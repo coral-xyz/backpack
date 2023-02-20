@@ -1,17 +1,14 @@
 import type { Blockchain } from "@coral-xyz/common";
 import {
-  BACKEND_API_URL,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
+  UI_RPC_METHOD_USER_ACCOUNT_AUTH,
+  UI_RPC_METHOD_USER_ACCOUNT_READ,
 } from "@coral-xyz/common";
-import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { ethers } from "ethers";
-
-const { base58 } = ethers.utils;
+import { useBackgroundClient } from "@coral-xyz/recoil";
 
 export const useAuthentication = () => {
   const background = useBackgroundClient();
-  const user = useUser();
 
   /**
    * Login the user.
@@ -28,22 +25,12 @@ export const useAuthentication = () => {
     message: string;
   }) => {
     try {
-      const response = await fetch(`${BACKEND_API_URL}/authenticate`, {
-        method: "POST",
-        body: JSON.stringify({
-          blockchain,
-          signature,
-          publicKey,
-          message: base58.encode(Buffer.from(message, "utf-8")),
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
+      return await background.request({
+        method: UI_RPC_METHOD_USER_ACCOUNT_AUTH,
+        params: [blockchain, publicKey, message, signature],
       });
-      if (response.status !== 200) throw new Error(`could not authenticate`);
-      return await response.json();
-    } catch (err) {
-      console.error("error authenticating", err);
+    } catch (error) {
+      console.error("error auth", error);
       // Relock if authentication failed
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
@@ -55,38 +42,30 @@ export const useAuthentication = () => {
   /**
    * Query the server and see if the user has a valid JWT..
    */
-  const checkAuthentication = async (): Promise<
-    | {
-        id: string;
-        publicKeys: Array<{ blockchain: Blockchain; publicKey: string }>;
-        isAuthenticated: Boolean;
-      }
-    | undefined
-  > => {
+  const checkAuthentication = async (
+    jwt?: string
+  ): Promise<{
+    id: string;
+    publicKeys: Array<{ blockchain: Blockchain; publicKey: string }>;
+  } | null> => {
     try {
-      const response = await fetch(
-        `${BACKEND_API_URL}/users/${user.username}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.status === 404) {
-        // User does not exist on server, how to handle?
-        throw new Error("user does not exist");
-      } else if (response.status !== 200) {
-        throw new Error(`could not fetch user`);
-      }
-      return await response.json();
-    } catch (err) {
-      console.error("error checking authentication", err);
-      // Relock if authentication failed
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-        params: [],
+      return await background.request({
+        method: UI_RPC_METHOD_USER_ACCOUNT_READ,
+        params: [jwt],
       });
+    } catch (error: any) {
+      // Relock if authentication failed
+      if (error.toString().includes("user not authenticated")) {
+        // 403
+        return null;
+      } else {
+        console.error("error checking auth", error);
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+          params: [],
+        });
+        return null;
+      }
     }
   };
 
@@ -164,5 +143,10 @@ export const useAuthentication = () => {
     return transparentSigner ? transparentSigner : signers[0];
   };
 
-  return { authenticate, checkAuthentication, getSigners, getAuthSigner };
+  return {
+    authenticate,
+    checkAuthentication,
+    getSigners,
+    getAuthSigner,
+  };
 };

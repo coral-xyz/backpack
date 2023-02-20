@@ -1,40 +1,95 @@
-import type { Message, MessageWithMetadata } from "@coral-xyz/common";
+import type {
+  Message,
+  MessageWithMetadata,
+  SubscriptionType,
+} from "@coral-xyz/common";
 import express from "express";
 
+import { enrichMessages } from "@coral-xyz/backend-common";
+
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
-import { getChats } from "../../db/chats";
-import { getUsers } from "../../db/users";
+import {
+  getChats,
+  updateSecureTransfer,
+} from "../../db/chats";
+import {
+  updateLastReadGroup,
+  updateLastReadIndividual,
+} from "../../db/friendships";
 
 const router = express.Router();
 
-router.get("/", extractUserId, ensureHasRoomAccess, async (req, res) => {
+router.post(
+  "/lastRead",
+  extractUserId,
+  ensureHasRoomAccess,
+  async (req, res) => {
+    // @ts-ignore
+    const client_generated_uuid: string = req.body.client_generated_uuid;
+    // @ts-ignore
+    const { user1, user2 } = req.roomMetadata;
+    //@ts-ignore
+    const uuid: string = req.id;
+    //@ts-ignore
+    const type: SubscriptionType = req.query.type;
+    // @ts-ignore
+    const room: string = req.query.room;
+
+    if (type === "individual") {
+      await updateLastReadIndividual(
+        user1,
+        user2,
+        client_generated_uuid,
+        user1 === uuid ? "1" : "2"
+      );
+    } else {
+      await updateLastReadGroup(uuid, room, client_generated_uuid);
+    }
+    res.json({});
+  }
+);
+
+router.put("/message", extractUserId, ensureHasRoomAccess, async (req, res) => {
+  //TODO: make this secure, there is a path to cancel but the UI shows the txn as redeemed.
   const room = req.query.room;
-  const type = req.query.type;
-  const lastChatId = req.query.lastChatId || 10000000000;
-  // @ts-ignore
-  const chats = await getChats({ room, type, lastChatId });
-  const enrichedChats = await enrichMessages(chats);
-  res.json({ chats: enrichedChats });
+  const messageId = req.body.messageId;
+  const state = req.body.state;
+  const txn = req.body.txn;
+  if (state !== "cancelled" && state !== "redeemed") {
+    return res.status(411).json({ msg: "Incorrect state" });
+  }
+  await updateSecureTransfer(messageId, room, state, txn);
+  res.json({});
 });
 
-async function enrichMessages(
-  messages: Message[]
-): Promise<MessageWithMetadata[]> {
-  const userIds: string[] = messages.map((m) => m.uuid || "");
-  const uniqueUserIds = userIds.filter(
-    (x, index) => userIds.indexOf(x) === index
-  );
-  const metadatas = await getUsers(uniqueUserIds);
-  return messages.map((message) => {
-    const username =
-      metadatas.find((x) => x.id === message.uuid || "")?.username || "";
-    const image = `https://avatars.xnfts.dev/v1/${username}`;
-    return {
-      ...message,
-      username,
-      image,
-    };
+router.get("/", extractUserId, ensureHasRoomAccess, async (req, res) => {
+  // @ts-ignore
+  const room: string = req.query.room;
+  // @ts-ignore
+  const type: SubscriptionType = req.query.type;
+  const timestampBefore = req.query.timestampBefore
+    ? // @ts-ignore
+      new Date(parseInt(req.query.timestampBefore))
+    : new Date();
+  const timestampAfter = req.query.timestampAfter
+    ? // @ts-ignore
+      new Date(parseInt(req.query.timestampAfter))
+    : new Date(0);
+  const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+  // @ts-ignore
+  const clientGeneratedUuid: string | undefined = req.query.clientGeneratedUuid;
+
+  // @ts-ignore
+  const chats = await getChats({
+    room,
+    type,
+    timestampBefore,
+    timestampAfter,
+    limit,
+    clientGeneratedUuid,
   });
-}
+  const enrichedChats = await enrichMessages(chats, room, type, false);
+  res.json({ chats: enrichedChats });
+});
 
 export default router;

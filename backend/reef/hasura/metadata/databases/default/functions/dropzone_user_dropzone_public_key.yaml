@@ -1,0 +1,3 @@
+function:
+  name: user_dropzone_public_key
+  schema: dropzone

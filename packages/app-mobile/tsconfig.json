@@ -1,26 +1,16 @@
 {
   "extends": "expo/tsconfig.base",
-  "baseUrl": "./",
   "include": ["src"],
   "exclude": ["**/node_modules", "**/.*/"],
   "compilerOptions": {
     "strict": true,
+    "baseUrl": ".",
     "paths": {
-      "@navigation/*": ["src/navigation/*"],
-      "@components/*": ["src/components/*"],
-      "@hooks/*": ["src/hooks/*"],
-      "@lib/*": ["src/lib/*"],
-      "@screens/*": ["src/screens/*"],
-      "@coral-xyz/recoil": ["../packages/recoil"],
-      "@coral-xyz/common": ["../packages/common"],
-      "@coral-xyz/background": ["../packages/background"],
-      "@coral-xyz/themes": ["../packages/themes"]
+      "~navigation/*": ["src/navigation/*"],
+      "~components/*": ["src/components/*"],
+      "~hooks/*": ["src/hooks/*"],
+      "~lib/*": ["src/lib/*"],
+      "~screens/*": ["src/screens/*"]
     }
-  },
-  "references": [
-    { "path": "../packages/recoil" },
-    { "path": "../packages/common" },
-    { "path": "../packages/background" },
-    { "path": "../packages/themes" }
-  ]
+  }
 }

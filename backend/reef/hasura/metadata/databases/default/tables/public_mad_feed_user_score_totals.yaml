@@ -1,0 +1,26 @@
+table:
+  name: mad_feed_user_score_totals
+  schema: public
+select_permissions:
+  - role: one_xnft
+    permission:
+      columns:
+        - rank
+        - total_post_comments_score
+        - total_post_votes_score
+        - total_promoted_score
+        - total_promotion_results_score
+        - total_score
+        - user_id
+      filter: {}
+  - role: public_avatar
+    permission:
+      columns:
+        - rank
+        - total_post_comments_score
+        - total_post_votes_score
+        - total_promoted_score
+        - total_promotion_results_score
+        - total_score
+        - user_id
+      filter: {}

@@ -1,24 +1,34 @@
+import type { ReactNode } from "react";
 import {
   BACKPACK_FEATURE_XNFT,
   DISCORD_INVITE_LINK,
   TWITTER_LINK,
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
-import { useCustomTheme } from "@coral-xyz/themes";
-import { Box, Grid, Typography } from "@mui/material";
-
-import { Header, PrimaryButton, SubtextParagraph } from "../../common";
 import {
   DiscordIcon,
   ExtensionIcon,
   PinIcon,
+  PrimaryButton,
   TwitterIcon,
-  WidgetIcon,
-} from "../../common/Icon";
+} from "@coral-xyz/react-common";
+import { useCustomTheme } from "@coral-xyz/themes";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  Typography,
+} from "@mui/material";
+
+import { Header, SubtextParagraph } from "../../common";
 import { ActionCard } from "../../common/Layout/ActionCard";
+import { AppStoreIcon } from "../Icon";
 
 export function SetupComplete({ onClose }: { onClose: () => void }) {
   const theme = useCustomTheme();
+
   return (
     <>
       <div
@@ -47,13 +57,13 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
               mr: "24px",
             }}
           >
-            <Header text="You’ve set up Backpack!" />
+            <Header text="You've set up Backpack!" />
             <SubtextParagraph
               style={{
-                marginBottom: "24px",
+                marginBottom: "25px",
               }}
             >
-              Now get started exploring what your Backpack can do.
+              We recommend downloading a few xNFTs to get started.
             </SubtextParagraph>
           </Box>
           <Box
@@ -62,27 +72,27 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
               mr: "16px",
             }}
           >
-            <Grid container spacing={2}>
+            <Grid container spacing={1} columns={1}>
               {BACKPACK_FEATURE_XNFT && (
                 <Grid item xs={6}>
-                  <ActionCard
-                    icon={<WidgetIcon fill="#E33E3F" />}
-                    text="Browse the xNFT library"
+                  <CallToAction
+                    icon={<AppStoreIcon />}
+                    title="Browse the xNFT library"
                     onClick={() => window.open(XNFT_GG_LINK, "_blank")}
                   />
                 </Grid>
               )}
               <Grid item xs={6}>
-                <ActionCard
+                <CallToAction
                   icon={<TwitterIcon fill="#1D9BF0" />}
-                  text="Follow us on Twitter"
+                  title="Follow us on Twitter"
                   onClick={() => window.open(TWITTER_LINK, "_blank")}
                 />
               </Grid>
               <Grid item xs={6}>
-                <ActionCard
+                <CallToAction
                   icon={<DiscordIcon fill="#5865F2" />}
-                  text="Join the Discord community"
+                  title="Join Discord"
                   onClick={() => window.open(DISCORD_INVITE_LINK, "_blank")}
                 />
               </Grid>
@@ -97,7 +107,7 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
           }}
         >
           <PrimaryButton
-            label="Finish"
+            label="Visit xnft.gg"
             onClick={onClose}
             buttonLabelStyle={{
               fontWeight: 600,
@@ -106,6 +116,59 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
         </Box>
       </Box>
     </>
+  );
+}
+
+function CallToAction({
+  icon,
+  title,
+  onClick,
+}: {
+  icon: ReactNode;
+  title: string;
+  onClick: () => void;
+}) {
+  const theme = useCustomTheme();
+  return (
+    <Button
+      disableRipple
+      onClick={onClick}
+      style={{
+        padding: 0,
+        textTransform: "none",
+        border: `${theme.custom.colors.borderFull}`,
+        borderRadius: "12px",
+        background: theme.custom.colors.nav,
+        width: "100%",
+      }}
+    >
+      <Card
+        sx={{
+          p: 1,
+          color: theme.custom.colors.fontColor,
+          cursor: "pointer",
+          padding: "16px",
+          boxShadow: "none",
+          backgroundColor: "transparent",
+          width: "100%",
+        }}
+      >
+        <CardContent
+          style={{ padding: 0, display: "flex", alignItems: "center", gap: 12 }}
+        >
+          {icon}
+          <Box
+            style={{
+              fontSize: "16px",
+              lineHeight: "24px",
+              textAlign: "left",
+            }}
+          >
+            {title}
+          </Box>
+        </CardContent>
+      </Card>
+    </Button>
   );
 }
 

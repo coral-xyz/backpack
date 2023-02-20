@@ -1,6 +1,9 @@
 import type { Event, XnftMetadata } from "@coral-xyz/common-public";
-import { getLogger } from "@coral-xyz/common-public";
-import type { ConfirmOptions, PublicKey, SendOptions } from "@solana/web3.js";
+import { externalResourceUri, getLogger } from "@coral-xyz/common-public";
+import type { ConfirmOptions, SendOptions } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
+import base32Encode from "base32-encode";
+import base58 from "bs58";
 
 import { openPopupWindow } from "./browser/extension";
 import type { BackgroundClient } from "./channel/app-ui";
@@ -29,6 +32,7 @@ import {
   PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
+  PLUGIN_RPC_METHOD_PLUGIN_OPEN,
   PLUGIN_RPC_METHOD_POP_OUT,
   PLUGIN_RPC_METHOD_WINDOW_OPEN,
   SOLANA_RPC_METHOD_SIGN_ALL_TXS as PLUGIN_SOLANA_RPC_METHOD_SIGN_ALL_TXS,
@@ -70,6 +74,7 @@ export class Plugin {
   private _requestTxApprovalFn?: (request: any) => void;
   private _backgroundClient?: BackgroundClient;
   private _connectionBackgroundClient?: BackgroundClient;
+  private _openPlugin?: (xnftAddress: string) => void;
 
   //
   // The last time a click event was handled for the plugin. This is used as an
@@ -80,15 +85,17 @@ export class Plugin {
 
   readonly iframeRootUrl: string;
   readonly iconUrl: string;
+  readonly splashUrls: { src: string; height: number; width: number }[];
   readonly title: string;
   readonly xnftAddress: PublicKey;
   readonly xnftInstallAddress: PublicKey;
 
   constructor(
-    xnftAddress: PublicKey,
-    xnftInstallAddress: PublicKey,
+    xnftAddress: PublicKey | string,
+    xnftInstallAddress: PublicKey | string,
     url: string,
     iconUrl: string,
+    splashUrls: { src: string; height: number; width: number }[],
     title: string,
     activeWallets: { [blockchain: string]: string },
     connectionUrls: { [blockchain: string]: string | null }
@@ -96,13 +103,29 @@ export class Plugin {
     //
     // Provide connection for the plugin.
     //
+
     this._activeWallets = activeWallets;
     this._connectionUrls = connectionUrls;
     this.title = title;
-    this.iframeRootUrl = url;
     this.iconUrl = iconUrl;
-    this.xnftAddress = xnftAddress;
-    this.xnftInstallAddress = xnftInstallAddress;
+    this.splashUrls = splashUrls;
+    this.xnftAddress = new PublicKey(xnftAddress);
+    this.xnftInstallAddress = new PublicKey(xnftInstallAddress);
+
+    const xnftAddressB32 = base32Encode(
+      base58.decode(this.xnftAddress.toBase58()),
+      "RFC4648",
+      { padding: false }
+    );
+
+    const iframeRootUrl =
+      url.startsWith("ar://") || url.startsWith("ipfs://")
+        ? //  || this.xnftAddress.toBase58() ===
+          //   "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8"
+          `https://${xnftAddressB32}.gateway.xnfts.dev`
+        : externalResourceUri(url);
+
+    this.iframeRootUrl = iframeRootUrl;
 
     //
     // RPC Server channel from plugin -> extension-ui.
@@ -112,7 +135,6 @@ export class Plugin {
       CHANNEL_PLUGIN_RPC_REQUEST,
       CHANNEL_PLUGIN_RPC_RESPONSE
     );
-    this._rpcServer.handler(this._handleRpc.bind(this));
 
     //
     // Effectively take a lock that's held until the setup is complete.
@@ -129,25 +151,33 @@ export class Plugin {
   //
   // Loads the plugin javascript code inside the iframe.
   //
-  public createIframe(preference?: XnftPreference) {
+  public createIframe(
+    preference: XnftPreference | null,
+    deepXnftPath?: string
+  ) {
     logger.debug("creating iframe element");
-
+    const url = new URL(this.iframeRootUrl);
+    if (deepXnftPath) {
+      // url.searchParams.set("deepXnftPath", deepXnftPath);
+      url.hash = deepXnftPath;
+    }
     this._nextRenderId = 0;
     this.iframeRoot = document.createElement("iframe");
     this.iframeRoot.style.width = "100%";
     this.iframeRoot.style.height = "100vh";
     this.iframeRoot.style.border = "none";
-
-    if (preference?.mediaPermissions) {
-      this.iframeRoot.setAttribute(
-        "allow",
-        "camera;microphone;display-capture"
-      );
-    }
+    this.iframeRoot.setAttribute(
+      "allow",
+      preference?.mediaPermissions
+        ? "camera;microphone;display-capture;fullscreen;clipboard-write *"
+        : "fullscreen;clipboard-write *"
+    );
     this.iframeRoot.setAttribute("fetchpriority", "low");
-    this.iframeRoot.src = this.iframeRootUrl;
+    this.iframeRoot.src = url.toString();
     this.iframeRoot.sandbox.add("allow-same-origin");
     this.iframeRoot.sandbox.add("allow-scripts");
+    this.iframeRoot.sandbox.add("allow-forms");
+
     this.iframeRoot.onload = () => this.handleRootIframeOnLoad();
   }
 
@@ -182,7 +212,12 @@ export class Plugin {
   //
   public setActiveIframe(iframe: HTMLIFrameElement, xnftUrl: string) {
     this._iframeActive = iframe;
-    this._rpcServer.setWindow(iframe.contentWindow, xnftUrl);
+
+    this._rpcServer.setWindow(
+      iframe.contentWindow,
+      xnftUrl,
+      this._handleRpc.bind(this)
+    );
     this.pushConnectNotification();
   }
 
@@ -196,7 +231,7 @@ export class Plugin {
     this.iframeRoot = undefined;
     // Don't need to remove the active iframe because we've removed the root.
     this._iframeActive = undefined;
-    this._rpcServer.setWindow(undefined, "");
+    this._rpcServer.destroyWindow();
     this._nextRenderId = undefined;
     this._pendingBridgeRequests = undefined;
     this._didFinishSetupResolver = undefined;
@@ -212,8 +247,10 @@ export class Plugin {
     request,
     backgroundClient,
     connectionBackgroundClient,
+    openPlugin,
   }: any) {
     this._navPushFn = push;
+    this._openPlugin = openPlugin;
     this._requestTxApprovalFn = request;
     this._backgroundClient = backgroundClient;
     this._connectionBackgroundClient = connectionBackgroundClient;
@@ -223,8 +260,8 @@ export class Plugin {
   // Rendering.
   //////////////////////////////////////////////////////////////////////////////
 
-  public mount(preference?: XnftPreference) {
-    this.createIframe(preference);
+  public mount(preference: XnftPreference | null, deepXnftPath: string) {
+    this.createIframe(preference, deepXnftPath);
     this.didFinishSetup!.then(() => {
       this.pushMountNotification();
     });
@@ -381,6 +418,8 @@ export class Plugin {
         return await this._handlePut(params[0], params[1]);
       case PLUGIN_RPC_METHOD_WINDOW_OPEN:
         return await this._handleWindowOpen(params[0]);
+      case PLUGIN_RPC_METHOD_PLUGIN_OPEN:
+        return await this._handlePluginOpen(params[0]);
       case PLUGIN_RPC_METHOD_POP_OUT:
         return await this._handlePopout(params[0]);
       case PLUGIN_ETHEREUM_RPC_METHOD_SIGN_TX:
@@ -568,6 +607,12 @@ export class Plugin {
 
   private async _handleWindowOpen(url: string): Promise<RpcResponse> {
     window.open(url, "_blank");
+    return ["success"];
+  }
+
+  private async _handlePluginOpen(nftAddress: string): Promise<RpcResponse> {
+    console.log("open", nftAddress, this._openPlugin);
+    this._openPlugin?.(nftAddress);
     return ["success"];
   }
 

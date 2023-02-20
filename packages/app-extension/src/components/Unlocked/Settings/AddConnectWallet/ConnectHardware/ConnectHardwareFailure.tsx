@@ -1,14 +1,12 @@
 import { DISCORD_INVITE_LINK } from "@coral-xyz/common";
+import {
+  PrimaryButton,
+  SadFaceIcon,
+  SecondaryButton,
+} from "@coral-xyz/react-common";
 import { Box } from "@mui/material";
 
-import {
-  Header,
-  HeaderIcon,
-  PrimaryButton,
-  SecondaryButton,
-  SubtextParagraph,
-} from "../../../../common";
-import { SadFaceIcon } from "../../../../common/Icon";
+import { Header, HeaderIcon, SubtextParagraph } from "../../../../common";
 
 export function ConnectHardwareFailure({ onRetry }: { onRetry: () => void }) {
   return (

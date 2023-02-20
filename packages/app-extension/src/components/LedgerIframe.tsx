@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import {
   getLogger,
+  isValidEventOrigin,
   LEDGER_IFRAME_URL,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
 } from "@coral-xyz/common";
@@ -15,12 +16,16 @@ const LedgerIframe = () => {
   useEffect(() => {
     let handleMessage: (event: MessageEvent) => void;
 
-    navigator.serviceWorker.ready.then((_registration) => {
+    navigator.serviceWorker.ready.then(() => {
       //
       // Response: relays message from the injected ledger iframe to the
       //           background script.
       //
-      handleMessage = ({ data }) => {
+      handleMessage = (event) => {
+        if (!isValidEventOrigin(event)) {
+          return;
+        }
+        const data = event.data;
         if (data.type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
           return;
         }
@@ -33,7 +38,11 @@ const LedgerIframe = () => {
       // Request: relays the message from the background script to the
       //          iframe so that it has permissions to communicate with
       //          the ledger.
-      navigator.serviceWorker.onmessage = ({ data }) => {
+      navigator.serviceWorker.onmessage = (msg) => {
+        if (!isValidEventOrigin(msg)) {
+          return;
+        }
+        const data = msg.data;
         logger.debug("onmessage", data);
         iframe.current?.contentWindow?.postMessage(data, "*");
       };

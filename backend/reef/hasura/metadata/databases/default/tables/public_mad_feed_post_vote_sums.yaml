@@ -1,0 +1,30 @@
+table:
+  name: mad_feed_post_vote_sums
+  schema: public
+select_permissions:
+  - role: one_xnft
+    permission:
+      columns:
+        - comments_count
+        - comments_value
+        - ranking
+        - trending_count
+        - trending_ranking
+        - votes
+        - votes_count
+        - post_id
+        - user_id
+      filter: {}
+  - role: public_avatar
+    permission:
+      columns:
+        - comments_count
+        - comments_value
+        - ranking
+        - trending_count
+        - trending_ranking
+        - votes
+        - votes_count
+        - post_id
+        - user_id
+      filter: {}

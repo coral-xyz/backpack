@@ -1,12 +1,9 @@
 import { ethers } from "ethers";
 import express from "express";
 
-import { clearCookie, setCookie } from "../../auth/util";
+import { clearCookie, setJWTCookie } from "../../auth/util";
 import { getUser } from "../../db/users";
-import {
-  validateEthereumSignature,
-  validateSolanaSignature,
-} from "../../validation/user";
+import { validateSignature } from "../../validation/signature";
 
 const { base58 } = ethers.utils;
 
@@ -28,18 +25,8 @@ router.post("/", async (req, res) => {
 
   const uuid = decodedMessage.toString().replace(messagePrefix, "");
 
-  let valid = false;
-  if (blockchain === "solana") {
-    valid = validateSolanaSignature(
-      decodedMessage,
-      base58.decode(signature),
-      base58.decode(publicKey)
-    );
-  } else if (blockchain === "ethereum") {
-    valid = validateEthereumSignature(decodedMessage, signature, publicKey);
-  }
-  if (!valid) {
-    return res.status(403).json({ msg: "invalid signature" });
+  if (!validateSignature(decodedMessage, blockchain, signature, publicKey)) {
+    return res.status(403).json({ msg: `Invalid ${blockchain} signature` });
   }
 
   let user;
@@ -53,14 +40,15 @@ router.post("/", async (req, res) => {
       return res
         .status(403)
         .json({ msg: "invalid signing public key for user" });
-  } catch {
+  } catch (error) {
+    console.error(error);
     // User not found
     return res.status(403).json({ msg: "invalid user id" });
   }
 
-  await setCookie(req, res, user.id as string);
+  const jwt = await setJWTCookie(req, res, user.id as string);
 
-  return res.json(user);
+  return res.json({ ...user, jwt });
 });
 
 export default router;

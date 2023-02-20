@@ -1,16 +1,11 @@
 import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
+import { HardwareWalletIcon, PrimaryButton } from "@coral-xyz/react-common";
 import type Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
 import { Box } from "@mui/material";
 
-import {
-  Header,
-  HeaderIcon,
-  PrimaryButton,
-  SubtextParagraph,
-} from "../../../../common";
-import { HardwareWalletIcon } from "../../../../common/Icon";
+import { Header, HeaderIcon, SubtextParagraph } from "../../../../common";
 
 import { ConnectHardwareApp } from "./ConnectHardwareApp";
 import { ConnectHardwareFailure } from "./ConnectHardwareFailure";
@@ -58,29 +53,30 @@ export function ConnectHardwareSearching({
   useEffect(() => {
     (async () => {
       if (transport === null && !connectFailure) {
-        TransportWebHid.create()
-          .then(setTransport)
-          .catch(async (err) => {
-            if (err.message === "The device is already open.") {
-              const devices = await TransportWebHid.list();
-              // Close all open devices
-              await Promise.all(devices.map((d) => d.close()));
-              // Reload
-              setNavigatorStateChange(() => navigatorStateChange + 1);
-            } else if (err.message === "Access denied to use Ledger device") {
-              // User cancelled the permissions screen, or no device available in screen
-              setTimeout(() => setConnectFailure(true), 2000);
-            } else {
-              console.error(err);
-              setTimeout(() => setConnectFailure(true), 2000);
-            }
-          });
+        try {
+          setTransport(await TransportWebHid.create());
+        } catch (error: any) {
+          if (error.message === "The device is already open.") {
+            const devices = await TransportWebHid.list();
+            // Close all open devices
+            await Promise.all(devices.map((d) => d.close()));
+            // Reload to retry
+            setNavigatorStateChange(() => navigatorStateChange + 1);
+          } else if (error.message === "Access denied to use Ledger device") {
+            // User cancelled the permissions screen, or no device available in screen
+            console.debug("access denied to ledger device");
+            setTimeout(() => setConnectFailure(true), 2000);
+          } else {
+            console.debug("ledger error", error);
+            setTimeout(() => setConnectFailure(true), 2000);
+          }
+        }
       }
     })();
   }, [connectFailure, navigatorStateChange]);
 
   useEffect(() => {
-    // Auto advance is transport set
+    // Auto advance if transport set
     if (transport) {
       setTimeout(() => setConnectSuccess(true), 2000);
     }

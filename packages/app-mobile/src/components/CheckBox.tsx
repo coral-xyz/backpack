@@ -1,9 +1,10 @@
-import { Controller } from "react-hook-form";
-import { StyleSheet, Text, View } from "react-native";
-import { useTheme } from "@hooks";
+import { StyleSheet, Text, Pressable } from "react-native";
+
 import ExpoCheckBox from "expo-checkbox";
 
-import { addTestIdentifier } from "../lib/addTestIdentifier";
+import { Controller } from "react-hook-form";
+
+import { useTheme } from "~hooks/useTheme";
 
 export const BaseCheckBoxLabel: React.FC<{
   label: string;
@@ -12,12 +13,16 @@ export const BaseCheckBoxLabel: React.FC<{
 }> = ({ label, value, onPress }) => {
   const theme = useTheme();
   return (
-    <View style={styles.row}>
+    <Pressable
+      hitSlop={10}
+      disabled={!label}
+      style={styles.row}
+      onPress={() => onPress(!value)}
+    >
       <ExpoCheckBox
         value={value}
-        onValueChange={onPress}
+        onValueChange={() => onPress(!value)}
         color={theme.custom.colors.fontColor}
-        {...addTestIdentifier(label)}
       />
       {label ? (
         <Text
@@ -31,11 +36,11 @@ export const BaseCheckBoxLabel: React.FC<{
           {label}
         </Text>
       ) : null}
-    </View>
+    </Pressable>
   );
 };
 
-export const CheckBox: React.FC<{
+export const ControlledCheckBoxLabel: React.FC<{
   name: string;
   control: any;
   label: string;
@@ -60,6 +65,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   label: {
+    fontSize: 16,
     marginLeft: 8,
   },
 });

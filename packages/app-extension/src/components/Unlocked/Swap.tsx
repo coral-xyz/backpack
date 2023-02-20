@@ -1,41 +1,48 @@
 import { useEffect, useState } from "react";
 import {
   Blockchain,
-  ETH_NATIVE_MINT,
   SOL_NATIVE_MINT,
+  toDisplayBalance,
   WSOL_MINT,
 } from "@coral-xyz/common";
 import {
-  useJupiterOutputMints,
-  useSplTokenRegistry,
+  CheckIcon,
+  CrossIcon,
+  DangerButton,
+  Loading,
+  MaxLabel,
+  PrimaryButton,
+  SecondaryButton,
+  TextFieldLabel,
+} from "@coral-xyz/react-common";
+import type { TokenData, TokenDataWithPrice } from "@coral-xyz/recoil";
+import {
+  useActiveWallet,
+  useDarkMode,
+  useJupiterOutputTokens,
   useSwapContext,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandMore, SwapVert } from "@mui/icons-material";
-import type { Button } from "@mui/material";
-import { IconButton, InputAdornment, Typography } from "@mui/material";
+import {
+  IconButton,
+  InputAdornment,
+  Skeleton,
+  Typography,
+} from "@mui/material";
 import { ethers, FixedNumber } from "ethers";
 
 import { Button as XnftButton } from "../../plugin/Component";
-import {
-  DangerButton,
-  Loading,
-  PrimaryButton,
-  SecondaryButton,
-  TextField,
-  TextFieldLabel,
-} from "../common";
+import { TextField } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
-import { CheckIcon, CrossIcon } from "../common/Icon";
+import { BottomCard } from "../common/Layout/BottomCard";
 import { useDrawerContext } from "../common/Layout/Drawer";
-import { useNavStack } from "../common/Layout/NavStack";
-import { MaxSwapLabel } from "../common/MaxSwapLabel";
+import { useNavigation } from "../common/Layout/NavStack";
 import { TokenAmountHeader } from "../common/TokenAmountHeader";
 import { TokenInputField } from "../common/TokenInput";
 import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
-
-import { BottomCard } from "./Balances/TokensWidget/Send";
+import { WalletDrawerButton } from "../common/WalletList";
 
 const { Zero } = ethers.constants;
 
@@ -201,23 +208,31 @@ enum SwapState {
 }
 
 export function Swap({ blockchain }: { blockchain: Blockchain }) {
-  const nav = useNavStack();
+  const isDark = useDarkMode();
+  const nav = useNavigation();
+
   useEffect(() => {
-    nav.setTitle("Swap");
+    nav.setOptions({
+      headerTitle: "Swap",
+      style: isDark ? { background: "#1D1D20" } : undefined,
+    });
   }, [nav]);
 
   if (blockchain && blockchain !== Blockchain.SOLANA) {
     throw new Error("only Solana swaps are supported currently");
   }
 
-  return <_Swap blockchain={blockchain ?? Blockchain.SOLANA} />;
+  return <_Swap />;
 }
 
-function _Swap({ blockchain }: { blockchain: Blockchain }) {
+function _Swap() {
+  const isDark = useDarkMode();
   const classes = useStyles();
-  const { toAmount, swapToFromMints } = useSwapContext();
+  const { swapToFromMints, fromToken } = useSwapContext();
   const [openDrawer, setOpenDrawer] = useState(false);
   const { close } = useDrawerContext();
+
+  const isLoading = !fromToken;
 
   const onSwapButtonClick = () => {
     swapToFromMints();
@@ -235,7 +250,12 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
 
   return (
     <>
-      <form onSubmit={onSubmit} className={classes.container} noValidate>
+      <form
+        onSubmit={onSubmit}
+        className={classes.container}
+        style={isDark ? { background: "#1D1D20" } : undefined}
+        noValidate
+      >
         <div className={classes.topHalf}>
           <SwapTokensButton
             onClick={onSwapButtonClick}
@@ -245,13 +265,19 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
               left: "24px",
             }}
           />
-          <InputTextField />
+          {isLoading ? (
+            <Skeleton height={80} style={{ borderRadius: "12px" }} />
+          ) : (
+            <InputTextField />
+          )}
         </div>
         <div className={classes.bottomHalfWrapper}>
           <div className={classes.bottomHalf}>
-            <div>
-              <OutputTextField />
-              {!!toAmount && toAmount.gt(Zero) && (
+            {isLoading ? (
+              <Skeleton height={80} style={{ borderRadius: "12px" }} />
+            ) : (
+              <div>
+                <OutputTextField />
                 <div
                   style={{
                     marginTop: "24px",
@@ -261,9 +287,9 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
                 >
                   <SwapInfo />
                 </div>
-              )}
-            </div>
-            <ConfirmSwapButton type="submit" blockchain={blockchain} />
+              </div>
+            )}
+            <ConfirmSwapButton />
           </div>
         </div>
       </form>
@@ -320,7 +346,7 @@ function InputTextField() {
   const {
     fromAmount,
     setFromAmount,
-    fromMintInfo,
+    fromToken,
     availableForSwap,
     exceedsBalance,
   } = useSwapContext();
@@ -330,10 +356,10 @@ function InputTextField() {
       <TextFieldLabel
         leftLabel={"Sending"}
         rightLabelComponent={
-          <MaxSwapLabel
+          <MaxLabel
             amount={availableForSwap}
             onSetAmount={setFromAmount}
-            decimals={fromMintInfo.decimals}
+            decimals={fromToken!.decimals}
           />
         }
       />
@@ -344,7 +370,7 @@ function InputTextField() {
         rootClass={classes.fromFieldRoot}
         value={fromAmount}
         setValue={setFromAmount}
-        decimals={fromMintInfo.decimals}
+        decimals={fromToken!.decimals}
         isError={exceedsBalance}
       />
     </>
@@ -354,7 +380,7 @@ function InputTextField() {
 function OutputTextField() {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { toAmount, toMintInfo, isLoadingRoutes } = useSwapContext();
+  const { toAmount, toToken, isLoadingRoutes } = useSwapContext();
   return (
     <>
       <TextFieldLabel leftLabel={"Receiving"} />
@@ -373,12 +399,12 @@ function OutputTextField() {
             />
           )
         }
-        endAdornment={<OutputTokenSelectorButton />}
+        endAdornment={<OutputTokensSelectorButton />}
         rootClass={classes.receiveFieldRoot}
         type={"number"}
         value={
-          toAmount
-            ? ethers.utils.formatUnits(toAmount, toMintInfo.decimals)
+          toAmount && toToken
+            ? ethers.utils.formatUnits(toAmount, toToken.decimals)
             : ""
         }
         disabled={true}
@@ -404,12 +430,11 @@ const InsufficientBalanceButton = () => {
   return <DangerButton label="Insufficient balance" disabled={true} />;
 };
 
-const ConfirmSwapButton = ({
-  blockchain,
-  ...buttonProps
-}: {
-  blockchain: Blockchain;
-} & React.ComponentProps<typeof Button>) => {
+const InsufficientFeeButton = () => {
+  return <DangerButton label="Insufficient balance for fee" disabled={true} />;
+};
+
+const ConfirmSwapButton = () => {
   const {
     toAmount,
     toMint,
@@ -417,15 +442,22 @@ const ConfirmSwapButton = ({
     fromMint,
     isJupiterError,
     exceedsBalance,
+    feeExceedsBalance,
     isLoadingRoutes,
     isLoadingTransactions,
   } = useSwapContext();
-  const tokenAccounts = useJupiterOutputMints(fromMint);
+  const tokenAccounts = useJupiterOutputTokens(fromMint);
+
+  // Parameters aren't all entered or the swap data is loading
+  const isIncomplete =
+    !fromAmount || !toAmount || isLoadingRoutes || isLoadingTransactions;
 
   if (fromMint === toMint) {
     return <SwapInvalidButton />;
   } else if (exceedsBalance) {
     return <InsufficientBalanceButton />;
+  } else if (feeExceedsBalance && !isIncomplete) {
+    return <InsufficientFeeButton />;
   } else if (isJupiterError || tokenAccounts.length === 0) {
     return <SwapUnavailableButton />;
   }
@@ -439,15 +471,7 @@ const ConfirmSwapButton = ({
     label = "Review";
   }
 
-  return (
-    <PrimaryButton
-      label={label}
-      disabled={
-        !fromAmount || !toAmount || isLoadingRoutes || isLoadingTransactions
-      }
-      {...buttonProps}
-    />
-  );
+  return <PrimaryButton type="submit" label={label} disabled={isIncomplete} />;
 };
 
 //
@@ -577,13 +601,13 @@ function SwapError({ onRetry, onCancel }: any) {
 }
 
 function SwapReceiveAmount() {
-  const { toAmount, toMintInfo } = useSwapContext();
+  const { toAmount, toToken } = useSwapContext();
   return (
     <TokenAmountHeader
       token={{
-        logo: toMintInfo.logoURI,
-        ticker: toMintInfo.symbol,
-        decimals: toMintInfo.decimals,
+        logo: toToken!.logo,
+        ticker: toToken!.ticker,
+        decimals: toToken!.decimals,
       }}
       amount={toAmount!}
     />
@@ -591,13 +615,11 @@ function SwapReceiveAmount() {
 }
 
 function SwapInfo({ compact = true }: { compact?: boolean }) {
-  const classes = useStyles();
-  const theme = useCustomTheme();
   const {
     fromAmount,
     toAmount,
-    fromMintInfo,
-    toMintInfo,
+    fromToken,
+    toToken,
     priceImpactPct,
     isLoadingRoutes,
     isLoadingTransactions,
@@ -622,9 +644,21 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     );
   }
 
-  if (!fromAmount || !toAmount) return <></>;
+  if (!fromAmount || !toAmount || !fromToken || !toToken) {
+    return (
+      <SwapInfoRows
+        {...{
+          compact,
+          youPay: "-",
+          rate: "-",
+          priceImpact: "-",
+          networkFee: "-",
+        }}
+      />
+    );
+  }
 
-  const decimalDifference = fromMintInfo.decimals - toMintInfo.decimals;
+  const decimalDifference = fromToken.decimals - toToken.decimals;
   const toAmountWithFees = toAmount.sub(swapFee);
 
   // Scale a FixedNumber up or down by a number of decimals
@@ -638,47 +672,67 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   };
 
   const rate = fromAmount.gt(Zero)
-    ? scale(
-        FixedNumber.from(toAmountWithFees).divUnsafe(
-          FixedNumber.from(fromAmount)
-        ),
-        decimalDifference
-      ).toString()
+    ? ethers.utils.commify(
+        scale(
+          FixedNumber.from(toAmountWithFees).divUnsafe(
+            FixedNumber.from(fromAmount)
+          ),
+          decimalDifference
+        ).toString()
+      )
     : "0";
 
+  return (
+    <SwapInfoRows
+      {...{
+        compact,
+        youPay: `${toDisplayBalance(fromAmount, fromToken.decimals)} ${
+          fromToken.ticker
+        }`,
+        rate: `1 ${fromToken.ticker} = ${rate.substring(0, 10)} ${
+          toToken.ticker
+        }`,
+        priceImpact: `${
+          priceImpactPct === 0
+            ? 0
+            : priceImpactPct > 0.1
+            ? priceImpactPct.toFixed(2)
+            : "< 0.1"
+        }%`,
+        networkFee: transactionFee
+          ? `${ethers.utils.formatUnits(transactionFee, 9)} SOL`
+          : "-",
+      }}
+    />
+  );
+}
+
+function SwapInfoRows({
+  youPay,
+  rate,
+  networkFee,
+  priceImpact,
+  compact,
+}: {
+  youPay: any;
+  rate: any;
+  priceImpact: any;
+  networkFee: any;
+  compact?: boolean;
+}) {
+  const classes = useStyles();
+  const wallet = useActiveWallet();
   const rows = [];
-  if (!compact) {
-    rows.push([
-      "You Pay",
-      `${ethers.utils.formatUnits(fromAmount, fromMintInfo.decimals)} ${
-        fromMintInfo.symbol
-      }`,
-    ]);
-  }
   rows.push([
-    "Rate",
-    `1 ${fromMintInfo.symbol} = ${rate} ${toMintInfo.symbol}`,
-  ]);
-  rows.push([
-    "Network Fee",
-    transactionFee ? `${ethers.utils.formatUnits(transactionFee, 9)} SOL` : "-",
+    "Wallet",
+    <WalletDrawerButton wallet={wallet} style={{ height: "20px" }} />,
   ]);
   if (!compact) {
-    rows.push([
-      "Backpack Fee",
-      <span style={{ color: theme.custom.colors.secondary }}>FREE</span>,
-    ]);
+    rows.push(["You Pay", youPay]);
   }
-  rows.push([
-    "Price Impact",
-    `${
-      priceImpactPct === 0
-        ? 0
-        : priceImpactPct > 0.1
-        ? priceImpactPct.toFixed(2)
-        : "< 0.1"
-    }%`,
-  ]);
+  rows.push(["Rate", rate]);
+  rows.push(["Network Fee", networkFee]);
+  rows.push(["Price Impact", priceImpact]);
 
   return (
     <>
@@ -714,72 +768,60 @@ function SwapTokensButton({
 }
 
 function InputTokenSelectorButton() {
-  const { inputTokenAccounts, fromMint, setFromMint } = useSwapContext();
-  const tokenAccountsFiltered = inputTokenAccounts.filter((token: Token) => {
-    if (token.mint && token.mint === SOL_NATIVE_MINT) {
-      return true;
-    }
-    if (token.address && token.address === ETH_NATIVE_MINT) {
-      return true;
-    }
-    return !token.nativeBalance.isZero();
-  });
+  const { fromToken, setFromMint } = useSwapContext();
   return (
     <TokenSelectorButton
-      selectedMint={fromMint}
-      tokenAccounts={tokenAccountsFiltered}
+      token={fromToken!}
+      input={true}
       setMint={setFromMint}
     />
   );
 }
 
-function OutputTokenSelectorButton() {
-  const { fromMint, toMint, setToMint } = useSwapContext();
-  const tokenAccounts = useJupiterOutputMints(fromMint);
+function OutputTokensSelectorButton() {
+  const { toToken, setToMint } = useSwapContext();
   return (
-    <TokenSelectorButton
-      selectedMint={toMint}
-      tokenAccounts={tokenAccounts}
-      setMint={setToMint}
-      displayWalletHeader={false}
-    />
+    <TokenSelectorButton token={toToken!} setMint={setToMint} input={false} />
   );
 }
 
 function TokenSelectorButton({
-  selectedMint,
-  tokenAccounts,
+  token,
   setMint,
-  displayWalletHeader,
-}: any) {
+  input,
+}: {
+  token: TokenData;
+  setMint: (mint: string) => void;
+  input: boolean;
+}) {
   const classes = useStyles();
-  const nav = useNavStack();
-  const tokenRegistry = useSplTokenRegistry();
-  const tokenInfo = tokenRegistry.get(selectedMint); // TODO handle null case
-  const symbol = tokenInfo ? tokenInfo.symbol : "-";
-  const logoUri = tokenInfo ? tokenInfo.logoURI : "-";
+  const nav = useNavigation();
 
   return (
     <InputAdornment position="end">
       <XnftButton
         onClick={() =>
           nav.push("select-token", {
+            // @ts-ignore
             setMint: (...args: any) => setMint(...args),
-            tokenAccounts,
-            displayWalletHeader,
+            input,
           })
         }
         style={{
           backgroundColor: "transparent",
+          width: "auto",
+          justifyContent: "right",
         }}
       >
-        <img
-          className={classes.tokenLogo}
-          src={logoUri}
-          onError={(event) => (event.currentTarget.style.display = "none")}
-        />
+        {token && (
+          <img
+            className={classes.tokenLogo}
+            src={token.logo}
+            onError={(event) => (event.currentTarget.style.display = "none")}
+          />
+        )}
         <Typography className={classes.tokenSelectorButtonLabel}>
-          {symbol}
+          {token && token.ticker}
         </Typography>
         <ExpandMore className={classes.expandMore} />
       </XnftButton>
@@ -787,34 +829,42 @@ function TokenSelectorButton({
   );
 }
 
-export function SelectToken({
+export function SwapSelectToken({
   setMint,
-  tokenAccounts,
   customFilter,
-  displayWalletHeader,
+  input,
 }: {
   setMint: (mint: string) => void;
-  tokenAccounts: Token[];
   customFilter: (token: Token) => boolean;
-  displayWalletHeader: boolean;
+  input: boolean;
 }) {
-  const nav = useNavStack();
+  const isDark = useDarkMode();
+  const theme = useCustomTheme();
+  const nav = useNavigation();
+  const { fromTokens, toTokens } = useSwapContext();
+  const tokenAccounts = (
+    !input ? toTokens : fromTokens
+  ) as Array<TokenDataWithPrice>;
+
   const onClickRow = (_blockchain: Blockchain, token: Token) => {
     setMint(token.mint!);
     nav.pop();
   };
 
   useEffect(() => {
-    nav.setTitle("Select Token");
+    nav.setOptions({
+      headerTitle: "Select Token",
+      style: isDark
+        ? { background: theme.custom.colors.background }
+        : undefined,
+    });
   }, [nav]);
 
   return (
     <SearchableTokenTable
-      blockchain={Blockchain.SOLANA}
       onClickRow={onClickRow}
       tokenAccounts={tokenAccounts}
       customFilter={customFilter}
-      displayWalletHeader={displayWalletHeader}
     />
   );
 }

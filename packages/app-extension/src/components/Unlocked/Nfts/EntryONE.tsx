@@ -1,40 +1,38 @@
-import { useEffect, useState } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
-import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
-import {
-  useBackgroundClient,
-  useOpenPlugin,
-  useUpdateSearchParams,
-} from "@coral-xyz/recoil";
+import { useLayoutEffect, useRef, useState } from "react";
+import { isOneLive, useOpenPlugin } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
 import Card from "@mui/material/Card";
-
-import { useIsONELive } from "../../../hooks/useIsONELive";
+import { useRecoilValue } from "recoil";
 
 const useStyles = styles((theme) => ({
   blockchainCard: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
+    position: "relative",
     marginBottom: "12px",
     marginLeft: "12px",
     marginRight: "12px",
     borderRadius: "12px",
-    border: theme.custom.colors.borderFull,
-    backgroundColor: "#000",
+    border: theme.custom.colors.border,
     height: "117px",
-    cursor: "pinter",
     overflow: "hidden",
+    backgroundColor: "transparent !important",
     "&:hover": {
       cursor: "pointer",
     },
   },
+  imageBackground: {
+    position: "relative",
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#000",
+  },
   image: {
+    zIndex: "1",
     height: "117px",
     width: "547px",
-    background: "url(https://xnft.wao.gg/one-entry-bg.png)",
     backgroundSize: "547px 234px",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "0px 0px",
@@ -42,15 +40,11 @@ const useStyles = styles((theme) => ({
       backgroundPosition: "0px -117px",
     },
   },
-  skeletonCard: {
-    marginBottom: "12px",
-    marginLeft: "12px",
-    marginRight: "12px",
-    borderRadius: "12px",
-    height: "117px",
-    padding: "0px",
-  },
   skeleton: {
+    position: "absolute",
+    zIndex: "0",
+    top: "0px",
+    left: "0px",
     height: "100%",
     width: "100%",
     transform: "none",
@@ -62,43 +56,68 @@ const useStyles = styles((theme) => ({
   none: {
     display: "none",
   },
+  visuallyHidden: {
+    visibility: "hidden",
+    position: "absolute",
+    top: "0px",
+  },
 }));
 
 export default function EntryONE() {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const isONELive = useIsONELive();
+  const ref = useRef<HTMLImageElement>(null);
+  const isONELive = useRecoilValue(isOneLive);
   const classes = useStyles();
   const openPlugin = useOpenPlugin();
 
-  useEffect(() => {
-    const img = new Image();
-    img.onload = () => {
+  useLayoutEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+    if (ref.current.complete) {
+      setImageLoaded(true);
+      return;
+    }
+    ref.current.onload = () => {
       setImageLoaded(true);
     };
-    img.src = "https://xnft.wao.gg/one-entry-bg.png";
     return () => {
-      img.onload = () => null;
+      if (ref.current) {
+        ref.current.onload = () => null;
+      }
     };
   }, []);
 
-  const isLoading = false || !imageLoaded || isONELive === "loading";
+  const isLoading = false || !imageLoaded;
 
   const openXNFT = () => {
-    openPlugin("4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4");
+    if (isONELive.isLive) {
+      openPlugin("CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8");
+    }
   };
 
   return (
-    <Card
-      onClick={isLoading ? () => {} : openXNFT}
-      className={isLoading ? classes.skeletonCard : classes.blockchainCard}
-      elevation={0}
-    >
+    <Card onClick={openXNFT} className={classes.blockchainCard} elevation={0}>
       <Skeleton
-        className={`${classes.skeleton} ${!isLoading ? classes.none : ""}`}
+        className={`${classes.skeleton}  ${!isLoading ? classes.none : ""}`}
       ></Skeleton>
       <div
-        className={`${classes.image} ${isLoading ? classes.hidden : ""}`}
-      ></div>
+        className={`${classes.imageBackground} ${
+          isLoading ? classes.hidden : ""
+        }`}
+      >
+        <div
+          className={`${classes.image}`}
+          style={{
+            backgroundImage: `url(${isONELive.banner})`,
+          }}
+        />
+      </div>
+      <img
+        ref={ref}
+        className={classes.visuallyHidden}
+        src={isONELive.banner}
+      />
     </Card>
   );
 }

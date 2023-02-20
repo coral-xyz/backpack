@@ -1,23 +1,28 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
+import type { ServerPublicKey } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
+import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { AlternateEmail } from "@mui/icons-material";
 import { Box, InputAdornment } from "@mui/material";
 
-import { Header, PrimaryButton, SubtextParagraph } from "../../common";
-import { TextInput } from "../../common/Inputs";
-import { getWaitlistId } from "../../common/WaitingRoom";
+import { Header, SubtextParagraph } from "../../common";
 
 export const RecoverAccountUsernameForm = ({
   onNext,
 }: {
-  onNext: (username: string, publicKey: string) => void;
+  onNext: (
+    userId: string,
+    username: string,
+    serverPublicKeys: Array<ServerPublicKey>
+  ) => void;
 }) => {
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const theme = useCustomTheme();
 
   useEffect(() => {
+    // Clear error on username changes
     setError("");
   }, [username]);
 
@@ -29,7 +34,7 @@ export const RecoverAccountUsernameForm = ({
         const json = await response.json();
         if (!response.ok) throw new Error(json.msg);
         // Use the first found public key
-        onNext(username, json.publicKeys[0].publicKey);
+        onNext(json.id, username, json.publicKeys);
       } catch (err: any) {
         setError(err.message || "Something went wrong");
       }
@@ -42,13 +47,13 @@ export const RecoverAccountUsernameForm = ({
       noValidate
       onSubmit={handleSubmit}
       style={{
-        flex: 1,
         display: "flex",
         flexDirection: "column",
-        padding: "0 16px 16px",
+        height: "100%",
+        justifyContent: "space-between",
       }}
     >
-      <Box style={{ padding: 8, flex: 1 }}>
+      <Box style={{ margin: "24px" }}>
         <Header text="Username recovery" />
         <SubtextParagraph style={{ margin: "16px 0" }}>
           Enter your username below, you will then be asked for your secret
@@ -56,7 +61,13 @@ export const RecoverAccountUsernameForm = ({
           initially associated with it.
         </SubtextParagraph>
       </Box>
-      <Box style={{ flex: 1 }}>
+      <Box
+        style={{
+          marginLeft: "16px",
+          marginRight: "16px",
+          marginBottom: "16px",
+        }}
+      >
         <TextInput
           inputProps={{
             name: "username",
@@ -87,8 +98,6 @@ export const RecoverAccountUsernameForm = ({
             </InputAdornment>
           }
         />
-      </Box>
-      <Box>
         <PrimaryButton
           label="Continue"
           type="submit"

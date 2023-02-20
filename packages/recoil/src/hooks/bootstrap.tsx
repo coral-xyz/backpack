@@ -20,8 +20,5 @@ export function useBootstrapFast() {
 }
 
 export function useRedirectUrl(): string {
-  const nav = useRecoilValue(atoms.navData);
-  const navData = nav.data[nav.activeTab];
-  const url = navData.urls[navData.urls.length - 1];
-  return url;
+  return useRecoilValue(atoms.navCurrentUrl);
 }

@@ -1,0 +1,63 @@
+table:
+  name: mad_feed_media
+  schema: auth
+object_relationships:
+  - name: post
+    using:
+      foreign_key_constraint_on: post_id
+insert_permissions:
+  - role: one_xnft
+    permission:
+      check: {}
+      columns:
+        - metadata
+        - thumbnail_metadata
+        - thumbnail_type
+        - thumbnail_url
+        - type
+        - url
+        - media_id
+        - post_id
+select_permissions:
+  - role: one_xnft
+    permission:
+      columns:
+        - metadata
+        - thumbnail_metadata
+        - thumbnail_type
+        - thumbnail_url
+        - type
+        - url
+        - media_id
+        - post_id
+      filter: {}
+  - role: public_avatar
+    permission:
+      columns:
+        - metadata
+        - thumbnail_metadata
+        - thumbnail_type
+        - thumbnail_url
+        - type
+        - url
+        - media_id
+        - post_id
+      filter: {}
+update_permissions:
+  - role: one_xnft
+    permission:
+      columns:
+        - metadata
+        - thumbnail_metadata
+        - thumbnail_type
+        - thumbnail_url
+        - type
+        - url
+        - media_id
+        - post_id
+      filter: {}
+      check: {}
+delete_permissions:
+  - role: one_xnft
+    permission:
+      filter: {}

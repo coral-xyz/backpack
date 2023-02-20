@@ -1,20 +1,15 @@
 import type { KeyringType } from "@coral-xyz/common";
 import { toTitleCase } from "@coral-xyz/common";
+import { HardwareWalletIcon, PrimaryButton } from "@coral-xyz/react-common";
 import { Box } from "@mui/material";
 
-import {
-  Header,
-  HeaderIcon,
-  PrimaryButton,
-  SubtextParagraph,
-} from "../../common";
-import { HardwareWalletIcon } from "../../common/Icon";
+import { Header, HeaderIcon, SubtextParagraph } from "../../common";
 
 export const KeyringTypeSelector = ({
   action,
   onNext,
 }: {
-  action: "create" | "import" | "recover";
+  action: "create" | "import" | "recover" | string;
   onNext: (keyringType: KeyringType) => void;
 }) => {
   return (

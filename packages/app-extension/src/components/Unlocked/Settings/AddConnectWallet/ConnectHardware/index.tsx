@@ -1,125 +1,59 @@
-import { useState } from "react";
-import type { Blockchain, DerivationPath } from "@coral-xyz/common";
+import type { Blockchain, SignedWalletDescriptor } from "@coral-xyz/common";
 import {
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+  getAddMessage,
+  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_LEDGER_IMPORT,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
-import type Transport from "@ledgerhq/hw-transport";
 
-import type { SelectedAccount } from "../../../../common/Account/ImportAccounts";
-import { ImportAccounts } from "../../../../common/Account/ImportAccounts";
-import { CloseButton } from "../../../../common/Layout/Drawer";
-import { NavBackButton, WithNav } from "../../../../common/Layout/Nav";
-import { OptionsContainer } from "../../../../Onboarding";
+import { HardwareOnboard } from "../../../../Onboarding/pages/HardwareOnboard";
 
-import { ConnectHardwareSearching } from "./ConnectHardwareSearching";
 import { ConnectHardwareSuccess } from "./ConnectHardwareSuccess";
-import { ConnectHardwareWelcome } from "./ConnectHardwareWelcome";
 
 export function ConnectHardware({
   blockchain,
+  action,
+  publicKey,
   onComplete,
-  onClose,
 }: {
   blockchain: Blockchain;
+  action: "create" | "import" | "search";
+  createKeyring: boolean;
+  publicKey?: string;
   onComplete: () => void;
-  onClose?: () => void;
 }) {
   const background = useBackgroundClient();
-  const theme = useCustomTheme();
-  const [transport, setTransport] = useState<Transport | null>(null);
-  const [transportError, setTransportError] = useState(false);
-  const [step, setStep] = useState(0);
 
-  const nextStep = () => setStep(step + 1);
-  const prevStep = () => {
-    if (step > 0) setStep(step - 1);
-  };
-
-  //
-  // Add one or more pubkeys to the Ledger store.
-  //
-  const ledgerImport = async (
-    accounts: SelectedAccount[],
-    derivationPath: DerivationPath
+  const handleHardwareOnboardComplete = async (
+    signedWalletDescriptor: SignedWalletDescriptor
   ) => {
-    for (const account of accounts) {
-      await background.request({
-        method: UI_RPC_METHOD_LEDGER_IMPORT,
-        params: [
-          blockchain,
-          derivationPath,
-          account.index,
-          account.publicKey.toString(),
-        ],
-      });
-    }
+    const blockchainKeyrings = await background.request({
+      method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
+      params: [],
+    });
+    const keyringExists = blockchainKeyrings.includes(blockchain);
 
-    //
-    // Automatically switch to the first wallet in the import list.
-    //
-    if (accounts.length > 0) {
-      const active = accounts[0].publicKey.toString();
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-        params: [active, blockchain],
-      });
-    }
+    const method = keyringExists
+      ? // Just import the wallet because the keyring already exists
+        UI_RPC_METHOD_LEDGER_IMPORT
+      : // Create the keyring
+        UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD;
+    await background.request({
+      method,
+      params: [blockchain, signedWalletDescriptor],
+    });
   };
-
-  //
-  // Flow for importing a hardware wallet.
-  //
-  const connectHardwareFlow = [
-    <ConnectHardwareWelcome onNext={() => nextStep()} />,
-    <ConnectHardwareSearching
-      blockchain={blockchain}
-      onNext={(transport) => {
-        setTransport(transport);
-        nextStep();
-      }}
-      isConnectFailure={!!transportError}
-    />,
-    <ImportAccounts
-      blockchain={blockchain}
-      transport={transport}
-      onNext={async (
-        accounts: SelectedAccount[],
-        derivationPath: DerivationPath
-      ) => {
-        await ledgerImport(accounts, derivationPath);
-        nextStep();
-      }}
-      onError={() => {
-        setTransportError(true);
-        prevStep();
-      }}
-    />,
-    <ConnectHardwareSuccess onNext={onComplete} />,
-  ];
 
   return (
-    <OptionsContainer>
-      <WithNav
-        navButtonLeft={
-          step > 0 && step < connectHardwareFlow.length - 1 ? (
-            <NavBackButton onClick={prevStep} />
-          ) : onClose ? (
-            <CloseButton onClick={onClose} />
-          ) : null
-        }
-        navbarStyle={{
-          backgroundColor: theme.custom.colors.nav,
-        }}
-        navContentStyle={{
-          backgroundColor: theme.custom.colors.nav,
-          height: "400px",
-        }}
-      >
-        {connectHardwareFlow[step]}
-      </WithNav>
-    </OptionsContainer>
+    <HardwareOnboard
+      blockchain={blockchain}
+      action={action}
+      signMessage={getAddMessage}
+      signText="Sign the message to add the wallet to your Backpack account."
+      successComponent={<ConnectHardwareSuccess onNext={onComplete} />}
+      searchPublicKey={publicKey}
+      onComplete={handleHardwareOnboardComplete}
+    />
   );
 }

@@ -1,5 +1,7 @@
+import type { TextInputProps } from "react-native";
 import { StyleSheet, TextInput as RNTextInput } from "react-native";
-import { useTheme } from "@hooks";
+
+import { useTheme } from "~hooks/useTheme";
 
 export function StyledTextInput({
   style,
@@ -7,8 +9,10 @@ export function StyledTextInput({
   placeholder,
   onChangeText,
   onBlur,
+  multiline,
+  numberOfLines,
   ...props
-}: any) {
+}: TextInputProps): JSX.Element {
   const theme = useTheme();
 
   return (
@@ -18,6 +22,7 @@ export function StyledTextInput({
           backgroundColor: theme.custom.colors.textBackground,
           borderColor: theme.custom.colors.textInputBorderFull,
           color: theme.custom.colors.secondary,
+          minHeight: multiline && numberOfLines ? numberOfLines * 24 : 44,
         },
         styles.container,
         style,
@@ -30,6 +35,9 @@ export function StyledTextInput({
       onChangeText={onChangeText}
       onBlur={onBlur}
       value={value}
+      multiline={multiline}
+      numberOfLines={numberOfLines}
+      textAlignVertical="top"
       {...props}
     />
   );
@@ -38,11 +46,12 @@ export function StyledTextInput({
 const styles = StyleSheet.create({
   container: {
     borderWidth: 2.5,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
     borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingTop: 14,
+    paddingBottom: 14,
     fontSize: 16,
-    // lineHeight: 20,
     fontWeight: "500",
+    alignItems: "center",
   },
 });

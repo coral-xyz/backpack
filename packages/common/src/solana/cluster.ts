@@ -1,4 +1,4 @@
-export const DEFAULT_SOLANA_CLUSTER = "https://swr-data.xnfts.dev/rpc-proxy/";
+export const DEFAULT_SOLANA_CLUSTER = "https://swr.xnfts.dev/rpc-proxy/";
 export const SolanaCluster = {
   MAINNET: DEFAULT_SOLANA_CLUSTER,
   DEVNET: "https://api.devnet.solana.com",

@@ -1,50 +1,63 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Button, Pressable, Text, View } from "react-native";
+import type { Blockchain } from "@coral-xyz/common";
+import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
+
+import { useCallback, useMemo, useRef, useState } from "react";
+import { Pressable, Text, View } from "react-native";
+
+import {
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+} from "@coral-xyz/common";
+import {
+  useBackgroundClient,
+  useKeyringHasMnemonic,
+  useWalletName,
+} from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
+import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import { useNavigation } from "@react-navigation/native";
+import { WalletListItem } from "~screens/Unlocked/EditWalletsScreen";
+
+import { CheckIcon } from "~components/Icon";
 import {
   ActionCard,
   Header,
   Margin,
   Screen,
   SubtextParagraph,
-} from "@components";
-import type { Blockchain } from "@coral-xyz/common";
-import {
-  openConnectHardware,
-  TAB_APPS,
-  TAB_BALANCES,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-  UI_RPC_METHOD_NAVIGATION_TO_ROOT,
-} from "@coral-xyz/common";
-import {
-  useBackgroundClient,
-  useKeyringType,
-  useTab,
-  useWalletName,
-} from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { useTheme } from "@hooks";
-import { useNavigation } from "@react-navigation/native";
+  RoundedContainerGroup,
+} from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
 export function AddConnectWalletScreen({ route }) {
   const { blockchain } = route.params;
   const navigation = useNavigation();
   const background = useBackgroundClient();
-  const keyringType = useKeyringType();
+  const hasMnemonic = useKeyringHasMnemonic();
   const theme = useTheme();
   const [newPublicKey, setNewPublicKey] = useState(null);
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const snapPoints = useMemo(() => ["25%"], []);
+  const modalHeight = 240;
 
   const handleOpenModal = () => bottomSheetModalRef.current?.present();
   const handleDismissModal = () => bottomSheetModalRef.current?.dismiss();
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        pressBehavior="close"
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+      />
+    ),
+    []
+  );
 
   return (
     <Screen>
-      <Margin vertical={24}>
+      <Margin bottom={24}>
         <Header text="Add or connect a wallet" />
         <SubtextParagraph>Add new wallets to Backpack</SubtextParagraph>
       </Margin>
@@ -55,7 +68,7 @@ export function AddConnectWalletScreen({ route }) {
           justifyContent: "space-between",
         }}
       >
-        {keyringType === "mnemonic" && (
+        {hasMnemonic ? (
           <View style={{ flex: 1, marginRight: 12 }}>
             <ActionCard
               icon={
@@ -82,7 +95,7 @@ export function AddConnectWalletScreen({ route }) {
               }}
             />
           </View>
-        )}
+        ) : null}
         <View style={{ flex: 1 }}>
           <ActionCard
             icon={
@@ -93,13 +106,15 @@ export function AddConnectWalletScreen({ route }) {
               />
             }
             text="Import a private key"
-            onPress={() => navigation.push("ImportSecretKey", { blockchain })}
+            onPress={() =>
+              navigation.push("import-private-key", { blockchain })
+            }
           />
         </View>
       </View>
       <View style={{ flex: 0.5, width: "48%", marginTop: 12 }}>
         <ActionCard
-          disabled={true}
+          disabled
           icon={
             <MaterialIcons
               size={24}
@@ -117,72 +132,60 @@ export function AddConnectWalletScreen({ route }) {
         index={0}
         snapPoints={snapPoints}
         ref={bottomSheetModalRef}
+        backdropComponent={renderBackdrop}
+        contentHeight={modalHeight}
+        handleStyle={{
+          marginBottom: 12,
+        }}
+        backgroundStyle={{
+          backgroundColor: theme.custom.colors.background,
+        }}
       >
-        {newPublicKey ? (
-          <ConfirmCreateWallet
-            blockchain={blockchain}
-            publicKey={newPublicKey}
-            onDismiss={handleDismissModal}
-          />
-        ) : null}
-        {newPublicKey ? <Text>{JSON.stringify({ newPublicKey })}</Text> : null}
+        <ConfirmCreateWallet blockchain={blockchain} publicKey={newPublicKey} />
       </BottomSheetModal>
     </Screen>
   );
 }
 
-export const ConfirmCreateWallet: React.FC<{
+export const ConfirmCreateWallet = ({
+  blockchain,
+  publicKey,
+}: {
   blockchain: Blockchain;
   publicKey: string;
-  onDismiss: () => void;
-}> = ({ blockchain, publicKey, onDismiss }) => {
+}): JSX.Element => {
   const theme = useTheme();
   const walletName = useWalletName(publicKey);
-  // const background = useBackgroundClient();
 
   return (
     <View
       style={{
+        marginHorizontal: 16,
         backgroundColor: theme.custom.colors.bg2,
-        padding: 16,
-        justifyContent: "space-between",
       }}
     >
       <View>
         <Text
           style={{
-            marginTop: 16,
             textAlign: "center",
             fontWeight: "500",
             fontSize: 18,
-            lineHeight: 24,
             color: theme.custom.colors.fontColor,
           }}
         >
           Wallet Created
         </Text>
-        <MaterialIcons name="check" size={24} />
+        <View style={{ alignSelf: "center", marginVertical: 24 }}>
+          <CheckIcon />
+        </View>
       </View>
-      <View>
-        <Pressable
-          onPress={() => {
-            onDismiss();
-          }}
-        >
-          <Text>
-            {JSON.stringify({ blockchain, walletName, publicKey }, null, 2)}
-          </Text>
-        </Pressable>
-      </View>
+      <RoundedContainerGroup>
+        <WalletListItem
+          blockchain={blockchain}
+          publicKey={publicKey}
+          name={walletName}
+        />
+      </RoundedContainerGroup>
     </View>
   );
 };
-
-// <WalletListItem
-//   blockchain={blockchain}
-//   name={walletName}
-//   publicKey={publicKey}
-//   showDetailMenu={false}
-//   isFirst={true}
-//   isLast={true}
-// />

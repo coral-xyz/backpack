@@ -1,4 +1,5 @@
 {
+  "root": true,
   "extends": ["next/core-web-vitals"],
   "rules": {
     "max-len": ["warn", { "ignoreUrls": true, "code": 100 }]

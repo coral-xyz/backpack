@@ -1,15 +1,22 @@
 import { useEffect, useState } from "react";
 import {
-  BACKEND_API_URL,
   Blockchain,
   confirmTransaction,
+  DEFAULT_PUBKEY_STR,
   explorerUrl,
   getLogger,
   Solana,
-  UI_RPC_METHOD_GET_XNFT_PREFERENCES,
-  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
   UI_RPC_METHOD_SET_XNFT_PREFERENCES,
+  XNFT_GG_LINK,
 } from "@coral-xyz/common";
+import {
+  CheckIcon,
+  LaunchDetail,
+  Loading,
+  NegativeButton,
+  ProxyImage,
+  SecondaryButton,
+} from "@coral-xyz/react-common";
 import {
   useBackgroundClient,
   useNavigation,
@@ -20,23 +27,13 @@ import {
   xnftPreference as xnftPreferenceAtom,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Button, CircularProgress, Link, Typography } from "@mui/material";
-import { PublicKey } from "@solana/web3.js";
+import { Button, Typography } from "@mui/material";
 import { useRecoilValue } from "recoil";
 
 import { updateRemotePreference } from "../../../../api/preferences";
-import {
-  LaunchDetail,
-  Loading,
-  NegativeButton,
-  PrimaryButton,
-  SecondaryButton,
-} from "../../../common";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
-import { CheckIcon } from "../../../common/Icon";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
-import { useNavStack } from "../../../common/Layout/NavStack";
-import { ProxyImage } from "../../../common/ProxyImage";
+import { useNavigation as useNavigationEphemeral } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 import { Error } from "../../Balances/TokensWidget/Send";
 import { SwitchToggle } from "../Preferences";
@@ -49,14 +46,18 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
     xnftPreferenceAtom(xnft.install.account.xnft.toString())
   );
 
-  const nav = useNavStack();
+  const nav = useNavigationEphemeral();
   const background = useBackgroundClient();
   const { username } = useUser();
 
-  const isDisabled = xnft.install.publicKey === PublicKey.default.toString();
+  // Using the raw string here instead of PublicKey.default.toString() because
+  // typescript sucks and is throwing inexplicable errors.
+  const isDisabled = xnft.install.publicKey === DEFAULT_PUBKEY_STR;
 
   useEffect(() => {
-    nav.setTitle(xnft.title);
+    nav.setOptions({
+      headerTitle: xnft.title,
+    });
   }, []);
 
   const menuItems = {
@@ -68,6 +69,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
       style: {
         opacity: 0.5,
       },
+      allowOnclickPropagation: true,
     },
     MediaAccess: {
       label: "Cam/Mic/Display access",
@@ -102,6 +104,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
       style: {
         opacity: 0.5,
       },
+      allowOnclickPropagation: true,
     },
     PushNotificationAccess: {
       label: "Push notifications",
@@ -149,6 +152,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
       style: {
         opacity: 0.5,
       },
+      allowOnclickPropagation: true,
     },
   };
 
@@ -194,7 +198,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
           }}
           onClick={() =>
             window.open(
-              `https://xnft.gg/app/${xnft.install.account.xnft.toString()}`
+              `${XNFT_GG_LINK}/app/${xnft.install.account.xnft.toString()}`
             )
           }
         >

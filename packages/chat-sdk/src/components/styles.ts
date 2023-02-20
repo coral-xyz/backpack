@@ -21,10 +21,11 @@ export const useStyles = styles((theme) => ({
     background: (props: any) =>
       props.type === "danger"
         ? theme.custom.colors.negativeBackground
-        : theme.custom.colors.banner,
+        : theme.custom.colors.background,
   },
   strongText: {
     color: theme.custom.colors.fontColor2,
-    fontWeight: 700,
+    fontWeight: 600,
+    fontSize: 14,
   },
 }));

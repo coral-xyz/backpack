@@ -1,9 +1,12 @@
-import type { StyleProp, ViewStyle } from "react-native";
-import { Image, Text, View } from "react-native";
-// import { ProxyImage } from "./ProxyImage";
-import { useTheme } from "@hooks";
 import type { BigNumber } from "ethers";
+
+import type { StyleProp, ViewStyle } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+
 import { ethers } from "ethers";
+
+import { ProxyImage } from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
 //
 // Displays token amount header with logo.
@@ -28,47 +31,49 @@ export const TokenAmountHeader: React.FC<{
       : formattedAmount;
 
   return (
-    <View style={style}>
-      {/* Dummy padding to center flex content */}
-      <View style={{ flex: 1 }} />
-      {displayLogo && (
-        <View
-          style={{
-            justifyContent: "center",
-            marginRight: 8,
-          }}
+    <View style={[styles.container, style]}>
+      {displayLogo ? <ProxyImage src={token.logo} style={styles.logo} /> : null}
+      <View style={styles.container}>
+        <Text
+          style={[
+            styles.amountLabel,
+            {
+              color: theme.custom.colors.fontColor,
+            },
+          ]}
         >
-          <Image
-            source={{ uri: token.logo }}
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: 16,
-            }}
-            // onError={(event: any) =>
-            //   (event.currentTarget.style.display = "none")
-            // }
-          />
-        </View>
-      )}
-      <Text
-        style={[
-          {
-            color: theme.custom.colors.fontColor,
-            fontWeight: "500",
-            fontSize: 30,
-            lineHeight: 36,
-            textAlign: "center",
-          },
-        ]}
-      >
-        {maybeTruncatedAmount}
-        <Text style={{ marginLeft: 8, color: theme.custom.colors.secondary }}>
+          {maybeTruncatedAmount}
+        </Text>
+        <Text
+          style={[styles.tickerLabel, { color: theme.custom.colors.secondary }]}
+        >
           {token.ticker}
         </Text>
-      </Text>
-      {/* Dummy padding to center flex content */}
-      <View style={{ flex: 1 }} />
+      </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "center",
+  },
+  logo: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    aspectRatio: 1,
+    marginRight: 8,
+  },
+  amountLabel: {
+    fontWeight: "500",
+    fontSize: 30,
+  },
+  tickerLabel: {
+    marginLeft: 8,
+    fontWeight: "400",
+    fontSize: 30,
+  },
+});

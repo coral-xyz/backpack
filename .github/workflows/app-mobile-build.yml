@@ -1,0 +1,69 @@
+name: app-mobile build
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform to build for (all/android/ios/native/web)
+        type: choice
+        required: true
+        default: native
+        options:
+          - all
+          - native
+          - android
+          - ios
+          - web
+      profile:
+        description: EAS build profile (development/production/preview)
+        type: choice
+        required: true
+        default: development
+        options:
+          - development
+          - production
+          - preview
+      app_env:
+        description: APP_ENV (development/production)
+        type: choice
+        required: true
+        default: development
+        options:
+          - development
+          - production
+
+jobs:
+  mobile:
+    name: Build App
+    timeout-minutes: 70
+    runs-on: ubuntu-latest
+    # To use Remote Caching, uncomment the next lines and follow the steps below.
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+    steps:
+      # Checkout must come before a custom action
+      - name: 🏗 Setup repository
+        uses: actions/checkout@v3
+
+      - name: 🏗 Setup monorepo
+        uses: ./.github/actions/app-mobile-monorepo-setup
+        with:
+          expo-token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 👷 Build modules
+        env:
+          BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-beta-${{ github.run_number }}"
+          BACKPACK_CONFIG_LOG_LEVEL: "info"
+          BACKPACK_FEATURE_LIGHT_MODE: "true"
+          BACKPACK_FEATURE_POP_MODE: "true"
+          BACKPACK_FEATURE_XNFT: "true"
+          # CI!=true so that build warnings aren't treated like errors (for now)
+          CI: ""
+        run: yarn build:mobile
+
+      - name: 🚀 Build mobile
+        working-directory: packages/app-mobile
+        env:
+          APP_ENV: ${{ github.event.inputs.app_env }}
+        run: eas build --non-interactive --wait --platform=${{ github.event.inputs.platform }} --profile=${{ github.event.inputs.profile }}

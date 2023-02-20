@@ -1,5 +1,4 @@
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import _CheckIcon from "@mui/icons-material/Check";
 import { Typography } from "@mui/material";
 import * as anchor from "@project-serum/anchor";
 

@@ -99,4 +99,19 @@ export const useStyles = styles((theme) => ({
   contactIconOuter: {
     background: theme.custom.colors.textBorder,
   },
+  menuItem: {
+    fontWeight: 400,
+    fontSize: 14,
+    color: theme.custom.colors.fontColor,
+    padding: "12px 16px",
+  },
+  menu: {
+    "& .MuiList-root": {
+      padding: 0,
+    },
+    paddingTop: 0,
+    paddingBottom: 0,
+    minWidth: 184,
+    color: theme.custom.colors.fontColor,
+  },
 }));

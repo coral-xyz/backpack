@@ -1,41 +1,66 @@
 import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-import { UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
-import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
+import {
+  BACKEND_API_URL,
+  UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
+  UI_RPC_METHOD_KEYNAME_READ,
+  walletAddressDisplay,
+} from "@coral-xyz/common";
+import {
+  PrimaryButton,
+  SecondaryButton,
+  toast,
+  WarningIcon,
+} from "@coral-xyz/react-common";
+import {
+  isKeyCold,
+  serverPublicKeys,
+  useBackgroundClient,
+  usePrimaryWallets,
+  useWalletPublicKeys,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ContentCopy } from "@mui/icons-material";
+import { Button, Typography } from "@mui/material";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { HeaderIcon } from "../../../../common";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";
 import { WithCopyTooltip } from "../../../../common/WithCopyTooltip";
+import { ModeSwitch } from "../../Preferences";
 
 export const WalletDetail: React.FC<{
   blockchain: Blockchain;
   publicKey: string;
   name: string;
   type: string;
+  isActive: boolean;
 }> = ({ blockchain, publicKey, name, type }) => {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [walletName, setWalletName] = useState(name);
-  const blockchainKeyrings = useWalletPublicKeys();
-  const keyring = blockchainKeyrings[blockchain];
-
-  const publicKeyCount = Object.values(keyring).flat().length;
+  const publicKeyData = useWalletPublicKeys();
+  const isCold = useRecoilValue(isKeyCold(publicKey));
+  const primaryWallets = usePrimaryWallets();
+  const setServerPublicKeys = useSetRecoilState(serverPublicKeys);
 
   useEffect(() => {
     (async () => {
-      const keyname = await background.request({
-        method: UI_RPC_METHOD_KEYNAME_READ,
-        params: [publicKey],
-      });
+      let keyname = "";
+      try {
+        keyname = await background.request({
+          method: UI_RPC_METHOD_KEYNAME_READ,
+          params: [publicKey],
+        });
+      } catch {
+        // No wallet name, might be dehydrated
+        keyname = walletAddressDisplay(publicKey);
+      }
       setWalletName(keyname);
-
-      const addr =
-        publicKey.slice(0, 4) + "..." + publicKey.slice(publicKey.length - 4);
-      nav.setTitle(`${keyname} (${addr})`);
+      nav.setOptions({ headerTitle: keyname });
     })();
   }, []);
 
@@ -45,7 +70,37 @@ export const WalletDetail: React.FC<{
     navigator.clipboard.writeText(publicKey);
   };
 
+  // Account recovery is not possible for private key imports, so prevent
+  // removal of wallets if they are the last one in the wallet that can be used
+  // for recovery
+  const isLastRecoverable =
+    Object.values(publicKeyData)
+      .map((keyring) => [...keyring.hdPublicKeys, ...keyring.ledgerPublicKeys])
+      .flat()
+      .filter((n) => n.publicKey !== publicKey).length === 0;
+
+  const isPrimary = primaryWallets.find((x) => x.publicKey === publicKey)
+    ? true
+    : false;
+
   const menuItems = {
+    "Wallet Address": {
+      onClick: () => copyAddress(),
+      detail: (
+        <div style={{ display: "flex" }}>
+          <Typography
+            style={{ color: theme.custom.colors.secondary, marginRight: "8px" }}
+          >
+            {publicKey.slice(0, 4) +
+              "..." +
+              publicKey.slice(publicKey.length - 4)}
+          </Typography>
+          <ContentCopy
+            style={{ width: "20px", color: theme.custom.colors.icon }}
+          />
+        </div>
+      ),
+    },
     "Rename Wallet": {
       onClick: () =>
         nav.push("edit-wallets-rename", {
@@ -53,42 +108,145 @@ export const WalletDetail: React.FC<{
           name: walletName,
         }),
     },
-    "Copy Address": {
-      onClick: () => copyAddress(),
-      detail: <ContentCopy style={{ color: theme.custom.colors.secondary }} />,
-    },
   };
 
   const secrets = {
-    "Show private key": {
+    "Show Private Key": {
       onClick: () => nav.push("show-private-key-warning", { publicKey }),
     },
   };
 
   const removeWallet = {
     "Remove Wallet": {
-      onClick: () =>
-        nav.push("edit-wallets-remove", {
-          blockchain,
-          publicKey,
-          name,
-          type,
-        }),
+      onClick: () => {
+        if (!isPrimary) {
+          nav.push("edit-wallets-remove", {
+            blockchain,
+            publicKey,
+            name,
+            type,
+          });
+        }
+      },
       style: {
         color: theme.custom.colors.negative,
+        opacity: isPrimary ? 0.6 : 1,
       },
+    },
+  };
+
+  const _isCold = {
+    "App Signing": {
+      onClick: async () => {
+        await background.request({
+          method: UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
+          params: [publicKey, !isCold],
+        });
+      },
+      detail: (
+        <ModeSwitch
+          enabled={!isCold}
+          onSwitch={async () => {
+            await background.request({
+              method: UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
+              params: [publicKey, !isCold],
+            });
+          }}
+        />
+      ),
     },
   };
 
   return (
     <div>
+      {type === "dehydrated" && (
+        <div
+          style={{
+            marginLeft: "16px",
+            marginRight: "16px",
+            marginBottom: "32px",
+          }}
+        >
+          <HeaderIcon icon={<WarningIcon />} />
+          <Typography
+            style={{
+              color: theme.custom.colors.fontColor,
+              fontSize: "20px",
+              fontWeight: 500,
+              textAlign: "center",
+              marginLeft: "28px",
+              marginRight: "28px",
+              marginBottom: "16px",
+            }}
+          >
+            Some more steps are needed to recover this wallet
+          </Typography>
+          <SecondaryButton
+            label="Recover"
+            onClick={() => {
+              nav.push("add-connect-wallet", {
+                blockchain,
+                publicKey,
+                isRecovery: true,
+              });
+            }}
+          />
+        </div>
+      )}
       <WithCopyTooltip tooltipOpen={tooltipOpen}>
         <div>
           <SettingsList menuItems={menuItems} />
         </div>
       </WithCopyTooltip>
-      {type !== "ledger" && <SettingsList menuItems={secrets} />}
-      {publicKeyCount > 1 && <SettingsList menuItems={removeWallet} />}
+      {type !== "dehydrated" && <SettingsList menuItems={_isCold} />}
+      {type !== "hardware" && type !== "dehydrated" && (
+        <SettingsList menuItems={secrets} />
+      )}
+      {!isLastRecoverable && <SettingsList menuItems={removeWallet} />}
+      {type !== "imported" && (
+        <div
+          style={{
+            padding: "16px",
+          }}
+        >
+          <PrimaryButton
+            fullWidth
+            label={isPrimary ? "This is your primary wallet" : "Set as primary"}
+            disabled={isPrimary || type === "dehydrated"}
+            onClick={async () => {
+              await fetch(`${BACKEND_API_URL}/users/activePubkey`, {
+                method: "POST",
+                body: JSON.stringify({
+                  publicKey: publicKey,
+                }),
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              });
+              setServerPublicKeys((current) =>
+                current.map((c) => {
+                  if (c.blockchain !== blockchain) {
+                    return c;
+                  }
+                  if (c.primary && c.publicKey !== publicKey) {
+                    return {
+                      ...c,
+                      primary: false,
+                    };
+                  }
+                  if (c.publicKey === publicKey) {
+                    return {
+                      ...c,
+                      primary: true,
+                    };
+                  }
+                  return c;
+                })
+              );
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

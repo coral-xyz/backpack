@@ -1,12 +1,21 @@
-import type { EventEmitter, Notification } from "@coral-xyz/common";
+import type {
+  CustomSplTokenAccountsResponse,
+  EventEmitter,
+  Notification,
+  SolanaTokenAccountWithKeyString,
+  SplNftMetadataString,
+  TokenMetadataString,
+} from "@coral-xyz/common";
 import {
   BACKEND_EVENT,
+  BackgroundSolanaConnection,
   Blockchain,
   confirmTransaction,
   customSplTokenAccounts,
+  fetchSplMetadataUri,
   getLogger,
-  NOTIFICATION_BLOCKCHAIN_DISABLED,
-  NOTIFICATION_BLOCKCHAIN_ENABLED,
+  NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
+  NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
@@ -82,7 +91,6 @@ import type {
   VoteAccountStatus,
 } from "@solana/web3.js";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { encode } from "bs58";
 
 import type { CachedValue } from "../types";
 
@@ -90,8 +98,10 @@ const logger = getLogger("solana-connection-backend");
 
 export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
 export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;
+
 // Time until cached values expire. This is arbitrary.
 const CACHE_EXPIRY = 15000;
+const NFT_CACHE_EXPIRY = 15 * 60000;
 
 export function start(events: EventEmitter): SolanaConnectionBackend {
   const b = new SolanaConnectionBackend(events);
@@ -105,10 +115,12 @@ export class SolanaConnectionBackend {
   private url?: string;
   private pollIntervals: Array<any>;
   private events: EventEmitter;
+  private lastCustomSplTokenAccountsKey: string;
 
   constructor(events: EventEmitter) {
     this.pollIntervals = [];
     this.events = events;
+    this.lastCustomSplTokenAccountsKey = "";
   }
 
   public start() {
@@ -140,11 +152,11 @@ export class SolanaConnectionBackend {
         case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
           handleConnectionUrlUpdated(notif);
           break;
-        case NOTIFICATION_BLOCKCHAIN_ENABLED:
-          handleBlockchainEnabled(notif);
+        case NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED:
+          handleBlockchainKeyringCreated(notif);
           break;
-        case NOTIFICATION_BLOCKCHAIN_DISABLED:
-          handleBlockchainDisabled(notif);
+        case NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED:
+          handleBlockchainKeyringDeleted(notif);
           break;
         default:
           break;
@@ -193,7 +205,7 @@ export class SolanaConnectionBackend {
       }
     };
 
-    const handleBlockchainEnabled = (notif: Notification) => {
+    const handleBlockchainKeyringCreated = (notif: Notification) => {
       const { blockchain, activeWallet } = notif.data;
       if (blockchain === Blockchain.SOLANA) {
         // Start polling if Solana was enabled in wallet settings
@@ -201,10 +213,9 @@ export class SolanaConnectionBackend {
       }
     };
 
-    const handleBlockchainDisabled = (notif: Notification) => {
+    const handleBlockchainKeyringDeleted = (notif: Notification) => {
       const { blockchain } = notif.data;
       if (blockchain === Blockchain.SOLANA) {
-        // Stop polling if Solana was disabled in wallet settings
         this.stopPolling();
       }
     };
@@ -215,24 +226,17 @@ export class SolanaConnectionBackend {
   // the data is still fresh.
   //
   private async startPolling(activeWallet: PublicKey) {
+    const connection = new Connection(this.url!); // Unhooked connection.
     this.pollIntervals.push(
       setInterval(async () => {
-        const _data = await customSplTokenAccounts(
-          this.connection!,
-          activeWallet
-        );
-        const data = {
-          ..._data,
-          tokenAccountsMap: _data.tokenAccountsMap.map((t: any) => {
-            return [
-              t[0],
-              {
-                ...t[1],
-                mint: t[1].mint.toString(),
-              },
-            ];
-          }),
-        };
+        const data = await customSplTokenAccounts(connection, activeWallet);
+        const dataKey = this.intoCustomSplTokenAccountsKey(data);
+
+        if (dataKey === this.lastCustomSplTokenAccountsKey) {
+          return;
+        }
+
+        this.lastCustomSplTokenAccountsKey = dataKey;
         const key = JSON.stringify({
           url: this.url,
           method: "customSplTokenAccounts",
@@ -247,9 +251,8 @@ export class SolanaConnectionBackend {
           data: {
             connectionUrl: this.url,
             publicKey: activeWallet.toString(),
-            customSplTokenAccounts: {
-              ...data,
-            },
+            customSplTokenAccounts:
+              BackgroundSolanaConnection.customSplTokenAccountsToJson(data),
           },
         });
       }, LOAD_SPL_TOKENS_REFRESH_INTERVAL)
@@ -272,6 +275,33 @@ export class SolanaConnectionBackend {
     );
   }
 
+  private intoCustomSplTokenAccountsKey(
+    resp: CustomSplTokenAccountsResponse
+  ): string {
+    //
+    // We sort the data so that we can have a consistent key when teh data
+    // doesn't change. We remove the mints and metadata from the key because
+    // it's not neceessary at all when calculating whether something has
+    // changed.
+    //
+    return JSON.stringify({
+      nfts: {
+        nftTokens: resp.nfts.nftTokens
+          .slice()
+          .sort((a: any, b: any) =>
+            a.key.toString().localeCompare(b.key.toString())
+          ),
+      },
+      fts: {
+        fungibleTokens: resp.fts.fungibleTokens
+          .slice()
+          .sort((a: any, b: any) =>
+            a.key.toString().localeCompare(b.key.toString())
+          ),
+      },
+    });
+  }
+
   private stopPolling() {
     this.pollIntervals.forEach((interval: number) => {
       clearInterval(interval);
@@ -291,6 +321,10 @@ export class SolanaConnectionBackend {
 
       // Only use cached values at most 15 seconds old.
       const value = this.cache.get(key);
+      //
+      // This should never expire, but some projects use mutable urls rather
+      // than IPFS or Arweave :(.
+      //
       if (value && value.ts + CACHE_EXPIRY > Date.now()) {
         return value.value;
       }
@@ -307,7 +341,9 @@ export class SolanaConnectionBackend {
   // Custom endpoints.
   //////////////////////////////////////////////////////////////////////////////
 
-  async customSplTokenAccounts(publicKey: PublicKey): Promise<any> {
+  async customSplTokenAccounts(
+    publicKey: PublicKey
+  ): Promise<CustomSplTokenAccountsResponse> {
     const key = JSON.stringify({
       url: this.url,
       method: "customSplTokenAccounts",
@@ -318,6 +354,34 @@ export class SolanaConnectionBackend {
       return value.value;
     }
     const resp = await customSplTokenAccounts(this.connection!, publicKey);
+
+    // Set once if the background poller hasn't run yet.
+    if (this.lastCustomSplTokenAccountsKey === "") {
+      this.lastCustomSplTokenAccountsKey =
+        this.intoCustomSplTokenAccountsKey(resp);
+    }
+
+    this.cache.set(key, {
+      ts: Date.now(),
+      value: resp,
+    });
+    return resp;
+  }
+
+  async customSplMetadataUri(
+    tokens: Array<SolanaTokenAccountWithKeyString>,
+    tokenMetadata: Array<TokenMetadataString | null>
+  ): Promise<Array<[string, SplNftMetadataString]>> {
+    const key = JSON.stringify({
+      url: this.url,
+      method: "customSplMetadataUri",
+      args: [tokens.map((t) => t.key).sort()],
+    });
+    const value = this.cache.get(key);
+    if (value && value.ts + NFT_CACHE_EXPIRY > Date.now()) {
+      return value.value;
+    }
+    const resp = await fetchSplMetadataUri(tokens, tokenMetadata);
     this.cache.set(key, {
       ts: Date.now(),
       value: resp,
@@ -431,6 +495,7 @@ export class SolanaConnectionBackend {
         configOrSigners
       );
     } else {
+      // Deprecated
       return await this.connection!.simulateTransaction(
         transactionOrMessage,
         configOrSigners as Array<Signer>,

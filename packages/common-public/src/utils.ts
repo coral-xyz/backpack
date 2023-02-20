@@ -1,3 +1,6 @@
+import type { BigNumberish } from "@ethersproject/bignumber";
+import type { BigNumber } from "ethers";
+import { ethers } from "ethers";
 import { v1 } from "uuid";
 
 import { IMAGE_PROXY_URL } from "./constants";
@@ -33,6 +36,14 @@ export function generateUniqueId() {
   return v1();
 }
 
+export function isMobile(): boolean {
+  if (typeof window !== "undefined" && typeof window.document !== "undefined") {
+    return false;
+  }
+
+  return true;
+}
+
 /**
  * True if we're in the mobile environment.
  */
@@ -54,11 +65,24 @@ export function isServiceWorker(): boolean {
  * TODO: replace host with host of caching layer for thumbnail generation, caching,
  * SVG sanitization, etc.
  */
-export function externalResourceUri(uri: string): string {
-  if (uri && uri.startsWith("ipfs://")) {
-    return uri.replace("ipfs://", "https://ipfs.io/ipfs/");
+export function externalResourceUri(
+  uri: string,
+  options: { cached?: boolean } = {}
+): string {
+  if (uri) {
+    uri = uri.replace(/\0/g, "");
   }
-  return uri;
+  if (uri && uri.startsWith("ipfs://")) {
+    return uri.replace("ipfs://", "https://cloudflare-ipfs.com/ipfs/");
+    // return uri.replace("ipfs://", "https://ipfs.io/ipfs/");
+  }
+  if (uri && uri.startsWith("ar://")) {
+    return uri.replace("ar://", "https://arweave.net/");
+  }
+  if (options.cached) {
+    return `https://swr.xnfts.dev/1hr/${uri}`;
+  }
+  return `${uri}`;
 }
 
 export function proxyImageUrl(url: string): string {
@@ -66,4 +90,24 @@ export function proxyImageUrl(url: string): string {
     return `${IMAGE_PROXY_URL}/insecure/rs:fit:400:400:0:0/plain/${url}`;
   }
   return url;
+}
+
+export function toDisplayBalance(
+  nativeBalance: BigNumber,
+  decimals: BigNumberish,
+  truncate = true
+): string {
+  let displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
+
+  if (truncate) {
+    try {
+      displayBalance = `${displayBalance.split(".")[0]}.${displayBalance
+        .split(".")[1]
+        .slice(0, 5)}`;
+    } catch {
+      // pass
+    }
+  }
+
+  return ethers.utils.commify(displayBalance);
 }

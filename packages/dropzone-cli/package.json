@@ -1,0 +1,15 @@
+{
+  "name": "dropzone-cli",
+  "description": "command line tools for interacting with dropzone",
+  "version": "0.0.1",
+  "bin": "index.js",
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.26.0",
+    "@saberhq/solana-contrib": "^1.14.11",
+    "@saberhq/token-utils": "^1.14.11",
+    "@solana/web3.js": "^1.73.2",
+    "axios": "^1.3.2",
+    "bs58": "^5.0.0",
+    "commander": "^10.0.0"
+  }
+}

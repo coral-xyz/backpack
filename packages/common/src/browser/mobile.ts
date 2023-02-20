@@ -18,6 +18,7 @@ import {
   MOBILE_CHANNEL_FE_RESPONSE_INNER,
   MOBILE_CHANNEL_HOST_RPC_REQUEST,
 } from "../constants";
+import type { RpcRequestMsg, RpcResponseData } from "../types";
 
 import { BrowserRuntimeCommon } from "./common";
 
@@ -71,12 +72,32 @@ export function startMobileIfNeeded() {
   //
   //////////////////////////////////////////////////////////////////////////////
 
-  BrowserRuntimeCommon.sendMessageToBackground = (msg, cb) => {
-    FrontendRequestManager.request(msg).then(cb);
+  // the actual app -> service worker
+  // on the client this is powered by chrome.runtime.sendMessage, so we try to recreate that here
+  // See FrontendRequestManager.request
+  BrowserRuntimeCommon.sendMessageToBackground = (
+    msg: RpcRequestMsg,
+    cb: (res: RpcResponseData) => void
+  ) => {
+    return FrontendRequestManager.request(msg)
+      .then(cb)
+      .catch((error) => {
+        cb({ error });
+      });
   };
 
-  BrowserRuntimeCommon.sendMessageToAppUi = (msg, cb) => {
-    BackendRequestManager.request(msg).then(cb);
+  // from the service worker -> app
+  // on the client this is powered by chrome.runtime.sendMessage, so we try to recreate that here
+  // See BackendRequestManager.request
+  BrowserRuntimeCommon.sendMessageToAppUi = (
+    msg: RpcRequestMsg,
+    cb: (res: RpcResponseData) => void
+  ) => {
+    return BackendRequestManager.request(msg)
+      .then(cb)
+      .catch((error) => {
+        cb({ error });
+      });
   };
 
   BrowserRuntimeCommon.addEventListenerFromBackground = (cb) => {
@@ -277,6 +298,7 @@ class CommonRequestManager {
     } = msg;
     const resolver = CommonRequestManager._resolvers[id];
     if (resolver === undefined) {
+      logger.debug("isServiceWorker", isServiceWorker().toString());
       logger.error("unable to find resolver for data", { id, result, error });
       return;
     }

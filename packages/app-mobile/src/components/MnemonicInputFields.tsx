@@ -1,6 +1,7 @@
 // function MnemonicInputFields from app-extension/.../common/Account/MnemonicInput.tsx
 import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
-import { useTheme } from "@hooks";
+
+import { useTheme } from "~hooks/useTheme";
 
 function Item({ item, index }) {
   const theme = useTheme();
@@ -14,7 +15,13 @@ function Item({ item, index }) {
         },
       ]}
     >
-      <Text>{index + 1}</Text>
+      <Text
+        style={{
+          color: theme.custom.colors.secondary,
+        }}
+      >
+        {index + 1}
+      </Text>
       <TextInput
         value={item}
         style={[
@@ -32,8 +39,8 @@ export function MnemonicInputFields({
   mnemonicWords,
   onChange,
 }: {
-  mnemonicWords: Array<string>;
-  onChange?: (mnemonicWords: Array<string>) => void;
+  mnemonicWords: string[];
+  onChange?: (mnemonicWords: string[]) => void;
 }) {
   return (
     <FlatList

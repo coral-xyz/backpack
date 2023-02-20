@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
+  UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_DELETE,
+  walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
-  useActiveWallets,
-  useBackgroundClient,
-  useWalletPublicKeys,
-} from "@coral-xyz/recoil";
+  CheckIcon,
+  PrimaryButton,
+  SecondaryButton,
+  WarningIcon,
+} from "@coral-xyz/react-common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 
-import { PrimaryButton, SecondaryButton } from "../../../../common";
-import { CheckIcon, WarningIcon } from "../../../../common/Icon";
 import { WithMiniDrawer } from "../../../../common/Layout/Drawer";
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 
 export const RemoveWallet: React.FC<{
   blockchain: Blockchain;
@@ -23,25 +24,31 @@ export const RemoveWallet: React.FC<{
   type: string;
 }> = ({ blockchain, publicKey, type }) => {
   const theme = useCustomTheme();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const background = useBackgroundClient();
   const [showSuccess, setShowSuccess] = useState(false);
-  const activeWallets = useActiveWallets();
-  const wallet = activeWallets.find((w) => w.blockchain === blockchain);
-  const blockchainKeyrings = useWalletPublicKeys();
-  const keyring = blockchainKeyrings[blockchain];
-  const flattenedWallets = [
-    ...keyring.hdPublicKeys,
-    ...keyring.importedPublicKeys,
-    ...keyring.ledgerPublicKeys,
-  ];
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    nav.setTitle("Remove Wallet");
+    nav.setOptions({ headerTitle: "Remove Wallet" });
   }, [nav]);
 
-  const pubkeyStr =
-    publicKey.slice(0, 4) + "..." + publicKey.slice(publicKey.length - 4);
+  const onRemove = async () => {
+    setLoading(true);
+    if (type === "dehydrated") {
+      await background.request({
+        method: UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_DELETE,
+        params: [blockchain, publicKey],
+      });
+    } else {
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
+        params: [blockchain, publicKey],
+      });
+    }
+    setLoading(false);
+    setShowSuccess(true);
+  };
 
   return (
     <>
@@ -73,7 +80,9 @@ export const RemoveWallet: React.FC<{
               color: theme.custom.colors.fontColor,
             }}
           >
-            {`Are you sure you want to remove ${pubkeyStr}?`}
+            {`Are you sure you want to remove ${walletAddressDisplay(
+              publicKey
+            )}?`}
           </Typography>
           <Typography
             style={{
@@ -95,6 +104,12 @@ export const RemoveWallet: React.FC<{
               <>
                 Removing from Backpack will not delete the wallet’s contents. It
                 will still be available by connecting your ledger.
+              </>
+            ) : type === "dehydrated" ? (
+              <>
+                Removing from Backpack will remove the connection between your
+                username and this public key. You can always add it back later
+                by adding the wallet to Backpack.
               </>
             ) : (
               <>
@@ -120,27 +135,8 @@ export const RemoveWallet: React.FC<{
           <PrimaryButton
             label={"Remove"}
             style={{ backgroundColor: theme.custom.colors.negative }}
-            onClick={() => {
-              (async () => {
-                if (wallet?.publicKey.toString() === publicKey.toString()) {
-                  const newActiveWalletPubkey = flattenedWallets.find(
-                    (wallet) =>
-                      wallet.publicKey.toString() !== publicKey.toString()
-                  )?.publicKey;
-                  if (newActiveWalletPubkey) {
-                    await background.request({
-                      method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-                      params: [newActiveWalletPubkey, blockchain],
-                    });
-                  }
-                }
-                await background.request({
-                  method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
-                  params: [blockchain, publicKey],
-                });
-                setShowSuccess(true);
-              })();
-            }}
+            onClick={onRemove}
+            disabled={loading}
           />
         </div>
       </div>

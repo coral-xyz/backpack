@@ -1,14 +1,22 @@
+import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useState } from "react";
+import type { SolanaFeeConfig } from "@coral-xyz/common";
 import {
   Blockchain,
+  deserializeLegacyTransaction,
   deserializeTransaction,
+  SOL_NATIVE_MINT,
   UI_RPC_METHOD_SOLANA_SIMULATE,
 } from "@coral-xyz/common";
 import type { TransactionRequest } from "@ethersproject/abstract-provider";
 import type { UnsignedTransaction } from "@ethersproject/transactions";
-import { AccountLayout, TOKEN_PROGRAM_ID, u64 } from "@solana/spl-token";
-import type { Message } from "@solana/web3.js";
-import { PublicKey } from "@solana/web3.js";
+import { AccountLayout, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import type { AddressLookupTableAccount, Message } from "@solana/web3.js";
+import {
+  ComputeBudgetInstruction,
+  ComputeBudgetProgram,
+  PublicKey,
+} from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
 
 import {
@@ -26,6 +34,10 @@ const DEFAULT_GAS_LIMIT = BigNumber.from("150000");
 type TransactionData = {
   loading: boolean;
   transaction: string;
+  solanaFeeConfig?: { config: SolanaFeeConfig; disabled: boolean };
+  setSolanaFeeConfig?: Dispatch<
+    SetStateAction<{ config: SolanaFeeConfig; disabled: boolean } | null>
+  >;
   transactionOverrides?: TransactionOverrides;
   setTransactionOverrides?: (overrides: object) => void;
   from: string;
@@ -226,85 +238,222 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
 export function useSolanaTxData(serializedTx: any): TransactionData {
   const background = useBackgroundClient();
   const tokenRegistry = useSplTokenRegistry();
-  const tokenAccountsSorted = useBlockchainNativeTokens(Blockchain.SOLANA);
   const { connection, walletPublicKey } = useSolanaCtx();
+  const tokenAccountsSorted = useBlockchainNativeTokens({
+    publicKey: walletPublicKey.toString(),
+    blockchain: Blockchain.SOLANA,
+  });
 
+  const [solanaFeeConfig, setSolanaFeeConfig] = useState<{
+    config: SolanaFeeConfig;
+    disabled: boolean;
+  }>({
+    config: {
+      priorityFee: BigInt(0),
+      computeUnits: 100000,
+    },
+    disabled: false,
+  });
   const [loading, setLoading] = useState(true);
   const [simulationError, setSimulationError] = useState(false);
-  const [estimatedTxFee, setEstimatedTxFee] = useState(0);
+  const [estimatedTxFee, setEstimatedTxFee] = useState(5000);
   const [balanceChanges, setBalanceChanges] = useState({});
+  const [simulationAccounts, setSimulationAccounts] = useState<Array<string>>(
+    []
+  );
 
   useEffect(() => {
     const estimateTxFee = async () => {
       const transaction = deserializeTransaction(serializedTx);
-      let fee;
       try {
         // TODO: Remove type inference after the API for `getFeeForMessage` changes
         const response = await connection.getFeeForMessage(
           transaction.message as Message
         );
-        fee = response.value;
+        setEstimatedTxFee(response.value);
       } catch (e) {
         // ignore
       }
-      setEstimatedTxFee(fee || 5000);
+    };
+
+    const refreshSolanaConfig = async () => {
+      const transaction = deserializeTransaction(serializedTx);
+
+      if (transaction.version === "legacy") {
+        const transaction = deserializeLegacyTransaction(serializedTx);
+        setSimulationAccounts(
+          transaction
+            .compileMessage()
+            .nonProgramIds()
+            .map((k) => k.toString())
+        );
+        transaction.instructions.forEach((ix) => {
+          if (ix.programId.equals(ComputeBudgetProgram.programId)) {
+            try {
+              const decodedUnits =
+                ComputeBudgetInstruction.decodeSetComputeUnitLimit(ix);
+              setSolanaFeeConfig((x) => ({
+                ...x,
+                config: {
+                  ...x.config,
+                  computeUnits: decodedUnits.units,
+                },
+                disabled: true,
+              }));
+            } catch (e) {
+              console.warn(`ix is not of type compute unit`);
+            }
+            try {
+              const decodedParams =
+                ComputeBudgetInstruction.decodeSetComputeUnitPrice(ix);
+              setSolanaFeeConfig((x) => ({
+                ...x,
+                config: {
+                  ...x.config,
+                  priorityFee: BigInt(decodedParams.microLamports),
+                },
+                disabled: true,
+              }));
+            } catch (e) {
+              console.warn(`ix is not of type priority fee`);
+            }
+          }
+        });
+      } else if (transaction.version === 0) {
+        // Resolve accounts for versioned transactions
+        const addressLookupTableAccounts: Array<AddressLookupTableAccount> = [];
+        const { addressTableLookups } = transaction.message;
+        if (addressTableLookups.length > 0) {
+          for (const addressTableLookup of addressTableLookups) {
+            const result = await connection.getAddressLookupTable(
+              addressTableLookup.accountKey
+            );
+            if (result.value) {
+              addressLookupTableAccounts.push(result.value);
+            }
+          }
+        }
+        const accountKeys = transaction.message.getAccountKeys({
+          addressLookupTableAccounts,
+        });
+        setSimulationAccounts([
+          ...new Set(
+            accountKeys.staticAccountKeys
+              .map((k) => k.toString())
+              .concat(
+                accountKeys.accountKeysFromLookups
+                  ? // Only writable accounts will contribute to balance changes
+                    accountKeys.accountKeysFromLookups.writable.map((k) =>
+                      k.toString()
+                    )
+                  : []
+              )
+          ),
+        ]);
+      }
     };
     estimateTxFee();
+    refreshSolanaConfig();
   }, [serializedTx]);
 
   useEffect(() => {
     const estimateBalanceChanges = async () => {
-      if (walletPublicKey && serializedTx) {
+      if (walletPublicKey && serializedTx && simulationAccounts.length > 0) {
         const result = await background.request({
           method: UI_RPC_METHOD_SOLANA_SIMULATE,
-          params: [serializedTx, walletPublicKey, true],
+          params: [serializedTx, simulationAccounts],
         });
         if (result.value.err) {
           console.warn("failed to simulate", result.value.err);
+          // TODO handle InsufficientFundsForRent
           setSimulationError(true);
         } else {
           const balanceChanges = result.value.accounts.reduce(
-            (result: any, a: any) => {
-              if (a.owner === TOKEN_PROGRAM_ID.toString()) {
+            (
+              result: { symbol: { nativeChange: BigNumber; decimals: number } },
+              account: any,
+              index: number
+            ) => {
+              // Token changes
+              const isToken = account.owner === TOKEN_PROGRAM_ID.toString();
+              const isNativeSol = account.owner === SOL_NATIVE_MINT;
+
+              if (isToken || isNativeSol) {
                 try {
-                  const buf = Buffer.from(a.data[0], a.data[1]);
-                  const account = AccountLayout.decode(buf);
-                  // Check account owner is active Solana public key
-                  if (
-                    !new PublicKey(account.owner).equals(
-                      new PublicKey(walletPublicKey)
-                    )
-                  ) {
-                    return result;
+                  let accountNativeBalance: BigNumber;
+                  let tokenMint: PublicKey;
+
+                  // Parse token accounts for change in balances
+                  if (isToken) {
+                    try {
+                      const tokenAccount = AccountLayout.decode(
+                        Buffer.from(account.data[0], account.data[1])
+                      );
+                      if (
+                        !new PublicKey(tokenAccount.owner).equals(
+                          new PublicKey(walletPublicKey)
+                        )
+                      ) {
+                        // Return the reducer state umodified if token account is not owned
+                        return result;
+                      }
+                      accountNativeBalance = BigNumber.from(
+                        tokenAccount.amount.toString()
+                      );
+                      // Standard token mint
+                      tokenMint = new PublicKey(tokenAccount.mint);
+                    } catch (error) {
+                      // Decoding of token account failed, not a token account
+                      return result;
+                    }
+                    // Parse changes in native SOL balances
+                  } else {
+                    // Not interested in SOL balance changes for accounts that
+                    // are not the current address
+                    if (
+                      simulationAccounts[index] !== walletPublicKey.toString()
+                    ) {
+                      return result;
+                    }
+                    accountNativeBalance = BigNumber.from(
+                      account.lamports.toString()
+                    );
+                    // Faux mint for native SOL
+                    tokenMint = new PublicKey(SOL_NATIVE_MINT);
                   }
+
                   // Find the existing token account
                   const existingTokenAccount = tokenAccountsSorted.find((t) =>
-                    new PublicKey(t.mint!).equals(new PublicKey(account.mint))
+                    new PublicKey(t.mint!).equals(tokenMint)
                   );
+
                   // Find the token in the registry to get the symbol for return
-                  const token = tokenRegistry.get(
-                    new PublicKey(account.mint).toString()
-                  );
+                  const token = tokenRegistry.get(tokenMint.toString());
                   if (!token) {
                     return result;
                   }
+
                   const existingNativeBalance = existingTokenAccount
                     ? existingTokenAccount.nativeBalance
                     : ethers.constants.Zero;
-                  //
-                  // Calculate the native balance change
-                  const nativeChange = BigNumber.from(
-                    u64.fromBuffer(account.amount).toString()
-                  ).sub(existingNativeBalance);
 
-                  result[token.symbol] = {
-                    nativeChange,
-                    decimals: token.decimals,
-                  };
+                  // Calculate the native balance change
+                  const nativeChange = accountNativeBalance.sub(
+                    existingNativeBalance
+                  );
+
+                  // Filter out zero change
+                  if (!nativeChange.eq(ethers.constants.Zero)) {
+                    result[token.symbol] = {
+                      nativeChange,
+                      decimals: token.decimals,
+                    };
+                  }
                 } catch (err) {
                   // ignore, probably not a token account or some other
                   // failure, we don't want to fail displaying the popup
                   console.warn("failed to get balance changes", err);
+                  return result;
                 }
               }
               return result;
@@ -317,7 +466,7 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
       }
     };
     estimateBalanceChanges();
-  }, []);
+  }, [serializedTx, simulationAccounts]);
 
   return {
     loading,
@@ -327,5 +476,7 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
     balanceChanges,
     network: "Solana",
     networkFee: ethers.utils.formatUnits(estimatedTxFee, 9),
+    solanaFeeConfig,
+    setSolanaFeeConfig,
   };
 }

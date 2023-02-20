@@ -1,11 +1,11 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
 import { styles } from "@coral-xyz/themes";
 import { ArrowForward } from "@mui/icons-material";
 import { Box } from "@mui/material";
 import { createPopup } from "@typeform/embed";
 
-import { PrimaryButton, SubtextParagraph } from "../../common";
-import { TextInput } from "../../common/Inputs";
+import { SubtextParagraph } from "../../common";
 import { getWaitlistId, setWaitlistId } from "../../common/WaitingRoom";
 import { BackpackHeader } from "../../Locked";
 
@@ -72,21 +72,31 @@ export const InviteCodeForm = ({
   );
 
   return (
-    <>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
       <Box
         style={{
-          marginBottom: "52px",
           flex: 1,
           textAlign: "center",
           padding: "32px 16px 0",
         }}
       >
-        <BackpackHeader />
+        <BackpackHeader disableUsername={true} />
       </Box>
 
       <form
         onSubmit={handleSubmit}
-        style={{ padding: "0 16px 16px", marginTop: 0 }}
+        style={{
+          padding: "0 16px 36px",
+          paddingBottom: 0,
+          marginTop: 0,
+        }}
         noValidate
       >
         <Box style={{ marginBottom: 8 }} className={classes.inviteCodeBox}>
@@ -145,6 +155,7 @@ export const InviteCodeForm = ({
           <Box
             style={{
               marginTop: 24,
+              marginBottom: 36,
             }}
           >
             <SubtextParagraph onClick={onClickRecover}>
@@ -153,6 +164,6 @@ export const InviteCodeForm = ({
           </Box>
         </Box>
       </form>
-    </>
+    </div>
   );
 };

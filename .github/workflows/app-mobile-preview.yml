@@ -1,0 +1,59 @@
+name: app-mobile preview
+
+on:
+  pull_request:
+    paths:
+      - "packages/app-mobile/**"
+    types: [opened, synchronize]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mobile:
+    name: Preview App
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout must come before a custom action
+      - name: 🏗 Setup repository
+        uses: actions/checkout@v3
+
+      - name: 🏗 Setup monorepo
+        uses: ./.github/actions/app-mobile-monorepo-setup
+        with:
+          expo-token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 👷 Build modules
+        env:
+          BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-beta-${{ github.run_number }}"
+          BACKPACK_CONFIG_LOG_LEVEL: "info"
+          BACKPACK_FEATURE_LIGHT_MODE: "true"
+          BACKPACK_FEATURE_POP_MODE: "true"
+          BACKPACK_FEATURE_XNFT: "true"
+          # CI!=true so that build warnings aren't treated like errors (for now)
+          CI: ""
+        run: yarn build:mobile
+
+      - name: 🚀 Publish preview
+        working-directory: packages/app-mobile
+        env:
+          APP_ENV: "production"
+          COMMIT_HASH: ${{ github.sha }}
+        run: eas update --branch preview --message=${{ github.sha }}
+
+      # - name: 💬 Comment preview
+      #   uses: expo/expo-github-action/preview-comment@v7
+      #   with:
+      #     comment: false
+      #     project: packages/app-mobile
+      #     channel: pr-${{ github.event.number }}
+
+      # - name: 💬 Comment in Slack
+      #   uses: slackapi/slack-github-action@v1.17.0
+      #   env:
+      #     SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
+      #   with:
+      #     channel-id: mobile-app
+      #     slack-message: 'New deployment is ready!\n- Preview: ${{ steps.preview.outputs.projectQR }}'

@@ -1,10 +1,12 @@
-import { WebSocketServer } from "ws";
-import { PORT } from "./config";
-import { UserManager } from "./users/UserManager";
-import { extractUserId } from "./auth";
 import express from "express";
 import http from "http";
 import url from "url";
+import { WebSocketServer } from "ws";
+
+import { RedisSubscriptionManager } from "./subscriptions/RedisSubscriptionManager";
+import { UserManager } from "./users/UserManager";
+import { extractUserId } from "./auth";
+import { PORT } from "./config";
 
 const app = express();
 const port = PORT || 3000;
@@ -12,6 +14,7 @@ const port = PORT || 3000;
 const server = http.createServer(app);
 
 const wss = new WebSocketServer({ server });
+app.get("/healthcheck", (req, res) => res.json({}));
 app.get("/cookie", (req, res) => {
   const cookie = req.headers.cookie || "";
   if (cookie) {
@@ -33,11 +36,13 @@ app.get("/cookie", (req, res) => {
 wss.on("connection", async (ws, req) => {
   const url_parts = url.parse(req.url || "", true);
   const query = url_parts.query;
-  const jwt = query.jwt;
+  // @ts-ignore
+  const jwt: string = query.jwt;
   const userId = await extractUserId(jwt || "");
   console.log(`userid is ${userId}`);
   if (!userId) {
     ws.close();
+    return;
   }
   UserManager.getInstance().addUser(
     ws,
@@ -51,3 +56,5 @@ process.on("uncaughtException", function (err) {
 });
 
 server.listen(port);
+
+const instance = RedisSubscriptionManager.getInstance();

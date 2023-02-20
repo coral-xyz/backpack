@@ -49,12 +49,14 @@ const useStyles = styles((theme) => ({
 export function BalanceSummaryWidget() {
   const theme = useCustomTheme();
   const classes = useStyles();
-  const [{ totalBalance, totalChange, percentChange }, _, isLoading] =
-    useLoader(totalBalanceSelector, {
+  const [{ totalBalance, totalChange, percentChange }, , isLoading] = useLoader(
+    totalBalanceSelector,
+    {
       totalBalance: 0,
       totalChange: 0,
       percentChange: 0,
-    });
+    }
+  );
   return (
     <div style={{ display: "flex" }}>
       <div
@@ -147,7 +149,7 @@ export function BalanceSummaryWidget() {
               <>
                 {totalChange > 0 ? "+" : ""}
                 {Number.isFinite(percentChange)
-                  ? `${percentChange.toFixed(2)}%`
+                  ? `${percentChange?.toFixed(2)}%`
                   : "0.00%"}
               </>
             )}

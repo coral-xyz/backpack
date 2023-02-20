@@ -1,11 +1,11 @@
-import type { Blockchain } from "@coral-xyz/common";
+import type { Blockchain, FeeConfig } from "@coral-xyz/common";
+import { EmptyState, Loading } from "@coral-xyz/react-common";
 import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
-import _CheckIcon from "@mui/icons-material/Check";
+import { Block as BlockIcon } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 
-import { Loading } from "../../common";
 import { TransactionData } from "../../common/TransactionData";
 import { WithApproval } from "../../Unlocked/Approvals";
 
@@ -26,25 +26,6 @@ const useStyles = styles((theme) => ({
     fontSize: "14px",
     marginBottom: "8px",
   },
-  listRoot: {
-    color: theme.custom.colors.fontColor,
-    padding: "0",
-    borderRadius: "4px",
-    fontSize: "14px",
-  },
-  listItemRoot: {
-    alignItems: "start",
-    border: `${theme.custom.colors.borderFull}`,
-    borderRadius: "4px",
-    background: theme.custom.colors.nav,
-    padding: "8px",
-  },
-  listItemIconRoot: {
-    minWidth: "inherit",
-    height: "20px",
-    width: "20px",
-    marginRight: "8px",
-  },
   warning: {
     color: theme.custom.colors.negative,
     fontSize: "14px",
@@ -62,6 +43,9 @@ const useStyles = styles((theme) => ({
   positive: {
     color: theme.custom.colors.positive,
   },
+  txMenuItemRoot: {
+    height: "36px !important",
+  },
 }));
 
 export function ApproveTransaction({
@@ -75,12 +59,16 @@ export function ApproveTransaction({
   title: string;
   tx: string | null;
   wallet: string;
-  onCompletion: (transaction: any) => Promise<void>;
+  onCompletion: (
+    transaction: any,
+    feeConfig?: { config: FeeConfig; disabled: boolean }
+  ) => Promise<void>;
 }) {
   const classes = useStyles();
   const blockchain = useWalletBlockchain(wallet);
   const transactionData = useTransactionData(blockchain as Blockchain, tx);
-  const { loading, balanceChanges, transaction } = transactionData;
+  const { loading, balanceChanges, transaction, solanaFeeConfig } =
+    transactionData;
 
   if (loading) {
     return <Loading />;
@@ -117,7 +105,7 @@ export function ApproveTransaction({
     : {};
 
   const onConfirm = async () => {
-    await onCompletion(transaction);
+    await onCompletion(transaction, solanaFeeConfig);
   };
 
   const onDeny = async () => {
@@ -137,13 +125,16 @@ export function ApproveTransaction({
       {loading ? (
         <Loading />
       ) : (
-        <div style={{ marginTop: "24px" }}>
+        <div
+          style={{ marginTop: "24px", marginLeft: "8px", marginRight: "8px" }}
+        >
           <Typography className={classes.listDescription}>
             Transaction details
           </Typography>
           <TransactionData
             transactionData={transactionData}
             menuItems={menuItems}
+            menuItemClasses={{ root: classes.txMenuItemRoot }}
           />
         </div>
       )}
@@ -151,17 +142,61 @@ export function ApproveTransaction({
   );
 }
 
+export function Cold({
+  origin,
+  title,
+  wallet,
+  onCompletion,
+  style,
+}: {
+  origin: string;
+  title: string;
+  wallet: string;
+  onCompletion: () => Promise<void>;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        <EmptyState
+          icon={(props: any) => <BlockIcon {...props} />}
+          title={"Request Rejected"}
+          subtitle={`WARNING: ${origin} is trying to sign with your cold wallet. This may be dangerous. To enable, see your wallet settings and enable "App Signing". Do so with caution!`}
+          buttonText={""}
+          onClick={() => {}}
+          style={style}
+        />
+        <div></div>
+      </div>
+    </div>
+  );
+}
+
 export function ApproveAllTransactions({
   origin,
   title,
-  txs,
   wallet,
+  // eslint-disable-next-line
+  txs,
   onCompletion,
 }: {
   origin: string;
   title: string;
-  txs: string;
   wallet: string;
+  txs: Array<string>;
   onCompletion: (confirmed: boolean) => void;
 }) {
   const classes = useStyles();

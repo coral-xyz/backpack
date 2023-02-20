@@ -362,12 +362,17 @@ export const traverseResponse = ({
     ) {
       return o;
     }
-    return Object.fromEntries(
-      Object.entries(o).map(([k, v]) => [
-        k,
-        ibb(k, v, [...p, purifyGraphQLKey(k)]),
-      ])
+    const entries = Object.entries(o).map(
+      ([k, v]) => [k, ibb(k, v, [...p, purifyGraphQLKey(k)])] as const
     );
+    const objectFromEntries = entries.reduce<Record<string, unknown>>(
+      (a, [k, v]) => {
+        a[k] = v;
+        return a;
+      },
+      {}
+    );
+    return objectFromEntries;
   };
   return ibb;
 };
@@ -599,7 +604,7 @@ export const ResolveFromPath = (
   returns: ReturnTypesType,
   ops: Operations
 ) => {
-  // @ts-ignore
+  //@ts-ignore
   const ResolvePropsType = (mappedParts: Part[]) => {
     const oKey = ops[mappedParts[0].v];
     const propsP1 = oKey ? props[oKey] : props[mappedParts[0].v];
@@ -642,7 +647,7 @@ export const ResolveFromPath = (
       }
     }
   };
-  // @ts-ignore
+  //@ts-ignore
   const ResolveReturnType = (mappedParts: Part[]) => {
     if (mappedParts.length === 0) {
       return "not";
@@ -818,9 +823,13 @@ type IsInterfaced<
                 : DST[P],
               SCLR
             >
-          : Record<string, unknown>
+          : IsArray<
+              R,
+              "__typename" extends keyof DST ? { __typename: true } : never,
+              SCLR
+            >
         : never;
-    }[keyof DST] & {
+    }[keyof SRC] & {
       [P in keyof Omit<
         Pick<
           SRC,
@@ -1040,14 +1049,1041 @@ export type ValueTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined | null | Variable<any, string>;
   };
+  /** columns and relationships of "barters" */
+  ["barters"]: AliasType<{
+    chat_barter_metadata?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["chat_barter_metadata_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["chat_barter_metadata_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["chat_barter_metadata_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_barter_metadata"]
+    ];
+    id?: boolean | `@${string}`;
+    on_chain_state?: boolean | `@${string}`;
+    room_active_chat_mappings?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["room_active_chat_mapping_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["room_active_chat_mapping_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["room_active_chat_mapping_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["room_active_chat_mapping"]
+    ];
+    room_id?: boolean | `@${string}`;
+    state?: boolean | `@${string}`;
+    user1_offers?: boolean | `@${string}`;
+    user2_offers?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "barters". All fields are combined with a logical 'AND'. */
+  ["barters_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["barters_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["barters_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["barters_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat_barter_metadata?:
+      | ValueTypes["chat_barter_metadata_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    on_chain_state?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    room_active_chat_mappings?:
+      | ValueTypes["room_active_chat_mapping_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    room_id?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    state?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user1_offers?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user2_offers?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "barters" */
+  ["barters_constraint"]: barters_constraint;
+  /** input type for incrementing numeric columns in table "barters" */
+  ["barters_inc_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+  };
+  /** input type for inserting data into table "barters" */
+  ["barters_insert_input"]: {
+    chat_barter_metadata?:
+      | ValueTypes["chat_barter_metadata_arr_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    on_chain_state?: string | undefined | null | Variable<any, string>;
+    room_active_chat_mappings?:
+      | ValueTypes["room_active_chat_mapping_arr_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    room_id?: string | undefined | null | Variable<any, string>;
+    state?: string | undefined | null | Variable<any, string>;
+    user1_offers?: string | undefined | null | Variable<any, string>;
+    user2_offers?: string | undefined | null | Variable<any, string>;
+  };
+  /** response of any mutation on the table "barters" */
+  ["barters_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["barters"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** input type for inserting object relation for remote table "barters" */
+  ["barters_obj_rel_insert_input"]: {
+    data: ValueTypes["barters_insert_input"] | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["barters_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** on_conflict condition type for table "barters" */
+  ["barters_on_conflict"]: {
+    constraint: ValueTypes["barters_constraint"] | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["barters_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["barters_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "barters". */
+  ["barters_order_by"]: {
+    chat_barter_metadata_aggregate?:
+      | ValueTypes["chat_barter_metadata_aggregate_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    on_chain_state?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    room_active_chat_mappings_aggregate?:
+      | ValueTypes["room_active_chat_mapping_aggregate_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    room_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    state?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    user1_offers?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user2_offers?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** primary key columns input for table: barters */
+  ["barters_pk_columns_input"]: {
+    id: number | Variable<any, string>;
+  };
+  /** select columns of table "barters" */
+  ["barters_select_column"]: barters_select_column;
+  /** input type for updating data in table "barters" */
+  ["barters_set_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+    on_chain_state?: string | undefined | null | Variable<any, string>;
+    room_id?: string | undefined | null | Variable<any, string>;
+    state?: string | undefined | null | Variable<any, string>;
+    user1_offers?: string | undefined | null | Variable<any, string>;
+    user2_offers?: string | undefined | null | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "barters" */
+  ["barters_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["barters_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["barters_stream_cursor_value_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+    on_chain_state?: string | undefined | null | Variable<any, string>;
+    room_id?: string | undefined | null | Variable<any, string>;
+    state?: string | undefined | null | Variable<any, string>;
+    user1_offers?: string | undefined | null | Variable<any, string>;
+    user2_offers?: string | undefined | null | Variable<any, string>;
+  };
+  /** update columns of table "barters" */
+  ["barters_update_column"]: barters_update_column;
+  ["barters_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ValueTypes["barters_inc_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["barters_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    where: ValueTypes["barters_bool_exp"] | Variable<any, string>;
+  };
+  /** columns and relationships of "chat_barter_metadata" */
+  ["chat_barter_metadata"]: AliasType<{
+    /** An object relationship */
+    barter?: ValueTypes["barters"];
+    barter_id?: boolean | `@${string}`;
+    /** An object relationship */
+    chat?: ValueTypes["chats"];
+    chat_client_generated_uuid?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "chat_barter_metadata" */
+  ["chat_barter_metadata_aggregate_order_by"]: {
+    avg?:
+      | ValueTypes["chat_barter_metadata_avg_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    count?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    max?:
+      | ValueTypes["chat_barter_metadata_max_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    min?:
+      | ValueTypes["chat_barter_metadata_min_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev?:
+      | ValueTypes["chat_barter_metadata_stddev_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_pop?:
+      | ValueTypes["chat_barter_metadata_stddev_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_samp?:
+      | ValueTypes["chat_barter_metadata_stddev_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    sum?:
+      | ValueTypes["chat_barter_metadata_sum_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_pop?:
+      | ValueTypes["chat_barter_metadata_var_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_samp?:
+      | ValueTypes["chat_barter_metadata_var_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    variance?:
+      | ValueTypes["chat_barter_metadata_variance_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** input type for inserting array relation for remote table "chat_barter_metadata" */
+  ["chat_barter_metadata_arr_rel_insert_input"]: {
+    data:
+      | Array<ValueTypes["chat_barter_metadata_insert_input"]>
+      | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["chat_barter_metadata_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by avg() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_avg_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Boolean expression to filter rows from the table "chat_barter_metadata". All fields are combined with a logical 'AND'. */
+  ["chat_barter_metadata_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["chat_barter_metadata_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["chat_barter_metadata_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["chat_barter_metadata_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    barter?:
+      | ValueTypes["barters_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    barter_id?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat?:
+      | ValueTypes["chats_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat_client_generated_uuid?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "chat_barter_metadata" */
+  ["chat_barter_metadata_constraint"]: chat_barter_metadata_constraint;
+  /** input type for inserting data into table "chat_barter_metadata" */
+  ["chat_barter_metadata_insert_input"]: {
+    barter?:
+      | ValueTypes["barters_obj_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    barter_id?: number | undefined | null | Variable<any, string>;
+    chat?:
+      | ValueTypes["chats_obj_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by max() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_max_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by min() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_min_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** response of any mutation on the table "chat_barter_metadata" */
+  ["chat_barter_metadata_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["chat_barter_metadata"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "chat_barter_metadata" */
+  ["chat_barter_metadata_on_conflict"]: {
+    constraint:
+      | ValueTypes["chat_barter_metadata_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["chat_barter_metadata_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["chat_barter_metadata_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "chat_barter_metadata". */
+  ["chat_barter_metadata_order_by"]: {
+    barter?:
+      | ValueTypes["barters_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat?:
+      | ValueTypes["chats_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** select columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_select_column"]: chat_barter_metadata_select_column;
+  /** order by stddev() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_stddev_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by stddev_pop() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_stddev_pop_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by stddev_samp() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_stddev_samp_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "chat_barter_metadata" */
+  ["chat_barter_metadata_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["chat_barter_metadata_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["chat_barter_metadata_stream_cursor_value_input"]: {
+    barter_id?: number | undefined | null | Variable<any, string>;
+    chat_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by sum() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_sum_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** placeholder for update columns of table "chat_barter_metadata" (current role has no relevant permissions) */
+  ["chat_barter_metadata_update_column"]: chat_barter_metadata_update_column;
+  ["chat_barter_metadata_updates"]: {
+    where: ValueTypes["chat_barter_metadata_bool_exp"] | Variable<any, string>;
+  };
+  /** order by var_pop() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_var_pop_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by var_samp() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_var_samp_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by variance() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_variance_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** columns and relationships of "chat_media_messages" */
+  ["chat_media_messages"]: AliasType<{
+    /** An object relationship */
+    chat?: ValueTypes["chats"];
+    id?: boolean | `@${string}`;
+    media_kind?: boolean | `@${string}`;
+    media_link?: boolean | `@${string}`;
+    message_client_generated_uuid?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "chat_media_messages" */
+  ["chat_media_messages_aggregate_order_by"]: {
+    avg?:
+      | ValueTypes["chat_media_messages_avg_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    count?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    max?:
+      | ValueTypes["chat_media_messages_max_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    min?:
+      | ValueTypes["chat_media_messages_min_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev?:
+      | ValueTypes["chat_media_messages_stddev_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_pop?:
+      | ValueTypes["chat_media_messages_stddev_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_samp?:
+      | ValueTypes["chat_media_messages_stddev_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    sum?:
+      | ValueTypes["chat_media_messages_sum_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_pop?:
+      | ValueTypes["chat_media_messages_var_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_samp?:
+      | ValueTypes["chat_media_messages_var_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    variance?:
+      | ValueTypes["chat_media_messages_variance_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** input type for inserting array relation for remote table "chat_media_messages" */
+  ["chat_media_messages_arr_rel_insert_input"]: {
+    data:
+      | Array<ValueTypes["chat_media_messages_insert_input"]>
+      | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["chat_media_messages_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by avg() on columns of table "chat_media_messages" */
+  ["chat_media_messages_avg_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** Boolean expression to filter rows from the table "chat_media_messages". All fields are combined with a logical 'AND'. */
+  ["chat_media_messages_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["chat_media_messages_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["chat_media_messages_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["chat_media_messages_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat?:
+      | ValueTypes["chats_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    media_kind?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    media_link?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    message_client_generated_uuid?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "chat_media_messages" */
+  ["chat_media_messages_constraint"]: chat_media_messages_constraint;
+  /** input type for incrementing numeric columns in table "chat_media_messages" */
+  ["chat_media_messages_inc_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+  };
+  /** input type for inserting data into table "chat_media_messages" */
+  ["chat_media_messages_insert_input"]: {
+    chat?:
+      | ValueTypes["chats_obj_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    media_kind?: string | undefined | null | Variable<any, string>;
+    media_link?: string | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by max() on columns of table "chat_media_messages" */
+  ["chat_media_messages_max_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    media_kind?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    media_link?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    message_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by min() on columns of table "chat_media_messages" */
+  ["chat_media_messages_min_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    media_kind?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    media_link?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    message_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** response of any mutation on the table "chat_media_messages" */
+  ["chat_media_messages_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["chat_media_messages"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "chat_media_messages" */
+  ["chat_media_messages_on_conflict"]: {
+    constraint:
+      | ValueTypes["chat_media_messages_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["chat_media_messages_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["chat_media_messages_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "chat_media_messages". */
+  ["chat_media_messages_order_by"]: {
+    chat?:
+      | ValueTypes["chats_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    media_kind?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    media_link?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    message_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** primary key columns input for table: chat_media_messages */
+  ["chat_media_messages_pk_columns_input"]: {
+    id: number | Variable<any, string>;
+  };
+  /** select columns of table "chat_media_messages" */
+  ["chat_media_messages_select_column"]: chat_media_messages_select_column;
+  /** input type for updating data in table "chat_media_messages" */
+  ["chat_media_messages_set_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+    media_kind?: string | undefined | null | Variable<any, string>;
+    media_link?: string | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by stddev() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev_pop() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_pop_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev_samp() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_samp_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "chat_media_messages" */
+  ["chat_media_messages_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["chat_media_messages_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["chat_media_messages_stream_cursor_value_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+    media_kind?: string | undefined | null | Variable<any, string>;
+    media_link?: string | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by sum() on columns of table "chat_media_messages" */
+  ["chat_media_messages_sum_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** update columns of table "chat_media_messages" */
+  ["chat_media_messages_update_column"]: chat_media_messages_update_column;
+  ["chat_media_messages_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ValueTypes["chat_media_messages_inc_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["chat_media_messages_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    where: ValueTypes["chat_media_messages_bool_exp"] | Variable<any, string>;
+  };
+  /** order by var_pop() on columns of table "chat_media_messages" */
+  ["chat_media_messages_var_pop_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by var_samp() on columns of table "chat_media_messages" */
+  ["chat_media_messages_var_samp_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by variance() on columns of table "chat_media_messages" */
+  ["chat_media_messages_variance_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
   /** columns and relationships of "chats" */
   ["chats"]: AliasType<{
+    chat_barter_metadata?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["chat_barter_metadata_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["chat_barter_metadata_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["chat_barter_metadata_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_barter_metadata"]
+    ];
+    chat_media_messages?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["chat_media_messages_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["chat_media_messages_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["chat_media_messages_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages"]
+    ];
     client_generated_uuid?: boolean | `@${string}`;
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     message?: boolean | `@${string}`;
     message_kind?: boolean | `@${string}`;
+    parent_client_generated_uuid?: boolean | `@${string}`;
     room?: boolean | `@${string}`;
+    secure_transfer_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["secure_transfer_transactions_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["secure_transfer_transactions_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["secure_transfer_transactions_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions"]
+    ];
+    simple_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["simple_transactions_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["simple_transactions_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["simple_transactions_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["simple_transactions"]
+    ];
     type?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     uuid?: boolean | `@${string}`;
@@ -1067,6 +2103,16 @@ export type ValueTypes = {
       | Variable<any, string>;
     _or?:
       | Array<ValueTypes["chats_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat_barter_metadata?:
+      | ValueTypes["chat_barter_metadata_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat_media_messages?:
+      | ValueTypes["chat_media_messages_bool_exp"]
       | undefined
       | null
       | Variable<any, string>;
@@ -1095,8 +2141,23 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    parent_client_generated_uuid?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     room?:
       | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    secure_transfer_transactions?:
+      | ValueTypes["secure_transfer_transactions_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    simple_transactions?:
+      | ValueTypes["simple_transactions_bool_exp"]
       | undefined
       | null
       | Variable<any, string>;
@@ -1120,6 +2181,16 @@ export type ValueTypes = {
   ["chats_constraint"]: chats_constraint;
   /** input type for inserting data into table "chats" */
   ["chats_insert_input"]: {
+    chat_barter_metadata?:
+      | ValueTypes["chat_barter_metadata_arr_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat_media_messages?:
+      | ValueTypes["chat_media_messages_arr_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
     client_generated_uuid?: string | undefined | null | Variable<any, string>;
     created_at?:
       | ValueTypes["timestamptz"]
@@ -1129,7 +2200,22 @@ export type ValueTypes = {
     id?: number | undefined | null | Variable<any, string>;
     message?: string | undefined | null | Variable<any, string>;
     message_kind?: string | undefined | null | Variable<any, string>;
+    parent_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
     room?: string | undefined | null | Variable<any, string>;
+    secure_transfer_transactions?:
+      | ValueTypes["secure_transfer_transactions_arr_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    simple_transactions?:
+      | ValueTypes["simple_transactions_arr_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
     type?: string | undefined | null | Variable<any, string>;
     username?: string | undefined | null | Variable<any, string>;
     uuid?: string | undefined | null | Variable<any, string>;
@@ -1142,6 +2228,16 @@ export type ValueTypes = {
     returning?: ValueTypes["chats"];
     __typename?: boolean | `@${string}`;
   }>;
+  /** input type for inserting object relation for remote table "chats" */
+  ["chats_obj_rel_insert_input"]: {
+    data: ValueTypes["chats_insert_input"] | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["chats_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
   /** on_conflict condition type for table "chats" */
   ["chats_on_conflict"]: {
     constraint: ValueTypes["chats_constraint"] | Variable<any, string>;
@@ -1156,6 +2252,16 @@ export type ValueTypes = {
   };
   /** Ordering options when selecting data from "chats". */
   ["chats_order_by"]: {
+    chat_barter_metadata_aggregate?:
+      | ValueTypes["chat_barter_metadata_aggregate_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat_media_messages_aggregate?:
+      | ValueTypes["chat_media_messages_aggregate_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     client_generated_uuid?:
       | ValueTypes["order_by"]
       | undefined
@@ -1173,7 +2279,22 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    parent_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     room?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    secure_transfer_transactions_aggregate?:
+      | ValueTypes["secure_transfer_transactions_aggregate_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    simple_transactions_aggregate?:
+      | ValueTypes["simple_transactions_aggregate_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     type?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     username?:
       | ValueTypes["order_by"]
@@ -1208,6 +2329,11 @@ export type ValueTypes = {
     id?: number | undefined | null | Variable<any, string>;
     message?: string | undefined | null | Variable<any, string>;
     message_kind?: string | undefined | null | Variable<any, string>;
+    parent_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
     room?: string | undefined | null | Variable<any, string>;
     type?: string | undefined | null | Variable<any, string>;
     username?: string | undefined | null | Variable<any, string>;
@@ -1219,6 +2345,103 @@ export type ValueTypes = {
   ["cursor_ordering"]: cursor_ordering;
   /** mutation root */
   ["mutation_root"]: AliasType<{
+    delete_room_active_chat_mapping?: [
+      {
+        /** filter the rows which have to be deleted */
+        where:
+          | ValueTypes["room_active_chat_mapping_bool_exp"]
+          | Variable<any, string>;
+      },
+      ValueTypes["room_active_chat_mapping_mutation_response"]
+    ];
+    delete_room_active_chat_mapping_by_pk?: [
+      { room_id: string | Variable<any, string> },
+      ValueTypes["room_active_chat_mapping"]
+    ];
+    insert_barters?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["barters_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["barters_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["barters_mutation_response"]
+    ];
+    insert_barters_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["barters_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["barters_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["barters"]
+    ];
+    insert_chat_barter_metadata?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["chat_barter_metadata_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["chat_barter_metadata_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_barter_metadata_mutation_response"]
+    ];
+    insert_chat_barter_metadata_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["chat_barter_metadata_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["chat_barter_metadata_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_barter_metadata"]
+    ];
+    insert_chat_media_messages?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["chat_media_messages_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["chat_media_messages_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages_mutation_response"]
+    ];
+    insert_chat_media_messages_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["chat_media_messages_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["chat_media_messages_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages"]
+    ];
     insert_chats?: [
       {
         /** the rows to be inserted */
@@ -1247,11 +2470,499 @@ export type ValueTypes = {
       },
       ValueTypes["chats"]
     ];
+    insert_room_active_chat_mapping?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["room_active_chat_mapping_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["room_active_chat_mapping_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["room_active_chat_mapping_mutation_response"]
+    ];
+    insert_room_active_chat_mapping_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["room_active_chat_mapping_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["room_active_chat_mapping_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["room_active_chat_mapping"]
+    ];
+    insert_secure_transfer_transactions?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["secure_transfer_transactions_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["secure_transfer_transactions_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions_mutation_response"]
+    ];
+    insert_secure_transfer_transactions_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["secure_transfer_transactions_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["secure_transfer_transactions_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions"]
+    ];
+    insert_simple_transactions?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["simple_transactions_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["simple_transactions_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["simple_transactions_mutation_response"]
+    ];
+    insert_simple_transactions_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["simple_transactions_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["simple_transactions_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["simple_transactions"]
+    ];
+    update_barters?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["barters_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["barters_set_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** filter the rows which have to be updated */;
+        where: ValueTypes["barters_bool_exp"] | Variable<any, string>;
+      },
+      ValueTypes["barters_mutation_response"]
+    ];
+    update_barters_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["barters_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["barters_set_input"]
+          | undefined
+          | null
+          | Variable<any, string>;
+        pk_columns:
+          | ValueTypes["barters_pk_columns_input"]
+          | Variable<any, string>;
+      },
+      ValueTypes["barters"]
+    ];
+    update_barters_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ValueTypes["barters_updates"]> | Variable<any, string>;
+      },
+      ValueTypes["barters_mutation_response"]
+    ];
+    update_chat_barter_metadata?: [
+      {
+        /** filter the rows which have to be updated */
+        where:
+          | ValueTypes["chat_barter_metadata_bool_exp"]
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_barter_metadata_mutation_response"]
+    ];
+    update_chat_barter_metadata_many?: [
+      {
+        /** updates to execute, in order */
+        updates:
+          | Array<ValueTypes["chat_barter_metadata_updates"]>
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_barter_metadata_mutation_response"]
+    ];
+    update_chat_media_messages?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["chat_media_messages_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["chat_media_messages_set_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** filter the rows which have to be updated */;
+        where:
+          | ValueTypes["chat_media_messages_bool_exp"]
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages_mutation_response"]
+    ];
+    update_chat_media_messages_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["chat_media_messages_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["chat_media_messages_set_input"]
+          | undefined
+          | null
+          | Variable<any, string>;
+        pk_columns:
+          | ValueTypes["chat_media_messages_pk_columns_input"]
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages"]
+    ];
+    update_chat_media_messages_many?: [
+      {
+        /** updates to execute, in order */
+        updates:
+          | Array<ValueTypes["chat_media_messages_updates"]>
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages_mutation_response"]
+    ];
+    update_room_active_chat_mapping?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["room_active_chat_mapping_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["room_active_chat_mapping_set_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** filter the rows which have to be updated */;
+        where:
+          | ValueTypes["room_active_chat_mapping_bool_exp"]
+          | Variable<any, string>;
+      },
+      ValueTypes["room_active_chat_mapping_mutation_response"]
+    ];
+    update_room_active_chat_mapping_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["room_active_chat_mapping_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["room_active_chat_mapping_set_input"]
+          | undefined
+          | null
+          | Variable<any, string>;
+        pk_columns:
+          | ValueTypes["room_active_chat_mapping_pk_columns_input"]
+          | Variable<any, string>;
+      },
+      ValueTypes["room_active_chat_mapping"]
+    ];
+    update_room_active_chat_mapping_many?: [
+      {
+        /** updates to execute, in order */
+        updates:
+          | Array<ValueTypes["room_active_chat_mapping_updates"]>
+          | Variable<any, string>;
+      },
+      ValueTypes["room_active_chat_mapping_mutation_response"]
+    ];
+    update_secure_transfer_transactions?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["secure_transfer_transactions_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["secure_transfer_transactions_set_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** filter the rows which have to be updated */;
+        where:
+          | ValueTypes["secure_transfer_transactions_bool_exp"]
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions_mutation_response"]
+    ];
+    update_secure_transfer_transactions_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["secure_transfer_transactions_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["secure_transfer_transactions_set_input"]
+          | undefined
+          | null
+          | Variable<any, string>;
+        pk_columns:
+          | ValueTypes["secure_transfer_transactions_pk_columns_input"]
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions"]
+    ];
+    update_secure_transfer_transactions_many?: [
+      {
+        /** updates to execute, in order */
+        updates:
+          | Array<ValueTypes["secure_transfer_transactions_updates"]>
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions_mutation_response"]
+    ];
+    update_simple_transactions?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["simple_transactions_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["simple_transactions_set_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** filter the rows which have to be updated */;
+        where:
+          | ValueTypes["simple_transactions_bool_exp"]
+          | Variable<any, string>;
+      },
+      ValueTypes["simple_transactions_mutation_response"]
+    ];
+    update_simple_transactions_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["simple_transactions_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["simple_transactions_set_input"]
+          | undefined
+          | null
+          | Variable<any, string>;
+        pk_columns:
+          | ValueTypes["simple_transactions_pk_columns_input"]
+          | Variable<any, string>;
+      },
+      ValueTypes["simple_transactions"]
+    ];
+    update_simple_transactions_many?: [
+      {
+        /** updates to execute, in order */
+        updates:
+          | Array<ValueTypes["simple_transactions_updates"]>
+          | Variable<any, string>;
+      },
+      ValueTypes["simple_transactions_mutation_response"]
+    ];
     __typename?: boolean | `@${string}`;
   }>;
   /** column ordering options */
   ["order_by"]: order_by;
   ["query_root"]: AliasType<{
+    barters?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["barters_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["barters_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["barters_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["barters"]
+    ];
+    barters_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["barters"]
+    ];
+    chat_barter_metadata?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["chat_barter_metadata_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["chat_barter_metadata_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["chat_barter_metadata_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_barter_metadata"]
+    ];
+    chat_media_messages?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["chat_media_messages_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["chat_media_messages_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["chat_media_messages_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages"]
+    ];
+    chat_media_messages_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["chat_media_messages"]
+    ];
     chats?: [
       {
         /** distinct select on columns */
@@ -1287,9 +2998,1306 @@ export type ValueTypes = {
       ValueTypes["chats"]
     ];
     chats_by_pk?: [{ id: number | Variable<any, string> }, ValueTypes["chats"]];
+    room_active_chat_mapping?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["room_active_chat_mapping_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["room_active_chat_mapping_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["room_active_chat_mapping_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["room_active_chat_mapping"]
+    ];
+    room_active_chat_mapping_by_pk?: [
+      { room_id: string | Variable<any, string> },
+      ValueTypes["room_active_chat_mapping"]
+    ];
+    secure_transfer_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["secure_transfer_transactions_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["secure_transfer_transactions_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["secure_transfer_transactions_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions"]
+    ];
+    secure_transfer_transactions_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["secure_transfer_transactions"]
+    ];
+    simple_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["simple_transactions_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["simple_transactions_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["simple_transactions_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["simple_transactions"]
+    ];
+    simple_transactions_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["simple_transactions"]
+    ];
     __typename?: boolean | `@${string}`;
   }>;
+  /** columns and relationships of "room_active_chat_mapping" */
+  ["room_active_chat_mapping"]: AliasType<{
+    /** An object relationship */
+    barter?: ValueTypes["barters"];
+    barter_id?: boolean | `@${string}`;
+    room_id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_aggregate_order_by"]: {
+    avg?:
+      | ValueTypes["room_active_chat_mapping_avg_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    count?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    max?:
+      | ValueTypes["room_active_chat_mapping_max_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    min?:
+      | ValueTypes["room_active_chat_mapping_min_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev?:
+      | ValueTypes["room_active_chat_mapping_stddev_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_pop?:
+      | ValueTypes["room_active_chat_mapping_stddev_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_samp?:
+      | ValueTypes["room_active_chat_mapping_stddev_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    sum?:
+      | ValueTypes["room_active_chat_mapping_sum_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_pop?:
+      | ValueTypes["room_active_chat_mapping_var_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_samp?:
+      | ValueTypes["room_active_chat_mapping_var_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    variance?:
+      | ValueTypes["room_active_chat_mapping_variance_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** input type for inserting array relation for remote table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_arr_rel_insert_input"]: {
+    data:
+      | Array<ValueTypes["room_active_chat_mapping_insert_input"]>
+      | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["room_active_chat_mapping_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by avg() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_avg_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Boolean expression to filter rows from the table "room_active_chat_mapping". All fields are combined with a logical 'AND'. */
+  ["room_active_chat_mapping_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["room_active_chat_mapping_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["room_active_chat_mapping_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["room_active_chat_mapping_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    barter?:
+      | ValueTypes["barters_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    barter_id?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    room_id?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_constraint"]: room_active_chat_mapping_constraint;
+  /** input type for incrementing numeric columns in table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_inc_input"]: {
+    barter_id?: number | undefined | null | Variable<any, string>;
+  };
+  /** input type for inserting data into table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_insert_input"]: {
+    barter?:
+      | ValueTypes["barters_obj_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    barter_id?: number | undefined | null | Variable<any, string>;
+    room_id?: string | undefined | null | Variable<any, string>;
+  };
+  /** order by max() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_max_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    room_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by min() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_min_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    room_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** response of any mutation on the table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["room_active_chat_mapping"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_on_conflict"]: {
+    constraint:
+      | ValueTypes["room_active_chat_mapping_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["room_active_chat_mapping_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["room_active_chat_mapping_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "room_active_chat_mapping". */
+  ["room_active_chat_mapping_order_by"]: {
+    barter?:
+      | ValueTypes["barters_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    room_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** primary key columns input for table: room_active_chat_mapping */
+  ["room_active_chat_mapping_pk_columns_input"]: {
+    room_id: string | Variable<any, string>;
+  };
+  /** select columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_select_column"]: room_active_chat_mapping_select_column;
+  /** input type for updating data in table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_set_input"]: {
+    barter_id?: number | undefined | null | Variable<any, string>;
+    room_id?: string | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_stddev_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by stddev_pop() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_stddev_pop_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by stddev_samp() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_stddev_samp_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["room_active_chat_mapping_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["room_active_chat_mapping_stream_cursor_value_input"]: {
+    barter_id?: number | undefined | null | Variable<any, string>;
+    room_id?: string | undefined | null | Variable<any, string>;
+  };
+  /** order by sum() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_sum_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** update columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_update_column"]: room_active_chat_mapping_update_column;
+  ["room_active_chat_mapping_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ValueTypes["room_active_chat_mapping_inc_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["room_active_chat_mapping_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    where:
+      | ValueTypes["room_active_chat_mapping_bool_exp"]
+      | Variable<any, string>;
+  };
+  /** order by var_pop() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_var_pop_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by var_samp() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_var_samp_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by variance() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_variance_order_by"]: {
+    barter_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** columns and relationships of "secure_transfer_transactions" */
+  ["secure_transfer_transactions"]: AliasType<{
+    /** An object relationship */
+    chat?: ValueTypes["chats"];
+    counter?: boolean | `@${string}`;
+    current_state?: boolean | `@${string}`;
+    escrow?: boolean | `@${string}`;
+    final_txn_signature?: boolean | `@${string}`;
+    from?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    message_client_generated_uuid?: boolean | `@${string}`;
+    message_id?: boolean | `@${string}`;
+    signature?: boolean | `@${string}`;
+    to?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_aggregate_order_by"]: {
+    avg?:
+      | ValueTypes["secure_transfer_transactions_avg_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    count?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    max?:
+      | ValueTypes["secure_transfer_transactions_max_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    min?:
+      | ValueTypes["secure_transfer_transactions_min_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev?:
+      | ValueTypes["secure_transfer_transactions_stddev_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_pop?:
+      | ValueTypes["secure_transfer_transactions_stddev_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_samp?:
+      | ValueTypes["secure_transfer_transactions_stddev_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    sum?:
+      | ValueTypes["secure_transfer_transactions_sum_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_pop?:
+      | ValueTypes["secure_transfer_transactions_var_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_samp?:
+      | ValueTypes["secure_transfer_transactions_var_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    variance?:
+      | ValueTypes["secure_transfer_transactions_variance_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** input type for inserting array relation for remote table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_arr_rel_insert_input"]: {
+    data:
+      | Array<ValueTypes["secure_transfer_transactions_insert_input"]>
+      | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["secure_transfer_transactions_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by avg() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_avg_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Boolean expression to filter rows from the table "secure_transfer_transactions". All fields are combined with a logical 'AND'. */
+  ["secure_transfer_transactions_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["secure_transfer_transactions_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["secure_transfer_transactions_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["secure_transfer_transactions_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat?:
+      | ValueTypes["chats_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    counter?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    current_state?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    escrow?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    final_txn_signature?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    from?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    message_client_generated_uuid?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    message_id?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    signature?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    to?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_constraint"]: secure_transfer_transactions_constraint;
+  /** input type for incrementing numeric columns in table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_inc_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+    message_id?: number | undefined | null | Variable<any, string>;
+  };
+  /** input type for inserting data into table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_insert_input"]: {
+    chat?:
+      | ValueTypes["chats_obj_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    counter?: string | undefined | null | Variable<any, string>;
+    current_state?: string | undefined | null | Variable<any, string>;
+    escrow?: string | undefined | null | Variable<any, string>;
+    final_txn_signature?: string | undefined | null | Variable<any, string>;
+    from?: string | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
+    message_id?: number | undefined | null | Variable<any, string>;
+    signature?: string | undefined | null | Variable<any, string>;
+    to?: string | undefined | null | Variable<any, string>;
+  };
+  /** order by max() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_max_order_by"]: {
+    counter?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    current_state?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    escrow?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    final_txn_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    from?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    to?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by min() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_min_order_by"]: {
+    counter?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    current_state?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    escrow?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    final_txn_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    from?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    to?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** response of any mutation on the table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["secure_transfer_transactions"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_on_conflict"]: {
+    constraint:
+      | ValueTypes["secure_transfer_transactions_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["secure_transfer_transactions_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["secure_transfer_transactions_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "secure_transfer_transactions". */
+  ["secure_transfer_transactions_order_by"]: {
+    chat?:
+      | ValueTypes["chats_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    counter?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    current_state?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    escrow?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    final_txn_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    from?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    to?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** primary key columns input for table: secure_transfer_transactions */
+  ["secure_transfer_transactions_pk_columns_input"]: {
+    id: number | Variable<any, string>;
+  };
+  /** select columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_select_column"]: secure_transfer_transactions_select_column;
+  /** input type for updating data in table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_set_input"]: {
+    counter?: string | undefined | null | Variable<any, string>;
+    current_state?: string | undefined | null | Variable<any, string>;
+    escrow?: string | undefined | null | Variable<any, string>;
+    final_txn_signature?: string | undefined | null | Variable<any, string>;
+    from?: string | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
+    message_id?: number | undefined | null | Variable<any, string>;
+    signature?: string | undefined | null | Variable<any, string>;
+    to?: string | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by stddev_pop() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_pop_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by stddev_samp() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_samp_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["secure_transfer_transactions_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["secure_transfer_transactions_stream_cursor_value_input"]: {
+    counter?: string | undefined | null | Variable<any, string>;
+    current_state?: string | undefined | null | Variable<any, string>;
+    escrow?: string | undefined | null | Variable<any, string>;
+    final_txn_signature?: string | undefined | null | Variable<any, string>;
+    from?: string | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
+    message_id?: number | undefined | null | Variable<any, string>;
+    signature?: string | undefined | null | Variable<any, string>;
+    to?: string | undefined | null | Variable<any, string>;
+  };
+  /** order by sum() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_sum_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** update columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_update_column"]: secure_transfer_transactions_update_column;
+  ["secure_transfer_transactions_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ValueTypes["secure_transfer_transactions_inc_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["secure_transfer_transactions_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    where:
+      | ValueTypes["secure_transfer_transactions_bool_exp"]
+      | Variable<any, string>;
+  };
+  /** order by var_pop() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_var_pop_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by var_samp() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_var_samp_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by variance() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_variance_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** columns and relationships of "simple_transactions" */
+  ["simple_transactions"]: AliasType<{
+    client_generated_uuid?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    txn_signature?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "simple_transactions" */
+  ["simple_transactions_aggregate_order_by"]: {
+    avg?:
+      | ValueTypes["simple_transactions_avg_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    count?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    max?:
+      | ValueTypes["simple_transactions_max_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    min?:
+      | ValueTypes["simple_transactions_min_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev?:
+      | ValueTypes["simple_transactions_stddev_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_pop?:
+      | ValueTypes["simple_transactions_stddev_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_samp?:
+      | ValueTypes["simple_transactions_stddev_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    sum?:
+      | ValueTypes["simple_transactions_sum_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_pop?:
+      | ValueTypes["simple_transactions_var_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_samp?:
+      | ValueTypes["simple_transactions_var_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    variance?:
+      | ValueTypes["simple_transactions_variance_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** input type for inserting array relation for remote table "simple_transactions" */
+  ["simple_transactions_arr_rel_insert_input"]: {
+    data:
+      | Array<ValueTypes["simple_transactions_insert_input"]>
+      | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["simple_transactions_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by avg() on columns of table "simple_transactions" */
+  ["simple_transactions_avg_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** Boolean expression to filter rows from the table "simple_transactions". All fields are combined with a logical 'AND'. */
+  ["simple_transactions_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["simple_transactions_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["simple_transactions_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["simple_transactions_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    client_generated_uuid?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    txn_signature?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "simple_transactions" */
+  ["simple_transactions_constraint"]: simple_transactions_constraint;
+  /** input type for incrementing numeric columns in table "simple_transactions" */
+  ["simple_transactions_inc_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+  };
+  /** input type for inserting data into table "simple_transactions" */
+  ["simple_transactions_insert_input"]: {
+    client_generated_uuid?: string | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    txn_signature?: string | undefined | null | Variable<any, string>;
+  };
+  /** order by max() on columns of table "simple_transactions" */
+  ["simple_transactions_max_order_by"]: {
+    client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    txn_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by min() on columns of table "simple_transactions" */
+  ["simple_transactions_min_order_by"]: {
+    client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    txn_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** response of any mutation on the table "simple_transactions" */
+  ["simple_transactions_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["simple_transactions"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "simple_transactions" */
+  ["simple_transactions_on_conflict"]: {
+    constraint:
+      | ValueTypes["simple_transactions_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["simple_transactions_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["simple_transactions_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "simple_transactions". */
+  ["simple_transactions_order_by"]: {
+    client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    txn_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** primary key columns input for table: simple_transactions */
+  ["simple_transactions_pk_columns_input"]: {
+    id: number | Variable<any, string>;
+  };
+  /** select columns of table "simple_transactions" */
+  ["simple_transactions_select_column"]: simple_transactions_select_column;
+  /** input type for updating data in table "simple_transactions" */
+  ["simple_transactions_set_input"]: {
+    client_generated_uuid?: string | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    txn_signature?: string | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev_pop() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_pop_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev_samp() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_samp_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "simple_transactions" */
+  ["simple_transactions_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["simple_transactions_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["simple_transactions_stream_cursor_value_input"]: {
+    client_generated_uuid?: string | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    txn_signature?: string | undefined | null | Variable<any, string>;
+  };
+  /** order by sum() on columns of table "simple_transactions" */
+  ["simple_transactions_sum_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** update columns of table "simple_transactions" */
+  ["simple_transactions_update_column"]: simple_transactions_update_column;
+  ["simple_transactions_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ValueTypes["simple_transactions_inc_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["simple_transactions_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    where: ValueTypes["simple_transactions_bool_exp"] | Variable<any, string>;
+  };
+  /** order by var_pop() on columns of table "simple_transactions" */
+  ["simple_transactions_var_pop_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by var_samp() on columns of table "simple_transactions" */
+  ["simple_transactions_var_samp_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by variance() on columns of table "simple_transactions" */
+  ["simple_transactions_variance_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
   ["subscription_root"]: AliasType<{
+    barters?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["barters_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["barters_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["barters_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["barters"]
+    ];
+    barters_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["barters"]
+    ];
+    barters_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<ValueTypes["barters_stream_cursor_input"] | undefined | null>
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["barters_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["barters"]
+    ];
+    chat_barter_metadata?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["chat_barter_metadata_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["chat_barter_metadata_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["chat_barter_metadata_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_barter_metadata"]
+    ];
+    chat_barter_metadata_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["chat_barter_metadata_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["chat_barter_metadata_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_barter_metadata"]
+    ];
+    chat_media_messages?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["chat_media_messages_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["chat_media_messages_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["chat_media_messages_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages"]
+    ];
+    chat_media_messages_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["chat_media_messages"]
+    ];
+    chat_media_messages_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["chat_media_messages_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["chat_media_messages_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages"]
+    ];
     chats?: [
       {
         /** distinct select on columns */
@@ -1344,6 +4352,192 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["chats"]
+    ];
+    room_active_chat_mapping?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["room_active_chat_mapping_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["room_active_chat_mapping_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["room_active_chat_mapping_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["room_active_chat_mapping"]
+    ];
+    room_active_chat_mapping_by_pk?: [
+      { room_id: string | Variable<any, string> },
+      ValueTypes["room_active_chat_mapping"]
+    ];
+    room_active_chat_mapping_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["room_active_chat_mapping_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["room_active_chat_mapping_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["room_active_chat_mapping"]
+    ];
+    secure_transfer_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["secure_transfer_transactions_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["secure_transfer_transactions_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["secure_transfer_transactions_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions"]
+    ];
+    secure_transfer_transactions_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["secure_transfer_transactions"]
+    ];
+    secure_transfer_transactions_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["secure_transfer_transactions_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["secure_transfer_transactions_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions"]
+    ];
+    simple_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["simple_transactions_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["simple_transactions_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["simple_transactions_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["simple_transactions"]
+    ];
+    simple_transactions_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["simple_transactions"]
+    ];
+    simple_transactions_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["simple_transactions_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["simple_transactions_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["simple_transactions"]
     ];
     __typename?: boolean | `@${string}`;
   }>;
@@ -1415,14 +4609,729 @@ export type ResolverInputTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined | null;
   };
+  /** columns and relationships of "barters" */
+  ["barters"]: AliasType<{
+    chat_barter_metadata?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["chat_barter_metadata_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["chat_barter_metadata_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["chat_barter_metadata_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_barter_metadata"]
+    ];
+    id?: boolean | `@${string}`;
+    on_chain_state?: boolean | `@${string}`;
+    room_active_chat_mappings?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["room_active_chat_mapping_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["room_active_chat_mapping_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["room_active_chat_mapping_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["room_active_chat_mapping"]
+    ];
+    room_id?: boolean | `@${string}`;
+    state?: boolean | `@${string}`;
+    user1_offers?: boolean | `@${string}`;
+    user2_offers?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "barters". All fields are combined with a logical 'AND'. */
+  ["barters_bool_exp"]: {
+    _and?: Array<ResolverInputTypes["barters_bool_exp"]> | undefined | null;
+    _not?: ResolverInputTypes["barters_bool_exp"] | undefined | null;
+    _or?: Array<ResolverInputTypes["barters_bool_exp"]> | undefined | null;
+    chat_barter_metadata?:
+      | ResolverInputTypes["chat_barter_metadata_bool_exp"]
+      | undefined
+      | null;
+    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    on_chain_state?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    room_active_chat_mappings?:
+      | ResolverInputTypes["room_active_chat_mapping_bool_exp"]
+      | undefined
+      | null;
+    room_id?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    state?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    user1_offers?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    user2_offers?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+  };
+  /** unique or primary key constraints on table "barters" */
+  ["barters_constraint"]: barters_constraint;
+  /** input type for incrementing numeric columns in table "barters" */
+  ["barters_inc_input"]: {
+    id?: number | undefined | null;
+  };
+  /** input type for inserting data into table "barters" */
+  ["barters_insert_input"]: {
+    chat_barter_metadata?:
+      | ResolverInputTypes["chat_barter_metadata_arr_rel_insert_input"]
+      | undefined
+      | null;
+    id?: number | undefined | null;
+    on_chain_state?: string | undefined | null;
+    room_active_chat_mappings?:
+      | ResolverInputTypes["room_active_chat_mapping_arr_rel_insert_input"]
+      | undefined
+      | null;
+    room_id?: string | undefined | null;
+    state?: string | undefined | null;
+    user1_offers?: string | undefined | null;
+    user2_offers?: string | undefined | null;
+  };
+  /** response of any mutation on the table "barters" */
+  ["barters_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["barters"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** input type for inserting object relation for remote table "barters" */
+  ["barters_obj_rel_insert_input"]: {
+    data: ResolverInputTypes["barters_insert_input"];
+    /** upsert condition */
+    on_conflict?: ResolverInputTypes["barters_on_conflict"] | undefined | null;
+  };
+  /** on_conflict condition type for table "barters" */
+  ["barters_on_conflict"]: {
+    constraint: ResolverInputTypes["barters_constraint"];
+    update_columns: Array<ResolverInputTypes["barters_update_column"]>;
+    where?: ResolverInputTypes["barters_bool_exp"] | undefined | null;
+  };
+  /** Ordering options when selecting data from "barters". */
+  ["barters_order_by"]: {
+    chat_barter_metadata_aggregate?:
+      | ResolverInputTypes["chat_barter_metadata_aggregate_order_by"]
+      | undefined
+      | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    on_chain_state?: ResolverInputTypes["order_by"] | undefined | null;
+    room_active_chat_mappings_aggregate?:
+      | ResolverInputTypes["room_active_chat_mapping_aggregate_order_by"]
+      | undefined
+      | null;
+    room_id?: ResolverInputTypes["order_by"] | undefined | null;
+    state?: ResolverInputTypes["order_by"] | undefined | null;
+    user1_offers?: ResolverInputTypes["order_by"] | undefined | null;
+    user2_offers?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** primary key columns input for table: barters */
+  ["barters_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "barters" */
+  ["barters_select_column"]: barters_select_column;
+  /** input type for updating data in table "barters" */
+  ["barters_set_input"]: {
+    id?: number | undefined | null;
+    on_chain_state?: string | undefined | null;
+    room_id?: string | undefined | null;
+    state?: string | undefined | null;
+    user1_offers?: string | undefined | null;
+    user2_offers?: string | undefined | null;
+  };
+  /** Streaming cursor of the table "barters" */
+  ["barters_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["barters_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["barters_stream_cursor_value_input"]: {
+    id?: number | undefined | null;
+    on_chain_state?: string | undefined | null;
+    room_id?: string | undefined | null;
+    state?: string | undefined | null;
+    user1_offers?: string | undefined | null;
+    user2_offers?: string | undefined | null;
+  };
+  /** update columns of table "barters" */
+  ["barters_update_column"]: barters_update_column;
+  ["barters_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ResolverInputTypes["barters_inc_input"] | undefined | null;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ResolverInputTypes["barters_set_input"] | undefined | null;
+    where: ResolverInputTypes["barters_bool_exp"];
+  };
+  /** columns and relationships of "chat_barter_metadata" */
+  ["chat_barter_metadata"]: AliasType<{
+    /** An object relationship */
+    barter?: ResolverInputTypes["barters"];
+    barter_id?: boolean | `@${string}`;
+    /** An object relationship */
+    chat?: ResolverInputTypes["chats"];
+    chat_client_generated_uuid?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "chat_barter_metadata" */
+  ["chat_barter_metadata_aggregate_order_by"]: {
+    avg?:
+      | ResolverInputTypes["chat_barter_metadata_avg_order_by"]
+      | undefined
+      | null;
+    count?: ResolverInputTypes["order_by"] | undefined | null;
+    max?:
+      | ResolverInputTypes["chat_barter_metadata_max_order_by"]
+      | undefined
+      | null;
+    min?:
+      | ResolverInputTypes["chat_barter_metadata_min_order_by"]
+      | undefined
+      | null;
+    stddev?:
+      | ResolverInputTypes["chat_barter_metadata_stddev_order_by"]
+      | undefined
+      | null;
+    stddev_pop?:
+      | ResolverInputTypes["chat_barter_metadata_stddev_pop_order_by"]
+      | undefined
+      | null;
+    stddev_samp?:
+      | ResolverInputTypes["chat_barter_metadata_stddev_samp_order_by"]
+      | undefined
+      | null;
+    sum?:
+      | ResolverInputTypes["chat_barter_metadata_sum_order_by"]
+      | undefined
+      | null;
+    var_pop?:
+      | ResolverInputTypes["chat_barter_metadata_var_pop_order_by"]
+      | undefined
+      | null;
+    var_samp?:
+      | ResolverInputTypes["chat_barter_metadata_var_samp_order_by"]
+      | undefined
+      | null;
+    variance?:
+      | ResolverInputTypes["chat_barter_metadata_variance_order_by"]
+      | undefined
+      | null;
+  };
+  /** input type for inserting array relation for remote table "chat_barter_metadata" */
+  ["chat_barter_metadata_arr_rel_insert_input"]: {
+    data: Array<ResolverInputTypes["chat_barter_metadata_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["chat_barter_metadata_on_conflict"]
+      | undefined
+      | null;
+  };
+  /** order by avg() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_avg_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Boolean expression to filter rows from the table "chat_barter_metadata". All fields are combined with a logical 'AND'. */
+  ["chat_barter_metadata_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["chat_barter_metadata_bool_exp"]>
+      | undefined
+      | null;
+    _not?:
+      | ResolverInputTypes["chat_barter_metadata_bool_exp"]
+      | undefined
+      | null;
+    _or?:
+      | Array<ResolverInputTypes["chat_barter_metadata_bool_exp"]>
+      | undefined
+      | null;
+    barter?: ResolverInputTypes["barters_bool_exp"] | undefined | null;
+    barter_id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    chat?: ResolverInputTypes["chats_bool_exp"] | undefined | null;
+    chat_client_generated_uuid?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+  };
+  /** unique or primary key constraints on table "chat_barter_metadata" */
+  ["chat_barter_metadata_constraint"]: chat_barter_metadata_constraint;
+  /** input type for inserting data into table "chat_barter_metadata" */
+  ["chat_barter_metadata_insert_input"]: {
+    barter?:
+      | ResolverInputTypes["barters_obj_rel_insert_input"]
+      | undefined
+      | null;
+    barter_id?: number | undefined | null;
+    chat?: ResolverInputTypes["chats_obj_rel_insert_input"] | undefined | null;
+    chat_client_generated_uuid?: string | undefined | null;
+  };
+  /** order by max() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_max_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+    chat_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
+  };
+  /** order by min() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_min_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+    chat_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
+  };
+  /** response of any mutation on the table "chat_barter_metadata" */
+  ["chat_barter_metadata_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["chat_barter_metadata"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "chat_barter_metadata" */
+  ["chat_barter_metadata_on_conflict"]: {
+    constraint: ResolverInputTypes["chat_barter_metadata_constraint"];
+    update_columns: Array<
+      ResolverInputTypes["chat_barter_metadata_update_column"]
+    >;
+    where?:
+      | ResolverInputTypes["chat_barter_metadata_bool_exp"]
+      | undefined
+      | null;
+  };
+  /** Ordering options when selecting data from "chat_barter_metadata". */
+  ["chat_barter_metadata_order_by"]: {
+    barter?: ResolverInputTypes["barters_order_by"] | undefined | null;
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+    chat?: ResolverInputTypes["chats_order_by"] | undefined | null;
+    chat_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
+  };
+  /** select columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_select_column"]: chat_barter_metadata_select_column;
+  /** order by stddev() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_stddev_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_pop() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_stddev_pop_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_samp() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_stddev_samp_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Streaming cursor of the table "chat_barter_metadata" */
+  ["chat_barter_metadata_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["chat_barter_metadata_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["chat_barter_metadata_stream_cursor_value_input"]: {
+    barter_id?: number | undefined | null;
+    chat_client_generated_uuid?: string | undefined | null;
+  };
+  /** order by sum() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_sum_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** placeholder for update columns of table "chat_barter_metadata" (current role has no relevant permissions) */
+  ["chat_barter_metadata_update_column"]: chat_barter_metadata_update_column;
+  ["chat_barter_metadata_updates"]: {
+    where: ResolverInputTypes["chat_barter_metadata_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_var_pop_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by var_samp() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_var_samp_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by variance() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_variance_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** columns and relationships of "chat_media_messages" */
+  ["chat_media_messages"]: AliasType<{
+    /** An object relationship */
+    chat?: ResolverInputTypes["chats"];
+    id?: boolean | `@${string}`;
+    media_kind?: boolean | `@${string}`;
+    media_link?: boolean | `@${string}`;
+    message_client_generated_uuid?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "chat_media_messages" */
+  ["chat_media_messages_aggregate_order_by"]: {
+    avg?:
+      | ResolverInputTypes["chat_media_messages_avg_order_by"]
+      | undefined
+      | null;
+    count?: ResolverInputTypes["order_by"] | undefined | null;
+    max?:
+      | ResolverInputTypes["chat_media_messages_max_order_by"]
+      | undefined
+      | null;
+    min?:
+      | ResolverInputTypes["chat_media_messages_min_order_by"]
+      | undefined
+      | null;
+    stddev?:
+      | ResolverInputTypes["chat_media_messages_stddev_order_by"]
+      | undefined
+      | null;
+    stddev_pop?:
+      | ResolverInputTypes["chat_media_messages_stddev_pop_order_by"]
+      | undefined
+      | null;
+    stddev_samp?:
+      | ResolverInputTypes["chat_media_messages_stddev_samp_order_by"]
+      | undefined
+      | null;
+    sum?:
+      | ResolverInputTypes["chat_media_messages_sum_order_by"]
+      | undefined
+      | null;
+    var_pop?:
+      | ResolverInputTypes["chat_media_messages_var_pop_order_by"]
+      | undefined
+      | null;
+    var_samp?:
+      | ResolverInputTypes["chat_media_messages_var_samp_order_by"]
+      | undefined
+      | null;
+    variance?:
+      | ResolverInputTypes["chat_media_messages_variance_order_by"]
+      | undefined
+      | null;
+  };
+  /** input type for inserting array relation for remote table "chat_media_messages" */
+  ["chat_media_messages_arr_rel_insert_input"]: {
+    data: Array<ResolverInputTypes["chat_media_messages_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["chat_media_messages_on_conflict"]
+      | undefined
+      | null;
+  };
+  /** order by avg() on columns of table "chat_media_messages" */
+  ["chat_media_messages_avg_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Boolean expression to filter rows from the table "chat_media_messages". All fields are combined with a logical 'AND'. */
+  ["chat_media_messages_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["chat_media_messages_bool_exp"]>
+      | undefined
+      | null;
+    _not?:
+      | ResolverInputTypes["chat_media_messages_bool_exp"]
+      | undefined
+      | null;
+    _or?:
+      | Array<ResolverInputTypes["chat_media_messages_bool_exp"]>
+      | undefined
+      | null;
+    chat?: ResolverInputTypes["chats_bool_exp"] | undefined | null;
+    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    media_kind?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    media_link?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    message_client_generated_uuid?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+  };
+  /** unique or primary key constraints on table "chat_media_messages" */
+  ["chat_media_messages_constraint"]: chat_media_messages_constraint;
+  /** input type for incrementing numeric columns in table "chat_media_messages" */
+  ["chat_media_messages_inc_input"]: {
+    id?: number | undefined | null;
+  };
+  /** input type for inserting data into table "chat_media_messages" */
+  ["chat_media_messages_insert_input"]: {
+    chat?: ResolverInputTypes["chats_obj_rel_insert_input"] | undefined | null;
+    id?: number | undefined | null;
+    media_kind?: string | undefined | null;
+    media_link?: string | undefined | null;
+    message_client_generated_uuid?: string | undefined | null;
+  };
+  /** order by max() on columns of table "chat_media_messages" */
+  ["chat_media_messages_max_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    media_kind?: ResolverInputTypes["order_by"] | undefined | null;
+    media_link?: ResolverInputTypes["order_by"] | undefined | null;
+    message_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
+  };
+  /** order by min() on columns of table "chat_media_messages" */
+  ["chat_media_messages_min_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    media_kind?: ResolverInputTypes["order_by"] | undefined | null;
+    media_link?: ResolverInputTypes["order_by"] | undefined | null;
+    message_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
+  };
+  /** response of any mutation on the table "chat_media_messages" */
+  ["chat_media_messages_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["chat_media_messages"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "chat_media_messages" */
+  ["chat_media_messages_on_conflict"]: {
+    constraint: ResolverInputTypes["chat_media_messages_constraint"];
+    update_columns: Array<
+      ResolverInputTypes["chat_media_messages_update_column"]
+    >;
+    where?:
+      | ResolverInputTypes["chat_media_messages_bool_exp"]
+      | undefined
+      | null;
+  };
+  /** Ordering options when selecting data from "chat_media_messages". */
+  ["chat_media_messages_order_by"]: {
+    chat?: ResolverInputTypes["chats_order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    media_kind?: ResolverInputTypes["order_by"] | undefined | null;
+    media_link?: ResolverInputTypes["order_by"] | undefined | null;
+    message_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
+  };
+  /** primary key columns input for table: chat_media_messages */
+  ["chat_media_messages_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "chat_media_messages" */
+  ["chat_media_messages_select_column"]: chat_media_messages_select_column;
+  /** input type for updating data in table "chat_media_messages" */
+  ["chat_media_messages_set_input"]: {
+    id?: number | undefined | null;
+    media_kind?: string | undefined | null;
+    media_link?: string | undefined | null;
+    message_client_generated_uuid?: string | undefined | null;
+  };
+  /** order by stddev() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_pop() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_pop_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_samp() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_samp_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Streaming cursor of the table "chat_media_messages" */
+  ["chat_media_messages_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["chat_media_messages_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["chat_media_messages_stream_cursor_value_input"]: {
+    id?: number | undefined | null;
+    media_kind?: string | undefined | null;
+    media_link?: string | undefined | null;
+    message_client_generated_uuid?: string | undefined | null;
+  };
+  /** order by sum() on columns of table "chat_media_messages" */
+  ["chat_media_messages_sum_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** update columns of table "chat_media_messages" */
+  ["chat_media_messages_update_column"]: chat_media_messages_update_column;
+  ["chat_media_messages_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ResolverInputTypes["chat_media_messages_inc_input"]
+      | undefined
+      | null;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ResolverInputTypes["chat_media_messages_set_input"]
+      | undefined
+      | null;
+    where: ResolverInputTypes["chat_media_messages_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "chat_media_messages" */
+  ["chat_media_messages_var_pop_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by var_samp() on columns of table "chat_media_messages" */
+  ["chat_media_messages_var_samp_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by variance() on columns of table "chat_media_messages" */
+  ["chat_media_messages_variance_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
   /** columns and relationships of "chats" */
   ["chats"]: AliasType<{
+    chat_barter_metadata?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["chat_barter_metadata_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["chat_barter_metadata_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["chat_barter_metadata_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_barter_metadata"]
+    ];
+    chat_media_messages?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["chat_media_messages_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["chat_media_messages_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["chat_media_messages_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_media_messages"]
+    ];
     client_generated_uuid?: boolean | `@${string}`;
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     message?: boolean | `@${string}`;
     message_kind?: boolean | `@${string}`;
+    parent_client_generated_uuid?: boolean | `@${string}`;
     room?: boolean | `@${string}`;
+    secure_transfer_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<
+              ResolverInputTypes["secure_transfer_transactions_select_column"]
+            >
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["secure_transfer_transactions_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["secure_transfer_transactions_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["secure_transfer_transactions"]
+    ];
+    simple_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["simple_transactions_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["simple_transactions_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["simple_transactions_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["simple_transactions"]
+    ];
     type?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     uuid?: boolean | `@${string}`;
@@ -1433,6 +5342,14 @@ export type ResolverInputTypes = {
     _and?: Array<ResolverInputTypes["chats_bool_exp"]> | undefined | null;
     _not?: ResolverInputTypes["chats_bool_exp"] | undefined | null;
     _or?: Array<ResolverInputTypes["chats_bool_exp"]> | undefined | null;
+    chat_barter_metadata?:
+      | ResolverInputTypes["chat_barter_metadata_bool_exp"]
+      | undefined
+      | null;
+    chat_media_messages?:
+      | ResolverInputTypes["chat_media_messages_bool_exp"]
+      | undefined
+      | null;
     client_generated_uuid?:
       | ResolverInputTypes["String_comparison_exp"]
       | undefined
@@ -1447,7 +5364,19 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["String_comparison_exp"]
       | undefined
       | null;
+    parent_client_generated_uuid?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
     room?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    secure_transfer_transactions?:
+      | ResolverInputTypes["secure_transfer_transactions_bool_exp"]
+      | undefined
+      | null;
+    simple_transactions?:
+      | ResolverInputTypes["simple_transactions_bool_exp"]
+      | undefined
+      | null;
     type?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     username?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     uuid?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
@@ -1456,12 +5385,29 @@ export type ResolverInputTypes = {
   ["chats_constraint"]: chats_constraint;
   /** input type for inserting data into table "chats" */
   ["chats_insert_input"]: {
+    chat_barter_metadata?:
+      | ResolverInputTypes["chat_barter_metadata_arr_rel_insert_input"]
+      | undefined
+      | null;
+    chat_media_messages?:
+      | ResolverInputTypes["chat_media_messages_arr_rel_insert_input"]
+      | undefined
+      | null;
     client_generated_uuid?: string | undefined | null;
     created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     id?: number | undefined | null;
     message?: string | undefined | null;
     message_kind?: string | undefined | null;
+    parent_client_generated_uuid?: string | undefined | null;
     room?: string | undefined | null;
+    secure_transfer_transactions?:
+      | ResolverInputTypes["secure_transfer_transactions_arr_rel_insert_input"]
+      | undefined
+      | null;
+    simple_transactions?:
+      | ResolverInputTypes["simple_transactions_arr_rel_insert_input"]
+      | undefined
+      | null;
     type?: string | undefined | null;
     username?: string | undefined | null;
     uuid?: string | undefined | null;
@@ -1474,6 +5420,12 @@ export type ResolverInputTypes = {
     returning?: ResolverInputTypes["chats"];
     __typename?: boolean | `@${string}`;
   }>;
+  /** input type for inserting object relation for remote table "chats" */
+  ["chats_obj_rel_insert_input"]: {
+    data: ResolverInputTypes["chats_insert_input"];
+    /** upsert condition */
+    on_conflict?: ResolverInputTypes["chats_on_conflict"] | undefined | null;
+  };
   /** on_conflict condition type for table "chats" */
   ["chats_on_conflict"]: {
     constraint: ResolverInputTypes["chats_constraint"];
@@ -1482,12 +5434,32 @@ export type ResolverInputTypes = {
   };
   /** Ordering options when selecting data from "chats". */
   ["chats_order_by"]: {
+    chat_barter_metadata_aggregate?:
+      | ResolverInputTypes["chat_barter_metadata_aggregate_order_by"]
+      | undefined
+      | null;
+    chat_media_messages_aggregate?:
+      | ResolverInputTypes["chat_media_messages_aggregate_order_by"]
+      | undefined
+      | null;
     client_generated_uuid?: ResolverInputTypes["order_by"] | undefined | null;
     created_at?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     message?: ResolverInputTypes["order_by"] | undefined | null;
     message_kind?: ResolverInputTypes["order_by"] | undefined | null;
+    parent_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
     room?: ResolverInputTypes["order_by"] | undefined | null;
+    secure_transfer_transactions_aggregate?:
+      | ResolverInputTypes["secure_transfer_transactions_aggregate_order_by"]
+      | undefined
+      | null;
+    simple_transactions_aggregate?:
+      | ResolverInputTypes["simple_transactions_aggregate_order_by"]
+      | undefined
+      | null;
     type?: ResolverInputTypes["order_by"] | undefined | null;
     username?: ResolverInputTypes["order_by"] | undefined | null;
     uuid?: ResolverInputTypes["order_by"] | undefined | null;
@@ -1508,6 +5480,7 @@ export type ResolverInputTypes = {
     id?: number | undefined | null;
     message?: string | undefined | null;
     message_kind?: string | undefined | null;
+    parent_client_generated_uuid?: string | undefined | null;
     room?: string | undefined | null;
     type?: string | undefined | null;
     username?: string | undefined | null;
@@ -1519,6 +5492,89 @@ export type ResolverInputTypes = {
   ["cursor_ordering"]: cursor_ordering;
   /** mutation root */
   ["mutation_root"]: AliasType<{
+    delete_room_active_chat_mapping?: [
+      {
+        /** filter the rows which have to be deleted */
+        where: ResolverInputTypes["room_active_chat_mapping_bool_exp"];
+      },
+      ResolverInputTypes["room_active_chat_mapping_mutation_response"]
+    ];
+    delete_room_active_chat_mapping_by_pk?: [
+      { room_id: string },
+      ResolverInputTypes["room_active_chat_mapping"]
+    ];
+    insert_barters?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["barters_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["barters_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["barters_mutation_response"]
+    ];
+    insert_barters_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["barters_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["barters_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["barters"]
+    ];
+    insert_chat_barter_metadata?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["chat_barter_metadata_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["chat_barter_metadata_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_barter_metadata_mutation_response"]
+    ];
+    insert_chat_barter_metadata_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["chat_barter_metadata_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["chat_barter_metadata_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_barter_metadata"]
+    ];
+    insert_chat_media_messages?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["chat_media_messages_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["chat_media_messages_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_media_messages_mutation_response"]
+    ];
+    insert_chat_media_messages_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["chat_media_messages_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["chat_media_messages_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_media_messages"]
+    ];
     insert_chats?: [
       {
         /** the rows to be inserted */
@@ -1543,11 +5599,361 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["chats"]
     ];
+    insert_room_active_chat_mapping?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["room_active_chat_mapping_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["room_active_chat_mapping_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["room_active_chat_mapping_mutation_response"]
+    ];
+    insert_room_active_chat_mapping_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["room_active_chat_mapping_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["room_active_chat_mapping_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["room_active_chat_mapping"]
+    ];
+    insert_secure_transfer_transactions?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["secure_transfer_transactions_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["secure_transfer_transactions_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["secure_transfer_transactions_mutation_response"]
+    ];
+    insert_secure_transfer_transactions_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["secure_transfer_transactions_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["secure_transfer_transactions_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["secure_transfer_transactions"]
+    ];
+    insert_simple_transactions?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["simple_transactions_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["simple_transactions_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["simple_transactions_mutation_response"]
+    ];
+    insert_simple_transactions_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["simple_transactions_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["simple_transactions_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["simple_transactions"]
+    ];
+    update_barters?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["barters_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["barters_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
+        where: ResolverInputTypes["barters_bool_exp"];
+      },
+      ResolverInputTypes["barters_mutation_response"]
+    ];
+    update_barters_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["barters_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?: ResolverInputTypes["barters_set_input"] | undefined | null;
+        pk_columns: ResolverInputTypes["barters_pk_columns_input"];
+      },
+      ResolverInputTypes["barters"]
+    ];
+    update_barters_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ResolverInputTypes["barters_updates"]>;
+      },
+      ResolverInputTypes["barters_mutation_response"]
+    ];
+    update_chat_barter_metadata?: [
+      {
+        /** filter the rows which have to be updated */
+        where: ResolverInputTypes["chat_barter_metadata_bool_exp"];
+      },
+      ResolverInputTypes["chat_barter_metadata_mutation_response"]
+    ];
+    update_chat_barter_metadata_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ResolverInputTypes["chat_barter_metadata_updates"]>;
+      },
+      ResolverInputTypes["chat_barter_metadata_mutation_response"]
+    ];
+    update_chat_media_messages?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["chat_media_messages_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["chat_media_messages_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
+        where: ResolverInputTypes["chat_media_messages_bool_exp"];
+      },
+      ResolverInputTypes["chat_media_messages_mutation_response"]
+    ];
+    update_chat_media_messages_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["chat_media_messages_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["chat_media_messages_set_input"]
+          | undefined
+          | null;
+        pk_columns: ResolverInputTypes["chat_media_messages_pk_columns_input"];
+      },
+      ResolverInputTypes["chat_media_messages"]
+    ];
+    update_chat_media_messages_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ResolverInputTypes["chat_media_messages_updates"]>;
+      },
+      ResolverInputTypes["chat_media_messages_mutation_response"]
+    ];
+    update_room_active_chat_mapping?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["room_active_chat_mapping_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["room_active_chat_mapping_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
+        where: ResolverInputTypes["room_active_chat_mapping_bool_exp"];
+      },
+      ResolverInputTypes["room_active_chat_mapping_mutation_response"]
+    ];
+    update_room_active_chat_mapping_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["room_active_chat_mapping_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["room_active_chat_mapping_set_input"]
+          | undefined
+          | null;
+        pk_columns: ResolverInputTypes["room_active_chat_mapping_pk_columns_input"];
+      },
+      ResolverInputTypes["room_active_chat_mapping"]
+    ];
+    update_room_active_chat_mapping_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ResolverInputTypes["room_active_chat_mapping_updates"]>;
+      },
+      ResolverInputTypes["room_active_chat_mapping_mutation_response"]
+    ];
+    update_secure_transfer_transactions?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["secure_transfer_transactions_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["secure_transfer_transactions_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
+        where: ResolverInputTypes["secure_transfer_transactions_bool_exp"];
+      },
+      ResolverInputTypes["secure_transfer_transactions_mutation_response"]
+    ];
+    update_secure_transfer_transactions_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["secure_transfer_transactions_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["secure_transfer_transactions_set_input"]
+          | undefined
+          | null;
+        pk_columns: ResolverInputTypes["secure_transfer_transactions_pk_columns_input"];
+      },
+      ResolverInputTypes["secure_transfer_transactions"]
+    ];
+    update_secure_transfer_transactions_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<
+          ResolverInputTypes["secure_transfer_transactions_updates"]
+        >;
+      },
+      ResolverInputTypes["secure_transfer_transactions_mutation_response"]
+    ];
+    update_simple_transactions?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["simple_transactions_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["simple_transactions_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
+        where: ResolverInputTypes["simple_transactions_bool_exp"];
+      },
+      ResolverInputTypes["simple_transactions_mutation_response"]
+    ];
+    update_simple_transactions_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["simple_transactions_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["simple_transactions_set_input"]
+          | undefined
+          | null;
+        pk_columns: ResolverInputTypes["simple_transactions_pk_columns_input"];
+      },
+      ResolverInputTypes["simple_transactions"]
+    ];
+    update_simple_transactions_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ResolverInputTypes["simple_transactions_updates"]>;
+      },
+      ResolverInputTypes["simple_transactions_mutation_response"]
+    ];
     __typename?: boolean | `@${string}`;
   }>;
   /** column ordering options */
   ["order_by"]: order_by;
   ["query_root"]: AliasType<{
+    barters?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["barters_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["barters_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?: ResolverInputTypes["barters_bool_exp"] | undefined | null;
+      },
+      ResolverInputTypes["barters"]
+    ];
+    barters_by_pk?: [{ id: number }, ResolverInputTypes["barters"]];
+    chat_barter_metadata?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["chat_barter_metadata_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["chat_barter_metadata_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["chat_barter_metadata_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_barter_metadata"]
+    ];
+    chat_media_messages?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["chat_media_messages_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["chat_media_messages_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["chat_media_messages_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_media_messages"]
+    ];
+    chat_media_messages_by_pk?: [
+      { id: number },
+      ResolverInputTypes["chat_media_messages"]
+    ];
     chats?: [
       {
         /** distinct select on columns */
@@ -1572,9 +5978,917 @@ export type ResolverInputTypes = {
       ResolverInputTypes["chats"]
     ];
     chats_by_pk?: [{ id: number }, ResolverInputTypes["chats"]];
+    room_active_chat_mapping?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["room_active_chat_mapping_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["room_active_chat_mapping_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["room_active_chat_mapping_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["room_active_chat_mapping"]
+    ];
+    room_active_chat_mapping_by_pk?: [
+      { room_id: string },
+      ResolverInputTypes["room_active_chat_mapping"]
+    ];
+    secure_transfer_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<
+              ResolverInputTypes["secure_transfer_transactions_select_column"]
+            >
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["secure_transfer_transactions_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["secure_transfer_transactions_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["secure_transfer_transactions"]
+    ];
+    secure_transfer_transactions_by_pk?: [
+      { id: number },
+      ResolverInputTypes["secure_transfer_transactions"]
+    ];
+    simple_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["simple_transactions_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["simple_transactions_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["simple_transactions_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["simple_transactions"]
+    ];
+    simple_transactions_by_pk?: [
+      { id: number },
+      ResolverInputTypes["simple_transactions"]
+    ];
     __typename?: boolean | `@${string}`;
   }>;
+  /** columns and relationships of "room_active_chat_mapping" */
+  ["room_active_chat_mapping"]: AliasType<{
+    /** An object relationship */
+    barter?: ResolverInputTypes["barters"];
+    barter_id?: boolean | `@${string}`;
+    room_id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_aggregate_order_by"]: {
+    avg?:
+      | ResolverInputTypes["room_active_chat_mapping_avg_order_by"]
+      | undefined
+      | null;
+    count?: ResolverInputTypes["order_by"] | undefined | null;
+    max?:
+      | ResolverInputTypes["room_active_chat_mapping_max_order_by"]
+      | undefined
+      | null;
+    min?:
+      | ResolverInputTypes["room_active_chat_mapping_min_order_by"]
+      | undefined
+      | null;
+    stddev?:
+      | ResolverInputTypes["room_active_chat_mapping_stddev_order_by"]
+      | undefined
+      | null;
+    stddev_pop?:
+      | ResolverInputTypes["room_active_chat_mapping_stddev_pop_order_by"]
+      | undefined
+      | null;
+    stddev_samp?:
+      | ResolverInputTypes["room_active_chat_mapping_stddev_samp_order_by"]
+      | undefined
+      | null;
+    sum?:
+      | ResolverInputTypes["room_active_chat_mapping_sum_order_by"]
+      | undefined
+      | null;
+    var_pop?:
+      | ResolverInputTypes["room_active_chat_mapping_var_pop_order_by"]
+      | undefined
+      | null;
+    var_samp?:
+      | ResolverInputTypes["room_active_chat_mapping_var_samp_order_by"]
+      | undefined
+      | null;
+    variance?:
+      | ResolverInputTypes["room_active_chat_mapping_variance_order_by"]
+      | undefined
+      | null;
+  };
+  /** input type for inserting array relation for remote table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_arr_rel_insert_input"]: {
+    data: Array<ResolverInputTypes["room_active_chat_mapping_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["room_active_chat_mapping_on_conflict"]
+      | undefined
+      | null;
+  };
+  /** order by avg() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_avg_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Boolean expression to filter rows from the table "room_active_chat_mapping". All fields are combined with a logical 'AND'. */
+  ["room_active_chat_mapping_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["room_active_chat_mapping_bool_exp"]>
+      | undefined
+      | null;
+    _not?:
+      | ResolverInputTypes["room_active_chat_mapping_bool_exp"]
+      | undefined
+      | null;
+    _or?:
+      | Array<ResolverInputTypes["room_active_chat_mapping_bool_exp"]>
+      | undefined
+      | null;
+    barter?: ResolverInputTypes["barters_bool_exp"] | undefined | null;
+    barter_id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    room_id?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+  };
+  /** unique or primary key constraints on table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_constraint"]: room_active_chat_mapping_constraint;
+  /** input type for incrementing numeric columns in table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_inc_input"]: {
+    barter_id?: number | undefined | null;
+  };
+  /** input type for inserting data into table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_insert_input"]: {
+    barter?:
+      | ResolverInputTypes["barters_obj_rel_insert_input"]
+      | undefined
+      | null;
+    barter_id?: number | undefined | null;
+    room_id?: string | undefined | null;
+  };
+  /** order by max() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_max_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+    room_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by min() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_min_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+    room_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** response of any mutation on the table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["room_active_chat_mapping"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_on_conflict"]: {
+    constraint: ResolverInputTypes["room_active_chat_mapping_constraint"];
+    update_columns: Array<
+      ResolverInputTypes["room_active_chat_mapping_update_column"]
+    >;
+    where?:
+      | ResolverInputTypes["room_active_chat_mapping_bool_exp"]
+      | undefined
+      | null;
+  };
+  /** Ordering options when selecting data from "room_active_chat_mapping". */
+  ["room_active_chat_mapping_order_by"]: {
+    barter?: ResolverInputTypes["barters_order_by"] | undefined | null;
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+    room_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** primary key columns input for table: room_active_chat_mapping */
+  ["room_active_chat_mapping_pk_columns_input"]: {
+    room_id: string;
+  };
+  /** select columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_select_column"]: room_active_chat_mapping_select_column;
+  /** input type for updating data in table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_set_input"]: {
+    barter_id?: number | undefined | null;
+    room_id?: string | undefined | null;
+  };
+  /** order by stddev() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_stddev_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_pop() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_stddev_pop_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_samp() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_stddev_samp_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Streaming cursor of the table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["room_active_chat_mapping_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["room_active_chat_mapping_stream_cursor_value_input"]: {
+    barter_id?: number | undefined | null;
+    room_id?: string | undefined | null;
+  };
+  /** order by sum() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_sum_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** update columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_update_column"]: room_active_chat_mapping_update_column;
+  ["room_active_chat_mapping_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ResolverInputTypes["room_active_chat_mapping_inc_input"]
+      | undefined
+      | null;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ResolverInputTypes["room_active_chat_mapping_set_input"]
+      | undefined
+      | null;
+    where: ResolverInputTypes["room_active_chat_mapping_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_var_pop_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by var_samp() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_var_samp_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by variance() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_variance_order_by"]: {
+    barter_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** columns and relationships of "secure_transfer_transactions" */
+  ["secure_transfer_transactions"]: AliasType<{
+    /** An object relationship */
+    chat?: ResolverInputTypes["chats"];
+    counter?: boolean | `@${string}`;
+    current_state?: boolean | `@${string}`;
+    escrow?: boolean | `@${string}`;
+    final_txn_signature?: boolean | `@${string}`;
+    from?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    message_client_generated_uuid?: boolean | `@${string}`;
+    message_id?: boolean | `@${string}`;
+    signature?: boolean | `@${string}`;
+    to?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_aggregate_order_by"]: {
+    avg?:
+      | ResolverInputTypes["secure_transfer_transactions_avg_order_by"]
+      | undefined
+      | null;
+    count?: ResolverInputTypes["order_by"] | undefined | null;
+    max?:
+      | ResolverInputTypes["secure_transfer_transactions_max_order_by"]
+      | undefined
+      | null;
+    min?:
+      | ResolverInputTypes["secure_transfer_transactions_min_order_by"]
+      | undefined
+      | null;
+    stddev?:
+      | ResolverInputTypes["secure_transfer_transactions_stddev_order_by"]
+      | undefined
+      | null;
+    stddev_pop?:
+      | ResolverInputTypes["secure_transfer_transactions_stddev_pop_order_by"]
+      | undefined
+      | null;
+    stddev_samp?:
+      | ResolverInputTypes["secure_transfer_transactions_stddev_samp_order_by"]
+      | undefined
+      | null;
+    sum?:
+      | ResolverInputTypes["secure_transfer_transactions_sum_order_by"]
+      | undefined
+      | null;
+    var_pop?:
+      | ResolverInputTypes["secure_transfer_transactions_var_pop_order_by"]
+      | undefined
+      | null;
+    var_samp?:
+      | ResolverInputTypes["secure_transfer_transactions_var_samp_order_by"]
+      | undefined
+      | null;
+    variance?:
+      | ResolverInputTypes["secure_transfer_transactions_variance_order_by"]
+      | undefined
+      | null;
+  };
+  /** input type for inserting array relation for remote table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_arr_rel_insert_input"]: {
+    data: Array<
+      ResolverInputTypes["secure_transfer_transactions_insert_input"]
+    >;
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["secure_transfer_transactions_on_conflict"]
+      | undefined
+      | null;
+  };
+  /** order by avg() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_avg_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Boolean expression to filter rows from the table "secure_transfer_transactions". All fields are combined with a logical 'AND'. */
+  ["secure_transfer_transactions_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["secure_transfer_transactions_bool_exp"]>
+      | undefined
+      | null;
+    _not?:
+      | ResolverInputTypes["secure_transfer_transactions_bool_exp"]
+      | undefined
+      | null;
+    _or?:
+      | Array<ResolverInputTypes["secure_transfer_transactions_bool_exp"]>
+      | undefined
+      | null;
+    chat?: ResolverInputTypes["chats_bool_exp"] | undefined | null;
+    counter?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    current_state?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    escrow?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    final_txn_signature?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    from?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    message_client_generated_uuid?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    message_id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    signature?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    to?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+  };
+  /** unique or primary key constraints on table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_constraint"]: secure_transfer_transactions_constraint;
+  /** input type for incrementing numeric columns in table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_inc_input"]: {
+    id?: number | undefined | null;
+    message_id?: number | undefined | null;
+  };
+  /** input type for inserting data into table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_insert_input"]: {
+    chat?: ResolverInputTypes["chats_obj_rel_insert_input"] | undefined | null;
+    counter?: string | undefined | null;
+    current_state?: string | undefined | null;
+    escrow?: string | undefined | null;
+    final_txn_signature?: string | undefined | null;
+    from?: string | undefined | null;
+    id?: number | undefined | null;
+    message_client_generated_uuid?: string | undefined | null;
+    message_id?: number | undefined | null;
+    signature?: string | undefined | null;
+    to?: string | undefined | null;
+  };
+  /** order by max() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_max_order_by"]: {
+    counter?: ResolverInputTypes["order_by"] | undefined | null;
+    current_state?: ResolverInputTypes["order_by"] | undefined | null;
+    escrow?: ResolverInputTypes["order_by"] | undefined | null;
+    final_txn_signature?: ResolverInputTypes["order_by"] | undefined | null;
+    from?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+    signature?: ResolverInputTypes["order_by"] | undefined | null;
+    to?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by min() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_min_order_by"]: {
+    counter?: ResolverInputTypes["order_by"] | undefined | null;
+    current_state?: ResolverInputTypes["order_by"] | undefined | null;
+    escrow?: ResolverInputTypes["order_by"] | undefined | null;
+    final_txn_signature?: ResolverInputTypes["order_by"] | undefined | null;
+    from?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+    signature?: ResolverInputTypes["order_by"] | undefined | null;
+    to?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** response of any mutation on the table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["secure_transfer_transactions"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_on_conflict"]: {
+    constraint: ResolverInputTypes["secure_transfer_transactions_constraint"];
+    update_columns: Array<
+      ResolverInputTypes["secure_transfer_transactions_update_column"]
+    >;
+    where?:
+      | ResolverInputTypes["secure_transfer_transactions_bool_exp"]
+      | undefined
+      | null;
+  };
+  /** Ordering options when selecting data from "secure_transfer_transactions". */
+  ["secure_transfer_transactions_order_by"]: {
+    chat?: ResolverInputTypes["chats_order_by"] | undefined | null;
+    counter?: ResolverInputTypes["order_by"] | undefined | null;
+    current_state?: ResolverInputTypes["order_by"] | undefined | null;
+    escrow?: ResolverInputTypes["order_by"] | undefined | null;
+    final_txn_signature?: ResolverInputTypes["order_by"] | undefined | null;
+    from?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+    signature?: ResolverInputTypes["order_by"] | undefined | null;
+    to?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** primary key columns input for table: secure_transfer_transactions */
+  ["secure_transfer_transactions_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_select_column"]: secure_transfer_transactions_select_column;
+  /** input type for updating data in table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_set_input"]: {
+    counter?: string | undefined | null;
+    current_state?: string | undefined | null;
+    escrow?: string | undefined | null;
+    final_txn_signature?: string | undefined | null;
+    from?: string | undefined | null;
+    id?: number | undefined | null;
+    message_client_generated_uuid?: string | undefined | null;
+    message_id?: number | undefined | null;
+    signature?: string | undefined | null;
+    to?: string | undefined | null;
+  };
+  /** order by stddev() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_pop() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_pop_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_samp() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_samp_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Streaming cursor of the table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["secure_transfer_transactions_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["secure_transfer_transactions_stream_cursor_value_input"]: {
+    counter?: string | undefined | null;
+    current_state?: string | undefined | null;
+    escrow?: string | undefined | null;
+    final_txn_signature?: string | undefined | null;
+    from?: string | undefined | null;
+    id?: number | undefined | null;
+    message_client_generated_uuid?: string | undefined | null;
+    message_id?: number | undefined | null;
+    signature?: string | undefined | null;
+    to?: string | undefined | null;
+  };
+  /** order by sum() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_sum_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** update columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_update_column"]: secure_transfer_transactions_update_column;
+  ["secure_transfer_transactions_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ResolverInputTypes["secure_transfer_transactions_inc_input"]
+      | undefined
+      | null;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ResolverInputTypes["secure_transfer_transactions_set_input"]
+      | undefined
+      | null;
+    where: ResolverInputTypes["secure_transfer_transactions_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_var_pop_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by var_samp() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_var_samp_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by variance() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_variance_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** columns and relationships of "simple_transactions" */
+  ["simple_transactions"]: AliasType<{
+    client_generated_uuid?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    txn_signature?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "simple_transactions" */
+  ["simple_transactions_aggregate_order_by"]: {
+    avg?:
+      | ResolverInputTypes["simple_transactions_avg_order_by"]
+      | undefined
+      | null;
+    count?: ResolverInputTypes["order_by"] | undefined | null;
+    max?:
+      | ResolverInputTypes["simple_transactions_max_order_by"]
+      | undefined
+      | null;
+    min?:
+      | ResolverInputTypes["simple_transactions_min_order_by"]
+      | undefined
+      | null;
+    stddev?:
+      | ResolverInputTypes["simple_transactions_stddev_order_by"]
+      | undefined
+      | null;
+    stddev_pop?:
+      | ResolverInputTypes["simple_transactions_stddev_pop_order_by"]
+      | undefined
+      | null;
+    stddev_samp?:
+      | ResolverInputTypes["simple_transactions_stddev_samp_order_by"]
+      | undefined
+      | null;
+    sum?:
+      | ResolverInputTypes["simple_transactions_sum_order_by"]
+      | undefined
+      | null;
+    var_pop?:
+      | ResolverInputTypes["simple_transactions_var_pop_order_by"]
+      | undefined
+      | null;
+    var_samp?:
+      | ResolverInputTypes["simple_transactions_var_samp_order_by"]
+      | undefined
+      | null;
+    variance?:
+      | ResolverInputTypes["simple_transactions_variance_order_by"]
+      | undefined
+      | null;
+  };
+  /** input type for inserting array relation for remote table "simple_transactions" */
+  ["simple_transactions_arr_rel_insert_input"]: {
+    data: Array<ResolverInputTypes["simple_transactions_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["simple_transactions_on_conflict"]
+      | undefined
+      | null;
+  };
+  /** order by avg() on columns of table "simple_transactions" */
+  ["simple_transactions_avg_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Boolean expression to filter rows from the table "simple_transactions". All fields are combined with a logical 'AND'. */
+  ["simple_transactions_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["simple_transactions_bool_exp"]>
+      | undefined
+      | null;
+    _not?:
+      | ResolverInputTypes["simple_transactions_bool_exp"]
+      | undefined
+      | null;
+    _or?:
+      | Array<ResolverInputTypes["simple_transactions_bool_exp"]>
+      | undefined
+      | null;
+    client_generated_uuid?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    txn_signature?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+  };
+  /** unique or primary key constraints on table "simple_transactions" */
+  ["simple_transactions_constraint"]: simple_transactions_constraint;
+  /** input type for incrementing numeric columns in table "simple_transactions" */
+  ["simple_transactions_inc_input"]: {
+    id?: number | undefined | null;
+  };
+  /** input type for inserting data into table "simple_transactions" */
+  ["simple_transactions_insert_input"]: {
+    client_generated_uuid?: string | undefined | null;
+    id?: number | undefined | null;
+    txn_signature?: string | undefined | null;
+  };
+  /** order by max() on columns of table "simple_transactions" */
+  ["simple_transactions_max_order_by"]: {
+    client_generated_uuid?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    txn_signature?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by min() on columns of table "simple_transactions" */
+  ["simple_transactions_min_order_by"]: {
+    client_generated_uuid?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    txn_signature?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** response of any mutation on the table "simple_transactions" */
+  ["simple_transactions_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["simple_transactions"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "simple_transactions" */
+  ["simple_transactions_on_conflict"]: {
+    constraint: ResolverInputTypes["simple_transactions_constraint"];
+    update_columns: Array<
+      ResolverInputTypes["simple_transactions_update_column"]
+    >;
+    where?:
+      | ResolverInputTypes["simple_transactions_bool_exp"]
+      | undefined
+      | null;
+  };
+  /** Ordering options when selecting data from "simple_transactions". */
+  ["simple_transactions_order_by"]: {
+    client_generated_uuid?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    txn_signature?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** primary key columns input for table: simple_transactions */
+  ["simple_transactions_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "simple_transactions" */
+  ["simple_transactions_select_column"]: simple_transactions_select_column;
+  /** input type for updating data in table "simple_transactions" */
+  ["simple_transactions_set_input"]: {
+    client_generated_uuid?: string | undefined | null;
+    id?: number | undefined | null;
+    txn_signature?: string | undefined | null;
+  };
+  /** order by stddev() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_pop() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_pop_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_samp() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_samp_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Streaming cursor of the table "simple_transactions" */
+  ["simple_transactions_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["simple_transactions_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["simple_transactions_stream_cursor_value_input"]: {
+    client_generated_uuid?: string | undefined | null;
+    id?: number | undefined | null;
+    txn_signature?: string | undefined | null;
+  };
+  /** order by sum() on columns of table "simple_transactions" */
+  ["simple_transactions_sum_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** update columns of table "simple_transactions" */
+  ["simple_transactions_update_column"]: simple_transactions_update_column;
+  ["simple_transactions_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ResolverInputTypes["simple_transactions_inc_input"]
+      | undefined
+      | null;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ResolverInputTypes["simple_transactions_set_input"]
+      | undefined
+      | null;
+    where: ResolverInputTypes["simple_transactions_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "simple_transactions" */
+  ["simple_transactions_var_pop_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by var_samp() on columns of table "simple_transactions" */
+  ["simple_transactions_var_samp_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by variance() on columns of table "simple_transactions" */
+  ["simple_transactions_variance_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
   ["subscription_root"]: AliasType<{
+    barters?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["barters_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["barters_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?: ResolverInputTypes["barters_bool_exp"] | undefined | null;
+      },
+      ResolverInputTypes["barters"]
+    ];
+    barters_by_pk?: [{ id: number }, ResolverInputTypes["barters"]];
+    barters_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          ResolverInputTypes["barters_stream_cursor_input"] | undefined | null
+        > /** filter the rows returned */;
+        where?: ResolverInputTypes["barters_bool_exp"] | undefined | null;
+      },
+      ResolverInputTypes["barters"]
+    ];
+    chat_barter_metadata?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["chat_barter_metadata_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["chat_barter_metadata_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["chat_barter_metadata_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_barter_metadata"]
+    ];
+    chat_barter_metadata_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["chat_barter_metadata_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["chat_barter_metadata_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_barter_metadata"]
+    ];
+    chat_media_messages?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["chat_media_messages_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["chat_media_messages_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["chat_media_messages_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_media_messages"]
+    ];
+    chat_media_messages_by_pk?: [
+      { id: number },
+      ResolverInputTypes["chat_media_messages"]
+    ];
+    chat_media_messages_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["chat_media_messages_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["chat_media_messages_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_media_messages"]
+    ];
     chats?: [
       {
         /** distinct select on columns */
@@ -1609,6 +6923,146 @@ export type ResolverInputTypes = {
         where?: ResolverInputTypes["chats_bool_exp"] | undefined | null;
       },
       ResolverInputTypes["chats"]
+    ];
+    room_active_chat_mapping?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["room_active_chat_mapping_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["room_active_chat_mapping_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["room_active_chat_mapping_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["room_active_chat_mapping"]
+    ];
+    room_active_chat_mapping_by_pk?: [
+      { room_id: string },
+      ResolverInputTypes["room_active_chat_mapping"]
+    ];
+    room_active_chat_mapping_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["room_active_chat_mapping_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["room_active_chat_mapping_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["room_active_chat_mapping"]
+    ];
+    secure_transfer_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<
+              ResolverInputTypes["secure_transfer_transactions_select_column"]
+            >
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["secure_transfer_transactions_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["secure_transfer_transactions_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["secure_transfer_transactions"]
+    ];
+    secure_transfer_transactions_by_pk?: [
+      { id: number },
+      ResolverInputTypes["secure_transfer_transactions"]
+    ];
+    secure_transfer_transactions_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["secure_transfer_transactions_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["secure_transfer_transactions_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["secure_transfer_transactions"]
+    ];
+    simple_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["simple_transactions_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["simple_transactions_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["simple_transactions_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["simple_transactions"]
+    ];
+    simple_transactions_by_pk?: [
+      { id: number },
+      ResolverInputTypes["simple_transactions"]
+    ];
+    simple_transactions_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["simple_transactions_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["simple_transactions_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["simple_transactions"]
     ];
     __typename?: boolean | `@${string}`;
   }>;
@@ -1672,14 +7126,440 @@ export type ModelTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined;
   };
+  /** columns and relationships of "barters" */
+  ["barters"]: {
+    /** An array relationship */
+    chat_barter_metadata: Array<ModelTypes["chat_barter_metadata"]>;
+    id: number;
+    on_chain_state?: string | undefined;
+    /** An array relationship */
+    room_active_chat_mappings: Array<ModelTypes["room_active_chat_mapping"]>;
+    room_id?: string | undefined;
+    state: string;
+    user1_offers: string;
+    user2_offers: string;
+  };
+  /** Boolean expression to filter rows from the table "barters". All fields are combined with a logical 'AND'. */
+  ["barters_bool_exp"]: {
+    _and?: Array<ModelTypes["barters_bool_exp"]> | undefined;
+    _not?: ModelTypes["barters_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["barters_bool_exp"]> | undefined;
+    chat_barter_metadata?:
+      | ModelTypes["chat_barter_metadata_bool_exp"]
+      | undefined;
+    id?: ModelTypes["Int_comparison_exp"] | undefined;
+    on_chain_state?: ModelTypes["String_comparison_exp"] | undefined;
+    room_active_chat_mappings?:
+      | ModelTypes["room_active_chat_mapping_bool_exp"]
+      | undefined;
+    room_id?: ModelTypes["String_comparison_exp"] | undefined;
+    state?: ModelTypes["String_comparison_exp"] | undefined;
+    user1_offers?: ModelTypes["String_comparison_exp"] | undefined;
+    user2_offers?: ModelTypes["String_comparison_exp"] | undefined;
+  };
+  ["barters_constraint"]: barters_constraint;
+  /** input type for incrementing numeric columns in table "barters" */
+  ["barters_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "barters" */
+  ["barters_insert_input"]: {
+    chat_barter_metadata?:
+      | ModelTypes["chat_barter_metadata_arr_rel_insert_input"]
+      | undefined;
+    id?: number | undefined;
+    on_chain_state?: string | undefined;
+    room_active_chat_mappings?:
+      | ModelTypes["room_active_chat_mapping_arr_rel_insert_input"]
+      | undefined;
+    room_id?: string | undefined;
+    state?: string | undefined;
+    user1_offers?: string | undefined;
+    user2_offers?: string | undefined;
+  };
+  /** response of any mutation on the table "barters" */
+  ["barters_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["barters"]>;
+  };
+  /** input type for inserting object relation for remote table "barters" */
+  ["barters_obj_rel_insert_input"]: {
+    data: ModelTypes["barters_insert_input"];
+    /** upsert condition */
+    on_conflict?: ModelTypes["barters_on_conflict"] | undefined;
+  };
+  /** on_conflict condition type for table "barters" */
+  ["barters_on_conflict"]: {
+    constraint: ModelTypes["barters_constraint"];
+    update_columns: Array<ModelTypes["barters_update_column"]>;
+    where?: ModelTypes["barters_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "barters". */
+  ["barters_order_by"]: {
+    chat_barter_metadata_aggregate?:
+      | ModelTypes["chat_barter_metadata_aggregate_order_by"]
+      | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    on_chain_state?: ModelTypes["order_by"] | undefined;
+    room_active_chat_mappings_aggregate?:
+      | ModelTypes["room_active_chat_mapping_aggregate_order_by"]
+      | undefined;
+    room_id?: ModelTypes["order_by"] | undefined;
+    state?: ModelTypes["order_by"] | undefined;
+    user1_offers?: ModelTypes["order_by"] | undefined;
+    user2_offers?: ModelTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: barters */
+  ["barters_pk_columns_input"]: {
+    id: number;
+  };
+  ["barters_select_column"]: barters_select_column;
+  /** input type for updating data in table "barters" */
+  ["barters_set_input"]: {
+    id?: number | undefined;
+    on_chain_state?: string | undefined;
+    room_id?: string | undefined;
+    state?: string | undefined;
+    user1_offers?: string | undefined;
+    user2_offers?: string | undefined;
+  };
+  /** Streaming cursor of the table "barters" */
+  ["barters_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["barters_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["barters_stream_cursor_value_input"]: {
+    id?: number | undefined;
+    on_chain_state?: string | undefined;
+    room_id?: string | undefined;
+    state?: string | undefined;
+    user1_offers?: string | undefined;
+    user2_offers?: string | undefined;
+  };
+  ["barters_update_column"]: barters_update_column;
+  ["barters_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ModelTypes["barters_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["barters_set_input"] | undefined;
+    where: ModelTypes["barters_bool_exp"];
+  };
+  /** columns and relationships of "chat_barter_metadata" */
+  ["chat_barter_metadata"]: {
+    /** An object relationship */
+    barter: ModelTypes["barters"];
+    barter_id: number;
+    /** An object relationship */
+    chat: ModelTypes["chats"];
+    chat_client_generated_uuid: string;
+  };
+  /** order by aggregate values of table "chat_barter_metadata" */
+  ["chat_barter_metadata_aggregate_order_by"]: {
+    avg?: ModelTypes["chat_barter_metadata_avg_order_by"] | undefined;
+    count?: ModelTypes["order_by"] | undefined;
+    max?: ModelTypes["chat_barter_metadata_max_order_by"] | undefined;
+    min?: ModelTypes["chat_barter_metadata_min_order_by"] | undefined;
+    stddev?: ModelTypes["chat_barter_metadata_stddev_order_by"] | undefined;
+    stddev_pop?:
+      | ModelTypes["chat_barter_metadata_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | ModelTypes["chat_barter_metadata_stddev_samp_order_by"]
+      | undefined;
+    sum?: ModelTypes["chat_barter_metadata_sum_order_by"] | undefined;
+    var_pop?: ModelTypes["chat_barter_metadata_var_pop_order_by"] | undefined;
+    var_samp?: ModelTypes["chat_barter_metadata_var_samp_order_by"] | undefined;
+    variance?: ModelTypes["chat_barter_metadata_variance_order_by"] | undefined;
+  };
+  /** input type for inserting array relation for remote table "chat_barter_metadata" */
+  ["chat_barter_metadata_arr_rel_insert_input"]: {
+    data: Array<ModelTypes["chat_barter_metadata_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: ModelTypes["chat_barter_metadata_on_conflict"] | undefined;
+  };
+  /** order by avg() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_avg_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "chat_barter_metadata". All fields are combined with a logical 'AND'. */
+  ["chat_barter_metadata_bool_exp"]: {
+    _and?: Array<ModelTypes["chat_barter_metadata_bool_exp"]> | undefined;
+    _not?: ModelTypes["chat_barter_metadata_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["chat_barter_metadata_bool_exp"]> | undefined;
+    barter?: ModelTypes["barters_bool_exp"] | undefined;
+    barter_id?: ModelTypes["Int_comparison_exp"] | undefined;
+    chat?: ModelTypes["chats_bool_exp"] | undefined;
+    chat_client_generated_uuid?:
+      | ModelTypes["String_comparison_exp"]
+      | undefined;
+  };
+  ["chat_barter_metadata_constraint"]: chat_barter_metadata_constraint;
+  /** input type for inserting data into table "chat_barter_metadata" */
+  ["chat_barter_metadata_insert_input"]: {
+    barter?: ModelTypes["barters_obj_rel_insert_input"] | undefined;
+    barter_id?: number | undefined;
+    chat?: ModelTypes["chats_obj_rel_insert_input"] | undefined;
+    chat_client_generated_uuid?: string | undefined;
+  };
+  /** order by max() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_max_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+    chat_client_generated_uuid?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_min_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+    chat_client_generated_uuid?: ModelTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "chat_barter_metadata" */
+  ["chat_barter_metadata_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["chat_barter_metadata"]>;
+  };
+  /** on_conflict condition type for table "chat_barter_metadata" */
+  ["chat_barter_metadata_on_conflict"]: {
+    constraint: ModelTypes["chat_barter_metadata_constraint"];
+    update_columns: Array<ModelTypes["chat_barter_metadata_update_column"]>;
+    where?: ModelTypes["chat_barter_metadata_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "chat_barter_metadata". */
+  ["chat_barter_metadata_order_by"]: {
+    barter?: ModelTypes["barters_order_by"] | undefined;
+    barter_id?: ModelTypes["order_by"] | undefined;
+    chat?: ModelTypes["chats_order_by"] | undefined;
+    chat_client_generated_uuid?: ModelTypes["order_by"] | undefined;
+  };
+  ["chat_barter_metadata_select_column"]: chat_barter_metadata_select_column;
+  /** order by stddev() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_stddev_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_stddev_pop_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_stddev_samp_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "chat_barter_metadata" */
+  ["chat_barter_metadata_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["chat_barter_metadata_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["chat_barter_metadata_stream_cursor_value_input"]: {
+    barter_id?: number | undefined;
+    chat_client_generated_uuid?: string | undefined;
+  };
+  /** order by sum() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_sum_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+  };
+  ["chat_barter_metadata_update_column"]: chat_barter_metadata_update_column;
+  ["chat_barter_metadata_updates"]: {
+    where: ModelTypes["chat_barter_metadata_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_var_pop_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_var_samp_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_variance_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** columns and relationships of "chat_media_messages" */
+  ["chat_media_messages"]: {
+    /** An object relationship */
+    chat: ModelTypes["chats"];
+    id: number;
+    media_kind: string;
+    media_link: string;
+    message_client_generated_uuid: string;
+  };
+  /** order by aggregate values of table "chat_media_messages" */
+  ["chat_media_messages_aggregate_order_by"]: {
+    avg?: ModelTypes["chat_media_messages_avg_order_by"] | undefined;
+    count?: ModelTypes["order_by"] | undefined;
+    max?: ModelTypes["chat_media_messages_max_order_by"] | undefined;
+    min?: ModelTypes["chat_media_messages_min_order_by"] | undefined;
+    stddev?: ModelTypes["chat_media_messages_stddev_order_by"] | undefined;
+    stddev_pop?:
+      | ModelTypes["chat_media_messages_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | ModelTypes["chat_media_messages_stddev_samp_order_by"]
+      | undefined;
+    sum?: ModelTypes["chat_media_messages_sum_order_by"] | undefined;
+    var_pop?: ModelTypes["chat_media_messages_var_pop_order_by"] | undefined;
+    var_samp?: ModelTypes["chat_media_messages_var_samp_order_by"] | undefined;
+    variance?: ModelTypes["chat_media_messages_variance_order_by"] | undefined;
+  };
+  /** input type for inserting array relation for remote table "chat_media_messages" */
+  ["chat_media_messages_arr_rel_insert_input"]: {
+    data: Array<ModelTypes["chat_media_messages_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: ModelTypes["chat_media_messages_on_conflict"] | undefined;
+  };
+  /** order by avg() on columns of table "chat_media_messages" */
+  ["chat_media_messages_avg_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "chat_media_messages". All fields are combined with a logical 'AND'. */
+  ["chat_media_messages_bool_exp"]: {
+    _and?: Array<ModelTypes["chat_media_messages_bool_exp"]> | undefined;
+    _not?: ModelTypes["chat_media_messages_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["chat_media_messages_bool_exp"]> | undefined;
+    chat?: ModelTypes["chats_bool_exp"] | undefined;
+    id?: ModelTypes["Int_comparison_exp"] | undefined;
+    media_kind?: ModelTypes["String_comparison_exp"] | undefined;
+    media_link?: ModelTypes["String_comparison_exp"] | undefined;
+    message_client_generated_uuid?:
+      | ModelTypes["String_comparison_exp"]
+      | undefined;
+  };
+  ["chat_media_messages_constraint"]: chat_media_messages_constraint;
+  /** input type for incrementing numeric columns in table "chat_media_messages" */
+  ["chat_media_messages_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "chat_media_messages" */
+  ["chat_media_messages_insert_input"]: {
+    chat?: ModelTypes["chats_obj_rel_insert_input"] | undefined;
+    id?: number | undefined;
+    media_kind?: string | undefined;
+    media_link?: string | undefined;
+    message_client_generated_uuid?: string | undefined;
+  };
+  /** order by max() on columns of table "chat_media_messages" */
+  ["chat_media_messages_max_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    media_kind?: ModelTypes["order_by"] | undefined;
+    media_link?: ModelTypes["order_by"] | undefined;
+    message_client_generated_uuid?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "chat_media_messages" */
+  ["chat_media_messages_min_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    media_kind?: ModelTypes["order_by"] | undefined;
+    media_link?: ModelTypes["order_by"] | undefined;
+    message_client_generated_uuid?: ModelTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "chat_media_messages" */
+  ["chat_media_messages_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["chat_media_messages"]>;
+  };
+  /** on_conflict condition type for table "chat_media_messages" */
+  ["chat_media_messages_on_conflict"]: {
+    constraint: ModelTypes["chat_media_messages_constraint"];
+    update_columns: Array<ModelTypes["chat_media_messages_update_column"]>;
+    where?: ModelTypes["chat_media_messages_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "chat_media_messages". */
+  ["chat_media_messages_order_by"]: {
+    chat?: ModelTypes["chats_order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    media_kind?: ModelTypes["order_by"] | undefined;
+    media_link?: ModelTypes["order_by"] | undefined;
+    message_client_generated_uuid?: ModelTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: chat_media_messages */
+  ["chat_media_messages_pk_columns_input"]: {
+    id: number;
+  };
+  ["chat_media_messages_select_column"]: chat_media_messages_select_column;
+  /** input type for updating data in table "chat_media_messages" */
+  ["chat_media_messages_set_input"]: {
+    id?: number | undefined;
+    media_kind?: string | undefined;
+    media_link?: string | undefined;
+    message_client_generated_uuid?: string | undefined;
+  };
+  /** order by stddev() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_pop_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_samp_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "chat_media_messages" */
+  ["chat_media_messages_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["chat_media_messages_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["chat_media_messages_stream_cursor_value_input"]: {
+    id?: number | undefined;
+    media_kind?: string | undefined;
+    media_link?: string | undefined;
+    message_client_generated_uuid?: string | undefined;
+  };
+  /** order by sum() on columns of table "chat_media_messages" */
+  ["chat_media_messages_sum_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  ["chat_media_messages_update_column"]: chat_media_messages_update_column;
+  ["chat_media_messages_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ModelTypes["chat_media_messages_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["chat_media_messages_set_input"] | undefined;
+    where: ModelTypes["chat_media_messages_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "chat_media_messages" */
+  ["chat_media_messages_var_pop_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "chat_media_messages" */
+  ["chat_media_messages_var_samp_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "chat_media_messages" */
+  ["chat_media_messages_variance_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
   /** columns and relationships of "chats" */
   ["chats"]: {
+    /** An array relationship */
+    chat_barter_metadata: Array<ModelTypes["chat_barter_metadata"]>;
+    /** An array relationship */
+    chat_media_messages: Array<ModelTypes["chat_media_messages"]>;
     client_generated_uuid: string;
     created_at?: ModelTypes["timestamptz"] | undefined;
     id: number;
     message: string;
     message_kind?: string | undefined;
+    parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
+    /** An array relationship */
+    secure_transfer_transactions: Array<
+      ModelTypes["secure_transfer_transactions"]
+    >;
+    /** An array relationship */
+    simple_transactions: Array<ModelTypes["simple_transactions"]>;
     type: string;
     username?: string | undefined;
     uuid?: string | undefined;
@@ -1689,12 +7569,27 @@ export type ModelTypes = {
     _and?: Array<ModelTypes["chats_bool_exp"]> | undefined;
     _not?: ModelTypes["chats_bool_exp"] | undefined;
     _or?: Array<ModelTypes["chats_bool_exp"]> | undefined;
+    chat_barter_metadata?:
+      | ModelTypes["chat_barter_metadata_bool_exp"]
+      | undefined;
+    chat_media_messages?:
+      | ModelTypes["chat_media_messages_bool_exp"]
+      | undefined;
     client_generated_uuid?: ModelTypes["String_comparison_exp"] | undefined;
     created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
     id?: ModelTypes["Int_comparison_exp"] | undefined;
     message?: ModelTypes["String_comparison_exp"] | undefined;
     message_kind?: ModelTypes["String_comparison_exp"] | undefined;
+    parent_client_generated_uuid?:
+      | ModelTypes["String_comparison_exp"]
+      | undefined;
     room?: ModelTypes["String_comparison_exp"] | undefined;
+    secure_transfer_transactions?:
+      | ModelTypes["secure_transfer_transactions_bool_exp"]
+      | undefined;
+    simple_transactions?:
+      | ModelTypes["simple_transactions_bool_exp"]
+      | undefined;
     type?: ModelTypes["String_comparison_exp"] | undefined;
     username?: ModelTypes["String_comparison_exp"] | undefined;
     uuid?: ModelTypes["String_comparison_exp"] | undefined;
@@ -1702,12 +7597,25 @@ export type ModelTypes = {
   ["chats_constraint"]: chats_constraint;
   /** input type for inserting data into table "chats" */
   ["chats_insert_input"]: {
+    chat_barter_metadata?:
+      | ModelTypes["chat_barter_metadata_arr_rel_insert_input"]
+      | undefined;
+    chat_media_messages?:
+      | ModelTypes["chat_media_messages_arr_rel_insert_input"]
+      | undefined;
     client_generated_uuid?: string | undefined;
     created_at?: ModelTypes["timestamptz"] | undefined;
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
+    parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
+    secure_transfer_transactions?:
+      | ModelTypes["secure_transfer_transactions_arr_rel_insert_input"]
+      | undefined;
+    simple_transactions?:
+      | ModelTypes["simple_transactions_arr_rel_insert_input"]
+      | undefined;
     type?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
@@ -1719,6 +7627,12 @@ export type ModelTypes = {
     /** data from the rows affected by the mutation */
     returning: Array<ModelTypes["chats"]>;
   };
+  /** input type for inserting object relation for remote table "chats" */
+  ["chats_obj_rel_insert_input"]: {
+    data: ModelTypes["chats_insert_input"];
+    /** upsert condition */
+    on_conflict?: ModelTypes["chats_on_conflict"] | undefined;
+  };
   /** on_conflict condition type for table "chats" */
   ["chats_on_conflict"]: {
     constraint: ModelTypes["chats_constraint"];
@@ -1727,12 +7641,25 @@ export type ModelTypes = {
   };
   /** Ordering options when selecting data from "chats". */
   ["chats_order_by"]: {
+    chat_barter_metadata_aggregate?:
+      | ModelTypes["chat_barter_metadata_aggregate_order_by"]
+      | undefined;
+    chat_media_messages_aggregate?:
+      | ModelTypes["chat_media_messages_aggregate_order_by"]
+      | undefined;
     client_generated_uuid?: ModelTypes["order_by"] | undefined;
     created_at?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
     message?: ModelTypes["order_by"] | undefined;
     message_kind?: ModelTypes["order_by"] | undefined;
+    parent_client_generated_uuid?: ModelTypes["order_by"] | undefined;
     room?: ModelTypes["order_by"] | undefined;
+    secure_transfer_transactions_aggregate?:
+      | ModelTypes["secure_transfer_transactions_aggregate_order_by"]
+      | undefined;
+    simple_transactions_aggregate?:
+      | ModelTypes["simple_transactions_aggregate_order_by"]
+      | undefined;
     type?: ModelTypes["order_by"] | undefined;
     username?: ModelTypes["order_by"] | undefined;
     uuid?: ModelTypes["order_by"] | undefined;
@@ -1752,6 +7679,7 @@ export type ModelTypes = {
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
+    parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
     type?: string | undefined;
     username?: string | undefined;
@@ -1761,25 +7689,746 @@ export type ModelTypes = {
   ["cursor_ordering"]: cursor_ordering;
   /** mutation root */
   ["mutation_root"]: {
+    /** delete data from the table: "room_active_chat_mapping" */
+    delete_room_active_chat_mapping?:
+      | ModelTypes["room_active_chat_mapping_mutation_response"]
+      | undefined;
+    /** delete single row from the table: "room_active_chat_mapping" */
+    delete_room_active_chat_mapping_by_pk?:
+      | ModelTypes["room_active_chat_mapping"]
+      | undefined;
+    /** insert data into the table: "barters" */
+    insert_barters?: ModelTypes["barters_mutation_response"] | undefined;
+    /** insert a single row into the table: "barters" */
+    insert_barters_one?: ModelTypes["barters"] | undefined;
+    /** insert data into the table: "chat_barter_metadata" */
+    insert_chat_barter_metadata?:
+      | ModelTypes["chat_barter_metadata_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "chat_barter_metadata" */
+    insert_chat_barter_metadata_one?:
+      | ModelTypes["chat_barter_metadata"]
+      | undefined;
+    /** insert data into the table: "chat_media_messages" */
+    insert_chat_media_messages?:
+      | ModelTypes["chat_media_messages_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "chat_media_messages" */
+    insert_chat_media_messages_one?:
+      | ModelTypes["chat_media_messages"]
+      | undefined;
     /** insert data into the table: "chats" */
     insert_chats?: ModelTypes["chats_mutation_response"] | undefined;
     /** insert a single row into the table: "chats" */
     insert_chats_one?: ModelTypes["chats"] | undefined;
+    /** insert data into the table: "room_active_chat_mapping" */
+    insert_room_active_chat_mapping?:
+      | ModelTypes["room_active_chat_mapping_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "room_active_chat_mapping" */
+    insert_room_active_chat_mapping_one?:
+      | ModelTypes["room_active_chat_mapping"]
+      | undefined;
+    /** insert data into the table: "secure_transfer_transactions" */
+    insert_secure_transfer_transactions?:
+      | ModelTypes["secure_transfer_transactions_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "secure_transfer_transactions" */
+    insert_secure_transfer_transactions_one?:
+      | ModelTypes["secure_transfer_transactions"]
+      | undefined;
+    /** insert data into the table: "simple_transactions" */
+    insert_simple_transactions?:
+      | ModelTypes["simple_transactions_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "simple_transactions" */
+    insert_simple_transactions_one?:
+      | ModelTypes["simple_transactions"]
+      | undefined;
+    /** update data of the table: "barters" */
+    update_barters?: ModelTypes["barters_mutation_response"] | undefined;
+    /** update single row of the table: "barters" */
+    update_barters_by_pk?: ModelTypes["barters"] | undefined;
+    /** update multiples rows of table: "barters" */
+    update_barters_many?:
+      | Array<ModelTypes["barters_mutation_response"] | undefined>
+      | undefined;
+    /** update data of the table: "chat_barter_metadata" */
+    update_chat_barter_metadata?:
+      | ModelTypes["chat_barter_metadata_mutation_response"]
+      | undefined;
+    /** update multiples rows of table: "chat_barter_metadata" */
+    update_chat_barter_metadata_many?:
+      | Array<ModelTypes["chat_barter_metadata_mutation_response"] | undefined>
+      | undefined;
+    /** update data of the table: "chat_media_messages" */
+    update_chat_media_messages?:
+      | ModelTypes["chat_media_messages_mutation_response"]
+      | undefined;
+    /** update single row of the table: "chat_media_messages" */
+    update_chat_media_messages_by_pk?:
+      | ModelTypes["chat_media_messages"]
+      | undefined;
+    /** update multiples rows of table: "chat_media_messages" */
+    update_chat_media_messages_many?:
+      | Array<ModelTypes["chat_media_messages_mutation_response"] | undefined>
+      | undefined;
+    /** update data of the table: "room_active_chat_mapping" */
+    update_room_active_chat_mapping?:
+      | ModelTypes["room_active_chat_mapping_mutation_response"]
+      | undefined;
+    /** update single row of the table: "room_active_chat_mapping" */
+    update_room_active_chat_mapping_by_pk?:
+      | ModelTypes["room_active_chat_mapping"]
+      | undefined;
+    /** update multiples rows of table: "room_active_chat_mapping" */
+    update_room_active_chat_mapping_many?:
+      | Array<
+          ModelTypes["room_active_chat_mapping_mutation_response"] | undefined
+        >
+      | undefined;
+    /** update data of the table: "secure_transfer_transactions" */
+    update_secure_transfer_transactions?:
+      | ModelTypes["secure_transfer_transactions_mutation_response"]
+      | undefined;
+    /** update single row of the table: "secure_transfer_transactions" */
+    update_secure_transfer_transactions_by_pk?:
+      | ModelTypes["secure_transfer_transactions"]
+      | undefined;
+    /** update multiples rows of table: "secure_transfer_transactions" */
+    update_secure_transfer_transactions_many?:
+      | Array<
+          | ModelTypes["secure_transfer_transactions_mutation_response"]
+          | undefined
+        >
+      | undefined;
+    /** update data of the table: "simple_transactions" */
+    update_simple_transactions?:
+      | ModelTypes["simple_transactions_mutation_response"]
+      | undefined;
+    /** update single row of the table: "simple_transactions" */
+    update_simple_transactions_by_pk?:
+      | ModelTypes["simple_transactions"]
+      | undefined;
+    /** update multiples rows of table: "simple_transactions" */
+    update_simple_transactions_many?:
+      | Array<ModelTypes["simple_transactions_mutation_response"] | undefined>
+      | undefined;
   };
   ["order_by"]: order_by;
   ["query_root"]: {
+    /** fetch data from the table: "barters" */
+    barters: Array<ModelTypes["barters"]>;
+    /** fetch data from the table: "barters" using primary key columns */
+    barters_by_pk?: ModelTypes["barters"] | undefined;
+    /** An array relationship */
+    chat_barter_metadata: Array<ModelTypes["chat_barter_metadata"]>;
+    /** An array relationship */
+    chat_media_messages: Array<ModelTypes["chat_media_messages"]>;
+    /** fetch data from the table: "chat_media_messages" using primary key columns */
+    chat_media_messages_by_pk?: ModelTypes["chat_media_messages"] | undefined;
     /** fetch data from the table: "chats" */
     chats: Array<ModelTypes["chats"]>;
     /** fetch data from the table: "chats" using primary key columns */
     chats_by_pk?: ModelTypes["chats"] | undefined;
+    /** fetch data from the table: "room_active_chat_mapping" */
+    room_active_chat_mapping: Array<ModelTypes["room_active_chat_mapping"]>;
+    /** fetch data from the table: "room_active_chat_mapping" using primary key columns */
+    room_active_chat_mapping_by_pk?:
+      | ModelTypes["room_active_chat_mapping"]
+      | undefined;
+    /** An array relationship */
+    secure_transfer_transactions: Array<
+      ModelTypes["secure_transfer_transactions"]
+    >;
+    /** fetch data from the table: "secure_transfer_transactions" using primary key columns */
+    secure_transfer_transactions_by_pk?:
+      | ModelTypes["secure_transfer_transactions"]
+      | undefined;
+    /** An array relationship */
+    simple_transactions: Array<ModelTypes["simple_transactions"]>;
+    /** fetch data from the table: "simple_transactions" using primary key columns */
+    simple_transactions_by_pk?: ModelTypes["simple_transactions"] | undefined;
+  };
+  /** columns and relationships of "room_active_chat_mapping" */
+  ["room_active_chat_mapping"]: {
+    /** An object relationship */
+    barter: ModelTypes["barters"];
+    barter_id: number;
+    room_id: string;
+  };
+  /** order by aggregate values of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_aggregate_order_by"]: {
+    avg?: ModelTypes["room_active_chat_mapping_avg_order_by"] | undefined;
+    count?: ModelTypes["order_by"] | undefined;
+    max?: ModelTypes["room_active_chat_mapping_max_order_by"] | undefined;
+    min?: ModelTypes["room_active_chat_mapping_min_order_by"] | undefined;
+    stddev?: ModelTypes["room_active_chat_mapping_stddev_order_by"] | undefined;
+    stddev_pop?:
+      | ModelTypes["room_active_chat_mapping_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | ModelTypes["room_active_chat_mapping_stddev_samp_order_by"]
+      | undefined;
+    sum?: ModelTypes["room_active_chat_mapping_sum_order_by"] | undefined;
+    var_pop?:
+      | ModelTypes["room_active_chat_mapping_var_pop_order_by"]
+      | undefined;
+    var_samp?:
+      | ModelTypes["room_active_chat_mapping_var_samp_order_by"]
+      | undefined;
+    variance?:
+      | ModelTypes["room_active_chat_mapping_variance_order_by"]
+      | undefined;
+  };
+  /** input type for inserting array relation for remote table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_arr_rel_insert_input"]: {
+    data: Array<ModelTypes["room_active_chat_mapping_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | ModelTypes["room_active_chat_mapping_on_conflict"]
+      | undefined;
+  };
+  /** order by avg() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_avg_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "room_active_chat_mapping". All fields are combined with a logical 'AND'. */
+  ["room_active_chat_mapping_bool_exp"]: {
+    _and?: Array<ModelTypes["room_active_chat_mapping_bool_exp"]> | undefined;
+    _not?: ModelTypes["room_active_chat_mapping_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["room_active_chat_mapping_bool_exp"]> | undefined;
+    barter?: ModelTypes["barters_bool_exp"] | undefined;
+    barter_id?: ModelTypes["Int_comparison_exp"] | undefined;
+    room_id?: ModelTypes["String_comparison_exp"] | undefined;
+  };
+  ["room_active_chat_mapping_constraint"]: room_active_chat_mapping_constraint;
+  /** input type for incrementing numeric columns in table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_inc_input"]: {
+    barter_id?: number | undefined;
+  };
+  /** input type for inserting data into table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_insert_input"]: {
+    barter?: ModelTypes["barters_obj_rel_insert_input"] | undefined;
+    barter_id?: number | undefined;
+    room_id?: string | undefined;
+  };
+  /** order by max() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_max_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+    room_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_min_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+    room_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["room_active_chat_mapping"]>;
+  };
+  /** on_conflict condition type for table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_on_conflict"]: {
+    constraint: ModelTypes["room_active_chat_mapping_constraint"];
+    update_columns: Array<ModelTypes["room_active_chat_mapping_update_column"]>;
+    where?: ModelTypes["room_active_chat_mapping_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "room_active_chat_mapping". */
+  ["room_active_chat_mapping_order_by"]: {
+    barter?: ModelTypes["barters_order_by"] | undefined;
+    barter_id?: ModelTypes["order_by"] | undefined;
+    room_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: room_active_chat_mapping */
+  ["room_active_chat_mapping_pk_columns_input"]: {
+    room_id: string;
+  };
+  ["room_active_chat_mapping_select_column"]: room_active_chat_mapping_select_column;
+  /** input type for updating data in table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_set_input"]: {
+    barter_id?: number | undefined;
+    room_id?: string | undefined;
+  };
+  /** order by stddev() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_stddev_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_stddev_pop_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_stddev_samp_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["room_active_chat_mapping_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["room_active_chat_mapping_stream_cursor_value_input"]: {
+    barter_id?: number | undefined;
+    room_id?: string | undefined;
+  };
+  /** order by sum() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_sum_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+  };
+  ["room_active_chat_mapping_update_column"]: room_active_chat_mapping_update_column;
+  ["room_active_chat_mapping_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ModelTypes["room_active_chat_mapping_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["room_active_chat_mapping_set_input"] | undefined;
+    where: ModelTypes["room_active_chat_mapping_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_var_pop_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_var_samp_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_variance_order_by"]: {
+    barter_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** columns and relationships of "secure_transfer_transactions" */
+  ["secure_transfer_transactions"]: {
+    /** An object relationship */
+    chat?: ModelTypes["chats"] | undefined;
+    counter: string;
+    current_state?: string | undefined;
+    escrow: string;
+    final_txn_signature?: string | undefined;
+    from: string;
+    id: number;
+    message_client_generated_uuid?: string | undefined;
+    message_id: number;
+    signature?: string | undefined;
+    to: string;
+  };
+  /** order by aggregate values of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_aggregate_order_by"]: {
+    avg?: ModelTypes["secure_transfer_transactions_avg_order_by"] | undefined;
+    count?: ModelTypes["order_by"] | undefined;
+    max?: ModelTypes["secure_transfer_transactions_max_order_by"] | undefined;
+    min?: ModelTypes["secure_transfer_transactions_min_order_by"] | undefined;
+    stddev?:
+      | ModelTypes["secure_transfer_transactions_stddev_order_by"]
+      | undefined;
+    stddev_pop?:
+      | ModelTypes["secure_transfer_transactions_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | ModelTypes["secure_transfer_transactions_stddev_samp_order_by"]
+      | undefined;
+    sum?: ModelTypes["secure_transfer_transactions_sum_order_by"] | undefined;
+    var_pop?:
+      | ModelTypes["secure_transfer_transactions_var_pop_order_by"]
+      | undefined;
+    var_samp?:
+      | ModelTypes["secure_transfer_transactions_var_samp_order_by"]
+      | undefined;
+    variance?:
+      | ModelTypes["secure_transfer_transactions_variance_order_by"]
+      | undefined;
+  };
+  /** input type for inserting array relation for remote table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_arr_rel_insert_input"]: {
+    data: Array<ModelTypes["secure_transfer_transactions_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | ModelTypes["secure_transfer_transactions_on_conflict"]
+      | undefined;
+  };
+  /** order by avg() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_avg_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "secure_transfer_transactions". All fields are combined with a logical 'AND'. */
+  ["secure_transfer_transactions_bool_exp"]: {
+    _and?:
+      | Array<ModelTypes["secure_transfer_transactions_bool_exp"]>
+      | undefined;
+    _not?: ModelTypes["secure_transfer_transactions_bool_exp"] | undefined;
+    _or?:
+      | Array<ModelTypes["secure_transfer_transactions_bool_exp"]>
+      | undefined;
+    chat?: ModelTypes["chats_bool_exp"] | undefined;
+    counter?: ModelTypes["String_comparison_exp"] | undefined;
+    current_state?: ModelTypes["String_comparison_exp"] | undefined;
+    escrow?: ModelTypes["String_comparison_exp"] | undefined;
+    final_txn_signature?: ModelTypes["String_comparison_exp"] | undefined;
+    from?: ModelTypes["String_comparison_exp"] | undefined;
+    id?: ModelTypes["Int_comparison_exp"] | undefined;
+    message_client_generated_uuid?:
+      | ModelTypes["String_comparison_exp"]
+      | undefined;
+    message_id?: ModelTypes["Int_comparison_exp"] | undefined;
+    signature?: ModelTypes["String_comparison_exp"] | undefined;
+    to?: ModelTypes["String_comparison_exp"] | undefined;
+  };
+  ["secure_transfer_transactions_constraint"]: secure_transfer_transactions_constraint;
+  /** input type for incrementing numeric columns in table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_inc_input"]: {
+    id?: number | undefined;
+    message_id?: number | undefined;
+  };
+  /** input type for inserting data into table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_insert_input"]: {
+    chat?: ModelTypes["chats_obj_rel_insert_input"] | undefined;
+    counter?: string | undefined;
+    current_state?: string | undefined;
+    escrow?: string | undefined;
+    final_txn_signature?: string | undefined;
+    from?: string | undefined;
+    id?: number | undefined;
+    message_client_generated_uuid?: string | undefined;
+    message_id?: number | undefined;
+    signature?: string | undefined;
+    to?: string | undefined;
+  };
+  /** order by max() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_max_order_by"]: {
+    counter?: ModelTypes["order_by"] | undefined;
+    current_state?: ModelTypes["order_by"] | undefined;
+    escrow?: ModelTypes["order_by"] | undefined;
+    final_txn_signature?: ModelTypes["order_by"] | undefined;
+    from?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    message_client_generated_uuid?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+    signature?: ModelTypes["order_by"] | undefined;
+    to?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_min_order_by"]: {
+    counter?: ModelTypes["order_by"] | undefined;
+    current_state?: ModelTypes["order_by"] | undefined;
+    escrow?: ModelTypes["order_by"] | undefined;
+    final_txn_signature?: ModelTypes["order_by"] | undefined;
+    from?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    message_client_generated_uuid?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+    signature?: ModelTypes["order_by"] | undefined;
+    to?: ModelTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["secure_transfer_transactions"]>;
+  };
+  /** on_conflict condition type for table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_on_conflict"]: {
+    constraint: ModelTypes["secure_transfer_transactions_constraint"];
+    update_columns: Array<
+      ModelTypes["secure_transfer_transactions_update_column"]
+    >;
+    where?: ModelTypes["secure_transfer_transactions_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "secure_transfer_transactions". */
+  ["secure_transfer_transactions_order_by"]: {
+    chat?: ModelTypes["chats_order_by"] | undefined;
+    counter?: ModelTypes["order_by"] | undefined;
+    current_state?: ModelTypes["order_by"] | undefined;
+    escrow?: ModelTypes["order_by"] | undefined;
+    final_txn_signature?: ModelTypes["order_by"] | undefined;
+    from?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    message_client_generated_uuid?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+    signature?: ModelTypes["order_by"] | undefined;
+    to?: ModelTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: secure_transfer_transactions */
+  ["secure_transfer_transactions_pk_columns_input"]: {
+    id: number;
+  };
+  ["secure_transfer_transactions_select_column"]: secure_transfer_transactions_select_column;
+  /** input type for updating data in table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_set_input"]: {
+    counter?: string | undefined;
+    current_state?: string | undefined;
+    escrow?: string | undefined;
+    final_txn_signature?: string | undefined;
+    from?: string | undefined;
+    id?: number | undefined;
+    message_client_generated_uuid?: string | undefined;
+    message_id?: number | undefined;
+    signature?: string | undefined;
+    to?: string | undefined;
+  };
+  /** order by stddev() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_pop_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_samp_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["secure_transfer_transactions_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["secure_transfer_transactions_stream_cursor_value_input"]: {
+    counter?: string | undefined;
+    current_state?: string | undefined;
+    escrow?: string | undefined;
+    final_txn_signature?: string | undefined;
+    from?: string | undefined;
+    id?: number | undefined;
+    message_client_generated_uuid?: string | undefined;
+    message_id?: number | undefined;
+    signature?: string | undefined;
+    to?: string | undefined;
+  };
+  /** order by sum() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_sum_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+  };
+  ["secure_transfer_transactions_update_column"]: secure_transfer_transactions_update_column;
+  ["secure_transfer_transactions_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ModelTypes["secure_transfer_transactions_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["secure_transfer_transactions_set_input"] | undefined;
+    where: ModelTypes["secure_transfer_transactions_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_var_pop_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_var_samp_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_variance_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** columns and relationships of "simple_transactions" */
+  ["simple_transactions"]: {
+    client_generated_uuid: string;
+    id: number;
+    txn_signature: string;
+  };
+  /** order by aggregate values of table "simple_transactions" */
+  ["simple_transactions_aggregate_order_by"]: {
+    avg?: ModelTypes["simple_transactions_avg_order_by"] | undefined;
+    count?: ModelTypes["order_by"] | undefined;
+    max?: ModelTypes["simple_transactions_max_order_by"] | undefined;
+    min?: ModelTypes["simple_transactions_min_order_by"] | undefined;
+    stddev?: ModelTypes["simple_transactions_stddev_order_by"] | undefined;
+    stddev_pop?:
+      | ModelTypes["simple_transactions_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | ModelTypes["simple_transactions_stddev_samp_order_by"]
+      | undefined;
+    sum?: ModelTypes["simple_transactions_sum_order_by"] | undefined;
+    var_pop?: ModelTypes["simple_transactions_var_pop_order_by"] | undefined;
+    var_samp?: ModelTypes["simple_transactions_var_samp_order_by"] | undefined;
+    variance?: ModelTypes["simple_transactions_variance_order_by"] | undefined;
+  };
+  /** input type for inserting array relation for remote table "simple_transactions" */
+  ["simple_transactions_arr_rel_insert_input"]: {
+    data: Array<ModelTypes["simple_transactions_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: ModelTypes["simple_transactions_on_conflict"] | undefined;
+  };
+  /** order by avg() on columns of table "simple_transactions" */
+  ["simple_transactions_avg_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "simple_transactions". All fields are combined with a logical 'AND'. */
+  ["simple_transactions_bool_exp"]: {
+    _and?: Array<ModelTypes["simple_transactions_bool_exp"]> | undefined;
+    _not?: ModelTypes["simple_transactions_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["simple_transactions_bool_exp"]> | undefined;
+    client_generated_uuid?: ModelTypes["String_comparison_exp"] | undefined;
+    id?: ModelTypes["Int_comparison_exp"] | undefined;
+    txn_signature?: ModelTypes["String_comparison_exp"] | undefined;
+  };
+  ["simple_transactions_constraint"]: simple_transactions_constraint;
+  /** input type for incrementing numeric columns in table "simple_transactions" */
+  ["simple_transactions_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "simple_transactions" */
+  ["simple_transactions_insert_input"]: {
+    client_generated_uuid?: string | undefined;
+    id?: number | undefined;
+    txn_signature?: string | undefined;
+  };
+  /** order by max() on columns of table "simple_transactions" */
+  ["simple_transactions_max_order_by"]: {
+    client_generated_uuid?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    txn_signature?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "simple_transactions" */
+  ["simple_transactions_min_order_by"]: {
+    client_generated_uuid?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    txn_signature?: ModelTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "simple_transactions" */
+  ["simple_transactions_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["simple_transactions"]>;
+  };
+  /** on_conflict condition type for table "simple_transactions" */
+  ["simple_transactions_on_conflict"]: {
+    constraint: ModelTypes["simple_transactions_constraint"];
+    update_columns: Array<ModelTypes["simple_transactions_update_column"]>;
+    where?: ModelTypes["simple_transactions_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "simple_transactions". */
+  ["simple_transactions_order_by"]: {
+    client_generated_uuid?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    txn_signature?: ModelTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: simple_transactions */
+  ["simple_transactions_pk_columns_input"]: {
+    id: number;
+  };
+  ["simple_transactions_select_column"]: simple_transactions_select_column;
+  /** input type for updating data in table "simple_transactions" */
+  ["simple_transactions_set_input"]: {
+    client_generated_uuid?: string | undefined;
+    id?: number | undefined;
+    txn_signature?: string | undefined;
+  };
+  /** order by stddev() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_pop_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_samp_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "simple_transactions" */
+  ["simple_transactions_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["simple_transactions_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["simple_transactions_stream_cursor_value_input"]: {
+    client_generated_uuid?: string | undefined;
+    id?: number | undefined;
+    txn_signature?: string | undefined;
+  };
+  /** order by sum() on columns of table "simple_transactions" */
+  ["simple_transactions_sum_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  ["simple_transactions_update_column"]: simple_transactions_update_column;
+  ["simple_transactions_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ModelTypes["simple_transactions_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["simple_transactions_set_input"] | undefined;
+    where: ModelTypes["simple_transactions_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "simple_transactions" */
+  ["simple_transactions_var_pop_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "simple_transactions" */
+  ["simple_transactions_var_samp_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "simple_transactions" */
+  ["simple_transactions_variance_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
   };
   ["subscription_root"]: {
+    /** fetch data from the table: "barters" */
+    barters: Array<ModelTypes["barters"]>;
+    /** fetch data from the table: "barters" using primary key columns */
+    barters_by_pk?: ModelTypes["barters"] | undefined;
+    /** fetch data from the table in a streaming manner: "barters" */
+    barters_stream: Array<ModelTypes["barters"]>;
+    /** An array relationship */
+    chat_barter_metadata: Array<ModelTypes["chat_barter_metadata"]>;
+    /** fetch data from the table in a streaming manner: "chat_barter_metadata" */
+    chat_barter_metadata_stream: Array<ModelTypes["chat_barter_metadata"]>;
+    /** An array relationship */
+    chat_media_messages: Array<ModelTypes["chat_media_messages"]>;
+    /** fetch data from the table: "chat_media_messages" using primary key columns */
+    chat_media_messages_by_pk?: ModelTypes["chat_media_messages"] | undefined;
+    /** fetch data from the table in a streaming manner: "chat_media_messages" */
+    chat_media_messages_stream: Array<ModelTypes["chat_media_messages"]>;
     /** fetch data from the table: "chats" */
     chats: Array<ModelTypes["chats"]>;
     /** fetch data from the table: "chats" using primary key columns */
     chats_by_pk?: ModelTypes["chats"] | undefined;
-    /** fetch data from the table in a streaming manner : "chats" */
+    /** fetch data from the table in a streaming manner: "chats" */
     chats_stream: Array<ModelTypes["chats"]>;
+    /** fetch data from the table: "room_active_chat_mapping" */
+    room_active_chat_mapping: Array<ModelTypes["room_active_chat_mapping"]>;
+    /** fetch data from the table: "room_active_chat_mapping" using primary key columns */
+    room_active_chat_mapping_by_pk?:
+      | ModelTypes["room_active_chat_mapping"]
+      | undefined;
+    /** fetch data from the table in a streaming manner: "room_active_chat_mapping" */
+    room_active_chat_mapping_stream: Array<
+      ModelTypes["room_active_chat_mapping"]
+    >;
+    /** An array relationship */
+    secure_transfer_transactions: Array<
+      ModelTypes["secure_transfer_transactions"]
+    >;
+    /** fetch data from the table: "secure_transfer_transactions" using primary key columns */
+    secure_transfer_transactions_by_pk?:
+      | ModelTypes["secure_transfer_transactions"]
+      | undefined;
+    /** fetch data from the table in a streaming manner: "secure_transfer_transactions" */
+    secure_transfer_transactions_stream: Array<
+      ModelTypes["secure_transfer_transactions"]
+    >;
+    /** An array relationship */
+    simple_transactions: Array<ModelTypes["simple_transactions"]>;
+    /** fetch data from the table: "simple_transactions" using primary key columns */
+    simple_transactions_by_pk?: ModelTypes["simple_transactions"] | undefined;
+    /** fetch data from the table in a streaming manner: "simple_transactions" */
+    simple_transactions_stream: Array<ModelTypes["simple_transactions"]>;
   };
   ["timestamptz"]: any;
   /** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
@@ -1841,15 +8490,464 @@ export type GraphQLTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined;
   };
+  /** columns and relationships of "barters" */
+  ["barters"]: {
+    __typename: "barters";
+    /** An array relationship */
+    chat_barter_metadata: Array<GraphQLTypes["chat_barter_metadata"]>;
+    id: number;
+    on_chain_state?: string | undefined;
+    /** An array relationship */
+    room_active_chat_mappings: Array<GraphQLTypes["room_active_chat_mapping"]>;
+    room_id?: string | undefined;
+    state: string;
+    user1_offers: string;
+    user2_offers: string;
+  };
+  /** Boolean expression to filter rows from the table "barters". All fields are combined with a logical 'AND'. */
+  ["barters_bool_exp"]: {
+    _and?: Array<GraphQLTypes["barters_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["barters_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["barters_bool_exp"]> | undefined;
+    chat_barter_metadata?:
+      | GraphQLTypes["chat_barter_metadata_bool_exp"]
+      | undefined;
+    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    on_chain_state?: GraphQLTypes["String_comparison_exp"] | undefined;
+    room_active_chat_mappings?:
+      | GraphQLTypes["room_active_chat_mapping_bool_exp"]
+      | undefined;
+    room_id?: GraphQLTypes["String_comparison_exp"] | undefined;
+    state?: GraphQLTypes["String_comparison_exp"] | undefined;
+    user1_offers?: GraphQLTypes["String_comparison_exp"] | undefined;
+    user2_offers?: GraphQLTypes["String_comparison_exp"] | undefined;
+  };
+  /** unique or primary key constraints on table "barters" */
+  ["barters_constraint"]: barters_constraint;
+  /** input type for incrementing numeric columns in table "barters" */
+  ["barters_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "barters" */
+  ["barters_insert_input"]: {
+    chat_barter_metadata?:
+      | GraphQLTypes["chat_barter_metadata_arr_rel_insert_input"]
+      | undefined;
+    id?: number | undefined;
+    on_chain_state?: string | undefined;
+    room_active_chat_mappings?:
+      | GraphQLTypes["room_active_chat_mapping_arr_rel_insert_input"]
+      | undefined;
+    room_id?: string | undefined;
+    state?: string | undefined;
+    user1_offers?: string | undefined;
+    user2_offers?: string | undefined;
+  };
+  /** response of any mutation on the table "barters" */
+  ["barters_mutation_response"]: {
+    __typename: "barters_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["barters"]>;
+  };
+  /** input type for inserting object relation for remote table "barters" */
+  ["barters_obj_rel_insert_input"]: {
+    data: GraphQLTypes["barters_insert_input"];
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["barters_on_conflict"] | undefined;
+  };
+  /** on_conflict condition type for table "barters" */
+  ["barters_on_conflict"]: {
+    constraint: GraphQLTypes["barters_constraint"];
+    update_columns: Array<GraphQLTypes["barters_update_column"]>;
+    where?: GraphQLTypes["barters_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "barters". */
+  ["barters_order_by"]: {
+    chat_barter_metadata_aggregate?:
+      | GraphQLTypes["chat_barter_metadata_aggregate_order_by"]
+      | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    on_chain_state?: GraphQLTypes["order_by"] | undefined;
+    room_active_chat_mappings_aggregate?:
+      | GraphQLTypes["room_active_chat_mapping_aggregate_order_by"]
+      | undefined;
+    room_id?: GraphQLTypes["order_by"] | undefined;
+    state?: GraphQLTypes["order_by"] | undefined;
+    user1_offers?: GraphQLTypes["order_by"] | undefined;
+    user2_offers?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: barters */
+  ["barters_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "barters" */
+  ["barters_select_column"]: barters_select_column;
+  /** input type for updating data in table "barters" */
+  ["barters_set_input"]: {
+    id?: number | undefined;
+    on_chain_state?: string | undefined;
+    room_id?: string | undefined;
+    state?: string | undefined;
+    user1_offers?: string | undefined;
+    user2_offers?: string | undefined;
+  };
+  /** Streaming cursor of the table "barters" */
+  ["barters_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["barters_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["barters_stream_cursor_value_input"]: {
+    id?: number | undefined;
+    on_chain_state?: string | undefined;
+    room_id?: string | undefined;
+    state?: string | undefined;
+    user1_offers?: string | undefined;
+    user2_offers?: string | undefined;
+  };
+  /** update columns of table "barters" */
+  ["barters_update_column"]: barters_update_column;
+  ["barters_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: GraphQLTypes["barters_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: GraphQLTypes["barters_set_input"] | undefined;
+    where: GraphQLTypes["barters_bool_exp"];
+  };
+  /** columns and relationships of "chat_barter_metadata" */
+  ["chat_barter_metadata"]: {
+    __typename: "chat_barter_metadata";
+    /** An object relationship */
+    barter: GraphQLTypes["barters"];
+    barter_id: number;
+    /** An object relationship */
+    chat: GraphQLTypes["chats"];
+    chat_client_generated_uuid: string;
+  };
+  /** order by aggregate values of table "chat_barter_metadata" */
+  ["chat_barter_metadata_aggregate_order_by"]: {
+    avg?: GraphQLTypes["chat_barter_metadata_avg_order_by"] | undefined;
+    count?: GraphQLTypes["order_by"] | undefined;
+    max?: GraphQLTypes["chat_barter_metadata_max_order_by"] | undefined;
+    min?: GraphQLTypes["chat_barter_metadata_min_order_by"] | undefined;
+    stddev?: GraphQLTypes["chat_barter_metadata_stddev_order_by"] | undefined;
+    stddev_pop?:
+      | GraphQLTypes["chat_barter_metadata_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | GraphQLTypes["chat_barter_metadata_stddev_samp_order_by"]
+      | undefined;
+    sum?: GraphQLTypes["chat_barter_metadata_sum_order_by"] | undefined;
+    var_pop?: GraphQLTypes["chat_barter_metadata_var_pop_order_by"] | undefined;
+    var_samp?:
+      | GraphQLTypes["chat_barter_metadata_var_samp_order_by"]
+      | undefined;
+    variance?:
+      | GraphQLTypes["chat_barter_metadata_variance_order_by"]
+      | undefined;
+  };
+  /** input type for inserting array relation for remote table "chat_barter_metadata" */
+  ["chat_barter_metadata_arr_rel_insert_input"]: {
+    data: Array<GraphQLTypes["chat_barter_metadata_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["chat_barter_metadata_on_conflict"] | undefined;
+  };
+  /** order by avg() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_avg_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "chat_barter_metadata". All fields are combined with a logical 'AND'. */
+  ["chat_barter_metadata_bool_exp"]: {
+    _and?: Array<GraphQLTypes["chat_barter_metadata_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["chat_barter_metadata_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["chat_barter_metadata_bool_exp"]> | undefined;
+    barter?: GraphQLTypes["barters_bool_exp"] | undefined;
+    barter_id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    chat?: GraphQLTypes["chats_bool_exp"] | undefined;
+    chat_client_generated_uuid?:
+      | GraphQLTypes["String_comparison_exp"]
+      | undefined;
+  };
+  /** unique or primary key constraints on table "chat_barter_metadata" */
+  ["chat_barter_metadata_constraint"]: chat_barter_metadata_constraint;
+  /** input type for inserting data into table "chat_barter_metadata" */
+  ["chat_barter_metadata_insert_input"]: {
+    barter?: GraphQLTypes["barters_obj_rel_insert_input"] | undefined;
+    barter_id?: number | undefined;
+    chat?: GraphQLTypes["chats_obj_rel_insert_input"] | undefined;
+    chat_client_generated_uuid?: string | undefined;
+  };
+  /** order by max() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_max_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+    chat_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_min_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+    chat_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "chat_barter_metadata" */
+  ["chat_barter_metadata_mutation_response"]: {
+    __typename: "chat_barter_metadata_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["chat_barter_metadata"]>;
+  };
+  /** on_conflict condition type for table "chat_barter_metadata" */
+  ["chat_barter_metadata_on_conflict"]: {
+    constraint: GraphQLTypes["chat_barter_metadata_constraint"];
+    update_columns: Array<GraphQLTypes["chat_barter_metadata_update_column"]>;
+    where?: GraphQLTypes["chat_barter_metadata_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "chat_barter_metadata". */
+  ["chat_barter_metadata_order_by"]: {
+    barter?: GraphQLTypes["barters_order_by"] | undefined;
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+    chat?: GraphQLTypes["chats_order_by"] | undefined;
+    chat_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** select columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_select_column"]: chat_barter_metadata_select_column;
+  /** order by stddev() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_stddev_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_stddev_pop_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_stddev_samp_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "chat_barter_metadata" */
+  ["chat_barter_metadata_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["chat_barter_metadata_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["chat_barter_metadata_stream_cursor_value_input"]: {
+    barter_id?: number | undefined;
+    chat_client_generated_uuid?: string | undefined;
+  };
+  /** order by sum() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_sum_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** placeholder for update columns of table "chat_barter_metadata" (current role has no relevant permissions) */
+  ["chat_barter_metadata_update_column"]: chat_barter_metadata_update_column;
+  ["chat_barter_metadata_updates"]: {
+    where: GraphQLTypes["chat_barter_metadata_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_var_pop_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_var_samp_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "chat_barter_metadata" */
+  ["chat_barter_metadata_variance_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** columns and relationships of "chat_media_messages" */
+  ["chat_media_messages"]: {
+    __typename: "chat_media_messages";
+    /** An object relationship */
+    chat: GraphQLTypes["chats"];
+    id: number;
+    media_kind: string;
+    media_link: string;
+    message_client_generated_uuid: string;
+  };
+  /** order by aggregate values of table "chat_media_messages" */
+  ["chat_media_messages_aggregate_order_by"]: {
+    avg?: GraphQLTypes["chat_media_messages_avg_order_by"] | undefined;
+    count?: GraphQLTypes["order_by"] | undefined;
+    max?: GraphQLTypes["chat_media_messages_max_order_by"] | undefined;
+    min?: GraphQLTypes["chat_media_messages_min_order_by"] | undefined;
+    stddev?: GraphQLTypes["chat_media_messages_stddev_order_by"] | undefined;
+    stddev_pop?:
+      | GraphQLTypes["chat_media_messages_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | GraphQLTypes["chat_media_messages_stddev_samp_order_by"]
+      | undefined;
+    sum?: GraphQLTypes["chat_media_messages_sum_order_by"] | undefined;
+    var_pop?: GraphQLTypes["chat_media_messages_var_pop_order_by"] | undefined;
+    var_samp?:
+      | GraphQLTypes["chat_media_messages_var_samp_order_by"]
+      | undefined;
+    variance?:
+      | GraphQLTypes["chat_media_messages_variance_order_by"]
+      | undefined;
+  };
+  /** input type for inserting array relation for remote table "chat_media_messages" */
+  ["chat_media_messages_arr_rel_insert_input"]: {
+    data: Array<GraphQLTypes["chat_media_messages_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["chat_media_messages_on_conflict"] | undefined;
+  };
+  /** order by avg() on columns of table "chat_media_messages" */
+  ["chat_media_messages_avg_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "chat_media_messages". All fields are combined with a logical 'AND'. */
+  ["chat_media_messages_bool_exp"]: {
+    _and?: Array<GraphQLTypes["chat_media_messages_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["chat_media_messages_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["chat_media_messages_bool_exp"]> | undefined;
+    chat?: GraphQLTypes["chats_bool_exp"] | undefined;
+    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    media_kind?: GraphQLTypes["String_comparison_exp"] | undefined;
+    media_link?: GraphQLTypes["String_comparison_exp"] | undefined;
+    message_client_generated_uuid?:
+      | GraphQLTypes["String_comparison_exp"]
+      | undefined;
+  };
+  /** unique or primary key constraints on table "chat_media_messages" */
+  ["chat_media_messages_constraint"]: chat_media_messages_constraint;
+  /** input type for incrementing numeric columns in table "chat_media_messages" */
+  ["chat_media_messages_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "chat_media_messages" */
+  ["chat_media_messages_insert_input"]: {
+    chat?: GraphQLTypes["chats_obj_rel_insert_input"] | undefined;
+    id?: number | undefined;
+    media_kind?: string | undefined;
+    media_link?: string | undefined;
+    message_client_generated_uuid?: string | undefined;
+  };
+  /** order by max() on columns of table "chat_media_messages" */
+  ["chat_media_messages_max_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    media_kind?: GraphQLTypes["order_by"] | undefined;
+    media_link?: GraphQLTypes["order_by"] | undefined;
+    message_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "chat_media_messages" */
+  ["chat_media_messages_min_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    media_kind?: GraphQLTypes["order_by"] | undefined;
+    media_link?: GraphQLTypes["order_by"] | undefined;
+    message_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "chat_media_messages" */
+  ["chat_media_messages_mutation_response"]: {
+    __typename: "chat_media_messages_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["chat_media_messages"]>;
+  };
+  /** on_conflict condition type for table "chat_media_messages" */
+  ["chat_media_messages_on_conflict"]: {
+    constraint: GraphQLTypes["chat_media_messages_constraint"];
+    update_columns: Array<GraphQLTypes["chat_media_messages_update_column"]>;
+    where?: GraphQLTypes["chat_media_messages_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "chat_media_messages". */
+  ["chat_media_messages_order_by"]: {
+    chat?: GraphQLTypes["chats_order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    media_kind?: GraphQLTypes["order_by"] | undefined;
+    media_link?: GraphQLTypes["order_by"] | undefined;
+    message_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: chat_media_messages */
+  ["chat_media_messages_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "chat_media_messages" */
+  ["chat_media_messages_select_column"]: chat_media_messages_select_column;
+  /** input type for updating data in table "chat_media_messages" */
+  ["chat_media_messages_set_input"]: {
+    id?: number | undefined;
+    media_kind?: string | undefined;
+    media_link?: string | undefined;
+    message_client_generated_uuid?: string | undefined;
+  };
+  /** order by stddev() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_pop_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_samp_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "chat_media_messages" */
+  ["chat_media_messages_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["chat_media_messages_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["chat_media_messages_stream_cursor_value_input"]: {
+    id?: number | undefined;
+    media_kind?: string | undefined;
+    media_link?: string | undefined;
+    message_client_generated_uuid?: string | undefined;
+  };
+  /** order by sum() on columns of table "chat_media_messages" */
+  ["chat_media_messages_sum_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** update columns of table "chat_media_messages" */
+  ["chat_media_messages_update_column"]: chat_media_messages_update_column;
+  ["chat_media_messages_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: GraphQLTypes["chat_media_messages_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: GraphQLTypes["chat_media_messages_set_input"] | undefined;
+    where: GraphQLTypes["chat_media_messages_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "chat_media_messages" */
+  ["chat_media_messages_var_pop_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "chat_media_messages" */
+  ["chat_media_messages_var_samp_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "chat_media_messages" */
+  ["chat_media_messages_variance_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
   /** columns and relationships of "chats" */
   ["chats"]: {
     __typename: "chats";
+    /** An array relationship */
+    chat_barter_metadata: Array<GraphQLTypes["chat_barter_metadata"]>;
+    /** An array relationship */
+    chat_media_messages: Array<GraphQLTypes["chat_media_messages"]>;
     client_generated_uuid: string;
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     id: number;
     message: string;
     message_kind?: string | undefined;
+    parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
+    /** An array relationship */
+    secure_transfer_transactions: Array<
+      GraphQLTypes["secure_transfer_transactions"]
+    >;
+    /** An array relationship */
+    simple_transactions: Array<GraphQLTypes["simple_transactions"]>;
     type: string;
     username?: string | undefined;
     uuid?: string | undefined;
@@ -1859,12 +8957,27 @@ export type GraphQLTypes = {
     _and?: Array<GraphQLTypes["chats_bool_exp"]> | undefined;
     _not?: GraphQLTypes["chats_bool_exp"] | undefined;
     _or?: Array<GraphQLTypes["chats_bool_exp"]> | undefined;
+    chat_barter_metadata?:
+      | GraphQLTypes["chat_barter_metadata_bool_exp"]
+      | undefined;
+    chat_media_messages?:
+      | GraphQLTypes["chat_media_messages_bool_exp"]
+      | undefined;
     client_generated_uuid?: GraphQLTypes["String_comparison_exp"] | undefined;
     created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
     id?: GraphQLTypes["Int_comparison_exp"] | undefined;
     message?: GraphQLTypes["String_comparison_exp"] | undefined;
     message_kind?: GraphQLTypes["String_comparison_exp"] | undefined;
+    parent_client_generated_uuid?:
+      | GraphQLTypes["String_comparison_exp"]
+      | undefined;
     room?: GraphQLTypes["String_comparison_exp"] | undefined;
+    secure_transfer_transactions?:
+      | GraphQLTypes["secure_transfer_transactions_bool_exp"]
+      | undefined;
+    simple_transactions?:
+      | GraphQLTypes["simple_transactions_bool_exp"]
+      | undefined;
     type?: GraphQLTypes["String_comparison_exp"] | undefined;
     username?: GraphQLTypes["String_comparison_exp"] | undefined;
     uuid?: GraphQLTypes["String_comparison_exp"] | undefined;
@@ -1873,12 +8986,25 @@ export type GraphQLTypes = {
   ["chats_constraint"]: chats_constraint;
   /** input type for inserting data into table "chats" */
   ["chats_insert_input"]: {
+    chat_barter_metadata?:
+      | GraphQLTypes["chat_barter_metadata_arr_rel_insert_input"]
+      | undefined;
+    chat_media_messages?:
+      | GraphQLTypes["chat_media_messages_arr_rel_insert_input"]
+      | undefined;
     client_generated_uuid?: string | undefined;
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
+    parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
+    secure_transfer_transactions?:
+      | GraphQLTypes["secure_transfer_transactions_arr_rel_insert_input"]
+      | undefined;
+    simple_transactions?:
+      | GraphQLTypes["simple_transactions_arr_rel_insert_input"]
+      | undefined;
     type?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
@@ -1891,6 +9017,12 @@ export type GraphQLTypes = {
     /** data from the rows affected by the mutation */
     returning: Array<GraphQLTypes["chats"]>;
   };
+  /** input type for inserting object relation for remote table "chats" */
+  ["chats_obj_rel_insert_input"]: {
+    data: GraphQLTypes["chats_insert_input"];
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["chats_on_conflict"] | undefined;
+  };
   /** on_conflict condition type for table "chats" */
   ["chats_on_conflict"]: {
     constraint: GraphQLTypes["chats_constraint"];
@@ -1899,12 +9031,25 @@ export type GraphQLTypes = {
   };
   /** Ordering options when selecting data from "chats". */
   ["chats_order_by"]: {
+    chat_barter_metadata_aggregate?:
+      | GraphQLTypes["chat_barter_metadata_aggregate_order_by"]
+      | undefined;
+    chat_media_messages_aggregate?:
+      | GraphQLTypes["chat_media_messages_aggregate_order_by"]
+      | undefined;
     client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
     created_at?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     message?: GraphQLTypes["order_by"] | undefined;
     message_kind?: GraphQLTypes["order_by"] | undefined;
+    parent_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
     room?: GraphQLTypes["order_by"] | undefined;
+    secure_transfer_transactions_aggregate?:
+      | GraphQLTypes["secure_transfer_transactions_aggregate_order_by"]
+      | undefined;
+    simple_transactions_aggregate?:
+      | GraphQLTypes["simple_transactions_aggregate_order_by"]
+      | undefined;
     type?: GraphQLTypes["order_by"] | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
     uuid?: GraphQLTypes["order_by"] | undefined;
@@ -1925,6 +9070,7 @@ export type GraphQLTypes = {
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
+    parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
     type?: string | undefined;
     username?: string | undefined;
@@ -1937,28 +9083,774 @@ export type GraphQLTypes = {
   /** mutation root */
   ["mutation_root"]: {
     __typename: "mutation_root";
+    /** delete data from the table: "room_active_chat_mapping" */
+    delete_room_active_chat_mapping?:
+      | GraphQLTypes["room_active_chat_mapping_mutation_response"]
+      | undefined;
+    /** delete single row from the table: "room_active_chat_mapping" */
+    delete_room_active_chat_mapping_by_pk?:
+      | GraphQLTypes["room_active_chat_mapping"]
+      | undefined;
+    /** insert data into the table: "barters" */
+    insert_barters?: GraphQLTypes["barters_mutation_response"] | undefined;
+    /** insert a single row into the table: "barters" */
+    insert_barters_one?: GraphQLTypes["barters"] | undefined;
+    /** insert data into the table: "chat_barter_metadata" */
+    insert_chat_barter_metadata?:
+      | GraphQLTypes["chat_barter_metadata_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "chat_barter_metadata" */
+    insert_chat_barter_metadata_one?:
+      | GraphQLTypes["chat_barter_metadata"]
+      | undefined;
+    /** insert data into the table: "chat_media_messages" */
+    insert_chat_media_messages?:
+      | GraphQLTypes["chat_media_messages_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "chat_media_messages" */
+    insert_chat_media_messages_one?:
+      | GraphQLTypes["chat_media_messages"]
+      | undefined;
     /** insert data into the table: "chats" */
     insert_chats?: GraphQLTypes["chats_mutation_response"] | undefined;
     /** insert a single row into the table: "chats" */
     insert_chats_one?: GraphQLTypes["chats"] | undefined;
+    /** insert data into the table: "room_active_chat_mapping" */
+    insert_room_active_chat_mapping?:
+      | GraphQLTypes["room_active_chat_mapping_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "room_active_chat_mapping" */
+    insert_room_active_chat_mapping_one?:
+      | GraphQLTypes["room_active_chat_mapping"]
+      | undefined;
+    /** insert data into the table: "secure_transfer_transactions" */
+    insert_secure_transfer_transactions?:
+      | GraphQLTypes["secure_transfer_transactions_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "secure_transfer_transactions" */
+    insert_secure_transfer_transactions_one?:
+      | GraphQLTypes["secure_transfer_transactions"]
+      | undefined;
+    /** insert data into the table: "simple_transactions" */
+    insert_simple_transactions?:
+      | GraphQLTypes["simple_transactions_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "simple_transactions" */
+    insert_simple_transactions_one?:
+      | GraphQLTypes["simple_transactions"]
+      | undefined;
+    /** update data of the table: "barters" */
+    update_barters?: GraphQLTypes["barters_mutation_response"] | undefined;
+    /** update single row of the table: "barters" */
+    update_barters_by_pk?: GraphQLTypes["barters"] | undefined;
+    /** update multiples rows of table: "barters" */
+    update_barters_many?:
+      | Array<GraphQLTypes["barters_mutation_response"] | undefined>
+      | undefined;
+    /** update data of the table: "chat_barter_metadata" */
+    update_chat_barter_metadata?:
+      | GraphQLTypes["chat_barter_metadata_mutation_response"]
+      | undefined;
+    /** update multiples rows of table: "chat_barter_metadata" */
+    update_chat_barter_metadata_many?:
+      | Array<
+          GraphQLTypes["chat_barter_metadata_mutation_response"] | undefined
+        >
+      | undefined;
+    /** update data of the table: "chat_media_messages" */
+    update_chat_media_messages?:
+      | GraphQLTypes["chat_media_messages_mutation_response"]
+      | undefined;
+    /** update single row of the table: "chat_media_messages" */
+    update_chat_media_messages_by_pk?:
+      | GraphQLTypes["chat_media_messages"]
+      | undefined;
+    /** update multiples rows of table: "chat_media_messages" */
+    update_chat_media_messages_many?:
+      | Array<GraphQLTypes["chat_media_messages_mutation_response"] | undefined>
+      | undefined;
+    /** update data of the table: "room_active_chat_mapping" */
+    update_room_active_chat_mapping?:
+      | GraphQLTypes["room_active_chat_mapping_mutation_response"]
+      | undefined;
+    /** update single row of the table: "room_active_chat_mapping" */
+    update_room_active_chat_mapping_by_pk?:
+      | GraphQLTypes["room_active_chat_mapping"]
+      | undefined;
+    /** update multiples rows of table: "room_active_chat_mapping" */
+    update_room_active_chat_mapping_many?:
+      | Array<
+          GraphQLTypes["room_active_chat_mapping_mutation_response"] | undefined
+        >
+      | undefined;
+    /** update data of the table: "secure_transfer_transactions" */
+    update_secure_transfer_transactions?:
+      | GraphQLTypes["secure_transfer_transactions_mutation_response"]
+      | undefined;
+    /** update single row of the table: "secure_transfer_transactions" */
+    update_secure_transfer_transactions_by_pk?:
+      | GraphQLTypes["secure_transfer_transactions"]
+      | undefined;
+    /** update multiples rows of table: "secure_transfer_transactions" */
+    update_secure_transfer_transactions_many?:
+      | Array<
+          | GraphQLTypes["secure_transfer_transactions_mutation_response"]
+          | undefined
+        >
+      | undefined;
+    /** update data of the table: "simple_transactions" */
+    update_simple_transactions?:
+      | GraphQLTypes["simple_transactions_mutation_response"]
+      | undefined;
+    /** update single row of the table: "simple_transactions" */
+    update_simple_transactions_by_pk?:
+      | GraphQLTypes["simple_transactions"]
+      | undefined;
+    /** update multiples rows of table: "simple_transactions" */
+    update_simple_transactions_many?:
+      | Array<GraphQLTypes["simple_transactions_mutation_response"] | undefined>
+      | undefined;
   };
   /** column ordering options */
   ["order_by"]: order_by;
   ["query_root"]: {
     __typename: "query_root";
+    /** fetch data from the table: "barters" */
+    barters: Array<GraphQLTypes["barters"]>;
+    /** fetch data from the table: "barters" using primary key columns */
+    barters_by_pk?: GraphQLTypes["barters"] | undefined;
+    /** An array relationship */
+    chat_barter_metadata: Array<GraphQLTypes["chat_barter_metadata"]>;
+    /** An array relationship */
+    chat_media_messages: Array<GraphQLTypes["chat_media_messages"]>;
+    /** fetch data from the table: "chat_media_messages" using primary key columns */
+    chat_media_messages_by_pk?: GraphQLTypes["chat_media_messages"] | undefined;
     /** fetch data from the table: "chats" */
     chats: Array<GraphQLTypes["chats"]>;
     /** fetch data from the table: "chats" using primary key columns */
     chats_by_pk?: GraphQLTypes["chats"] | undefined;
+    /** fetch data from the table: "room_active_chat_mapping" */
+    room_active_chat_mapping: Array<GraphQLTypes["room_active_chat_mapping"]>;
+    /** fetch data from the table: "room_active_chat_mapping" using primary key columns */
+    room_active_chat_mapping_by_pk?:
+      | GraphQLTypes["room_active_chat_mapping"]
+      | undefined;
+    /** An array relationship */
+    secure_transfer_transactions: Array<
+      GraphQLTypes["secure_transfer_transactions"]
+    >;
+    /** fetch data from the table: "secure_transfer_transactions" using primary key columns */
+    secure_transfer_transactions_by_pk?:
+      | GraphQLTypes["secure_transfer_transactions"]
+      | undefined;
+    /** An array relationship */
+    simple_transactions: Array<GraphQLTypes["simple_transactions"]>;
+    /** fetch data from the table: "simple_transactions" using primary key columns */
+    simple_transactions_by_pk?: GraphQLTypes["simple_transactions"] | undefined;
+  };
+  /** columns and relationships of "room_active_chat_mapping" */
+  ["room_active_chat_mapping"]: {
+    __typename: "room_active_chat_mapping";
+    /** An object relationship */
+    barter: GraphQLTypes["barters"];
+    barter_id: number;
+    room_id: string;
+  };
+  /** order by aggregate values of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_aggregate_order_by"]: {
+    avg?: GraphQLTypes["room_active_chat_mapping_avg_order_by"] | undefined;
+    count?: GraphQLTypes["order_by"] | undefined;
+    max?: GraphQLTypes["room_active_chat_mapping_max_order_by"] | undefined;
+    min?: GraphQLTypes["room_active_chat_mapping_min_order_by"] | undefined;
+    stddev?:
+      | GraphQLTypes["room_active_chat_mapping_stddev_order_by"]
+      | undefined;
+    stddev_pop?:
+      | GraphQLTypes["room_active_chat_mapping_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | GraphQLTypes["room_active_chat_mapping_stddev_samp_order_by"]
+      | undefined;
+    sum?: GraphQLTypes["room_active_chat_mapping_sum_order_by"] | undefined;
+    var_pop?:
+      | GraphQLTypes["room_active_chat_mapping_var_pop_order_by"]
+      | undefined;
+    var_samp?:
+      | GraphQLTypes["room_active_chat_mapping_var_samp_order_by"]
+      | undefined;
+    variance?:
+      | GraphQLTypes["room_active_chat_mapping_variance_order_by"]
+      | undefined;
+  };
+  /** input type for inserting array relation for remote table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_arr_rel_insert_input"]: {
+    data: Array<GraphQLTypes["room_active_chat_mapping_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | GraphQLTypes["room_active_chat_mapping_on_conflict"]
+      | undefined;
+  };
+  /** order by avg() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_avg_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "room_active_chat_mapping". All fields are combined with a logical 'AND'. */
+  ["room_active_chat_mapping_bool_exp"]: {
+    _and?: Array<GraphQLTypes["room_active_chat_mapping_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["room_active_chat_mapping_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["room_active_chat_mapping_bool_exp"]> | undefined;
+    barter?: GraphQLTypes["barters_bool_exp"] | undefined;
+    barter_id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    room_id?: GraphQLTypes["String_comparison_exp"] | undefined;
+  };
+  /** unique or primary key constraints on table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_constraint"]: room_active_chat_mapping_constraint;
+  /** input type for incrementing numeric columns in table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_inc_input"]: {
+    barter_id?: number | undefined;
+  };
+  /** input type for inserting data into table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_insert_input"]: {
+    barter?: GraphQLTypes["barters_obj_rel_insert_input"] | undefined;
+    barter_id?: number | undefined;
+    room_id?: string | undefined;
+  };
+  /** order by max() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_max_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+    room_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_min_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+    room_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_mutation_response"]: {
+    __typename: "room_active_chat_mapping_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["room_active_chat_mapping"]>;
+  };
+  /** on_conflict condition type for table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_on_conflict"]: {
+    constraint: GraphQLTypes["room_active_chat_mapping_constraint"];
+    update_columns: Array<
+      GraphQLTypes["room_active_chat_mapping_update_column"]
+    >;
+    where?: GraphQLTypes["room_active_chat_mapping_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "room_active_chat_mapping". */
+  ["room_active_chat_mapping_order_by"]: {
+    barter?: GraphQLTypes["barters_order_by"] | undefined;
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+    room_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: room_active_chat_mapping */
+  ["room_active_chat_mapping_pk_columns_input"]: {
+    room_id: string;
+  };
+  /** select columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_select_column"]: room_active_chat_mapping_select_column;
+  /** input type for updating data in table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_set_input"]: {
+    barter_id?: number | undefined;
+    room_id?: string | undefined;
+  };
+  /** order by stddev() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_stddev_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_stddev_pop_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_stddev_samp_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["room_active_chat_mapping_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["room_active_chat_mapping_stream_cursor_value_input"]: {
+    barter_id?: number | undefined;
+    room_id?: string | undefined;
+  };
+  /** order by sum() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_sum_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** update columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_update_column"]: room_active_chat_mapping_update_column;
+  ["room_active_chat_mapping_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: GraphQLTypes["room_active_chat_mapping_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: GraphQLTypes["room_active_chat_mapping_set_input"] | undefined;
+    where: GraphQLTypes["room_active_chat_mapping_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_var_pop_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_var_samp_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "room_active_chat_mapping" */
+  ["room_active_chat_mapping_variance_order_by"]: {
+    barter_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** columns and relationships of "secure_transfer_transactions" */
+  ["secure_transfer_transactions"]: {
+    __typename: "secure_transfer_transactions";
+    /** An object relationship */
+    chat?: GraphQLTypes["chats"] | undefined;
+    counter: string;
+    current_state?: string | undefined;
+    escrow: string;
+    final_txn_signature?: string | undefined;
+    from: string;
+    id: number;
+    message_client_generated_uuid?: string | undefined;
+    message_id: number;
+    signature?: string | undefined;
+    to: string;
+  };
+  /** order by aggregate values of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_aggregate_order_by"]: {
+    avg?: GraphQLTypes["secure_transfer_transactions_avg_order_by"] | undefined;
+    count?: GraphQLTypes["order_by"] | undefined;
+    max?: GraphQLTypes["secure_transfer_transactions_max_order_by"] | undefined;
+    min?: GraphQLTypes["secure_transfer_transactions_min_order_by"] | undefined;
+    stddev?:
+      | GraphQLTypes["secure_transfer_transactions_stddev_order_by"]
+      | undefined;
+    stddev_pop?:
+      | GraphQLTypes["secure_transfer_transactions_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | GraphQLTypes["secure_transfer_transactions_stddev_samp_order_by"]
+      | undefined;
+    sum?: GraphQLTypes["secure_transfer_transactions_sum_order_by"] | undefined;
+    var_pop?:
+      | GraphQLTypes["secure_transfer_transactions_var_pop_order_by"]
+      | undefined;
+    var_samp?:
+      | GraphQLTypes["secure_transfer_transactions_var_samp_order_by"]
+      | undefined;
+    variance?:
+      | GraphQLTypes["secure_transfer_transactions_variance_order_by"]
+      | undefined;
+  };
+  /** input type for inserting array relation for remote table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_arr_rel_insert_input"]: {
+    data: Array<GraphQLTypes["secure_transfer_transactions_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | GraphQLTypes["secure_transfer_transactions_on_conflict"]
+      | undefined;
+  };
+  /** order by avg() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_avg_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "secure_transfer_transactions". All fields are combined with a logical 'AND'. */
+  ["secure_transfer_transactions_bool_exp"]: {
+    _and?:
+      | Array<GraphQLTypes["secure_transfer_transactions_bool_exp"]>
+      | undefined;
+    _not?: GraphQLTypes["secure_transfer_transactions_bool_exp"] | undefined;
+    _or?:
+      | Array<GraphQLTypes["secure_transfer_transactions_bool_exp"]>
+      | undefined;
+    chat?: GraphQLTypes["chats_bool_exp"] | undefined;
+    counter?: GraphQLTypes["String_comparison_exp"] | undefined;
+    current_state?: GraphQLTypes["String_comparison_exp"] | undefined;
+    escrow?: GraphQLTypes["String_comparison_exp"] | undefined;
+    final_txn_signature?: GraphQLTypes["String_comparison_exp"] | undefined;
+    from?: GraphQLTypes["String_comparison_exp"] | undefined;
+    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    message_client_generated_uuid?:
+      | GraphQLTypes["String_comparison_exp"]
+      | undefined;
+    message_id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    signature?: GraphQLTypes["String_comparison_exp"] | undefined;
+    to?: GraphQLTypes["String_comparison_exp"] | undefined;
+  };
+  /** unique or primary key constraints on table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_constraint"]: secure_transfer_transactions_constraint;
+  /** input type for incrementing numeric columns in table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_inc_input"]: {
+    id?: number | undefined;
+    message_id?: number | undefined;
+  };
+  /** input type for inserting data into table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_insert_input"]: {
+    chat?: GraphQLTypes["chats_obj_rel_insert_input"] | undefined;
+    counter?: string | undefined;
+    current_state?: string | undefined;
+    escrow?: string | undefined;
+    final_txn_signature?: string | undefined;
+    from?: string | undefined;
+    id?: number | undefined;
+    message_client_generated_uuid?: string | undefined;
+    message_id?: number | undefined;
+    signature?: string | undefined;
+    to?: string | undefined;
+  };
+  /** order by max() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_max_order_by"]: {
+    counter?: GraphQLTypes["order_by"] | undefined;
+    current_state?: GraphQLTypes["order_by"] | undefined;
+    escrow?: GraphQLTypes["order_by"] | undefined;
+    final_txn_signature?: GraphQLTypes["order_by"] | undefined;
+    from?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+    signature?: GraphQLTypes["order_by"] | undefined;
+    to?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_min_order_by"]: {
+    counter?: GraphQLTypes["order_by"] | undefined;
+    current_state?: GraphQLTypes["order_by"] | undefined;
+    escrow?: GraphQLTypes["order_by"] | undefined;
+    final_txn_signature?: GraphQLTypes["order_by"] | undefined;
+    from?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+    signature?: GraphQLTypes["order_by"] | undefined;
+    to?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_mutation_response"]: {
+    __typename: "secure_transfer_transactions_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["secure_transfer_transactions"]>;
+  };
+  /** on_conflict condition type for table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_on_conflict"]: {
+    constraint: GraphQLTypes["secure_transfer_transactions_constraint"];
+    update_columns: Array<
+      GraphQLTypes["secure_transfer_transactions_update_column"]
+    >;
+    where?: GraphQLTypes["secure_transfer_transactions_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "secure_transfer_transactions". */
+  ["secure_transfer_transactions_order_by"]: {
+    chat?: GraphQLTypes["chats_order_by"] | undefined;
+    counter?: GraphQLTypes["order_by"] | undefined;
+    current_state?: GraphQLTypes["order_by"] | undefined;
+    escrow?: GraphQLTypes["order_by"] | undefined;
+    final_txn_signature?: GraphQLTypes["order_by"] | undefined;
+    from?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+    signature?: GraphQLTypes["order_by"] | undefined;
+    to?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: secure_transfer_transactions */
+  ["secure_transfer_transactions_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_select_column"]: secure_transfer_transactions_select_column;
+  /** input type for updating data in table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_set_input"]: {
+    counter?: string | undefined;
+    current_state?: string | undefined;
+    escrow?: string | undefined;
+    final_txn_signature?: string | undefined;
+    from?: string | undefined;
+    id?: number | undefined;
+    message_client_generated_uuid?: string | undefined;
+    message_id?: number | undefined;
+    signature?: string | undefined;
+    to?: string | undefined;
+  };
+  /** order by stddev() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_pop_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_samp_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["secure_transfer_transactions_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["secure_transfer_transactions_stream_cursor_value_input"]: {
+    counter?: string | undefined;
+    current_state?: string | undefined;
+    escrow?: string | undefined;
+    final_txn_signature?: string | undefined;
+    from?: string | undefined;
+    id?: number | undefined;
+    message_client_generated_uuid?: string | undefined;
+    message_id?: number | undefined;
+    signature?: string | undefined;
+    to?: string | undefined;
+  };
+  /** order by sum() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_sum_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** update columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_update_column"]: secure_transfer_transactions_update_column;
+  ["secure_transfer_transactions_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: GraphQLTypes["secure_transfer_transactions_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: GraphQLTypes["secure_transfer_transactions_set_input"] | undefined;
+    where: GraphQLTypes["secure_transfer_transactions_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_var_pop_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_var_samp_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_variance_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** columns and relationships of "simple_transactions" */
+  ["simple_transactions"]: {
+    __typename: "simple_transactions";
+    client_generated_uuid: string;
+    id: number;
+    txn_signature: string;
+  };
+  /** order by aggregate values of table "simple_transactions" */
+  ["simple_transactions_aggregate_order_by"]: {
+    avg?: GraphQLTypes["simple_transactions_avg_order_by"] | undefined;
+    count?: GraphQLTypes["order_by"] | undefined;
+    max?: GraphQLTypes["simple_transactions_max_order_by"] | undefined;
+    min?: GraphQLTypes["simple_transactions_min_order_by"] | undefined;
+    stddev?: GraphQLTypes["simple_transactions_stddev_order_by"] | undefined;
+    stddev_pop?:
+      | GraphQLTypes["simple_transactions_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | GraphQLTypes["simple_transactions_stddev_samp_order_by"]
+      | undefined;
+    sum?: GraphQLTypes["simple_transactions_sum_order_by"] | undefined;
+    var_pop?: GraphQLTypes["simple_transactions_var_pop_order_by"] | undefined;
+    var_samp?:
+      | GraphQLTypes["simple_transactions_var_samp_order_by"]
+      | undefined;
+    variance?:
+      | GraphQLTypes["simple_transactions_variance_order_by"]
+      | undefined;
+  };
+  /** input type for inserting array relation for remote table "simple_transactions" */
+  ["simple_transactions_arr_rel_insert_input"]: {
+    data: Array<GraphQLTypes["simple_transactions_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["simple_transactions_on_conflict"] | undefined;
+  };
+  /** order by avg() on columns of table "simple_transactions" */
+  ["simple_transactions_avg_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "simple_transactions". All fields are combined with a logical 'AND'. */
+  ["simple_transactions_bool_exp"]: {
+    _and?: Array<GraphQLTypes["simple_transactions_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["simple_transactions_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["simple_transactions_bool_exp"]> | undefined;
+    client_generated_uuid?: GraphQLTypes["String_comparison_exp"] | undefined;
+    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    txn_signature?: GraphQLTypes["String_comparison_exp"] | undefined;
+  };
+  /** unique or primary key constraints on table "simple_transactions" */
+  ["simple_transactions_constraint"]: simple_transactions_constraint;
+  /** input type for incrementing numeric columns in table "simple_transactions" */
+  ["simple_transactions_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "simple_transactions" */
+  ["simple_transactions_insert_input"]: {
+    client_generated_uuid?: string | undefined;
+    id?: number | undefined;
+    txn_signature?: string | undefined;
+  };
+  /** order by max() on columns of table "simple_transactions" */
+  ["simple_transactions_max_order_by"]: {
+    client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    txn_signature?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "simple_transactions" */
+  ["simple_transactions_min_order_by"]: {
+    client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    txn_signature?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "simple_transactions" */
+  ["simple_transactions_mutation_response"]: {
+    __typename: "simple_transactions_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["simple_transactions"]>;
+  };
+  /** on_conflict condition type for table "simple_transactions" */
+  ["simple_transactions_on_conflict"]: {
+    constraint: GraphQLTypes["simple_transactions_constraint"];
+    update_columns: Array<GraphQLTypes["simple_transactions_update_column"]>;
+    where?: GraphQLTypes["simple_transactions_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "simple_transactions". */
+  ["simple_transactions_order_by"]: {
+    client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    txn_signature?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: simple_transactions */
+  ["simple_transactions_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "simple_transactions" */
+  ["simple_transactions_select_column"]: simple_transactions_select_column;
+  /** input type for updating data in table "simple_transactions" */
+  ["simple_transactions_set_input"]: {
+    client_generated_uuid?: string | undefined;
+    id?: number | undefined;
+    txn_signature?: string | undefined;
+  };
+  /** order by stddev() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_pop_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_samp_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "simple_transactions" */
+  ["simple_transactions_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["simple_transactions_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["simple_transactions_stream_cursor_value_input"]: {
+    client_generated_uuid?: string | undefined;
+    id?: number | undefined;
+    txn_signature?: string | undefined;
+  };
+  /** order by sum() on columns of table "simple_transactions" */
+  ["simple_transactions_sum_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** update columns of table "simple_transactions" */
+  ["simple_transactions_update_column"]: simple_transactions_update_column;
+  ["simple_transactions_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: GraphQLTypes["simple_transactions_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: GraphQLTypes["simple_transactions_set_input"] | undefined;
+    where: GraphQLTypes["simple_transactions_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "simple_transactions" */
+  ["simple_transactions_var_pop_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "simple_transactions" */
+  ["simple_transactions_var_samp_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "simple_transactions" */
+  ["simple_transactions_variance_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
   };
   ["subscription_root"]: {
     __typename: "subscription_root";
+    /** fetch data from the table: "barters" */
+    barters: Array<GraphQLTypes["barters"]>;
+    /** fetch data from the table: "barters" using primary key columns */
+    barters_by_pk?: GraphQLTypes["barters"] | undefined;
+    /** fetch data from the table in a streaming manner: "barters" */
+    barters_stream: Array<GraphQLTypes["barters"]>;
+    /** An array relationship */
+    chat_barter_metadata: Array<GraphQLTypes["chat_barter_metadata"]>;
+    /** fetch data from the table in a streaming manner: "chat_barter_metadata" */
+    chat_barter_metadata_stream: Array<GraphQLTypes["chat_barter_metadata"]>;
+    /** An array relationship */
+    chat_media_messages: Array<GraphQLTypes["chat_media_messages"]>;
+    /** fetch data from the table: "chat_media_messages" using primary key columns */
+    chat_media_messages_by_pk?: GraphQLTypes["chat_media_messages"] | undefined;
+    /** fetch data from the table in a streaming manner: "chat_media_messages" */
+    chat_media_messages_stream: Array<GraphQLTypes["chat_media_messages"]>;
     /** fetch data from the table: "chats" */
     chats: Array<GraphQLTypes["chats"]>;
     /** fetch data from the table: "chats" using primary key columns */
     chats_by_pk?: GraphQLTypes["chats"] | undefined;
-    /** fetch data from the table in a streaming manner : "chats" */
+    /** fetch data from the table in a streaming manner: "chats" */
     chats_stream: Array<GraphQLTypes["chats"]>;
+    /** fetch data from the table: "room_active_chat_mapping" */
+    room_active_chat_mapping: Array<GraphQLTypes["room_active_chat_mapping"]>;
+    /** fetch data from the table: "room_active_chat_mapping" using primary key columns */
+    room_active_chat_mapping_by_pk?:
+      | GraphQLTypes["room_active_chat_mapping"]
+      | undefined;
+    /** fetch data from the table in a streaming manner: "room_active_chat_mapping" */
+    room_active_chat_mapping_stream: Array<
+      GraphQLTypes["room_active_chat_mapping"]
+    >;
+    /** An array relationship */
+    secure_transfer_transactions: Array<
+      GraphQLTypes["secure_transfer_transactions"]
+    >;
+    /** fetch data from the table: "secure_transfer_transactions" using primary key columns */
+    secure_transfer_transactions_by_pk?:
+      | GraphQLTypes["secure_transfer_transactions"]
+      | undefined;
+    /** fetch data from the table in a streaming manner: "secure_transfer_transactions" */
+    secure_transfer_transactions_stream: Array<
+      GraphQLTypes["secure_transfer_transactions"]
+    >;
+    /** An array relationship */
+    simple_transactions: Array<GraphQLTypes["simple_transactions"]>;
+    /** fetch data from the table: "simple_transactions" using primary key columns */
+    simple_transactions_by_pk?: GraphQLTypes["simple_transactions"] | undefined;
+    /** fetch data from the table in a streaming manner: "simple_transactions" */
+    simple_transactions_stream: Array<GraphQLTypes["simple_transactions"]>;
   };
   ["timestamptz"]: "scalar" & { name: "timestamptz" };
   /** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
@@ -1974,8 +9866,62 @@ export type GraphQLTypes = {
     _nin?: Array<GraphQLTypes["timestamptz"]> | undefined;
   };
 };
+/** unique or primary key constraints on table "barters" */
+export const enum barters_constraint {
+  barters_pkey = "barters_pkey",
+}
+/** select columns of table "barters" */
+export const enum barters_select_column {
+  id = "id",
+  on_chain_state = "on_chain_state",
+  room_id = "room_id",
+  state = "state",
+  user1_offers = "user1_offers",
+  user2_offers = "user2_offers",
+}
+/** update columns of table "barters" */
+export const enum barters_update_column {
+  id = "id",
+  on_chain_state = "on_chain_state",
+  room_id = "room_id",
+  state = "state",
+  user1_offers = "user1_offers",
+  user2_offers = "user2_offers",
+}
+/** unique or primary key constraints on table "chat_barter_metadata" */
+export const enum chat_barter_metadata_constraint {
+  chat_barter_metadata_pkey = "chat_barter_metadata_pkey",
+}
+/** select columns of table "chat_barter_metadata" */
+export const enum chat_barter_metadata_select_column {
+  barter_id = "barter_id",
+  chat_client_generated_uuid = "chat_client_generated_uuid",
+}
+/** placeholder for update columns of table "chat_barter_metadata" (current role has no relevant permissions) */
+export const enum chat_barter_metadata_update_column {
+  _PLACEHOLDER = "_PLACEHOLDER",
+}
+/** unique or primary key constraints on table "chat_media_messages" */
+export const enum chat_media_messages_constraint {
+  chat_media_messages_pkey = "chat_media_messages_pkey",
+}
+/** select columns of table "chat_media_messages" */
+export const enum chat_media_messages_select_column {
+  id = "id",
+  media_kind = "media_kind",
+  media_link = "media_link",
+  message_client_generated_uuid = "message_client_generated_uuid",
+}
+/** update columns of table "chat_media_messages" */
+export const enum chat_media_messages_update_column {
+  id = "id",
+  media_kind = "media_kind",
+  media_link = "media_link",
+  message_client_generated_uuid = "message_client_generated_uuid",
+}
 /** unique or primary key constraints on table "chats" */
 export const enum chats_constraint {
+  chats_client_generated_uuid_key = "chats_client_generated_uuid_key",
   chats_pkey = "chats_pkey",
 }
 /** select columns of table "chats" */
@@ -1985,6 +9931,7 @@ export const enum chats_select_column {
   id = "id",
   message = "message",
   message_kind = "message_kind",
+  parent_client_generated_uuid = "parent_client_generated_uuid",
   room = "room",
   type = "type",
   username = "username",
@@ -2008,13 +9955,135 @@ export const enum order_by {
   desc_nulls_first = "desc_nulls_first",
   desc_nulls_last = "desc_nulls_last",
 }
+/** unique or primary key constraints on table "room_active_chat_mapping" */
+export const enum room_active_chat_mapping_constraint {
+  room_active_chat_mapping_pkey = "room_active_chat_mapping_pkey",
+}
+/** select columns of table "room_active_chat_mapping" */
+export const enum room_active_chat_mapping_select_column {
+  barter_id = "barter_id",
+  room_id = "room_id",
+}
+/** update columns of table "room_active_chat_mapping" */
+export const enum room_active_chat_mapping_update_column {
+  barter_id = "barter_id",
+  room_id = "room_id",
+}
+/** unique or primary key constraints on table "secure_transfer_transactions" */
+export const enum secure_transfer_transactions_constraint {
+  secure_transfer_transactions_pkey = "secure_transfer_transactions_pkey",
+}
+/** select columns of table "secure_transfer_transactions" */
+export const enum secure_transfer_transactions_select_column {
+  counter = "counter",
+  current_state = "current_state",
+  escrow = "escrow",
+  final_txn_signature = "final_txn_signature",
+  from = "from",
+  id = "id",
+  message_client_generated_uuid = "message_client_generated_uuid",
+  message_id = "message_id",
+  signature = "signature",
+  to = "to",
+}
+/** update columns of table "secure_transfer_transactions" */
+export const enum secure_transfer_transactions_update_column {
+  counter = "counter",
+  current_state = "current_state",
+  escrow = "escrow",
+  final_txn_signature = "final_txn_signature",
+  from = "from",
+  id = "id",
+  message_client_generated_uuid = "message_client_generated_uuid",
+  message_id = "message_id",
+  signature = "signature",
+  to = "to",
+}
+/** unique or primary key constraints on table "simple_transactions" */
+export const enum simple_transactions_constraint {
+  simple_transactions_pkey = "simple_transactions_pkey",
+}
+/** select columns of table "simple_transactions" */
+export const enum simple_transactions_select_column {
+  client_generated_uuid = "client_generated_uuid",
+  id = "id",
+  txn_signature = "txn_signature",
+}
+/** update columns of table "simple_transactions" */
+export const enum simple_transactions_update_column {
+  client_generated_uuid = "client_generated_uuid",
+  id = "id",
+  txn_signature = "txn_signature",
+}
 
 type ZEUS_VARIABLES = {
   ["Int_comparison_exp"]: ValueTypes["Int_comparison_exp"];
   ["String_comparison_exp"]: ValueTypes["String_comparison_exp"];
+  ["barters_bool_exp"]: ValueTypes["barters_bool_exp"];
+  ["barters_constraint"]: ValueTypes["barters_constraint"];
+  ["barters_inc_input"]: ValueTypes["barters_inc_input"];
+  ["barters_insert_input"]: ValueTypes["barters_insert_input"];
+  ["barters_obj_rel_insert_input"]: ValueTypes["barters_obj_rel_insert_input"];
+  ["barters_on_conflict"]: ValueTypes["barters_on_conflict"];
+  ["barters_order_by"]: ValueTypes["barters_order_by"];
+  ["barters_pk_columns_input"]: ValueTypes["barters_pk_columns_input"];
+  ["barters_select_column"]: ValueTypes["barters_select_column"];
+  ["barters_set_input"]: ValueTypes["barters_set_input"];
+  ["barters_stream_cursor_input"]: ValueTypes["barters_stream_cursor_input"];
+  ["barters_stream_cursor_value_input"]: ValueTypes["barters_stream_cursor_value_input"];
+  ["barters_update_column"]: ValueTypes["barters_update_column"];
+  ["barters_updates"]: ValueTypes["barters_updates"];
+  ["chat_barter_metadata_aggregate_order_by"]: ValueTypes["chat_barter_metadata_aggregate_order_by"];
+  ["chat_barter_metadata_arr_rel_insert_input"]: ValueTypes["chat_barter_metadata_arr_rel_insert_input"];
+  ["chat_barter_metadata_avg_order_by"]: ValueTypes["chat_barter_metadata_avg_order_by"];
+  ["chat_barter_metadata_bool_exp"]: ValueTypes["chat_barter_metadata_bool_exp"];
+  ["chat_barter_metadata_constraint"]: ValueTypes["chat_barter_metadata_constraint"];
+  ["chat_barter_metadata_insert_input"]: ValueTypes["chat_barter_metadata_insert_input"];
+  ["chat_barter_metadata_max_order_by"]: ValueTypes["chat_barter_metadata_max_order_by"];
+  ["chat_barter_metadata_min_order_by"]: ValueTypes["chat_barter_metadata_min_order_by"];
+  ["chat_barter_metadata_on_conflict"]: ValueTypes["chat_barter_metadata_on_conflict"];
+  ["chat_barter_metadata_order_by"]: ValueTypes["chat_barter_metadata_order_by"];
+  ["chat_barter_metadata_select_column"]: ValueTypes["chat_barter_metadata_select_column"];
+  ["chat_barter_metadata_stddev_order_by"]: ValueTypes["chat_barter_metadata_stddev_order_by"];
+  ["chat_barter_metadata_stddev_pop_order_by"]: ValueTypes["chat_barter_metadata_stddev_pop_order_by"];
+  ["chat_barter_metadata_stddev_samp_order_by"]: ValueTypes["chat_barter_metadata_stddev_samp_order_by"];
+  ["chat_barter_metadata_stream_cursor_input"]: ValueTypes["chat_barter_metadata_stream_cursor_input"];
+  ["chat_barter_metadata_stream_cursor_value_input"]: ValueTypes["chat_barter_metadata_stream_cursor_value_input"];
+  ["chat_barter_metadata_sum_order_by"]: ValueTypes["chat_barter_metadata_sum_order_by"];
+  ["chat_barter_metadata_update_column"]: ValueTypes["chat_barter_metadata_update_column"];
+  ["chat_barter_metadata_updates"]: ValueTypes["chat_barter_metadata_updates"];
+  ["chat_barter_metadata_var_pop_order_by"]: ValueTypes["chat_barter_metadata_var_pop_order_by"];
+  ["chat_barter_metadata_var_samp_order_by"]: ValueTypes["chat_barter_metadata_var_samp_order_by"];
+  ["chat_barter_metadata_variance_order_by"]: ValueTypes["chat_barter_metadata_variance_order_by"];
+  ["chat_media_messages_aggregate_order_by"]: ValueTypes["chat_media_messages_aggregate_order_by"];
+  ["chat_media_messages_arr_rel_insert_input"]: ValueTypes["chat_media_messages_arr_rel_insert_input"];
+  ["chat_media_messages_avg_order_by"]: ValueTypes["chat_media_messages_avg_order_by"];
+  ["chat_media_messages_bool_exp"]: ValueTypes["chat_media_messages_bool_exp"];
+  ["chat_media_messages_constraint"]: ValueTypes["chat_media_messages_constraint"];
+  ["chat_media_messages_inc_input"]: ValueTypes["chat_media_messages_inc_input"];
+  ["chat_media_messages_insert_input"]: ValueTypes["chat_media_messages_insert_input"];
+  ["chat_media_messages_max_order_by"]: ValueTypes["chat_media_messages_max_order_by"];
+  ["chat_media_messages_min_order_by"]: ValueTypes["chat_media_messages_min_order_by"];
+  ["chat_media_messages_on_conflict"]: ValueTypes["chat_media_messages_on_conflict"];
+  ["chat_media_messages_order_by"]: ValueTypes["chat_media_messages_order_by"];
+  ["chat_media_messages_pk_columns_input"]: ValueTypes["chat_media_messages_pk_columns_input"];
+  ["chat_media_messages_select_column"]: ValueTypes["chat_media_messages_select_column"];
+  ["chat_media_messages_set_input"]: ValueTypes["chat_media_messages_set_input"];
+  ["chat_media_messages_stddev_order_by"]: ValueTypes["chat_media_messages_stddev_order_by"];
+  ["chat_media_messages_stddev_pop_order_by"]: ValueTypes["chat_media_messages_stddev_pop_order_by"];
+  ["chat_media_messages_stddev_samp_order_by"]: ValueTypes["chat_media_messages_stddev_samp_order_by"];
+  ["chat_media_messages_stream_cursor_input"]: ValueTypes["chat_media_messages_stream_cursor_input"];
+  ["chat_media_messages_stream_cursor_value_input"]: ValueTypes["chat_media_messages_stream_cursor_value_input"];
+  ["chat_media_messages_sum_order_by"]: ValueTypes["chat_media_messages_sum_order_by"];
+  ["chat_media_messages_update_column"]: ValueTypes["chat_media_messages_update_column"];
+  ["chat_media_messages_updates"]: ValueTypes["chat_media_messages_updates"];
+  ["chat_media_messages_var_pop_order_by"]: ValueTypes["chat_media_messages_var_pop_order_by"];
+  ["chat_media_messages_var_samp_order_by"]: ValueTypes["chat_media_messages_var_samp_order_by"];
+  ["chat_media_messages_variance_order_by"]: ValueTypes["chat_media_messages_variance_order_by"];
   ["chats_bool_exp"]: ValueTypes["chats_bool_exp"];
   ["chats_constraint"]: ValueTypes["chats_constraint"];
   ["chats_insert_input"]: ValueTypes["chats_insert_input"];
+  ["chats_obj_rel_insert_input"]: ValueTypes["chats_obj_rel_insert_input"];
   ["chats_on_conflict"]: ValueTypes["chats_on_conflict"];
   ["chats_order_by"]: ValueTypes["chats_order_by"];
   ["chats_select_column"]: ValueTypes["chats_select_column"];
@@ -2023,6 +10092,81 @@ type ZEUS_VARIABLES = {
   ["chats_update_column"]: ValueTypes["chats_update_column"];
   ["cursor_ordering"]: ValueTypes["cursor_ordering"];
   ["order_by"]: ValueTypes["order_by"];
+  ["room_active_chat_mapping_aggregate_order_by"]: ValueTypes["room_active_chat_mapping_aggregate_order_by"];
+  ["room_active_chat_mapping_arr_rel_insert_input"]: ValueTypes["room_active_chat_mapping_arr_rel_insert_input"];
+  ["room_active_chat_mapping_avg_order_by"]: ValueTypes["room_active_chat_mapping_avg_order_by"];
+  ["room_active_chat_mapping_bool_exp"]: ValueTypes["room_active_chat_mapping_bool_exp"];
+  ["room_active_chat_mapping_constraint"]: ValueTypes["room_active_chat_mapping_constraint"];
+  ["room_active_chat_mapping_inc_input"]: ValueTypes["room_active_chat_mapping_inc_input"];
+  ["room_active_chat_mapping_insert_input"]: ValueTypes["room_active_chat_mapping_insert_input"];
+  ["room_active_chat_mapping_max_order_by"]: ValueTypes["room_active_chat_mapping_max_order_by"];
+  ["room_active_chat_mapping_min_order_by"]: ValueTypes["room_active_chat_mapping_min_order_by"];
+  ["room_active_chat_mapping_on_conflict"]: ValueTypes["room_active_chat_mapping_on_conflict"];
+  ["room_active_chat_mapping_order_by"]: ValueTypes["room_active_chat_mapping_order_by"];
+  ["room_active_chat_mapping_pk_columns_input"]: ValueTypes["room_active_chat_mapping_pk_columns_input"];
+  ["room_active_chat_mapping_select_column"]: ValueTypes["room_active_chat_mapping_select_column"];
+  ["room_active_chat_mapping_set_input"]: ValueTypes["room_active_chat_mapping_set_input"];
+  ["room_active_chat_mapping_stddev_order_by"]: ValueTypes["room_active_chat_mapping_stddev_order_by"];
+  ["room_active_chat_mapping_stddev_pop_order_by"]: ValueTypes["room_active_chat_mapping_stddev_pop_order_by"];
+  ["room_active_chat_mapping_stddev_samp_order_by"]: ValueTypes["room_active_chat_mapping_stddev_samp_order_by"];
+  ["room_active_chat_mapping_stream_cursor_input"]: ValueTypes["room_active_chat_mapping_stream_cursor_input"];
+  ["room_active_chat_mapping_stream_cursor_value_input"]: ValueTypes["room_active_chat_mapping_stream_cursor_value_input"];
+  ["room_active_chat_mapping_sum_order_by"]: ValueTypes["room_active_chat_mapping_sum_order_by"];
+  ["room_active_chat_mapping_update_column"]: ValueTypes["room_active_chat_mapping_update_column"];
+  ["room_active_chat_mapping_updates"]: ValueTypes["room_active_chat_mapping_updates"];
+  ["room_active_chat_mapping_var_pop_order_by"]: ValueTypes["room_active_chat_mapping_var_pop_order_by"];
+  ["room_active_chat_mapping_var_samp_order_by"]: ValueTypes["room_active_chat_mapping_var_samp_order_by"];
+  ["room_active_chat_mapping_variance_order_by"]: ValueTypes["room_active_chat_mapping_variance_order_by"];
+  ["secure_transfer_transactions_aggregate_order_by"]: ValueTypes["secure_transfer_transactions_aggregate_order_by"];
+  ["secure_transfer_transactions_arr_rel_insert_input"]: ValueTypes["secure_transfer_transactions_arr_rel_insert_input"];
+  ["secure_transfer_transactions_avg_order_by"]: ValueTypes["secure_transfer_transactions_avg_order_by"];
+  ["secure_transfer_transactions_bool_exp"]: ValueTypes["secure_transfer_transactions_bool_exp"];
+  ["secure_transfer_transactions_constraint"]: ValueTypes["secure_transfer_transactions_constraint"];
+  ["secure_transfer_transactions_inc_input"]: ValueTypes["secure_transfer_transactions_inc_input"];
+  ["secure_transfer_transactions_insert_input"]: ValueTypes["secure_transfer_transactions_insert_input"];
+  ["secure_transfer_transactions_max_order_by"]: ValueTypes["secure_transfer_transactions_max_order_by"];
+  ["secure_transfer_transactions_min_order_by"]: ValueTypes["secure_transfer_transactions_min_order_by"];
+  ["secure_transfer_transactions_on_conflict"]: ValueTypes["secure_transfer_transactions_on_conflict"];
+  ["secure_transfer_transactions_order_by"]: ValueTypes["secure_transfer_transactions_order_by"];
+  ["secure_transfer_transactions_pk_columns_input"]: ValueTypes["secure_transfer_transactions_pk_columns_input"];
+  ["secure_transfer_transactions_select_column"]: ValueTypes["secure_transfer_transactions_select_column"];
+  ["secure_transfer_transactions_set_input"]: ValueTypes["secure_transfer_transactions_set_input"];
+  ["secure_transfer_transactions_stddev_order_by"]: ValueTypes["secure_transfer_transactions_stddev_order_by"];
+  ["secure_transfer_transactions_stddev_pop_order_by"]: ValueTypes["secure_transfer_transactions_stddev_pop_order_by"];
+  ["secure_transfer_transactions_stddev_samp_order_by"]: ValueTypes["secure_transfer_transactions_stddev_samp_order_by"];
+  ["secure_transfer_transactions_stream_cursor_input"]: ValueTypes["secure_transfer_transactions_stream_cursor_input"];
+  ["secure_transfer_transactions_stream_cursor_value_input"]: ValueTypes["secure_transfer_transactions_stream_cursor_value_input"];
+  ["secure_transfer_transactions_sum_order_by"]: ValueTypes["secure_transfer_transactions_sum_order_by"];
+  ["secure_transfer_transactions_update_column"]: ValueTypes["secure_transfer_transactions_update_column"];
+  ["secure_transfer_transactions_updates"]: ValueTypes["secure_transfer_transactions_updates"];
+  ["secure_transfer_transactions_var_pop_order_by"]: ValueTypes["secure_transfer_transactions_var_pop_order_by"];
+  ["secure_transfer_transactions_var_samp_order_by"]: ValueTypes["secure_transfer_transactions_var_samp_order_by"];
+  ["secure_transfer_transactions_variance_order_by"]: ValueTypes["secure_transfer_transactions_variance_order_by"];
+  ["simple_transactions_aggregate_order_by"]: ValueTypes["simple_transactions_aggregate_order_by"];
+  ["simple_transactions_arr_rel_insert_input"]: ValueTypes["simple_transactions_arr_rel_insert_input"];
+  ["simple_transactions_avg_order_by"]: ValueTypes["simple_transactions_avg_order_by"];
+  ["simple_transactions_bool_exp"]: ValueTypes["simple_transactions_bool_exp"];
+  ["simple_transactions_constraint"]: ValueTypes["simple_transactions_constraint"];
+  ["simple_transactions_inc_input"]: ValueTypes["simple_transactions_inc_input"];
+  ["simple_transactions_insert_input"]: ValueTypes["simple_transactions_insert_input"];
+  ["simple_transactions_max_order_by"]: ValueTypes["simple_transactions_max_order_by"];
+  ["simple_transactions_min_order_by"]: ValueTypes["simple_transactions_min_order_by"];
+  ["simple_transactions_on_conflict"]: ValueTypes["simple_transactions_on_conflict"];
+  ["simple_transactions_order_by"]: ValueTypes["simple_transactions_order_by"];
+  ["simple_transactions_pk_columns_input"]: ValueTypes["simple_transactions_pk_columns_input"];
+  ["simple_transactions_select_column"]: ValueTypes["simple_transactions_select_column"];
+  ["simple_transactions_set_input"]: ValueTypes["simple_transactions_set_input"];
+  ["simple_transactions_stddev_order_by"]: ValueTypes["simple_transactions_stddev_order_by"];
+  ["simple_transactions_stddev_pop_order_by"]: ValueTypes["simple_transactions_stddev_pop_order_by"];
+  ["simple_transactions_stddev_samp_order_by"]: ValueTypes["simple_transactions_stddev_samp_order_by"];
+  ["simple_transactions_stream_cursor_input"]: ValueTypes["simple_transactions_stream_cursor_input"];
+  ["simple_transactions_stream_cursor_value_input"]: ValueTypes["simple_transactions_stream_cursor_value_input"];
+  ["simple_transactions_sum_order_by"]: ValueTypes["simple_transactions_sum_order_by"];
+  ["simple_transactions_update_column"]: ValueTypes["simple_transactions_update_column"];
+  ["simple_transactions_updates"]: ValueTypes["simple_transactions_updates"];
+  ["simple_transactions_var_pop_order_by"]: ValueTypes["simple_transactions_var_pop_order_by"];
+  ["simple_transactions_var_samp_order_by"]: ValueTypes["simple_transactions_var_samp_order_by"];
+  ["simple_transactions_variance_order_by"]: ValueTypes["simple_transactions_variance_order_by"];
   ["timestamptz"]: ValueTypes["timestamptz"];
   ["timestamptz_comparison_exp"]: ValueTypes["timestamptz_comparison_exp"];
 };

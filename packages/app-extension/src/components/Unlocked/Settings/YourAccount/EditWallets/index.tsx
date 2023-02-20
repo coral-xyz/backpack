@@ -1,107 +1,11 @@
-import { useEffect } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-import { toTitleCase } from "@coral-xyz/common";
-import { useWalletPublicKeys } from "@coral-xyz/recoil";
+import { ListItem } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { MoreHoriz } from "@mui/icons-material";
-import { Typography } from "@mui/material";
 
-import { List, ListItem, WalletAddress } from "../../../../common";
-import { useNavStack } from "../../../../common/Layout/NavStack";
-import { AddConnectWalletButton, ImportTypeBadge } from "../..";
-
-export function EditWallets() {
-  const nav = useNavStack();
-  const blockchainKeyrings = useWalletPublicKeys();
-
-  useEffect(() => {
-    const title = nav.title;
-    nav.setTitle("Edit wallets");
-
-    return () => {
-      nav.setTitle(title);
-    };
-  }, []);
-
-  return (
-    <div style={{ paddingTop: "16px", height: "100%" }}>
-      {Object.entries(blockchainKeyrings).map(([blockchain, keyring]) => (
-        <WalletList
-          key={blockchain}
-          blockchain={blockchain as Blockchain}
-          keyring={keyring}
-        />
-      ))}
-      {/* Hack to add margin bottom. */}
-      <div style={{ height: "16px" }} />
-    </div>
-  );
-}
-
-function WalletList({
-  blockchain,
-  keyring,
-}: {
-  blockchain: Blockchain;
-  keyring: any;
-}) {
-  const theme = useCustomTheme();
-  const flattenedWallets = [
-    ...keyring.hdPublicKeys.map((k: any) => ({ ...k, type: "derived" })),
-    ...keyring.importedPublicKeys.map((k: any) => ({
-      ...k,
-      type: "imported",
-    })),
-    ...keyring.ledgerPublicKeys.map((k: any) => ({
-      ...k,
-      type: "ledger",
-    })),
-  ];
-
-  // TODO: replace placeholder wallet avatar with stored image when available
-  return (
-    <div style={{ marginBottom: "16px" }}>
-      <Typography
-        style={{
-          marginLeft: "16px",
-          marginRight: "16px",
-          marginBottom: "12px",
-          color: theme.custom.colors.fontColor,
-        }}
-      >
-        {toTitleCase(blockchain)}
-      </Typography>
-
-      <List
-        style={{
-          border: `${theme.custom.colors.borderFull}`,
-          borderRadius: "10px",
-        }}
-      >
-        {flattenedWallets.map(({ name, publicKey, type }, idx) => (
-          <WalletListItem
-            blockchain={blockchain}
-            key={publicKey.toString()}
-            name={name}
-            publicKey={publicKey}
-            type={type}
-            isFirst={idx === 0}
-            isLast={idx === flattenedWallets.length - 1}
-            showDetailMenu={true}
-          />
-        ))}
-      </List>
-      <div
-        style={{
-          marginLeft: "16px",
-          marginRight: "16px",
-        }}
-      >
-        <AddConnectWalletButton blockchain={blockchain} />
-      </div>
-    </div>
-  );
-}
+import { WalletAddress } from "../../../../common";
+import { useNavigation } from "../../../../common/Layout/NavStack";
+import { ImportTypeBadge } from "../../../../common/WalletList";
 
 export const WalletListItem: React.FC<{
   blockchain: Blockchain;
@@ -123,7 +27,7 @@ export const WalletListItem: React.FC<{
   onClick,
 }) => {
   const theme = useCustomTheme();
-  const nav = useNavStack();
+  const nav = useNavigation();
   return (
     <ListItem
       button

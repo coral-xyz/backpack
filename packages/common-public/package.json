@@ -10,14 +10,14 @@
     "dist"
   ],
   "scripts": {
-    "build": "./scripts/config.sh && tsc && tsc-alias && tsc -p tsconfig.rn.json",
+    "build": "./scripts/config.sh && tsc -b && tsc-alias && tsc -p tsconfig.rn.json",
     "dev": "tsc --watch",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
     "lint:fix": "yarn run lint --fix",
     "start": "yarn build"
   },
   "dependencies": {
-    "react": "^18.2.0",
+    "react": "18.2.0",
     "uuid": "^8.3.2",
     "zustand": "^4.0.0-rc.2"
   },

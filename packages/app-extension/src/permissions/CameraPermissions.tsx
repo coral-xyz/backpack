@@ -1,42 +1,12 @@
 import { useEffect, useState } from "react";
-import { styles } from "@coral-xyz/themes";
-import { Typography } from "@mui/material";
 
 import { CameraOff } from "./icons/CameraOff";
 import { CameraOn } from "./icons/CameraOn";
-import PermissionWithContext from "./Permissions";
 import { PermissionsContent } from "./PermissionsContent";
-
-const useStyles = styles((theme) => ({
-  containerDiv: {
-    height: `100vh`,
-    width: "100vw",
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-  },
-  containerDivInternal: {
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "row",
-  },
-  circularContainer: {
-    margin: "auto",
-    height: "100px",
-    width: "100px",
-    backgroundColor: "#bbb",
-    borderRadius: "50%",
-  },
-  icon: {
-    marginTop: 35,
-    marginLeft: 27,
-  },
-}));
 
 export const CameraPermissions = () => {
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [inProgress, setInProgress] = useState(true);
-  const classes = useStyles();
 
   const fetchPermissions = async () => {
     let stream = null;

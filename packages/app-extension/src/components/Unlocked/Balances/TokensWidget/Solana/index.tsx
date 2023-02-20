@@ -1,20 +1,36 @@
 import { useState } from "react";
+import { findMintManagerId } from "@cardinal/creator-standard";
 import { programs, tryGetAccount } from "@cardinal/token-manager";
+import type { RawMintString } from "@coral-xyz/common";
 import {
   Blockchain,
   confirmTransaction,
   getLogger,
+  metadataAddress,
   SOL_NATIVE_MINT,
   Solana,
 } from "@coral-xyz/common";
-import { useSolanaCtx } from "@coral-xyz/recoil";
+import { LocalImage, PrimaryButton, UserIcon } from "@coral-xyz/react-common";
+import {
+  useAvatarUrl,
+  useSolanaCtx,
+  useSolanaTokenMint,
+} from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
+import {
+  findMintStatePk,
+  MintState,
+} from "@magiceden-oss/open_creator_protocol";
+import {
+  Metadata,
+  TokenStandard,
+} from "@metaplex-foundation/mpl-token-metadata";
 import { Typography } from "@mui/material";
-import type { Connection } from "@solana/web3.js";
+import type { AccountInfo, Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import type { BigNumber } from "ethers";
 
-import { PrimaryButton, walletAddressDisplay } from "../../../../common";
+import { walletAddressDisplay } from "../../../../common";
 import { SettingsList } from "../../../../common/Settings/List";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
 import { Error, Sending } from "../Send";
@@ -33,6 +49,7 @@ const useStyles = styles((theme) => ({
 export function SendSolanaConfirmationCard({
   token,
   destinationAddress,
+  destinationUser,
   amount,
   onComplete,
 }: {
@@ -44,8 +61,12 @@ export function SendSolanaConfirmationCard({
     mint?: string;
   };
   destinationAddress: string;
+  destinationUser?: {
+    username: string;
+    image: string;
+  };
   amount: BigNumber;
-  onComplete?: () => void;
+  onComplete?: (txSig?: any) => void;
 }) {
   const [txSignature, setTxSignature] = useState<string | null>(null);
   const solanaCtx = useSolanaCtx();
@@ -55,6 +76,10 @@ export function SendSolanaConfirmationCard({
   const [cardType, setCardType] = useState<
     "confirm" | "sending" | "complete" | "error"
   >("confirm");
+  const mintInfo = useSolanaTokenMint({
+    publicKey: solanaCtx.walletPublicKey.toString(),
+    tokenAddress: token.address,
+  });
 
   const onConfirm = async () => {
     setCardType("sending");
@@ -62,7 +87,9 @@ export function SendSolanaConfirmationCard({
     // Send the tx.
     //
     let txSig;
+
     try {
+      const mintId = new PublicKey(token.mint?.toString() as string);
       if (token.mint === SOL_NATIVE_MINT.toString()) {
         txSig = await Solana.transferSol(solanaCtx, {
           source: solanaCtx.walletPublicKey,
@@ -70,24 +97,59 @@ export function SendSolanaConfirmationCard({
           amount: amount.toNumber(),
         });
       } else if (
-        await isCardinalWrappedToken(
+        await isProgrammableNftToken(
           solanaCtx.connection,
           token.mint?.toString() as string
         )
       ) {
-        txSig = await Solana.transferCardinalToken(solanaCtx, {
+        txSig = await Solana.transferProgrammableNft(solanaCtx, {
           destination: new PublicKey(destinationAddress),
           mint: new PublicKey(token.mint!),
           amount: amount.toNumber(),
           decimals: token.decimals,
         });
-      } else {
-        txSig = await Solana.transferToken(solanaCtx, {
-          destination: new PublicKey(destinationAddress),
-          mint: new PublicKey(token.mint!),
-          amount: amount.toNumber(),
-          decimals: token.decimals,
-        });
+      }
+      // Use an else here to avoid an extra request if we are transferring sol native mints.
+      else {
+        const ocpMintState = await isOpenCreatorProtocol(
+          solanaCtx.connection,
+          mintId,
+          mintInfo
+        );
+        if (ocpMintState !== null) {
+          txSig = await Solana.transferOpenCreatorProtocol(
+            solanaCtx,
+            {
+              destination: new PublicKey(destinationAddress),
+              amount: amount.toNumber(),
+              mint: new PublicKey(token.mint!),
+            },
+            ocpMintState
+          );
+        } else if (isCreatorStandardToken(mintId, mintInfo)) {
+          txSig = await Solana.transferCreatorStandardToken(solanaCtx, {
+            destination: new PublicKey(destinationAddress),
+            mint: new PublicKey(token.mint!),
+            amount: amount.toNumber(),
+            decimals: token.decimals,
+          });
+        } else if (
+          await isCardinalWrappedToken(solanaCtx.connection, mintId, mintInfo)
+        ) {
+          txSig = await Solana.transferCardinalManagedToken(solanaCtx, {
+            destination: new PublicKey(destinationAddress),
+            mint: new PublicKey(token.mint!),
+            amount: amount.toNumber(),
+            decimals: token.decimals,
+          });
+        } else {
+          txSig = await Solana.transferToken(solanaCtx, {
+            destination: new PublicKey(destinationAddress),
+            mint: new PublicKey(token.mint!),
+            amount: amount.toNumber(),
+            decimals: token.decimals,
+          });
+        }
       }
     } catch (err: any) {
       logger.error("solana transaction failed", err);
@@ -111,7 +173,7 @@ export function SendSolanaConfirmationCard({
           : solanaCtx.commitment
       );
       setCardType("complete");
-      if (onComplete) onComplete();
+      if (onComplete) onComplete(txSig);
     } catch (err: any) {
       logger.error("unable to confirm", err);
       setError(err.toString());
@@ -125,6 +187,7 @@ export function SendSolanaConfirmationCard({
         <ConfirmSendSolana
           token={token}
           destinationAddress={destinationAddress}
+          destinationUser={destinationUser}
           amount={amount}
           onConfirm={onConfirm}
         />
@@ -161,6 +224,7 @@ export function ConfirmSendSolana({
   destinationAddress,
   amount,
   onConfirm,
+  destinationUser,
 }: {
   token: {
     logo?: string;
@@ -170,6 +234,10 @@ export function ConfirmSendSolana({
   destinationAddress: string;
   amount: BigNumber;
   onConfirm: () => void;
+  destinationUser?: {
+    username: string;
+    image: string;
+  };
 }) {
   const theme = useCustomTheme();
   return (
@@ -203,7 +271,10 @@ export function ConfirmSendSolana({
           amount={amount}
           token={token}
         />
-        <ConfirmSendSolanaTable destinationAddress={destinationAddress} />
+        <ConfirmSendSolanaTable
+          destinationUser={destinationUser}
+          destinationAddress={destinationAddress}
+        />
       </div>
       <PrimaryButton
         onClick={() => onConfirm()}
@@ -217,18 +288,23 @@ export function ConfirmSendSolana({
 
 const ConfirmSendSolanaTable: React.FC<{
   destinationAddress: string;
-}> = ({ destinationAddress }) => {
+  destinationUser?: { username: string; image: string };
+}> = ({ destinationAddress, destinationUser }) => {
   const theme = useCustomTheme();
   const classes = useStyles();
   const solanaCtx = useSolanaCtx();
+  const avatarUrl = useAvatarUrl();
 
   const menuItems = {
     From: {
       onClick: () => {},
       detail: (
-        <Typography>
-          {walletAddressDisplay(solanaCtx.walletPublicKey)}
-        </Typography>
+        <div style={{ display: "flex" }}>
+          <UserIcon marginRight={5} image={avatarUrl} size={24} />
+          <Typography>
+            {walletAddressDisplay(solanaCtx.walletPublicKey)}
+          </Typography>
+        </div>
       ),
       classes: { root: classes.confirmTableListItem },
       button: false,
@@ -236,7 +312,12 @@ const ConfirmSendSolanaTable: React.FC<{
     To: {
       onClick: () => {},
       detail: (
-        <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
+        <div style={{ display: "flex" }}>
+          {destinationUser && (
+            <UserIcon marginRight={5} image={destinationUser.image} size={24} />
+          )}
+          <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
+        </div>
       ),
       classes: { root: classes.confirmTableListItem },
       button: false,
@@ -270,25 +351,84 @@ const ConfirmSendSolanaTable: React.FC<{
 
 export const isCardinalWrappedToken = async (
   connection: Connection,
-  tokenAddress: string
+  mintId: PublicKey,
+  mintInfo: RawMintString
 ) => {
+  const mintManagerId = (
+    await programs.tokenManager.pda.findMintManagerId(mintId)
+  )[0];
+  if (
+    !mintInfo.freezeAuthority ||
+    mintInfo.freezeAuthority !== mintManagerId.toString()
+  ) {
+    return false;
+  }
+
+  // only need network calls to double confirm but the above check is likely sufficient if we assume it was created correctly
   const [tokenManagerId] =
     await programs.tokenManager.pda.findTokenManagerAddress(
-      new PublicKey(tokenAddress)
+      new PublicKey(mintId)
     );
   const tokenManagerData = await tryGetAccount(() =>
     programs.tokenManager.accounts.getTokenManager(connection, tokenManagerId)
   );
-  if (tokenManagerData?.parsed && tokenManagerData?.parsed.transferAuthority) {
-    try {
-      programs.transferAuthority.accounts.getTransferAuthority(
-        connection,
-        tokenManagerData?.parsed.transferAuthority
-      );
-      return true;
-    } catch (error) {
-      console.log("Invalid transfer authority");
-    }
+  if (!tokenManagerData?.parsed) {
+    return false;
+  }
+  try {
+    programs.transferAuthority.accounts.getTransferAuthority(
+      connection,
+      tokenManagerData?.parsed.transferAuthority || new PublicKey("")
+    );
+    return true;
+  } catch (error) {
+    console.log("Invalid transfer authority");
   }
   return false;
 };
+
+export const isCreatorStandardToken = (
+  mintId: PublicKey,
+  mintInfo: RawMintString
+) => {
+  const mintManagerId = findMintManagerId(mintId);
+  // not network calls involved we can assume this token was created properly if the mint and freeze authority match
+  return (
+    mintInfo.freezeAuthority &&
+    mintInfo.mintAuthority &&
+    mintInfo.freezeAuthority === mintManagerId.toString() &&
+    mintInfo.mintAuthority === mintManagerId.toString()
+  );
+};
+
+async function isOpenCreatorProtocol(
+  connection: Connection,
+  mintId: PublicKey,
+  mintInfo: RawMintString
+): Promise<MintState | null> {
+  const mintStatePk = findMintStatePk(mintId);
+  const accountInfo = (await connection.getAccountInfo(
+    mintStatePk
+  )) as AccountInfo<Buffer>;
+  return accountInfo !== null
+    ? MintState.fromAccountInfo(accountInfo)[0]
+    : null;
+}
+
+async function isProgrammableNftToken(
+  connection: Connection,
+  mintAddress: string
+): Promise<boolean> {
+  try {
+    const metadata = await Metadata.fromAccountAddress(
+      connection,
+      await metadataAddress(new PublicKey(mintAddress))
+    );
+
+    return metadata.tokenStandard == TokenStandard.ProgrammableNonFungible;
+  } catch (error) {
+    // most likely this happens if the metadata account does not exist
+    console.log(error);
+    return false;
+  }
+}

@@ -1,13 +1,21 @@
 import { useState } from "react";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
-import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
+import {
+  Backpack,
+  EmptyState,
+  LocalImage,
+  PrimaryButton,
+  ProxyImage,
+  RedBackpack,
+  TextInput,
+} from "@coral-xyz/react-common";
+import { useAvatarUrl, useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Error, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 
-import { PrimaryButton } from "../common";
-import { Backpack, RedBackpack } from "../common/Icon";
-import { TextInput } from "../common/Inputs";
+import { WithDrawer } from "../common/Layout/Drawer";
+import { lockScreenKey, lockScreenKeyImage } from "../Unlocked/Nfts/Detail";
 
 import { LockedMenu } from "./LockedMenu";
 
@@ -18,23 +26,43 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const background = useBackgroundClient();
   const user = useUser();
 
+  const [migrationFailed, setMigrationFailed] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<boolean>(false);
+
+  const { uuid, nft } = (() => {
+    try {
+      return JSON.parse(
+        window.localStorage.getItem(lockScreenKey(user.uuid)) ??
+          JSON.stringify({ uuid: undefined, nft: undefined })
+      );
+    } catch {
+      return { uuid: undefined, nft: undefined };
+    }
+  })();
+
+  const isFullScreen = uuid === user.uuid && nft !== undefined;
 
   const _onUnlock = async (e: any) => {
     e.preventDefault();
     try {
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-        params: [password, user.uuid, user.username],
+        params: [password, user.uuid],
       });
 
       if (onUnlock) {
-        onUnlock();
+        await onUnlock();
       }
     } catch (err) {
+      console.error(err);
+      // @ts-ignore
+      if (err.toString().includes("migration failed:")) {
+        setMigrationFailed(true);
+        return;
+      }
       setError(true);
     }
   };
@@ -49,7 +77,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
     >
       <Box
         sx={{
-          backgroundColor: theme.custom.colors.backdropColor,
+          backgroundColor: theme.custom.colors.backgroundBackdrop,
           textAlign: "center",
           display: "flex",
           flexDirection: "column",
@@ -59,27 +87,23 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
       >
         <Box>
           <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-          <div style={{ marginTop: "40px" }}>
-            <BackpackHeader />
+          <div style={{ marginTop: "24px" }}>
+            <BackpackHeader forceWhite={isFullScreen} style={{ zIndex: 2 }} />
+            <div
+              style={{
+                position: "relative",
+              }}
+            >
+              <LockScreenAvatar
+                isFullScreen={isFullScreen}
+                nft={nft}
+                user={user}
+              />
+            </div>
           </div>
         </Box>
 
-        <Box style={{ marginBottom: 84 }}>
-          {user.username && (
-            <Box
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-                display: "flex",
-              }}
-            >
-              <Typography style={{ color: theme.custom.colors.fontColor }}>
-                gm @{user.username}
-              </Typography>
-            </Box>
-          )}
-
+        <Box style={{ zIndex: 1, marginBottom: 74 }}>
           <form onSubmit={_onUnlock} noValidate>
             <Box sx={{ margin: "0 12px 12px 12px" }}>
               <TextInput
@@ -118,7 +142,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
           >
             <Typography
               sx={{
-                color: theme.custom.colors.secondary,
+                color: isFullScreen ? "white" : theme.custom.colors.secondary,
                 fontSize: "16px",
                 textAlign: "center",
                 cursor: "pointer",
@@ -132,16 +156,115 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
           </Box>
         </Box>
       </Box>
+      <WithDrawer openDrawer={migrationFailed} setOpenDrawer={() => {}}>
+        <MigrationFailed />
+      </WithDrawer>
     </Box>
   );
 }
 
-export function BackpackHeader({
-  alphaStyle,
+function LockScreenAvatar({
+  isFullScreen,
+  nft,
+  user,
 }: {
-  alphaStyle?: React.CSSProperties;
+  isFullScreen: boolean;
+  nft: any;
+  user: any;
+}) {
+  const avatarUrl = useAvatarUrl(120, user.username);
+  return (
+    <div style={{}}>
+      {isFullScreen ? (
+        <>
+          <div
+            style={{
+              position: "fixed",
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              background: "black",
+              opacity: 0.2,
+              zIndex: 1,
+            }}
+          />
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+            }}
+          >
+            <LocalImage
+              localKey={lockScreenKeyImage(user.uuid)}
+              src={avatarUrl}
+              style={{
+                height: "100vh",
+                position: "absolute",
+                top: 0,
+                transform: "translate(-50%, 0%)",
+                transformOrigin: undefined,
+              }}
+              loadingStyles={{
+                position: "fixed",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                transform: "inherit",
+              }}
+            />
+          </div>
+        </>
+      ) : (
+        <LocalImage
+          localKey={lockScreenKeyImage(user.uuid)}
+          src={avatarUrl}
+          style={{
+            height: "120px",
+            width: "120px",
+            borderRadius: "60px",
+            position: "absolute",
+            bottom: -152,
+            transform: "translate(-50%, 0%)",
+            transformOrigin: undefined,
+            display: "inline",
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function MigrationFailed() {
+  return (
+    <div
+      style={{
+        height: "100%",
+      }}
+    >
+      <EmptyState
+        icon={(props: any) => <Error {...props} />}
+        title={"Unable to migrate"}
+        subtitle={
+          "Thank you for participating in the Backpack Beta! We weren't able to migrate your account. Please reinstall Backpack to continue. Don't worry, this is normal."
+        }
+      />
+    </div>
+  );
+}
+
+export function BackpackHeader({
+  disableUsername,
+  forceWhite,
+  style,
+}: {
+  disableUsername?: boolean;
+  forceWhite?: boolean;
+  style?: React.CSSProperties;
 }) {
   const theme = useCustomTheme();
+  const user = useUser();
   return (
     <Box
       sx={{
@@ -150,65 +273,30 @@ export function BackpackHeader({
         marginRight: "auto",
         display: "block",
         position: "relative",
+        ...style,
       }}
     >
       <div style={{ display: "flex" }}>
-        <RedBackpack style={{ marginLeft: "auto", marginRight: "auto" }} />
+        <RedBackpack
+          style={{
+            marginBottom: "32px",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        />
       </div>
-      <Box
-        sx={{
-          marginTop: "16px",
-          display: "flex",
-          flexDirection: "row-reverse",
-          justifyContent: "center",
-          marginLeft: "200px",
-          marginBottom: "4px",
-          ...alphaStyle,
-        }}
-      >
-        <AlphaLabel />
-      </Box>
-      <Backpack fill={theme.custom.colors.fontColor} />
+      <Backpack fill={forceWhite ? "white" : theme.custom.colors.fontColor} />
       <Typography
         sx={{
           textAlign: "center",
           lineHeight: "24px",
           fontSize: "16px",
           fontWeight: "500",
-          color: theme.custom.colors.secondary,
+          color: forceWhite ? "white" : theme.custom.colors.secondary,
           marginTop: "8px",
         }}
       >
-        A home for your xNFTs
-      </Typography>
-    </Box>
-  );
-}
-
-function AlphaLabel() {
-  const theme = useCustomTheme();
-  return (
-    <Box
-      sx={{
-        borderRadius: "10px",
-        border: `solid 1pt ${theme.custom.colors.alpha}`,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        height: "20px",
-        width: "53px",
-      }}
-    >
-      <Typography
-        sx={{
-          color: theme.custom.colors.alpha,
-          fontSize: "12px",
-          lineHeight: "16px",
-          textAlign: "center",
-          fontWeight: 500,
-        }}
-      >
-        Alpha
+        gm {disableUsername ? "" : `@${user.username}`}
       </Typography>
     </Box>
   );

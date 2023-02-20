@@ -1,27 +1,59 @@
 import { useEffect } from "react";
 import { XNFT_GG_LINK } from "@coral-xyz/common";
-import { useAppIcons } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
+import {
+  EmptyState,
+  Loading,
+  ProxyImage,
+  PushDetail,
+} from "@coral-xyz/react-common";
+import {
+  filteredPlugins,
+  useActiveSolanaWallet,
+  useSolanaConnectionUrl,
+} from "@coral-xyz/recoil";
 import { Apps } from "@mui/icons-material";
-import { Typography } from "@mui/material";
+import { useRecoilValueLoadable } from "recoil";
 
-import { PushDetail } from "../../../common";
-import { EmptyState } from "../../../common/EmptyState";
-import { useNavStack } from "../../../common/Layout/NavStack";
-import { ProxyImage } from "../../../common/ProxyImage";
+import { useNavigation } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 
 export function XnftSettings() {
-  const nav = useNavStack();
-  const theme = useCustomTheme();
-  const xnfts = useAppIcons();
+  const nav = useNavigation();
+  // TODO: Aggregate view.
+  const activeSolanaWallet = useActiveSolanaWallet();
+  const connectionUrl = useSolanaConnectionUrl();
+  const publicKey = activeSolanaWallet?.publicKey;
+  const { contents, state } = useRecoilValueLoadable(
+    filteredPlugins({ publicKey, connectionUrl })
+  );
+
+  useEffect(() => {
+    nav.setOptions({ headerTitle: "xNFTs" });
+  }, [nav.setOptions]);
+
+  if (state !== "hasValue" && state === "loading") {
+    return (
+      <div
+        style={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <Loading />
+      </div>
+    );
+  }
+
+  const xnfts = contents || [];
   const settingsMenu = {} as any;
-  xnfts.forEach((xnft) => {
+  xnfts.forEach((xnft: any) => {
     const pubkeyStr = xnft.install.publicKey.toString();
     settingsMenu[pubkeyStr] = {
       label: xnft.title,
       onClick: () => nav.push("xnfts-detail", { xnft }),
-      icon: (props: any) => (
+      icon: () => (
         <ProxyImage
           style={{
             marginRight: "12px",
@@ -38,10 +70,6 @@ export function XnftSettings() {
       },
     };
   });
-
-  useEffect(() => {
-    nav.setTitle("xNFTs");
-  }, [nav.setTitle]);
 
   return xnfts.length === 0 ? (
     <EmptyState
@@ -61,24 +89,12 @@ export function XnftSettings() {
         marginBottom: "16px",
       }}
     >
-      <>
-        <Typography
-          style={{
-            fontSize: "16px",
-            lineHeight: "24px",
-            marginLeft: "16px",
-            color: theme.custom.colors.fontColor,
-          }}
-        >
-          Installed xNFTs
-        </Typography>
-        <SettingsList
-          menuItems={settingsMenu}
-          style={{
-            marginTop: "12px",
-          }}
-        />
-      </>
+      <SettingsList
+        menuItems={settingsMenu}
+        style={{
+          marginTop: "12px",
+        }}
+      />
     </div>
   );
 }

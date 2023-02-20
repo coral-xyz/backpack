@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
+import { Loading, PrimaryButton } from "@coral-xyz/react-common";
 import type { CustomTheme } from "@coral-xyz/themes";
 import { styles } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 
-import { Loading, PrimaryButton } from "../../common";
-import { useNavStack } from "../../common/Layout/NavStack";
+import { useDrawerContext } from "../../common/Layout/Drawer";
 
 const STRIP_RAMP_URL = "https://auth.xnfts.dev";
 
@@ -35,10 +35,10 @@ export const StripeRamp = ({
   blockchain: Blockchain;
   publicKey: string;
 }) => {
-  const [loading, setLoading] = useState(false);
+  const { close } = useDrawerContext();
+  const [, setLoading] = useState(false);
   const [err, setErr] = useState("");
-  const [clientSecret, setClientSecret] = useState(false);
-  const nav = useNavStack();
+  const [, setClientSecret] = useState(false);
   const classes = useStyles();
 
   const fetchToken = () => {
@@ -66,7 +66,7 @@ export const StripeRamp = ({
             width=400,
             height=600`
         );
-        nav.close();
+        close();
       })
       .catch((e) => {
         console.error(e);

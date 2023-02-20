@@ -1,9 +1,0 @@
-name = "swr-data-cache"
-main = "src/index.ts"
-compatibility_date = "2022-12-05"
-
-
-services = [
-  { binding = "rpc", service = "rpc-proxy" },
-  { binding = "data", service = "data" }
-]

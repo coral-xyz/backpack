@@ -2,6 +2,7 @@ import { UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE } from "@coral-xyz/common";
 import { useRecoilValue } from "recoil";
 
 import * as atoms from "../../atoms";
+import { xnftJwt } from "../../atoms";
 import { useBackgroundClient } from "../client";
 
 export function useApprovedOrigins(): Array<string> {
@@ -23,8 +24,8 @@ export function useApproveOrigin(): (origin: string) => Promise<void> {
   };
 }
 
-export function useAutolockSecs(): number {
-  return useRecoilValue(atoms.autoLockSecs)!;
+export function useAutoLockSettings() {
+  return useRecoilValue(atoms.autoLockSettings);
 }
 
 export function useDarkMode(): boolean {
@@ -35,12 +36,24 @@ export function useDeveloperMode(): boolean {
   return useRecoilValue(atoms.isDeveloperMode)!;
 }
 
+export function useIsAggregateWallets(): boolean {
+  return useRecoilValue(atoms.isAggregateWallets);
+}
+
 export function useConnectionUrls() {
   return useRecoilValue(atoms.connectionUrls);
 }
 
-export function useUser() {
+export function useUser(): { username: string; uuid: string; jwt: string } {
   return useRecoilValue(atoms.user);
+}
+
+export function useAuthenticatedUser() {
+  return useRecoilValue(atoms.authenticatedUser);
+}
+
+export function useXnftJwt(xnftAddress: string) {
+  return useRecoilValue(xnftJwt({ xnftAddress }));
 }
 
 export function useAllUsers() {

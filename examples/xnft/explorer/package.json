@@ -2,9 +2,9 @@
   "name": "@coral-xyz/xnft-explorer",
   "version": "0.1.0",
   "scripts": {
-    "build": "xnft build",
-    "start": "xnft start",
-    "dev": "xnft dev"
+    "build": "xnft legacy build",
+    "start": "xnft legacy start",
+    "dev": "xnft legacy dev"
   },
   "devDependencies": {},
   "dependencies": {
@@ -16,7 +16,7 @@
     "debounce": "^1.2.1",
     "nano-memoize": "^1.3.1",
     "node-stdlib-browser": "^1.2.0",
-    "react": "^17.0.2",
+    "react": "18.2.0",
     "react-xnft": "*",
     "recoil": "^0.7.5"
   }

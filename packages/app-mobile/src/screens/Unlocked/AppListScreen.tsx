@@ -1,4 +1,4 @@
-import { RandomBackgroundScreen } from "@screens/Helpers/RandomBackgroundScreen";
+import { RandomBackgroundScreen } from "~screens/Helpers/RandomBackgroundScreen";
 
 // type Plugin = {
 //   title: string;
@@ -48,7 +48,7 @@ import { RandomBackgroundScreen } from "@screens/Helpers/RandomBackgroundScreen"
 //   const pluginsWithoutONExNFT = plugins.filter(
 //     (p) =>
 //       p.install.account.xfnit.toString() !==
-//       "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4"
+//       "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8"
 //   );
 //
 //   return (

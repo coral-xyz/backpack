@@ -5,6 +5,18 @@ object_relationships:
   - name: invitation
     using:
       foreign_key_constraint_on: invitation_id
+  - name: mad_feed_user_score
+    using:
+      manual_configuration:
+        column_mapping:
+          id: user_id
+        insertion_order: null
+        remote_table:
+          name: mad_feed_user_score_totals
+          schema: public
+  - name: referrer
+    using:
+      foreign_key_constraint_on: referrer_id
   - name: twitter_user
     using:
       foreign_key_constraint_on:
@@ -20,6 +32,13 @@ object_relationships:
           name: waolist_tokens
           schema: auth
 array_relationships:
+  - name: mad_feed_votes
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: mad_feed_votes
+          schema: auth
   - name: public_keys
     using:
       foreign_key_constraint_on:
@@ -27,12 +46,27 @@ array_relationships:
         table:
           name: public_keys
           schema: auth
+  - name: referred_users
+    using:
+      foreign_key_constraint_on:
+        column: referrer_id
+        table:
+          name: users
+          schema: auth
+computed_fields:
+  - name: dropzone_public_key
+    definition:
+      function:
+        name: user_dropzone_public_key
+        schema: dropzone
+    comment: the user's first solana public key inside an array due to hasura limitation
 insert_permissions:
   - role: auth_worker
     permission:
       check: {}
       columns:
         - invitation_id
+        - referrer_id
         - username
         - waitlist_id
 select_permissions:
@@ -47,6 +81,7 @@ select_permissions:
   - role: auth_worker
     permission:
       columns:
+        - created_at
         - id
         - username
       filter: {}
@@ -54,13 +89,27 @@ select_permissions:
   - role: one_xnft
     permission:
       columns:
+        - created_at
         - id
+        - is_internal
+        - referrer_id
+        - username
+      filter: {}
+      allow_aggregations: true
+  - role: public_avatar
+    permission:
+      columns:
+        - avatar_nft
+        - created_at
+        - id
+        - is_internal
         - username
       filter: {}
 update_permissions:
   - role: auth_worker
     permission:
       columns:
+        - avatar_nft
         - updated_at
       filter: {}
       check: null

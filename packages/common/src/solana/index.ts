@@ -1,4 +1,28 @@
-import { withSend } from "@cardinal/token-manager";
+import {
+  createTransferInstruction as createCCSTransferInstruction,
+  findMintManagerId,
+  findMintMetadataId,
+  MintManager,
+} from "@cardinal/creator-standard";
+import { emptyWallet, withSend } from "@cardinal/token-manager";
+import type { MintState } from "@magiceden-oss/open_creator_protocol";
+import {
+  CMT_PROGRAM,
+  computeBudgetIx,
+  createInitAccountInstruction as ocpCreateInitAccountInstruction,
+  createTransferInstruction as ocpCreateTransferInstruction,
+  findFreezeAuthorityPk,
+  findMintStatePk,
+} from "@magiceden-oss/open_creator_protocol";
+import type {
+  TransferInstructionAccounts,
+  TransferInstructionArgs} from "@metaplex-foundation/mpl-token-metadata";
+import {
+  createTransferInstruction as createTokenMetadataTransferInstruction,
+  Metadata,
+  TokenRecord,
+  TokenState
+} from "@metaplex-foundation/mpl-token-metadata";
 import type { Program, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import {
@@ -20,6 +44,7 @@ import {
   Keypair,
   PublicKey,
   SystemProgram,
+  SYSVAR_INSTRUCTIONS_PUBKEY,
   Transaction,
 } from "@solana/web3.js";
 import BN from "bn.js";
@@ -27,7 +52,14 @@ import BN from "bn.js";
 import type { BackgroundClient } from "../";
 
 import * as assertOwner from "./programs/assert-owner";
-import { associatedTokenAddress } from "./programs/token";
+import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  associatedTokenAddress,
+  masterEditionAddress,
+  metadataAddress,
+  TOKEN_AUTH_RULES_ID,
+  tokenRecordAddress,
+} from "./programs/token";
 import { xnftClient } from "./programs/xnft";
 import { SolanaProvider } from "./provider";
 
@@ -184,7 +216,8 @@ export class Solana {
     });
   }
 
-  public static async transferCardinalToken(
+  // see github.com/cardinal-labs/cardinal-creator-standard
+  public static async transferCreatorStandardToken(
     ctx: SolanaContext,
     req: TransferTokenRequest
   ): Promise<string> {
@@ -214,6 +247,14 @@ export class Solana {
 
     // Instructions to execute prior to the transfer.
     const transaction: Transaction = new Transaction();
+
+    const mintManagerId = findMintManagerId(mint);
+    const mintMetadataId = findMintMetadataId(mint);
+    const mintManagerData = await MintManager.fromAccountAddress(
+      ctx.connection,
+      mintManagerId
+    );
+
     if (!destinationAtaAccount) {
       transaction.add(
         assertOwner.assertOwnerInstruction({
@@ -231,13 +272,113 @@ export class Solana {
       );
     }
 
+    transaction.add(
+      createCCSTransferInstruction({
+        mintManager: mintManagerId,
+        mint: mintManagerData.mint,
+        mintMetadata: mintMetadataId,
+        ruleset: mintManagerData.ruleset,
+        from: sourceAta,
+        to: destinationAta,
+        authority: walletPublicKey,
+        instructions: SYSVAR_INSTRUCTIONS_PUBKEY,
+      })
+    );
+    transaction.feePayer = walletPublicKey;
+    transaction.recentBlockhash = (
+      await tokenClient.provider.connection.getLatestBlockhash(commitment)
+    ).blockhash;
+
+    const signedTx = await SolanaProvider.signTransaction(ctx, transaction);
+    const rawTx = signedTx.serialize();
+
+    return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
+      skipPreflight: false,
+      preflightCommitment: commitment,
+    });
+  }
+
+  public static async transferOpenCreatorProtocol(
+    solanaCtx: SolanaContext,
+    req: TransferTokenRequest,
+    mintState: MintState
+  ): Promise<string> {
+    const { walletPublicKey, tokenClient, commitment } = solanaCtx;
+    const { mint, destination } = req;
+
+    const sourceAta = associatedTokenAddress(mint, walletPublicKey);
+    const destinationAta = associatedTokenAddress(mint, destination);
+
+    const destinationAtaAccount =
+      await tokenClient.provider.connection.getAccountInfo(destinationAta);
+
+    const transaction: Transaction = new Transaction();
+    transaction.add(computeBudgetIx);
+
+    if (!destinationAtaAccount) {
+      transaction.add(
+        ocpCreateInitAccountInstruction({
+          policy: mintState.policy,
+          freezeAuthority: findFreezeAuthorityPk(mintState.policy),
+          mint,
+          metadata: await metadataAddress(mint),
+          mintState: findMintStatePk(mint),
+          from: destination,
+          fromAccount: destinationAta,
+          cmtProgram: CMT_PROGRAM,
+          instructions: SYSVAR_INSTRUCTIONS_PUBKEY,
+          payer: walletPublicKey,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        })
+      );
+    }
+
+    transaction.add(
+      ocpCreateTransferInstruction({
+        policy: mintState.policy,
+        freezeAuthority: findFreezeAuthorityPk(mintState.policy),
+        mint,
+        metadata: await metadataAddress(mint),
+        mintState: findMintStatePk(mint),
+        from: walletPublicKey,
+        fromAccount: sourceAta,
+        cmtProgram: CMT_PROGRAM,
+        instructions: SYSVAR_INSTRUCTIONS_PUBKEY,
+        to: destination,
+        toAccount: destinationAta,
+      })
+    );
+
+    transaction.feePayer = walletPublicKey;
+    transaction.recentBlockhash = (
+      await tokenClient.provider.connection.getLatestBlockhash(commitment)
+    ).blockhash;
+
+    const signedTx = await SolanaProvider.signTransaction(
+      solanaCtx,
+      transaction
+    );
+    const rawTx = signedTx.serialize();
+
+    return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
+      skipPreflight: true,
+      preflightCommitment: commitment,
+    });
+  }
+
+  public static async transferCardinalManagedToken(
+    ctx: SolanaContext,
+    req: TransferTokenRequest
+  ): Promise<string> {
+    const { walletPublicKey, tokenClient, commitment } = ctx;
+    const { mint, destination } = req;
+
+    const sourceAta = associatedTokenAddress(mint, walletPublicKey);
+
     const tx = await withSend(
-      transaction,
+      new Transaction(),
       tokenClient.provider.connection,
-      // @ts-ignore
-      {
-        publicKey: walletPublicKey,
-      },
+      emptyWallet(walletPublicKey),
       mint,
       sourceAta,
       destination
@@ -253,6 +394,96 @@ export class Solana {
 
     return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
       skipPreflight: false,
+      preflightCommitment: commitment,
+    });
+  }
+
+  public static async transferProgrammableNft(
+    solanaCtx: SolanaContext,
+    req: TransferTokenRequest
+  ): Promise<string> {
+    const { walletPublicKey, tokenClient, commitment } = solanaCtx;
+    const { amount, mint, destination: destinationOwner } = req;
+
+    const sourceAta = associatedTokenAddress(mint, walletPublicKey);
+    const destinationAta = associatedTokenAddress(mint, destinationOwner);
+
+    const ownerTokenRecord = await tokenRecordAddress(mint, sourceAta);
+
+    // we need to check whether the token is lock or listed
+
+    const tokenRecord = await TokenRecord.fromAccountAddress(
+      tokenClient.provider.connection,
+      ownerTokenRecord
+    );
+
+    if (tokenRecord.state == TokenState.Locked) {
+      throw new Error("token account is locked");
+    } else if (tokenRecord.state == TokenState.Listed) {
+      throw new Error("token is listed");
+    }
+
+    // we need the metadata object to retrieve the programmable config
+
+    const metadata = await Metadata.fromAccountAddress(
+      tokenClient.provider.connection,
+      await metadataAddress(mint)
+    );
+
+    let authorizationRules: PublicKey | undefined;
+
+    if (metadata.programmableConfig) {
+      authorizationRules = metadata.programmableConfig.ruleSet ?? undefined;
+    }
+
+    const transferAcccounts: TransferInstructionAccounts = {
+      authority: walletPublicKey,
+      tokenOwner: walletPublicKey,
+      token: sourceAta,
+      metadata: await metadataAddress(mint),
+      mint,
+      edition: await masterEditionAddress(mint),
+      destinationOwner,
+      destination: destinationAta,
+      payer: walletPublicKey,
+      splTokenProgram: TOKEN_PROGRAM_ID,
+      splAtaProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      sysvarInstructions: SYSVAR_INSTRUCTIONS_PUBKEY,
+      authorizationRules,
+      authorizationRulesProgram: TOKEN_AUTH_RULES_ID,
+      ownerTokenRecord,
+      destinationTokenRecord: await tokenRecordAddress(mint, destinationAta),
+    };
+
+    const transferArgs: TransferInstructionArgs = {
+      transferArgs: {
+        __kind: "V1",
+        amount,
+        authorizationData: null,
+      },
+    };
+
+    const transferIx = createTokenMetadataTransferInstruction(
+      transferAcccounts,
+      transferArgs
+    );
+
+    const transaction: Transaction = new Transaction();
+    transaction.add(computeBudgetIx, transferIx);
+
+    transaction.feePayer = walletPublicKey;
+    transaction.recentBlockhash = (
+      await tokenClient.provider.connection.getLatestBlockhash(commitment)
+    ).blockhash;
+
+    const signedTx = await SolanaProvider.signTransaction(
+      solanaCtx,
+      transaction
+    );
+    const rawTx = signedTx.serialize();
+
+    return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
+      skipPreflight: true,
       preflightCommitment: commitment,
     });
   }

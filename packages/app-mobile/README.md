@@ -1,23 +1,36 @@
-# running locally
+# Backpack 🎒📱
 
-`npm i -g expo-cli`
+Android and iOS apps powered via react-native.
 
-`xcode-select --install`
+## Requirements
 
-## run background service worker
+- A phone or Simulator (Download XCode)
+- At least two terminal windows
 
-ensure the background serviceworker wrapper html is running on http://localhost:9333, either `yarn start` from root or `cd ../background && yarn start`
+## Quick Start
 
-install [ngrok](https://ngrok.com/download) or something similar to forward http://localhost:9333 to an external https:// url
+- Install [Expo](https://docs.expo.dev/workflow/expo-cli/)
 
-` brew install ngrok/ngrok/ngrok`
+```sh
+npm install -g expo-cli
+```
 
-start the forwarding service
+- Install [Eas](https://docs.expo.dev/build/setup/#install-the-latest-eas-cli)
 
-`ngrok http 9333`
+```sh
+npm install -g eas-cli
+```
 
-copy the URL and set it as `WEBWORKER_URL` in env
+- In one terminal window, from the _root backpack folder_ run:
 
-`WEBWORKER_URL=https://theForwardingUrlFromAbove yarn android`
+```sh
+yarn build:mobile && yarn start:mobile
+```
 
-^ if this doesn't open XCode's iPhone simulator you might need to install XCode from the Mac App Store and then try again.
+- In another terminal window, from `packages/app-mobile`, run:
+
+```sh
+yarn ios
+```
+
+An iPhone simulator should open up and you should be well on your way!

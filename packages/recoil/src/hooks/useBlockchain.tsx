@@ -2,11 +2,7 @@ import { Blockchain } from "@coral-xyz/common";
 import { useRecoilValue } from "recoil";
 
 import * as atoms from "../atoms";
-import type { TokenData } from "../types";
-
-export function useBlockchainKeyrings() {
-  return useRecoilValue(atoms.blockchainKeyrings);
-}
+import type { TokenDataWithPrice } from "../types";
 
 export function useEnabledBlockchains() {
   return useRecoilValue(atoms.enabledBlockchains);
@@ -50,23 +46,60 @@ export function useBlockchainLogo(blockchain: Blockchain): string {
   }
 }
 
-export function useBlockchainTokens(blockchain: Blockchain) {
-  return useRecoilValue(atoms.blockchainTokenAddresses(blockchain));
+export function useBlockchainTokens({
+  publicKey,
+  blockchain,
+}: {
+  publicKey: string;
+  blockchain: Blockchain;
+}) {
+  return useRecoilValue(
+    atoms.blockchainTokenAddresses({
+      publicKey,
+      blockchain,
+    })
+  );
 }
 
-export function useBlockchainTokensSorted(blockchain: Blockchain) {
-  return useRecoilValue(atoms.blockchainBalancesSorted(blockchain));
+export function useBlockchainTokensSorted({
+  publicKey,
+  blockchain,
+}: {
+  publicKey: string;
+  blockchain: Blockchain;
+}) {
+  return useRecoilValue(
+    atoms.blockchainBalancesSorted({
+      publicKey,
+      blockchain,
+    })
+  );
 }
 
-export function useBlockchainNativeTokens(blockchain: Blockchain) {
-  return useRecoilValue(atoms.blockchainNativeBalances(blockchain));
+export function useBlockchainNativeTokens({
+  publicKey,
+  blockchain,
+}: {
+  publicKey: string;
+  blockchain: Blockchain;
+}) {
+  return useRecoilValue(
+    atoms.blockchainNativeBalances({ publicKey, blockchain })
+  );
 }
 
-export function useBlockchainTokenAccount(
-  blockchain: Blockchain,
-  address: string
-): TokenData | null {
-  return useRecoilValue(atoms.blockchainTokenData({ blockchain, address }));
+export function useBlockchainTokenAccount({
+  publicKey,
+  blockchain,
+  tokenAddress,
+}: {
+  publicKey: string;
+  blockchain: Blockchain;
+  tokenAddress: string;
+}): TokenDataWithPrice | null {
+  return useRecoilValue(
+    atoms.blockchainTokenData({ publicKey, blockchain, tokenAddress })
+  );
 }
 
 export function useBlockchainActiveWallet(blockchain: Blockchain) {

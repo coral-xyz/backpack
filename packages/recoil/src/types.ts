@@ -3,53 +3,79 @@ import {
   TAB_BALANCES,
   TAB_MESSAGES,
   TAB_NFTS,
+  TAB_NOTIFICATIONS,
+  TAB_RECENT_ACTIVITY,
   TAB_SWAP,
 } from "@coral-xyz/common";
 import type { BigNumber } from "ethers";
+import type { RecoilValueReadOnly } from "recoil";
 
 import { makeUrl } from "./hooks";
 
+//
+// Client side public keys
+//
+
 export type NamedPublicKey = {
-  publicKey: string;
   name: string;
+  publicKey: string;
+};
+
+export type PublicKeyMetadata = NamedPublicKey & {
+  isCold: boolean;
 };
 
 export type WalletPublicKeys = {
   [key: string]: {
-    hdPublicKeys: Array<NamedPublicKey>;
-    importedPublicKeys: Array<NamedPublicKey>;
-    ledgerPublicKeys: Array<NamedPublicKey>;
+    hdPublicKeys: Array<PublicKeyMetadata>;
+    importedPublicKeys: Array<PublicKeyMetadata>;
+    ledgerPublicKeys: Array<PublicKeyMetadata>;
   };
 };
 
-export interface TokenNativeData {
+//
+// Tokens
+//
+
+export interface TokenData {
   name: string;
   decimals: number;
-  nativeBalance: BigNumber;
-  displayBalance: string;
   ticker: string;
   logo: string;
   address: string;
+  // Mint is Solana only so is optional
   mint?: string;
 }
 
-export interface TokenData extends TokenNativeData {
+export interface TokenDataWithBalance extends TokenData {
+  nativeBalance: BigNumber;
+  displayBalance: string;
+}
+
+export interface TokenDataWithPrice extends TokenDataWithBalance {
   usdBalance: number;
   recentPercentChange: number | undefined;
   recentUsdBalanceChange: number;
   priceData: any;
 }
 
-export type TokenDisplay = {
+export type TokenDisplay = Pick<
+  TokenDataWithPrice,
+  | "name"
+  | "ticker"
+  | "logo"
+  | "displayBalance"
+  | "nativeBalance"
+  | "usdBalance"
+  | "recentUsdBalanceChange"
+  | "priceData"
+>;
+
+export interface TokenMetadata {
   name: string;
-  ticker: string;
-  displayBalance: number;
-  nativeBalance: number;
-  usdBalance: string;
-  recentUsdBalanceChange: string;
-  logo: string;
-  priceData: any;
-};
+  image: string;
+  symbol: string;
+}
 
 export const TABS = [
   [TAB_BALANCES, "Balances"],
@@ -57,6 +83,8 @@ export const TABS = [
   [TAB_SWAP, "Swap"],
   [TAB_APPS, "Apps"],
   [TAB_MESSAGES, "Messages"],
+  [TAB_RECENT_ACTIVITY, "Recent Activity"],
+  [TAB_NOTIFICATIONS, "Notifications"],
 ];
 
 export function makeDefaultNav() {
@@ -72,3 +100,7 @@ export function makeDefaultNav() {
   });
   return defaultNav;
 }
+
+export type ExtractRecoilType<P> = P extends RecoilValueReadOnly<infer T>
+  ? T
+  : never;

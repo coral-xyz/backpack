@@ -1,71 +1,33 @@
-import { useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import type { Plugin } from "@coral-xyz/common";
+import { DEFAULT_PUBKEY_STR } from "@coral-xyz/common";
+import { Loading, MoreIcon, PowerIcon } from "@coral-xyz/react-common";
 import {
+  transactionRequest,
+  useActiveSolanaWallet,
+  useBackgroundClient,
+  useClosePlugin,
+  useConnectionBackgroundClient,
   useFreshPlugin,
+  useNavigationSegue,
+  useOpenPlugin,
   usePlugins,
-  xnftPreference as xnftPreferenceAtom,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Button, Divider } from "@mui/material";
-import { PublicKey } from "@solana/web3.js";
-import { useRecoilValue } from "recoil";
+import { Button, CircularProgress, Divider } from "@mui/material";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
-import { PluginRenderer } from "../../../plugin/Renderer";
-import { MoreIcon, PowerIcon } from "../../common/Icon";
-
+import { PluginRenderer } from "./Renderer";
 import { Simulator } from "./Simulator";
 
 export function PluginApp({
   xnftAddress,
-  closePlugin,
+  deepXnftPath,
 }: {
-  xnftAddress: string;
-  closePlugin: () => void;
-}) {
-  const plugins = usePlugins();
-
-  if (!plugins) {
-    return null;
-  }
-  const plugin = plugins?.find((p) => p.xnftAddress.toString() === xnftAddress);
-  if (!plugin) {
-    return (
-      <DisplayFreshPlugin xnftAddress={xnftAddress} closePlugin={closePlugin} />
-    );
-  }
-  if (xnftAddress === PublicKey.default.toString()) {
-    return <Simulator plugin={plugin} closePlugin={closePlugin} />;
-  }
-  return <PluginDisplay plugin={plugin} closePlugin={closePlugin} />;
-}
-
-function DisplayFreshPlugin({
-  xnftAddress,
-  closePlugin,
-}: {
-  xnftAddress: string;
-  closePlugin: () => void;
-}) {
-  const p = useFreshPlugin(xnftAddress);
-  if (!p.result) {
-    return null;
-  }
-  return <PluginDisplay plugin={p.result} closePlugin={closePlugin} />;
-}
-
-export function PluginDisplay({
-  plugin,
-  closePlugin,
-}: {
-  plugin?: Plugin;
-  closePlugin: () => void;
+  xnftAddress: string | undefined;
+  deepXnftPath: string;
 }) {
   const theme = useCustomTheme();
-  const xnftPreference = useRecoilValue(
-    xnftPreferenceAtom(plugin?.xnftInstallAddress?.toString())
-  );
-
-  // TODO: splash loading page.
   return (
     <div
       style={{
@@ -73,19 +35,102 @@ export function PluginDisplay({
         backgroundColor: theme.custom.colors.background,
       }}
     >
-      <PluginControl closePlugin={closePlugin} />
-      {plugin && (
-        <PluginRenderer
-          key={plugin.iframeRootUrl}
-          plugin={plugin}
-          xnftPreference={xnftPreference}
-        />
-      )}
+      <LoadPlugin xnftAddress={xnftAddress} deepXnftPath={deepXnftPath} />
     </div>
   );
 }
 
-function PluginControl({ closePlugin }: any) {
+export function LoadPlugin({
+  xnftAddress,
+  deepXnftPath,
+}: {
+  xnftAddress: string | undefined;
+  deepXnftPath: string;
+}) {
+  const { publicKey } = useActiveSolanaWallet(); // TODO: aggregate wallet considerations.
+  const plugins = usePlugins(publicKey);
+  const segue = useNavigationSegue();
+  const setTransactionRequest = useSetRecoilState(transactionRequest);
+  const backgroundClient = useBackgroundClient();
+  const connectionBackgroundClient = useConnectionBackgroundClient();
+  const openPlugin = useOpenPlugin();
+
+  if (!xnftAddress) {
+    return <Loading />;
+  }
+
+  const plugin = plugins?.find((p) => p.xnftAddress.toString() === xnftAddress);
+
+  if (!plugin) {
+    return (
+      <DisplayFreshPlugin
+        xnftAddress={xnftAddress}
+        deepXnftPath={deepXnftPath}
+      />
+    );
+  }
+  plugin.setHostApi({
+    push: segue.push,
+    pop: segue.pop,
+    request: setTransactionRequest,
+    backgroundClient,
+    connectionBackgroundClient,
+    openPlugin,
+  });
+
+  if (xnftAddress === DEFAULT_PUBKEY_STR) {
+    return <Simulator plugin={plugin} deepXnftPath={deepXnftPath} />;
+  }
+  return <PluginDisplay plugin={plugin} deepXnftPath={deepXnftPath} />;
+}
+
+function DisplayFreshPlugin({
+  xnftAddress,
+  deepXnftPath,
+}: {
+  xnftAddress: string;
+  deepXnftPath: string;
+}) {
+  const p = useFreshPlugin(xnftAddress);
+  if (!p.result) {
+    return null;
+  }
+  return <PluginDisplay plugin={p.result} deepXnftPath={deepXnftPath} />;
+}
+
+export function PluginDisplay({
+  plugin,
+  deepXnftPath,
+}: {
+  plugin?: Plugin;
+  deepXnftPath: string;
+}) {
+  return (
+    <>
+      <PluginControl plugin={plugin} />
+      <Suspense fallback={<Loading />}>
+        {plugin && (
+          <PluginRenderer
+            key={plugin?.iframeRootUrl}
+            plugin={plugin}
+            deepXnftPath={deepXnftPath}
+          />
+        )}
+      </Suspense>
+    </>
+  );
+}
+
+export function PluginControl({ plugin }: { plugin: any | null }) {
+  const closePlugin = useClosePlugin();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    plugin?.didFinishSetup!.then(() => {
+      setIsLoading(false);
+    });
+  });
+
   return (
     <div
       style={{
@@ -101,17 +146,21 @@ function PluginControl({ closePlugin }: any) {
     >
       <div
         style={{
-          width: "87px",
+          //          width: "87px",
+          width: "60px",
           height: "32px",
           borderRadius: "18.5px",
           display: "flex",
           background: "#fff",
         }}
       >
+        {/*
         <Button
           disableRipple
           onClick={() => {}}
-          style={{
+          sx={{
+						borderTopLeftRadius: '18.5px',
+						borderBottomLeftRadius: '18.5px',
             flex: 1,
             height: "32px",
             padding: 0,
@@ -139,20 +188,36 @@ function PluginControl({ closePlugin }: any) {
             }}
           />
         </div>
+				*/}
         <Button
           disableRipple
           onClick={() => closePlugin()}
-          style={{
+          sx={{
+            position: "relative",
+            borderRadius: "18.5px",
             flex: 1,
             height: "32px",
             padding: 0,
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
+            alignItems: "center",
             minWidth: "41.67px",
           }}
         >
-          <PowerIcon fill={"#000000"} />
+          {isLoading ? (
+            <div
+              style={{ position: "relative", height: "20px", width: "20px" }}
+            >
+              <Loading
+                size="small"
+                color="secondary"
+                style={{ display: "block" }}
+              />
+            </div>
+          ) : (
+            <PowerIcon fill={"#000000"} />
+          )}
         </Button>
       </div>
     </div>

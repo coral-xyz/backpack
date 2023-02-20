@@ -2,18 +2,17 @@
   "name": "@coral-xyz/example-xnft-provider-test",
   "version": "0.1.0",
   "scripts": {
-    "build": "xnft build",
-    "start": "xnft watch",
-    "dev": "xnft dev"
+    "build": "xnft legacy build",
+    "start": "xnft legacy watch",
+    "dev": "xnft legacy dev"
   },
   "devDependencies": {
-    "@coral-xyz/xnft-cli": "*",
     "local-web-server": "^5.2.0"
   },
   "dependencies": {
     "react-xnft": "*",
     "@project-serum/anchor": "^0.23.0",
     "@solana/web3.js": "^1.36.0",
-    "react": "^17.0.2"
+    "react": "18.2.0"
   }
 }

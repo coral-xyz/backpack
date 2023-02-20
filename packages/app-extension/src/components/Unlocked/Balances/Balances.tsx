@@ -1,18 +1,23 @@
 import React, { useState } from "react";
-import { formatUSD, proxyImageUrl } from "@coral-xyz/common";
-import { styles } from "@coral-xyz/themes";
+import type { Blockchain } from "@coral-xyz/common";
+import { formatUSD, proxyImageUrl, toTitleCase } from "@coral-xyz/common";
+import { isAggregateWallets, useBlockchainLogo } from "@coral-xyz/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import {
+  Button as MuiButton,
   Card,
   CardContent,
   CardHeader,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   Typography,
 } from "@mui/material";
+import { useRecoilValue } from "recoil";
 
-import { Button } from "../../../plugin";
+import { UNKNOWN_ICON_SRC } from "../../common/Icon";
+import { WalletDrawerButton } from "../../common/WalletList";
 
 const useStyles = styles((theme) => ({
   blockchainLogo: {
@@ -39,11 +44,6 @@ const useStyles = styles((theme) => ({
     paddingRight: "16px",
     height: "36px",
     width: "100%",
-  },
-  hover: {
-    "&:hover": {
-      cursor: "pointer",
-    },
   },
   cardHeaderTitle: {
     fontWeight: 500,
@@ -131,9 +131,10 @@ const useStyles = styles((theme) => ({
   },
   tokenBalanceChangeNegative: {
     fontWeight: 500,
-    fontSize: "12px",
+    fontSize: "14px",
     color: theme.custom.colors.negative,
     float: "right",
+    lineHeight: "20px",
   },
   tokenListItemIconRoot: {
     minWidth: "44px",
@@ -152,13 +153,6 @@ export function BalancesTableCell({ props }: any) {
   const negative = percentChange && percentChange < 0 ? true : false;
   const neutral = percentChange && percentChange === 0 ? true : false;
 
-  let trim;
-  try {
-    trim = `${subtitle.split(".")[0]}.${subtitle.split(".")[1].slice(0, 5)}`;
-  } catch {
-    // pass
-  }
-
   return (
     <div className={classes.balancesTableCellContainer}>
       {!!icon && (
@@ -169,26 +163,22 @@ export function BalancesTableCell({ props }: any) {
           <ProxyImage
             src={icon}
             className={classes.logoIcon}
-            onError={(event: any) =>
-              (event.currentTarget.style.display = "none")
-            }
+            onError={(event: any) => {
+              event.currentTarget.src = UNKNOWN_ICON_SRC;
+            }}
           />
         </ListItemIcon>
       )}
       <div className={classes.tokenListItemContent}>
         <div className={classes.tokenListItemRow}>
           <Typography className={classes.tokenName}>{title}</Typography>
-          {usdValue && (
-            <Typography className={classes.tokenBalance}>
-              {formatUSD(usdValue)}
-            </Typography>
-          )}
+          <Typography className={classes.tokenBalance}>
+            {usdValue ? formatUSD(usdValue) : "-"}
+          </Typography>
         </div>
         <div className={classes.tokenListItemRow}>
           {subtitle && (
-            <Typography className={classes.tokenAmount}>
-              {trim ? trim : subtitle}
-            </Typography>
+            <Typography className={classes.tokenAmount}>{subtitle}</Typography>
           )}
           {percentChange !== undefined && positive && (
             <Typography className={classes.tokenBalanceChangePositive}>
@@ -205,13 +195,18 @@ export function BalancesTableCell({ props }: any) {
               {formatUSD(percentChange.toLocaleString())}
             </Typography>
           )}
+          {!usdValue && (
+            <Typography className={classes.tokenBalanceChangeNeutral}>
+              {"-"}
+            </Typography>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-export function BalancesTable({ props, style, children }: any) {
+export function BalancesTable({ style, children }: any) {
   const classes = useStyles();
   return (
     <BalancesTableProvider>
@@ -222,7 +217,7 @@ export function BalancesTable({ props, style, children }: any) {
   );
 }
 
-function BalancesTableProvider(props: any) {
+export function BalancesTableProvider(props: any) {
   const [showContent, setShowContent] = useState(true);
   return (
     <_BalancesTableContext.Provider
@@ -250,21 +245,53 @@ export function useBalancesContext() {
   return ctx;
 }
 
-export function BalancesTableHead({ props, style }: any) {
-  const { subtitle, title, iconUrl, disableToggle } = props;
-  const classes = useStyles();
+export function BalancesTableHead({
+  disableToggle,
+  wallet,
+}: {
+  wallet: { name: string; publicKey: string; blockchain: Blockchain };
+  disableToggle?: boolean;
+}) {
   const { showContent, setShowContent } = useBalancesContext();
   return (
-    <Button
+    <_BalancesTableHead
+      blockchain={wallet.blockchain}
+      disableToggle={disableToggle}
+      wallet={wallet}
+      showContent={showContent}
+      setShowContent={setShowContent}
+    />
+  );
+}
+
+export function _BalancesTableHead({
+  blockchain,
+  disableToggle,
+  wallet,
+  showContent,
+  setShowContent,
+}: {
+  blockchain: Blockchain;
+  wallet: { name: string; publicKey: string };
+  disableToggle?: boolean;
+  showContent: boolean;
+  setShowContent: (b: boolean) => void;
+}) {
+  const classes = useStyles();
+  const theme = useCustomTheme();
+  const title = toTitleCase(blockchain);
+  const iconUrl = useBlockchainLogo(blockchain);
+  const _isAggregateWallets = useRecoilValue(isAggregateWallets);
+  return (
+    <div
       style={{
         width: "100%",
         borderRadius: 0,
         padding: 0,
-        ...style,
+        backgroundColor: theme.custom.colors.nav,
       }}
     >
       <CardHeader
-        onClick={() => !disableToggle && setShowContent(!showContent)}
         avatar={
           iconUrl ? (
             <ProxyImage className={classes.blockchainLogo} src={iconUrl} />
@@ -280,6 +307,7 @@ export function BalancesTableHead({ props, style }: any) {
             <div
               style={{
                 display: "flex",
+                width: "100%",
               }}
             >
               <Typography
@@ -294,33 +322,40 @@ export function BalancesTableHead({ props, style }: any) {
               >
                 {title}
               </Typography>
-              {subtitle}
+              <WalletDrawerButton wallet={wallet} />
             </div>
-            {!disableToggle && (
-              <>
+            {_isAggregateWallets && (
+              <MuiButton
+                disableRipple
+                style={{
+                  width: "18px",
+                  minWidth: "18px",
+                  marginLeft: "8px",
+                  padding: 0,
+                }}
+                onClick={() => !disableToggle && setShowContent(!showContent)}
+              >
                 {showContent ? (
                   <ExpandLess className={classes.expand} />
                 ) : (
                   <ExpandMore className={classes.expand} />
                 )}
-              </>
+              </MuiButton>
             )}
           </div>
         }
         classes={{
-          root: `${classes.cardHeaderRoot} ${
-            disableToggle ? "" : classes.hover
-          }`,
+          root: `${classes.cardHeaderRoot}`,
           content: classes.cardHeaderContent,
           title: classes.cardHeaderTitle,
           avatar: classes.cardHeaderAvatar,
         }}
       />
-    </Button>
+    </div>
   );
 }
 
-export function BalancesTableContent({ props, style, children }: any) {
+export function BalancesTableContent({ style, children }: any) {
   const classes = useStyles();
   const { showContent } = useBalancesContext();
   return (
@@ -357,25 +392,17 @@ export function BalancesTableRow({
   );
 }
 
-function __BalancesTableRow({
-  id,
-  props,
-  style,
-  children,
-  childrenRenderer,
-  onClick,
-}: any) {
+function __BalancesTableRow({ style, children, onClick }: any) {
   const classes = useStyles();
   return (
-    <ListItem
-      button
+    <ListItemButton
       disableRipple
       className={classes.tokenListItem}
       onClick={onClick}
       style={style}
     >
       {children}
-    </ListItem>
+    </ListItemButton>
   );
 }
 function ProxyImage(props: any) {

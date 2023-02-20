@@ -1,18 +1,28 @@
 import React, { useContext } from "react";
-import type { SubscriptionType } from "@coral-xyz/common";
-
-import type { ChatManager, EnrichedMessage } from "../ChatManager";
+import type {
+  EnrichedMessage,
+  EnrichedMessageWithMetadata,
+  SubscriptionType,
+  UserMetadata,
+} from "@coral-xyz/common";
+export type MessagePlugins = "secure-transfer" | "barter" | "";
 
 type ChatContext = {
-  chatManager: ChatManager | null;
+  setActiveReply: any;
+  activeReply: {
+    parent_client_generated_uuid: string | null;
+    text: string;
+    parent_username: string;
+    parent_message_author_uuid: string;
+  };
   roomId: string;
-  chats: EnrichedMessage[];
-  setChats: any;
+  chats: EnrichedMessageWithMetadata[];
   userId: string;
   loading: boolean;
   username: string;
   areFriends: boolean;
   requested: boolean;
+  remoteRequested: boolean;
   remoteUserId: string;
   type: SubscriptionType;
   blocked?: boolean;
@@ -20,21 +30,35 @@ type ChatContext = {
   setRequested?: any;
   setSpam?: any;
   setBlocked?: any;
+  isDarkMode: boolean;
+  remoteUsername?: string;
+  reconnecting: boolean;
+  nftMint?: string;
+  publicKey?: string;
+  usersMetadata: { [key: string]: UserMetadata };
+  openPlugin: MessagePlugins;
+  setOpenPlugin: any;
 };
 
 export const _ChatContext = React.createContext<ChatContext | null>(null);
 
 export function ChatProvider(props: {
-  chatManager: ChatManager | null;
+  setActiveReply: any;
+  activeReply: {
+    parent_client_generated_uuid: string | null;
+    text: string;
+    parent_username: string;
+    parent_message_author_uuid: string;
+  };
   roomId: string;
-  chats: EnrichedMessage[];
+  chats: EnrichedMessageWithMetadata[];
   userId: string;
-  setChats: any;
   children: any;
   loading: boolean;
   username: string;
   areFriends: boolean;
   requested: boolean;
+  remoteRequested: boolean;
   remoteUserId: string;
   type: SubscriptionType;
   blocked?: boolean;
@@ -42,14 +66,22 @@ export function ChatProvider(props: {
   setRequested?: any;
   setSpam?: any;
   setBlocked?: any;
+  isDarkMode: boolean;
+  remoteUsername?: string;
+  reconnecting: boolean;
+  nftMint?: string;
+  publicKey?: string;
+  usersMetadata: { [key: string]: UserMetadata };
+  openPlugin: MessagePlugins;
+  setOpenPlugin: any;
 }) {
   return (
     <_ChatContext.Provider
       value={{
-        chatManager: props.chatManager,
+        setActiveReply: props.setActiveReply,
+        activeReply: props.activeReply,
         roomId: props.roomId,
         chats: props.chats,
-        setChats: props.setChats,
         userId: props.userId,
         loading: props.loading,
         username: props.username,
@@ -62,6 +94,15 @@ export function ChatProvider(props: {
         setRequested: props.setRequested,
         setSpam: props.setSpam,
         setBlocked: props.setBlocked,
+        isDarkMode: props.isDarkMode,
+        remoteRequested: props.remoteRequested,
+        remoteUsername: props.remoteUsername,
+        reconnecting: props.reconnecting,
+        nftMint: props.nftMint,
+        publicKey: props.publicKey,
+        usersMetadata: props.usersMetadata,
+        openPlugin: props.openPlugin,
+        setOpenPlugin: props.setOpenPlugin,
       }}
     >
       {props.children}

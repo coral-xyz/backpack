@@ -106,14 +106,24 @@ export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD =
   "ui-rpc-method-blockchain-keyrings-add";
 export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ =
   "ui-rpc-method-blockchain-keyrings-read";
+export const UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS =
+  "ui-rpc-method-find-server-public-key-conflicts";
+export const UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR =
+  "ui-rpc-method-find-wallet-descriptor";
+export const UI_RPC_METHOD_KEY_IS_COLD_UPDATE =
+  "ui-rpc-method-key-is-cold-update";
 export const UI_RPC_METHOD_KEYNAME_READ = "ui-rpc-method-keyname-read";
 export const UI_RPC_METHOD_KEYNAME_UPDATE = "ui-rpc-method-keyname-update";
 export const UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE =
   "ui-rpc-method-keyring-active-wallet-update";
-export const UI_RPC_METHOD_KEYRING_AUTOLOCK_READ =
-  "ui-rpc-method-autolock-read";
-export const UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE =
-  "ui-rpc-method-autolock-update";
+export const UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_READ =
+  "ui-rpc-method-auto-lock-settings-read";
+export const UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_UPDATE =
+  "ui-rpc-method-auto-lock-settings-update";
+export const UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH =
+  "ui-rpc-method-keyring-read-next-derivation-path";
+export const UI_RPC_METHOD_KEYRING_IMPORT_WALLET =
+  "ui-rpc-method-keyring-import-wallet";
 export const UI_RPC_METHOD_KEYRING_DERIVE_WALLET =
   "ui-rpc-method-keyring-derive";
 export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC =
@@ -121,7 +131,9 @@ export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC =
 export const UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY =
   "ui-rpc-method-export-secret-key";
 export const UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY =
-  "ui-rpc-method-keyring-import-wallet";
+  "ui-rpc-method-keyring-import-secret-key";
+export const UI_RPC_METHOD_KEYRING_HAS_MNEMONIC =
+  "ui-rpc-method-keyring-has-mnemonic";
 export const UI_RPC_METHOD_KEYRING_KEY_DELETE = "ui-rpc-method-keyring-delete";
 export const UI_RPC_METHOD_KEYRING_RESET = "ui-rpc-method-keyring-reset";
 export const UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD =
@@ -134,6 +146,8 @@ export const UI_RPC_METHOD_KEYRING_STORE_LOCK =
   "ui-rpc-method-keyring-store-lock";
 export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
   "ui-rpc-method-keyring-mnemonic-create";
+export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC =
+  "ui-rpc-method-keyring-mnemonic-sync";
 export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS =
   "ui-rpc-method-keyring-read-all-pubkeys";
 export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA =
@@ -142,8 +156,6 @@ export const UI_RPC_METHOD_KEYRING_STORE_STATE =
   "ui-rpc-method-keyring-store-state";
 export const UI_RPC_METHOD_KEYRING_STORE_UNLOCK =
   "ui-rpc-method-keyring-store-unlock";
-export const UI_RPC_METHOD_KEYRING_TYPE_READ =
-  "ui-rpc-method-keyring-type-read";
 export const UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC =
   "ui-rpc-method-validate-mnemonic";
 export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
@@ -155,6 +167,8 @@ export const UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE =
 export const UI_RPC_METHOD_NAVIGATION_POP = "ui-rpc-method-navigation-pop";
 export const UI_RPC_METHOD_NAVIGATION_PUSH = "ui-rpc-method-navigation-push";
 export const UI_RPC_METHOD_NAVIGATION_READ = "ui-rpc-method-navigation-read";
+export const UI_RPC_METHOD_NAVIGATION_READ_URL =
+  "ui-rpc-method-navigation-read-url";
 export const UI_RPC_METHOD_NAVIGATION_TO_ROOT =
   "ui-rpc-method-navigation-to-root";
 export const UI_RPC_METHOD_NAVIGATION_TO_DEFAULT =
@@ -183,6 +197,8 @@ export const UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_READ =
   "ui-rpc-method-settings-developer-mode-read";
 export const UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE =
   "ui-rpc-method-settings-developer-mode-update";
+export const UI_RPC_METHOD_SETTINGS_AGGREGATE_WALLETS_UPDATE =
+  "ui-rpc-method-settings-aggregate-wallet-update";
 export const UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY =
   "ui-rpc-method-sign-message-for-public-key";
 export const UI_RPC_METHOD_TRY_TO_SIGN_MESSAGE =
@@ -193,7 +209,18 @@ export const UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE =
   "ui-rpc-method-username-account-create";
 export const UI_RPC_METHOD_ACTIVE_USER_UPDATE =
   "ui-rpc-method-active-user-update";
+export const UI_RPC_METHOD_USER_JWT_UPDATE = "ui-rpc-method-user-jwt-update";
 export const UI_RPC_METHOD_PREFERENCES_READ = "ui-rpc-method-references-read";
+// User account methods that interact with the API
+export const UI_RPC_METHOD_USER_ACCOUNT_AUTH =
+  "ui-rpc-method-user-account-auth";
+export const UI_RPC_METHOD_USER_ACCOUNT_LOGOUT = "ui-rpc-method-user-logout";
+export const UI_RPC_METHOD_USER_ACCOUNT_READ =
+  "ui-rpc-method-user-account-read";
+export const UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE =
+  "ui-rpc-method-user-account-add-public-create";
+export const UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_DELETE =
+  "ui-rpc-method-user-account-remove-public-delete";
 // Solana
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ =
   "ui-rpc-method-solana-commitment-read";
@@ -240,25 +267,29 @@ export const UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION =
 // Notifications sent from the background script to observers.
 //
 
+export const NOTIFICATION_KEY_IS_COLD_UPDATE =
+  "notification-key-is-cold-update";
 export const NOTIFICATION_APPROVED_ORIGINS_UPDATE =
   "notification-approved-origins-update";
-export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
-  "notification-auto-lock-secs-updated";
-export const NOTIFICATION_BLOCKCHAIN_DISABLED =
-  "notification-blockchain-disabled";
-export const NOTIFICATION_XNFT_PREFERENCE_UPDATED =
-  "notification-xnft-preference-updated";
-export const NOTIFICATION_BLOCKCHAIN_ENABLED =
-  "notification-blockchain-enabled";
-export const NOTIFICATION_FEATURE_GATES_UPDATED =
-  "notification-feature-gates-updated";
+export const NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED =
+  "notification-auto-lock-settings-updated";
+export const NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED =
+  "notification-blockchain-keyring-created";
+export const NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED =
+  "notification-blockchain-keyring-deleted";
+export const NOTIFICATION_AGGREGATE_WALLETS_UPDATED =
+  "notification-aggregate-wallets-updated";
 export const NOTIFICATION_DARK_MODE_UPDATED = "notification-dark-mode-updated";
 export const NOTIFICATION_DEVELOPER_MODE_UPDATED =
   "notification-developer-mode-updated";
+export const NOTIFICATION_FEATURE_GATES_UPDATED =
+  "notification-feature-gates-updated";
 export const NOTIFICATION_KEYNAME_UPDATE = "notification-keyname-update";
 export const NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED =
   "notification-keyring-active-blockchain-updated";
 export const NOTIFICATION_KEYRING_CREATED = "notification-keyring-created";
+export const NOTIFICATION_KEYRING_IMPORTED_WALLET =
+  "notification-keyring-imported-wallet";
 export const NOTIFICATION_KEYRING_DERIVED_WALLET =
   "notification-keyring-derived-wallet";
 export const NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY =
@@ -279,8 +310,16 @@ export const NOTIFICATION_NAVIGATION_URL_DID_CHANGE =
   "notification-navigation-url-did-change";
 export const NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED =
   "notification-username-account-created";
+export const NOTIFICATION_KEYRING_STORE_USER_AVATAR_UPDATED =
+  "notification-user-avatar-updated";
 export const NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED =
   "notification-active-user-updated";
+export const NOTIFICATION_KEYRING_STORE_REMOVED_USER =
+  "notification-keyring-store-removed-user";
+export const NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED =
+  "notification-keyring-active-blockchain-updated";
+export const NOTIFICATION_XNFT_PREFERENCE_UPDATED =
+  "notification-xnft-preference-updated";
 // Ethereum specific notifications
 export const NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED =
   "notification-keyring-ethereum-active-wallet-updated";
@@ -312,6 +351,15 @@ export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
   "notification-solana-explorer-updated";
 export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
   "notification-solana-spl-tokens-did-update";
+export const NOTIFICATION_USER_ACCOUNT_AUTHENTICATED =
+  "notification-user-account-authenticated";
+export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED =
+  "notification-user-account-public-keys-updated";
+export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED =
+  "notification-user-account-public-key-created";
+export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED =
+  "notification-user-account-public-key-deleted";
+
 //
 // Ethereum web injected provider API.
 //
@@ -401,6 +449,8 @@ export const SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2 =
   "solana-get-confirmed-signatures-for-address-2";
 export const SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS =
   "solana-custom-spl-token-accounts";
+export const SOLANA_CONNECTION_RPC_CUSTOM_SPL_METADATA_URI =
+  "solana-custom-spl-metadata-uri";
 export const SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS =
   "solana-get-program-accounts";
 export const SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE =
@@ -449,6 +499,8 @@ export const LEDGER_METHOD_ETHEREUM_SIGN_EIP712_HASHED_MESSAGE =
 
 export const PLUGIN_RPC_METHOD_WINDOW_OPEN = "rpc-method-window-open";
 
+export const PLUGIN_RPC_METHOD_PLUGIN_OPEN = "rpc-method-plugin-open";
+
 export const PLUGIN_RPC_METHOD_POP_OUT = "rpc-method-pop-out";
 
 export const BACKGROUND_SERVICE_WORKER_READY = "service-worker-ready";
@@ -466,12 +518,18 @@ export const TAB_SWAP = "swap";
 export const TAB_NFTS = "nfts";
 export const TAB_MESSAGES = "messages";
 export const TAB_APPS = "apps";
+export const TAB_XNFT = "xnft";
+export const TAB_RECENT_ACTIVITY = "recent-activity";
+export const TAB_NOTIFICATIONS = "notifications";
 export const TAB_SET = new Set([
   TAB_BALANCES,
   TAB_SWAP,
   TAB_NFTS,
   TAB_APPS,
   TAB_MESSAGES,
+  TAB_XNFT,
+  TAB_RECENT_ACTIVITY,
+  TAB_NOTIFICATIONS,
 ]);
 
 export const NAV_COMPONENT_TOKEN = "balances/token";
@@ -479,9 +537,12 @@ export const NAV_COMPONENT_NFT_DETAIL = "nfts/detail";
 export const NAV_COMPONENT_NFT_COLLECTION = "nfts/collection";
 export const NAV_COMPONENT_NFT_EXPERIENCE = "nfts/experience";
 export const NAV_COMPONENT_NFT_CHAT = "nfts/chat";
+export const NAV_COMPONENT_CONTACTS = "contacts";
 export const NAV_COMPONENT_MESSAGE_CHAT = "messages/chat";
+export const NAV_COMPONENT_MESSAGE_GROUP_CHAT = "messages/groupchat";
 export const NAV_COMPONENT_MESSAGE_PROFILE = "messages/profile";
 export const NAV_COMPONENT_MESSAGE_REQUESTS = "messages/requests";
+export const NAV_COMPONENT_XNFT = "xnft/*";
 
 export const BACKEND_EVENT = "backend-event";
 
@@ -489,6 +550,7 @@ export const BACKEND_EVENT = "backend-event";
 // Popup query routes.
 //
 export const QUERY_LOCKED = "locked=true";
+export const QUERY_LOCKED_APPROVAL = "locked-approval=true";
 export const QUERY_APPROVAL = "approve-origin=true";
 export const QUERY_APPROVE_TRANSACTION = "approve-tx=true";
 export const QUERY_APPROVE_ALL_TRANSACTIONS = "approve-all-txs=true";
@@ -502,12 +564,88 @@ export const SIMULATOR_PORT = 9933;
 export const NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 890880;
 export const TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 2039280;
 
-export const DISCORD_INVITE_LINK = "https://discord.gg/RfwUqWrn7T";
+export const DISCORD_INVITE_LINK = "https://discord.gg/RhKxgS8SaD";
 export const TWITTER_LINK = "https://twitter.com/xNFT_Backpack";
 export const XNFT_GG_LINK = "https://xnft.gg";
 export const BACKPACK_LINK = "https://backpack.app";
+export const BACKPACK_TERMS_OF_SERVICE = "https://backpack.app/terms";
+export const BACKPACK_GITHUB_LINK = "https://github.com/coral-xyz/backpack";
 
 export const ALCHEMY_ETHEREUM_MAINNET_API_KEY =
   "DlJr6QuBC2EaE-L60-iqQQGq9hi9-XSZ";
 
+export const AVATAR_BASE_URL = "https://swr.xnfts.dev/avatars";
 export const BACKEND_API_URL = "https://backpack-api.xnfts.dev";
+export const REALTIME_API_URL = "https://backend-ws.xnfts.dev";
+export const MESSAGING_COMMUNICATION_PUSH = "MESSAGING_COMMUNICATION_PUSH";
+export const MESSAGING_COMMUNICATION_FETCH = "MESSAGING_COMMUNICATION_FETCH";
+export const MESSAGING_COMMUNICATION_FETCH_RESPONSE =
+  "MESSAGING_COMMUNICATION_FETCH_RESPONSE";
+
+// Image displayed in the event of a broken NFT.
+export const UNKNOWN_NFT_ICON_SRC =
+  "data:image/png;base64,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";
+
+export const DEFAULT_GROUP_CHATS: {
+  id: string;
+  name: string;
+  image: string;
+}[] = [
+  {
+    id: "backpack-chat",
+    name: "Backpack",
+    image:
+      "https://user-images.githubusercontent.com/321395/206757416-a80e662a-0ccc-41cc-a20f-ff397755d47f.png",
+  },
+];
+
+export const WHITELISTED_CHAT_COLLECTIONS: {
+  id: string;
+  name: string;
+  image: string;
+  collectionId: string;
+  attributeMapping?: { [key: string]: string };
+}[] = [
+  {
+    id: "nouns",
+    name: "Y00ts + Nouns",
+    image: "https://metadata.y00ts.com/y/12189.png",
+    collectionId: "4mKSoDDqApmF1DqXvVTSL6tu2zixrSSNjqMxUnwvVzy2",
+    attributeMapping: {
+      Eyewear: "Nouns",
+    },
+  },
+  {
+    id: "nokiamon",
+    name: "Nokiamon",
+    image:
+      "https://files.slack.com/files-pri/T0353BWC561-F04KG1AKQ4D/logo-baku.png",
+    collectionId: "3YysdoK6ZcJFEL5QJxccY3q8AcTUFpahgbp4HFgBtjNF",
+  },
+  {
+    id: "backpack-chat-internal",
+    name: "Backpack Team",
+    image: "https://one.xnfts.dev/BackpackTeamNFT.gif",
+
+    collectionId: "BjN9u6zneFrjzuC7LH3eLaGC9FgYLnwQJMGA1xzVBKsj",
+  },
+  {
+    id: "bonkz",
+    name: "BONKz",
+    image:
+      "https://bafybeiecuemcqxzuv4ti4sgffjlwvrqedr7golppwrbbu2u5yttglath3m.ipfs.nftstorage.link/0.png",
+    collectionId: "ajM4QBHtZBBRcMqqq9gawdHK28GXcb2yeRs6WBnqhay",
+  },
+  {
+    id: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
+    name: "Mad Lads WL",
+    image: "https://mad-lads-web.vercel.app/mad_lads_logo.svg",
+    collectionId: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
+  },
+];
+
+// Load a fixed amount of public keys for various actions, e.g. import list,
+// searching mnemonics
+export const LOAD_PUBLIC_KEY_AMOUNT = 20;
+
+export const DEFAULT_PUBKEY_STR = "11111111111111111111111111111111";

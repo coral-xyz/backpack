@@ -1,19 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChatRoom } from "@coral-xyz/chat-sdk";
-import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common";
-import { useNavigation, useUser } from "@coral-xyz/recoil";
+import {
+  BACKEND_API_URL,
+  NAV_COMPONENT_NFT_CHAT,
+  REALTIME_API_URL,
+} from "@coral-xyz/common";
+import { PrimaryButton } from "@coral-xyz/react-common";
+import {
+  useActiveSolanaWallet,
+  useDarkMode,
+  useNavigation,
+  useUser,
+} from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 
-import { PrimaryButton } from "../../common";
-import { CloseButton } from "../../common/Layout/Drawer";
-import { NAV_BUTTON_WIDTH } from "../../common/Layout/Nav";
-import {
-  NavStackEphemeral,
-  NavStackScreen,
-} from "../../common/Layout/NavStack";
-
-const useStyles = styles((theme) => ({
+const useStyles = styles(() => ({
   container: {
     width: "100%",
     height: "100%",
@@ -43,14 +45,20 @@ export const NftsExperience = ({ id }: any) => {
   );
 };
 
-export function NftChat({ id }: any) {
-  const { username } = useUser();
+export function NftChat({ collectionId, nftMint }: any) {
+  const { username, uuid } = useUser();
+  const isDarkMode = useDarkMode();
+  const activeSolanaWallet = useActiveSolanaWallet();
+
   return (
     <ChatRoom
       username={username || ""}
       type={"collection"}
-      roomId={id}
-      userId={"asdadsas"}
+      roomId={collectionId || "-"}
+      userId={uuid}
+      isDarkMode={isDarkMode}
+      publicKey={activeSolanaWallet?.publicKey}
+      nftMint={nftMint}
     />
   );
 }

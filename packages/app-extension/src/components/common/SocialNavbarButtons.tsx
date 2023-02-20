@@ -1,4 +1,4 @@
-import { DiscordIcon, TwitterIcon } from "./Icon";
+import { DiscordIcon, TwitterIcon } from "@coral-xyz/react-common";
 
 const SocialNavbarButtons = () => {
   const handleTwitterClick = () => {

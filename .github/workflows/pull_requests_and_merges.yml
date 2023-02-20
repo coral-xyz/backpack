@@ -51,35 +51,17 @@ jobs:
       ##########################################################################
 
       #
-      # Build the extension, edge release.
-      #
-      - name: "build edge"
-        env:
-          BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-edge-${{ github.run_number }}"
-          BACKPACK_CONFIG_LOG_LEVEL: "info"
-          BACKPACK_FEATURE_LIGHT_MODE: "true"
-          BACKPACK_FEATURE_POP_MODE: "true"
-          BACKPACK_FEATURE_MULTICHAIN: "true"
-          BACKPACK_FEATURE_XNFT: "true"
-          # CI!=true so that build warnings aren't treated like errors (for now)
-          CI: ""
-        run: yarn build
-      - name: "rename edge build"
-        working-directory: packages/app-extension
-        run: mv build build-edge
-
-      #
       # Build the extension, beta release.
       #
       - name: "build beta"
         env:
           BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-beta-${{ github.run_number }}"
+          BACKPACK_CONFIG_GITHUB_RUN_NUMBER: "${{ github.run_number }}"
           BACKPACK_CONFIG_LOG_LEVEL: "info"
           BACKPACK_FEATURE_LIGHT_MODE: "true"
           BACKPACK_FEATURE_POP_MODE: "true"
-          BACKPACK_FEATURE_MULTICHAIN: "true"
-          BACKPACK_FEATURE_USERNAMES: "true"
           BACKPACK_FEATURE_XNFT: "true"
+          BACKPACK_FEATURE_FORCE_LATEST_VERSION: "true"
           # CI!=true so that build warnings aren't treated like errors (for now)
           CI: ""
         run: yarn build
@@ -94,22 +76,24 @@ jobs:
       - run: yarn test
 
       ##########################################################################
-      # GitHub Pages.
+      # GitHub Pages (mobile app and hardware wallet support)
       ##########################################################################
 
-      - run: cd packages/background && yarn build:html
+      - name: Build background-service-worker.html
+        run: cd packages/background && yarn build:html
 
       - if: github.event_name == 'pull_request'
         name: "set env.commit_sha from latest commit in PR"
         run: echo "commit_sha=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+
       - if: github.event_name == 'push'
         name: "set env.commit_sha from commit or merge commit"
         run: echo "commit_sha=${{ github.sha }}" >> $GITHUB_ENV
 
       - name: "set env.short_sha"
-        run: echo "short_sha=`echo "${{ env.commit_sha }}" | cut -c1-8`" >> $GITHUB_ENV
+        run: echo "short_sha=`echo "${{ env.commit_sha }}" | cut -c1-7`" >> $GITHUB_ENV
 
-      - name: Deploy
+      - name: (Github Pages) Deploy background-service-worker.html
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -117,7 +101,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           destination_dir: "background-scripts/${{ env.short_sha }}"
 
-      - name: "Deploy ledger injection"
+      - name: (Github Pages) Deploy ledger injection
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -128,20 +112,6 @@ jobs:
       ##########################################################################
       # Upload build artifacts.
       ##########################################################################
-
-      #
-      # Upload edge artifact.
-      #
-      - name: "zip edge build artifacts"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        working-directory: packages/app-extension
-        run: zip -r build-edge-${{ github.run_number }}.zip build-edge/
-      - name: "upload build artifacts"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v2
-        with:
-          name: backpack-build-edge
-          path: packages/app-extension/build-edge-${{ github.run_number }}.zip
 
       #
       # Upload beta artifact.
@@ -172,11 +142,6 @@ jobs:
       - uses: actions/download-artifact@v2
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
-          name: backpack-build-edge
-          path: ./
-      - uses: actions/download-artifact@v2
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        with:
           name: backpack-build-beta
           path: ./
 
@@ -198,15 +163,6 @@ jobs:
       #
       # Attach files to the release.
       #
-      - uses: actions/upload-release-asset@v1.0.1
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build-edge-${{ github.run_number }}.zip
-          asset_name: build-edge-${{ github.run_number }}.zip
-          asset_content_type: application/zip
       - uses: actions/upload-release-asset@v1.0.1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:

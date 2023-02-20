@@ -1,8 +1,10 @@
 import { Blockchain } from "@coral-xyz/common";
 
-export { useIsONELive } from "./useIsONELive";
-export { useTheme } from "./useTheme";
 import Images from "../Images";
+
+export { useIsONELive } from "./useIsONELive";
+export { useIsValidAddress } from "./useIsValidAddress";
+export { useTheme } from "./useTheme";
 
 // TODO(peter) consolidate between extension/mobile-app or just live on S3
 export function useBlockchainLogo(blockchain: Blockchain): string {

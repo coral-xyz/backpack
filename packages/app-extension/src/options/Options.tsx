@@ -13,7 +13,7 @@ import { RecoilRoot } from "recoil";
 
 import { WithSuspense } from "../app/Router";
 import { WithTheme } from "../components/common/WithTheme";
-import { Onboarding } from "../components/Onboarding";
+import { Onboarding, OptionsContainer } from "../components/Onboarding";
 import { ConnectHardware } from "../components/Unlocked/Settings/AddConnectWallet/ConnectHardware";
 
 import "../app/App.css";
@@ -59,14 +59,25 @@ function Router() {
 
   const params = new URLSearchParams(window.location.search);
   const blockchain = params.get("blockchain") || Blockchain.SOLANA;
+  const action = (params.get("action") || "create") as
+    | "create"
+    | "import"
+    | "search";
+  const createKeyring = params.get("create") === "true";
+  const publicKey = params.get("publicKey") || undefined;
 
   switch (query) {
     case QUERY_CONNECT_HARDWARE:
       return (
-        <ConnectHardware
-          blockchain={blockchain as Blockchain}
-          onComplete={window.close}
-        />
+        <OptionsContainer>
+          <ConnectHardware
+            blockchain={blockchain as Blockchain}
+            action={action}
+            createKeyring={createKeyring}
+            publicKey={publicKey}
+            onComplete={window.close}
+          />
+        </OptionsContainer>
       );
     case QUERY_ONBOARDING:
       return <Onboarding />;

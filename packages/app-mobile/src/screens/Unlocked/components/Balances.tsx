@@ -1,208 +1,132 @@
-import React, { useEffect, useState } from "react";
-import {
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { Margin } from "@components";
+// TODO(peter) one thing we might need to make sure is that when we wrap these FlatLists in a ScrollView, we can't nest virtualized lists.
+// This means we might just use the scrollview directly from within a flatlist by using ListHeaderComponent and ListFooterComponent
+import type { Token } from "@@types/types";
 import type { Blockchain } from "@coral-xyz/common";
-import { formatUSD } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
+
+import React, { useEffect, useState } from "react";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+
+import { formatUSD } from "@coral-xyz/common";
 import {
   blockchainBalancesSorted,
-  useActiveWallets,
-  useBlockchainConnectionUrl,
-  // useBlockchainLogo,
-  useEnabledBlockchains,
-  useLoader,
+  allWalletsDisplayed,
 } from "@coral-xyz/recoil";
-import { useTheme } from "@hooks";
+import { useNavigation } from "@react-navigation/native";
+import { useRecoilValueLoadable } from "recoil";
 
-import type { Token } from "./index";
-import { RowSeparator, TableHeader } from "./index";
+import { ExpandCollapseIcon } from "~components/Icon";
+import {
+  ListRowSeparator,
+  Margin,
+  ProxyImage,
+  Row,
+  StyledTextInput,
+} from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
-export const balances = {
-  enabledBlockchains: ["ethereum", "solana"],
-  filteredBlockchains: ["ethereum", "solana"],
-  "solana.tokenAccountsFiltered": [
-    {
-      name: "Solana",
-      decimals: 9,
-      nativeBalance: {
-        type: "BigNumber",
-        hex: "0x076e32b5f7",
-      },
-      displayBalance: "31.913588215",
-      ticker: "SOL",
-      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
-      address: "GqRzxLfxUmuQPh48K3cq7M6uy8bScJV9qVmXcfbmT5jD",
-      mint: "11111111111111111111111111111111",
-      priceMint: "11111111111111111111111111111111",
-      usdBalance: 406.89824974125,
-      recentPercentChange: -0.57,
-      recentUsdBalanceChange: -2.317763597333453,
-      priceData: {
-        usd: 12.75,
-        usd_market_cap: 4624757141.387485,
-        usd_24h_vol: 450952009.3447383,
-        usd_24h_change: -0.5696174900745707,
-        last_updated_at: 1668978758,
-      },
-    },
-    {
-      name: "USD Coin",
-      decimals: 6,
-      nativeBalance: {
-        type: "BigNumber",
-        hex: "0xb0990f",
-      },
-      displayBalance: "11.573519",
-      ticker: "USDC",
-      logo: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
-      address: "Eu6DQKRJoQJKBixj72oaxbnEN5YnRS5ab82uYAU9YeLk",
-      mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-      priceMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-      usdBalance: 11.596666037999999,
-      recentPercentChange: -0.03,
-      recentUsdBalanceChange: -0.0035714359978840093,
-      priceData: {
-        usd: 1.002,
-        usd_market_cap: 44534865080.03753,
-        usd_24h_vol: 1846118975.5030138,
-        usd_24h_change: -0.030797092769430382,
-        last_updated_at: 1668978755,
-      },
-    },
-  ],
-  "ethereum.tokenAccountsFiltered": [
-    {
-      name: "Ethereum",
-      decimals: 9,
-      nativeBalance: {
-        type: "BigNumber",
-        hex: "0x076e32b5f7",
-      },
-      displayBalance: "31.913588215",
-      ticker: "ETH",
-      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
-      address: "GqRzxLfxUmuQPh48K3cq7M6uy8bScJV9qVmXcfbmT5jD",
-      mint: "11111111111111111111111111111111",
-      priceMint: "11111111111111111111111111111111",
-      usdBalance: 1200.89824974125,
-      recentPercentChange: -0.57,
-      recentUsdBalanceChange: -2.317763597333453,
-      priceData: {
-        usd: 12.75,
-        usd_market_cap: 4624757141.387485,
-        usd_24h_vol: 450952009.3447383,
-        usd_24h_change: -0.5696174900745707,
-        last_updated_at: 1668978758,
-      },
-    },
-    {
-      name: "USD Coin",
-      decimals: 6,
-      nativeBalance: {
-        type: "BigNumber",
-        hex: "0xb0990f",
-      },
-      displayBalance: "11.573519",
-      ticker: "USDC",
-      logo: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
-      address: "Eu6DQKRJoQJKBixj72oaxbnEN5YnRS5ab82uYAU9YeLk",
-      mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-      priceMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-      usdBalance: 11.596666037999999,
-      recentPercentChange: -0.03,
-      recentUsdBalanceChange: -0.0035714359978840093,
-      priceData: {
-        usd: 1.002,
-        usd_market_cap: 44534865080.03753,
-        usd_24h_vol: 1846118975.5030138,
-        usd_24h_change: -0.030797092769430382,
-        last_updated_at: 1668978755,
-      },
-    },
-  ],
-};
+import { TableHeader } from "./index";
 
-export function TokenTables({
-  blockchains,
+export function SearchableTokenTables({
   onPressRow,
-  searchFilter = "",
   customFilter = () => true,
 }: {
-  blockchains?: Array<Blockchain>;
   onPressRow: (blockchain: Blockchain, token: Token) => void;
-  searchFilter?: string;
-  customFilter?: (token: Token) => boolean;
+  customFilter: (token: Token) => boolean;
 }) {
-  const enabledBlockchains = useEnabledBlockchains();
-  const filteredBlockchains =
-    blockchains?.filter((b) => enabledBlockchains.includes(b)) ||
-    enabledBlockchains;
-
+  const [searchFilter, setSearchFilter] = useState("");
   return (
-    <View style={{ padding: 8, flex: 1 }}>
-      {filteredBlockchains.map((blockchain: Blockchain) => {
-        return (
-          <Margin key={blockchain} bottom={8}>
-            <BalanceTable
-              blockchain={blockchain}
-              onPressRow={onPressRow}
-              searchFilter={searchFilter}
-              customFilter={customFilter}
-            />
-          </Margin>
-        );
-      })}
-    </View>
+    <>
+      <Margin bottom={12}>
+        <StyledTextInput
+          placeholder="Search"
+          value={searchFilter}
+          onChangeText={setSearchFilter}
+        />
+      </Margin>
+      <TokenTables
+        searchFilter={searchFilter}
+        onPressRow={onPressRow}
+        customFilter={customFilter}
+      />
+    </>
   );
 }
 
-function BalanceTable({
+// Renders each blockchain section
+export function TokenTables({
+  onPressRow,
+  searchFilter = "",
+  customFilter = () => true,
+  tokenAccounts,
+}: {
+  onPressRow: (blockchain: Blockchain, token: Token) => void;
+  searchFilter?: string;
+  customFilter?: (token: Token) => boolean;
+  tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
+}) {
+  const wl = useRecoilValueLoadable(allWalletsDisplayed);
+  const wallets = wl.state === "hasValue" ? wl.contents : [];
+  console.log("rrr:wallets", wallets);
+  return (
+    <>
+      {wallets.map(
+        (wallet: {
+          blockchain: Blockchain;
+          publicKey: string;
+          type: string;
+          name: string;
+        }) => (
+          <WalletTokenTable
+            key={wallet.publicKey.toString()}
+            onPressRow={onPressRow}
+            searchFilter={searchFilter}
+            customFilter={customFilter}
+            wallet={wallet}
+            blockchain={wallet.blockchain}
+            tokenAccounts={tokenAccounts}
+          />
+        )
+      )}
+    </>
+  );
+}
+
+// Renders the header (expand/collapse) as well as the list of tokens
+function WalletTokenTable({
   blockchain,
   onPressRow,
   tokenAccounts,
   searchFilter = "",
   customFilter = () => true,
-}: // displayWalletHeader,
-{
+  wallet,
+}: {
   blockchain: Blockchain;
   onPressRow: (blockchain: Blockchain, token: Token) => void;
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   searchFilter?: string;
   customFilter?: (token: Token) => boolean;
-  // displayWalletHeader?: boolean;
-}) {
+  wallet: { name: string; publicKey: string };
+}): JSX.Element {
+  const navigation = useNavigation();
+  const theme = useTheme();
+  const [search, setSearch] = useState(searchFilter);
   const [expanded, setExpanded] = React.useState(true);
   const onPressExpand = () => {
     setExpanded(!expanded);
   };
 
-  // LOG  {"blockchain": "ethereum", "blockchainLogo": 6, "title": "Ethereum"}
-  // LOG  {"blockchain": "solana", "blockchainLogo": 5, "title": "Solana"}
-  // const title = toTitleCase(blockchain);
-  // const blockchainLogo = useBlockchainLogo(blockchain);
-  const connectionUrl = useBlockchainConnectionUrl(blockchain);
-  const activeWallets = useActiveWallets();
-  const wallet = activeWallets.filter((w) => w.blockchain === blockchain)[0];
+  const rta = useRecoilValueLoadable(
+    blockchainBalancesSorted({
+      publicKey: wallet.publicKey.toString(),
+      blockchain,
+    })
+  );
 
-  const [_tokenAccounts, _, isLoading] = tokenAccounts
-    ? [tokenAccounts, "hasValue"]
-    : useLoader(
-        blockchainBalancesSorted(blockchain),
-        [],
-        [wallet.publicKey, connectionUrl]
-      );
-
-  const [search, setSearch] = useState(searchFilter);
+  const rawTokenAccounts = rta.state === "hasValue" ? rta.contents : [];
 
   const searchLower = search.toLowerCase();
-  const tokenAccountsFiltered2 = _tokenAccounts
+  const tokenAccountsFiltered = rawTokenAccounts
     .filter(
       (t: any) =>
         t.name &&
@@ -211,33 +135,45 @@ function BalanceTable({
     )
     .filter(customFilter);
 
-  const tokenAccountsFiltered = balances["solana.tokenAccountsFiltered"];
-
   useEffect(() => {
     setSearch(searchFilter);
   }, [searchFilter]);
 
   return (
-    <View style={{ backgroundColor: "transparent", borderRadius: 8 }}>
+    <View
+      style={{
+        borderColor: theme.custom.colors.borderFull,
+        backgroundColor: theme.custom.colors.nav,
+        borderRadius: 12,
+      }}
+    >
       <TableHeader
         blockchain={blockchain}
         onPress={onPressExpand}
         visible={expanded}
+        subtitle={
+          <WalletPickerButton
+            name={wallet.name}
+            onPress={() => {
+              navigation.navigate("wallet-picker");
+            }}
+          />
+        }
       />
 
       {expanded ? (
         <FlatList
-          style={{ padding: 8 }}
-          initialNumToRender={2}
           scrollEnabled={false}
           data={tokenAccountsFiltered}
-          ItemSeparatorComponent={RowSeparator}
+          keyExtractor={(item) => item.address}
+          ItemSeparatorComponent={ListRowSeparator}
           renderItem={({ item: token }) => {
             return (
-              <BalanceRow
+              <TokenRow
                 onPressRow={onPressRow}
                 blockchain={blockchain}
                 token={token}
+                walletPublicKey={wallet.publicKey.toString()}
               />
             );
           }}
@@ -247,11 +183,31 @@ function BalanceTable({
   );
 }
 
+export function WalletPickerButton({
+  name,
+  onPress,
+}: {
+  name: string;
+  onPress: () => void;
+}): JSX.Element {
+  return (
+    <Pressable onPress={onPress}>
+      <Margin left={4}>
+        <Row>
+          <Text>{name}</Text>
+          <ExpandCollapseIcon size={15} isExpanded={false} />
+        </Row>
+      </Margin>
+    </Pressable>
+  );
+}
+
+// Used for each individual row  of Balances
 function TextPercentChanged({ percentChange }: { percentChange: number }) {
   const theme = useTheme();
-  const positive = percentChange && percentChange > 0 ? true : false;
-  const negative = percentChange && percentChange < 0 ? true : false;
-  const neutral = percentChange && percentChange === 0 ? true : false;
+  const positive = !!(percentChange && percentChange > 0);
+  const negative = !!(percentChange && percentChange < 0);
+  const neutral = !!(percentChange && percentChange === 0);
 
   return (
     <>
@@ -289,15 +245,63 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
   );
 }
 
-export function BalanceRow({
+// Used in BalanceDetail TokenHeader, slightly diff than the other one
+function RecentPercentChange({
+  recentPercentChange,
+}: {
+  recentPercentChange: number | undefined;
+}): JSX.Element {
+  const theme = useTheme();
+  const color =
+    recentPercentChange === undefined
+      ? ""
+      : recentPercentChange > 0
+      ? theme.custom.colors.positive
+      : theme.custom.colors.negative;
+
+  return <Text style={{ color }}>{recentPercentChange}%</Text>;
+}
+
+// Used in BalanceDetail TokenHeader, slightly diff than other recent percent changes
+export function UsdBalanceAndPercentChange({
+  usdBalance,
+  recentPercentChange,
+}: {
+  usdBalance: number;
+  recentPercentChange: number | undefined;
+}): JSX.Element {
+  const theme = useTheme();
+  return (
+    <View style={usdBalanceAndPercentChangeStyles.container}>
+      <Text
+        style={[
+          usdBalanceAndPercentChangeStyles.usdBalanceLabel,
+          { color: theme.custom.colors.secondary },
+        ]}
+      >
+        ${parseFloat(usdBalance.toFixed(2)).toLocaleString()}{" "}
+        <RecentPercentChange recentPercentChange={recentPercentChange} />
+      </Text>
+    </View>
+  );
+}
+
+// Renders the individual token row
+function TokenRow({
   onPressRow,
   token,
   blockchain,
+  walletPublicKey,
 }: {
-  onPressRow: (blockchain: Blockchain, token: Token) => void;
+  onPressRow: (
+    blockchain: Blockchain,
+    token: Token,
+    walletPublicKey: string
+  ) => void;
   token: Token;
   blockchain: Blockchain;
-}) {
+  walletPublicKey: string;
+}): JSX.Element {
   const theme = useTheme();
   const { name, recentUsdBalanceChange, logo: iconUrl } = token;
 
@@ -306,22 +310,17 @@ export function BalanceRow({
     subtitle = `${token.displayBalance.toLocaleString()} ${subtitle}`;
   }
 
-  let trim;
-  try {
-    trim = `${subtitle.split(".")[0]}.${subtitle.split(".")[1].slice(0, 5)}`;
-  } catch {
-    // pass
-  }
-
   return (
     <Pressable
-      onPress={() => onPressRow(blockchain, token)}
+      onPress={() => onPressRow(blockchain, token, walletPublicKey)}
       style={styles.rowContainer}
     >
       <View style={{ flexDirection: "row" }}>
-        <Margin right={12}>
-          <Image style={styles.rowLogo} source={{ uri: iconUrl }} />
-        </Margin>
+        {iconUrl ? (
+          <Margin right={12}>
+            <ProxyImage style={styles.rowLogo} src={iconUrl} />
+          </Margin>
+        ) : null}
         <View>
           <Text
             style={[styles.tokenName, { color: theme.custom.colors.fontColor }]}
@@ -334,7 +333,7 @@ export function BalanceRow({
               { color: theme.custom.colors.secondary },
             ]}
           >
-            {trim ? trim : subtitle}
+            {subtitle}
           </Text>
         </View>
       </View>
@@ -358,52 +357,58 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    padding: 12,
+    overflow: "hidden",
   },
   rowLogo: {
     width: 50,
     height: 50,
     aspectRatio: 1,
-    borderRadius: 100,
+    borderRadius: 25,
   },
   tokenName: {
     height: 24,
     fontWeight: "500",
     fontSize: 16,
-    // maxWidth: "200px",
-    // overflow: "hidden",
-    // color: theme.custom.colors.fontColor,
     lineHeight: 24,
   },
   tokenAmount: {
     fontWeight: "500",
     fontSize: 14,
-    // color: theme.custom.colors.secondary,
     lineHeight: 20,
   },
   tokenBalance: {
     fontWeight: "500",
     fontSize: 16,
-    // color: theme.custom.colors.fontColor,
     lineHeight: 24,
   },
   tokenBalanceChangeNeutral: {
     fontWeight: "500",
     fontSize: 14,
-    // color: theme.custom.colors.secondary,
-    // float: "right",
     lineHeight: 20,
   },
   tokenBalanceChangePositive: {
     fontWeight: "500",
     fontSize: 14,
-    // color: theme.custom.colors.positive,
-    // float: "right",
     lineHeight: 20,
   },
   tokenBalanceChangeNegative: {
     fontWeight: "500",
     fontSize: 12,
-    // color: theme.custom.colors.negative,
-    // float: "right",
+  },
+});
+
+const usdBalanceAndPercentChangeStyles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "center",
+  },
+  usdBalanceLabel: {
+    fontWeight: "500",
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 4,
+    lineHeight: 24,
   },
 });

@@ -1,7 +1,9 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Avatar, Margin } from "@components";
+
+import { Avatar, Margin } from "~components/index";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "@hooks";
+import { useTheme } from "~hooks/useTheme";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export function NavHeader({
   title,
@@ -10,6 +12,7 @@ export function NavHeader({
   title: string;
   navigation: any;
 }) {
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
   const emoji = title.startsWith("Balances")
     ? "💰"
@@ -20,7 +23,12 @@ export function NavHeader({
   return (
     <View
       style={[
-        { backgroundColor: theme.custom.colors.background },
+        {
+          backgroundColor: theme.custom.colors.background,
+          marginTop: insets.top,
+          paddingLeft: insets.left + 12,
+          paddingRight: insets.right + 12,
+        },
         styles.container,
       ]}
     >
@@ -32,7 +40,7 @@ export function NavHeader({
       </View>
       <View style={styles.centeredRow}>
         <Margin right={12}>
-          <Pressable onPress={() => navigation.navigate("RecentActivityModal")}>
+          <Pressable onPress={() => navigation.navigate("RecentActivity")}>
             <MaterialIcons
               name="list"
               size={28}
@@ -40,7 +48,7 @@ export function NavHeader({
             />
           </Pressable>
         </Margin>
-        <Pressable onPress={() => navigation.navigate("AccountSettingsModal")}>
+        <Pressable onPress={() => navigation.navigate("AccountSettings")}>
           <Avatar size={28} />
         </Pressable>
       </View>

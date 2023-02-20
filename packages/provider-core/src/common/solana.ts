@@ -34,24 +34,15 @@ export async function sendAndConfirm<
   signers?: Signer[],
   options?: ConfirmOptions
 ): Promise<TransactionSignature> {
-  const [signature, { blockhash, lastValidBlockHeight }] = await Promise.all([
-    send(publicKey, requestManager, connection, tx, signers, options, true),
-    connection.getLatestBlockhash(options?.preflightCommitment),
-  ]);
-
-  const resp = await connection.confirmTransaction(
-    {
-      signature,
-      blockhash,
-      lastValidBlockHeight,
-    },
-    options?.commitment
+  const signature = await send(
+    publicKey,
+    requestManager,
+    connection,
+    tx,
+    signers,
+    options,
+    true
   );
-  if (resp?.value.err) {
-    throw new Error(
-      `error confirming transaction: ${resp.value.err.toString()}`
-    );
-  }
   return signature;
 }
 

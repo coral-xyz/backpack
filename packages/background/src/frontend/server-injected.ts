@@ -37,9 +37,10 @@ import {
   openApproveAllTransactionsPopupWindow,
   openApproveMessagePopupWindow,
   openApproveTransactionPopupWindow,
+  openLockedApprovalPopupWindow,
   openLockedPopupWindow,
   openOnboarding,
-  openXnft,
+  openPopupWindow,
   SOLANA_RPC_METHOD_CONNECT,
   SOLANA_RPC_METHOD_DISCONNECT,
   SOLANA_RPC_METHOD_OPEN_XNFT,
@@ -48,15 +49,16 @@ import {
   SOLANA_RPC_METHOD_SIGN_MESSAGE,
   SOLANA_RPC_METHOD_SIGN_TX,
   SOLANA_RPC_METHOD_SIMULATE,
+  TAB_XNFT,
+  UiActionRequestManager,
   withContext,
   withContextPort,
 } from "@coral-xyz/common";
 import type { SendOptions } from "@solana/web3.js";
 
 import type { Backend } from "../backend/core";
+import { SUCCESS_RESPONSE } from "../backend/core";
 import type { Config, Handle } from "../types";
-
-import { handlePopupUiResponse, RequestManager } from "./common";
 
 const logger = getLogger("server-injected");
 
@@ -64,6 +66,8 @@ const whitelistedOrigins = [
   /^http:\/\/localhost:[0-9]{4}$/,
   /^https:\/\/one-nft\.vercel\.app$/,
   /^https:\/\/xnft\.wao\.gg$/,
+  /^https:\/\/one\.xnfts\.dev$/,
+  /^https:\/\/rafffle\.famousfoxes\.com$/,
 ];
 
 export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
@@ -152,6 +156,9 @@ async function handle<T = any>(
     method !== SOLANA_RPC_METHOD_CONNECT
   ) {
     const origin = ctx.sender.origin;
+    if (origin === undefined) {
+      return [undefined, "origin is undefined"];
+    }
     const isApproved = await ctx.backend.isApprovedOrigin(origin);
     if (
       !isApproved &&
@@ -175,7 +182,7 @@ async function handle<T = any>(
     case SOLANA_RPC_METHOD_CONNECT:
       return await handleConnect(ctx, Blockchain.SOLANA);
     case SOLANA_RPC_METHOD_DISCONNECT:
-      return handleDisconnect(ctx, Blockchain.SOLANA);
+      return await handleDisconnect(ctx, Blockchain.SOLANA);
     case SOLANA_RPC_METHOD_SIGN_AND_SEND_TX:
       return await handleSolanaSignAndSendTx(
         ctx,
@@ -190,7 +197,7 @@ async function handle<T = any>(
     case SOLANA_RPC_METHOD_SIGN_MESSAGE:
       return await handleSolanaSignMessage(ctx, params[0], params[1]);
     case SOLANA_RPC_METHOD_SIMULATE:
-      return await handleSolanaSimulate(ctx, params[0], params[1], params[2]);
+      return await handleSolanaSimulate(ctx, params[0], params[1]);
     case SOLANA_RPC_METHOD_OPEN_XNFT:
       return await handleSolanaOpenXnft(ctx, params[0]);
     default:
@@ -214,6 +221,10 @@ async function handleConnect(
 ): Promise<RpcResponse<string>> {
   const origin = ctx.sender.origin;
 
+  if (!origin) {
+    throw new Error("origin is undefined");
+  }
+
   if (locks.has(origin)) {
     throw new Error(`already handling a request from ${origin}`);
   }
@@ -231,20 +242,34 @@ async function handleConnect(
   let didApprove = false;
   let resp: any;
 
-  if (
-    keyringStoreState === "locked" &&
-    (await ctx.backend.isApprovedOrigin(origin))
-  ) {
-    logger.debug("origin approved but need to unlock");
-    resp = await RequestManager.requestUiAction((requestId: number) => {
-      return openLockedPopupWindow(
-        ctx.sender.origin,
-        getTabTitle(ctx),
-        requestId,
-        blockchain
+  if (keyringStoreState === "locked") {
+    if (await ctx.backend.isApprovedOrigin(origin)) {
+      logger.debug("origin approved but need to unlock");
+      resp = await UiActionRequestManager.requestUiAction(
+        (requestId: string) => {
+          return openLockedPopupWindow(
+            origin,
+            getTabTitle(ctx),
+            requestId,
+            blockchain
+          );
+        }
       );
-    });
-    didApprove = !resp.windowClosed && resp.result;
+      didApprove = !resp.windowClosed && resp.result;
+    } else {
+      logger.debug("origin not apporved and needs to unlock");
+      resp = await UiActionRequestManager.requestUiAction(
+        (requestId: string) => {
+          return openLockedApprovalPopupWindow(
+            origin,
+            getTabTitle(ctx),
+            requestId,
+            blockchain
+          );
+        }
+      );
+      didApprove = !resp.windowClosed && resp.result.didApprove;
+    }
   } else {
     if (await ctx.backend.isApprovedOrigin(origin)) {
       logger.debug("origin approved so automatically connecting");
@@ -252,15 +277,17 @@ async function handleConnect(
     } else {
       // Origin is not approved and wallet may or may not be locked
       logger.debug("requesting approval for origin");
-      resp = await RequestManager.requestUiAction((requestId: number) => {
-        return openApprovalPopupWindow(
-          ctx.sender.origin,
-          getTabTitle(ctx),
-          requestId,
-          blockchain
-        );
-      });
-      didApprove = !resp.windowClosed && resp.result;
+      resp = await UiActionRequestManager.requestUiAction(
+        (requestId: string) => {
+          return openApprovalPopupWindow(
+            origin,
+            getTabTitle(ctx),
+            requestId,
+            blockchain
+          );
+        }
+      );
+      didApprove = !resp.windowClosed && resp.result.didApprove;
     }
   }
 
@@ -272,16 +299,18 @@ async function handleConnect(
 
   // If the user approved and unlocked, then we're connected.
   if (didApprove) {
-    const activeWallet = (await ctx.backend.blockchainActiveWallets())[
-      blockchain
-    ];
     const user = await ctx.backend.userRead();
+    const publicKey = ctx.backend.activeWalletForBlockchain(blockchain);
     if (blockchain === Blockchain.ETHEREUM) {
       const connectionUrl = await ctx.backend.ethereumConnectionUrlRead(
         user.uuid
       );
       const chainId = await ctx.backend.ethereumChainIdRead();
-      const data = { publicKey: activeWallet, connectionUrl, chainId };
+      const data = {
+        publicKey,
+        connectionUrl,
+        chainId,
+      };
       ctx.events.emit(BACKEND_EVENT, {
         name: NOTIFICATION_ETHEREUM_CONNECTED,
         data,
@@ -291,7 +320,7 @@ async function handleConnect(
       const connectionUrl = await ctx.backend.solanaConnectionUrlRead(
         user.uuid
       );
-      const data = { publicKey: activeWallet, connectionUrl };
+      const data = { publicKey, connectionUrl };
       ctx.events.emit(BACKEND_EVENT, {
         name: NOTIFICATION_SOLANA_CONNECTED,
         data,
@@ -303,22 +332,19 @@ async function handleConnect(
   throw new Error("user did not approve");
 }
 
-function getTabTitle(ctx) {
-  return ctx.sender.tab?.title ?? `Xnft from ${ctx.sender.origin}`;
-}
-
-function handleDisconnect(
+async function handleDisconnect(
   ctx: Context<Backend>,
   blockchain: Blockchain
-): RpcResponse<string> {
-  let resp;
+): Promise<RpcResponse<string>> {
+  if (!ctx.sender.origin) {
+    throw new Error("origin is undefined");
+  }
+  const resp = await ctx.backend.disconnect(ctx.sender.origin);
   if (blockchain === Blockchain.SOLANA) {
-    resp = ctx.backend.solanaDisconnect();
     ctx.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_SOLANA_DISCONNECTED,
     });
   } else if (blockchain === Blockchain.ETHEREUM) {
-    // resp = ctx.backend.ethereumDisconnect();
     ctx.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_ETHEREUM_DISCONNECTED,
     });
@@ -332,17 +358,22 @@ async function handleSolanaSignAndSendTx(
   walletAddress: string,
   options?: SendOptions
 ): Promise<RpcResponse<string>> {
+  if (ctx.sender.origin === undefined) {
+    throw new Error("origin is undefined");
+  }
   // Get user approval.
-  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveTransactionPopupWindow(
-      ctx.sender.origin,
-      getTabTitle(ctx),
-      requestId,
-      tx,
-      walletAddress,
-      Blockchain.SOLANA
-    );
-  });
+  const uiResp = await UiActionRequestManager.requestUiAction(
+    (requestId: string) => {
+      return openApproveTransactionPopupWindow(
+        ctx.sender.origin!,
+        getTabTitle(ctx),
+        requestId,
+        tx,
+        walletAddress,
+        Blockchain.SOLANA
+      );
+    }
+  );
 
   if (uiResp.error) {
     logger.debug("require ui action error", uiResp);
@@ -351,13 +382,18 @@ async function handleSolanaSignAndSendTx(
   }
 
   let resp: RpcResponse<string>;
-  const didApprove = uiResp.result;
+  const { didApprove, transaction } = uiResp.result
+    ? uiResp.result
+    : {
+        didApprove: false,
+        transaction: undefined,
+      };
 
   try {
     // Only sign if the user clicked approve.
     if (didApprove) {
       const sig = await ctx.backend.solanaSignAndSendTx(
-        tx,
+        transaction,
         walletAddress,
         options
       );
@@ -373,7 +409,8 @@ async function handleSolanaSignAndSendTx(
   if (resp) {
     return resp;
   }
-  return [resp];
+
+  throw new Error("user denied transaction signature");
 }
 
 async function handleSolanaSignTx(
@@ -381,16 +418,21 @@ async function handleSolanaSignTx(
   tx: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
-  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveTransactionPopupWindow(
-      ctx.sender.origin,
-      getTabTitle(ctx),
-      requestId,
-      tx,
-      walletAddress,
-      Blockchain.SOLANA
-    );
-  });
+  if (ctx.sender.origin === undefined) {
+    throw new Error("origin is undefined");
+  }
+  const uiResp = await UiActionRequestManager.requestUiAction(
+    (requestId: string) => {
+      return openApproveTransactionPopupWindow(
+        ctx.sender.origin!,
+        getTabTitle(ctx),
+        requestId,
+        tx,
+        walletAddress,
+        Blockchain.SOLANA
+      );
+    }
+  );
 
   if (uiResp.error) {
     logger.debug("require ui action error", uiResp);
@@ -399,12 +441,15 @@ async function handleSolanaSignTx(
   }
 
   let resp: RpcResponse<string>;
-  const didApprove = uiResp.result;
+  const { didApprove, transaction } = uiResp.result;
 
   try {
     // Only sign if the user clicked approve.
     if (didApprove) {
-      const sig = await ctx.backend.solanaSignTransaction(tx, walletAddress);
+      const sig = await ctx.backend.solanaSignTransaction(
+        transaction,
+        walletAddress
+      );
       resp = [sig];
     }
   } catch (err) {
@@ -426,16 +471,21 @@ async function handleSolanaSignAllTxs(
   txs: Array<string>,
   walletAddress: string
 ): Promise<RpcResponse<Array<string>>> {
-  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveAllTransactionsPopupWindow(
-      ctx.sender.origin,
-      getTabTitle(ctx),
-      requestId,
-      txs,
-      walletAddress,
-      Blockchain.SOLANA
-    );
-  });
+  if (ctx.sender.origin === undefined) {
+    throw new Error("origin is undefined");
+  }
+  const uiResp = await UiActionRequestManager.requestUiAction(
+    (requestId: string) => {
+      return openApproveAllTransactionsPopupWindow(
+        ctx.sender.origin!,
+        getTabTitle(ctx),
+        requestId,
+        txs,
+        walletAddress,
+        Blockchain.SOLANA
+      );
+    }
+  );
 
   if (uiResp.error) {
     logger.debug("require ui action error", uiResp);
@@ -474,16 +524,21 @@ async function handleSolanaSignMessage(
   msg: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
-  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveMessagePopupWindow(
-      ctx.sender.origin,
-      getTabTitle(ctx),
-      requestId,
-      msg,
-      walletAddress,
-      Blockchain.SOLANA
-    );
-  });
+  if (ctx.sender.origin === undefined) {
+    throw new Error("origin is undefined");
+  }
+  const uiResp = await UiActionRequestManager.requestUiAction(
+    (requestId: string) => {
+      return openApproveMessagePopupWindow(
+        ctx.sender.origin!,
+        getTabTitle(ctx),
+        requestId,
+        msg,
+        walletAddress,
+        Blockchain.SOLANA
+      );
+    }
+  );
 
   if (uiResp.error) {
     logger.debug("require ui action error", uiResp);
@@ -516,14 +571,9 @@ async function handleSolanaSignMessage(
 async function handleSolanaSimulate(
   ctx: Context<Backend>,
   txStr: string,
-  walletAddress: string,
-  includeAccounts?: boolean | Array<string>
+  accounts: Array<string>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaSimulate(
-    txStr,
-    walletAddress,
-    includeAccounts
-  );
+  const resp = await ctx.backend.solanaSimulate(txStr, accounts);
   return [resp];
 }
 
@@ -531,7 +581,9 @@ async function handleSolanaOpenXnft(
   ctx: Context<Backend>,
   xnftAddress: string
 ): Promise<RpcResponse<string>> {
-  await openXnft(xnftAddress);
+  const url = `xnft/${xnftAddress}`;
+  await ctx.backend.navigationPush(url, TAB_XNFT);
+  await openPopupWindow(`popup.html`);
   return ["success"];
 }
 
@@ -540,17 +592,22 @@ async function handleEthereumSignAndSendTx(
   tx: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
+  if (ctx.sender.origin === undefined) {
+    throw new Error("origin is undefined");
+  }
   // Get user approval.
-  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveTransactionPopupWindow(
-      ctx.sender.origin,
-      getTabTitle(ctx),
-      requestId,
-      tx,
-      walletAddress,
-      Blockchain.ETHEREUM
-    );
-  });
+  const uiResp = await UiActionRequestManager.requestUiAction(
+    (requestId: string) => {
+      return openApproveTransactionPopupWindow(
+        ctx.sender.origin!,
+        getTabTitle(ctx),
+        requestId,
+        tx,
+        walletAddress,
+        Blockchain.ETHEREUM
+      );
+    }
+  );
 
   if (uiResp.error) {
     logger.debug("require ui action error", uiResp);
@@ -561,12 +618,12 @@ async function handleEthereumSignAndSendTx(
   let resp: RpcResponse<string>;
   // The transaction may be modified and returned as result to accomodate user
   // tweaked gas settings/nonce.
-  const approvedTransaction = uiResp.result;
+  const { didApprove } = uiResp.result;
   try {
     // Only sign if the user clicked approve.
-    if (approvedTransaction) {
+    if (didApprove) {
       const sig = await ctx.backend.ethereumSignAndSendTransaction(
-        approvedTransaction,
+        tx,
         walletAddress
       );
       resp = [sig];
@@ -590,16 +647,21 @@ async function handleEthereumSignTx(
   tx: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
-  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveTransactionPopupWindow(
-      ctx.sender.origin,
-      getTabTitle(ctx),
-      requestId,
-      tx,
-      walletAddress,
-      Blockchain.ETHEREUM
-    );
-  });
+  if (ctx.sender.origin === undefined) {
+    throw new Error("origin is undefined");
+  }
+  const uiResp = await UiActionRequestManager.requestUiAction(
+    (requestId: string) => {
+      return openApproveTransactionPopupWindow(
+        ctx.sender.origin!,
+        getTabTitle(ctx),
+        requestId,
+        tx,
+        walletAddress,
+        Blockchain.ETHEREUM
+      );
+    }
+  );
 
   if (uiResp.error) {
     logger.debug("require ui action error", uiResp);
@@ -610,15 +672,12 @@ async function handleEthereumSignTx(
   let resp: RpcResponse<string>;
   // The transaction may be modified and returned as result to accomodate user
   // tweaked gas settings/nonce.
-  const approvedTransaction = uiResp.result;
+  const { didApprove } = uiResp.result;
 
   try {
     // Only sign if the user clicked approve.
-    if (approvedTransaction) {
-      const sig = await ctx.backend.ethereumSignTransaction(
-        approvedTransaction,
-        walletAddress
-      );
+    if (didApprove) {
+      const sig = await ctx.backend.ethereumSignTransaction(tx, walletAddress);
       resp = [sig];
     }
   } catch (err) {
@@ -640,16 +699,21 @@ async function handleEthereumSignMessage(
   msg: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
-  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveMessagePopupWindow(
-      ctx.sender.origin,
-      getTabTitle(ctx),
-      requestId,
-      msg,
-      walletAddress,
-      Blockchain.ETHEREUM
-    );
-  });
+  if (ctx.sender.origin === undefined) {
+    throw new Error("origin is undefined");
+  }
+  const uiResp = await UiActionRequestManager.requestUiAction(
+    (requestId: string) => {
+      return openApproveMessagePopupWindow(
+        ctx.sender.origin!,
+        getTabTitle(ctx),
+        requestId,
+        msg,
+        walletAddress,
+        Blockchain.ETHEREUM
+      );
+    }
+  );
 
   if (uiResp.error) {
     logger.debug("require ui action error", uiResp);
@@ -677,4 +741,18 @@ async function handleEthereumSignMessage(
   }
 
   throw new Error("user denied ethereum message signature");
+}
+
+async function handlePopupUiResponse(
+  ctx: Context<Backend>,
+  msg: RpcResponse
+): Promise<string> {
+  const { id, result, error } = msg;
+  logger.debug("handle popup ui response", msg);
+  UiActionRequestManager.resolveResponse(id, result, error);
+  return SUCCESS_RESPONSE;
+}
+
+function getTabTitle(ctx) {
+  return ctx.sender.tab?.title ?? `Xnft from ${ctx.sender.origin}`;
 }

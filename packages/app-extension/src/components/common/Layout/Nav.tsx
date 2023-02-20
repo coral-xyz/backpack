@@ -1,10 +1,10 @@
 import React, { Suspense, useState } from "react";
+import { Loading } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowBack } from "@mui/icons-material";
 import KeyboardArrowDownSharpIcon from "@mui/icons-material/KeyboardArrowDownSharp";
+import VerifiedIcon from "@mui/icons-material/Verified";
 import { IconButton, Typography } from "@mui/material";
-
-import { Loading } from "../";
 
 import { Scrollbar } from "./Scrollbar";
 
@@ -36,7 +36,7 @@ const useStyles = styles((theme) => ({
     position: "absolute",
     left: 0,
     "&:hover": {
-      background: "transparent",
+      background: "transparent !important",
     },
   },
 }));
@@ -49,6 +49,10 @@ export function WithNav({
   navbarStyle = {},
   navContentStyle = {},
   notchViewComponent,
+  noScrollbars,
+  image,
+  onClick,
+  isVerified,
 }: {
   title?: string;
   navButtonLeft?: React.ReactNode;
@@ -57,17 +61,28 @@ export function WithNav({
   navbarStyle?: React.CSSProperties;
   navContentStyle?: React.CSSProperties;
   notchViewComponent?: React.ReactElement | null;
+  noScrollbars?: boolean;
+  image?: string;
+  onClick?: any;
+  isVerified?: boolean;
 }) {
   return (
     <>
       <NavBar
         notchViewComponent={notchViewComponent}
         title={title || ""}
+        image={image}
+        isVerified={isVerified}
+        onClick={onClick}
         navButtonLeft={navButtonLeft}
         navButtonRight={navButtonRight}
         style={navbarStyle}
       />
-      <NavContent style={navContentStyle} renderComponent={children} />
+      <NavContent
+        style={navContentStyle}
+        noScrollbars={noScrollbars}
+        renderComponent={children}
+      />
     </>
   );
 }
@@ -78,12 +93,18 @@ export function NavBar({
   navButtonRight,
   style = {},
   notchViewComponent,
+  image,
+  onClick,
+  isVerified,
 }: {
   title: string;
+  image?: string;
+  onClick?: any;
   navButtonLeft: React.ReactNode;
   navButtonRight: React.ReactNode;
   style?: any;
   notchViewComponent?: React.ReactElement | null;
+  isVerified?: boolean;
 }) {
   return (
     <Suspense fallback={null}>
@@ -100,6 +121,9 @@ export function NavBar({
         <div style={{ position: "relative", width: "100%", display: "flex" }}>
           <NavButton button={navButtonLeft} />
           <CenterDisplay
+            image={image}
+            onClick={onClick}
+            isVerified={isVerified}
             title={title}
             notchViewComponent={notchViewComponent}
           />
@@ -163,19 +187,26 @@ export function NavBackButton({ onClick }: { onClick: () => void }) {
 export function NavContent({
   renderComponent,
   style,
+  noScrollbars,
 }: {
   renderComponent?: React.ReactNode;
+  noScrollbars?: boolean;
   style?: any;
 }) {
   const _style = {
     flex: 1,
     ...style,
   };
+
   return (
     <div className="nav-content-style" style={_style}>
-      <Scrollbar>
+      {noScrollbars ? (
         <Suspense fallback={<Loading />}>{renderComponent}</Suspense>
-      </Scrollbar>
+      ) : (
+        <Scrollbar>
+          <Suspense fallback={<Loading />}>{renderComponent}</Suspense>
+        </Scrollbar>
+      )}
     </div>
   );
 }
@@ -183,9 +214,15 @@ export function NavContent({
 function CenterDisplay({
   title,
   notchViewComponent,
+  image,
+  onClick,
+  isVerified,
 }: {
   title: string;
   notchViewComponent?: React.ReactElement | null;
+  image?: string;
+  onClick?: any;
+  isVerified?: boolean;
 }) {
   const [notchEnabled, setNotchEnabled] = useState(false);
   const notchViewComponentWithProps = notchViewComponent
@@ -203,8 +240,21 @@ function CenterDisplay({
           margin: "0 auto",
           display: "flex",
           alignItems: "center",
+          cursor: onClick ? "pointer" : "",
         }}
+        onClick={onClick ? onClick : () => {}}
       >
+        {image && (
+          <img
+            style={{
+              width: 25,
+              height: 25,
+              marginRight: 5,
+              borderRadius: "50%",
+            }}
+            src={image}
+          />
+        )}
         <NavTitleLabel title={title} />
         {notchViewComponent && (
           <KeyboardArrowDownSharpIcon
@@ -214,6 +264,15 @@ function CenterDisplay({
         )}
         {notchEnabled && notchViewComponentWithProps && (
           <>{notchViewComponentWithProps}</>
+        )}
+        {isVerified && (
+          <VerifiedIcon
+            style={{
+              fontSize: 19,
+              marginLeft: 3,
+              color: theme.custom.colors.verified,
+            }}
+          />
         )}
       </div>
     </Suspense>

@@ -1,0 +1,60 @@
+table:
+  name: user_nfts
+  schema: auth
+object_relationships:
+  - name: publicKeyByBlockchainPublicKey
+    using:
+      manual_configuration:
+        column_mapping:
+          blockchain: blockchain
+          public_key: public_key
+        insertion_order: null
+        remote_table:
+          name: public_keys
+          schema: auth
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - blockchain
+        - centralized_group
+        - collection_id
+        - nft_id
+        - public_key
+  - role: one_xnft
+    permission:
+      check: {}
+      columns:
+        - blockchain
+        - centralized_group
+        - collection_id
+        - nft_id
+        - public_key
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - blockchain
+        - centralized_group
+        - collection_id
+        - nft_id
+        - public_key
+      filter: {}
+      allow_aggregations: true
+  - role: one_xnft
+    permission:
+      columns:
+        - nft_id
+        - public_key
+        - collection_id
+        - blockchain
+        - centralized_group
+      filter: {}
+delete_permissions:
+  - role: auth_worker
+    permission:
+      filter: {}
+  - role: one_xnft
+    permission:
+      filter: {}

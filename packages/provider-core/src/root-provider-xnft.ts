@@ -13,6 +13,7 @@ import {
   PLUGIN_NOTIFICATION_UPDATE_METADATA,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
+  PLUGIN_RPC_METHOD_PLUGIN_OPEN,
   PLUGIN_RPC_METHOD_POP_OUT,
   PLUGIN_RPC_METHOD_WINDOW_OPEN,
 } from "@coral-xyz/common";
@@ -30,6 +31,7 @@ import type {
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 import type { ChainedRequestManager } from "./chained-request-manager";
 import { RequestManager } from "./request-manager";
+import { isValidEventOrigin } from ".";
 
 const logger = getLogger("provider-xnft-injection");
 
@@ -90,6 +92,13 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
     });
   }
 
+  public async openPlugin(xnftAddress: string) {
+    await this.#requestManager.request({
+      method: PLUGIN_RPC_METHOD_PLUGIN_OPEN,
+      params: [xnftAddress],
+    });
+  }
+
   public async popout(fullscreen: boolean) {
     await this.#requestManager.request({
       method: PLUGIN_RPC_METHOD_POP_OUT,
@@ -109,6 +118,13 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
     if (this.#cachedNotifications[PLUGIN_NOTIFICATION_CONNECT]) {
       iframeEl.contentWindow?.postMessage(
         this.#cachedNotifications[PLUGIN_NOTIFICATION_CONNECT],
+        "*"
+      );
+    }
+
+    if (this.#cachedNotifications[PLUGIN_NOTIFICATION_UPDATE_METADATA]) {
+      iframeEl.contentWindow?.postMessage(
+        this.#cachedNotifications[PLUGIN_NOTIFICATION_UPDATE_METADATA],
         "*"
       );
     }
@@ -140,6 +156,7 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
   // Notifications from the extension UI -> plugin.
   //
   async #handleNotifications(event: Event) {
+    if (!isValidEventOrigin(event)) return;
     if (event.data.type !== CHANNEL_PLUGIN_NOTIFICATION) return;
 
     // Send RPC message to all child iframes

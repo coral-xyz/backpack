@@ -3,6 +3,7 @@ import {
   openAddUserAccount,
   UI_RPC_METHOD_ACTIVE_USER_UPDATE,
 } from "@coral-xyz/common";
+import { ListItem, ProxyImage } from "@coral-xyz/react-common";
 import {
   useAllUsers,
   useAvatarUrl,
@@ -13,7 +14,6 @@ import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, Check, ExpandMore } from "@mui/icons-material";
 import { Button, Typography } from "@mui/material";
 
-import { ListItem } from "../../../components/common";
 import {
   useDrawerContext,
   WithMiniDrawer,
@@ -195,7 +195,10 @@ function UserAccountListItem({
             }}
           >
             <Check
-              style={{ opacity: 0.8, color: theme.custom.colors.fontColor }}
+              style={{
+                opacity: 0.8,
+                color: theme.custom.colors.fontColor,
+              }}
             />
           </div>
         )}
@@ -206,6 +209,7 @@ function UserAccountListItem({
 
 function MiniAvatarIcon({ avatarUrl }: { avatarUrl: string }) {
   const theme = useCustomTheme();
+  // PCA test ProxyImage
   return (
     <div
       style={{
@@ -218,7 +222,7 @@ function MiniAvatarIcon({ avatarUrl }: { avatarUrl: string }) {
         flexDirection: "column",
       }}
     >
-      <img
+      <ProxyImage
         src={avatarUrl}
         style={{
           width: "24px",

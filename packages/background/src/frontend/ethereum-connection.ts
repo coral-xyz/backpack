@@ -200,7 +200,15 @@ async function handleResolveName(
 
 async function handleGetNetwork(ctx: Context<EthereumConnectionBackend>) {
   const resp = await ctx.backend.getNetwork();
-  return [resp];
+
+  // NOTE(peter): defaultProvider is a function that fails to serialize in the mobile app.
+  // By setting it to undefined, we can avoid the serialization error.
+  return [
+    {
+      ...resp,
+      _defaultProvider: undefined,
+    },
+  ];
 }
 
 async function handleGetBlockNumber(ctx: Context<EthereumConnectionBackend>) {

@@ -9,6 +9,24 @@ const chain = Chain(HASURA_URL, {
   },
 });
 
+export const getFriendshipById = async ({roomId}: {roomId: number;}): Promise<null | { user1: string; user2: string; }> => {
+  const friendship = await chain("query")({
+    auth_friendships: [
+      {
+        where: { id: { _eq: roomId } },
+        limit: 1,
+      },
+      {
+        user1: true,
+        user2: true
+      },
+    ],
+  });
+
+  return friendship.auth_friendships[0] || null;
+
+}
+
 export const getOrCreateFriendship = async ({
   from,
   to,
@@ -35,18 +53,35 @@ export const getOrCreateFriendship = async ({
     ],
     auth_friend_requests: [
       {
-        where: { from: { _eq: from }, to: { _eq: to } },
+        where: {
+          _or: [
+            { from: { _eq: from }, to: { _eq: to } },
+            { from: { _eq: to }, to: { _eq: from } },
+          ],
+        },
         limit: 1,
       },
-      { id: true },
+      { id: true, from: true, to: true },
     ],
   });
+
+  const requested = existingFriendship.auth_friend_requests.find(
+    (x) => x.from === from
+  )
+    ? true
+    : false;
+  const remote_requested = existingFriendship.auth_friend_requests.find(
+    (x) => x.from === to
+  )
+    ? true
+    : false;
 
   if (existingFriendship.auth_friendships[0]?.id) {
     return {
       id: existingFriendship.auth_friendships[0]?.id,
       are_friends: existingFriendship.auth_friendships[0]?.are_friends,
-      requested: existingFriendship.auth_friend_requests[0] ? true : false,
+      requested,
+      remote_requested,
       spam: existingFriendship.auth_friendships[0]?.[spamLabel] ? true : false,
       blocked: existingFriendship.auth_friendships[0]?.[blockedLabel]
         ? true
@@ -74,11 +109,208 @@ export const getOrCreateFriendship = async ({
     return {
       id: response.insert_auth_friendships_one?.id,
       are_friends: false,
-      requested: false,
+      requested,
+      remote_requested,
       spam: false,
       blocked: false,
     };
   }
+};
+
+export const getAllFriendships = async ({
+  uuid,
+  limit,
+  offset,
+}: {
+  uuid: string;
+  limit: number;
+  offset: number;
+}) => {
+  const response = await chain("query")({
+    auth_friendships: [
+      {
+        where: {
+          _or: [
+            {
+              user1: { _eq: uuid },
+              // Only show users if either users have interacted with each other or they are friends
+              _or: [
+                {
+                  user1_interacted: { _eq: true },
+                },
+                {
+                  user2_interacted: { _eq: true },
+                },
+                {
+                  are_friends: { _eq: true },
+                },
+              ],
+            },
+            {
+              user2: { _eq: uuid },
+              // Only show users if either users have interacted with each other or they are friends
+              _or: [
+                {
+                  user1_interacted: { _eq: true },
+                },
+                {
+                  user2_interacted: { _eq: true },
+                },
+                {
+                  are_friends: { _eq: true },
+                },
+              ],
+            },
+          ],
+        },
+        limit,
+        offset,
+        //@ts-ignore
+        order_by: [{ last_message_timestamp: "desc" }],
+      },
+      {
+        id: true,
+        are_friends: true,
+        user1: true,
+        user2: true,
+        last_message_timestamp: true,
+        last_message: true,
+        last_message_sender: true,
+        last_message_client_uuid: true,
+        user1_last_read_message_id: true,
+        user2_last_read_message_id: true,
+        user1_blocked_user2: true,
+        user2_blocked_user1: true,
+        user1_spam_user2: true,
+        user2_spam_user1: true,
+        user1_interacted: true,
+        user2_interacted: true,
+      },
+    ],
+    auth_friend_requests: [
+      {
+        where: {
+          _or: [{ from: { _eq: uuid } }, { to: { _eq: uuid } }],
+        },
+      },
+      {
+        id: true,
+        from: true,
+        to: true,
+      },
+    ],
+  });
+  return {
+    friendships: response.auth_friendships,
+    friendRequests: response.auth_friend_requests,
+  };
+};
+
+export const getReceivedRequests = async ({
+  uuid,
+}: {
+  uuid: string;
+}): Promise<string[]> => {
+  const response = await chain("query")({
+    auth_friend_requests: [
+      {
+        where: {
+          to: { _eq: uuid },
+        },
+      },
+      {
+        from: true,
+      },
+    ],
+    auth_friendships: [
+      {
+        where: {
+          _or: [
+            {
+              user1: { _eq: uuid },
+              _or: [
+                { are_friends: { _eq: true } },
+                { user1_blocked_user2: { _eq: true } },
+              ],
+            },
+            {
+              user2: { _eq: uuid },
+              _or: [
+                { are_friends: { _eq: true } },
+                { user2_blocked_user1: { _eq: true } },
+              ],
+            },
+          ],
+        },
+      },
+      {
+        user1: true,
+        user2: true,
+      },
+    ],
+  });
+
+  const blockedOrFriends: { [userId: string]: boolean } = {};
+  response.auth_friendships.forEach((x) => {
+    blockedOrFriends[x.user1 || ""] = true;
+    blockedOrFriends[x.user2 || ""] = true;
+  });
+  return response.auth_friend_requests
+    .map((x) => x.from)
+    .filter((userId) => !blockedOrFriends[userId]);
+};
+
+export const getSentRequests = async ({
+  uuid,
+}: {
+  uuid: string;
+}): Promise<string[]> => {
+  const response = await chain("query")({
+    auth_friend_requests: [
+      {
+        where: {
+          from: { _eq: uuid },
+        },
+      },
+      {
+        to: true,
+      },
+    ],
+    auth_friendships: [
+      {
+        where: {
+          _or: [
+            {
+              user1: { _eq: uuid },
+              _or: [
+                { are_friends: { _eq: true } },
+                { user1_blocked_user2: { _eq: true } },
+              ],
+            },
+            {
+              user2: { _eq: uuid },
+              _or: [
+                { are_friends: { _eq: true } },
+                { user2_blocked_user1: { _eq: true } },
+              ],
+            },
+          ],
+        },
+      },
+      {
+        user1: true,
+        user2: true,
+      },
+    ],
+  });
+  const blockedOrFriends: { [userId: string]: boolean } = {};
+  response.auth_friendships.forEach((x) => {
+    blockedOrFriends[x.user1 || ""] = true;
+    blockedOrFriends[x.user2 || ""] = true;
+  });
+  return response.auth_friend_requests
+    .map((r) => r.to)
+    .filter((userId) => !blockedOrFriends[userId]);
 };
 
 export const getFriendships = async ({
@@ -91,7 +323,7 @@ export const getFriendships = async ({
   limit: number;
   offset: number;
   areConnected: boolean;
-}): Promise<InboxDb[]> => {
+}): Promise<{ requestCount: number; friendships: InboxDb[] }> => {
   let where = {};
   if (areConnected) {
     where = {
@@ -122,12 +354,14 @@ export const getFriendships = async ({
           are_friends: { _eq: false },
           user1_interacted: { _eq: false },
           user1_blocked_user2: { _eq: false },
+          user2_interacted: { _eq: true },
         },
         {
           user2: { _eq: uuid },
           are_friends: { _eq: false },
           user2_interacted: { _eq: false },
           user2_blocked_user1: { _eq: false },
+          user1_interacted: { _eq: true },
         },
       ],
     };
@@ -149,11 +383,105 @@ export const getFriendships = async ({
         last_message_timestamp: true,
         last_message: true,
         last_message_sender: true,
+        last_message_client_uuid: true,
+        user1_last_read_message_id: true,
+        user2_last_read_message_id: true,
+      },
+    ],
+    auth_friendships_aggregate: [
+      {
+        where: {
+          _or: [
+            {
+              user1: { _eq: uuid },
+              are_friends: { _eq: false },
+              user1_interacted: { _eq: false },
+              user1_blocked_user2: { _eq: false },
+              user2_interacted: { _eq: true },
+            },
+            {
+              user2: { _eq: uuid },
+              are_friends: { _eq: false },
+              user2_interacted: { _eq: false },
+              user2_blocked_user1: { _eq: false },
+              user1_interacted: { _eq: true },
+            },
+          ],
+        },
+      },
+      {
+        aggregate: {
+          count: true,
+        },
       },
     ],
   });
 
-  return response.auth_friendships ?? [];
+  return {
+    friendships: response.auth_friendships ?? [],
+    requestCount: response.auth_friendships_aggregate.aggregate?.count || 0,
+  };
+};
+
+export const getFriendshipStatus = async (
+  userIds: string[],
+  myuserId: string
+): Promise<
+  {
+    id: string;
+    areFriends: boolean;
+    requested: boolean;
+    remoteRequested: boolean;
+  }[]
+> => {
+  const response = await chain("query")({
+    auth_friendships: [
+      {
+        where: {
+          _or: [
+            { user1: { _eq: myuserId }, user2: { _in: userIds } },
+            { user1: { _in: userIds }, user2: { _eq: myuserId } },
+          ],
+        },
+      },
+      {
+        are_friends: true,
+        user1: true,
+        user2: true,
+      },
+    ],
+    auth_friend_requests: [
+      {
+        where: {
+          _or: [
+            { from: { _eq: myuserId }, to: { _in: userIds } },
+            { from: { _in: userIds }, to: { _eq: myuserId } },
+          ],
+        },
+      },
+      {
+        id: true,
+        from: true,
+        to: true,
+      },
+    ],
+  });
+
+  return userIds.map((userId) => {
+    const friendship = response.auth_friendships.find(
+      (x) => x.user1 === userId || x.user2 === userId
+    );
+    const requests = response.auth_friend_requests.find(
+      (x) => x.from === userId || x.to === userId
+    );
+
+    return {
+      id: userId,
+      areFriends: friendship?.are_friends ? true : false,
+      requested: requests?.from === myuserId ? true : false,
+      remoteRequested: requests?.from === userId ? true : false,
+    };
+  });
 };
 
 export async function unfriend({ from, to }: { from: string; to: string }) {
@@ -241,11 +569,27 @@ export async function setFriendship({
   to: string;
   sendRequest: boolean;
 }) {
-  if (!sendRequest) {
-    return deleteFriendRequest({ from, to });
-  }
-
   const { user1, user2 } = getSortedUsers(from, to);
+  if (!sendRequest) {
+    await chain("mutation")({
+      update_auth_friendships: [
+        {
+          _set: {
+            are_friends: false,
+          },
+          where: {
+            user1: { _eq: user1 },
+            user2: { _eq: user2 },
+          },
+        },
+        { affected_rows: true },
+      ],
+    });
+    await deleteFriendRequest({ from, to });
+    // Delete friend request from other user to this user as well
+    await deleteFriendRequest({ from: to, to: from });
+    return;
+  }
 
   const existingFriendship = await chain("query")({
     auth_friendships: [
@@ -298,7 +642,7 @@ export async function setFriendship({
         },
       ],
     });
-    console.log("above main mutation");
+
     // @ts-ignore
     await chain("mutation")({
       insert_auth_friendships_one: [
@@ -318,8 +662,8 @@ export async function setFriendship({
         { id: true },
       ],
     });
+    return true;
   } else {
-    console.log("elseee");
     await chain("mutation")({
       insert_auth_friend_requests_one: [
         {
@@ -439,34 +783,53 @@ export const getFriendship = async ({
   };
 };
 
-export const validateRoom = async (uuid: string, roomId: number) => {
-  const response = await chain("query")({
-    auth_friendships: [
+export const updateLastReadGroup = async (
+  uuid: string,
+  room: string,
+  client_generated_uuid: string
+) => {
+  await chain("mutation")({
+    insert_auth_collection_messages: [
       {
-        where: {
-          _or: [
-            {
-              id: { _eq: roomId },
-              user1: { _eq: uuid },
-            },
-            {
-              id: { _eq: roomId },
-              user2: { _eq: uuid },
-            },
-          ],
+        objects: [
+          {
+            uuid,
+            collection_id: room,
+            last_read_message_id: client_generated_uuid,
+          },
+        ],
+        on_conflict: {
+          //@ts-ignore
+          update_columns: ["last_read_message_id"],
+          //@ts-ignore
+          constraint: "collection_messages_pkey",
         },
       },
-      {
-        id: true,
-      },
+      { affected_rows: true },
     ],
   });
+};
 
-  if (response.auth_friendships) {
-    return true;
-  }
-
-  return false;
+export const updateLastReadIndividual = async (
+  user1: string,
+  user2: string,
+  client_generated_uuid: string,
+  userIndex: "1" | "2"
+) => {
+  await chain("mutation")({
+    update_auth_friendships: [
+      {
+        where: {
+          user1: { _eq: user1 },
+          user2: { _eq: user2 },
+        },
+        _set: {
+          [`user${userIndex}_last_read_message_id`]: client_generated_uuid,
+        },
+      },
+      { affected_rows: true },
+    ],
+  });
 };
 
 function getLabel(type: "blocked" | "spam", from: string, to: string) {

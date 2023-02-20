@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "source": "src/index.ts",
   "scripts": {
+    "start": "yarn build",
     "build": "node build.js"
   },
   "browserslist": "> 0.5%, last 2 versions, not dead",

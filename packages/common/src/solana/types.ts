@@ -1,5 +1,6 @@
+import type { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import type { IdlAccounts, SplToken } from "@project-serum/anchor";
-import type { metadata } from "@project-serum/token";
+import type { RawMint } from "@solana/spl-token";
 import type { TokenAccountsFilter } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 
@@ -18,13 +19,13 @@ export type SolanaTokenAccountWithKeySerializable = Omit<
 
 export type TokenMetadata = {
   publicKey: PublicKey;
-  account: metadata.Metadata;
+  account: Metadata;
 };
 
 export type SplNftMetadata = {
   publicKey: PublicKey;
   metadataAddress: PublicKey;
-  metadata: metadata.Metadata;
+  metadata: Metadata;
   tokenMetaUriData: any;
 };
 
@@ -35,9 +36,11 @@ type ReplaceType<Type, FromType, ToType> = Type extends FromType // FromType?
   ? ReplaceTypes<Type, FromType, ToType> // Yes
   : Type; // No, leave it alone
 
-type ReplaceTypes<ObjType extends object, FromType, ToType> = {
+export type ReplaceTypes<ObjType extends object, FromType, ToType> = {
   [KeyType in keyof ObjType]: ReplaceType<ObjType[KeyType], FromType, ToType>;
 };
+
+export type RawMintString = ReplaceTypes<RawMint, PublicKey, string>;
 
 export type SolanaTokenAccountWithKeyString = ReplaceTypes<
   SolanaTokenAccountWithKey,

@@ -1,20 +1,24 @@
+import type { Token } from "../common/TokenTable";
+import type { Button } from "@mui/material";
+
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+
 import {
   Blockchain,
   ETH_NATIVE_MINT,
   SOL_NATIVE_MINT,
   WSOL_MINT,
 } from "@coral-xyz/common";
+import { CheckIcon, CrossIcon } from "@coral-xyz/react-common";
 import {
   useJupiterOutputMints,
   useSplTokenRegistry,
   useSwapContext,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { useTheme } from "@hooks";
+import { useTheme } from "~hooks/useTheme";
 import { ExpandMore, SwapVert } from "@mui/icons-material";
-import type { Button } from "@mui/material";
 import { IconButton, InputAdornment, Typography } from "@mui/material";
 import { ethers, FixedNumber } from "ethers";
 
@@ -28,15 +32,11 @@ import {
   TextFieldLabel,
 } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
-import { CheckIcon, CrossIcon } from "../common/Icon";
 import { useDrawerContext } from "../common/Layout/Drawer";
 import { useNavStack } from "../common/Layout/NavStack";
-import { MaxSwapLabel } from "../common/MaxSwapLabel";
 import { TokenAmountHeader } from "../common/TokenAmountHeader";
 import { TokenInputField } from "../common/TokenInput";
-import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
-
 import { BottomCard } from "./Balances/TokensWidget/Send";
 
 const { Zero } = ethers.constants;
@@ -60,7 +60,9 @@ export function SwapInfo({ compact = true }: { compact?: boolean }) {
     return <ActivityIndicator style={{ alignSelf: "center" }} />;
   }
 
-  if (!fromAmount || !toAmount) return <></>;
+  if (!fromAmount || !toAmount) {
+    return <></>;
+  }
 
   const decimalDifference = fromMintInfo.decimals - toMintInfo.decimals;
   const toAmountWithFees = toAmount.sub(swapFee);

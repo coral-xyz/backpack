@@ -31,6 +31,11 @@ const moduleExports = withPlausibleProxy()({
         destination:
           'https://chrome.google.com/webstore/detail/backpack/aflkmfhebedbjioipglgcbcmnbpgliof',
         permanent: true
+      },
+      {
+        source: '/ref/:username',
+        destination: 'https://backpack-api.xnfts.dev/referrals/:username',
+        permanent: true
       }
     ];
   }

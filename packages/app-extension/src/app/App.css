@@ -55,3 +55,18 @@ body {
   transform: translate3d(-100%, 0, 0);
   transition: all 300ms ease-in-out;
 }
+
+.Toastify__toast {
+  border-radius: 20px !important;
+  margin: 10px;
+  padding: 10px !important;
+}
+
+[contentEditable="true"]:empty:before {
+  content: attr(placeholder);
+  opacity: 0.2;
+}
+
+[contenteditable]:focus {
+  outline: 0px solid transparent;
+}

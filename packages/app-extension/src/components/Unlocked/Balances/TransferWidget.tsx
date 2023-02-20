@@ -1,55 +1,59 @@
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
   ETH_NATIVE_MINT,
   SOL_NATIVE_MINT,
   STRIPE_ENABLED,
 } from "@coral-xyz/common";
+import { Dollar } from "@coral-xyz/react-common";
 import {
   SwapProvider,
-  useEnabledBlockchains,
+  useActiveSolanaWallet,
   useFeatureGates,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ArrowDownward, ArrowUpward, SwapHoriz } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 
-import { Dollar } from "../../common/Icon";
-import { useNavStack } from "../../common/Layout/NavStack";
+import { useNavigation } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";
-import { SelectToken, Swap } from "../../Unlocked/Swap";
+import { Swap, SwapSelectToken } from "../../Unlocked/Swap";
 
+import {
+  AddressSelector,
+  AddressSelectorLoader,
+} from "./TokensWidget/AddressSelector";
 import { Deposit } from "./TokensWidget/Deposit";
 import { Ramp } from "./TokensWidget/Ramp";
-import { Send, SendLoader } from "./TokensWidget/Send";
+import { Send } from "./TokensWidget/Send";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { StripeRamp } from "./StripeRamp";
 
 export function TransferWidget({
   blockchain,
   address,
+  publicKey,
   rampEnabled,
+  swapEnabled,
 }: {
   blockchain?: Blockchain;
   address?: string;
+  publicKey?: string;
   rampEnabled: boolean;
+  swapEnabled: boolean;
 }) {
-  const enabledBlockchains = useEnabledBlockchains();
   const featureGates = useFeatureGates();
   const enableOnramp =
     featureGates && featureGates[STRIPE_ENABLED] && rampEnabled;
-  const renderSwap =
-    blockchain !== Blockchain.ETHEREUM &&
-    enabledBlockchains.includes(Blockchain.SOLANA);
 
   return (
     <div
       style={{
         display: "flex",
         width:
-          enableOnramp && renderSwap
+          enableOnramp && swapEnabled
             ? "256px"
-            : renderSwap || enableOnramp
+            : swapEnabled || enableOnramp
             ? "188px"
             : "120px",
         marginLeft: "auto",
@@ -62,13 +66,21 @@ export function TransferWidget({
           <div style={{ width: "16px" }} />
         </>
       )}
-      <ReceiveButton blockchain={blockchain} />
+      <ReceiveButton blockchain={blockchain} publicKey={publicKey} />
       <div style={{ width: "16px" }} />
-      <SendButton blockchain={blockchain} address={address} />
-      {renderSwap && (
+      <SendButton
+        blockchain={blockchain}
+        address={address}
+        publicKey={publicKey}
+      />
+      {swapEnabled && (
         <>
           <div style={{ width: "16px" }} />
-          <SwapButton blockchain={blockchain} address={address} />
+          <SwapButton
+            blockchain={blockchain}
+            address={address}
+            publicKey={publicKey}
+          />
         </>
       )}
     </div>
@@ -78,14 +90,18 @@ export function TransferWidget({
 function SwapButton({
   blockchain,
   address,
+  publicKey,
 }: {
   blockchain?: Blockchain;
   address?: string;
+  publicKey?: string;
 }) {
   const theme = useCustomTheme();
+  // Aggregate view swapper can just default to the current (global) active key.
+  publicKey = publicKey ?? useActiveSolanaWallet()?.publicKey;
 
   return (
-    <SwapProvider blockchain={Blockchain.SOLANA} tokenAddress={address}>
+    <SwapProvider tokenAddress={address}>
       <TransferButton
         label={"Swap"}
         labelComponent={
@@ -110,7 +126,7 @@ function SwapButton({
           {
             title: `Select Token`,
             name: "select-token",
-            component: (props: any) => <SelectToken {...props} />,
+            component: (props: any) => <SwapSelectToken {...props} />,
           },
         ]}
       />
@@ -121,9 +137,11 @@ function SwapButton({
 function SendButton({
   blockchain,
   address,
+  publicKey,
 }: {
   blockchain?: Blockchain;
   address?: string;
+  publicKey?: string;
 }) {
   const theme = useCustomTheme();
   return (
@@ -143,13 +161,19 @@ function SendButton({
         blockchain && address
           ? [
               {
-                name: "send",
-                component: (props: any) => <SendLoader {...props} />,
-                title: `Send`,
+                name: "select-user",
+                component: (props: any) => <AddressSelectorLoader {...props} />,
+                title: "",
                 props: {
                   blockchain,
                   address,
+                  publicKey,
                 },
+              },
+              {
+                name: "send",
+                component: (props: any) => <Send {...props} />,
+                title: `Send`,
               },
             ]
           : [
@@ -157,6 +181,11 @@ function SendButton({
                 name: "select-token",
                 component: SendToken,
                 title: "Select Token",
+              },
+              {
+                name: "select-user",
+                component: (props: any) => <AddressSelector {...props} />,
+                title: "",
               },
               {
                 name: "send",
@@ -169,7 +198,13 @@ function SendButton({
   );
 }
 
-function ReceiveButton({ blockchain }: { blockchain?: Blockchain }) {
+function ReceiveButton({
+  blockchain,
+  publicKey,
+}: {
+  blockchain?: Blockchain;
+  publicKey?: string;
+}) {
   const theme = useCustomTheme();
   return (
     <TransferButton
@@ -191,6 +226,7 @@ function ReceiveButton({ blockchain }: { blockchain?: Blockchain }) {
           name: "deposit",
           props: {
             blockchain,
+            publicKey,
           },
         },
       ]}
@@ -303,10 +339,10 @@ function TransferButton({
 }
 
 function SendToken() {
-  const { push } = useNavStack();
+  const { push } = useNavigation();
 
   const onClickRow = (blockchain: Blockchain, token: Token) => {
-    push("send", { blockchain, token });
+    push("select-user", { blockchain, token });
   };
 
   return (

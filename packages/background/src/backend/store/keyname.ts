@@ -6,23 +6,23 @@ const KEY_KEYNAME_STORE = "keyname-store";
  * Persistent model for the naming of wallet keys.
  */
 export type Keyname = {
-  [pubkeyStr: string]: string;
+  [publicKeyStr: string]: string;
 };
 
-export async function setKeyname(pubkey: string, name: string) {
+export async function setKeyname(publicKey: string, name: string) {
   let keynames = await LocalStorageDb.get(key());
   if (!keynames) {
     keynames = {};
   }
-  keynames[pubkey] = name;
+  keynames[publicKey] = name;
   await LocalStorageDb.set(KEY_KEYNAME_STORE, keynames);
 }
 
-export async function getKeyname(pubkey: string): Promise<string> {
+export async function getKeyname(publicKey: string): Promise<string> {
   const names = await LocalStorageDb.get(key());
-  const name = names[pubkey];
+  const name = names[publicKey];
   if (!name) {
-    throw new Error(`unable to find name for key: ${pubkey.toString()}`);
+    throw Error(`unable to find name for key: ${publicKey.toString()}`);
   }
   return name;
 }
@@ -32,13 +32,13 @@ function key() {
 }
 
 export const DefaultKeyname = {
-  defaultDerived(accountIndex: number): string {
-    return `Wallet ${accountIndex + 1}`;
+  defaultDerived(index: number): string {
+    return `Wallet ${index}`;
   },
-  defaultImported(accountIndex: number): string {
-    return `Imported Wallet ${accountIndex + 1}`;
+  defaultImported(index: number): string {
+    return `Imported Wallet ${index}`;
   },
-  defaultLedger(accountIndex: number): string {
-    return `Ledger ${accountIndex + 1}`;
+  defaultLedger(index: number): string {
+    return `Ledger ${index}`;
   },
 };

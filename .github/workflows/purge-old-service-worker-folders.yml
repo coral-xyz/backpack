@@ -1,0 +1,23 @@
+# gh-pages branch is deployed on every commit to update the service-worker
+# the process creates a new folder for every commit hash, which leads to
+# thousands of folders that are never used
+# This purges the old folders. The script lives in gh-pages branch called check-for-old-folders.sh
+
+name: Purge old service worker folders from gh-pages
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - gh-pages
+
+jobs:
+  purge:
+    name: Purge old service worker folders from gh-pages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: gh-pages # checkout gh-pages branch
+      - name: run bash check-for-old-folders.sh
+        shell: bash
+        run: bash ./check-for-old-folders.sh

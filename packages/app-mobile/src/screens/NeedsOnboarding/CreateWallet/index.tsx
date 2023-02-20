@@ -1,3 +1,6 @@
+import React, { useState } from "react";
+import { Text } from "react-native";
+
 import {
   Blockchain,
   DerivationPath,
@@ -6,9 +9,7 @@ import {
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Text } from "react-native";
 import { useNavigate } from "react-router-native";
 import tw from "twrnc";
 

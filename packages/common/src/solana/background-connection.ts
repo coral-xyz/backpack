@@ -1,3 +1,4 @@
+import { IS_MOBILE } from "@coral-xyz/common-public";
 import type {
   AccountBalancePair,
   AccountChangeCallback,
@@ -74,6 +75,7 @@ import type { BackgroundClient } from "../channel";
 import {
   SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION,
+  SOLANA_CONNECTION_RPC_CUSTOM_SPL_METADATA_URI,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO_AND_CONTEXT,
@@ -98,11 +100,14 @@ import {
   SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION,
 } from "../constants";
 
+import type {
+  CustomSplTokenAccountsResponse,
+  CustomSplTokenAccountsResponseString,
+} from "./programs/token";
 import { addressLookupTableAccountParser } from "./rpc-helpers";
 import type {
   SolanaTokenAccountWithKey,
   SolanaTokenAccountWithKeyString,
-  SplNftMetadata,
   SplNftMetadataString,
   TokenMetadata,
   TokenMetadataString,
@@ -125,32 +130,142 @@ export class BackgroundSolanaConnection extends Connection {
     this._backgroundClient = backgroundClient;
   }
 
-  async customSplTokenAccounts(publicKey: PublicKey): Promise<{
-    tokenAccountsMap: [string, SolanaTokenAccountWithKeyString][];
-    tokenMetadata: (TokenMetadataString | null)[];
-    nftMetadata: [string, SplNftMetadataString][];
-  }> {
+  async customSplMetadataUri(
+    tokens: Array<SolanaTokenAccountWithKeyString>,
+    tokenMetadata: Array<TokenMetadataString | null>
+  ): Promise<Array<[string, SplNftMetadataString]>> {
+    return await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_CUSTOM_SPL_METADATA_URI,
+      params: [tokens, tokenMetadata],
+    });
+  }
+
+  async customSplTokenAccounts(
+    publicKey: PublicKey
+  ): Promise<CustomSplTokenAccountsResponseString> {
     const resp = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
       params: [publicKey.toString()],
     });
-    const _resp =
-      BackgroundSolanaConnection.customSplTokenAccountsFromJson(resp);
-    return _resp;
+    return BackgroundSolanaConnection.customSplTokenAccountsFromJson(resp);
   }
 
-  static customSplTokenAccountsFromJson(json: any) {
+  static customSplTokenAccountsFromJson(
+    json: CustomSplTokenAccountsResponseString
+  ): CustomSplTokenAccountsResponseString {
     return {
-      ...json,
-      tokenAccountsMap: json.tokenAccountsMap.map((t: any) => {
+      mintsMap: json.mintsMap.map((m: any) => {
         return [
-          t[0],
+          m[0],
           {
-            ...t[1],
-            amount: new BN(t[1].amount),
+            ...m[1],
+            supply: BigInt(m[1].supply),
           },
         ];
       }),
+      fts: {
+        ...json.fts,
+        fungibleTokens: json.fts.fungibleTokens.map((t: any) => {
+          return {
+            ...t,
+            amount: new BN(t.amount),
+          };
+        }),
+      },
+      nfts: {
+        ...json.nfts,
+        nftTokens: json.nfts.nftTokens.map((t: any) => {
+          return {
+            ...t,
+            amount: new BN(t.amount),
+          };
+        }),
+      },
+    };
+  }
+
+  static customSplTokenAccountsToJson(
+    _resp: CustomSplTokenAccountsResponse
+  ) /* : CustomSplTokenAccountsResponseString */ {
+    return {
+      mintsMap: _resp.mintsMap.map(([publicKey, mintStr]) => {
+        return [
+          publicKey,
+          mintStr != null
+            ? {
+                ...mintStr,
+                supply: mintStr.supply.toString(),
+                mintAuthority: mintStr.mintAuthority?.toString(),
+                freezeAuthority: mintStr.freezeAuthority?.toString(),
+              }
+            : null,
+        ];
+      }),
+      fts: {
+        fungibleTokens: _resp.fts.fungibleTokens.map((t) => {
+          return BackgroundSolanaConnection.solanaTokenAccountWithKeyToJson(t);
+        }),
+        fungibleTokenMetadata: _resp.fts.fungibleTokenMetadata.map((t) => {
+          return t ? BackgroundSolanaConnection.tokenMetadataToJson(t) : null;
+        }),
+      },
+      nfts: {
+        nftTokens: _resp.nfts.nftTokens.map((t) => {
+          return BackgroundSolanaConnection.solanaTokenAccountWithKeyToJson(t);
+        }),
+        nftTokenMetadata: _resp.nfts.nftTokenMetadata.map((t) => {
+          return t ? BackgroundSolanaConnection.tokenMetadataToJson(t) : null;
+        }),
+      },
+    };
+  }
+
+  static solanaTokenAccountWithKeyToJson(
+    t: SolanaTokenAccountWithKey
+  ) /* : SolanaTokenAccountWithKeyString */ {
+    return {
+      ...t,
+      mint: t.mint.toString(),
+      key: t.key.toString(),
+      amount: t.amount.toString(),
+      delegate: t.delegate?.toString(),
+      delegatedAmount: t.delegatedAmount.toString(),
+      authority: t.authority.toString(),
+      closeAuthority: t.closeAuthority?.toString(),
+    };
+  }
+
+  static tokenMetadataToJson(t: TokenMetadata) /* : TokenMetadataString */ {
+    return {
+      ...t,
+      publicKey: t.publicKey.toString(),
+      account: {
+        ...t.account,
+        updateAuthority: t.account.updateAuthority.toString(),
+        mint: t.account.mint.toString(),
+        collection: t.account.collection
+          ? {
+              ...t.account.collection,
+              key: t.account.collection.key.toString(),
+            }
+          : null,
+        uses: t.account.uses
+          ? {
+              ...t.account.uses,
+              remaining: t.account.uses.remaining.toString(),
+              total: t.account.uses.total.toString(),
+            }
+          : null,
+        data: {
+          ...t.account.data,
+          creators: (t.account.data.creators ?? []).map((c) => {
+            return {
+              ...c,
+              address: c.address.toString(),
+            };
+          }),
+        },
+      },
     };
   }
 
@@ -162,12 +277,38 @@ export class BackgroundSolanaConnection extends Connection {
       method: SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
       params: [publicKey.toString(), commitment],
     });
+
     if (resp === null) {
       return resp;
     }
-    resp.data = Buffer.from(resp.data);
-    resp.owner = new PublicKey(resp.owner);
-    return resp;
+
+    return BackgroundSolanaConnection.accountInfoFromJson(resp);
+  }
+
+  static accountInfoToJson(res) {
+    if (!IS_MOBILE) {
+      return res;
+    }
+
+    return {
+      ...res,
+      owner: res.owner.toString(),
+      data: res.data?.toString(),
+    };
+  }
+
+  static accountInfoFromJson(res) {
+    if (!IS_MOBILE) {
+      res.data = Buffer.from(res.data);
+      res.owner = new PublicKey(res.owner);
+      return res;
+    }
+
+    return {
+      ...res,
+      owner: new PublicKey(res.owner),
+      data: Buffer.from(res.data),
+    };
   }
 
   async getLatestBlockhash(commitment?: Commitment): Promise<{
@@ -284,6 +425,7 @@ export class BackgroundSolanaConnection extends Connection {
     });
   }
 
+  // @ts-ignore
   async confirmTransaction(
     strategy: BlockheightBasedTransactionConfirmationStrategy | string,
     commitment?: Commitment
@@ -637,6 +779,7 @@ export class BackgroundSolanaConnection extends Connection {
     throw new Error("not implemented");
   }
 
+  // @ts-ignore
   getBlock(
     slot: number,
     opts?: {

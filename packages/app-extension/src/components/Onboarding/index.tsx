@@ -7,14 +7,18 @@ import {
   EXTENSION_WIDTH,
   TWITTER_LINK,
 } from "@coral-xyz/common";
+import { DiscordIcon, List, ListItem } from "@coral-xyz/react-common";
+import {
+  KeyringStoreStateEnum,
+  OnboardingProvider,
+  useKeyringStoreState,
+} from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, Lock, Menu, Twitter } from "@mui/icons-material";
 import { Box, IconButton, ListItemText, Toolbar } from "@mui/material";
 
-import { DiscordIcon } from "../common/Icon";
 import { WithContaineredDrawer } from "../common/Layout/Drawer";
 import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
-import { List, ListItem } from "../common/List";
 import WaitingRoom from "../common/WaitingRoom";
 
 import { OnboardAccount } from "./pages/OnboardAccount";
@@ -30,6 +34,9 @@ export const Onboarding = ({
   const [action, setAction] = useState<"onboard" | "recover" | "waiting">(
     "onboard"
   );
+  const isOnboarded =
+    !isAddingAccount &&
+    useKeyringStoreState() !== KeyringStoreStateEnum.NeedsOnboarding;
 
   const defaultProps = {
     containerRef,
@@ -51,23 +58,25 @@ export const Onboarding = ({
         display: "flex",
       },
     },
+    isAddingAccount,
+    isOnboarded,
   };
 
   return (
     <OptionsContainer innerRef={containerRef}>
-      {action === "onboard" && (
-        <OnboardAccount
-          onRecover={() => setAction("recover")}
-          onWaiting={() => setAction("waiting")}
-          isAddingAccount={isAddingAccount}
-          {...defaultProps}
-        />
-      )}
+      {action === "onboard" ? (
+        <OnboardingProvider>
+          <OnboardAccount
+            onRecover={() => setAction("recover")}
+            onWaiting={() => setAction("waiting")}
+            {...defaultProps}
+          />
+        </OnboardingProvider>
+      ) : null}
       {action === "waiting" && <WaitingRoom />}
       {action === "recover" && (
         <RecoverAccount
           onClose={() => setAction("onboard")}
-          isAddingAccount={isAddingAccount}
           {...defaultProps}
         />
       )}

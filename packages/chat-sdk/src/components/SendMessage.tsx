@@ -1,40 +1,57 @@
-import { IconButton, TextField } from "@mui/material";
-import GifIcon from "@mui/icons-material/Gif";
+import { useEffect, useRef, useState } from "react";
+import type { MessageKind, MessageMetadata } from "@coral-xyz/common";
+import { CHAT_MESSAGES } from "@coral-xyz/common";
+import { createEmptyFriendship } from "@coral-xyz/db";
+import { SignalingManager, useUsersMetadata } from "@coral-xyz/react-common";
+import { useActiveSolanaWallet, useUser } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import { CircularProgress, IconButton } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
-import { useChatContext } from "./ChatContext";
-import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import SendIcon from "@mui/icons-material/Send";
-import EmojiPicker, { Theme } from "emoji-picker-react";
-import SentimentVerySatisfiedIcon from "@mui/icons-material/SentimentVerySatisfied";
-import { useDarkMode } from "@coral-xyz/recoil";
-import { Carousel } from "@giphy/react-components";
-import { GiphyFetch } from "@giphy/js-fetch-api";
 
-// use @giphy/js-fetch-api to fetch gifs, instantiate with your api key
-const gf = new GiphyFetch("SjZwwCn1e394TKKjrMJWb2qQRNcqW8ro");
-const fetchGifs = (offset: number) => gf.trending({ offset, limit: 10 });
+import { CustomAutoComplete, MessageInput } from "./messageInput/MessageInput";
+import { MessageInputProvider } from "./messageInput/MessageInputProvider";
+import { Attachment } from "./Attachment";
+import { Barter } from "./Barter";
+import { useChatContext } from "./ChatContext";
+import { EmojiPickerComponent } from "./EmojiPicker";
+import { GifPicker } from "./GifPicker";
+import { ReplyContainer } from "./ReplyContainer";
+import { SecureTransfer } from "./SecureTransfer";
+
+const BARTER_ENABLED = false;
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
     outerDiv: {
-      padding: 10,
-      background: theme.custom.colors.textBackground,
+      padding: 2,
+      background: theme.custom.colors.listItemHover,
       backdropFilter: "blur(6px)",
+      borderRadius: 8,
+      margin: 12,
+    },
+    text: {
+      color: theme.custom.colors.fontColor2,
     },
     wrapText: {
       width: "100%",
     },
-    button: {
-      //margin: theme.spacing(1),
-    },
     textFieldRoot: {
       color: theme.custom.colors.secondary,
       "& .MuiOutlinedInput-root": {
+        padding: 0,
+        "border-top-right-radius": 10,
+        "border-top-left-radius": 10,
         "& fieldset": {
           border: "none",
-          color: theme.custom.colors.secondary,
         },
+      },
+      "& .MuiInputBase-input": {
+        padding: "10px 12px 10px 12px",
+        fontSize: "15px",
       },
     },
     textFieldInputColorEmpty: {
@@ -43,30 +60,20 @@ const useStyles = makeStyles((theme: any) =>
     textFieldInputColor: {
       color: theme.custom.colors.fontColor2,
     },
-    sendIcon: {
-      color: theme.custom.colors.fontColor2,
+    icon: {
+      color: theme.custom.colors.icon,
     },
     textInputRoot: {
+      "border-top-right-radius": 10,
+      "border-top-left-radius": 10,
       color: theme.custom.colors.fontColor2,
       fontWeight: 500,
       borderRadius: "12px",
       fontSize: "16px",
       lineHeight: "24px",
       "& .MuiOutlinedInput-root": {
-        background: theme.custom.colors.textBackground,
-        borderRadius: "12px",
         "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-          border: (props) => theme.custom.colors.textInputBorderFocussed,
           outline: "none",
-        },
-        "& fieldset": {
-          border: (props) => theme.custom.colors.textInputBorderFull,
-        },
-        "&:hover fieldset": {
-          border: (props) => theme.custom.colors.textInputBorderHovered,
-        },
-        "&.Mui-focused fieldset": {
-          border: (props) => theme.custom.colors.textInputBorderFocussed,
         },
         "&:active": {
           outline: "none",
@@ -77,31 +84,118 @@ const useStyles = makeStyles((theme: any) =>
   })
 );
 
-export const SendMessage = ({ messageRef }: any) => {
+export const SendMessage = ({
+  uploadingFile,
+  setUploadingFile,
+  selectedFile,
+  setSelectedFile,
+  onMediaSelect,
+  selectedMediaKind,
+  uploadedImageUri,
+}: {
+  onMediaSelect: any;
+  selectedMediaKind: "video" | "image";
+  uploadedImageUri: string;
+  selectedFile: string;
+  setSelectedFile: any;
+  uploadingFile: boolean;
+  setUploadingFile: any;
+}) => {
   const classes = useStyles();
-  const [messageContent, setMessageContent] = useState("");
+  const { uuid } = useUser();
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
-  const { chatManager, setChats, userId, username } = useChatContext();
-  const isDarkMode = useDarkMode();
+  const [pluginMenuOpen, setPluginMenuOpen] = useState(false);
 
-  const sendMessage = (messageTxt, messageKind: "text" | "gif" = "text") => {
-    if (chatManager && messageTxt) {
+  const theme = useCustomTheme();
+  const activeSolanaWallet = useActiveSolanaWallet();
+  const inputRef = useRef<any>(null);
+  const { openPlugin, setOpenPlugin } = useChatContext();
+
+  const {
+    remoteUserId,
+    remoteUsername,
+    roomId,
+    activeReply,
+    setActiveReply,
+    type,
+    chats,
+  } = useChatContext();
+  const remoteUsers = useUsersMetadata({ remoteUserIds: [remoteUserId] });
+  const remoteUserImage = remoteUsers?.[0]?.image;
+
+  const sendMessage = async (
+    messageTxt,
+    messageKind: MessageKind = "text",
+    messageMetadata?: MessageMetadata
+  ) => {
+    if (selectedFile && uploadingFile) {
+      return;
+    }
+    if (messageTxt || selectedFile) {
+      if (selectedFile) {
+        messageKind = "media";
+        messageMetadata = {
+          media_kind: selectedMediaKind,
+          media_link: uploadedImageUri,
+        };
+        setSelectedFile(null);
+      }
       const client_generated_uuid = uuidv4();
-      chatManager?.send(messageTxt, client_generated_uuid, messageKind);
-      setChats((x) => [
-        ...x,
-        {
-          message: messageTxt,
-          client_generated_uuid,
-          received: false,
-          uuid: userId,
-          message_kind: messageKind,
-          username,
-          image: `https://avatars.xnfts.dev/v1/${username}`,
+      if (chats.length === 0 && type === "individual") {
+        // If it's the first time the user is interacting,
+        // create an in memory friendship
+        createEmptyFriendship(uuid, remoteUserId, {
+          last_message_sender: uuid,
+          last_message_timestamp: new Date().toISOString(),
+          last_message:
+            messageKind === "gif"
+              ? "GIF"
+              : messageKind === "secure-transfer"
+              ? "Secure Transfer"
+              : messageKind === "media"
+              ? "Media"
+              : messageTxt,
+          last_message_client_uuid: client_generated_uuid,
+        });
+      }
+      SignalingManager.getInstance()?.send({
+        type: CHAT_MESSAGES,
+        payload: {
+          messages: [
+            {
+              client_generated_uuid: client_generated_uuid,
+              message: messageTxt,
+              message_kind: messageKind,
+              message_metadata: messageMetadata,
+              parent_client_generated_uuid:
+                activeReply.parent_client_generated_uuid
+                  ? activeReply.parent_client_generated_uuid
+                  : undefined,
+              //@ts-ignore
+              parent_message_author_username:
+                activeReply.parent_client_generated_uuid
+                  ? activeReply.parent_username?.slice(1)
+                  : undefined,
+              //@ts-ignore
+              parent_message_text: activeReply.parent_client_generated_uuid
+                ? activeReply.text
+                : undefined,
+              parent_message_author_uuid:
+                activeReply.parent_message_author_uuid,
+            },
+          ],
+          type: type,
+          room: roomId,
         },
-      ]);
-      setMessageContent("");
+      });
+
+      setActiveReply({
+        parent_username: "",
+        parent_client_generated_uuid: null,
+        text: "",
+      });
+      inputRef.current.setValue("");
     }
   };
 
@@ -109,7 +203,7 @@ export const SendMessage = ({ messageRef }: any) => {
     function keyDownTextField(event) {
       if (event.key === "Enter") {
         event.preventDefault();
-        sendMessage(messageContent);
+        sendMessage(inputRef.current.getTransformedValue());
         setEmojiPicker(false);
       }
       if (event.key === "Escape") {
@@ -124,87 +218,210 @@ export const SendMessage = ({ messageRef }: any) => {
     return () => {
       document.removeEventListener("keydown", keyDownTextField);
     };
-  });
+  }, [
+    inputRef,
+    selectedFile,
+    uploadedImageUri,
+    selectedMediaKind,
+    activeReply,
+    chats,
+  ]);
+
+  const getOfflineMembers = () => {
+    if (type === "individual") {
+      return [
+        {
+          uuid: remoteUserId,
+          username: remoteUsername,
+          image: remoteUserImage,
+        },
+      ];
+    }
+    const userMap = {};
+    chats.map((x) => {
+      if (x.uuid !== uuid) {
+        userMap[x.uuid] = x;
+      }
+    });
+    return Object.keys(userMap).map((uuid) => userMap[uuid]);
+  };
   return (
-    <div className={classes.outerDiv}>
-      <TextField
-        classes={{
-          root: classes.textFieldRoot,
-        }}
-        inputProps={{
-          style: {
-            padding: 12,
-          },
-          className: `${
-            messageContent
-              ? classes.textFieldInputColor
-              : classes.textFieldInputColorEmpty
-          }`,
-        }}
-        fullWidth={true}
-        className={`${classes.textInputRoot} ${
-          messageContent
-            ? classes.textFieldInputColor
-            : classes.textFieldInputColorEmpty
-        }`}
-        placeholder={"Your message..."}
-        value={messageContent}
-        id="standard-text"
-        InputProps={{
-          endAdornment: (
-            <>
-              <IconButton>
-                {" "}
-                <SentimentVerySatisfiedIcon
-                  className={classes.sendIcon}
-                  onClick={() => setEmojiPicker((x) => !x)}
-                />{" "}
-              </IconButton>
-              <IconButton>
-                {" "}
-                <GifIcon
-                  className={classes.sendIcon}
-                  onClick={(e) => {
-                    setGifPicker((x) => !x);
+    <MessageInputProvider
+      inputRef={inputRef}
+      offlineMembers={getOfflineMembers().slice(0, 5)}
+    >
+      <div className={classes.outerDiv}>
+        {selectedFile && (
+          <div>
+            <div style={{ background: theme.custom.colors.bg3 }}>
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row-reverse",
+                }}
+              >
+                <HighlightOffIcon
+                  style={{
+                    color: theme.custom.colors.icon,
+                    cursor: "pointer",
+                    marginRight: 5,
+                    marginTop: 5,
                   }}
-                />{" "}
-              </IconButton>
-              <IconButton>
-                {" "}
-                <SendIcon
-                  className={classes.sendIcon}
-                  onClick={sendMessage}
-                />{" "}
-              </IconButton>
-            </>
-          ),
-        }}
-        onChange={(e) => setMessageContent(e.target.value)}
-      />
-      {emojiPicker && (
-        <EmojiPicker
-          theme={isDarkMode ? Theme.DARK : Theme.LIGHT}
-          height={400}
-          width={"100%"}
-          onEmojiClick={(e) => setMessageContent((x) => x + e.emoji)}
-        />
-      )}
-      {gifPicker && (
-        <>
-          {/*
-             //@ts-ignore*/}
-          <Carousel
-            onGifClick={(x, e) => {
-              sendMessage(x.id, "gif");
-              setGifPicker(false);
-              e.preventDefault();
-            }}
-            gifHeight={200}
-            gutter={6}
-            fetchGifs={fetchGifs}
+                  onClick={() => {
+                    setSelectedFile(null);
+                    setUploadingFile(false);
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                {selectedMediaKind === "image" ? (
+                  <img
+                    style={{ maxHeight: 300, maxWidth: 300 }}
+                    src={selectedFile}
+                  />
+                ) : (
+                  <video
+                    style={{ maxHeight: 300, maxWidth: 300 }}
+                    controls={true}
+                    src={selectedFile}
+                  />
+                )}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: 3,
+                }}
+              >
+                {uploadingFile && (
+                  <>
+                    {" "}
+                    <div
+                      style={{
+                        marginRight: 5,
+                        color: theme.custom.colors.fontColor,
+                      }}
+                    >
+                      Uploading{" "}
+                    </div>
+                    <div>
+                      <CircularProgress size={20} color="secondary" />{" "}
+                    </div>{" "}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        {activeReply.parent_client_generated_uuid && (
+          <ReplyContainer
+            marginBottom={6}
+            padding={12}
+            parent_username={activeReply.parent_username || ""}
+            showCloseBtn={true}
+            text={activeReply.text}
           />
-        </>
-      )}
-    </div>
+        )}
+        <CustomAutoComplete />
+        <div style={{ display: "flex" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              marginLeft: 5,
+            }}
+          >
+            <IconButton
+              disableRipple
+              size="small"
+              sx={{
+                color: "#555C6B",
+                "&:hover": {
+                  backgroundColor: `${theme.custom.colors.hoverIconBackground} !important`,
+                },
+              }}
+              onClick={() => {
+                setPluginMenuOpen(!pluginMenuOpen);
+              }}
+            >
+              {pluginMenuOpen ? (
+                <CloseIcon style={{ fontSize: 24 }} />
+              ) : (
+                <AddIcon style={{ fontSize: 24 }} />
+              )}
+            </IconButton>
+          </div>
+          <MessageInput setPluginMenuOpen={setPluginMenuOpen} />
+        </div>
+        {pluginMenuOpen && (
+          <div style={{ display: "flex", marginLeft: 8, paddingBottom: 5 }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            ></div>
+            <EmojiPickerComponent
+              setEmojiPicker={setEmojiPicker}
+              emojiPicker={emojiPicker}
+              setGifPicker={setGifPicker}
+              inputRef={inputRef}
+              buttonStyle={{
+                height: "28px",
+              }}
+            />
+            <GifPicker
+              sendMessage={sendMessage}
+              setGifPicker={setGifPicker}
+              gifPicker={gifPicker}
+              setEmojiPicker={setEmojiPicker}
+              buttonStyle={{
+                height: "28px",
+              }}
+            />
+            <Attachment
+              onMediaSelect={onMediaSelect}
+              buttonStyle={{
+                height: "28px",
+              }}
+            />
+            {type === "individual" && BARTER_ENABLED && (
+              <Barter
+                setOpenPlugin={setOpenPlugin}
+                onMediaSelect={onMediaSelect}
+                buttonStyle={{
+                  height: "28px",
+                }}
+              />
+            )}
+            {activeSolanaWallet?.publicKey && (
+              <SecureTransfer
+                buttonStyle={{
+                  height: "28px",
+                }}
+                remoteUserId={remoteUserId}
+                onTxFinalized={({ signature, counter, escrow }) => {
+                  sendMessage("Secure transfer", "secure-transfer", {
+                    signature,
+                    counter,
+                    escrow,
+                    current_state: "pending",
+                  });
+                }}
+              />
+            )}
+          </div>
+        )}
+      </div>
+    </MessageInputProvider>
   );
 };

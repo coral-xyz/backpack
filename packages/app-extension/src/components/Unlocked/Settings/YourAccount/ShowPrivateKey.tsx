@@ -1,6 +1,13 @@
 import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
 import { UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY } from "@coral-xyz/common";
+import {
+  DangerButton,
+  EyeIcon,
+  SecondaryButton,
+  TextInput,
+  WarningIcon,
+} from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -10,18 +17,14 @@ import WebIcon from "@mui/icons-material/Web";
 import { Box, List, ListItem, ListItemIcon } from "@mui/material";
 
 import {
-  DangerButton,
   Header,
   HeaderIcon,
-  SecondaryButton,
   SubtextParagraph,
   TextField,
 } from "../../../common";
 import { CopyButton } from "../../../common/Account/MnemonicInput";
-import { EyeIcon, WarningIcon } from "../../../common/Icon";
-import { TextInput } from "../../../common/Inputs";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation } from "../../../common/Layout/NavStack";
 
 const useStyles = styles((theme: any) => ({
   passwordField: {
@@ -103,15 +106,15 @@ const useStyles = styles((theme: any) => ({
 export function ShowPrivateKeyWarning({ publicKey }: { publicKey: string }) {
   const classes = useStyles();
   const background = useBackgroundClient();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
 
   useEffect(() => {
     const navButton = nav.navButtonRight;
-    nav.setTitle("Show private key");
+    nav.setOptions({ headerTitle: "Show private key" });
     return () => {
-      nav.setNavButtonRight(navButton);
+      nav.setOptions({ headerRight: navButton });
     };
   }, []);
 
@@ -220,10 +223,10 @@ export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
   const theme = useCustomTheme();
   const classes = useStyles();
   const { close } = useDrawerContext();
-  const nav = useNavStack();
+  const nav = useNavigation();
 
   useEffect(() => {
-    nav.setTitle("Private key");
+    nav.setOptions({ headerTitle: "Private key" });
   }, []);
 
   return (

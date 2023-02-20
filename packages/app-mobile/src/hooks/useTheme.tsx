@@ -30,8 +30,9 @@ const POSITIVE_COLOR = "#35A63A";
 const NEGATIVE_COLOR = "#E95050";
 const SCROLLBAR_THUMB_COLOR = "rgb(153 164 180)";
 
-const LIGHT_BACKGROUND_BACKDROP_COLOR =
-  "linear-gradient(180deg, #F8F8F9 0%, #F0F0F2 100%), #FFFFFF";
+const LIGHT_BACKGROUND_BACKDROP_COLOR = "#f8f8f9";
+// const LIGHT_BACKGROUND_BACKDROP_COLOR =
+//   "linear-gradient(180deg, #F8F8F9 0%, #F0F0F2 100%), #FFFFFF";
 const LIGHT_BACKGROUND_COLOR_0 = "#F0F0F2";
 const LIGHT_BACKGROUND_COLOR_1 = "#ffffff";
 const LIGHT_BACKGROUND_COLOR_2 = LIGHT_BACKGROUND_COLOR_0;
@@ -50,26 +51,12 @@ const LIGHT_ICON_HOVER_COLOR = "#787C89";
 
 const DANGER_COLOR = "#DC2626";
 
-// const baseTheme = createStyles({
-//   typography: {
-//     fontFamily: ["Inter", "sans-serif"].join(","),
-//     // TODO: do we need all of these?
-//     fontWeight: 500,
-//     allVariants: {
-//       fontWeight: 500,
-//     },
-//     body: {
-//       fontWeight: 500,
-//     },
-//     p: {
-//       fontWeight: 500,
-//     },
-//   },
-// });
-
 export const darkTheme: any = {
-  // ...baseTheme,
   custom: {
+    borderRadius: {
+      large: 12,
+      medium: 8,
+    },
     colors: {
       brandColor: BRAND_COLOR,
       background: BACKGROUND_COLOR_0,
@@ -100,9 +87,9 @@ export const darkTheme: any = {
       copyTooltipTextColor: BACKGROUND_COLOR_1,
       tableBorder: BACKGROUND_COLOR_0,
       balanceSkeleton: BACKGROUND_COLOR_1,
-      balanceChangeNegative: "rgb(233, 80, 80, .1)",
-      balanceChangePositive: "rgb(53, 166, 58, .1)",
-      balanceChangeNeutral: "rgb(78, 87, 104, .1)",
+      balanceChangeNegative: "rgba(233, 80, 80, 0.1)",
+      balanceChangePositive: "rgba(53, 166, 58, 0.1)",
+      balanceChangeNeutral: "rgba(78, 87, 104, 0.1)",
       textBackground: BACKGROUND_COLOR_1,
       textPlaceholder: FONT_COLOR_1,
       textBorder: BACKGROUND_COLOR_1,
@@ -110,7 +97,7 @@ export const darkTheme: any = {
       icon: "#787C89",
       approveTransactionTableBackground: BACKGROUND_COLOR_2,
       approveTransactionCloseBackground: BACKGROUND_COLOR_0,
-      hoverIconBackground: `rgb(39, 39, 42, ${HOVER_OPACITY})`,
+      hoverIconBackground: `rgba(39, 39, 42, ${HOVER_OPACITY})`,
       avatarIconBackground: "#DFE0E5",
 
       dangerButton: DANGER_COLOR,
@@ -133,6 +120,10 @@ export const darkTheme: any = {
 export const lightTheme: any = {
   // ...baseTheme,
   custom: {
+    borderRadius: {
+      large: 12,
+      medium: 8,
+    },
     colors: {
       brandColor: LIGHT_BRAND_COLOR,
       backgroundBackdrop: LIGHT_BACKGROUND_BACKDROP_COLOR,
@@ -162,9 +153,9 @@ export const lightTheme: any = {
       copyTooltipTextColor: LIGHT_BACKGROUND_COLOR_1,
       tableBorder: LIGHT_BORDER_COLOR,
       balanceSkeleton: "rgba(0,0,0,0.15)",
-      balanceChangeNegative: "rgb(233, 80, 80, .1)",
-      balanceChangePositive: "rgb(53, 166, 58, .1)",
-      balanceChangeNeutral: "rgb(78, 87, 104, .1)",
+      balanceChangeNegative: "rgba(233, 80, 80, 0.1)",
+      balanceChangePositive: "rgba(53, 166, 58, 0.1)",
+      balanceChangeNeutral: "rgba(78, 87, 104, 0.1)",
       textBackground: LIGHT_BACKGROUND_COLOR_1,
       textBorder: LIGHT_BORDER_COLOR,
       textPlaceholder: "#4E5768",

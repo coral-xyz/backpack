@@ -1,5 +1,5 @@
+export * from "./avatar";
 export * from "./balance";
-export * from "./blockchain";
 export * from "./bootstrap";
 export * from "./client";
 export * from "./ethereum";
@@ -11,7 +11,9 @@ export * from "./notifications";
 export * from "./preferences";
 export * from "./preferences/connection-urls";
 export * from "./prices";
+export * from "./primaryWallets";
 export * from "./recent-transactions";
 export * from "./solana";
 export * from "./transaction-request";
+export * from "./unreadCount";
 export * from "./wallet";

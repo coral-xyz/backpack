@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { RichMentionsInput } from "react-rich-mentions";
 import {
   getHashedName,
   getNameAccountKey,
@@ -9,47 +10,83 @@ import {
   ETH_NATIVE_MINT,
   explorerUrl,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
+  NAV_COMPONENT_MESSAGE_CHAT,
+  NAV_COMPONENT_MESSAGE_PROFILE,
   SOL_NATIVE_MINT,
+  TAB_MESSAGES,
+  toDisplayBalance,
   toTitleCase,
+  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+  walletAddressDisplay,
 } from "@coral-xyz/common";
-import type { TokenData } from "@coral-xyz/recoil";
+import { createEmptyFriendship } from "@coral-xyz/db";
+import {
+  CheckIcon,
+  CrossIcon,
+  DangerButton,
+  Loading,
+  LocalImage,
+  MaxLabel,
+  PrimaryButton,
+  SecondaryButton,
+  SignalingManager,
+  TextFieldLabel,
+  TextInput,
+  UserIcon,
+} from "@coral-xyz/react-common";
+import type { TokenDataWithPrice } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
+  useActiveWallet,
   useAnchorContext,
+  useBackgroundClient,
+  useBlockchainActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
   useBlockchainTokenAccount,
+  useDarkMode,
   useEthereumCtx,
+  useFriendship,
   useLoader,
   useNavigation,
+  useUser,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Typography } from "@mui/material";
+import { TextField, Typography } from "@mui/material";
+import { TldParser } from "@onsol/tldparser";
 import type { Connection } from "@solana/web3.js";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
+import { v4 as uuidv4 } from "uuid";
 
-import {
-  DangerButton,
-  Loading,
-  PrimaryButton,
-  SecondaryButton,
-  TextFieldLabel,
-} from "../../../common";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
-import { CheckIcon, CrossIcon } from "../../../common/Icon";
-import { TextInput } from "../../../common/Inputs";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
-import { useNavStack } from "../../../common/Layout/NavStack";
-import { MaxLabel } from "../../../common/MaxLabel";
+import { useNavigation as useNavigationEphemeral } from "../../../common/Layout/NavStack";
 import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 import { TokenInputField } from "../../../common/TokenInput";
+import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 
 import { SendEthereumConfirmationCard } from "./Ethereum";
 import { SendSolanaConfirmationCard } from "./Solana";
 import { WithHeaderButton } from "./Token";
+import { TokenBadge } from "./TokenBadge";
 
 const useStyles = styles((theme) => ({
+  topImage: {
+    width: 80,
+  },
+  topImageOuter: {
+    width: 80,
+    height: 80,
+    border: `solid 3px ${theme.custom.colors.avatarIconBackground}`,
+    borderRadius: "50%",
+    display: "inline-block",
+    overflow: "hidden",
+  },
+  horizontalCenter: {
+    display: "flex",
+    justifyContent: "center",
+  },
   container: {
     display: "flex",
     flexDirection: "column",
@@ -59,11 +96,16 @@ const useStyles = styles((theme) => ({
     paddingTop: "24px",
     flex: 1,
   },
+  inputContainer: {
+    paddingLeft: "12px",
+    paddingRight: "12px",
+    marginBottom: -10,
+  },
   buttonContainer: {
     display: "flex",
     paddingLeft: "12px",
     paddingRight: "12px",
-    paddingBottom: "24px",
+    paddingBottom: "16px",
     paddingTop: "25px",
     justifyContent: "space-between",
   },
@@ -105,13 +147,22 @@ const useStyles = styles((theme) => ({
 }));
 
 export function SendButton({
+  publicKey,
   blockchain,
   address,
 }: {
   blockchain: Blockchain;
   address: string;
+  publicKey: string;
 }) {
-  const token = useBlockchainTokenAccount(blockchain, address);
+  // publicKey should only be undefined if the user is in single-wallet mode
+  // (rather than aggregate mode).
+  publicKey = publicKey ?? useActiveWallet().publicKey;
+  const token = useBlockchainTokenAccount({
+    publicKey,
+    blockchain,
+    tokenAddress: address,
+  });
   return (
     <WithHeaderButton
       label={"Send"}
@@ -123,6 +174,7 @@ export function SendButton({
           props: {
             blockchain,
             address,
+            publicKey,
           },
         },
       ]}
@@ -131,13 +183,25 @@ export function SendButton({
 }
 
 export function SendLoader({
+  publicKey,
   blockchain,
   address,
 }: {
+  publicKey?: string;
   blockchain: Blockchain;
   address: string;
 }) {
-  const [token] = useLoader(blockchainTokenData({ blockchain, address }), null);
+  // publicKey should only be undefined if the user is in single-wallet mode
+  // (rather than aggregate mode).
+  const publicKeyStr = publicKey ?? useActiveWallet().publicKey;
+  const [token] = useLoader(
+    blockchainTokenData({
+      publicKey: publicKeyStr,
+      blockchain,
+      tokenAddress: address,
+    }),
+    null
+  );
   if (!token) return <></>;
   return <Send blockchain={blockchain} token={token} />;
 }
@@ -145,31 +209,43 @@ export function SendLoader({
 export function Send({
   blockchain,
   token,
+  to,
 }: {
   blockchain: Blockchain;
-  token: TokenData;
+  token: TokenDataWithPrice;
+  to?: {
+    address: string;
+    username?: string;
+    image?: string;
+    uuid?: string;
+  };
 }) {
   const classes = useStyles() as any;
-  const { close } = useDrawerContext();
-  const { title, setTitle } = useNavStack();
+  const { uuid } = useUser();
+  const nav = useNavigationEphemeral();
+  const navOuter = useNavigation();
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [address, setAddress] = useState("");
-  const [amount, setAmount] = useState<BigNumber | undefined>(undefined);
+  const [address, setAddress] = useState(to?.address || "");
+  const [amount, setAmount] = useState<BigNumber | null>(null);
   const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
+  const [message, setMessage] = useState("");
+  const friendship = useFriendship({ userId: to?.uuid || "" });
+  const theme = useCustomTheme();
+  const { push } = useNavigation();
+  const background = useBackgroundClient();
 
   useEffect(() => {
-    const prev = title;
-    setTitle(`Send ${token.ticker}`);
+    const prev = nav.title;
+    nav.setOptions({ headerTitle: `Send ${token.ticker}` });
     return () => {
-      setTitle(prev);
+      nav.setOptions({ headerTitle: prev });
     };
   }, []);
 
   const {
     isValidAddress,
-    isFreshAddress: _,
     isErrorAddress,
     normalizedAddress: destinationAddress,
   } = useIsValidAddress(
@@ -205,7 +281,8 @@ export function Send({
   const amountSubFee = BigNumber.from(token!.nativeBalance).sub(feeOffset);
   const maxAmount = amountSubFee.gt(0) ? amountSubFee : BigNumber.from(0);
   const exceedsBalance = amount && amount.gt(maxAmount);
-  const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
+  const isSendDisabled =
+    !isValidAddress || amount === null || amount.eq(0) || !!exceedsBalance;
   const isAmountError = amount && exceedsBalance;
 
   // On click handler.
@@ -225,7 +302,7 @@ export function Send({
     sendButton = (
       <PrimaryButton
         disabled={isSendDisabled}
-        label="Send"
+        label="Review"
         type="submit"
         data-testid="Send"
       />
@@ -246,6 +323,124 @@ export function Send({
       }}
       noValidate
     >
+      <>
+        {!to && (
+          <SendV1
+            address={address}
+            sendButton={sendButton}
+            amount={amount}
+            token={token}
+            blockchain={blockchain}
+            isAmountError={isAmountError}
+            isErrorAddress={isAmountError}
+            maxAmount={maxAmount}
+            setAddress={setAddress}
+            setAmount={setAmount}
+          />
+        )}
+        {to && (
+          <SendV2
+            to={to}
+            message={message}
+            setMessage={setMessage}
+            sendButton={sendButton}
+            amount={amount}
+            token={token}
+            blockchain={blockchain}
+            isAmountError={isAmountError}
+            isErrorAddress={isAmountError}
+            maxAmount={maxAmount}
+            setAddress={setAddress}
+            setAmount={setAmount}
+          />
+        )}
+        <ApproveTransactionDrawer
+          openDrawer={openDrawer}
+          setOpenDrawer={setOpenDrawer}
+        >
+          <SendConfirmComponent
+            onComplete={async (txSig) => {
+              if (
+                to?.uuid &&
+                to?.uuid !== uuid &&
+                friendship?.id &&
+                to?.uuid !== uuid &&
+                blockchain === Blockchain.SOLANA
+              ) {
+                // const client_generated_uuid = uuidv4();
+                // createEmptyFriendship(uuid, to?.uuid, {
+                //   last_message_sender: uuid,
+                //   last_message_timestamp: new Date().toISOString(),
+                //   last_message: message,
+                //   last_message_client_uuid: client_generated_uuid,
+                // });
+                //
+                // SignalingManager.getInstance().send({
+                //   type: "CHAT_MESSAGES",
+                //   payload: {
+                //     room: friendship?.id?.toString(),
+                //     type: "individual",
+                //     messages: [
+                //       {
+                //         client_generated_uuid: client_generated_uuid,
+                //         message,
+                //         message_kind: "transaction",
+                //         message_metadata: {
+                //           final_tx_signature: txSig,
+                //         },
+                //       },
+                //     ],
+                //   },
+                // });
+                // await navOuter.toRoot();
+                // await background.request({
+                //   method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+                //   params: [TAB_MESSAGES],
+                // });
+                // push({
+                //   title: `@${to?.username}`,
+                //   componentId: NAV_COMPONENT_MESSAGE_CHAT,
+                //   componentProps: {
+                //     userId: to?.uuid,
+                //     id: to?.uuid,
+                //     username: to?.username,
+                //   },
+                // });
+              }
+            }}
+            token={token}
+            destinationAddress={destinationAddress}
+            destinationUser={
+              to?.uuid && to?.username && to?.image
+                ? {
+                    username: to.username,
+                    image: to.image,
+                  }
+                : undefined
+            }
+            amount={amount!}
+          />
+        </ApproveTransactionDrawer>
+      </>
+    </form>
+  );
+}
+
+function SendV1({
+  blockchain,
+  address,
+  isErrorAddress,
+  token,
+  maxAmount,
+  setAmount,
+  amount,
+  isAmountError,
+  sendButton,
+  setAddress,
+}: any) {
+  const classes = useStyles();
+  return (
+    <>
       <div className={classes.topHalf}>
         <div style={{ marginBottom: "40px" }}>
           <TextFieldLabel
@@ -257,12 +452,18 @@ export function Send({
             <TextInput
               placeholder={`${toTitleCase(blockchain)} address`}
               value={address}
-              setValue={(e) => setAddress(e.target.value.trim())}
+              setValue={(e) => {
+                setAddress(e.target.value.trim());
+              }}
               error={isErrorAddress}
               inputProps={{
                 name: "to",
                 spellCheck: "false",
+                // readOnly: to ? true : false,
               }}
+              // startAdornment={
+              //   to?.image ? <UserIcon size={32} image={to?.image} /> : <></>
+              // }
               margin="none"
             />
           </div>
@@ -296,20 +497,168 @@ export function Send({
           </div>
         </div>
       </div>
-      <div className={classes.buttonContainer}>
-        {sendButton}
-        <ApproveTransactionDrawer
-          openDrawer={openDrawer}
-          setOpenDrawer={setOpenDrawer}
-        >
-          <SendConfirmComponent
-            token={token}
-            destinationAddress={destinationAddress}
-            amount={amount!}
+      <div className={classes.buttonContainer}>{sendButton}</div>
+    </>
+  );
+}
+
+function SendV2({
+  token,
+  maxAmount,
+  setAmount,
+  sendButton,
+  to,
+  message,
+  setMessage,
+  blockchain,
+}: any) {
+  const classes = useStyles();
+  const theme = useCustomTheme();
+  const { uuid } = useUser();
+  const isDarkMode = useDarkMode();
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [_amount, _setAmount] = useState<string>("");
+
+  return (
+    <>
+      <div
+        style={{
+          paddingTop: "40px",
+          flex: 1,
+        }}
+      >
+        <div>
+          <div className={classes.horizontalCenter} style={{ marginBottom: 6 }}>
+            <div className={classes.topImageOuter}>
+              <LocalImage
+                className={classes.topImage}
+                src={
+                  to?.image ||
+                  `https://avatars.backpack.workers.dev/${to?.address}`
+                }
+                style={{ width: 80, height: 80 }}
+              />
+            </div>
+          </div>
+          <div className={classes.horizontalCenter}>
+            {to.username && (
+              <div
+                style={{
+                  color: theme.custom.colors.fontColor,
+                  fontSize: 16,
+                  fontWeight: 500,
+                }}
+              >
+                @{`${to.username}`}
+              </div>
+            )}
+          </div>
+          <div className={classes.horizontalCenter} style={{ marginTop: 4 }}>
+            <WithCopyTooltip tooltipOpen={tooltipOpen}>
+              <div>
+                <TokenBadge
+                  fontSize={13}
+                  overwriteBackground={theme.custom.colors.bg2}
+                  onClick={async () => {
+                    setTooltipOpen(true);
+                    setTimeout(() => setTooltipOpen(false), 1000);
+                    await navigator.clipboard.writeText(to.address);
+                  }}
+                  label={walletAddressDisplay(to?.address)}
+                />
+              </div>
+            </WithCopyTooltip>
+          </div>
+        </div>
+        <div>
+          <input
+            placeholder="0"
+            autoFocus
+            type="text"
+            style={{
+              marginTop: "40px",
+              outline: "none",
+              background: "transparent",
+              border: "none",
+              fontWeight: 600,
+              fontSize: 48,
+              height: 50,
+              color: theme.custom.colors.fontColor,
+              textAlign: "center",
+              width: "100%",
+              // @ts-ignore
+              fontFamily: theme.typography.fontFamily,
+            }}
+            value={_amount}
+            onChange={(e: any) => {
+              try {
+                const num =
+                  e.target.value !== "" ? parseFloat(e.target.value) : 0.0;
+                if (num >= 0) {
+                  _setAmount(e.target.value);
+                  setAmount(
+                    ethers.utils.parseUnits(num.toString(), token.decimals)
+                  );
+                }
+              } catch (err) {
+                // Do nothing.
+              }
+            }}
           />
-        </ApproveTransactionDrawer>
+          <div
+            style={{ display: "flex", justifyContent: "center", marginTop: 20 }}
+          >
+            <img
+              src={token.logo}
+              style={{
+                height: 35,
+                borderRadius: "50%",
+                marginRight: 5,
+              }}
+            />
+            <div
+              style={{
+                color: theme.custom.colors.smallTextColor,
+                fontSize: 24,
+              }}
+            >
+              {token.ticker}
+            </div>
+          </div>
+          <div
+            style={{ display: "flex", justifyContent: "center", marginTop: 20 }}
+          >
+            <div
+              style={{
+                display: "inline-flex",
+                color: theme.custom.colors.fontColor,
+                cursor: "pointer",
+                fontSize: 14,
+                border: `2px solid ${
+                  isDarkMode
+                    ? theme.custom.colors.bg2
+                    : theme.custom.colors.border1
+                }`,
+                padding: "4px 12px",
+                borderRadius: 8,
+                marginTop: 5,
+                background: theme.custom.colors.bg3,
+              }}
+              onClick={() => {
+                const a = toDisplayBalance(maxAmount, token.decimals);
+                _setAmount(a);
+                setAmount(maxAmount);
+              }}
+            >
+              Max: {toDisplayBalance(maxAmount, token.decimals)} {token.ticker}
+            </div>
+          </div>
+        </div>
       </div>
-    </form>
+      <div>
+        <div className={classes.buttonContainer}>{sendButton}</div>
+      </div>
+    </>
   );
 }
 
@@ -381,7 +730,6 @@ export function Sending({
               marginLeft: "auto",
               marginRight: "auto",
             }}
-            thickness={6}
           />
         )}
       </div>
@@ -491,85 +839,6 @@ export function Error({
   );
 }
 
-export function BottomCard({
-  onButtonClick,
-  onCancelButtonClick,
-  buttonLabel,
-  buttonStyle,
-  buttonLabelStyle,
-  cancelButtonLabel,
-  cancelButtonStyle,
-  cancelButtonLabelStyle,
-  children,
-  topHalfStyle,
-  wrapperStyle,
-}: any) {
-  const theme = useCustomTheme();
-  return (
-    <div
-      style={{
-        background: "transparent",
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        ...wrapperStyle,
-      }}
-    >
-      <div
-        style={{
-          height: "100%",
-          overflow: "hidden",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          background: theme.custom.colors.background,
-          borderTopLeftRadius: "12px",
-          borderTopRightRadius: "12px",
-        }}
-      >
-        <div
-          style={{
-            flex: 1,
-            background: theme.custom.colors.drawerGradient,
-            ...topHalfStyle,
-          }}
-        >
-          {children}
-        </div>
-        <div
-          style={{
-            marginBottom: "24px",
-            marginLeft: "12px",
-            marginRight: "12px",
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          {cancelButtonLabel && (
-            <SecondaryButton
-              style={{
-                marginRight: "8px",
-                ...cancelButtonStyle,
-              }}
-              buttonLabelStyle={cancelButtonLabelStyle}
-              onClick={onCancelButtonClick}
-              label={cancelButtonLabel}
-            />
-          )}
-          {buttonLabel && (
-            <PrimaryButton
-              style={buttonStyle}
-              buttonLabelStyle={buttonLabelStyle}
-              onClick={onButtonClick}
-              label={buttonLabel}
-            />
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // TODO(peter) share between extension/mobile
 export function useIsValidAddress(
   blockchain: Blockchain,
@@ -616,6 +885,24 @@ export function useIsValidAddress(
             );
 
             pubkey = owner.registry.owner;
+          } catch (e) {
+            setAddressError(true);
+            return;
+          }
+        }
+
+        // ANS by ONSOL
+        if (!pubkey && address.split(".").length === 2) {
+          try {
+            // address would be e.g. miester.poor
+            const parser = new TldParser(solanaConnection);
+            const owner = await parser.getOwnerFromDomainTld(address);
+            if (!owner) {
+              setAddressError(true);
+              // Not a valid domain don't bother continuing since it has a dot in it.
+              return;
+            }
+            pubkey = owner;
           } catch (e) {
             setAddressError(true);
             return;

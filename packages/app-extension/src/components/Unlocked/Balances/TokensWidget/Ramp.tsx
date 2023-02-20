@@ -1,18 +1,20 @@
 import { useState } from "react";
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
+import { ProxyImage } from "@coral-xyz/react-common";
 import {
+  isAggregateWallets,
   SOL_LOGO_URI,
+  useActiveWallet,
   useActiveWallets,
-  useBlockchainLogo,
+  useAllWalletsDisplayed,
+  useWalletName,
 } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { Button as MuiButton, ListItemIcon, Typography } from "@mui/material";
+import { ListItemIcon, Typography } from "@mui/material";
+import { useRecoilValue } from "recoil";
 
-import { TextField, walletAddressDisplay } from "../../../common";
-import { useNavStack } from "../../../common/Layout/NavStack";
-import { ProxyImage } from "../../../common/ProxyImage";
-import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
+import { TextField } from "../../../common";
+import { useNavigation } from "../../../common/Layout/NavStack";
 import {
   BalancesTable,
   BalancesTableContent,
@@ -112,15 +114,20 @@ export function Ramp({
   blockchain,
   publicKey,
 }: {
-  blockchain: Blockchain;
-  publicKey: string;
+  blockchain?: Blockchain;
+  publicKey?: string;
 }) {
-  const activeWallets = useActiveWallets();
+  const wallets = useAllWalletsDisplayed();
   const [searchFilter, setSearchFilter] = useState("");
-  const { push } = useNavStack();
+  const { push } = useNavigation();
   const classes = useStyles();
 
-  if (blockchain) {
+  // If prop one is undefined, both must be undefined.
+  if ((blockchain && !publicKey) || (!blockchain && publicKey)) {
+    throw new Error("invariant violation");
+  }
+
+  if (blockchain && publicKey) {
     return (
       <>
         <TextField
@@ -165,7 +172,7 @@ export function Ramp({
           flex: 1,
         }}
       >
-        {activeWallets.map(({ blockchain, publicKey }) => (
+        {wallets.map(({ blockchain, publicKey }) => (
           <RampCard
             searchFilter={searchFilter}
             key={blockchain}
@@ -192,40 +199,11 @@ export function RampCard({
   onStartRamp: any;
   searchFilter: string;
 }) {
-  const [tooltipOpen, setTooltipOpen] = useState(false);
-  const blockchainLogo = useBlockchainLogo(blockchain);
-
-  const classes = useStyles();
-  const onCopy = () => {
-    setTooltipOpen(true);
-    setTimeout(() => setTooltipOpen(false), 1000);
-    navigator.clipboard.writeText(publicKey);
-  };
-
+  // This component only works for the main gas tokens at the moment.
+  const name = useWalletName(publicKey);
   return (
     <BalancesTable>
-      <BalancesTableHead
-        props={{
-          title: toTitleCase(blockchain),
-          iconUrl: blockchainLogo,
-          disableToggle: false,
-          subtitle: (
-            <WithCopyTooltip tooltipOpen={tooltipOpen}>
-              <MuiButton
-                disableRipple
-                className={classes.addressButton}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onCopy();
-                }}
-              >
-                {walletAddressDisplay(publicKey)}
-                <ContentCopyIcon className={classes.copyIcon} />
-              </MuiButton>
-            </WithCopyTooltip>
-          ),
-        }}
-      />
+      <BalancesTableHead wallet={{ name, publicKey, blockchain }} />
       <BalancesTableContent>
         {RAMP_SUPPORTED_TOKENS[blockchain]
           .filter(

@@ -1,5 +1,5 @@
+import React, { useState } from "react";
 import { Scrollbars } from "react-custom-scrollbars";
-import React from "react";
 import { useCustomTheme } from "@coral-xyz/themes";
 
 export function ScrollBarImpl(props: any) {
@@ -7,7 +7,13 @@ export function ScrollBarImpl(props: any) {
   return (
     <>
       <Scrollbars
-        style={{ width: "100%", height: "100%", position: "absolute" }}
+        onScrollStop={props.onScrollStop}
+        ref={(e) => props.setRef?.(e)}
+        style={{
+          width: "100%",
+          height: props.height || "100%",
+          position: "absolute",
+        }}
         renderTrackHorizontal={(props: any) => (
           <div {...props} className="track-horizontal" />
         )}

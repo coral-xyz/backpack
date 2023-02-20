@@ -1,22 +1,53 @@
-import type { SubscriptionType } from "./toServer";
-export const CHAT_MESSAGES = "CHAT_MESSAGEES";
+import type { ToPubsub } from "./ToPubsub";
+import type {
+  MessageKind,
+  MessageMetadata,
+  SubscriptionType,
+} from "./toServer";
+export const CHAT_MESSAGES = "CHAT_MESSAGES";
+export const UPDATE_ACTIVE_BARTER = "UPDATE_ACTIVE_BARTER";
+export const EXECUTE_BARTER = "EXECUTE_BARTER";
 export const SUBSCRIBE = "SUBSCRIBE";
 export const UNSUBSCRIBE = "UNSUBSCRIBE";
 export const WS_READY = "WS_READY";
 
 export interface Message {
-  id: number;
-  uuid?: string;
-  message?: string;
-  // received?: boolean;
-  client_generated_uuid?: string;
-  message_kind: "gif" | "text";
+  uuid: string;
+  message: string;
+  client_generated_uuid: string;
+  message_kind: MessageKind;
   created_at: string;
+  parent_client_generated_uuid?: string;
+  room: string;
+  type: SubscriptionType;
+  message_metadata?: MessageMetadata;
 }
 
 export interface MessageWithMetadata extends Message {
+  parent_message_text?: string;
+  parent_message_author_uuid?: string;
+}
+
+export interface EnrichedMessage extends MessageWithMetadata {
+  direction: "send" | "recv";
+  received?: boolean;
+  from_http_server: 0 | 1;
+}
+
+export interface EnrichedMessageWithMetadata extends EnrichedMessage {
   username: string;
   image: string;
+  color?: string;
+  colorIndex?: number;
+  parent_message_author_username?: string;
+}
+
+export interface UserMetadata {
+  uuid: string;
+  image: string;
+  username: string;
+  color?: string;
+  colorIndex: number;
 }
 
 export type ReceiveChat = {
@@ -27,14 +58,7 @@ export type ReceiveChat = {
 
 export type FromServer =
   | {
-      type: typeof CHAT_MESSAGES;
-      payload: {
-        messages: Message[];
-        type: SubscriptionType;
-        room: string;
-      };
-    }
-  | {
       type: typeof WS_READY;
       payload: {};
-    };
+    }
+  | ToPubsub;

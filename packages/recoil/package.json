@@ -9,26 +9,30 @@
   "react-native": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b",
     "dev": "tsc --watch",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
     "lint:fix": "yarn run lint --fix"
   },
   "dependencies": {
     "@coral-xyz/common": "*",
+    "@coral-xyz/db": "*",
+    "@metaplex-foundation/mpl-token-metadata": "^2.5.2",
     "@project-serum/anchor": "^0.25.0",
+    "@solana/spl-token": "^0.3.6",
     "@solana/spl-token-registry": "^0.2.3225",
     "bn.js": "^5.2.1",
     "bs58": "^5.0.0",
+    "cheerio": "^1.0.0-rc.12",
     "ethereum-multicall": "^2.14.1",
     "ethers": "^5.7.0",
-    "react": "^17.0.0",
+    "react": "18.2.0",
     "react-router-dom": "^6.3.0",
     "recoil": "^0.7.5"
   },
   "devDependencies": {
-    "eslint-config-custom": "*",
     "@coral-xyz/xnft-cli": "*",
+    "eslint-config-custom": "*",
     "typescript": "~4.9.3"
   },
   "peerDependencies": {

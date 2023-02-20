@@ -6,40 +6,40 @@ import {
   TAB_BALANCES,
   TAB_MESSAGES,
   TAB_NFTS,
+  TAB_NOTIFICATIONS,
+  TAB_RECENT_ACTIVITY,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
+import { useUnreadGlobal } from "@coral-xyz/db";
 import {
+  BalancesIcon,
+  GridIcon,
+  ImageIcon,
+  MessageBubbleIcon,
+  MessageBubbleUnreadIcon,
+ useBreakpoints } from "@coral-xyz/react-common";
+import {
+  useAuthenticatedUser,
   useBackgroundClient,
   useFeatureGates,
   useTab,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { Tab, Tabs } from "@mui/material";
 
-import {
-  BalancesIcon,
-  GridIcon,
-  ImageIcon,
-  MessageIcon,
-} from "../../common/Icon";
+import { AvatarPopoverButton } from "../../Unlocked/Settings/AvatarPopover";
+import { NotificationIconWithBadge } from "../NotificationIconWithBadge";
 
 const TAB_HEIGHT = 64;
 
 const useStyles = styles((theme) => ({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-  },
-  tab: {
-    color: theme.custom.colors.tabIconBackground,
+  tabXs: {
+    opacity: "1 !important",
     height: `${TAB_HEIGHT}px`,
     "&:hover": {
+      background: "transparent !important",
       "& svg": {
         "& path": {
           fill: `${theme.custom.colors.brandColor} !important`,
@@ -47,7 +47,36 @@ const useStyles = styles((theme) => ({
       },
     },
   },
+  tab: {
+    opacity: "1 !important",
+    minWidth: "74px",
+    width: "74px",
+    marginTop: "16px",
+    "&:hover": {
+      background: "transparent !important",
+      "& svg": {
+        "& path": {
+          fill: `${theme.custom.colors.brandColor} !important`,
+        },
+      },
+    },
+    "& .MuiTabs-flexContainer": {
+      height: "100%",
+      width: "100%",
+    },
+  },
   tabRoot: {
+    height: "100%",
+    minWidth: "74px",
+    width: "74px",
+    backgroundColor: theme.custom.colors.nav,
+    borderRight: `${theme.custom.colors.borderFull}`,
+    "& .MuiTabs-flexContainer": {
+      height: "100%",
+      width: "100%",
+    },
+  },
+  tabRootXs: {
     height: `${TAB_HEIGHT}px`,
     minHeight: `${TAB_HEIGHT}px`,
     backgroundColor: theme.custom.colors.nav,
@@ -68,18 +97,30 @@ const useStyles = styles((theme) => ({
 }));
 
 export function WithTabs(props: any) {
-  const classes = useStyles();
   const location = useLocation();
+  const { isXs } = useBreakpoints();
 
   return (
-    <div className={classes.container}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: isXs ? "column" : "row-reverse",
+        position: "absolute",
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+      }}
+    >
       <div style={{ position: "relative", width: "100%", height: "100%" }}>
         {props.children}
       </div>
-      {location.pathname !== "/nfts/experience" &&
+      {!location.pathname.startsWith("/xnft/") &&
+        location.pathname !== "/nfts/experience" &&
         location.pathname !== "/nfts/chat" &&
-        location.pathname !== "/messages/chat" &&
-        location.pathname !== "/messages/profile" && <TabBar />}
+        (!isXs || location.pathname !== "/messages/chat") &&
+        (!isXs || location.pathname !== "/messages/groupchat") &&
+        (!isXs || location.pathname !== "/messages/profile") && <TabBar />}
     </div>
   );
 }
@@ -87,18 +128,23 @@ export function WithTabs(props: any) {
 function TabBar() {
   const classes = useStyles();
   const theme = useCustomTheme();
+  const authenticatedUser = useAuthenticatedUser();
   const tab = useTab();
   const background = useBackgroundClient();
   const featureGates = useFeatureGates();
+  const messagesUnread = useUnreadGlobal(
+    authenticatedUser ? authenticatedUser.uuid : null
+  );
+  const { isXs } = useBreakpoints();
 
-  const onTabClick = (tabValue: string) => {
+  const onTabClick = async (tabValue: string) => {
     if (tabValue === tab) {
-      background.request({
+      await background.request({
         method: UI_RPC_METHOD_NAVIGATION_TO_ROOT,
         params: [],
       });
     } else {
-      background.request({
+      await background.request({
         method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
         params: [tabValue],
       });
@@ -107,10 +153,11 @@ function TabBar() {
 
   return tab === "" ? null : (
     <Tabs
+      orientation={isXs ? "horizontal" : "vertical"}
       value={tab}
       variant="fullWidth"
       classes={{
-        root: classes.tabRoot,
+        root: isXs ? classes.tabRootXs : classes.tabRoot,
         indicator: classes.tabIndicator,
       }}
       TabIndicatorProps={{
@@ -119,92 +166,189 @@ function TabBar() {
         },
       }}
     >
-      <Tab
-        onClick={() => onTabClick(TAB_BALANCES)}
-        value={TAB_BALANCES}
-        disableRipple
-        className={`${classes.tab} ${
-          tab === TAB_BALANCES ? classes.activeTab : ""
-        }`}
-        icon={
-          <BalancesIcon
-            fill={
-              tab === TAB_BALANCES
-                ? theme.custom.colors.brandColor
-                : theme.custom.colors.icon
+      <div
+        style={{
+          display: "flex",
+          flexDirection: isXs ? "row" : "column",
+          justifyContent: "space-between",
+          height: "100%",
+          width: "100%",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: isXs ? "row" : "column",
+            width: isXs ? "100%" : undefined,
+            justifyContent: isXs ? "space-between" : undefined,
+            marginTop: !isXs ? "12px" : undefined,
+          }}
+        >
+          <Tab
+            onClick={() => onTabClick(TAB_BALANCES)}
+            value={TAB_BALANCES}
+            disableRipple
+            className={`${isXs ? classes.tabXs : classes.tab} ${
+              tab === TAB_BALANCES ? classes.activeTab : ""
+            }`}
+            icon={
+              <BalancesIcon
+                fill={
+                  tab === TAB_BALANCES
+                    ? theme.custom.colors.brandColor
+                    : theme.custom.colors.icon
+                }
+                style={{
+                  width: "20px",
+                  height: "20px",
+                }}
+              />
             }
-            style={{
-              width: "20px",
-              height: "20px",
-            }}
           />
-        }
-      />
-      {BACKPACK_FEATURE_XNFT && (
-        <Tab
-          onClick={() => onTabClick(TAB_APPS)}
-          value={TAB_APPS}
-          disableRipple
-          className={classes.tab}
-          icon={
-            <GridIcon
-              fill={
-                tab === TAB_APPS
-                  ? theme.custom.colors.brandColor
-                  : theme.custom.colors.icon
+          {BACKPACK_FEATURE_XNFT && (
+            <Tab
+              onClick={() => onTabClick(TAB_APPS)}
+              value={TAB_APPS}
+              disableRipple
+              className={isXs ? classes.tabXs : classes.tab}
+              icon={
+                <GridIcon
+                  fill={
+                    tab === TAB_APPS
+                      ? theme.custom.colors.brandColor
+                      : theme.custom.colors.icon
+                  }
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                  }}
+                />
               }
-              style={{
-                width: "20px",
-                height: "20px",
+            />
+          )}
+          <Tab
+            onClick={() => onTabClick(TAB_NFTS)}
+            value={TAB_NFTS}
+            disableRipple
+            className={`${isXs ? classes.tabXs : classes.tab} ${
+              tab === TAB_NFTS ? classes.activeTab : ""
+            }`}
+            icon={
+              <ImageIcon
+                fill={
+                  tab === TAB_NFTS
+                    ? theme.custom.colors.brandColor
+                    : theme.custom.colors.icon
+                }
+                style={{
+                  width: "20px",
+                  height: "20px",
+                }}
+              />
+            }
+          />
+          {featureGates[MESSAGES_ENABLED] && (
+            <Tab
+              onClick={() => onTabClick(TAB_MESSAGES)}
+              value={TAB_MESSAGES}
+              disableRipple
+              className={`${isXs ? classes.tabXs : classes.tab} ${
+                tab === TAB_MESSAGES ? classes.activeTab : ""
+              }`}
+              icon={
+                !messagesUnread ? (
+                  <MessageBubbleIcon
+                    fill={
+                      tab === TAB_MESSAGES
+                        ? theme.custom.colors.brandColor
+                        : theme.custom.colors.icon
+                    }
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                    }}
+                  />
+                ) : (
+                  <MessageBubbleUnreadIcon
+                    fill={
+                      tab === TAB_MESSAGES
+                        ? theme.custom.colors.brandColor
+                        : theme.custom.colors.icon
+                    }
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                    }}
+                  />
+                )
+              }
+            />
+          )}
+          {!isXs && (
+            <>
+              <Tab
+                onClick={() => onTabClick(TAB_NOTIFICATIONS)}
+                value={TAB_NOTIFICATIONS}
+                disableRipple
+                className={`${isXs ? classes.tabXs : classes.tab} ${
+                  tab === TAB_MESSAGES ? classes.activeTab : ""
+                }`}
+                icon={
+                  <NotificationIconWithBadge
+                    style={{
+                      width: "28px",
+                      height: "28px",
+                      color:
+                        tab === TAB_NOTIFICATIONS
+                          ? theme.custom.colors.brandColor
+                          : theme.custom.colors.icon,
+                    }}
+                  />
+                }
+              />
+              <Tab
+                onClick={() => onTabClick(TAB_RECENT_ACTIVITY)}
+                value={TAB_RECENT_ACTIVITY}
+                disableRipple
+                className={`${isXs ? classes.tabXs : classes.tab} ${
+                  tab === TAB_MESSAGES ? classes.activeTab : ""
+                }`}
+                icon={
+                  <FormatListBulletedIcon
+                    style={{
+                      width: "28px",
+                      height: "28px",
+                      color:
+                        tab === TAB_RECENT_ACTIVITY
+                          ? theme.custom.colors.brandColor
+                          : theme.custom.colors.icon,
+                    }}
+                  />
+                }
+              />
+            </>
+          )}
+        </div>
+        {!isXs && (
+          <div
+            style={{
+              marginBottom: "16px",
+            }}
+          >
+            <AvatarPopoverButton
+              imgStyle={{
+                width: "38px",
+                height: "38px",
+                borderRadius: "20px",
+              }}
+              buttonStyle={{
+                marginLeft: "auto",
+                marginRight: "auto",
               }}
             />
-          }
-        />
-      )}
-      <Tab
-        onClick={() => onTabClick(TAB_NFTS)}
-        value={TAB_NFTS}
-        disableRipple
-        className={`${classes.tab} ${
-          tab === TAB_NFTS ? classes.activeTab : ""
-        }`}
-        icon={
-          <ImageIcon
-            fill={
-              tab === TAB_NFTS
-                ? theme.custom.colors.brandColor
-                : theme.custom.colors.icon
-            }
-            style={{
-              width: "20px",
-              height: "20px",
-            }}
-          />
-        }
-      />
-      {featureGates[MESSAGES_ENABLED] && (
-        <Tab
-          onClick={() => onTabClick(TAB_MESSAGES)}
-          value={TAB_MESSAGES}
-          disableRipple
-          className={`${classes.tab} ${
-            tab === TAB_MESSAGES ? classes.activeTab : ""
-          }`}
-          icon={
-            <MessageIcon
-              fill={
-                tab === TAB_MESSAGES
-                  ? theme.custom.colors.brandColor
-                  : theme.custom.colors.icon
-              }
-              style={{
-                width: "20px",
-                height: "20px",
-              }}
-            />
-          }
-        />
-      )}
+          </div>
+        )}
+      </div>
     </Tabs>
   );
 }

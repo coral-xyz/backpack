@@ -1,72 +1,89 @@
 import { useEffect, useState } from "react";
-import type { Blockchain, DerivationPath } from "@coral-xyz/common";
-import {
-  BACKPACK_FEATURE_JWT,
-  BACKPACK_FEATURE_USERNAMES,
-  getAuthMessage,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+import type {
+  Blockchain,
+  ServerPublicKey,
+  SignedWalletDescriptor,
 } from "@coral-xyz/common";
-import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
-import type Transport from "@ledgerhq/hw-transport";
+import {
+  BACKEND_API_URL,
+  getAuthMessage,
+  UI_RPC_METHOD_KEYRING_KEY_DELETE,
+  UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+  UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE,
+  UI_RPC_METHOD_USER_JWT_UPDATE,
+} from "@coral-xyz/common";
+import {
+  useBackgroundClient,
+  useDehydratedWallets,
+  useKeyringHasMnemonic,
+  useUser,
+} from "@coral-xyz/recoil";
 import { ethers } from "ethers";
 
 import { useAuthentication } from "../../hooks/useAuthentication";
-import { useSteps } from "../../hooks/useSteps";
-import { Loading } from "../common";
 import { WithDrawer } from "../common/Layout/Drawer";
-import { NavBackButton, WithNav } from "../common/Layout/Nav";
-import { HardwareSearch } from "../Onboarding/pages/HardwareSearch";
-import { HardwareSign } from "../Onboarding/pages/HardwareSign";
-import { ConnectHardwareSearching } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
-import { ConnectHardwareWelcome } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
-
-const { base58 } = ethers.utils;
+import { HardwareOnboard } from "../Onboarding/pages/HardwareOnboard";
 
 export function WithAuth({ children }: { children: React.ReactElement }) {
-  const { authenticate, checkAuthentication, getAuthSigner } =
+  const { authenticate, checkAuthentication, getAuthSigner, getSigners } =
     useAuthentication();
   const background = useBackgroundClient();
   const user = useUser();
-  const [loading, setLoading] = useState(true);
-  const [authSigner, setAuthSigner] = useState<{
+  const dehydratedWallets = useDehydratedWallets();
+
+  const [authData, setAuthData] = useState<{
     publicKey: string;
     blockchain: Blockchain;
     hardware: boolean;
+    message: string;
+    userId: string;
   } | null>(null);
-  const [authData, setAuthData] = useState<{
+  const [authSignature, setAuthSignature] = useState<string | null>(null);
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [serverPublicKeys, setServerPublicKeys] = useState<Array<{
     blockchain: Blockchain;
     publicKey: string;
-    message: string;
-    signature: string;
-  } | null>(null);
-  const [openDrawer, setOpenDrawer] = useState(false);
-
-  const jwtEnabled = !!(
-    BACKPACK_FEATURE_USERNAMES &&
-    BACKPACK_FEATURE_JWT &&
-    user
-  );
+  }> | null>(null);
+  const [clientPublicKeys, setClientPublicKeys] = useState<
+    Array<{ blockchain: Blockchain; publicKey: string; hardware: boolean }>
+  >([]);
+  const hasMnemonic = useKeyringHasMnemonic();
+  const [syncAttempted, setSyncAttempted] = useState(false);
 
   /**
    * Check authentication status and take required actions to authenticate if
    * not authenticated.
    */
   useEffect(() => {
+    setAuthSignature(null);
+    setServerPublicKeys(null);
     (async () => {
-      if (!jwtEnabled) {
-        // Already authenticated or not using JWTs
-        setLoading(false);
+      setClientPublicKeys(await getSigners());
+      const result = user.jwt ? await checkAuthentication(user.jwt) : null;
+      // These set state calls should be batched
+      if (result) {
+        const { publicKeys } = result;
+        setServerPublicKeys(publicKeys);
       } else {
-        const result = await checkAuthentication();
-        if (result) {
-          if (result.isAuthenticated) {
-            setLoading(false);
-          } else {
-            setAuthSigner(
-              await getAuthSigner(result.publicKeys.map((p) => p.publicKey))
-            );
-          }
+        // Not authenticated so couldn't get public keys, get the primary
+        // public keys from a public endpoint and use one of those to auth
+        const response = await fetch(
+          `${BACKEND_API_URL}/users/${user.username}`
+        );
+        const serverPublicKeys = (await response.json()).publicKeys;
+        setServerPublicKeys(serverPublicKeys);
+        // Find a local signer that exists on the client and server and
+        // set the auth data
+        const signer = await getAuthSigner(
+          serverPublicKeys.map((p: ServerPublicKey) => p.publicKey)
+        );
+        if (authData) {
+          setAuthData({
+            ...signer,
+            message: getAuthMessage(user.uuid),
+            userId: user.uuid,
+          });
         }
       }
     })();
@@ -74,28 +91,24 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   }, [user]);
 
   /**
-   * When an auth signer is found, take the required action to get a signature.
+   * When data for authentication is set, take the required action to get a signature.
    */
   useEffect(() => {
     (async () => {
-      if (authSigner) {
-        const authMessage = getAuthMessage(user.uuid);
-        if (!authSigner.hardware) {
+      if (authData) {
+        if (!authData.hardware) {
           // Auth signer is not a hardware wallet, sign transparent
           const signature = await background.request({
             method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
             params: [
-              authSigner.blockchain,
-              base58.encode(Buffer.from(authMessage, "utf-8")),
-              authSigner.publicKey,
+              authData.blockchain,
+              authData.publicKey,
+              ethers.utils.base58.encode(
+                Buffer.from(authData.message, "utf-8")
+              ),
             ],
           });
-          setAuthData({
-            blockchain: authSigner.blockchain,
-            publicKey: authSigner.publicKey,
-            signature,
-            message: authMessage,
-          });
+          setAuthSignature(signature);
         } else {
           // Auth signer is a hardware wallet, pop up a drawer to guide through
           // flow
@@ -103,27 +116,105 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
         }
       }
     })();
-  }, [authSigner, user]);
+  }, [authData]);
 
   /**
    * When an auth signature is created, authenticate with it.
    */
   useEffect(() => {
     (async () => {
-      if (authData) {
-        await authenticate(authData);
-        setLoading(false);
+      if (authData && authSignature) {
+        const { id, jwt, publicKeys } = await authenticate({
+          ...authData,
+          signature: authSignature,
+        });
+        // Update server public keys so we attempt to sync the non primary
+        // public keys (i.e. those that require authentication to see)
+        setServerPublicKeys(publicKeys);
+        // Store the JWT from the authentication forl ater
+        await background.request({
+          method: UI_RPC_METHOD_USER_JWT_UPDATE,
+          params: [id, jwt],
+        });
+        // Close the hardware sign drawer (if open)
         setOpenDrawer(false);
       }
     })();
-  }, [authData]);
+  }, [authData, authSignature]);
 
-  const authMessage = getAuthMessage(user.uuid);
+  /**
+   * Remove any hardware wallets that are on the client but not the server
+   * because we can't transparently sign. For mnemmonic based wallets
+   * transparently sign and add them to the server.
+   */
+  useEffect(() => {
+    (async () => {
+      if (!serverPublicKeys) return;
+      // Public key/signature pairs that are required to sync the state of the
+      // server public key data with the client data.
+      const danglingPublicKeys = clientPublicKeys.filter((c) => {
+        // Filter to client public keys that don't exist on the server
+        const existsServer = serverPublicKeys.find(
+          (s) => s.blockchain === c.blockchain && s.publicKey === c.publicKey
+        );
+        return !existsServer;
+      });
+      for (const danglingPublicKey of danglingPublicKeys) {
+        if (danglingPublicKey.hardware) {
+          // Remove hardware public keys if they are not on the server
+          // They can be added again through settings to capture the
+          // signature
+          try {
+            await background.request({
+              method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
+              params: [
+                danglingPublicKey.blockchain,
+                danglingPublicKey.publicKey,
+              ],
+            });
+          } catch {
+            // If the delete fails for some reason, don't error out because
+            // the wallet will not be accessible
+          }
+        } else {
+          // Sync all transparently signable public keys by adding them
+          // to the server
+          await background.request({
+            method: UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE,
+            params: [danglingPublicKey.blockchain, danglingPublicKey.publicKey],
+          });
+        }
+      }
+    })();
+  }, [clientPublicKeys, serverPublicKeys]);
+
+  //
+  // Attempt to find any dehydrated wallets on the mnemonic if a mnemonic is in use.
+  //
+  useEffect(() => {
+    (async () => {
+      try {
+        if (hasMnemonic && dehydratedWallets.length > 0 && !syncAttempted) {
+          // We need to only do this once, the dehydrated wallets array will change
+          // if we find wallets and successfully load them and we don't want to
+          // trigger this function for smaller and smaller dehydratedWallets arrays
+          setSyncAttempted(true);
+          // Do the sync
+          await background.request({
+            method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
+            params: [dehydratedWallets],
+          });
+        }
+      } catch (error) {
+        console.log("sync error", error);
+      }
+    })();
+  }, [hasMnemonic, dehydratedWallets, syncAttempted]);
 
   return (
     <>
-      {loading ? <Loading /> : children}
-      {authSigner && (
+      {children}
+      {authData && (
         <WithDrawer
           openDrawer={openDrawer}
           setOpenDrawer={setOpenDrawer}
@@ -133,96 +224,18 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
             borderTopRightRadius: "12px",
           }}
         >
-          <HardwareAuthSigner
-            blockchain={authSigner!.blockchain}
-            publicKey={authSigner!.publicKey}
-            authMessage={authMessage}
-            onSignature={(signature) => {
-              setAuthData({
-                blockchain: authSigner!.blockchain,
-                publicKey: authSigner!.publicKey,
-                message: authMessage,
-                signature,
-              });
+          <HardwareOnboard
+            blockchain={authData!.blockchain}
+            action="search"
+            searchPublicKey={authData!.publicKey}
+            signMessage={authData!.message}
+            signText="Sign the message to authenticate with Backpack."
+            onComplete={(signedWalletDescriptor: SignedWalletDescriptor) => {
+              setAuthSignature(signedWalletDescriptor.signature);
             }}
           />
         </WithDrawer>
       )}
     </>
-  );
-}
-
-export function HardwareAuthSigner({
-  blockchain,
-  publicKey,
-  authMessage,
-  onSignature,
-}: {
-  blockchain: Blockchain;
-  publicKey: string;
-  authMessage: string;
-  onSignature: (signature: string) => void;
-}) {
-  const theme = useCustomTheme();
-  const { step, nextStep, prevStep, setStep } = useSteps();
-  const [transport, setTransport] = useState<Transport | null>(null);
-  const [transportError] = useState(false);
-  const [signingAccount, setSigningAccount] = useState<{
-    derivationPath: DerivationPath;
-    accountIndex: number;
-  } | null>();
-
-  const steps = [
-    <ConnectHardwareWelcome onNext={nextStep} />,
-    <ConnectHardwareSearching
-      blockchain={blockchain}
-      onNext={(transport) => {
-        setTransport(transport);
-        nextStep();
-      }}
-      isConnectFailure={!!transportError}
-    />,
-    <HardwareSearch
-      blockchain={blockchain!}
-      transport={transport!}
-      publicKey={publicKey!}
-      onNext={(derivationPath: DerivationPath, accountIndex: number) => {
-        setSigningAccount({ derivationPath, accountIndex });
-        nextStep();
-      }}
-      onRetry={() => setStep(1)}
-    />,
-    ...(signingAccount
-      ? [
-          <HardwareSign
-            blockchain={blockchain!}
-            message={authMessage}
-            publicKey={publicKey}
-            derivationPath={signingAccount.derivationPath}
-            accountIndex={signingAccount.accountIndex!}
-            text="Sign the message to authenticate with Backpack"
-            onNext={onSignature}
-          />,
-        ]
-      : []),
-  ];
-
-  return (
-    <WithNav
-      navButtonLeft={
-        step > 0 && step < steps.length - 1 ? (
-          <NavBackButton onClick={prevStep} />
-        ) : null
-      }
-      navbarStyle={{
-        backgroundColor: theme.custom.colors.nav,
-      }}
-      navContentStyle={{
-        backgroundColor: theme.custom.colors.nav,
-        height: "400px",
-      }}
-    >
-      {steps[step]}
-    </WithNav>
   );
 }

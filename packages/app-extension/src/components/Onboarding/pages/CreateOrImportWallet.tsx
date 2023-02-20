@@ -1,6 +1,7 @@
+import { PrimaryButton } from "@coral-xyz/react-common";
 import { Box } from "@mui/material";
 
-import { PrimaryButton, SubtextParagraph } from "../../common";
+import { SubtextParagraph } from "../../common";
 import { BackpackHeader } from "../../Locked";
 
 export const CreateOrImportWallet = ({
@@ -18,11 +19,7 @@ export const CreateOrImportWallet = ({
       }}
     >
       <Box style={{ flex: 1, textAlign: "center", padding: "0 16px" }}>
-        <BackpackHeader
-          alphaStyle={{
-            marginRight: "42px",
-          }}
-        />
+        <BackpackHeader disableUsername={true} />
       </Box>
       <Box
         style={{
@@ -38,7 +35,7 @@ export const CreateOrImportWallet = ({
           />
         </Box>
         <SubtextParagraph onClick={() => onNext("import")}>
-          I already have an account
+          I already have a wallet
         </SubtextParagraph>
       </Box>
     </div>

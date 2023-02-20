@@ -1,36 +1,20 @@
-import { Suspense, useMemo } from "react";
+import type { ReactNode} from "react";
+import { Suspense } from "react";
 import { EXTENSION_HEIGHT, EXTENSION_WIDTH } from "@coral-xyz/common";
+import { WithThemeInner } from "@coral-xyz/react-common";
 import { useDarkMode } from "@coral-xyz/recoil";
-import { darkTheme, lightTheme } from "@coral-xyz/themes";
-import { CssBaseline, StyledEngineProvider } from "@mui/material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { ThemeProvider as OldThemeProvider } from "@mui/styles";
 
-export const WithTheme: React.FC = ({ children }) => {
+export const WithTheme = ({ children }: { children: ReactNode }) => {
   return (
     <Suspense fallback={<BlankNoTheme />}>
-      <WithThemeInner>{children}</WithThemeInner>
+      <WithThemeMode>{children}</WithThemeMode>
     </Suspense>
   );
 };
 
-const WithThemeInner: React.FC = ({ children }) => {
+const WithThemeMode = ({ children }: { children: ReactNode }) => {
   const isDarkMode = useDarkMode();
-  const [theme, rawTheme] = useMemo(() => {
-    const rawTheme = isDarkMode ? darkTheme : lightTheme;
-    const theme = createTheme(rawTheme as any, { custom: rawTheme.custom });
-    return [theme, rawTheme];
-  }, [isDarkMode]);
-  return (
-    <StyledEngineProvider injectFirst>
-      <OldThemeProvider theme={rawTheme}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          {children}
-        </ThemeProvider>
-      </OldThemeProvider>
-    </StyledEngineProvider>
-  );
+  return <WithThemeInner isDarkMode={isDarkMode}>{children}</WithThemeInner>;
 };
 
 // Used as a suspense fallback when loading the theme from the background.

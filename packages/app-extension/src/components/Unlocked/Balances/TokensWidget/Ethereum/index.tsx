@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
 import { Blockchain, Ethereum, getLogger } from "@coral-xyz/common";
-import { useEthereumCtx, useTransactionData } from "@coral-xyz/recoil";
+import { PrimaryButton, UserIcon } from "@coral-xyz/react-common";
+import {
+  useAvatarUrl,
+  useEthereumCtx,
+  useTransactionData,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type { UnsignedTransaction } from "@ethersproject/transactions";
 import { Typography } from "@mui/material";
 import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 
-import { PrimaryButton, walletAddressDisplay } from "../../../../common";
+import { walletAddressDisplay } from "../../../../common";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
 import { TransactionData } from "../../../../common/TransactionData";
 import { Error, Sending } from "../Send";
@@ -18,6 +23,7 @@ const { base58: bs58 } = ethers.utils;
 export function SendEthereumConfirmationCard({
   token,
   destinationAddress,
+  destinationUser,
   amount,
   onComplete,
 }: {
@@ -27,6 +33,10 @@ export function SendEthereumConfirmationCard({
     decimals: number;
     // For ERC721 sends
     tokenId?: string;
+  };
+  destinationUser?: {
+    username: string;
+    image: string;
   };
   destinationAddress: string;
   amount: BigNumber;
@@ -120,6 +130,7 @@ export function SendEthereumConfirmationCard({
         <ConfirmSendEthereum
           token={token}
           destinationAddress={destinationAddress}
+          destinationUser={destinationUser}
           transaction={transaction}
           amount={amount}
           onConfirm={onConfirm}
@@ -158,6 +169,7 @@ export function ConfirmSendEthereum({
   amount,
   transaction,
   onConfirm,
+  destinationUser,
 }: {
   token: {
     address?: string;
@@ -166,6 +178,7 @@ export function ConfirmSendEthereum({
     decimals: number;
   };
   destinationAddress: string;
+  destinationUser?: { image: string; username: string };
   amount: BigNumber;
   transaction: UnsignedTransaction;
   onConfirm: (transactionToSend: UnsignedTransaction) => void;
@@ -175,19 +188,31 @@ export function ConfirmSendEthereum({
     Blockchain.ETHEREUM,
     bs58.encode(ethers.utils.serializeTransaction(transaction))
   );
+  const avatarUrl = useAvatarUrl();
 
   const { from, loading, transaction: transactionToSend } = transactionData;
 
   const menuItems = {
     From: {
       onClick: () => {},
-      detail: <Typography>{walletAddressDisplay(from)}</Typography>,
+      detail: (
+        <div style={{ display: "flex" }}>
+          {" "}
+          <UserIcon marginRight={5} image={avatarUrl} size={22} />{" "}
+          <Typography>{walletAddressDisplay(from)}</Typography>
+        </div>
+      ),
       button: false,
     },
     To: {
       onClick: () => {},
       detail: (
-        <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
+        <div style={{ display: "flex" }}>
+          {destinationUser && (
+            <UserIcon marginRight={5} image={destinationUser.image} size={22} />
+          )}
+          <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
+        </div>
       ),
       button: false,
     },

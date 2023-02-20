@@ -1,12 +1,10 @@
 import { useEffect } from "react";
-import { Blockchain } from "@coral-xyz/common";
 
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";
-import { PreferencesBlockchains } from "../Blockchains";
 
 export const PreferencesEthereum = () => {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const ethereumMenuItems = {
     "RPC Connection": {
       onClick: () => nav.push("preferences-ethereum-rpc-connection"),
@@ -14,13 +12,8 @@ export const PreferencesEthereum = () => {
   };
 
   useEffect(() => {
-    nav.setTitle("Ethereum");
+    nav.setOptions({ headerTitle: "Ethereum" });
   }, [nav]);
 
-  return (
-    <div>
-      <PreferencesBlockchains blockchain={Blockchain.ETHEREUM} />
-      <SettingsList menuItems={ethereumMenuItems} />
-    </div>
-  );
+  return <SettingsList menuItems={ethereumMenuItems} />;
 };

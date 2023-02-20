@@ -7,11 +7,14 @@
   "scripts": {
     "zeus-ws": "npx graphql-zeus http://localhost:8113/v1/graphql ./src --header=x-hasura-admin-secret:myadminsecretkey --header=x-hasura-role:chat  --subscriptions graphql-ws",
     "zeus": "npx graphql-zeus http://localhost:8113/v1/graphql ./src --header=x-hasura-admin-secret:myadminsecretkey --header=x-hasura-role:chat  --subscriptions",
-    "build": "tsc && tsc-alias"
+    "build": "tsc -b && tsc-alias"
   },
   "license": "MIT",
   "dependencies": {
+    "@coral-xyz/common": "*",
+    "@coral-xyz/db": "*",
     "@coral-xyz/recoil": "*",
+    "@coral-xyz/react-common": "*",
     "@coral-xyz/themes": "*",
     "@giphy/js-fetch-api": "^4.4.0",
     "@giphy/react-components": "^6.2.0",
@@ -20,9 +23,9 @@
     "emoji-picker-react": "^4.4.5",
     "eventemitter3": "^4.0.7",
     "graphql-ws": "^5.11.2",
-    "react": "^17.0.2",
+    "react": "18.2.0",
     "react-custom-scrollbars": "^4.2.1",
-    "tsc": "^2.0.4",
+    "react-rich-mentions": "^0.1.10",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

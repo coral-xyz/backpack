@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { BACKEND_API_URL } from "@coral-xyz/common";
+import { BACKEND_API_URL, sendFriendRequest } from "@coral-xyz/common";
+import { toast } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import InfoIcon from "@mui/icons-material/Info";
 
@@ -15,8 +15,21 @@ export const Banner = () => {
     blocked,
     setRequested,
     setSpam,
+    remoteRequested,
+    remoteUsername,
+    reconnecting,
   } = useChatContext();
   const classes = useStyles();
+
+  if (reconnecting) {
+    return (
+      <TextBanner
+        fixed={true}
+        type={"danger"}
+        title={"Network connection error"}
+      />
+    );
+  }
 
   if (spam) {
     return (
@@ -44,6 +57,14 @@ export const Banner = () => {
     );
   }
 
+  if (areFriends) {
+    return <div></div>;
+  }
+
+  if (requested) {
+    return <TextBanner type={"disabled"} title={"Contact requested"} />;
+  }
+
   return (
     <div>
       {!areFriends && (
@@ -55,17 +76,20 @@ export const Banner = () => {
               className={classes.strongText}
               style={{ cursor: "pointer", marginRight: 25 }}
               onClick={async () => {
-                await fetch(`${BACKEND_API_URL}/friends/request`, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({ to: remoteUserId, sendRequest: true }),
+                await sendFriendRequest({
+                  to: remoteUserId,
+                  sendRequest: true,
                 });
                 setRequested(true);
+                toast.success(
+                  remoteRequested ? `` : "",
+                  remoteRequested
+                    ? `You and ${remoteUsername} are now connected`
+                    : `We'll let ${remoteUsername} know you want to connect`
+                );
               }}
             >
-              Send Friend Request
+              {remoteRequested ? "Accept Contact Request" : "Add to contacts"}
             </div>
           )}
           <div
@@ -80,9 +104,10 @@ export const Banner = () => {
                 body: JSON.stringify({ to: remoteUserId, spam: true }),
               });
               setSpam(true);
+              toast.success("Spam", "Marked user as spam");
             }}
           >
-            Mark as spam
+            Mark as Spam
           </div>
           <br />
         </div>
@@ -96,37 +121,55 @@ function TextBanner({
   buttonText,
   onClick,
   type,
+  fixed = false,
 }: {
   title: String;
   buttonText?: string;
   onClick?: () => void;
-  type: "danger" | "normal";
+  type: "danger" | "normal" | "disabled";
+  fixed?: boolean;
 }) {
   const theme = useCustomTheme();
   const classes = useStyles({ type });
   return (
-    <div>
+    <div
+      style={{
+        marginBottom: "12px",
+        ...(fixed ? { position: "absolute", top: 0, width: "100%" } : {}),
+      }}
+    >
       <div
         className={`${classes.noContactBanner} ${classes.horizontalCenter} ${classes.text}`}
+        style={{
+          color:
+            type === "disabled" ? theme.custom.colors.fontColor3 : "inherit",
+          fontSize: 14,
+        }}
       >
         {" "}
-        <InfoIcon
-          style={{
-            color:
-              type === "danger"
-                ? theme.custom.colors.negative
-                : theme.custom.colors.fontColor,
-            marginRight: 5,
-          }}
-        />{" "}
-        {title}
-        {buttonText && (
-          <div style={{ marginLeft: 10, cursor: "pointer" }} onClick={onClick}>
-            {buttonText}
-          </div>
-        )}
+        {type !== "disabled" && (
+          <InfoIcon
+            style={{
+              color:
+                type === "danger"
+                  ? theme.custom.colors.negative
+                  : theme.custom.colors.fontColor,
+              marginRight: 5,
+            }}
+          />
+        )}{" "}
+        <div style={{ marginTop: type !== "disabled" ? 1 : 0 }}>
+          {title}
+          {buttonText && (
+            <div
+              style={{ marginLeft: 10, cursor: "pointer" }}
+              onClick={onClick}
+            >
+              {buttonText}
+            </div>
+          )}
+        </div>
       </div>
-      <br />
     </div>
   );
 }

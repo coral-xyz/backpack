@@ -1,32 +1,15 @@
 import { useEffect, useState } from "react";
+import { InputListItem, Inputs, PrimaryButton } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { TextField, Typography } from "@mui/material";
 
-import { List, ListItem, PrimaryButton } from "../../../../common";
-import { InputListItem, Inputs } from "../../../../common/Inputs";
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 
 import { changeNetwork } from "./common";
 
-const useStyles = styles((theme) => ({
-  textFieldRoot: {
-    color: theme.custom.colors.secondary,
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        border: "none",
-        color: theme.custom.colors.secondary,
-      },
-    },
-  },
-}));
-
 export function PreferenceEthereumCustomRpcUrl() {
-  const classes = useStyles();
-  const theme = useCustomTheme();
   const { close } = useDrawerContext();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const background = useBackgroundClient();
   const [rpcUrl, setRpcUrl] = useState("");
   const [chainId, setChainId] = useState("");
@@ -35,9 +18,9 @@ export function PreferenceEthereumCustomRpcUrl() {
 
   useEffect(() => {
     const title = nav.title;
-    nav.setTitle("Change RPC Connection");
+    nav.setOptions({ headerTitle: "Change RPC Connection" });
     return () => {
-      nav.setTitle(title);
+      nav.setOptions({ headerTitle: title });
     };
   }, []);
 

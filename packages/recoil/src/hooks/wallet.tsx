@@ -18,6 +18,14 @@ export function useActiveSolanaWallet(): {
   return useRecoilValue(atoms.activeSolanaWallet)!;
 }
 
+export function useActiveWallet(): {
+  publicKey: string;
+  name: string;
+  blockchain: Blockchain;
+} {
+  return useRecoilValue(atoms.activeWallet);
+}
+
 export function useActiveWallets(): Array<{
   publicKey: string;
   name: string;
@@ -45,7 +53,7 @@ export function useWalletName(address: string): string {
       }
     }
   }
-  throw new Error("key not found");
+  return "";
 }
 
 export function useWalletBlockchain(address: string): string {
@@ -60,4 +68,40 @@ export function useWalletBlockchain(address: string): string {
     }
   }
   throw new Error("key not found");
+}
+
+export function useAllWalletsPerBlockchain(blockchain: Blockchain): Array<{
+  name: string;
+  type: string;
+  publicKey: string;
+  blockchain: Blockchain;
+}> {
+  return useRecoilValue(atoms.allWalletsPerBlockchain(blockchain));
+}
+
+export function useAllWallets(): Array<{
+  name: string;
+  type: string;
+  publicKey: string;
+  blockchain: Blockchain;
+  isCold?: boolean;
+}> {
+  return useRecoilValue(atoms.allWallets);
+}
+
+export function useAllWalletsDisplayed(): Array<{
+  name: string;
+  type: string;
+  publicKey: string;
+  blockchain: Blockchain;
+  isCold?: boolean;
+}> {
+  return useRecoilValue(atoms.allWalletsDisplayed);
+}
+
+export function useDehydratedWallets(): Array<{
+  blockchain: Blockchain;
+  publicKey: string;
+}> {
+  return useRecoilValue(atoms.dehydratedWallets);
 }

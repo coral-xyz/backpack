@@ -1,0 +1,21 @@
+table:
+  name: distributors
+  schema: dropzone
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - data
+        - id
+        - mint
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - data
+        - id
+        - mint
+        - created_at
+      filter: {}
+      allow_aggregations: true

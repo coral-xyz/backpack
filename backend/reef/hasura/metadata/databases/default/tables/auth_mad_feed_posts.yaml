@@ -1,0 +1,94 @@
+table:
+  name: mad_feed_posts
+  schema: auth
+object_relationships:
+  - name: parent_post
+    using:
+      foreign_key_constraint_on: parent_post_id
+  - name: user
+    using:
+      foreign_key_constraint_on: author
+  - name: vote_sums
+    using:
+      manual_configuration:
+        column_mapping:
+          post_id: post_id
+        insertion_order: null
+        remote_table:
+          name: mad_feed_post_vote_sums
+          schema: public
+array_relationships:
+  - name: comments
+    using:
+      foreign_key_constraint_on:
+        column: parent_post_id
+        table:
+          name: mad_feed_posts
+          schema: auth
+  - name: media
+    using:
+      foreign_key_constraint_on:
+        column: post_id
+        table:
+          name: mad_feed_media
+          schema: auth
+  - name: votes
+    using:
+      foreign_key_constraint_on:
+        column: post_id
+        table:
+          name: mad_feed_votes
+          schema: auth
+insert_permissions:
+  - role: one_xnft
+    permission:
+      check: {}
+      columns:
+        - author
+        - expanded_url
+        - parent_post_id
+        - post_id
+        - published
+        - text
+        - value
+select_permissions:
+  - role: one_xnft
+    permission:
+      columns:
+        - author
+        - expanded_url
+        - parent_post_id
+        - post_id
+        - published
+        - text
+        - value
+      filter: {}
+      allow_aggregations: true
+  - role: public_avatar
+    permission:
+      columns:
+        - author
+        - expanded_url
+        - parent_post_id
+        - post_id
+        - published
+        - text
+        - value
+      filter: {}
+update_permissions:
+  - role: one_xnft
+    permission:
+      columns:
+        - author
+        - expanded_url
+        - parent_post_id
+        - post_id
+        - published
+        - text
+        - value
+      filter: {}
+      check: {}
+delete_permissions:
+  - role: one_xnft
+    permission:
+      filter: {}

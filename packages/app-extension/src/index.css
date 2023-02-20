@@ -28,3 +28,7 @@ input[type="number"] {
 #root {
   overflow: hidden;
 }
+
+.MuiCircularProgress-circle {
+  stroke-linecap: round;
+}

@@ -4,19 +4,19 @@ import {
 } from "@coral-xyz/blockchain-common";
 import type { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import type {
+  AutolockSettingsOption,
   Blockchain,
-  DerivationPath,
   EventEmitter,
   KeyringInit,
+  WalletDescriptor,
 } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   BACKEND_EVENT,
-  EthereumConnectionUrl,
-  EthereumExplorer,
+  DEFAULT_AUTO_LOCK_INTERVAL_SECS,
+  defaultPreferences,
+  getBlockchainFromPath,
   NOTIFICATION_KEYRING_STORE_LOCKED,
-  SolanaCluster,
-  SolanaExplorer,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
@@ -24,11 +24,7 @@ import { generateMnemonic } from "bip39";
 
 import type { KeyringStoreJson, User, UserKeyringJson } from "../store";
 import * as store from "../store";
-import {
-  DEFAULT_DARK_MODE,
-  DEFAULT_DEVELOPER_MODE,
-  DefaultKeyname,
-} from "../store";
+import { DefaultKeyname } from "../store";
 
 /**
  * KeyringStore API for managing all wallet keys .
@@ -36,7 +32,13 @@ import {
 export class KeyringStore {
   private lastUsedTs: number;
   private password?: string;
-  private autoLockInterval?: ReturnType<typeof setInterval>;
+
+  private autoLockCountdown: {
+    start: () => void;
+    restart: () => void;
+    toggle: (enabled: boolean) => void;
+  };
+
   private events: EventEmitter;
   private users: Map<string, UserKeyring>;
   // Must be undefined when the keyring-store is locked or uninitialized.
@@ -65,6 +67,95 @@ export class KeyringStore {
     this.users = new Map();
     this.lastUsedTs = 0;
     this.events = events;
+
+    this.autoLockCountdown = (() => {
+      let autoLockCountdownTimer: ReturnType<typeof setTimeout>;
+
+      let secondsUntilAutoLock: number | undefined;
+      let autoLockIsEnabled = true;
+
+      let shouldLockImmediatelyWhenClosed = false;
+      let lockImmediatelyWhenClosedCountdown: ReturnType<typeof setTimeout>;
+      const SECONDS_UNTIL_LOCK_WHEN_CLOSED = 0.5;
+
+      const lock = () => {
+        if (!autoLockIsEnabled) return;
+        this.lock();
+        this.events.emit(BACKEND_EVENT, {
+          name: NOTIFICATION_KEYRING_STORE_LOCKED,
+        });
+      };
+
+      const startAutoLockCountdownTimer = () => {
+        stopAutoLockCountdownTimer();
+        stopLockWhenClosedCountdownTimer();
+        if (!secondsUntilAutoLock || !autoLockIsEnabled) return;
+        autoLockCountdownTimer = setTimeout(lock, secondsUntilAutoLock * 1000);
+      };
+
+      const stopAutoLockCountdownTimer = () => {
+        if (autoLockCountdownTimer) clearTimeout(autoLockCountdownTimer);
+      };
+
+      const stopLockWhenClosedCountdownTimer = () => {
+        if (lockImmediatelyWhenClosedCountdown)
+          clearTimeout(lockImmediatelyWhenClosedCountdown);
+      };
+
+      globalThis.chrome?.runtime.onConnect.addListener((port) => {
+        port.onDisconnect.addListener(() => {
+          // Force-enable the auto-lock countdown if the popup is closed
+          autoLockIsEnabled = true;
+          if (shouldLockImmediatelyWhenClosed) {
+            lockImmediatelyWhenClosedCountdown = setTimeout(() => {
+              stopAutoLockCountdownTimer();
+              lock();
+            }, SECONDS_UNTIL_LOCK_WHEN_CLOSED * 1000);
+          } else {
+            startAutoLockCountdownTimer();
+          }
+        });
+      });
+
+      return {
+        start: () => {
+          // Get the auto-lock interval from the
+          // user's preferences and start the countdown timer.
+          store
+            .getWalletDataForUser(this.activeUserUuid!)
+            .then(({ autoLockSettings, autoLockSecs }) => {
+              switch (autoLockSettings?.option) {
+                case "never":
+                  shouldLockImmediatelyWhenClosed = false;
+                  secondsUntilAutoLock = undefined;
+                  break;
+                case "onClose":
+                  shouldLockImmediatelyWhenClosed = true;
+                  secondsUntilAutoLock = undefined;
+                  break;
+                default:
+                  shouldLockImmediatelyWhenClosed = false;
+                  secondsUntilAutoLock =
+                    // Try to use read the new style (>0.4.0) value first
+                    autoLockSettings?.seconds ||
+                    // if that doesn't exist check for a legacy (<=0.4.0) value
+                    autoLockSecs ||
+                    // otherwise fall back to the default value
+                    DEFAULT_AUTO_LOCK_INTERVAL_SECS;
+              }
+              startAutoLockCountdownTimer();
+            });
+        },
+        restart: () => {
+          // Reset the countdown timer and start it again.
+          startAutoLockCountdownTimer();
+        },
+        toggle: (enabled: boolean) => {
+          autoLockIsEnabled = enabled;
+          startAutoLockCountdownTimer();
+        },
+      };
+    })();
   }
 
   // Initializes the keystore for the first time.
@@ -72,47 +163,55 @@ export class KeyringStore {
     username: string,
     password: string,
     keyringInit: KeyringInit,
-    uuid: string
+    uuid: string,
+    jwt: string
   ) {
     this.password = password;
 
     // Setup the user.
-    await this._usernameKeyringCreate(username, keyringInit, uuid);
+    await this._usernameKeyringCreate(username, keyringInit, uuid, jwt);
 
     // Persist the encrypted data to then store.
     await this.persist(true);
 
     // Automatically lock the store when idle.
-    await this.tryUnlock(password);
+    await this.tryUnlock({ password, uuid });
   }
 
   public async usernameKeyringCreate(
     username: string,
     keyringInit: KeyringInit,
-    uuid: string
+    uuid: string,
+    jwt: string
   ) {
     return await this.withUnlockAndPersist(async () => {
-      return await this._usernameKeyringCreate(username, keyringInit, uuid);
+      return await this._usernameKeyringCreate(
+        username,
+        keyringInit,
+        uuid,
+        jwt
+      );
     });
   }
 
   public async _usernameKeyringCreate(
     username: string,
     keyringInit: KeyringInit,
-    uuid: string
+    uuid: string,
+    jwt: string
   ) {
+    // Store unlocked keyring in memory.
     this.users.set(uuid, await UserKeyring.init(username, keyringInit, uuid));
     this.activeUserUuid = uuid;
 
-    await store.setWalletDataForUser(
-      uuid,
-      defaultPreferences(
-        keyringInit.blockchainKeyrings.map((k) => k.blockchain)
-      )
-    );
+    // Per user preferences.
+    await store.setWalletDataForUser(uuid, defaultPreferences());
+
+    // Persist active user to disk.
     await store.setActiveUser({
       username,
       uuid,
+      jwt,
     });
   }
 
@@ -149,13 +248,54 @@ export class KeyringStore {
   // Actions.
   ///////////////////////////////////////////////////////////////////////////////
 
-  public async tryUnlock(password: string) {
+  /**
+   * Returns true if the active user was removed (and thus chanaged).
+   */
+  public async removeUser(uuid: string): Promise<boolean> {
+    if (this.users.size <= 1) {
+      throw new Error(
+        "invariant violation: users map size must be greater than 1"
+      );
+    }
+    return await this.withUnlockAndPersist(async () => {
+      const user = this.users.get(uuid);
+      if (!user) {
+        throw new Error(`User not found: ${uuid}`);
+      }
+      this.users.delete(uuid);
+      await store.setWalletDataForUser(uuid, undefined);
+
+      //
+      // If the active user is being removed, then auto switch it.
+      //
+      if (this.activeUserUuid === uuid) {
+        const userData = await store.getUserData();
+        const users = userData.users.filter((user) => user.uuid !== uuid);
+        await store.setUserData({
+          activeUser: users[0],
+          users,
+        });
+        this.activeUserUuid = users[0].uuid;
+        return true;
+      } else {
+        return false;
+      }
+    });
+  }
+
+  public async tryUnlock(userInfo: { password: string; uuid: string }) {
     return this.withLock(async () => {
-      const json = await store.getKeyringStore(password);
+      const json = await store.getKeyringStore(userInfo);
       await this.fromJson(json);
-      this.password = password;
+
+      // Must use this object, because the uuid may have been set during migration.
+      // This will only happen in the event that the given uuid is empty.
+      this.activeUserUuid = userInfo.uuid;
+
+      this.password = userInfo.password;
       // Automatically lock the store when idle.
-      this.autoLockStart();
+      // this.autoLockStart();
+      this.autoLockCountdown.start();
     });
   }
 
@@ -164,7 +304,7 @@ export class KeyringStore {
    */
   public async checkPassword(password: string) {
     try {
-      await store.getKeyringStore(password);
+      await store.getKeyringStore_NO_MIGRATION(password);
       return true;
     } catch (err) {
       return false;
@@ -179,19 +319,21 @@ export class KeyringStore {
 
   // Preview public keys for a given mnemonic and derivation path without
   // importing the mnemonic.
-  public previewPubkeys(
+  public async previewPubkeys(
     blockchain: Blockchain,
-    mnemonic: string,
-    derivationPath: DerivationPath,
-    numberOfAccounts: number
-  ): string[] {
+    mnemonic: string | true,
+    derivationPaths: Array<string>
+  ): Promise<string[]> {
     const factory = hdFactoryForBlockchain(blockchain);
-    const hdKeyring = factory.fromMnemonic(mnemonic, derivationPath, [
-      ...Array(numberOfAccounts).keys(),
-    ]);
-    return [...Array(numberOfAccounts).keys()].map((i) =>
-      hdKeyring.getPublicKey(i)
-    );
+    if (mnemonic === true) {
+      // Read the mnemonic from the store
+      return await this.withUnlock(async () => {
+        mnemonic = this.activeUserKeyring.exportMnemonic();
+        return factory.init(mnemonic, derivationPaths).publicKeys();
+      });
+    } else {
+      return factory.init(mnemonic, derivationPaths).publicKeys();
+    }
   }
 
   public reset() {
@@ -211,18 +353,21 @@ export class KeyringStore {
     });
   }
 
-  public async autoLockUpdate(autoLockSecs: number) {
+  public async autoLockSettingsUpdate(
+    seconds?: number,
+    option?: AutolockSettingsOption
+  ) {
     return await this.withUnlock(async () => {
       const data = await store.getWalletDataForUser(this.activeUserUuid!);
       await store.setWalletDataForUser(this.activeUserUuid!, {
         ...data,
-        autoLockSecs,
+        autoLockSettings: {
+          seconds,
+          option,
+        },
       });
 
-      if (this.autoLockInterval) {
-        clearInterval(this.autoLockInterval);
-      }
-      this.autoLockStart();
+      this.autoLockCountdown.start();
     });
   }
 
@@ -239,33 +384,20 @@ export class KeyringStore {
     const userData = await store.getUserData();
     const user = userData.users.filter((u) => u.uuid === uuid)[0];
     this.activeUserUuid = uuid;
-    await store.setActiveUser({
-      username: user.username,
-      uuid,
-    });
+    await store.setActiveUser(user);
     return user;
   }
 
-  private autoLockStart() {
-    // Check the last time the keystore was used at a regular interval.
-    // If it hasn't been used recently, lock the keystore.
-    store
-      .getWalletDataForUser(this.activeUserUuid!)
-      .then(({ autoLockSecs }) => {
-        const _autoLockSecs = autoLockSecs ?? store.DEFAULT_LOCK_INTERVAL_SECS;
-        this.autoLockInterval = setInterval(() => {
-          const currentTs = Date.now() / 1000;
-          if (currentTs - this.lastUsedTs >= _autoLockSecs) {
-            this.lock();
-            this.events.emit(BACKEND_EVENT, {
-              name: NOTIFICATION_KEYRING_STORE_LOCKED,
-            });
-            if (this.autoLockInterval) {
-              clearInterval(this.autoLockInterval);
-            }
-          }
-        }, _autoLockSecs * 1000);
-      });
+  public autoLockCountdownToggle(enable: boolean) {
+    this.autoLockCountdown.toggle(enable);
+  }
+
+  public autoLockCountdownRestart() {
+    this.autoLockCountdown.restart();
+  }
+
+  public autoLockCountdownReset() {
+    this.autoLockCountdown.start();
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -277,18 +409,31 @@ export class KeyringStore {
    */
   public async blockchainKeyringAdd(
     blockchain: Blockchain,
-    derivationPath: DerivationPath,
-    accountIndex: number,
-    publicKey?: string,
+    walletDescriptor: WalletDescriptor,
+    persist = true
+  ): Promise<string> {
+    await this.activeUserKeyring.blockchainKeyringAdd(
+      blockchain,
+      walletDescriptor
+    );
+    if (persist) {
+      await this.persist();
+    }
+    return walletDescriptor.publicKey;
+  }
+
+  /**
+   * Remove a keyring. This shouldn't be exposed to the client as it can
+   * use the blockchain disable method to soft remove a keyring and still be
+   * able to enable it later without any reonboarding (signatures, etc). It
+   * is used by the backend to revert state changes for non atomic call
+   * sequences.
+   */
+  public async blockchainKeyringRemove(
+    blockchain: Blockchain,
     persist = true
   ): Promise<void> {
-    this.activeUserKeyring.blockchainKeyringAdd(
-      blockchain,
-      derivationPath,
-      accountIndex,
-      publicKey,
-      persist
-    );
+    await this.activeUserKeyring.blockchainKeyringRemove(blockchain);
     if (persist) {
       await this.persist();
     }
@@ -301,7 +446,7 @@ export class KeyringStore {
     secretKey: string,
     name: string
   ): Promise<[string, string]> {
-    return this.withUnlockAndPersist(async () => {
+    return await this.withUnlockAndPersist(async () => {
       return await this.activeUserKeyring.importSecretKey(
         blockchain,
         secretKey,
@@ -310,33 +455,50 @@ export class KeyringStore {
     });
   }
 
+  public async nextDerivationPath(
+    blockchain: Blockchain,
+    keyring: "hd" | "ledger"
+  ): Promise<string> {
+    return await this.withUnlock(async () => {
+      return this.activeUserKeyring.nextDerivationPath(blockchain, keyring);
+    });
+  }
+
+  public async addDerivationPath(
+    blockchain: Blockchain,
+    derivationPath: string
+  ): Promise<{ publicKey: string; name: string }> {
+    return await this.withUnlock(async () => {
+      return this.activeUserKeyring.addDerivationPath(
+        blockchain,
+        derivationPath
+      );
+    });
+  }
+
   // Derive the next key for the given blockchain.
   public async deriveNextKey(
     blockchain: Blockchain
-  ): Promise<[string, string]> {
-    return this.withUnlockAndPersist(async () => {
+  ): Promise<{ publicKey: string; derivationPath: string; name: string }> {
+    return await this.withUnlockAndPersist(async () => {
       return await this.activeUserKeyring.deriveNextKey(blockchain);
     });
   }
 
-  public async keyDelete(blockchain: Blockchain, pubkey: string) {
-    return this.withUnlockAndPersist(async () => {
-      return await this.activeUserKeyring.keyDelete(blockchain, pubkey);
+  public async keyDelete(blockchain: Blockchain, publicKey: string) {
+    return await this.withUnlockAndPersist(async () => {
+      return await this.activeUserKeyring.keyDelete(blockchain, publicKey);
     });
   }
 
   public async ledgerImport(
     blockchain: Blockchain,
-    dPath: string,
-    account: number,
-    pubkey: string
+    walletDescriptor: WalletDescriptor
   ) {
-    return this.withUnlockAndPersist(async () => {
+    return await this.withUnlockAndPersist(async () => {
       return await this.activeUserKeyring.ledgerImport(
         blockchain,
-        dPath,
-        account,
-        pubkey
+        walletDescriptor
       );
     });
   }
@@ -348,7 +510,7 @@ export class KeyringStore {
     newActivePublicKey: string,
     blockchain: Blockchain
   ) {
-    return this.withUnlockAndPersist(async () => {
+    return await this.withUnlockAndPersist(async () => {
       return await this.activeUserKeyring.activeWalletUpdate(
         newActivePublicKey,
         blockchain
@@ -382,13 +544,13 @@ export class KeyringStore {
 
   public exportSecretKey(password: string, publicKey: string): string {
     return this.withPassword(password, () => {
-      return this.activeUserKeyring.exportSecretKey(password, publicKey);
+      return this.activeUserKeyring.exportSecretKey(publicKey);
     });
   }
 
   public exportMnemonic(password: string): string {
     return this.withPassword(password, () => {
-      return this.activeUserKeyring.exportMnemonic(password);
+      return this.activeUserKeyring.exportMnemonic();
     });
   }
 
@@ -396,10 +558,10 @@ export class KeyringStore {
   // Utilities.
   ///////////////////////////////////////////////////////////////////////////////
 
-  private withUnlockAndPersist<T>(fn: () => T) {
-    return this.withUnlock(() => {
-      const resp = fn();
-      this.persist();
+  private async withUnlockAndPersist<T>(fn: () => Promise<T>) {
+    return await this.withUnlock(async () => {
+      const resp = await fn();
+      await this.persist();
       return resp;
     });
   }
@@ -464,15 +626,13 @@ export class KeyringStore {
       [...this.users].map(([k, v]) => [k, v.toJson()])
     );
     return {
-      activeUserUuid: this.activeUserUuid!,
       users,
       lastUsedTs: this.lastUsedTs,
     };
   }
 
   private async fromJson(json: KeyringStoreJson) {
-    const { activeUserUuid, users } = json;
-    this.activeUserUuid = activeUserUuid;
+    const { users } = json;
     this.users = new Map(
       Object.entries(users).map(([username, obj]) => {
         return [username, UserKeyring.fromJson(obj)];
@@ -487,6 +647,7 @@ class UserKeyring {
   username: string;
   uuid: string;
   private mnemonic?: string;
+  activeBlockchain: Blockchain;
 
   ///////////////////////////////////////////////////////////////////////////////
   // Initialization.
@@ -501,22 +662,32 @@ class UserKeyring {
     keyringInit: KeyringInit,
     uuid: string
   ): Promise<UserKeyring> {
-    const kr = new UserKeyring();
-    kr.uuid = uuid;
-    kr.username = username;
-    kr.mnemonic = keyringInit.mnemonic;
-
-    for (const blockchainKeyring of keyringInit.blockchainKeyrings) {
-      await kr.blockchainKeyringAdd(
-        blockchainKeyring.blockchain,
-        blockchainKeyring.derivationPath,
-        blockchainKeyring.accountIndex,
-        blockchainKeyring.publicKey,
-        // Don't persist, as we persist manually later
-        false
+    const keyring = new UserKeyring();
+    keyring.uuid = uuid;
+    keyring.username = username;
+    keyring.mnemonic = keyringInit.mnemonic;
+    for (const signedWalletDescriptor of keyringInit.signedWalletDescriptors) {
+      const blockchainKeyring = keyring.blockchains.get(
+        getBlockchainFromPath(signedWalletDescriptor.derivationPath)
       );
+      if (blockchainKeyring) {
+        // Blockchain keyring already exists, just add the derivation path
+        await blockchainKeyring.addDerivationPath(
+          signedWalletDescriptor.derivationPath
+        );
+      } else {
+        // No blockchain keyring, create it
+        await keyring.blockchainKeyringAdd(
+          getBlockchainFromPath(signedWalletDescriptor.derivationPath),
+          signedWalletDescriptor
+        );
+      }
     }
-    return kr;
+    // Set the active wallet to be the first keyring.
+    keyring.activeBlockchain = getBlockchainFromPath(
+      keyringInit.signedWalletDescriptors[0].derivationPath
+    );
+    return keyring;
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -535,26 +706,6 @@ class UserKeyring {
     return [...this.blockchains.keys()].map((b) => b as Blockchain);
   }
 
-  /**
-   * Return all the enabled blockchains.
-   */
-  public async enabledBlockchains(): Promise<Array<Blockchain>> {
-    const data = await store.getWalletDataForUser(this.uuid);
-    if (!data.enabledBlockchains) {
-      // Keyring created prior to this feature being added, so data does not
-      // exist, write it using all blockchains in keyring
-      const enabledBlockchains = [...this.blockchains.keys()].map(
-        (b) => b as Blockchain
-      );
-      await store.setWalletDataForUser(this.uuid, {
-        ...data,
-        enabledBlockchains,
-      });
-      return enabledBlockchains;
-    }
-    return data.enabledBlockchains;
-  }
-
   public async publicKeys(): Promise<{
     [key: string]: {
       hdPublicKeys: Array<string>;
@@ -562,7 +713,7 @@ class UserKeyring {
       ledgerPublicKeys: Array<string>;
     };
   }> {
-    const entries = (await this.enabledBlockchains()).map((blockchain) => {
+    const entries = this.blockchainKeyrings().map((blockchain) => {
       const keyring = this.keyringForBlockchain(blockchain);
       return [blockchain, keyring.publicKeys()];
     });
@@ -605,7 +756,7 @@ class UserKeyring {
   }
 
   public async activeWallets(): Promise<string[]> {
-    return (await this.enabledBlockchains())
+    return this.blockchainKeyrings()
       .map((blockchain) =>
         this.keyringForBlockchain(blockchain).getActiveWallet()
       )
@@ -618,32 +769,24 @@ class UserKeyring {
 
   public async blockchainKeyringAdd(
     blockchain: Blockchain,
-    derivationPath: DerivationPath,
-    accountIndex: number,
-    publicKey?: string,
-    persist = true
-  ): Promise<void> {
+    walletDescriptor: WalletDescriptor
+  ): Promise<string> {
     const keyring = keyringForBlockchain(blockchain);
     if (this.mnemonic) {
       // Initialising using a mnemonic
-      await keyring.initFromMnemonic(this.mnemonic, derivationPath, [
-        accountIndex,
+      await keyring.initFromMnemonic(this.mnemonic, [
+        walletDescriptor.derivationPath,
       ]);
     } else {
-      if (!publicKey)
-        throw new Error(
-          "initialising keyring with hardware wallet requires publickey"
-        );
       // Initialising using a hardware wallet
-      await keyring.initFromLedger([
-        {
-          path: derivationPath,
-          account: accountIndex,
-          publicKey,
-        },
-      ]);
+      await keyring.initFromLedger([walletDescriptor]);
     }
     this.blockchains.set(blockchain, keyring);
+    return walletDescriptor.publicKey;
+  }
+
+  public async blockchainKeyringRemove(blockchain: Blockchain): Promise<void> {
+    this.blockchains.delete(blockchain);
   }
 
   public async importSecretKey(
@@ -665,43 +808,70 @@ class UserKeyring {
   ) {
     const keyring = this.keyringForBlockchain(blockchain);
     await keyring.activeWalletUpdate(newActivePublicKey);
+
+    this.activeBlockchain = blockchain;
   }
 
-  // Derive the next key for the given blockchain.
-  public async deriveNextKey(
-    blockchain: Blockchain
-  ): Promise<[string, string]> {
+  public nextDerivationPath(
+    blockchain: Blockchain,
+    keyring: "hd" | "ledger"
+  ): string {
     let blockchainKeyring = this.blockchains.get(blockchain);
     if (!blockchainKeyring) {
       throw new Error("blockchain keyring not initialised");
     } else {
-      // Derive the next key.
-      const [pubkey, name] = blockchainKeyring.deriveNextKey();
-      return [pubkey, name];
+      return blockchainKeyring.nextDerivationPath(keyring);
     }
   }
 
-  public exportSecretKey(password: string, publicKey: string): string {
+  public addDerivationPath(
+    blockchain: Blockchain,
+    derivationPath: string
+  ): Promise<{ publicKey: string; name: string }> {
+    let blockchainKeyring = this.blockchains.get(blockchain);
+    if (!blockchainKeyring) {
+      throw new Error("blockchain keyring not initialised");
+    } else {
+      return blockchainKeyring.addDerivationPath(derivationPath);
+    }
+  }
+
+  /**
+   * Get the next derived key for the mnemonic.
+   */
+  public async deriveNextKey(
+    blockchain: Blockchain
+  ): Promise<{ publicKey: string; derivationPath: string; name: string }> {
+    let blockchainKeyring = this.blockchains.get(blockchain);
+    if (!blockchainKeyring) {
+      throw new Error("blockchain keyring not initialised");
+    } else {
+      return await blockchainKeyring.deriveNextKey();
+    }
+  }
+
+  public exportSecretKey(publicKey: string): string {
     const keyring = this.keyringForPublicKey(publicKey);
     return keyring.exportSecretKey(publicKey);
   }
 
-  public exportMnemonic(password: string): string {
-    if (!this.mnemonic) throw new Error("keyring uses a hardware wallet");
+  public exportMnemonic(): string {
+    if (!this.mnemonic) throw new Error("keyring does not have a mnemonic");
     return this.mnemonic;
   }
 
   public async ledgerImport(
     blockchain: Blockchain,
-    dPath: string,
-    account: number,
-    pubkey: string
+    walletDescriptor: WalletDescriptor
   ) {
     const blockchainKeyring = this.blockchains.get(blockchain);
     const ledgerKeyring = blockchainKeyring!.ledgerKeyring!;
-    const name = DefaultKeyname.defaultLedger(ledgerKeyring.keyCount());
-    await ledgerKeyring.ledgerImport(dPath, account, pubkey);
-    await store.setKeyname(pubkey, name);
+    await ledgerKeyring.add(walletDescriptor);
+    const name = DefaultKeyname.defaultLedger(
+      ledgerKeyring.publicKeys().length
+    );
+    await store.setKeyname(walletDescriptor.publicKey, name);
+    await store.setIsCold(walletDescriptor.publicKey, true);
   }
 
   public async keyDelete(blockchain: Blockchain, pubkey: string) {
@@ -721,13 +891,14 @@ class UserKeyring {
     return {
       uuid: this.uuid,
       username: this.username,
+      activeBlockchain: this.activeBlockchain,
       mnemonic: this.mnemonic,
       blockchains,
     };
   }
 
   public static fromJson(json: UserKeyringJson): UserKeyring {
-    const { uuid, username, mnemonic, blockchains } = json;
+    const { uuid, username, activeBlockchain, mnemonic, blockchains } = json;
 
     const u = new UserKeyring();
     u.uuid = uuid;
@@ -742,26 +913,8 @@ class UserKeyring {
         return [blockchain, blockchainKeyring];
       })
     );
+    u.activeBlockchain = activeBlockchain ?? Object.keys(blockchains)[0];
 
     return u;
   }
-}
-
-export function defaultPreferences(enabledBlockchains: any): any {
-  return {
-    autoLockSecs: store.DEFAULT_LOCK_INTERVAL_SECS,
-    approvedOrigins: [],
-    enabledBlockchains,
-    darkMode: DEFAULT_DARK_MODE,
-    developerMode: DEFAULT_DEVELOPER_MODE,
-    solana: {
-      explorer: SolanaExplorer.DEFAULT,
-      cluster: SolanaCluster.DEFAULT,
-      commitment: "confirmed",
-    },
-    ethereum: {
-      explorer: EthereumExplorer.DEFAULT,
-      connectionUrl: EthereumConnectionUrl.DEFAULT,
-    },
-  };
 }

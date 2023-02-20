@@ -1,9 +1,13 @@
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import { StyleSheet, Text, View } from "react-native";
-import { useTheme } from "@hooks";
 
-import { IconPushDetail, RoundedContainer, SettingsRow } from "./SettingsRow";
+import { useTheme } from "~hooks/useTheme";
 
+import { RoundedContainerGroup } from "~components/index";
+
+import { IconPushDetail, SettingsRow } from "./SettingsRow";
+
+// TODO(peter) fix for next PR
 export function SettingsList({
   style,
   menuItems,
@@ -27,7 +31,7 @@ export function SettingsList({
   // const theme = useTheme();
 
   return (
-    <RoundedContainer>
+    <RoundedContainerGroup>
       {Object.entries(menuItems).map(([key, val]: any, i, { length }) => (
         <SettingsRow
           key={key}
@@ -51,6 +55,6 @@ export function SettingsList({
           </Text>
         </SettingsRow>
       ))}
-    </RoundedContainer>
+    </RoundedContainerGroup>
   );
 }

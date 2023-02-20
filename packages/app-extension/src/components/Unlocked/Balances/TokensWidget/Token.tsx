@@ -49,17 +49,23 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
+export function Token({
+  blockchain,
+  tokenAddress,
+  publicKey,
+}: SearchParamsFor.Token["props"]) {
   const ethereumWallet = useActiveEthereumWallet();
   // Hack: This is hit for some reason due to the framer-motion animation.
-  if (!blockchain || !address) {
+  if (!blockchain || !tokenAddress) {
     return <></>;
   }
 
   const activityAddress =
-    blockchain === Blockchain.ETHEREUM ? ethereumWallet.publicKey : address;
+    blockchain === Blockchain.ETHEREUM
+      ? ethereumWallet.publicKey
+      : tokenAddress;
   const contractAddresses =
-    blockchain === Blockchain.ETHEREUM ? [address] : undefined;
+    blockchain === Blockchain.ETHEREUM ? [tokenAddress] : undefined;
 
   return (
     <div
@@ -69,7 +75,11 @@ export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
         flexDirection: "column",
       }}
     >
-      <TokenHeader blockchain={blockchain} address={address} />
+      <TokenHeader
+        blockchain={blockchain}
+        tokenAddress={tokenAddress}
+        publicKey={publicKey}
+      />
       <RecentActivityList
         blockchain={blockchain}
         address={activityAddress}
@@ -81,10 +91,20 @@ export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
   );
 }
 
-function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
+function TokenHeader({
+  blockchain,
+  tokenAddress,
+  publicKey,
+}: SearchParamsFor.Token["props"]) {
   const classes = useStyles();
-
-  const [token] = useLoader(blockchainTokenData({ blockchain, address }), null);
+  const [token] = useLoader(
+    blockchainTokenData({
+      publicKey,
+      blockchain,
+      tokenAddress,
+    }),
+    null
+  );
 
   if (!token) return <></>;
 
@@ -120,7 +140,9 @@ function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
             (blockchain === Blockchain.ETHEREUM && token.ticker === "ETH")
           }
           blockchain={blockchain}
-          address={address}
+          address={tokenAddress}
+          publicKey={publicKey}
+          swapEnabled={blockchain === Blockchain.SOLANA}
         />
       </div>
     </div>
@@ -151,7 +173,6 @@ export function WithHeaderButton({
             initialRoute={initialRoute}
             options={(args) => routeOptions(routes, args)}
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
-            onClose={() => setOpenDrawer(false)}
           >
             {routes.map((r: any) => (
               <NavStackScreen

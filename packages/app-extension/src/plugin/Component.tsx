@@ -1,7 +1,5 @@
-import React from "react";
-//TODO: We should remove this dependency somehow
+// TODO: We should remove this dependency somehow
 import { Scrollbars } from "react-custom-scrollbars";
-import { proxyImageUrl } from "@coral-xyz/common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { TextareaAutosize as MuiTextArea } from "@mui/base";
 import { Button as MuiButton, TextField as MuiTextField } from "@mui/material";
@@ -187,8 +185,7 @@ export function Button({ id, props, style, onClick, children }: any) {
   );
 }
 
-export function __Button({ id, onClick, props, style, children }: any) {
-  const classes = useStyles();
+export function __Button({ onClick, style, children }: any) {
   const theme = useCustomTheme();
   return (
     <MuiButton
@@ -211,6 +208,7 @@ export function __Button({ id, onClick, props, style, children }: any) {
 
 export function ScrollBarImpl(props: any) {
   const theme = useCustomTheme();
+
   return (
     <>
       <Scrollbars
@@ -238,9 +236,8 @@ export function ScrollBarImpl(props: any) {
         renderView={(props: any) => <div {...props} className="view" />}
         autoHide
         thumbMinSize={30}
-      >
-        {props.children}
-      </Scrollbars>
+        {...props}
+      />
       <style>
         {`
           .track-vertical {

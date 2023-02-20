@@ -42,3 +42,6 @@ test-ledger/
 .eslintcache
 .js.map
 .d.ts.map
+.tsbuildinfo
+
+.dev.vars

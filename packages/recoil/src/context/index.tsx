@@ -1,4 +1,4 @@
 export * from "./NavEphemeral";
 export * from "./Notifications";
-export * from "./Plugins";
+export * from "./OnboardingProvider";
 export * from "./Swap";

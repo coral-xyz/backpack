@@ -1,20 +1,49 @@
 {
   "name": "eslint-config-custom",
-  "version": "0.0.1",
+  "description": "Shared ESLINT config for universl Backpack projects across web, native and node",
+  "version": "1.0.0",
   "main": "index.js",
   "private": true,
+  "scripts": {
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "jest": {
+    "testMatch": [
+      "**/__tests__/*-test.js"
+    ]
+  },
+  "eslintIgnore": [
+    "/__tests__/fixtures/*"
+  ],
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.40.1",
-    "@typescript-eslint/parser": "^5.40.1",
-    "eslint": "latest",
-    "eslint-config-next": "latest",
-    "eslint-config-prettier": "latest",
-    "eslint-config-turbo": "latest",
+    "@typescript-eslint/eslint-plugin": "^5.45.1",
+    "@typescript-eslint/parser": "^5.45.1",
+    "eslint-config-next": "^13.1.1",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-turbo": "^0.0.7",
     "eslint-import-resolver-node": "^0.3.6",
     "eslint-import-resolver-typescript": "^3.5.1",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-mui-unused-classes": "^1.0.3",
-    "eslint-plugin-react": "latest",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-react": "^7.30.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "@peterpme/eslint-plugin-react-native": "^4.2.0",
     "eslint-plugin-workspaces": "^0.7.0"
+  },
+  "peerDependencies": {
+    "eslint": ">=8.18",
+    "prettier": "~2.8.1"
+  },
+  "peerDependenciesMeta": {
+    "prettier": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "eslint": "^8.31.0",
+    "jest": "^27.5.1",
+    "prettier": "~2.8.1"
   }
 }
