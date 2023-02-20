@@ -1,5 +1,4 @@
 import { useState } from "react";
-// @ts-ignore
 import { Text, View } from "react-native";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import {
@@ -7,7 +6,6 @@ import {
   EmptyState,
   LocalImage,
   PrimaryButton,
-  ProxyImage,
   RedBackpack,
   TextInput,
 } from "@coral-xyz/react-common";
