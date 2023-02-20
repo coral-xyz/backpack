@@ -229,7 +229,7 @@ router.post("/", async (req, res) => {
 router.get("/userById", extractUserId, async (req: Request, res: Response) => {
   //@ts-ignore
   const remoteUserId: string = req.query.remoteUserId;
-  const user = await getUser(remoteUserId);
+  const user = await getUser(remoteUserId, true);
   return res.json({ user });
 });
 

@@ -25,6 +25,7 @@ import {
   useSolanaConnectionUrl,
   useUser,
 } from "@coral-xyz/recoil";
+import type { CustomTheme } from "@coral-xyz/themes";
 import { styled, useCustomTheme } from "@coral-xyz/themes";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { CircularProgress, Grid, IconButton } from "@mui/material";
@@ -378,14 +379,16 @@ const Container = styled("div")(() => ({
   overflow: "hidden",
 }));
 
-const StyledProxyImage = styled(ProxyImage)(({ theme }) => ({
-  "&:hover": {
-    border: `3px solid ${theme.custom.colors.avatarIconBackground}`,
-    cursor: "pointer",
-  },
-}));
+const StyledProxyImage = styled(ProxyImage)(
+  ({ theme }: { theme: CustomTheme }) => ({
+    "&:hover": {
+      border: `3px solid ${theme.custom.colors.avatarIconBackground}`,
+      cursor: "pointer",
+    },
+  })
+);
 
-const FakeDrawer = styled("div")(({ theme }) => ({
+const FakeDrawer = styled("div")(({ theme }: { theme: CustomTheme }) => ({
   position: "relative",
   display: "flex",
   flexDirection: "column",
@@ -401,7 +404,7 @@ const FakeDrawer = styled("div")(({ theme }) => ({
   zIndex: "0",
   overflow: "hidden",
 }));
-const ButtonsOverlay = styled("div")(({ theme }) => ({
+const ButtonsOverlay = styled("div")(({ theme }: { theme: CustomTheme }) => ({
   position: "absolute",
   bottom: "0px",
   display: "flex",
@@ -422,7 +425,7 @@ const Avatar = styled(ProxyImage)(() => ({
   zIndex: 0,
 }));
 
-const AvatarWrapper = styled("div")(({ theme }) => ({
+const AvatarWrapper = styled("div")(({ theme }: { theme: CustomTheme }) => ({
   boxSizing: "border-box",
   position: "relative",
   borderRadius: "50px",

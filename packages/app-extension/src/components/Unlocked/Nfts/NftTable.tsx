@@ -1,13 +1,8 @@
-import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useRef, useState } from "react";
 import Autosizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
-import type {
-  Blockchain,
-  CollectionChatData,
-  NftCollection,
-} from "@coral-xyz/common";
+import type { Blockchain, NftCollection } from "@coral-xyz/common";
 import {
-  BACKEND_API_URL,
   NAV_COMPONENT_NFT_COLLECTION,
   NAV_COMPONENT_NFT_DETAIL,
 } from "@coral-xyz/common";
@@ -16,10 +11,10 @@ import {
   nftById,
   useAllWallets,
   useBlockchainConnectionUrl,
-  useGroupCollections,
   useNavigation,
   useUser,
 } from "@coral-xyz/recoil";
+import type { CustomTheme } from "@coral-xyz/themes";
 import { styled } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
 import { useRecoilValue } from "recoil";
@@ -295,7 +290,7 @@ const ItemRow = function ({
 };
 
 const CustomCard = styled("div")(
-  ({ theme }) =>
+  ({ theme }: { theme: CustomTheme }) =>
     ({ top, bottom }: { top: boolean; bottom: boolean }) => ({
       position: "relative",
       backgroundColor: "inherit",

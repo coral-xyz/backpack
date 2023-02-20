@@ -18,7 +18,7 @@ import {
   ImageIcon,
   MessageBubbleIcon,
   MessageBubbleUnreadIcon,
-} from "@coral-xyz/react-common";
+ useBreakpoints } from "@coral-xyz/react-common";
 import {
   useAuthenticatedUser,
   useBackgroundClient,
@@ -31,8 +31,6 @@ import { Tab, Tabs } from "@mui/material";
 
 import { AvatarPopoverButton } from "../../Unlocked/Settings/AvatarPopover";
 import { NotificationIconWithBadge } from "../NotificationIconWithBadge";
-
-import { useBreakpoints } from "./hooks";
 
 const TAB_HEIGHT = 64;
 

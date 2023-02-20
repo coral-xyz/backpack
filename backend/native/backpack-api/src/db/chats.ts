@@ -78,6 +78,18 @@ export const getChats = async ({
             media_link: true,
           },
         ],
+        chat_barter_metadata: [
+          {
+            limit: 1,
+          },
+          {
+            barter: {
+              id: true,
+              state: true,
+              on_chain_state: true,
+            },
+          },
+        ],
         simple_transactions: [
           {
             limit: 1,
@@ -129,39 +141,17 @@ export const getChats = async ({
           ? {
               final_tx_signature: chat.simple_transactions[0]?.txn_signature,
             }
+          : chat.message_kind === "barter"
+          ? {
+              barter_id: chat.chat_barter_metadata?.[0]?.barter?.id,
+              state: chat.chat_barter_metadata?.[0]?.barter?.state,
+              on_chain_state:
+                chat.chat_barter_metadata?.[0]?.barter?.on_chain_state,
+            }
           : undefined,
     });
   });
   return chats;
-};
-
-export const getChatsFromParentGuids = async (
-  roomId: string,
-  type: SubscriptionType,
-  parentClientGeneratedGuids: string[]
-) => {
-  const response = await chain("query")({
-    chats: [
-      {
-        where: {
-          room: { _eq: roomId },
-          //@ts-ignore
-          type: { _eq: type },
-          client_generated_uuid: { _in: parentClientGeneratedGuids },
-        },
-      },
-      {
-        id: true,
-        uuid: true,
-        message: true,
-        client_generated_uuid: true,
-        created_at: true,
-        message_kind: true,
-        parent_client_generated_uuid: true,
-      },
-    ],
-  });
-  return response.chats || [];
 };
 
 export const updateSecureTransfer = async (

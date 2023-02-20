@@ -14,8 +14,7 @@ import {
   Loading,
   ProxyImage,
   SuccessButton,
-  useUserMetadata,
-} from "@coral-xyz/react-common";
+ useBreakpoints,  useUserMetadata } from "@coral-xyz/react-common";
 import {
   unreadCount,
   useFriendship,
@@ -29,7 +28,6 @@ import { Badge, IconButton, List, ListItem, Typography } from "@mui/material";
 import { useRecoilState } from "recoil";
 
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
-import { useBreakpoints } from "../../common/Layout/hooks";
 import {
   NavStackEphemeral,
   NavStackScreen,
@@ -520,6 +518,7 @@ function NotificationListItem({
                 style={{ fontSize: 30, marginTop: 15 }}
                 variant={"dot"}
                 color={"primary"}
+                // @ts-expect-error Type 'RecoilState<number' is not assignable to type 'ReactNode'
                 badgeContent={unreadCount}
               ></Badge>
             )}

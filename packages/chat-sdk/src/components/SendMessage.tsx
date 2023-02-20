@@ -15,11 +15,14 @@ import { v4 as uuidv4 } from "uuid";
 import { CustomAutoComplete, MessageInput } from "./messageInput/MessageInput";
 import { MessageInputProvider } from "./messageInput/MessageInputProvider";
 import { Attachment } from "./Attachment";
+import { Barter } from "./Barter";
 import { useChatContext } from "./ChatContext";
 import { EmojiPickerComponent } from "./EmojiPicker";
 import { GifPicker } from "./GifPicker";
 import { ReplyContainer } from "./ReplyContainer";
 import { SecureTransfer } from "./SecureTransfer";
+
+const BARTER_ENABLED = false;
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
@@ -102,11 +105,12 @@ export const SendMessage = ({
   const { uuid } = useUser();
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
-  const [emojiMenuOpen, setEmojiMenuOpen] = useState(false);
+  const [pluginMenuOpen, setPluginMenuOpen] = useState(false);
 
   const theme = useCustomTheme();
   const activeSolanaWallet = useActiveSolanaWallet();
   const inputRef = useRef<any>(null);
+  const { openPlugin, setOpenPlugin } = useChatContext();
 
   const {
     remoteUserId,
@@ -345,19 +349,19 @@ export const SendMessage = ({
                 },
               }}
               onClick={() => {
-                setEmojiMenuOpen(!emojiMenuOpen);
+                setPluginMenuOpen(!pluginMenuOpen);
               }}
             >
-              {emojiMenuOpen ? (
+              {pluginMenuOpen ? (
                 <CloseIcon style={{ fontSize: 24 }} />
               ) : (
                 <AddIcon style={{ fontSize: 24 }} />
               )}
             </IconButton>
           </div>
-          <MessageInput setEmojiMenuOpen={setEmojiMenuOpen} />
+          <MessageInput setPluginMenuOpen={setPluginMenuOpen} />
         </div>
-        {emojiMenuOpen && (
+        {pluginMenuOpen && (
           <div style={{ display: "flex", marginLeft: 8, paddingBottom: 5 }}>
             <div
               style={{
@@ -390,6 +394,15 @@ export const SendMessage = ({
                 height: "28px",
               }}
             />
+            {type === "individual" && BARTER_ENABLED && (
+              <Barter
+                setOpenPlugin={setOpenPlugin}
+                onMediaSelect={onMediaSelect}
+                buttonStyle={{
+                  height: "28px",
+                }}
+              />
+            )}
             {activeSolanaWallet?.publicKey && (
               <SecureTransfer
                 buttonStyle={{
