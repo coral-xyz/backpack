@@ -136,6 +136,12 @@ export function ChatListItem({
     .map((x) => (x.type === "tag" ? users[x.value]?.username : x.value))
     .join("");
 
+  let messagePreview = "";
+  if (printText) {
+    messagePreview =
+      printText.length > 25 ? printText.substring(0, 22) + "..." : printText;
+  }
+
   function formatAMPM(date: Date) {
     let hours = date.getHours();
     let minutes: string | number = date.getMinutes();
@@ -255,7 +261,7 @@ export function ChatListItem({
                     : theme.custom.colors.smallTextColor,
                 }}
               >
-                {printText?.substr(0, 25) || ""}
+                {messagePreview}
               </div>
             </div>
           </div>

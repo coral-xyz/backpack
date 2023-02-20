@@ -1,4 +1,3 @@
-import React from "react";
 import { NAV_COMPONENT_MESSAGE_CHAT, parseMessage } from "@coral-xyz/common";
 import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -13,8 +12,8 @@ export function ParsedMessage({ message }) {
   const theme = useCustomTheme();
   const { usersMetadata } = useChatContext();
   return (
-    <div style={{ display: "flex" }}>
-      {parts.map((part, i) => {
+    <>
+      {parts.map((part) => {
         if (part.type === "text") {
           return (
             <span style={{ wordBreak: "break-word" }}>
@@ -26,7 +25,7 @@ export function ParsedMessage({ message }) {
           if (user) {
             const handle = `@${user.username}`;
             return (
-              <div
+              <span
                 onClick={() => {
                   push({
                     title: `@${user.username}`,
@@ -39,16 +38,11 @@ export function ParsedMessage({ message }) {
                 }}
                 style={{
                   cursor: "pointer",
-                  display: "flex",
                   color: theme.custom.colors.blue,
                 }}
               >
-                <div>
-                  {i > 0 && <>&nbsp;</>}
-                  {handle}
-                  {i < parts.length - 1 && <>&nbsp;</>}
-                </div>
-              </div>
+                {handle}
+              </span>
             );
           } else {
             return (
@@ -65,6 +59,6 @@ export function ParsedMessage({ message }) {
           }
         }
       })}
-    </div>
+    </>
   );
 }

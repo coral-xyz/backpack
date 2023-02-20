@@ -210,6 +210,7 @@ enum SwapState {
 export function Swap({ blockchain }: { blockchain: Blockchain }) {
   const isDark = useDarkMode();
   const nav = useNavigation();
+
   useEffect(() => {
     nav.setOptions({
       headerTitle: "Swap",

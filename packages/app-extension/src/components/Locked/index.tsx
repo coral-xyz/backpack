@@ -5,6 +5,7 @@ import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import {
   Backpack,
   EmptyState,
+  LocalImage,
   PrimaryButton,
   ProxyImage,
   RedBackpack,
@@ -16,6 +17,7 @@ import { Error, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 
 import { WithDrawer } from "../common/Layout/Drawer";
+import { lockScreenKey, lockScreenKeyImage } from "../Unlocked/Nfts/Detail";
 
 import { LockedMenu } from "./LockedMenu";
 
@@ -25,13 +27,25 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const user = useUser();
-  const avatarUrl = useAvatarUrl(120, user.username);
 
   const [migrationFailed, setMigrationFailed] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<boolean>(false);
+
+  const { uuid, nft } = (() => {
+    try {
+      return JSON.parse(
+        window.localStorage.getItem(lockScreenKey(user.uuid)) ??
+          JSON.stringify({ uuid: undefined, nft: undefined })
+      );
+    } catch {
+      return { uuid: undefined, nft: undefined };
+    }
+  })();
+
+  const isFullScreen = uuid === user.uuid && nft !== undefined;
 
   const _onUnlock = async (e: any) => {
     e.preventDefault();
@@ -79,32 +93,22 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         <Box>
           <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
           <div style={{ marginTop: "24px" }}>
-            <BackpackHeader />
+            <BackpackHeader forceWhite={isFullScreen} style={{ zIndex: 2 }} />
             <div
               style={{
                 position: "relative",
               }}
             >
-              <div style={{}}>
-                <ProxyImage
-                  src={avatarUrl}
-                  style={{
-                    height: "120px",
-                    width: "120px",
-                    borderRadius: "60px",
-                    position: "absolute",
-                    bottom: -152,
-                    transform: "translate(-50%, 0%)",
-                    transformOrigin: undefined,
-                    display: "inline",
-                  }}
-                />
-              </div>
+              <LockScreenAvatar
+                isFullScreen={isFullScreen}
+                nft={nft}
+                user={user}
+              />
             </div>
           </div>
         </Box>
 
-        <Box style={{ marginBottom: 74 }}>
+        <Box style={{ zIndex: 1, marginBottom: 74 }}>
           <form onSubmit={_onUnlock} noValidate>
             <Box sx={{ margin: "0 12px 12px 12px" }}>
               <TextInput
@@ -143,7 +147,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
           >
             <Typography
               sx={{
-                color: theme.custom.colors.secondary,
+                color: isFullScreen ? "white" : theme.custom.colors.secondary,
                 fontSize: "16px",
                 textAlign: "center",
                 cursor: "pointer",
@@ -161,6 +165,79 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         <MigrationFailed />
       </WithDrawer>
     </Box>
+  );
+}
+
+function LockScreenAvatar({
+  isFullScreen,
+  nft,
+  user,
+}: {
+  isFullScreen: boolean;
+  nft: any;
+  user: any;
+}) {
+  const avatarUrl = useAvatarUrl(120, user.username);
+  return (
+    <div style={{}}>
+      {isFullScreen ? (
+        <>
+          <div
+            style={{
+              position: "fixed",
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              background: "black",
+              opacity: 0.2,
+              zIndex: 1,
+            }}
+          />
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+            }}
+          >
+            <LocalImage
+              localKey={lockScreenKeyImage(user.uuid)}
+              src={avatarUrl}
+              style={{
+                height: "100vh",
+                position: "absolute",
+                top: 0,
+                transform: "translate(-50%, 0%)",
+                transformOrigin: undefined,
+              }}
+              loadingStyles={{
+                position: "fixed",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                transform: "inherit",
+              }}
+            />
+          </div>
+        </>
+      ) : (
+        <LocalImage
+          localKey={lockScreenKeyImage(user.uuid)}
+          src={avatarUrl}
+          style={{
+            height: "120px",
+            width: "120px",
+            borderRadius: "60px",
+            position: "absolute",
+            bottom: -152,
+            transform: "translate(-50%, 0%)",
+            transformOrigin: undefined,
+            display: "inline",
+          }}
+        />
+      )}
+    </div>
   );
 }
 
@@ -184,8 +261,12 @@ function MigrationFailed() {
 
 export function BackpackHeader({
   disableUsername,
+  forceWhite,
+  style,
 }: {
   disableUsername?: boolean;
+  forceWhite?: boolean;
+  style?: React.CSSProperties;
 }) {
   const theme = useCustomTheme();
   const user = useUser();
@@ -197,6 +278,7 @@ export function BackpackHeader({
         marginRight: "auto",
         display: "block",
         position: "relative",
+        ...style,
       }}
     >
       <div style={{ display: "flex" }}>
@@ -208,14 +290,14 @@ export function BackpackHeader({
           }}
         />
       </div>
-      <Backpack fill={theme.custom.colors.fontColor} />
+      <Backpack fill={forceWhite ? "white" : theme.custom.colors.fontColor} />
       <Typography
         sx={{
           textAlign: "center",
           lineHeight: "24px",
           fontSize: "16px",
           fontWeight: "500",
-          color: theme.custom.colors.secondary,
+          color: forceWhite ? "white" : theme.custom.colors.secondary,
           marginTop: "8px",
         }}
       >

@@ -730,7 +730,6 @@ export function Sending({
               marginLeft: "auto",
               marginRight: "auto",
             }}
-            thickness={6}
           />
         )}
       </div>
@@ -922,7 +921,6 @@ export function useIsValidAddress(
         }
 
         const account = await solanaConnection?.getAccountInfo(pubkey);
-        console.log("ext:account", account);
 
         // Null data means the account has no lamports. This is valid.
         if (!account) {

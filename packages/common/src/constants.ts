@@ -623,6 +623,13 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     collectionId: "3YysdoK6ZcJFEL5QJxccY3q8AcTUFpahgbp4HFgBtjNF",
   },
   {
+    id: "backpack-chat-internal",
+    name: "Backpack Team",
+    image: "https://one.xnfts.dev/BackpackTeamNFT.gif",
+
+    collectionId: "BjN9u6zneFrjzuC7LH3eLaGC9FgYLnwQJMGA1xzVBKsj",
+  },
+  {
     id: "bonkz",
     name: "BONKz",
     image:

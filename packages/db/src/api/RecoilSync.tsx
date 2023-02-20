@@ -54,36 +54,13 @@ export class RecoilSync {
       return -1;
     });
     for (let i = 0; i < sortedUsersMetadata?.length; i++) {
-      await this.storeImageInLocalStorage(sortedUsersMetadata[i]?.image);
+      await storeImageInLocalStorage(sortedUsersMetadata[i]?.image);
       await this.sleep(60);
     }
   }
 
   async sleep(timer) {
     await new Promise((resolve) => setTimeout(resolve, timer * 1000));
-  }
-
-  async storeImageInLocalStorage(url: string) {
-    return new Promise((resolve, reject) => {
-      const canvas = document.createElement("canvas");
-      //@ts-ignore
-      const context = canvas.getContext("2d");
-      const base_image = new Image();
-      base_image.onload = function () {
-        const aspectRatio = base_image.width / base_image.height;
-        canvas.width = 200;
-        canvas.height = 200 / aspectRatio;
-        //@ts-ignore
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        //@ts-ignore
-        context.drawImage(base_image, 0, 0, canvas.width, canvas.height);
-        // @ts-ignore
-        const dataURL = canvas.toDataURL("image/webp");
-        localStorage.setItem(`img-${url}`, dataURL);
-        resolve("");
-      };
-      base_image.src = url;
-    });
   }
 
   getChatsForRoom(uuid: string, room: string, type: SubscriptionType) {
@@ -93,4 +70,32 @@ export class RecoilSync {
   getAllUserMetadata(uuid: string) {
     return getDb(uuid).users.toArray();
   }
+}
+
+export async function storeImageInLocalStorage(
+  url: string,
+  key?: string,
+  fullImage?: boolean
+) {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement("canvas");
+    //@ts-ignore
+    const context = canvas.getContext("2d");
+    const base_image = new Image();
+    base_image.crossOrigin = "anonymous";
+    base_image.onload = function () {
+      const aspectRatio = base_image.width / base_image.height;
+      canvas.width = fullImage ? base_image.width : 200;
+      canvas.height = fullImage ? base_image.height : 200 / aspectRatio;
+      //@ts-ignore
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      //@ts-ignore
+      context.drawImage(base_image, 0, 0, canvas.width, canvas.height);
+      // @ts-ignore
+      const dataURL = canvas.toDataURL("image/webp");
+      localStorage.setItem(key ?? `img-${url}`, dataURL);
+      resolve("");
+    };
+    base_image.src = url;
+  });
 }
