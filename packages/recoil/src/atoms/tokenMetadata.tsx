@@ -21,6 +21,8 @@ export const tokenMetadata = selectorFamily<
           //TODO: implement for eth
           return {
             name: "",
+            image: "",
+            symbol: "",
           };
         default:
           throw new Error(`unsupported blockchain: ${blockchain}`);
@@ -51,7 +53,7 @@ export const solanaTokenMetadata = selectorFamily<
       } catch (e) {
         console.error(e);
         const registry = get(splTokenRegistry);
-        const tokenMetadata = registry.get(mintAddress);
+        const tokenMetadata = registry?.get(mintAddress);
         if (tokenMetadata) {
           return {
             image: tokenMetadata.logoURI,

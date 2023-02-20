@@ -22,6 +22,8 @@ import { GifPicker } from "./GifPicker";
 import { ReplyContainer } from "./ReplyContainer";
 import { SecureTransfer } from "./SecureTransfer";
 
+const BARTER_ENABLED = false;
+
 const useStyles = makeStyles((theme: any) =>
   createStyles({
     outerDiv: {
@@ -377,15 +379,6 @@ export const SendMessage = ({
                 height: "28px",
               }}
             />
-            <EmojiPickerComponent
-              setEmojiPicker={setEmojiPicker}
-              emojiPicker={emojiPicker}
-              setGifPicker={setGifPicker}
-              inputRef={inputRef}
-              buttonStyle={{
-                height: "28px",
-              }}
-            />
             <GifPicker
               sendMessage={sendMessage}
               setGifPicker={setGifPicker}
@@ -401,7 +394,7 @@ export const SendMessage = ({
                 height: "28px",
               }}
             />
-            {type === "individual" && (
+            {type === "individual" && BARTER_ENABLED && (
               <Barter
                 setOpenPlugin={setOpenPlugin}
                 onMediaSelect={onMediaSelect}
