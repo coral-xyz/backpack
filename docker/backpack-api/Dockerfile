@@ -11,6 +11,7 @@ COPY ["backend/native/backpack-api", "./backend/native/backpack-api"]
 COPY ["backend/native/zeus", "./backend/native/zeus"]
 COPY ["backend/native/chat-zeus", "./backend/native/chat-zeus"]
 COPY ["backend/native/tsconfig.json", "./backend/native/tsconfig.json"]
+COPY ["backend/native/backend-common", "./backend/native/backend-common"]
 
 RUN cd /base && yarn install && yarn run build && cd /base/backend/native/backpack-api && yarn run build
 

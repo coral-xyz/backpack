@@ -6,10 +6,7 @@ import type {
   RemoteUserData,
 } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import {
-  BubbleTopLabel,
-  EmptyState,
-} from "@coral-xyz/react-common";
+import { BubbleTopLabel, EmptyState } from "@coral-xyz/react-common";
 import {
   useFriendships,
   useGroupCollections,

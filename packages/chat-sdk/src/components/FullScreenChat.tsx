@@ -8,6 +8,7 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import FileUploadIcon from "@mui/icons-material/FileUploadRounded";
 import { CircularProgress, Typography } from "@mui/material";
 
+import { MessagePluginRenderer } from "../MessagePluginRenderer";
 import { base64ToArrayBuffer } from "../utils/imageUploadUtils";
 
 import { Banner } from "./Banner";
@@ -108,6 +109,7 @@ export const FullScreenChat = ({
           display: "flex",
           flexFlow: "column",
           height: "100%",
+          position: "relative",
           background: theme.custom.colors.chatFadeGradient,
         },
       })}
@@ -236,6 +238,7 @@ export const FullScreenChat = ({
           </div>
         </div>
       </div>
+
       <div style={{ position: "absolute", bottom: 0, width: "100%" }}>
         <SendMessage
           uploadingFile={uploadingFile}

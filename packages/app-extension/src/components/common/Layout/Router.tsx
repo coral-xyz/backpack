@@ -23,7 +23,7 @@ import {
   ProfileScreen,
   RequestsScreen,
 } from "@coral-xyz/message-sdk";
-import { useUsersMetadata } from "@coral-xyz/react-common";
+import { useBreakpoints,useUsersMetadata  } from "@coral-xyz/react-common";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   useDarkMode,
@@ -50,7 +50,6 @@ import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/Detail";
 import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
 import { SettingsButton } from "../../Unlocked/Settings";
 
-import { useBreakpoints } from "./hooks";
 import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
 import { Scrollbar } from "./Scrollbar";

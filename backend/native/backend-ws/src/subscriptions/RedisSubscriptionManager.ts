@@ -9,15 +9,9 @@ import type { RedisClientType } from "redis";
 import { createClient } from "redis";
 
 import { REDIS_URL } from "../config";
-import { postChat } from "../db/chats";
-import {
-  updateLatestMessage,
-  updateLatestMessageGroup,
-} from "../db/friendships";
+import { postChat, updateLatestMessage, updateLatestMessageGroup, enrichMessages } from "@coral-xyz/backend-common";
 import { Redis } from "../redis/Redis";
 import type { User } from "../users/User";
-
-import { enrichMessages } from "./Room";
 
 export class RedisSubscriptionManager {
   private static instance: RedisSubscriptionManager;
@@ -196,7 +190,8 @@ export class RedisSubscriptionManager {
           },
         ],
         room,
-        type
+        type,
+        true
       )
     )[0];
 

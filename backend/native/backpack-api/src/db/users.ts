@@ -117,7 +117,7 @@ export const getUserByUsername = async (username: string) => {
 /**
  * Get a user by their id.
  */
-export const getUser = async (id: string) => {
+export const getUser = async (id: string, onlyActiveKeys?: boolean) => {
   const response = await chain("query")({
     auth_users_by_pk: [
       {
@@ -141,7 +141,7 @@ export const getUser = async (id: string) => {
   if (!response.auth_users_by_pk) {
     throw new Error("user not found");
   }
-  return transformUser(response.auth_users_by_pk);
+  return transformUser(response.auth_users_by_pk, onlyActiveKeys);
 };
 
 export const getReferrer = async (userId: string) => {

@@ -1,5 +1,10 @@
 import type { FromServer, ToServer } from "@coral-xyz/common";
-import { CHAT_MESSAGES, REALTIME_API_URL, WS_READY } from "@coral-xyz/common";
+import {
+  CHAT_MESSAGES,
+  EXECUTE_BARTER,
+  UPDATE_ACTIVE_BARTER,
+  WS_READY,
+} from "@coral-xyz/common";
 import EventEmitter from "eventemitter3";
 
 import { SERVER_URL } from "../config";
@@ -61,6 +66,12 @@ export class Signaling extends EventEmitter {
       switch (message.type) {
         case CHAT_MESSAGES:
           this.emit(CHAT_MESSAGES, message.payload);
+          break;
+        case UPDATE_ACTIVE_BARTER:
+          this.emit(UPDATE_ACTIVE_BARTER, message.payload);
+          break;
+        case EXECUTE_BARTER:
+          this.emit(EXECUTE_BARTER, message.payload);
           break;
         case WS_READY:
           this.emit(SIGNALING_CONNECTED);
