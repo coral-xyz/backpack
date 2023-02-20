@@ -8,7 +8,8 @@ export const vanillaStore = vanilla<{
   injectJavaScript?: (js: string) => void;
 }>((set) => ({
   injectJavaScript: undefined,
-  setInjectJavaScript: (injectJavaScript) => set(() => ({ injectJavaScript })),
+  setInjectJavaScript: (injectJavaScript: any) =>
+    set(() => ({ injectJavaScript })),
 }));
 
 export const useStore = create(vanillaStore);

@@ -7,7 +7,7 @@ import {
 } from "@coral-xyz/common-public";
 import EventEmitter from "eventemitter3";
 // use expo-secure-store if in react-native, otherwise fake-expo-secure-store.ts
-import { deleteItemAsync, getItemAsync, setItemAsync } from "expo-secure-store";
+import { getItemAsync, setItemAsync } from "expo-secure-store";
 
 import {
   MOBILE_CHANNEL_BG_REQUEST,
@@ -242,7 +242,7 @@ export function startMobileIfNeeded() {
   }: {
     data: { id: string; method: string; params: Array<any> };
   }) => {
-    const { id, method, params } = data;
+    const { method, params } = data;
     switch (method) {
       case "getLocalStorage":
         return await handleGetLocalStorage(params[0]);
@@ -344,7 +344,7 @@ async function postMsgFromWorker(msg: any) {
     includeUncontrolled: true,
     type: "window",
   });
-  clients.forEach((client) => {
+  clients.forEach((client: any) => {
     client.postMessage(msg);
   });
 }

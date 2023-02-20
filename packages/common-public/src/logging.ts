@@ -61,7 +61,7 @@ async function _mobileLog(...args: any[]) {
       type: "window",
     });
 
-    clients.forEach((client) => {
+    clients.forEach((client: any) => {
       client.postMessage({
         channel: MOBILE_CHANNEL_LOGS,
         data: args,

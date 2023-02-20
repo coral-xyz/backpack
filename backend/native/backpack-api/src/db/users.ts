@@ -7,6 +7,7 @@ import { HASURA_URL, JWT } from "../config";
 import { updatePublicKey } from "./publicKey";
 
 const chain = Chain(HASURA_URL, {
+  // @ts-ignore
   headers: {
     Authorization: `Bearer ${JWT}`,
   },
@@ -168,7 +169,7 @@ const transformUsers = (
     public_keys: Array<{
       blockchain: string;
       public_key: string;
-      user_active_publickey_mappings?: { user_id: string }[];
+      user_active_publickey_mappings?: { user_id: unknown }[];
     }>;
   }[],
   onlyActiveKeys?: boolean
@@ -185,7 +186,7 @@ const transformUser = (
     public_keys: Array<{
       blockchain: string;
       public_key: string;
-      user_active_publickey_mappings?: { user_id: string }[];
+      user_active_publickey_mappings?: { user_id: unknown }[];
     }>;
   },
   onlyActiveKeys?: boolean
@@ -291,7 +292,14 @@ export async function getUsersByPrefix({
     ],
   });
 
-  return response.auth_users || [];
+  if (!response.auth_users) {
+    return [];
+  } else {
+    return response.auth_users.filter((u) => u !== undefined) as Array<{
+      username: string;
+      id: string;
+    }>;
+  }
 }
 
 /**
@@ -399,8 +407,8 @@ export const getUserByPublicKeyAndChain = async (
   blockchain: Blockchain
 ): Promise<
   {
-    id: string;
-    username: string;
+    id: unknown;
+    username: unknown;
   }[]
 > => {
   const response = await chain("query")({

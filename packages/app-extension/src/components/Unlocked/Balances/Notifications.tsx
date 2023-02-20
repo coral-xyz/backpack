@@ -14,7 +14,9 @@ import {
   Loading,
   ProxyImage,
   SuccessButton,
- useBreakpoints,  useUserMetadata } from "@coral-xyz/react-common";
+  useBreakpoints,
+  useUserMetadata,
+} from "@coral-xyz/react-common";
 import {
   unreadCount,
   useFriendship,
@@ -629,9 +631,6 @@ function FriendRequestListItem({
   const nav = isXs ? useNavigation() : undefined;
   const user = useUserMetadata({
     remoteUserId: parseJson(notification.body).from,
-  });
-  const friendshipValue = useFriendship({
-    userId: parseJson(notification.body).from,
   });
   const classes = useStyles();
   const theme = useCustomTheme();
