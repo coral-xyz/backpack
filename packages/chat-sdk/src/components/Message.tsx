@@ -580,7 +580,7 @@ function SecureTransferElement({
     <div className={classes.secureSendOuter}>
       {loading && <div>Loading</div>}
       {!loading && escrowState && (
-        <div>
+        <div style={{ paddingLeft: 8, paddingRight: 8 }}>
           {uuid === senderUuid ? (
             <div style={{ marginBottom: 5 }}> Sending to @{remoteUsername}</div>
           ) : (
