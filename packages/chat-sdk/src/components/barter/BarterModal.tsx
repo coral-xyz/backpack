@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { BarterResponse } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { SuccessButton } from "@coral-xyz/react-common";
+import { SecondaryButton, SuccessButton } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -77,22 +77,20 @@ function InternalModal({
           background: theme.custom.colors.invertedTertiary,
         }}
       >
-        <Typography
-          id="transition-modal-title"
-          variant="h6"
-          component="h2"
-          style={{ color: theme.custom.colors.background }}
-        >
-          Barter
-        </Typography>
-
         {!barterState && "loading"}
         {barterState && (
           <div style={{ display: "flex" }}>
-            <div style={{ flex: 1, marginRight: 20 }}>
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                borderRight: `1px solid ${theme.custom.colors.icon}`,
+              }}
+            >
               <div
                 style={{
-                  fontSize: 25,
+                  fontSize: 20,
                   padding: 10,
                   color: theme.custom.colors.background,
                 }}
@@ -100,18 +98,29 @@ function InternalModal({
                 Your offer
               </div>
               <br />
-              <RemoteSelection selection={barterState?.localOffers || []} />
-              <SuccessButton
-                label={"Execute"}
-                onClick={() => {
-                  // send request to contract
-                }}
-              />
+              <div style={{ height: "100%", flex: 1 }}>
+                <RemoteSelection selection={barterState?.localOffers || []} />
+              </div>
+              <div style={{ padding: 10 }}>
+                <SecondaryButton
+                  label={"Execute"}
+                  onClick={() => {
+                    // send request to contract
+                  }}
+                />
+              </div>
             </div>
-            <div style={{ flex: 1 }}>
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                borderLeft: `1px solid ${theme.custom.colors.icon}`,
+              }}
+            >
               <div
                 style={{
-                  fontSize: 25,
+                  fontSize: 20,
                   padding: 10,
                   color: theme.custom.colors.background,
                 }}
@@ -119,13 +128,17 @@ function InternalModal({
                 Their offer
               </div>
               <br />
-              <RemoteSelection selection={barterState?.remoteOffers || []} />
-              <SuccessButton
-                label={"Execute"}
-                onClick={() => {
-                  // send request to contract
-                }}
-              />
+              <div style={{ height: "100%", flex: 1 }}>
+                <RemoteSelection selection={barterState?.remoteOffers || []} />
+              </div>
+              <div style={{ padding: 10 }}>
+                <SecondaryButton
+                  label={"Execute"}
+                  onClick={() => {
+                    // send request to contract
+                  }}
+                />
+              </div>
             </div>
           </div>
         )}

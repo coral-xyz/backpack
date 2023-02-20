@@ -67,6 +67,7 @@ type CustomColors = {
   bg2: string;
   bg3: string;
   bg4: string;
+  invertedBg4: string;
   banner: string;
   fontColor: string;
   fontColor2: string;
@@ -206,6 +207,7 @@ const DARK_COLORS: CustomColors = {
   bg2: BACKGROUND_COLOR_2,
   bg3: BACKGROUND_COLOR_0,
   bg4: "rgba(255, 255, 255, 0.2)",
+  invertedBg4: LIGHT_BACKGROUND_COLOR_0,
   nav: BACKGROUND_COLOR_1,
   fontColor: FONT_COLOR,
   fontColor2: FONT_COLOR_2,
@@ -287,6 +289,7 @@ const LIGHT_COLORS: CustomColors = {
   bg2: LIGHT_BACKGROUND_COLOR_2,
   bg3: LIGHT_BACKGROUND_COLOR_1,
   bg4: LIGHT_BACKGROUND_COLOR_0,
+  invertedBg4: "rgba(255, 255, 255, 0.2)",
   fontColor: LIGHT_FONT_COLOR,
   successButton: "#2ecc71",
   fontColor2: LIGHT_FONT_COLOR_2,

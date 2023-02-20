@@ -1,13 +1,10 @@
 import { useBreakpoints } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
-import AddIcon from "@mui/icons-material/Add";
 
-import { useBarterContext } from "./BarterContext";
-
-export const AddAssetsCard = () => {
-  const { setSelectNft } = useBarterContext();
+export const AbsolutelyNothingCard = () => {
   const theme = useCustomTheme();
   const { isXs } = useBreakpoints();
+
   const getDimensions = () => {
     if (isXs) {
       return 140;
@@ -17,20 +14,13 @@ export const AddAssetsCard = () => {
 
   return (
     <div
-      onClick={() => {
-        setSelectNft(true);
-      }}
       style={{
-        cursor: "pointer",
-        background: theme.custom.colors.invertedBg4,
         color: theme.custom.colors.icon,
         width: getDimensions(),
         height: getDimensions(),
         justifyContent: "center",
         textAlign: "center",
         fontSize: 16,
-        borderRadius: 8,
-        margin: isXs ? 4 : 12,
       }}
     >
       <div
@@ -39,11 +29,12 @@ export const AddAssetsCard = () => {
           flexDirection: "column",
           justifyContent: "center",
           height: "100%",
+          border: `2px solid ${theme.custom.colors.icon}`,
+          borderRadius: 8,
         }}
       >
         <div style={{ display: "inline-flex", justifyContent: "center" }}>
-          <AddIcon />
-          <div>Add assets</div>
+          Absolutely nothing!
         </div>
       </div>
     </div>

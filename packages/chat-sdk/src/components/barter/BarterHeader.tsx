@@ -1,4 +1,5 @@
-import { LocalImage,useUsersMetadata } from "@coral-xyz/react-common";
+import { LocalImage, useUsersMetadata } from "@coral-xyz/react-common";
+import { useUser } from "@coral-xyz/recoil";
 import CloseIcon from "@mui/icons-material/Close";
 import { createStyles, makeStyles } from "@mui/styles";
 
@@ -13,15 +14,19 @@ const useStyles = makeStyles((theme: any) =>
       flex: 1,
       color: theme.custom.colors.background,
       display: "flex",
+      justifyContent: "center",
+      marginTop: 16,
     },
     avatar: {
-      width: 32,
       height: 32,
       borderRadius: "50%",
+      display: "flex",
+      justifyContent: "center",
+      width: "100%",
     },
     title: {
       flex: 1,
-      fontSize: 22,
+      fontSize: 18,
       padding: 10,
       textAlign: "center",
     },
@@ -30,6 +35,7 @@ const useStyles = makeStyles((theme: any) =>
     },
     iconOuter: {
       cursor: "pointer",
+      paddingLeft: 5,
     },
   })
 );
@@ -37,9 +43,11 @@ const useStyles = makeStyles((theme: any) =>
 export const BarterHeader = () => {
   const classes = useStyles();
   const { setOpenPlugin, remoteUserId } = useChatContext();
+  const { uuid } = useUser();
 
-  const remoteUsers = useUsersMetadata({ remoteUserIds: [remoteUserId] });
-  const remoteUserImage = remoteUsers?.[0]?.image;
+  const remoteUsers = useUsersMetadata({ remoteUserIds: [remoteUserId, uuid] });
+  const remoteUserImage = remoteUsers?.[remoteUserId]?.image;
+  const localUserImage = remoteUsers?.[uuid]?.image;
 
   return (
     <div className={classes.topDiv}>
@@ -51,20 +59,22 @@ export const BarterHeader = () => {
           <div className={classes.avatar}>
             <LocalImage
               style={{ width: 32, height: 32, borderRadius: "50%" }}
-              src={remoteUserImage}
+              src={localUserImage}
             />
           </div>
           <div className={classes.title}>Your offer</div>
         </div>
       </div>
       <div className={classes.midDiv}>
-        <div className={classes.avatar}>
-          <LocalImage
-            style={{ width: 32, height: 32, borderRadius: "50%" }}
-            src={remoteUserImage}
-          />
+        <div style={{ flex: 1 }}>
+          <div className={classes.avatar}>
+            <LocalImage
+              style={{ width: 32, height: 32, borderRadius: "50%" }}
+              src={remoteUserImage}
+            />
+          </div>
+          <div className={classes.title}>Their offer</div>
         </div>
-        <div className={classes.title}>Their offer</div>
       </div>
     </div>
   );
