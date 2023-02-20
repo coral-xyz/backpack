@@ -280,6 +280,8 @@ export async function getUsersByPrefix({
           username: { _like: `${usernamePrefix}%` },
           id: { _neq: uuid },
         },
+        //@ts-ignore
+        order_by: [{ username: "asc" }],
         limit: limit || 25,
       },
       {
