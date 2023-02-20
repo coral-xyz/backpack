@@ -26,7 +26,13 @@ export const PopoverMenu: FunctionComponent<PopoverProps> = ({
   );
 };
 
-export const PopoverMenuItemGroup: FunctionComponent = ({ children }) => {
+type GroupProps = {
+  children?: React.ReactNode;
+};
+
+export const PopoverMenuItemGroup: FunctionComponent<GroupProps> = ({
+  children,
+}) => {
   const theme = useCustomTheme();
   return (
     <div

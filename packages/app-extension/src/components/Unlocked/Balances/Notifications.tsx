@@ -518,6 +518,7 @@ function NotificationListItem({
                 style={{ fontSize: 30, marginTop: 15 }}
                 variant={"dot"}
                 color={"primary"}
+                // @ts-expect-error Type 'RecoilState<number' is not assignable to type 'ReactNode'
                 badgeContent={unreadCount}
               ></Badge>
             )}

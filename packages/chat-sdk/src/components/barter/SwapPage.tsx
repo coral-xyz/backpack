@@ -141,7 +141,7 @@ function RemoteNfts({ selection }: { selection: BarterOffers }) {
       style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
     >
       {selection.map((s) => (
-        <Suspense fallback={() => <></>}>
+        <Suspense>
           <RemoteNft mint={s.mint} />
         </Suspense>
       ))}
@@ -207,7 +207,7 @@ function RemoteTokens({ selection }: { selection: BarterOffers }) {
       style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
     >
       {selection.map((s) => (
-        <Suspense fallback={() => <></>}>
+        <Suspense>
           <RemoteToken mint={s.mint} amount={s.amount} />
         </Suspense>
       ))}

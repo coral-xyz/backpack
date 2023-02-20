@@ -22,7 +22,7 @@
     "@coral-xyz/themes": "*",
     "@solana/web3.js": "^1.63.1",
     "eventemitter3": "^4.0.7",
-    "react": "^17.0.0",
+    "react": "18.2.0",
     "react-reconciler": "^0.26.0"
   },
   "devDependencies": {
