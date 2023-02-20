@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { CustomAutoComplete, MessageInput } from "./messageInput/MessageInput";
 import { MessageInputProvider } from "./messageInput/MessageInputProvider";
+import { AboveMessagePluginRenderer } from "./AboveMessagePluginRenderer";
 import { Attachment } from "./Attachment";
 import { Barter } from "./Barter";
 import { useChatContext } from "./ChatContext";
@@ -106,11 +107,12 @@ export const SendMessage = ({
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
   const [pluginMenuOpen, setPluginMenuOpen] = useState(false);
+  const [aboveMessagePlugin, setAboveMessagePlugin] = useState("");
 
   const theme = useCustomTheme();
   const activeSolanaWallet = useActiveSolanaWallet();
   const inputRef = useRef<any>(null);
-  const { openPlugin, setOpenPlugin } = useChatContext();
+  const { setOpenPlugin } = useChatContext();
 
   const {
     remoteUserId,
@@ -329,6 +331,13 @@ export const SendMessage = ({
             text={activeReply.text}
           />
         )}
+        {aboveMessagePlugin && (
+          <AboveMessagePluginRenderer
+            aboveMessagePlugin={aboveMessagePlugin}
+            sendMessage={sendMessage}
+            setAboveMessagePlugin={setAboveMessagePlugin}
+          />
+        )}
         <CustomAutoComplete />
         <div style={{ display: "flex" }}>
           <div
@@ -403,20 +412,12 @@ export const SendMessage = ({
                 }}
               />
             )}
-            {activeSolanaWallet?.publicKey && (
+            {activeSolanaWallet?.publicKey && type === "individual" && (
               <SecureTransfer
                 buttonStyle={{
                   height: "28px",
                 }}
-                remoteUserId={remoteUserId}
-                onTxFinalized={({ signature, counter, escrow }) => {
-                  sendMessage("Secure transfer", "secure-transfer", {
-                    signature,
-                    counter,
-                    escrow,
-                    current_state: "pending",
-                  });
-                }}
+                setAboveMessagePlugin={setAboveMessagePlugin}
               />
             )}
           </div>
