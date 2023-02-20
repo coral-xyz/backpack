@@ -29,7 +29,7 @@ import BlockIcon from "@mui/icons-material/Block";
 import SearchIcon from "@mui/icons-material/Search";
 import { List, ListItem } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
-import { createStyles, makeStyles } from "@mui/styles";
+import { makeStyles } from "tss-react/mui";
 
 import {
   useNavigation,
@@ -40,12 +40,13 @@ import { useIsValidAddress } from "./Send";
 
 let debouncedTimer = 0;
 
-const useStyles = makeStyles((theme: any) =>
-  createStyles({
+const useStyles = makeStyles<void, "hoverChild">()(
+  (theme: any, _params, classes) => ({
     hoverParent: {
-      "&:hover $hoverChild, & .Mui-focused $hoverChild": {
-        visibility: "visible",
-      },
+      [`&:hover .${classes.hoverChild}, & .Mui-focused .${classes.hoverChild}`]:
+        {
+          visibility: "visible",
+        },
     },
     hoverChild: {
       visibility: "hidden",
@@ -145,7 +146,7 @@ export const AddressSelector = ({
   blockchain: Blockchain;
   token: TokenDataWithPrice;
 }) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const nav = useNavigationEphemeral();
   const [inputContent, setInputContent] = useState("");
   const { provider: solanaProvider } = useAnchorContext();
@@ -288,7 +289,7 @@ function MembersList({
 }) {
   const theme = useCustomTheme();
   const MEMBER_THRESHOLD = 3;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const renderMembersStr = () => {
     if (members.length <= MEMBER_THRESHOLD) {
       return members.map(
@@ -488,7 +489,7 @@ const AddressListItem = ({
   isLast: boolean;
 }) => {
   const theme = useCustomTheme();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { push } = useNavigation();
   const { blockchain, token } = useAddressSelectorContext();
 

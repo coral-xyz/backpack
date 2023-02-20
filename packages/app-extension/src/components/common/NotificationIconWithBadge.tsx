@@ -1,7 +1,7 @@
 import { useUnreadCount } from "@coral-xyz/recoil";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { Badge } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { makeStyles } from "tss-react/mui";
 const badgeStyle = {
   "& .MuiBadge-badge": {
     color: "white",
@@ -10,7 +10,7 @@ const badgeStyle = {
     minWidth: 16,
   },
 };
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   badge: {
     fontSize: 10,
   },
@@ -18,7 +18,7 @@ const useStyles = makeStyles(() => ({
 
 export const NotificationIconWithBadge = ({ style }: { style: any }) => {
   const unreadCount = useUnreadCount();
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   if (!unreadCount) {
     return <NotificationsIcon style={style} />;

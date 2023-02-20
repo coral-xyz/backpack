@@ -15,11 +15,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { makeStyles } from "tss-react/mui";
 
 import { CheckboxForm, Header, SubtextParagraph } from "../../common";
 import { WithCopyTooltip } from "../../common/WithCopyTooltip";
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles()((theme: any) => ({
   mnemonicInputRoot: {
     border: `${theme.custom.colors.borderFull}`,
     background: theme.custom.colors.textBackground,
@@ -75,7 +75,7 @@ export function MnemonicInput({
   customError?: string;
 }) {
   const theme = useCustomTheme();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const background = useBackgroundClient();
   const [mnemonicWords, setMnemonicWords] = useState<string[]>([
     ...Array(12).fill(""),
@@ -254,7 +254,7 @@ export function MnemonicInputFields({
   rootClass?: any;
 }) {
   const theme = useCustomTheme();
-  const classes = useStyles();
+  const { classes } = useStyles();
   if (!rootClass) {
     rootClass = classes.mnemonicInputRoot;
   }

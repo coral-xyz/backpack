@@ -153,7 +153,7 @@ export const InputListItem = ({
         height: "46px",
         padding: "10px",
       }}
-      radius={"8px"}
+      // radius={"8px"}
       button={button}
     >
       <Typography style={{ width: "80px" }}>{title}</Typography>
