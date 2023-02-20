@@ -747,13 +747,14 @@ function BurnConfirmationCard({
           )
         ).value.amount
       );
+      setState("sending");
+
       const _signature = await Solana.burnAndCloseNft(solanaCtx, {
         solDestination: solanaCtx.walletPublicKey,
         mint: new PublicKey(nft.mint.toString()),
         amount,
       });
       setSignature(_signature);
-      setState("sending");
 
       //
       // Confirm the tx.
