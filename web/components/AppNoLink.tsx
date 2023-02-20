@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import Image from 'next/image';
+import Image from 'next/legacy/image';
 
 function AppNoLink({ iconUrl, name }: AppNoLinkPros) {
   return (
