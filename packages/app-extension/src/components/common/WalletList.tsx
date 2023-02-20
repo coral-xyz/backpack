@@ -9,6 +9,7 @@ import {
   List,
   ListItem,
   MnemonicIcon,
+  QRCodeIcon,
   SecretKeyIcon,
 } from "@coral-xyz/react-common";
 import {
@@ -961,7 +962,9 @@ function WalletTypeIcon({ type, fill }: { type: string; fill?: string }) {
   switch (type) {
     case "imported":
       return <SecretKeyIcon fill={fill} style={style} />;
-    case "hardware":
+    case "keystone":
+      return <QRCodeIcon fill={fill} style={style} />;
+    case "ledger":
       return <HardwareIcon fill={fill} style={style} />;
     case "derived":
       return <MnemonicIcon fill={fill} style={style} />;

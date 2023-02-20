@@ -296,8 +296,11 @@ export class SolanaLedgerKeyring
 }
 
 export class SolanaKeystoneKeyringFactory implements KeystoneKeyringFactory {
-  public fromAccounts(accounts: Array<WalletDescriptor>): KeystoneKeyring {
-    return new SolanaKeystoneKeyring({ accounts });
+  public fromAccounts(
+    accounts: Array<WalletDescriptor>,
+    xfp?: string
+  ): KeystoneKeyring {
+    return new SolanaKeystoneKeyring({ accounts, xfp });
   }
 
   public async fromUR(ur: UR): Promise<KeystoneKeyring> {

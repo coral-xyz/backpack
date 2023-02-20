@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { UR, WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
@@ -162,7 +162,15 @@ export function ImportWallets({
   );
   const [derivationPaths, setDerivationPaths] = useState<Array<string>>([]);
 
-  const disabledPublicKeys = [...importedPublicKeys, ...conflictingPublicKeys];
+  const disabledPublicKeys = useMemo(() => {
+    const loadedKeys = [...importedPublicKeys, ...conflictingPublicKeys];
+    if (action === "search") {
+      return Object.keys(balances).filter(
+        (e: string) => !loadedKeys.includes(e)
+      );
+    }
+    return loadedKeys;
+  }, [importedPublicKeys, conflictingPublicKeys, balances, action]);
 
   useEffect(() => {
     (async () => {
@@ -391,31 +399,33 @@ export function ImportWallets({
   //
   // Handles checkbox clicks to select accounts to import.
   //
-  const handleSelect = (publicKey: string, derivationPath: string) => () => {
-    const currentIndex = checkedWalletDescriptors.findIndex(
-      (a) => a.publicKey === publicKey
-    );
-    let newCheckedWalletDescriptors = [...checkedWalletDescriptors];
-    if (currentIndex === -1) {
-      // Not selected, add it
-      const walletDescriptor = {
-        derivationPath,
-        publicKey,
-      } as WalletDescriptor;
-      // Adding the account
-      if (allowMultiple) {
-        newCheckedWalletDescriptors.push(walletDescriptor);
+  const handleSelect =
+    (publicKey: string, derivationPath: string, xfp?: string) => () => {
+      const currentIndex = checkedWalletDescriptors.findIndex(
+        (a) => a.publicKey === publicKey
+      );
+      let newCheckedWalletDescriptors = [...checkedWalletDescriptors];
+      if (currentIndex === -1) {
+        // Not selected, add it
+        const walletDescriptor = {
+          derivationPath,
+          publicKey,
+          xfp,
+        } as WalletDescriptor;
+        // Adding the account
+        if (allowMultiple) {
+          newCheckedWalletDescriptors.push(walletDescriptor);
+        } else {
+          newCheckedWalletDescriptors = [walletDescriptor];
+        }
       } else {
-        newCheckedWalletDescriptors = [walletDescriptor];
+        // Removing the account
+        newCheckedWalletDescriptors.splice(currentIndex, 1);
       }
-    } else {
-      // Removing the account
-      newCheckedWalletDescriptors.splice(currentIndex, 1);
-    }
-    // TODO Sort by account indices
-    // newCheckedWalletDescriptors.sort((a, b) => a.index - b.index);
-    setCheckedWalletDescriptors(newCheckedWalletDescriptors);
-  };
+      // TODO Sort by account indices
+      // newCheckedWalletDescriptors.sort((a, b) => a.index - b.index);
+      setCheckedWalletDescriptors(newCheckedWalletDescriptors);
+    };
 
   // Symbol for balance displays
   const symbol = {
@@ -487,10 +497,10 @@ export function ImportWallets({
             >
               {walletDescriptors
                 .slice(0, DISPLAY_PUBKEY_AMOUNT)
-                .map(({ publicKey, derivationPath }) => (
+                .map(({ publicKey, derivationPath, xfp }) => (
                   <ListItemButton
                     key={publicKey.toString()}
-                    onClick={handleSelect(publicKey, derivationPath)}
+                    onClick={handleSelect(publicKey, derivationPath, xfp)}
                     sx={{
                       display: "flex",
                       paddinLeft: "16px",
@@ -511,12 +521,9 @@ export function ImportWallets({
                       >
                         <Checkbox
                           edge="start"
-                          checked={
-                            checkedWalletDescriptors.some(
-                              (a) => a.derivationPath === derivationPath
-                            ) ||
-                            importedPublicKeys.includes(publicKey.toString())
-                          }
+                          checked={checkedWalletDescriptors.some(
+                            (a) => a.derivationPath === derivationPath
+                          )}
                           tabIndex={-1}
                           disabled={disabledPublicKeys.includes(
                             publicKey.toString()

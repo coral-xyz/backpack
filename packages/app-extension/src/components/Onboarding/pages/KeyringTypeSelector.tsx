@@ -8,7 +8,7 @@ export const KeyringTypeSelector = ({
   action,
   onNext,
 }: {
-  action: "create" | "import" | "recover";
+  action: string;
   onNext: (type: "mnemonic" | "hardware") => void;
 }) => {
   return (

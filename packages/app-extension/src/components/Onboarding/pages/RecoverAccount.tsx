@@ -1,7 +1,6 @@
-import type { MutableRefObject } from "react";
+import type { MutableRefObject  } from "react";
 import { useEffect,useState } from "react";
 import type {
-  KeyringType,
   ServerPublicKey,
   SignedWalletDescriptor,
   WalletDescriptor,
@@ -22,6 +21,7 @@ import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
 import { MnemonicInput } from "../../common/Account/MnemonicInput";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
+import type { HardwareType } from "../../Onboarding/pages/HardwareOnboard";
 import { useHardwareOnboardSteps } from "../../Onboarding/pages/HardwareOnboard";
 
 import { AlreadyOnboarded } from "./AlreadyOnboarded";
@@ -69,12 +69,16 @@ export const RecoverAccount = ({
       serverPublicKeys.length > 0 ? serverPublicKeys[0].publicKey : undefined,
     signMessage: authMessage,
     signText: "Sign the message to authenticate with Backpack",
-    onComplete: (signedWalletDescriptor: SignedWalletDescriptor) => {
+    onComplete: (
+      signedWalletDescriptor: SignedWalletDescriptor,
+      hardwareType: HardwareType
+    ) => {
       setOnboardingData({
         signedWalletDescriptors: [
           ...signedWalletDescriptors,
           signedWalletDescriptor,
         ],
+        keyringType: hardwareType
       });
       nextStep();
     },
@@ -116,8 +120,10 @@ export const RecoverAccount = ({
     />,
     <KeyringTypeSelector
       action={"recover"}
-      onNext={(keyringType: KeyringType) => {
-        setOnboardingData({ keyringType });
+      onNext={(type: "mnemonic" | "hardware") => {
+        setOnboardingData({
+          keyringType: type === "mnemonic" ? type : undefined,
+        });
         nextStep();
       }}
     />,
