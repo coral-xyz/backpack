@@ -418,7 +418,6 @@ export const SendMessage = ({
                   height: "28px",
                 }}
                 setAboveMessagePlugin={setAboveMessagePlugin}
-                remoteUserId={remoteUserId}
               />
             )}
           </div>

@@ -44,13 +44,9 @@ const style = {
   p: 4,
 };
 export const SecureTransfer = ({
-  remoteUserId,
-  onTxFinalized,
   buttonStyle,
   setAboveMessagePlugin,
 }: {
-  remoteUserId: string;
-  onTxFinalized: any;
   buttonStyle: any;
   setAboveMessagePlugin: any;
 }) => {
