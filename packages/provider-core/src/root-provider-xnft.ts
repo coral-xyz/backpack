@@ -1,4 +1,4 @@
-import type { Event } from "@coral-xyz/common";
+import type { Event, XnftMetadata } from "@coral-xyz/common";
 import {
   Blockchain,
   CHANNEL_PLUGIN_NOTIFICATION,
@@ -17,7 +17,6 @@ import {
   PLUGIN_RPC_METHOD_POP_OUT,
   PLUGIN_RPC_METHOD_WINDOW_OPEN,
 } from "@coral-xyz/common";
-import type { XnftMetadata } from "@coral-xyz/common-public";
 import type {
   Commitment,
   SendOptions,

@@ -3,16 +3,15 @@
 // the background script.
 //
 
-import type { RpcRequest } from "@coral-xyz/common-public";
-import { generateUniqueId, isMobile } from "@coral-xyz/common-public";
-
 import { BrowserRuntimeCommon } from "../browser";
 import type {
   Notification,
+  RpcRequest,
   RpcResponse,
   RpcResponseData,
   Sender,
 } from "../types";
+import { generateUniqueId, isMobile } from "../utils";
 
 export interface BackgroundClient {
   request<T = any>({ method, params }: RpcRequest): Promise<RpcResponse<T>>;
@@ -141,7 +140,7 @@ export class ChannelAppUiResponder {
     id,
     result,
   }: RpcResponse): Promise<RpcResponse<T>> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       BrowserRuntimeCommon.sendMessageToBackground(
         {
           channel: this.name,

@@ -7,7 +7,6 @@
     { "path": "packages/blockchains" },
     { "path": "packages/chat-sdk" },
     { "path": "packages/common" },
-    { "path": "packages/common-public" },
     { "path": "packages/db" },
     { "path": "packages/deptool" },
     { "path": "packages/ledger-injection" },

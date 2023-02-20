@@ -1,11 +1,11 @@
 import {
   Blockchain,
   DEFAULT_PUBKEY_STR,
+  externalResourceUri,
   fetchXnfts,
   SIMULATOR_PORT,
   XNFT_PROGRAM_ID,
 } from "@coral-xyz/common";
-import { externalResourceUri } from "@coral-xyz/common-public";
 import { PublicKey } from "@solana/web3.js";
 import * as cheerio from "cheerio";
 import { atomFamily, selectorFamily } from "recoil";

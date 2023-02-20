@@ -1,4 +1,4 @@
-import { externalResourceUri, getLogger } from "@coral-xyz/common-public";
+import { externalResourceUri, getLogger } from "@coral-xyz/common";
 import {
   Metadata,
   TokenStandard,

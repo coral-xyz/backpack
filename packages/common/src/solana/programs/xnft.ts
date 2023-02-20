@@ -1,4 +1,4 @@
-import { externalResourceUri } from "@coral-xyz/common-public";
+import { externalResourceUri } from "@coral-xyz/common";
 import type { Provider } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
