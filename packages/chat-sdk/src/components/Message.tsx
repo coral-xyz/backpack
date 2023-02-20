@@ -740,6 +740,7 @@ function SecureTransferElement({
             ) : (
               <>
                 <SuccessButton
+                  style={{ height: 38 }}
                   onClick={async () => {
                     setActionButtonLoading(true);
                     try {
@@ -775,7 +776,7 @@ function SecureTransferElement({
                       setActionButtonLoading(false);
                     }
                   }}
-                  label={!actionButtonLoading ? "REDEEM" : "Redeeming..."}
+                  label={!actionButtonLoading ? "Accept" : "Accepting..."}
                 ></SuccessButton>
               </>
             )}
