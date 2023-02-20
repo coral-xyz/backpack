@@ -541,7 +541,7 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
       <div style={{ display: "flex", marginTop: 5 }}>
         <SuccessButton
           disabled={inProgress}
-          label={"Confirm"}
+          label={"Accept"}
           style={{
             marginRight: 8,
             height: 32,
@@ -558,7 +558,7 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
               requested: 0,
               areFriends: 1,
             });
-            setFriendshipValue({
+            await setFriendshipValue({
               userId: userId,
               friendshipValue: {
                 requested: false,
@@ -578,7 +578,7 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
             paddingRight: 10,
             borderRadius: 6,
           }}
-          label={"Delete"}
+          label={"Reject"}
           onClick={async (e: any) => {
             e.stopPropagation();
             setInProgress(true);
@@ -588,7 +588,7 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
               areFriends: 0,
               remoteRequested: 0,
             });
-            setFriendshipValue({
+            await setFriendshipValue({
               userId: userId,
               friendshipValue: {
                 requested: false,
@@ -691,17 +691,6 @@ function FriendRequestListItem({
             <Typography className={classes.txBody}>@{user.username}</Typography>
             <AcceptRejectRequest userId={parseJson(notification.body).from} />
           </div>
-        </div>
-        <div>
-          {friendshipValue?.remoteRequested && !friendshipValue?.areFriends && (
-            <Badge
-              classes={{ badge: classes.customBadge }}
-              style={{ marginTop: 15, fontSize: 30 }}
-              variant={"dot"}
-              color={"primary"}
-              badgeContent={unreadCount}
-            ></Badge>
-          )}
         </div>
       </div>
     </ListItem>
