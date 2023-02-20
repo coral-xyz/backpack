@@ -119,7 +119,8 @@ function SecureTransferPlugin({ sendMessage, setAboveMessagePlugin }) {
             onClick={() => {
               setAmount(
                 (
-                  parseInt(token?.nativeBalance.toString()) / LAMPORTS_PER_SOL
+                  parseInt(token?.nativeBalance?.toString() || "0") /
+                  LAMPORTS_PER_SOL
                 ).toString()
               );
             }}
