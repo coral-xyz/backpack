@@ -64,6 +64,12 @@ const useStyles = styles((theme) => ({
   },
 }));
 
+// TODO move this to common
+function formatLargeNum(number: number) {
+  let formatter = Intl.NumberFormat("en", { notation: "compact" });
+  return formatter.format(number);
+}
+
 export function SolanaTransactionListItem({
   transaction,
   isFirst,
@@ -256,14 +262,14 @@ function RecentActivityListItemData({
       <>
         <div className={classes.textReceived}>
           {"+ " +
-            transaction?.tokenTransfers?.[1]?.tokenAmount.toFixed(5) +
+            formatLargeNum(transaction?.tokenTransfers?.[1]?.tokenAmount) +
             " " +
             (tokenData[1]?.symbol ||
               walletAddressDisplay(transaction?.tokenTransfers?.[1]?.mint))}
         </div>
         <div className={classes.textSecondary}>
           {"- " +
-            transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
+            formatLargeNum(transaction?.tokenTransfers[0]?.tokenAmount) +
             " " +
             (tokenData[0]?.symbol ||
               walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint))}
@@ -305,9 +311,7 @@ function RecentActivityListItemData({
       return (
         <div className={classes.textSent}>
           -{" "}
-          {new Number(
-            transaction?.tokenTransfers?.[0]?.tokenAmount.toFixed(5)
-          ) +
+          {formatLargeNum(transaction?.tokenTransfers?.[0]?.tokenAmount) +
             " " +
             (tokenData[0]?.symbol ||
               metadata?.onChainMetadata?.metadata?.data?.symbol ||
@@ -321,16 +325,16 @@ function RecentActivityListItemData({
       if (transaction.source === Source.SYSTEM_PROGRAM) {
         return (
           <div className={classes.textReceived}>
-            + {transaction?.nativeTransfers[0]?.amount / 10 ** 9 + " SOL"}
+            +{" "}
+            {formatLargeNum(transaction?.nativeTransfers[0]?.amount / 10 ** 9) +
+              " SOL"}
           </div>
         );
       }
       return (
         <div className={classes.textReceived}>
           +{" "}
-          {new Number(
-            transaction?.tokenTransfers?.[0]?.tokenAmount.toFixed(5)
-          ) +
+          {formatLargeNum(transaction?.tokenTransfers?.[0]?.tokenAmount) +
             " " +
             (tokenData[0]?.symbol ||
               metadata?.onChainMetadata?.metadata?.data?.symbol ||
