@@ -22,17 +22,42 @@ const style = {
 
 export const BarterModal = ({ barterId }: { barterId: string }) => {
   const [modal, setModal] = useState(false);
+  const theme = useCustomTheme();
   return (
-    <div style={{ textAlign: "center" }}>
-      You negotiated a barter.{" "}
-      <div onClick={() => setModal(true)}>
-        {" "}
-        <b> More details. </b>{" "}
+    <>
+      <div
+        style={{
+          display: "flex",
+          background: "#0057EB",
+          borderRadius: 16,
+          color: "white",
+          fontWeight: 500,
+          fontSize: 14,
+          padding: 15,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            marginRight: 5,
+          }}
+        >
+          <div>You negotiated a barter. </div>
+        </div>
+        <div
+          style={{ color: theme.custom.colors.icon, cursor: "pointer" }}
+          onClick={() => setModal(true)}
+        >
+          {" "}
+          <b> VIEW </b>{" "}
+        </div>
       </div>
       {modal && (
         <InternalModal modal={modal} setModal={setModal} barterId={barterId} />
       )}
-    </div>
+    </>
   );
 };
 
