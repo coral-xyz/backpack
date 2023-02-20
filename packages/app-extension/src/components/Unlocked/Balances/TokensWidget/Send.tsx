@@ -730,7 +730,6 @@ export function Sending({
               marginLeft: "auto",
               marginRight: "auto",
             }}
-            thickness={6}
           />
         )}
       </div>
