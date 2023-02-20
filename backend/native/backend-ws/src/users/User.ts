@@ -10,7 +10,7 @@ import {
 import type { SubscriptionType } from "@coral-xyz/common/dist/esm/messages/toServer";
 import type WebSocket from "ws";
 
-import { validateRoom } from "../db/friendships";
+import { validateRoom } from "@coral-xyz/backend-common";
 import {
   getNftCollections,
   validateCentralizedGroupOwnership,

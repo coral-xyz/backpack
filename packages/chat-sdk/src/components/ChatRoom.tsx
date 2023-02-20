@@ -8,6 +8,10 @@ import {
 } from "@coral-xyz/react-common";
 import { useUser } from "@coral-xyz/recoil";
 
+import { MessagePluginRenderer } from "../MessagePluginRenderer";
+import { PLUGIN_HEIGHT_PERCENTAGE } from "../utils/constants";
+
+import type { MessagePlugins } from "./ChatContext";
 import { ChatProvider } from "./ChatContext";
 import { FullScreenChat } from "./FullScreenChat";
 
@@ -68,6 +72,7 @@ export const ChatRoom = ({
   const [messageRef, setMessageRef] = useState(null);
   const [jumpToBottom, setShowJumpToBottom] = useState(false);
   const [localUnreadCount, setLocalUnreadCount] = useState(0);
+  const [openPlugin, setOpenPlugin] = useState<MessagePlugins>("");
 
   useEffect(() => {
     if (roomId) {
@@ -192,15 +197,37 @@ export const ChatRoom = ({
       nftMint={nftMint}
       publicKey={publicKey}
       usersMetadata={usersMetadata}
+      openPlugin={openPlugin}
+      setOpenPlugin={setOpenPlugin}
     >
-      <FullScreenChat
-        setLocalUnreadCount={setLocalUnreadCount}
-        localUnreadCount={localUnreadCount}
-        jumpToBottom={jumpToBottom}
-        setShowJumpToBottom={setShowJumpToBottom}
-        messageRef={messageRef}
-        setMessageRef={setMessageRef}
-      />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            height: !openPlugin
+              ? "100vh"
+              : `${100 - PLUGIN_HEIGHT_PERCENTAGE}vh`,
+          }}
+        >
+          <FullScreenChat
+            setLocalUnreadCount={setLocalUnreadCount}
+            localUnreadCount={localUnreadCount}
+            jumpToBottom={jumpToBottom}
+            setShowJumpToBottom={setShowJumpToBottom}
+            messageRef={messageRef}
+            setMessageRef={setMessageRef}
+          />
+        </div>
+        <div>
+          <MessagePluginRenderer />
+        </div>
+      </div>
     </ChatProvider>
   );
 };

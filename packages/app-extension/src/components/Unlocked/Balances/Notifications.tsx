@@ -14,8 +14,7 @@ import {
   Loading,
   ProxyImage,
   SuccessButton,
-  useUserMetadata,
-} from "@coral-xyz/react-common";
+ useBreakpoints,  useUserMetadata } from "@coral-xyz/react-common";
 import {
   unreadCount,
   useFriendship,
@@ -29,7 +28,6 @@ import { Badge, IconButton, List, ListItem, Typography } from "@mui/material";
 import { useRecoilState } from "recoil";
 
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
-import { useBreakpoints } from "../../common/Layout/hooks";
 import {
   NavStackEphemeral,
   NavStackScreen,

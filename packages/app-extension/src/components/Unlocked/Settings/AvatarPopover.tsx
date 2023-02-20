@@ -5,7 +5,7 @@ import {
   UI_RPC_METHOD_ACTIVE_USER_UPDATE,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
 } from "@coral-xyz/common";
-import { ProxyImage } from "@coral-xyz/react-common";
+import { ProxyImage , useBreakpoints } from "@coral-xyz/react-common";
 import {
   useAllUsers,
   useAvatarUrl,
@@ -15,8 +15,6 @@ import {
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, Check } from "@mui/icons-material";
 import { Button, IconButton, Popover, Typography } from "@mui/material";
-
-import { useBreakpoints } from "../../../components/common/Layout/hooks";
 
 import { SettingsNavStackDrawer } from "./SettingsNavStackDrawer";
 

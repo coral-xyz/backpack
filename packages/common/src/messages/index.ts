@@ -134,3 +134,12 @@ export const parseMessage = (
   }
   return parts;
 };
+
+export interface BarterOffer {
+  mint: string;
+  amount: number;
+  publicKey: string;
+  type: "NFT" | "TOKEN";
+}
+
+export type BarterOffers = BarterOffer[];

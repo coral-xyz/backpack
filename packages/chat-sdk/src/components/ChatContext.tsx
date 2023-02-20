@@ -5,6 +5,7 @@ import type {
   SubscriptionType,
   UserMetadata,
 } from "@coral-xyz/common";
+export type MessagePlugins = "secure-transfer" | "barter" | "";
 
 type ChatContext = {
   setActiveReply: any;
@@ -35,6 +36,8 @@ type ChatContext = {
   nftMint?: string;
   publicKey?: string;
   usersMetadata: { [key: string]: UserMetadata };
+  openPlugin: MessagePlugins;
+  setOpenPlugin: any;
 };
 
 export const _ChatContext = React.createContext<ChatContext | null>(null);
@@ -69,6 +72,8 @@ export function ChatProvider(props: {
   nftMint?: string;
   publicKey?: string;
   usersMetadata: { [key: string]: UserMetadata };
+  openPlugin: MessagePlugins;
+  setOpenPlugin: any;
 }) {
   return (
     <_ChatContext.Provider
@@ -96,6 +101,8 @@ export function ChatProvider(props: {
         nftMint: props.nftMint,
         publicKey: props.publicKey,
         usersMetadata: props.usersMetadata,
+        openPlugin: props.openPlugin,
+        setOpenPlugin: props.setOpenPlugin,
       }}
     >
       {props.children}
