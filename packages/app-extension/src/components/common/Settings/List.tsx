@@ -19,7 +19,7 @@ export function SettingsList({
       style?: React.CSSProperties;
       classes?: any;
       button?: boolean;
-      icon?: React.ReactNode;
+      icon?: any;
       label?: string;
       allowOnclickPropagation?: boolean;
     };

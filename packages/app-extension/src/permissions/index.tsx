@@ -1,14 +1,15 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 
 import Permissions from "./Permissions";
 
 //
 // Render the UI.
 //
-ReactDOM.render(
+const container = document.getElementById("permissions");
+const root = createRoot(container!);
+root.render(
   <React.StrictMode>
     <Permissions />
-  </React.StrictMode>,
-  document.getElementById("permissions")
+  </React.StrictMode>
 );

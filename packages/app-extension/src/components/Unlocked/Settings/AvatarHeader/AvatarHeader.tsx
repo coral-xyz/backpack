@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ProxyImage } from "@coral-xyz/react-common";
 import { useAvatarUrl } from "@coral-xyz/recoil";
+import type { CustomTheme } from "@coral-xyz/themes";
 import { styled } from "@coral-xyz/themes";
 import { Edit } from "@mui/icons-material";
 
@@ -68,7 +69,7 @@ export function AvatarHeader() {
   );
 }
 
-const AvatarWrapper = styled("div")(({ theme }) => ({
+const AvatarWrapper = styled("div")(({ theme }: CustomTheme) => ({
   position: "relative",
   background: theme.custom.colors.avatarIconBackground,
   borderRadius: "40px",
