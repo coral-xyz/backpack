@@ -218,6 +218,9 @@ export function useHardwareOnboardSteps({
                 nextStep();
               }
             }}
+            onError={() => {
+              prevStep();
+            }}
           />,
         ]
       : []),

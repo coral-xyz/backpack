@@ -413,14 +413,12 @@ export class KeyringStore {
   public async blockchainKeyringAdd(
     blockchain: Blockchain,
     walletDescriptor: WalletDescriptor,
-    xfp?: string,
     keyringType?: KeyringType,
     persist = true
   ): Promise<string> {
     await this.activeUserKeyring.blockchainKeyringAdd(
       blockchain,
       walletDescriptor,
-      xfp,
       keyringType
     );
     if (persist) {
@@ -715,7 +713,8 @@ class UserKeyring {
         // No blockchain keyring, create it
         await keyring.blockchainKeyringAdd(
           getBlockchainFromPath(signedWalletDescriptor.derivationPath),
-          signedWalletDescriptor
+          signedWalletDescriptor,
+          keyringInit.keyringType
         );
       }
     }
@@ -807,7 +806,6 @@ class UserKeyring {
   public async blockchainKeyringAdd(
     blockchain: Blockchain,
     walletDescriptor: WalletDescriptor,
-    xfp?: string,
     keyringType?: KeyringType
   ): Promise<string> {
     const keyring = keyringForBlockchain(blockchain);
@@ -819,12 +817,15 @@ class UserKeyring {
     } else {
       // Initialising using a hardware wallet
       if (keyringType === "keystone") {
-        if (!xfp) {
+        if (!walletDescriptor.xfp) {
           throw new Error(
             "initialising keyring with Keystone wallet requires xfp"
           );
         }
-        await keyring.initFromKeystone([walletDescriptor], xfp);
+        await keyring.initFromKeystone(
+          [walletDescriptor],
+          walletDescriptor.xfp
+        );
       } else {
         await keyring.initFromLedger([walletDescriptor]);
       }
@@ -931,7 +932,7 @@ class UserKeyring {
       const i = accounts.findIndex((e) => e.publicKey === pubkey);
       if (i > -1) {
         const account = accounts[i];
-        const name = DefaultKeyname.defaultKeystone(account.index!);
+        const name = DefaultKeyname.defaultKeystone(i + 1);
         await store.setKeyname(account.publicKey, name);
         await store.setIsCold(account.publicKey, false);
       }

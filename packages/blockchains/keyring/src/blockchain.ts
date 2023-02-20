@@ -79,7 +79,7 @@ export class BlockchainKeyring {
     this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
     // Empty imported keyring to hold imported secret keys
     this.importedKeyring = this.keyringFactory.init([]);
-    this.keystoneKeyring = this.keystoneKeyringFactory.fromAccounts([], '');
+    this.keystoneKeyring = this.keystoneKeyringFactory.fromAccounts([], "");
     this.activeWallet = this.hdKeyring.publicKeys()[0];
     this.deletedWallets = [];
 
@@ -101,7 +101,7 @@ export class BlockchainKeyring {
     // Empty imported keyring to hold imported secret keys
     this.importedKeyring = this.keyringFactory.init([]);
     this.activeWallet = this.ledgerKeyring.publicKeys()[0];
-    this.keystoneKeyring = this.keystoneKeyringFactory.fromAccounts([], '');
+    this.keystoneKeyring = this.keystoneKeyringFactory.fromAccounts([], "");
     this.deletedWallets = [];
 
     // Persist a given name for this wallet.
@@ -119,11 +119,14 @@ export class BlockchainKeyring {
     accounts: Array<WalletDescriptor>,
     xfp: string
   ): Promise<Array<[string, string]>> {
-    this.keystoneKeyring = this.keystoneKeyringFactory.fromAccounts(accounts, xfp);
+    this.keystoneKeyring = this.keystoneKeyringFactory.fromAccounts(
+      accounts,
+      xfp
+    );
     // Empty imported and ledger keyring
     this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
     this.importedKeyring = this.keyringFactory.init([]);
-    this.activeWallet = this.ledgerKeyring.publicKeys()[0];
+    this.activeWallet = this.keystoneKeyring.publicKeys()[0];
     this.deletedWallets = [];
 
     // Persist a given name for this wallet.
@@ -253,7 +256,8 @@ export class BlockchainKeyring {
       : undefined;
     this.importedKeyring = this.keyringFactory.fromJson(importedKeyring);
     this.ledgerKeyring = this.ledgerKeyringFactory.fromJson(ledgerKeyring);
-    this.keystoneKeyring = this.keystoneKeyringFactory.fromJson(keystoneKeyring);
+    this.keystoneKeyring =
+      this.keystoneKeyringFactory.fromJson(keystoneKeyring);
     this.activeWallet = activeWallet;
     this.deletedWallets = deletedWallets;
   }

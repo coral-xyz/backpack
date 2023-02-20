@@ -1208,11 +1208,7 @@ export class Backend {
     publicKey: string,
     signature?: string
   ) {
-    await this.keyringStore.keystoneImport(
-      blockchain,
-      ur,
-      publicKey
-    );
+    await this.keyringStore.keystoneImport(blockchain, ur, publicKey);
     try {
       await this.userAccountPublicKeyCreate(blockchain, publicKey, signature);
     } catch (error) {
@@ -1226,10 +1222,7 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async keystoneURDecode(
-    blockchain: Blockchain,
-    ur: UR,
-  ) {
+  async keystoneURDecode(blockchain: Blockchain, ur: UR) {
     return await this.keyringStore.keystoneURDecode(blockchain, ur);
   }
 
@@ -1716,13 +1709,11 @@ export class Backend {
   async blockchainKeyringsAdd(
     blockchain: Blockchain,
     signedWalletDescriptor: SignedWalletDescriptor,
-    xfp?: string,
     keyringType?: KeyringType
   ): Promise<string> {
     await this.keyringStore.blockchainKeyringAdd(
       blockchain,
       signedWalletDescriptor as WalletDescriptor,
-      xfp,
       keyringType
     );
 

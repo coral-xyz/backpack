@@ -354,6 +354,32 @@ export function HardwareIcon({
   );
 }
 
+export function QRCodeIcon({
+  fill = "#A1A1AA",
+  style,
+}: {
+  fill?: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style={style}
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4 4H6.28571V6.28571H4V4ZM3 3H4H6.28571H7.28571V4V6.28571V7.28571H6.28571H4H3V6.28571V4V3ZM4.0001 9.71428H6.28582V12H4.0001V9.71428ZM3.0001 8.71428H4.0001H6.28582H7.28582V9.71428V12V13H6.28582H4.0001H3.0001V12V9.71428V8.71428ZM11.9999 4H9.71421V6.28571H11.9999V4ZM9.71421 3H8.71421V4V6.28571V7.28571H9.71421H11.9999H12.9999V6.28571V4V3H11.9999H9.71421ZM10.1428 8.71428H8.71421V10.1429H10.1428V8.71428ZM11.5713 8.71428H12.9998V10.1429L11.5716 10.1428V11.5714H10.143V10.1428L11.5713 10.1429V8.71428ZM10.1428 11.5714H8.71421V13H10.1428V11.5714ZM11.5713 11.5714H12.9998V13H11.5713V11.5714Z"
+        fill={fill}
+      />
+    </svg>
+  );
+}
+
 export function PlusCircleIcon({
   fill = "#A1A1AA",
   style,

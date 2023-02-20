@@ -202,7 +202,7 @@ export const WalletDetail: React.FC<{
         <SettingsList menuItems={menuItems} />
       </div>
       {type !== "dehydrated" ? <SettingsList menuItems={_isCold} /> : null}
-      {type !== "hardware" && type !== "dehydrated" ? (
+      {type !== "ledger" && type !== "keystone" && type !== "dehydrated" ? (
         <SettingsList menuItems={secrets} />
       ) : null}
       {!isLastRecoverable ? <SettingsList menuItems={removeWallet} /> : null}

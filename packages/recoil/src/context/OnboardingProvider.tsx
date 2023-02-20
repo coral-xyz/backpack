@@ -82,7 +82,7 @@ export type OnboardingData = {
   inviteCode: string | undefined;
   username: string | null;
   action: string;
-  keyringType: KeyringType | null;
+  keyringType: KeyringType | undefined;
   blockchain: Blockchain | null;
   password: string | null;
   mnemonic: string | undefined;
@@ -100,7 +100,7 @@ const defaultState = {
   inviteCode: undefined,
   username: null,
   action: "create",
-  keyringType: null,
+  keyringType: undefined,
   blockchain: null,
   password: null,
   mnemonic: undefined,
@@ -176,7 +176,7 @@ export function OnboardingProvider({
         });
       } else {
         // Blockchain is being selected
-        if (keyringType === "ledger" || action === "import") {
+        if (keyringType !== "mnemonic" || action === "import") {
           // If wallet is a ledger, step through the ledger onboarding flow
           // OR if action is an import then open the drawer with the import accounts
           // component

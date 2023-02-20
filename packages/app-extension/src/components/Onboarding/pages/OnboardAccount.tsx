@@ -1,7 +1,6 @@
 import type { MutableRefObject } from "react";
 import { useEffect, useState } from "react";
 import type {
-  KeyringType,
   SignedWalletDescriptor,
   WalletDescriptor,
 } from "@coral-xyz/common";
@@ -26,6 +25,7 @@ import { AlreadyOnboarded } from "./AlreadyOnboarded";
 import { BlockchainSelector } from "./BlockchainSelector";
 import { CreateOrImportWallet } from "./CreateOrImportWallet";
 import { Finish } from "./Finish";
+import type { HardwareType } from "./HardwareOnboard";
 import { HardwareOnboard } from "./HardwareOnboard";
 import { InviteCodeForm } from "./InviteCodeForm";
 import { KeyringTypeSelector } from "./KeyringTypeSelector";
@@ -97,8 +97,10 @@ export const OnboardAccount = ({
     <KeyringTypeSelector
       key="KeyringTypeSelector"
       action={action}
-      onNext={(keyringType: KeyringType) => {
-        setOnboardingData({ keyringType });
+      onNext={(keyringType: "mnemonic" | "hardware") => {
+        setOnboardingData({
+          keyringType: keyringType === "mnemonic" ? keyringType : undefined,
+        });
         nextStep();
       }}
     />,
@@ -180,12 +182,16 @@ export const OnboardAccount = ({
             signMessage={(publicKey: string) => getCreateMessage(publicKey)}
             signText="Sign the message to authenticate with Backpack."
             onClose={() => setOpenDrawer(false)}
-            onComplete={(signedWalletDescriptor: SignedWalletDescriptor) => {
+            onComplete={(
+              signedWalletDescriptor: SignedWalletDescriptor,
+              hardwareType: HardwareType
+            ) => {
               setOnboardingData({
                 signedWalletDescriptors: [
                   ...signedWalletDescriptors,
                   signedWalletDescriptor,
                 ],
+                keyringType: hardwareType,
               });
               setOpenDrawer(false);
             }}

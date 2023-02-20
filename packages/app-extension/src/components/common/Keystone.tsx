@@ -1,5 +1,5 @@
-import type { MutableRefObject } from "react";
-import { useState } from "react";
+import type { Dispatch, MutableRefObject, SetStateAction } from "react";
+import { useEffect, useState } from "react";
 import type { UR } from "@coral-xyz/common";
 import {
   PrimaryButton,
@@ -7,11 +7,7 @@ import {
   WarningIcon,
 } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
-import {
-  AnimatedQRCode,
-  URType,
-  useAnimatedQRScanner,
-} from "@keystonehq/animated-qr";
+import { AnimatedQRCode, useAnimatedQRScanner } from "@keystonehq/animated-qr";
 import { Box, Link, SvgIcon } from "@mui/material";
 
 import { WithContaineredDrawer } from "./Layout/Drawer";
@@ -33,19 +29,21 @@ type PlayProps = BaseProps & {
 
 type ScanProps = BaseProps & {
   containerRef: MutableRefObject<any>;
+  urTypes: string[];
   onScan: (ur: UR) => void;
+  size?: number;
 };
 
 function KeystoneBase({
   header,
   card,
-  cardSize = "200px",
+  cardSize = 200,
   help,
   footer,
   hasFooter,
 }: BaseProps & {
   card: React.ReactNode;
-  cardSize?: string;
+  cardSize?: number;
   help?: React.ReactNode;
   footer?: React.ReactNode;
 }) {
@@ -93,8 +91,12 @@ export function KeystoneScanner({
   hasFooter = true,
   onScan,
   setDisplay,
+  size = 200,
+  urTypes,
 }: ScanProps) {
-  const [isPermissionError, setIsPermissionError] = useState(true);
+  const [isPermissionError, setIsPermissionError] = useState<boolean | null>(
+    null
+  );
   const [isScanError, setIsScanError] = useState(false);
   const theme = useCustomTheme();
 
@@ -116,6 +118,20 @@ export function KeystoneScanner({
     setIsDone(false);
     setIsScanError(false);
   };
+
+  useEffect(() => {
+    if (isPermissionError !== null) {
+      return;
+    }
+    const t = setTimeout(() => {
+      if (isPermissionError === null) {
+        setIsPermissionError(true);
+      }
+    }, 3000);
+    return () => {
+      clearTimeout(t);
+    };
+  }, [isPermissionError]);
 
   return (
     <KeystoneBase
@@ -141,75 +157,41 @@ export function KeystoneScanner({
             />
           </SvgIcon>
           <AnimatedQRScanner
-            urTypes={[URType.SOL_SIGNATURE]}
+            urTypes={urTypes}
             handleError={handleError}
             handleScan={handleScan}
             options={{
-              width: 220,
-              height: 220,
+              width: size,
+              height: size,
               blur: false,
             }}
           />
         </>
       }
+      cardSize={size}
       help={
         <>
           <Box
             fontSize={14}
             color={
-              theme.custom.colors[isPermissionError ? "negative" : "fontColor3"]
+              theme.custom.colors[
+                isPermissionError === true ? "negative" : "fontColor3"
+              ]
             }
             textAlign="center"
             mt={3}
             height={2}
           >
-            {isPermissionError
+            {isPermissionError === true
               ? "Please enable your camera permission via [Settings]"
               : "Position the QR code in front of your camera."}
           </Box>
-          <WithContaineredDrawer
+          <KeystoneScanError
             containerRef={containerRef}
-            openDrawer={isScanError}
-            setOpenDrawer={setIsScanError}
-            paperStyles={{
-              background: "transparent",
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                borderRadius: "12px",
-                background: theme.custom.colors.backgroundBackdrop,
-                padding: "24px 16px 16px",
-              }}
-            >
-              <WarningIcon fill={theme.custom.colors.negative} />
-              <Box
-                m="20px 0 12px"
-                textAlign="center"
-                fontSize="14px"
-                color={theme.custom.colors.fontColor}
-              >
-                Invalid QR code. Please ensure you have selected a valid QR code
-                from your Keystone device.
-              </Box>
-              <Link
-                href="https://keyst.one/t/backpack"
-                target="_blank"
-                sx={{
-                  color: theme.custom.colors.fontColor3,
-                  textDecorationColor: theme.custom.colors.fontColor3,
-                  marginBottom: "16px",
-                  fontSize: "14px",
-                }}
-              >
-                Tutorial
-              </Link>
-              <PrimaryButton label="OK" onClick={continueScan} />
-            </Box>
-          </WithContaineredDrawer>
+            isError={isScanError}
+            setIsError={setIsScanError}
+            onOK={continueScan}
+          />
         </>
       }
       footer={
@@ -220,6 +202,66 @@ export function KeystoneScanner({
       }
       hasFooter={hasFooter}
     />
+  );
+}
+
+export function KeystoneScanError({
+  containerRef,
+  isError,
+  setIsError,
+  onOK,
+}: {
+  containerRef: MutableRefObject<any>;
+  isError: boolean;
+  setIsError: Dispatch<SetStateAction<boolean>>;
+  onOK: () => void;
+}) {
+  const theme = useCustomTheme();
+
+  return (
+    <WithContaineredDrawer
+      containerRef={containerRef}
+      openDrawer={isError}
+      setOpenDrawer={setIsError}
+      paperStyles={{
+        background: "transparent",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          borderRadius: "12px",
+          background: theme.custom.colors.backgroundBackdrop,
+          padding: "24px 16px 16px",
+        }}
+      >
+        <WarningIcon fill={theme.custom.colors.negative} />
+        <Box
+          m="20px 0 12px"
+          textAlign="center"
+          fontSize="14px"
+          color={theme.custom.colors.fontColor}
+        >
+          Invalid QR code. Please ensure you have selected a valid QR code from
+          your Keystone device.
+        </Box>
+        <Link
+          href="https://keyst.one/t/backpack"
+          target="_blank"
+          sx={{
+            color: theme.custom.colors.fontColor3,
+            textDecorationColor: theme.custom.colors.fontColor3,
+            marginBottom: "16px",
+            fontSize: "14px",
+          }}
+        >
+          Tutorial
+        </Link>
+        <PrimaryButton label="OK" onClick={onOK} />
+      </Box>
+    </WithContaineredDrawer>
   );
 }
 

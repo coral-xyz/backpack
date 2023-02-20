@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { SolanaKeystoneKeyring } from "@coral-xyz/blockchain-solana";
 import type { Blockchain, UR, WalletDescriptor } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { URType } from "@keystonehq/animated-qr";
 import { Box } from "@mui/system";
 
 import { Header, SubtextParagraph } from "../../../../common";
@@ -14,6 +15,7 @@ import {
 import {
   DisplayType,
   KeystonePlayer,
+  KeystoneScanError,
   KeystoneScanner,
 } from "../../../../common/Keystone";
 
@@ -23,6 +25,7 @@ export function ConnectHardwareKeystoneSign({
   message,
   ur,
   onNext,
+  onError,
 }: {
   containerRef: MutableRefObject<any>;
   blockchain: Blockchain;
@@ -30,13 +33,14 @@ export function ConnectHardwareKeystoneSign({
   message: string;
   ur: UR;
   onNext: (signature: string) => void;
+  onError: () => void;
 }) {
   const [msgPlayUR, setMsgPlayUR] = useState<UR>();
   const [xfp, setXFP] = useState<string>("");
   const [display, setDisplay] = useState(DisplayType.qrcode);
+  const [isScanError, setIsScanError] = useState(false);
 
-  // TODO: reject
-  let readQRResolve: (ur: UR, xfp: string) => void, readQRReject;
+  let readQRResolve: (ur: UR, xfp: string) => void;
 
   const signMsg = async () => {
     const keyring = await SolanaKeystoneKeyring.fromUR(ur);
@@ -46,9 +50,8 @@ export function ConnectHardwareKeystoneSign({
     });
     keyring.onRead(
       () =>
-        new Promise((resolve, reject) => {
+        new Promise((resolve) => {
           readQRResolve = resolve;
-          readQRReject = reject;
         })
     );
     const sig = await keyring.signMessage(
@@ -63,7 +66,10 @@ export function ConnectHardwareKeystoneSign({
   }, []);
 
   useEffect(() => {
-    signMsg();
+    signMsg().catch((err) => {
+      console.error(err);
+      setIsScanError(true);
+    });
   }, [ur]);
 
   return {
@@ -77,14 +83,26 @@ export function ConnectHardwareKeystoneSign({
       />
     ),
     [DisplayType.scanner]: (
-      <KeystoneScanner
-        containerRef={containerRef}
-        header={
-          <CommonHeader text="Scan the QR code displayed on your Keystone Device." />
-        }
-        onScan={handleScan}
-        setDisplay={setDisplay}
-      />
+      <>
+        <KeystoneScanner
+          containerRef={containerRef}
+          header={
+            <CommonHeader text="Scan the QR code displayed on your Keystone Device." />
+          }
+          onScan={handleScan}
+          setDisplay={setDisplay}
+          urTypes={[URType.SOL_SIGNATURE]}
+        />
+        <KeystoneScanError
+          containerRef={containerRef}
+          isError={isScanError}
+          setIsError={setIsScanError}
+          onOK={() => {
+            setIsScanError(false);
+            onError();
+          }}
+        />
+      </>
     ),
   }[display];
 }

@@ -95,19 +95,19 @@ export type NftAttribute = {
   value: string;
 };
 
-export type KeyringType = "mnemonic" | "ledger" | 'keystone';
+export type KeyringType = "mnemonic" | "ledger" | "keystone";
 
 export type KeyringInit = {
   signedWalletDescriptors: Array<SignedWalletDescriptor>;
   // No mnemonic means this is a hardware wallet keyring
   mnemonic?: string;
+  keyringType?: KeyringType;
 };
 
 // Location of a public key including the public key
 export type WalletDescriptor = {
   derivationPath: string;
   publicKey: string;
-  index?: number;
   xfp?: string;
 };
 
@@ -121,7 +121,7 @@ export type ServerPublicKey = {
   blockchain: Blockchain;
   publicKey: string;
   xfp?: string;
-  keyringType?: KeyringType
+  keyringType?: KeyringType;
   primary?: boolean;
 };
 
@@ -205,7 +205,7 @@ export type UR = {
 export type KeystoneKeyringJson = {
   accounts: WalletDescriptor[];
   xfp: string;
-}
+};
 
 // Legacy types. Don't use these.
 export type DeprecatedWalletDataDoNotUse = {
