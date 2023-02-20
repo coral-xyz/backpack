@@ -8,6 +8,7 @@ options.resolve.alias = {
   "@coral-xyz/react-common": path.resolve(__dirname, "../react-common/src"),
   "@coral-xyz/db": path.resolve(__dirname, "../db/src"),
   "@coral-xyz/message-sdk": path.resolve(__dirname, "../message-sdk/src"),
+  "react-native$": "react-native-web",
 };
 
 module.exports = options;
