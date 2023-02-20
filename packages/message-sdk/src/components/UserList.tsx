@@ -1,7 +1,6 @@
 import type { CSSProperties, MouseEvent } from "react";
 import type { RemoteUserData } from "@coral-xyz/common";
 import {
-  fetchFriendship,
   NAV_COMPONENT_MESSAGE_PROFILE,
   sendFriendRequest,
   unFriend,
@@ -15,14 +14,12 @@ import {
   SignalingManager,
 } from "@coral-xyz/react-common";
 import {
-  friendship,
   useNavigation,
   useUpdateFriendships,
   useUser,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List, ListItem } from "@mui/material";
-import { useRecoilCallback } from "recoil";
 
 import { useStyles } from "./styles";
 
