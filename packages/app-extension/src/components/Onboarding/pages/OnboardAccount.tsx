@@ -125,7 +125,6 @@ export const OnboardAccount = ({
       ? [
           <CreatePassword
             onNext={async (password) => {
-              setLoading(true);
               setOnboardingData({ password });
               nextStep();
             }}
@@ -134,6 +133,7 @@ export const OnboardAccount = ({
       : []),
     <NotificationsPermission
       onNext={async () => {
+        setLoading(true);
         await maybeCreateUser();
         setLoading(false);
         nextStep();
