@@ -88,6 +88,7 @@ const useStyles = styles((theme) => ({
     justifyContent: "center",
   },
   container: {
+    alignItems: "center",
     display: "flex",
     flexDirection: "column",
     height: "100%",
@@ -571,40 +572,44 @@ function SendV2({
           </div>
         </div>
         <div>
-          <input
-            placeholder="0"
-            autoFocus
-            type="text"
-            style={{
-              marginTop: "40px",
-              outline: "none",
-              background: "transparent",
-              border: "none",
-              fontWeight: 600,
-              fontSize: 48,
-              height: 50,
-              color: theme.custom.colors.fontColor,
-              textAlign: "center",
-              width: "100%",
-              // @ts-ignore
-              fontFamily: theme.typography.fontFamily,
-            }}
-            value={_amount}
-            onChange={(e: any) => {
-              try {
-                const num =
-                  e.target.value !== "" ? parseFloat(e.target.value) : 0.0;
-                if (num >= 0) {
-                  _setAmount(e.target.value);
-                  setAmount(
-                    ethers.utils.parseUnits(num.toString(), token.decimals)
-                  );
+          <div
+            style={{ display: "flex", justifyContent: "center", width: "100" }}
+          >
+            <input
+              placeholder="0"
+              autoFocus
+              type="text"
+              style={{
+                marginTop: "40px",
+                outline: "none",
+                background: "transparent",
+                border: "none",
+                fontWeight: 600,
+                fontSize: 48,
+                height: 50,
+                color: theme.custom.colors.fontColor,
+                textAlign: "center",
+                width: "35px",
+                // @ts-ignore
+                fontFamily: theme.typography.fontFamily,
+              }}
+              value={_amount}
+              onChange={(e: any) => {
+                try {
+                  const num =
+                    e.target.value !== "" ? parseFloat(e.target.value) : 0.0;
+                  if (num >= 0) {
+                    _setAmount(e.target.value);
+                    setAmount(
+                      ethers.utils.parseUnits(num.toString(), token.decimals)
+                    );
+                  }
+                } catch (err) {
+                  // Do nothing.
                 }
-              } catch (err) {
-                // Do nothing.
-              }
-            }}
-          />
+              }}
+            />
+          </div>
           <div
             style={{ display: "flex", justifyContent: "center", marginTop: 20 }}
           >
