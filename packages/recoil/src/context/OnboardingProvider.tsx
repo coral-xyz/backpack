@@ -113,7 +113,7 @@ type IOnboardingContext = {
   onboardingData: OnboardingData;
   setOnboardingData: (data: Partial<OnboardingData>) => void;
   handleSelectBlockchain: (data: SelectBlockchainType) => Promise<void>;
-  maybeCreateUser: () => Promise<boolean>;
+  maybeCreateUser: (password: string) => Promise<boolean>;
 };
 
 const OnboardingContext = createContext<IOnboardingContext>({
@@ -132,6 +132,7 @@ export function OnboardingProvider({
   const background = useBackgroundClient();
   const { authenticate } = useAuthentication();
   const [data, setData] = useState<OnboardingData>(defaultState);
+  console.log("BB OnboardingProvider:data", data);
 
   const setOnboardingData = useCallback((data: Partial<OnboardingData>) => {
     return setData((oldData) => ({
@@ -216,7 +217,8 @@ export function OnboardingProvider({
   //
   // Create the user in the backend
   //
-  async function createUser(): Promise<{ id: string; jwt: string }> {
+  const createUser = useCallback(async () => {
+    console.log("BB createUser:data", data);
     const { inviteCode, userId, username, signedWalletDescriptors, mnemonic } =
       data;
 
@@ -225,6 +227,8 @@ export function OnboardingProvider({
       mnemonic,
     };
 
+    console.log("BB createUser:keyringInit", keyringInit);
+
     // If userId is provided, then we are onboarding via the recover flow.
     if (userId) {
       // Authenticate the user that the recovery has a JWT.
@@ -232,6 +236,7 @@ export function OnboardingProvider({
       // we use if there are multiple.
       const { derivationPath, publicKey, signature } =
         keyringInit.signedWalletDescriptors[0];
+
       const authData = {
         blockchain: getBlockchainFromPath(derivationPath),
         publicKey,
@@ -278,51 +283,61 @@ export function OnboardingProvider({
     } catch (err) {
       throw new Error("createUser: error creating account");
     }
-  }
+  }, [data]);
 
   //
   // Create the local store for the wallets
   //
-  async function createStore(
-    uuid: string,
-    jwt: string,
-    password: string
-  ): Promise<boolean | string> {
-    const { isAddingAccount, username, signedWalletDescriptors, mnemonic } =
-      data;
+  const createStore = useCallback(
+    async (uuid: string, jwt: string, password: string) => {
+      const { isAddingAccount, username, signedWalletDescriptors, mnemonic } =
+        data;
 
-    const keyringInit = {
-      signedWalletDescriptors,
-      mnemonic,
-    };
+      const keyringInit = {
+        signedWalletDescriptors,
+        mnemonic,
+      };
 
-    if (isAddingAccount) {
-      // Add a new account if needed, this will also create the new keyring
-      // store
-      await background.request({
-        method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
-        params: [username, keyringInit, uuid, jwt],
-      });
-    } else {
-      // Add a new keyring store under the new account
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-        params: [username, password, keyringInit, uuid, jwt],
-      });
-    }
-    return true;
-  }
+      console.log("BB createStore:keyringInit", keyringInit);
+      console.log("BB createStore", data);
 
-  const maybeCreateUser = useCallback(async () => {
-    try {
-      const { password } = data;
-      const { id, jwt } = await createUser();
-      await createStore(id, jwt, password!);
+      if (isAddingAccount) {
+        // Add a new account if needed, this will also create the new keyring
+        // store
+        await background.request({
+          method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
+          params: [username, keyringInit, uuid, jwt],
+        });
+      } else {
+        // Add a new keyring store under the new account
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
+          params: [username, password, keyringInit, uuid, jwt],
+        });
+      }
+
       return true;
-    } catch (error) {
-      return error.toString();
-    }
-  }, [data.password]);
+    },
+    [data]
+  );
+
+  const maybeCreateUser = useCallback(
+    async (password: string) => {
+      console.log("BB: maybeCreateUser:data", data);
+      try {
+        console.log("BB: create user");
+        const { id, jwt } = await createUser();
+        console.log("BB: created user");
+        await createStore(id, jwt, password!);
+        console.log("BB: created store");
+        return true;
+      } catch (error) {
+        console.error("BB:error", error);
+        return error.toString();
+      }
+    },
+    [data]
+  );
 
   const contextValue = useMemo(
     () => ({

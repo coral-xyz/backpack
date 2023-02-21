@@ -5,6 +5,7 @@ import type {
   WalletDescriptor,
 } from "@coral-xyz/common";
 import { getCreateMessage } from "@coral-xyz/common";
+import { Loading } from "@coral-xyz/react-common";
 import { useOnboarding, useSignMessageForWallet } from "@coral-xyz/recoil";
 
 import { useSteps } from "../../../hooks/useSteps";
@@ -39,6 +40,7 @@ export const OnboardAccount = ({
   isAddingAccount?: boolean;
   isOnboarded?: boolean;
 }) => {
+  const [loading, setLoading] = useState(false);
   const { step, nextStep, prevStep } = useSteps();
   const [openDrawer, setOpenDrawer] = useState(false);
   const {
@@ -123,8 +125,10 @@ export const OnboardAccount = ({
       ? [
           <CreatePassword
             onNext={async (password) => {
+              setLoading(true);
               setOnboardingData({ password });
-              await maybeCreateUser();
+              await maybeCreateUser(password);
+              setLoading(false);
               nextStep();
             }}
           />,
@@ -136,6 +140,10 @@ export const OnboardAccount = ({
 
   if (isOnboarded && step !== steps.length - 1) {
     return <AlreadyOnboarded />;
+  }
+
+  if (loading) {
+    return <Loading />;
   }
 
   return (

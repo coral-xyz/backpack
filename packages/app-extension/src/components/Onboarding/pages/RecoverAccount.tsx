@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type {
   KeyringType,
   ServerPublicKey,
@@ -5,7 +6,7 @@ import type {
   WalletDescriptor,
 } from "@coral-xyz/common";
 import { Blockchain, getAuthMessage } from "@coral-xyz/common";
-// import { Loading } from "@coral-xyz/react-common";
+import { Loading } from "@coral-xyz/react-common";
 import { useOnboarding, useSignMessageForWallet } from "@coral-xyz/recoil";
 
 import { useSteps } from "../../../hooks/useSteps";
@@ -31,6 +32,7 @@ export const RecoverAccount = ({
   isAddingAccount?: boolean;
   isOnboarded?: boolean;
 }) => {
+  const [loading, setLoading] = useState(false);
   const { step, nextStep, prevStep } = useSteps();
   const { onboardingData, setOnboardingData, maybeCreateUser } =
     useOnboarding();
@@ -41,9 +43,9 @@ export const RecoverAccount = ({
     signedWalletDescriptors,
     serverPublicKeys,
   } = onboardingData;
+
   const authMessage = userId ? getAuthMessage(userId) : "";
   const signMessageForWallet = useSignMessageForWallet(mnemonic);
-
   const hardwareOnboardSteps = useHardwareOnboardSteps({
     blockchain:
       serverPublicKeys.length > 0
@@ -116,8 +118,10 @@ export const RecoverAccount = ({
       ? [
           <CreatePassword
             onNext={async (password) => {
+              setLoading(true);
               setOnboardingData({ password });
-              await maybeCreateUser();
+              await maybeCreateUser(password);
+              setLoading(false);
               nextStep();
             }}
           />,
@@ -134,6 +138,10 @@ export const RecoverAccount = ({
   // Display message if already onboarded and not on last step
   if (isOnboarded && !isLastStep) {
     return <AlreadyOnboarded />;
+  }
+
+  if (loading) {
+    return <Loading />;
   }
 
   return (
