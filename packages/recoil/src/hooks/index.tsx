@@ -7,6 +7,7 @@ export * from "./navigation";
 export * from "./preferences";
 export * from "./solana";
 export * from "./transaction-request";
+export * from "./useAuthentication";
 export * from "./useBlockchain";
 export * from "./useFeatureGates";
 export * from "./useFriendship";

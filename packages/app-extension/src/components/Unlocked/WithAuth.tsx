@@ -14,6 +14,7 @@ import {
   UI_RPC_METHOD_USER_JWT_UPDATE,
 } from "@coral-xyz/common";
 import {
+  useAuthentication,
   useBackgroundClient,
   useDehydratedWallets,
   useKeyringHasMnemonic,
@@ -21,7 +22,6 @@ import {
 } from "@coral-xyz/recoil";
 import { ethers } from "ethers";
 
-import { useAuthentication } from "../../hooks/useAuthentication";
 import { WithDrawer } from "../common/Layout/Drawer";
 import { HardwareOnboard } from "../Onboarding/pages/HardwareOnboard";
 

@@ -16,7 +16,6 @@ import {
   DEFAULT_AUTO_LOCK_INTERVAL_SECS,
   defaultPreferences,
   getBlockchainFromPath,
-  getLogger,
   NOTIFICATION_KEYRING_STORE_LOCKED,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
@@ -26,8 +25,6 @@ import { generateMnemonic } from "bip39";
 import type { KeyringStoreJson, User, UserKeyringJson } from "../store";
 import * as store from "../store";
 import { DefaultKeyname } from "../store";
-
-const logger = getLogger("BB");
 
 /**
  * KeyringStore API for managing all wallet keys .
@@ -178,16 +175,7 @@ export class KeyringStore {
     await this.persist(true);
 
     // Automatically lock the store when idle.
-    logger.debug("tryUnlock:before", {
-      username,
-      password,
-      keyringInit,
-      uuid,
-      jwt,
-    });
-
     await this.tryUnlock({ password, uuid });
-    logger.debug("tryUnlock:after", { password, uuid });
   }
 
   public async usernameKeyringCreate(
@@ -249,7 +237,6 @@ export class KeyringStore {
   }
 
   private isUnlocked(): boolean {
-    logger.debug("isUnlocked: this", this);
     return (
       this.activeUserUuid !== undefined &&
       this.activeUserKeyring.blockchains.size > 0 &&
