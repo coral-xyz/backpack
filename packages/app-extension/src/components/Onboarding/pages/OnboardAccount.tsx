@@ -46,14 +46,16 @@ export const OnboardAccount = ({
   const background = useBackgroundClient();
   const { step, nextStep, prevStep } = useSteps();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const { onboardingData, setOnboardingData, handleSelectBlockchain } =
-    useOnboarding();
+  const {
+    onboardingData,
+    setOnboardingData,
+    handleSelectBlockchain,
+    maybeCreateUser,
+  } = useOnboarding();
   const {
     inviteCode,
-    username,
     action,
     keyringType,
-    password,
     mnemonic,
     blockchain,
     signedWalletDescriptors,
@@ -126,8 +128,9 @@ export const OnboardAccount = ({
     ...(!isAddingAccount
       ? [
           <CreatePassword
-            onNext={(password) => {
+            onNext={async (password) => {
               setOnboardingData({ password });
+              await maybeCreateUser();
               nextStep();
             }}
           />,
