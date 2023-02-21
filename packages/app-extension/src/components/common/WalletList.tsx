@@ -920,6 +920,7 @@ export function StackedWalletAddress({
         style={{
           display: "flex",
           height: "24px",
+          alignItems: "center",
         }}
       >
         <WalletTypeIcon

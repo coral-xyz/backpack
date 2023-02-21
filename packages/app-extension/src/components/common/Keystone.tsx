@@ -20,6 +20,7 @@ export enum DisplayType {
 interface BaseProps {
   header: React.ReactNode;
   hasFooter?: boolean;
+  size?: number;
   setDisplay?: (type: DisplayType) => void;
 }
 
@@ -31,7 +32,6 @@ type ScanProps = BaseProps & {
   containerRef: MutableRefObject<any>;
   urTypes: string[];
   onScan: (ur: UR) => void;
-  size?: number;
 };
 
 function KeystoneBase({
@@ -72,7 +72,7 @@ function KeystoneBase({
               boxSizing: "content-box",
               overflow: "hidden",
               position: "relative",
-              margin: "16px auto 8px",
+              margin: `${cardSize < 200 ? 12 : 24}px auto`,
             }}
           >
             {card}
@@ -127,7 +127,7 @@ export function KeystoneScanner({
       if (isPermissionError === null) {
         setIsPermissionError(true);
       }
-    }, 3000);
+    }, 2000);
     return () => {
       clearTimeout(t);
     };
@@ -180,11 +180,9 @@ export function KeystoneScanner({
             }
             textAlign="center"
             mt={3}
-            height={2}
           >
-            {isPermissionError === true
-              ? "Please enable your camera permission via [Settings]"
-              : "Position the QR code in front of your camera."}
+            {isPermissionError === true &&
+              "Please enable your camera permission via [Settings]."}
           </Box>
           <KeystoneScanError
             containerRef={containerRef}
@@ -270,6 +268,7 @@ export function KeystonePlayer({
   hasFooter = true,
   setDisplay,
   ur,
+  size = 200,
 }: PlayProps) {
   const theme = useCustomTheme();
 
@@ -283,20 +282,15 @@ export function KeystonePlayer({
               type={ur.type}
               cbor={ur.cbor}
               options={{
-                size: 190,
+                size: size - 10,
               }}
             />
           </Box>
         )
       }
+      cardSize={size}
       help={
-        <Box
-          color={theme.custom.colors.fontColor3}
-          mt={2}
-          fontSize={12}
-          textAlign="center"
-          lineHeight="16px"
-        >
+        <Box color="#90929D" fontSize={12} textAlign="center" lineHeight="16px">
           Click on the '
           <span style={{ color: theme.custom.colors.fontColor }}>
             Get Signature

@@ -40,6 +40,7 @@ export function useHardwareOnboardSteps({
   signMessage,
   signText,
   successComponent,
+  isInDrawer,
   onComplete,
   nextStep,
   prevStep,
@@ -51,6 +52,7 @@ export function useHardwareOnboardSteps({
   signMessage: string | ((publicKey: string) => string);
   signText: string;
   successComponent?: React.ReactElement;
+  isInDrawer?: boolean;
   onComplete: (
     signedWalletDescriptor: SignedWalletDescriptor,
     hardwareType: HardwareType,
@@ -89,6 +91,7 @@ export function useHardwareOnboardSteps({
   const steps = [
     <ConnectHardwareWelcome
       containerRef={containerRef}
+      blockchain={blockchain}
       onNext={onWelcomeNext}
     />,
     ...(hardwareType === HardwareType.Ledger
@@ -177,6 +180,7 @@ export function useHardwareOnboardSteps({
         <ImportWallets
           blockchain={blockchain}
           transport={transport!}
+          publicKey={searchPublicKey!}
           ur={ur}
           allowMultiple={false} // Only allow a single wallet to be selected
           action={action}
@@ -205,6 +209,7 @@ export function useHardwareOnboardSteps({
             }
             text={signText}
             ur={ur}
+            isInDrawer={isInDrawer}
             onNext={(signature: string) => {
               onComplete(
                 {
@@ -242,6 +247,7 @@ export function HardwareOnboard({
   signMessage,
   signText,
   successComponent,
+  isInDrawer,
   onComplete,
   onClose,
 }: {
@@ -252,6 +258,7 @@ export function HardwareOnboard({
   signMessage: string | ((publicKey: string) => string);
   signText: string;
   successComponent?: React.ReactElement;
+  isInDrawer?: boolean;
   onComplete: (
     signedWalletDescriptor: SignedWalletDescriptor,
     hardwareType: HardwareType,
@@ -269,6 +276,7 @@ export function HardwareOnboard({
     signMessage,
     signText,
     successComponent,
+    isInDrawer,
     onComplete,
     nextStep,
     prevStep,

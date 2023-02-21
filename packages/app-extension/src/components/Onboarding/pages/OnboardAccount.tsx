@@ -14,6 +14,7 @@ import {
   useOnboarding,
   useSignMessageForWallet,
 } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
 
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
@@ -68,12 +69,15 @@ export const OnboardAccount = ({
     selectedBlockchains,
   } = onboardingData;
   const signMessageForWallet = useSignMessageForWallet(mnemonic);
+  const theme = useCustomTheme();
 
   useEffect(() => {
     // Reset blockchain keyrings on certain changes that invalidate the addresses
-    setOnboardingData({
-      signedWalletDescriptors: [],
-    });
+    if (keyringType !== "keystone" && keyringType !== "ledger") {
+      setOnboardingData({
+        signedWalletDescriptors: [],
+      });
+    }
   }, [action, keyringType, mnemonic]);
 
   useEffect(() => {
@@ -211,6 +215,7 @@ export const OnboardAccount = ({
           height: "calc(100% - 56px)",
           borderTopLeftRadius: "12px",
           borderTopRightRadius: "12px",
+          background: theme.custom.colors.backgroundBackdrop,
         }}
       >
         {keyringType !== "mnemonic" ? (
@@ -221,6 +226,7 @@ export const OnboardAccount = ({
             action={action}
             signMessage={(publicKey: string) => getCreateMessage(publicKey)}
             signText={`Sign the message to authenticate with Backpack.`}
+            isInDrawer={true}
             onClose={() => setOpenDrawer(false)}
             onComplete={(
               signedWalletDescriptor: SignedWalletDescriptor,

@@ -932,7 +932,8 @@ class UserKeyring {
       const i = accounts.findIndex((e) => e.publicKey === pubkey);
       if (i > -1) {
         const account = accounts[i];
-        const name = DefaultKeyname.defaultKeystone(i + 1);
+        const newIndex = keystoneKeyring.getAccounts().length;
+        const name = DefaultKeyname.defaultKeystone(newIndex);
         await store.setKeyname(account.publicKey, name);
         await store.setIsCold(account.publicKey, false);
       }

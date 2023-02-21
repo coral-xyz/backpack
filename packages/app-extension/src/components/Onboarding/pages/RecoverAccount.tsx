@@ -180,20 +180,19 @@ export const RecoverAccount = ({
     ...(signedWalletDescriptors.length > 0 ? [<Finish />] : []),
   ];
 
-  // Cant go backwards from the last step as the keyring is already created
-  const isLastStep = step === steps.length - 1;
   // Cant go backwards from the password step as can hit mnemonic search which
   // auto progresses. This could be handled by jumping to a step.
   const isPasswordStep = steps[step].type.name === "CreatePassword";
+  const isFinishStep = steps[step].type.name === "Finish";
   // Display message if already onboarded and not on last step
-  if (isOnboarded && !isLastStep) {
+  if (isOnboarded && !isFinishStep) {
     return <AlreadyOnboarded />;
   }
 
   return (
     <WithNav
       navButtonLeft={
-        !isLastStep && !isPasswordStep ? (
+        !isFinishStep && !isPasswordStep ? (
           <NavBackButton onClick={step > 0 ? prevStep : onClose} />
         ) : undefined
       }
