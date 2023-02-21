@@ -120,7 +120,7 @@ export const RecoverAccount = ({
             onNext={async (password) => {
               setLoading(true);
               setOnboardingData({ password });
-              await maybeCreateUser(password);
+              await maybeCreateUser();
               setLoading(false);
               nextStep();
             }}
