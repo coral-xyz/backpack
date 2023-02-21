@@ -53,6 +53,7 @@ export function ImportWallets({
   allowMultiple = true,
   ur,
   action,
+  publicKey,
 }: {
   blockchain: Blockchain;
   mnemonic?: string | true;
@@ -62,6 +63,7 @@ export function ImportWallets({
   allowMultiple?: boolean;
   ur?: UR;
   action?: "create" | "derive" | "search" | "import";
+  publicKey?: string;
 }) {
   const background = useBackgroundClient();
   const theme = useCustomTheme();
@@ -165,8 +167,8 @@ export function ImportWallets({
   const disabledPublicKeys = useMemo(() => {
     const loadedKeys = [...importedPublicKeys, ...conflictingPublicKeys];
     if (action === "search") {
-      return Object.keys(balances).filter(
-        (e: string) => !loadedKeys.includes(e)
+      return Object.keys(balances).filter((e: string) =>
+        publicKey ? e !== publicKey : !loadedKeys.includes(e)
       );
     }
     return loadedKeys;
@@ -462,7 +464,8 @@ export function ImportWallets({
             }`}
           />
           <SubtextParagraph>
-            Select which wallet{allowMultiple ? "s" : ""} you'd like to import.
+            Select which wallet{allowMultiple ? "s" : ""} you'd like to{" "}
+            {action === "search" ? "recover" : "import"}.
           </SubtextParagraph>
         </Box>
         {!ur ? <div style={{ margin: "16px" }}>
@@ -490,6 +493,8 @@ export function ImportWallets({
               marginRight: "16px",
               paddingTop: "8px",
               paddingBottom: "8px",
+                maxHeight: "280px",
+                overflow: "auto",
             }}
           >
             {[...walletDescriptors]
@@ -503,7 +508,7 @@ export function ImportWallets({
                   return 0;
                 }
               })
-              .slice(0, DISPLAY_PUBKEY_AMOUNT)
+              .slice(0, ur ? undefined : DISPLAY_PUBKEY_AMOUNT)
               .map(({ publicKey, derivationPath, xfp }) => (
                 <ListItemButton
                   key={publicKey.toString()}

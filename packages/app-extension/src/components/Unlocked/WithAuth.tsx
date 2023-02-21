@@ -231,6 +231,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
           searchPublicKey={authData!.publicKey}
           signMessage={authData!.message}
           signText="Sign the message to authenticate with Backpack."
+          isInDrawer
           onComplete={(signedWalletDescriptor: SignedWalletDescriptor) => {
               setAuthSignature(signedWalletDescriptor.signature);
             }}

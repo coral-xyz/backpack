@@ -165,7 +165,7 @@ function CheckBadge() {
   );
 }
 
-function SoonBadge() {
+export function SoonBadge() {
   return (
     <div
       style={{

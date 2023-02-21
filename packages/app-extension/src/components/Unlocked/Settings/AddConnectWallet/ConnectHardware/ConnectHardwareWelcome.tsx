@@ -1,20 +1,28 @@
-import type { MutableRefObject} from 'react';
-import { useState } from 'react';
-import { SecondaryButton } from '@coral-xyz/react-common';
-import { useCustomTheme } from '@coral-xyz/themes';
+import type { MutableRefObject } from "react";
+import { useState } from "react";
+import { Blockchain } from "@coral-xyz/common";
+import { SecondaryButton } from "@coral-xyz/react-common";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { Box, Link, Stack, SvgIcon } from "@mui/material";
 
 import { Header, SubtextParagraph } from "../../../../common";
-import { KeystoneIcon, KeystoneWithQRIcon, USBIcon } from '../../../../common/Icon';
-import { ActionCard } from '../../../../common/Layout/ActionCard';
-import { WithContaineredDrawer } from '../../../../common/Layout/Drawer';
+import {
+  KeystoneIcon,
+  KeystoneWithQRIcon,
+  USBIcon,
+} from "../../../../common/Icon";
+import { ActionCard } from "../../../../common/Layout/ActionCard";
+import { WithContaineredDrawer } from "../../../../common/Layout/Drawer";
+import { SoonBadge } from "../../../../Onboarding/pages/BlockchainSelector";
 import { HardwareType } from "../../../../Onboarding/pages/HardwareOnboard";
 
 export function ConnectHardwareWelcome({
   containerRef,
+  blockchain,
   onNext,
 }: {
   containerRef: MutableRefObject<any>;
+  blockchain: Blockchain;
   onNext: (type: HardwareType) => void;
 }) {
   const [isKeystoneIntroOpen, setIsKeystoneIntroOpen] = useState(false);
@@ -41,36 +49,60 @@ export function ConnectHardwareWelcome({
             onClick={() => onNext(HardwareType.Ledger)}
             direction="row"
           />
-          <ActionCard
-            icon={<KeystoneWithQRIcon />}
-            text="Keystone"
-            textAdornment={
-              <SvgIcon
-                viewBox="0 0 20 20"
-                sx={{
-                  width: "20px",
-                  height: "20px",
-                  fill: "none",
-                  position: "absolute",
-                  right: "16px",
-                  top: "50%",
-                  marginTop: "-10px",
-                  color: "#C2C4CB",
-                  "&:hover": { color: theme.custom.colors.fontColor }
-                }}
-                onClick={e => {
-                  e.stopPropagation();
-                  setIsKeystoneIntroOpen(true);
-                }}
-              >
-                <circle cx="10" cy="6" r="1" fill="currentColor" />
-                <rect x="9" y="9" width="2" height="7" rx="1" fill="currentColor" />
-                <rect x="1" y="1" width="18" height="18" rx="9" stroke="currentColor" strokeWidth="2" />
-              </SvgIcon>
-            }
-            onClick={() => onNext(HardwareType.Keystone)}
-            direction="row"
-          />
+          <Box
+            sx={{
+              position: "relative",
+            }}
+          >
+            <ActionCard
+              icon={<KeystoneWithQRIcon />}
+              text="Keystone"
+              textAdornment={
+                blockchain === Blockchain.ETHEREUM && <SoonBadge />
+              }
+              onClick={() => onNext(HardwareType.Keystone)}
+              direction="row"
+              disabled={blockchain === Blockchain.ETHEREUM}
+            />
+            <SvgIcon
+              viewBox="0 0 20 20"
+              sx={{
+                width: "20px",
+                height: "20px",
+                fill: "none",
+                position: "absolute",
+                right: "16px",
+                top: "50%",
+                marginTop: "-10px",
+                color: "#C2C4CB",
+                cursor: "pointer",
+                "&:hover": { color: theme.custom.colors.fontColor },
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsKeystoneIntroOpen(true);
+              }}
+            >
+              <circle cx="10" cy="6" r="1" fill="currentColor" />
+              <rect
+                x="9"
+                y="9"
+                width="2"
+                height="7"
+                rx="1"
+                fill="currentColor"
+              />
+              <rect
+                x="1"
+                y="1"
+                width="18"
+                height="18"
+                rx="9"
+                stroke="currentColor"
+                strokeWidth="2"
+              />
+            </SvgIcon>
+          </Box>
         </Stack>
       </Box>
       <WithContaineredDrawer
@@ -81,22 +113,25 @@ export function ConnectHardwareWelcome({
           background: "transparent",
         }}
       >
-        <Box sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          borderRadius: "12px",
-          background: theme.custom.colors.backgroundBackdrop,
-          padding: "34px 16px 16px",
-        }}>
-          <KeystoneIcon width='48' height='48' />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            borderRadius: "12px",
+            background: theme.custom.colors.backgroundBackdrop,
+            padding: "34px 16px 16px",
+          }}
+        >
+          <KeystoneIcon width="48" height="48" />
           <Box
             m="20px 0 12px"
             textAlign="center"
             fontSize="14px"
             color={theme.custom.colors.fontColor}
           >
-            Keystone is a top-notch hardware wallet for optimal security, user-friendly interface and extensive compatibility.
+            Keystone is a top-notch hardware wallet for optimal security,
+            user-friendly interface and extensive compatibility.
           </Box>
           <Link
             href="https://keyst.one/"
@@ -107,9 +142,11 @@ export function ConnectHardwareWelcome({
               marginBottom: "16px",
               fontSize: "14px",
             }}
-          >Learn more</Link>
+          >
+            Learn more
+          </Link>
           <SecondaryButton
-            label='OK'
+            label="OK"
             onClick={() => setIsKeystoneIntroOpen(false)}
           />
         </Box>

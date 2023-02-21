@@ -24,6 +24,7 @@ export function ConnectHardwareKeystoneSign({
   walletDescriptor,
   message,
   ur,
+  isInDrawer,
   onNext,
   onError,
 }: {
@@ -32,6 +33,7 @@ export function ConnectHardwareKeystoneSign({
   walletDescriptor: WalletDescriptor;
   message: string;
   ur: UR;
+  isInDrawer?: boolean;
   onNext: (signature: string) => void;
   onError: () => void;
 }) {
@@ -76,10 +78,11 @@ export function ConnectHardwareKeystoneSign({
     [DisplayType.qrcode]: (
       <KeystonePlayer
         header={
-          <CommonHeader text="Scan the QR code below using your Keystone to import your account to Backpack" />
+          <CommonHeader text="Scan the QR code below using your Keystone to import your account to Backpack." />
         }
         ur={msgPlayUR}
         setDisplay={setDisplay}
+        size={isInDrawer ? 180 : 200}
       />
     ),
     [DisplayType.scanner]: (
@@ -87,11 +90,15 @@ export function ConnectHardwareKeystoneSign({
         <KeystoneScanner
           containerRef={containerRef}
           header={
-            <CommonHeader text="Scan the QR code displayed on your Keystone Device." />
+            <CommonHeader
+              text="Scan the QR code displayed on your Keystone Device."
+              style={{ marginBottom: isInDrawer ? "32px" : "48px" }}
+            />
           }
           onScan={handleScan}
           setDisplay={setDisplay}
           urTypes={[URType.SOL_SIGNATURE]}
+          size={isInDrawer ? 200 : 220}
         />
         <KeystoneScanError
           containerRef={containerRef}
@@ -107,11 +114,17 @@ export function ConnectHardwareKeystoneSign({
   }[display];
 }
 
-function CommonHeader({ text }: { text: string }) {
+function CommonHeader({
+  text,
+  ...args
+}: {
+  text: string;
+  [propType: string]: any;
+}) {
   const theme = useCustomTheme();
 
   return (
-    <Box textAlign="center">
+    <Box textAlign="center" {...args}>
       <Box
         sx={{
           display: "flex",
@@ -119,11 +132,11 @@ function CommonHeader({ text }: { text: string }) {
           alignItems: "center",
         }}
       >
-        <CircleBackpackIcon />
-        <Box mx={4}>
+        <CircleBackpackIcon width={40} height={40} />
+        <Box mx="28px" height="24px">
           <ConnectIcon color={theme.custom.colors.fontColor} />
         </Box>
-        <KeystoneIcon />
+        <KeystoneIcon width={40} height={40} />
       </Box>
       <Header
         text="Sign the message"
