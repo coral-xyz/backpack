@@ -4,28 +4,14 @@ import type {
   SignedWalletDescriptor,
   WalletDescriptor,
 } from "@coral-xyz/common";
-import {
-  BACKEND_API_URL,
-  Blockchain,
-  getAuthMessage,
-  getBlockchainFromPath,
-  UI_RPC_METHOD_KEYRING_STORE_CREATE,
-  UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
-} from "@coral-xyz/common";
-import { Loading } from "@coral-xyz/react-common";
-import {
-  useBackgroundClient,
-  useOnboarding,
-  useSignMessageForWallet,
-} from "@coral-xyz/recoil";
-import { v4 as uuidv4 } from "uuid";
+import { Blockchain, getAuthMessage } from "@coral-xyz/common";
+// import { Loading } from "@coral-xyz/react-common";
+import { useOnboarding, useSignMessageForWallet } from "@coral-xyz/recoil";
 
-import { useAuthentication } from "../../../hooks/useAuthentication";
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
 import { MnemonicInput } from "../../common/Account/MnemonicInput";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
-import { getWaitlistId } from "../../common/WaitingRoom";
 import { useHardwareOnboardSteps } from "../../Onboarding/pages/HardwareOnboard";
 
 import { AlreadyOnboarded } from "./AlreadyOnboarded";
@@ -45,6 +31,7 @@ export const RecoverAccount = ({
   isAddingAccount?: boolean;
   isOnboarded?: boolean;
 }) => {
+  const { step, nextStep, prevStep } = useSteps();
   const { onboardingData, setOnboardingData, maybeCreateUser } =
     useOnboarding();
   const {
@@ -54,7 +41,6 @@ export const RecoverAccount = ({
     signedWalletDescriptors,
     serverPublicKeys,
   } = onboardingData;
-  const { step, nextStep, prevStep } = useSteps();
   const authMessage = userId ? getAuthMessage(userId) : "";
   const signMessageForWallet = useSignMessageForWallet(mnemonic);
 

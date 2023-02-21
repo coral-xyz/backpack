@@ -106,7 +106,6 @@ const defaultState = {
 
 type SelectBlockchainType = {
   blockchain: Blockchain;
-  background: any;
   onSelectImport?: () => void;
 };
 
@@ -151,11 +150,7 @@ export function OnboardingProvider({
   }, []);
 
   const handleSelectBlockchain = useCallback(
-    async ({
-      blockchain,
-      background,
-      onSelectImport,
-    }: SelectBlockchainType) => {
+    async ({ blockchain, onSelectImport }: SelectBlockchainType) => {
       const {
         selectedBlockchains,
         signedWalletDescriptors,

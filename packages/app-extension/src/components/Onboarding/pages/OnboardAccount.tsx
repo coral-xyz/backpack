@@ -5,11 +5,7 @@ import type {
   WalletDescriptor,
 } from "@coral-xyz/common";
 import { getCreateMessage } from "@coral-xyz/common";
-import {
-  useBackgroundClient,
-  useOnboarding,
-  useSignMessageForWallet,
-} from "@coral-xyz/recoil";
+import { useOnboarding, useSignMessageForWallet } from "@coral-xyz/recoil";
 
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
@@ -43,7 +39,6 @@ export const OnboardAccount = ({
   isAddingAccount?: boolean;
   isOnboarded?: boolean;
 }) => {
-  const background = useBackgroundClient();
   const { step, nextStep, prevStep } = useSteps();
   const [openDrawer, setOpenDrawer] = useState(false);
   const {
@@ -117,7 +112,6 @@ export const OnboardAccount = ({
       onClick={async (blockchain) => {
         await handleSelectBlockchain({
           blockchain,
-          background,
           onSelectImport: () => {
             setOpenDrawer(true);
           },
