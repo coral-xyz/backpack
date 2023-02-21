@@ -674,16 +674,10 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleSetFeatureGates = (notif: Notification) => {
-      setFeatureGates((current) => {
-        console.log({
-          ...current,
-          ...notif.data.gates,
-        });
-        return {
-          ...current,
-          ...notif.data.gates,
-        };
-      });
+      setFeatureGates((current) => ({
+        ...current,
+        ...notif.data.gates,
+      }));
     };
 
     const handleUsernameAccountCreated = (notif: Notification) => {
