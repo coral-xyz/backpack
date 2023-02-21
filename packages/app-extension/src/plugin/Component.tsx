@@ -8,12 +8,6 @@ import { motion } from "framer-motion";
 import { MOTION_VARIANTS } from "../app/Router";
 
 const useStyles = styles((theme) => ({
-  textFieldInput: {
-    fontWeight: 500,
-    borderRadius: "12px",
-    fontSize: "16px",
-    lineHeight: "24px",
-  },
   textAreaInput: {
     fontWeight: 500,
     borderRadius: "12px",
@@ -127,8 +121,6 @@ export function TextField({
   const textColor = value
     ? theme.custom.colors.textPlaceholder
     : theme.custom.colors.fontColor2;
-  console.log("Component TextField:classes", classes);
-  console.log("Component TextField:textColor", textColor);
 
   return (
     <MuiTextField
