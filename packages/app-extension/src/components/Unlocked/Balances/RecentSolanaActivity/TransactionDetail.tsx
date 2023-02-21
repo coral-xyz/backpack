@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Blockchain,
+  exploreAddressUrl,
   explorerUrl,
   walletAddressDisplay,
 } from "@coral-xyz/common";
@@ -140,6 +141,11 @@ const useStyles = styles((theme) => ({
     borderRadius: "50%",
     width: "56px",
     height: "56px",
+  },
+  addressExplorerRow: {
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
 }));
 
@@ -500,15 +506,34 @@ function DetailTable({
       {(transaction?.type === TransactionType.UNKNOWN ||
         transaction.type === TransactionType.TRANSFER) &&
         isUserTxnSender(transaction, activeWallet) && (
-          <div className={classes.middleRow}>
-            <div className={classes.cell}>
-              <div className={classes.label}>To</div>
-
-              <div className={classes.cellValue}>
-                {walletAddressDisplay(
-                  transaction?.tokenTransfers?.[0]?.toUserAccount ||
-                    transaction?.nativeTransfers?.[0]?.toUserAccount
-                )}
+          <div className={classes.addressExplorerRow}>
+            <div
+              className={classes.middleRow}
+              onClick={() => {
+                window.open(
+                  exploreAddressUrl(
+                    explorer!,
+                    transaction?.tokenTransfers?.[0]?.toUserAccount ||
+                      transaction?.nativeTransfers?.[0]?.toUserAccount,
+                    connectionUrl!
+                  )
+                );
+              }}
+            >
+              <div className={classes.cell}>
+                <div className={classes.label}>To</div>
+                <div className={classes.cellValue}>
+                  {walletAddressDisplay(
+                    transaction?.tokenTransfers?.[0]?.toUserAccount ||
+                      transaction?.nativeTransfers?.[0]?.toUserAccount
+                  )}
+                  <CallMade
+                    style={{
+                      color: theme.custom.colors.icon,
+                      paddingLeft: "2px",
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
