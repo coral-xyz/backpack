@@ -5,7 +5,7 @@ import {
   UI_RPC_METHOD_ACTIVE_USER_UPDATE,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
 } from "@coral-xyz/common";
-import { ProxyImage , useBreakpoints } from "@coral-xyz/react-common";
+import { ProxyImage, useBreakpoints } from "@coral-xyz/react-common";
 import {
   useAllUsers,
   useAvatarUrl,
@@ -15,10 +15,11 @@ import {
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, Check } from "@mui/icons-material";
 import { Button, IconButton, Popover, Typography } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 
 import { SettingsNavStackDrawer } from "./SettingsNavStackDrawer";
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   menuButton: {
     padding: "2px",
     background: `${theme.custom.colors.avatarIconBackground} !important`,

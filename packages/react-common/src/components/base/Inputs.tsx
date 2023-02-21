@@ -10,7 +10,7 @@ function overrideErrBorder(originalBorder: string, err: boolean, theme: any) {
   return originalBorder;
 }
 
-const useStyles = styles((theme) => ({
+const useStyles = styles()((theme) => ({
   textFieldRoot: {
     color: theme.custom.colors.secondary,
     "& .MuiOutlinedInput-root": {
