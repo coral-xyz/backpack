@@ -103,14 +103,6 @@ const useStyles = styles((theme) => ({
     paddingRight: "12px",
     marginBottom: -10,
   },
-  buttonContainer: {
-    display: "flex",
-    paddingLeft: "12px",
-    paddingRight: "12px",
-    paddingBottom: "16px",
-    paddingTop: "25px",
-    justifyContent: "space-between",
-  },
   textRoot: {
     marginTop: "0 !important",
     marginBottom: "0 !important",
