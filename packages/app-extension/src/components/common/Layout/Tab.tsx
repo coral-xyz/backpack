@@ -18,16 +18,20 @@ import {
   ImageIcon,
   MessageBubbleIcon,
   MessageBubbleUnreadIcon,
- useBreakpoints } from "@coral-xyz/react-common";
+  useBreakpoints,
+} from "@coral-xyz/react-common";
 import {
   useAuthenticatedUser,
   useBackgroundClient,
   useFeatureGates,
+  useMessageUnreadCount,
   useTab,
+  useUser,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { Tab, Tabs } from "@mui/material";
+import Badge from "@mui/material/Badge";
 
 import { AvatarPopoverButton } from "../../Unlocked/Settings/AvatarPopover";
 import { NotificationIconWithBadge } from "../NotificationIconWithBadge";
@@ -128,13 +132,10 @@ export function WithTabs(props: any) {
 function TabBar() {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const authenticatedUser = useAuthenticatedUser();
   const tab = useTab();
   const background = useBackgroundClient();
   const featureGates = useFeatureGates();
-  const messagesUnread = useUnreadGlobal(
-    authenticatedUser ? authenticatedUser.uuid : null
-  );
+  const { uuid } = useUser();
   const { isXs } = useBreakpoints();
 
   const onTabClick = async (tabValue: string) => {
@@ -255,33 +256,7 @@ function TabBar() {
               className={`${isXs ? classes.tabXs : classes.tab} ${
                 tab === TAB_MESSAGES ? classes.activeTab : ""
               }`}
-              icon={
-                !messagesUnread ? (
-                  <MessageBubbleIcon
-                    fill={
-                      tab === TAB_MESSAGES
-                        ? theme.custom.colors.brandColor
-                        : theme.custom.colors.icon
-                    }
-                    style={{
-                      width: "20px",
-                      height: "20px",
-                    }}
-                  />
-                ) : (
-                  <MessageBubbleUnreadIcon
-                    fill={
-                      tab === TAB_MESSAGES
-                        ? theme.custom.colors.brandColor
-                        : theme.custom.colors.icon
-                    }
-                    style={{
-                      width: "20px",
-                      height: "20px",
-                    }}
-                  />
-                )
-              }
+              icon={<LocalMessageIcon />}
             />
           )}
           {!isXs && (
@@ -350,5 +325,59 @@ function TabBar() {
         )}
       </div>
     </Tabs>
+  );
+}
+
+function LocalMessageIcon() {
+  const theme = useCustomTheme();
+  const tab = useTab();
+  const { uuid } = useUser();
+  const messagesUnreadCount = useMessageUnreadCount({ uuid });
+
+  return (
+    <>
+      {!messagesUnreadCount ? (
+        <MessageBubbleIcon
+          fill={
+            tab === TAB_MESSAGES
+              ? theme.custom.colors.brandColor
+              : theme.custom.colors.icon
+          }
+          style={{
+            width: "20px",
+            height: "20px",
+          }}
+        />
+      ) : (
+        <Badge
+          sx={{
+            "& .MuiBadge-badge": {
+              padding: 0,
+              paddingTop: -2,
+              fontSize: 10,
+              height: 15,
+              width: 15,
+              minWidth: 15,
+              borderRadius: "50%",
+              backgroundColor: "#E33E3F",
+            },
+          }}
+          badgeContent={messagesUnreadCount}
+          color="secondary"
+        >
+          <MessageBubbleIcon
+            fill={
+              tab === TAB_MESSAGES
+                ? theme.custom.colors.brandColor
+                : theme.custom.colors.icon
+            }
+            style={{
+              width: "20px",
+              height: "20px",
+            }}
+          />
+        </Badge>
+      )}
+    </>
   );
 }

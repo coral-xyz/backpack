@@ -1,10 +1,11 @@
-import type { CollectionChatData,SubscriptionType  } from "@coral-xyz/common";
+import type { CollectionChatData, SubscriptionType } from "@coral-xyz/common";
 import { useRecoilValue } from "recoil";
 
 import {
   friendship,
   friendships,
   groupCollections,
+  messageUnreadCount,
   requestCount,
   roomChats,
 } from "../";
@@ -27,6 +28,10 @@ export function useGroupCollections({
   uuid: string;
 }): CollectionChatData[] {
   return useRecoilValue(groupCollections({ uuid }));
+}
+
+export function useMessageUnreadCount({ uuid }: { uuid: string }): number {
+  return useRecoilValue(messageUnreadCount({ uuid }));
 }
 
 export function useChats({
