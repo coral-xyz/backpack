@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { RichMentionsInput } from "react-rich-mentions";
 import {
   getHashedName,
@@ -498,10 +499,23 @@ function SendV1({
           </div>
         </div>
       </div>
-      <div className={classes.buttonContainer}>{sendButton}</div>
+      <ButtonContainer>{sendButton}</ButtonContainer>
     </>
   );
 }
+
+function ButtonContainer({ children }: { children: React.ReactNode }) {
+  return <View style={buttonContainerStyles.container}>{children}</View>;
+}
+
+const buttonContainerStyles = StyleSheet.create({
+  container: {
+    width: "100%",
+    paddingHorizontal: 12,
+    paddingBottom: 16,
+    paddingTop: 25,
+  },
+});
 
 function SendV2({
   token,
@@ -660,9 +674,7 @@ function SendV2({
           </div>
         </div>
       </div>
-      <div>
-        <div className={classes.buttonContainer}>{sendButton}</div>
-      </div>
+      <ButtonContainer>{sendButton}</ButtonContainer>
     </>
   );
 }
