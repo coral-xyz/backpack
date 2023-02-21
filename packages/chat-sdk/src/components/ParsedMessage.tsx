@@ -1,5 +1,9 @@
-import { NAV_COMPONENT_MESSAGE_CHAT, parseMessage } from "@coral-xyz/common";
-import { useNavigation } from "@coral-xyz/recoil";
+import {
+  NAV_COMPONENT_MESSAGE_CHAT,
+  NAV_COMPONENT_MESSAGE_PROFILE,
+  parseMessage,
+} from "@coral-xyz/common";
+import { useNavigation, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
 import Linkify from "linkify-react";
@@ -10,7 +14,8 @@ export function ParsedMessage({ message }) {
   const { push } = useNavigation();
   const parts = parseMessage(message);
   const theme = useCustomTheme();
-  const { usersMetadata } = useChatContext();
+  const { usersMetadata, type } = useChatContext();
+  const { uuid } = useUser();
   return (
     <>
       {parts.map((part) => {
@@ -27,12 +32,18 @@ export function ParsedMessage({ message }) {
             return (
               <span
                 onClick={() => {
+                  if (user.uuid === uuid) {
+                    return;
+                  }
                   push({
                     title: `@${user.username}`,
-                    componentId: NAV_COMPONENT_MESSAGE_CHAT,
+                    componentId:
+                      type === "individual"
+                        ? NAV_COMPONENT_MESSAGE_PROFILE
+                        : NAV_COMPONENT_MESSAGE_CHAT,
                     componentProps: {
                       userId: user.uuid,
-                      username: user.username,
+                      title: `@${user.username}`,
                     },
                   });
                 }}
