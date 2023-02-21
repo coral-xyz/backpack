@@ -3,11 +3,13 @@ import {
   buildFullFeatureGatesMap,
   UI_RPC_METHOD_GET_FEATURE_GATES,
 } from "@coral-xyz/common";
-import { atom, selector } from "recoil";
+import { selector } from "recoil";
+
+import { equalAtom } from "../equals";
 
 import { backgroundClient } from "./client";
 
-export const featureGates = atom<FEATURE_GATES_MAP>({
+export const featureGates = equalAtom<FEATURE_GATES_MAP>({
   key: "featureGates",
   default: selector({
     key: "featureGatesDefaults",
@@ -21,4 +23,5 @@ export const featureGates = atom<FEATURE_GATES_MAP>({
       return gates;
     },
   }),
+  equals: (m1, m2) => JSON.stringify(m1) === JSON.stringify(m2),
 });
