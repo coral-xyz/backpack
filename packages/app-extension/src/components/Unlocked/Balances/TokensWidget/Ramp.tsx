@@ -9,9 +9,9 @@ import {
   useAllWalletsDisplayed,
   useWalletName,
 } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
 import { ListItemIcon, Typography } from "@mui/material";
 import { useRecoilValue } from "recoil";
+import { makeStyles } from "tss-react/mui";
 
 import { TextField } from "../../../common";
 import { useNavigation } from "../../../common/Layout/NavStack";
@@ -22,7 +22,7 @@ import {
   BalancesTableRow,
 } from "../Balances";
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   searchField: {
     marginLeft: "12px",
     marginRight: "12px",
@@ -120,7 +120,7 @@ export function Ramp({
   const wallets = useAllWalletsDisplayed();
   const [searchFilter, setSearchFilter] = useState("");
   const { push } = useNavigation();
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   // If prop one is undefined, both must be undefined.
   if ((blockchain && !publicKey) || (!blockchain && publicKey)) {
@@ -225,7 +225,7 @@ export function RampCard({
 
 function RampTokenCell({ token }: any) {
   const { icon, title, subtitle } = token;
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <div className={classes.balancesTableCellContainer}>
       {!!icon && (

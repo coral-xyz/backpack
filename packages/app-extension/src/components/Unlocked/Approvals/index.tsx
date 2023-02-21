@@ -4,12 +4,12 @@ import {
   SecondaryButton,
 } from "@coral-xyz/react-common";
 import { useAvatarUrl, useUser, useWalletName } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
+import { makeStyles } from "tss-react/mui";
 
 import { walletAddressDisplay } from "../../../components/common";
 import { UNKNOWN_ICON_SRC } from "../../common/Icon";
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   connectablesContainer: {
     display: "flex",
     flexDirection: "row",
@@ -124,7 +124,7 @@ export function OriginWalletConnectIcons({
   originTitle: string;
   wallet: string;
 }) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const walletName = useWalletName(wallet);
   const avatarUrl = useAvatarUrl(56);
   const { username } = useUser();
@@ -183,7 +183,7 @@ export function Connectable({
   kind?: "small" | "medium";
   style?: React.CSSProperties;
 }) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <div className={classes.connectable} style={style}>
       <div

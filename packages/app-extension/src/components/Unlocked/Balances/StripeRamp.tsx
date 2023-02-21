@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import { Loading, PrimaryButton } from "@coral-xyz/react-common";
 import type { CustomTheme } from "@coral-xyz/themes";
-import { styles } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
+import { makeStyles } from "tss-react/mui";
 
 import { useDrawerContext } from "../../common/Layout/Drawer";
 
 const STRIP_RAMP_URL = "https://auth.xnfts.dev";
 
-const useStyles = styles((theme: CustomTheme) => ({
+const useStyles = makeStyles()((theme: CustomTheme) => ({
   outerContainer: {
     height: "80vh",
     display: "flex",
@@ -39,7 +39,7 @@ export const StripeRamp = ({
   const [, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [, setClientSecret] = useState(false);
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const fetchToken = () => {
     setLoading(true);

@@ -1,11 +1,11 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { isOneLive, useOpenPlugin } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
 import Card from "@mui/material/Card";
 import { useRecoilValue } from "recoil";
+import { makeStyles } from "tss-react/mui";
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   blockchainCard: {
     position: "relative",
     marginBottom: "12px",
@@ -67,7 +67,7 @@ export default function EntryONE() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const ref = useRef<HTMLImageElement>(null);
   const isONELive = useRecoilValue(isOneLive);
-  const classes = useStyles();
+  const { classes } = useStyles();
   const openPlugin = useOpenPlugin();
 
   useLayoutEffect(() => {

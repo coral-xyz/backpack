@@ -12,10 +12,10 @@ import {
   useNavigation,
   useUser,
 } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+import { makeStyles } from "tss-react/mui";
 
-const useStyles = styles(() => ({
+const useStyles = makeStyles()(() => ({
   container: {
     width: "100%",
     height: "100%",
@@ -64,7 +64,7 @@ export function NftChat({ collectionId, nftMint }: any) {
 }
 
 function MainScreen({ id }: { id: string }) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { push } = useNavigation();
   return (
     <div className={classes.container}>

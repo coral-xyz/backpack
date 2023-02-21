@@ -9,13 +9,13 @@ import React, {
 } from "react";
 import { EXTENSION_HEIGHT } from "@coral-xyz/common";
 import { useEphemeralNav } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
 import { Close } from "@mui/icons-material";
 import { Button, Drawer, IconButton } from "@mui/material";
+import { makeStyles } from "tss-react/mui";
 
 import { NAV_BAR_HEIGHT, NAV_BUTTON_WIDTH } from "./Nav";
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   withDrawer: {
     height: "100%",
     display: "flex",
@@ -76,7 +76,7 @@ export function WithDrawer(
     setOpenDrawer: Dispatch<SetStateAction<boolean>>;
   }>
 ) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { backdropStyles, children, openDrawer, paperStyles, setOpenDrawer } =
     props;
   return (
@@ -108,7 +108,7 @@ export function WithDrawer(
 }
 
 export function WithMiniDrawer(props: any) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const {
     children,
     openDrawer,
@@ -150,7 +150,7 @@ export function WithMiniDrawer(props: any) {
 }
 
 export function CloseButton({ onClick, buttonStyle }: any) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <div
       style={{
@@ -180,7 +180,7 @@ export function CloseButton({ onClick, buttonStyle }: any) {
 
 export function WithDrawerNoHeader(props: any) {
   const { children, openDrawer, setOpenDrawer } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <Drawer
       BackdropProps={{

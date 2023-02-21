@@ -10,8 +10,8 @@ import {
   useBlockchainConnectionUrl,
   useLoader,
 } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
+import { makeStyles } from "tss-react/mui";
 
 import {
   BalancesTable,
@@ -23,7 +23,7 @@ import {
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
-const useStyles = styles(() => ({
+const useStyles = makeStyles()(() => ({
   searchField: {
     marginLeft: "12px",
     marginRight: "12px",
@@ -50,7 +50,7 @@ export function SearchableTokenTables({
   onClickRow: (blockchain: Blockchain, token: Token) => void;
   customFilter: (token: Token) => boolean;
 }) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
   return (
     <>
@@ -83,7 +83,7 @@ export function SearchableTokenTable({
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   customFilter: (token: Token) => boolean;
 }) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
   return (
     <>
@@ -251,7 +251,7 @@ export function WalletTokenTable({
 }
 
 const SkeletonRows = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <BalancesTableRow>
       <div

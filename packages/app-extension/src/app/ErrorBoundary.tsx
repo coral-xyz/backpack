@@ -3,8 +3,8 @@ import type { BackgroundClient } from "@coral-xyz/common";
 import { UI_RPC_METHOD_NAVIGATION_TO_DEFAULT } from "@coral-xyz/common";
 import { EmptyState } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import { makeStyles } from "tss-react/mui";
 
 interface State {
   err: boolean;
@@ -16,7 +16,7 @@ interface Props {
   classes: any;
 }
 
-const useStyles = styles((theme) => {
+const useStyles = makeStyles()((theme) => {
   return {
     appContainer: {
       background: theme.custom.colors.backgroundBackdrop,
@@ -69,7 +69,7 @@ class ErrorBoundaryWithHooks extends React.Component<Props, State> {
 
 export function ErrorBoundary(props: { children: React.ReactNode }) {
   const background = useBackgroundClient();
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     //@ts-ignore
     <ErrorBoundaryWithHooks classes={classes} background={background}>

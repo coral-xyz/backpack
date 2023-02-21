@@ -1,15 +1,15 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
-import { styles } from "@coral-xyz/themes";
 import { ArrowForward } from "@mui/icons-material";
 import { Box } from "@mui/material";
 import { createPopup } from "@typeform/embed";
+import { makeStyles } from "tss-react/mui";
 
 import { SubtextParagraph } from "../../common";
 import { getWaitlistId, setWaitlistId } from "../../common/WaitingRoom";
 import { BackpackHeader } from "../../Locked";
 
-const useStyles = styles(() => ({
+const useStyles = makeStyles()(() => ({
   inviteCodeBox: {
     "& .MuiFormControl-root": {
       marginTop: 0,
@@ -31,7 +31,7 @@ export const InviteCodeForm = ({
   const [waitlistResponseId, setWaitlistResponseId] = useState(
     getWaitlistId() || ""
   );
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   useEffect(() => {
     setError("");

@@ -6,8 +6,8 @@ import {
   useActiveEthereumWallet,
   useLoader,
 } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
+import { makeStyles } from "tss-react/mui";
 
 import { Button } from "../../../../plugin/Component";
 import { CloseButton, WithDrawer } from "../../../common/Layout/Drawer";
@@ -19,7 +19,7 @@ import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 import { RecentActivityList } from "../RecentActivity";
 import { TransferWidget } from "../TransferWidget";
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   tokenHeaderButtonContainer: {
     display: "flex",
     justifyContent: "space-between",
@@ -96,7 +96,7 @@ function TokenHeader({
   tokenAddress,
   publicKey,
 }: SearchParamsFor.Token["props"]) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [token] = useLoader(
     blockchainTokenData({
       publicKey,
@@ -155,7 +155,7 @@ export function WithHeaderButton({
   label,
   routes,
 }: any) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [openDrawer, setOpenDrawer] = useState(false);
   const initialRoute = routes[0];
   return (

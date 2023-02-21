@@ -1,17 +1,17 @@
 import type { Blockchain, FeeConfig } from "@coral-xyz/common";
 import { EmptyState, Loading } from "@coral-xyz/react-common";
 import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
+import { makeStyles } from "tss-react/mui";
 
 import { TransactionData } from "../../common/TransactionData";
 import { WithApproval } from "../../Unlocked/Approvals";
 
 const { Zero } = ethers.constants;
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   title: {
     fontWeight: 500,
     fontSize: "18px",
@@ -64,7 +64,7 @@ export function ApproveTransaction({
     feeConfig?: { config: FeeConfig; disabled: boolean }
   ) => Promise<void>;
 }) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const blockchain = useWalletBlockchain(wallet);
   const transactionData = useTransactionData(blockchain as Blockchain, tx);
   const { loading, balanceChanges, transaction, solanaFeeConfig } =
@@ -199,7 +199,7 @@ export function ApproveAllTransactions({
   txs: Array<string>;
   onCompletion: (confirmed: boolean) => void;
 }) {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const onConfirm = async () => {
     onCompletion(true);

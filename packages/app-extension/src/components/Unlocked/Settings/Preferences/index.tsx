@@ -14,8 +14,8 @@ import {
   useDeveloperMode,
   useIsAggregateWallets,
 } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
 import { Switch } from "@mui/material";
+import { makeStyles } from "tss-react/mui";
 
 import {
   deleteSubscription,
@@ -201,7 +201,7 @@ export function SwitchToggle({
   onChange: () => void;
   disableUiState?: boolean;
 }) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <Switch
       disableRipple
@@ -217,7 +217,7 @@ export function SwitchToggle({
   );
 }
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   switchBase: {
     "&:hover": {
       backgroundColor: "transparent !important",
