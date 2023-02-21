@@ -14,8 +14,6 @@
     { "path": "packages/provider-core" },
     { "path": "packages/provider-injection" },
     { "path": "packages/react-common" },
-    { "path": "packages/react-xnft" },
-    { "path": "packages/react-xnft-dom-renderer" },
     { "path": "packages/recoil" },
     { "path": "packages/themes" },
     { "path": "packages/wallet-standard" }

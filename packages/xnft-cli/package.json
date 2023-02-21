@@ -30,7 +30,6 @@
   },
   "devDependencies": {
     "eslint-config-custom": "*",
-    "react-xnft": "*",
     "shx": "^0.3.4"
   }
 }
