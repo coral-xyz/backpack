@@ -1,7 +1,7 @@
-import { styles } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
+import { makeStyles } from "tss-react/mui";
 
-const useStyles = styles(() => ({
+const useStyles = makeStyles()(() => ({
   containerDiv: {
     height: `100vh`,
     width: "100vw",
@@ -18,14 +18,15 @@ const useStyles = styles(() => ({
     margin: "auto",
     height: "100px",
     width: "100px",
-    backgroundColor: (props: any) => props.backgroundColor,
+    // backgroundColor: (props: any) => props.backgroundColor,
     borderRadius: "50%",
   },
   icon: {
-    marginTop: (props: any) => props.marginTop || 25,
-    marginLeft: (props: any) => props.marginLeft || 25,
+    // marginTop: (props: any) => props.marginTop || 25,
+    // marginLeft: (props: any) => props.marginLeft || 25,
   },
 }));
+
 interface Props {
   title: string;
   subtitle1: string;
@@ -44,7 +45,7 @@ export const PermissionsContent = ({
   marginTop,
   marginLeft,
 }: Props) => {
-  const classes = useStyles({ backgroundColor, marginTop, marginLeft });
+  const { classes } = useStyles();
   return (
     <div className={classes.containerDiv}>
       <div>

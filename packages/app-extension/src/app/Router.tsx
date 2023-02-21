@@ -79,7 +79,7 @@ function _Router() {
 }
 
 function PopupView() {
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <div className={classes.appContainer}>
       <PopupRouter />
@@ -443,11 +443,11 @@ export function WithSuspense(props: any) {
 }
 
 export function BlankApp() {
-  const classes = useStyles();
+  const { classes } = useStyles();
   return <div className={classes.appContainer}></div>;
 }
 
-const useStyles = styles((theme) => {
+const useStyles = styles()((theme) => {
   return {
     appContainer: {
       minWidth: `${EXTENSION_WIDTH}px`,
