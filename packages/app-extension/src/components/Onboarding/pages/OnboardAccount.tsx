@@ -134,13 +134,7 @@ export const OnboardAccount = ({
         ]
       : []),
     <NotificationsPermission onNext={nextStep} />,
-    <Finish
-      inviteCode={inviteCode}
-      username={username}
-      password={password!}
-      keyringInit={{ mnemonic, signedWalletDescriptors }}
-      isAddingAccount={isAddingAccount}
-    />,
+    <Finish />,
   ];
 
   if (isOnboarded && step !== steps.length - 1) {
