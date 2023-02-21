@@ -291,7 +291,7 @@ function UserListItem({
               <UserIcon image={user.image} />
             </div>
             <div className={classes.userText}>
-              {usernameDisplay(user.username)}{" "}
+              {usernameDisplay(user.username, 15)}{" "}
               {user.searchedSolPubKey ? (
                 <> ({walletAddressDisplay(user.searchedSolPubKey, 2)})</>
               ) : (
