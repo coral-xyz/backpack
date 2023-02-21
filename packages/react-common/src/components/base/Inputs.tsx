@@ -183,18 +183,24 @@ export const TextInput = ({
   required = true,
 }: InputProps) => {
   const classes = useStyles({ error });
-  console.log("classes.textField", classes.textField);
-  console.log("className", className);
+  console.log("TextInput:classes.textField", classes.textField);
+  console.log("TextInput:className", className);
   const theme = useCustomTheme();
-  // inputProps = Object.assign(
-  //   {
-  //     className: `${classes.textFieldInput} ${
-  //       value ? classes.textFieldInputColor : classes.textFieldInputColorEmpty
-  //     }`,
-  //   },
-  //   inputProps
-  // );
-  console.log("inputProps", inputProps);
+  console.log("TextInput:inputProps:before", inputProps);
+  inputProps = Object.assign(
+    {
+      className: `${classes.textFieldInput} ${
+        value ? classes.textFieldInputColor : classes.textFieldInputColorEmpty
+      }`,
+    },
+    inputProps
+  );
+  console.log("TextInput:inputProps:after", inputProps);
+  const textColor = value
+    ? theme.custom.colors.fontColor2
+    : theme.custom.colors.textPlaceholder;
+  console.log("TextInput:textColor:after", textColor);
+
   return (
     <>
       <TextField
@@ -205,7 +211,14 @@ export const TextInput = ({
         value={value}
         onChange={setValue}
         onKeyDown={onKeyDown}
-        inputProps={inputProps}
+        inputProps={{
+          ...inputProps,
+          style: {
+            ...inputProps.style,
+            color: textColor,
+          },
+        }}
+        className={className}
         sx={{
           fontWeight: 500,
           borderRadius: "24px",
@@ -257,7 +270,7 @@ export const TextInput = ({
             },
           },
         }}
-        // className={`${classes.textInputRoot} ${classes.textField} ${className}`}
+        // className={`${classes.textField} ${className}`}
         variant="outlined"
         fullWidth
         required={required}
@@ -316,19 +329,19 @@ export const SmallInput = ({
           fontSize: "14px",
         },
       }}
-      sx={{
-        // textFieldRoot
-        color: theme.custom.colors.secondary,
-        "& .MuiOutlinedInput-root": {
-          "& fieldset": {
-            border: "none",
-            color: theme.custom.colors.secondary,
-          },
-        },
-      }}
-      // classes={{
-      //   root: classes.textFieldRoot,
+      // sx={{
+      //   // textFieldRoot
+      //   color: theme.custom.colors.secondary,
+      //   "& .MuiOutlinedInput-root": {
+      //     "& fieldset": {
+      //       border: "none",
+      //       color: theme.custom.colors.secondary,
+      //     },
+      //   },
       // }}
+      classes={{
+        root: classes.textFieldRoot,
+      }}
       style={{
         width: 100,
         padding: 0,
