@@ -9,7 +9,7 @@ COPY ["backend/native/backend-ws", "./backend/native/backend-ws"]
 COPY ["packages/chat-sdk", "./packages/chat-sdk"]
 COPY ["packages/common", "./packages/common"]
 COPY ["packages/common-public", "./packages/common-public"]
-COPY ["packages/db", "./packages/db"]
+COPY ["packages/db", "./packages/db"]]
 COPY ["packages/react-common", "./packages/react-common"]
 COPY ["packages/message-sdk", "./packages/message-sdk"]
 COPY ["packages/app-extension", "./packages/app-extension"]
@@ -35,6 +35,7 @@ RUN cd /base/backend/native/zeus && yarn run build
 RUN cd /base/backend/native/chat-zeus && yarn run build
 RUN cd /base/packages/common-public && yarn run build
 RUN cd /base/packages/common && yarn run build
+RUN cd /base/backend/native/backend-common && yarn run build
 RUN cd /base/backend/native/backend-ws && yarn run build
 
 EXPOSE 8080
