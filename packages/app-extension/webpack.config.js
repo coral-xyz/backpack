@@ -1,3 +1,4 @@
+const createExpoWebpackConfigAsync = require("@expo/webpack-config");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const { DuplicatesPlugin } = require("inspectpack/plugin");
@@ -154,9 +155,9 @@ const options = {
     ],
   },
   resolve: {
-    alias: {
-      "react-native$": "react-native-web",
-    },
+    // alias: {
+    //   "react-native$": "react-native-web",
+    // },
     extensions: fileExtensions
       .map((extension) => "." + extension)
       .concat([".js", ".jsx", ".ts", ".tsx", ".css"]),
@@ -223,4 +224,21 @@ const options = {
   ...extras,
 };
 
-module.exports = options;
+module.exports = async function (env, argv) {
+  const config = await createExpoWebpackConfigAsync(
+    { ...env, mode: "development" },
+    argv
+  );
+
+  options.resolve.alias = {
+    "@coral-xyz/chat-sdk": path.resolve(__dirname, "../chat-sdk/src"),
+    "@coral-xyz/themes": path.resolve(__dirname, "../themes/src"),
+    "@coral-xyz/recoil": path.resolve(__dirname, "../recoil/src"),
+    "@coral-xyz/react-common": path.resolve(__dirname, "../react-common/src"),
+    "@coral-xyz/db": path.resolve(__dirname, "../db/src"),
+    "@coral-xyz/message-sdk": path.resolve(__dirname, "../message-sdk/src"),
+    "react-native$": "react-native-web",
+  };
+
+  return Object.assign({}, config, options);
+};

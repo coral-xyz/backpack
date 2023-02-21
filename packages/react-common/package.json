@@ -10,8 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "@coral-xyz/common": "*",
-    "@coral-xyz/recoil": "*",
     "@coral-xyz/db": "*",
+    "@coral-xyz/recoil": "*",
     "@coral-xyz/themes": "*",
     "@mui/icons-material": "^5.10.14",
     "@mui/material": "^5.10.14",
@@ -20,6 +20,7 @@
     "graphql-ws": "^5.11.2",
     "react": "18.2.0",
     "react-custom-scrollbars": "^4.2.1",
+    "react-native-web": "^0.18.12",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
