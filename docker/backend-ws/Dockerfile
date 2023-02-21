@@ -35,6 +35,7 @@ RUN cd /base/backend/native/zeus && yarn run build
 RUN cd /base/backend/native/chat-zeus && yarn run build
 RUN cd /base/packages/common-public && yarn run build
 RUN cd /base/packages/common && yarn run build
+RUN cd /base/backend/native/backend-common && yarn run build
 RUN cd /base/backend/native/backend-ws && yarn run build
 
 EXPOSE 8080
