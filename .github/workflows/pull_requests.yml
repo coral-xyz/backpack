@@ -23,8 +23,6 @@ jobs:
             extension:
               - 'packages/app-extension/**'
             xnft:
-              - 'packages/react-xnft/**'
-              - 'packages/xnft/**'
               - 'packages/xnft-cli/**'
             backend:
               - 'backend/**'
