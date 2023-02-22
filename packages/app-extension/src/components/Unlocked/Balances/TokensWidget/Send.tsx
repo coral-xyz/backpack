@@ -595,7 +595,7 @@ function SendV2({
                 height: 50,
                 color: theme.custom.colors.fontColor,
                 textAlign: "center",
-                width: "35px",
+                width: "100%",
                 // @ts-ignore
                 fontFamily: theme.typography.fontFamily,
               }}
