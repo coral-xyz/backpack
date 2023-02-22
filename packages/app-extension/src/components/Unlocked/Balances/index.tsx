@@ -46,7 +46,7 @@ export function Balances() {
           marginBottom: "32px",
         }}
       >
-        <TransferWidget rampEnabled={false} swapEnabled={swapEnabled} />
+        <TransferWidget rampEnabled={true} swapEnabled={swapEnabled} />
       </div>
       <TokenTables
         onClickRow={onClickTokenRow}
