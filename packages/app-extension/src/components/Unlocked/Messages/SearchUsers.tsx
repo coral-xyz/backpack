@@ -89,7 +89,11 @@ export const SearchUsers = ({
                 ? "No contacts"
                 : `No results for '${searchFilter}'`
             }
-            subtitle={searchFilter === "" ? "Search for people to add." : ""}
+            subtitle={
+              searchFilter === ""
+                ? "Send users requests to add them as contacts"
+                : ""
+            }
             style={{ paddingLeft: 0, paddingRight: 0, marginTop: "24px" }}
           />
         </>
