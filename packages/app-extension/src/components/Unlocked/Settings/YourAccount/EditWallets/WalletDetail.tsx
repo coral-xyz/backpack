@@ -87,18 +87,23 @@ export const WalletDetail: React.FC<{
     "Wallet Address": {
       onClick: () => copyAddress(),
       detail: (
-        <div style={{ display: "flex" }}>
-          <Typography
-            style={{ color: theme.custom.colors.secondary, marginRight: "8px" }}
-          >
-            {publicKey.slice(0, 4) +
-              "..." +
-              publicKey.slice(publicKey.length - 4)}
-          </Typography>
-          <ContentCopy
-            style={{ width: "20px", color: theme.custom.colors.icon }}
-          />
-        </div>
+        <WithCopyTooltip tooltipOpen={tooltipOpen}>
+          <div style={{ display: "flex" }}>
+            <Typography
+              style={{
+                color: theme.custom.colors.secondary,
+                marginRight: "8px",
+              }}
+            >
+              {publicKey.slice(0, 4) +
+                "..." +
+                publicKey.slice(publicKey.length - 4)}
+            </Typography>
+            <ContentCopy
+              style={{ width: "20px", color: theme.custom.colors.icon }}
+            />
+          </div>
+        </WithCopyTooltip>
       ),
     },
     "Rename Wallet": {
@@ -193,11 +198,9 @@ export const WalletDetail: React.FC<{
           />
         </div>
       )}
-      <WithCopyTooltip tooltipOpen={tooltipOpen}>
-        <div>
-          <SettingsList menuItems={menuItems} />
-        </div>
-      </WithCopyTooltip>
+      <div>
+        <SettingsList menuItems={menuItems} />
+      </div>
       {type !== "dehydrated" && <SettingsList menuItems={_isCold} />}
       {type !== "hardware" && type !== "dehydrated" && (
         <SettingsList menuItems={secrets} />
