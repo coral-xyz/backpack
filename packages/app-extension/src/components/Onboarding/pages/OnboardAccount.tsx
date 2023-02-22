@@ -69,29 +69,9 @@ export const OnboardAccount = ({
     });
   }, [action, keyringType, mnemonic]);
 
-  useEffect(() => {
-    (async () => {
-      // This is a mitigation to ensure the keyring store doesn't lock before
-      // creating the user on the server.
-      //
-      // Would be better (though probably not a priority atm) to ensure atomicity.
-      // E.g. we could generate the UUID here on the client, create the keyring store,
-      // and only then create the user on the server. If the server fails, then
-      // rollback on the client.
-      //
-      // An improvement for the future!
-      if (isAddingAccount) {
-        setOnboardingData({ isAddingAccount });
-        await background.request({
-          method: UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
-          params: [],
-        });
-      }
-    })();
-  }, [isAddingAccount]);
-
   const steps = [
     <InviteCodeForm
+      key="InviteCodeForm"
       onClickWaiting={onWaiting}
       onClickRecover={onRecover}
       onSubmit={(inviteCode) => {
@@ -100,6 +80,7 @@ export const OnboardAccount = ({
       }}
     />,
     <UsernameForm
+      key="UsernameForm"
       inviteCode={inviteCode!}
       onNext={(username) => {
         setOnboardingData({ username });
@@ -107,12 +88,14 @@ export const OnboardAccount = ({
       }}
     />,
     <CreateOrImportWallet
+      key="CreateOrImportWallet"
       onNext={(action) => {
         setOnboardingData({ action });
         nextStep();
       }}
     />,
     <KeyringTypeSelector
+      key="KeyringTypeSelector"
       action={action}
       onNext={(keyringType: KeyringType) => {
         setOnboardingData({ keyringType });
@@ -123,6 +106,7 @@ export const OnboardAccount = ({
     ...(keyringType === "mnemonic"
       ? [
         <MnemonicInput
+          key="MnemonicInput"
           readOnly={action === "create"}
           buttonLabel={action === "create" ? "Next" : "Import"}
           onNext={(mnemonic) => {
@@ -133,6 +117,7 @@ export const OnboardAccount = ({
         ]
       : []),
     <BlockchainSelector
+      key="BlockchainSelector"
       selectedBlockchains={selectedBlockchains}
       onClick={async (blockchain) => {
         await handleSelectBlockchain({
@@ -147,6 +132,7 @@ export const OnboardAccount = ({
     ...(!isAddingAccount
       ? [
         <CreatePassword
+          key="CreatePassword"
           onNext={async (password) => {
               setOnboardingData({ password });
               nextStep();
@@ -154,12 +140,11 @@ export const OnboardAccount = ({
           />,
         ]
       : []),
-    <NotificationsPermission onNext={nextStep} />,
-    <Finish isAddingAccount={isAddingAccount} />,
+    <NotificationsPermission key="NotificationsPermission" onNext={nextStep} />,
+    <Finish key="Finish" isAddingAccount={isAddingAccount} />,
   ];
 
-  const isLastStep = step === steps.length - 1;
-  if (isOnboarded && !isLastStep) {
+  if (isOnboarded && step !== steps.length - 1) {
     return <AlreadyOnboarded />;
   }
 
@@ -175,6 +160,7 @@ export const OnboardAccount = ({
       navButtonRight={step === 0 ? navProps.navButtonRight : undefined}
     >
       {steps[step]}
+
       <WithContaineredDrawer
         containerRef={containerRef}
         openDrawer={openDrawer}
