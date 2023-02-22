@@ -94,19 +94,13 @@ export function KeystoneScanner({
   size = 200,
   urTypes,
 }: ScanProps) {
-  const [isPermissionError, setIsPermissionError] = useState<boolean | null>(
-    null
-  );
+  const [isPermissionError, setIsPermissionError] = useState<boolean>(false);
   const [isScanError, setIsScanError] = useState(false);
   const theme = useCustomTheme();
 
-  const { AnimatedQRScanner, setIsDone } = useAnimatedQRScanner({
-    scannerProps: {
-      videoLoaded: (canPlay: boolean) => {
-        setIsPermissionError(!canPlay);
-      },
-    },
-  });
+  const { AnimatedQRScanner, setIsDone, hasPermission } = useAnimatedQRScanner(
+    {}
+  );
 
   const handleError = () => {
     setIsScanError(true);
@@ -120,18 +114,10 @@ export function KeystoneScanner({
   };
 
   useEffect(() => {
-    if (isPermissionError !== null) {
-      return;
+    if (!hasPermission) {
+      setIsPermissionError(true);
     }
-    const t = setTimeout(() => {
-      if (isPermissionError === null) {
-        setIsPermissionError(true);
-      }
-    }, 2000);
-    return () => {
-      clearTimeout(t);
-    };
-  }, [isPermissionError]);
+  }, [hasPermission]);
 
   return (
     <KeystoneBase
