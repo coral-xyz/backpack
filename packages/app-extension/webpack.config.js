@@ -154,6 +154,9 @@ const options = {
     ],
   },
   resolve: {
+    alias: {
+      "react-native$": "react-native-web",
+    },
     extensions: fileExtensions
       .map((extension) => "." + extension)
       .concat([".js", ".jsx", ".ts", ".tsx", ".css"]),

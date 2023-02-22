@@ -1,4 +1,3 @@
-import { IS_MOBILE } from "@coral-xyz/common-public";
 import type {
   AccountBalancePair,
   AccountChangeCallback,
@@ -99,6 +98,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS,
   SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION,
 } from "../constants";
+import { IS_MOBILE } from "../utils";
 
 import type {
   CustomSplTokenAccountsResponse,

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { RichMentionsInput } from "react-rich-mentions";
 import {
   getHashedName,
@@ -88,6 +89,7 @@ const useStyles = styles((theme) => ({
     justifyContent: "center",
   },
   container: {
+    alignItems: "center",
     display: "flex",
     flexDirection: "column",
     height: "100%",
@@ -100,14 +102,6 @@ const useStyles = styles((theme) => ({
     paddingLeft: "12px",
     paddingRight: "12px",
     marginBottom: -10,
-  },
-  buttonContainer: {
-    display: "flex",
-    paddingLeft: "12px",
-    paddingRight: "12px",
-    paddingBottom: "16px",
-    paddingTop: "25px",
-    justifyContent: "space-between",
   },
   textRoot: {
     marginTop: "0 !important",
@@ -497,10 +491,23 @@ function SendV1({
           </div>
         </div>
       </div>
-      <div className={classes.buttonContainer}>{sendButton}</div>
+      <ButtonContainer>{sendButton}</ButtonContainer>
     </>
   );
 }
+
+function ButtonContainer({ children }: { children: React.ReactNode }) {
+  return <View style={buttonContainerStyles.container}>{children}</View>;
+}
+
+const buttonContainerStyles = StyleSheet.create({
+  container: {
+    width: "100%",
+    paddingHorizontal: 12,
+    paddingBottom: 16,
+    paddingTop: 25,
+  },
+});
 
 function SendV2({
   token,
@@ -571,40 +578,44 @@ function SendV2({
           </div>
         </div>
         <div>
-          <input
-            placeholder="0"
-            autoFocus
-            type="text"
-            style={{
-              marginTop: "40px",
-              outline: "none",
-              background: "transparent",
-              border: "none",
-              fontWeight: 600,
-              fontSize: 48,
-              height: 50,
-              color: theme.custom.colors.fontColor,
-              textAlign: "center",
-              width: "100%",
-              // @ts-ignore
-              fontFamily: theme.typography.fontFamily,
-            }}
-            value={_amount}
-            onChange={(e: any) => {
-              try {
-                const num =
-                  e.target.value !== "" ? parseFloat(e.target.value) : 0.0;
-                if (num >= 0) {
-                  _setAmount(e.target.value);
-                  setAmount(
-                    ethers.utils.parseUnits(num.toString(), token.decimals)
-                  );
+          <div
+            style={{ display: "flex", justifyContent: "center", width: "100" }}
+          >
+            <input
+              placeholder="0"
+              autoFocus
+              type="text"
+              style={{
+                marginTop: "40px",
+                outline: "none",
+                background: "transparent",
+                border: "none",
+                fontWeight: 600,
+                fontSize: 48,
+                height: 50,
+                color: theme.custom.colors.fontColor,
+                textAlign: "center",
+                width: "100%",
+                // @ts-ignore
+                fontFamily: theme.typography.fontFamily,
+              }}
+              value={_amount}
+              onChange={(e: any) => {
+                try {
+                  const num =
+                    e.target.value !== "" ? parseFloat(e.target.value) : 0.0;
+                  if (num >= 0) {
+                    _setAmount(e.target.value);
+                    setAmount(
+                      ethers.utils.parseUnits(num.toString(), token.decimals)
+                    );
+                  }
+                } catch (err) {
+                  // Do nothing.
                 }
-              } catch (err) {
-                // Do nothing.
-              }
-            }}
-          />
+              }}
+            />
+          </div>
           <div
             style={{ display: "flex", justifyContent: "center", marginTop: 20 }}
           >
@@ -655,9 +666,7 @@ function SendV2({
           </div>
         </div>
       </div>
-      <div>
-        <div className={classes.buttonContainer}>{sendButton}</div>
-      </div>
+      <ButtonContainer>{sendButton}</ButtonContainer>
     </>
   );
 }

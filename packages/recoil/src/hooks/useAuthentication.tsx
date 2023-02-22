@@ -5,7 +5,8 @@ import {
   UI_RPC_METHOD_USER_ACCOUNT_AUTH,
   UI_RPC_METHOD_USER_ACCOUNT_READ,
 } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+
+import { useBackgroundClient } from "./client";
 
 export const useAuthentication = () => {
   const background = useBackgroundClient();
@@ -30,7 +31,7 @@ export const useAuthentication = () => {
         params: [blockchain, publicKey, message, signature],
       });
     } catch (error) {
-      console.error("error auth", error);
+      console.error("useAuthentication:authenticate::error", error);
       // Relock if authentication failed
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
@@ -59,7 +60,7 @@ export const useAuthentication = () => {
         // 403
         return null;
       } else {
-        console.error("error checking auth", error);
+        console.error("useAuthentication:checkAuthentication::error", error);
         await background.request({
           method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
           params: [],
@@ -130,7 +131,7 @@ export const useAuthentication = () => {
 
     if (signers.length === 0) {
       // This should never happen
-      console.error("no valid auth signers found");
+      console.error("useAuthentication:getAuthSigner::no signers");
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
         params: [],

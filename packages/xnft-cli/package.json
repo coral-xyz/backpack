@@ -1,13 +1,10 @@
 {
   "name": "@coral-xyz/xnft-cli",
-  "version": "0.0.2-test.3",
+  "version": "0.0.2-test.4",
   "bin": {
     "xnft": "./index.js"
   },
-  "scripts": {
-    "prebuild": "cd ../../examples/xnft/iframe && npm run build && cd ../../../packages/common && npm run build && cd ../react-xnft-dom-renderer && npm run build",
-    "build": "shx cp ../../examples/xnft/iframe/dist/index.html iframe.html && shx cp ../react-xnft-dom-renderer/dist/index.js renderer.js"
-  },
+  "scripts": {},
   "browserslist": [
     "last 1 chrome version",
     "last 1 firefox version",
@@ -15,25 +12,21 @@
     "last 1 edge version"
   ],
   "dependencies": {
-    "@coral-xyz/xnft": "^0.2.29",
-    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
-    "@parcel/config-default": "^2.7.0",
-    "@parcel/core": "^2.7.0",
-    "@parcel/reporter-cli": "^2.7.0",
+    "@coral-xyz/xnft": "^0.2.37",
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "chokidar": "^3.5.3",
-    "commander": "^9.3.0",
+    "commander": "^10.0.0",
     "download-git-repo": "latest",
-    "esbuild": "^0.15.13",
+    "esbuild": "^0.17.10",
     "esbuild-plugin-resolve": "^1.0.3",
     "eslint-config-custom": "*",
-    "express": "^4.18.1",
+    "express": "^4.18.2",
     "fast-glob": "^3.2.12",
     "jszip": "^3.10.1",
     "node-stdlib-browser": "^1.2.0"
   },
   "devDependencies": {
     "eslint-config-custom": "*",
-    "react-xnft": "*",
     "shx": "^0.3.4"
   }
 }

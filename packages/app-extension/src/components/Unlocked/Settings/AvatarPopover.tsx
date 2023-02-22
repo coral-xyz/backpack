@@ -5,7 +5,7 @@ import {
   UI_RPC_METHOD_ACTIVE_USER_UPDATE,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
 } from "@coral-xyz/common";
-import { ProxyImage , useBreakpoints } from "@coral-xyz/react-common";
+import { ProxyImage, useBreakpoints } from "@coral-xyz/react-common";
 import {
   useAllUsers,
   useAvatarUrl,
@@ -193,6 +193,9 @@ function UsersMenuList() {
             user={user}
             onClick={async () => {
               close();
+              // HACK to get the popover to close properly. We had to add this after upgrading
+              // react to 18.2. :/
+              await new Promise((resolve) => setTimeout(resolve, 290));
               await background.request({
                 method: UI_RPC_METHOD_ACTIVE_USER_UPDATE,
                 params: [user.uuid],

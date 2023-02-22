@@ -1,8 +1,6 @@
 import { Suspense, useEffect, useMemo } from "react";
 import {
   BACKPACK_FEATURE_XNFT,
-  MESSAGES_ENABLED,
-  NOTIFICATIONS_ENABLED,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
 } from "@coral-xyz/common";
 import {
@@ -12,7 +10,7 @@ import {
   ListItem,
   PushDetail,
 } from "@coral-xyz/react-common";
-import { useBackgroundClient, useFeatureGates } from "@coral-xyz/recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { AccountCircleOutlined, Lock, Settings } from "@mui/icons-material";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
@@ -24,14 +22,12 @@ import { NotificationButton } from "../Balances/Notifications";
 
 import { AvatarHeader } from "./AvatarHeader/AvatarHeader";
 import { AvatarPopoverButton } from "./AvatarPopover";
-import { UserAccountsMenuButton } from "./UsernamesMenu";
 
 export function SettingsButton() {
-  const featureGates = useFeatureGates();
   return (
     <div style={{ display: "flex" }}>
       <RecentActivityButton />
-      {featureGates[NOTIFICATIONS_ENABLED] && <NotificationButton />}
+      <NotificationButton />
       <div style={{ width: "16px" }} />
       <AvatarPopoverButton />
     </div>
@@ -41,10 +37,8 @@ export function SettingsButton() {
 export function SettingsMenu() {
   const nav = useNavigation();
 
-  const headerTitle = useMemo(() => <UserAccountsMenuButton />, []);
-
   useEffect(() => {
-    nav.setOptions({ headerTitle });
+    nav.setOptions({ headerTitle: "" });
   }, [nav.setOptions]);
 
   return (
@@ -67,7 +61,6 @@ function SettingsList() {
   const theme = useCustomTheme();
   const nav = useNavigation();
   const background = useBackgroundClient();
-  const featureGates = useFeatureGates();
 
   const lockWallet = () => {
     background
@@ -102,14 +95,12 @@ function SettingsList() {
     },
   ];
 
-  if (featureGates[MESSAGES_ENABLED]) {
-    settingsMenu.push({
-      label: "Contacts",
-      onClick: () => nav.push("contacts"),
-      icon: (props: any) => <ContactsIcon {...props} />,
-      detailIcon: <PushDetail />,
-    });
-  }
+  settingsMenu.push({
+    label: "Contacts",
+    onClick: () => nav.push("contacts"),
+    icon: (props: any) => <ContactsIcon {...props} />,
+    detailIcon: <PushDetail />,
+  });
 
   if (BACKPACK_FEATURE_XNFT) {
     settingsMenu.push({

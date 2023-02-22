@@ -5,7 +5,11 @@ import {
   NAV_COMPONENT_MESSAGE_PROFILE,
   NEW_COLORS,
 } from "@coral-xyz/common";
-import { LocalImage, refreshIndividualChatsFor } from "@coral-xyz/react-common";
+import {
+  LocalImage,
+  refreshIndividualChatsFor,
+  SuccessButton,
+} from "@coral-xyz/react-common";
 import {
   blockchainTokenData,
   SOL_LOGO_URI,
@@ -20,6 +24,8 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Gif as GifComponent } from "@giphy/react-components";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import CallMadeIcon from "@mui/icons-material/CallMade";
 import DoneIcon from "@mui/icons-material/Done";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
@@ -143,6 +149,8 @@ const useStyles = makeStyles((theme: any) =>
       borderRadius: 16,
       padding: "8px 10px",
       color: theme.custom.colors.background,
+      minWidth: 230,
+      maxWidth: 400,
     },
     secureSendInner: {
       background: theme.custom.colors.invertedSecondary,
@@ -534,6 +542,7 @@ function SecureTransferElement({
   const { roomId } = useChatContext();
   const { provider, connection } = useAnchorContext();
   const activeSolanaWallet = useActiveSolanaWallet();
+  const theme = useCustomTheme();
   const classes = useStyles();
   const background = useBackgroundClient();
   const [actionButtonLoading, setActionButtonLoading] = useState(false);
@@ -554,7 +563,9 @@ function SecureTransferElement({
   }, [currentState]);
 
   useEffect(() => {
-    setFinalTxIdLocal(finalTxId);
+    if (finalTxId) {
+      setFinalTxIdLocal(finalTxId);
+    }
   }, [finalTxId]);
 
   const [token] = useLoader(
@@ -577,15 +588,53 @@ function SecureTransferElement({
   }, [escrow]);
 
   return (
-    <div className={classes.secureSendOuter}>
+    <div className={classes.secureSendOuter} id={"asdasd"}>
       {loading && <div>Loading</div>}
       {!loading && escrowState && (
-        <div>
+        <div style={{ paddingLeft: 5, paddingRight: 5 }}>
           {uuid === senderUuid ? (
-            <div style={{ marginBottom: 5 }}> Sending to @{remoteUsername}</div>
+            <div
+              style={{
+                display: "flex",
+                color: theme.custom.colors.icon,
+                marginBottom: 5,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                  marginRight: 3,
+                }}
+              >
+                <ArrowUpwardIcon
+                  style={{ color: theme.custom.colors.icon, fontSize: 15 }}
+                />
+              </div>
+              <div> Sending to @{remoteUsername}</div>
+            </div>
           ) : (
-            <div style={{ marginBottom: 5 }}>
-              Receiving from @{remoteUsername}
+            <div
+              style={{
+                display: "flex",
+                color: theme.custom.colors.icon,
+                marginBottom: 5,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                  marginRight: 3,
+                }}
+              >
+                <ArrowDownwardIcon
+                  style={{ color: theme.custom.colors.icon, fontSize: 15 }}
+                />
+              </div>
+              <div>Payment from @{remoteUsername}</div>
             </div>
           )}
           <div className={classes.secureSendInner}>
@@ -619,22 +668,40 @@ function SecureTransferElement({
               paddingTop: 8,
             }}
           >
-            <div
-              className={classes.roundBtn}
-              style={{ color: "#F8C840", background: "rgba(206, 121, 7, 0.2)" }}
-            >
-              <AccessTimeIcon style={{ fontSize: 21 }} />
-            </div>
+            {uuid === senderUuid && (
+              <div
+                style={{
+                  color: "#F8C840",
+                  background: "rgba(206, 121, 7, 0.2)",
+                  borderRadius: 16,
+                  padding: "4px 10px",
+                  display: "flex",
+                }}
+              >
+                {/*<div style={{justifyContent: "center", flexDirection: "column", display: "flex"}}>*/}
+                {/*  <AccessTimeIcon style={{ fontSize: 18 }} />*/}
+                {/*</div>*/}
+                <div
+                  style={{
+                    marginLeft: 5,
+                    justifyContent: "center",
+                    flexDirection: "column",
+                    display: "flex",
+                  }}
+                >
+                  Waiting for {remoteUsername}
+                </div>
+              </div>
+            )}
             {uuid === senderUuid ? (
               <>
                 {" "}
                 <div
-                  className={classes.smallBtn}
                   style={{
-                    background: "rgba(241, 50, 54, 0.2)",
-                    color: "#FF6269",
+                    color: theme.custom.colors.background,
                     cursor: actionButtonLoading ? "auto" : "pointer",
-                    fontSize: 12,
+                    fontSize: 15,
+                    marginTop: 2,
                   }}
                   onClick={async () => {
                     setActionButtonLoading(true);
@@ -672,46 +739,45 @@ function SecureTransferElement({
               </>
             ) : (
               <>
-                <div
-                  className={classes.smallBtn}
-                  style={{
-                    background: "rgba(17, 168, 0, 0.2)",
-                    color: "#52D24C",
-                    cursor: actionButtonLoading ? "auto" : "pointer",
-                  }}
+                <SuccessButton
+                  style={{ height: 38 }}
                   onClick={async () => {
                     setActionButtonLoading(true);
-                    const txn = await redeem(
-                      provider,
-                      background,
-                      connection,
-                      new PublicKey(escrowState.receiver),
-                      new PublicKey(escrowState.sender),
-                      new PublicKey(escrow),
-                      counter
-                    );
-                    fetch(
-                      `${BACKEND_API_URL}/chat/message?type=individual&room=${roomId}`,
-                      {
-                        method: "PUT",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                          messageId,
-                          state: "redeemed",
-                          txn,
-                        }),
-                      }
-                    );
-                    setFinalTxIdLocal(txn);
-                    setCurrentStateLocal("redeemed");
-                    setEscrowState(null);
-                    setActionButtonLoading(false);
+                    try {
+                      const txn = await redeem(
+                        provider,
+                        background,
+                        connection,
+                        new PublicKey(escrowState.receiver),
+                        new PublicKey(escrowState.sender),
+                        new PublicKey(escrow),
+                        counter
+                      );
+                      fetch(
+                        `${BACKEND_API_URL}/chat/message?type=individual&room=${roomId}`,
+                        {
+                          method: "PUT",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            messageId,
+                            state: "redeemed",
+                            txn,
+                          }),
+                        }
+                      );
+                      setFinalTxIdLocal(txn);
+                      setCurrentStateLocal("redeemed");
+                      setEscrowState(null);
+                      setActionButtonLoading(false);
+                    } catch (e) {
+                      console.error(e);
+                      setActionButtonLoading(false);
+                    }
                   }}
-                >
-                  {!actionButtonLoading ? "REDEEM" : "Redeeming..."}
-                </div>
+                  label={!actionButtonLoading ? "Accept" : "Accepting..."}
+                ></SuccessButton>
               </>
             )}
           </div>
@@ -745,7 +811,7 @@ function SecureTransferElement({
               }}
               onClick={() =>
                 window.open(
-                  `https://explorer.solana.com/tx/${finalTxId}`,
+                  `https://explorer.solana.com/tx/${finalTxIdLocal}`,
                   "mywindow"
                 )
               }

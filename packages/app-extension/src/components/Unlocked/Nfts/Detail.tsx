@@ -8,6 +8,8 @@ import {
   explorerNftUrl,
   getLogger,
   isMadLads,
+  NAV_COMPONENT_MESSAGE_CHAT,
+  NAV_COMPONENT_MESSAGE_GROUP_CHAT,
   Solana,
   TAB_MESSAGES,
   toTitleCase,
@@ -15,7 +17,7 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
-import { storeImageInLocalStorage } from "@coral-xyz/db";
+import { refreshGroups, storeImageInLocalStorage } from "@coral-xyz/db";
 import {
   NegativeButton,
   PrimaryButton,
@@ -30,15 +32,15 @@ import {
   newAvatarAtom,
   nftById,
   useAnchorContext,
+  useAuthenticatedUser,
   useBackgroundClient,
   useDecodedSearchParams,
   useEthereumCtx,
   useEthereumExplorer,
-  useOpenPlugin,
+ useNavigation,  useOpenPlugin,
   useSolanaCtx,
   useSolanaExplorer,
-  useUser,
-} from "@coral-xyz/recoil";
+  useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Whatshot } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
@@ -84,6 +86,7 @@ export function NftsDetail({
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const onLive = useRecoilValue(isOneLive);
+  const { uuid } = useUser();
   const WHITELISTED_CHAT_COLLECTIONS_WITH_OVERRIDE =
     onLive.wlCollection &&
     onLive.wlCollection !== "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tGs7vP6qczfj"
@@ -118,6 +121,7 @@ export function NftsDetail({
   const [joiningChat, setJoiningChat] = useState(false);
 
   let whitelistedChatCollectionId = whitelistedChatCollection?.collectionId;
+  const { push } = useNavigation();
 
   if (whitelistedChatCollection) {
     Object.keys(whitelistedChatCollection?.attributeMapping || {}).forEach(
@@ -189,10 +193,20 @@ export function NftsDetail({
                   ],
                 }),
               });
+              await refreshGroups(uuid);
               setJoiningChat(false);
-              background.request({
+              await background.request({
                 method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
                 params: [TAB_MESSAGES],
+              });
+              push({
+                title: whitelistedChatCollection?.name,
+                componentId: NAV_COMPONENT_MESSAGE_GROUP_CHAT,
+                componentProps: {
+                  fromInbox: true,
+                  id: whitelistedChatCollection?.id,
+                  title: whitelistedChatCollection?.name,
+                },
               });
               setChatJoined(true);
             }}
