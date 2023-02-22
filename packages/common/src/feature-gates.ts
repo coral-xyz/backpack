@@ -1,7 +1,9 @@
 export const PRIMARY_PUBKEY_ENABLED = "PRIMARY_PUBKEY_ENABLED";
+export const STRIPE_ENABLED = "STRIPE_ENABLED";
 
 // Used as a fallback if feature gates worker is offline
 export const DEFAULT_FEATURE_GATES = {
+  STRIPE_ENABLED: false,
   PRIMARY_PUBKEY_ENABLED: true,
   SWAP_FEES_ENABLED: false,
 } as const;
