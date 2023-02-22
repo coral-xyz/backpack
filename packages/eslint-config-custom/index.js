@@ -1,6 +1,7 @@
 module.exports = {
   root: true,
   extends: [
+    "./shared/react.js",
     // "turbo",
     // "prettier",
     // "plugin:workspaces/recommended",

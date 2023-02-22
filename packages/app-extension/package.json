@@ -59,12 +59,6 @@
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
     "lint:fix": "yarn run lint --fix"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
   "browserslist": "last 2 chrome versions",
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.10",
@@ -79,8 +73,6 @@
     "@types/react-native": "~0.70.6",
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
-    "@typescript-eslint/eslint-plugin": "^5.25.0",
-    "@typescript-eslint/parser": "^5.25.0",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "cross-env": "^7.0.3",
@@ -88,8 +80,6 @@
     "css-loader": "^6.7.1",
     "esbuild": "^0.14.42",
     "esbuild-jest": "^0.5.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-mui-unused-classes": "^1.0.3",
     "expect-puppeteer": "^6.1.0",
     "file-loader": "^6.2.0",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
