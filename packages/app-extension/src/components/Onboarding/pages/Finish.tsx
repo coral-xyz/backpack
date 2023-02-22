@@ -46,7 +46,7 @@ export const Finish = ({ isAddingAccount }: { isAddingAccount?: boolean }) => {
     })();
   }, [onboardingData, isAddingAccount]);
 
-  return loading ? (
+  return !loading ? (
     <SetupComplete
       onClose={() => {
         BrowserRuntimeExtension.closeActiveTab();
