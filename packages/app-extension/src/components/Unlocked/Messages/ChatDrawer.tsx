@@ -86,8 +86,9 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
     <Drawer
       sx={{
         "& .MuiDrawer-paper": {
-          background: ({ isDark }: any) =>
-            isDark ? theme.custom.colors.background : theme.custom.colors.nav,
+          background: isDark
+            ? theme.custom.colors.background
+            : theme.custom.colors.nav,
           height: "90vh",
           borderTopLeftRadius: "15px",
           borderTopRightRadius: "15px",
