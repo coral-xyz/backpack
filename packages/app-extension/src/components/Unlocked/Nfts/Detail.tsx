@@ -91,7 +91,7 @@ export function NftsDetail({
           ...WHITELISTED_CHAT_COLLECTIONS,
           {
             id: onLive.wlCollection,
-            name: "Mad Lads WL",
+            name: "The Madlist",
             image: "https://mad-lads-web.vercel.app/mad_lads_logo.svg",
             collectionId: onLive.wlCollection,
             attributeMapping: {} as any,
