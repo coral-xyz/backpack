@@ -231,7 +231,7 @@ function CenterDisplay({
   const theme = useCustomTheme();
 
   return (
-    <Suspense fallback={<div></div>}>
+    <Suspense fallback={<div />}>
       <div
         style={{
           visibility: title ? undefined : "hidden",
@@ -244,7 +244,7 @@ function CenterDisplay({
         }}
         onClick={onClick ? onClick : () => {}}
       >
-        {image && (
+        {image ? (
           <img
             style={{
               width: 25,
@@ -254,18 +254,18 @@ function CenterDisplay({
             }}
             src={image}
           />
-        )}
+        ) : null}
         <NavTitleLabel title={title} />
-        {notchViewComponent && (
+        {notchViewComponent ? (
           <KeyboardArrowDownSharpIcon
             onClick={() => setNotchEnabled((x) => !x)}
             style={{ cursor: "pointer", color: theme.custom.colors.fontColor }}
           />
-        )}
-        {notchEnabled && notchViewComponentWithProps && (
+        ) : null}
+        {notchEnabled && notchViewComponentWithProps ? (
           <>{notchViewComponentWithProps}</>
-        )}
-        {isVerified && (
+        ) : null}
+        {isVerified ? (
           <VerifiedIcon
             style={{
               fontSize: 19,
@@ -273,7 +273,7 @@ function CenterDisplay({
               color: theme.custom.colors.verified,
             }}
           />
-        )}
+        ) : null}
       </div>
     </Suspense>
   );
@@ -307,5 +307,5 @@ export function NavTitleLabel({ title }: any) {
 
 export function DummyButton() {
   const classes = useStyles();
-  return <div className={classes.menuButtonContainer}></div>;
+  return <div className={classes.menuButtonContainer} />;
 }

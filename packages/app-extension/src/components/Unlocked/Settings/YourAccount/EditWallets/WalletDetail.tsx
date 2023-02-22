@@ -21,7 +21,7 @@ import {
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ContentCopy } from "@mui/icons-material";
-import { Button, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 
 import { HeaderIcon } from "../../../../common";
@@ -164,7 +164,7 @@ export const WalletDetail: React.FC<{
 
   return (
     <div>
-      {type === "dehydrated" && (
+      {type === "dehydrated" ? (
         <div
           style={{
             marginLeft: "16px",
@@ -197,16 +197,16 @@ export const WalletDetail: React.FC<{
             }}
           />
         </div>
-      )}
+      ) : null}
       <div>
         <SettingsList menuItems={menuItems} />
       </div>
-      {type !== "dehydrated" && <SettingsList menuItems={_isCold} />}
-      {type !== "hardware" && type !== "dehydrated" && (
+      {type !== "dehydrated" ? <SettingsList menuItems={_isCold} /> : null}
+      {type !== "hardware" && type !== "dehydrated" ? (
         <SettingsList menuItems={secrets} />
-      )}
-      {!isLastRecoverable && <SettingsList menuItems={removeWallet} />}
-      {type !== "imported" && (
+      ) : null}
+      {!isLastRecoverable ? <SettingsList menuItems={removeWallet} /> : null}
+      {type !== "imported" ? (
         <div
           style={{
             padding: "16px",
@@ -249,7 +249,7 @@ export const WalletDetail: React.FC<{
             }}
           />
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
