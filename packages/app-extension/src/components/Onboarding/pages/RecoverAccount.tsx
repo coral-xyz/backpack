@@ -1,13 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type {
   KeyringType,
   ServerPublicKey,
   SignedWalletDescriptor,
   WalletDescriptor,
 } from "@coral-xyz/common";
-import { Blockchain, getAuthMessage } from "@coral-xyz/common";
+import {
+  Blockchain,
+  getAuthMessage,
+  UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
+} from "@coral-xyz/common";
 import { Loading } from "@coral-xyz/react-common";
-import { useOnboarding, useSignMessageForWallet } from "@coral-xyz/recoil";
+import {
+  useBackgroundClient,
+  useOnboarding,
+  useSignMessageForWallet,
+} from "@coral-xyz/recoil";
 
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
@@ -32,6 +40,7 @@ export const RecoverAccount = ({
   isAddingAccount?: boolean;
   isOnboarded?: boolean;
 }) => {
+  const background = useBackgroundClient();
   const [loading, setLoading] = useState(false);
   const { step, nextStep, prevStep } = useSteps();
   const { onboardingData, setOnboardingData, maybeCreateUser } =
@@ -68,6 +77,27 @@ export const RecoverAccount = ({
     nextStep,
     prevStep,
   });
+
+  useEffect(() => {
+    (async () => {
+      // This is a mitigation to ensure the keyring store doesn't lock before
+      // creating the user on the server.
+      //
+      // Would be better (though probably not a priority atm) to ensure atomicity.
+      // E.g. we could generate the UUID here on the client, create the keyring store,
+      // and only then create the user on the server. If the server fails, then
+      // rollback on the client.
+      //
+      // An improvement for the future!
+      if (isAddingAccount) {
+        setOnboardingData({ isAddingAccount });
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
+          params: [],
+        });
+      }
+    })();
+  }, [isAddingAccount]);
 
   const steps = [
     <RecoverAccountUsernameForm
@@ -120,9 +150,19 @@ export const RecoverAccount = ({
             onNext={async (password) => {
               setLoading(true);
               setOnboardingData({ password });
-              await maybeCreateUser();
+              const res = await maybeCreateUser(password);
               setLoading(false);
-              nextStep();
+              if (res) {
+                nextStep();
+              } else {
+                if (
+                  confirm(
+                    "There was an issue setting up your account. Please try again."
+                  )
+                ) {
+                  window.location.reload();
+                }
+              }
             }}
           />,
         ]
@@ -140,10 +180,6 @@ export const RecoverAccount = ({
     return <AlreadyOnboarded />;
   }
 
-  if (loading) {
-    return <Loading />;
-  }
-
   return (
     <WithNav
       navButtonLeft={
@@ -155,7 +191,7 @@ export const RecoverAccount = ({
       // Only display the onboarding menu on the first step
       navButtonRight={undefined}
     >
-      {steps[step]}
+      {loading ? <Loading /> : steps[step]}
     </WithNav>
   );
 };

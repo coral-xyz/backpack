@@ -28,7 +28,14 @@ import { useBackgroundClient } from "../hooks/client";
 import { useAuthentication } from "../hooks/useAuthentication";
 const { base58 } = ethers.utils;
 
-const getWaitlistId = () => undefined; // todo
+export const getWaitlistId = () => {
+  if (window?.localStorage) {
+    const WAITLIST_RES_ID_KEY = "waitlist-form-res-id";
+    return window.localStorage.getItem(WAITLIST_RES_ID_KEY) ?? undefined;
+  }
+
+  return undefined;
+};
 
 type BlockchainSelectOption = {
   id: string;
@@ -113,7 +120,7 @@ type IOnboardingContext = {
   onboardingData: OnboardingData;
   setOnboardingData: (data: Partial<OnboardingData>) => void;
   handleSelectBlockchain: (data: SelectBlockchainType) => Promise<void>;
-  maybeCreateUser: () => Promise<boolean>;
+  maybeCreateUser: (password: string) => Promise<boolean>;
 };
 
 const OnboardingContext = createContext<IOnboardingContext>({
@@ -314,15 +321,21 @@ export function OnboardingProvider({
     [data]
   );
 
-  const maybeCreateUser = useCallback(async () => {
-    try {
-      const { id, jwt } = await createUser();
-      await createStore(id, jwt, data.password!);
-      return true;
-    } catch (error) {
-      return error.toString();
-    }
-  }, [data]);
+  const maybeCreateUser = useCallback(
+    async (password: string) => {
+      console.log("maybeCreateUser init");
+      try {
+        const { id, jwt } = await createUser();
+        console.log("created user", id, jwt);
+        const res = await createStore(id, jwt, password);
+        console.log("created store", res);
+        return true;
+      } catch (error) {
+        return error.toString();
+      }
+    },
+    [data]
+  );
 
   const contextValue = useMemo(
     () => ({
