@@ -164,7 +164,16 @@ export function ImportSecretKey({
           />
         </Box>
       </form>
-      <WithMiniDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+      <WithMiniDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
+        backdropProps={{
+          style: {
+            opacity: 0.8,
+            background: "#18181b",
+          },
+        }}
+      >
         <ConfirmCreateWallet
           blockchain={blockchain}
           publicKey={newPublicKey}
