@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { render } from "react-dom";
 import { openPopupWindow } from "@coral-xyz/common/dist/esm/browser";
 import { BACKPACK_FEATURE_POP_MODE } from "@coral-xyz/common/dist/esm/generated-config";
@@ -33,13 +33,13 @@ document.addEventListener("keypress", async function onPress(event) {
 // TOOD(react) createRoot is required: https://reactjs.org/blog/2022/03/08/react-18-upgrade-guide.html#updates-to-client-rendering-apis
 const container = document.getElementById("root");
 render(
-  <React.StrictMode>
+  <>
     <Suspense fallback={null}>
       <App />
     </Suspense>
     <Suspense fallback={null}>
       <LedgerIframe />
     </Suspense>
-  </React.StrictMode>,
+  </>,
   container
 );

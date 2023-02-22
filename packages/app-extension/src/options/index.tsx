@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { render } from "react-dom";
 
 import Options from "./Options";
@@ -9,11 +9,11 @@ const LedgerIframe = lazy(() => import("../components/LedgerIframe"));
 // TOOD(react) createRoot is required: https://reactjs.org/blog/2022/03/08/react-18-upgrade-guide.html#updates-to-client-rendering-apis
 const container = document.getElementById("options");
 render(
-  <React.StrictMode>
+  <>
     <Options />
     <Suspense fallback={null}>
       <LedgerIframe />
     </Suspense>
-  </React.StrictMode>,
+  </>,
   container
 );
