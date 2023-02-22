@@ -37,10 +37,12 @@ import {
   useDecodedSearchParams,
   useEthereumCtx,
   useEthereumExplorer,
- useNavigation,  useOpenPlugin,
+  useNavigation,
+  useOpenPlugin,
   useSolanaCtx,
   useSolanaExplorer,
-  useUser } from "@coral-xyz/recoil";
+  useUser,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Whatshot } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
@@ -95,7 +97,7 @@ export function NftsDetail({
           {
             id: onLive.wlCollection,
             name: "The Madlist",
-            image: "https://mad-lads-web.vercel.app/mad_lads_logo.svg",
+            image: "https://www.madlads.com/mad_lads_logo.svg",
             collectionId: onLive.wlCollection,
             attributeMapping: {} as any,
           },
