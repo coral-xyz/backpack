@@ -22,7 +22,6 @@ import { NotificationButton } from "../Balances/Notifications";
 
 import { AvatarHeader } from "./AvatarHeader/AvatarHeader";
 import { AvatarPopoverButton } from "./AvatarPopover";
-import { UserAccountsMenuButton } from "./UsernamesMenu";
 
 export function SettingsButton() {
   return (
@@ -38,10 +37,8 @@ export function SettingsButton() {
 export function SettingsMenu() {
   const nav = useNavigation();
 
-  const headerTitle = useMemo(() => <UserAccountsMenuButton />, []);
-
   useEffect(() => {
-    nav.setOptions({ headerTitle });
+    nav.setOptions({ headerTitle: "" });
   }, [nav.setOptions]);
 
   return (
