@@ -297,11 +297,18 @@ export function OnboardingProvider({
   //
   const createStore = useCallback(
     async (uuid: string, jwt: string, data: Partial<OnboardingData>) => {
-      const { isAddingAccount, username, mnemonic, password } = data;
+      const {
+        isAddingAccount,
+        username,
+        mnemonic,
+        password,
+        keyringType,
+      } = data;
 
       const keyringInit = {
         signedWalletDescriptors: data.signedWalletDescriptors!,
         mnemonic,
+        keyringType,
       };
 
       try {
