@@ -1,12 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type {
   KeyringType,
   ServerPublicKey,
   SignedWalletDescriptor,
   WalletDescriptor,
 } from "@coral-xyz/common";
-import { Blockchain, getAuthMessage } from "@coral-xyz/common";
-import { useSignMessageForWallet } from "@coral-xyz/recoil";
+import {
+  Blockchain,
+  getAuthMessage,
+  UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
+} from "@coral-xyz/common";
+import { Loading } from "@coral-xyz/react-common";
+import {
+  useBackgroundClient,
+  useOnboarding,
+  useSignMessageForWallet,
+} from "@coral-xyz/recoil";
 
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
@@ -31,18 +40,19 @@ export const RecoverAccount = ({
   isAddingAccount?: boolean;
   isOnboarded?: boolean;
 }) => {
+  const background = useBackgroundClient();
+  const [loading, setLoading] = useState(false);
   const { step, nextStep, prevStep } = useSteps();
-  const [username, setUsername] = useState<string | null>(null);
-  const [password, setPassword] = useState<string | null>(null);
-  const [keyringType, setKeyringType] = useState<KeyringType | null>(null);
-  const [mnemonic, setMnemonic] = useState<string | undefined>(undefined);
-  const [userId, setUserId] = useState<string | undefined>(undefined);
-  const [serverPublicKeys, setServerPublicKeys] = useState<
-    Array<ServerPublicKey>
-  >([]);
-  const [signedWalletDescriptors, setSignedWalletDescriptors] = useState<
-    Array<SignedWalletDescriptor>
-  >([]);
+  const { onboardingData, setOnboardingData, maybeCreateUser } =
+    useOnboarding();
+  const {
+    userId,
+    keyringType,
+    mnemonic,
+    signedWalletDescriptors,
+    serverPublicKeys,
+  } = onboardingData;
+
   const authMessage = userId ? getAuthMessage(userId) : "";
   const signMessageForWallet = useSignMessageForWallet(mnemonic);
   const hardwareOnboardSteps = useHardwareOnboardSteps({
@@ -56,33 +66,54 @@ export const RecoverAccount = ({
     signMessage: authMessage,
     signText: "Sign the message to authenticate with Backpack",
     onComplete: (signedWalletDescriptor: SignedWalletDescriptor) => {
-      setSignedWalletDescriptors([
-        ...signedWalletDescriptors,
-        signedWalletDescriptor,
-      ]);
+      setOnboardingData({
+        signedWalletDescriptors: [
+          ...signedWalletDescriptors,
+          signedWalletDescriptor,
+        ],
+      });
       nextStep();
     },
     nextStep,
     prevStep,
   });
 
+  useEffect(() => {
+    (async () => {
+      // This is a mitigation to ensure the keyring store doesn't lock before
+      // creating the user on the server.
+      //
+      // Would be better (though probably not a priority atm) to ensure atomicity.
+      // E.g. we could generate the UUID here on the client, create the keyring store,
+      // and only then create the user on the server. If the server fails, then
+      // rollback on the client.
+      //
+      // An improvement for the future!
+      if (isAddingAccount) {
+        setOnboardingData({ isAddingAccount });
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
+          params: [],
+        });
+      }
+    })();
+  }, [isAddingAccount]);
+
   const steps = [
     <RecoverAccountUsernameForm
       onNext={(
         userId: string,
         username: string,
-        serverPublicKeys: Array<ServerPublicKey>
+        serverPublicKeys: ServerPublicKey[]
       ) => {
-        setUserId(userId);
-        setUsername(username);
-        setServerPublicKeys(serverPublicKeys);
+        setOnboardingData({ userId, username, serverPublicKeys });
         nextStep();
       }}
     />,
     <KeyringTypeSelector
       action={"recover"}
       onNext={(keyringType: KeyringType) => {
-        setKeyringType(keyringType);
+        setOnboardingData({ keyringType });
         nextStep();
       }}
     />,
@@ -92,7 +123,7 @@ export const RecoverAccount = ({
           <MnemonicInput
             buttonLabel={"Next"}
             onNext={(mnemonic: string) => {
-              setMnemonic(mnemonic);
+              setOnboardingData({ mnemonic });
               nextStep();
             }}
           />,
@@ -106,7 +137,7 @@ export const RecoverAccount = ({
                   signature: await signMessageForWallet(w, authMessage),
                 }))
               );
-              setSignedWalletDescriptors(signedWalletDescriptors);
+              setOnboardingData({ signedWalletDescriptors });
               nextStep();
             }}
             onRetry={prevStep}
@@ -116,25 +147,27 @@ export const RecoverAccount = ({
     ...(!isAddingAccount
       ? [
           <CreatePassword
-            onNext={(password) => {
-              setPassword(password);
-              nextStep();
+            onNext={async (password) => {
+              setLoading(true);
+              setOnboardingData({ password });
+              const res = await maybeCreateUser(password);
+              setLoading(false);
+              if (res) {
+                nextStep();
+              } else {
+                if (
+                  confirm(
+                    "There was an issue setting up your account. Please try again."
+                  )
+                ) {
+                  window.location.reload();
+                }
+              }
             }}
           />,
         ]
       : []),
-    ...(signedWalletDescriptors.length > 0
-      ? [
-          <Finish
-            inviteCode={undefined} // Recovery so no invite code
-            userId={userId}
-            username={username}
-            password={password!}
-            keyringInit={{ mnemonic, signedWalletDescriptors }}
-            isAddingAccount={isAddingAccount}
-          />,
-        ]
-      : []),
+    ...(signedWalletDescriptors.length > 0 ? [<Finish />] : []),
   ];
 
   // Cant go backwards from the last step as the keyring is already created
@@ -158,7 +191,7 @@ export const RecoverAccount = ({
       // Only display the onboarding menu on the first step
       navButtonRight={undefined}
     >
-      {steps[step]}
+      {loading ? <Loading /> : steps[step]}
     </WithNav>
   );
 };

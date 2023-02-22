@@ -4,7 +4,11 @@ import type {
   SignedWalletDescriptor,
   WalletDescriptor,
 } from "@coral-xyz/common";
-import { getCreateMessage } from "@coral-xyz/common";
+import {
+  getCreateMessage,
+  UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
+} from "@coral-xyz/common";
+import { Loading } from "@coral-xyz/react-common";
 import {
   useBackgroundClient,
   useOnboarding,
@@ -44,16 +48,19 @@ export const OnboardAccount = ({
   isOnboarded?: boolean;
 }) => {
   const background = useBackgroundClient();
+  const [loading, setLoading] = useState(false);
   const { step, nextStep, prevStep } = useSteps();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const { onboardingData, setOnboardingData, handleSelectBlockchain } =
-    useOnboarding();
+  const {
+    onboardingData,
+    setOnboardingData,
+    handleSelectBlockchain,
+    maybeCreateUser,
+  } = useOnboarding();
   const {
     inviteCode,
-    username,
     action,
     keyringType,
-    password,
     mnemonic,
     blockchain,
     signedWalletDescriptors,
@@ -67,6 +74,27 @@ export const OnboardAccount = ({
       signedWalletDescriptors: [],
     });
   }, [action, keyringType, mnemonic]);
+
+  useEffect(() => {
+    (async () => {
+      // This is a mitigation to ensure the keyring store doesn't lock before
+      // creating the user on the server.
+      //
+      // Would be better (though probably not a priority atm) to ensure atomicity.
+      // E.g. we could generate the UUID here on the client, create the keyring store,
+      // and only then create the user on the server. If the server fails, then
+      // rollback on the client.
+      //
+      // An improvement for the future!
+      if (isAddingAccount) {
+        setOnboardingData({ isAddingAccount });
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
+          params: [],
+        });
+      }
+    })();
+  }, [isAddingAccount]);
 
   const steps = [
     <InviteCodeForm
@@ -115,7 +143,6 @@ export const OnboardAccount = ({
       onClick={async (blockchain) => {
         await handleSelectBlockchain({
           blockchain,
-          background,
           onSelectImport: () => {
             setOpenDrawer(true);
           },
@@ -126,24 +153,37 @@ export const OnboardAccount = ({
     ...(!isAddingAccount
       ? [
           <CreatePassword
-            onNext={(password) => {
+            onNext={async (password) => {
               setOnboardingData({ password });
               nextStep();
             }}
           />,
         ]
       : []),
-    <NotificationsPermission onNext={nextStep} />,
-    <Finish
-      inviteCode={inviteCode}
-      username={username}
-      password={password!}
-      keyringInit={{ mnemonic, signedWalletDescriptors }}
-      isAddingAccount={isAddingAccount}
+    <NotificationsPermission
+      onNext={async () => {
+        setLoading(true);
+        const res = await maybeCreateUser(onboardingData.password!);
+        setLoading(false);
+
+        if (res) {
+          nextStep();
+        } else {
+          if (
+            confirm(
+              "There was an issue setting up your account. Please try again."
+            )
+          ) {
+            window.location.reload();
+          }
+        }
+      }}
     />,
+    <Finish />,
   ];
 
-  if (isOnboarded && step !== steps.length - 1) {
+  const isLastStep = step === steps.length - 1;
+  if (isOnboarded && !isLastStep) {
     return <AlreadyOnboarded />;
   }
 
@@ -158,7 +198,7 @@ export const OnboardAccount = ({
       // Only display the onboarding menu on the first step
       navButtonRight={step === 0 ? navProps.navButtonRight : undefined}
     >
-      {steps[step]}
+      {loading ? <Loading /> : steps[step]}
 
       <WithContaineredDrawer
         containerRef={containerRef}
