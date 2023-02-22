@@ -167,9 +167,7 @@ export function ImportWallets({
   const disabledPublicKeys = useMemo(() => {
     const loadedKeys = [...importedPublicKeys, ...conflictingPublicKeys];
     if (action === "search") {
-      return Object.keys(balances).filter((e: string) =>
-        publicKey ? e !== publicKey : !loadedKeys.includes(e)
-      );
+      return [];
     }
     return loadedKeys;
   }, [importedPublicKeys, conflictingPublicKeys, balances, action]);
@@ -502,6 +500,19 @@ export function ImportWallets({
             >
               {walletDescriptors
                 .slice(0, ur ? undefined : DISPLAY_PUBKEY_AMOUNT)
+                .sort((a, b) => {
+                  const aNum = disabledPublicKeys.includes(
+                    a.publicKey.toString()
+                  )
+                    ? 1
+                    : 0;
+                  const bNum = disabledPublicKeys.includes(
+                    b.publicKey.toString()
+                  )
+                    ? 1
+                    : 0;
+                  return aNum - bNum;
+                })
                 .map(({ publicKey, derivationPath, xfp }) => (
                   <ListItemButton
                     key={publicKey.toString()}

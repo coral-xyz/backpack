@@ -63,7 +63,7 @@ export function ConnectHardwareKeystoneSign({
     onNext(sig);
   };
 
-  const handleScan = useCallback((ur) => {
+  const handleScan = useCallback((ur: UR) => {
     readQRResolve(ur, xfp);
   }, []);
 
@@ -78,7 +78,7 @@ export function ConnectHardwareKeystoneSign({
     [DisplayType.qrcode]: (
       <KeystonePlayer
         header={
-          <CommonHeader text="Scan the QR code below using your Keystone to import your account to Backpack." />
+          <CommonHeader text="Scan the QR code via your Keystone device." />
         }
         ur={msgPlayUR}
         setDisplay={setDisplay}

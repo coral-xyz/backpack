@@ -17,7 +17,7 @@
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@fontsource/inter": "^4.5.11",
-    "@keystonehq/animated-qr": "^0.4.5",
+    "@keystonehq/animated-qr": "^0.5.1",
     "@keystonehq/sol-keyring": "^0.5.2",
     "@ledgerhq/hw-app-solana": "^6.27.2",
     "@ledgerhq/hw-transport": "^6.24.1",
