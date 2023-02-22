@@ -353,13 +353,13 @@ function LocalMessageIcon() {
           sx={{
             "& .MuiBadge-badge": {
               padding: 0,
-              paddingTop: -2,
               fontSize: 10,
               height: 15,
               width: 15,
               minWidth: 15,
               borderRadius: "50%",
               backgroundColor: "#E33E3F",
+              paddingBottom: "2px",
             },
           }}
           badgeContent={messagesUnreadCount}
