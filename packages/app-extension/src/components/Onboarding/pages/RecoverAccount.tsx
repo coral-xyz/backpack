@@ -52,7 +52,6 @@ export const RecoverAccount = ({
     signedWalletDescriptors,
     serverPublicKeys,
   } = onboardingData;
-  console.log("RecoverAccount:onboardingData", onboardingData);
 
   const authMessage = userId ? getAuthMessage(userId) : "";
   const signMessageForWallet = useSignMessageForWallet(mnemonic);

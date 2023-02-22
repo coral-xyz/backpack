@@ -120,9 +120,7 @@ type IOnboardingContext = {
   onboardingData: OnboardingData;
   setOnboardingData: (data: Partial<OnboardingData>) => void;
   handleSelectBlockchain: (data: SelectBlockchainType) => Promise<void>;
-  maybeCreateUser: (
-    overrides: Partial<OnboardingData>
-  ) => Promise<{ ok: boolean }>;
+  maybeCreateUser: (data: Partial<OnboardingData>) => Promise<{ ok: boolean }>;
 };
 
 const OnboardingContext = createContext<IOnboardingContext>({
@@ -229,18 +227,14 @@ export function OnboardingProvider({
     async (data: Partial<OnboardingData>) => {
       const { inviteCode, userId, username, mnemonic } = data;
 
-      console.log("OnboardingProvider:createUser::data", data);
-
       const keyringInit = {
         signedWalletDescriptors: data.signedWalletDescriptors!,
         mnemonic,
       };
 
-      console.log("OnboardingProvider:createUser::keyringInit", keyringInit);
       //
       // If userId is provided, then we are onboarding via the recover flow.
       if (userId) {
-        console.log("OnboardingProvider: user should exist", userId);
         // Authenticate the user that the recovery has a JWT.
         // Take the first keyring init to fetch the JWT, it doesn't matter which
         // we use if there are multiple.
@@ -254,7 +248,6 @@ export function OnboardingProvider({
           message: getAuthMessage(userId),
         };
         const { jwt } = await authenticate(authData!);
-        console.log("OnboardingProvider user should exist jwt", jwt);
         return { id: userId, jwt };
       }
 
@@ -277,7 +270,6 @@ export function OnboardingProvider({
           signature: b.signature,
         })),
       });
-      console.log("OnboardingProvider:createUser::body", body);
 
       try {
         const res = await fetch(`${BACKEND_API_URL}/users`, {
@@ -291,10 +283,9 @@ export function OnboardingProvider({
         if (!res.ok) {
           throw new Error(await res.json());
         }
-        const d = await res.json();
-        console.log("OnboardingProvider:createUser::res", d);
-        return d;
+        return await res.json();
       } catch (err) {
+        console.error("OnboardingProvider:createUser::error", err);
         throw new Error(`error creating user`);
       }
     },
@@ -306,16 +297,12 @@ export function OnboardingProvider({
   //
   const createStore = useCallback(
     async (uuid: string, jwt: string, data: Partial<OnboardingData>) => {
-      console.log("createStore uuid, jwt", uuid, jwt);
       const { isAddingAccount, username, mnemonic, password } = data;
-      console.log("createstore data", data);
 
       const keyringInit = {
         signedWalletDescriptors: data.signedWalletDescriptors!,
         mnemonic,
       };
-
-      console.log("createstore keyringInit", keyringInit);
 
       try {
         if (isAddingAccount) {
@@ -325,19 +312,15 @@ export function OnboardingProvider({
             method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
             params: [username, keyringInit, uuid, jwt],
           });
-          console.log("create store isAdding account false complete");
         } else {
           // Add a new keyring store under the new account
           await background.request({
             method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
             params: [username, password, keyringInit, uuid, jwt],
           });
-
-          console.log("create store isAdding account true complete");
         }
-        return true;
       } catch (err) {
-        console.log("OnboardingProvider::error:createStore", err);
+        console.error("OnboardingProvider:createStore::error", err);
         throw new Error(`error creating account`);
       }
     },
@@ -348,9 +331,7 @@ export function OnboardingProvider({
     async (data: Partial<OnboardingData>) => {
       try {
         const { id, jwt } = await createUser(data);
-        console.log("createUser:id,jwt", id, jwt);
-        const res = await createStore(id, jwt, data);
-        console.log("OnboardingProvider:createStore::res", res);
+        await createStore(id, jwt, data);
         return { ok: true };
       } catch (err) {
         console.error("OnboardingProvider:maybeCreateUser::error", err);
