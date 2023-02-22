@@ -78,6 +78,21 @@ export const RecoverAccount = ({
     prevStep,
   });
 
+  async function tryCreateUser(options: {}) {
+    setLoading(true);
+    const res = await maybeCreateUser(options);
+    setLoading(false);
+    if (res.ok) {
+      nextStep();
+    } else {
+      if (
+        confirm("There was an issue setting up your account. Please try again.")
+      ) {
+        window.location.reload();
+      }
+    }
+  }
+
   useEffect(() => {
     (async () => {
       // This is a mitigation to ensure the keyring store doesn't lock before
@@ -138,6 +153,15 @@ export const RecoverAccount = ({
                 }))
               );
               setOnboardingData({ signedWalletDescriptors });
+
+              if (isAddingAccount) {
+                await tryCreateUser({
+                  ...onboardingData,
+                  password: onboardingData.password!,
+                  signedWalletDescriptors,
+                });
+              }
+
               nextStep();
             }}
             onRetry={prevStep}
@@ -148,21 +172,8 @@ export const RecoverAccount = ({
       ? [
           <CreatePassword
             onNext={async (password) => {
-              setLoading(true);
               setOnboardingData({ password });
-              const res = await maybeCreateUser(password);
-              setLoading(false);
-              if (res) {
-                nextStep();
-              } else {
-                if (
-                  confirm(
-                    "There was an issue setting up your account. Please try again."
-                  )
-                ) {
-                  window.location.reload();
-                }
-              }
+              await tryCreateUser({ ...onboardingData, password });
             }}
           />,
         ]
