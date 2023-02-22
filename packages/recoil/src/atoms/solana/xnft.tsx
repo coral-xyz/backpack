@@ -26,7 +26,7 @@ export const appStoreMetaTags = selectorFamily<
 >({
   key: "appStoreMetaTags",
   get: (xnft) => async () => {
-    const res = await fetch(`https://test.xnft.gg/app/${xnft}`);
+    const res = await fetch(`https://xnft.gg/app/${xnft}`);
     const html = await res.text();
 
     const $ = cheerio.load(html);
@@ -162,7 +162,7 @@ export const plugins = selectorFamily<
               xnft: DEFAULT_PUBKEY_STR,
             },
           },
-        } as typeof plugins[0];
+        } as (typeof plugins)[0];
 
         plugins.push(simulator);
       }
