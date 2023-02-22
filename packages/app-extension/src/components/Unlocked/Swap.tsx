@@ -350,7 +350,7 @@ function InputTextField() {
     availableForSwap,
     exceedsBalance,
   } = useSwapContext();
-
+  const inputValue = fromAmount?.isZero ? 1 : fromAmount;
   return (
     <>
       <TextFieldLabel
@@ -368,7 +368,7 @@ function InputTextField() {
         placeholder="0"
         endAdornment={<InputTokenSelectorButton />}
         rootClass={classes.fromFieldRoot}
-        value={fromAmount}
+        value={inputValue}
         setValue={setFromAmount}
         decimals={fromToken!.decimals}
         isError={exceedsBalance}
