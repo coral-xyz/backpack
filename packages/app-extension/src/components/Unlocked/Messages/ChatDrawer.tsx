@@ -32,18 +32,6 @@ const useStyles = makeStyles((theme: any) =>
       padding: 10,
       height: "80vh",
     },
-    drawer: {
-      "& .MuiDrawer-paper": {
-        background: ({ isDark }: any) =>
-          isDark ? theme.custom.colors.background : theme.custom.colors.nav,
-        height: "90vh",
-        borderTopLeftRadius: "15px",
-        borderTopRightRadius: "15px",
-        "&::-webkit-scrollbar": {
-          display: "none",
-        },
-      },
-    },
   })
 );
 
@@ -96,7 +84,18 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
 
   return (
     <Drawer
-      className={classes.drawer}
+      sx={{
+        "& .MuiDrawer-paper": {
+          background: ({ isDark }: any) =>
+            isDark ? theme.custom.colors.background : theme.custom.colors.nav,
+          height: "90vh",
+          borderTopLeftRadius: "15px",
+          borderTopRightRadius: "15px",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+        },
+      }}
       anchor={"bottom"}
       open={true}
       onClose={() => setOpenDrawer(false)}
