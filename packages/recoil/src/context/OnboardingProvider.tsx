@@ -293,12 +293,18 @@ export function OnboardingProvider({
   //
   const createStore = useCallback(
     async (uuid: string, jwt: string, password: string) => {
-      const { isAddingAccount, username, signedWalletDescriptors, mnemonic } =
-        data;
+      const {
+        isAddingAccount,
+        username,
+        signedWalletDescriptors,
+        mnemonic,
+        keyringType,
+      } = data;
 
       const keyringInit = {
         signedWalletDescriptors,
         mnemonic,
+        keyringType,
       };
 
       try {
