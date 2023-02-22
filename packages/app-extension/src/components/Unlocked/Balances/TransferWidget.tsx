@@ -1,5 +1,9 @@
 import type { Blockchain } from "@coral-xyz/common";
-import { ETH_NATIVE_MINT, SOL_NATIVE_MINT } from "@coral-xyz/common";
+import {
+  ETH_NATIVE_MINT,
+  SOL_NATIVE_MINT,
+  STRIPE_ENABLED,
+} from "@coral-xyz/common";
 import { Dollar } from "@coral-xyz/react-common";
 import {
   SwapProvider,
