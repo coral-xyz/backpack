@@ -91,7 +91,7 @@ export const SearchUsers = ({
             }
             subtitle={
               searchFilter === ""
-                ? "Send users requests to add them as contacts"
+                ? "You can request to add users in the messaging tab"
                 : ""
             }
             style={{ paddingLeft: 0, paddingRight: 0, marginTop: "24px" }}
