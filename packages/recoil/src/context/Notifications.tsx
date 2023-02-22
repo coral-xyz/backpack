@@ -676,7 +676,7 @@ export function NotificationsProvider(props: any) {
     const handleSetFeatureGates = (notif: Notification) => {
       setFeatureGates((current) => ({
         ...current,
-        ...featureGates,
+        ...notif.data.gates,
       }));
     };
 

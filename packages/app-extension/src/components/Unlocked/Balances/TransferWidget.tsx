@@ -1,15 +1,7 @@
 import type { Blockchain } from "@coral-xyz/common";
-import {
-  ETH_NATIVE_MINT,
-  SOL_NATIVE_MINT,
-  STRIPE_ENABLED,
-} from "@coral-xyz/common";
+import { ETH_NATIVE_MINT, SOL_NATIVE_MINT } from "@coral-xyz/common";
 import { Dollar } from "@coral-xyz/react-common";
-import {
-  SwapProvider,
-  useActiveSolanaWallet,
-  useFeatureGates,
-} from "@coral-xyz/recoil";
+import { SwapProvider, useActiveSolanaWallet } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ArrowDownward, ArrowUpward, SwapHoriz } from "@mui/icons-material";
 import { Typography } from "@mui/material";
@@ -42,25 +34,21 @@ export function TransferWidget({
   rampEnabled: boolean;
   swapEnabled: boolean;
 }) {
-  const featureGates = useFeatureGates();
-  const enableOnramp =
-    featureGates && featureGates[STRIPE_ENABLED] && rampEnabled;
-
   return (
     <div
       style={{
         display: "flex",
         width:
-          enableOnramp && swapEnabled
+          rampEnabled && swapEnabled
             ? "256px"
-            : swapEnabled || enableOnramp
+            : swapEnabled || rampEnabled
             ? "188px"
             : "120px",
         marginLeft: "auto",
         marginRight: "auto",
       }}
     >
-      {enableOnramp && (
+      {rampEnabled && (
         <>
           <RampButton blockchain={blockchain} address={address} />
           <div style={{ width: "16px" }} />

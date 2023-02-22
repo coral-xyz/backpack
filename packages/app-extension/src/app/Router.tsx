@@ -352,8 +352,12 @@ function FullApp() {
   const background = useBackgroundClient();
 
   useEffect(() => {
-    refreshFeatureGates(background);
-    refreshXnftPreferences(background);
+    (async () => {
+      await Promise.all([
+        refreshFeatureGates(background),
+        refreshXnftPreferences(background),
+      ]);
+    })();
   }, [background]);
 
   return (
