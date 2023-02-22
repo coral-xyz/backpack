@@ -1,8 +1,9 @@
-import { externalResourceUri } from "@coral-xyz/common-public";
 import type { Provider } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
+
+import { externalResourceUri } from "../../utils";
 
 export const XNFT_PROGRAM_ID = new PublicKey(
   "xnft5aaToUM4UFETUQfj7NUDUBdvYHTVhNFThEYTm55"

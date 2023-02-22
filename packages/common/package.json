@@ -17,7 +17,6 @@
   "dependencies": {
     "@cardinal/creator-standard": "^2.1.10",
     "@cardinal/token-manager": "^1.7.9",
-    "@coral-xyz/common-public": "*",
     "@magiceden-oss/open_creator_protocol": "^0.3.2",
     "@metaplex-foundation/mpl-core": "^0.6.1",
     "@metaplex-foundation/mpl-token-metadata": "^2.7.0",

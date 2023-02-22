@@ -1,4 +1,3 @@
-import { externalResourceUri, getLogger } from "@coral-xyz/common-public";
 import {
   Metadata,
   TokenStandard,
@@ -11,6 +10,8 @@ import { MintLayout } from "@solana/spl-token";
 import type { Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 
+import { getLogger } from "../../logging";
+import { externalResourceUri } from "../../utils";
 import type {
   ReplaceTypes,
   SolanaTokenAccount,
