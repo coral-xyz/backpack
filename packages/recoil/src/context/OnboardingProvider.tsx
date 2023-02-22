@@ -120,14 +120,16 @@ type IOnboardingContext = {
   onboardingData: OnboardingData;
   setOnboardingData: (data: Partial<OnboardingData>) => void;
   handleSelectBlockchain: (data: SelectBlockchainType) => Promise<void>;
-  maybeCreateUser: (overrides: Partial<OnboardingData>) => Promise<boolean>;
+  maybeCreateUser: (
+    overrides: Partial<OnboardingData>
+  ) => Promise<{ ok: boolean }>;
 };
 
 const OnboardingContext = createContext<IOnboardingContext>({
   onboardingData: defaultState,
   setOnboardingData: () => {},
   handleSelectBlockchain: async () => {},
-  maybeCreateUser: async () => true,
+  maybeCreateUser: async () => ({ ok: true }),
 });
 
 export function OnboardingProvider({
@@ -224,14 +226,13 @@ export function OnboardingProvider({
   // Create the user in the backend
   //
   const createUser = useCallback(
-    async (overrides: Partial<OnboardingData>) => {
+    async (data: Partial<OnboardingData>) => {
       const { inviteCode, userId, username, mnemonic } = data;
+
       console.log("OnboardingProvider:createUser::data", data);
 
       const keyringInit = {
-        signedWalletDescriptors:
-          // overrides.signedWalletDescriptors only exists when adding a new user
-          overrides.signedWalletDescriptors || data.signedWalletDescriptors,
+        signedWalletDescriptors: data.signedWalletDescriptors!,
         mnemonic,
       };
 
@@ -292,7 +293,7 @@ export function OnboardingProvider({
         }
         const d = await res.json();
         console.log("OnboardingProvider:createUser::res", d);
-        return await res.json();
+        return d;
       } catch (err) {
         throw new Error(`error creating user`);
       }
@@ -304,17 +305,17 @@ export function OnboardingProvider({
   // Create the local store for the wallets
   //
   const createStore = useCallback(
-    async (uuid: string, jwt: string, overrides: Partial<OnboardingData>) => {
-      const { isAddingAccount, username, mnemonic } = data;
+    async (uuid: string, jwt: string, data: Partial<OnboardingData>) => {
+      console.log("createStore uuid, jwt", uuid, jwt);
+      const { isAddingAccount, username, mnemonic, password } = data;
+      console.log("createstore data", data);
 
       const keyringInit = {
-        signedWalletDescriptors:
-          // overrides.signedWalletDescriptors will only exist if adding a new account. this logic could use some cleanup
-          overrides.signedWalletDescriptors || data.signedWalletDescriptors,
+        signedWalletDescriptors: data.signedWalletDescriptors!,
         mnemonic,
       };
+
       console.log("createstore keyringInit", keyringInit);
-      console.log("createstore data", data);
 
       try {
         if (isAddingAccount) {
@@ -329,12 +330,11 @@ export function OnboardingProvider({
           // Add a new keyring store under the new account
           await background.request({
             method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-            params: [username, overrides.password, keyringInit, uuid, jwt],
+            params: [username, password, keyringInit, uuid, jwt],
           });
 
           console.log("create store isAdding account true complete");
         }
-
         return true;
       } catch (err) {
         console.log("OnboardingProvider::error:createStore", err);
@@ -345,15 +345,16 @@ export function OnboardingProvider({
   );
 
   const maybeCreateUser = useCallback(
-    async (overrides: Partial<OnboardingData>) => {
+    async (data: Partial<OnboardingData>) => {
       try {
-        const { id, jwt } = await createUser(overrides);
-        const res = await createStore(id, jwt, overrides);
-        console.log("OnboardingProvider:maybeCreateUser::res", res);
-        return res;
+        const { id, jwt } = await createUser(data);
+        console.log("createUser:id,jwt", id, jwt);
+        const res = await createStore(id, jwt, data);
+        console.log("OnboardingProvider:createStore::res", res);
+        return { ok: true };
       } catch (err) {
         console.error("OnboardingProvider:maybeCreateUser::error", err);
-        return err;
+        return { ok: false };
       }
     },
     [data]

@@ -166,7 +166,7 @@ export const OnboardAccount = ({
         const res = await maybeCreateUser(onboardingData);
         setLoading(false);
 
-        if (res) {
+        if (res.ok) {
           nextStep();
         } else {
           if (

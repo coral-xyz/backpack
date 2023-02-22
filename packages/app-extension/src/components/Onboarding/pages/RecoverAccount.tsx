@@ -79,15 +79,11 @@ export const RecoverAccount = ({
     prevStep,
   });
 
-  async function tryCreateUser(options: {
-    password?: string;
-    signedWalletDescriptors?: SignedWalletDescriptor[];
-  }) {
+  async function tryCreateUser(options: {}) {
     setLoading(true);
-    // When adding an account a password isn't necessary
     const res = await maybeCreateUser(options);
     setLoading(false);
-    if (res) {
+    if (res.ok) {
       nextStep();
     } else {
       if (
@@ -158,11 +154,16 @@ export const RecoverAccount = ({
                 }))
               );
               setOnboardingData({ signedWalletDescriptors });
-              nextStep();
 
               if (isAddingAccount) {
-                await tryCreateUser({ signedWalletDescriptors });
+                await tryCreateUser({
+                  ...onboardingData,
+                  password: onboardingData.password!,
+                  signedWalletDescriptors,
+                });
               }
+
+              nextStep();
             }}
             onRetry={prevStep}
           />,
@@ -173,7 +174,7 @@ export const RecoverAccount = ({
           <CreatePassword
             onNext={async (password) => {
               setOnboardingData({ password });
-              await tryCreateUser({ password });
+              await tryCreateUser({ ...onboardingData, password });
             }}
           />,
         ]
