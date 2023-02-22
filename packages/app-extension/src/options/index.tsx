@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-import { createRoot } from "react-dom/client";
+import { render } from "react-dom";
 
 import Options from "./Options";
 
@@ -9,12 +9,12 @@ const LedgerIframe = lazy(() => import("../components/LedgerIframe"));
 // Render the UI.
 //
 const container = document.getElementById("options");
-const root = createRoot(container!);
-root.render(
+render(
   <React.StrictMode>
     <Options />
     <Suspense fallback={null}>
       <LedgerIframe />
     </Suspense>
-  </React.StrictMode>
+  </React.StrictMode>,
+  container
 );

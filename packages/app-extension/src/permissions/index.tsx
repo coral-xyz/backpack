@@ -1,15 +1,15 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
+import { render } from "react-dom";
 
 import Permissions from "./Permissions";
 
 //
-// Render the UI.
+// Render the UI TODO(react) v18 requires createRoot
 //
 const container = document.getElementById("permissions");
-const root = createRoot(container!);
-root.render(
+render(
   <React.StrictMode>
     <Permissions />
-  </React.StrictMode>
+  </React.StrictMode>,
+  container
 );

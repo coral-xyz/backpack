@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-import { createRoot } from "react-dom/client";
+import { render } from "react-dom";
 import { openPopupWindow } from "@coral-xyz/common/dist/esm/browser";
 import { BACKPACK_FEATURE_POP_MODE } from "@coral-xyz/common/dist/esm/generated-config";
 
@@ -30,11 +30,10 @@ document.addEventListener("keypress", async function onPress(event) {
 });
 
 //
-// Render the UI.
+// Render the UI. TOOD(react) createRoot is required to support v18 version
 //
 const container = document.getElementById("root");
-const root = createRoot(container!);
-root.render(
+render(
   <React.StrictMode>
     <Suspense fallback={null}>
       <App />
@@ -42,5 +41,6 @@ root.render(
     <Suspense fallback={null}>
       <LedgerIframe />
     </Suspense>
-  </React.StrictMode>
+  </React.StrictMode>,
+  container
 );
