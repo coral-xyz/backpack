@@ -143,7 +143,7 @@ export function TextField({
       inputProps={{
         ...inputProps,
         style: {
-          ...inputProps.style,
+          ...(inputProps?.style || {}),
           color: textColor,
         },
       }}
