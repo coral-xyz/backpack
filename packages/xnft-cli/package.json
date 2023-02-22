@@ -14,9 +14,6 @@
   "dependencies": {
     "@coral-xyz/xnft": "^0.2.37",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
-    "@parcel/config-default": "^2.8.3",
-    "@parcel/core": "^2.8.3",
-    "@parcel/reporter-cli": "^2.8.3",
     "chokidar": "^3.5.3",
     "commander": "^10.0.0",
     "download-git-repo": "latest",
