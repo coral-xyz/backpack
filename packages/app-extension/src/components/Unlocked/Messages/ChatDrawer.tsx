@@ -3,31 +3,21 @@ import { useLocation } from "react-router-dom";
 import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { UserList } from "@coral-xyz/message-sdk";
-import {
-  useActiveSolanaWallet,
-  useDarkMode,
-  useDecodedSearchParams,
-} from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { useDarkMode, useDecodedSearchParams } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { Drawer, Typography } from "@mui/material";
+import { createStyles, makeStyles } from "@mui/styles";
 
 import { SearchBox } from "./SearchBox";
 import { UserListSkeleton } from "./UserListSkeleton";
-
 const LIMIT = 25;
 let debouncedTimer = 0;
 
-export const useStyles = (isDark: boolean) =>
-  styles((theme) => ({
+const useStyles = makeStyles((theme: any) =>
+  createStyles({
     container: {
       padding: 0,
       color: theme.custom.colors.fontColor2,
-    },
-    icon: {
-      color: theme.custom.colors.icon,
-      marginRight: 10,
-      height: "24px",
-      width: "24px",
     },
     horizontalCenter: {
       justifyContent: "center",
@@ -44,9 +34,8 @@ export const useStyles = (isDark: boolean) =>
     },
     drawer: {
       "& .MuiDrawer-paper": {
-        background: isDark
-          ? theme.custom.colors.background
-          : theme.custom.colors.nav,
+        background: ({ isDark }: any) =>
+          isDark ? theme.custom.colors.background : theme.custom.colors.nav,
         height: "90vh",
         borderTopLeftRadius: "15px",
         borderTopRightRadius: "15px",
@@ -55,11 +44,12 @@ export const useStyles = (isDark: boolean) =>
         },
       },
     },
-  }));
+  })
+);
 
 export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
   const isDark = useDarkMode();
-  const classes = useStyles(isDark)();
+  const classes = useStyles({ isDark });
   const { props, title }: any = useDecodedSearchParams();
   const [members, setMembers] = useState<RemoteUserData[]>([]);
   const [searchFilter, setSearchFilter] = useState("");
