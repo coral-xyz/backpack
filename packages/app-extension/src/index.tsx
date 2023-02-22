@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { openPopupWindow } from "@coral-xyz/common/dist/esm/browser";
 import { BACKPACK_FEATURE_POP_MODE } from "@coral-xyz/common/dist/esm/generated-config";
@@ -35,12 +35,12 @@ document.addEventListener("keypress", async function onPress(event) {
 const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
-  <React.StrictMode>
+  <>
     <Suspense fallback={null}>
       <App />
     </Suspense>
     <Suspense fallback={null}>
       <LedgerIframe />
     </Suspense>
-  </React.StrictMode>
+  </>
 );

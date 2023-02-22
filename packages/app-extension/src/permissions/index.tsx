@@ -9,7 +9,5 @@ import Permissions from "./Permissions";
 const container = document.getElementById("permissions");
 const root = createRoot(container!);
 root.render(
-  <React.StrictMode>
     <Permissions />
-  </React.StrictMode>
 );
