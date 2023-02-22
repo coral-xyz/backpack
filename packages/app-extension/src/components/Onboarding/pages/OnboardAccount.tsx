@@ -163,7 +163,7 @@ export const OnboardAccount = ({
     <NotificationsPermission
       onNext={async () => {
         setLoading(true);
-        const res = await maybeCreateUser(onboardingData.password!);
+        const res = await maybeCreateUser(onboardingData);
         setLoading(false);
 
         if (res) {

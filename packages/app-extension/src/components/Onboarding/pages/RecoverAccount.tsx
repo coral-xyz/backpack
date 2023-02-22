@@ -52,6 +52,7 @@ export const RecoverAccount = ({
     signedWalletDescriptors,
     serverPublicKeys,
   } = onboardingData;
+  console.log("RecoverAccount:onboardingData", onboardingData);
 
   const authMessage = userId ? getAuthMessage(userId) : "";
   const signMessageForWallet = useSignMessageForWallet(mnemonic);
@@ -77,6 +78,25 @@ export const RecoverAccount = ({
     nextStep,
     prevStep,
   });
+
+  async function tryCreateUser(options: {
+    password?: string;
+    signedWalletDescriptors?: SignedWalletDescriptor[];
+  }) {
+    setLoading(true);
+    // When adding an account a password isn't necessary
+    const res = await maybeCreateUser(options);
+    setLoading(false);
+    if (res) {
+      nextStep();
+    } else {
+      if (
+        confirm("There was an issue setting up your account. Please try again.")
+      ) {
+        window.location.reload();
+      }
+    }
+  }
 
   useEffect(() => {
     (async () => {
@@ -139,6 +159,10 @@ export const RecoverAccount = ({
               );
               setOnboardingData({ signedWalletDescriptors });
               nextStep();
+
+              if (isAddingAccount) {
+                await tryCreateUser({ signedWalletDescriptors });
+              }
             }}
             onRetry={prevStep}
           />,
@@ -148,21 +172,8 @@ export const RecoverAccount = ({
       ? [
           <CreatePassword
             onNext={async (password) => {
-              setLoading(true);
               setOnboardingData({ password });
-              const res = await maybeCreateUser(password);
-              setLoading(false);
-              if (res) {
-                nextStep();
-              } else {
-                if (
-                  confirm(
-                    "There was an issue setting up your account. Please try again."
-                  )
-                ) {
-                  window.location.reload();
-                }
-              }
+              await tryCreateUser({ password });
             }}
           />,
         ]
