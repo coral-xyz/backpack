@@ -4,6 +4,7 @@ import {
   externalResourceUri,
   fetchXnfts,
   SIMULATOR_PORT,
+  XNFT_GG_LINK,
   XNFT_PROGRAM_ID,
 } from "@coral-xyz/common";
 import { PublicKey } from "@solana/web3.js";
@@ -26,7 +27,7 @@ export const appStoreMetaTags = selectorFamily<
 >({
   key: "appStoreMetaTags",
   get: (xnft) => async () => {
-    const res = await fetch(`https://xnft.gg/app/${xnft}`);
+    const res = await fetch(`${XNFT_GG_LINK}/app/${xnft}`);
     const html = await res.text();
 
     const $ = cheerio.load(html);
