@@ -284,7 +284,7 @@ export function OnboardingProvider({
       }
       return await res.json();
     } catch (err) {
-      throw new Error("createUser: error creating account");
+      throw new Error(`createUser: error creating account:: ${err.toString}`);
     }
   }, [data]);
 
@@ -301,37 +301,41 @@ export function OnboardingProvider({
         mnemonic,
       };
 
-      if (isAddingAccount) {
-        // Add a new account if needed, this will also create the new keyring
-        // store
-        await background.request({
-          method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
-          params: [username, keyringInit, uuid, jwt],
-        });
-      } else {
-        // Add a new keyring store under the new account
-        await background.request({
-          method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-          params: [username, password, keyringInit, uuid, jwt],
-        });
-      }
+      try {
+        if (isAddingAccount) {
+          // Add a new account if needed, this will also create the new keyring
+          // store
+          await background.request({
+            method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
+            params: [username, keyringInit, uuid, jwt],
+          });
+        } else {
+          // Add a new keyring store under the new account
+          await background.request({
+            method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
+            params: [username, password, keyringInit, uuid, jwt],
+          });
+        }
 
-      return true;
+        return true;
+      } catch (err) {
+        throw new Error(
+          `createStore: error creating account:: ${err.toString}`
+        );
+      }
     },
     [data]
   );
 
   const maybeCreateUser = useCallback(
     async (password: string) => {
-      console.log("maybeCreateUser init");
       try {
         const { id, jwt } = await createUser();
-        console.log("created user", id, jwt);
         const res = await createStore(id, jwt, password);
-        console.log("created store", res);
-        return true;
-      } catch (error) {
-        return error.toString();
+        return res;
+      } catch (err) {
+        console.error("OnboardingProvider:maybeCreateUser::error", err);
+        return err.toString();
       }
     },
     [data]
