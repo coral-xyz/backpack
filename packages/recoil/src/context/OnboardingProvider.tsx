@@ -120,7 +120,7 @@ type IOnboardingContext = {
   onboardingData: OnboardingData;
   setOnboardingData: (data: Partial<OnboardingData>) => void;
   handleSelectBlockchain: (data: SelectBlockchainType) => Promise<void>;
-  maybeCreateUser: (options: Partial<OnboardingData>) => Promise<boolean>;
+  maybeCreateUser: (overrides: Partial<OnboardingData>) => Promise<boolean>;
 };
 
 const OnboardingContext = createContext<IOnboardingContext>({
@@ -223,91 +223,98 @@ export function OnboardingProvider({
   //
   // Create the user in the backend
   //
-  const createUser = useCallback(async () => {
-    const { inviteCode, userId, username, signedWalletDescriptors, mnemonic } =
-      data;
-    console.log("OnboardingProvider:createUser::data", data);
+  const createUser = useCallback(
+    async (overrides: Partial<OnboardingData>) => {
+      const { inviteCode, userId, username, mnemonic } = data;
+      console.log("OnboardingProvider:createUser::data", data);
 
-    const keyringInit = {
-      signedWalletDescriptors,
-      mnemonic,
-    };
-
-    console.log("OnboardingProvider:createUser::keyringInit", keyringInit);
-    //
-    // If userId is provided, then we are onboarding via the recover flow.
-    if (userId) {
-      console.log("OnboardingProvider: user should exist", userId);
-      // Authenticate the user that the recovery has a JWT.
-      // Take the first keyring init to fetch the JWT, it doesn't matter which
-      // we use if there are multiple.
-      const { derivationPath, publicKey, signature } =
-        keyringInit.signedWalletDescriptors[0];
-
-      const authData = {
-        blockchain: getBlockchainFromPath(derivationPath),
-        publicKey,
-        signature,
-        message: getAuthMessage(userId),
+      const keyringInit = {
+        signedWalletDescriptors:
+          // overrides.signedWalletDescriptors only exists when adding a new user
+          overrides.signedWalletDescriptors || data.signedWalletDescriptors,
+        mnemonic,
       };
-      const { jwt } = await authenticate(authData!);
-      console.log("OnboardingProvider user should exist jwt", jwt);
-      return { id: userId, jwt };
-    }
 
-    // If userId is not provided and an invite code is not provided, then
-    // this is dev mode.
-    if (!inviteCode) {
-      return { id: uuidv4(), jwt: "" };
-    }
+      console.log("OnboardingProvider:createUser::keyringInit", keyringInit);
+      //
+      // If userId is provided, then we are onboarding via the recover flow.
+      if (userId) {
+        console.log("OnboardingProvider: user should exist", userId);
+        // Authenticate the user that the recovery has a JWT.
+        // Take the first keyring init to fetch the JWT, it doesn't matter which
+        // we use if there are multiple.
+        const { derivationPath, publicKey, signature } =
+          keyringInit.signedWalletDescriptors[0];
 
-    //
-    // If we're down here, then we are creating a user for the first time.
-    //
-    const body = JSON.stringify({
-      username,
-      inviteCode,
-      waitlistId: getWaitlistId?.(),
-      blockchainPublicKeys: keyringInit.signedWalletDescriptors.map((b) => ({
-        blockchain: getBlockchainFromPath(b.derivationPath),
-        publicKey: b.publicKey,
-        signature: b.signature,
-      })),
-    });
-    console.log("OnboardingProvider:createUser::body", body);
-
-    try {
-      const res = await fetch(`${BACKEND_API_URL}/users`, {
-        method: "POST",
-        body,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error(await res.json());
+        const authData = {
+          blockchain: getBlockchainFromPath(derivationPath),
+          publicKey,
+          signature,
+          message: getAuthMessage(userId),
+        };
+        const { jwt } = await authenticate(authData!);
+        console.log("OnboardingProvider user should exist jwt", jwt);
+        return { id: userId, jwt };
       }
-      const d = await res.json();
-      console.log("OnboardingProvider:createUser::res", d);
-      return await res.json();
-    } catch (err) {
-      throw new Error(`createUser: error creating account:: ${err.toString}`);
-    }
-  }, [data]);
+
+      // If userId is not provided and an invite code is not provided, then
+      // this is dev mode.
+      if (!inviteCode) {
+        return { id: uuidv4(), jwt: "" };
+      }
+
+      //
+      // If we're down here, then we are creating a user for the first time.
+      //
+      const body = JSON.stringify({
+        username,
+        inviteCode,
+        waitlistId: getWaitlistId?.(),
+        blockchainPublicKeys: keyringInit.signedWalletDescriptors.map((b) => ({
+          blockchain: getBlockchainFromPath(b.derivationPath),
+          publicKey: b.publicKey,
+          signature: b.signature,
+        })),
+      });
+      console.log("OnboardingProvider:createUser::body", body);
+
+      try {
+        const res = await fetch(`${BACKEND_API_URL}/users`, {
+          method: "POST",
+          body,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error(await res.json());
+        }
+        const d = await res.json();
+        console.log("OnboardingProvider:createUser::res", d);
+        return await res.json();
+      } catch (err) {
+        throw new Error(`error creating user`);
+      }
+    },
+    [data]
+  );
 
   //
   // Create the local store for the wallets
   //
   const createStore = useCallback(
-    async (uuid: string, jwt: string, options: Partial<OnboardingData>) => {
+    async (uuid: string, jwt: string, overrides: Partial<OnboardingData>) => {
       const { isAddingAccount, username, mnemonic } = data;
 
       const keyringInit = {
         signedWalletDescriptors:
-          data.signedWalletDescriptors || options.signedWalletDescriptors,
+          // overrides.signedWalletDescriptors will only exist if adding a new account. this logic could use some cleanup
+          overrides.signedWalletDescriptors || data.signedWalletDescriptors,
         mnemonic,
       };
+      console.log("createstore keyringInit", keyringInit);
+      console.log("createstore data", data);
 
       try {
         if (isAddingAccount) {
@@ -317,35 +324,36 @@ export function OnboardingProvider({
             method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
             params: [username, keyringInit, uuid, jwt],
           });
+          console.log("create store isAdding account false complete");
         } else {
           // Add a new keyring store under the new account
           await background.request({
             method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-            params: [username, options.password, keyringInit, uuid, jwt],
+            params: [username, overrides.password, keyringInit, uuid, jwt],
           });
+
+          console.log("create store isAdding account true complete");
         }
 
         return true;
       } catch (err) {
-        console.log("OnboardingProvider::error", err);
-        throw new Error(
-          `createStore: error creating account:: ${err.toString}`
-        );
+        console.log("OnboardingProvider::error:createStore", err);
+        throw new Error(`error creating account`);
       }
     },
     [data]
   );
 
   const maybeCreateUser = useCallback(
-    async (options: Partial<OnboardingData>) => {
+    async (overrides: Partial<OnboardingData>) => {
       try {
-        const { id, jwt } = await createUser();
-        const res = await createStore(id, jwt, options);
+        const { id, jwt } = await createUser(overrides);
+        const res = await createStore(id, jwt, overrides);
         console.log("OnboardingProvider:maybeCreateUser::res", res);
         return res;
       } catch (err) {
         console.error("OnboardingProvider:maybeCreateUser::error", err);
-        return err.toString();
+        return err;
       }
     },
     [data]
