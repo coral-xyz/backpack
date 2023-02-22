@@ -107,7 +107,7 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
             {props.title || title}
           </Typography>
         </div>
-        {count !== 0 && <MembersList count={count} members={staticMembers} />}
+        {count !== 0 ? <MembersList count={count} members={staticMembers} /> : null}
         <SearchBox
           placeholder="Search username"
           onChange={(prefix: string) => {
@@ -138,29 +138,25 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
             {offset !== 0 ? "Prev" : ""}
           </div>
           {/* TODO: clean up this logic */}
-          {members.length === LIMIT && (
-            <div
-              style={{
+          {members.length === LIMIT ? <div
+            style={{
                 padding: 5,
                 cursor: "pointer",
                 fontWeight: 600,
                 fontSize: "14px",
                 color: theme.custom.colors.blue,
               }}
-              onClick={() => {
+            onClick={() => {
                 debouncedInit(searchFilter, offset + 1);
               }}
             >
-              Next
-            </div>
-          )}
+            Next
+          </div> : null}
         </div>
 
-        {loading && <UserListSkeleton />}
-        {!loading && (
-          <>
-            <div className={classes.container}>
-              {members.filter((x) =>
+        {loading ? <UserListSkeleton /> : null}
+        {!loading ? <div className={classes.container}>
+          {members.filter((x) =>
                 x.username
                   ?.toLocaleLowerCase()
                   .includes(searchFilter?.toLocaleLowerCase())
@@ -185,9 +181,7 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
               ) : (
                 <></>
               )}
-            </div>
-          </>
-        )}
+        </div> : null}
       </div>
     </Drawer>
   );
