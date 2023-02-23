@@ -1,7 +1,6 @@
 import { useLocation } from "react-router-dom";
 import {
   BACKPACK_FEATURE_XNFT,
-  MESSAGES_ENABLED,
   TAB_APPS,
   TAB_BALANCES,
   TAB_MESSAGES,
@@ -21,9 +20,7 @@ import {
   useBreakpoints,
 } from "@coral-xyz/react-common";
 import {
-  useAuthenticatedUser,
   useBackgroundClient,
-  useFeatureGates,
   useMessageUnreadCount,
   useTab,
   useUser,
@@ -134,8 +131,6 @@ function TabBar() {
   const theme = useCustomTheme();
   const tab = useTab();
   const background = useBackgroundClient();
-  const featureGates = useFeatureGates();
-  const { uuid } = useUser();
   const { isXs } = useBreakpoints();
 
   const onTabClick = async (tabValue: string) => {
@@ -248,17 +243,15 @@ function TabBar() {
               />
             }
           />
-          {featureGates[MESSAGES_ENABLED] && (
-            <Tab
-              onClick={() => onTabClick(TAB_MESSAGES)}
-              value={TAB_MESSAGES}
-              disableRipple
-              className={`${isXs ? classes.tabXs : classes.tab} ${
-                tab === TAB_MESSAGES ? classes.activeTab : ""
-              }`}
-              icon={<LocalMessageIcon />}
-            />
-          )}
+          <Tab
+            onClick={() => onTabClick(TAB_MESSAGES)}
+            value={TAB_MESSAGES}
+            disableRipple
+            className={`${isXs ? classes.tabXs : classes.tab} ${
+              tab === TAB_MESSAGES ? classes.activeTab : ""
+            }`}
+            icon={<LocalMessageIcon />}
+          />
           {!isXs && (
             <>
               <Tab

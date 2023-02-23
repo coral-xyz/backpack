@@ -1288,7 +1288,7 @@ export class Backend {
   /**
    * Add a public key to a Backpack account via the Backpack API.
    */
-  async userAccountPublicKeyCreate(
+  public async userAccountPublicKeyCreate(
     blockchain: Blockchain,
     publicKey: string,
     signature?: string

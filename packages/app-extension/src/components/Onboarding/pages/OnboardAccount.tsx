@@ -4,7 +4,10 @@ import type {
   SignedWalletDescriptor,
   WalletDescriptor,
 } from "@coral-xyz/common";
-import { getCreateMessage } from "@coral-xyz/common";
+import {
+  getCreateMessage,
+  UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
+} from "@coral-xyz/common";
 import {
   useBackgroundClient,
   useOnboarding,
@@ -43,17 +46,14 @@ export const OnboardAccount = ({
   isAddingAccount?: boolean;
   isOnboarded?: boolean;
 }) => {
-  const background = useBackgroundClient();
   const { step, nextStep, prevStep } = useSteps();
   const [openDrawer, setOpenDrawer] = useState(false);
   const { onboardingData, setOnboardingData, handleSelectBlockchain } =
     useOnboarding();
   const {
     inviteCode,
-    username,
     action,
     keyringType,
-    password,
     mnemonic,
     blockchain,
     signedWalletDescriptors,
@@ -70,6 +70,7 @@ export const OnboardAccount = ({
 
   const steps = [
     <InviteCodeForm
+      key="InviteCodeForm"
       onClickWaiting={onWaiting}
       onClickRecover={onRecover}
       onSubmit={(inviteCode) => {
@@ -78,6 +79,7 @@ export const OnboardAccount = ({
       }}
     />,
     <UsernameForm
+      key="UsernameForm"
       inviteCode={inviteCode!}
       onNext={(username) => {
         setOnboardingData({ username });
@@ -85,12 +87,14 @@ export const OnboardAccount = ({
       }}
     />,
     <CreateOrImportWallet
+      key="CreateOrImportWallet"
       onNext={(action) => {
         setOnboardingData({ action });
         nextStep();
       }}
     />,
     <KeyringTypeSelector
+      key="KeyringTypeSelector"
       action={action}
       onNext={(keyringType: KeyringType) => {
         setOnboardingData({ keyringType });
@@ -100,10 +104,11 @@ export const OnboardAccount = ({
     // Show the seed phrase if we are creating based on a mnemonic
     ...(keyringType === "mnemonic"
       ? [
-          <MnemonicInput
-            readOnly={action === "create"}
-            buttonLabel={action === "create" ? "Next" : "Import"}
-            onNext={(mnemonic) => {
+        <MnemonicInput
+          key="MnemonicInput"
+          readOnly={action === "create"}
+          buttonLabel={action === "create" ? "Next" : "Import"}
+          onNext={(mnemonic) => {
               setOnboardingData({ mnemonic });
               nextStep();
             }}
@@ -111,11 +116,11 @@ export const OnboardAccount = ({
         ]
       : []),
     <BlockchainSelector
+      key="BlockchainSelector"
       selectedBlockchains={selectedBlockchains}
       onClick={async (blockchain) => {
         await handleSelectBlockchain({
           blockchain,
-          background,
           onSelectImport: () => {
             setOpenDrawer(true);
           },
@@ -125,22 +130,17 @@ export const OnboardAccount = ({
     />,
     ...(!isAddingAccount
       ? [
-          <CreatePassword
-            onNext={(password) => {
+        <CreatePassword
+          key="CreatePassword"
+          onNext={async (password) => {
               setOnboardingData({ password });
               nextStep();
             }}
           />,
         ]
       : []),
-    <NotificationsPermission onNext={nextStep} />,
-    <Finish
-      inviteCode={inviteCode}
-      username={username}
-      password={password!}
-      keyringInit={{ mnemonic, signedWalletDescriptors }}
-      isAddingAccount={isAddingAccount}
-    />,
+    <NotificationsPermission key="NotificationsPermission" onNext={nextStep} />,
+    <Finish key="Finish" isAddingAccount={isAddingAccount} />,
   ];
 
   if (isOnboarded && step !== steps.length - 1) {
@@ -176,7 +176,7 @@ export const OnboardAccount = ({
             // @ts-expect-error not assignable to type string ...
             action={action}
             signMessage={(publicKey: string) => getCreateMessage(publicKey)}
-            signText={`Sign the message to authenticate with Backpack.`}
+            signText="Sign the message to authenticate with Backpack."
             onClose={() => setOpenDrawer(false)}
             onComplete={(signedWalletDescriptor: SignedWalletDescriptor) => {
               setOnboardingData({

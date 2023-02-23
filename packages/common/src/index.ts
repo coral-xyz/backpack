@@ -1,4 +1,3 @@
-import type { RpcRequest } from "@coral-xyz/common-public";
 import type { PublicKey } from "@solana/web3.js";
 
 import type { Event } from ".";
@@ -7,7 +6,14 @@ import {
   BACKPACK_CONFIG_EXTENSION_KEY,
   BACKPACK_CONFIG_VERSION,
 } from "./generated-config";
-import type { Context, EventEmitter, Nft, RpcResponse, Sender } from "./types";
+import type {
+  Context,
+  EventEmitter,
+  Nft,
+  RpcRequest,
+  RpcResponse,
+  Sender,
+} from "./types";
 
 export * from "./api";
 export * from "./browser";
@@ -17,13 +23,14 @@ export * from "./crypto";
 export * from "./ethereum";
 export * from "./explorer";
 export * from "./feature-gates";
+export * from "./logging";
 export * from "./messages";
 export * from "./notifications";
 export * from "./plugin";
 export * from "./preferences";
 export * from "./solana";
 export * from "./types";
-export * from "@coral-xyz/common-public";
+export * from "./utils";
 
 // Generated pre-build step.
 export * from "./generated-config";

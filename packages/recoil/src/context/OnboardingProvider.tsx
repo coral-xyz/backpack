@@ -5,16 +5,37 @@ import {
   useMemo,
   useState,
 } from "react";
-import type { KeyringType, SignedWalletDescriptor } from "@coral-xyz/common";
+import type {
+  KeyringType,
+  ServerPublicKey,
+  SignedWalletDescriptor,
+} from "@coral-xyz/common";
 import {
+  BACKEND_API_URL,
   Blockchain,
+  getAuthMessage,
   getBlockchainFromPath,
   getCreateMessage,
   UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
+  UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+  UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
 } from "@coral-xyz/common";
 import { ethers } from "ethers";
+import { v4 as uuidv4 } from "uuid";
+
+import { useBackgroundClient } from "../hooks/client";
+import { useAuthentication } from "../hooks/useAuthentication";
 const { base58 } = ethers.utils;
+
+export const getWaitlistId = () => {
+  if (window?.localStorage) {
+    const WAITLIST_RES_ID_KEY = "waitlist-form-res-id";
+    return window.localStorage.getItem(WAITLIST_RES_ID_KEY) ?? undefined;
+  }
+
+  return undefined;
+};
 
 type BlockchainSelectOption = {
   id: string;
@@ -56,6 +77,7 @@ const BLOCKCHAIN_OPTIONS: BlockchainSelectOption[] = [
 ];
 
 export type OnboardingData = {
+  userId: string | undefined;
   complete: boolean;
   inviteCode: string | undefined;
   username: string | null;
@@ -67,12 +89,13 @@ export type OnboardingData = {
   blockchainOptions: BlockchainSelectOption[];
   waitlistId: string | undefined;
   signedWalletDescriptors: SignedWalletDescriptor[];
-  userId?: string;
   isAddingAccount?: boolean;
   selectedBlockchains: Blockchain[];
+  serverPublicKeys: ServerPublicKey[];
 };
 
 const defaultState = {
+  userId: undefined,
   complete: false,
   inviteCode: undefined,
   username: null,
@@ -85,11 +108,11 @@ const defaultState = {
   waitlistId: undefined,
   signedWalletDescriptors: [],
   selectedBlockchains: [],
+  serverPublicKeys: [],
 };
 
 type SelectBlockchainType = {
   blockchain: Blockchain;
-  background: any;
   onSelectImport?: () => void;
 };
 
@@ -97,12 +120,14 @@ type IOnboardingContext = {
   onboardingData: OnboardingData;
   setOnboardingData: (data: Partial<OnboardingData>) => void;
   handleSelectBlockchain: (data: SelectBlockchainType) => Promise<void>;
+  maybeCreateUser: (data: Partial<OnboardingData>) => Promise<{ ok: boolean }>;
 };
 
 const OnboardingContext = createContext<IOnboardingContext>({
   onboardingData: defaultState,
   setOnboardingData: () => {},
   handleSelectBlockchain: async () => {},
+  maybeCreateUser: async () => ({ ok: true }),
 });
 
 export function OnboardingProvider({
@@ -111,6 +136,8 @@ export function OnboardingProvider({
 }: {
   children: JSX.Element;
 }) {
+  const background = useBackgroundClient();
+  const { authenticate } = useAuthentication();
   const [data, setData] = useState<OnboardingData>(defaultState);
 
   const setOnboardingData = useCallback((data: Partial<OnboardingData>) => {
@@ -130,11 +157,7 @@ export function OnboardingProvider({
   }, []);
 
   const handleSelectBlockchain = useCallback(
-    async ({
-      blockchain,
-      background,
-      onSelectImport,
-    }: SelectBlockchainType) => {
+    async ({ blockchain, onSelectImport }: SelectBlockchainType) => {
       const {
         selectedBlockchains,
         signedWalletDescriptors,
@@ -197,13 +220,135 @@ export function OnboardingProvider({
     [data]
   );
 
+  //
+  // Create the user in the backend
+  //
+  const createUser = useCallback(
+    async (data: Partial<OnboardingData>) => {
+      const { inviteCode, userId, username, mnemonic } = data;
+
+      const keyringInit = {
+        signedWalletDescriptors: data.signedWalletDescriptors!,
+        mnemonic,
+      };
+
+      //
+      // If userId is provided, then we are onboarding via the recover flow.
+      if (userId) {
+        // Authenticate the user that the recovery has a JWT.
+        // Take the first keyring init to fetch the JWT, it doesn't matter which
+        // we use if there are multiple.
+        const { derivationPath, publicKey, signature } =
+          keyringInit.signedWalletDescriptors[0];
+
+        const authData = {
+          blockchain: getBlockchainFromPath(derivationPath),
+          publicKey,
+          signature,
+          message: getAuthMessage(userId),
+        };
+        const { jwt } = await authenticate(authData!);
+        return { id: userId, jwt };
+      }
+
+      // If userId is not provided and an invite code is not provided, then
+      // this is dev mode.
+      if (!inviteCode) {
+        return { id: uuidv4(), jwt: "" };
+      }
+
+      //
+      // If we're down here, then we are creating a user for the first time.
+      //
+      const body = JSON.stringify({
+        username,
+        inviteCode,
+        waitlistId: getWaitlistId?.(),
+        blockchainPublicKeys: keyringInit.signedWalletDescriptors.map((b) => ({
+          blockchain: getBlockchainFromPath(b.derivationPath),
+          publicKey: b.publicKey,
+          signature: b.signature,
+        })),
+      });
+
+      try {
+        const res = await fetch(`${BACKEND_API_URL}/users`, {
+          method: "POST",
+          body,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error(await res.json());
+        }
+        return await res.json();
+      } catch (err) {
+        console.error("OnboardingProvider:createUser::error", err);
+        throw new Error(`error creating user`);
+      }
+    },
+    [data]
+  );
+
+  //
+  // Create the local store for the wallets
+  //
+  const createStore = useCallback(
+    async (uuid: string, jwt: string, data: Partial<OnboardingData>) => {
+      const { isAddingAccount, username, mnemonic, password } = data;
+
+      const keyringInit = {
+        signedWalletDescriptors: data.signedWalletDescriptors!,
+        mnemonic,
+      };
+
+      try {
+        if (isAddingAccount) {
+          // Add a new account if needed, this will also create the new keyring
+          // store
+          await background.request({
+            method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
+            params: [username, keyringInit, uuid, jwt],
+          });
+        } else {
+          // Add a new keyring store under the new account
+          await background.request({
+            method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
+            params: [username, password, keyringInit, uuid, jwt],
+          });
+        }
+      } catch (err) {
+        console.error("OnboardingProvider:createStore::error", err);
+        throw new Error(`error creating account`);
+      }
+    },
+    [data]
+  );
+
+  const maybeCreateUser = useCallback(
+    async (data: Partial<OnboardingData>) => {
+      try {
+        const { id, jwt } = await createUser(data);
+        await createStore(id, jwt, data);
+        return { ok: true };
+      } catch (err) {
+        console.error("OnboardingProvider:maybeCreateUser::error", err);
+        return { ok: false };
+      }
+    },
+    [data]
+  );
+
   const contextValue = useMemo(
     () => ({
       onboardingData: data,
       setOnboardingData,
       handleSelectBlockchain,
+      maybeCreateUser,
     }),
-    [data, setOnboardingData, handleSelectBlockchain]
+    [data, setOnboardingData, handleSelectBlockchain, maybeCreateUser]
   );
 
   return (

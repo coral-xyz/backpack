@@ -32,18 +32,6 @@ const useStyles = makeStyles((theme: any) =>
       padding: 10,
       height: "80vh",
     },
-    drawer: {
-      "& .MuiDrawer-paper": {
-        background: ({ isDark }: any) =>
-          isDark ? theme.custom.colors.background : theme.custom.colors.nav,
-        height: "90vh",
-        borderTopLeftRadius: "15px",
-        borderTopRightRadius: "15px",
-        "&::-webkit-scrollbar": {
-          display: "none",
-        },
-      },
-    },
   })
 );
 
@@ -96,7 +84,19 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
 
   return (
     <Drawer
-      className={classes.drawer}
+      sx={{
+        "& .MuiDrawer-paper": {
+          background: isDark
+            ? theme.custom.colors.background
+            : theme.custom.colors.nav,
+          height: "90vh",
+          borderTopLeftRadius: "15px",
+          borderTopRightRadius: "15px",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+        },
+      }}
       anchor={"bottom"}
       open={true}
       onClose={() => setOpenDrawer(false)}
@@ -107,7 +107,7 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
             {props.title || title}
           </Typography>
         </div>
-        {count !== 0 && <MembersList count={count} members={staticMembers} />}
+        {count !== 0 ? <MembersList count={count} members={staticMembers} /> : null}
         <SearchBox
           placeholder="Search username"
           onChange={(prefix: string) => {
@@ -138,29 +138,25 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
             {offset !== 0 ? "Prev" : ""}
           </div>
           {/* TODO: clean up this logic */}
-          {members.length === LIMIT && (
-            <div
-              style={{
+          {members.length === LIMIT ? <div
+            style={{
                 padding: 5,
                 cursor: "pointer",
                 fontWeight: 600,
                 fontSize: "14px",
                 color: theme.custom.colors.blue,
               }}
-              onClick={() => {
+            onClick={() => {
                 debouncedInit(searchFilter, offset + 1);
               }}
             >
-              Next
-            </div>
-          )}
+            Next
+          </div> : null}
         </div>
 
-        {loading && <UserListSkeleton />}
-        {!loading && (
-          <>
-            <div className={classes.container}>
-              {members.filter((x) =>
+        {loading ? <UserListSkeleton /> : null}
+        {!loading ? <div className={classes.container}>
+          {members.filter((x) =>
                 x.username
                   ?.toLocaleLowerCase()
                   .includes(searchFilter?.toLocaleLowerCase())
@@ -185,9 +181,7 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
               ) : (
                 <></>
               )}
-            </div>
-          </>
-        )}
+        </div> : null}
       </div>
     </Drawer>
   );

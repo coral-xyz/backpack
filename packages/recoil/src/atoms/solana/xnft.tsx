@@ -1,11 +1,12 @@
 import {
   Blockchain,
   DEFAULT_PUBKEY_STR,
+  externalResourceUri,
   fetchXnfts,
   SIMULATOR_PORT,
+  XNFT_GG_LINK,
   XNFT_PROGRAM_ID,
 } from "@coral-xyz/common";
-import { externalResourceUri } from "@coral-xyz/common-public";
 import { PublicKey } from "@solana/web3.js";
 import * as cheerio from "cheerio";
 import { atomFamily, selectorFamily } from "recoil";
@@ -26,7 +27,7 @@ export const appStoreMetaTags = selectorFamily<
 >({
   key: "appStoreMetaTags",
   get: (xnft) => async () => {
-    const res = await fetch(`https://test.xnft.gg/app/${xnft}`);
+    const res = await fetch(`${XNFT_GG_LINK}/app/${xnft}`);
     const html = await res.text();
 
     const $ = cheerio.load(html);
@@ -162,7 +163,7 @@ export const plugins = selectorFamily<
               xnft: DEFAULT_PUBKEY_STR,
             },
           },
-        } as typeof plugins[0];
+        } as (typeof plugins)[0];
 
         plugins.push(simulator);
       }

@@ -43,7 +43,7 @@ export const SearchUsers = ({
     <div className={classes.container}>
       <TextInput
         className={classes.searchField}
-        placeholder={"Search"}
+        placeholder="Search"
         startAdornment={
           <SearchIcon sx={{ color: theme.custom.colors.icon, mr: "10px" }} />
         }
@@ -60,36 +60,36 @@ export const SearchUsers = ({
       />
       {filteredFriends.length > 0 ? (
         <div style={{ marginTop: "24px" }}>
-          <BubbleTopLabel text="Your contacts" />
+          <BubbleTopLabel text="Your friends" />
           <UserList users={filteredFriends as RemoteUserData[]} />
-          {requests.received.length > 0 && (
-            <RequestHeader requests={requests} />
-          )}
+          {requests.received.length > 0 ? <RequestHeader requests={requests} /> : null}
         </div>
       ) : (
         <>
-          {requests.received.length > 0 && (
-            <div
-              style={{
+          {requests.received.length > 0 ? <div
+            style={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
                 marginBottom: "8px",
               }}
             >
-              <RequestHeader requests={requests} />
-            </div>
-          )}
+            <RequestHeader requests={requests} />
+          </div> : null}
           <EmptyState
             icon={(props: any) => (
               <ContactsIcon fill={theme.custom.colors.icon} {...props} />
             )}
             title={
               searchFilter === ""
-                ? "No contacts"
+                ? "No friends"
                 : `No results for '${searchFilter}'`
             }
-            subtitle={searchFilter === "" ? "Search for people to add." : ""}
+            subtitle={
+              searchFilter === ""
+                ? "Request users to become friends in the messaging tab"
+                : ""
+            }
             style={{ paddingLeft: 0, paddingRight: 0, marginTop: "24px" }}
           />
         </>
@@ -115,7 +115,7 @@ const RequestHeader = ({
           nav.push("contact-requests", {
             description: (
               <>
-                These people wanted to add you as a contact.
+                These people wanted to add you as a friend.
                 <br /> Click someone to view their profile.
               </>
             ),

@@ -29,7 +29,6 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "parcel": "^2.7.0",
     "typescript": "~4.9.3"
   },
   "targets": {

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type {
   KeyringType,
   ServerPublicKey,
@@ -6,7 +5,7 @@ import type {
   WalletDescriptor,
 } from "@coral-xyz/common";
 import { Blockchain, getAuthMessage } from "@coral-xyz/common";
-import { useSignMessageForWallet } from "@coral-xyz/recoil";
+import { useOnboarding, useSignMessageForWallet } from "@coral-xyz/recoil";
 
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
@@ -32,17 +31,15 @@ export const RecoverAccount = ({
   isOnboarded?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
-  const [username, setUsername] = useState<string | null>(null);
-  const [password, setPassword] = useState<string | null>(null);
-  const [keyringType, setKeyringType] = useState<KeyringType | null>(null);
-  const [mnemonic, setMnemonic] = useState<string | undefined>(undefined);
-  const [userId, setUserId] = useState<string | undefined>(undefined);
-  const [serverPublicKeys, setServerPublicKeys] = useState<
-    Array<ServerPublicKey>
-  >([]);
-  const [signedWalletDescriptors, setSignedWalletDescriptors] = useState<
-    Array<SignedWalletDescriptor>
-  >([]);
+  const { onboardingData, setOnboardingData } = useOnboarding();
+  const {
+    userId,
+    keyringType,
+    mnemonic,
+    signedWalletDescriptors,
+    serverPublicKeys,
+  } = onboardingData;
+
   const authMessage = userId ? getAuthMessage(userId) : "";
   const signMessageForWallet = useSignMessageForWallet(mnemonic);
   const hardwareOnboardSteps = useHardwareOnboardSteps({
@@ -56,10 +53,12 @@ export const RecoverAccount = ({
     signMessage: authMessage,
     signText: "Sign the message to authenticate with Backpack",
     onComplete: (signedWalletDescriptor: SignedWalletDescriptor) => {
-      setSignedWalletDescriptors([
-        ...signedWalletDescriptors,
-        signedWalletDescriptor,
-      ]);
+      setOnboardingData({
+        signedWalletDescriptors: [
+          ...signedWalletDescriptors,
+          signedWalletDescriptor,
+        ],
+      });
       nextStep();
     },
     nextStep,
@@ -68,72 +67,66 @@ export const RecoverAccount = ({
 
   const steps = [
     <RecoverAccountUsernameForm
+      key="RecoverAccountUsernameForm"
       onNext={(
         userId: string,
         username: string,
-        serverPublicKeys: Array<ServerPublicKey>
+        serverPublicKeys: ServerPublicKey[]
       ) => {
-        setUserId(userId);
-        setUsername(username);
-        setServerPublicKeys(serverPublicKeys);
+        setOnboardingData({ userId, username, serverPublicKeys });
         nextStep();
       }}
     />,
     <KeyringTypeSelector
-      action={"recover"}
+      key="KeyringTypeSelector"
+      action="recover"
       onNext={(keyringType: KeyringType) => {
-        setKeyringType(keyringType);
+        setOnboardingData({ keyringType });
         nextStep();
       }}
     />,
     ...(keyringType === "mnemonic"
       ? [
           // Using a mnemonic
-          <MnemonicInput
-            buttonLabel={"Next"}
-            onNext={(mnemonic: string) => {
-              setMnemonic(mnemonic);
+        <MnemonicInput
+          key="MnemonicInput"
+          buttonLabel="Next"
+          onNext={(mnemonic: string) => {
+              setOnboardingData({ mnemonic });
               nextStep();
             }}
           />,
-          <MnemonicSearch
-            serverPublicKeys={serverPublicKeys!}
-            mnemonic={mnemonic!}
-            onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
+        <MnemonicSearch
+          key="MnemonicSearch"
+          serverPublicKeys={serverPublicKeys!}
+          mnemonic={mnemonic!}
+          onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
               const signedWalletDescriptors = await Promise.all(
                 walletDescriptors.map(async (w) => ({
                   ...w,
                   signature: await signMessageForWallet(w, authMessage),
                 }))
               );
-              setSignedWalletDescriptors(signedWalletDescriptors);
+              setOnboardingData({ signedWalletDescriptors });
               nextStep();
             }}
-            onRetry={prevStep}
+          onRetry={prevStep}
           />,
         ]
       : hardwareOnboardSteps),
     ...(!isAddingAccount
       ? [
-          <CreatePassword
-            onNext={(password) => {
-              setPassword(password);
+        <CreatePassword
+          key="CreatePassword"
+          onNext={async (password) => {
+              setOnboardingData({ password });
               nextStep();
             }}
           />,
         ]
       : []),
     ...(signedWalletDescriptors.length > 0
-      ? [
-          <Finish
-            inviteCode={undefined} // Recovery so no invite code
-            userId={userId}
-            username={username}
-            password={password!}
-            keyringInit={{ mnemonic, signedWalletDescriptors }}
-            isAddingAccount={isAddingAccount}
-          />,
-        ]
+      ? [<Finish key="Finish" isAddingAccount={isAddingAccount} />]
       : []),
   ];
 

@@ -21,7 +21,7 @@ import {
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ContentCopy } from "@mui/icons-material";
-import { Button, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 
 import { HeaderIcon } from "../../../../common";
@@ -87,18 +87,23 @@ export const WalletDetail: React.FC<{
     "Wallet Address": {
       onClick: () => copyAddress(),
       detail: (
-        <div style={{ display: "flex" }}>
-          <Typography
-            style={{ color: theme.custom.colors.secondary, marginRight: "8px" }}
-          >
-            {publicKey.slice(0, 4) +
-              "..." +
-              publicKey.slice(publicKey.length - 4)}
-          </Typography>
-          <ContentCopy
-            style={{ width: "20px", color: theme.custom.colors.icon }}
-          />
-        </div>
+        <WithCopyTooltip tooltipOpen={tooltipOpen}>
+          <div style={{ display: "flex" }}>
+            <Typography
+              style={{
+                color: theme.custom.colors.secondary,
+                marginRight: "8px",
+              }}
+            >
+              {publicKey.slice(0, 4) +
+                "..." +
+                publicKey.slice(publicKey.length - 4)}
+            </Typography>
+            <ContentCopy
+              style={{ width: "20px", color: theme.custom.colors.icon }}
+            />
+          </div>
+        </WithCopyTooltip>
       ),
     },
     "Rename Wallet": {
@@ -159,7 +164,7 @@ export const WalletDetail: React.FC<{
 
   return (
     <div>
-      {type === "dehydrated" && (
+      {type === "dehydrated" ? (
         <div
           style={{
             marginLeft: "16px",
@@ -192,18 +197,16 @@ export const WalletDetail: React.FC<{
             }}
           />
         </div>
-      )}
-      <WithCopyTooltip tooltipOpen={tooltipOpen}>
-        <div>
-          <SettingsList menuItems={menuItems} />
-        </div>
-      </WithCopyTooltip>
-      {type !== "dehydrated" && <SettingsList menuItems={_isCold} />}
-      {type !== "hardware" && type !== "dehydrated" && (
+      ) : null}
+      <div>
+        <SettingsList menuItems={menuItems} />
+      </div>
+      {type !== "dehydrated" ? <SettingsList menuItems={_isCold} /> : null}
+      {type !== "hardware" && type !== "dehydrated" ? (
         <SettingsList menuItems={secrets} />
-      )}
-      {!isLastRecoverable && <SettingsList menuItems={removeWallet} />}
-      {type !== "imported" && (
+      ) : null}
+      {!isLastRecoverable ? <SettingsList menuItems={removeWallet} /> : null}
+      {type !== "imported" ? (
         <div
           style={{
             padding: "16px",
@@ -246,7 +249,7 @@ export const WalletDetail: React.FC<{
             }}
           />
         </div>
-      )}
+      ) : null}
     </div>
   );
 };

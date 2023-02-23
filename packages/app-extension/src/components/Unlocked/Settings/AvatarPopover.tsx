@@ -5,7 +5,7 @@ import {
   UI_RPC_METHOD_ACTIVE_USER_UPDATE,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
 } from "@coral-xyz/common";
-import { ProxyImage , useBreakpoints } from "@coral-xyz/react-common";
+import { ProxyImage, useBreakpoints } from "@coral-xyz/react-common";
 import {
   useAllUsers,
   useAvatarUrl,
@@ -31,7 +31,6 @@ const useStyles = styles((theme) => ({
   popoverRoot: {
     zIndex: 1,
   },
-  popoverPaper: {},
 }));
 
 export function AvatarPopoverButton({
@@ -96,6 +95,10 @@ export function AvatarPopoverButton({
           horizontal: "left",
         }}
         classes={{ root: classes.popoverRoot }}
+        // Required duration of 0 because the rerender on a user change causes
+        // the transition component in mui to not complete and so the popover
+        // never disappears
+        transitionDuration={0}
       >
         <PopoverProvider
           close={() => setAnchorEl(null)}
@@ -346,24 +349,22 @@ function UserMenuItem({ user, onClick }: { user: any; onClick: () => void }) {
             @{user.username}
           </Typography>
         </div>
-        {isCurrentUser && (
-          <div
-            style={{
+        {isCurrentUser ? <div
+          style={{
               display: "flex",
               justifyContent: "center",
               flexDirection: "column",
             }}
           >
-            <Check
-              style={{
+          <Check
+            style={{
                 width: "20px",
                 height: "20px",
                 opacity: 0.8,
                 color: theme.custom.colors.fontColor,
               }}
             />
-          </div>
-        )}
+        </div> : null}
       </div>
     </MenuListItem>
   );

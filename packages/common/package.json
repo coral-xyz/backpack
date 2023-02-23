@@ -17,7 +17,6 @@
   "dependencies": {
     "@cardinal/creator-standard": "^2.1.10",
     "@cardinal/token-manager": "^1.7.9",
-    "@coral-xyz/common-public": "*",
     "@magiceden-oss/open_creator_protocol": "^0.3.2",
     "@metaplex-foundation/mpl-core": "^0.6.1",
     "@metaplex-foundation/mpl-token-metadata": "^2.7.0",
@@ -38,8 +37,10 @@
     "eventemitter3": "^4.0.7",
     "expo-secure-store": "~12.1.1",
     "jest": "^29.4.2",
+    "react": "^18.2.0",
     "ts-jest": "^29.0.5",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "zustand": "^4.3.3"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.203",

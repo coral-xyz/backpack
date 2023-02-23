@@ -656,7 +656,7 @@ function FriendRequestListItem({
           alignItems: "center",
         }}
       >
-        <div style={{ flex: 1, display: "flex" }}>
+        <div style={{ flex: 1, display: "flex", alignItems: "flex-start" }}>
           <div
             style={{
               display: "flex",

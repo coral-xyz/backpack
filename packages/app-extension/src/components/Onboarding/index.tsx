@@ -75,10 +75,12 @@ export const Onboarding = ({
       ) : null}
       {action === "waiting" && <WaitingRoom />}
       {action === "recover" && (
-        <RecoverAccount
-          onClose={() => setAction("onboard")}
-          {...defaultProps}
-        />
+        <OnboardingProvider>
+          <RecoverAccount
+            onClose={() => setAction("onboard")}
+            {...defaultProps}
+          />
+        </OnboardingProvider>
       )}
     </OptionsContainer>
   );

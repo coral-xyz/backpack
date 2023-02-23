@@ -170,7 +170,6 @@ export const TextInput = ({
   margin,
   required = true,
 }: InputProps) => {
-  console.log("TextInput:error", error);
   const theme = useCustomTheme();
   const textColor = value
     ? theme.custom.colors.fontColor2

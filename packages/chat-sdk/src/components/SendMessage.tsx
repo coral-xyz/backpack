@@ -24,6 +24,7 @@ import { ReplyContainer } from "./ReplyContainer";
 import { SecureTransfer } from "./SecureTransfer";
 
 const BARTER_ENABLED = false;
+const SECURE_TRANSFER_ENABLED = false;
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
@@ -412,14 +413,16 @@ export const SendMessage = ({
                 }}
               />
             )}
-            {activeSolanaWallet?.publicKey && type === "individual" && (
-              <SecureTransfer
-                buttonStyle={{
-                  height: "28px",
-                }}
-                setAboveMessagePlugin={setAboveMessagePlugin}
-              />
-            )}
+            {SECURE_TRANSFER_ENABLED &&
+              activeSolanaWallet?.publicKey &&
+              type === "individual" && (
+                <SecureTransfer
+                  buttonStyle={{
+                    height: "28px",
+                  }}
+                  setAboveMessagePlugin={setAboveMessagePlugin}
+                />
+              )}
           </div>
         )}
       </div>

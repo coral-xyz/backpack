@@ -5,10 +5,9 @@ import * as Linking from "expo-linking";
 import {
   BACKPACK_FEATURE_XNFT,
   DISCORD_INVITE_LINK,
-  MESSAGES_ENABLED,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
 } from "@coral-xyz/common";
-import { useBackgroundClient, useFeatureGates } from "@coral-xyz/recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useNavigation } from "@react-navigation/native";
 
 import { DiscordIcon } from "~components/Icon";
@@ -31,7 +30,6 @@ type SettingsMenuItem = {
 };
 
 export function SettingsList() {
-  const featureGates = useFeatureGates();
   const background = useBackgroundClient();
   const navigation = useNavigation();
   const theme = useTheme();
@@ -69,14 +67,12 @@ export function SettingsList() {
     },
   ];
 
-  if (featureGates[MESSAGES_ENABLED]) {
-    settingsMenu.push({
-      label: "Contacts",
-      onPress: () => navigation.push("contacts-list"),
-      icon: <IconLeft name="people" />,
-      detailIcon: <IconPushDetail />,
-    });
-  }
+  settingsMenu.push({
+    label: "Friends",
+    onPress: () => navigation.push("contacts-list"),
+    icon: <IconLeft name="people" />,
+    detailIcon: <IconPushDetail />,
+  });
 
   if (BACKPACK_FEATURE_XNFT) {
     settingsMenu.push({

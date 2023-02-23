@@ -8,7 +8,6 @@ import {
 } from "react-router-dom";
 import type { SubscriptionType } from "@coral-xyz/common";
 import {
-  MESSAGE_IFRAME_ENABLED,
   MESSAGING_COMMUNICATION_FETCH_RESPONSE,
   NAV_COMPONENT_MESSAGE_PROFILE,
 } from "@coral-xyz/common";
@@ -23,12 +22,11 @@ import {
   ProfileScreen,
   RequestsScreen,
 } from "@coral-xyz/message-sdk";
-import { useBreakpoints,useUsersMetadata  } from "@coral-xyz/react-common";
+import { useBreakpoints, useUsersMetadata } from "@coral-xyz/react-common";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   useDarkMode,
   useDecodedSearchParams,
-  useFeatureGates,
   useNavigation,
   useRedirectUrl,
   useUser,
@@ -155,16 +153,6 @@ function NftsDetailPage() {
 }
 
 function Messages() {
-  const featureGates = useFeatureGates();
-
-  if (featureGates[MESSAGE_IFRAME_ENABLED]) {
-    return <MessagesIframe />;
-  }
-
-  return <MessagesNative />;
-}
-
-function MessagesNative() {
   const { push, pop } = useNavigation();
   const { isXs } = useBreakpoints();
 
@@ -183,7 +171,7 @@ function MessagesNative() {
 function MessageNativeInner() {
   const isDarkMode = useDarkMode();
   const hash = location.hash.slice(1);
-  const { uuid, username } = useUser();
+  const { uuid } = useUser();
   const { props } = useDecodedSearchParams<any>();
   const { isXs } = useBreakpoints();
 
@@ -268,90 +256,6 @@ function FullChatPage() {
         <MessageNativeInner />
       </div>
     </div>
-  );
-}
-
-function MessagesIframe() {
-  const MESSAGING_URL = "http://localhost:3000";
-  const iframeRef = useRef<any>();
-  const { push } = useNavigation();
-  const location = useLocation();
-  const { props }: any = useDecodedSearchParams();
-  const { uuid, username } = useUser();
-  const isDarkMode = useDarkMode();
-
-  useEffect(() => {
-    if (iframeRef && iframeRef.current) {
-      window.addEventListener(
-        "message",
-        async (event) => {
-          if (event.origin !== MESSAGING_URL) return;
-
-          if (event.data.type === MESSAGING_COMMUNICATION_FETCH) {
-            try {
-              const response = await fetch(
-                event.data.payload.url,
-                event.data.payload.args
-              );
-              iframeRef.current?.contentWindow?.postMessage(
-                {
-                  type: MESSAGING_COMMUNICATION_FETCH_RESPONSE,
-                  payload: {
-                    counter: event.data.payload.counter,
-                    data: await response.json(),
-                    success: true,
-                  },
-                },
-                "*"
-              );
-            } catch (e) {
-              iframeRef.current?.contentWindow?.postMessage(
-                {
-                  type: MESSAGING_COMMUNICATION_FETCH_RESPONSE,
-                  payload: {
-                    counter: event.data.payload.counter,
-                    success: false,
-                  },
-                },
-                "*"
-              );
-            }
-          }
-          if (event.data.type === MESSAGING_COMMUNICATION_PUSH) {
-            push(event.data.payload);
-          }
-        },
-        false
-      );
-    }
-  }, [iframeRef]);
-
-  const route = location.pathname;
-
-  return (
-    <NavScreen
-      component={
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
-          }}
-        >
-          <iframe
-            ref={iframeRef}
-            frameBorder="0"
-            src={`${MESSAGING_URL}/#${route}?parentUrl=${
-              window.location.origin
-            }&userId=${
-              props.userId || ""
-            }&uuid=${uuid}&username=${username}&isDarkMode=${isDarkMode}`}
-            width={"100%"}
-            height={"100%"}
-          />
-        </div>
-      }
-    />
   );
 }
 

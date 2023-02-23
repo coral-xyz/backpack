@@ -30,10 +30,10 @@
     "start": "env-cmd --silent turbo run start --concurrency=100% --filter=./packages/*",
     "start:fresh": "yarn install && yarn clean && yarn install && yarn start",
     "test": "env-cmd --silent turbo run test -- --passWithNoTests --watchAll=false",
-    "build": "env-cmd --silent turbo run build",
+    "build": "env-cmd --silent turbo run build --filter=!./examples/**",
     "build:fresh": "git clean -xfd && yarn install && yarn build --force",
     "e2e": "env-cmd --silent turbo run e2e",
-    "clean": "npx rimraf {.,backend,examples,packages,node_modules}/**/{.parcel-cache,.turbo,build,dist,node_modules,yarn-error.log} packages/app-extension/dev",
+    "clean": "npx rimraf {.,backend,examples,packages,node_modules}/**/{.parcel-cache,.turbo,build,dist,node_modules,yarn-error.log} packages/app-extension/dev node_modules",
     "start:ext": "env-cmd --silent turbo run start --filter=@coral-xyz/app-extension...",
     "build:ext": "env-cmd --silent turbo run build --filter=@coral-xyz/app-extension...",
     "start:mobile": "env-cmd --silent turbo run start --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
@@ -41,10 +41,12 @@
     "postinstall": "yarn-deduplicate --scopes @babel @mui @typescript-eslint @types @react-native-community @react-navigation @emotion"
   },
   "devDependencies": {
+    "buffer": "^5.5.0",
     "env-cmd": "^10.1.0",
     "eslint": "^8.31.0",
     "husky": "^8.0.1",
     "lint-staged": "^12.4.1",
+    "parcel": "2.7.0",
     "prettier": "^2.8.1",
     "rimraf": "^3.0.2",
     "turbo": "^1.6.2",
@@ -63,7 +65,6 @@
   "resolutions": {
     "react-refresh": "0.11.0",
     "@solana/web3.js": "1.63.1",
-    "parcel": "2.7.0",
     "prettier": "^2.8.1",
     "wrangler": "^2.10.0",
     "typescript": "^4.9.5"

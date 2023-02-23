@@ -125,7 +125,8 @@ export const AddressSelectorLoader = ({
 }) => {
   // publicKey should only be undefined if the user is in single-wallet mode
   // (rather than aggregate mode).
-  const publicKeyStr = publicKey ?? useActiveWallet().publicKey;
+  const activePublicKey = useActiveWallet().publicKey;
+  const publicKeyStr = publicKey ?? activePublicKey;
   const [token] = useLoader(
     blockchainTokenData({
       publicKey: publicKeyStr,
@@ -134,7 +135,7 @@ export const AddressSelectorLoader = ({
     }),
     null
   );
-  if (!token) return <></>;
+  if (!token) return null;
   return <AddressSelector blockchain={blockchain} token={token} />;
 };
 
@@ -176,14 +177,15 @@ export const AddressSelector = ({
             setInputContent={setInputContent}
             setSearchResults={setSearchResults}
           />
-          {!inputContent && (
-            <YourAddresses
-              searchFilter={inputContent}
-              blockchain={blockchain}
-            />
-          )}
+          {!inputContent ? <YourAddresses
+            searchFilter={inputContent}
+            blockchain={blockchain}
+            /> : null}
           <Contacts searchFilter={inputContent} blockchain={blockchain} />
-          <SearchResults searchResults={searchResults} />
+          <SearchResults
+            searchResults={searchResults}
+            blockchain={blockchain}
+          />
           <NotSelected
             searchResults={searchResults}
             searchFilter={inputContent}
@@ -191,7 +193,7 @@ export const AddressSelector = ({
         </div>
         <div className={classes.buttonContainer}>
           {!isValidAddress && inputContent.length > 15 ? (
-            <DangerButton label="Invalid address" disabled={true} />
+            <DangerButton label="Invalid address" disabled />
           ) : (
             <PrimaryButton
               onClick={() => {
@@ -247,7 +249,7 @@ function NotSelected({
   ];
 
   if (!allResults.length) {
-    return <></>;
+    return null;
   }
 
   return (
@@ -365,11 +367,10 @@ const Contacts = ({
 
   return (
     <div>
-      {filteredContacts.length !== 0 && (
-        <div style={{ margin: "12px 12px" }}>
-          <BubbleTopLabel text="Contacts" />
-          <AddressList
-            wallets={filteredContacts.map((c) => ({
+      {filteredContacts.length !== 0 ? <div style={{ margin: "12px 12px" }}>
+        <BubbleTopLabel text="Friends" />
+        <AddressList
+          wallets={filteredContacts.map((c) => ({
               username: c.remoteUsername,
               addresses: c.public_keys
                 .filter(
@@ -383,8 +384,7 @@ const Contacts = ({
               uuid: c.remoteUserId,
             }))}
           />
-        </div>
-      )}
+      </div> : null}
     </div>
   );
 };
@@ -403,7 +403,7 @@ const YourAddresses = ({
   const activeEthWallet = useActiveEthereumWallet();
   if (wallets.length === 1) {
     // Only one wallet available
-    return <></>;
+    return null;
   }
 
   return (
@@ -411,6 +411,7 @@ const YourAddresses = ({
       <BubbleTopLabel text="Your addresses" />
       <AddressList
         wallets={wallets
+          .filter((x) => x.blockchain === blockchain)
           .filter(
             (x) =>
               x.publicKey !==
@@ -454,19 +455,17 @@ function AddressList({
       }}
     >
       {walletsWithPrimary.map((wallet, index) => (
-        <>
-          <AddressListItem
-            key={wallet.username}
-            isFirst={index === 0}
-            isLast={index === walletsWithPrimary.length - 1}
-            user={{
+        <AddressListItem
+          key={wallet.username}
+          isFirst={index === 0}
+          isLast={index === walletsWithPrimary.length - 1}
+          user={{
               username: wallet.username,
               image: wallet.image,
               uuid: wallet.uuid,
             }}
-            address={wallet.addresses?.[0]}
+          address={wallet.addresses?.[0]}
           />
-        </>
       ))}
     </List>
   );
@@ -542,9 +541,7 @@ const AddressListItem = ({
         </div>
         <div style={{ display: "flex" }}>
           <div className={classes.userText}>{user.username}</div>
-          {!address && (
-            <BlockIcon style={{ color: "#E33E3F", marginLeft: 10 }} />
-          )}
+          {!address ? <BlockIcon style={{ color: "#E33E3F", marginLeft: 10 }} /> : null}
         </div>
       </div>
     </ListItem>
@@ -561,11 +558,12 @@ const SearchInput = ({
   setSearchResults: any;
 }) => {
   const theme = useCustomTheme();
+  const { blockchain } = useAddressSelectorContext();
 
-  const fetchUserDetails = async (address: string) => {
+  const fetchUserDetails = async (address: string, blockchain: Blockchain) => {
     try {
       const response = await ParentCommunicationManager.getInstance().fetch(
-        `${BACKEND_API_URL}/users?usernamePrefix=${address}&limit=6`
+        `${BACKEND_API_URL}/users?usernamePrefix=${address}&blockchain=${blockchain}limit=6`
       );
       const json = await response.json();
       setSearchResults(
@@ -578,23 +576,26 @@ const SearchInput = ({
     }
   };
 
-  const debouncedFetchUserDetails = (prefix: string) => {
+  const debouncedFetchUserDetails = (
+    prefix: string,
+    blockchain: Blockchain
+  ) => {
     clearTimeout(debouncedTimer);
     debouncedTimer = setTimeout(async () => {
-      await fetchUserDetails(prefix);
+      await fetchUserDetails(prefix, blockchain);
     }, 250);
   };
 
   useEffect(() => {
     if (inputContent.length >= 2) {
-      debouncedFetchUserDetails(inputContent);
+      debouncedFetchUserDetails(inputContent, blockchain);
     }
-  }, [inputContent]);
+  }, [inputContent, blockchain]);
 
   return (
     <div style={{ margin: "0 12px" }}>
       <TextInput
-        placeholder={`Enter a username or address`}
+        placeholder="Enter a username or address"
         startAdornment={
           <InputAdornment position="start">
             <SearchIcon style={{ color: theme.custom.colors.icon }} />
@@ -613,7 +614,13 @@ const SearchInput = ({
   );
 };
 
-const SearchResults = ({ searchResults }: { searchResults: any[] }) => {
+const SearchResults = ({
+  searchResults,
+  blockchain,
+}: {
+  searchResults: any[];
+  blockchain: Blockchain;
+}) => {
   // Don't show any friends because they will show up under contacts
   // This would be better implemented on the server query because it messes
   // with the limit, i.e. you could filter all the results from the limit
@@ -623,19 +630,21 @@ const SearchResults = ({ searchResults }: { searchResults: any[] }) => {
 
   return (
     <div style={{ margin: "0 12px" }}>
-      {filteredSearchResults.length !== 0 && (
-        <div style={{ marginTop: 10 }}>
-          <BubbleTopLabel text="Other people" />
-          <AddressList
-            wallets={filteredSearchResults.map((user) => ({
-              username: user.username,
-              image: user.image,
-              uuid: user.id,
-              addresses: user.public_keys?.map((x: any) => x.publicKey),
-            }))}
+      {filteredSearchResults.length !== 0 ? <div style={{ marginTop: 10 }}>
+        <BubbleTopLabel text="Other people" />
+        <AddressList
+          wallets={filteredSearchResults
+              .map((user) => ({
+                username: user.username,
+                image: user.image,
+                uuid: user.id,
+                addresses: user.public_keys
+                  .filter((x: any) => x.blockchain === blockchain)
+                  ?.map((x: any) => x.publicKey),
+              }))
+              .filter((x) => x.addresses.length !== 0)}
           />
-        </div>
-      )}
+      </div> : null}
     </div>
   );
 };

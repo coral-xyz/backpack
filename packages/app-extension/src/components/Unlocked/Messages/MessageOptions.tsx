@@ -79,8 +79,8 @@ export const MessageOptions = () => {
                   },
                 });
                 toast.success(
-                  "Contact removed",
-                  `We've removed @${remoteUsername} from your contacts.`
+                  "Friend removed",
+                  `We've removed @${remoteUsername} from your friends.`
                 );
               } else {
                 if (friendshipValue?.requested) {
@@ -99,12 +99,12 @@ export const MessageOptions = () => {
             }}
           >
             {friendshipValue?.areFriends
-              ? "Remove from contacts"
+              ? "Remove from Friends"
               : friendshipValue?.requested
               ? "Cancel Pending Request"
               : friendshipValue?.remoteRequested
-              ? "Accept Contact Request"
-              : "Add to contacts"}
+              ? "Accept Friend Request"
+              : "Add to Friends"}
           </PopoverMenu.Item>
         </PopoverMenu.Group>
         <PopoverMenu.Group>

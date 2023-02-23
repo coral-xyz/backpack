@@ -619,7 +619,7 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     id: "nokiamon",
     name: "Nokiamon",
     image:
-      "https://files.slack.com/files-pri/T0353BWC561-F04KG1AKQ4D/logo-baku.png",
+      "https://madlist-images.s3.us-west-2.amazonaws.com/nokiamon_pfp_1675332500467.png",
     collectionId: "3YysdoK6ZcJFEL5QJxccY3q8AcTUFpahgbp4HFgBtjNF",
   },
   {
@@ -638,8 +638,8 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
   },
   {
     id: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
-    name: "Mad Lads WL",
-    image: "https://mad-lads-web.vercel.app/mad_lads_logo.svg",
+    name: "The Madlist",
+    image: "https://www.madlads.com/mad_lads_logo.svg",
     collectionId: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
   },
 ];
@@ -649,3 +649,7 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
 export const LOAD_PUBLIC_KEY_AMOUNT = 20;
 
 export const DEFAULT_PUBKEY_STR = "11111111111111111111111111111111";
+
+export const MOBILE_CHANNEL_LOGS = "mobile-logs";
+
+export const IMAGE_PROXY_URL = "https://d1a7965zcx2lcc.cloudfront.net";

@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import type { Blockchain, FeeConfig } from "@coral-xyz/common";
 import {
@@ -66,13 +66,21 @@ export default function Router() {
   );
 }
 
+// Hack: we use this lock variable to ensure that the onboarding flow
+//       can only open once per second. This is to avoid multiple
+//       windows opening up at once.
+let lock = 0;
 function _Router() {
   const needsOnboarding =
     useKeyringStoreState() === KeyringStoreStateEnum.NeedsOnboarding;
 
   useEffect(() => {
+    const current = Date.now();
     // if the user needs onboarding then open the expanded view
-    if (needsOnboarding) openOnboarding();
+    if (needsOnboarding && current - lock > 1000) {
+      lock = current;
+      openOnboarding();
+    }
   }, [needsOnboarding]);
 
   return needsOnboarding ? null : <PopupView />;
@@ -352,8 +360,12 @@ function FullApp() {
   const background = useBackgroundClient();
 
   useEffect(() => {
-    refreshFeatureGates(background);
-    refreshXnftPreferences(background);
+    (async () => {
+      await Promise.all([
+        refreshFeatureGates(background),
+        refreshXnftPreferences(background),
+      ]);
+    })();
   }, [background]);
 
   return (
