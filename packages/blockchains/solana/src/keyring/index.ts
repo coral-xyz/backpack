@@ -26,7 +26,7 @@ import {
   LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
   nextIndicesFromPaths,
 } from "@coral-xyz/common";
-import { Keypair, PublicKey, Transaction } from "@solana/web3.js";
+import { Keypair, Message,PublicKey, Transaction } from "@solana/web3.js";
 import { mnemonicToSeedSync, validateMnemonic } from "bip39";
 import { ethers } from "ethers";
 import nacl from "tweetnacl";
@@ -340,10 +340,13 @@ export class SolanaKeystoneKeyring
     this.keyring.getInteraction().onRead(fn);
   }
 
-  public async signTransaction(tx: Buffer, address: string): Promise<string> {
+  public async signTransaction(
+    txMsg: Buffer,
+    address: string
+  ): Promise<string> {
     const signedTx = await this.keyring.signTransaction(
       address,
-      Transaction.from(tx)
+      Transaction.populate(Message.from(txMsg))
     );
     return signedTx.signature ? base58.encode(signedTx.signature) : "";
   }
