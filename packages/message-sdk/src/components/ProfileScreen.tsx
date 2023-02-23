@@ -3,7 +3,9 @@ import {
   BACKEND_API_URL,
   NAV_COMPONENT_MESSAGE_CHAT,
   sendFriendRequest,
+  unFriend,
 } from "@coral-xyz/common";
+import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
   Loading,
   LocalImage,
@@ -11,10 +13,15 @@ import {
   PrimaryButton,
   useUsersMetadata,
 } from "@coral-xyz/react-common";
-import { useNavigation } from "@coral-xyz/recoil";
+import {
+  useNavigation,
+  useUpdateFriendships,
+  useUser,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import LockIcon from "@mui/icons-material/Lock";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { IconButton } from "@mui/material";
 
@@ -34,7 +41,11 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
   const classes = useStyles();
   const theme = useCustomTheme();
   const userMetadata = useUsersMetadata({ remoteUserIds: [userId] });
+
+  const { uuid } = useUser();
   const { push } = useNavigation();
+
+  const setFriendshipValue = useUpdateFriendships();
 
   async function getChatRoom() {
     const res = await ParentCommunicationManager.getInstance().fetch(
@@ -55,6 +66,21 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
       sendRequest,
     });
     setRequestSent(sendRequest);
+  };
+
+  const unfriend = async () => {
+    await unFriend({ to: userId });
+    await updateFriendshipIfExists(uuid, userId, {
+      areFriends: 0,
+    });
+    setFriendshipValue({
+      userId: userId,
+      friendshipValue: {
+        requested: false,
+        areFriends: false,
+      },
+    });
+    setFriendship(false);
   };
 
   useEffect(() => {
@@ -90,8 +116,14 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
           </div>
         </div>
         <br />
-        <div className={classes.horizontalCenter}>
-          <div style={{ marginRight: 25 }}>
+        <div
+          className={classes.horizontalCenter}
+          style={{
+            display: "flex",
+            justifyContent: "space-evenly",
+          }}
+        >
+          <div>
             <IconButton
               size={"large"}
               className={classes.icon}
@@ -129,7 +161,11 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
               className={classes.icon}
             >
               <ArrowUpwardIcon
-                style={{ height: 21, color: theme.custom.colors.fontColor }}
+                style={{
+                  padding: 2,
+                  height: 21,
+                  color: theme.custom.colors.fontColor,
+                }}
               />
             </IconButton>
             <div
@@ -143,6 +179,34 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
               Send
             </div>
           </div>
+          {friendship && (
+            <div>
+              <IconButton
+                style={{ cursor: "auto" }}
+                size={"large"}
+                className={classes.icon}
+                onClick={() => unfriend()}
+              >
+                <PersonRemoveIcon
+                  style={{
+                    padding: 2,
+                    height: 21,
+                    color: theme.custom.colors.fontColor,
+                  }}
+                />
+              </IconButton>
+              <div
+                className={classes.smallText}
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: 8,
+                }}
+              >
+                Unfriend
+              </div>
+            </div>
+          )}
         </div>
         <br />
         {friendship && (
