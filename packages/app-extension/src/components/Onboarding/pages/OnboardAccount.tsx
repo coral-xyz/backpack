@@ -8,7 +8,6 @@ import {
   getCreateMessage,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
 } from "@coral-xyz/common";
-import { Loading } from "@coral-xyz/react-common";
 import {
   useBackgroundClient,
   useOnboarding,
@@ -47,16 +46,10 @@ export const OnboardAccount = ({
   isAddingAccount?: boolean;
   isOnboarded?: boolean;
 }) => {
-  const background = useBackgroundClient();
-  const [loading, setLoading] = useState(false);
   const { step, nextStep, prevStep } = useSteps();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const {
-    onboardingData,
-    setOnboardingData,
-    handleSelectBlockchain,
-    maybeCreateUser,
-  } = useOnboarding();
+  const { onboardingData, setOnboardingData, handleSelectBlockchain } =
+    useOnboarding();
   const {
     inviteCode,
     action,
@@ -75,29 +68,9 @@ export const OnboardAccount = ({
     });
   }, [action, keyringType, mnemonic]);
 
-  useEffect(() => {
-    (async () => {
-      // This is a mitigation to ensure the keyring store doesn't lock before
-      // creating the user on the server.
-      //
-      // Would be better (though probably not a priority atm) to ensure atomicity.
-      // E.g. we could generate the UUID here on the client, create the keyring store,
-      // and only then create the user on the server. If the server fails, then
-      // rollback on the client.
-      //
-      // An improvement for the future!
-      if (isAddingAccount) {
-        setOnboardingData({ isAddingAccount });
-        await background.request({
-          method: UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
-          params: [],
-        });
-      }
-    })();
-  }, [isAddingAccount]);
-
   const steps = [
     <InviteCodeForm
+      key="InviteCodeForm"
       onClickWaiting={onWaiting}
       onClickRecover={onRecover}
       onSubmit={(inviteCode) => {
@@ -106,6 +79,7 @@ export const OnboardAccount = ({
       }}
     />,
     <UsernameForm
+      key="UsernameForm"
       inviteCode={inviteCode!}
       onNext={(username) => {
         setOnboardingData({ username });
@@ -113,12 +87,14 @@ export const OnboardAccount = ({
       }}
     />,
     <CreateOrImportWallet
+      key="CreateOrImportWallet"
       onNext={(action) => {
         setOnboardingData({ action });
         nextStep();
       }}
     />,
     <KeyringTypeSelector
+      key="KeyringTypeSelector"
       action={action}
       onNext={(keyringType: KeyringType) => {
         setOnboardingData({ keyringType });
@@ -128,10 +104,11 @@ export const OnboardAccount = ({
     // Show the seed phrase if we are creating based on a mnemonic
     ...(keyringType === "mnemonic"
       ? [
-          <MnemonicInput
-            readOnly={action === "create"}
-            buttonLabel={action === "create" ? "Next" : "Import"}
-            onNext={(mnemonic) => {
+        <MnemonicInput
+          key="MnemonicInput"
+          readOnly={action === "create"}
+          buttonLabel={action === "create" ? "Next" : "Import"}
+          onNext={(mnemonic) => {
               setOnboardingData({ mnemonic });
               nextStep();
             }}
@@ -139,6 +116,7 @@ export const OnboardAccount = ({
         ]
       : []),
     <BlockchainSelector
+      key="BlockchainSelector"
       selectedBlockchains={selectedBlockchains}
       onClick={async (blockchain) => {
         await handleSelectBlockchain({
@@ -152,38 +130,20 @@ export const OnboardAccount = ({
     />,
     ...(!isAddingAccount
       ? [
-          <CreatePassword
-            onNext={async (password) => {
+        <CreatePassword
+          key="CreatePassword"
+          onNext={async (password) => {
               setOnboardingData({ password });
               nextStep();
             }}
           />,
         ]
       : []),
-    <NotificationsPermission
-      onNext={async () => {
-        setLoading(true);
-        const res = await maybeCreateUser(onboardingData);
-        setLoading(false);
-
-        if (res.ok) {
-          nextStep();
-        } else {
-          if (
-            confirm(
-              "There was an issue setting up your account. Please try again."
-            )
-          ) {
-            window.location.reload();
-          }
-        }
-      }}
-    />,
-    <Finish />,
+    <NotificationsPermission key="NotificationsPermission" onNext={nextStep} />,
+    <Finish key="Finish" isAddingAccount={isAddingAccount} />,
   ];
 
-  const isLastStep = step === steps.length - 1;
-  if (isOnboarded && !isLastStep) {
+  if (isOnboarded && step !== steps.length - 1) {
     return <AlreadyOnboarded />;
   }
 
@@ -198,7 +158,7 @@ export const OnboardAccount = ({
       // Only display the onboarding menu on the first step
       navButtonRight={step === 0 ? navProps.navButtonRight : undefined}
     >
-      {loading ? <Loading /> : steps[step]}
+      {steps[step]}
 
       <WithContaineredDrawer
         containerRef={containerRef}
@@ -216,7 +176,7 @@ export const OnboardAccount = ({
             // @ts-expect-error not assignable to type string ...
             action={action}
             signMessage={(publicKey: string) => getCreateMessage(publicKey)}
-            signText={`Sign the message to authenticate with Backpack.`}
+            signText="Sign the message to authenticate with Backpack."
             onClose={() => setOpenDrawer(false)}
             onComplete={(signedWalletDescriptor: SignedWalletDescriptor) => {
               setOnboardingData({
