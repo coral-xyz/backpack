@@ -93,7 +93,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
         <div className={classes.horizontalCenter}>
           <div style={{ marginRight: 25 }}>
             <IconButton
-              size={"large"}
+              size="large"
               className={classes.icon}
               onClick={async () => {
                 push({
@@ -125,7 +125,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
           <div>
             <IconButton
               style={{ cursor: "auto" }}
-              size={"large"}
+              size="large"
               className={classes.icon}
             >
               <ArrowUpwardIcon
@@ -145,49 +145,39 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
           </div>
         </div>
         <br />
-        {friendship && (
-          <ContactSection
-            icon={<VerifiedIcon style={{ color: theme.custom.colors.icon }} />}
-            title={"Connected"}
-            subtitle={`You and @${user.username} are mutual contacts`}
-          />
-        )}
-        {!friendship && requestSent && (
-          <ContactSection
-            icon={<LockIcon style={{ color: theme.custom.colors.icon }} />}
-            title={"Contact pending request"}
-            subtitle={`You can still message and send things to @${user.username}.`}
-          />
-        )}
-        {!friendship && !requestSent && (
-          <ContactSection
-            icon={<LockIcon style={{ color: theme.custom.colors.icon }} />}
-            title={"This is not a contact"}
-            subtitle={`You can message and send crypto to anyone on Backpack, but we suggest only adding contacts you know and trust.`}
-          />
-        )}
+        {friendship ? <ContactSection
+          icon={<VerifiedIcon style={{ color: theme.custom.colors.icon }} />}
+          title="Connected"
+          subtitle={`You and @${user.username} are mutual friends`}
+          /> : null}
+        {!friendship && requestSent ? <ContactSection
+          icon={<LockIcon style={{ color: theme.custom.colors.icon }} />}
+          title="Friend pending request"
+          subtitle={`You can still message and send things to @${user.username}.`}
+          /> : null}
+        {!friendship && !requestSent ? <ContactSection
+          icon={<LockIcon style={{ color: theme.custom.colors.icon }} />}
+          title="This is not a friend"
+          subtitle="You can message and send crypto to anyone on Backpack, but we suggest only adding friends you know and trust."
+          /> : null}
       </div>
       <div>
-        {!friendship && !requestSent && (
-          <PrimaryButton
-            label={"Request to add contact"}
-            onClick={() => send(true)}
-          />
-        )}
-        {!friendship && requestSent && (
-          <div
-            style={{
+        {!friendship && !requestSent ? <PrimaryButton
+          label="Request to add friend"
+          onClick={() => send(true)}
+          /> : null}
+        {!friendship && requestSent ? <div
+          style={{
               display: "flex",
               justifyContent: "space-between",
             }}
           >
-            <PrimaryButton
-              label={"Cancel Pending Request"}
-              style={{ margin: 3 }}
-              onClick={() => send(false)}
+          <PrimaryButton
+            label="Cancel Pending Request"
+            style={{ margin: 3 }}
+            onClick={() => send(false)}
             />
-          </div>
-        )}
+        </div> : null}
       </div>
     </div>
   );
@@ -206,7 +196,7 @@ function ContactSection({
   return (
     <div>
       <div className={classes.horizontalCenter} style={{ marginBottom: 16 }}>
-        <IconButton className={classes.contactIconOuter} size={"large"}>
+        <IconButton className={classes.contactIconOuter} size="large">
           {" "}
           {icon}{" "}
         </IconButton>

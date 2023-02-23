@@ -125,7 +125,8 @@ export const AddressSelectorLoader = ({
 }) => {
   // publicKey should only be undefined if the user is in single-wallet mode
   // (rather than aggregate mode).
-  const publicKeyStr = publicKey ?? useActiveWallet().publicKey;
+  const activePublicKey = useActiveWallet().publicKey;
+  const publicKeyStr = publicKey ?? activePublicKey;
   const [token] = useLoader(
     blockchainTokenData({
       publicKey: publicKeyStr,
@@ -134,7 +135,7 @@ export const AddressSelectorLoader = ({
     }),
     null
   );
-  if (!token) return <></>;
+  if (!token) return null;
   return <AddressSelector blockchain={blockchain} token={token} />;
 };
 
@@ -176,12 +177,10 @@ export const AddressSelector = ({
             setInputContent={setInputContent}
             setSearchResults={setSearchResults}
           />
-          {!inputContent && (
-            <YourAddresses
-              searchFilter={inputContent}
-              blockchain={blockchain}
-            />
-          )}
+          {!inputContent ? <YourAddresses
+            searchFilter={inputContent}
+            blockchain={blockchain}
+            /> : null}
           <Contacts searchFilter={inputContent} blockchain={blockchain} />
           <SearchResults
             searchResults={searchResults}
@@ -194,7 +193,7 @@ export const AddressSelector = ({
         </div>
         <div className={classes.buttonContainer}>
           {!isValidAddress && inputContent.length > 15 ? (
-            <DangerButton label="Invalid address" disabled={true} />
+            <DangerButton label="Invalid address" disabled />
           ) : (
             <PrimaryButton
               onClick={() => {
@@ -250,7 +249,7 @@ function NotSelected({
   ];
 
   if (!allResults.length) {
-    return <></>;
+    return null;
   }
 
   return (
@@ -368,11 +367,10 @@ const Contacts = ({
 
   return (
     <div>
-      {filteredContacts.length !== 0 && (
-        <div style={{ margin: "12px 12px" }}>
-          <BubbleTopLabel text="Contacts" />
-          <AddressList
-            wallets={filteredContacts.map((c) => ({
+      {filteredContacts.length !== 0 ? <div style={{ margin: "12px 12px" }}>
+        <BubbleTopLabel text="Friends" />
+        <AddressList
+          wallets={filteredContacts.map((c) => ({
               username: c.remoteUsername,
               addresses: c.public_keys
                 .filter(
@@ -386,8 +384,7 @@ const Contacts = ({
               uuid: c.remoteUserId,
             }))}
           />
-        </div>
-      )}
+      </div> : null}
     </div>
   );
 };
@@ -406,7 +403,7 @@ const YourAddresses = ({
   const activeEthWallet = useActiveEthereumWallet();
   if (wallets.length === 1) {
     // Only one wallet available
-    return <></>;
+    return null;
   }
 
   return (
@@ -458,19 +455,17 @@ function AddressList({
       }}
     >
       {walletsWithPrimary.map((wallet, index) => (
-        <>
-          <AddressListItem
-            key={wallet.username}
-            isFirst={index === 0}
-            isLast={index === walletsWithPrimary.length - 1}
-            user={{
+        <AddressListItem
+          key={wallet.username}
+          isFirst={index === 0}
+          isLast={index === walletsWithPrimary.length - 1}
+          user={{
               username: wallet.username,
               image: wallet.image,
               uuid: wallet.uuid,
             }}
-            address={wallet.addresses?.[0]}
+          address={wallet.addresses?.[0]}
           />
-        </>
       ))}
     </List>
   );
@@ -546,9 +541,7 @@ const AddressListItem = ({
         </div>
         <div style={{ display: "flex" }}>
           <div className={classes.userText}>{user.username}</div>
-          {!address && (
-            <BlockIcon style={{ color: "#E33E3F", marginLeft: 10 }} />
-          )}
+          {!address ? <BlockIcon style={{ color: "#E33E3F", marginLeft: 10 }} /> : null}
         </div>
       </div>
     </ListItem>
@@ -602,7 +595,7 @@ const SearchInput = ({
   return (
     <div style={{ margin: "0 12px" }}>
       <TextInput
-        placeholder={`Enter a username or address`}
+        placeholder="Enter a username or address"
         startAdornment={
           <InputAdornment position="start">
             <SearchIcon style={{ color: theme.custom.colors.icon }} />
@@ -637,11 +630,10 @@ const SearchResults = ({
 
   return (
     <div style={{ margin: "0 12px" }}>
-      {filteredSearchResults.length !== 0 && (
-        <div style={{ marginTop: 10 }}>
-          <BubbleTopLabel text="Other people" />
-          <AddressList
-            wallets={filteredSearchResults
+      {filteredSearchResults.length !== 0 ? <div style={{ marginTop: 10 }}>
+        <BubbleTopLabel text="Other people" />
+        <AddressList
+          wallets={filteredSearchResults
               .map((user) => ({
                 username: user.username,
                 image: user.image,
@@ -652,8 +644,7 @@ const SearchResults = ({
               }))
               .filter((x) => x.addresses.length !== 0)}
           />
-        </div>
-      )}
+      </div> : null}
     </div>
   );
 };

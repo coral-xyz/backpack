@@ -68,7 +68,7 @@ export function SettingsList() {
   ];
 
   settingsMenu.push({
-    label: "Contacts",
+    label: "Friends",
     onPress: () => navigation.push("contacts-list"),
     icon: <IconLeft name="people" />,
     detailIcon: <IconPushDetail />,

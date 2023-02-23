@@ -103,7 +103,7 @@ export function InboxInner() {
           debouncedInit(prefix);
         }}
       />
-      {(!allChats || !allChats.length) && <MessagesSkeleton />}
+      {(!allChats || !allChats.length) ? <MessagesSkeleton /> : null}
       {allChats &&
         allChats.length !== 0 &&
         (allChats.filter((x) =>
@@ -112,11 +112,8 @@ export function InboxInner() {
             : x.chatProps.name
           )?.includes(searchFilter)
         ).length > 0 ||
-          requestCount > 0) && (
-          <>
-            {searchFilter.length >= 3 && (
-              <BubbleTopLabel text="Your contacts" />
-            )}
+          requestCount > 0) ? <>
+            {searchFilter.length >= 3 ? <BubbleTopLabel text="Your friends" /> : null}
             <div style={{ paddingBottom: "16px" }}>
               <MessageList
                 requestCount={searchFilter.length < 3 ? requestCount : 0}
@@ -140,24 +137,20 @@ export function InboxInner() {
                 })}
               />
             </div>
-          </>
-        )}
-      {searchFilter.length >= 3 && searchedUsersDistinct.length !== 0 && (
-        <>
-          <BubbleTopLabel text="Other people" />
-          <UserList
-            users={searchedUsersDistinct}
-            setMembers={setSearchResults}
+          </> : null}
+      {searchFilter.length >= 3 && searchedUsersDistinct.length !== 0 ? <>
+        <BubbleTopLabel text="Other people" />
+        <UserList
+          users={searchedUsersDistinct}
+          setMembers={setSearchResults}
           />
-        </>
-      )}
+      </> : null}
       {allChats &&
         allChats.length !== 0 &&
         searchFilter.length < 3 &&
         requestCount === 0 &&
-        allChats.length === 0 && (
-          <div
-            style={{
+        allChats.length === 0 ? <div
+          style={{
               flexGrow: 1,
               justifyContent: "center",
               flexDirection: "column",
@@ -165,14 +158,13 @@ export function InboxInner() {
               paddingBottom: 50,
             }}
           >
-            {" "}
-            <EmptyState
-              icon={(props: any) => <ChatBubbleIcon {...props} />}
-              title={"No messages"}
-              subtitle={"Search for someone to send a message!"}
+          {" "}
+          <EmptyState
+            icon={(props: any) => <ChatBubbleIcon {...props} />}
+            title="No messages"
+            subtitle="Search for someone to send a message!"
             />
-          </div>
-        )}
+        </div> : null}
     </div>
   );
 }
