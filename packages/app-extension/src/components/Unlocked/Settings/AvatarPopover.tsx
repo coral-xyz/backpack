@@ -31,7 +31,6 @@ const useStyles = styles((theme) => ({
   popoverRoot: {
     zIndex: 1,
   },
-  popoverPaper: {},
 }));
 
 export function AvatarPopoverButton({
@@ -96,6 +95,10 @@ export function AvatarPopoverButton({
           horizontal: "left",
         }}
         classes={{ root: classes.popoverRoot }}
+        // Required duration of 0 because the rerender on a user change causes
+        // the transition component in mui to not complete and so the popover
+        // never disappears
+        transitionDuration={0}
       >
         <PopoverProvider
           close={() => setAnchorEl(null)}
@@ -193,9 +196,6 @@ function UsersMenuList() {
             user={user}
             onClick={async () => {
               close();
-              // HACK to get the popover to close properly. We had to add this after upgrading
-              // react to 18.2. :/
-              await new Promise((resolve) => setTimeout(resolve, 290));
               await background.request({
                 method: UI_RPC_METHOD_ACTIVE_USER_UPDATE,
                 params: [user.uuid],
@@ -349,24 +349,22 @@ function UserMenuItem({ user, onClick }: { user: any; onClick: () => void }) {
             @{user.username}
           </Typography>
         </div>
-        {isCurrentUser && (
-          <div
-            style={{
+        {isCurrentUser ? <div
+          style={{
               display: "flex",
               justifyContent: "center",
               flexDirection: "column",
             }}
           >
-            <Check
-              style={{
+          <Check
+            style={{
                 width: "20px",
                 height: "20px",
                 opacity: 0.8,
                 color: theme.custom.colors.fontColor,
               }}
             />
-          </div>
-        )}
+        </div> : null}
       </div>
     </MenuListItem>
   );
