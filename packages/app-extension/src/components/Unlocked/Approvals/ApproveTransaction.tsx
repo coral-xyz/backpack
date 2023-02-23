@@ -11,6 +11,7 @@ import { Typography } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 import { useRecoilValue } from "recoil";
 
+import { useKeystoneSign } from "../../../hooks/useKeystoneSign";
 import { TransactionData } from "../../common/TransactionData";
 import { WithApproval } from "../../Unlocked/Approvals";
 
@@ -75,6 +76,7 @@ export function ApproveTransaction({
   const { loading, balanceChanges, transaction, solanaFeeConfig } =
     transactionData;
   const _isKeyCold = useRecoilValue(isKeyCold(wallet));
+  const { keystoneSign, openKeystone } = useKeystoneSign();
 
   if (loading) {
     return <Loading />;
@@ -122,7 +124,9 @@ export function ApproveTransaction({
     await onCompletion(false);
   };
 
-  return (
+  return openKeystone ? (
+    <>{keystoneSign}</>
+  ) : (
     <WithApproval
       origin={origin}
       originTitle={title}
@@ -204,6 +208,7 @@ export function ApproveAllTransactions({
 }) {
   const classes = useStyles();
   const _isKeyCold = useRecoilValue(isKeyCold(wallet));
+  const { keystoneSign, openKeystone } = useKeystoneSign();
 
   const onConfirm = async () => {
     onCompletion(true);
@@ -217,7 +222,9 @@ export function ApproveAllTransactions({
     return <Cold origin={origin!} />;
   }
 
-  return (
+  return openKeystone ? (
+    <>{keystoneSign}</>
+  ) : (
     <WithApproval
       origin={origin}
       originTitle={title}

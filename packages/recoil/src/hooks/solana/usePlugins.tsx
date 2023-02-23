@@ -95,7 +95,7 @@ export function usePluginUrl(address?: string) {
       if (address) {
         try {
           const xnft = await fetchXnft(new PublicKey(address));
-          setUrl(xnft!.xnft.manifest.entrypoints.default.web);
+          setUrl(xnft!.xnft.xnft.manifest.entrypoints.default.web);
         } catch (error) {
           console.error(error);
         }

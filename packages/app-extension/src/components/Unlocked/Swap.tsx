@@ -32,6 +32,7 @@ import {
 } from "@mui/material";
 import { ethers, FixedNumber } from "ethers";
 
+import { useKeystoneSign } from "../../hooks/useKeystoneSign";
 import { Button as XnftButton } from "../../plugin/Component";
 import { TextField } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
@@ -205,6 +206,7 @@ enum SwapState {
   CONFIRMING,
   CONFIRMED,
   ERROR,
+  KEYSTONE,
 }
 
 export function Swap({ blockchain }: { blockchain: Blockchain }) {
@@ -313,6 +315,13 @@ const SwapConfirmationCard: React.FC<{
   const { executeSwap } = useSwapContext();
   const [swapState, setSwapState] = useState(SwapState.CONFIRMATION);
 
+  const { keystoneSign, openKeystone } = useKeystoneSign({ isInDrawer: true });
+
+  useEffect(() => {
+    typeof openKeystone === "boolean" &&
+      setSwapState(openKeystone ? SwapState.KEYSTONE : SwapState.CONFIRMING);
+  }, [openKeystone]);
+
   const onConfirm = async () => {
     setSwapState(SwapState.CONFIRMING);
     const result = await executeSwap();
@@ -326,6 +335,7 @@ const SwapConfirmationCard: React.FC<{
   return (
     <div>
       {swapState === SwapState.CONFIRMATION ? <SwapConfirmation onConfirm={onConfirm} /> : null}
+      {swapState === SwapState.KEYSTONE ? keystoneSign : null}
       {swapState === SwapState.CONFIRMING ? <SwapConfirming isConfirmed={false} onViewBalances={onViewBalances} /> : null}
       {swapState === SwapState.CONFIRMED ? <SwapConfirming isConfirmed onViewBalances={onViewBalances} /> : null}
       {swapState === SwapState.ERROR ? <SwapError onCancel={() => onClose()} onRetry={onConfirm} /> : null}

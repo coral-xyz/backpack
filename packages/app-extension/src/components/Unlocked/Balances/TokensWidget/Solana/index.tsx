@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { findMintManagerId } from "@cardinal/creator-standard";
 import { programs, tryGetAccount } from "@cardinal/token-manager";
 import type { RawMintString } from "@coral-xyz/common";
@@ -10,7 +10,7 @@ import {
   SOL_NATIVE_MINT,
   Solana,
 } from "@coral-xyz/common";
-import { LocalImage, PrimaryButton, UserIcon } from "@coral-xyz/react-common";
+import { PrimaryButton, UserIcon } from "@coral-xyz/react-common";
 import {
   useAvatarUrl,
   useSolanaCtx,
@@ -30,6 +30,7 @@ import type { AccountInfo, Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import type { BigNumber } from "ethers";
 
+import { useKeystoneSign } from "../../../../../hooks/useKeystoneSign";
 import { walletAddressDisplay } from "../../../../common";
 import { SettingsList } from "../../../../common/Settings/List";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
@@ -74,12 +75,19 @@ export function SendSolanaConfirmationCard({
     "Error 422. Transaction time out. Runtime error. Reticulating splines."
   );
   const [cardType, setCardType] = useState<
-    "confirm" | "sending" | "complete" | "error"
+    "confirm" | "sending" | "complete" | "error" | "keystone"
   >("confirm");
   const mintInfo = useSolanaTokenMint({
     publicKey: solanaCtx.walletPublicKey.toString(),
     tokenAddress: token.address,
   });
+
+  const { keystoneSign, openKeystone } = useKeystoneSign({ isInDrawer: true });
+
+  useEffect(() => {
+    typeof openKeystone === "boolean" &&
+      setCardType(openKeystone ? "keystone" : "sending");
+  }, [openKeystone]);
 
   const onConfirm = async () => {
     setCardType("sending");
@@ -199,6 +207,8 @@ export function SendSolanaConfirmationCard({
           token={token}
           signature={txSignature!}
         />
+      ) : cardType === "keystone" ? (
+        keystoneSign
       ) : cardType === "complete" ? (
         <Sending
           blockchain={Blockchain.SOLANA}

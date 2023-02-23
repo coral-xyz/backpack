@@ -36,6 +36,7 @@ import * as anchor from "@project-serum/anchor";
 import type { ConfirmOptions, SendOptions } from "@solana/web3.js";
 import { useRecoilValue } from "recoil";
 
+import { useKeystoneSign } from "../../hooks/useKeystoneSign";
 import { sanitizeTransactionWithFeeConfig } from "../../utils/solana";
 import { walletAddressDisplay } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
@@ -112,6 +113,8 @@ export function ApproveTransactionRequest() {
   const [signature, setSignature] = useState<string | null>(null);
   const _isKeyCold = useRecoilValue(isKeyCold(publicKey));
 
+  const { keystoneSign, openKeystone } = useKeystoneSign();
+
   useEffect(() => {
     setOpenDrawer(request !== undefined);
   }, [request, signature]);
@@ -157,7 +160,9 @@ export function ApproveTransactionRequest() {
       }}
     >
       <Suspense fallback={<DisabledRequestPrompt />}>
-        {_isKeyCold ? (
+        {openKeystone ? (
+          keystoneSign
+        ) : _isKeyCold ? (
           <Cold
             origin="This xNFT"
             style={{

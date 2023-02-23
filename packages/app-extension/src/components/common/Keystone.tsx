@@ -8,9 +8,7 @@ import {
 } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { AnimatedQRCode, useAnimatedQRScanner } from "@keystonehq/animated-qr";
-import { Box, Link, SvgIcon } from "@mui/material";
-
-import { WithContaineredDrawer } from "./Layout/Drawer";
+import { Box, Drawer, Link, SvgIcon } from "@mui/material";
 
 export enum DisplayType {
   qrcode = "qrcode",
@@ -21,6 +19,7 @@ interface BaseProps {
   header: React.ReactNode;
   hasFooter?: boolean;
   size?: number;
+  help?: React.ReactNode;
   setDisplay?: (type: DisplayType) => void;
 }
 
@@ -88,6 +87,7 @@ function KeystoneBase({
 export function KeystoneScanner({
   containerRef,
   header,
+  help,
   hasFooter = true,
   onScan,
   setDisplay,
@@ -170,6 +170,7 @@ export function KeystoneScanner({
             {isPermissionError === true &&
               "Please enable your camera permission via [Settings]."}
           </Box>
+          {help}
           <KeystoneScanError
             containerRef={containerRef}
             isError={isScanError}
@@ -203,12 +204,29 @@ export function KeystoneScanError({
   const theme = useCustomTheme();
 
   return (
-    <WithContaineredDrawer
-      containerRef={containerRef}
-      openDrawer={isError}
-      setOpenDrawer={setIsError}
-      paperStyles={{
-        background: "transparent",
+    <Drawer
+      anchor="bottom"
+      open={isError}
+      onClose={() => setIsError(false)}
+      PaperProps={{
+        style: {
+          position: "absolute",
+          borderTopLeftRadius: "12px",
+          borderTopRightRadius: "12px",
+        },
+      }}
+      BackdropProps={{
+        style: {
+          position: "absolute",
+        },
+      }}
+      ModalProps={{
+        container: containerRef.current,
+        style: {
+          position: "absolute",
+          zIndex: 1500,
+        },
+        disableAutoFocus: true,
       }}
     >
       <Box
@@ -245,7 +263,7 @@ export function KeystoneScanError({
         </Link>
         <PrimaryButton label="OK" onClick={onOK} />
       </Box>
-    </WithContaineredDrawer>
+    </Drawer>
   );
 }
 
@@ -255,6 +273,7 @@ export function KeystonePlayer({
   setDisplay,
   ur,
   size = 200,
+  help,
 }: PlayProps) {
   const theme = useCustomTheme();
 
@@ -277,12 +296,16 @@ export function KeystonePlayer({
       cardSize={size}
       help={
         <Box color="#90929D" fontSize={12} textAlign="center" lineHeight="16px">
-          Click on the '
-          <span style={{ color: theme.custom.colors.fontColor }}>
-            Get Signature
-          </span>
-          ' button after signing the message. This request will NOT trigger any
-          blockchain transaction or cost any SOL.
+          {help || (
+            <>
+              Click on the '
+              <span style={{ color: theme.custom.colors.fontColor }}>
+                Get Signature
+              </span>
+              ' button after signing the message. This request will NOT trigger
+              any blockchain transaction or cost any SOL.
+            </>
+          )}
         </Box>
       }
       hasFooter={hasFooter}

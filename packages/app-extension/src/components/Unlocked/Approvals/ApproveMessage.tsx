@@ -4,6 +4,7 @@ import { Typography } from "@mui/material";
 import * as anchor from "@project-serum/anchor";
 import { useRecoilValue } from "recoil";
 
+import { useKeystoneSign } from "../../../hooks/useKeystoneSign";
 import { TextField } from "../../../plugin/Component";
 
 import { Cold } from "./ApproveTransaction";
@@ -46,6 +47,7 @@ export function ApproveMessage({
   const classes = useStyles();
   const theme = useCustomTheme();
   const _isKeyCold = useRecoilValue(isKeyCold(wallet));
+  const { keystoneSign, openKeystone } = useKeystoneSign();
 
   let displayMessage;
   try {
@@ -68,7 +70,9 @@ export function ApproveMessage({
     return <Cold origin={origin!} />;
   }
 
-  return (
+  return openKeystone ? (
+    <>{keystoneSign}</>
+  ) : (
     <WithApproval
       origin={origin}
       originTitle={title}

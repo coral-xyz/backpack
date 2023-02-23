@@ -26,6 +26,10 @@ export class BrowserRuntimeCommon {
     return chrome.runtime.onMessage.addListener(listener);
   }
 
+  public static removeEventListener(listener: any): void {
+    return chrome.runtime.onMessage.removeListener(listener);
+  }
+
   public static async getLocalStorage(key: string): Promise<any> {
     return new Promise((resolve, reject) => {
       return chrome?.storage.local.get(key, (result) => {
