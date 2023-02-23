@@ -21,16 +21,16 @@ fi
 version=$1
 
 main () {
-		update_package packages/common/
-		update_package packages/themes/
+    update_package packages/common/
+    update_package packages/themes/
     update_package packages/xnft-cli/
 }
 
 update_package () {
-		local package=$1
-		pushd $package
-		sed -i "s/\"version\": \".*\"/\"version\": \"${version}\"/g" package.json
-		popd
+    local package=$1
+    pushd $package
+    sed -i "s/\"version\": \".*\"/\"version\": \"${version}\"/g" package.json
+    popd
 }
 
 main
