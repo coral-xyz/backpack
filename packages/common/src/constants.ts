@@ -619,7 +619,7 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     id: "nokiamon",
     name: "Nokiamon",
     image:
-      "https://files.slack.com/files-pri/T0353BWC561-F04KG1AKQ4D/logo-baku.png",
+      "https://madlist-images.s3.us-west-2.amazonaws.com/nokiamon_pfp_1675332500467.png",
     collectionId: "3YysdoK6ZcJFEL5QJxccY3q8AcTUFpahgbp4HFgBtjNF",
   },
   {
