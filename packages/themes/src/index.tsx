@@ -134,6 +134,7 @@ type CustomColors = {
   verified: string;
   chatFadeGradient: string;
   chatFadeGradientStart: string;
+  linkColor: string;
 };
 
 const baseTheme = createStyles({
@@ -276,6 +277,7 @@ const DARK_COLORS: CustomColors = {
   chatFadeGradientStart: "rgba(255, 255, 255, 0.04)",
   chatFadeGradient:
     "linear-gradient(180deg, rgba(255, 255, 255, 0.04) 20%, rgba(0, 0, 0, 0) 100%), #18181B",
+  linkColor: "#4C94FF",
 };
 
 const LIGHT_COLORS: CustomColors = {
@@ -357,6 +359,7 @@ const LIGHT_COLORS: CustomColors = {
   chatFadeGradientStart: "rgba(248,248,248,255)",
   chatFadeGradient:
     "linear-gradient(360deg, rgb(255, 255, 255) 20%, rgba(240, 240, 242, 0.5) 100%), #FFFFFF",
+  linkColor: "#0057EB",
 };
 
 export const darkTheme: Partial<Theme> & {
