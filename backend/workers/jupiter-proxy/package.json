@@ -12,6 +12,7 @@
     "deploy": "wrangler publish"
   },
   "dependencies": {
+    "@coral-xyz/common": "*",
     "@jup-ag/api": "^4.0.1-alpha.0",
     "@solana/web3.js": "^1.73.0",
     "@supabase/supabase-js": "^2.4.1",

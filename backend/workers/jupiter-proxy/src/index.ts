@@ -1,3 +1,4 @@
+import { SWAP_FEE_IN_BASIS_POINTS } from "@coral-xyz/common";
 import type { V4SwapPostRequest } from "@jup-ag/api";
 import { Connection } from "@solana/web3.js";
 import { createClient } from "@supabase/supabase-js";
@@ -87,7 +88,7 @@ app.use("/v4/quote", async (c) => {
     // If there's an account to receive fees for the output mint, append the feeBps
     const mint = params.get("outputMint") as MintAddress; // satisfies keyof Def0);
     return mint && ACCOUNTS[mint]
-      ? _url.concat(`&feeBps=${c.env.DEFAULT_FEE_BPS}`)
+      ? _url.concat(`&feeBps=${SWAP_FEE_IN_BASIS_POINTS}`)
       : _url;
   })();
 
