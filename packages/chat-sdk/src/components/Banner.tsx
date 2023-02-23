@@ -24,9 +24,9 @@ export const Banner = () => {
   if (reconnecting) {
     return (
       <TextBanner
-        fixed={true}
-        type={"danger"}
-        title={"Network connection error"}
+        fixed
+        type="danger"
+        title="Network connection error"
       />
     );
   }
@@ -34,9 +34,9 @@ export const Banner = () => {
   if (spam) {
     return (
       <TextBanner
-        type={"danger"}
-        title={"You marked this account as spam"}
-        buttonText={"Undo"}
+        type="danger"
+        title="You marked this account as spam"
+        buttonText="Undo"
         onClick={async () => {
           await fetch(`${BACKEND_API_URL}/friends/spam`, {
             method: "POST",
@@ -53,29 +53,27 @@ export const Banner = () => {
 
   if (blocked) {
     return (
-      <TextBanner type={"normal"} title={"You have blocked this account"} />
+      <TextBanner type="normal" title="You have blocked this account" />
     );
   }
 
   if (areFriends) {
-    return <div></div>;
+    return <div />;
   }
 
   if (requested) {
-    return <TextBanner type={"disabled"} title={"Contact requested"} />;
+    return <TextBanner type="disabled" title="Friend requested" />;
   }
 
   return (
     <div>
-      {!areFriends && (
-        <div
-          className={`${classes.noContactBanner} ${classes.horizontalCenter} ${classes.text}`}
+      {!areFriends ? <div
+        className={`${classes.noContactBanner} ${classes.horizontalCenter} ${classes.text}`}
         >
-          {!requested && (
-            <div
-              className={classes.strongText}
-              style={{ cursor: "pointer", marginRight: 25 }}
-              onClick={async () => {
+        {!requested ? <div
+          className={classes.strongText}
+          style={{ cursor: "pointer", marginRight: 25 }}
+          onClick={async () => {
                 await sendFriendRequest({
                   to: remoteUserId,
                   sendRequest: true,
@@ -89,13 +87,12 @@ export const Banner = () => {
                 );
               }}
             >
-              {remoteRequested ? "Accept Contact Request" : "Add to contacts"}
-            </div>
-          )}
-          <div
-            className={classes.strongText}
-            style={{ cursor: "pointer" }}
-            onClick={async () => {
+          {remoteRequested ? "Accept Friend Request" : "Add to Friends"}
+        </div> : null}
+        <div
+          className={classes.strongText}
+          style={{ cursor: "pointer" }}
+          onClick={async () => {
               await fetch(`${BACKEND_API_URL}/friends/spam`, {
                 method: "POST",
                 headers: {
@@ -107,11 +104,10 @@ export const Banner = () => {
               toast.success("Spam", "Marked user as spam");
             }}
           >
-            Mark as Spam
-          </div>
-          <br />
+          Mark as Spam
         </div>
-      )}
+        <br />
+      </div> : null}
     </div>
   );
 };
@@ -147,27 +143,23 @@ function TextBanner({
         }}
       >
         {" "}
-        {type !== "disabled" && (
-          <InfoIcon
-            style={{
+        {type !== "disabled" ? <InfoIcon
+          style={{
               color:
                 type === "danger"
                   ? theme.custom.colors.negative
                   : theme.custom.colors.fontColor,
               marginRight: 5,
             }}
-          />
-        )}{" "}
+          /> : null}{" "}
         <div style={{ marginTop: type !== "disabled" ? 1 : 0 }}>
           {title}
-          {buttonText && (
-            <div
-              style={{ marginLeft: 10, cursor: "pointer" }}
-              onClick={onClick}
+          {buttonText ? <div
+            style={{ marginLeft: 10, cursor: "pointer" }}
+            onClick={onClick}
             >
-              {buttonText}
-            </div>
-          )}
+            {buttonText}
+          </div> : null}
         </div>
       </div>
     </div>

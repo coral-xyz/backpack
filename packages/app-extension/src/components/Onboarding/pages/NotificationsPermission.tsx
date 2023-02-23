@@ -56,7 +56,7 @@ export const NotificationsPermission = ({ onNext }: { onNext: () => void }) => {
         <Box sx={{ mt: "24px", mx: "24px" }}>
           <Header text="Allow notifications?" />
           <SubtextParagraph style={{ marginBottom: "20px" }}>
-            These appear for messages and contact requests.
+            These appear for messages and friend requests.
           </SubtextParagraph>
         </Box>
         <Box sx={{ mx: "20px" }}>

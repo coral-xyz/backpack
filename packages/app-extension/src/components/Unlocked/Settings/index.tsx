@@ -42,7 +42,7 @@ export function SettingsMenu() {
   }, [nav.setOptions]);
 
   return (
-    <Suspense fallback={<div></div>}>
+    <Suspense fallback={<div />}>
       <_SettingsContent />
     </Suspense>
   );
@@ -96,7 +96,7 @@ function SettingsList() {
   ];
 
   settingsMenu.push({
-    label: "Contacts",
+    label: "Friends",
     onClick: () => nav.push("contacts"),
     icon: (props: any) => <ContactsIcon {...props} />,
     detailIcon: <PushDetail />,
@@ -127,7 +127,7 @@ function SettingsList() {
     label: "Lock",
     onClick: () => lockWallet(),
     icon: (props: any) => <Lock {...props} />,
-    detailIcon: <></>,
+    detailIcon: null as unknown as JSX.Element,
   });
 
   const aboutList = [
