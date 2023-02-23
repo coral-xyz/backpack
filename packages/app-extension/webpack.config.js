@@ -155,7 +155,6 @@ const options = {
   resolve: {
     alias: {
       "react-native$": "react-native-web",
-      "../common/src/browser/mobile.ts": "./common/src/browser/mobileStub.ts",
     },
     extensions: fileExtensions
       .map((extension) => "." + extension)
