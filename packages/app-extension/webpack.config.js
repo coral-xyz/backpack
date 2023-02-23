@@ -76,7 +76,6 @@ const {
 const options = {
   mode: process.env.NODE_ENV,
   entry: {
-    background: "./src/background/index.ts",
     options: "./src/options/index.tsx",
     permissions: "./src/permissions/index.tsx",
     popup: "./src/index.tsx",
@@ -215,6 +214,11 @@ const options = {
         {
           from: "../provider-injection/dist/browser/index.js",
           to: "injected.js",
+          force: true,
+        },
+        {
+          from: "../background-injection/dev/background.js",
+          to: "background.js",
           force: true,
         },
       ],

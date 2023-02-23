@@ -6,11 +6,9 @@ import type {
 } from "@coral-xyz/common";
 import {
   NAV_COMPONENT_MESSAGE_CHAT,
-  NAV_COMPONENT_MESSAGE_PROFILE,
+ NAV_COMPONENT_MESSAGE_GROUP_CHAT,  NAV_COMPONENT_MESSAGE_PROFILE,
   NAV_COMPONENT_MESSAGE_REQUESTS,
-  parseMessage,
-} from "@coral-xyz/common";
-import { NAV_COMPONENT_MESSAGE_GROUP_CHAT } from "@coral-xyz/common/src/constants";
+  parseMessage } from "@coral-xyz/common";
 import {
   isFirstLastListItemStyle,
   LocalImage,
@@ -49,13 +47,11 @@ export const MessageList = ({
         border: `${theme.custom.colors.borderFull}`,
       }}
     >
-      {requestCount > 0 && (
-        <RequestsChatItem
-          requestCount={requestCount}
-          isFirst={true}
-          isLast={activeChats?.length === 0}
-        />
-      )}
+      {requestCount > 0 ? <RequestsChatItem
+        requestCount={requestCount}
+        isFirst
+        isLast={activeChats?.length === 0}
+        /> : null}
       {activeChats?.map((activeChat, index) => (
         <ChatListItem
           toRoot={toRoot}
@@ -85,7 +81,7 @@ export const MessageList = ({
               ? activeChat.chatProps.last_message_timestamp || ""
               : activeChat.chatProps.lastMessageTimestamp || ""
           }
-          isFirst={requestCount === 0 && index === 0}
+          isFirst={requestCount === 0 ? index === 0 : null}
           isLast={index === activeChats?.length - 1}
           isUnread={
             activeChat.chatType === "individual"
@@ -240,15 +236,13 @@ export function ChatListItem({
               >
                 <div>{type === "individual" ? `@${name}` : name}</div>
                 <div>
-                  {id === "backpack-chat" && (
-                    <VerifiedIcon
-                      style={{
+                  {id === "backpack-chat" ? <VerifiedIcon
+                    style={{
                         fontSize: 19,
                         marginLeft: 3,
                         color: theme.custom.colors.verified,
                       }}
-                    />
-                  )}
+                    /> : null}
                 </div>
               </div>
               <div

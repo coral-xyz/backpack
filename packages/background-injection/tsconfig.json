@@ -1,0 +1,22 @@
+{
+  "include": ["src", "webpack.config.js"],
+  "exclude": ["**/node_modules", "**/.*/"],
+  "compilerOptions": {
+    "strict": true,
+    "allowJs": true,
+    "target": "es2022",
+    "lib": ["dom", "dom.iterable", "es2022"],
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "es2022",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "downlevelIteration": true,
+    "jsx": "react-jsx"
+  }
+}
