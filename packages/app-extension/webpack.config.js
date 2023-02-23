@@ -155,6 +155,7 @@ const options = {
   resolve: {
     alias: {
       "react-native$": "react-native-web",
+      "../common/src/browser/mobile.ts": "./common/src/browser/mobileStub.ts",
     },
     extensions: fileExtensions
       .map((extension) => "." + extension)
@@ -217,7 +218,7 @@ const options = {
           force: true,
         },
         {
-          from: "../background-injection/dev/background.js",
+          from: "../background-injection/build/background.js",
           to: "background.js",
           force: true,
         },
