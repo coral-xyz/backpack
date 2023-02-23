@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   Blockchain,
   SOL_NATIVE_MINT,
+  SWAP_FEE_IN_BASIS_POINTS,
   toDisplayBalance,
   WSOL_MINT,
 } from "@coral-xyz/common";
@@ -19,15 +20,18 @@ import type { TokenData, TokenDataWithPrice } from "@coral-xyz/recoil";
 import {
   useActiveWallet,
   useDarkMode,
+  useFeatureGates,
   useJupiterOutputTokens,
   useSwapContext,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandMore, SwapVert } from "@mui/icons-material";
+import Info from "@mui/icons-material/Info";
 import {
   IconButton,
   InputAdornment,
   Skeleton,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { ethers, FixedNumber } from "ethers";
@@ -47,6 +51,10 @@ import { WalletDrawerButton } from "../common/WalletList";
 const { Zero } = ethers.constants;
 
 const useStyles = styles((theme) => ({
+  tooltipIcon: {
+    color: theme.custom.colors.secondary,
+    height: 14,
+  },
   container: {
     display: "flex",
     flexDirection: "column",
@@ -190,6 +198,8 @@ const useStyles = styles((theme) => ({
     lineHeight: "20px",
     fontSize: "14px",
     fontWeight: 500,
+    display: "flex",
+    alignItems: "center",
   },
   swapInfoTitleRight: {
     color: theme.custom.colors.fontColor,
@@ -325,18 +335,18 @@ const SwapConfirmationCard: React.FC<{
 
   return (
     <div>
-      {swapState === SwapState.CONFIRMATION && (
+      {swapState === SwapState.CONFIRMATION ? (
         <SwapConfirmation onConfirm={onConfirm} />
-      )}
-      {swapState === SwapState.CONFIRMING && (
+      ) : null}
+      {swapState === SwapState.CONFIRMING ? (
         <SwapConfirming isConfirmed={false} onViewBalances={onViewBalances} />
-      )}
-      {swapState === SwapState.CONFIRMED && (
-        <SwapConfirming isConfirmed={true} onViewBalances={onViewBalances} />
-      )}
-      {swapState === SwapState.ERROR && (
+      ) : null}
+      {swapState === SwapState.CONFIRMED ? (
+        <SwapConfirming isConfirmed onViewBalances={onViewBalances} />
+      ) : null}
+      {swapState === SwapState.ERROR ? (
         <SwapError onCancel={() => onClose()} onRetry={onConfirm} />
-      )}
+      ) : null}
     </div>
   );
 };
@@ -354,7 +364,7 @@ function InputTextField() {
   return (
     <>
       <TextFieldLabel
-        leftLabel={"Sending"}
+        leftLabel="Sending"
         rightLabelComponent={
           <MaxLabel
             amount={availableForSwap}
@@ -383,11 +393,11 @@ function OutputTextField() {
   const { toAmount, toToken, isLoadingRoutes } = useSwapContext();
   return (
     <>
-      <TextFieldLabel leftLabel={"Receiving"} />
+      <TextFieldLabel leftLabel="Receiving" />
       <TextField
-        placeholder={"0"}
+        placeholder="0"
         startAdornment={
-          isLoadingRoutes && (
+          isLoadingRoutes ? (
             <Loading
               iconStyle={{
                 display: "flex",
@@ -397,17 +407,17 @@ function OutputTextField() {
               size={24}
               thickness={5}
             />
-          )
+          ) : null
         }
         endAdornment={<OutputTokensSelectorButton />}
         rootClass={classes.receiveFieldRoot}
-        type={"number"}
+        type="number"
         value={
           toAmount && toToken
             ? ethers.utils.formatUnits(toAmount, toToken.decimals)
             : ""
         }
-        disabled={true}
+        disabled
         inputProps={{
           style: {
             textFill: `${theme.custom.colors.fontColor} !important`,
@@ -419,19 +429,19 @@ function OutputTextField() {
 }
 
 const SwapUnavailableButton = () => {
-  return <DangerButton label="Swaps unavailable" disabled={true} />;
+  return <DangerButton label="Swaps unavailable" disabled />;
 };
 
 const SwapInvalidButton = () => {
-  return <DangerButton label="Invalid swap" disabled={true} />;
+  return <DangerButton label="Invalid swap" disabled />;
 };
 
 const InsufficientBalanceButton = () => {
-  return <DangerButton label="Insufficient balance" disabled={true} />;
+  return <DangerButton label="Insufficient balance" disabled />;
 };
 
 const InsufficientFeeButton = () => {
-  return <DangerButton label="Insufficient balance for fee" disabled={true} />;
+  return <DangerButton label="Insufficient balance for fee" disabled />;
 };
 
 const ConfirmSwapButton = () => {
@@ -480,7 +490,7 @@ const ConfirmSwapButton = () => {
 function SwapConfirmation({ onConfirm }: { onConfirm: () => void }) {
   const classes = useStyles();
   return (
-    <BottomCard onButtonClick={onConfirm} buttonLabel={"Confirm"}>
+    <BottomCard onButtonClick={onConfirm} buttonLabel="Confirm">
       <Typography
         className={classes.confirmationTitle}
         style={{ marginTop: "32px" }}
@@ -557,7 +567,7 @@ function SwapConfirming({
           )}
         </div>
       </div>
-      {isConfirmed && (
+      {isConfirmed ? (
         <div
           style={{
             marginBottom: "16px",
@@ -567,10 +577,10 @@ function SwapConfirming({
         >
           <SecondaryButton
             onClick={() => onViewBalances()}
-            label={"View Balances"}
+            label="View Balances"
           />
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -582,9 +592,9 @@ function SwapError({ onRetry, onCancel }: any) {
   const classes = useStyles();
   return (
     <BottomCard
-      buttonLabel={"Retry"}
+      buttonLabel="Retry"
       onButtonClick={onRetry}
-      cancelButtonLabel={"Back"}
+      cancelButtonLabel="Back"
       onCancelButtonClick={onCancel}
     >
       <Typography
@@ -722,24 +732,48 @@ function SwapInfoRows({
 }) {
   const classes = useStyles();
   const wallet = useActiveWallet();
-  const rows = [];
-  rows.push([
-    "Wallet",
-    <WalletDrawerButton wallet={wallet} style={{ height: "20px" }} />,
-  ]);
+  const { SWAP_FEES_ENABLED } = useFeatureGates();
+
+  const rows: Array<{
+    label: string;
+    value: string | React.ReactElement;
+    tooltip?: string;
+  }> = [
+    {
+      label: "Wallet",
+      value: <WalletDrawerButton wallet={wallet} style={{ height: "20px" }} />,
+    },
+  ];
+
   if (!compact) {
-    rows.push(["You Pay", youPay]);
+    rows.push({ label: "You Pay", value: youPay });
   }
-  rows.push(["Rate", rate]);
-  rows.push(["Network Fee", networkFee]);
-  rows.push(["Price Impact", priceImpact]);
+
+  rows.push({ label: "Rate", value: rate });
+  rows.push({
+    label: "Network Fee",
+    value: networkFee,
+    tooltip: SWAP_FEES_ENABLED
+      ? `Quote includes a ${SWAP_FEE_IN_BASIS_POINTS / 100}% Backpack fee`
+      : undefined,
+  });
+  rows.push({ label: "Price Impact", value: priceImpact });
 
   return (
     <>
-      {rows.map((r: any) => (
-        <div className={classes.swapInfoRow} key={r[0]}>
-          <Typography className={classes.swapInfoTitleLeft}>{r[0]}</Typography>
-          <Typography className={classes.swapInfoTitleRight}>{r[1]}</Typography>
+      {rows.map(({ label, value, tooltip }) => (
+        <div className={classes.swapInfoRow} key={label}>
+          <Typography className={classes.swapInfoTitleLeft}>
+            {label}
+            {tooltip ? (
+              <Tooltip title={tooltip}>
+                <Info className={classes.tooltipIcon} />
+              </Tooltip>
+            ) : null}
+          </Typography>
+          <Typography className={classes.swapInfoTitleRight}>
+            {value}
+          </Typography>
         </div>
       ))}
     </>
@@ -769,13 +803,7 @@ function SwapTokensButton({
 
 function InputTokenSelectorButton() {
   const { fromToken, setFromMint } = useSwapContext();
-  return (
-    <TokenSelectorButton
-      token={fromToken!}
-      input={true}
-      setMint={setFromMint}
-    />
-  );
+  return <TokenSelectorButton token={fromToken!} input setMint={setFromMint} />;
 }
 
 function OutputTokensSelectorButton() {
@@ -813,15 +841,15 @@ function TokenSelectorButton({
           justifyContent: "right",
         }}
       >
-        {token && (
+        {token ? (
           <img
             className={classes.tokenLogo}
             src={token.logo}
             onError={(event) => (event.currentTarget.style.display = "none")}
           />
-        )}
+        ) : null}
         <Typography className={classes.tokenSelectorButtonLabel}>
-          {token && token.ticker}
+          {token ? token.ticker : null}
         </Typography>
         <ExpandMore className={classes.expandMore} />
       </XnftButton>

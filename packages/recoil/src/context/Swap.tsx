@@ -6,6 +6,7 @@ import {
   generateWrapSolTx,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
   SOL_NATIVE_MINT,
+  SWAP_FEE_IN_BASIS_POINTS,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
   USDC_MINT,
   WSOL_MINT,
@@ -13,7 +14,7 @@ import {
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { Transaction } from "@solana/web3.js";
 import * as bs58 from "bs58";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber, ethers, FixedNumber } from "ethers";
 
 import { blockchainTokenData } from "../atoms/balance";
 import { jupiterInputTokens, jupiterUrl } from "../atoms/solana/jupiter";
@@ -111,7 +112,9 @@ export function SwapProvider({
     []
   );
   const [token] = tokenAddress
-    ? useLoader(
+    ? // TODO: refactor so this hook isn't behind a conditional
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      useLoader(
         blockchainTokenData({
           publicKey: walletPublicKey.toString(),
           blockchain,
@@ -447,6 +450,21 @@ export function SwapProvider({
     return signature;
   };
 
+  const swapFee =
+    SWAP_FEES_ENABLED && toAmount
+      ? BigNumber.from(
+          FixedNumber.from(toAmount)
+            .mulUnsafe(
+              FixedNumber.fromString(
+                (SWAP_FEE_IN_BASIS_POINTS / 10_000).toString()
+              )
+            )
+            .ceiling()
+            .toString()
+            .split(".")[0]
+        )
+      : Zero;
+
   return (
     <_SwapContext.Provider
       value={{
@@ -469,8 +487,7 @@ export function SwapProvider({
         isLoadingRoutes,
         isLoadingTransactions,
         transactionFee,
-        // TODO backpack fees
-        swapFee: Zero,
+        swapFee,
         isJupiterError,
         availableForSwap,
         exceedsBalance,

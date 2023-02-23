@@ -653,3 +653,5 @@ export const DEFAULT_PUBKEY_STR = "11111111111111111111111111111111";
 export const MOBILE_CHANNEL_LOGS = "mobile-logs";
 
 export const IMAGE_PROXY_URL = "https://d1a7965zcx2lcc.cloudfront.net";
+
+export const SWAP_FEE_IN_BASIS_POINTS = 85 as const;
