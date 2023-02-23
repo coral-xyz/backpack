@@ -22,7 +22,25 @@ export function ParsedMessage({ message }) {
         if (part.type === "text") {
           return (
             <span style={{ wordBreak: "break-word" }}>
-              <Linkify options={{ target: "_blank" }}>{part.value}</Linkify>
+              <Linkify
+                options={{
+                  target: "_blank",
+                  render: {
+                    url: ({ attributes, content }) => {
+                      return (
+                        <a
+                          {...attributes}
+                          style={{ color: theme.custom.colors.linkColor }}
+                        >
+                          {content}
+                        </a>
+                      );
+                    },
+                  },
+                }}
+              >
+                {part.value}
+              </Linkify>
             </span>
           );
         } else {
