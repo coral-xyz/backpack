@@ -28,17 +28,15 @@ export function Logout() {
 
   return (
     <Warning
-      buttonTitle={"Log out"}
-      title={"Log out"}
-      subtext={
-        "This will remove all the wallets you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
-      }
+      buttonTitle="Log out"
+      title="Log out"
+      subtext="This will remove all the wallets you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
       onNext={async () => {
+        close();
         await background.request({
           method: UI_RPC_METHOD_USER_ACCOUNT_LOGOUT,
           params: [user.uuid],
         });
-        close();
       }}
     />
   );
@@ -54,11 +52,9 @@ export function ResetWarning() {
 
   return (
     <Warning
-      buttonTitle={"Reset"}
-      title={"Reset Backpack"}
-      subtext={
-        "This will remove all the user accounts you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
-      }
+      buttonTitle="Reset"
+      title="Reset Backpack"
+      subtext="This will remove all the user accounts you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
       onNext={async () => {
         await background.request({
           method: UI_RPC_METHOD_KEYRING_RESET,
