@@ -46,7 +46,6 @@ export const OnboardAccount = ({
   isAddingAccount?: boolean;
   isOnboarded?: boolean;
 }) => {
-  const background = useBackgroundClient();
   const { step, nextStep, prevStep } = useSteps();
   const [openDrawer, setOpenDrawer] = useState(false);
   const { onboardingData, setOnboardingData, handleSelectBlockchain } =

@@ -31,8 +31,7 @@ export const Finish = ({ isAddingAccount }: { isAddingAccount?: boolean }) => {
           params: [],
         });
       }
-      setLoading(true);
-      const res = await maybeCreateUser(onboardingData);
+      const res = await maybeCreateUser({ ...onboardingData, isAddingAccount });
       if (!res.ok) {
         if (
           confirm(
