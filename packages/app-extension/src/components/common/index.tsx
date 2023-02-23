@@ -68,7 +68,7 @@ const useStyles = styles((theme: CustomTheme) => ({
     padding: 0,
   },
   checkBoxChecked: {
-    color: `${theme.custom.colors.primaryButton} !important`,
+    color: theme?.palette?.mode === 'dark' ? `${theme.custom.colors.successButton} !important`: `${theme.custom.colors.primaryButton}`,
     background: "white",
   },
   subtext: {
