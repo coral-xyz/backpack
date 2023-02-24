@@ -22,6 +22,7 @@ export const initPushNotificationHandlers = () => {
       if (href) {
         clients.openWindow(href);
       }
+      event.notification.close();
     },
     false
   );
