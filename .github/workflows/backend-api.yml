@@ -8,6 +8,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repo
       - uses: actions/checkout@v2
-      - run: "mv docker/backpack-api/Dockerfile ."
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: "mv docker/notifications-worker/fly.toml ."
