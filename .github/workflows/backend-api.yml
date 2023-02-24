@@ -1,7 +1,8 @@
 name: Deploy backend-api
 on:
   push:
-    branches: ["master"]
+    branches:
+      - master
 
 jobs:
   deploy:
