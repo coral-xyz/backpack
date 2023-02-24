@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "source": "src/index.ts",
   "scripts": {
-    "start": "cross-env NODE_ENV=development webpack serve",
+    "start": "cross-env NODE_ENV=production webpack",
     "build": "cross-env NODE_ENV=production webpack"
   },
   "browserslist": "> 0.5%, last 2 versions, not dead",
