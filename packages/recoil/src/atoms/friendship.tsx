@@ -69,6 +69,25 @@ export const friendships = atomFamily<
   }),
 });
 
+export const messageUnreadCount = atomFamily<number, { uuid: string }>({
+  key: "messageUnreadCount",
+  default: selectorFamily({
+    get:
+      ({ uuid }: { uuid: string }) =>
+      async ({ get }: any) => {
+        const activeChats = get(friendships({ uuid }));
+        const groupChats = get(groupCollections({ uuid }));
+        return (
+          (activeChats.filter((x) => (x.unread ? true : false))?.length || 0) +
+          (groupChats
+            .filter((x) => x.lastMessageUuid !== x.lastReadMessage)
+            .filter((x) => x.name && x.image).length || 0)
+        );
+      },
+    key: "messageUnreadCountDefault",
+  }),
+});
+
 export const roomChats = atomFamily<
   EnrichedMessage[] | null | undefined,
   { uuid: string; room: string; type: SubscriptionType }

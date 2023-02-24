@@ -103,6 +103,12 @@ export const ChatRoom = ({
   }, [roomId]);
 
   useEffect(() => {
+    if (
+      existingChatRef.current &&
+      JSON.stringify(chats) === JSON.stringify(existingChatRef.current)
+    ) {
+      return;
+    }
     if (chats && chats.length) {
       SignalingManager.getInstance().debouncedUpdateLastRead(
         chats[chats.length - 1],
