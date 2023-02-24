@@ -1,0 +1,7 @@
+{
+  "AWSEBDockerrunVersion": "3",
+  "Authentication": {
+    "bucket": "elasticbeanstalk-docker-conf",
+    "key": "dockercfg"
+  }
+}
