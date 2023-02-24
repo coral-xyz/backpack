@@ -272,10 +272,10 @@ const BlockchainNFTs = React.memo(function BlockchainNFTs({
   const wallets = useActiveWallets();
   const wallet = wallets.find((wallet) => wallet.publicKey === publicKey)!;
   const blockchain = wallet.blockchain;
-  const connectionUrl = useEthereumConnectionUrl();
-  // blockchain === Blockchain.SOLANA
-  //   ? useSolanaConnectionUrl()
-  //   :
+  const connectionUrl =
+  blockchain === Blockchain.SOLANA
+    ? useSolanaConnectionUrl()
+    : useEthereumConnectionUrl();
 
   const nftsIds = collections.reduce<string[]>((flat, collection) => {
     flat.push(...collection.itemIds);
