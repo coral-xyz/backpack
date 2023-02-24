@@ -134,7 +134,7 @@ export class BlockchainKeyring {
     for (const [index, walletDescriptor] of accounts.entries()) {
       const name = DefaultKeyname.defaultKeystone(index + 1);
       await store.setKeyname(walletDescriptor.publicKey, name);
-      await store.setIsCold(walletDescriptor.publicKey, true);
+      await store.setIsCold(walletDescriptor.publicKey, false);
       newAccounts.push([walletDescriptor.publicKey, name]);
     }
     return newAccounts;
