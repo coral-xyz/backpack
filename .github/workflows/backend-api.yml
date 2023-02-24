@@ -32,7 +32,7 @@ jobs:
           aws_access_key: ${{ secrets.AWS_EB_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_EB_SECRET_ACCESS_KEY }}
           aws_session_token: ${{ secrets.AWS_EB_SESSION_TOKEN }}
-          application_name: hasura-env
+          application_name: Hasura-env
           environment_name: hasura
           version_label: ${{ github.sha }}
           region: us-west-1
