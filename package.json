@@ -33,7 +33,7 @@
     "build": "env-cmd --silent turbo run build --filter=!./examples/**",
     "build:fresh": "git clean -xfd && yarn install && yarn build --force",
     "e2e": "env-cmd --silent turbo run e2e",
-    "clean": "npx rimraf {.,backend,examples,packages,node_modules}/**/{.parcel-cache,.turbo,build,dist,node_modules,yarn-error.log} packages/app-extension/dev node_modules",
+    "clean": "git clean -xfd",
     "start:ext": "env-cmd --silent turbo run start --filter=@coral-xyz/app-extension...",
     "build:ext": "env-cmd --silent turbo run build --filter=@coral-xyz/app-extension...",
     "start:mobile": "env-cmd --silent turbo run start --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
@@ -48,7 +48,6 @@
     "lint-staged": "^12.4.1",
     "parcel": "2.7.0",
     "prettier": "^2.8.1",
-    "rimraf": "^3.0.2",
     "turbo": "^1.6.2",
     "yarn-deduplicate": "^6.0.0"
   },
