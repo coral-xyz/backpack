@@ -107,9 +107,9 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
           <form onSubmit={_onUnlock} noValidate>
             <Box sx={{ margin: "0 12px 12px 12px" }}>
               <TextInput
-                autoFocus={true}
+                autoFocus
                 error={error}
-                placeholder={"Password"}
+                placeholder="Password"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 setValue={(e) => setPassword(e.target.value)}
@@ -196,8 +196,7 @@ function LockScreenAvatar({
             }}
           >
             <LocalImage
-              localKey={lockScreenKeyImage(user.uuid)}
-              src={avatarUrl}
+              src={lockScreenKeyImage(user.username)}
               style={{
                 height: "100vh",
                 position: "absolute",
@@ -218,8 +217,7 @@ function LockScreenAvatar({
         </>
       ) : (
         <LocalImage
-          localKey={lockScreenKeyImage(user.uuid)}
-          src={avatarUrl}
+          src={lockScreenKeyImage(user.username)}
           style={{
             height: "120px",
             width: "120px",
@@ -245,7 +243,7 @@ function MigrationFailed() {
     >
       <EmptyState
         icon={(props: any) => <Error {...props} />}
-        title={"Unable to migrate"}
+        title="Unable to migrate"
         subtitle={
           "Thank you for participating in the Backpack Beta! We weren't able to migrate your account. Please reinstall Backpack to continue. Don't worry, this is normal."
         }
