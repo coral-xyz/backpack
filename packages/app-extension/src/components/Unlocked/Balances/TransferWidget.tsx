@@ -5,11 +5,7 @@ import {
   STRIPE_ENABLED,
 } from "@coral-xyz/common";
 import { Dollar } from "@coral-xyz/react-common";
-import {
-  SwapProvider,
-  useActiveSolanaWallet,
-  useFeatureGates,
-} from "@coral-xyz/recoil";
+import { SwapProvider, useFeatureGates } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ArrowDownward, ArrowUpward, SwapHoriz } from "@mui/icons-material";
 import { Typography } from "@mui/material";
@@ -50,39 +46,24 @@ export function TransferWidget({
     <div
       style={{
         display: "flex",
-        width:
-          enableOnramp && swapEnabled
-            ? "256px"
-            : swapEnabled || enableOnramp
-            ? "188px"
-            : "120px",
         marginLeft: "auto",
         marginRight: "auto",
+        justifyContent: "center",
+        gap: "16px",
       }}
     >
-      {enableOnramp && (
-        <>
-          <RampButton blockchain={blockchain} address={address} />
-          <div style={{ width: "16px" }} />
-        </>
-      )}
+      {enableOnramp ? (
+        <RampButton blockchain={blockchain} address={address} />
+      ) : null}
       <ReceiveButton blockchain={blockchain} publicKey={publicKey} />
-      <div style={{ width: "16px" }} />
       <SendButton
         blockchain={blockchain}
         address={address}
         publicKey={publicKey}
       />
-      {swapEnabled && (
-        <>
-          <div style={{ width: "16px" }} />
-          <SwapButton
-            blockchain={blockchain}
-            address={address}
-            publicKey={publicKey}
-          />
-        </>
-      )}
+      {swapEnabled ? (
+        <SwapButton blockchain={blockchain} address={address} />
+      ) : null}
     </div>
   );
 }
@@ -90,20 +71,16 @@ export function TransferWidget({
 function SwapButton({
   blockchain,
   address,
-  publicKey,
 }: {
   blockchain?: Blockchain;
   address?: string;
-  publicKey?: string;
 }) {
   const theme = useCustomTheme();
-  // Aggregate view swapper can just default to the current (global) active key.
-  publicKey = publicKey ?? useActiveSolanaWallet()?.publicKey;
 
   return (
     <SwapProvider tokenAddress={address}>
       <TransferButton
-        label={"Swap"}
+        label="Swap"
         labelComponent={
           <SwapHoriz
             style={{
@@ -146,7 +123,7 @@ function SendButton({
   const theme = useCustomTheme();
   return (
     <TransferButton
-      label={"Send"}
+      label="Send"
       labelComponent={
         <ArrowUpward
           style={{
@@ -208,7 +185,7 @@ function ReceiveButton({
   const theme = useCustomTheme();
   return (
     <TransferButton
-      label={"Receive"}
+      label="Receive"
       labelComponent={
         <ArrowDownward
           style={{
@@ -244,7 +221,7 @@ function RampButton({
   const theme = useCustomTheme();
   return (
     <TransferButton
-      label={"Buy"}
+      label="Buy"
       labelComponent={
         <Dollar
           fill={theme.custom.colors.fontColor}
@@ -319,7 +296,7 @@ function TransferButton({
           display: "block",
           marginBottom: "8px",
         }}
-        label={""}
+        label=""
         labelComponent={labelComponent}
         routes={routes}
       />
