@@ -36,7 +36,7 @@ function KeystonePlay({
             </span>
             ' button after signing the transaction with your Keystone device.
           </Box>
-          {!isInDrawer && (
+          {!isInDrawer ? (
             <Box mt={2}>
               <Link
                 href="https://keyst.one/t/backpack"
@@ -50,7 +50,7 @@ function KeystonePlay({
                 Tutorial
               </Link>
             </Box>
-          )}
+          ) : null}
         </>
       }
       ur={ur}
@@ -92,7 +92,7 @@ function KeystoneScan({
         />
       }
       help={
-        !isInDrawer && (
+        !isInDrawer ? (
           <Box mt={2} textAlign="center">
             <Link
               href="https://keyst.one/t/backpack"
@@ -106,7 +106,7 @@ function KeystoneScan({
               Tutorial
             </Link>
           </Box>
-        )
+        ) : null
       }
       urTypes={[URType.SOL_SIGNATURE]}
       size={isInDrawer ? 220 : 260}
@@ -143,7 +143,7 @@ function CommonHeader({
         >
           Request Signature
         </Typography>
-        {hasTutorial && (
+        {hasTutorial ? (
           <Link
             href="https://keyst.one/t/backpack"
             target="_blank"
@@ -158,7 +158,7 @@ function CommonHeader({
           >
             Tutorial
           </Link>
-        )}
+        ) : null}
       </Box>
       <Box py={2}>
         <KeystoneWithWordsIcon />
@@ -195,6 +195,12 @@ export function useKeystoneSign(props?: { isInDrawer?: boolean }) {
     };
   }, []);
 
+  const resetKeystoneSign = () => {
+    setType("play");
+    setUR(undefined);
+    setOpen(false);
+  };
+
   return {
     keystoneSign:
       type &&
@@ -214,6 +220,7 @@ export function useKeystoneSign(props?: { isInDrawer?: boolean }) {
           />
         ),
       }[type],
+    resetKeystoneSign,
     openKeystone: open,
   };
 }

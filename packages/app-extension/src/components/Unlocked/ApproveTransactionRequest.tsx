@@ -113,7 +113,9 @@ export function ApproveTransactionRequest() {
   const [signature, setSignature] = useState<string | null>(null);
   const _isKeyCold = useRecoilValue(isKeyCold(publicKey));
 
-  const { keystoneSign, openKeystone } = useKeystoneSign();
+  const { keystoneSign, resetKeystoneSign, openKeystone } = useKeystoneSign({
+    isInDrawer: true,
+  });
 
   useEffect(() => {
     setOpenDrawer(request !== undefined);
@@ -139,6 +141,7 @@ export function ApproveTransactionRequest() {
     e: Error = new Error("user rejected signature request")
   ) => {
     setRequest(undefined);
+    resetKeystoneSign();
     request!.reject(e);
   };
 
