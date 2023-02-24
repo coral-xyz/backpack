@@ -6,7 +6,6 @@ import {
   generateWrapSolTx,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
   SOL_NATIVE_MINT,
-  SWAP_FEE_IN_BASIS_POINTS,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
   USDC_MINT,
   WSOL_MINT,
@@ -34,13 +33,32 @@ const DEFAULT_SLIPPAGE_PERCENT = 1;
 const ROUTE_POLL_INTERVAL = 30000;
 
 type JupiterRoute = {
-  amount: string;
   inAmount: string;
-  otherAmountThreshold: string;
   outAmount: string;
-  // deprecated field
-  outAmountWithSlippage: string;
   priceImpactPct: number;
+  marketInfos: Array<{
+    id: string;
+    label: string;
+    inputMint: string;
+    outputMint: string;
+    notEnoughLiquidity: boolean;
+    inAmount: string;
+    outAmount: string;
+    priceImpactPct: number;
+    lpFee: {
+      amount: string;
+      mint: string;
+      pct: number;
+    };
+    platformFee: {
+      amount: string;
+      mint: string;
+      pct: number;
+    };
+  }>;
+  amount: string;
+  slippageBps: number;
+  otherAmountThreshold: string;
   swapMode: string;
 };
 
@@ -69,7 +87,7 @@ type SwapContext = {
   executeSwap: () => Promise<boolean>;
   // Fees
   transactionFee: BigNumber | undefined;
-  swapFee: BigNumber;
+  swapFee: JupiterRoute["marketInfos"][number]["platformFee"];
   availableForSwap: BigNumber;
   exceedsBalance: boolean | undefined;
   feeExceedsBalance: boolean | undefined;
@@ -154,10 +172,37 @@ export function SwapProvider({
   const isJupiterSwap = !isWrap && !isUnwrap;
 
   const route = routes && routes[0];
-  // If not a Jupiter swap then 1:1
-  const toAmount = isJupiterSwap
-    ? route && BigNumber.from(route.outAmount)
-    : fromAmount;
+
+  const swapFee = route?.marketInfos[route.marketInfos.length - 1].platformFee;
+
+  const toAmount = (() => {
+    if (isJupiterSwap) {
+      if (route) {
+        if (swapFee.pct > 0) {
+          // =SUM(swapFee.amount*(100/swapFee.pct))
+          return BigNumber.from(
+            FixedNumber.from(BigNumber.from(swapFee.amount))
+              .mulUnsafe(
+                FixedNumber.from(100).divUnsafe(
+                  FixedNumber.fromString(swapFee.pct.toString())
+                )
+              )
+              .ceiling()
+              .toString()
+              .split(".")[0]
+          );
+        } else {
+          return BigNumber.from(route.outAmount);
+        }
+      } else {
+        return undefined;
+      }
+    } else {
+      // If not a Jupiter swap then 1:1
+      return fromAmount;
+    }
+  })();
+
   // If not a Jupiter swap then no price impact
   const priceImpactPct = isJupiterSwap ? route && route.priceImpactPct : 0;
 
@@ -449,21 +494,6 @@ export function SwapProvider({
     await confirmTransaction(connection, signature, "confirmed");
     return signature;
   };
-
-  const swapFee =
-    SWAP_FEES_ENABLED && toAmount
-      ? BigNumber.from(
-          FixedNumber.from(toAmount)
-            .mulUnsafe(
-              FixedNumber.fromString(
-                (SWAP_FEE_IN_BASIS_POINTS / 10_000).toString()
-              )
-            )
-            .ceiling()
-            .toString()
-            .split(".")[0]
-        )
-      : Zero;
 
   return (
     <_SwapContext.Provider

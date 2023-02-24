@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   Blockchain,
   SOL_NATIVE_MINT,
-  SWAP_FEE_IN_BASIS_POINTS,
   toDisplayBalance,
   WSOL_MINT,
 } from "@coral-xyz/common";
@@ -20,7 +19,6 @@ import type { TokenData, TokenDataWithPrice } from "@coral-xyz/recoil";
 import {
   useActiveWallet,
   useDarkMode,
-  useFeatureGates,
   useJupiterOutputTokens,
   useSwapContext,
 } from "@coral-xyz/recoil";
@@ -669,7 +667,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   }
 
   const decimalDifference = fromToken.decimals - toToken.decimals;
-  const toAmountWithFees = toAmount.sub(swapFee);
+  // const toAmountWithFees = toAmount.sub(swapFee);
 
   // Scale a FixedNumber up or down by a number of decimals
   const scale = (x: FixedNumber, decimalDifference: number) => {
@@ -684,9 +682,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   const rate = fromAmount.gt(Zero)
     ? ethers.utils.commify(
         scale(
-          FixedNumber.from(toAmountWithFees).divUnsafe(
-            FixedNumber.from(fromAmount)
-          ),
+          FixedNumber.from(toAmount).divUnsafe(FixedNumber.from(fromAmount)),
           decimalDifference
         ).toString()
       )
@@ -712,6 +708,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
         networkFee: transactionFee
           ? `${ethers.utils.formatUnits(transactionFee, 9)} SOL`
           : "-",
+        swapFee,
       }}
     />
   );
@@ -723,16 +720,17 @@ function SwapInfoRows({
   networkFee,
   priceImpact,
   compact,
+  swapFee,
 }: {
   youPay: any;
   rate: any;
   priceImpact: any;
   networkFee: any;
+  swapFee?: any;
   compact?: boolean;
 }) {
   const classes = useStyles();
   const wallet = useActiveWallet();
-  const { SWAP_FEES_ENABLED } = useFeatureGates();
 
   const rows: Array<{
     label: string;
@@ -753,8 +751,8 @@ function SwapInfoRows({
   rows.push({
     label: "Network Fee",
     value: networkFee,
-    tooltip: SWAP_FEES_ENABLED
-      ? `Quote includes a ${SWAP_FEE_IN_BASIS_POINTS / 100}% Backpack fee`
+    tooltip: swapFee?.pct
+      ? `Quote includes a ${swapFee?.pct}% Backpack fee`
       : undefined,
   });
   rows.push({ label: "Price Impact", value: priceImpact });
