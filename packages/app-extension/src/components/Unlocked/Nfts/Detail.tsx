@@ -17,7 +17,7 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
-import { refreshGroups, storeImageInLocalStorage } from "@coral-xyz/db";
+import {LocalImageManager, refreshGroups} from "@coral-xyz/db";
 import {
   NegativeButton,
   PrimaryButton,
@@ -676,7 +676,7 @@ export function NftOptionsButton() {
       //
       // Store locally.
       //
-      await updateLocalNftPfp(uuid, nft);
+      await updateLocalNftPfp(uuid, username, nft);
       setNewAvatar({ id, url: nft.imageUrl });
     }
   };
@@ -879,7 +879,7 @@ function BurnConfirmation({ onConfirm }: { onConfirm: () => void }) {
   );
 }
 
-export async function updateLocalNftPfp(uuid: string, nft: Nft) {
+export async function updateLocalNftPfp(uuid: string, username: string, nft: Nft) {
   //
   // Only show mad lads on the lock screen in full screen view.
   //
@@ -897,20 +897,17 @@ export async function updateLocalNftPfp(uuid: string, nft: Nft) {
     window.localStorage.removeItem(lockScreenKey(uuid));
     lockScreenImageUrl = nft.imageUrl;
   }
-  // Note: this is probably a duplicate and we likely can just use whatever
-  //       the contact storage already has instead of storing this extra
-  //       image.
-  await storeImageInLocalStorage(
-    lockScreenImageUrl,
-    lockScreenKeyImage(uuid),
-    true
+  await LocalImageManager.getInstance().storeImageInLocalStorage(
+      lockScreenKeyImage(username),
+      true,
+      lockScreenImageUrl
   );
 }
 
 export function lockScreenKey(uuid: string) {
-  return `${uuid}:lock-screen-nft`;
+  return `${uuid}:lock-screen-nft:1`;
 }
 
-export function lockScreenKeyImage(uuid: string) {
-  return `${uuid}:lock-screen-nft-image`;
+export function lockScreenKeyImage(username: string) {
+  return `https://swr.xnfts.dev/avatars/${username}`;
 }
