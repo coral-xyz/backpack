@@ -9,7 +9,11 @@ const chain = Chain(HASURA_URL, {
   },
 });
 
-export const getFriendshipById = async ({roomId}: {roomId: number;}): Promise<null | { user1: string; user2: string; }> => {
+export const getFriendshipById = async ({
+  roomId,
+}: {
+  roomId: number;
+}): Promise<null | { user1: string; user2: string }> => {
   const friendship = await chain("query")({
     auth_friendships: [
       {
@@ -18,14 +22,13 @@ export const getFriendshipById = async ({roomId}: {roomId: number;}): Promise<nu
       },
       {
         user1: true,
-        user2: true
+        user2: true,
       },
     ],
   });
 
   return friendship.auth_friendships[0] || null;
-
-}
+};
 
 export const getOrCreateFriendship = async ({
   from,
@@ -163,8 +166,8 @@ export const getAllFriendships = async ({
             },
           ],
         },
-        limit,
-        offset,
+        // limit,
+        // offset,
         //@ts-ignore
         order_by: [{ last_message_timestamp: "desc" }],
       },
