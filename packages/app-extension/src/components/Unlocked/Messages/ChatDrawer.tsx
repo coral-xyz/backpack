@@ -3,7 +3,12 @@ import { useLocation } from "react-router-dom";
 import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { UserList } from "@coral-xyz/message-sdk";
-import { useDarkMode, useDecodedSearchParams } from "@coral-xyz/recoil";
+import { LocalImage } from "@coral-xyz/react-common";
+import {
+  useDarkMode,
+  useDecodedSearchParams,
+  useUser,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Drawer, Typography } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
@@ -45,6 +50,7 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [staticMembers, setStaticMembers] = useState<RemoteUserData[]>([]);
+  const { username } = useUser();
   const theme = useCustomTheme();
   const pathname = useLocation().pathname;
 
@@ -71,7 +77,7 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
     setLoading(false);
     setStaticMembers((members) => {
       if (members.length === 0) {
-        return json.members.slice(0, 4);
+        return json.members.slice(0, 3);
       }
       return members;
     });
@@ -97,17 +103,29 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
           },
         },
       }}
-      anchor={"bottom"}
-      open={true}
+      anchor="bottom"
+      open
       onClose={() => setOpenDrawer(false)}
     >
       <div className={classes.drawerContainer}>
         <div className={classes.horizontalCenter}>
-          <Typography variant={"h5"} className={classes.title}>
+          <Typography variant="h5" className={classes.title}>
             {props.title || title}
           </Typography>
         </div>
-        {count !== 0 ? <MembersList count={count} members={staticMembers} /> : null}
+        {count !== 0 ? (
+          <MembersList
+            count={count}
+            members={[
+              ...staticMembers.map((x) => ({
+                image: x.image,
+              })),
+              {
+                image: `https://swr.xnfts.dev/avatars/${username}`,
+              },
+            ]}
+          />
+        ) : null}
         <SearchBox
           placeholder="Search username"
           onChange={(prefix: string) => {
@@ -138,50 +156,54 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
             {offset !== 0 ? "Prev" : ""}
           </div>
           {/* TODO: clean up this logic */}
-          {members.length === LIMIT ? <div
-            style={{
+          {members.length === LIMIT ? (
+            <div
+              style={{
                 padding: 5,
                 cursor: "pointer",
                 fontWeight: 600,
                 fontSize: "14px",
                 color: theme.custom.colors.blue,
               }}
-            onClick={() => {
+              onClick={() => {
                 debouncedInit(searchFilter, offset + 1);
               }}
             >
-            Next
-          </div> : null}
+              Next
+            </div>
+          ) : null}
         </div>
 
         {loading ? <UserListSkeleton /> : null}
-        {!loading ? <div className={classes.container}>
-          {members.filter((x) =>
-                x.username
-                  ?.toLocaleLowerCase()
-                  .includes(searchFilter?.toLocaleLowerCase())
-              ).length !== 0 ? (
-                <UserList
-                  style={{
-                    border: "none",
-                  }}
-                  itemStyle={{
-                    backgroundColor: isDark
-                      ? theme.custom.colors.background
-                      : undefined,
-                    border: "none",
-                  }}
-                  setMembers={setMembers}
-                  users={members.filter((x) =>
-                    x.username
-                      ?.toLocaleLowerCase()
-                      .includes(searchFilter?.toLocaleLowerCase())
-                  )}
-                />
-              ) : (
-                <></>
-              )}
-        </div> : null}
+        {!loading ? (
+          <div className={classes.container}>
+            {members.filter((x) =>
+              x.username
+                ?.toLocaleLowerCase()
+                .includes(searchFilter?.toLocaleLowerCase())
+            ).length !== 0 ? (
+              <UserList
+                style={{
+                  border: "none",
+                }}
+                itemStyle={{
+                  backgroundColor: isDark
+                    ? theme.custom.colors.background
+                    : undefined,
+                  border: "none",
+                }}
+                setMembers={setMembers}
+                users={members.filter((x) =>
+                  x.username
+                    ?.toLocaleLowerCase()
+                    .includes(searchFilter?.toLocaleLowerCase())
+                )}
+              />
+            ) : (
+              <div />
+            )}
+          </div>
+        ) : null}
       </div>
     </Drawer>
   );
@@ -192,7 +214,7 @@ function MembersList({
   members,
 }: {
   count: number;
-  members: RemoteUserData[];
+  members: { image: string }[];
 }) {
   const theme = useCustomTheme();
   const countText = count >= 1000 ? `${(count / 1000).toFixed(1)}k` : count;
@@ -206,7 +228,7 @@ function MembersList({
       }}
     >
       {members.map((member, idx) => (
-        <img
+        <LocalImage
           key={idx}
           src={member.image}
           style={{
