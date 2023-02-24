@@ -23,8 +23,8 @@ jobs:
       - name: Docker Push
         run: docker push backpackapp/backpack-api:${{ github.sha }}
 
-     - name: Create zip
-       run: "mdkir deploy && cp ./docker/backpack-api/docker-compose.yml ./deploy && cp ./docker/Dockerrun.aws.json ./deploy && sed 's/{{tag}}/${{ github.sha }}/g' ./deploy/docker-compose.yml > ./deploy/docker-compose.yml && zip -r deploy.zip ./deploy -x '*.git*'"
+      - name: Create zip
+        run: "mkdir deploy && cp ./docker/backpack-api/docker-compose.yml ./deploy && cp ./docker/Dockerrun.aws.json ./deploy && sed 's/{{tag}}/${{ github.sha }}/g' ./deploy/docker-compose.yml > ./deploy/docker-compose.yml && zip -r deploy.zip ./deploy"
 
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v21
