@@ -80,6 +80,13 @@ export function usernameDisplay(username: string, maxLength = 10) {
   return username.slice(0, maxLength - 2) + "..";
 }
 
+export function walletNameDisplay(walletName: string, maxLength = 10) {
+  if (walletName.length <= maxLength) {
+    return walletName;
+  }
+  return walletName.slice(0, maxLength - 2) + "..";
+}
+
 /**
  * Message to be signed for authenticating a user.
  */
