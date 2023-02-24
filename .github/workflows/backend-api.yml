@@ -21,4 +21,4 @@ jobs:
         run: docker build . --tag backpackapp/backpack-api:${{ github.sha }}
 
       - name: Docker Push
-        run: docker push backpackapp/backpack-api
+        run: docker push backpackapp/backpack-api:${{ github.sha }}
