@@ -6,20 +6,17 @@ import * as Device from "expo-device";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 
-import {
-  BACKGROUND_SERVICE_WORKER_READY,
-  useStore,
-  WEB_VIEW_EVENTS,
-} from "@coral-xyz/common";
+import { BACKGROUND_SERVICE_WORKER_READY, useStore } from "@coral-xyz/common";
+import { WEB_VIEW_EVENTS } from "@coral-xyz/common-mobile";
 import { NotificationsProvider } from "@coral-xyz/recoil";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { useTheme } from "~hooks/useTheme";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import { RecoilRoot, useRecoilCallback, useRecoilSnapshot } from "recoil";
 
 import { ErrorBoundary } from "~components/ErrorBoundary";
+import { useTheme } from "~hooks/useTheme";
 
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import { RootNavigation } from "./navigation/RootNavigator";

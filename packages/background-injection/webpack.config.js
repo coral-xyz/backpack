@@ -76,11 +76,7 @@ const {
 const options = {
   mode: process.env.NODE_ENV,
   entry: {
-    options: "./src/options/index.tsx",
-    permissions: "./src/permissions/index.tsx",
-    popup: "./src/index.tsx",
-    contentScript: "./src/contentScript/index.ts",
-    // injected: "../provider-injection/dist/browser/index.js",
+    background: "./src/index.tsx",
   },
   output: {
     filename: "[name].js",
@@ -153,9 +149,6 @@ const options = {
     ],
   },
   resolve: {
-    alias: {
-      "react-native$": "react-native-web",
-    },
     extensions: fileExtensions
       .map((extension) => "." + extension)
       .concat([".js", ".jsx", ".ts", ".tsx", ".css"]),
@@ -174,54 +167,6 @@ const options = {
       process: "process/browser",
       React: "react",
       Buffer: ["buffer", "Buffer"],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: "src/manifest.json",
-          force: true,
-          transform: function (content, path) {
-            return Buffer.from(
-              JSON.stringify(
-                {
-                  description: process.env.npm_package_description,
-                  version: process.env.npm_package_version,
-                  name: EXTENSION_NAME,
-                  ...JSON.parse(content.toString()),
-                },
-                null,
-                2
-              )
-            );
-          },
-        },
-        {
-          from: "src/*.{html,png,svg}",
-          to: "[name][ext]",
-          force: true,
-        },
-        {
-          // use a different icon depending on the NODE_ENV
-          from: `src/anchor-${process.env.NODE_ENV}.png`,
-          to: "anchor.png",
-          force: true,
-        },
-        {
-          from: `src/assets/`,
-          to: "assets/",
-          force: true,
-        },
-        {
-          from: "../provider-injection/dist/browser/index.js",
-          to: "injected.js",
-          force: true,
-        },
-        {
-          from: "../background-injection/build/background.js",
-          to: "background.js",
-          force: true,
-        },
-      ],
     }),
   ],
   ...extras,
