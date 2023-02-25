@@ -13,6 +13,7 @@ jobs:
       - run: "cd backend/native/backpack-api"
       - run: "touch .env"
       - run: 'printf "AUTH_JWT=%s\n" "${{AUTH_JWT}}" >> .env'
+      - run: 'cd ../../..'
 
       - name: docker login
         env:
