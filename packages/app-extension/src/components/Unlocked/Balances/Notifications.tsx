@@ -14,7 +14,9 @@ import {
   Loading,
   ProxyImage,
   SuccessButton,
- useBreakpoints,  useUserMetadata } from "@coral-xyz/react-common";
+  useBreakpoints,
+  useUserMetadata,
+} from "@coral-xyz/react-common";
 import {
   unreadCount,
   useFriendship,
@@ -474,7 +476,9 @@ function NotificationListItem({
         paddingBottom: "10px",
         display: "flex",
         height: "68px",
-        backgroundColor: theme.custom.colors.nav,
+        backgroundColor: !notification.viewed
+          ? theme.custom.colors.unreadBackground
+          : theme.custom.colors.nav,
         borderBottom: isLast
           ? undefined
           : `solid 1pt ${theme.custom.colors.border}`,
@@ -510,18 +514,6 @@ function NotificationListItem({
         <div>
           <div className={classes.time}>
             {getTimeStr(notification.timestamp)}
-          </div>
-          <div style={{ display: "flex", flexDirection: "row-reverse" }}>
-            {!notification.viewed && (
-              <Badge
-                classes={{ badge: classes.customBadge }}
-                style={{ fontSize: 30, marginTop: 15 }}
-                variant={"dot"}
-                color={"primary"}
-                // @ts-expect-error Type 'RecoilState<number' is not assignable to type 'ReactNode'
-                badgeContent={unreadCount}
-              ></Badge>
-            )}
           </div>
         </div>
       </div>
@@ -647,7 +639,9 @@ function FriendRequestListItem({
         paddingTop: "10px",
         paddingBottom: "10px",
         display: "flex",
-        backgroundColor: theme.custom.colors.nav,
+        backgroundColor: !notification.viewed
+          ? theme.custom.colors.unreadBackground
+          : theme.custom.colors.nav,
         borderBottom: isLast
           ? undefined
           : `solid 1pt ${theme.custom.colors.border1}`,

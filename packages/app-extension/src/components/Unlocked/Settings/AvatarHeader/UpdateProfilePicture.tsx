@@ -99,25 +99,23 @@ export function UpdateProfilePicture({
           <AvatarWrapper>
             <Avatar src={tempAvatar?.url || avatarUrl} />
           </AvatarWrapper>
-          {!isDefaultAvatar && (
-            <IconButton
-              disableRipple
-              sx={{
+          {!isDefaultAvatar ? <IconButton
+            disableRipple
+            sx={{
                 position: "absolute",
                 top: "-8px",
                 right: "-8px",
                 color: theme.custom.colors.icon,
               }}
-              onClick={() =>
+            onClick={() =>
                 setTempAvatar({
                   id: "",
                   url: `https://avatars.xnfts.dev/v1/${username}`,
                 })
               }
             >
-              <DeleteIcon />
-            </IconButton>
-          )}
+            <DeleteIcon />
+          </IconButton> : null}
         </div>
       </div>
       <Typography
@@ -143,22 +141,20 @@ export function UpdateProfilePicture({
               <Loading size={50} />
             ) : numberOfNFTs === 0 ? (
               <>
-                {!_isAggregateWallets && (
-                  <div
-                    style={{ position: "absolute", top: 0, left: 0, right: 0 }}
+                {!_isAggregateWallets ? <div
+                  style={{ position: "absolute", top: 0, left: 0, right: 0 }}
                   >
-                    <_BalancesTableHead
-                      blockchain={activeWallet.blockchain}
-                      wallet={activeWallet}
-                      showContent={true}
-                      setShowContent={() => {}}
+                  <_BalancesTableHead
+                    blockchain={activeWallet.blockchain}
+                    wallet={activeWallet}
+                    showContent
+                    setShowContent={() => {}}
                     />
-                  </div>
-                )}
+                </div> : null}
                 <EmptyState
                   icon={(props: any) => <ImageIcon {...props} />}
-                  title={"No NFTs to use"}
-                  subtitle={"Get started with your first NFT"}
+                  title="No NFTs to use"
+                  subtitle="Get started with your first NFT"
                   onClick={() => window.open("https://magiceden.io/")}
                   contentStyle={{
                     marginBottom: 0,
@@ -168,7 +164,7 @@ export function UpdateProfilePicture({
                   innerStyle={{
                     border: "none",
                   }}
-                  buttonText={"Browse Magic Eden"}
+                  buttonText="Browse Magic Eden"
                 />
               </>
             ) : (
@@ -204,7 +200,7 @@ export function UpdateProfilePicture({
         }}
       >
         <SecondaryButton
-          label={"Cancel"}
+          label="Cancel"
           onClick={() => {
             setTempAvatar(null);
           }}
@@ -239,7 +235,7 @@ export function UpdateProfilePicture({
                 }),
               });
               await fetch(AVATAR_BASE_URL + "/" + username + "?bust_cache=1"); // bust edge cache
-              await updateLocalNftPfp(uuid, tempAvatar.nft!);
+              await updateLocalNftPfp(uuid, username, tempAvatar.nft!);
               setLoading(false);
               setNewAvatar(tempAvatar);
               setTempAvatar(null);
@@ -277,9 +273,9 @@ const BlockchainNFTs = React.memo(function BlockchainNFTs({
   const wallet = wallets.find((wallet) => wallet.publicKey === publicKey)!;
   const blockchain = wallet.blockchain;
   const connectionUrl =
-    blockchain === Blockchain.SOLANA
-      ? useSolanaConnectionUrl()
-      : useEthereumConnectionUrl();
+  blockchain === Blockchain.SOLANA
+    ? useSolanaConnectionUrl()
+    : useEthereumConnectionUrl();
 
   const nftsIds = collections.reduce<string[]>((flat, collection) => {
     flat.push(...collection.itemIds);
@@ -364,7 +360,7 @@ function RenderNFT({
             border: tempAvatar?.url === nft.imageUrl ? "3px solid black" : "",
           }}
           src={nft.imageUrl}
-          removeOnError={true}
+          removeOnError
         />
       ),
     [nft, nftId, tempAvatar]

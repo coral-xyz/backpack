@@ -1,0 +1,27 @@
+{
+  "name": "@coral-xyz/background-injection",
+  "version": "0.1.0",
+  "source": "src/index.ts",
+  "scripts": {
+    "start": "cross-env NODE_ENV=production webpack",
+    "build": "cross-env NODE_ENV=production webpack"
+  },
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "dependencies": {
+    "@coral-xyz/background": "*"
+  },
+  "browser": {
+    "crypto": "crypto-browserify",
+    "stream": "stream-browserify"
+  },
+  "devDependencies": {
+    "esbuild": "^0.14.42",
+    "esbuild-node-builtins": "^0.1.0",
+    "eslint-config-custom": "*",
+    "typescript": "~4.9.3"
+  },
+  "app": "dist/browser/index.js",
+  "targets": {
+    "app": {}
+  }
+}

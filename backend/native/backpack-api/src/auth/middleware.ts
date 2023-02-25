@@ -1,6 +1,5 @@
 import { validateRoom } from "@coral-xyz/backend-common";
-import { DEFAULT_GROUP_CHATS } from "@coral-xyz/common";
-import { WHITELISTED_CHAT_COLLECTIONS } from "@coral-xyz/common/src/constants";
+import { DEFAULT_GROUP_CHATS , WHITELISTED_CHAT_COLLECTIONS } from "@coral-xyz/common";
 import type { NextFunction, Request, Response } from "express";
 
 import { getActiveBarter } from "../db/barter";

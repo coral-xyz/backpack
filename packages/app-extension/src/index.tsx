@@ -1,7 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
-import { openPopupWindow } from "@coral-xyz/common/dist/esm/browser";
-import { BACKPACK_FEATURE_POP_MODE } from "@coral-xyz/common/dist/esm/generated-config";
+import { BACKPACK_FEATURE_POP_MODE,openPopupWindow  } from "@coral-xyz/common";
 
 import "./index.css";
 

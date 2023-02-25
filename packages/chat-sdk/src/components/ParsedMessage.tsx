@@ -1,9 +1,10 @@
 import {
   NAV_COMPONENT_MESSAGE_CHAT,
   NAV_COMPONENT_MESSAGE_PROFILE,
+  NEW_COLORS,
   parseMessage,
 } from "@coral-xyz/common";
-import { useNavigation, useUser } from "@coral-xyz/recoil";
+import { useDarkMode, useNavigation, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
 import Linkify from "linkify-react";
@@ -16,6 +17,7 @@ export function ParsedMessage({ message }) {
   const theme = useCustomTheme();
   const { usersMetadata, type } = useChatContext();
   const { uuid } = useUser();
+  const isDarkMode = useDarkMode();
   return (
     <>
       {parts.map((part) => {
@@ -67,7 +69,12 @@ export function ParsedMessage({ message }) {
                 }}
                 style={{
                   cursor: "pointer",
-                  color: theme.custom.colors.blue,
+                  color:
+                    user.colorIndex || user.colorIndex === 0
+                      ? NEW_COLORS[user.colorIndex || 0][
+                          isDarkMode ? "dark" : "light"
+                        ]
+                      : user.color,
                 }}
               >
                 {handle}

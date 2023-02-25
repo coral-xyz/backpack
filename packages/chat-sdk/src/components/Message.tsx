@@ -669,28 +669,32 @@ function SecureTransferElement({
             }}
           >
             {uuid === senderUuid && (
-              <div
-                style={{
-                  color: "#F8C840",
-                  background: "rgba(206, 121, 7, 0.2)",
-                  borderRadius: 16,
-                  padding: "4px 10px",
-                  display: "flex",
-                }}
-              >
-                {/*<div style={{justifyContent: "center", flexDirection: "column", display: "flex"}}>*/}
-                {/*  <AccessTimeIcon style={{ fontSize: 18 }} />*/}
-                {/*</div>*/}
-                <div
-                  style={{
-                    marginLeft: 5,
-                    justifyContent: "center",
-                    flexDirection: "column",
-                    display: "flex",
-                  }}
-                >
-                  Waiting for {remoteUsername}
-                </div>
+              <div>
+                {!actionButtonLoading && (
+                  <div
+                    style={{
+                      color: "#F8C840",
+                      background: "rgba(206, 121, 7, 0.2)",
+                      borderRadius: 16,
+                      padding: "4px 10px",
+                      display: "flex",
+                    }}
+                  >
+                    {/*<div style={{justifyContent: "center", flexDirection: "column", display: "flex"}}>*/}
+                    {/*  <AccessTimeIcon style={{ fontSize: 18 }} />*/}
+                    {/*</div>*/}
+                    <div
+                      style={{
+                        marginLeft: 5,
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        display: "flex",
+                      }}
+                    >
+                      Waiting for {remoteUsername}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             {uuid === senderUuid ? (

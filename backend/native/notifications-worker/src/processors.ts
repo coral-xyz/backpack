@@ -1,9 +1,8 @@
 import type { SubscriptionType } from "@coral-xyz/common";
-import { DEFAULT_GROUP_CHATS, parseMessage } from "@coral-xyz/common";
-import {
-  AVATAR_BASE_URL,
+import {   AVATAR_BASE_URL,
+DEFAULT_GROUP_CHATS, parseMessage ,
   WHITELISTED_CHAT_COLLECTIONS,
-} from "@coral-xyz/common/src/constants";
+} from "@coral-xyz/common";
 
 import { getMessages } from "./db/chats";
 import { getLatestReadMessage } from "./db/collection_messages";

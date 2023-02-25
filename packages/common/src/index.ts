@@ -31,6 +31,7 @@ export * from "./preferences";
 export * from "./solana";
 export * from "./types";
 export * from "./utils";
+export * from "./zustand-store";
 
 // Generated pre-build step.
 export * from "./generated-config";

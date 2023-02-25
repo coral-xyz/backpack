@@ -3,8 +3,7 @@ import {
   AVATAR_BASE_URL,
   Blockchain,
   DEFAULT_GROUP_CHATS,
-} from "@coral-xyz/common";
-import { WHITELISTED_CHAT_COLLECTIONS } from "@coral-xyz/common/src/constants";
+ WHITELISTED_CHAT_COLLECTIONS } from "@coral-xyz/common";
 import express from "express";
 
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
