@@ -5,6 +5,6 @@ services:
     image: backpackapp/backpack-api:{{tag}}
     restart: unless-stopped
     ports:
-      - 80:8080
+      - 5000:8080
     command: "node ./dist/index.js"
 
