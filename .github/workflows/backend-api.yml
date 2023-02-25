@@ -31,8 +31,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_EB_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_EB_SECRET_ACCESS_KEY }}
-          application_name: hasura
-          environment_name: Hasura-env
+          application_name: backend-api
+          environment_name: backend-api-dockerhub
           version_label: ${{ github.sha }}
           region: us-west-1
           deployment_package: deploy.zip
