@@ -145,7 +145,7 @@ export const RemoveWallet: React.FC<{
         setOpenDrawer={setShowSuccess}
         backdropProps={{
           style: {
-            opacity: 0.8,
+            opacity: 0.2,
             background: "#18181b",
           },
         }}
