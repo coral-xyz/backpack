@@ -10,6 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: "mv docker/backpack-api/Dockerfile ."
+      - run: "cd backend/native/backpack-api"
+      - run: "touch .env"
+      - run: 'printf "AUTH_JWT=%s\n" "${{AUTH_JWT}}" >> .env'
 
       - name: docker login
         env:
