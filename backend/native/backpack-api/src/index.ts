@@ -62,6 +62,14 @@ app.get("/_health", (_req, res) => {
   });
 });
 
+app.get("/", (_req, res) => {
+  return res.status(200).json({
+    uptime: process.uptime(),
+    message: "OK",
+    timestamp: Date.now(),
+  });
+});
+
 // @ts-ignore
 app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
   if (err instanceof ZodError) {
