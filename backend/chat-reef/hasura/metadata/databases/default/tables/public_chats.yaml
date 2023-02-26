@@ -16,6 +16,13 @@ array_relationships:
         table:
           name: chat_media_messages
           schema: public
+  - name: nft_sticker_metadata
+    using:
+      foreign_key_constraint_on:
+        column: chat_client_generated_uuid
+        table:
+          name: nft_sticker_metadata
+          schema: public
   - name: secure_transfer_transactions
     using:
       foreign_key_constraint_on:
