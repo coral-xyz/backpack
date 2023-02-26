@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import type { Blockchain, FeeConfig } from "@coral-xyz/common";
 import {
@@ -16,7 +16,6 @@ import {
 } from "@coral-xyz/common";
 import { EmptyState } from "@coral-xyz/react-common";
 import {
-  isKeyCold,
   KeyringStoreStateEnum,
   useApprovedOrigins,
   useBackgroundClient,
@@ -29,7 +28,6 @@ import {
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { AnimatePresence, motion } from "framer-motion";
-import { useRecoilValue } from "recoil";
 
 import { refreshXnftPreferences } from "../api/preferences";
 import { Locked } from "../components/Locked";
@@ -39,7 +37,6 @@ import { ApproveOrigin } from "../components/Unlocked/Approvals/ApproveOrigin";
 import {
   ApproveAllTransactions,
   ApproveTransaction,
-  Cold,
 } from "../components/Unlocked/Approvals/ApproveTransaction";
 import { AuthenticatedSync } from "../components/Unlocked/AuthenticatedSync";
 import { WithAuth } from "../components/Unlocked/WithAuth";
@@ -153,8 +150,9 @@ function QueryLocked() {
 
   // Wallet is unlocked so close the window. We're done.
   if (!isLocked) {
-    return <></>;
+    return null;
   }
+
   return (
     <LockedBootstrap
       onUnlock={async () => {
@@ -191,8 +189,8 @@ function QueryApproval() {
   }
 
   return (
-    <WithUnlock>
-      <WithEnabledBlockchain blockchain={blockchain!}>
+    <WithEnabledBlockchain blockchain={blockchain!}>
+      <WithUnlock>
         <ApproveOrigin
           origin={origin}
           title={title}
@@ -204,8 +202,8 @@ function QueryApproval() {
             });
           }}
         />
-      </WithEnabledBlockchain>
-    </WithUnlock>
+      </WithUnlock>
+    </WithEnabledBlockchain>
   );
 }
 
@@ -219,18 +217,10 @@ function QueryApproveTransaction() {
   const tx = url.searchParams.get("tx");
   const wallet = url.searchParams.get("wallet")!;
   const blockchain = url.searchParams.get("blockchain")! as Blockchain;
-  const _isKeyCold = useRecoilValue(isKeyCold(wallet));
 
-  return _isKeyCold ? (
-    <Cold
-      title={title!}
-      origin={origin!}
-      wallet={wallet}
-      onCompletion={async () => {}}
-    />
-  ) : (
-    <WithEnabledBlockchain blockchain={blockchain}>
-      <WithUnlock>
+  return (
+    <WithUnlock>
+      <WithEnabledBlockchain blockchain={blockchain}>
         <ApproveTransaction
           origin={origin!}
           title={title!}
@@ -272,8 +262,8 @@ function QueryApproveTransaction() {
             });
           }}
         />
-      </WithUnlock>
-    </WithEnabledBlockchain>
+      </WithEnabledBlockchain>
+    </WithUnlock>
   );
 }
 
@@ -287,18 +277,10 @@ function QueryApproveAllTransactions() {
   const txs = JSON.parse(url.searchParams.get("txs")!);
   const wallet = url.searchParams.get("wallet")!;
   const blockchain = url.searchParams.get("blockchain")! as Blockchain;
-  const _isKeyCold = useRecoilValue(isKeyCold(wallet));
 
-  return _isKeyCold ? (
-    <Cold
-      title={title!}
-      origin={origin!}
-      wallet={wallet}
-      onCompletion={async () => {}}
-    />
-  ) : (
-    <WithEnabledBlockchain blockchain={blockchain}>
-      <WithUnlock>
+  return (
+    <WithUnlock>
+      <WithEnabledBlockchain blockchain={blockchain}>
         <ApproveAllTransactions
           origin={origin!}
           title={title!}
@@ -311,8 +293,8 @@ function QueryApproveAllTransactions() {
             });
           }}
         />
-      </WithUnlock>
-    </WithEnabledBlockchain>
+      </WithEnabledBlockchain>
+    </WithUnlock>
   );
 }
 
@@ -326,18 +308,10 @@ function QueryApproveMessage() {
   const requestId = url.searchParams.get("requestId")!;
   const wallet = url.searchParams.get("wallet")!;
   const blockchain = url.searchParams.get("blockchain")! as Blockchain;
-  const _isKeyCold = useRecoilValue(isKeyCold(wallet));
 
-  return _isKeyCold ? (
-    <Cold
-      title={title!}
-      origin={origin!}
-      wallet={wallet}
-      onCompletion={async () => {}}
-    />
-  ) : (
-    <WithEnabledBlockchain blockchain={blockchain}>
-      <WithUnlock>
+  return (
+    <WithUnlock>
+      <WithEnabledBlockchain blockchain={blockchain}>
         <ApproveMessage
           origin={origin}
           title={title}
@@ -350,8 +324,8 @@ function QueryApproveMessage() {
             });
           }}
         />
-      </WithUnlock>
-    </WithEnabledBlockchain>
+      </WithEnabledBlockchain>
+    </WithUnlock>
   );
 }
 
@@ -409,7 +383,7 @@ function WithUnlock({ children }: { children: React.ReactElement }) {
   return (
     <AnimatePresence initial={false}>
       <WithLockMotion id={isLocked ? "locked" : "unlocked"}>
-        <Suspense fallback={<div style={{ display: "none" }}></div>}>
+        <Suspense fallback={<div style={{ display: "none" }} />}>
           {isLocked ? (
             <Locked />
           ) : (
@@ -436,9 +410,9 @@ function WithLockMotion({ children, id }: any) {
       }}
       key={id}
       variants={MOTION_VARIANTS}
-      initial={"initial"}
-      animate={"animate"}
-      exit={"exit"}
+      initial="initial"
+      animate="animate"
+      exit="exit"
     >
       {children}
     </motion.div>
@@ -456,7 +430,7 @@ export function WithSuspense(props: any) {
 
 export function BlankApp() {
   const classes = useStyles();
-  return <div className={classes.appContainer}></div>;
+  return <div className={classes.appContainer} />;
 }
 
 const useStyles = styles((theme) => {
