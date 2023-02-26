@@ -257,6 +257,11 @@ export const AllTypesProps: Record<string, any> = {
       order_by: "chat_media_messages_order_by",
       where: "chat_media_messages_bool_exp",
     },
+    nft_sticker_metadata: {
+      distinct_on: "nft_sticker_metadata_select_column",
+      order_by: "nft_sticker_metadata_order_by",
+      where: "nft_sticker_metadata_bool_exp",
+    },
     secure_transfer_transactions: {
       distinct_on: "secure_transfer_transactions_select_column",
       order_by: "secure_transfer_transactions_order_by",
@@ -279,6 +284,7 @@ export const AllTypesProps: Record<string, any> = {
     id: "Int_comparison_exp",
     message: "String_comparison_exp",
     message_kind: "String_comparison_exp",
+    nft_sticker_metadata: "nft_sticker_metadata_bool_exp",
     parent_client_generated_uuid: "String_comparison_exp",
     room: "String_comparison_exp",
     secure_transfer_transactions: "secure_transfer_transactions_bool_exp",
@@ -292,6 +298,7 @@ export const AllTypesProps: Record<string, any> = {
     chat_barter_metadata: "chat_barter_metadata_arr_rel_insert_input",
     chat_media_messages: "chat_media_messages_arr_rel_insert_input",
     created_at: "timestamptz",
+    nft_sticker_metadata: "nft_sticker_metadata_arr_rel_insert_input",
     secure_transfer_transactions:
       "secure_transfer_transactions_arr_rel_insert_input",
     simple_transactions: "simple_transactions_arr_rel_insert_input",
@@ -313,6 +320,7 @@ export const AllTypesProps: Record<string, any> = {
     id: "order_by",
     message: "order_by",
     message_kind: "order_by",
+    nft_sticker_metadata_aggregate: "nft_sticker_metadata_aggregate_order_by",
     parent_client_generated_uuid: "order_by",
     room: "order_by",
     secure_transfer_transactions_aggregate:
@@ -368,6 +376,14 @@ export const AllTypesProps: Record<string, any> = {
     insert_chats_one: {
       object: "chats_insert_input",
       on_conflict: "chats_on_conflict",
+    },
+    insert_nft_sticker_metadata: {
+      objects: "nft_sticker_metadata_insert_input",
+      on_conflict: "nft_sticker_metadata_on_conflict",
+    },
+    insert_nft_sticker_metadata_one: {
+      object: "nft_sticker_metadata_insert_input",
+      on_conflict: "nft_sticker_metadata_on_conflict",
     },
     insert_room_active_chat_mapping: {
       objects: "room_active_chat_mapping_insert_input",
@@ -425,6 +441,19 @@ export const AllTypesProps: Record<string, any> = {
     update_chat_media_messages_many: {
       updates: "chat_media_messages_updates",
     },
+    update_nft_sticker_metadata: {
+      _inc: "nft_sticker_metadata_inc_input",
+      _set: "nft_sticker_metadata_set_input",
+      where: "nft_sticker_metadata_bool_exp",
+    },
+    update_nft_sticker_metadata_by_pk: {
+      _inc: "nft_sticker_metadata_inc_input",
+      _set: "nft_sticker_metadata_set_input",
+      pk_columns: "nft_sticker_metadata_pk_columns_input",
+    },
+    update_nft_sticker_metadata_many: {
+      updates: "nft_sticker_metadata_updates",
+    },
     update_room_active_chat_mapping: {
       _inc: "room_active_chat_mapping_inc_input",
       _set: "room_active_chat_mapping_set_input",
@@ -465,6 +494,96 @@ export const AllTypesProps: Record<string, any> = {
       updates: "simple_transactions_updates",
     },
   },
+  nft_sticker_metadata_aggregate_order_by: {
+    avg: "nft_sticker_metadata_avg_order_by",
+    count: "order_by",
+    max: "nft_sticker_metadata_max_order_by",
+    min: "nft_sticker_metadata_min_order_by",
+    stddev: "nft_sticker_metadata_stddev_order_by",
+    stddev_pop: "nft_sticker_metadata_stddev_pop_order_by",
+    stddev_samp: "nft_sticker_metadata_stddev_samp_order_by",
+    sum: "nft_sticker_metadata_sum_order_by",
+    var_pop: "nft_sticker_metadata_var_pop_order_by",
+    var_samp: "nft_sticker_metadata_var_samp_order_by",
+    variance: "nft_sticker_metadata_variance_order_by",
+  },
+  nft_sticker_metadata_arr_rel_insert_input: {
+    data: "nft_sticker_metadata_insert_input",
+    on_conflict: "nft_sticker_metadata_on_conflict",
+  },
+  nft_sticker_metadata_avg_order_by: {
+    id: "order_by",
+  },
+  nft_sticker_metadata_bool_exp: {
+    _and: "nft_sticker_metadata_bool_exp",
+    _not: "nft_sticker_metadata_bool_exp",
+    _or: "nft_sticker_metadata_bool_exp",
+    chat: "chats_bool_exp",
+    chat_client_generated_uuid: "String_comparison_exp",
+    id: "Int_comparison_exp",
+    mint: "String_comparison_exp",
+  },
+  nft_sticker_metadata_constraint: "enum" as const,
+  nft_sticker_metadata_inc_input: {},
+  nft_sticker_metadata_insert_input: {
+    chat: "chats_obj_rel_insert_input",
+  },
+  nft_sticker_metadata_max_order_by: {
+    chat_client_generated_uuid: "order_by",
+    id: "order_by",
+    mint: "order_by",
+  },
+  nft_sticker_metadata_min_order_by: {
+    chat_client_generated_uuid: "order_by",
+    id: "order_by",
+    mint: "order_by",
+  },
+  nft_sticker_metadata_on_conflict: {
+    constraint: "nft_sticker_metadata_constraint",
+    update_columns: "nft_sticker_metadata_update_column",
+    where: "nft_sticker_metadata_bool_exp",
+  },
+  nft_sticker_metadata_order_by: {
+    chat: "chats_order_by",
+    chat_client_generated_uuid: "order_by",
+    id: "order_by",
+    mint: "order_by",
+  },
+  nft_sticker_metadata_pk_columns_input: {},
+  nft_sticker_metadata_select_column: "enum" as const,
+  nft_sticker_metadata_set_input: {},
+  nft_sticker_metadata_stddev_order_by: {
+    id: "order_by",
+  },
+  nft_sticker_metadata_stddev_pop_order_by: {
+    id: "order_by",
+  },
+  nft_sticker_metadata_stddev_samp_order_by: {
+    id: "order_by",
+  },
+  nft_sticker_metadata_stream_cursor_input: {
+    initial_value: "nft_sticker_metadata_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  nft_sticker_metadata_stream_cursor_value_input: {},
+  nft_sticker_metadata_sum_order_by: {
+    id: "order_by",
+  },
+  nft_sticker_metadata_update_column: "enum" as const,
+  nft_sticker_metadata_updates: {
+    _inc: "nft_sticker_metadata_inc_input",
+    _set: "nft_sticker_metadata_set_input",
+    where: "nft_sticker_metadata_bool_exp",
+  },
+  nft_sticker_metadata_var_pop_order_by: {
+    id: "order_by",
+  },
+  nft_sticker_metadata_var_samp_order_by: {
+    id: "order_by",
+  },
+  nft_sticker_metadata_variance_order_by: {
+    id: "order_by",
+  },
   order_by: "enum" as const,
   query_root: {
     barters: {
@@ -490,6 +609,12 @@ export const AllTypesProps: Record<string, any> = {
       where: "chats_bool_exp",
     },
     chats_by_pk: {},
+    nft_sticker_metadata: {
+      distinct_on: "nft_sticker_metadata_select_column",
+      order_by: "nft_sticker_metadata_order_by",
+      where: "nft_sticker_metadata_bool_exp",
+    },
+    nft_sticker_metadata_by_pk: {},
     room_active_chat_mapping: {
       distinct_on: "room_active_chat_mapping_select_column",
       order_by: "room_active_chat_mapping_order_by",
@@ -847,6 +972,16 @@ export const AllTypesProps: Record<string, any> = {
       cursor: "chats_stream_cursor_input",
       where: "chats_bool_exp",
     },
+    nft_sticker_metadata: {
+      distinct_on: "nft_sticker_metadata_select_column",
+      order_by: "nft_sticker_metadata_order_by",
+      where: "nft_sticker_metadata_bool_exp",
+    },
+    nft_sticker_metadata_by_pk: {},
+    nft_sticker_metadata_stream: {
+      cursor: "nft_sticker_metadata_stream_cursor_input",
+      where: "nft_sticker_metadata_bool_exp",
+    },
     room_active_chat_mapping: {
       distinct_on: "room_active_chat_mapping_select_column",
       order_by: "room_active_chat_mapping_order_by",
@@ -939,6 +1074,7 @@ export const ReturnTypes: Record<string, any> = {
     id: "Int",
     message: "String",
     message_kind: "String",
+    nft_sticker_metadata: "nft_sticker_metadata",
     parent_client_generated_uuid: "String",
     room: "String",
     secure_transfer_transactions: "secure_transfer_transactions",
@@ -963,6 +1099,8 @@ export const ReturnTypes: Record<string, any> = {
     insert_chat_media_messages_one: "chat_media_messages",
     insert_chats: "chats_mutation_response",
     insert_chats_one: "chats",
+    insert_nft_sticker_metadata: "nft_sticker_metadata_mutation_response",
+    insert_nft_sticker_metadata_one: "nft_sticker_metadata",
     insert_room_active_chat_mapping:
       "room_active_chat_mapping_mutation_response",
     insert_room_active_chat_mapping_one: "room_active_chat_mapping",
@@ -979,6 +1117,9 @@ export const ReturnTypes: Record<string, any> = {
     update_chat_media_messages: "chat_media_messages_mutation_response",
     update_chat_media_messages_by_pk: "chat_media_messages",
     update_chat_media_messages_many: "chat_media_messages_mutation_response",
+    update_nft_sticker_metadata: "nft_sticker_metadata_mutation_response",
+    update_nft_sticker_metadata_by_pk: "nft_sticker_metadata",
+    update_nft_sticker_metadata_many: "nft_sticker_metadata_mutation_response",
     update_room_active_chat_mapping:
       "room_active_chat_mapping_mutation_response",
     update_room_active_chat_mapping_by_pk: "room_active_chat_mapping",
@@ -993,6 +1134,16 @@ export const ReturnTypes: Record<string, any> = {
     update_simple_transactions_by_pk: "simple_transactions",
     update_simple_transactions_many: "simple_transactions_mutation_response",
   },
+  nft_sticker_metadata: {
+    chat: "chats",
+    chat_client_generated_uuid: "String",
+    id: "Int",
+    mint: "String",
+  },
+  nft_sticker_metadata_mutation_response: {
+    affected_rows: "Int",
+    returning: "nft_sticker_metadata",
+  },
   query_root: {
     barters: "barters",
     barters_by_pk: "barters",
@@ -1001,6 +1152,8 @@ export const ReturnTypes: Record<string, any> = {
     chat_media_messages_by_pk: "chat_media_messages",
     chats: "chats",
     chats_by_pk: "chats",
+    nft_sticker_metadata: "nft_sticker_metadata",
+    nft_sticker_metadata_by_pk: "nft_sticker_metadata",
     room_active_chat_mapping: "room_active_chat_mapping",
     room_active_chat_mapping_by_pk: "room_active_chat_mapping",
     secure_transfer_transactions: "secure_transfer_transactions",
@@ -1055,6 +1208,9 @@ export const ReturnTypes: Record<string, any> = {
     chats: "chats",
     chats_by_pk: "chats",
     chats_stream: "chats",
+    nft_sticker_metadata: "nft_sticker_metadata",
+    nft_sticker_metadata_by_pk: "nft_sticker_metadata",
+    nft_sticker_metadata_stream: "nft_sticker_metadata",
     room_active_chat_mapping: "room_active_chat_mapping",
     room_active_chat_mapping_by_pk: "room_active_chat_mapping",
     room_active_chat_mapping_stream: "room_active_chat_mapping",
