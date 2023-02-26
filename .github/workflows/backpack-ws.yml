@@ -35,10 +35,10 @@ jobs:
         run: |
           docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
       - name: Build the Docker image
-        run: docker build . --tag backpackapp/backend-ws:${{ github.sha }}
+        run: docker build . --tag backpackapp/backend-ws:${{ github.sha }}-ws
 
       - name: Docker Push
-        run: docker push backpackapp/backend-ws:${{ github.sha }}
+        run: docker push backpackapp/backend-ws:${{ github.sha }}-ws
 
       - name: Create zip
         run: "mkdir deploy && cp ./docker/backend-ws/docker-compose.yml ./deploy && cp ./docker/Dockerrun.aws.json ./deploy && sed 's/{{tag}}/${{ github.sha }}/g' ./deploy/docker-compose.yml > ./deploy/temp.yml && mv ./deploy/temp.yml ./deploy/docker-compose.yml && cd deploy && zip deploy.zip * && cd .. && mv ./deploy/deploy.zip ."
