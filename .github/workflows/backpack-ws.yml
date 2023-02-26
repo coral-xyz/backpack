@@ -50,6 +50,6 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_EB_SECRET_ACCESS_KEY }}
           application_name: backend-api
           environment_name: backend-ws-dockerhub
-          version_label: ${{ github.sha }}
+          version_label: ${{ github.sha }}-ws
           region: us-west-1
           deployment_package: deploy.zip
