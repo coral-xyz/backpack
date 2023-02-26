@@ -64,4 +64,5 @@ process.on("uncaughtException", function (err) {
 
 server.listen(port);
 
+console.log(`listening on port ${port}`);
 const instance = RedisSubscriptionManager.getInstance();

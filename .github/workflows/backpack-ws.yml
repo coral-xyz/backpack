@@ -16,7 +16,7 @@ jobs:
           DOCKER_USER: ${{secrets.DOCKER_USERNAME}}
           DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
         run: |
-          cd backend/native/backpack-api
+          cd backend/native/backend-ws
           touch .env
           printf 'AUTH_JWT=%s\n' '${{secrets.AUTH_JWT}}' >> .env
           printf 'AUTH_JWT_PRIVATE_KEY=%s\n' '${{secrets.AUTH_JWT_PRIVATE_KEY}}' >> .env
