@@ -16,7 +16,8 @@ export type MessageKind =
   | "secure-transfer"
   | "media"
   | "transaction"
-  | "barter";
+  | "barter"
+  | "nft-sticker";
 
 export type MessageMetadata =
   | {
@@ -37,6 +38,9 @@ export type MessageMetadata =
       on_chain_state: string;
       barter_id: number;
       state: BarterState;
+    }
+  | {
+      mint: string;
     };
 
 export type SendMessagePayload = {

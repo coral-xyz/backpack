@@ -29,21 +29,26 @@ import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 import { createEscrow } from "../utils/secure-transfer/secureTransfer";
 
+import { NftStickerPlugin } from "./plugins/NftStickerPlugin";
 import { useChatContext } from "./ChatContext";
 
 export const AboveMessagePluginRenderer = ({
   aboveMessagePlugin,
   sendMessage,
   setAboveMessagePlugin,
+  setPluginMenuOpen,
 }) => {
   return (
     <>
-      {aboveMessagePlugin === "secure-transfer" && (
-        <SecureTransferPlugin
-          sendMessage={sendMessage}
-          setAboveMessagePlugin={setAboveMessagePlugin}
-        />
-      )}
+      {aboveMessagePlugin === "secure-transfer" ? <SecureTransferPlugin
+        sendMessage={sendMessage}
+        setAboveMessagePlugin={setAboveMessagePlugin}
+        /> : null}
+      {aboveMessagePlugin === "nft-sticker" ? <NftStickerPlugin
+        sendMessage={sendMessage}
+        setAboveMessagePlugin={setAboveMessagePlugin}
+        setPluginMenuOpen={setPluginMenuOpen}
+        /> : null}
     </>
   );
 };
@@ -153,7 +158,7 @@ function SecureTransferPlugin({ sendMessage, setAboveMessagePlugin }) {
             },
           }}
           fullWidth
-          margin={"none"}
+          margin="none"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
