@@ -65,7 +65,7 @@ export function ApproveMessage({
   };
 
   if (_isKeyCold) {
-    <Cold origin={origin!} />;
+    return <Cold origin={origin!} />;
   }
 
   return (
