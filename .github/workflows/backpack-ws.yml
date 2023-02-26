@@ -25,6 +25,7 @@ jobs:
           printf 'CHAT_HASURA_URL=%s\n' '${{secrets.CHAT_HASURA_URL}}' >> .env
           printf 'REDIS_URL=%s\n' '${{secrets.REDIS_URL}}' >> .env
           printf 'CHAT_JWT=%s\n' '${{secrets.CHAT_JWT}}' >> .env
+          printf 'PORT=%s\n' '8080' >> .env
           cd ../../..
 
       - name: docker login
