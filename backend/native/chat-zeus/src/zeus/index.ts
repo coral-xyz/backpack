@@ -362,17 +362,12 @@ export const traverseResponse = ({
     ) {
       return o;
     }
-    const entries = Object.entries(o).map(
-      ([k, v]) => [k, ibb(k, v, [...p, purifyGraphQLKey(k)])] as const
+    return Object.fromEntries(
+      Object.entries(o).map(([k, v]) => [
+        k,
+        ibb(k, v, [...p, purifyGraphQLKey(k)]),
+      ])
     );
-    const objectFromEntries = entries.reduce<Record<string, unknown>>(
-      (a, [k, v]) => {
-        a[k] = v;
-        return a;
-      },
-      {}
-    );
-    return objectFromEntries;
   };
   return ibb;
 };
@@ -474,7 +469,7 @@ export class GraphQLError extends Error {
   }
 }
 export type GenericOperation<O> = O extends keyof typeof Ops
-  ? typeof Ops[O]
+  ? (typeof Ops)[O]
   : never;
 export type ThunderGraphQLOptions<SCLR extends ScalarDefinition> = {
   scalars?: SCLR | ScalarCoders;
@@ -823,13 +818,9 @@ type IsInterfaced<
                 : DST[P],
               SCLR
             >
-          : IsArray<
-              R,
-              "__typename" extends keyof DST ? { __typename: true } : never,
-              SCLR
-            >
+          : Record<string, unknown>
         : never;
-    }[keyof SRC] & {
+    }[keyof DST] & {
       [P in keyof Omit<
         Pick<
           SRC,
@@ -2014,6 +2005,40 @@ export type ValueTypes = {
     id?: boolean | `@${string}`;
     message?: boolean | `@${string}`;
     message_kind?: boolean | `@${string}`;
+    nft_sticker_metadata?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["nft_sticker_metadata_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["nft_sticker_metadata_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["nft_sticker_metadata_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["nft_sticker_metadata"]
+    ];
     parent_client_generated_uuid?: boolean | `@${string}`;
     room?: boolean | `@${string}`;
     secure_transfer_transactions?: [
@@ -2141,6 +2166,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    nft_sticker_metadata?:
+      | ValueTypes["nft_sticker_metadata_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     parent_client_generated_uuid?:
       | ValueTypes["String_comparison_exp"]
       | undefined
@@ -2200,6 +2230,11 @@ export type ValueTypes = {
     id?: number | undefined | null | Variable<any, string>;
     message?: string | undefined | null | Variable<any, string>;
     message_kind?: string | undefined | null | Variable<any, string>;
+    nft_sticker_metadata?:
+      | ValueTypes["nft_sticker_metadata_arr_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
     parent_client_generated_uuid?:
       | string
       | undefined
@@ -2276,6 +2311,11 @@ export type ValueTypes = {
     message?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     message_kind?:
       | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    nft_sticker_metadata_aggregate?:
+      | ValueTypes["nft_sticker_metadata_aggregate_order_by"]
       | undefined
       | null
       | Variable<any, string>;
@@ -2469,6 +2509,34 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["chats"]
+    ];
+    insert_nft_sticker_metadata?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["nft_sticker_metadata_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["nft_sticker_metadata_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["nft_sticker_metadata_mutation_response"]
+    ];
+    insert_nft_sticker_metadata_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["nft_sticker_metadata_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["nft_sticker_metadata_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["nft_sticker_metadata"]
     ];
     insert_room_active_chat_mapping?: [
       {
@@ -2680,6 +2748,62 @@ export type ValueTypes = {
       },
       ValueTypes["chat_media_messages_mutation_response"]
     ];
+    update_nft_sticker_metadata?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["nft_sticker_metadata_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["nft_sticker_metadata_set_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** filter the rows which have to be updated */;
+        where:
+          | ValueTypes["nft_sticker_metadata_bool_exp"]
+          | Variable<any, string>;
+      },
+      ValueTypes["nft_sticker_metadata_mutation_response"]
+    ];
+    update_nft_sticker_metadata_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["nft_sticker_metadata_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["nft_sticker_metadata_set_input"]
+          | undefined
+          | null
+          | Variable<any, string>;
+        pk_columns:
+          | ValueTypes["nft_sticker_metadata_pk_columns_input"]
+          | Variable<any, string>;
+      },
+      ValueTypes["nft_sticker_metadata"]
+    ];
+    update_nft_sticker_metadata_many?: [
+      {
+        /** updates to execute, in order */
+        updates:
+          | Array<ValueTypes["nft_sticker_metadata_updates"]>
+          | Variable<any, string>;
+      },
+      ValueTypes["nft_sticker_metadata_mutation_response"]
+    ];
     update_room_active_chat_mapping?: [
       {
         /** increments the numeric columns with given value of the filtered values */
@@ -2850,6 +2974,285 @@ export type ValueTypes = {
     ];
     __typename?: boolean | `@${string}`;
   }>;
+  /** columns and relationships of "nft_sticker_metadata" */
+  ["nft_sticker_metadata"]: AliasType<{
+    /** An object relationship */
+    chat?: ValueTypes["chats"];
+    chat_client_generated_uuid?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    mint?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_aggregate_order_by"]: {
+    avg?:
+      | ValueTypes["nft_sticker_metadata_avg_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    count?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    max?:
+      | ValueTypes["nft_sticker_metadata_max_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    min?:
+      | ValueTypes["nft_sticker_metadata_min_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev?:
+      | ValueTypes["nft_sticker_metadata_stddev_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_pop?:
+      | ValueTypes["nft_sticker_metadata_stddev_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_samp?:
+      | ValueTypes["nft_sticker_metadata_stddev_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    sum?:
+      | ValueTypes["nft_sticker_metadata_sum_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_pop?:
+      | ValueTypes["nft_sticker_metadata_var_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_samp?:
+      | ValueTypes["nft_sticker_metadata_var_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    variance?:
+      | ValueTypes["nft_sticker_metadata_variance_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** input type for inserting array relation for remote table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_arr_rel_insert_input"]: {
+    data:
+      | Array<ValueTypes["nft_sticker_metadata_insert_input"]>
+      | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["nft_sticker_metadata_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by avg() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_avg_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** Boolean expression to filter rows from the table "nft_sticker_metadata". All fields are combined with a logical 'AND'. */
+  ["nft_sticker_metadata_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["nft_sticker_metadata_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["nft_sticker_metadata_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["nft_sticker_metadata_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat?:
+      | ValueTypes["chats_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat_client_generated_uuid?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    mint?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_constraint"]: nft_sticker_metadata_constraint;
+  /** input type for incrementing numeric columns in table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_inc_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+  };
+  /** input type for inserting data into table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_insert_input"]: {
+    chat?:
+      | ValueTypes["chats_obj_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    mint?: string | undefined | null | Variable<any, string>;
+  };
+  /** order by max() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_max_order_by"]: {
+    chat_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    mint?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by min() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_min_order_by"]: {
+    chat_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    mint?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** response of any mutation on the table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["nft_sticker_metadata"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_on_conflict"]: {
+    constraint:
+      | ValueTypes["nft_sticker_metadata_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["nft_sticker_metadata_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["nft_sticker_metadata_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "nft_sticker_metadata". */
+  ["nft_sticker_metadata_order_by"]: {
+    chat?:
+      | ValueTypes["chats_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    mint?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** primary key columns input for table: nft_sticker_metadata */
+  ["nft_sticker_metadata_pk_columns_input"]: {
+    id: number | Variable<any, string>;
+  };
+  /** select columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_select_column"]: nft_sticker_metadata_select_column;
+  /** input type for updating data in table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_set_input"]: {
+    chat_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    mint?: string | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_stddev_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev_pop() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_stddev_pop_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev_samp() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_stddev_samp_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["nft_sticker_metadata_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["nft_sticker_metadata_stream_cursor_value_input"]: {
+    chat_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    mint?: string | undefined | null | Variable<any, string>;
+  };
+  /** order by sum() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_sum_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** update columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_update_column"]: nft_sticker_metadata_update_column;
+  ["nft_sticker_metadata_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ValueTypes["nft_sticker_metadata_inc_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["nft_sticker_metadata_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    where: ValueTypes["nft_sticker_metadata_bool_exp"] | Variable<any, string>;
+  };
+  /** order by var_pop() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_var_pop_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by var_samp() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_var_samp_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by variance() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_variance_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
   /** column ordering options */
   ["order_by"]: order_by;
   ["query_root"]: AliasType<{
@@ -2998,6 +3401,44 @@ export type ValueTypes = {
       ValueTypes["chats"]
     ];
     chats_by_pk?: [{ id: number | Variable<any, string> }, ValueTypes["chats"]];
+    nft_sticker_metadata?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["nft_sticker_metadata_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["nft_sticker_metadata_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["nft_sticker_metadata_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["nft_sticker_metadata"]
+    ];
+    nft_sticker_metadata_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["nft_sticker_metadata"]
+    ];
     room_active_chat_mapping?: [
       {
         /** distinct select on columns */
@@ -4353,6 +4794,68 @@ export type ValueTypes = {
       },
       ValueTypes["chats"]
     ];
+    nft_sticker_metadata?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["nft_sticker_metadata_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["nft_sticker_metadata_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["nft_sticker_metadata_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["nft_sticker_metadata"]
+    ];
+    nft_sticker_metadata_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["nft_sticker_metadata"]
+    ];
+    nft_sticker_metadata_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["nft_sticker_metadata_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["nft_sticker_metadata_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["nft_sticker_metadata"]
+    ];
     room_active_chat_mapping?: [
       {
         /** distinct select on columns */
@@ -5276,6 +5779,32 @@ export type ResolverInputTypes = {
     id?: boolean | `@${string}`;
     message?: boolean | `@${string}`;
     message_kind?: boolean | `@${string}`;
+    nft_sticker_metadata?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["nft_sticker_metadata_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["nft_sticker_metadata_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["nft_sticker_metadata_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["nft_sticker_metadata"]
+    ];
     parent_client_generated_uuid?: boolean | `@${string}`;
     room?: boolean | `@${string}`;
     secure_transfer_transactions?: [
@@ -5364,6 +5893,10 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["String_comparison_exp"]
       | undefined
       | null;
+    nft_sticker_metadata?:
+      | ResolverInputTypes["nft_sticker_metadata_bool_exp"]
+      | undefined
+      | null;
     parent_client_generated_uuid?:
       | ResolverInputTypes["String_comparison_exp"]
       | undefined
@@ -5398,6 +5931,10 @@ export type ResolverInputTypes = {
     id?: number | undefined | null;
     message?: string | undefined | null;
     message_kind?: string | undefined | null;
+    nft_sticker_metadata?:
+      | ResolverInputTypes["nft_sticker_metadata_arr_rel_insert_input"]
+      | undefined
+      | null;
     parent_client_generated_uuid?: string | undefined | null;
     room?: string | undefined | null;
     secure_transfer_transactions?:
@@ -5447,6 +5984,10 @@ export type ResolverInputTypes = {
     id?: ResolverInputTypes["order_by"] | undefined | null;
     message?: ResolverInputTypes["order_by"] | undefined | null;
     message_kind?: ResolverInputTypes["order_by"] | undefined | null;
+    nft_sticker_metadata_aggregate?:
+      | ResolverInputTypes["nft_sticker_metadata_aggregate_order_by"]
+      | undefined
+      | null;
     parent_client_generated_uuid?:
       | ResolverInputTypes["order_by"]
       | undefined
@@ -5598,6 +6139,30 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["chats"]
+    ];
+    insert_nft_sticker_metadata?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["nft_sticker_metadata_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["nft_sticker_metadata_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["nft_sticker_metadata_mutation_response"]
+    ];
+    insert_nft_sticker_metadata_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["nft_sticker_metadata_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["nft_sticker_metadata_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["nft_sticker_metadata"]
     ];
     insert_room_active_chat_mapping?: [
       {
@@ -5756,6 +6321,43 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["chat_media_messages_mutation_response"]
     ];
+    update_nft_sticker_metadata?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["nft_sticker_metadata_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["nft_sticker_metadata_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
+        where: ResolverInputTypes["nft_sticker_metadata_bool_exp"];
+      },
+      ResolverInputTypes["nft_sticker_metadata_mutation_response"]
+    ];
+    update_nft_sticker_metadata_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["nft_sticker_metadata_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["nft_sticker_metadata_set_input"]
+          | undefined
+          | null;
+        pk_columns: ResolverInputTypes["nft_sticker_metadata_pk_columns_input"];
+      },
+      ResolverInputTypes["nft_sticker_metadata"]
+    ];
+    update_nft_sticker_metadata_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ResolverInputTypes["nft_sticker_metadata_updates"]>;
+      },
+      ResolverInputTypes["nft_sticker_metadata_mutation_response"]
+    ];
     update_room_active_chat_mapping?: [
       {
         /** increments the numeric columns with given value of the filtered values */
@@ -5871,6 +6473,222 @@ export type ResolverInputTypes = {
     ];
     __typename?: boolean | `@${string}`;
   }>;
+  /** columns and relationships of "nft_sticker_metadata" */
+  ["nft_sticker_metadata"]: AliasType<{
+    /** An object relationship */
+    chat?: ResolverInputTypes["chats"];
+    chat_client_generated_uuid?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    mint?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_aggregate_order_by"]: {
+    avg?:
+      | ResolverInputTypes["nft_sticker_metadata_avg_order_by"]
+      | undefined
+      | null;
+    count?: ResolverInputTypes["order_by"] | undefined | null;
+    max?:
+      | ResolverInputTypes["nft_sticker_metadata_max_order_by"]
+      | undefined
+      | null;
+    min?:
+      | ResolverInputTypes["nft_sticker_metadata_min_order_by"]
+      | undefined
+      | null;
+    stddev?:
+      | ResolverInputTypes["nft_sticker_metadata_stddev_order_by"]
+      | undefined
+      | null;
+    stddev_pop?:
+      | ResolverInputTypes["nft_sticker_metadata_stddev_pop_order_by"]
+      | undefined
+      | null;
+    stddev_samp?:
+      | ResolverInputTypes["nft_sticker_metadata_stddev_samp_order_by"]
+      | undefined
+      | null;
+    sum?:
+      | ResolverInputTypes["nft_sticker_metadata_sum_order_by"]
+      | undefined
+      | null;
+    var_pop?:
+      | ResolverInputTypes["nft_sticker_metadata_var_pop_order_by"]
+      | undefined
+      | null;
+    var_samp?:
+      | ResolverInputTypes["nft_sticker_metadata_var_samp_order_by"]
+      | undefined
+      | null;
+    variance?:
+      | ResolverInputTypes["nft_sticker_metadata_variance_order_by"]
+      | undefined
+      | null;
+  };
+  /** input type for inserting array relation for remote table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_arr_rel_insert_input"]: {
+    data: Array<ResolverInputTypes["nft_sticker_metadata_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["nft_sticker_metadata_on_conflict"]
+      | undefined
+      | null;
+  };
+  /** order by avg() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_avg_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Boolean expression to filter rows from the table "nft_sticker_metadata". All fields are combined with a logical 'AND'. */
+  ["nft_sticker_metadata_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["nft_sticker_metadata_bool_exp"]>
+      | undefined
+      | null;
+    _not?:
+      | ResolverInputTypes["nft_sticker_metadata_bool_exp"]
+      | undefined
+      | null;
+    _or?:
+      | Array<ResolverInputTypes["nft_sticker_metadata_bool_exp"]>
+      | undefined
+      | null;
+    chat?: ResolverInputTypes["chats_bool_exp"] | undefined | null;
+    chat_client_generated_uuid?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    mint?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+  };
+  /** unique or primary key constraints on table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_constraint"]: nft_sticker_metadata_constraint;
+  /** input type for incrementing numeric columns in table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_inc_input"]: {
+    id?: number | undefined | null;
+  };
+  /** input type for inserting data into table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_insert_input"]: {
+    chat?: ResolverInputTypes["chats_obj_rel_insert_input"] | undefined | null;
+    chat_client_generated_uuid?: string | undefined | null;
+    id?: number | undefined | null;
+    mint?: string | undefined | null;
+  };
+  /** order by max() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_max_order_by"]: {
+    chat_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    mint?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by min() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_min_order_by"]: {
+    chat_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    mint?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** response of any mutation on the table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["nft_sticker_metadata"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_on_conflict"]: {
+    constraint: ResolverInputTypes["nft_sticker_metadata_constraint"];
+    update_columns: Array<
+      ResolverInputTypes["nft_sticker_metadata_update_column"]
+    >;
+    where?:
+      | ResolverInputTypes["nft_sticker_metadata_bool_exp"]
+      | undefined
+      | null;
+  };
+  /** Ordering options when selecting data from "nft_sticker_metadata". */
+  ["nft_sticker_metadata_order_by"]: {
+    chat?: ResolverInputTypes["chats_order_by"] | undefined | null;
+    chat_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    mint?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** primary key columns input for table: nft_sticker_metadata */
+  ["nft_sticker_metadata_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_select_column"]: nft_sticker_metadata_select_column;
+  /** input type for updating data in table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_set_input"]: {
+    chat_client_generated_uuid?: string | undefined | null;
+    id?: number | undefined | null;
+    mint?: string | undefined | null;
+  };
+  /** order by stddev() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_stddev_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_pop() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_stddev_pop_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_samp() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_stddev_samp_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Streaming cursor of the table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["nft_sticker_metadata_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["nft_sticker_metadata_stream_cursor_value_input"]: {
+    chat_client_generated_uuid?: string | undefined | null;
+    id?: number | undefined | null;
+    mint?: string | undefined | null;
+  };
+  /** order by sum() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_sum_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** update columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_update_column"]: nft_sticker_metadata_update_column;
+  ["nft_sticker_metadata_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ResolverInputTypes["nft_sticker_metadata_inc_input"]
+      | undefined
+      | null;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ResolverInputTypes["nft_sticker_metadata_set_input"]
+      | undefined
+      | null;
+    where: ResolverInputTypes["nft_sticker_metadata_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_var_pop_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by var_samp() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_var_samp_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by variance() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_variance_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
   /** column ordering options */
   ["order_by"]: order_by;
   ["query_root"]: AliasType<{
@@ -5978,6 +6796,36 @@ export type ResolverInputTypes = {
       ResolverInputTypes["chats"]
     ];
     chats_by_pk?: [{ id: number }, ResolverInputTypes["chats"]];
+    nft_sticker_metadata?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["nft_sticker_metadata_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["nft_sticker_metadata_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["nft_sticker_metadata_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["nft_sticker_metadata"]
+    ];
+    nft_sticker_metadata_by_pk?: [
+      { id: number },
+      ResolverInputTypes["nft_sticker_metadata"]
+    ];
     room_active_chat_mapping?: [
       {
         /** distinct select on columns */
@@ -6924,6 +7772,52 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["chats"]
     ];
+    nft_sticker_metadata?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["nft_sticker_metadata_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["nft_sticker_metadata_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["nft_sticker_metadata_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["nft_sticker_metadata"]
+    ];
+    nft_sticker_metadata_by_pk?: [
+      { id: number },
+      ResolverInputTypes["nft_sticker_metadata"]
+    ];
+    nft_sticker_metadata_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["nft_sticker_metadata_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["nft_sticker_metadata_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["nft_sticker_metadata"]
+    ];
     room_active_chat_mapping?: [
       {
         /** distinct select on columns */
@@ -7552,6 +8446,8 @@ export type ModelTypes = {
     id: number;
     message: string;
     message_kind?: string | undefined;
+    /** An array relationship */
+    nft_sticker_metadata: Array<ModelTypes["nft_sticker_metadata"]>;
     parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
     /** An array relationship */
@@ -7580,6 +8476,9 @@ export type ModelTypes = {
     id?: ModelTypes["Int_comparison_exp"] | undefined;
     message?: ModelTypes["String_comparison_exp"] | undefined;
     message_kind?: ModelTypes["String_comparison_exp"] | undefined;
+    nft_sticker_metadata?:
+      | ModelTypes["nft_sticker_metadata_bool_exp"]
+      | undefined;
     parent_client_generated_uuid?:
       | ModelTypes["String_comparison_exp"]
       | undefined;
@@ -7608,6 +8507,9 @@ export type ModelTypes = {
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
+    nft_sticker_metadata?:
+      | ModelTypes["nft_sticker_metadata_arr_rel_insert_input"]
+      | undefined;
     parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
     secure_transfer_transactions?:
@@ -7652,6 +8554,9 @@ export type ModelTypes = {
     id?: ModelTypes["order_by"] | undefined;
     message?: ModelTypes["order_by"] | undefined;
     message_kind?: ModelTypes["order_by"] | undefined;
+    nft_sticker_metadata_aggregate?:
+      | ModelTypes["nft_sticker_metadata_aggregate_order_by"]
+      | undefined;
     parent_client_generated_uuid?: ModelTypes["order_by"] | undefined;
     room?: ModelTypes["order_by"] | undefined;
     secure_transfer_transactions_aggregate?:
@@ -7721,6 +8626,14 @@ export type ModelTypes = {
     insert_chats?: ModelTypes["chats_mutation_response"] | undefined;
     /** insert a single row into the table: "chats" */
     insert_chats_one?: ModelTypes["chats"] | undefined;
+    /** insert data into the table: "nft_sticker_metadata" */
+    insert_nft_sticker_metadata?:
+      | ModelTypes["nft_sticker_metadata_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "nft_sticker_metadata" */
+    insert_nft_sticker_metadata_one?:
+      | ModelTypes["nft_sticker_metadata"]
+      | undefined;
     /** insert data into the table: "room_active_chat_mapping" */
     insert_room_active_chat_mapping?:
       | ModelTypes["room_active_chat_mapping_mutation_response"]
@@ -7773,6 +8686,18 @@ export type ModelTypes = {
     update_chat_media_messages_many?:
       | Array<ModelTypes["chat_media_messages_mutation_response"] | undefined>
       | undefined;
+    /** update data of the table: "nft_sticker_metadata" */
+    update_nft_sticker_metadata?:
+      | ModelTypes["nft_sticker_metadata_mutation_response"]
+      | undefined;
+    /** update single row of the table: "nft_sticker_metadata" */
+    update_nft_sticker_metadata_by_pk?:
+      | ModelTypes["nft_sticker_metadata"]
+      | undefined;
+    /** update multiples rows of table: "nft_sticker_metadata" */
+    update_nft_sticker_metadata_many?:
+      | Array<ModelTypes["nft_sticker_metadata_mutation_response"] | undefined>
+      | undefined;
     /** update data of the table: "room_active_chat_mapping" */
     update_room_active_chat_mapping?:
       | ModelTypes["room_active_chat_mapping_mutation_response"]
@@ -7815,6 +8740,158 @@ export type ModelTypes = {
       | Array<ModelTypes["simple_transactions_mutation_response"] | undefined>
       | undefined;
   };
+  /** columns and relationships of "nft_sticker_metadata" */
+  ["nft_sticker_metadata"]: {
+    /** An object relationship */
+    chat: ModelTypes["chats"];
+    chat_client_generated_uuid: string;
+    id: number;
+    mint: string;
+  };
+  /** order by aggregate values of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_aggregate_order_by"]: {
+    avg?: ModelTypes["nft_sticker_metadata_avg_order_by"] | undefined;
+    count?: ModelTypes["order_by"] | undefined;
+    max?: ModelTypes["nft_sticker_metadata_max_order_by"] | undefined;
+    min?: ModelTypes["nft_sticker_metadata_min_order_by"] | undefined;
+    stddev?: ModelTypes["nft_sticker_metadata_stddev_order_by"] | undefined;
+    stddev_pop?:
+      | ModelTypes["nft_sticker_metadata_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | ModelTypes["nft_sticker_metadata_stddev_samp_order_by"]
+      | undefined;
+    sum?: ModelTypes["nft_sticker_metadata_sum_order_by"] | undefined;
+    var_pop?: ModelTypes["nft_sticker_metadata_var_pop_order_by"] | undefined;
+    var_samp?: ModelTypes["nft_sticker_metadata_var_samp_order_by"] | undefined;
+    variance?: ModelTypes["nft_sticker_metadata_variance_order_by"] | undefined;
+  };
+  /** input type for inserting array relation for remote table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_arr_rel_insert_input"]: {
+    data: Array<ModelTypes["nft_sticker_metadata_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: ModelTypes["nft_sticker_metadata_on_conflict"] | undefined;
+  };
+  /** order by avg() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_avg_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "nft_sticker_metadata". All fields are combined with a logical 'AND'. */
+  ["nft_sticker_metadata_bool_exp"]: {
+    _and?: Array<ModelTypes["nft_sticker_metadata_bool_exp"]> | undefined;
+    _not?: ModelTypes["nft_sticker_metadata_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["nft_sticker_metadata_bool_exp"]> | undefined;
+    chat?: ModelTypes["chats_bool_exp"] | undefined;
+    chat_client_generated_uuid?:
+      | ModelTypes["String_comparison_exp"]
+      | undefined;
+    id?: ModelTypes["Int_comparison_exp"] | undefined;
+    mint?: ModelTypes["String_comparison_exp"] | undefined;
+  };
+  ["nft_sticker_metadata_constraint"]: nft_sticker_metadata_constraint;
+  /** input type for incrementing numeric columns in table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_insert_input"]: {
+    chat?: ModelTypes["chats_obj_rel_insert_input"] | undefined;
+    chat_client_generated_uuid?: string | undefined;
+    id?: number | undefined;
+    mint?: string | undefined;
+  };
+  /** order by max() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_max_order_by"]: {
+    chat_client_generated_uuid?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    mint?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_min_order_by"]: {
+    chat_client_generated_uuid?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    mint?: ModelTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["nft_sticker_metadata"]>;
+  };
+  /** on_conflict condition type for table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_on_conflict"]: {
+    constraint: ModelTypes["nft_sticker_metadata_constraint"];
+    update_columns: Array<ModelTypes["nft_sticker_metadata_update_column"]>;
+    where?: ModelTypes["nft_sticker_metadata_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "nft_sticker_metadata". */
+  ["nft_sticker_metadata_order_by"]: {
+    chat?: ModelTypes["chats_order_by"] | undefined;
+    chat_client_generated_uuid?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    mint?: ModelTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: nft_sticker_metadata */
+  ["nft_sticker_metadata_pk_columns_input"]: {
+    id: number;
+  };
+  ["nft_sticker_metadata_select_column"]: nft_sticker_metadata_select_column;
+  /** input type for updating data in table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_set_input"]: {
+    chat_client_generated_uuid?: string | undefined;
+    id?: number | undefined;
+    mint?: string | undefined;
+  };
+  /** order by stddev() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_stddev_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_stddev_pop_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_stddev_samp_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["nft_sticker_metadata_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["nft_sticker_metadata_stream_cursor_value_input"]: {
+    chat_client_generated_uuid?: string | undefined;
+    id?: number | undefined;
+    mint?: string | undefined;
+  };
+  /** order by sum() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_sum_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  ["nft_sticker_metadata_update_column"]: nft_sticker_metadata_update_column;
+  ["nft_sticker_metadata_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ModelTypes["nft_sticker_metadata_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["nft_sticker_metadata_set_input"] | undefined;
+    where: ModelTypes["nft_sticker_metadata_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_var_pop_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_var_samp_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_variance_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
   ["order_by"]: order_by;
   ["query_root"]: {
     /** fetch data from the table: "barters" */
@@ -7831,6 +8908,10 @@ export type ModelTypes = {
     chats: Array<ModelTypes["chats"]>;
     /** fetch data from the table: "chats" using primary key columns */
     chats_by_pk?: ModelTypes["chats"] | undefined;
+    /** An array relationship */
+    nft_sticker_metadata: Array<ModelTypes["nft_sticker_metadata"]>;
+    /** fetch data from the table: "nft_sticker_metadata" using primary key columns */
+    nft_sticker_metadata_by_pk?: ModelTypes["nft_sticker_metadata"] | undefined;
     /** fetch data from the table: "room_active_chat_mapping" */
     room_active_chat_mapping: Array<ModelTypes["room_active_chat_mapping"]>;
     /** fetch data from the table: "room_active_chat_mapping" using primary key columns */
@@ -8401,6 +9482,12 @@ export type ModelTypes = {
     chats_by_pk?: ModelTypes["chats"] | undefined;
     /** fetch data from the table in a streaming manner: "chats" */
     chats_stream: Array<ModelTypes["chats"]>;
+    /** An array relationship */
+    nft_sticker_metadata: Array<ModelTypes["nft_sticker_metadata"]>;
+    /** fetch data from the table: "nft_sticker_metadata" using primary key columns */
+    nft_sticker_metadata_by_pk?: ModelTypes["nft_sticker_metadata"] | undefined;
+    /** fetch data from the table in a streaming manner: "nft_sticker_metadata" */
+    nft_sticker_metadata_stream: Array<ModelTypes["nft_sticker_metadata"]>;
     /** fetch data from the table: "room_active_chat_mapping" */
     room_active_chat_mapping: Array<ModelTypes["room_active_chat_mapping"]>;
     /** fetch data from the table: "room_active_chat_mapping" using primary key columns */
@@ -8940,6 +10027,8 @@ export type GraphQLTypes = {
     id: number;
     message: string;
     message_kind?: string | undefined;
+    /** An array relationship */
+    nft_sticker_metadata: Array<GraphQLTypes["nft_sticker_metadata"]>;
     parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
     /** An array relationship */
@@ -8968,6 +10057,9 @@ export type GraphQLTypes = {
     id?: GraphQLTypes["Int_comparison_exp"] | undefined;
     message?: GraphQLTypes["String_comparison_exp"] | undefined;
     message_kind?: GraphQLTypes["String_comparison_exp"] | undefined;
+    nft_sticker_metadata?:
+      | GraphQLTypes["nft_sticker_metadata_bool_exp"]
+      | undefined;
     parent_client_generated_uuid?:
       | GraphQLTypes["String_comparison_exp"]
       | undefined;
@@ -8997,6 +10089,9 @@ export type GraphQLTypes = {
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
+    nft_sticker_metadata?:
+      | GraphQLTypes["nft_sticker_metadata_arr_rel_insert_input"]
+      | undefined;
     parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
     secure_transfer_transactions?:
@@ -9042,6 +10137,9 @@ export type GraphQLTypes = {
     id?: GraphQLTypes["order_by"] | undefined;
     message?: GraphQLTypes["order_by"] | undefined;
     message_kind?: GraphQLTypes["order_by"] | undefined;
+    nft_sticker_metadata_aggregate?:
+      | GraphQLTypes["nft_sticker_metadata_aggregate_order_by"]
+      | undefined;
     parent_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
     room?: GraphQLTypes["order_by"] | undefined;
     secure_transfer_transactions_aggregate?:
@@ -9115,6 +10213,14 @@ export type GraphQLTypes = {
     insert_chats?: GraphQLTypes["chats_mutation_response"] | undefined;
     /** insert a single row into the table: "chats" */
     insert_chats_one?: GraphQLTypes["chats"] | undefined;
+    /** insert data into the table: "nft_sticker_metadata" */
+    insert_nft_sticker_metadata?:
+      | GraphQLTypes["nft_sticker_metadata_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "nft_sticker_metadata" */
+    insert_nft_sticker_metadata_one?:
+      | GraphQLTypes["nft_sticker_metadata"]
+      | undefined;
     /** insert data into the table: "room_active_chat_mapping" */
     insert_room_active_chat_mapping?:
       | GraphQLTypes["room_active_chat_mapping_mutation_response"]
@@ -9169,6 +10275,20 @@ export type GraphQLTypes = {
     update_chat_media_messages_many?:
       | Array<GraphQLTypes["chat_media_messages_mutation_response"] | undefined>
       | undefined;
+    /** update data of the table: "nft_sticker_metadata" */
+    update_nft_sticker_metadata?:
+      | GraphQLTypes["nft_sticker_metadata_mutation_response"]
+      | undefined;
+    /** update single row of the table: "nft_sticker_metadata" */
+    update_nft_sticker_metadata_by_pk?:
+      | GraphQLTypes["nft_sticker_metadata"]
+      | undefined;
+    /** update multiples rows of table: "nft_sticker_metadata" */
+    update_nft_sticker_metadata_many?:
+      | Array<
+          GraphQLTypes["nft_sticker_metadata_mutation_response"] | undefined
+        >
+      | undefined;
     /** update data of the table: "room_active_chat_mapping" */
     update_room_active_chat_mapping?:
       | GraphQLTypes["room_active_chat_mapping_mutation_response"]
@@ -9211,6 +10331,167 @@ export type GraphQLTypes = {
       | Array<GraphQLTypes["simple_transactions_mutation_response"] | undefined>
       | undefined;
   };
+  /** columns and relationships of "nft_sticker_metadata" */
+  ["nft_sticker_metadata"]: {
+    __typename: "nft_sticker_metadata";
+    /** An object relationship */
+    chat: GraphQLTypes["chats"];
+    chat_client_generated_uuid: string;
+    id: number;
+    mint: string;
+  };
+  /** order by aggregate values of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_aggregate_order_by"]: {
+    avg?: GraphQLTypes["nft_sticker_metadata_avg_order_by"] | undefined;
+    count?: GraphQLTypes["order_by"] | undefined;
+    max?: GraphQLTypes["nft_sticker_metadata_max_order_by"] | undefined;
+    min?: GraphQLTypes["nft_sticker_metadata_min_order_by"] | undefined;
+    stddev?: GraphQLTypes["nft_sticker_metadata_stddev_order_by"] | undefined;
+    stddev_pop?:
+      | GraphQLTypes["nft_sticker_metadata_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | GraphQLTypes["nft_sticker_metadata_stddev_samp_order_by"]
+      | undefined;
+    sum?: GraphQLTypes["nft_sticker_metadata_sum_order_by"] | undefined;
+    var_pop?: GraphQLTypes["nft_sticker_metadata_var_pop_order_by"] | undefined;
+    var_samp?:
+      | GraphQLTypes["nft_sticker_metadata_var_samp_order_by"]
+      | undefined;
+    variance?:
+      | GraphQLTypes["nft_sticker_metadata_variance_order_by"]
+      | undefined;
+  };
+  /** input type for inserting array relation for remote table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_arr_rel_insert_input"]: {
+    data: Array<GraphQLTypes["nft_sticker_metadata_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["nft_sticker_metadata_on_conflict"] | undefined;
+  };
+  /** order by avg() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_avg_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "nft_sticker_metadata". All fields are combined with a logical 'AND'. */
+  ["nft_sticker_metadata_bool_exp"]: {
+    _and?: Array<GraphQLTypes["nft_sticker_metadata_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["nft_sticker_metadata_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["nft_sticker_metadata_bool_exp"]> | undefined;
+    chat?: GraphQLTypes["chats_bool_exp"] | undefined;
+    chat_client_generated_uuid?:
+      | GraphQLTypes["String_comparison_exp"]
+      | undefined;
+    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    mint?: GraphQLTypes["String_comparison_exp"] | undefined;
+  };
+  /** unique or primary key constraints on table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_constraint"]: nft_sticker_metadata_constraint;
+  /** input type for incrementing numeric columns in table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_insert_input"]: {
+    chat?: GraphQLTypes["chats_obj_rel_insert_input"] | undefined;
+    chat_client_generated_uuid?: string | undefined;
+    id?: number | undefined;
+    mint?: string | undefined;
+  };
+  /** order by max() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_max_order_by"]: {
+    chat_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    mint?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_min_order_by"]: {
+    chat_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    mint?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_mutation_response"]: {
+    __typename: "nft_sticker_metadata_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["nft_sticker_metadata"]>;
+  };
+  /** on_conflict condition type for table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_on_conflict"]: {
+    constraint: GraphQLTypes["nft_sticker_metadata_constraint"];
+    update_columns: Array<GraphQLTypes["nft_sticker_metadata_update_column"]>;
+    where?: GraphQLTypes["nft_sticker_metadata_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "nft_sticker_metadata". */
+  ["nft_sticker_metadata_order_by"]: {
+    chat?: GraphQLTypes["chats_order_by"] | undefined;
+    chat_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    mint?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: nft_sticker_metadata */
+  ["nft_sticker_metadata_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_select_column"]: nft_sticker_metadata_select_column;
+  /** input type for updating data in table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_set_input"]: {
+    chat_client_generated_uuid?: string | undefined;
+    id?: number | undefined;
+    mint?: string | undefined;
+  };
+  /** order by stddev() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_stddev_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_stddev_pop_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_stddev_samp_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["nft_sticker_metadata_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["nft_sticker_metadata_stream_cursor_value_input"]: {
+    chat_client_generated_uuid?: string | undefined;
+    id?: number | undefined;
+    mint?: string | undefined;
+  };
+  /** order by sum() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_sum_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** update columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_update_column"]: nft_sticker_metadata_update_column;
+  ["nft_sticker_metadata_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: GraphQLTypes["nft_sticker_metadata_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: GraphQLTypes["nft_sticker_metadata_set_input"] | undefined;
+    where: GraphQLTypes["nft_sticker_metadata_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_var_pop_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_var_samp_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "nft_sticker_metadata" */
+  ["nft_sticker_metadata_variance_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
   /** column ordering options */
   ["order_by"]: order_by;
   ["query_root"]: {
@@ -9229,6 +10510,12 @@ export type GraphQLTypes = {
     chats: Array<GraphQLTypes["chats"]>;
     /** fetch data from the table: "chats" using primary key columns */
     chats_by_pk?: GraphQLTypes["chats"] | undefined;
+    /** An array relationship */
+    nft_sticker_metadata: Array<GraphQLTypes["nft_sticker_metadata"]>;
+    /** fetch data from the table: "nft_sticker_metadata" using primary key columns */
+    nft_sticker_metadata_by_pk?:
+      | GraphQLTypes["nft_sticker_metadata"]
+      | undefined;
     /** fetch data from the table: "room_active_chat_mapping" */
     room_active_chat_mapping: Array<GraphQLTypes["room_active_chat_mapping"]>;
     /** fetch data from the table: "room_active_chat_mapping" using primary key columns */
@@ -9823,6 +11110,14 @@ export type GraphQLTypes = {
     chats_by_pk?: GraphQLTypes["chats"] | undefined;
     /** fetch data from the table in a streaming manner: "chats" */
     chats_stream: Array<GraphQLTypes["chats"]>;
+    /** An array relationship */
+    nft_sticker_metadata: Array<GraphQLTypes["nft_sticker_metadata"]>;
+    /** fetch data from the table: "nft_sticker_metadata" using primary key columns */
+    nft_sticker_metadata_by_pk?:
+      | GraphQLTypes["nft_sticker_metadata"]
+      | undefined;
+    /** fetch data from the table in a streaming manner: "nft_sticker_metadata" */
+    nft_sticker_metadata_stream: Array<GraphQLTypes["nft_sticker_metadata"]>;
     /** fetch data from the table: "room_active_chat_mapping" */
     room_active_chat_mapping: Array<GraphQLTypes["room_active_chat_mapping"]>;
     /** fetch data from the table: "room_active_chat_mapping" using primary key columns */
@@ -9945,6 +11240,22 @@ export const enum chats_update_column {
 export const enum cursor_ordering {
   ASC = "ASC",
   DESC = "DESC",
+}
+/** unique or primary key constraints on table "nft_sticker_metadata" */
+export const enum nft_sticker_metadata_constraint {
+  nft_sticker_metadata_pkey = "nft_sticker_metadata_pkey",
+}
+/** select columns of table "nft_sticker_metadata" */
+export const enum nft_sticker_metadata_select_column {
+  chat_client_generated_uuid = "chat_client_generated_uuid",
+  id = "id",
+  mint = "mint",
+}
+/** update columns of table "nft_sticker_metadata" */
+export const enum nft_sticker_metadata_update_column {
+  chat_client_generated_uuid = "chat_client_generated_uuid",
+  id = "id",
+  mint = "mint",
 }
 /** column ordering options */
 export const enum order_by {
@@ -10091,6 +11402,31 @@ type ZEUS_VARIABLES = {
   ["chats_stream_cursor_value_input"]: ValueTypes["chats_stream_cursor_value_input"];
   ["chats_update_column"]: ValueTypes["chats_update_column"];
   ["cursor_ordering"]: ValueTypes["cursor_ordering"];
+  ["nft_sticker_metadata_aggregate_order_by"]: ValueTypes["nft_sticker_metadata_aggregate_order_by"];
+  ["nft_sticker_metadata_arr_rel_insert_input"]: ValueTypes["nft_sticker_metadata_arr_rel_insert_input"];
+  ["nft_sticker_metadata_avg_order_by"]: ValueTypes["nft_sticker_metadata_avg_order_by"];
+  ["nft_sticker_metadata_bool_exp"]: ValueTypes["nft_sticker_metadata_bool_exp"];
+  ["nft_sticker_metadata_constraint"]: ValueTypes["nft_sticker_metadata_constraint"];
+  ["nft_sticker_metadata_inc_input"]: ValueTypes["nft_sticker_metadata_inc_input"];
+  ["nft_sticker_metadata_insert_input"]: ValueTypes["nft_sticker_metadata_insert_input"];
+  ["nft_sticker_metadata_max_order_by"]: ValueTypes["nft_sticker_metadata_max_order_by"];
+  ["nft_sticker_metadata_min_order_by"]: ValueTypes["nft_sticker_metadata_min_order_by"];
+  ["nft_sticker_metadata_on_conflict"]: ValueTypes["nft_sticker_metadata_on_conflict"];
+  ["nft_sticker_metadata_order_by"]: ValueTypes["nft_sticker_metadata_order_by"];
+  ["nft_sticker_metadata_pk_columns_input"]: ValueTypes["nft_sticker_metadata_pk_columns_input"];
+  ["nft_sticker_metadata_select_column"]: ValueTypes["nft_sticker_metadata_select_column"];
+  ["nft_sticker_metadata_set_input"]: ValueTypes["nft_sticker_metadata_set_input"];
+  ["nft_sticker_metadata_stddev_order_by"]: ValueTypes["nft_sticker_metadata_stddev_order_by"];
+  ["nft_sticker_metadata_stddev_pop_order_by"]: ValueTypes["nft_sticker_metadata_stddev_pop_order_by"];
+  ["nft_sticker_metadata_stddev_samp_order_by"]: ValueTypes["nft_sticker_metadata_stddev_samp_order_by"];
+  ["nft_sticker_metadata_stream_cursor_input"]: ValueTypes["nft_sticker_metadata_stream_cursor_input"];
+  ["nft_sticker_metadata_stream_cursor_value_input"]: ValueTypes["nft_sticker_metadata_stream_cursor_value_input"];
+  ["nft_sticker_metadata_sum_order_by"]: ValueTypes["nft_sticker_metadata_sum_order_by"];
+  ["nft_sticker_metadata_update_column"]: ValueTypes["nft_sticker_metadata_update_column"];
+  ["nft_sticker_metadata_updates"]: ValueTypes["nft_sticker_metadata_updates"];
+  ["nft_sticker_metadata_var_pop_order_by"]: ValueTypes["nft_sticker_metadata_var_pop_order_by"];
+  ["nft_sticker_metadata_var_samp_order_by"]: ValueTypes["nft_sticker_metadata_var_samp_order_by"];
+  ["nft_sticker_metadata_variance_order_by"]: ValueTypes["nft_sticker_metadata_variance_order_by"];
   ["order_by"]: ValueTypes["order_by"];
   ["room_active_chat_mapping_aggregate_order_by"]: ValueTypes["room_active_chat_mapping_aggregate_order_by"];
   ["room_active_chat_mapping_arr_rel_insert_input"]: ValueTypes["room_active_chat_mapping_arr_rel_insert_input"];
