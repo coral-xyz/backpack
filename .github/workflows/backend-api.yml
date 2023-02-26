@@ -16,7 +16,6 @@ jobs:
           DOCKER_USER: ${{secrets.DOCKER_USERNAME}}
           DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
         run: |
-          mv docker/backpack-api/Dockerfile .
           cd backend/native/backpack-api
           touch .env
           printf 'AUTH_JWT=%s\n' '${{secrets.AUTH_JWT}}' >> .env
