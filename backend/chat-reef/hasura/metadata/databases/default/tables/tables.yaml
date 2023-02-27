@@ -1,3 +1,4 @@
+- "!include public_barter_poke_metadata.yaml"
 - "!include public_barters.yaml"
 - "!include public_chat_barter_metadata.yaml"
 - "!include public_chat_media_messages.yaml"

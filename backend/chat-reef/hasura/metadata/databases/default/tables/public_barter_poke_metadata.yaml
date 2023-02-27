@@ -1,0 +1,28 @@
+table:
+  name: barter_poke_metadata
+  schema: public
+insert_permissions:
+  - role: chat
+    permission:
+      check: {}
+      columns:
+        - id
+        - message_client_generated_uuid
+        - barter_id
+select_permissions:
+  - role: chat
+    permission:
+      columns:
+        - barter_id
+        - id
+        - message_client_generated_uuid
+      filter: {}
+update_permissions:
+  - role: chat
+    permission:
+      columns:
+        - barter_id
+        - id
+        - message_client_generated_uuid
+      filter: {}
+      check: null
