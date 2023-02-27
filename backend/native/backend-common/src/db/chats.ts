@@ -90,6 +90,20 @@ export const postChat = (
         }
       : {};
 
+  const nftStickerMutation =
+    message_kind === "nft-sticker"
+      ? {
+          nft_sticker: {
+            data: [
+              {
+                //@ts-ignore
+                mint: messageMetadata?.mint || "",
+              },
+            ],
+          },
+        }
+      : {};
+
   chain("mutation")({
     insert_chats_one: [
       {
@@ -98,6 +112,7 @@ export const postChat = (
           ...mediaMessageMutation,
           ...simpleTransferMutation,
           ...barterMessageMutation,
+          ...nftStickerMutation,
           username: "",
           room,
           message: message,

@@ -36,6 +36,22 @@ interface ChatRoomProps {
   publicKey?: string;
 }
 
+export type AboveMessagePlugin =
+  | {
+      type: "secure-transfer";
+      metadata: {};
+    }
+  | {
+      type: "nft-sticker";
+      metadata: {
+        mint: string;
+      };
+    }
+  | {
+      type: "";
+      metadata: {};
+    };
+
 export const ChatRoom = ({
   roomId,
   userId,
@@ -73,6 +89,8 @@ export const ChatRoom = ({
   const [jumpToBottom, setShowJumpToBottom] = useState(false);
   const [localUnreadCount, setLocalUnreadCount] = useState(0);
   const [openPlugin, setOpenPlugin] = useState<MessagePlugins>("");
+  const [aboveMessagePlugin, setAboveMessagePlugin] =
+    useState<AboveMessagePlugin>({ type: "", metadata: {} });
 
   useEffect(() => {
     if (roomId) {
@@ -205,6 +223,8 @@ export const ChatRoom = ({
       usersMetadata={usersMetadata}
       openPlugin={openPlugin}
       setOpenPlugin={setOpenPlugin}
+      aboveMessagePlugin={aboveMessagePlugin}
+      setAboveMessagePlugin={setAboveMessagePlugin}
     >
       <div
         style={{

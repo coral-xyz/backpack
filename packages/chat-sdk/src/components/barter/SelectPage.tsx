@@ -6,7 +6,8 @@ import {
   ProxyImage,
   SecondaryButton,
   TextInput,
- useBreakpoints } from "@coral-xyz/react-common";
+  useBreakpoints,
+} from "@coral-xyz/react-common";
 import type { TokenDataWithPrice } from "@coral-xyz/recoil";
 import {
   blockchainBalancesSorted,
@@ -18,7 +19,7 @@ import {
 } from "@coral-xyz/recoil";
 import { styled, useCustomTheme } from "@coral-xyz/themes";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { TextField } from "@mui/material";
+import { Skeleton, TextField } from "@mui/material";
 import { useRecoilValueLoadable } from "recoil";
 
 import { useBarterContext } from "./BarterContext";
@@ -36,6 +37,7 @@ export function SelectPage({
     useState<BarterOffers>(currentSelection);
 
   const [activeTab, setActiveTab] = useState("nfts");
+  const activeSolWallet = useActiveSolanaWallet();
 
   const theme = useCustomTheme();
 
@@ -116,23 +118,39 @@ export function SelectPage({
         }}
       >
         <div>
-          {activeTab !== "nfts" && (
+          {activeTab !== "nfts" ? (
             <Tokens
               localSelection={localSelection}
               setLocalSelection={setLocalSelection}
             />
-          )}
-          {activeTab === "nfts" && (
+          ) : null}
+          {activeTab === "nfts" ? (
             <Nfts
+              onSelect={(nft: Nft) => {
+                setLocalSelection((s: any) => {
+                  if (s.map((x) => x.mint).includes(nft.mint || "")) {
+                    return s.filter((x) => x.mint !== nft.mint);
+                  }
+                  return [
+                    ...s,
+                    {
+                      mint: nft.mint,
+                      publicKey: activeSolWallet.publicKey,
+                      amount: 1,
+                      type: "NFT",
+                    },
+                  ];
+                });
+              }}
               localSelection={localSelection}
               setLocalSelection={setLocalSelection}
             />
-          )}
+          ) : null}
         </div>
         <div style={{ justifyContent: "center", padding: 10 }}>
           <SecondaryButton
             fullWidth
-            label={"Update Trade"}
+            label="Update Trade"
             onClick={async () => {
               await fetch(
                 `${BACKEND_API_URL}/barter/active?room=${room}&type=individual`,
@@ -151,14 +169,54 @@ export function SelectPage({
               }));
               setSelectNft(false);
             }}
-          ></SecondaryButton>
+          />
         </div>
       </div>
     </div>
   );
 }
 
-function Nfts({ localSelection, setLocalSelection }: any) {
+export function NftsSkeleton() {
+  const { isXs } = useBreakpoints();
+
+  const getDimensions = () => {
+    if (isXs) {
+      return 80;
+    }
+    return 120;
+  };
+
+  return (
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <NftSkeleton />
+      <NftSkeleton />
+      <NftSkeleton />
+      <NftSkeleton />
+    </div>
+  );
+}
+
+export function NftSkeleton({ dimension }: { dimension?: number }) {
+  const { isXs } = useBreakpoints();
+
+  const getDimensions = () => {
+    if (isXs) {
+      return 80;
+    }
+    return 120;
+  };
+
+  return (
+    <Skeleton
+      variant="rectangular"
+      height={dimension ?? getDimensions()}
+      width={dimension ?? getDimensions()}
+      style={{ margin: isXs ? 4 : 12 }}
+    />
+  );
+}
+
+export function Nfts({ localSelection, onSelect }: any) {
   const activeSolWallet = useActiveSolanaWallet();
   const { contents, state }: any = useRecoilValueLoadable(
     nftsByOwner({
@@ -170,11 +228,11 @@ function Nfts({ localSelection, setLocalSelection }: any) {
   const theme = useCustomTheme();
 
   if (state === "loading" || state === "hasError") {
-    return <></>;
+    return <NftsSkeleton />;
   }
 
   return (
-    <>
+    <div>
       <div style={{ display: "flex" }}>
         <div style={{ flex: 1 }}>
           <div
@@ -186,20 +244,20 @@ function Nfts({ localSelection, setLocalSelection }: any) {
             }}
           >
             {contents?.map((nft) => (
-              <>
+              <div>
                 <RenderNFT
                   nft={nft}
                   selected={localSelection
                     .map((x) => x.mint)
                     .includes(nft.mint)}
-                  setLocalSelection={setLocalSelection}
+                  onSelect={onSelect}
                 />
-              </>
+              </div>
             ))}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -217,7 +275,7 @@ function Tokens({ localSelection, setLocalSelection }: any) {
 
   if (isLoading) {
     //TODO: adda skeletons here
-    return <></>;
+    return <div />;
   }
 
   return (
@@ -355,11 +413,11 @@ function TokenSelector({
 function RenderNFT({
   nft,
   selected,
-  setLocalSelection,
+  onSelect,
 }: {
   nft: Nft;
   selected: boolean;
-  setLocalSelection: any;
+  onSelect: any;
 }) {
   const activeSolWallet = useActiveSolanaWallet();
   const { isXs } = useBreakpoints();
@@ -375,20 +433,7 @@ function RenderNFT({
     <div style={{ position: "relative", margin: isXs ? 4 : 12 }}>
       <StyledProxyImage
         onClick={() => {
-          setLocalSelection((s) => {
-            if (s.map((x) => x.mint).includes(nft.mint)) {
-              return s.filter((x) => x.mint !== nft.mint);
-            }
-            return [
-              ...s,
-              {
-                mint: nft.mint,
-                publicKey: activeSolWallet.publicKey,
-                amount: 1,
-                type: "NFT",
-              },
-            ];
-          });
+          onSelect(nft);
         }}
         style={{
           width: getDimensions(),
@@ -396,14 +441,14 @@ function RenderNFT({
           border: selected ? "3px solid #4C94FF" : "",
         }}
         src={nft.imageUrl}
-        removeOnError={true}
+        removeOnError
       />
-      {selected && (
+      {selected ? (
         <div style={{ position: "absolute", right: 10, top: 8 }}>
           {" "}
           <CheckMark />{" "}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

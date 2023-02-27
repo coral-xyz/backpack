@@ -20,6 +20,7 @@ import { Barter } from "./Barter";
 import { useChatContext } from "./ChatContext";
 import { EmojiPickerComponent } from "./EmojiPicker";
 import { GifPicker } from "./GifPicker";
+import { NftSticker } from "./NftSticker";
 import { ReplyContainer } from "./ReplyContainer";
 import { SecureTransfer } from "./SecureTransfer";
 
@@ -108,12 +109,12 @@ export const SendMessage = ({
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
   const [pluginMenuOpen, setPluginMenuOpen] = useState(false);
-  const [aboveMessagePlugin, setAboveMessagePlugin] = useState("");
 
   const theme = useCustomTheme();
   const activeSolanaWallet = useActiveSolanaWallet();
   const inputRef = useRef<any>(null);
-  const { setOpenPlugin } = useChatContext();
+  const { setOpenPlugin, aboveMessagePlugin, setAboveMessagePlugin } =
+    useChatContext();
 
   const {
     remoteUserId,
@@ -135,7 +136,11 @@ export const SendMessage = ({
     if (selectedFile && uploadingFile) {
       return;
     }
-    if (messageTxt || selectedFile) {
+    if (
+      messageTxt ||
+      selectedFile ||
+      aboveMessagePlugin.type === "nft-sticker"
+    ) {
       if (selectedFile) {
         messageKind = "media";
         messageMetadata = {
@@ -143,6 +148,17 @@ export const SendMessage = ({
           media_link: uploadedImageUri,
         };
         setSelectedFile(null);
+      }
+      if (aboveMessagePlugin.type === "nft-sticker") {
+        messageKind = "nft-sticker";
+        messageMetadata = {
+          mint: aboveMessagePlugin.metadata.mint,
+        };
+        setAboveMessagePlugin({
+          type: "",
+          metadata: {},
+        });
+        setOpenPlugin(false);
       }
       const client_generated_uuid = uuidv4();
       if (chats.length === 0 && type === "individual") {
@@ -254,7 +270,7 @@ export const SendMessage = ({
       offlineMembers={getOfflineMembers().slice(0, 5)}
     >
       <div className={classes.outerDiv}>
-        {selectedFile && (
+        {selectedFile ? (
           <div>
             <div style={{ background: theme.custom.colors.bg3 }}>
               <div
@@ -291,7 +307,7 @@ export const SendMessage = ({
                 ) : (
                   <video
                     style={{ maxHeight: 300, maxWidth: 300 }}
-                    controls={true}
+                    controls
                     src={selectedFile}
                   />
                 )}
@@ -303,7 +319,7 @@ export const SendMessage = ({
                   marginTop: 3,
                 }}
               >
-                {uploadingFile && (
+                {uploadingFile ? (
                   <>
                     {" "}
                     <div
@@ -318,27 +334,26 @@ export const SendMessage = ({
                       <CircularProgress size={20} color="secondary" />{" "}
                     </div>{" "}
                   </>
-                )}
+                ) : null}
               </div>
             </div>
           </div>
-        )}
-        {activeReply.parent_client_generated_uuid && (
+        ) : null}
+        {activeReply.parent_client_generated_uuid ? (
           <ReplyContainer
             marginBottom={6}
             padding={12}
             parent_username={activeReply.parent_username || ""}
-            showCloseBtn={true}
+            showCloseBtn
             text={activeReply.text}
           />
-        )}
-        {aboveMessagePlugin && (
+        ) : null}
+        {aboveMessagePlugin ? (
           <AboveMessagePluginRenderer
-            aboveMessagePlugin={aboveMessagePlugin}
             sendMessage={sendMessage}
             setAboveMessagePlugin={setAboveMessagePlugin}
           />
-        )}
+        ) : null}
         <CustomAutoComplete />
         <div style={{ display: "flex" }}>
           <div
@@ -371,7 +386,7 @@ export const SendMessage = ({
           </div>
           <MessageInput setPluginMenuOpen={setPluginMenuOpen} />
         </div>
-        {pluginMenuOpen && (
+        {pluginMenuOpen ? (
           <div style={{ display: "flex", marginLeft: 8, paddingBottom: 5 }}>
             <div
               style={{
@@ -379,7 +394,7 @@ export const SendMessage = ({
                 flexDirection: "column",
                 justifyContent: "center",
               }}
-            ></div>
+            />
             <EmojiPickerComponent
               setEmojiPicker={setEmojiPicker}
               emojiPicker={emojiPicker}
@@ -404,7 +419,13 @@ export const SendMessage = ({
                 height: "28px",
               }}
             />
-            {type === "individual" && BARTER_ENABLED && (
+            <NftSticker
+              buttonStyle={{
+                height: "28px",
+              }}
+              setAboveMessagePlugin={setAboveMessagePlugin}
+            />
+            {type === "individual" && BARTER_ENABLED ? (
               <Barter
                 setOpenPlugin={setOpenPlugin}
                 onMediaSelect={onMediaSelect}
@@ -412,19 +433,19 @@ export const SendMessage = ({
                   height: "28px",
                 }}
               />
-            )}
+            ) : null}
             {SECURE_TRANSFER_ENABLED &&
-              activeSolanaWallet?.publicKey &&
-              type === "individual" && (
-                <SecureTransfer
-                  buttonStyle={{
-                    height: "28px",
-                  }}
-                  setAboveMessagePlugin={setAboveMessagePlugin}
-                />
-              )}
+            activeSolanaWallet?.publicKey &&
+            type === "individual" ? (
+              <SecureTransfer
+                buttonStyle={{
+                  height: "28px",
+                }}
+                setAboveMessagePlugin={setAboveMessagePlugin}
+              />
+            ) : null}
           </div>
-        )}
+        ) : null}
       </div>
     </MessageInputProvider>
   );

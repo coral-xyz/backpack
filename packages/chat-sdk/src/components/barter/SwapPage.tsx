@@ -17,6 +17,7 @@ import { useChatContext } from "../ChatContext";
 import { AbsolutelyNothingCard } from "./AbsolutelyNothingCard";
 import { AddAssetsCard } from "./AddAssetsCard";
 import { useBarterContext } from "./BarterContext";
+import { NftSkeleton } from "./SelectPage";
 
 export function SwapPage({
   remoteSelection,
@@ -51,11 +52,11 @@ export function SwapPage({
             }}
           >
             <RemoteSelection selection={localSelection} />
-            {!finalized && (
+            {!finalized ? (
               <div style={{ display: "flex", justifyContent: "center" }}>
                 <AddAssetsCard />
               </div>
-            )}
+            ) : null}
           </div>
           <div
             style={{
@@ -65,7 +66,7 @@ export function SwapPage({
               fontWeight: 500,
             }}
           >
-            {remoteSelection.length === 0 && (
+            {remoteSelection.length === 0 ? (
               <div
                 style={{
                   display: "flex",
@@ -75,15 +76,15 @@ export function SwapPage({
               >
                 <AbsolutelyNothingCard />
               </div>
-            )}
-            {remoteSelection.length !== 0 && (
+            ) : null}
+            {remoteSelection.length !== 0 ? (
               <RemoteSelection selection={remoteSelection} />
-            )}
+            ) : null}
           </div>
         </div>
       </div>
       <div style={{ padding: 10 }}>
-        {remoteSelection.length === 0 && (
+        {remoteSelection.length === 0 ? (
           <SecondaryButton
             label={`Request @${remoteUsername} to add assets`}
             onClick={async () => {
@@ -101,10 +102,10 @@ export function SwapPage({
                 setOpenPlugin("");*/
             }}
           />
-        )}
-        {remoteSelection.length !== 0 && (
+        ) : null}
+        {remoteSelection.length !== 0 ? (
           <SecondaryButton
-            label={"Approve trade"}
+            label="Approve trade"
             onClick={async () => {
               await fetch(
                 `${BACKEND_API_URL}/barter/execute?room=${roomId}&type=individual`,
@@ -120,7 +121,7 @@ export function SwapPage({
               setOpenPlugin("");
             }}
           />
-        )}
+        ) : null}
       </div>
     </div>
   );
@@ -136,26 +137,8 @@ export function RemoteSelection({ selection }: { selection: BarterOffers }) {
 }
 
 function RemoteNfts({ selection }: { selection: BarterOffers }) {
-  return (
-    <div
-      style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
-    >
-      {selection.map((s) => (
-        <Suspense>
-          <RemoteNft mint={s.mint} />
-        </Suspense>
-      ))}
-    </div>
-  );
-}
-
-function RemoteNft({ mint }: { mint: string }) {
-  const { isXs } = useBreakpoints();
   const theme = useCustomTheme();
-  const tokenData = useTokenMetadata({
-    mintAddress: mint,
-    blockchain: Blockchain.SOLANA,
-  });
+  const { isXs } = useBreakpoints();
   const getDimensions = () => {
     if (isXs) {
       return 140;
@@ -165,39 +148,82 @@ function RemoteNft({ mint }: { mint: string }) {
 
   return (
     <div
+      style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
+    >
+      {selection.map((s) => (
+        <div>
+          <div
+            style={{
+              position: "relative",
+              margin: isXs ? 4 : 12,
+              padding: 10,
+              background: theme.custom.colors.invertedBg4,
+              borderRadius: 8,
+              width: getDimensions(),
+            }}
+          >
+            <RemoteNftWithSuspense mint={s.mint} />
+            <ExplorerLink mint={s.mint} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function ExplorerLink({ mint }: { mint: string }) {
+  const theme = useCustomTheme();
+
+  return (
+    <div
       style={{
-        position: "relative",
-        margin: isXs ? 4 : 12,
-        padding: 10,
-        background: theme.custom.colors.invertedBg4,
-        borderRadius: 8,
-        width: getDimensions(),
+        cursor: "pointer",
+        color: theme.custom.colors.icon,
+        display: "flex",
+        justifyContent: "center",
+      }}
+      onClick={() => {
+        window.open(`https://explorer.solana.com/address/${mint}`, "_blank");
       }}
     >
-      <ProxyImage
-        style={{
-          borderRadius: 8,
-          width: "100%",
-        }}
-        src={tokenData?.image}
-        removeOnError={true}
-      />
-      <div
-        style={{
-          cursor: "pointer",
-          color: theme.custom.colors.icon,
-          display: "flex",
-          justifyContent: "center",
-        }}
-        onClick={() => {
-          window.open(`https://explorer.solana.com/address/${mint}`, "_blank");
-        }}
-      >
-        <div style={{ display: "flex" }}>
-          <div>View</div> <CallMadeIcon />
-        </div>
+      <div style={{ display: "flex" }}>
+        <div>View</div> <CallMadeIcon />
       </div>
     </div>
+  );
+}
+
+export function RemoteNftWithSuspense({
+  mint,
+  dimension,
+}: {
+  mint: string;
+  dimension?: number;
+}) {
+  const theme = useCustomTheme();
+
+  return (
+    <Suspense fallback={<NftSkeleton dimension={dimension} />}>
+      <RemoteNft mint={mint} />
+    </Suspense>
+  );
+}
+
+export function RemoteNft({ mint }: { mint: string }) {
+  const tokenData = useTokenMetadata({
+    mintAddress: mint,
+    blockchain: Blockchain.SOLANA,
+  });
+
+  return (
+    <ProxyImage
+      style={{
+        borderRadius: 8,
+        width: "100%",
+      }}
+      src={tokenData?.image}
+      removeOnError
+    />
   );
 }
 
