@@ -196,7 +196,7 @@ export function NftsSkeleton() {
   );
 }
 
-export function NftSkeleton() {
+export function NftSkeleton({ dimension }: { dimension?: number }) {
   const { isXs } = useBreakpoints();
 
   const getDimensions = () => {
@@ -209,8 +209,8 @@ export function NftSkeleton() {
   return (
     <Skeleton
       variant="rectangular"
-      height={getDimensions()}
-      width={getDimensions()}
+      height={dimension ?? getDimensions()}
+      width={dimension ?? getDimensions()}
       style={{ margin: isXs ? 4 : 12 }}
     />
   );

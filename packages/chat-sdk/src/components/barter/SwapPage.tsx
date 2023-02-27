@@ -52,9 +52,11 @@ export function SwapPage({
             }}
           >
             <RemoteSelection selection={localSelection} />
-            {!finalized ? <div style={{ display: "flex", justifyContent: "center" }}>
-              <AddAssetsCard />
-            </div> : null}
+            {!finalized ? (
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <AddAssetsCard />
+              </div>
+            ) : null}
           </div>
           <div
             style={{
@@ -64,23 +66,28 @@ export function SwapPage({
               fontWeight: 500,
             }}
           >
-            {remoteSelection.length === 0 ? <div
-              style={{
+            {remoteSelection.length === 0 ? (
+              <div
+                style={{
                   display: "flex",
                   flexWrap: "wrap",
                   justifyContent: "center",
                 }}
               >
-              <AbsolutelyNothingCard />
-            </div> : null}
-            {remoteSelection.length !== 0 ? <RemoteSelection selection={remoteSelection} /> : null}
+                <AbsolutelyNothingCard />
+              </div>
+            ) : null}
+            {remoteSelection.length !== 0 ? (
+              <RemoteSelection selection={remoteSelection} />
+            ) : null}
           </div>
         </div>
       </div>
       <div style={{ padding: 10 }}>
-        {remoteSelection.length === 0 ? <SecondaryButton
-          label={`Request @${remoteUsername} to add assets`}
-          onClick={async () => {
+        {remoteSelection.length === 0 ? (
+          <SecondaryButton
+            label={`Request @${remoteUsername} to add assets`}
+            onClick={async () => {
               /*await fetch(
                     `${BACKEND_API_URL}/barter/execute?room=${roomId}&type=individual`,
                     {
@@ -94,10 +101,12 @@ export function SwapPage({
                 );
                 setOpenPlugin("");*/
             }}
-          /> : null}
-        {remoteSelection.length !== 0 ? <SecondaryButton
-          label="Approve trade"
-          onClick={async () => {
+          />
+        ) : null}
+        {remoteSelection.length !== 0 ? (
+          <SecondaryButton
+            label="Approve trade"
+            onClick={async () => {
               await fetch(
                 `${BACKEND_API_URL}/barter/execute?room=${roomId}&type=individual`,
                 {
@@ -111,7 +120,8 @@ export function SwapPage({
               );
               setOpenPlugin("");
             }}
-          /> : null}
+          />
+        ) : null}
       </div>
     </div>
   );
@@ -183,11 +193,17 @@ export function ExplorerLink({ mint }: { mint: string }) {
   );
 }
 
-export function RemoteNftWithSuspense({ mint }) {
+export function RemoteNftWithSuspense({
+  mint,
+  dimension,
+}: {
+  mint: string;
+  dimension?: number;
+}) {
   const theme = useCustomTheme();
 
   return (
-    <Suspense fallback={<NftSkeleton />}>
+    <Suspense fallback={<NftSkeleton dimension={dimension} />}>
       <RemoteNft mint={mint} />
     </Suspense>
   );

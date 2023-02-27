@@ -1,1 +1,1 @@
-export const PLUGIN_HEIGHT_PERCENTAGE = 75;
+export const PLUGIN_HEIGHT_PERCENTAGE = 40;

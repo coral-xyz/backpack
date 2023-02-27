@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { useBreakpoints } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -16,6 +16,7 @@ export const NftStickerRender = ({
 }) => {
   const { isXs } = useBreakpoints();
   const theme = useCustomTheme();
+  const [ownerVerified, setOwnerVerified] = useState(false);
   const getDimensions = () => {
     if (isXs) {
       return 180;
@@ -24,12 +25,20 @@ export const NftStickerRender = ({
   };
 
   const validate = async (uuid, mint) => {
-    await fetch(
-      `${BACKEND_API_URL}/nft/validateOwner?ownerUuid=${uuid}&mint=${mint}`,
-      {
-        method: "GET",
+    try {
+      const res = await fetch(
+        `${BACKEND_API_URL}/nft/validateOwner?ownerUuid=${uuid}&mint=${mint}`,
+        {
+          method: "GET",
+        }
+      );
+      const json = await res.json();
+      if (json.isOwner) {
+        setOwnerVerified(true);
       }
-    );
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   useEffect(() => {
@@ -65,10 +74,10 @@ export const NftStickerRender = ({
             <CallMadeIcon style={{ fontSize: 18 }} />
           </div>
         </div>
-        <div style={{ position: "absolute", right: 10, top: 8 }}>
+        {ownerVerified ? <div style={{ position: "absolute", right: 10, top: 8 }}>
           {" "}
           <CheckMark />{" "}
-        </div>
+        </div> : null}
       </div>
     </div>
   );
