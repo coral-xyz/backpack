@@ -3,6 +3,104 @@
 export const AllTypesProps: Record<string, any> = {
   Int_comparison_exp: {},
   String_comparison_exp: {},
+  barter_poke_metadata_aggregate_order_by: {
+    avg: "barter_poke_metadata_avg_order_by",
+    count: "order_by",
+    max: "barter_poke_metadata_max_order_by",
+    min: "barter_poke_metadata_min_order_by",
+    stddev: "barter_poke_metadata_stddev_order_by",
+    stddev_pop: "barter_poke_metadata_stddev_pop_order_by",
+    stddev_samp: "barter_poke_metadata_stddev_samp_order_by",
+    sum: "barter_poke_metadata_sum_order_by",
+    var_pop: "barter_poke_metadata_var_pop_order_by",
+    var_samp: "barter_poke_metadata_var_samp_order_by",
+    variance: "barter_poke_metadata_variance_order_by",
+  },
+  barter_poke_metadata_arr_rel_insert_input: {
+    data: "barter_poke_metadata_insert_input",
+    on_conflict: "barter_poke_metadata_on_conflict",
+  },
+  barter_poke_metadata_avg_order_by: {
+    barter_id: "order_by",
+    id: "order_by",
+  },
+  barter_poke_metadata_bool_exp: {
+    _and: "barter_poke_metadata_bool_exp",
+    _not: "barter_poke_metadata_bool_exp",
+    _or: "barter_poke_metadata_bool_exp",
+    barter_id: "Int_comparison_exp",
+    chat: "chats_bool_exp",
+    id: "Int_comparison_exp",
+    message_client_generated_uuid: "String_comparison_exp",
+  },
+  barter_poke_metadata_constraint: "enum" as const,
+  barter_poke_metadata_inc_input: {},
+  barter_poke_metadata_insert_input: {
+    chat: "chats_obj_rel_insert_input",
+  },
+  barter_poke_metadata_max_order_by: {
+    barter_id: "order_by",
+    id: "order_by",
+    message_client_generated_uuid: "order_by",
+  },
+  barter_poke_metadata_min_order_by: {
+    barter_id: "order_by",
+    id: "order_by",
+    message_client_generated_uuid: "order_by",
+  },
+  barter_poke_metadata_on_conflict: {
+    constraint: "barter_poke_metadata_constraint",
+    update_columns: "barter_poke_metadata_update_column",
+    where: "barter_poke_metadata_bool_exp",
+  },
+  barter_poke_metadata_order_by: {
+    barter_id: "order_by",
+    chat: "chats_order_by",
+    id: "order_by",
+    message_client_generated_uuid: "order_by",
+  },
+  barter_poke_metadata_pk_columns_input: {},
+  barter_poke_metadata_select_column: "enum" as const,
+  barter_poke_metadata_set_input: {},
+  barter_poke_metadata_stddev_order_by: {
+    barter_id: "order_by",
+    id: "order_by",
+  },
+  barter_poke_metadata_stddev_pop_order_by: {
+    barter_id: "order_by",
+    id: "order_by",
+  },
+  barter_poke_metadata_stddev_samp_order_by: {
+    barter_id: "order_by",
+    id: "order_by",
+  },
+  barter_poke_metadata_stream_cursor_input: {
+    initial_value: "barter_poke_metadata_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  barter_poke_metadata_stream_cursor_value_input: {},
+  barter_poke_metadata_sum_order_by: {
+    barter_id: "order_by",
+    id: "order_by",
+  },
+  barter_poke_metadata_update_column: "enum" as const,
+  barter_poke_metadata_updates: {
+    _inc: "barter_poke_metadata_inc_input",
+    _set: "barter_poke_metadata_set_input",
+    where: "barter_poke_metadata_bool_exp",
+  },
+  barter_poke_metadata_var_pop_order_by: {
+    barter_id: "order_by",
+    id: "order_by",
+  },
+  barter_poke_metadata_var_samp_order_by: {
+    barter_id: "order_by",
+    id: "order_by",
+  },
+  barter_poke_metadata_variance_order_by: {
+    barter_id: "order_by",
+    id: "order_by",
+  },
   barters: {
     chat_barter_metadata: {
       distinct_on: "chat_barter_metadata_select_column",
@@ -247,6 +345,11 @@ export const AllTypesProps: Record<string, any> = {
     id: "order_by",
   },
   chats: {
+    barter_poke_metadata: {
+      distinct_on: "barter_poke_metadata_select_column",
+      order_by: "barter_poke_metadata_order_by",
+      where: "barter_poke_metadata_bool_exp",
+    },
     chat_barter_metadata: {
       distinct_on: "chat_barter_metadata_select_column",
       order_by: "chat_barter_metadata_order_by",
@@ -277,6 +380,7 @@ export const AllTypesProps: Record<string, any> = {
     _and: "chats_bool_exp",
     _not: "chats_bool_exp",
     _or: "chats_bool_exp",
+    barter_poke_metadata: "barter_poke_metadata_bool_exp",
     chat_barter_metadata: "chat_barter_metadata_bool_exp",
     chat_media_messages: "chat_media_messages_bool_exp",
     client_generated_uuid: "String_comparison_exp",
@@ -295,6 +399,7 @@ export const AllTypesProps: Record<string, any> = {
   },
   chats_constraint: "enum" as const,
   chats_insert_input: {
+    barter_poke_metadata: "barter_poke_metadata_arr_rel_insert_input",
     chat_barter_metadata: "chat_barter_metadata_arr_rel_insert_input",
     chat_media_messages: "chat_media_messages_arr_rel_insert_input",
     created_at: "timestamptz",
@@ -313,6 +418,7 @@ export const AllTypesProps: Record<string, any> = {
     where: "chats_bool_exp",
   },
   chats_order_by: {
+    barter_poke_metadata_aggregate: "barter_poke_metadata_aggregate_order_by",
     chat_barter_metadata_aggregate: "chat_barter_metadata_aggregate_order_by",
     chat_media_messages_aggregate: "chat_media_messages_aggregate_order_by",
     client_generated_uuid: "order_by",
@@ -345,6 +451,14 @@ export const AllTypesProps: Record<string, any> = {
       where: "room_active_chat_mapping_bool_exp",
     },
     delete_room_active_chat_mapping_by_pk: {},
+    insert_barter_poke_metadata: {
+      objects: "barter_poke_metadata_insert_input",
+      on_conflict: "barter_poke_metadata_on_conflict",
+    },
+    insert_barter_poke_metadata_one: {
+      object: "barter_poke_metadata_insert_input",
+      on_conflict: "barter_poke_metadata_on_conflict",
+    },
     insert_barters: {
       objects: "barters_insert_input",
       on_conflict: "barters_on_conflict",
@@ -408,6 +522,19 @@ export const AllTypesProps: Record<string, any> = {
     insert_simple_transactions_one: {
       object: "simple_transactions_insert_input",
       on_conflict: "simple_transactions_on_conflict",
+    },
+    update_barter_poke_metadata: {
+      _inc: "barter_poke_metadata_inc_input",
+      _set: "barter_poke_metadata_set_input",
+      where: "barter_poke_metadata_bool_exp",
+    },
+    update_barter_poke_metadata_by_pk: {
+      _inc: "barter_poke_metadata_inc_input",
+      _set: "barter_poke_metadata_set_input",
+      pk_columns: "barter_poke_metadata_pk_columns_input",
+    },
+    update_barter_poke_metadata_many: {
+      updates: "barter_poke_metadata_updates",
     },
     update_barters: {
       _inc: "barters_inc_input",
@@ -586,6 +713,12 @@ export const AllTypesProps: Record<string, any> = {
   },
   order_by: "enum" as const,
   query_root: {
+    barter_poke_metadata: {
+      distinct_on: "barter_poke_metadata_select_column",
+      order_by: "barter_poke_metadata_order_by",
+      where: "barter_poke_metadata_bool_exp",
+    },
+    barter_poke_metadata_by_pk: {},
     barters: {
       distinct_on: "barters_select_column",
       order_by: "barters_order_by",
@@ -933,6 +1066,16 @@ export const AllTypesProps: Record<string, any> = {
     id: "order_by",
   },
   subscription_root: {
+    barter_poke_metadata: {
+      distinct_on: "barter_poke_metadata_select_column",
+      order_by: "barter_poke_metadata_order_by",
+      where: "barter_poke_metadata_bool_exp",
+    },
+    barter_poke_metadata_by_pk: {},
+    barter_poke_metadata_stream: {
+      cursor: "barter_poke_metadata_stream_cursor_input",
+      where: "barter_poke_metadata_bool_exp",
+    },
     barters: {
       distinct_on: "barters_select_column",
       order_by: "barters_order_by",
@@ -1031,6 +1174,16 @@ export const ReturnTypes: Record<string, any> = {
     ttl: "Int",
     refresh: "Boolean",
   },
+  barter_poke_metadata: {
+    barter_id: "Int",
+    chat: "chats",
+    id: "Int",
+    message_client_generated_uuid: "String",
+  },
+  barter_poke_metadata_mutation_response: {
+    affected_rows: "Int",
+    returning: "barter_poke_metadata",
+  },
   barters: {
     chat_barter_metadata: "chat_barter_metadata",
     id: "Int",
@@ -1067,6 +1220,7 @@ export const ReturnTypes: Record<string, any> = {
     returning: "chat_media_messages",
   },
   chats: {
+    barter_poke_metadata: "barter_poke_metadata",
     chat_barter_metadata: "chat_barter_metadata",
     chat_media_messages: "chat_media_messages",
     client_generated_uuid: "String",
@@ -1091,6 +1245,8 @@ export const ReturnTypes: Record<string, any> = {
     delete_room_active_chat_mapping:
       "room_active_chat_mapping_mutation_response",
     delete_room_active_chat_mapping_by_pk: "room_active_chat_mapping",
+    insert_barter_poke_metadata: "barter_poke_metadata_mutation_response",
+    insert_barter_poke_metadata_one: "barter_poke_metadata",
     insert_barters: "barters_mutation_response",
     insert_barters_one: "barters",
     insert_chat_barter_metadata: "chat_barter_metadata_mutation_response",
@@ -1109,6 +1265,9 @@ export const ReturnTypes: Record<string, any> = {
     insert_secure_transfer_transactions_one: "secure_transfer_transactions",
     insert_simple_transactions: "simple_transactions_mutation_response",
     insert_simple_transactions_one: "simple_transactions",
+    update_barter_poke_metadata: "barter_poke_metadata_mutation_response",
+    update_barter_poke_metadata_by_pk: "barter_poke_metadata",
+    update_barter_poke_metadata_many: "barter_poke_metadata_mutation_response",
     update_barters: "barters_mutation_response",
     update_barters_by_pk: "barters",
     update_barters_many: "barters_mutation_response",
@@ -1145,6 +1304,8 @@ export const ReturnTypes: Record<string, any> = {
     returning: "nft_sticker_metadata",
   },
   query_root: {
+    barter_poke_metadata: "barter_poke_metadata",
+    barter_poke_metadata_by_pk: "barter_poke_metadata",
     barters: "barters",
     barters_by_pk: "barters",
     chat_barter_metadata: "chat_barter_metadata",
@@ -1197,6 +1358,9 @@ export const ReturnTypes: Record<string, any> = {
     returning: "simple_transactions",
   },
   subscription_root: {
+    barter_poke_metadata: "barter_poke_metadata",
+    barter_poke_metadata_by_pk: "barter_poke_metadata",
+    barter_poke_metadata_stream: "barter_poke_metadata",
     barters: "barters",
     barters_by_pk: "barters",
     barters_stream: "barters",
