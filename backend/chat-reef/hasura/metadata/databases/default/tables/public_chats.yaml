@@ -2,6 +2,13 @@ table:
   name: chats
   schema: public
 array_relationships:
+  - name: barter_poke_metadata
+    using:
+      foreign_key_constraint_on:
+        column: message_client_generated_uuid
+        table:
+          name: barter_poke_metadata
+          schema: public
   - name: chat_barter_metadata
     using:
       foreign_key_constraint_on:
