@@ -32,14 +32,13 @@ import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { createEscrow } from "../utils/secure-transfer/secureTransfer";
 
 import { CheckMark } from "./barter/CheckMark";
-import { ExplorerLink,RemoteNftWithSuspense } from "./barter/SwapPage";
+import { ExplorerLink, RemoteNftWithSuspense } from "./barter/SwapPage";
 import { NftStickerPlugin } from "./plugins/NftStickerPlugin";
 import { useChatContext } from "./ChatContext";
 
 export const AboveMessagePluginRenderer = ({
   sendMessage,
   setAboveMessagePlugin,
-  setPluginMenuOpen,
 }) => {
   const { aboveMessagePlugin } = useChatContext();
   return (
@@ -63,6 +62,11 @@ function AboveNftStickerPlugin() {
   const { isXs } = useBreakpoints();
   const theme = useCustomTheme();
 
+  const mint =
+    aboveMessagePlugin.type === "nft-sticker"
+      ? aboveMessagePlugin?.metadata?.mint
+      : "";
+
   const getDimensions = () => {
     if (isXs) {
       return 140;
@@ -76,17 +80,15 @@ function AboveNftStickerPlugin() {
         <CloseIcon
           style={{ color: theme.custom.colors.icon, cursor: "pointer" }}
           onClick={() => {
-            setAboveMessagePlugin({ type: "" });
+            setAboveMessagePlugin({ type: "", metadata: "" });
             setOpenPlugin("");
           }}
         />
       </div>
       <div style={{ display: "flex", justifyContent: "center", marginTop: -5 }}>
         <div style={{ width: getDimensions(), position: "relative" }}>
-          <RemoteNftWithSuspense
-            mint={aboveMessagePlugin?.metadata?.mint || ""}
-          />
-          <ExplorerLink mint={aboveMessagePlugin?.metadata?.mint || ""} />
+          <RemoteNftWithSuspense mint={mint} />
+          <ExplorerLink mint={mint} />
           <div style={{ position: "absolute", right: 10, top: 8 }}>
             {" "}
             <CheckMark />{" "}

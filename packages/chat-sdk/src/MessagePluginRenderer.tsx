@@ -18,22 +18,20 @@ export const MessagePluginRenderer = () => {
   return (
     <>
       {openPlugin === "barter" ? <BarterUi roomId={roomId} /> : null}
-      {openPlugin === "nft-sticker" ? <ScrollBarImpl height={`${PLUGIN_HEIGHT_PERCENTAGE}vh`}>
-        <div
-          style={{
+      {openPlugin === "nft-sticker" ? (
+        <ScrollBarImpl height={`${PLUGIN_HEIGHT_PERCENTAGE}vh`}>
+          <div
+            style={{
               height: "calc(100% - 56px)",
               overflow: "scroll",
               display: "flex",
               flexDirection: "column",
             }}
           >
-          <NftStickerPlugin
-            sendMessage={() => {}}
-            setAboveMessagePlugin={() => {}}
-            setPluginMenuOpen={() => {}}
-            />
-        </div>
-      </ScrollBarImpl> : null}
+            <NftStickerPlugin />
+          </div>
+        </ScrollBarImpl>
+      ) : null}
     </>
   );
 };

@@ -156,6 +156,7 @@ export const SendMessage = ({
         };
         setAboveMessagePlugin({
           type: "",
+          metadata: {},
         });
         setOpenPlugin(false);
       }
@@ -349,10 +350,8 @@ export const SendMessage = ({
         ) : null}
         {aboveMessagePlugin ? (
           <AboveMessagePluginRenderer
-            aboveMessagePlugin={aboveMessagePlugin}
             sendMessage={sendMessage}
             setAboveMessagePlugin={setAboveMessagePlugin}
-            setPluginMenuOpen={setPluginMenuOpen}
           />
         ) : null}
         <CustomAutoComplete />

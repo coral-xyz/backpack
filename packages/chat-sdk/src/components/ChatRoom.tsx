@@ -49,6 +49,7 @@ export type AboveMessagePlugin =
     }
   | {
       type: "";
+      metadata: {};
     };
 
 export const ChatRoom = ({
@@ -89,7 +90,7 @@ export const ChatRoom = ({
   const [localUnreadCount, setLocalUnreadCount] = useState(0);
   const [openPlugin, setOpenPlugin] = useState<MessagePlugins>("");
   const [aboveMessagePlugin, setAboveMessagePlugin] =
-    useState<AboveMessagePlugin>({ type: "" });
+    useState<AboveMessagePlugin>({ type: "", metadata: {} });
 
   useEffect(() => {
     if (roomId) {
