@@ -118,14 +118,17 @@ export function SelectPage({
         }}
       >
         <div>
-          {activeTab !== "nfts" ? <Tokens
-            localSelection={localSelection}
-            setLocalSelection={setLocalSelection}
-            /> : null}
-          {activeTab === "nfts" ? <Nfts
-            onSelect={(nft: Nft) => {
-                setLocalSelection((s) => {
-                  if (s.map((x) => x.mint).includes(nft.mint)) {
+          {activeTab !== "nfts" ? (
+            <Tokens
+              localSelection={localSelection}
+              setLocalSelection={setLocalSelection}
+            />
+          ) : null}
+          {activeTab === "nfts" ? (
+            <Nfts
+              onSelect={(nft: Nft) => {
+                setLocalSelection((s: any) => {
+                  if (s.map((x) => x.mint).includes(nft.mint || "")) {
                     return s.filter((x) => x.mint !== nft.mint);
                   }
                   return [
@@ -139,9 +142,10 @@ export function SelectPage({
                   ];
                 });
               }}
-            localSelection={localSelection}
-            setLocalSelection={setLocalSelection}
-            /> : null}
+              localSelection={localSelection}
+              setLocalSelection={setLocalSelection}
+            />
+          ) : null}
         </div>
         <div style={{ justifyContent: "center", padding: 10 }}>
           <SecondaryButton
@@ -165,9 +169,29 @@ export function SelectPage({
               }));
               setSelectNft(false);
             }}
-           />
+          />
         </div>
       </div>
+    </div>
+  );
+}
+
+export function NftsSkeleton() {
+  const { isXs } = useBreakpoints();
+
+  const getDimensions = () => {
+    if (isXs) {
+      return 80;
+    }
+    return 120;
+  };
+
+  return (
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <NftSkeleton />
+      <NftSkeleton />
+      <NftSkeleton />
+      <NftSkeleton />
     </div>
   );
 }
@@ -183,32 +207,12 @@ export function NftSkeleton() {
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
-      <Skeleton
-        variant="rectangular"
-        height={getDimensions()}
-        width={getDimensions()}
-        style={{ margin: isXs ? 4 : 12 }}
-      />
-      <Skeleton
-        variant="rectangular"
-        height={getDimensions()}
-        width={getDimensions()}
-        style={{ margin: isXs ? 4 : 12 }}
-      />
-      <Skeleton
-        variant="rectangular"
-        height={getDimensions()}
-        width={getDimensions()}
-        style={{ margin: isXs ? 4 : 12 }}
-      />
-      <Skeleton
-        variant="rectangular"
-        height={getDimensions()}
-        width={getDimensions()}
-        style={{ margin: isXs ? 4 : 12 }}
-      />
-    </div>
+    <Skeleton
+      variant="rectangular"
+      height={getDimensions()}
+      width={getDimensions()}
+      style={{ margin: isXs ? 4 : 12 }}
+    />
   );
 }
 
@@ -224,7 +228,7 @@ export function Nfts({ localSelection, onSelect }: any) {
   const theme = useCustomTheme();
 
   if (state === "loading" || state === "hasError") {
-    return <NftSkeleton />;
+    return <NftsSkeleton />;
   }
 
   return (
@@ -439,10 +443,12 @@ function RenderNFT({
         src={nft.imageUrl}
         removeOnError
       />
-      {selected ? <div style={{ position: "absolute", right: 10, top: 8 }}>
-        {" "}
-        <CheckMark />{" "}
-      </div> : null}
+      {selected ? (
+        <div style={{ position: "absolute", right: 10, top: 8 }}>
+          {" "}
+          <CheckMark />{" "}
+        </div>
+      ) : null}
     </div>
   );
 }

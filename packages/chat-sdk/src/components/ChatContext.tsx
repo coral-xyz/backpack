@@ -5,6 +5,8 @@ import type {
   SubscriptionType,
   UserMetadata,
 } from "@coral-xyz/common";
+
+import type { AboveMessagePlugin } from "./ChatRoom";
 export type MessagePlugins = "secure-transfer" | "barter" | "";
 
 type ChatContext = {
@@ -38,6 +40,10 @@ type ChatContext = {
   usersMetadata: { [key: string]: UserMetadata };
   openPlugin: MessagePlugins;
   setOpenPlugin: any;
+  aboveMessagePlugin: AboveMessagePlugin;
+  setAboveMessagePlugin: React.Dispatch<
+    React.SetStateAction<AboveMessagePlugin>
+  >;
 };
 
 export const _ChatContext = React.createContext<ChatContext | null>(null);
@@ -74,6 +80,10 @@ export function ChatProvider(props: {
   usersMetadata: { [key: string]: UserMetadata };
   openPlugin: MessagePlugins;
   setOpenPlugin: any;
+  aboveMessagePlugin: AboveMessagePlugin;
+  setAboveMessagePlugin: React.Dispatch<
+    React.SetStateAction<AboveMessagePlugin>
+  >;
 }) {
   return (
     <_ChatContext.Provider
@@ -103,6 +113,8 @@ export function ChatProvider(props: {
         usersMetadata: props.usersMetadata,
         openPlugin: props.openPlugin,
         setOpenPlugin: props.setOpenPlugin,
+        aboveMessagePlugin: props.aboveMessagePlugin,
+        setAboveMessagePlugin: props.setAboveMessagePlugin,
       }}
     >
       {props.children}

@@ -43,9 +43,11 @@ import { BarterModal } from "./barter/BarterModal";
 import { useChatContext } from "./ChatContext";
 import { ReplyIcon } from "./Icons";
 import { MediaContent } from "./MediaContent";
+import { NftStickerRender } from "./NftStickerRender";
 import { ParsedMessage } from "./ParsedMessage";
 import { ReplyContainer } from "./ReplyContainer";
 import { SimpleTransaction } from "./SimpleTransaction";
+
 // use @giphy/js-fetch-api to fetch gifs, instantiate with your api key
 const gf = new GiphyFetch("SjZwwCn1e394TKKjrMJWb2qQRNcqW8ro");
 
@@ -239,67 +241,58 @@ export const MessageLine = (props) => {
   };
 
   return (
-    <>
-      <div
-        className={classes.messageRow}
-        style={{
+    <div
+      className={classes.messageRow}
+      style={{
           marginTop: sameUserMessage ? 0 : 16,
           paddingLeft: sameUserMessage ? 32 : 0,
         }}
       >
-        {sameUserMessage ? (
-          <div
-            className={`${classes.messageContainer} ${classes.hoverParent}`}
-            style={{ display: "flex", paddingTop: "4px" }}
+      {sameUserMessage ? (
+        <div
+          className={`${classes.messageContainer} ${classes.hoverParent}`}
+          style={{ display: "flex", paddingTop: "4px" }}
           >
-            <div>
-              {props.parent_message_author_uuid && (
-                <div>
-                  <ReplyContainer
-                    marginBottom={2}
-                    padding={0}
-                    parent_username={props.parent_message_author_username || ""}
-                    showCloseBtn={false}
-                    text={props.parent_message_text}
+          <div>
+            {props.parent_message_author_uuid ? <div>
+              <ReplyContainer
+                marginBottom={2}
+                padding={0}
+                parent_username={props.parent_message_author_username || ""}
+                showCloseBtn={false}
+                text={props.parent_message_text}
                   />
-                </div>
-              )}
-              <div>
-                <p className={classes.messageContent}>
-                  {props.messageKind === "gif" ? (
-                    <div
-                      style={{
+            </div> : null}
+            <div>
+              <p className={classes.messageContent}>
+                {props.messageKind === "gif" ? (
+                  <div
+                    style={{
                         height: 150,
                         maxWidth: 220,
                         overflow: "hidden",
                       }}
                     >
-                      <GifDemo id={message} height={150} />
-                    </div>
+                    <GifDemo id={message} height={150} />
+                  </div>
                   ) : props.messageKind === "secure-transfer" ? (
-                    <>
-                      <SecureTransferElement
-                        messageId={props.messageId}
-                        senderUuid={props.uuid}
-                        escrow={props.metadata.escrow}
-                        counter={props.metadata.counter}
-                        currentState={props.metadata.current_state}
-                        remoteUsername={props.username}
-                        finalTxId={props.metadata.final_txn_signature}
+                    <SecureTransferElement
+                      messageId={props.messageId}
+                      senderUuid={props.uuid}
+                      escrow={props.metadata.escrow}
+                      counter={props.metadata.counter}
+                      currentState={props.metadata.current_state}
+                      remoteUsername={props.username}
+                      finalTxId={props.metadata.final_txn_signature}
                       />
-                    </>
                   ) : props.messageKind === "barter" ? (
-                    <>
-                      <BarterModal barterId={props.metadata?.barter_id} />
-                    </>
+                    <BarterModal barterId={props.metadata?.barter_id} />
                   ) : props.messageKind === "transaction" ? (
-                    <>
-                      <SimpleTransaction
-                        remoteUserId={props.uuid}
-                        message={message}
-                        txnSignature={props.metadata?.final_tx_signature}
+                    <SimpleTransaction
+                      remoteUserId={props.uuid}
+                      message={message}
+                      txnSignature={props.metadata?.final_tx_signature}
                       />
-                    </>
                   ) : props.messageKind === "media" ? (
                     <div>
                       <MediaContent
@@ -308,22 +301,29 @@ export const MessageLine = (props) => {
                       />
                       <div>{message}</div>
                     </div>
+                  ) : props.messageKind === "nft-sticker" ? (
+                    <div>
+                      <NftStickerRender
+                        uuid={props.uuid}
+                        mint={props.metadata?.mint}
+                      />
+                      <ParsedMessage message={message} />
+                    </div>
                   ) : (
                     <ParsedMessage message={message} />
                   )}
-                </p>
-              </div>
+              </p>
             </div>
-            <div>
-              {props.messageKind === "text" && (
-                <div
-                  style={{
+          </div>
+          <div>
+            {props.messageKind === "text" ? <div
+              style={{
                     marginLeft: 10,
                     marginTop: 3,
                     cursor: "pointer",
                   }}
-                  className={classes.hoverChild}
-                  onClick={() => {
+              className={classes.hoverChild}
+              onClick={() => {
                     setActiveReply({
                       parent_client_generated_uuid: props.client_generated_uuid,
                       text: message,
@@ -332,11 +332,10 @@ export const MessageLine = (props) => {
                     });
                   }}
                 >
-                  <ReplyIcon fill={theme.custom.colors.icon} />
-                </div>
-              )}
-            </div>
+              <ReplyIcon fill={theme.custom.colors.icon} />
+            </div> : null}
           </div>
+        </div>
         ) : (
           <>
             <div
@@ -396,19 +395,17 @@ export const MessageLine = (props) => {
                   style={{ display: "flex" }}
                 >
                   <div>
-                    {props.parent_message_author_uuid && (
-                      <div style={{}}>
-                        <ReplyContainer
-                          marginBottom={0}
-                          padding={0}
-                          parent_username={
+                    {props.parent_message_author_uuid ? <div style={{}}>
+                      <ReplyContainer
+                        marginBottom={0}
+                        padding={0}
+                        parent_username={
                             props.parent_message_author_username || ""
                           }
-                          showCloseBtn={false}
-                          text={props.parent_message_text}
+                        showCloseBtn={false}
+                        text={props.parent_message_text}
                         />
-                      </div>
-                    )}
+                    </div> : null}
                     <div>
                       <p className={classes.messageContent}>
                         {props.messageKind === "gif" ? (
@@ -422,29 +419,31 @@ export const MessageLine = (props) => {
                             <GifDemo id={message} height={150} />
                           </div>
                         ) : props.messageKind === "secure-transfer" ? (
-                          <>
-                            <SecureTransferElement
-                              messageId={props.messageId}
-                              senderUuid={props.uuid}
-                              escrow={props.metadata.escrow}
-                              counter={props.metadata.counter}
-                              currentState={props.metadata.current_state}
-                              remoteUsername={props.username}
-                              finalTxId={props.metadata.final_txn_signature}
+                          <SecureTransferElement
+                            messageId={props.messageId}
+                            senderUuid={props.uuid}
+                            escrow={props.metadata.escrow}
+                            counter={props.metadata.counter}
+                            currentState={props.metadata.current_state}
+                            remoteUsername={props.username}
+                            finalTxId={props.metadata.final_txn_signature}
                             />
-                          </>
                         ) : props.messageKind === "barter" ? (
-                          <>
-                            <BarterModal barterId={props.metadata?.barter_id} />
-                          </>
+                          <BarterModal barterId={props.metadata?.barter_id} />
                         ) : props.messageKind === "transaction" ? (
-                          <>
-                            <SimpleTransaction
-                              remoteUserId={props.uuid}
-                              message={message}
-                              txnSignature={props.metadata?.final_tx_signature}
+                          <SimpleTransaction
+                            remoteUserId={props.uuid}
+                            message={message}
+                            txnSignature={props.metadata?.final_tx_signature}
                             />
-                          </>
+                        ) : props.messageKind === "nft-sticker" ? (
+                          <div>
+                            <NftStickerRender
+                              mint={props.metadata?.mint}
+                              uuid={props.uuid}
+                            />
+                            <ParsedMessage message={message} />
+                          </div>
                         ) : props.messageKind === "media" ? (
                           <div>
                             <MediaContent
@@ -460,15 +459,14 @@ export const MessageLine = (props) => {
                     </div>
                   </div>
                   <div>
-                    {props.messageKind === "text" && (
-                      <div
-                        style={{
+                    {props.messageKind === "text" ? <div
+                      style={{
                           marginLeft: 10,
                           marginTop: 3,
                           cursor: "pointer",
                         }}
-                        className={classes.hoverChild}
-                        onClick={() => {
+                      className={classes.hoverChild}
+                      onClick={() => {
                           setActiveReply({
                             parent_client_generated_uuid:
                               props.client_generated_uuid,
@@ -479,9 +477,8 @@ export const MessageLine = (props) => {
                           document.getElementById("message-input")?.focus();
                         }}
                       >
-                        <ReplyIcon fill={theme.custom.colors.icon} />
-                      </div>
-                    )}
+                      <ReplyIcon fill={theme.custom.colors.icon} />
+                    </div> : null}
                   </div>
                 </div>
               </div>
@@ -513,8 +510,7 @@ export const MessageLine = (props) => {
             </div>
           </>
         )}
-      </div>
-    </>
+    </div>
   );
 };
 
@@ -588,32 +584,31 @@ function SecureTransferElement({
   }, [escrow]);
 
   return (
-    <div className={classes.secureSendOuter} id={"asdasd"}>
-      {loading && <div>Loading</div>}
-      {!loading && escrowState && (
-        <div style={{ paddingLeft: 5, paddingRight: 5 }}>
-          {uuid === senderUuid ? (
-            <div
-              style={{
+    <div className={classes.secureSendOuter} id="asdasd">
+      {loading ? <div>Loading</div> : null}
+      {!loading && escrowState ? <div style={{ paddingLeft: 5, paddingRight: 5 }}>
+        {uuid === senderUuid ? (
+          <div
+            style={{
                 display: "flex",
                 color: theme.custom.colors.icon,
                 marginBottom: 5,
               }}
             >
-              <div
-                style={{
+            <div
+              style={{
                   display: "flex",
                   justifyContent: "center",
                   flexDirection: "column",
                   marginRight: 3,
                 }}
               >
-                <ArrowUpwardIcon
-                  style={{ color: theme.custom.colors.icon, fontSize: 15 }}
+              <ArrowUpwardIcon
+                style={{ color: theme.custom.colors.icon, fontSize: 15 }}
                 />
-              </div>
-              <div> Sending to @{remoteUsername}</div>
             </div>
+            <div> Sending to @{remoteUsername}</div>
+          </div>
           ) : (
             <div
               style={{
@@ -637,42 +632,40 @@ function SecureTransferElement({
               <div>Payment from @{remoteUsername}</div>
             </div>
           )}
-          <div className={classes.secureSendInner}>
-            <div style={{ fontSize: 30, display: "flex" }}>
-              $
-              <div>
-                {(
+        <div className={classes.secureSendInner}>
+          <div style={{ fontSize: 30, display: "flex" }}>
+            $
+            <div>
+              {(
                   ((token?.priceData?.usd || 0) *
                     parseInt(escrowState.amount)) /
                   LAMPORTS_PER_SOL
                 ).toFixed(2)}
-              </div>
             </div>
-            <div style={{ display: "flex", marginTop: 3 }}>
-              <img
-                src={SOL_LOGO_URI}
-                style={{
+          </div>
+          <div style={{ display: "flex", marginTop: 3 }}>
+            <img
+              src={SOL_LOGO_URI}
+              style={{
                   width: 20,
                   height: 20,
                   borderRadius: 8,
                   marginRight: 5,
                 }}
               />{" "}
-              <div> {parseInt(escrowState.amount) / LAMPORTS_PER_SOL}</div>
-            </div>
+            <div> {parseInt(escrowState.amount) / LAMPORTS_PER_SOL}</div>
           </div>
-          <div
-            style={{
+        </div>
+        <div
+          style={{
               display: "flex",
               justifyContent: "space-between",
               paddingTop: 8,
             }}
           >
-            {uuid === senderUuid && (
-              <div>
-                {!actionButtonLoading && (
-                  <div
-                    style={{
+          {uuid === senderUuid ? <div>
+            {!actionButtonLoading ? <div
+              style={{
                       color: "#F8C840",
                       background: "rgba(206, 121, 7, 0.2)",
                       borderRadius: 16,
@@ -680,34 +673,32 @@ function SecureTransferElement({
                       display: "flex",
                     }}
                   >
-                    {/*<div style={{justifyContent: "center", flexDirection: "column", display: "flex"}}>*/}
-                    {/*  <AccessTimeIcon style={{ fontSize: 18 }} />*/}
-                    {/*</div>*/}
-                    <div
-                      style={{
+              {/*<div style={{justifyContent: "center", flexDirection: "column", display: "flex"}}>*/}
+              {/*  <AccessTimeIcon style={{ fontSize: 18 }} />*/}
+              {/*</div>*/}
+              <div
+                style={{
                         marginLeft: 5,
                         justifyContent: "center",
                         flexDirection: "column",
                         display: "flex",
                       }}
                     >
-                      Waiting for {remoteUsername}
-                    </div>
-                  </div>
-                )}
+                Waiting for {remoteUsername}
               </div>
-            )}
-            {uuid === senderUuid ? (
-              <>
-                {" "}
-                <div
-                  style={{
+            </div> : null}
+          </div> : null}
+          {uuid === senderUuid ? (
+            <>
+              {" "}
+              <div
+                style={{
                     color: theme.custom.colors.background,
                     cursor: actionButtonLoading ? "auto" : "pointer",
                     fontSize: 15,
                     marginTop: 2,
                   }}
-                  onClick={async () => {
+                onClick={async () => {
                     setActionButtonLoading(true);
                     const txn = await cancel(
                       provider,
@@ -738,14 +729,13 @@ function SecureTransferElement({
                     setActionButtonLoading(false);
                   }}
                 >
-                  {!actionButtonLoading ? "Cancel" : "Cancelling..."}
-                </div>
-              </>
+                {!actionButtonLoading ? "Cancel" : "Cancelling..."}
+              </div>
+            </>
             ) : (
-              <>
-                <SuccessButton
-                  style={{ height: 38 }}
-                  onClick={async () => {
+              <SuccessButton
+                style={{ height: 38 }}
+                onClick={async () => {
                     setActionButtonLoading(true);
                     try {
                       const txn = await redeem(
@@ -780,28 +770,25 @@ function SecureTransferElement({
                       setActionButtonLoading(false);
                     }
                   }}
-                  label={!actionButtonLoading ? "Accept" : "Accepting..."}
-                ></SuccessButton>
-              </>
+                label={!actionButtonLoading ? "Accept" : "Accepting..."}
+                 />
             )}
-          </div>
         </div>
-      )}
-      {!loading && !escrowState && (
-        <div style={{ fontSize: 14 }}>
-          <div>
-            {currentStateLocal === "redeemed"
+      </div> : null}
+      {!loading && !escrowState ? <div style={{ fontSize: 14 }}>
+        <div>
+          {currentStateLocal === "redeemed"
               ? `Escrow redeemed by ${
                   remoteUsername !== username ? "you" : remoteUsername
                 } `
               : `Escrow cancelled by ${
                   remoteUsername === username ? "you" : remoteUsername
                 }`}
-          </div>
-          <div style={{ display: "flex", flexDirection: "row-reverse" }}>
-            <div
-              className={classes.smallBtn}
-              style={{
+        </div>
+        <div style={{ display: "flex", flexDirection: "row-reverse" }}>
+          <div
+            className={classes.smallBtn}
+            style={{
                 display: "flex",
                 marginTop: 4,
                 padding: "3px 7px",
@@ -813,19 +800,18 @@ function SecureTransferElement({
                 color: currentStateLocal === "redeemed" ? "#52D24C" : "#FF6269",
                 marginLeft: 10,
               }}
-              onClick={() =>
+            onClick={() =>
                 window.open(
                   `https://explorer.solana.com/tx/${finalTxIdLocal}`,
                   "mywindow"
                 )
               }
             >
-              <div>Txn </div>
-              <CallMadeIcon style={{ fontSize: 15 }} />
-            </div>
+            <div>Txn </div>
+            <CallMadeIcon style={{ fontSize: 15 }} />
           </div>
         </div>
-      )}
+      </div> : null}
     </div>
   );
 }
@@ -844,8 +830,7 @@ export function ChatMessages() {
             sameUserMessage={
               chats[index]?.uuid &&
               index > 0 &&
-              index < chats.length &&
-              chats[index]?.uuid === chats[index - 1]?.uuid
+              index < chats.length ? chats[index]?.uuid === chats[index - 1]?.uuid : null
             }
             parent_message_author_username={chat.parent_message_author_username}
             parent_message_text={chat.parent_message_text}
@@ -873,24 +858,22 @@ export function ChatMessages() {
       {chats.map((chat) => {
         if (chat.uuid !== userId) {
           return (
-            <>
-              <MessageLeft
-                timestamp={chat.created_at}
-                key={chat.client_generated_uuid}
-                message={chat.message}
-                received={chat.received}
-                messageKind={chat.message_kind}
-                image={chat.image}
-                username={chat.username}
-                userId={chat.uuid}
-                client_generated_uuid={chat.client_generated_uuid}
-                parent_message_text={chat.parent_message_text}
-                parent_message_author_username={
+            <MessageLeft
+              timestamp={chat.created_at}
+              key={chat.client_generated_uuid}
+              message={chat.message}
+              received={chat.received}
+              messageKind={chat.message_kind}
+              image={chat.image}
+              username={chat.username}
+              userId={chat.uuid}
+              client_generated_uuid={chat.client_generated_uuid}
+              parent_message_text={chat.parent_message_text}
+              parent_message_author_username={
                   "" //TODO: Flow this from userDB
                 }
-                parent_message_author_uuid={chat.parent_message_author_uuid}
+              parent_message_author_uuid={chat.parent_message_author_uuid}
               />
-            </>
           );
         }
         return (
@@ -905,7 +888,7 @@ export function ChatMessages() {
             username={chat.username}
             client_generated_uuid={chat.client_generated_uuid}
             parent_message_text={chat.parent_message_text}
-            parent_message_author_username={""} // TODO: Flow this from user index db
+            parent_message_author_username="" // TODO: Flow this from user index db
             parent_message_author_uuid={chat.parent_message_author_uuid}
           />
         );
@@ -922,17 +905,15 @@ function MessageLeft(props) {
 
   return (
     <>
-      {props.parent_message_author_uuid && (
-        <div style={{ paddingLeft: 19, marginBottom: -10 }}>
-          <ReplyContainer
-            marginBottom={0}
-            padding={0}
-            parent_username={props.parent_message_author_username || ""}
-            showCloseBtn={false}
-            text={props.parent_message_text}
+      {props.parent_message_author_uuid ? <div style={{ paddingLeft: 19, marginBottom: -10 }}>
+        <ReplyContainer
+          marginBottom={0}
+          padding={0}
+          parent_username={props.parent_message_author_username || ""}
+          showCloseBtn={false}
+          text={props.parent_message_text}
           />
-        </div>
-      )}
+      </div> : null}
       <div className={`${classes.messageLeftContainer} ${classes.hoverParent}`}>
         <div
           className={classes.messageLeft}
@@ -951,11 +932,10 @@ function MessageLeft(props) {
             message
           )}
         </div>
-        {props.messageKind === "text" && (
-          <div
-            style={{ marginLeft: 10, marginTop: 10, cursor: "pointer" }}
-            className={classes.hoverChild}
-            onClick={() => {
+        {props.messageKind === "text" ? <div
+          style={{ marginLeft: 10, marginTop: 10, cursor: "pointer" }}
+          className={classes.hoverChild}
+          onClick={() => {
               setActiveReply({
                 parent_client_generated_uuid: props.client_generated_uuid,
                 text: message,
@@ -964,9 +944,8 @@ function MessageLeft(props) {
               });
             }}
           >
-            <ReplyIcon fill={theme.custom.colors.icon} />
-          </div>
-        )}
+          <ReplyIcon fill={theme.custom.colors.icon} />
+        </div> : null}
       </div>
     </>
   );
@@ -980,18 +959,16 @@ function MessageRight(props) {
 
   return (
     <>
-      {props.parent_message_author_uuid && (
-        <div style={{ paddingLeft: 19, marginBottom: -10 }}>
-          <ReplyContainer
-            align={"right"}
-            marginBottom={0}
-            padding={0}
-            parent_username={props.parent_message_author_username || ""}
-            showCloseBtn={false}
-            text={props.parent_message_text}
+      {props.parent_message_author_uuid ? <div style={{ paddingLeft: 19, marginBottom: -10 }}>
+        <ReplyContainer
+          align="right"
+          marginBottom={0}
+          padding={0}
+          parent_username={props.parent_message_author_username || ""}
+          showCloseBtn={false}
+          text={props.parent_message_text}
           />
-        </div>
-      )}
+      </div> : null}
       <div className={`${classes.messageRightContainer}`}>
         <div
           className={`${classes.hoverParent}`}
@@ -1001,11 +978,10 @@ function MessageRight(props) {
             alignItems: "flex-start",
           }}
         >
-          {props.messageKind !== "gif" && (
-            <div
-              style={{ marginRight: 10, marginTop: 10, cursor: "pointer" }}
-              className={classes.hoverChild}
-              onClick={() => {
+          {props.messageKind !== "gif" ? <div
+            style={{ marginRight: 10, marginTop: 10, cursor: "pointer" }}
+            className={classes.hoverChild}
+            onClick={() => {
                 setActiveReply({
                   parent_client_generated_uuid: props.client_generated_uuid,
                   text: message,
@@ -1014,9 +990,8 @@ function MessageRight(props) {
                 });
               }}
             >
-              <ReplyIcon fill={theme.custom.colors.icon} />
-            </div>
-          )}
+            <ReplyIcon fill={theme.custom.colors.icon} />
+          </div> : null}
           <div
             className={classes.messageRight}
             style={{

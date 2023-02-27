@@ -56,13 +56,15 @@ export class RecoilSync {
       return -1;
     });
 
-    LocalImageManager.getInstance().bulkAddToQueue(
-      sortedUsersMetadata.map((x) => {
-        return {
-          image: x.image,
-        };
-      })
-    );
+    if (sortedUsersMetadata) {
+      LocalImageManager.getInstance().bulkAddToQueue(
+        sortedUsersMetadata.map((x) => {
+          return {
+            image: x.image,
+          };
+        })
+      );
+    }
   }
 
   async sleep(timer) {

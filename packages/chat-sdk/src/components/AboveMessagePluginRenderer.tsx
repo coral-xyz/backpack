@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BACKEND_API_URL,
   Blockchain,
@@ -14,6 +14,7 @@ import {
   TextFieldLabel,
   TextInput,
   toast,
+  useBreakpoints,
 } from "@coral-xyz/react-common";
 import {
   blockchainTokenData,
@@ -23,35 +24,78 @@ import {
   useLoader,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
+import CloseIcon from "@mui/icons-material/Close";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import { TextField } from "@mui/material";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 import { createEscrow } from "../utils/secure-transfer/secureTransfer";
 
+import { CheckMark } from "./barter/CheckMark";
+import { ExplorerLink,RemoteNftWithSuspense } from "./barter/SwapPage";
 import { NftStickerPlugin } from "./plugins/NftStickerPlugin";
 import { useChatContext } from "./ChatContext";
 
 export const AboveMessagePluginRenderer = ({
-  aboveMessagePlugin,
   sendMessage,
   setAboveMessagePlugin,
   setPluginMenuOpen,
 }) => {
+  const { aboveMessagePlugin } = useChatContext();
   return (
     <>
-      {aboveMessagePlugin === "secure-transfer" ? <SecureTransferPlugin
-        sendMessage={sendMessage}
-        setAboveMessagePlugin={setAboveMessagePlugin}
-        /> : null}
-      {aboveMessagePlugin === "nft-sticker" ? <NftStickerPlugin
-        sendMessage={sendMessage}
-        setAboveMessagePlugin={setAboveMessagePlugin}
-        setPluginMenuOpen={setPluginMenuOpen}
-        /> : null}
+      {aboveMessagePlugin.type === "secure-transfer" ? (
+        <SecureTransferPlugin
+          sendMessage={sendMessage}
+          setAboveMessagePlugin={setAboveMessagePlugin}
+        />
+      ) : null}
+      {aboveMessagePlugin.type === "nft-sticker" ? (
+        <AboveNftStickerPlugin />
+      ) : null}
     </>
   );
 };
+
+function AboveNftStickerPlugin() {
+  const { aboveMessagePlugin, setAboveMessagePlugin, setOpenPlugin } =
+    useChatContext();
+  const { isXs } = useBreakpoints();
+  const theme = useCustomTheme();
+
+  const getDimensions = () => {
+    if (isXs) {
+      return 140;
+    }
+    return 170;
+  };
+
+  return (
+    <div>
+      <div style={{ margin: 4 }}>
+        <CloseIcon
+          style={{ color: theme.custom.colors.icon, cursor: "pointer" }}
+          onClick={() => {
+            setAboveMessagePlugin({ type: "" });
+            setOpenPlugin("");
+          }}
+        />
+      </div>
+      <div style={{ display: "flex", justifyContent: "center", marginTop: -5 }}>
+        <div style={{ width: getDimensions(), position: "relative" }}>
+          <RemoteNftWithSuspense
+            mint={aboveMessagePlugin?.metadata?.mint || ""}
+          />
+          <ExplorerLink mint={aboveMessagePlugin?.metadata?.mint || ""} />
+          <div style={{ position: "absolute", right: 10, top: 8 }}>
+            {" "}
+            <CheckMark />{" "}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function SecureTransferPlugin({ sendMessage, setAboveMessagePlugin }) {
   const { provider, connection } = useAnchorContext();

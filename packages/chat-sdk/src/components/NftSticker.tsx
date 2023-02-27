@@ -30,6 +30,8 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
+
+import { useChatContext } from "./ChatContext";
 const style = {
   position: "absolute",
   top: "50%",
@@ -50,6 +52,7 @@ export const NftSticker = ({
   setAboveMessagePlugin: any;
 }) => {
   const theme = useCustomTheme();
+  const { setOpenPlugin } = useChatContext();
   return (
     <div
       style={{
@@ -69,9 +72,7 @@ export const NftSticker = ({
         <BrokenImageIcon
           style={{ fontSize: 20 }}
           onClick={() =>
-            setAboveMessagePlugin((x) =>
-              x === "nft-sticker" ? "" : "nft-sticker"
-            )
+            setOpenPlugin((x) => (x === "nft-sticker" ? "" : "nft-sticker"))
           }
         />
       </IconButton>
