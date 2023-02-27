@@ -2,7 +2,7 @@ name: Deploy backpack-ws
 on:
   push:
     branches:
-      - master
+      - production
 
 jobs:
   deploy:

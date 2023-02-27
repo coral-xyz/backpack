@@ -2,7 +2,7 @@ name: Deploy backend-api
 on:
   push:
     branches:
-      - master
+      - production
 
 jobs:
   deploy:
