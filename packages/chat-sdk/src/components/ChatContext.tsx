@@ -7,7 +7,7 @@ import type {
 } from "@coral-xyz/common";
 
 import type { AboveMessagePlugin } from "./ChatRoom";
-export type MessagePlugins = "secure-transfer" | "barter" | "nft-sticker";
+export type MessagePlugins = "secure-transfer" | "barter" | "nft-sticker" | "";
 
 type ChatContext = {
   setActiveReply: any;

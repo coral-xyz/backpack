@@ -16,7 +16,7 @@ export const NftStickerPlugin = () => {
           <CloseIcon
             style={{ color: theme.custom.colors.icon, cursor: "pointer" }}
             onClick={() => {
-              setAboveMessagePlugin({ type: "" });
+              setAboveMessagePlugin({ type: "", metadata: {} });
               setOpenPlugin("");
             }}
           />
