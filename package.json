@@ -34,8 +34,8 @@
     "build:fresh": "git clean -xfd && yarn install && yarn build --force",
     "e2e": "env-cmd --silent turbo run e2e",
     "clean": "git clean -xfd",
-    "start:ext": "env-cmd --silent turbo run start --filter=@coral-xyz/app-extension...",
-    "build:ext": "env-cmd --silent turbo run build --filter=@coral-xyz/app-extension...",
+    "start:ext": "env-cmd --silent turbo run start --filter=@coral-xyz/app-extension... --filter=@coral-xyz/background...",
+    "build:ext": "env-cmd --silent turbo run build --filter=@coral-xyz/app-extension... --filter=@coral-xyz/background...",
     "start:mobile": "env-cmd --silent turbo run start --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
     "build:mobile": "env-cmd --silent turbo run build --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
     "postinstall": "yarn-deduplicate --scopes @babel @mui @typescript-eslint @types @react-native-community @react-navigation @emotion"
