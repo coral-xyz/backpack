@@ -54,6 +54,12 @@ export function AddConnectPreview() {
       <div>
         <ProxyImage
           src={avatarUrl}
+          loadingStyles={{
+            margin: "8px auto 16px auto",
+            height: "72px",
+            width: "72px",
+            display: "block",
+          }}
           style={{
             marginBottom: "16px",
             marginTop: "8px",
@@ -102,7 +108,7 @@ export function AddConnectPreview() {
           onClick={() => nav.push("edit-wallets-blockchain-selector")}
         />
         <SecondaryButton
-          label={`Create a new account`}
+          label="Create a new account"
           style={{
             marginTop: "16px",
             marginBottom: "16px",
@@ -295,8 +301,8 @@ export const ConfirmCreateWallet: React.FC<{
               name={walletName}
               publicKey={publicKey}
               showDetailMenu={false}
-              isFirst={true}
-              isLast={true}
+              isFirst
+              isLast
               onClick={() => {
                 onClose();
               }}
