@@ -90,8 +90,26 @@ app.get("/check/:inviteCode", async (c) => {
         } else {
           return j("Invite code has already been claimed", 409);
         }
+      } else {
+        await fetch(c.env.HASURA_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${c.env.JWT}`,
+          },
+          body: JSON.stringify({
+            mutation: `mutation($id: uuid) {
+            insert_auth_invitations_one(object: {id: $id}) {
+              id
+            }
+          }`,
+            variables: {
+              id: code,
+            },
+          }),
+        });
+        return j("Invite code is valid");
       }
-      return j("Invite code is not valid", 400);
     } else {
       return j("Invite code is incorrect format", 400);
     }
