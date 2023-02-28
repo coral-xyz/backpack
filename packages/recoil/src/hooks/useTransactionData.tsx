@@ -63,8 +63,10 @@ export function useTransactionData(
   transaction: any
 ): TransactionData {
   return blockchain === Blockchain.ETHEREUM
-    ? useEthereumTxData(transaction)
-    : useSolanaTxData(transaction);
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      useEthereumTxData(transaction)
+    : // eslint-disable-next-line react-hooks/rules-of-hooks
+      useSolanaTxData(transaction);
 }
 
 //
@@ -270,7 +272,7 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
         const response = await connection.getFeeForMessage(
           transaction.message as Message
         );
-        setEstimatedTxFee(response.value);
+        setEstimatedTxFee(response.value || 0);
       } catch (e) {
         // ignore
       }

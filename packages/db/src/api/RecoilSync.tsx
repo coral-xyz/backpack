@@ -49,6 +49,8 @@ export class RecoilSync {
       true
     );
 
+    if (!newUsersMetadata) return;
+
     const sortedUsersMetadata = newUsersMetadata?.sort((a) => {
       if (localStorage.getItem(`image-${a.image}`)) {
         return 1;
