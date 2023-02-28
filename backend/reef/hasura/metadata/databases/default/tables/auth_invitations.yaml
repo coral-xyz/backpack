@@ -24,6 +24,14 @@ insert_permissions:
         - data
         - id
 select_permissions:
+  - role: invites_worker
+    permission:
+      columns:
+        - data
+        - created_at
+        - id
+      filter: {}
+      limit: 1
   - role: mod
     permission:
       columns:
