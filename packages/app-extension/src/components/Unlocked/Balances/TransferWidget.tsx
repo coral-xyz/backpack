@@ -1,3 +1,4 @@
+import React from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   ETH_NATIVE_MINT,
@@ -77,37 +78,51 @@ function SwapButton({
 }) {
   const theme = useCustomTheme();
 
+  const SwapButtonComponent = ({
+    routes = [],
+  }: {
+    routes?: React.ComponentProps<typeof TransferButton>["routes"];
+  }) => (
+    <TransferButton
+      label="Swap"
+      labelComponent={
+        <SwapHoriz
+          style={{
+            color: theme.custom.colors.fontColor,
+            display: "flex",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        />
+      }
+      routes={routes}
+      disabled={routes.length === 0}
+    />
+  );
+
+  // Wrap in Suspense so it doesn't block if Jupiter is slow or down.
   return (
-    <SwapProvider tokenAddress={address}>
-      <TransferButton
-        label="Swap"
-        labelComponent={
-          <SwapHoriz
-            style={{
-              color: theme.custom.colors.fontColor,
-              display: "flex",
-              marginLeft: "auto",
-              marginRight: "auto",
-            }}
-          />
-        }
-        routes={[
-          {
-            name: "swap",
-            component: (props: any) => <Swap {...props} />,
-            title: `Swap`,
-            props: {
-              blockchain,
+    <React.Suspense fallback={<SwapButtonComponent />}>
+      <SwapProvider tokenAddress={address}>
+        <SwapButtonComponent
+          routes={[
+            {
+              name: "swap",
+              component: (props: any) => <Swap {...props} />,
+              title: `Swap`,
+              props: {
+                blockchain,
+              },
             },
-          },
-          {
-            title: `Select Token`,
-            name: "select-token",
-            component: (props: any) => <SwapSelectToken {...props} />,
-          },
-        ]}
-      />
-    </SwapProvider>
+            {
+              title: `Select Token`,
+              name: "select-token",
+              component: (props: any) => <SwapSelectToken {...props} />,
+            },
+          ]}
+        />
+      </SwapProvider>
+    </React.Suspense>
   );
 }
 
@@ -270,10 +285,12 @@ function TransferButton({
   label,
   labelComponent,
   routes,
+  disabled = false,
 }: {
   label: string;
   labelComponent: any;
-  routes: Array<{ props?: any; component: any; title: string; name: string }>;
+  routes?: Array<{ props?: any; component: any; title: string; name: string }>;
+  disabled?: boolean;
 }) {
   const theme = useCustomTheme();
   return (
@@ -281,6 +298,9 @@ function TransferButton({
       style={{
         width: "52px",
         height: "70px",
+        // semi-transparent and unclickable when disabled=true
+        opacity: disabled ? 0.5 : 1,
+        pointerEvents: disabled ? "none" : "auto",
       }}
     >
       <WithHeaderButton
