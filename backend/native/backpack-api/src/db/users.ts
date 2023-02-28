@@ -226,7 +226,7 @@ export const createUser = async (
   public_keys: { blockchain: "solana" | "ethereum"; id: number }[];
 }> => {
   const inviteCode = uuidv4();
-  await chain("mutation", {
+  await chain("mutation")({
     insert_auth_invitations_one: [
       {
         object: {
@@ -238,6 +238,7 @@ export const createUser = async (
       },
     ],
   });
+
   const response = await chain("mutation")({
     insert_auth_users_one: [
       {
