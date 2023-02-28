@@ -78,50 +78,45 @@ function SwapButton({
 }) {
   const theme = useCustomTheme();
 
-  const SwapButtonComponent = ({
-    routes = [],
-  }: {
-    routes?: React.ComponentProps<typeof TransferButton>["routes"];
-  }) => (
-    <TransferButton
-      label="Swap"
-      labelComponent={
-        <SwapHoriz
-          style={{
-            color: theme.custom.colors.fontColor,
-            display: "flex",
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        />
-      }
-      routes={routes}
-      disabled={routes.length === 0}
-    />
-  );
-
   // Wrap in Suspense so it doesn't block if Jupiter is slow or down.
   return (
-    <React.Suspense fallback={<SwapButtonComponent />}>
-      <SwapProvider tokenAddress={address}>
-        <SwapButtonComponent
-          routes={[
-            {
-              name: "swap",
-              component: (props: any) => <Swap {...props} />,
-              title: `Swap`,
-              props: {
-                blockchain,
-              },
+    <React.Suspense fallback={null}>
+      <TransferButton
+        label="Swap"
+        labelComponent={
+          <SwapHoriz
+            style={{
+              color: theme.custom.colors.fontColor,
+              display: "flex",
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+          />
+        }
+        routes={[
+          {
+            name: "swap",
+            component: (props) => (
+              <SwapProvider tokenAddress={address}>
+                <Swap {...props} />
+              </SwapProvider>
+            ),
+            title: `Swap`,
+            props: {
+              blockchain,
             },
-            {
-              title: `Select Token`,
-              name: "select-token",
-              component: (props: any) => <SwapSelectToken {...props} />,
-            },
-          ]}
-        />
-      </SwapProvider>
+          },
+          {
+            title: `Select Token`,
+            name: "select-token",
+            component: (props) => (
+              <SwapProvider tokenAddress={address}>
+                <SwapSelectToken {...props} />
+              </SwapProvider>
+            ),
+          },
+        ]}
+      />
     </React.Suspense>
   );
 }
@@ -154,7 +149,7 @@ function SendButton({
           ? [
               {
                 name: "select-user",
-                component: (props: any) => <AddressSelectorLoader {...props} />,
+                component: (props) => <AddressSelectorLoader {...props} />,
                 title: "",
                 props: {
                   blockchain,
@@ -164,7 +159,7 @@ function SendButton({
               },
               {
                 name: "send",
-                component: (props: any) => <Send {...props} />,
+                component: (props) => <Send {...props} />,
                 title: `Send`,
               },
             ]
@@ -176,12 +171,12 @@ function SendButton({
               },
               {
                 name: "select-user",
-                component: (props: any) => <AddressSelector {...props} />,
+                component: (props) => <AddressSelector {...props} />,
                 title: "",
               },
               {
                 name: "send",
-                component: (props: any) => <Send {...props} />,
+                component: (props) => <Send {...props} />,
                 title: "",
               },
             ]
@@ -252,7 +247,7 @@ function RampButton({
           ? [
               {
                 name: "stripe",
-                component: (props: any) => <StripeRamp {...props} />,
+                component: (props) => <StripeRamp {...props} />,
                 title: "Buy",
                 props: {
                   blockchain,
@@ -271,7 +266,7 @@ function RampButton({
                 },
               },
               {
-                component: (props: any) => <StripeRamp {...props} />,
+                component: (props) => <StripeRamp {...props} />,
                 title: "Buy using Link",
                 name: "stripe",
               },
@@ -289,7 +284,12 @@ function TransferButton({
 }: {
   label: string;
   labelComponent: any;
-  routes?: Array<{ props?: any; component: any; title: string; name: string }>;
+  routes?: Array<{
+    props?: any;
+    component: (props: any) => React.ReactElement;
+    title: string;
+    name: string;
+  }>;
   disabled?: boolean;
 }) {
   const theme = useCustomTheme();
