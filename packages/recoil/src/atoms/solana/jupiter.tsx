@@ -12,7 +12,7 @@ export const jupiterUrl = (useProxy: boolean) =>
   useProxy ? "https://jupiter.xnfts.dev/v4/" : "https://quote-api.jup.ag/v4/";
 
 // Load the route map from the Jupiter API
-export const jupiterRouteMap = selector({
+const jupiterRouteMap = selector({
   key: "jupiterRouteMap",
   get: async ({ get }) => {
     try {
@@ -63,7 +63,7 @@ export const jupiterTokenMap = selector<Map<string, TokenInfo>>({
 });
 
 // All input tokens for Jupiter
-export const allJupiterInputMints = selector({
+const allJupiterInputMints = selector({
   key: "allJupiterInputMints",
   get: async ({ get }) => {
     const routeMap = get(jupiterRouteMap);
