@@ -642,6 +642,12 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     image: "https://www.madlads.com/mad_lads_logo.svg",
     collectionId: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
   },
+  {
+    id: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
+    name: "The Madlist",
+    image: "https://www.madlads.com/mad_lads_logo.svg",
+    collectionId: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
+  },
 ];
 
 // Load a fixed amount of public keys for various actions, e.g. import list,
