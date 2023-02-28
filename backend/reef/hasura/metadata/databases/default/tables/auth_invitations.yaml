@@ -10,6 +10,13 @@ object_relationships:
           name: users
           schema: auth
 insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - data
+        - created_at
+        - id
   - role: invites_worker
     permission:
       check: {}
@@ -24,14 +31,20 @@ insert_permissions:
         - data
         - id
 select_permissions:
-  - role: invites_worker
+  - role: auth_worker
     permission:
       columns:
         - data
         - created_at
         - id
       filter: {}
-      limit: 1
+  - role: invites_worker
+    permission:
+      columns:
+        - id
+        - created_at
+        - data
+      filter: {}
   - role: mod
     permission:
       columns:
