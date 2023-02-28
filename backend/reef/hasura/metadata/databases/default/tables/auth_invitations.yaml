@@ -10,6 +10,13 @@ object_relationships:
           name: users
           schema: auth
 insert_permissions:
+  - role: invites_worker
+    permission:
+      check: {}
+      columns:
+        - id
+        - created_at
+        - data
   - role: mod
     permission:
       check: {}
