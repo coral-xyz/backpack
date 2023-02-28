@@ -98,7 +98,7 @@ app.get("/check/:inviteCode", async (c) => {
             Authorization: `Bearer ${c.env.JWT}`,
           },
           body: JSON.stringify({
-            mutation: `mutation($id: uuid) {
+            query: `mutation($id: uuid) {
             insert_auth_invitations_one(object: {id: $id}) {
               id
             }
