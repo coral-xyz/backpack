@@ -31,7 +31,7 @@
     "big-integer": "^1.6.51",
     "buffer": "^6.0.3",
     "ethers": "^5.7.2",
-    "expo": "^48.0.0",
+    "expo": "^48.0.4",
     "expo-blur": "~12.2.1",
     "expo-checkbox": "~2.3.1",
     "expo-clipboard": "~4.1.1",
@@ -62,7 +62,6 @@
     "react-qr-code": "^2.0.8",
     "react-test-renderer": "^18.2.0",
     "recoil": "^0.7.6",
-    "twrnc": "^3.3.3",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
