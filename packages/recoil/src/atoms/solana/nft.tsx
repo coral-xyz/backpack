@@ -132,14 +132,16 @@ export const solanaNftById = equalSelectorFamily<
                 uriData.tokenMetaUriData.image?.replace(/\0/g, "")
               )
             : UNKNOWN_NFT_ICON_SRC,
-        attributes: uriData
-          ? uriData.tokenMetaUriData.attributes?.map(
-              (a: { trait_type: string; value: string }) => ({
-                traitType: a.trait_type,
-                value: a.value,
-              })
-            )
-          : [],
+        // ensuring attributes is an array
+        attributes:
+          uriData && uriData?.tokenMetaUriData?.attributes?.map
+            ? uriData?.tokenMetaUriData?.attributes?.map(
+                (a: { trait_type: string; value: string }) => ({
+                  traitType: a.trait_type,
+                  value: a.value,
+                })
+              )
+            : [],
         collectionName,
       };
       if (isMadLads(nft)) {
