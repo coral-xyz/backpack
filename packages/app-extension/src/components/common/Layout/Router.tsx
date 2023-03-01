@@ -12,10 +12,6 @@ import {
   NAV_COMPONENT_MESSAGE_PROFILE,
 } from "@coral-xyz/common";
 import {
-  MESSAGING_COMMUNICATION_FETCH,
-  MESSAGING_COMMUNICATION_PUSH,
-} from "@coral-xyz/common/src/constants";
-import {
   ChatScreen,
   Inbox,
   ParentCommunicationManager,
@@ -68,10 +64,12 @@ export function Router() {
         <Route path="/nfts/experience" element={<NftsExperiencePage />} />
         <Route path="/nfts/chat" element={<NftsChatPage />} />
         <Route path="/nfts/detail" element={<NftsDetailPage />} />
-        {!isXs ? <>
-          <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/recent-activity" element={<RecentActivityPage />} />
-        </> : null}
+        {!isXs ? (
+          <>
+            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/recent-activity" element={<RecentActivityPage />} />
+          </>
+        ) : null}
         {/*
           Auto-lock functionality is dependent on checking if the URL contains
           "xnft", if this changes then please verify that it still works
@@ -204,15 +202,12 @@ function MessageNativeInner() {
 
   if (hash.startsWith("/messages/profile")) {
     return (
-      <NavScreen
-        noMotion
-        component={<ProfileScreen userId={props.userId} />}
-      />
+      <NavScreen noMotion component={<ProfileScreen userId={props.userId} />} />
     );
   }
 
   if (!isXs) {
-    return <></>;
+    return <div />;
   }
 
   return <NavScreen noMotion component={<Inbox />} />;

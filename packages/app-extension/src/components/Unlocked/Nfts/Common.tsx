@@ -1,6 +1,8 @@
 import type { MouseEvent } from "react";
-import { UNKNOWN_NFT_ICON_SRC } from "@coral-xyz/common";
-import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
+import {
+  NAV_COMPONENT_NFT_CHAT,
+  UNKNOWN_NFT_ICON_SRC,
+} from "@coral-xyz/common";
 import { MessageBubbleUnreadIcon, ProxyImage } from "@coral-xyz/react-common";
 import {
   collectibleXnft,
@@ -58,138 +60,144 @@ export function GridCard({
       onClick={onClick}
       disableRipple
       style={{
-          textTransform: "none",
-          padding: 0,
-          borderRadius: "8px",
-          position: "relative",
-          overflow: "hidden",
-          minWidth: "153.5px",
-          minHeight: "153.5px",
-          aspectRatio: "1",
-          background: theme.custom.colors.background,
-        }}
-      >
+        textTransform: "none",
+        padding: 0,
+        borderRadius: "8px",
+        position: "relative",
+        overflow: "hidden",
+        minWidth: "153.5px",
+        minHeight: "153.5px",
+        aspectRatio: "1",
+        background: theme.custom.colors.background,
+      }}
+    >
       <ProxyImage
         style={{
-            width: "100%",
-          }}
+          width: "100%",
+        }}
         loadingStyles={{
-            height: "100%",
-          }}
+          height: "100%",
+        }}
         removeOnError
         src={nft.imageUrl}
         onError={(e) => {
-            e.currentTarget.src = UNKNOWN_NFT_ICON_SRC;
+          e.currentTarget.src = UNKNOWN_NFT_ICON_SRC;
+        }}
+      />
+      {metadataCollectionId ? (
+        <div
+          style={{
+            backgroundColor: theme.custom.colors.nav,
+            position: "absolute",
+            right: 0,
+            top: 8,
+            zIndex: 2,
+            width: 40,
+            height: 40,
+            borderRadius: "50%",
+            padding: "0 8px",
+            margin: "0 5%",
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+            maxWidth: "90%",
           }}
-        />
-      {metadataCollectionId ? <div
-        style={{
-              backgroundColor: theme.custom.colors.nav,
-              position: "absolute",
-              right: 0,
-              top: 8,
-              zIndex: 2,
-              width: 40,
-              height: 40,
-              borderRadius: "50%",
-              padding: "0 8px",
-              margin: "0 5%",
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "column",
-              maxWidth: "90%",
-            }}
-          >
-        <MessageBubbleUnreadIcon
-          onClick={(e: any) => {
-                push({
+        >
+          <MessageBubbleUnreadIcon
+            onClick={(e: any) => {
+              push({
+                title: subtitle.name || "",
+                componentId: NAV_COMPONENT_NFT_CHAT,
+                componentProps: {
+                  collectionId: metadataCollectionId,
+                  nftMint: nft.mint,
                   title: subtitle.name || "",
-                  componentId: NAV_COMPONENT_NFT_CHAT,
-                  componentProps: {
-                    collectionId: metadataCollectionId,
-                    nftMint: nft.mint,
-                    title: subtitle.name || "",
-                  },
-                });
-                e.stopPropagation();
-              }}
-            />
-      </div> : null}
+                },
+              });
+              e.stopPropagation();
+            }}
+          />
+        </div>
+      ) : null}
 
       <div
         style={{
-            width: "100%",
-            position: "absolute",
-            left: 0,
-            bottom: 8,
-            zIndex: 2,
-            display: "flex",
-            justifyContent: "space-between",
-            padding: "0 5px",
-            gap: "6px",
-          }}
-        >
+          width: "100%",
+          position: "absolute",
+          left: 0,
+          bottom: 8,
+          zIndex: 2,
+          display: "flex",
+          justifyContent: "space-between",
+          padding: "0 5px",
+          gap: "6px",
+        }}
+      >
         <div
           style={{
-              backgroundColor: theme.custom.colors.nav,
-              height: "24px",
-              borderRadius: "12px",
-              padding: "0 8px",
+            backgroundColor: theme.custom.colors.nav,
+            height: "24px",
+            borderRadius: "12px",
+            padding: "0 8px",
+            display: "flex",
+            alignItems: "center",
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+          }}
+        >
+          <Typography
+            component="div"
+            style={{
               display: "flex",
-              alignItems: "center",
+              justifyContent: "space-between",
+              fontSize: "12px",
+              color: theme.custom.colors.fontColor,
+              textOverflow: "ellipsis",
               overflow: "hidden",
               whiteSpace: "nowrap",
             }}
           >
-          <Typography
-            component="div"
-            style={{
-                display: "flex",
-                justifyContent: "space-between",
-                fontSize: "12px",
-                color: theme.custom.colors.fontColor,
+            <div
+              style={{
                 textOverflow: "ellipsis",
                 overflow: "hidden",
                 whiteSpace: "nowrap",
               }}
             >
-            <div
-              style={{
-                  textOverflow: "ellipsis",
-                  overflow: "hidden",
-                  whiteSpace: "nowrap",
-                }}
-              >
               {subtitle?.name ?? nft.name}
             </div>
-            {subtitle?.length > 0 ? <span
-              style={{
-                    marginLeft: "8px",
-                    color: theme.custom.colors.secondary,
-                  }}
-                >
-              {subtitle?.length ?? ""}
-            </span> : null}
+            {subtitle?.length > 0 ? (
+              <span
+                style={{
+                  marginLeft: "8px",
+                  color: theme.custom.colors.secondary,
+                }}
+              >
+                {subtitle?.length ?? ""}
+              </span>
+            ) : null}
           </Typography>
         </div>
-        {xnft ? <IconButton
-          disableRipple
-          onClick={onClickAction}
-          sx={{
-                background: theme.custom.colors.nav,
-                display: "flex",
-                alignItems: "center",
-                borderRadius: "15px",
-                padding: "4px",
-              }}
-            >
-          <RocketLaunchIcon
+        {xnft ? (
+          <IconButton
+            disableRipple
+            onClick={onClickAction}
             sx={{
-                  fontSize: "16px",
-                  color: theme.custom.colors.icon,
-                }}
-              />
-        </IconButton> : null}
+              background: theme.custom.colors.nav,
+              display: "flex",
+              alignItems: "center",
+              borderRadius: "15px",
+              padding: "4px",
+            }}
+          >
+            <RocketLaunchIcon
+              sx={{
+                fontSize: "16px",
+                color: theme.custom.colors.icon,
+              }}
+            />
+          </IconButton>
+        ) : null}
       </div>
     </Button>
   );
