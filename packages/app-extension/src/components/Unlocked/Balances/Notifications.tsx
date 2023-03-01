@@ -132,19 +132,19 @@ export function NotificationButton() {
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen
-              name={"root"}
+              name="root"
               component={(props: any) => <Notifications {...props} />}
             />
             <NavStackScreen
-              name={"contacts"}
+              name="contacts"
               component={(props: any) => <Contacts {...props} />}
             />
             <NavStackScreen
-              name={"contact-requests"}
+              name="contact-requests"
               component={(props: any) => <ContactRequests {...props} />}
             />
             <NavStackScreen
-              name={"contact-requests-sent"}
+              name="contact-requests-sent"
               component={(props: any) => <ContactRequests {...props} />}
             />
           </NavStackEphemeral>
@@ -274,32 +274,30 @@ export function Notifications() {
           groupedNotifications={groupedNotifications}
         />
       </Suspense>
-      {!isXs && (
-        <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-          <div style={{ height: "100%" }}>
-            <NavStackEphemeral
-              initialRoute={{ name: "root" }}
-              options={() => ({ title: "Notifications" })}
-              navButtonLeft={
-                <CloseButton onClick={() => setOpenDrawer(false)} />
+      {!isXs ? <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+        <div style={{ height: "100%" }}>
+          <NavStackEphemeral
+            initialRoute={{ name: "root" }}
+            options={() => ({ title: "Notifications" })}
+            navButtonLeft={
+              <CloseButton onClick={() => setOpenDrawer(false)} />
               }
             >
-              <NavStackScreen
-                name={"root"}
-                component={(props: any) => <Contacts {...props} />}
+            <NavStackScreen
+              name="root"
+              component={(props: any) => <Contacts {...props} />}
               />
-              <NavStackScreen
-                name={"contact-requests"}
-                component={(props: any) => <ContactRequests {...props} />}
+            <NavStackScreen
+              name="contact-requests"
+              component={(props: any) => <ContactRequests {...props} />}
               />
-              <NavStackScreen
-                name={"contact-requests-sent"}
-                component={(props: any) => <ContactRequests {...props} />}
+            <NavStackScreen
+              name="contact-requests-sent"
+              component={(props: any) => <ContactRequests {...props} />}
               />
-            </NavStackEphemeral>
-          </div>
-        </WithDrawer>
-      )}
+          </NavStackEphemeral>
+        </div>
+      </WithDrawer> : null}
     </>
   );
 }
@@ -355,45 +353,43 @@ export function NotificationList({
   const theme = useCustomTheme();
 
   return groupedNotifications.length > 0 ? (
-    <>
-      <div
-        style={{
+    <div
+      style={{
           paddingBottom: "16px",
         }}
       >
-        {groupedNotifications.map(({ date, notifications }) => (
-          <div
-            style={{
+      {groupedNotifications.map(({ date, notifications }) => (
+        <div
+          style={{
               marginLeft: "16px",
               marginRight: "16px",
               marginTop: "16px",
             }}
           >
-            <BubbleTopLabel text={date} />
-            <List
-              style={{
+          <BubbleTopLabel text={date} />
+          <List
+            style={{
                 paddingTop: 0,
                 paddingBottom: 0,
                 borderRadius: "12px",
                 border: `${theme.custom.colors.borderFull}`,
               }}
             >
-              <div>
-                {notifications.map((notification: any, idx: number) => (
-                  <NotificationListItem
-                    key={idx}
-                    notification={notification}
-                    isFirst={idx === 0}
-                    isLast={idx === notifications.length - 1}
-                    onOpenDrawer={onOpenDrawer}
+            <div>
+              {notifications.map((notification: any, idx: number) => (
+                <NotificationListItem
+                  key={idx}
+                  notification={notification}
+                  isFirst={idx === 0}
+                  isLast={idx === notifications.length - 1}
+                  onOpenDrawer={onOpenDrawer}
                   />
                 ))}
-              </div>
-            </List>
-          </div>
+            </div>
+          </List>
+        </div>
         ))}
-      </div>
-    </>
+    </div>
   ) : (
     <NoNotificationsLabel minimize={false} />
   );
@@ -445,7 +441,7 @@ function NotificationListItem({
   if (notification.xnft_id === "friend_requests") {
     return (
       <FriendRequestListItem
-        title={"Friend request"}
+        title="Friend request"
         notification={notification}
         isFirst={isFirst}
         isLast={isLast}
@@ -457,7 +453,7 @@ function NotificationListItem({
   if (notification.xnft_id === "friend_requests_accept") {
     return (
       <FriendRequestListItem
-        title={"Friend request accepted"}
+        title="Friend request accepted"
         notification={notification}
         isFirst={isFirst}
         isLast={isLast}
@@ -534,7 +530,7 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
       <div style={{ display: "flex", marginTop: 5 }}>
         <SuccessButton
           disabled={inProgress}
-          label={"Accept"}
+          label="Accept"
           style={{
             marginRight: 8,
             height: 32,
@@ -571,7 +567,7 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
             paddingRight: 10,
             borderRadius: 6,
           }}
-          label={"Reject"}
+          label="Reject"
           onClick={async (e: any) => {
             e.stopPropagation();
             setInProgress(true);
@@ -595,7 +591,7 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
       </div>
     );
   }
-  return <div></div>;
+  return <div />;
 }
 
 function parseJson(body: string) {
@@ -714,9 +710,9 @@ function NoNotificationsLabel({ minimize }: { minimize: boolean }) {
     >
       <EmptyState
         icon={(props: any) => <NotificationsIcon {...props} />}
-        title={"No Notifications"}
+        title="No Notifications"
         subtitle={"You don't have any notifications yet."}
-        buttonText={"Browse the xNFT Library"}
+        buttonText="Browse the xNFT Library"
         onClick={() => window.open(XNFT_GG_LINK)}
         innerStyle={{
           marginBottom: minimize !== true ? "64px" : 0, // Tab height offset.

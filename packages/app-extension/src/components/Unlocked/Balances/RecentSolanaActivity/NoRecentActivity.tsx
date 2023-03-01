@@ -15,10 +15,10 @@ export function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
     >
       <EmptyState
         icon={(props: any) => <Bolt {...props} />}
-        title={"No Recent Activity"}
-        subtitle={"Get started by adding your first xNFT"}
+        title="No Recent Activity"
+        subtitle="Get started by adding your first xNFT"
         onClick={() => window.open(XNFT_GG_LINK)}
-        buttonText={"Browse the xNFT Library"}
+        buttonText="Browse the xNFT Library"
         contentStyle={{
           color: minimize ? theme.custom.colors.secondary : "inherit",
         }}

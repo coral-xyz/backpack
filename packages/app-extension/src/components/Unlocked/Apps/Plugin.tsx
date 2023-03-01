@@ -109,13 +109,11 @@ export function PluginDisplay({
     <>
       <PluginControl plugin={plugin} />
       <Suspense fallback={<Loading />}>
-        {plugin && (
-          <PluginRenderer
-            key={plugin?.iframeRootUrl}
-            plugin={plugin}
-            deepXnftPath={deepXnftPath}
-          />
-        )}
+        {plugin ? <PluginRenderer
+          key={plugin?.iframeRootUrl}
+          plugin={plugin}
+          deepXnftPath={deepXnftPath}
+          /> : null}
       </Suspense>
     </>
   );
@@ -216,7 +214,7 @@ export function PluginControl({ plugin }: { plugin: any | null }) {
               />
             </div>
           ) : (
-            <PowerIcon fill={"#000000"} />
+            <PowerIcon fill="#000000" />
           )}
         </Button>
       </div>

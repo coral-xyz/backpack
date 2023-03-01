@@ -98,8 +98,8 @@ export function PreferencesAutoLock() {
       >
         <div style={{ marginBottom: -2 }}>
           <TextInput
-            placeholder={""}
-            type={"string"}
+            placeholder=""
+            type="string"
             required={false}
             error={false}
             inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
@@ -135,7 +135,7 @@ export function PreferencesAutoLock() {
             onClick={() => {
               setOption(id);
             }}
-            detail={option === id && <Checkmark />}
+            detail={option === id ? <Checkmark /> : null}
           >
             <Typography style={{ padding: "0 8px" }}>{text}</Typography>
           </ListItem>
@@ -154,7 +154,7 @@ export function PreferencesAutoLock() {
         <PrimaryButton
           label="Set"
           type="submit"
-          disabled={!option && !minutes}
+          disabled={!option ? !minutes : null}
         />
       </div>
     </form>

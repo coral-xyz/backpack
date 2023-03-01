@@ -59,7 +59,7 @@ export const PrimaryPubkeySelector = () => {
         borderTopRightRadius: "12px",
         height: "80%",
       }}
-      openDrawer={needsMigration.length > 0 && !migrationDone}
+      openDrawer={needsMigration.length > 0 ? !migrationDone : null}
       setOpenDrawer={() => {}}
     >
       <div

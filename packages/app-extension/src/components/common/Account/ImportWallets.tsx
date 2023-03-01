@@ -432,7 +432,7 @@ export function ImportWallets({
             placeholder="Derivation Path"
             value={derivationPathLabel}
             setValue={(e) => setDerivationPathLabel(e.target.value)}
-            select={true}
+            select
             disabled={ledgerLocked}
           >
             {derivationPathOptions.map((o, index) => (
@@ -443,9 +443,8 @@ export function ImportWallets({
           </TextInput>
         </div>
         {Object.keys(balances).length > 0 ? (
-          <>
-            <List
-              sx={{
+          <List
+            sx={{
                 color: theme.custom.colors.fontColor,
                 background: theme.custom.colors.background,
                 borderRadius: "12px",
@@ -455,7 +454,7 @@ export function ImportWallets({
                 paddingBottom: "8px",
               }}
             >
-              {walletDescriptors
+            {walletDescriptors
                 .slice(0, DISPLAY_PUBKEY_AMOUNT)
                 .map(({ publicKey, derivationPath }) => (
                   <ListItemButton
@@ -522,8 +521,7 @@ export function ImportWallets({
                     </Box>
                   </ListItemButton>
                 ))}
-            </List>
-          </>
+          </List>
         ) : (
           <Loading />
         )}

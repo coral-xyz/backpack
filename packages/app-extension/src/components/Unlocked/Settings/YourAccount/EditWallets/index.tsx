@@ -73,18 +73,16 @@ export const WalletListItem: React.FC<{
           maxWidth: "75px",
         }}
       />
-      {type && (
-        <div
-          style={{
+      {type ? <div
+        style={{
             display: "flex",
             justifyContent: "center",
             flexDirection: "column",
             marginLeft: "4px",
           }}
         >
-          <ImportTypeBadge type={type} />
-        </div>
-      )}
+        <ImportTypeBadge type={type} />
+      </div> : null}
     </ListItem>
   );
 };
