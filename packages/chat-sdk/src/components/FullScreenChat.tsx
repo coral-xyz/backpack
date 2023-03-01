@@ -27,18 +27,27 @@ export const FullScreenChat = ({
   setShowJumpToBottom,
   localUnreadCount,
 }) => {
-  const { loading, chats, userId, roomId, type, nftMint, publicKey } =
-    useChatContext();
+  const {
+    loading,
+    chats,
+    userId,
+    roomId,
+    type,
+    nftMint,
+    publicKey,
+    selectedFile,
+    setSelectedFile,
+    uploadingFile,
+    setUploadingFile,
+    selectedMediaKind,
+    setSelectedMediaKind,
+    uploadedImageUri,
+    setUploadedImageUri,
+  } = useChatContext();
   const [autoScroll, setAutoScroll] = useState(true);
   const theme = useCustomTheme();
   const existingMessagesRef = useRef<EnrichedMessageWithMetadata[]>([]);
   const [fetchingMoreChats, setFetchingMoreChats] = useState(false);
-  const [selectedMediaKind, setSelectedMediaKind] = useState<"image" | "video">(
-    "image"
-  );
-  const [selectedFile, setSelectedFile] = useState<any>(null);
-  const [uploadingFile, setUploadingFile] = useState(false);
-  const [uploadedImageUri, setUploadedImageUri] = useState("");
 
   const { getRootProps, getInputProps, isDragAccept } = useDropzone({
     onDrop: (files) => {
@@ -114,8 +123,8 @@ export const FullScreenChat = ({
         },
       })}
     >
-      {isDragAccept && <DropzonePopup />}
-      <div id={"messageContainer"} style={{ height: "calc(100% - 50px)" }}>
+      {isDragAccept ? <DropzonePopup /> : null}
+      <div id="messageContainer" style={{ height: "calc(100% - 50px)" }}>
         <ScrollBarImpl
           onScrollStop={async () => {
             // @ts-ignore
@@ -165,29 +174,27 @@ export const FullScreenChat = ({
             }
           }}
           setRef={setMessageRef}
-          height={"calc(100% - 50px)"}
+          height="calc(100% - 50px)"
         >
           <div>
             <div style={{ paddingBottom: 20 }}>
               <input {...getInputProps()} />
               <div>
-                {fetchingMoreChats && (
-                  <div
-                    style={{
+                {fetchingMoreChats ? <div
+                  style={{
                       display: "flex",
                       justifyContent: "center",
                       marginBottom: 3,
                       marginTop: 3,
                     }}
                   >
-                    {" "}
-                    <CircularProgress size={20} />{" "}
-                  </div>
-                )}
+                  {" "}
+                  <CircularProgress size={20} />{" "}
+                </div> : null}
                 <Banner />
-                {loading && <MessagesSkeleton />}
-                {!loading && chats?.length === 0 && <EmptyChat />}
-                {!loading && chats?.length !== 0 && <ChatMessages />}
+                {loading ? <MessagesSkeleton /> : null}
+                {!loading && chats?.length === 0 ? <EmptyChat /> : null}
+                {!loading && chats?.length !== 0 ? <ChatMessages /> : null}
               </div>
             </div>
           </div>

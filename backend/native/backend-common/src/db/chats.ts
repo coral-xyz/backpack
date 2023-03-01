@@ -104,6 +104,18 @@ export const postChat = (
         }
       : {};
 
+  const barterRequestMutation =
+    message_kind === "barter-request"
+      ? {
+          data: [
+            {
+              //@ts-ignore
+              barter_id: messageMetadata?.barter_id || "",
+            },
+          ],
+        }
+      : {};
+
   chain("mutation")({
     insert_chats_one: [
       {
@@ -113,6 +125,7 @@ export const postChat = (
           ...simpleTransferMutation,
           ...barterMessageMutation,
           ...nftStickerMutation,
+          ...barterRequestMutation,
           username: "",
           room,
           message: message,
