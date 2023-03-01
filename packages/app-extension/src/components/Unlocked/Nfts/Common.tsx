@@ -1,5 +1,8 @@
 import type { MouseEvent } from "react";
-import { NAV_COMPONENT_NFT_CHAT,UNKNOWN_NFT_ICON_SRC  } from "@coral-xyz/common";
+import {
+  NAV_COMPONENT_NFT_CHAT,
+  UNKNOWN_NFT_ICON_SRC,
+} from "@coral-xyz/common";
 import { MessageBubbleUnreadIcon, ProxyImage } from "@coral-xyz/react-common";
 import {
   collectibleXnft,

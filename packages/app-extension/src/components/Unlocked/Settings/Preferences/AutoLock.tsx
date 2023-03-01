@@ -154,7 +154,7 @@ export function PreferencesAutoLock() {
         <PrimaryButton
           label="Set"
           type="submit"
-          disabled={!option ? !minutes : null}
+          disabled={!option ? !minutes : false}
         />
       </div>
     </form>

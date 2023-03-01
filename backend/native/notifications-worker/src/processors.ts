@@ -1,6 +1,8 @@
 import type { SubscriptionType } from "@coral-xyz/common";
-import {   AVATAR_BASE_URL,
-DEFAULT_GROUP_CHATS, parseMessage ,
+import {
+  AVATAR_BASE_URL,
+  DEFAULT_GROUP_CHATS,
+  parseMessage,
   WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
 

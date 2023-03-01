@@ -19,7 +19,6 @@
     "@coral-xyz/common": "*",
     "@coral-xyz/recoil": "*",
     "@ethersproject/shims": "^5.7.0",
-    "@coral-xyz/common-mobile": "*",
     "@expo/react-native-action-sheet": "^4.0.1",
     "@expo/vector-icons": "^13.0.0",
     "@gorhom/bottom-sheet": "^4.4.5",
