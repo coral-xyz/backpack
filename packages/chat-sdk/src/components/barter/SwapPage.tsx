@@ -29,7 +29,8 @@ export function SwapPage({
   localSelection: BarterOffers;
 }) {
   const theme = useCustomTheme();
-  const { roomId, setOpenPlugin, remoteUsername } = useChatContext();
+  const { roomId, setOpenPlugin, remoteUsername, sendMessage } =
+    useChatContext();
   const { barterId } = useBarterContext();
   return (
     <div
@@ -88,6 +89,9 @@ export function SwapPage({
           <SecondaryButton
             label={`Request @${remoteUsername} to add assets`}
             onClick={async () => {
+              sendMessage("Barter request", "barter-request", {
+                barter_id: barterId,
+              });
               /*await fetch(
                     `${BACKEND_API_URL}/barter/execute?room=${roomId}&type=individual`,
                     {

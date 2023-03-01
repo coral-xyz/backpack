@@ -98,6 +98,14 @@ export const getChats = async ({
             txn_signature: true,
           },
         ],
+        barter_poke_metadata: [
+          {
+            limit: 1,
+          },
+          {
+            barter_id: true,
+          },
+        ],
         nft_sticker_metadata: [
           {
             limit: 1,
@@ -159,6 +167,10 @@ export const getChats = async ({
           : chat.message_kind === "nft-sticker"
           ? {
               mint: chat.nft_sticker_metadata?.[0]?.mint,
+            }
+          : chat.message_kind === "barter-request"
+          ? {
+              barter_id: chat.barter_poke_metadata?.[0]?.barter_id,
             }
           : undefined,
     });

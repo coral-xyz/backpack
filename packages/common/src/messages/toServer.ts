@@ -17,6 +17,7 @@ export type MessageKind =
   | "media"
   | "transaction"
   | "barter"
+  | "barter-request"
   | "nft-sticker";
 
 export type MessageMetadata =
@@ -41,6 +42,9 @@ export type MessageMetadata =
     }
   | {
       mint: string;
+    }
+  | {
+      barter_id: string;
     };
 
 export type SendMessagePayload = {

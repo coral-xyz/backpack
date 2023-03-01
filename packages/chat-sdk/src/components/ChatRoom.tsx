@@ -1,12 +1,18 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import type { SubscriptionType } from "@coral-xyz/common";
-import { SUBSCRIBE } from "@coral-xyz/common";
+import type {   MessageKind,
+  MessageMetadata,SubscriptionType } from "@coral-xyz/common";
+import {
+  CHAT_MESSAGES,
+  SUBSCRIBE,
+} from "@coral-xyz/common";
+import { createEmptyFriendship } from "@coral-xyz/db";
 import {
   refreshChatsFor,
   SignalingManager,
   useChatsWithMetadata,
 } from "@coral-xyz/react-common";
 import { useUser } from "@coral-xyz/recoil";
+import { v4 as uuidv4 } from "uuid";
 
 import { MessagePluginRenderer } from "../MessagePluginRenderer";
 import { PLUGIN_HEIGHT_PERCENTAGE } from "../utils/constants";
@@ -91,6 +97,13 @@ export const ChatRoom = ({
   const [openPlugin, setOpenPlugin] = useState<MessagePlugins>("");
   const [aboveMessagePlugin, setAboveMessagePlugin] =
     useState<AboveMessagePlugin>({ type: "", metadata: {} });
+  const [selectedFile, setSelectedFile] = useState<any>(null);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [selectedMediaKind, setSelectedMediaKind] = useState<"image" | "video">(
+    "image"
+  );
+  const [uploadedImageUri, setUploadedImageUri] = useState("");
+  const inputRef = useRef<any>(null);
 
   useEffect(() => {
     if (roomId) {
@@ -196,6 +209,96 @@ export const ChatRoom = ({
     setScrollFromBottom(null);
   }, [scrollFromBottom, chats]);
 
+  const sendMessage = async (
+    messageTxt,
+    messageKind: MessageKind = "text",
+    messageMetadata?: MessageMetadata
+  ) => {
+    if (selectedFile && uploadingFile) {
+      return;
+    }
+    if (
+      messageTxt ||
+      selectedFile ||
+      aboveMessagePlugin.type === "nft-sticker"
+    ) {
+      if (selectedFile) {
+        messageKind = "media";
+        messageMetadata = {
+          media_kind: selectedMediaKind,
+          media_link: uploadedImageUri,
+        };
+        setSelectedFile(null);
+      }
+      if (aboveMessagePlugin.type === "nft-sticker") {
+        messageKind = "nft-sticker";
+        messageMetadata = {
+          mint: aboveMessagePlugin.metadata.mint,
+        };
+        setAboveMessagePlugin({
+          type: "",
+          metadata: {},
+        });
+        setOpenPlugin("");
+      }
+      const client_generated_uuid = uuidv4();
+      if (chats.length === 0 && type === "individual") {
+        // If it's the first time the user is interacting,
+        // create an in memory friendship
+        createEmptyFriendship(uuid, remoteUserId || "", {
+          last_message_sender: uuid,
+          last_message_timestamp: new Date().toISOString(),
+          last_message:
+            messageKind === "gif"
+              ? "GIF"
+              : messageKind === "secure-transfer"
+              ? "Secure Transfer"
+              : messageKind === "media"
+              ? "Media"
+              : messageTxt,
+          last_message_client_uuid: client_generated_uuid,
+        });
+      }
+      SignalingManager.getInstance()?.send({
+        type: CHAT_MESSAGES,
+        payload: {
+          messages: [
+            {
+              client_generated_uuid: client_generated_uuid,
+              message: messageTxt,
+              message_kind: messageKind,
+              message_metadata: messageMetadata,
+              parent_client_generated_uuid:
+                activeReply.parent_client_generated_uuid
+                  ? activeReply.parent_client_generated_uuid
+                  : undefined,
+              //@ts-ignore
+              parent_message_author_username:
+                activeReply.parent_client_generated_uuid
+                  ? activeReply.parent_username?.slice(1)
+                  : undefined,
+              //@ts-ignore
+              parent_message_text: activeReply.parent_client_generated_uuid
+                ? activeReply.text
+                : undefined,
+              parent_message_author_uuid:
+                activeReply.parent_message_author_uuid,
+            },
+          ],
+          type: type,
+          room: roomId,
+        },
+      });
+
+      setActiveReply({
+        parent_username: "",
+        parent_client_generated_uuid: null,
+        text: "",
+      });
+      inputRef.current.setValue("");
+    }
+  };
+
   return (
     <ChatProvider
       activeReply={activeReply}
@@ -225,6 +328,16 @@ export const ChatRoom = ({
       setOpenPlugin={setOpenPlugin}
       aboveMessagePlugin={aboveMessagePlugin}
       setAboveMessagePlugin={setAboveMessagePlugin}
+      selectedFile={selectedFile}
+      setSelectedFile={setSelectedFile}
+      uploadingFile={uploadingFile}
+      setUploadingFile={setUploadingFile}
+      inputRef={inputRef}
+      selectedMediaKind={selectedMediaKind}
+      setSelectedMediaKind={setSelectedMediaKind}
+      uploadedImageUri={uploadedImageUri}
+      setUploadedImageUri={setUploadedImageUri}
+      sendMessage={sendMessage}
     >
       <div
         style={{
