@@ -81,22 +81,18 @@ export const StripeRamp = ({
   return (
     <div className={classes.outerContainer}>
       {" "}
-      {err && (
-        <>
-          <div className={classes.innerContainer}>
-            <Typography variant={"subtitle1"}>{err}</Typography>
-          </div>
-          <br />
-          <div className={classes.innerContainerPad}>
-            <PrimaryButton label="Try again" onClick={() => fetchToken()} />
-          </div>
-        </>
-      )}
-      {!err && (
+      {err ? <>
         <div className={classes.innerContainer}>
-          <Loading />{" "}
+          <Typography variant="subtitle1">{err}</Typography>
         </div>
-      )}
+        <br />
+        <div className={classes.innerContainerPad}>
+          <PrimaryButton label="Try again" onClick={() => fetchToken()} />
+        </div>
+      </> : null}
+      {!err ? <div className={classes.innerContainer}>
+        <Loading />{" "}
+      </div> : null}
     </div>
   );
 };

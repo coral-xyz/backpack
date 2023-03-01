@@ -82,7 +82,7 @@ function Router() {
     case QUERY_ONBOARDING:
       return <Onboarding />;
     case QUERY_ADD_USER_ACCOUNT:
-      return <Onboarding isAddingAccount={true} />;
+      return <Onboarding isAddingAccount />;
     default:
       throw new Error("invalid query param");
   }

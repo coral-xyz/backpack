@@ -74,12 +74,12 @@ export function XnftSettings() {
   return xnfts.length === 0 ? (
     <EmptyState
       icon={(props: any) => <Apps {...props} />}
-      title={"No xNFTs"}
-      subtitle={"Get started by adding your first xNFT"}
+      title="No xNFTs"
+      subtitle="Get started by adding your first xNFT"
       contentStyle={{
         marginBottom: "64px", // Tab height offset.
       }}
-      buttonText={"Browse the xNFT Library"}
+      buttonText="Browse the xNFT Library"
       onClick={() => window.open(XNFT_GG_LINK, "_blank")}
     />
   ) : (

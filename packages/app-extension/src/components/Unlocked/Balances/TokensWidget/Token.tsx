@@ -84,7 +84,7 @@ export function Token({
         blockchain={blockchain}
         address={activityAddress}
         contractAddresses={contractAddresses}
-        minimize={true}
+        minimize
         style={{ marginTop: 0 }}
       />
     </div>

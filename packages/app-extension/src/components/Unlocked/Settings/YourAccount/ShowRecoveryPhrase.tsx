@@ -148,12 +148,12 @@ export function ShowRecoveryPhraseWarning() {
       >
         <Box sx={{ marginBottom: "8px" }}>
           <TextInput
-            autoFocus={true}
+            autoFocus
             value={password}
             setValue={(e) => setPassword(e.target.value)}
             error={error}
-            type={"password"}
-            placeholder={"Password"}
+            type="password"
+            placeholder="Password"
           />
         </Box>
         <DangerButton

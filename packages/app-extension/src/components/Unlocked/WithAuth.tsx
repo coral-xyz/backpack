@@ -214,28 +214,26 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   return (
     <>
       {children}
-      {authData && (
-        <WithDrawer
-          openDrawer={openDrawer}
-          setOpenDrawer={setOpenDrawer}
-          paperStyles={{
+      {authData ? <WithDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
+        paperStyles={{
             height: "calc(100% - 56px)",
             borderTopLeftRadius: "12px",
             borderTopRightRadius: "12px",
           }}
         >
-          <HardwareOnboard
-            blockchain={authData!.blockchain}
-            action="search"
-            searchPublicKey={authData!.publicKey}
-            signMessage={authData!.message}
-            signText="Sign the message to authenticate with Backpack."
-            onComplete={(signedWalletDescriptor: SignedWalletDescriptor) => {
+        <HardwareOnboard
+          blockchain={authData!.blockchain}
+          action="search"
+          searchPublicKey={authData!.publicKey}
+          signMessage={authData!.message}
+          signText="Sign the message to authenticate with Backpack."
+          onComplete={(signedWalletDescriptor: SignedWalletDescriptor) => {
               setAuthSignature(signedWalletDescriptor.signature);
             }}
           />
-        </WithDrawer>
-      )}
+      </WithDrawer> : null}
     </>
   );
 }

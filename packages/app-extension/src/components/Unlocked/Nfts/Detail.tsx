@@ -173,13 +173,12 @@ export function NftsDetail({
           marginTop: "16px",
         }}
       >
-        {whitelistedChatCollectionId && (
-          <PrimaryButton
-            disabled={chatJoined || joiningChat}
-            label={
+        {whitelistedChatCollectionId ? <PrimaryButton
+          disabled={chatJoined || joiningChat}
+          label={
               joiningChat ? "Joining" : chatJoined ? "Joined" : "Join chat"
             }
-            onClick={async () => {
+          onClick={async () => {
               setJoiningChat(true);
               await fetch(`${BACKEND_API_URL}/nft/bulk`, {
                 method: "POST",
@@ -212,8 +211,7 @@ export function NftsDetail({
               });
               setChatJoined(true);
             }}
-          />
-        )}
+          /> : null}
         <SendButton
           style={
             whitelistedChatCollectionId
@@ -226,9 +224,9 @@ export function NftsDetail({
           nft={nft}
         />
       </div>
-      {xnft && <ApplicationButton xnft={xnft} mintAddress={nft.mint} />}
+      {xnft ? <ApplicationButton xnft={xnft} mintAddress={nft.mint} /> : null}
       <Description nft={nft} />
-      {nft.attributes && nft.attributes.length > 0 && <Attributes nft={nft} />}
+      {nft.attributes && nft.attributes.length > 0 ? <Attributes nft={nft} /> : null}
     </div>
   );
 }
@@ -254,7 +252,7 @@ function Image({ nft }: { nft: any }) {
           minHeight: "343px",
         }}
         src={src}
-        removeOnError={true}
+        removeOnError
       />
     </div>
   );
@@ -388,7 +386,7 @@ function SendButton({ nft, style }: { nft: any; style?: CSSProperties }) {
   };
   return (
     <>
-      <PrimaryButton style={style} onClick={() => send()} label={"Send"} />
+      <PrimaryButton style={style} onClick={() => send()} label="Send" />
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
@@ -399,7 +397,7 @@ function SendButton({ nft, style }: { nft: any; style?: CSSProperties }) {
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen
-              name={"send"}
+              name="send"
               component={() => <SendScreen nft={nft} />}
             />
           </NavStackEphemeral>
@@ -481,12 +479,12 @@ function SendScreen({ nft }: { nft: any }) {
                 marginRight: "8px",
               }}
               onClick={close}
-              label={"Cancel"}
+              label="Cancel"
             />
             <PrimaryButton
               disabled={!isValidAddress}
               onClick={() => setOpenConfirm(true)}
-              label={"Next"}
+              label="Next"
             />
           </div>
         </div>
@@ -495,32 +493,28 @@ function SendScreen({ nft }: { nft: any }) {
         openDrawer={openConfirm}
         setOpenDrawer={setOpenConfirm}
       >
-        {nft.blockchain === Blockchain.SOLANA && (
-          <SendSolanaConfirmationCard
-            token={{
+        {nft.blockchain === Blockchain.SOLANA ? <SendSolanaConfirmationCard
+          token={{
               address: nft.publicKey,
               logo: nft.imageUrl,
               decimals: 0, // Are there any NFTs that don't use decimals 0?
               mint: nft.mint,
             }}
-            destinationAddress={destinationAddress}
-            amount={BigNumber.from(1)}
-            onComplete={() => setWasSent(true)}
-          />
-        )}
-        {nft.blockchain === Blockchain.ETHEREUM && (
-          <SendEthereumConfirmationCard
-            token={{
+          destinationAddress={destinationAddress}
+          amount={BigNumber.from(1)}
+          onComplete={() => setWasSent(true)}
+          /> : null}
+        {nft.blockchain === Blockchain.ETHEREUM ? <SendEthereumConfirmationCard
+          token={{
               logo: nft.imageUrl,
               decimals: 0, // Are there any NFTs that don't use decimals 0?
               address: nft.contractAddress,
               tokenId: nft.tokenId,
             }}
-            destinationAddress={destinationAddress}
-            amount={BigNumber.from(1)}
-            onComplete={() => setWasSent(true)}
-          />
-        )}
+          destinationAddress={destinationAddress}
+          amount={BigNumber.from(1)}
+          onComplete={() => setWasSent(true)}
+          /> : null}
       </ApproveTransactionDrawer>
     </>
   );
@@ -807,16 +801,16 @@ function BurnConfirmationCard({
       amount={BigNumber.from(1)}
       token={token}
       signature={signature!}
-      titleOverride={"Burning"}
+      titleOverride="Burning"
     />
   ) : state === "confirmed" ? (
     <Sending
       blockchain={Blockchain.SOLANA}
-      isComplete={true}
+      isComplete
       amount={BigNumber.from(1)}
       token={token}
       signature={signature!}
-      titleOverride={"Burnt"}
+      titleOverride="Burnt"
     />
   ) : (
     <ErrorConfirmation

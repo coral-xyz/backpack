@@ -55,7 +55,7 @@ function VersionWarning() {
     >
       <EmptyState
         icon={(props: any) => <Block {...props} />}
-        title={"Please upgrade your Backpack"}
+        title="Please upgrade your Backpack"
         subtitle={`During the duration of the beta program, Backpack
         requires users to use the most up to date version of the extension.`}
       />

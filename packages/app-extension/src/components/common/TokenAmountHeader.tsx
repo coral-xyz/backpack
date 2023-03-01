@@ -36,26 +36,24 @@ export const TokenAmountHeader: React.FC<{
     >
       {/* Dummy padding to center flex content */}
       <div style={{ flex: 1 }} />
-      {displayLogo && (
-        <div
-          style={{
+      {displayLogo ? <div
+        style={{
             display: "flex",
             justifyContent: "center",
             flexDirection: "column",
             marginRight: "8px",
           }}
         >
-          <ProxyImage
-            src={token.logo}
-            style={{
+        <ProxyImage
+          src={token.logo}
+          style={{
               width: "32px",
               height: "32px",
               borderRadius: "16px",
             }}
-            removeOnError={true}
+          removeOnError
           />
-        </div>
-      )}
+      </div> : null}
       <Typography
         style={{
           color: theme.custom.colors.fontColor,

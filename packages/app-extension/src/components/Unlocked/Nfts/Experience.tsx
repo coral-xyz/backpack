@@ -53,7 +53,7 @@ export function NftChat({ collectionId, nftMint }: any) {
   return (
     <ChatRoom
       username={username || ""}
-      type={"collection"}
+      type="collection"
       roomId={collectionId || "-"}
       userId={uuid}
       isDarkMode={isDarkMode}
@@ -70,19 +70,19 @@ function MainScreen({ id }: { id: string }) {
     <div className={classes.container}>
       <div className={classes.centerAlign}>
         <img
-          src={"/assets/one/cream-circle.png"}
+          src="/assets/one/cream-circle.png"
           style={{ height: "50vh", marginTop: "10vh" }}
         />
       </div>
       <div className={classes.centerAlign}>
         <img
-          src={"/assets/one/vito-smoke.png"}
+          src="/assets/one/vito-smoke.png"
           style={{ height: "70vh", marginTop: "-60vh" }}
         />
       </div>
       <div className={classes.centerAlign}>
         <img
-          src={"/assets/one/vito.png"}
+          src="/assets/one/vito.png"
           style={{ height: "70vh", marginTop: "-70vh" }}
         />
       </div>

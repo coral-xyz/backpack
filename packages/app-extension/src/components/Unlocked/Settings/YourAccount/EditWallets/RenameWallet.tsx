@@ -60,7 +60,7 @@ export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
         }}
       >
         <TextInput
-          autoFocus={true}
+          autoFocus
           value={walletName}
           setValue={(e) => setWalletName(e.target.value)}
         />
