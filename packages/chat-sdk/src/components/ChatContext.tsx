@@ -2,8 +2,11 @@ import React, { useContext } from "react";
 import type {
   EnrichedMessage,
   EnrichedMessageWithMetadata,
- MessageKind, MessageMetadata,  SubscriptionType,
-  UserMetadata } from "@coral-xyz/common";
+  MessageKind,
+  MessageMetadata,
+  SubscriptionType,
+  UserMetadata,
+} from "@coral-xyz/common";
 
 import type { AboveMessagePlugin } from "./ChatRoom";
 export type MessagePlugins = "secure-transfer" | "barter" | "nft-sticker" | "";
@@ -54,7 +57,7 @@ type ChatContext = {
   setUploadedImageUri: any;
   sendMessage: (
     messageTxt: string,
-    messageKind: MessageKind,
+    messageKind?: MessageKind,
     messageMetadata?: MessageMetadata
   ) => void;
 };

@@ -1,10 +1,10 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import type {   MessageKind,
-  MessageMetadata,SubscriptionType } from "@coral-xyz/common";
-import {
-  CHAT_MESSAGES,
-  SUBSCRIBE,
+import type {
+  MessageKind,
+  MessageMetadata,
+  SubscriptionType,
 } from "@coral-xyz/common";
+import { CHAT_MESSAGES, SUBSCRIBE } from "@coral-xyz/common";
 import { createEmptyFriendship } from "@coral-xyz/db";
 import {
   refreshChatsFor,
@@ -294,6 +294,7 @@ export const ChatRoom = ({
         parent_username: "",
         parent_client_generated_uuid: null,
         text: "",
+        parent_message_author_uuid: "",
       });
       inputRef.current.setValue("");
     }

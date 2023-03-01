@@ -90,7 +90,7 @@ export function SwapPage({
             label={`Request @${remoteUsername} to add assets`}
             onClick={async () => {
               sendMessage("Barter request", "barter-request", {
-                barter_id: barterId,
+                barter_id: barterId.toString(),
               });
               /*await fetch(
                     `${BACKEND_API_URL}/barter/execute?room=${roomId}&type=individual`,
