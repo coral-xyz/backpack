@@ -5,6 +5,7 @@ import {
 } from "@coral-xyz/backend-common";
 import type { FromServer, ToServer } from "@coral-xyz/common";
 import {
+  BACKPACK_TEAM,
   CHAT_MESSAGES,
   DEFAULT_GROUP_CHATS,
   DELETE_MESSAGE,
@@ -131,9 +132,14 @@ export class User {
         const messageDetails = await getChatFromClientGeneratedUuid(
           message.payload.client_generated_uuid
         );
-        if (!messageDetails || messageDetails.uuid !== this.userId) {
+        if (
+          !messageDetails ||
+          !BACKPACK_TEAM.includes(
+            this.userId
+          ) /* messageDetails.uuid !== this.userId */
+        ) {
           console.error(
-            `Someone sending errorneous input sending uuid ${messageDetails.uuid} for ${message.payload.client_generated_uuid}`
+            `Someone sending errorneous input sending uuid ${messageDetails?.uuid} for ${message.payload.client_generated_uuid}`
           );
           return;
         }
