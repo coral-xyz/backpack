@@ -351,5 +351,3 @@ async function postMsgFromAppUi(msg: any) {
       `window.postMessageToBackgroundViaWebview(${JSON.stringify(msg)}); true;`
     );
 }
-
-startMobileIfNeeded();
