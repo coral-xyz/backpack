@@ -5,7 +5,7 @@ import * as atoms from "../atoms";
 export const useRecentNotifications = ({
   limit,
   offset,
-                                         uuid
+  uuid,
 }: {
   limit: number;
   offset: number;
