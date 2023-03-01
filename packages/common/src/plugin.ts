@@ -41,6 +41,7 @@ import {
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
 } from "./constants";
+import { BACKPACK_CONFIG_VERSION } from "./generated-config";
 import { getLogger } from "./logging";
 import type { Event, RpcResponse, XnftMetadata, XnftPreference } from "./types";
 import { Blockchain } from "./types";
@@ -124,6 +125,14 @@ export class Plugin {
           //   "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8"
           `https://${xnftAddressB32}.gateway.xnfts.dev`
         : externalResourceUri(url);
+
+    const whitelistedProtocols = ["ar://", "ipfs://", "https://", "http://"];
+    const isWhitelisted = whitelistedProtocols.find((p) =>
+      iframeRootUrl.startsWith(p)
+    );
+    if (!isWhitelisted) {
+      throw new Error("invalid xnft url");
+    }
 
     this.iframeRootUrl = iframeRootUrl;
 
