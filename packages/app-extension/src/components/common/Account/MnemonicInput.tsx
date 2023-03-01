@@ -3,7 +3,11 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
 } from "@coral-xyz/common";
-import { PrimaryButton, SecondaryButton } from "@coral-xyz/react-common";
+import {
+  PrimaryButton,
+  SecondaryButton,
+  TextInput,
+} from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -77,6 +81,7 @@ export function MnemonicInput({
   const theme = useCustomTheme();
   const classes = useStyles();
   const background = useBackgroundClient();
+  const [mnemonicText, setMnemonicText] = useState("");
   const [mnemonicWords, setMnemonicWords] = useState<string[]>([
     ...Array(12).fill(""),
   ]);
@@ -178,8 +183,24 @@ export function MnemonicInput({
               : "Enter your 12 or 24-word secret recovery mnemonic to add an existing wallet."}
           </SubtextParagraph>
         </Box>
+        <MnemonicTextInput
+          mnemonicText={mnemonicText}
+          mnemonicWords={mnemonicWords}
+          setMnemonicWords={readOnly ? undefined : setMnemonicWords}
+          onChange={readOnly ? undefined : setMnemonicText}
+        />
+        <Box
+          style={{
+            margin: 0,
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          (or)
+        </Box>
         <MnemonicInputFields
           mnemonicWords={mnemonicWords}
+          setMnemonicText={readOnly ? undefined : setMnemonicText}
           onChange={readOnly ? undefined : setMnemonicWords}
         />
         {readOnly ? null : (
@@ -207,7 +228,7 @@ export function MnemonicInput({
           </Box>
         )}
       </Box>
-      {readOnly && (
+      {readOnly ? (
         <>
           <CopyButton
             text={mnemonic}
@@ -226,9 +247,11 @@ export function MnemonicInput({
             />
           </Box>
         </>
-      )}
+      ) : null}
       <Box>
-        {error && <Typography className={classes.errorMsg}>{error}</Typography>}
+        {error ? (
+          <Typography className={classes.errorMsg}>{error}</Typography>
+        ) : null}
 
         <PrimaryButton
           label={buttonLabel}
@@ -243,13 +266,77 @@ export function MnemonicInput({
     </Box>
   );
 }
-
-export function MnemonicInputFields({
+export function MnemonicTextInput({
+  mnemonicText,
   mnemonicWords,
+  setMnemonicWords,
   onChange,
   rootClass,
 }: {
+  mnemonicText: string;
+  onChange?: (mnemonicText: string) => void;
   mnemonicWords: Array<string>;
+  setMnemonicWords?: (mnemonicWords: Array<string>) => void;
+  rootClass?: any;
+}) {
+  function mnemonicSplitUp(e: any) {
+    if (onChange) {
+      let textValue = e.target.value.toLowerCase();
+      let textSplitArray = textValue.split(" ");
+      onChange(textValue);
+      if (textSplitArray.length < 12 && setMnemonicWords) {
+        let localmnemonicArr = [
+          ...textSplitArray,
+          ...new Array(12 - textSplitArray.length).fill(""),
+        ];
+        setMnemonicWords(localmnemonicArr);
+      }
+
+      console.log("textValue", textValue.split(" "));
+    }
+  }
+  return (
+    <Box style={{ marginBottom: "2px" }}>
+      <TextInput
+        inputProps={{
+          name: "mnemonicText",
+          autoComplete: "off",
+          spellCheck: "false",
+          autoFocus: true,
+        }}
+        placeholder="xxxxx xxxx xxx xx..."
+        type="text"
+        value={mnemonicText}
+        setValue={(e) => {
+          console.log("pasted");
+          mnemonicSplitUp(e);
+        }}
+        // error={error ? true : false}
+        // errorMessage={error}
+        // startAdornment={
+        //   <InputAdornment position="start">
+        //     <AlternateEmail
+        //       style={{
+        //         color: theme.custom.colors.secondary,
+        //         fontSize: 18,
+        //         marginRight: -2,
+        //         userSelect: "none",
+        //       }}
+        //     />
+        //   </InputAdornment>
+        // }
+      />
+    </Box>
+  );
+}
+export function MnemonicInputFields({
+  mnemonicWords,
+  onChange,
+  setMnemonicText,
+  rootClass,
+}: {
+  mnemonicWords: Array<string>;
+  setMnemonicText?: (mnemonicText: string) => void;
   onChange?: (mnemonicWords: Array<string>) => void;
   rootClass?: any;
 }) {
@@ -259,45 +346,50 @@ export function MnemonicInputFields({
     rootClass = classes.mnemonicInputRoot;
   }
   return (
-    <Grid
-      container
-      rowSpacing={0}
-      columnSpacing={1.00005}
-      sx={{ marginTop: "24px" }}
-    >
-      {Array.from(Array(mnemonicWords.length).keys()).map((i) => (
-        <Grid item xs={4} key={i}>
-          <TextField
-            className={rootClass}
-            variant="outlined"
-            margin="dense"
-            size="small"
-            required
-            fullWidth
-            InputLabelProps={{
-              shrink: false,
-              style: {
-                backgroundColor: theme.custom.colors.nav,
-              },
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">{i + 1}</InputAdornment>
-              ),
-              readOnly: onChange === undefined,
-            }}
-            value={mnemonicWords[i]}
-            onChange={(e) => {
-              if (onChange) {
-                const newMnemonicWords = [...mnemonicWords];
-                newMnemonicWords[i] = e.target.value;
-                onChange(newMnemonicWords);
-              }
-            }}
-          />
-        </Grid>
-      ))}
-    </Grid>
+    <Box>
+      <Grid
+        container
+        rowSpacing={0}
+        columnSpacing={1.00005}
+        sx={{ marginTop: "10px" }}
+      >
+        {Array.from(Array(mnemonicWords.length).keys()).map((i) => (
+          <Grid item xs={4} key={i}>
+            <TextField
+              className={rootClass}
+              variant="outlined"
+              margin="dense"
+              size="small"
+              required
+              fullWidth
+              InputLabelProps={{
+                shrink: false,
+                style: {
+                  backgroundColor: theme.custom.colors.nav,
+                },
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">{i + 1}</InputAdornment>
+                ),
+                readOnly: onChange === undefined,
+              }}
+              value={mnemonicWords[i]}
+              onChange={(e) => {
+                if (onChange) {
+                  const newMnemonicWords = [...mnemonicWords];
+                  newMnemonicWords[i] = e.target.value;
+                  onChange(newMnemonicWords);
+                  if (setMnemonicText) {
+                    setMnemonicText(newMnemonicWords.join(" "));
+                  }
+                }
+              }}
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
   );
 }
 

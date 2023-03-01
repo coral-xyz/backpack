@@ -1,5 +1,5 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
-import { PrimaryButton,TextInput } from "@coral-xyz/react-common";
+import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { AlternateEmail } from "@mui/icons-material";
 import { Box, InputAdornment } from "@mui/material";
