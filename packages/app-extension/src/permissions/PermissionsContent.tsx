@@ -56,14 +56,14 @@ export const PermissionsContent = ({
           </div>
           <br />
           <div className={classes.containerDivInternal}>
-            <Typography variant={"h5"}>{title}</Typography>
+            <Typography variant="h5">{title}</Typography>
           </div>
           <br />
           <div className={classes.containerDivInternal}>
-            <Typography variant={"subtitle1"}>{subtitle1}</Typography>
+            <Typography variant="subtitle1">{subtitle1}</Typography>
           </div>
           <div className={classes.containerDivInternal}>
-            <Typography variant={"subtitle1"}>{subtitle2}</Typography>
+            <Typography variant="subtitle1">{subtitle2}</Typography>
           </div>
         </div>
       </div>

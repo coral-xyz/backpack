@@ -33,11 +33,11 @@ export const CameraPermissions = () => {
     return (
       <PermissionsContent
         marginTop={35}
-        title={"Allow Camera"}
-        subtitle1={"Please allow Backpack access to your camera."}
-        subtitle2={"This is required to share your video during a call."}
-        icon={<CameraOn fill={"#8F929E"} />}
-        backgroundColor={"#DFE0E6"}
+        title="Allow Camera"
+        subtitle1="Please allow Backpack access to your camera."
+        subtitle2="This is required to share your video during a call."
+        icon={<CameraOn fill="#8F929E" />}
+        backgroundColor="#DFE0E6"
       />
     );
   }
@@ -45,11 +45,11 @@ export const CameraPermissions = () => {
   if (!permissionGranted) {
     return (
       <PermissionsContent
-        title={"Access Blocked"}
-        subtitle1={"To give Backpack camera and microphone access,"}
-        subtitle2={"check your browser or device settings"}
+        title="Access Blocked"
+        subtitle1="To give Backpack camera and microphone access,"
+        subtitle2="check your browser or device settings"
         icon={<CameraOff />}
-        backgroundColor={"#DFE0E6"}
+        backgroundColor="#DFE0E6"
       />
     );
   }
@@ -57,10 +57,10 @@ export const CameraPermissions = () => {
   return (
     <PermissionsContent
       marginTop={35}
-      title={"Access Granted"}
-      subtitle1={"You have granted camera and mic access"}
-      icon={<CameraOn fill={"#35A63A"} />}
-      backgroundColor={"rgba(53, 166, 58, 0.1)"}
+      title="Access Granted"
+      subtitle1="You have granted camera and mic access"
+      icon={<CameraOn fill="#35A63A" />}
+      backgroundColor="rgba(53, 166, 58, 0.1)"
     />
   );
 };

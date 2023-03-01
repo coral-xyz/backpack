@@ -49,7 +49,7 @@ export const PrimaryPubkeySelector = () => {
   });
 
   if (!gates["PRIMARY_PUBKEY_ENABLED"]) {
-    return <></>;
+    return null;
   }
 
   return (
@@ -59,7 +59,7 @@ export const PrimaryPubkeySelector = () => {
         borderTopRightRadius: "12px",
         height: "80%",
       }}
-      openDrawer={needsMigration.length > 0 && !migrationDone}
+      openDrawer={needsMigration.length > 0 ? !migrationDone : false}
       setOpenDrawer={() => {}}
     >
       <div

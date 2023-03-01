@@ -140,16 +140,16 @@ export function useHardwareOnboardSteps({
     ...(walletDescriptor
       ? [
           // Sign the found wallet descriptor for API submit
-          <HardwareSign
-            blockchain={blockchain}
-            walletDescriptor={walletDescriptor}
-            message={
+        <HardwareSign
+          blockchain={blockchain}
+          walletDescriptor={walletDescriptor}
+          message={
               typeof signMessage === "string"
                 ? signMessage
                 : signMessage(walletDescriptor.publicKey)
             }
-            text={signText}
-            onNext={(signature: string) => {
+          text={signText}
+          onNext={(signature: string) => {
               onComplete({
                 ...walletDescriptor,
                 signature,

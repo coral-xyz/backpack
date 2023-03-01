@@ -1,7 +1,7 @@
 import { MOBILE_CHANNEL_LOGS } from "./constants";
 import * as cfg from "./generated-config";
 import { IS_MOBILE, isServiceWorker } from "./utils";
-import { vanillaStore } from "./zustand-store";
+import { useStore } from "./zustand-store";
 
 export function getLogger(mod: string) {
   if (_LOG_LEVEL === undefined) {
@@ -71,7 +71,7 @@ async function _mobileLog(...args: any[]) {
     // Although we're already in the frontend code here, send the log back
     // to the webview so that we can log through the mobile subsystem.
     //
-    vanillaStore.getState()?.injectJavaScript?.(
+    useStore.getState()?.injectJavaScript?.(
       `navigator.serviceWorker.onmessage(${JSON.stringify({
         data: {
           channel: MOBILE_CHANNEL_LOGS,

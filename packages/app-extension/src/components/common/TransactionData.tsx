@@ -156,15 +156,14 @@ export function TransactionData({
           "Max Compute units": {
             onClick: () => {},
             detail: (
-              <>
-                <SmallInput
-                  disabled={transactionData.solanaFeeConfig?.disabled}
-                  placeholder="Compute units"
-                  value={
+              <SmallInput
+                disabled={transactionData.solanaFeeConfig?.disabled}
+                placeholder="Compute units"
+                value={
                     transactionData.solanaFeeConfig?.config?.computeUnits.toString() ||
                     0
                   }
-                  onChange={(e: any) => {
+                onChange={(e: any) => {
                     const computeUnits = parseInt(e.target.value || "0");
                     if (
                       computeUnits < 0 ||
@@ -183,7 +182,6 @@ export function TransactionData({
                     }));
                   }}
                 />
-              </>
             ),
             button: false,
             classes: menuItemClasses,
@@ -191,15 +189,14 @@ export function TransactionData({
           "Priority fee (micro lamports)": {
             onClick: () => {},
             detail: (
-              <>
-                <SmallInput
-                  disabled={transactionData.solanaFeeConfig?.disabled}
-                  placeholder="Priority fee"
-                  value={
+              <SmallInput
+                disabled={transactionData.solanaFeeConfig?.disabled}
+                placeholder="Priority fee"
+                value={
                     transactionData.solanaFeeConfig.config?.priorityFee?.toString() ||
                     0
                   }
-                  onChange={(e: any) => {
+                onChange={(e: any) => {
                     const priorityFee = parseInt(e.target.value || "0");
                     if (priorityFee < 0 || isNaN(parseInt(e.target.value))) {
                       return;
@@ -214,7 +211,6 @@ export function TransactionData({
                     }));
                   }}
                 />
-              </>
             ),
             button: false,
             classes: menuItemClasses,
@@ -222,9 +218,8 @@ export function TransactionData({
           "Max Priority fee": {
             onClick: () => {},
             detail: (
-              <>
-                <Typography>
-                  {transactionData.solanaFeeConfig?.config?.computeUnits
+              <Typography>
+                {transactionData.solanaFeeConfig?.config?.computeUnits
                     ? transactionData.solanaFeeConfig?.config?.computeUnits *
                       (Number(
                         transactionData.solanaFeeConfig?.config?.priorityFee
@@ -232,9 +227,8 @@ export function TransactionData({
                         LAMPORTS_PER_SOL /
                         1000000 || 0)
                     : 0}{" "}
-                  SOL
-                </Typography>
-              </>
+                SOL
+              </Typography>
             ),
             button: false,
             classes: menuItemClasses,
@@ -255,29 +249,25 @@ export function TransactionData({
           color: theme.custom.colors.secondary,
         }}
       />
-      {simulationError && (
-        <Typography
-          style={{
+      {simulationError ? <Typography
+        style={{
             color: theme.custom.colors.negative,
             marginTop: "8px",
             textAlign: "center",
             fontSize: "14px",
           }}
         >
-          This transaction is unlikely to succeed.
-        </Typography>
-      )}
-      {network === "Ethereum" && !loading && (
-        <EthereumSettingsDrawer
-          mode={mode}
-          setMode={setMode}
-          transactionOverrides={transactionOverrides}
-          setTransactionOverrides={setTransactionOverrides}
-          networkFeeUsd={networkFeeUsd}
-          openDrawer={ethSettingsDrawerOpen}
-          setOpenDrawer={setEthSettingsDrawerOpen}
-        />
-      )}
+        This transaction is unlikely to succeed.
+      </Typography> : null}
+      {network === "Ethereum" && !loading ? <EthereumSettingsDrawer
+        mode={mode}
+        setMode={setMode}
+        transactionOverrides={transactionOverrides}
+        setTransactionOverrides={setTransactionOverrides}
+        networkFeeUsd={networkFeeUsd}
+        openDrawer={ethSettingsDrawerOpen}
+        setOpenDrawer={setEthSettingsDrawerOpen}
+        /> : null}
     </>
   );
 }
@@ -409,7 +399,7 @@ export function EthereumSettingsDrawer({
           }}
           value={maxFeePerGas}
           onChange={(e) => setMaxFeePerGas(e.target.value)}
-        ></TextField>
+         />
       ) : (
         <ValueWithUnit
           value={ethers.utils.formatUnits(transactionOverrides.maxFeePerGas, 9)}
@@ -439,7 +429,7 @@ export function EthereumSettingsDrawer({
           }}
           value={maxPriorityFeePerGas}
           onChange={(e) => setMaxPriorityFeePerGas(e.target.value)}
-        ></TextField>
+         />
       ) : (
         <ValueWithUnit
           value={ethers.utils.formatUnits(
@@ -472,7 +462,7 @@ export function EthereumSettingsDrawer({
           }}
           value={gasLimit}
           onChange={(e) => setGasLimit(e.target.value)}
-        ></TextField>
+         />
       ) : (
         <Typography
           style={{ cursor: gasEditOnClick ? "pointer" : "inherit" }}
@@ -501,7 +491,7 @@ export function EthereumSettingsDrawer({
           value={nonce}
           type="number"
           onChange={(e) => setNonce(e.target.value)}
-        ></TextField>
+         />
       ) : (
         <Typography
           style={{ cursor: nonceEditOnClick ? "pointer" : "inherit" }}
@@ -621,13 +611,11 @@ export function EthereumSettingsDrawer({
               </div>
             </div>
             <div style={{ margin: "0 16px" }}>
-              {((mode === "custom" && editingGas) || editingNonce) && (
-                <PrimaryButton
-                  style={{ marginBottom: "12px" }}
-                  label="Save"
-                  onClick={handleSave}
-                />
-              )}
+              {((mode === "custom" && editingGas) || editingNonce) ? <PrimaryButton
+                style={{ marginBottom: "12px" }}
+                label="Save"
+                onClick={handleSave}
+                /> : null}
               <SecondaryButton
                 label="Close"
                 onClick={() => setOpenDrawer(false)}

@@ -155,20 +155,18 @@ export function BalancesTableCell({ props }: any) {
 
   return (
     <div className={classes.balancesTableCellContainer}>
-      {!!icon && (
-        <ListItemIcon
-          className={classes.tokenListItemIcon}
-          classes={{ root: classes.tokenListItemIconRoot }}
+      {icon ? <ListItemIcon
+        className={classes.tokenListItemIcon}
+        classes={{ root: classes.tokenListItemIconRoot }}
         >
-          <ProxyImage
-            src={icon}
-            className={classes.logoIcon}
-            onError={(event: any) => {
+        <ProxyImage
+          src={icon}
+          className={classes.logoIcon}
+          onError={(event: any) => {
               event.currentTarget.src = UNKNOWN_ICON_SRC;
             }}
           />
-        </ListItemIcon>
-      )}
+      </ListItemIcon> : null}
       <div className={classes.tokenListItemContent}>
         <div className={classes.tokenListItemRow}>
           <Typography className={classes.tokenName}>{title}</Typography>
@@ -177,29 +175,19 @@ export function BalancesTableCell({ props }: any) {
           </Typography>
         </div>
         <div className={classes.tokenListItemRow}>
-          {subtitle && (
-            <Typography className={classes.tokenAmount}>{subtitle}</Typography>
-          )}
-          {percentChange !== undefined && positive && (
-            <Typography className={classes.tokenBalanceChangePositive}>
-              +{formatUSD(percentChange.toLocaleString())}
-            </Typography>
-          )}
-          {percentChange !== undefined && negative && (
-            <Typography className={classes.tokenBalanceChangeNegative}>
-              {formatUSD(percentChange.toLocaleString())}
-            </Typography>
-          )}
-          {percentChange !== undefined && neutral && (
-            <Typography className={classes.tokenBalanceChangeNeutral}>
-              {formatUSD(percentChange.toLocaleString())}
-            </Typography>
-          )}
-          {!usdValue && (
-            <Typography className={classes.tokenBalanceChangeNeutral}>
-              {"-"}
-            </Typography>
-          )}
+          {subtitle ? <Typography className={classes.tokenAmount}>{subtitle}</Typography> : null}
+          {percentChange !== undefined && positive ? <Typography className={classes.tokenBalanceChangePositive}>
+            +{formatUSD(percentChange.toLocaleString())}
+          </Typography> : null}
+          {percentChange !== undefined && negative ? <Typography className={classes.tokenBalanceChangeNegative}>
+            {formatUSD(percentChange.toLocaleString())}
+          </Typography> : null}
+          {percentChange !== undefined && neutral ? <Typography className={classes.tokenBalanceChangeNeutral}>
+            {formatUSD(percentChange.toLocaleString())}
+          </Typography> : null}
+          {!usdValue ? <Typography className={classes.tokenBalanceChangeNeutral}>
+            -
+          </Typography> : null}
         </div>
       </div>
     </div>
@@ -324,24 +312,22 @@ export function _BalancesTableHead({
               </Typography>
               <WalletDrawerButton wallet={wallet} />
             </div>
-            {_isAggregateWallets && (
-              <MuiButton
-                disableRipple
-                style={{
+            {_isAggregateWallets ? <MuiButton
+              disableRipple
+              style={{
                   width: "18px",
                   minWidth: "18px",
                   marginLeft: "8px",
                   padding: 0,
                 }}
-                onClick={() => !disableToggle && setShowContent(!showContent)}
+              onClick={() => !disableToggle && setShowContent(!showContent)}
               >
-                {showContent ? (
-                  <ExpandLess className={classes.expand} />
+              {showContent ? (
+                <ExpandLess className={classes.expand} />
                 ) : (
                   <ExpandMore className={classes.expand} />
                 )}
-              </MuiButton>
-            )}
+            </MuiButton> : null}
           </div>
         }
         classes={{
