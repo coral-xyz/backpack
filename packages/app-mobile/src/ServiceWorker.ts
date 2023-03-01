@@ -38,9 +38,12 @@ const EVENT_LISTENERS = [] as any;
  * background service worker.
  */
 export function startMobileIfNeeded() {
+  console.log("startMobileIfNeeded");
   if (!IS_MOBILE) {
     return;
   }
+
+  console.log("startMobileIfNeeded: is mobile", IS_MOBILE);
 
   //////////////////////////////////////////////////////////////////////////////
   //
