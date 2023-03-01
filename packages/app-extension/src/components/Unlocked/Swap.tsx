@@ -325,18 +325,10 @@ const SwapConfirmationCard: React.FC<{
 
   return (
     <div>
-      {swapState === SwapState.CONFIRMATION && (
-        <SwapConfirmation onConfirm={onConfirm} />
-      )}
-      {swapState === SwapState.CONFIRMING && (
-        <SwapConfirming isConfirmed={false} onViewBalances={onViewBalances} />
-      )}
-      {swapState === SwapState.CONFIRMED && (
-        <SwapConfirming isConfirmed={true} onViewBalances={onViewBalances} />
-      )}
-      {swapState === SwapState.ERROR && (
-        <SwapError onCancel={() => onClose()} onRetry={onConfirm} />
-      )}
+      {swapState === SwapState.CONFIRMATION ? <SwapConfirmation onConfirm={onConfirm} /> : null}
+      {swapState === SwapState.CONFIRMING ? <SwapConfirming isConfirmed={false} onViewBalances={onViewBalances} /> : null}
+      {swapState === SwapState.CONFIRMED ? <SwapConfirming isConfirmed onViewBalances={onViewBalances} /> : null}
+      {swapState === SwapState.ERROR ? <SwapError onCancel={() => onClose()} onRetry={onConfirm} /> : null}
     </div>
   );
 };
@@ -354,7 +346,7 @@ function InputTextField() {
   return (
     <>
       <TextFieldLabel
-        leftLabel={"Sending"}
+        leftLabel="Sending"
         rightLabelComponent={
           <MaxLabel
             amount={availableForSwap}
@@ -383,31 +375,29 @@ function OutputTextField() {
   const { toAmount, toToken, isLoadingRoutes } = useSwapContext();
   return (
     <>
-      <TextFieldLabel leftLabel={"Receiving"} />
+      <TextFieldLabel leftLabel="Receiving" />
       <TextField
-        placeholder={"0"}
+        placeholder="0"
         startAdornment={
-          isLoadingRoutes && (
-            <Loading
-              iconStyle={{
+          isLoadingRoutes ? <Loading
+            iconStyle={{
                 display: "flex",
                 color: theme.custom.colors.secondary,
                 marginRight: "10px",
               }}
-              size={24}
-              thickness={5}
-            />
-          )
+            size={24}
+            thickness={5}
+            /> : null
         }
         endAdornment={<OutputTokensSelectorButton />}
         rootClass={classes.receiveFieldRoot}
-        type={"number"}
+        type="number"
         value={
           toAmount && toToken
             ? ethers.utils.formatUnits(toAmount, toToken.decimals)
             : ""
         }
-        disabled={true}
+        disabled
         inputProps={{
           style: {
             textFill: `${theme.custom.colors.fontColor} !important`,
@@ -419,19 +409,19 @@ function OutputTextField() {
 }
 
 const SwapUnavailableButton = () => {
-  return <DangerButton label="Swaps unavailable" disabled={true} />;
+  return <DangerButton label="Swaps unavailable" disabled />;
 };
 
 const SwapInvalidButton = () => {
-  return <DangerButton label="Invalid swap" disabled={true} />;
+  return <DangerButton label="Invalid swap" disabled />;
 };
 
 const InsufficientBalanceButton = () => {
-  return <DangerButton label="Insufficient balance" disabled={true} />;
+  return <DangerButton label="Insufficient balance" disabled />;
 };
 
 const InsufficientFeeButton = () => {
-  return <DangerButton label="Insufficient balance for fee" disabled={true} />;
+  return <DangerButton label="Insufficient balance for fee" disabled />;
 };
 
 const ConfirmSwapButton = () => {
@@ -480,7 +470,7 @@ const ConfirmSwapButton = () => {
 function SwapConfirmation({ onConfirm }: { onConfirm: () => void }) {
   const classes = useStyles();
   return (
-    <BottomCard onButtonClick={onConfirm} buttonLabel={"Confirm"}>
+    <BottomCard onButtonClick={onConfirm} buttonLabel="Confirm">
       <Typography
         className={classes.confirmationTitle}
         style={{ marginTop: "32px" }}
@@ -557,20 +547,18 @@ function SwapConfirming({
           )}
         </div>
       </div>
-      {isConfirmed && (
-        <div
-          style={{
+      {isConfirmed ? <div
+        style={{
             marginBottom: "16px",
             marginLeft: "16px",
             marginRight: "16px",
           }}
         >
-          <SecondaryButton
-            onClick={() => onViewBalances()}
-            label={"View Balances"}
+        <SecondaryButton
+          onClick={() => onViewBalances()}
+          label="View Balances"
           />
-        </div>
-      )}
+      </div> : null}
     </div>
   );
 }
@@ -582,9 +570,9 @@ function SwapError({ onRetry, onCancel }: any) {
   const classes = useStyles();
   return (
     <BottomCard
-      buttonLabel={"Retry"}
+      buttonLabel="Retry"
       onButtonClick={onRetry}
-      cancelButtonLabel={"Back"}
+      cancelButtonLabel="Back"
       onCancelButtonClick={onCancel}
     >
       <Typography
@@ -772,7 +760,7 @@ function InputTokenSelectorButton() {
   return (
     <TokenSelectorButton
       token={fromToken!}
-      input={true}
+      input
       setMint={setFromMint}
     />
   );
@@ -813,15 +801,13 @@ function TokenSelectorButton({
           justifyContent: "right",
         }}
       >
-        {token && (
-          <img
-            className={classes.tokenLogo}
-            src={token.logo}
-            onError={(event) => (event.currentTarget.style.display = "none")}
-          />
-        )}
+        {token ? <img
+          className={classes.tokenLogo}
+          src={token.logo}
+          onError={(event) => (event.currentTarget.style.display = "none")}
+          /> : null}
         <Typography className={classes.tokenSelectorButtonLabel}>
-          {token && token.ticker}
+          {token ? token.ticker : null}
         </Typography>
         <ExpandMore className={classes.expandMore} />
       </XnftButton>

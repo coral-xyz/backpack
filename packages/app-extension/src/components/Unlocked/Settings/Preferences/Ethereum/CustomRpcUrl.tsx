@@ -50,21 +50,21 @@ export function PreferenceEthereumCustomRpcUrl() {
           <Inputs error={rpcUrlError}>
             <InputListItem
               isLast={false}
-              isFirst={true}
+              isFirst
               button={false}
-              title={"RPC"}
-              placeholder={"RPC URL"}
+              title="RPC"
+              placeholder="RPC URL"
               value={rpcUrl}
               onChange={(e) => {
                 setRpcUrl(e.target.value);
               }}
             />
             <InputListItem
-              isLast={true}
+              isLast
               isFirst={false}
               button={false}
-              title={"Chain"}
-              placeholder={"Chain ID"}
+              title="Chain"
+              placeholder="Chain ID"
               value={chainId}
               onChange={(e) => setChainId(e.target.value)}
             />

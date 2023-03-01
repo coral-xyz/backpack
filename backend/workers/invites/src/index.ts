@@ -69,47 +69,7 @@ app.get("/check/:inviteCode", async (c) => {
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i
       )
     ) {
-      const res = await fetch(c.env.HASURA_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${c.env.JWT}`,
-        },
-        body: JSON.stringify({
-          query: `query($id: uuid) { invitations(limit: 1, where: {id: {_eq: $id}}) { id claimed_at } }`,
-          variables: {
-            id: code,
-          },
-        }),
-      });
-      const json = await res.json<any>();
-      const invitation = json?.data.invitations?.[0];
-      if (invitation) {
-        if (!invitation.claimed_at) {
-          return j("Invite code is valid");
-        } else {
-          return j("Invite code has already been claimed", 409);
-        }
-      } else {
-        await fetch(c.env.HASURA_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${c.env.JWT}`,
-          },
-          body: JSON.stringify({
-            query: `mutation($id: uuid) {
-            insert_auth_invitations_one(object: {id: $id}) {
-              id
-            }
-          }`,
-            variables: {
-              id: code,
-            },
-          }),
-        });
-        return j("Invite code is valid");
-      }
+      return j("Invite code is valid");
     } else {
       return j("Invite code is incorrect format", 400);
     }

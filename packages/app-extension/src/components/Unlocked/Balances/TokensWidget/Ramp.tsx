@@ -131,7 +131,7 @@ export function Ramp({
     return (
       <>
         <TextField
-          placeholder={"Search"}
+          placeholder="Search"
           value={searchFilter}
           setValue={setSearchFilter}
           rootClass={classes.searchField}
@@ -157,7 +157,7 @@ export function Ramp({
   return (
     <>
       <TextField
-        placeholder={"Search"}
+        placeholder="Search"
         value={searchFilter}
         setValue={setSearchFilter}
         rootClass={classes.searchField}
@@ -228,28 +228,24 @@ function RampTokenCell({ token }: any) {
   const classes = useStyles();
   return (
     <div className={classes.balancesTableCellContainer}>
-      {!!icon && (
-        <ListItemIcon
-          className={classes.tokenListItemIcon}
-          classes={{ root: classes.tokenListItemIconRoot }}
+      {icon ? <ListItemIcon
+        className={classes.tokenListItemIcon}
+        classes={{ root: classes.tokenListItemIconRoot }}
         >
-          <ProxyImage
-            src={icon}
-            className={classes.logoIcon}
-            onError={(event: any) =>
+        <ProxyImage
+          src={icon}
+          className={classes.logoIcon}
+          onError={(event: any) =>
               (event.currentTarget.style.display = "none")
             }
           />
-        </ListItemIcon>
-      )}
+      </ListItemIcon> : null}
       <div className={classes.tokenListItemContent}>
         <div className={classes.tokenListItemRow}>
           <Typography className={classes.tokenName}>{title}</Typography>
         </div>
         <div className={classes.tokenListItemRow}>
-          {subtitle && (
-            <Typography className={classes.tokenAmount}>{subtitle}</Typography>
-          )}
+          {subtitle ? <Typography className={classes.tokenAmount}>{subtitle}</Typography> : null}
         </div>
       </div>
     </div>

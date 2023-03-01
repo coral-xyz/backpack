@@ -44,7 +44,7 @@ export function ActionCard({
         }}
       >
         <CardContent style={{ padding: 0 }}>
-          {icon && <Box sx={{ mb: 1, display: "flex" }}>{icon}</Box>}
+          {icon ? <Box sx={{ mb: 1, display: "flex" }}>{icon}</Box> : null}
           <Box
             style={{
               fontWeight: 500,
