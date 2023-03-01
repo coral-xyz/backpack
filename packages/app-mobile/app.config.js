@@ -17,7 +17,7 @@
 // }
 
 const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
-const packageName = "peterpme.coral.backpack";
+const packageName = "app.backpack.mobile";
 
 export default {
   name: "Backpack",
