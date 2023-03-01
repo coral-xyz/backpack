@@ -47,7 +47,7 @@ export const Attachment = ({
         }}
       >
         {" "}
-        <Tooltip title="Attachments">
+        <Tooltip title="Attach">
           <AttachFileIcon
             style={{ color: theme.custom.colors.icon, fontSize: 20 }}
           />
