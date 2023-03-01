@@ -6,7 +6,7 @@ import { v1 } from "uuid";
 import { IMAGE_PROXY_URL } from "./constants";
 
 export function toTitleCase(str: string) {
-  return str.slice(0, 1).toUpperCase() + str.toLowerCase().slice(1);
+  return str?.slice(0, 1)?.toUpperCase() + str?.toLowerCase()?.slice(1);
 }
 
 /**
