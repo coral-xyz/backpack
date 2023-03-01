@@ -18,7 +18,7 @@ import {
   useUserMetadata,
 } from "@coral-xyz/react-common";
 import {
-  unreadCount,
+  unreadCount, useAuthenticatedUser,
   useFriendship,
   useRecentNotifications,
   useUpdateFriendships,
@@ -208,6 +208,7 @@ const getGroupedNotifications = (notifications: EnrichedNotification[]) => {
 export function Notifications() {
   const { isXs } = useBreakpoints();
   const nav = isXs ? useNavigation() : null;
+  const authenticatedUser = useAuthenticatedUser();
   const [openDrawer, setOpenDrawer] = isXs
     ? [false, () => {}]
     : useState(false);
@@ -217,6 +218,7 @@ export function Notifications() {
   const notifications: EnrichedNotification[] = useRecentNotifications({
     limit: 50,
     offset: 0,
+    uuid: authenticatedUser?.uuid ?? "",
   });
 
   useEffect(() => {
