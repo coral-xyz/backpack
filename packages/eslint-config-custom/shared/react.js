@@ -1,3 +1,4 @@
+// add no redefine variable from function
 module.exports = {
   parserOptions: { ecmaFeatures: { jsx: true } },
   plugins: ["react", "react-hooks"],

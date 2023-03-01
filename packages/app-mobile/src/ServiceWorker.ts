@@ -1,4 +1,7 @@
 import type { RpcRequestMsg, RpcResponseData } from "@coral-xyz/common";
+
+import { getItemAsync, setItemAsync } from "expo-secure-store";
+
 import {
   BrowserRuntimeCommon,
   generateUniqueId,
@@ -15,8 +18,6 @@ import {
   vanillaStore,
 } from "@coral-xyz/common";
 import EventEmitter from "eventemitter3";
-// use expo-secure-store if in react-native, otherwise fake-expo-secure-store.ts
-import { getItemAsync, setItemAsync } from "expo-secure-store";
 const logger = getLogger("common/mobile");
 
 /**
@@ -235,7 +236,7 @@ export function startMobileIfNeeded() {
   const handleHostRpcRequest = async ({
     data,
   }: {
-    data: { id: string; method: string; params: Array<any> };
+    data: { id: string; method: string; params: any[] };
   }) => {
     const { id, method, params } = data;
     switch (method) {
@@ -334,8 +335,7 @@ class BackendRequestManager extends CommonRequestManager {
 }
 
 async function postMsgFromWorker(msg: any) {
-  // @ts-ignore
-  const clients = await self.clients.matchAll({
+  const clients = await globalThis.clients.matchAll({
     includeUncontrolled: true,
     type: "window",
   });
@@ -351,3 +351,5 @@ async function postMsgFromAppUi(msg: any) {
       `window.postMessageToBackgroundViaWebview(${JSON.stringify(msg)}); true;`
     );
 }
+
+startMobileIfNeeded();

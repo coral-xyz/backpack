@@ -7,7 +7,6 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 
 import { BACKGROUND_SERVICE_WORKER_READY, useStore } from "@coral-xyz/common";
-import { WEB_VIEW_EVENTS } from "@coral-xyz/common-mobile";
 import { NotificationsProvider } from "@coral-xyz/recoil";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -18,6 +17,7 @@ import { RecoilRoot, useRecoilCallback, useRecoilSnapshot } from "recoil";
 import { ErrorBoundary } from "~components/ErrorBoundary";
 import { useTheme } from "~hooks/useTheme";
 
+import { WEB_VIEW_EVENTS } from "./ServiceWorker";
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import { RootNavigation } from "./navigation/RootNavigator";
 
@@ -207,13 +207,11 @@ function BackgroundHiddenWebView(): JSX.Element {
   console.log("webviewUrl", webViewUrl);
 
   return (
-    <View style={styles.webview}>
+    <View>
       <WebView
         ref={ref}
-        // useWebView2
-        // originWhitelist={["*", "https://*", "https://backpack-api.xnfts.dev/*"]}
-        // cacheMode="LOAD_CACHE_ELSE_NETWORK"
-        // cacheEnabled
+        cacheMode="LOAD_CACHE_ELSE_NETWORK"
+        cacheEnabled
         limitsNavigationsToAppBoundDomains
         source={{
           uri: webViewUrl,
