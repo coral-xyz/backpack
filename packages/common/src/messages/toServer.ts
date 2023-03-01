@@ -94,7 +94,7 @@ export interface RemoteUserData {
   searchedEthPubKey?: string;
   public_keys: {
     blockchain: Blockchain;
-    public_key: string;
+    publicKey: string;
   }[];
 }
 
