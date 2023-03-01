@@ -9,14 +9,14 @@ export const recentNotifications = selectorFamily<
   {
     limit: number;
     offset: number;
+    uuid: string;
   }
 >({
   key: "recentNotifications",
   get:
-    ({ limit, offset }: { limit: number; offset: number }) =>
+    ({ limit, offset, uuid }: { limit: number; offset: number; uuid: string; }) =>
     async ({ get }: any) => {
       try {
-        const provider = get(anchorContext).provider;
         const notifications = (await fetchNotifications(offset, limit)) || [];
         const xnftIds = notifications.map((x) => x.xnft_id);
         const uniqueXnftIds = xnftIds.filter(

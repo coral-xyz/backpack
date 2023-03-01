@@ -134,6 +134,8 @@ export const processMessage = async ({
       );
       return;
     }
+    // Not sending group messages for now
+    return;
     const uuids = await getAllUsersInCollection(room as string);
     uuids.map(async (uuid) => {
       await Redis.getInstance().send(
