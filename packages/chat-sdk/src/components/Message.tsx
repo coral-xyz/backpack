@@ -443,7 +443,9 @@ export const MessageLine = (props) => {
                   ) : null}
                   <div>
                     <p className={classes.messageContent}>
-                      {props.messageKind === "gif" ? (
+                      {props.deleted ? (
+                        <DeletedMessage />
+                      ) : props.messageKind === "gif" ? (
                         <div
                           style={{
                             height: 150,
