@@ -9,6 +9,7 @@ import type { InteractionProvider as KeystoneInteractionProvider } from "@keysto
 
 export class InteractionProvider implements KeystoneInteractionProvider {
   private static instance;
+  private windowId: number | undefined;
 
   constructor() {
     if (InteractionProvider.instance) {
@@ -18,12 +19,18 @@ export class InteractionProvider implements KeystoneInteractionProvider {
   }
 
   private async onPlayCall(ur: UR): Promise<void> {
-    BrowserRuntimeCommon.sendMessageToAppUi({
-      type: "KEYSTONE_PLAY_UR",
-      data: {
-        ur,
-      },
+    const data: { windowId?: number } = await new Promise((resolve) => {
+      BrowserRuntimeCommon.sendMessageToAppUi(
+        {
+          type: "KEYSTONE_PLAY_UR",
+          data: {
+            ur,
+          },
+        },
+        resolve
+      );
     });
+    this.windowId = data.windowId;
   }
 
   public onPlay(fn: (ur: UR) => Promise<void>) {
@@ -31,13 +38,25 @@ export class InteractionProvider implements KeystoneInteractionProvider {
   }
 
   private onReadCall(): Promise<UR> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const handler = (e) => {
         if (e.type === "KEYSTONE_SCAN_UR") {
-          resolve(e.data.ur);
           BrowserRuntimeCommon.removeEventListener(handler);
+          resolve(e.data.ur);
         }
       };
+      if (this.windowId) {
+        const removeHandler = (winId: number) => {
+          if (winId === this.windowId) {
+            chrome.windows.onRemoved.removeListener(removeHandler);
+            BrowserRuntimeCommon.removeEventListener(handler);
+            reject("KeystoneError: User reject the signing.");
+          }
+        };
+        chrome.windows.onRemoved.addListener(removeHandler, {
+          windowTypes: ["popup"],
+        });
+      }
       BrowserRuntimeCommon.addEventListenerFromAppUi(handler);
     });
   }

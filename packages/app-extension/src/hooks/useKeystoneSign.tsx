@@ -182,18 +182,27 @@ export function useKeystoneSign(props?: { isInDrawer?: boolean }) {
   const [open, setOpen] = useState<boolean>();
 
   useEffect(() => {
-    const handler = (e: any) => {
-      if (e.type === "KEYSTONE_PLAY_UR") {
+    const handler = (msg: any, sender: any, sendResponse: (e: any) => void) => {
+      if (msg.type === "KEYSTONE_PLAY_UR") {
         setType("play");
-        setUR(e.data.ur);
+        setUR(msg.data.ur);
         setOpen(true);
+        chrome.tabs
+          .getCurrent()
+          .then((win) => {
+            sendResponse({
+              windowId: win?.windowId,
+            });
+          })
+          .catch(console.error);
+        return true;
       }
     };
     BrowserRuntimeCommon.addEventListenerFromBackground(handler);
     return () => {
       BrowserRuntimeCommon.removeEventListener(handler);
     };
-  }, []);
+  }, [open]);
 
   const resetKeystoneSign = () => {
     setType("play");
