@@ -41,7 +41,6 @@ import {
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
 } from "./constants";
-import { BACKPACK_CONFIG_VERSION } from "./generated-config";
 import { getLogger } from "./logging";
 import type { Event, RpcResponse, XnftMetadata, XnftPreference } from "./types";
 import { Blockchain } from "./types";
