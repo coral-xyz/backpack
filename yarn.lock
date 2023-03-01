@@ -14254,7 +14254,7 @@ expo-updates@~0.16.1:
     fbemitter "^3.0.0"
     resolve-from "^5.0.0"
 
-expo@^48.0.0:
+expo@^48.0.4:
   version "48.0.4"
   resolved "https://registry.yarnpkg.com/expo/-/expo-48.0.4.tgz#de3be9695edb422a49c7734b2bde82f2caad668d"
   integrity sha512-FGxaxqI8u0r3CvFQAEx/kpqZP4cA7q9ymMoIrrjtOsWvKsuk5Dt3gLEJpymGp6aicPuDXn3xBxo2dsRZF5NkUw==
