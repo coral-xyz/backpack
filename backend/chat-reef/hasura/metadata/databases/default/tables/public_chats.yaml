@@ -76,3 +76,10 @@ select_permissions:
         - username
         - uuid
       filter: {}
+update_permissions:
+  - role: chat
+    permission:
+      columns:
+        - deleted
+      filter: {}
+      check: null

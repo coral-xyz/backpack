@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 export const AllTypesProps: Record<string, any> = {
+  Boolean_comparison_exp: {},
   Int_comparison_exp: {},
   String_comparison_exp: {},
   barter_poke_metadata_aggregate_order_by: {
@@ -385,6 +386,7 @@ export const AllTypesProps: Record<string, any> = {
     chat_media_messages: "chat_media_messages_bool_exp",
     client_generated_uuid: "String_comparison_exp",
     created_at: "timestamptz_comparison_exp",
+    deleted: "Boolean_comparison_exp",
     id: "Int_comparison_exp",
     message: "String_comparison_exp",
     message_kind: "String_comparison_exp",
@@ -423,6 +425,7 @@ export const AllTypesProps: Record<string, any> = {
     chat_media_messages_aggregate: "chat_media_messages_aggregate_order_by",
     client_generated_uuid: "order_by",
     created_at: "order_by",
+    deleted: "order_by",
     id: "order_by",
     message: "order_by",
     message_kind: "order_by",
@@ -1225,6 +1228,7 @@ export const ReturnTypes: Record<string, any> = {
     chat_media_messages: "chat_media_messages",
     client_generated_uuid: "String",
     created_at: "timestamptz",
+    deleted: "Boolean",
     id: "Int",
     message: "String",
     message_kind: "String",

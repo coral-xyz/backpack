@@ -599,7 +599,6 @@ export const ResolveFromPath = (
   returns: ReturnTypesType,
   ops: Operations
 ) => {
-  // @ts-ignore
   const ResolvePropsType = (mappedParts: Part[]) => {
     const oKey = ops[mappedParts[0].v];
     const propsP1 = oKey ? props[oKey] : props[mappedParts[0].v];
@@ -642,7 +641,6 @@ export const ResolveFromPath = (
       }
     }
   };
-  // @ts-ignore
   const ResolveReturnType = (mappedParts: Part[]) => {
     if (mappedParts.length === 0) {
       return "not";
@@ -996,6 +994,18 @@ export type ScalarCoders = {
 type ZEUS_UNIONS = never;
 
 export type ValueTypes = {
+  /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
+  ["Boolean_comparison_exp"]: {
+    _eq?: boolean | undefined | null | Variable<any, string>;
+    _gt?: boolean | undefined | null | Variable<any, string>;
+    _gte?: boolean | undefined | null | Variable<any, string>;
+    _in?: Array<boolean> | undefined | null | Variable<any, string>;
+    _is_null?: boolean | undefined | null | Variable<any, string>;
+    _lt?: boolean | undefined | null | Variable<any, string>;
+    _lte?: boolean | undefined | null | Variable<any, string>;
+    _neq?: boolean | undefined | null | Variable<any, string>;
+    _nin?: Array<boolean> | undefined | null | Variable<any, string>;
+  };
   /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
   ["Int_comparison_exp"]: {
     _eq?: number | undefined | null | Variable<any, string>;
@@ -2368,6 +2378,7 @@ export type ValueTypes = {
     ];
     client_generated_uuid?: boolean | `@${string}`;
     created_at?: boolean | `@${string}`;
+    deleted?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     message?: boolean | `@${string}`;
     message_kind?: boolean | `@${string}`;
@@ -2522,6 +2533,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    deleted?:
+      | ValueTypes["Boolean_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     id?:
       | ValueTypes["Int_comparison_exp"]
       | undefined
@@ -2603,6 +2619,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    deleted?: boolean | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     message?: string | undefined | null | Variable<any, string>;
     message_kind?: string | undefined | null | Variable<any, string>;
@@ -2688,6 +2705,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    deleted?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     message?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     message_kind?:
@@ -2747,6 +2765,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    deleted?: boolean | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     message?: string | undefined | null | Variable<any, string>;
     message_kind?: string | undefined | null | Variable<any, string>;
@@ -5633,6 +5652,18 @@ export type ValueTypes = {
 };
 
 export type ResolverInputTypes = {
+  /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
+  ["Boolean_comparison_exp"]: {
+    _eq?: boolean | undefined | null;
+    _gt?: boolean | undefined | null;
+    _gte?: boolean | undefined | null;
+    _in?: Array<boolean> | undefined | null;
+    _is_null?: boolean | undefined | null;
+    _lt?: boolean | undefined | null;
+    _lte?: boolean | undefined | null;
+    _neq?: boolean | undefined | null;
+    _nin?: Array<boolean> | undefined | null;
+  };
   /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
   ["Int_comparison_exp"]: {
     _eq?: number | undefined | null;
@@ -6592,6 +6623,7 @@ export type ResolverInputTypes = {
     ];
     client_generated_uuid?: boolean | `@${string}`;
     created_at?: boolean | `@${string}`;
+    deleted?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     message?: boolean | `@${string}`;
     message_kind?: boolean | `@${string}`;
@@ -6707,6 +6739,7 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["timestamptz_comparison_exp"]
       | undefined
       | null;
+    deleted?: ResolverInputTypes["Boolean_comparison_exp"] | undefined | null;
     id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
     message?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     message_kind?:
@@ -6752,6 +6785,7 @@ export type ResolverInputTypes = {
       | null;
     client_generated_uuid?: string | undefined | null;
     created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    deleted?: boolean | undefined | null;
     id?: number | undefined | null;
     message?: string | undefined | null;
     message_kind?: string | undefined | null;
@@ -6809,6 +6843,7 @@ export type ResolverInputTypes = {
       | null;
     client_generated_uuid?: ResolverInputTypes["order_by"] | undefined | null;
     created_at?: ResolverInputTypes["order_by"] | undefined | null;
+    deleted?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     message?: ResolverInputTypes["order_by"] | undefined | null;
     message_kind?: ResolverInputTypes["order_by"] | undefined | null;
@@ -6846,6 +6881,7 @@ export type ResolverInputTypes = {
   ["chats_stream_cursor_value_input"]: {
     client_generated_uuid?: string | undefined | null;
     created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    deleted?: boolean | undefined | null;
     id?: number | undefined | null;
     message?: string | undefined | null;
     message_kind?: string | undefined | null;
@@ -8941,6 +8977,18 @@ export type ResolverInputTypes = {
 };
 
 export type ModelTypes = {
+  /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
+  ["Boolean_comparison_exp"]: {
+    _eq?: boolean | undefined;
+    _gt?: boolean | undefined;
+    _gte?: boolean | undefined;
+    _in?: Array<boolean> | undefined;
+    _is_null?: boolean | undefined;
+    _lt?: boolean | undefined;
+    _lte?: boolean | undefined;
+    _neq?: boolean | undefined;
+    _nin?: Array<boolean> | undefined;
+  };
   /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
   ["Int_comparison_exp"]: {
     _eq?: number | undefined;
@@ -9571,6 +9619,7 @@ export type ModelTypes = {
     chat_media_messages: Array<ModelTypes["chat_media_messages"]>;
     client_generated_uuid: string;
     created_at?: ModelTypes["timestamptz"] | undefined;
+    deleted?: boolean | undefined;
     id: number;
     message: string;
     message_kind?: string | undefined;
@@ -9604,6 +9653,7 @@ export type ModelTypes = {
       | undefined;
     client_generated_uuid?: ModelTypes["String_comparison_exp"] | undefined;
     created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
+    deleted?: ModelTypes["Boolean_comparison_exp"] | undefined;
     id?: ModelTypes["Int_comparison_exp"] | undefined;
     message?: ModelTypes["String_comparison_exp"] | undefined;
     message_kind?: ModelTypes["String_comparison_exp"] | undefined;
@@ -9638,6 +9688,7 @@ export type ModelTypes = {
       | undefined;
     client_generated_uuid?: string | undefined;
     created_at?: ModelTypes["timestamptz"] | undefined;
+    deleted?: boolean | undefined;
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
@@ -9688,6 +9739,7 @@ export type ModelTypes = {
       | undefined;
     client_generated_uuid?: ModelTypes["order_by"] | undefined;
     created_at?: ModelTypes["order_by"] | undefined;
+    deleted?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
     message?: ModelTypes["order_by"] | undefined;
     message_kind?: ModelTypes["order_by"] | undefined;
@@ -9718,6 +9770,7 @@ export type ModelTypes = {
   ["chats_stream_cursor_value_input"]: {
     client_generated_uuid?: string | undefined;
     created_at?: ModelTypes["timestamptz"] | undefined;
+    deleted?: boolean | undefined;
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
@@ -10700,6 +10753,18 @@ export type ModelTypes = {
 };
 
 export type GraphQLTypes = {
+  /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
+  ["Boolean_comparison_exp"]: {
+    _eq?: boolean | undefined;
+    _gt?: boolean | undefined;
+    _gte?: boolean | undefined;
+    _in?: Array<boolean> | undefined;
+    _is_null?: boolean | undefined;
+    _lt?: boolean | undefined;
+    _lte?: boolean | undefined;
+    _neq?: boolean | undefined;
+    _nin?: Array<boolean> | undefined;
+  };
   /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
   ["Int_comparison_exp"]: {
     _eq?: number | undefined;
@@ -11363,6 +11428,7 @@ export type GraphQLTypes = {
     chat_media_messages: Array<GraphQLTypes["chat_media_messages"]>;
     client_generated_uuid: string;
     created_at?: GraphQLTypes["timestamptz"] | undefined;
+    deleted?: boolean | undefined;
     id: number;
     message: string;
     message_kind?: string | undefined;
@@ -11396,6 +11462,7 @@ export type GraphQLTypes = {
       | undefined;
     client_generated_uuid?: GraphQLTypes["String_comparison_exp"] | undefined;
     created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
+    deleted?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
     id?: GraphQLTypes["Int_comparison_exp"] | undefined;
     message?: GraphQLTypes["String_comparison_exp"] | undefined;
     message_kind?: GraphQLTypes["String_comparison_exp"] | undefined;
@@ -11431,6 +11498,7 @@ export type GraphQLTypes = {
       | undefined;
     client_generated_uuid?: string | undefined;
     created_at?: GraphQLTypes["timestamptz"] | undefined;
+    deleted?: boolean | undefined;
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
@@ -11482,6 +11550,7 @@ export type GraphQLTypes = {
       | undefined;
     client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
     created_at?: GraphQLTypes["order_by"] | undefined;
+    deleted?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     message?: GraphQLTypes["order_by"] | undefined;
     message_kind?: GraphQLTypes["order_by"] | undefined;
@@ -11513,6 +11582,7 @@ export type GraphQLTypes = {
   ["chats_stream_cursor_value_input"]: {
     client_generated_uuid?: string | undefined;
     created_at?: GraphQLTypes["timestamptz"] | undefined;
+    deleted?: boolean | undefined;
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
@@ -12623,6 +12693,7 @@ export const enum chats_constraint {
 export const enum chats_select_column {
   client_generated_uuid = "client_generated_uuid",
   created_at = "created_at",
+  deleted = "deleted",
   id = "id",
   message = "message",
   message_kind = "message_kind",
@@ -12728,6 +12799,7 @@ export const enum simple_transactions_update_column {
 }
 
 type ZEUS_VARIABLES = {
+  ["Boolean_comparison_exp"]: ValueTypes["Boolean_comparison_exp"];
   ["Int_comparison_exp"]: ValueTypes["Int_comparison_exp"];
   ["String_comparison_exp"]: ValueTypes["String_comparison_exp"];
   ["barter_poke_metadata_aggregate_order_by"]: ValueTypes["barter_poke_metadata_aggregate_order_by"];
