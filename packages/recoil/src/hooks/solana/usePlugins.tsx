@@ -10,7 +10,7 @@ import {
 } from "@coral-xyz/common";
 // XXX: this full path is currently necessary as it avoids loading the jsx in
 //      react-xnft-renderer/src/Component.tsx in the background service worker
-import { Plugin } from "@coral-xyz/common";
+import { Plugin } from "@coral-xyz/common/dist/esm/plugin";
 import { PublicKey } from "@solana/web3.js";
 import {
   useRecoilValue,
@@ -88,10 +88,10 @@ export function usePluginUrl(address?: string) {
     PLUGIN_CACHE.get(address ?? "")
   );
 
+  if (cached) return cached.iframeRootUrl;
+
   useEffect(() => {
     (async () => {
-      if (cached) setUrl(cached.iframeRootUrl);
-
       if (address) {
         try {
           const xnft = await fetchXnft(new PublicKey(address));
@@ -101,7 +101,7 @@ export function usePluginUrl(address?: string) {
         }
       }
     })();
-  }, [cached]);
+  });
 
   return url;
 }

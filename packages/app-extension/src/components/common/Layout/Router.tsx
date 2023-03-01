@@ -12,6 +12,10 @@ import {
   NAV_COMPONENT_MESSAGE_PROFILE,
 } from "@coral-xyz/common";
 import {
+  MESSAGING_COMMUNICATION_FETCH,
+  MESSAGING_COMMUNICATION_PUSH,
+} from "@coral-xyz/common/src/constants";
+import {
   ChatScreen,
   Inbox,
   ParentCommunicationManager,
@@ -64,10 +68,12 @@ export function Router() {
         <Route path="/nfts/experience" element={<NftsExperiencePage />} />
         <Route path="/nfts/chat" element={<NftsChatPage />} />
         <Route path="/nfts/detail" element={<NftsDetailPage />} />
-        {!isXs ? <>
-          <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/recent-activity" element={<RecentActivityPage />} />
-        </> : null}
+        {!isXs && (
+          <>
+            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/recent-activity" element={<RecentActivityPage />} />
+          </>
+        )}
         {/*
           Auto-lock functionality is dependent on checking if the URL contains
           "xnft", if this changes then please verify that it still works
@@ -103,7 +109,7 @@ export function Redirect() {
 export function RedirectXs() {
   let url = useRedirectUrl();
   if (url.startsWith("/notifications") || url.startsWith("/recent-activity")) {
-    return <Navigate to="/balances" replace />;
+    return <Navigate to={"/balances"} replace />;
   }
   return <Navigate to={url} replace />;
 }
@@ -113,7 +119,7 @@ function BalancesPage() {
 }
 
 function NftsPage() {
-  return <NavScreen noScrollbars component={<Nfts />} />;
+  return <NavScreen noScrollbars={true} component={<Nfts />} />;
 }
 
 function NftsChatPage() {
@@ -170,13 +176,13 @@ function MessageNativeInner() {
   const { isXs } = useBreakpoints();
 
   if (hash.startsWith("/messages/requests")) {
-    return <NavScreen noMotion component={<RequestsScreen />} />;
+    return <NavScreen noMotion={true} component={<RequestsScreen />} />;
   }
 
   if (hash.startsWith("/messages/chat")) {
     return (
       <NavScreen
-        noMotion
+        noMotion={true}
         component={
           <ChatScreen
             isDarkMode={isDarkMode}
@@ -192,7 +198,7 @@ function MessageNativeInner() {
   if (hash.startsWith("/messages/groupchat")) {
     return (
       <NavScreen
-        noMotion
+        noMotion={true}
         component={<NftChat collectionId={props.id} {...props} />}
       />
     );
@@ -201,17 +207,17 @@ function MessageNativeInner() {
   if (hash.startsWith("/messages/profile")) {
     return (
       <NavScreen
-        noMotion
+        noMotion={true}
         component={<ProfileScreen userId={props.userId} />}
       />
     );
   }
 
   if (!isXs) {
-    return <div />;
+    return <></>;
   }
 
-  return <NavScreen noMotion component={<Inbox />} />;
+  return <NavScreen noMotion={true} component={<Inbox />} />;
 }
 
 function FullChatPage() {

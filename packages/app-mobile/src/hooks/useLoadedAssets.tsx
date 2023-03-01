@@ -7,12 +7,16 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 type status = "loading" | "ready" | "error";
 
+console.log("BOOL", Boolean(undefined), Boolean("abc"));
+
 export function useLoadedAssets(): status {
   const [intervalId, setIntervalId] = React.useState(0);
   const [secondsPassed, setSecondsPassed] = React.useState(0);
   const [isLoadingComplete, setLoadingComplete] =
     React.useState<status>("loading");
-  const webviewLoaded = useStore((state) => state.injectJavaScript);
+  const webviewLoaded = useStore(({ injectJavaScript }) =>
+    Boolean(injectJavaScript)
+  );
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
