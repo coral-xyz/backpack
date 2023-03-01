@@ -53,12 +53,11 @@ export function GridCard({
   }
 
   return (
-    <>
-      <Button
-        className={classes.button}
-        onClick={onClick}
-        disableRipple
-        style={{
+    <Button
+      className={classes.button}
+      onClick={onClick}
+      disableRipple
+      style={{
           textTransform: "none",
           padding: 0,
           borderRadius: "8px",
@@ -70,22 +69,21 @@ export function GridCard({
           background: theme.custom.colors.background,
         }}
       >
-        <ProxyImage
-          style={{
+      <ProxyImage
+        style={{
             width: "100%",
           }}
-          loadingStyles={{
+        loadingStyles={{
             height: "100%",
           }}
-          removeOnError={true}
-          src={nft.imageUrl}
-          onError={(e) => {
+        removeOnError
+        src={nft.imageUrl}
+        onError={(e) => {
             e.currentTarget.src = UNKNOWN_NFT_ICON_SRC;
           }}
         />
-        {metadataCollectionId && (
-          <div
-            style={{
+      {metadataCollectionId ? <div
+        style={{
               backgroundColor: theme.custom.colors.nav,
               position: "absolute",
               right: 0,
@@ -102,8 +100,8 @@ export function GridCard({
               maxWidth: "90%",
             }}
           >
-            <MessageBubbleUnreadIcon
-              onClick={(e: any) => {
+        <MessageBubbleUnreadIcon
+          onClick={(e: any) => {
                 push({
                   title: subtitle.name || "",
                   componentId: NAV_COMPONENT_NFT_CHAT,
@@ -116,11 +114,10 @@ export function GridCard({
                 e.stopPropagation();
               }}
             />
-          </div>
-        )}
+      </div> : null}
 
-        <div
-          style={{
+      <div
+        style={{
             width: "100%",
             position: "absolute",
             left: 0,
@@ -132,8 +129,8 @@ export function GridCard({
             gap: "6px",
           }}
         >
-          <div
-            style={{
+        <div
+          style={{
               backgroundColor: theme.custom.colors.nav,
               height: "24px",
               borderRadius: "12px",
@@ -144,9 +141,9 @@ export function GridCard({
               whiteSpace: "nowrap",
             }}
           >
-            <Typography
-              component="div"
-              style={{
+          <Typography
+            component="div"
+            style={{
                 display: "flex",
                 justifyContent: "space-between",
                 fontSize: "12px",
@@ -156,32 +153,29 @@ export function GridCard({
                 whiteSpace: "nowrap",
               }}
             >
-              <div
-                style={{
+            <div
+              style={{
                   textOverflow: "ellipsis",
                   overflow: "hidden",
                   whiteSpace: "nowrap",
                 }}
               >
-                {subtitle?.name ?? nft.name}
-              </div>
-              {subtitle?.length > 0 && (
-                <span
-                  style={{
+              {subtitle?.name ?? nft.name}
+            </div>
+            {subtitle?.length > 0 ? <span
+              style={{
                     marginLeft: "8px",
                     color: theme.custom.colors.secondary,
                   }}
                 >
-                  {subtitle?.length ?? ""}
-                </span>
-              )}
-            </Typography>
-          </div>
-          {xnft && (
-            <IconButton
-              disableRipple
-              onClick={onClickAction}
-              sx={{
+              {subtitle?.length ?? ""}
+            </span> : null}
+          </Typography>
+        </div>
+        {xnft ? <IconButton
+          disableRipple
+          onClick={onClickAction}
+          sx={{
                 background: theme.custom.colors.nav,
                 display: "flex",
                 alignItems: "center",
@@ -189,16 +183,14 @@ export function GridCard({
                 padding: "4px",
               }}
             >
-              <RocketLaunchIcon
-                sx={{
+          <RocketLaunchIcon
+            sx={{
                   fontSize: "16px",
                   color: theme.custom.colors.icon,
                 }}
               />
-            </IconButton>
-          )}
-        </div>
-      </Button>
-    </>
+        </IconButton> : null}
+      </div>
+    </Button>
   );
 }
