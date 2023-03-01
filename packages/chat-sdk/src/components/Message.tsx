@@ -350,11 +350,6 @@ export const MessageLine = (props) => {
                 <ReplyIcon fill={theme.custom.colors.icon} />
               </div>
             ) : null}
-            {props.uuid === uuid ? (
-              <MessageOptions
-                clientGeneratedUuid={props.client_generated_uuid}
-              />
-            ) : null}
           </div>
         </div>
       ) : (
@@ -497,7 +492,9 @@ export const MessageLine = (props) => {
                     </p>
                   </div>
                 </div>
-                <div>
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
                   {props.messageKind === "text" ? (
                     <div
                       style={{
@@ -519,11 +516,6 @@ export const MessageLine = (props) => {
                     >
                       <ReplyIcon fill={theme.custom.colors.icon} />
                     </div>
-                  ) : null}
-                  {props.uuid === uuid ? (
-                    <MessageOptions
-                      clientGeneratedUuid={props.client_generated_uuid}
-                    />
                   ) : null}
                 </div>
               </div>
@@ -551,6 +543,13 @@ export const MessageLine = (props) => {
                     style={{ color: theme.custom.colors.icon, fontSize: 13 }}
                   />
                 )}
+                {
+                  /*props.uuid === uuid && */ BACKPACK_TEAM.includes(uuid) ? (
+                    <MessageOptions
+                      clientGeneratedUuid={props.client_generated_uuid}
+                    />
+                  ) : null
+                }
               </div>
             </div>
           </div>
@@ -1085,6 +1084,7 @@ function MessageOptions({
 }) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const theme = useCustomTheme();
   const { roomId, type } = useChatContext();
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -1094,15 +1094,15 @@ function MessageOptions({
   };
   return (
     <div>
-      <IconButton
-        id="fade-button"
-        aria-controls={open ? "fade-menu" : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? "true" : undefined}
+      <MoreHorizIcon
         onClick={handleClick}
-      >
-        <MoreHorizIcon />
-      </IconButton>
+        style={{
+          color: theme.custom.colors.icon,
+          cursor: "pointer",
+          marginTop: -5,
+          marginRight: 3,
+        }}
+      />
       <Menu
         id="fade-menu"
         MenuListProps={{

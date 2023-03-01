@@ -1,6 +1,6 @@
 import type { Blockchain } from "../types";
 
-import type { CHAT_MESSAGES, SUBSCRIBE, UNSUBSCRIBE } from "./fromServer";
+import type { CHAT_MESSAGES, DELETE_MESSAGE,SUBSCRIBE, UNSUBSCRIBE  } from "./fromServer";
 import { BarterOffers } from "./index";
 
 export type SubscriptionType = "collection" | "individual";
@@ -63,6 +63,14 @@ export type ToServer =
   | {
       type: typeof CHAT_MESSAGES;
       payload: SendMessagePayload;
+    }
+  | {
+      type: typeof DELETE_MESSAGE;
+      payload: {
+        client_generated_uuid: string;
+        room: string;
+        type: SubscriptionType;
+      };
     }
   | {
       type: typeof SUBSCRIBE;
