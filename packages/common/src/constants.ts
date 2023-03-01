@@ -659,3 +659,13 @@ export const DEFAULT_PUBKEY_STR = "11111111111111111111111111111111";
 export const MOBILE_CHANNEL_LOGS = "mobile-logs";
 
 export const IMAGE_PROXY_URL = "https://d1a7965zcx2lcc.cloudfront.net";
+
+export const BACKPACK_TEAM = [
+  "ee7ce804-44b2-4360-bfbb-28e14cd0499b",
+  "29c33e60-d54a-4fe4-80e9-4bbfcc6c69b8",
+  "446a5f21-35b9-4248-970f-7b4558f57e21",
+  "6ecf7d82-095d-4fa3-9830-3567b286066d",
+  "68daeda7-2c20-49ea-9dab-f7a3ebd45ab5",
+  "931fac1c-0fb1-4e0a-9119-0a9112506db1",
+  "47dd7685-8eb1-4d4e-bbab-b7790eebb2b9",
+];

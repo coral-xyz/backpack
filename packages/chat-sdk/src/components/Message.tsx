@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   BACKEND_API_URL,
+  BACKPACK_TEAM,
   Blockchain,
   NAV_COMPONENT_MESSAGE_PROFILE,
   NEW_COLORS,
@@ -29,6 +30,7 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import CallMadeIcon from "@mui/icons-material/CallMade";
 import DoneIcon from "@mui/icons-material/Done";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+import VerifiedIcon from "@mui/icons-material/Verified";
 import { Skeleton } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
@@ -388,7 +390,17 @@ export const MessageLine = (props) => {
                 }}
               >
                 {displayName ? (
-                  `@${displayName}`
+                  <div style={{ display: "flex" }}>
+                    <div>@{displayName} </div>{" "}
+                    {BACKPACK_TEAM.includes(props.uuid) ? <VerifiedIcon
+                      style={{
+                          fontSize: 14,
+                          marginLeft: 2,
+                          marginTop: 1,
+                          color: theme.custom.colors.verified,
+                        }}
+                      /> : null}
+                  </div>
                 ) : (
                   <Skeleton
                     width={50}

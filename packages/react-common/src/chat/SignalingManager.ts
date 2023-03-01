@@ -21,6 +21,7 @@ import {
   updateLastRead,
 } from "@coral-xyz/db";
 
+import { getSanitizedTitle } from "./getSanitizedTitle";
 import { RECONNECTING, Signaling } from "./Signaling";
 
 const DEBOUNCE_INTERVAL_MS = 500;
@@ -116,7 +117,7 @@ export class SignalingManager {
             if (friendship?.remoteUserId) {
               await updateFriendship(this.uuid, friendship?.remoteUserId, {
                 last_message_sender: message.uuid,
-                last_message: message.message,
+                last_message: getSanitizedTitle(message),
                 last_message_timestamp: new Date().toISOString(),
                 unread: message.uuid === this.uuid ? 0 : 1,
               });
@@ -131,7 +132,7 @@ export class SignalingManager {
                   {
                     last_message_sender: message.uuid,
                     last_message_timestamp: new Date().toISOString(),
-                    last_message: message.message,
+                    last_message: getSanitizedTitle(message),
                     last_message_client_uuid: message.uuid,
                   },
                   {
@@ -269,7 +270,7 @@ export class SignalingManager {
           if (friendship?.remoteUserId) {
             await updateFriendship(this.uuid, friendship?.remoteUserId, {
               last_message_sender: this.uuid,
-              last_message: m.message,
+              last_message: getSanitizedTitle(m),
               last_message_timestamp: new Date().toISOString(),
               unread: 0,
             });
@@ -282,7 +283,7 @@ export class SignalingManager {
             collectionId: message.payload.room,
             lastReadMessage: m.client_generated_uuid,
             lastMessageUuid: m.client_generated_uuid,
-            lastMessage: m.message,
+            lastMessage: getSanitizedTitle(m),
             lastMessageTimestamp: new Date().toISOString(),
           });
         }
