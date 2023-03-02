@@ -103,7 +103,10 @@ export function MnemonicInput({
   //
   useEffect(() => {
     const onPaste = (e: any) => {
-      const words = e.clipboardData.getData("text").split(" ");
+      const words = e.clipboardData
+        .getData("text")
+        .split(" ")
+        .filter((word: any) => word !== "");
       if (words.length !== 12 && words.length !== 24) {
         // Not a valid mnemonic length
         return;
@@ -112,6 +115,7 @@ export function MnemonicInput({
       // all words
       e.preventDefault();
       setMnemonicWords(words);
+      setMnemonicText(words.join(" "));
     };
     if (!readOnly) {
       // Enable pasting if not readonly
@@ -155,6 +159,7 @@ export function MnemonicInput({
       .then((m: string) => {
         const words = m.split(" ");
         setMnemonicWords(words);
+        setMnemonicText(m);
       });
   };
 
@@ -170,7 +175,7 @@ export function MnemonicInput({
       }}
     >
       <Box>
-        <Box style={{ margin: 8 }}>
+        <Box style={{ margin: 4 }}>
           <Header
             text="Secret recovery phrase"
             style={{
@@ -185,9 +190,12 @@ export function MnemonicInput({
         </Box>
         <MnemonicTextInput
           mnemonicText={mnemonicText}
-          mnemonicWords={mnemonicWords}
-          setMnemonicWords={readOnly ? undefined : setMnemonicWords}
-          onChange={readOnly ? undefined : setMnemonicText}
+          setMnemonicWordsArr={(e) => {
+            readOnly ? undefined : setMnemonicWords(e);
+          }}
+          onChange={(e) => {
+            readOnly ? undefined : setMnemonicText(e);
+          }}
         />
         <Box
           style={{
@@ -210,21 +218,19 @@ export function MnemonicInput({
               margin: "32px 0",
             }}
           >
-            <>
-              <Box sx={{ flex: 1 }}>
-                <Link
-                  className={classes.link}
-                  onClick={() =>
-                    setMnemonicWords([
-                      ...Array(mnemonicWords.length === 12 ? 24 : 12).fill(""),
-                    ])
-                  }
-                >
-                  Use a {mnemonicWords.length === 12 ? "24" : "12"}-word
-                  recovery mnemonic
-                </Link>
-              </Box>
-            </>
+            <Box sx={{ flex: 1 }}>
+              <Link
+                className={classes.link}
+                onClick={() =>
+                  setMnemonicWords([
+                    ...Array(mnemonicWords.length === 12 ? 24 : 12).fill(""),
+                  ])
+                }
+              >
+                Use a {mnemonicWords.length === 12 ? "24" : "12"}-word recovery
+                mnemonic
+              </Link>
+            </Box>
           </Box>
         )}
       </Box>
@@ -268,64 +274,60 @@ export function MnemonicInput({
 }
 export function MnemonicTextInput({
   mnemonicText,
-  mnemonicWords,
-  setMnemonicWords,
+  setMnemonicWordsArr,
   onChange,
   rootClass,
 }: {
   mnemonicText: string;
   onChange?: (mnemonicText: string) => void;
-  mnemonicWords: Array<string>;
-  setMnemonicWords?: (mnemonicWords: Array<string>) => void;
+  setMnemonicWordsArr?: (mnemonicWords: Array<string>) => void;
   rootClass?: any;
 }) {
+  const theme = useCustomTheme();
+  const classes = useStyles();
+  if (!rootClass) {
+    rootClass = classes.mnemonicInputRoot;
+  }
   function mnemonicSplitUp(e: any) {
-    if (onChange) {
-      let textValue = e.target.value.toLowerCase();
-      let textSplitArray = textValue.split(" ");
-      onChange(textValue);
-      if (textSplitArray.length < 12 && setMnemonicWords) {
-        let localmnemonicArr = [
-          ...textSplitArray,
-          ...new Array(12 - textSplitArray.length).fill(""),
-        ];
-        setMnemonicWords(localmnemonicArr);
-      }
+    let textValue = e.target.value.toLowerCase();
+    let textSplitArray = textValue.split(" ");
 
-      console.log("textValue", textValue.split(" "));
+    if (textSplitArray.length <= 12 && setMnemonicWordsArr) {
+      let localmnemonicArr = [
+        ...textSplitArray,
+        ...new Array(12 - textSplitArray.length).fill(""),
+      ];
+      setMnemonicWordsArr(localmnemonicArr);
     }
   }
   return (
-    <Box style={{ marginBottom: "2px" }}>
-      <TextInput
-        inputProps={{
-          name: "mnemonicText",
-          autoComplete: "off",
-          spellCheck: "false",
-          autoFocus: true,
-        }}
-        placeholder="xxxxx xxxx xxx xx..."
-        type="text"
-        value={mnemonicText}
-        setValue={(e) => {
-          console.log("pasted");
-          mnemonicSplitUp(e);
-        }}
-        // error={error ? true : false}
-        // errorMessage={error}
-        // startAdornment={
-        //   <InputAdornment position="start">
-        //     <AlternateEmail
-        //       style={{
-        //         color: theme.custom.colors.secondary,
-        //         fontSize: 18,
-        //         marginRight: -2,
-        //         userSelect: "none",
-        //       }}
-        //     />
-        //   </InputAdornment>
-        // }
-      />
+    <Box>
+      <Grid container rowSpacing={0} sx={{ marginTop: "5px" }}>
+        <Grid item xs={12}>
+          <TextField
+            className={rootClass}
+            variant="outlined"
+            margin="dense"
+            size="medium"
+            required
+            fullWidth
+            InputLabelProps={{
+              shrink: false,
+              style: {
+                backgroundColor: theme.custom.colors.nav,
+              },
+            }}
+            placeholder="xxxxx xxxx xxx xx..."
+            value={mnemonicText}
+            onChange={(e) => {
+              if (onChange) {
+                onChange(e.target.value.toLowerCase());
+              }
+              mnemonicSplitUp(e);
+            }}
+          />
+        </Grid>
+      </Grid>
     </Box>
   );
 }
@@ -351,7 +353,7 @@ export function MnemonicInputFields({
         container
         rowSpacing={0}
         columnSpacing={1.00005}
-        sx={{ marginTop: "10px" }}
+        sx={{ marginTop: "5px" }}
       >
         {Array.from(Array(mnemonicWords.length).keys()).map((i) => (
           <Grid item xs={4} key={i}>
