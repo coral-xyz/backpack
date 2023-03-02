@@ -166,9 +166,9 @@ const HeaderRow = function HeaderRow({
         wallet={wallet!}
         showContent={!isCollapsed}
         setShowContent={(isCollapsed) => {
-            collapseSingleCollection(listIndex, blockchainIndex, !isCollapsed);
-          }}
-        />
+          collapseSingleCollection(listIndex, blockchainIndex, !isCollapsed);
+        }}
+      />
     </CustomCard>
   );
 };
@@ -270,13 +270,15 @@ const ItemRow = function ({
                 margin: "0px 6px",
               }}
             >
-              {collection ? <Suspense fallback={<Loading />}>
-                <NftCollectionCard
-                  publicKey={c.publicKey}
-                  connectionUrl={connectionUrl}
-                  collection={collection}
+              {collection ? (
+                <Suspense fallback={<Loading />}>
+                  <NftCollectionCard
+                    publicKey={c.publicKey}
+                    connectionUrl={connectionUrl}
+                    collection={collection}
                   />
-              </Suspense> : null}
+                </Suspense>
+              ) : null}
             </div>
           );
         })}
