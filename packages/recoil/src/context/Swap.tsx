@@ -131,6 +131,7 @@ export function SwapProvider({
     jupiterInputTokens({ publicKey: walletPublicKey.toString() }),
     []
   );
+
   const [token] = tokenAddress
     ? // TODO: refactor so this hook isn't behind a conditional
       // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -407,9 +408,6 @@ export function SwapProvider({
         )
       ).toString("base64");
     } else if (isJupiterSwap && routes && routes.length > 0) {
-      // Jupiter swap. Although Jupiter can return between 1 and 3 transactions
-      // to perform a swap, we should only ever get one as we are using the
-      // onlyDirectRoutes parameter.
       const response = await fetch(`${JUPITER_BASE_URL}swap`, {
         method: "POST",
         headers: {

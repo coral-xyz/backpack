@@ -13,8 +13,7 @@ const jupiterRouteMap = selector({
   get: async () => {
     try {
       const [response, topTokensReversed] = await (async () => {
-        const url =
-          "https://quote-api.jup.ag/v4/indexed-route-map?onlyDirectRoutes=true";
+        const url = "https://quote-api.jup.ag/v4/indexed-route-map";
         try {
           // Try to fetch the routes & top token list in parallel to reduce wait,
           // but fall back to just routes and an empty top token list if it fails
