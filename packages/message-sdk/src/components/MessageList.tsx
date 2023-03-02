@@ -5,6 +5,7 @@ import type {
   SubscriptionType,
 } from "@coral-xyz/common";
 import {
+  BACKPACK_TEAM,
   NAV_COMPONENT_MESSAGE_CHAT,
   NAV_COMPONENT_MESSAGE_GROUP_CHAT,
   NAV_COMPONENT_MESSAGE_PROFILE,
@@ -65,6 +66,11 @@ export const MessageList = ({
               ? activeChat.chatProps.remoteUserImage!
               : activeChat.chatProps.image!
           }
+          userId={
+            activeChat.chatType === "individual"
+              ? activeChat.chatProps.remoteUserId!
+              : ""
+          }
           name={
             activeChat.chatType === "individual"
               ? activeChat.chatProps.remoteUsername!
@@ -112,6 +118,7 @@ export function ChatListItem({
   id,
   isUnread,
   toRoot,
+  userId,
 }: {
   type: SubscriptionType;
   image: string;
@@ -123,6 +130,7 @@ export function ChatListItem({
   id: string;
   isUnread: boolean;
   toRoot: boolean;
+  userId: string;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -240,7 +248,7 @@ export function ChatListItem({
               >
                 <div>{type === "individual" ? `@${name}` : name}</div>
                 <div>
-                  {id === "backpack-chat" ? (
+                  {BACKPACK_TEAM.includes(userId) || id === "backpack-chat" ? (
                     <VerifiedIcon
                       style={{
                         fontSize: 19,

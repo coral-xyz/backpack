@@ -159,7 +159,7 @@ export function SendButton({
   });
   return (
     <WithHeaderButton
-      label={"Send"}
+      label="Send"
       routes={[
         {
           name: "send",
@@ -289,9 +289,9 @@ export function Send({
 
   let sendButton;
   if (isErrorAddress) {
-    sendButton = <DangerButton disabled={true} label="Invalid Address" />;
+    sendButton = <DangerButton disabled label="Invalid Address" />;
   } else if (isAmountError) {
-    sendButton = <DangerButton disabled={true} label="Insufficient Balance" />;
+    sendButton = <DangerButton disabled label="Insufficient Balance" />;
   } else {
     sendButton = (
       <PrimaryButton
@@ -317,43 +317,38 @@ export function Send({
       }}
       noValidate
     >
-      <>
-        {!to && (
-          <SendV1
-            address={address}
-            sendButton={sendButton}
-            amount={amount}
-            token={token}
-            blockchain={blockchain}
-            isAmountError={isAmountError}
-            isErrorAddress={isAmountError}
-            maxAmount={maxAmount}
-            setAddress={setAddress}
-            setAmount={setAmount}
-          />
-        )}
-        {to && (
-          <SendV2
-            to={to}
-            message={message}
-            setMessage={setMessage}
-            sendButton={sendButton}
-            amount={amount}
-            token={token}
-            blockchain={blockchain}
-            isAmountError={isAmountError}
-            isErrorAddress={isAmountError}
-            maxAmount={maxAmount}
-            setAddress={setAddress}
-            setAmount={setAmount}
-          />
-        )}
-        <ApproveTransactionDrawer
-          openDrawer={openDrawer}
-          setOpenDrawer={setOpenDrawer}
+      {!to ? <SendV1
+        address={address}
+        sendButton={sendButton}
+        amount={amount}
+        token={token}
+        blockchain={blockchain}
+        isAmountError={isAmountError}
+        isErrorAddress={isAmountError}
+        maxAmount={maxAmount}
+        setAddress={setAddress}
+        setAmount={setAmount}
+          /> : null}
+      {to ? <SendV2
+        to={to}
+        message={message}
+        setMessage={setMessage}
+        sendButton={sendButton}
+        amount={amount}
+        token={token}
+        blockchain={blockchain}
+        isAmountError={isAmountError}
+        isErrorAddress={isAmountError}
+        maxAmount={maxAmount}
+        setAddress={setAddress}
+        setAmount={setAmount}
+          /> : null}
+      <ApproveTransactionDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
         >
-          <SendConfirmComponent
-            onComplete={async (txSig) => {
+        <SendConfirmComponent
+          onComplete={async (txSig) => {
               if (
                 to?.uuid &&
                 to?.uuid !== uuid &&
@@ -402,9 +397,9 @@ export function Send({
                 // });
               }
             }}
-            token={token}
-            destinationAddress={destinationAddress}
-            destinationUser={
+          token={token}
+          destinationAddress={destinationAddress}
+          destinationUser={
               to?.uuid && to?.username && to?.image
                 ? {
                     username: to.username,
@@ -412,10 +407,9 @@ export function Send({
                   }
                 : undefined
             }
-            amount={amount!}
+          amount={amount!}
           />
-        </ApproveTransactionDrawer>
-      </>
+      </ApproveTransactionDrawer>
     </form>
   );
 }
@@ -438,8 +432,8 @@ function SendV1({
       <div className={classes.topHalf}>
         <div style={{ marginBottom: "40px" }}>
           <TextFieldLabel
-            leftLabel={"Send to"}
-            rightLabel={""}
+            leftLabel="Send to"
+            rightLabel=""
             style={{ marginLeft: "24px", marginRight: "24px" }}
           />
           <div style={{ margin: "0 12px" }}>
@@ -464,7 +458,7 @@ function SendV1({
         </div>
         <div>
           <TextFieldLabel
-            leftLabel={"Amount"}
+            leftLabel="Amount"
             rightLabel={`${token.displayBalance} ${token.ticker}`}
             rightLabelComponent={
               <MaxLabel
@@ -548,17 +542,15 @@ function SendV2({
             </div>
           </div>
           <div className={classes.horizontalCenter}>
-            {to.username && (
-              <div
-                style={{
+            {to.username ? <div
+              style={{
                   color: theme.custom.colors.fontColor,
                   fontSize: 16,
                   fontWeight: 500,
                 }}
               >
-                @{`${to.username}`}
-              </div>
-            )}
+              @{`${to.username}`}
+            </div> : null}
           </div>
           <div className={classes.horizontalCenter} style={{ marginTop: 4 }}>
             <WithCopyTooltip tooltipOpen={tooltipOpen}>
@@ -749,9 +741,8 @@ export function Sending({
           marginRight: "16px",
         }}
       >
-        {explorer && connectionUrl && (
-          <SecondaryButton
-            onClick={() => {
+        {explorer && connectionUrl ? <SecondaryButton
+          onClick={() => {
               if (isComplete) {
                 nav.toRoot();
                 drawer.close();
@@ -759,9 +750,8 @@ export function Sending({
                 window.open(explorerUrl(explorer, signature, connectionUrl));
               }
             }}
-            label={isComplete ? "View Balances" : "View Explorer"}
-          />
-        )}
+          label={isComplete ? "View Balances" : "View Explorer"}
+          /> : null}
       </div>
     </div>
   );
@@ -824,26 +814,24 @@ export function Error({
         >
           {error}
         </Typography>
-        {explorer && connectionUrl && signature && (
-          <SecondaryButton
-            style={{
+        {explorer && connectionUrl && signature ? <SecondaryButton
+          style={{
               height: "40px",
               width: "147px",
             }}
-            buttonLabelStyle={{
+          buttonLabelStyle={{
               fontSize: "14px",
             }}
-            label={"View Explorer"}
-            onClick={() =>
+          label="View Explorer"
+          onClick={() =>
               window.open(
                 explorerUrl(explorer, signature, connectionUrl),
                 "_blank"
               )
             }
-          />
-        )}
+          /> : null}
       </div>
-      <PrimaryButton label={"Retry"} onClick={() => onRetry()} />
+      <PrimaryButton label="Retry" onClick={() => onRetry()} />
     </div>
   );
 }

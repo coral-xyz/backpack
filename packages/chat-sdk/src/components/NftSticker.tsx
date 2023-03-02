@@ -24,7 +24,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import BrokenImageIcon from "@mui/icons-material/BrokenImage";
 import CheckIcon from "@mui/icons-material/Check";
-import { IconButton } from "@mui/material";
+import { IconButton , Tooltip } from "@mui/material";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -61,21 +61,23 @@ export const NftSticker = ({
         flexDirection: "column",
       }}
     >
-      <IconButton
-        size="small"
-        sx={{
-          color: theme.custom.colors.icon,
-          cursor: "pointer",
-        }}
-        style={buttonStyle}
-      >
-        <BrokenImageIcon
-          style={{ fontSize: 20 }}
-          onClick={() =>
-            setOpenPlugin((x) => (x === "nft-sticker" ? "" : "nft-sticker"))
-          }
-        />
-      </IconButton>
+      <Tooltip title="NFT stickers">
+        <IconButton
+          size="small"
+          sx={{
+            color: theme.custom.colors.icon,
+            cursor: "pointer",
+          }}
+          style={buttonStyle}
+        >
+          <BrokenImageIcon
+            style={{ fontSize: 20 }}
+            onClick={() =>
+              setOpenPlugin((x) => (x === "nft-sticker" ? "" : "nft-sticker"))
+            }
+          />
+        </IconButton>
+      </Tooltip>
     </div>
   );
 };

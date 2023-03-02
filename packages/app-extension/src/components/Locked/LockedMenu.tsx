@@ -85,15 +85,15 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
             navButtonLeft={<CloseButton onClick={() => setMenuOpen(false)} />}
           >
             <NavStackScreen
-              name={"root"}
+              name="root"
               component={(props: any) => <LockedMenuList {...props} />}
             />
             <NavStackScreen
-              name={"reset"}
+              name="reset"
               component={(props: any) => <Reset {...props} />}
             />
             <NavStackScreen
-              name={"reset-warning"}
+              name="reset-warning"
               component={(props: any) => <ResetWarning {...props} />}
             />
           </NavStackEphemeral>

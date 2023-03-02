@@ -2,6 +2,7 @@ export {
   bulkAddChats,
   clearChats,
   createOrUpdateCollection,
+  deleteChat,
   latestReceivedMessage,
   oldestReceivedMessage,
 } from "./chats";

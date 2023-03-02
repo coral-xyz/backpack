@@ -5,6 +5,7 @@ import type {
   SubscriptionType,
 } from "./toServer";
 export const CHAT_MESSAGES = "CHAT_MESSAGES";
+export const DELETE_MESSAGE = "DELETE_MESSAGE";
 export const UPDATE_ACTIVE_BARTER = "UPDATE_ACTIVE_BARTER";
 export const EXECUTE_BARTER = "EXECUTE_BARTER";
 export const SUBSCRIBE = "SUBSCRIBE";
@@ -21,6 +22,7 @@ export interface Message {
   room: string;
   type: SubscriptionType;
   message_metadata?: MessageMetadata;
+  deleted?: boolean;
 }
 
 export interface MessageWithMetadata extends Message {
