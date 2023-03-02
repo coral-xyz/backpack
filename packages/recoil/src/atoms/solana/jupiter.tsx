@@ -14,7 +14,7 @@ const jupiterRouteMap = selector({
     try {
       const [response, topTokensReversed] = await (async () => {
         const url =
-          "https://jupiter.xnfts.dev/v4/indexed-route-map?onlyDirectRoutes=true";
+          "https://quote-api.jup.ag/v4/indexed-route-map?onlyDirectRoutes=true";
         try {
           // Try to fetch the routes & top token list in parallel to reduce wait,
           // but fall back to just routes and an empty top token list if it fails
