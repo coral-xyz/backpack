@@ -16,7 +16,7 @@ import * as bs58 from "bs58";
 import { BigNumber, ethers } from "ethers";
 
 import { blockchainTokenData } from "../atoms/balance";
-import { jupiterInputTokens, jupiterUrl } from "../atoms/solana/jupiter";
+import { jupiterInputTokens } from "../atoms/solana/jupiter";
 import {
   useFeatureGates,
   useJupiterOutputTokens,
@@ -105,13 +105,16 @@ export function SwapProvider({
   const { backgroundClient, connection, walletPublicKey } = solanaCtx;
   const jupiterTokenList = useJupiterTokenList();
   const { SWAP_FEES_ENABLED } = useFeatureGates();
-  const JUPITER_BASE_URL = jupiterUrl(SWAP_FEES_ENABLED);
+  const JUPITER_BASE_URL = SWAP_FEES_ENABLED
+    ? "https://jupiter.xnfts.dev/v4/"
+    : "https://quote-api.jup.ag/v4/";
   const [fromTokens] = useLoader(
     jupiterInputTokens({ publicKey: walletPublicKey.toString() }),
     []
   );
   const [token] = tokenAddress
-    ? useLoader(
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      useLoader(
         blockchainTokenData({
           publicKey: walletPublicKey.toString(),
           blockchain,
