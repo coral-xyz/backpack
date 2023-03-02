@@ -110,11 +110,11 @@ export function ImportWallets({
       .concat(
         mnemonic && window.localStorage.getItem("sollet")
           ? [
-              {
-                path: (i: number) => legacySolletIndexed(i),
-                label: "501'/0'/0/0 (Deprecated)",
-              },
-            ]
+            {
+              path: (i: number) => legacySolletIndexed(i),
+              label: "501'/0'/0/0 (Deprecated)",
+            },
+          ]
           : []
       ),
     [Blockchain.ETHEREUM]: [
@@ -445,82 +445,91 @@ export function ImportWallets({
         {Object.keys(balances).length > 0 ? (
           <List
             sx={{
-                color: theme.custom.colors.fontColor,
-                background: theme.custom.colors.background,
-                borderRadius: "12px",
-                marginLeft: "16px",
-                marginRight: "16px",
-                paddingTop: "8px",
-                paddingBottom: "8px",
-              }}
-            >
-            {walletDescriptors
-                .slice(0, DISPLAY_PUBKEY_AMOUNT)
-                .map(({ publicKey, derivationPath }) => (
-                  <ListItemButton
-                    key={publicKey.toString()}
-                    onClick={handleSelect(publicKey, derivationPath)}
-                    sx={{
-                      display: "flex",
-                      paddinLeft: "16px",
-                      paddingRight: "16px",
-                      paddingTop: "5px",
-                      paddingBottom: "5px",
-                    }}
-                    disableRipple
-                    disabled={disabledPublicKeys.includes(publicKey.toString())}
-                  >
-                    <Box style={{ display: "flex", width: "100%" }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          flexDirection: "column",
-                        }}
-                      >
-                        <Checkbox
-                          edge="start"
-                          checked={
-                            checkedWalletDescriptors.some(
-                              (a) => a.derivationPath === derivationPath
-                            ) ||
-                            importedPublicKeys.includes(publicKey.toString())
-                          }
-                          tabIndex={-1}
-                          disabled={disabledPublicKeys.includes(
-                            publicKey.toString()
-                          )}
-                          disableRipple
-                          style={{ marginLeft: 0 }}
-                        />
-                      </div>
-                      <ListItemText
-                        id={publicKey.toString()}
-                        primary={walletAddressDisplay(publicKey)}
-                        sx={{
-                          marginLeft: "8px",
-                          fontSize: "14px",
-                          lineHeight: "32px",
-                          fontWeight: 500,
-                        }}
+              color: theme.custom.colors.fontColor,
+              background: theme.custom.colors.background,
+              borderRadius: "12px",
+              marginLeft: "16px",
+              marginRight: "16px",
+              paddingTop: "8px",
+              paddingBottom: "8px",
+            }}
+          >
+            {[...walletDescriptors]
+              .sort((a, b) => {
+                // Sort so that any public keys with balances are displayed first
+                if (balances[a.publicKey] < balances[b.publicKey]) {
+                  return 1;
+                } else if (balances[a.publicKey] > balances[b.publicKey]) {
+                  return -1;
+                } else {
+                  return 0;
+                }
+              })
+              .slice(0, DISPLAY_PUBKEY_AMOUNT)
+              .map(({ publicKey, derivationPath }) => (
+                <ListItemButton
+                  key={publicKey.toString()}
+                  onClick={handleSelect(publicKey, derivationPath)}
+                  sx={{
+                    display: "flex",
+                    paddinLeft: "16px",
+                    paddingRight: "16px",
+                    paddingTop: "5px",
+                    paddingBottom: "5px",
+                  }}
+                  disableRipple
+                  disabled={disabledPublicKeys.includes(publicKey.toString())}
+                >
+                  <Box style={{ display: "flex", width: "100%" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Checkbox
+                        edge="start"
+                        checked={
+                          checkedWalletDescriptors.some(
+                            (a) => a.derivationPath === derivationPath
+                          ) ||
+                          importedPublicKeys.includes(publicKey.toString())
+                        }
+                        tabIndex={-1}
+                        disabled={disabledPublicKeys.includes(
+                          publicKey.toString()
+                        )}
+                        disableRipple
+                        style={{ marginLeft: 0 }}
                       />
-                      <ListItemText
-                        sx={{
-                          color: theme.custom.colors.secondary,
-                          textAlign: "right",
-                        }}
-                        primary={`${
-                          balances[publicKey]
-                            ? (+ethers.utils.formatUnits(
-                                balances[publicKey],
-                                decimals
-                              )).toFixed(4)
-                            : "-"
+                    </div>
+                    <ListItemText
+                      id={publicKey.toString()}
+                      primary={walletAddressDisplay(publicKey)}
+                      sx={{
+                        marginLeft: "8px",
+                        fontSize: "14px",
+                        lineHeight: "32px",
+                        fontWeight: 500,
+                      }}
+                    />
+                    <ListItemText
+                      sx={{
+                        color: theme.custom.colors.secondary,
+                        textAlign: "right",
+                      }}
+                      primary={`${balances[publicKey]
+                        ? (+ethers.utils.formatUnits(
+                          balances[publicKey],
+                          decimals
+                        )).toFixed(4)
+                        : "-"
                         } ${symbol}`}
-                      />
-                    </Box>
-                  </ListItemButton>
-                ))}
+                    />
+                  </Box>
+                </ListItemButton>
+              ))}
           </List>
         ) : (
           <Loading />
