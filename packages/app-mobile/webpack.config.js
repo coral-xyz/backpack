@@ -1,5 +1,6 @@
 const createExpoWebpackConfigAsync = require("@expo/webpack-config");
 const path = require("path");
+const { ProvidePlugin } = require("webpack");
 
 const _dirname = __dirname; // eslint-disable-line
 
@@ -20,6 +21,18 @@ module.exports = async function (env, argv) {
       "node_modules/expo-modules-core"
     ),
   };
+
+  config.resolve.fallback = {
+    ...config.resolve.fallback,
+    buffer: require.resolve("buffer/"), // trailing slash is intentional
+  };
+
+  config.plugins = [
+    ...config.plugins,
+    new ProvidePlugin({
+      Buffer: ["buffer", "Buffer"],
+    }),
+  ];
 
   return config;
 };
