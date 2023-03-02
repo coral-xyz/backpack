@@ -8,10 +8,11 @@ import {
   UI_RPC_METHOD_NAVIGATION_PUSH,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
-import { useBreakpoints } from "@coral-xyz/react-common";
 import { useRecoilValue } from "recoil";
 
 import * as atoms from "../atoms";
+
+import { useBreakpoints } from "./useBreakpoints";
 
 type NavigationContext = {
   isRoot: boolean;
@@ -23,14 +24,15 @@ type NavigationContext = {
 
 export function useNavigation(): NavigationContext {
   const location = useLocation();
+
   const { push, pop, toRoot } = useNavigationSegue();
 
   const pathname = location.pathname;
   const isRoot = TAB_SET.has(pathname.slice(1));
   const params = new URLSearchParams(location.search);
-  const title = isRoot
-    ? ""
-    : useDecodedSearchParams<ExtensionSearchParams>(params).title || "";
+  const paramsTitle =
+    useDecodedSearchParams<ExtensionSearchParams>(params).title || "";
+  const title = isRoot ? "" : paramsTitle;
 
   return {
     isRoot,
@@ -125,9 +127,8 @@ export function useNavigationSegue() {
 export function useDecodedSearchParams<
   SearchParamsType extends ExtensionSearchParams
 >(urlSearchParams?: URLSearchParams) {
-  const [searchParams] = urlSearchParams
-    ? [urlSearchParams]
-    : useSearchParams();
+  const _searchParams = useSearchParams();
+  const [searchParams] = urlSearchParams ? [urlSearchParams] : _searchParams;
   const ob = {};
   searchParams.forEach((v, k) => {
     if (k !== "nav") {
