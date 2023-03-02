@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Blockchain } from "@coral-xyz/common";
+import { Blockchain, DEFAULT_PUBKEY_STR, WSOL_MINT } from "@coral-xyz/common";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useActiveEthereumWallet,
+  useAllJupiterInputMints,
   useLoader,
 } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
@@ -57,7 +58,7 @@ export function Token({
   const ethereumWallet = useActiveEthereumWallet();
   // Hack: This is hit for some reason due to the framer-motion animation.
   if (!blockchain || !tokenAddress) {
-    return <></>;
+    return null;
   }
 
   const activityAddress =
@@ -106,7 +107,9 @@ function TokenHeader({
     null
   );
 
-  if (!token) return <></>;
+  const list = useAllJupiterInputMints();
+
+  if (!token) return null;
 
   const percentClass =
     token.recentPercentChange === undefined
@@ -142,7 +145,13 @@ function TokenHeader({
           blockchain={blockchain}
           address={tokenAddress}
           publicKey={publicKey}
-          swapEnabled={blockchain === Blockchain.SOLANA}
+          swapEnabled={Boolean(
+            blockchain === Blockchain.SOLANA &&
+              (!token.mint ||
+              [WSOL_MINT, DEFAULT_PUBKEY_STR].includes(token.mint)
+                ? true
+                : list.includes(token.mint))
+          )}
         />
       </div>
     </div>

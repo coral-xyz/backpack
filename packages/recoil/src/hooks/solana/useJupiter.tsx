@@ -8,6 +8,10 @@ export function useJupiterTokenList(): Array<TokenInfo> {
   return useRecoilValue(atoms.jupiterTokenList);
 }
 
+export function useAllJupiterInputMints(): ReadonlyArray<string> {
+  return useRecoilValue(atoms.allJupiterInputMints);
+}
+
 export function useJupiterTokenMap(): Map<string, TokenInfo> {
   return useRecoilValue(atoms.jupiterTokenMap);
 }

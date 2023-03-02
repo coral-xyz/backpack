@@ -63,7 +63,7 @@ export const jupiterTokenMap = selector<Map<string, TokenInfo>>({
 });
 
 // All input tokens for Jupiter
-const allJupiterInputMints = selector({
+export const allJupiterInputMints = selector({
   key: "allJupiterInputMints",
   get: async ({ get }) => {
     const routeMap = get(jupiterRouteMap);
