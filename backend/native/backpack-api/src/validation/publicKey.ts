@@ -2,7 +2,7 @@ import { PublicKey } from "@solana/web3.js";
 import type { BlockChain } from "auth/src/onramp/zodTypes";
 import { ethers } from "ethers";
 
-export const validatePulicKey = (address: string, chain: BlockChain) => {
+export const validatePublicKey = (address: string, chain: BlockChain) => {
   if (chain === "solana") {
     try {
       new PublicKey(address);

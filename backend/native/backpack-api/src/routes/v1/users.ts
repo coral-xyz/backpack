@@ -32,7 +32,7 @@ import {
 } from "../../db/users";
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
 import { logger } from "../../logger";
-import { validatePulicKey } from "../../validation/publicKey";
+import { validatePublicKey } from "../../validation/publicKey";
 import { validateSignature } from "../../validation/signature";
 import {
   BlockchainPublicKey,
@@ -50,8 +50,8 @@ router.get("/", extractUserId, async (req, res) => {
   // @ts-ignore
   const limit: number = req.query.limit ? parseInt(req.query.limit) : 20;
 
-  const isSolPublicKey = validatePulicKey(usernamePrefix, "solana");
-  const isEthPublicKey = validatePulicKey(usernamePrefix, "ethereum");
+  const isSolPublicKey = validatePublicKey(usernamePrefix, "solana");
+  const isEthPublicKey = validatePublicKey(usernamePrefix, "ethereum");
 
   let users;
   if (isSolPublicKey) {
