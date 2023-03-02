@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
-import { useBreakpoints } from "@coral-xyz/app-extension/src/components/common/Layout/hooks";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   TAB_SET,
@@ -9,6 +8,7 @@ import {
   UI_RPC_METHOD_NAVIGATION_PUSH,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
+import { useBreakpoints } from "@coral-xyz/react-common";
 import { useRecoilValue } from "recoil";
 
 import * as atoms from "../atoms";
