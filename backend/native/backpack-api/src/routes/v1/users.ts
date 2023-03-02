@@ -41,7 +41,15 @@ import {
 } from "../../validation/user";
 
 const router = express.Router();
-
+const blacklistedNames = [
+  "armani",
+  "armaani",
+  "ferante",
+  "faramte",
+  "tristan",
+  "backpack",
+  "admin",
+];
 router.get("/", extractUserId, async (req, res) => {
   // @ts-ignore
   const usernamePrefix: string = req.query.usernamePrefix;
@@ -133,6 +141,12 @@ router.post("/", async (req, res) => {
         .status(400)
         .json({ msg: `Invalid ${blockchainPublicKey.blockchain} signature` });
     }
+  }
+
+  if (!blacklistedNames.find((name) => username.includes(name))) {
+    return res.status(400).json({
+      msg: `You cant have a special name`,
+    });
   }
 
   // Check for conflicts
