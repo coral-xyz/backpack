@@ -12,7 +12,7 @@ export const latestReceivedUpdate = async (
   roomId: string,
   type: string
 ) => {
-  return (await getDb(uuid).updates.where({ room: roomId }))[0];
+  return getDb(uuid).updates.get(roomId);
 };
 
 export const resetUpdateTimestamp = async (uuid: string, roomId: string) => {
@@ -57,23 +57,41 @@ export const processMessageUpdates = async (
       .filter((x) => x.type === DELETE_MESSAGE)
       .map((update) => deleteChat(uuid, update.client_generated_uuid))
   );
+
+  const latestUpdate = updates.sort((a, b) => (a.id > b.id ? -1 : 1))?.[0];
+  if (latestUpdate) {
+    await getDb(uuid).updates.put({
+      last_local_reset_time: new Date().getTime(),
+      last_received_update_id: latestUpdate.id,
+      room: latestUpdate.room,
+    });
+  }
+
+  //@ts-ignore
   return result.filter((x) => x !== null);
 };
 
-export const deleteChat = async (uuid: string, clientGeneratedUuid: string) => {
+export const deleteChat = async (
+  uuid: string,
+  clientGeneratedUuid: string
+): Promise<EnrichedMessage | null> => {
   const db = getDb(uuid);
-  if (await db.messages.get(clientGeneratedUuid)) {
-    await db.collections.update(clientGeneratedUuid, {
+  const el = await db.messages.get(clientGeneratedUuid);
+
+  if (el) {
+    await db.messages.update(clientGeneratedUuid, {
       deleted: true,
       message: "",
       message_metadata: {},
     });
+    //@ts-ignore
     return {
-      ...db.messages.get(clientGeneratedUuid),
+      ...(await db.messages.get(clientGeneratedUuid)),
       deleted: true,
     } as EnrichedMessage;
+  } else {
+    return null;
   }
-  return null;
 };
 
 export const bulkAddChats = (uuid: string, chats: EnrichedMessage[]) => {

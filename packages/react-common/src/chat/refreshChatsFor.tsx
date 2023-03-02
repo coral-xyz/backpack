@@ -34,7 +34,7 @@ export const refreshChatsFor = async (
 
   if (chats.length >= 40) {
     // we received a fresh set of messages and we reset the message state locally
-    await resetUpdateTimestamp();
+    await resetUpdateTimestamp(uuid, room);
   }
 
   if (chats.length >= 40) {

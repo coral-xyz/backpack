@@ -227,6 +227,7 @@ export const getChatsFromParentGuids = async (
         created_at: true,
         message_kind: true,
         parent_client_generated_uuid: true,
+        deleted: true,
       },
     ],
   });

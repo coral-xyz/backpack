@@ -1,10 +1,6 @@
 import { Chain } from "@coral-xyz/chat-zeus";
-import type {
-  MessageUpdates,
-  SubscriptionType} from "@coral-xyz/common";
-import {
-  DELETE_MESSAGE
-} from "@coral-xyz/common";
+import type { MessageUpdates, SubscriptionType } from "@coral-xyz/common";
+import { DELETE_MESSAGE } from "@coral-xyz/common";
 
 import { CHAT_HASURA_URL, CHAT_JWT } from "../config";
 
@@ -51,7 +47,11 @@ export const getHistoryUpdates = async (
         where: {
           room: { _eq: room },
           id: { _gt: lastSeenUpdate },
-          created_at: { _gte: updatesSinceTimestamp },
+          created_at: {
+            _gte: updatesSinceTimestamp
+              ? new Date(updatesSinceTimestamp).toUTCString()
+              : new Date(1122292384789).toUTCString(),
+          },
         },
       },
       {

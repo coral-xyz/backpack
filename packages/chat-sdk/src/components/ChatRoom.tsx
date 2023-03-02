@@ -117,8 +117,11 @@ export const ChatRoom = ({
           setRefreshing(false);
         });
 
-      refreshUpdatesFor(userId, roomId, type, nftMint, publicKey).catch((e) =>
-        console.error(`error while updating `)
+      refreshUpdatesFor(userId, roomId, type, nftMint || "", publicKey).catch(
+        (e) => {
+          console.error(`error while updating `);
+          console.error(e);
+        }
       );
     }
   }, [roomId, userId, type]);

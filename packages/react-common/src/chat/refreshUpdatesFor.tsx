@@ -1,4 +1,4 @@
-import type { MessageUpdates,SubscriptionType  } from "@coral-xyz/common";
+import type { MessageUpdates, SubscriptionType } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
   bulkAddChats,
@@ -12,11 +12,10 @@ export const refreshUpdatesFor = async (
   uuid: string,
   room: string,
   type: SubscriptionType,
-  clientGeneratedUuid: string,
   nftMint?: string,
   publicKey?: string // To avoid DB calls on the backend
 ) => {
-  const lastUpdate = await latestReceivedUpdate(uuid, room, type);
+  const lastUpdate = await latestReceivedUpdate(uuid, room.toString(), type);
 
   const response = await fetch(
     `${BACKEND_API_URL}/chat/updates?room=${room}&type=${type}&lastSeenUpdate=${
@@ -32,7 +31,7 @@ export const refreshUpdatesFor = async (
   const json = await response.json();
   const updates: MessageUpdates[] = json?.updates || [];
 
-  const processedUpdates = await processMessageUpdates(updates);
+  const processedUpdates = await processMessageUpdates(uuid, updates);
 
   SignalingManager.getInstance().onUpdateRecoil({
     type: "chat",
