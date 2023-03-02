@@ -60,22 +60,32 @@ export const SearchUsers = ({
       />
       {filteredFriends.length > 0 ? (
         <div style={{ marginTop: "24px" }}>
-          <BubbleTopLabel text="Your friends" />
-          <UserList users={filteredFriends as RemoteUserData[]} />
-          {requests.received.length > 0 ? <RequestHeader requests={requests} /> : null}
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <BubbleTopLabel text="Your friends" />
+            {requests.received.length > 0 ? (
+              <RequestHeader requests={requests} />
+            ) : null}
+          </div>
+          <div style={{ marginBottom: 15 }}>
+            <UserList users={filteredFriends as RemoteUserData[]} />
+          </div>
         </div>
       ) : (
         <>
-          {requests.received.length > 0 ? <div
-            style={{
+          {requests.received.length > 0 ? (
+            <div
+              style={{
                 display: "flex",
                 alignItems: "center",
+                flexDirection: "row-reverse",
                 justifyContent: "space-between",
                 marginBottom: "8px",
+                marginTop: "24px",
               }}
             >
-            <RequestHeader requests={requests} />
-          </div> : null}
+              <RequestHeader requests={requests} />
+            </div>
+          ) : null}
           <EmptyState
             icon={(props: any) => (
               <ContactsIcon fill={theme.custom.colors.icon} {...props} />
@@ -106,7 +116,13 @@ const RequestHeader = ({
   const theme = useCustomTheme();
   const nav = useNavigation();
   return (
-    <div style={{ marginTop: "24px", marginLeft: "4px" }}>
+    <div
+      style={{
+        marginLeft: "4px",
+        display: "flex",
+        flexDirection: "row-reverse",
+      }}
+    >
       <Typography
         sx={{ cursor: "pointer" }}
         color={theme.custom.colors.fontColor3}
@@ -123,8 +139,8 @@ const RequestHeader = ({
           })
         }
       >
-        You have {requests.received.length} pending friend request
-        {requests.received.length > 1 ? "s" : ""}.
+        Request{requests.received.length > 1 ? "s" : ""} (
+        {requests.received.length})
       </Typography>
     </div>
   );

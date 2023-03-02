@@ -7,6 +7,7 @@ import type {
 } from "@coral-xyz/common";
 import {
   CHAT_MESSAGES,
+  DELETE_MESSAGE,
   EXECUTE_BARTER,
   SUBSCRIBE,
   UPDATE_ACTIVE_BARTER,
@@ -16,6 +17,7 @@ import {
   bulkAddChats,
   createDefaultFriendship,
   createOrUpdateCollection,
+  deleteChat,
   getFriendshipByRoom,
   updateFriendship,
   updateLastRead,
@@ -169,6 +171,31 @@ export class SignalingManager {
       this.onBarterExecute(payload);
     });
 
+    this.signaling?.on(
+      DELETE_MESSAGE,
+      async (payload: {
+        client_generated_uuid: string;
+        room: string;
+        type: SubscriptionType;
+      }) => {
+        const updatedChat = await deleteChat(
+          this.uuid,
+          payload.client_generated_uuid
+        );
+        if (updatedChat) {
+          this.onUpdateRecoil({
+            type: "chat",
+            payload: {
+              room: payload.room,
+              type: payload.type,
+              uuid: this.uuid,
+              chats: [updatedChat],
+            },
+          });
+        }
+      }
+    );
+
     this.signaling?.on(WS_READY, () => {
       this.postSubscribes.forEach(({ room, type, mint, publicKey }) => {
         this.send({
@@ -228,7 +255,7 @@ export class SignalingManager {
     return this.instance;
   }
 
-  send(message: ToServer) {
+  async send(message: ToServer) {
     this.signaling?.send(message);
     if (message.type === CHAT_MESSAGES) {
       // we only bulkify messages from the same room yet
@@ -296,6 +323,24 @@ export class SignalingManager {
         mint: message.payload.mint || "",
         publicKey: message.payload.publicKey || "",
       });
+    }
+    if (message.type === DELETE_MESSAGE) {
+      const updatedChat = await deleteChat(
+        this.uuid,
+        message.payload.client_generated_uuid
+      );
+
+      if (updatedChat) {
+        this.onUpdateRecoil({
+          type: "chat",
+          payload: {
+            room: message.payload.room,
+            type: message.payload.type,
+            uuid: this.uuid,
+            chats: [updatedChat],
+          },
+        });
+      }
     }
   }
 }

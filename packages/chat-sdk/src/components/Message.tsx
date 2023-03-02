@@ -3,12 +3,14 @@ import {
   BACKEND_API_URL,
   BACKPACK_TEAM,
   Blockchain,
+  DELETE_MESSAGE,
   NAV_COMPONENT_MESSAGE_PROFILE,
   NEW_COLORS,
 } from "@coral-xyz/common";
 import {
   LocalImage,
   refreshIndividualChatsFor,
+  SignalingManager,
   SuccessButton,
 } from "@coral-xyz/react-common";
 import {
@@ -30,8 +32,11 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import CallMadeIcon from "@mui/icons-material/CallMade";
 import DoneIcon from "@mui/icons-material/Done";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import VerifiedIcon from "@mui/icons-material/Verified";
-import { Skeleton } from "@mui/material";
+import { Button, IconButton, Skeleton } from "@mui/material";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import { createStyles, makeStyles } from "@mui/styles";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
@@ -270,7 +275,9 @@ export const MessageLine = (props) => {
             ) : null}
             <div>
               <p className={classes.messageContent}>
-                {props.messageKind === "gif" ? (
+                {props.deleted ? (
+                  <DeletedMessage />
+                ) : props.messageKind === "gif" ? (
                   <div
                     style={{
                       height: 150,
@@ -392,14 +399,16 @@ export const MessageLine = (props) => {
                 {displayName ? (
                   <div style={{ display: "flex" }}>
                     <div>@{displayName} </div>{" "}
-                    {BACKPACK_TEAM.includes(props.uuid) ? <VerifiedIcon
-                      style={{
+                    {BACKPACK_TEAM.includes(props.uuid) ? (
+                      <VerifiedIcon
+                        style={{
                           fontSize: 14,
                           marginLeft: 2,
                           marginTop: 1,
                           color: theme.custom.colors.verified,
                         }}
-                      /> : null}
+                      />
+                    ) : null}
                   </div>
                 ) : (
                   <Skeleton
@@ -429,7 +438,9 @@ export const MessageLine = (props) => {
                   ) : null}
                   <div>
                     <p className={classes.messageContent}>
-                      {props.messageKind === "gif" ? (
+                      {props.deleted ? (
+                        <DeletedMessage />
+                      ) : props.messageKind === "gif" ? (
                         <div
                           style={{
                             height: 150,
@@ -481,7 +492,9 @@ export const MessageLine = (props) => {
                     </p>
                   </div>
                 </div>
-                <div>
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
                   {props.messageKind === "text" ? (
                     <div
                       style={{
@@ -530,6 +543,13 @@ export const MessageLine = (props) => {
                     style={{ color: theme.custom.colors.icon, fontSize: 13 }}
                   />
                 )}
+                {
+                  /*props.uuid === uuid && */ BACKPACK_TEAM.includes(uuid) ? (
+                    <MessageOptions
+                      clientGeneratedUuid={props.client_generated_uuid}
+                    />
+                  ) : null
+                }
               </div>
             </div>
           </div>
@@ -873,6 +893,7 @@ export function ChatMessages() {
             colorIndex={chat.colorIndex}
             timestamp={chat.created_at}
             message={chat.message}
+            deleted={chat.deleted}
             messageKind={chat.message_kind}
             image={chat.image}
             username={chat.username}
@@ -1053,5 +1074,73 @@ function MessageRight(props) {
         </div>
       </div>
     </>
+  );
+}
+
+function MessageOptions({
+  clientGeneratedUuid,
+}: {
+  clientGeneratedUuid: string;
+}) {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const theme = useCustomTheme();
+  const { roomId, type } = useChatContext();
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  return (
+    <div>
+      {/*
+      //@ts-ignore */}
+      <MoreHorizIcon
+        onClick={handleClick}
+        style={{
+          color: theme.custom.colors.icon,
+          cursor: "pointer",
+          marginTop: -5,
+          marginRight: 3,
+        }}
+      />
+      <Menu
+        id="fade-menu"
+        MenuListProps={{
+          "aria-labelledby": "fade-button",
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+      >
+        <MenuItem
+          onClick={() => {
+            SignalingManager.getInstance().send({
+              type: DELETE_MESSAGE,
+              payload: {
+                client_generated_uuid: clientGeneratedUuid,
+                room: roomId,
+                type: type,
+              },
+            });
+            handleClose();
+          }}
+        >
+          Delete
+        </MenuItem>
+      </Menu>
+    </div>
+  );
+}
+
+function DeletedMessage() {
+  const theme = useCustomTheme();
+  return (
+    <div
+      style={{ background: theme.custom.colors.background, borderRadius: 5 }}
+    >
+      This message has been deleted...
+    </div>
   );
 }

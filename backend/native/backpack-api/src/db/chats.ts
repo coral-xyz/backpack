@@ -51,6 +51,7 @@ export const getChats = async ({
         id: true,
         uuid: true,
         type: true,
+        deleted: true,
         room: true,
         message: true,
         client_generated_uuid: true,
@@ -130,49 +131,50 @@ export const getChats = async ({
     }
     chats.push({
       uuid: chat.uuid,
-      message: chat.message,
+      message: chat.deleted ? "" : chat.message,
       client_generated_uuid: chat.client_generated_uuid,
       message_kind: chat.message_kind,
       created_at: chat.created_at,
       parent_client_generated_uuid: chat.parent_client_generated_uuid,
       room: chat.room,
       type: chat.type,
-      message_metadata:
-        chat.message_kind === "secure-transfer"
-          ? {
-              escrow: chat.secure_transfer_transactions[0]?.escrow,
-              counter: chat.secure_transfer_transactions[0]?.counter,
-              signature: chat.secure_transfer_transactions[0]?.signature,
-              final_txn_signature:
-                chat.secure_transfer_transactions[0]?.final_txn_signature,
-              current_state:
-                chat.secure_transfer_transactions[0]?.current_state,
-            }
-          : chat.message_kind === "media"
-          ? {
-              media_kind: chat.chat_media_messages[0]?.media_kind,
-              media_link: chat.chat_media_messages[0]?.media_link,
-            }
-          : chat.message_kind === "transaction"
-          ? {
-              final_tx_signature: chat.simple_transactions[0]?.txn_signature,
-            }
-          : chat.message_kind === "barter"
-          ? {
-              barter_id: chat.chat_barter_metadata?.[0]?.barter?.id,
-              state: chat.chat_barter_metadata?.[0]?.barter?.state,
-              on_chain_state:
-                chat.chat_barter_metadata?.[0]?.barter?.on_chain_state,
-            }
-          : chat.message_kind === "nft-sticker"
-          ? {
-              mint: chat.nft_sticker_metadata?.[0]?.mint,
-            }
-          : chat.message_kind === "barter-request"
-          ? {
-              barter_id: chat.barter_poke_metadata?.[0]?.barter_id,
-            }
-          : undefined,
+      deleted: chat.deleted,
+      message_metadata: chat.deleted
+        ? {}
+        : chat.message_kind === "secure-transfer"
+        ? {
+            escrow: chat.secure_transfer_transactions[0]?.escrow,
+            counter: chat.secure_transfer_transactions[0]?.counter,
+            signature: chat.secure_transfer_transactions[0]?.signature,
+            final_txn_signature:
+              chat.secure_transfer_transactions[0]?.final_txn_signature,
+            current_state: chat.secure_transfer_transactions[0]?.current_state,
+          }
+        : chat.message_kind === "media"
+        ? {
+            media_kind: chat.chat_media_messages[0]?.media_kind,
+            media_link: chat.chat_media_messages[0]?.media_link,
+          }
+        : chat.message_kind === "transaction"
+        ? {
+            final_tx_signature: chat.simple_transactions[0]?.txn_signature,
+          }
+        : chat.message_kind === "barter"
+        ? {
+            barter_id: chat.chat_barter_metadata?.[0]?.barter?.id,
+            state: chat.chat_barter_metadata?.[0]?.barter?.state,
+            on_chain_state:
+              chat.chat_barter_metadata?.[0]?.barter?.on_chain_state,
+          }
+        : chat.message_kind === "nft-sticker"
+        ? {
+            mint: chat.nft_sticker_metadata?.[0]?.mint,
+          }
+        : chat.message_kind === "barter-request"
+        ? {
+            barter_id: chat.barter_poke_metadata?.[0]?.barter_id,
+          }
+        : undefined,
     });
   });
   return chats;

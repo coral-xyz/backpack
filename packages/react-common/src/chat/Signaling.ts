@@ -1,6 +1,7 @@
 import type { FromServer, ToServer } from "@coral-xyz/common";
 import {
   CHAT_MESSAGES,
+  DELETE_MESSAGE,
   EXECUTE_BARTER,
   UPDATE_ACTIVE_BARTER,
   WS_READY,
@@ -75,6 +76,9 @@ export class Signaling extends EventEmitter {
           break;
         case WS_READY:
           this.emit(SIGNALING_CONNECTED);
+          break;
+        case DELETE_MESSAGE:
+          this.emit(DELETE_MESSAGE, message.payload);
           break;
         default:
           console.error(`Invalid type of message found ${data}`);

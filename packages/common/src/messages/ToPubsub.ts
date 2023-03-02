@@ -1,6 +1,7 @@
 import type {
   CHAT_MESSAGES,
- EXECUTE_BARTER,  MessageWithMetadata,
+ DELETE_MESSAGE,  EXECUTE_BARTER,
+  MessageWithMetadata,
   UPDATE_ACTIVE_BARTER } from "./fromServer";
 import type { BarterOffers } from "./index";
 
@@ -15,6 +16,12 @@ export type ToPubsub =
         barterId: number;
         localOffers?: BarterOffers;
         remoteOffers?: BarterOffers;
+      };
+    }
+  | {
+      type: typeof DELETE_MESSAGE;
+      payload: {
+        client_generated_uuid: string;
       };
     }
   | {

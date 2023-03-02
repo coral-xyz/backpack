@@ -642,7 +642,7 @@ export const ResolveFromPath = (
       }
     }
   };
-  // @ts-ignore
+  //@ts-ignore
   const ResolveReturnType = (mappedParts: Part[]) => {
     if (mappedParts.length === 0) {
       return "not";
@@ -996,6 +996,18 @@ export type ScalarCoders = {
 type ZEUS_UNIONS = never;
 
 export type ValueTypes = {
+  /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
+  ["Boolean_comparison_exp"]: {
+    _eq?: boolean | undefined | null | Variable<any, string>;
+    _gt?: boolean | undefined | null | Variable<any, string>;
+    _gte?: boolean | undefined | null | Variable<any, string>;
+    _in?: Array<boolean> | undefined | null | Variable<any, string>;
+    _is_null?: boolean | undefined | null | Variable<any, string>;
+    _lt?: boolean | undefined | null | Variable<any, string>;
+    _lte?: boolean | undefined | null | Variable<any, string>;
+    _neq?: boolean | undefined | null | Variable<any, string>;
+    _nin?: Array<boolean> | undefined | null | Variable<any, string>;
+  };
   /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
   ["Int_comparison_exp"]: {
     _eq?: number | undefined | null | Variable<any, string>;
@@ -2368,6 +2380,7 @@ export type ValueTypes = {
     ];
     client_generated_uuid?: boolean | `@${string}`;
     created_at?: boolean | `@${string}`;
+    deleted?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     message?: boolean | `@${string}`;
     message_kind?: boolean | `@${string}`;
@@ -2522,6 +2535,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    deleted?:
+      | ValueTypes["Boolean_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     id?:
       | ValueTypes["Int_comparison_exp"]
       | undefined
@@ -2603,6 +2621,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    deleted?: boolean | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     message?: string | undefined | null | Variable<any, string>;
     message_kind?: string | undefined | null | Variable<any, string>;
@@ -2688,6 +2707,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    deleted?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     message?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     message_kind?:
@@ -2724,8 +2744,16 @@ export type ValueTypes = {
       | Variable<any, string>;
     uuid?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
   };
+  /** primary key columns input for table: chats */
+  ["chats_pk_columns_input"]: {
+    id: number | Variable<any, string>;
+  };
   /** select columns of table "chats" */
   ["chats_select_column"]: chats_select_column;
+  /** input type for updating data in table "chats" */
+  ["chats_set_input"]: {
+    deleted?: boolean | undefined | null | Variable<any, string>;
+  };
   /** Streaming cursor of the table "chats" */
   ["chats_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -2747,6 +2775,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    deleted?: boolean | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     message?: string | undefined | null | Variable<any, string>;
     message_kind?: string | undefined | null | Variable<any, string>;
@@ -2760,8 +2789,17 @@ export type ValueTypes = {
     username?: string | undefined | null | Variable<any, string>;
     uuid?: string | undefined | null | Variable<any, string>;
   };
-  /** placeholder for update columns of table "chats" (current role has no relevant permissions) */
+  /** update columns of table "chats" */
   ["chats_update_column"]: chats_update_column;
+  ["chats_updates"]: {
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["chats_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    where: ValueTypes["chats_bool_exp"] | Variable<any, string>;
+  };
   /** ordering argument of a cursor */
   ["cursor_ordering"]: cursor_ordering;
   /** mutation root */
@@ -3212,6 +3250,42 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["chat_media_messages_mutation_response"]
+    ];
+    update_chats?: [
+      {
+        /** sets the columns of the filtered rows to the given values */
+        _set?:
+          | ValueTypes["chats_set_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** filter the rows which have to be updated */;
+        where: ValueTypes["chats_bool_exp"] | Variable<any, string>;
+      },
+      ValueTypes["chats_mutation_response"]
+    ];
+    update_chats_by_pk?: [
+      {
+        /** sets the columns of the filtered rows to the given values */
+        _set?:
+          | ValueTypes["chats_set_input"]
+          | undefined
+          | null
+          | Variable<any, string>;
+        pk_columns:
+          | ValueTypes["chats_pk_columns_input"]
+          | Variable<any, string>;
+      },
+      ValueTypes["chats"]
+    ];
+    update_chats_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ValueTypes["chats_updates"]> | Variable<any, string>;
+      },
+      ValueTypes["chats_mutation_response"]
     ];
     update_nft_sticker_metadata?: [
       {
@@ -5633,6 +5707,18 @@ export type ValueTypes = {
 };
 
 export type ResolverInputTypes = {
+  /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
+  ["Boolean_comparison_exp"]: {
+    _eq?: boolean | undefined | null;
+    _gt?: boolean | undefined | null;
+    _gte?: boolean | undefined | null;
+    _in?: Array<boolean> | undefined | null;
+    _is_null?: boolean | undefined | null;
+    _lt?: boolean | undefined | null;
+    _lte?: boolean | undefined | null;
+    _neq?: boolean | undefined | null;
+    _nin?: Array<boolean> | undefined | null;
+  };
   /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
   ["Int_comparison_exp"]: {
     _eq?: number | undefined | null;
@@ -6592,6 +6678,7 @@ export type ResolverInputTypes = {
     ];
     client_generated_uuid?: boolean | `@${string}`;
     created_at?: boolean | `@${string}`;
+    deleted?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     message?: boolean | `@${string}`;
     message_kind?: boolean | `@${string}`;
@@ -6707,6 +6794,7 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["timestamptz_comparison_exp"]
       | undefined
       | null;
+    deleted?: ResolverInputTypes["Boolean_comparison_exp"] | undefined | null;
     id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
     message?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     message_kind?:
@@ -6752,6 +6840,7 @@ export type ResolverInputTypes = {
       | null;
     client_generated_uuid?: string | undefined | null;
     created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    deleted?: boolean | undefined | null;
     id?: number | undefined | null;
     message?: string | undefined | null;
     message_kind?: string | undefined | null;
@@ -6809,6 +6898,7 @@ export type ResolverInputTypes = {
       | null;
     client_generated_uuid?: ResolverInputTypes["order_by"] | undefined | null;
     created_at?: ResolverInputTypes["order_by"] | undefined | null;
+    deleted?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     message?: ResolverInputTypes["order_by"] | undefined | null;
     message_kind?: ResolverInputTypes["order_by"] | undefined | null;
@@ -6833,8 +6923,16 @@ export type ResolverInputTypes = {
     username?: ResolverInputTypes["order_by"] | undefined | null;
     uuid?: ResolverInputTypes["order_by"] | undefined | null;
   };
+  /** primary key columns input for table: chats */
+  ["chats_pk_columns_input"]: {
+    id: number;
+  };
   /** select columns of table "chats" */
   ["chats_select_column"]: chats_select_column;
+  /** input type for updating data in table "chats" */
+  ["chats_set_input"]: {
+    deleted?: boolean | undefined | null;
+  };
   /** Streaming cursor of the table "chats" */
   ["chats_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -6846,6 +6944,7 @@ export type ResolverInputTypes = {
   ["chats_stream_cursor_value_input"]: {
     client_generated_uuid?: string | undefined | null;
     created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    deleted?: boolean | undefined | null;
     id?: number | undefined | null;
     message?: string | undefined | null;
     message_kind?: string | undefined | null;
@@ -6855,8 +6954,13 @@ export type ResolverInputTypes = {
     username?: string | undefined | null;
     uuid?: string | undefined | null;
   };
-  /** placeholder for update columns of table "chats" (current role has no relevant permissions) */
+  /** update columns of table "chats" */
   ["chats_update_column"]: chats_update_column;
+  ["chats_updates"]: {
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ResolverInputTypes["chats_set_input"] | undefined | null;
+    where: ResolverInputTypes["chats_bool_exp"];
+  };
   /** ordering argument of a cursor */
   ["cursor_ordering"]: cursor_ordering;
   /** mutation root */
@@ -7209,6 +7313,32 @@ export type ResolverInputTypes = {
         updates: Array<ResolverInputTypes["chat_media_messages_updates"]>;
       },
       ResolverInputTypes["chat_media_messages_mutation_response"]
+    ];
+    update_chats?: [
+      {
+        /** sets the columns of the filtered rows to the given values */
+        _set?:
+          | ResolverInputTypes["chats_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
+        where: ResolverInputTypes["chats_bool_exp"];
+      },
+      ResolverInputTypes["chats_mutation_response"]
+    ];
+    update_chats_by_pk?: [
+      {
+        /** sets the columns of the filtered rows to the given values */
+        _set?: ResolverInputTypes["chats_set_input"] | undefined | null;
+        pk_columns: ResolverInputTypes["chats_pk_columns_input"];
+      },
+      ResolverInputTypes["chats"]
+    ];
+    update_chats_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ResolverInputTypes["chats_updates"]>;
+      },
+      ResolverInputTypes["chats_mutation_response"]
     ];
     update_nft_sticker_metadata?: [
       {
@@ -8941,6 +9071,18 @@ export type ResolverInputTypes = {
 };
 
 export type ModelTypes = {
+  /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
+  ["Boolean_comparison_exp"]: {
+    _eq?: boolean | undefined;
+    _gt?: boolean | undefined;
+    _gte?: boolean | undefined;
+    _in?: Array<boolean> | undefined;
+    _is_null?: boolean | undefined;
+    _lt?: boolean | undefined;
+    _lte?: boolean | undefined;
+    _neq?: boolean | undefined;
+    _nin?: Array<boolean> | undefined;
+  };
   /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
   ["Int_comparison_exp"]: {
     _eq?: number | undefined;
@@ -9571,6 +9713,7 @@ export type ModelTypes = {
     chat_media_messages: Array<ModelTypes["chat_media_messages"]>;
     client_generated_uuid: string;
     created_at?: ModelTypes["timestamptz"] | undefined;
+    deleted?: boolean | undefined;
     id: number;
     message: string;
     message_kind?: string | undefined;
@@ -9604,6 +9747,7 @@ export type ModelTypes = {
       | undefined;
     client_generated_uuid?: ModelTypes["String_comparison_exp"] | undefined;
     created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
+    deleted?: ModelTypes["Boolean_comparison_exp"] | undefined;
     id?: ModelTypes["Int_comparison_exp"] | undefined;
     message?: ModelTypes["String_comparison_exp"] | undefined;
     message_kind?: ModelTypes["String_comparison_exp"] | undefined;
@@ -9638,6 +9782,7 @@ export type ModelTypes = {
       | undefined;
     client_generated_uuid?: string | undefined;
     created_at?: ModelTypes["timestamptz"] | undefined;
+    deleted?: boolean | undefined;
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
@@ -9688,6 +9833,7 @@ export type ModelTypes = {
       | undefined;
     client_generated_uuid?: ModelTypes["order_by"] | undefined;
     created_at?: ModelTypes["order_by"] | undefined;
+    deleted?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
     message?: ModelTypes["order_by"] | undefined;
     message_kind?: ModelTypes["order_by"] | undefined;
@@ -9706,7 +9852,15 @@ export type ModelTypes = {
     username?: ModelTypes["order_by"] | undefined;
     uuid?: ModelTypes["order_by"] | undefined;
   };
+  /** primary key columns input for table: chats */
+  ["chats_pk_columns_input"]: {
+    id: number;
+  };
   ["chats_select_column"]: chats_select_column;
+  /** input type for updating data in table "chats" */
+  ["chats_set_input"]: {
+    deleted?: boolean | undefined;
+  };
   /** Streaming cursor of the table "chats" */
   ["chats_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -9718,6 +9872,7 @@ export type ModelTypes = {
   ["chats_stream_cursor_value_input"]: {
     client_generated_uuid?: string | undefined;
     created_at?: ModelTypes["timestamptz"] | undefined;
+    deleted?: boolean | undefined;
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
@@ -9728,6 +9883,11 @@ export type ModelTypes = {
     uuid?: string | undefined;
   };
   ["chats_update_column"]: chats_update_column;
+  ["chats_updates"]: {
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["chats_set_input"] | undefined;
+    where: ModelTypes["chats_bool_exp"];
+  };
   ["cursor_ordering"]: cursor_ordering;
   /** mutation root */
   ["mutation_root"]: {
@@ -9842,6 +10002,14 @@ export type ModelTypes = {
     /** update multiples rows of table: "chat_media_messages" */
     update_chat_media_messages_many?:
       | Array<ModelTypes["chat_media_messages_mutation_response"] | undefined>
+      | undefined;
+    /** update data of the table: "chats" */
+    update_chats?: ModelTypes["chats_mutation_response"] | undefined;
+    /** update single row of the table: "chats" */
+    update_chats_by_pk?: ModelTypes["chats"] | undefined;
+    /** update multiples rows of table: "chats" */
+    update_chats_many?:
+      | Array<ModelTypes["chats_mutation_response"] | undefined>
       | undefined;
     /** update data of the table: "nft_sticker_metadata" */
     update_nft_sticker_metadata?:
@@ -10700,6 +10868,18 @@ export type ModelTypes = {
 };
 
 export type GraphQLTypes = {
+  /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
+  ["Boolean_comparison_exp"]: {
+    _eq?: boolean | undefined;
+    _gt?: boolean | undefined;
+    _gte?: boolean | undefined;
+    _in?: Array<boolean> | undefined;
+    _is_null?: boolean | undefined;
+    _lt?: boolean | undefined;
+    _lte?: boolean | undefined;
+    _neq?: boolean | undefined;
+    _nin?: Array<boolean> | undefined;
+  };
   /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
   ["Int_comparison_exp"]: {
     _eq?: number | undefined;
@@ -11363,6 +11543,7 @@ export type GraphQLTypes = {
     chat_media_messages: Array<GraphQLTypes["chat_media_messages"]>;
     client_generated_uuid: string;
     created_at?: GraphQLTypes["timestamptz"] | undefined;
+    deleted?: boolean | undefined;
     id: number;
     message: string;
     message_kind?: string | undefined;
@@ -11396,6 +11577,7 @@ export type GraphQLTypes = {
       | undefined;
     client_generated_uuid?: GraphQLTypes["String_comparison_exp"] | undefined;
     created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
+    deleted?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
     id?: GraphQLTypes["Int_comparison_exp"] | undefined;
     message?: GraphQLTypes["String_comparison_exp"] | undefined;
     message_kind?: GraphQLTypes["String_comparison_exp"] | undefined;
@@ -11431,6 +11613,7 @@ export type GraphQLTypes = {
       | undefined;
     client_generated_uuid?: string | undefined;
     created_at?: GraphQLTypes["timestamptz"] | undefined;
+    deleted?: boolean | undefined;
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
@@ -11482,6 +11665,7 @@ export type GraphQLTypes = {
       | undefined;
     client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
     created_at?: GraphQLTypes["order_by"] | undefined;
+    deleted?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     message?: GraphQLTypes["order_by"] | undefined;
     message_kind?: GraphQLTypes["order_by"] | undefined;
@@ -11500,8 +11684,16 @@ export type GraphQLTypes = {
     username?: GraphQLTypes["order_by"] | undefined;
     uuid?: GraphQLTypes["order_by"] | undefined;
   };
+  /** primary key columns input for table: chats */
+  ["chats_pk_columns_input"]: {
+    id: number;
+  };
   /** select columns of table "chats" */
   ["chats_select_column"]: chats_select_column;
+  /** input type for updating data in table "chats" */
+  ["chats_set_input"]: {
+    deleted?: boolean | undefined;
+  };
   /** Streaming cursor of the table "chats" */
   ["chats_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -11513,6 +11705,7 @@ export type GraphQLTypes = {
   ["chats_stream_cursor_value_input"]: {
     client_generated_uuid?: string | undefined;
     created_at?: GraphQLTypes["timestamptz"] | undefined;
+    deleted?: boolean | undefined;
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
@@ -11522,8 +11715,13 @@ export type GraphQLTypes = {
     username?: string | undefined;
     uuid?: string | undefined;
   };
-  /** placeholder for update columns of table "chats" (current role has no relevant permissions) */
+  /** update columns of table "chats" */
   ["chats_update_column"]: chats_update_column;
+  ["chats_updates"]: {
+    /** sets the columns of the filtered rows to the given values */
+    _set?: GraphQLTypes["chats_set_input"] | undefined;
+    where: GraphQLTypes["chats_bool_exp"];
+  };
   /** ordering argument of a cursor */
   ["cursor_ordering"]: cursor_ordering;
   /** mutation root */
@@ -11644,6 +11842,14 @@ export type GraphQLTypes = {
     /** update multiples rows of table: "chat_media_messages" */
     update_chat_media_messages_many?:
       | Array<GraphQLTypes["chat_media_messages_mutation_response"] | undefined>
+      | undefined;
+    /** update data of the table: "chats" */
+    update_chats?: GraphQLTypes["chats_mutation_response"] | undefined;
+    /** update single row of the table: "chats" */
+    update_chats_by_pk?: GraphQLTypes["chats"] | undefined;
+    /** update multiples rows of table: "chats" */
+    update_chats_many?:
+      | Array<GraphQLTypes["chats_mutation_response"] | undefined>
       | undefined;
     /** update data of the table: "nft_sticker_metadata" */
     update_nft_sticker_metadata?:
@@ -12623,6 +12829,7 @@ export const enum chats_constraint {
 export const enum chats_select_column {
   client_generated_uuid = "client_generated_uuid",
   created_at = "created_at",
+  deleted = "deleted",
   id = "id",
   message = "message",
   message_kind = "message_kind",
@@ -12632,9 +12839,9 @@ export const enum chats_select_column {
   username = "username",
   uuid = "uuid",
 }
-/** placeholder for update columns of table "chats" (current role has no relevant permissions) */
+/** update columns of table "chats" */
 export const enum chats_update_column {
-  _PLACEHOLDER = "_PLACEHOLDER",
+  deleted = "deleted",
 }
 /** ordering argument of a cursor */
 export const enum cursor_ordering {
@@ -12728,6 +12935,7 @@ export const enum simple_transactions_update_column {
 }
 
 type ZEUS_VARIABLES = {
+  ["Boolean_comparison_exp"]: ValueTypes["Boolean_comparison_exp"];
   ["Int_comparison_exp"]: ValueTypes["Int_comparison_exp"];
   ["String_comparison_exp"]: ValueTypes["String_comparison_exp"];
   ["barter_poke_metadata_aggregate_order_by"]: ValueTypes["barter_poke_metadata_aggregate_order_by"];
@@ -12822,10 +13030,13 @@ type ZEUS_VARIABLES = {
   ["chats_obj_rel_insert_input"]: ValueTypes["chats_obj_rel_insert_input"];
   ["chats_on_conflict"]: ValueTypes["chats_on_conflict"];
   ["chats_order_by"]: ValueTypes["chats_order_by"];
+  ["chats_pk_columns_input"]: ValueTypes["chats_pk_columns_input"];
   ["chats_select_column"]: ValueTypes["chats_select_column"];
+  ["chats_set_input"]: ValueTypes["chats_set_input"];
   ["chats_stream_cursor_input"]: ValueTypes["chats_stream_cursor_input"];
   ["chats_stream_cursor_value_input"]: ValueTypes["chats_stream_cursor_value_input"];
   ["chats_update_column"]: ValueTypes["chats_update_column"];
+  ["chats_updates"]: ValueTypes["chats_updates"];
   ["cursor_ordering"]: ValueTypes["cursor_ordering"];
   ["nft_sticker_metadata_aggregate_order_by"]: ValueTypes["nft_sticker_metadata_aggregate_order_by"];
   ["nft_sticker_metadata_arr_rel_insert_input"]: ValueTypes["nft_sticker_metadata_arr_rel_insert_input"];
