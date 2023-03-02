@@ -35,7 +35,7 @@ export const deleteChat = async (uuid: string, clientGeneratedUuid: string) => {
       message: "",
       message_metadata: {},
     });
-    return { ...(await db.messages.get(clientGeneratedUuid)), deleted: true };
+    return db.messages.get(clientGeneratedUuid);
   }
   return null;
 };
