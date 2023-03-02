@@ -21,6 +21,7 @@ const useStyles = styles((theme) => ({
     },
   },
   imageBackground: {
+    zIndex: 2,
     position: "relative",
     height: "100%",
     display: "flex",
@@ -30,7 +31,8 @@ const useStyles = styles((theme) => ({
     backgroundColor: "#000",
   },
   image: {
-    zIndex: "1",
+    zIndex: 1,
+    position: "relative",
     height: "117px",
     width: "547px",
     backgroundSize: "547px 234px",
@@ -57,9 +59,11 @@ const useStyles = styles((theme) => ({
     display: "none",
   },
   visuallyHidden: {
+    zIndex: -1,
+    pointerEvents: "none",
     visibility: "hidden",
     position: "absolute",
-    top: "0px",
+    top: "1000px",
   },
 }));
 
@@ -100,7 +104,7 @@ export default function EntryONE() {
     <Card onClick={openXNFT} className={classes.blockchainCard} elevation={0}>
       <Skeleton
         className={`${classes.skeleton}  ${!isLoading ? classes.none : ""}`}
-       />
+      />
       <div
         className={`${classes.imageBackground} ${
           isLoading ? classes.hidden : ""
