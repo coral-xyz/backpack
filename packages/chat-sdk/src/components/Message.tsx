@@ -261,95 +261,117 @@ export const MessageLine = (props) => {
           className={`${classes.messageContainer} ${classes.hoverParent}`}
           style={{ display: "flex", paddingTop: "4px" }}
         >
-          <div>
-            {props.parent_message_author_uuid ? (
-              <div>
-                <ReplyContainer
-                  marginBottom={2}
-                  padding={0}
-                  parent_username={props.parent_message_author_username || ""}
-                  showCloseBtn={false}
-                  text={props.parent_message_text}
-                />
-              </div>
-            ) : null}
+          <div style={{ width: "calc(100% - 80px)" }}>
             <div>
-              <p className={classes.messageContent}>
-                {props.deleted ? (
-                  <DeletedMessage />
-                ) : props.messageKind === "gif" ? (
-                  <div
-                    style={{
-                      height: 150,
-                      maxWidth: 220,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <GifDemo id={message} height={150} />
-                  </div>
-                ) : props.messageKind === "secure-transfer" ? (
-                  <SecureTransferElement
-                    messageId={props.messageId}
-                    senderUuid={props.uuid}
-                    escrow={props.metadata.escrow}
-                    counter={props.metadata.counter}
-                    currentState={props.metadata.current_state}
-                    remoteUsername={props.username}
-                    finalTxId={props.metadata.final_txn_signature}
+              {props.parent_message_author_uuid ? (
+                <div>
+                  <ReplyContainer
+                    marginBottom={2}
+                    padding={0}
+                    parent_username={props.parent_message_author_username || ""}
+                    showCloseBtn={false}
+                    text={props.parent_message_text}
                   />
-                ) : props.messageKind === "barter-request" ? (
-                  <BarterPoke barterId={props.metadata?.barter_id} />
-                ) : props.messageKind === "barter" ? (
-                  <BarterModal barterId={props.metadata?.barter_id} />
-                ) : props.messageKind === "transaction" ? (
-                  <SimpleTransaction
-                    remoteUserId={props.uuid}
-                    message={message}
-                    txnSignature={props.metadata?.final_tx_signature}
-                  />
-                ) : props.messageKind === "media" ? (
-                  <div>
-                    <MediaContent
-                      mediaLink={props.metadata?.media_link}
-                      mediaKind={props.metadata?.media_kind}
-                    />
-                    <div>{message}</div>
-                  </div>
-                ) : props.messageKind === "nft-sticker" ? (
-                  <div>
-                    <NftStickerRender
-                      uuid={props.uuid}
-                      mint={props.metadata?.mint}
-                    />
-                    <ParsedMessage message={message} />
-                  </div>
-                ) : (
-                  <ParsedMessage message={message} />
-                )}
-              </p>
+                </div>
+              ) : null}
+              <div style={{ display: "flex" }}>
+                <div>
+                  <p className={classes.messageContent}>
+                    {props.deleted ? (
+                      <DeletedMessage />
+                    ) : props.messageKind === "gif" ? (
+                      <div
+                        style={{
+                          height: 150,
+                          maxWidth: 220,
+                          overflow: "hidden",
+                        }}
+                      >
+                        <GifDemo id={message} height={150} />
+                      </div>
+                    ) : props.messageKind === "secure-transfer" ? (
+                      <SecureTransferElement
+                        messageId={props.messageId}
+                        senderUuid={props.uuid}
+                        escrow={props.metadata.escrow}
+                        counter={props.metadata.counter}
+                        currentState={props.metadata.current_state}
+                        remoteUsername={props.username}
+                        finalTxId={props.metadata.final_txn_signature}
+                      />
+                    ) : props.messageKind === "barter-request" ? (
+                      <BarterPoke barterId={props.metadata?.barter_id} />
+                    ) : props.messageKind === "barter" ? (
+                      <BarterModal barterId={props.metadata?.barter_id} />
+                    ) : props.messageKind === "transaction" ? (
+                      <SimpleTransaction
+                        remoteUserId={props.uuid}
+                        message={message}
+                        txnSignature={props.metadata?.final_tx_signature}
+                      />
+                    ) : props.messageKind === "media" ? (
+                      <div>
+                        <MediaContent
+                          mediaLink={props.metadata?.media_link}
+                          mediaKind={props.metadata?.media_kind}
+                        />
+                        <div>{message}</div>
+                      </div>
+                    ) : props.messageKind === "nft-sticker" ? (
+                      <div>
+                        <NftStickerRender
+                          uuid={props.uuid}
+                          mint={props.metadata?.mint}
+                        />
+                        <ParsedMessage message={message} />
+                      </div>
+                    ) : (
+                      <ParsedMessage message={message} />
+                    )}
+                  </p>
+                </div>
+                <div>
+                  {props.messageKind === "text" ? (
+                    <div
+                      style={{
+                        marginLeft: 10,
+                        marginTop: 3,
+                        cursor: "pointer",
+                      }}
+                      className={classes.hoverChild}
+                      onClick={() => {
+                        setActiveReply({
+                          parent_client_generated_uuid:
+                            props.client_generated_uuid,
+                          text: message,
+                          parent_username: `@${props.username}`,
+                          parent_message_author_uuid: props.userId,
+                        });
+                      }}
+                    >
+                      <ReplyIcon fill={theme.custom.colors.icon} />
+                    </div>
+                  ) : null}
+                </div>
+              </div>
             </div>
           </div>
-          <div>
-            {props.messageKind === "text" ? (
-              <div
-                style={{
-                  marginLeft: 10,
-                  marginTop: 3,
-                  cursor: "pointer",
-                }}
-                className={classes.hoverChild}
-                onClick={() => {
-                  setActiveReply({
-                    parent_client_generated_uuid: props.client_generated_uuid,
-                    text: message,
-                    parent_username: `@${props.username}`,
-                    parent_message_author_uuid: props.userId,
-                  });
-                }}
-              >
-                <ReplyIcon fill={theme.custom.colors.icon} />
-              </div>
-            ) : null}
+          <div style={{ minWidth: 63 }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row-reverse",
+                marginTop: 5,
+              }}
+            >
+              {
+                /*props.uuid === uuid && */ BACKPACK_TEAM.includes(uuid) ? (
+                  <MessageOptions
+                    clientGeneratedUuid={props.client_generated_uuid}
+                  />
+                ) : null
+              }
+            </div>
           </div>
         </div>
       ) : (
@@ -1138,7 +1160,11 @@ function DeletedMessage() {
   const theme = useCustomTheme();
   return (
     <div
-      style={{ background: theme.custom.colors.background, borderRadius: 5 }}
+      style={{
+        background: theme.custom.colors.background,
+        borderRadius: 5,
+        display: "inline-flex",
+      }}
     >
       This message has been deleted...
     </div>
