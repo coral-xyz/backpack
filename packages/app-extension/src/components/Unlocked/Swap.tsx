@@ -216,7 +216,7 @@ export function Swap({ blockchain }: { blockchain: Blockchain }) {
       headerTitle: "Swap",
       style: isDark ? { background: "#1D1D20" } : undefined,
     });
-  }, [nav]);
+  }, [nav, isDark]);
 
   if (blockchain && blockchain !== Blockchain.SOLANA) {
     throw new Error("only Solana swaps are supported currently");
@@ -325,10 +325,18 @@ const SwapConfirmationCard: React.FC<{
 
   return (
     <div>
-      {swapState === SwapState.CONFIRMATION ? <SwapConfirmation onConfirm={onConfirm} /> : null}
-      {swapState === SwapState.CONFIRMING ? <SwapConfirming isConfirmed={false} onViewBalances={onViewBalances} /> : null}
-      {swapState === SwapState.CONFIRMED ? <SwapConfirming isConfirmed onViewBalances={onViewBalances} /> : null}
-      {swapState === SwapState.ERROR ? <SwapError onCancel={() => onClose()} onRetry={onConfirm} /> : null}
+      {swapState === SwapState.CONFIRMATION ? (
+        <SwapConfirmation onConfirm={onConfirm} />
+      ) : null}
+      {swapState === SwapState.CONFIRMING ? (
+        <SwapConfirming isConfirmed={false} onViewBalances={onViewBalances} />
+      ) : null}
+      {swapState === SwapState.CONFIRMED ? (
+        <SwapConfirming isConfirmed onViewBalances={onViewBalances} />
+      ) : null}
+      {swapState === SwapState.ERROR ? (
+        <SwapError onCancel={() => onClose()} onRetry={onConfirm} />
+      ) : null}
     </div>
   );
 };
@@ -379,15 +387,17 @@ function OutputTextField() {
       <TextField
         placeholder="0"
         startAdornment={
-          isLoadingRoutes ? <Loading
-            iconStyle={{
+          isLoadingRoutes ? (
+            <Loading
+              iconStyle={{
                 display: "flex",
                 color: theme.custom.colors.secondary,
                 marginRight: "10px",
               }}
-            size={24}
-            thickness={5}
-            /> : null
+              size={24}
+              thickness={5}
+            />
+          ) : null
         }
         endAdornment={<OutputTokensSelectorButton />}
         rootClass={classes.receiveFieldRoot}
@@ -547,18 +557,20 @@ function SwapConfirming({
           )}
         </div>
       </div>
-      {isConfirmed ? <div
-        style={{
+      {isConfirmed ? (
+        <div
+          style={{
             marginBottom: "16px",
             marginLeft: "16px",
             marginRight: "16px",
           }}
         >
-        <SecondaryButton
-          onClick={() => onViewBalances()}
-          label="View Balances"
+          <SecondaryButton
+            onClick={() => onViewBalances()}
+            label="View Balances"
           />
-      </div> : null}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -713,7 +725,11 @@ function SwapInfoRows({
   const rows = [];
   rows.push([
     "Wallet",
-    <WalletDrawerButton wallet={wallet} style={{ height: "20px" }} />,
+    <WalletDrawerButton
+      key="wallet"
+      wallet={wallet}
+      style={{ height: "20px" }}
+    />,
   ]);
   if (!compact) {
     rows.push(["You Pay", youPay]);
@@ -757,13 +773,7 @@ function SwapTokensButton({
 
 function InputTokenSelectorButton() {
   const { fromToken, setFromMint } = useSwapContext();
-  return (
-    <TokenSelectorButton
-      token={fromToken!}
-      input
-      setMint={setFromMint}
-    />
-  );
+  return <TokenSelectorButton token={fromToken!} input setMint={setFromMint} />;
 }
 
 function OutputTokensSelectorButton() {
@@ -801,11 +811,13 @@ function TokenSelectorButton({
           justifyContent: "right",
         }}
       >
-        {token ? <img
-          className={classes.tokenLogo}
-          src={token.logo}
-          onError={(event) => (event.currentTarget.style.display = "none")}
-          /> : null}
+        {token ? (
+          <img
+            className={classes.tokenLogo}
+            src={token.logo}
+            onError={(event) => (event.currentTarget.style.display = "none")}
+          />
+        ) : null}
         <Typography className={classes.tokenSelectorButtonLabel}>
           {token ? token.ticker : null}
         </Typography>
@@ -828,6 +840,15 @@ export function SwapSelectToken({
   const theme = useCustomTheme();
   const nav = useNavigation();
   const { fromTokens, toTokens } = useSwapContext();
+  useEffect(() => {
+    nav.setOptions({
+      headerTitle: "Select Token",
+      style: isDark
+        ? { background: theme.custom.colors.background }
+        : undefined,
+    });
+  }, [nav, isDark, theme]);
+
   const tokenAccounts = (
     !input ? toTokens : fromTokens
   ) as Array<TokenDataWithPrice>;
@@ -836,15 +857,6 @@ export function SwapSelectToken({
     setMint(token.mint!);
     nav.pop();
   };
-
-  useEffect(() => {
-    nav.setOptions({
-      headerTitle: "Select Token",
-      style: isDark
-        ? { background: theme.custom.colors.background }
-        : undefined,
-    });
-  }, [nav]);
 
   return (
     <SearchableTokenTable
