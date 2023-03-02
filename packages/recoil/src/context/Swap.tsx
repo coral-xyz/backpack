@@ -1,4 +1,3 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   Blockchain,
   confirmTransaction,
@@ -13,7 +12,8 @@ import {
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { Transaction } from "@solana/web3.js";
 import * as bs58 from "bs58";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber, ethers, FixedNumber } from "ethers";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { blockchainTokenData } from "../atoms/balance";
 import { jupiterInputTokens } from "../atoms/solana/jupiter";
@@ -33,13 +33,32 @@ const DEFAULT_SLIPPAGE_PERCENT = 1;
 const ROUTE_POLL_INTERVAL = 30000;
 
 type JupiterRoute = {
-  amount: string;
   inAmount: string;
-  otherAmountThreshold: string;
   outAmount: string;
-  // deprecated field
-  outAmountWithSlippage: string;
   priceImpactPct: number;
+  marketInfos: Array<{
+    id: string;
+    label: string;
+    inputMint: string;
+    outputMint: string;
+    notEnoughLiquidity: boolean;
+    inAmount: string;
+    outAmount: string;
+    priceImpactPct: number;
+    lpFee: {
+      amount: string;
+      mint: string;
+      pct: number;
+    };
+    platformFee: {
+      amount: string;
+      mint: string;
+      pct: number;
+    };
+  }>;
+  amount: string;
+  slippageBps: number;
+  otherAmountThreshold: string;
   swapMode: string;
 };
 
@@ -68,7 +87,7 @@ type SwapContext = {
   executeSwap: () => Promise<boolean>;
   // Fees
   transactionFee: BigNumber | undefined;
-  swapFee: BigNumber;
+  swapFee: JupiterRoute["marketInfos"][number]["platformFee"];
   availableForSwap: BigNumber;
   exceedsBalance: boolean | undefined;
   feeExceedsBalance: boolean | undefined;
@@ -113,7 +132,8 @@ export function SwapProvider({
     []
   );
   const [token] = tokenAddress
-    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+    ? // TODO: refactor so this hook isn't behind a conditional
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       useLoader(
         blockchainTokenData({
           publicKey: walletPublicKey.toString(),
@@ -154,10 +174,40 @@ export function SwapProvider({
   const isJupiterSwap = !isWrap && !isUnwrap;
 
   const route = routes && routes[0];
-  // If not a Jupiter swap then 1:1
-  const toAmount = isJupiterSwap
-    ? route && BigNumber.from(route.outAmount)
-    : fromAmount;
+
+  const swapFee = route?.marketInfos[route.marketInfos.length - 1].platformFee;
+
+  const toAmount = (() => {
+    if (isJupiterSwap) {
+      if (route) {
+        if (swapFee.pct > 0) {
+          // It's a Jupiter swap with fees, the output amount is
+          // swapFeeTotal * (100 / swapFeePercentage)
+          return BigNumber.from(
+            FixedNumber.from(BigNumber.from(swapFee.amount))
+              .mulUnsafe(
+                FixedNumber.from(100).divUnsafe(
+                  FixedNumber.fromString(swapFee.pct.toString())
+                )
+              )
+              .ceiling()
+              .toString()
+              .split(".")[0]
+          );
+        } else {
+          // It's a Jupiter swap with no fees
+          return BigNumber.from(route.outAmount);
+        }
+      } else {
+        // Error case
+        return undefined;
+      }
+    } else {
+      // If not a Jupiter swap then 1:1
+      return fromAmount;
+    }
+  })();
+
   // If not a Jupiter swap then no price impact
   const priceImpactPct = isJupiterSwap ? route && route.priceImpactPct : 0;
 
@@ -472,8 +522,7 @@ export function SwapProvider({
         isLoadingRoutes,
         isLoadingTransactions,
         transactionFee,
-        // TODO backpack fees
-        swapFee: Zero,
+        swapFee,
         isJupiterError,
         availableForSwap,
         exceedsBalance,
