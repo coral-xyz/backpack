@@ -91,7 +91,7 @@ export const ChatRoom = ({
   });
   const { chats, usersMetadata } = useChatsWithMetadata({ room: roomId, type });
   const [refreshing, setRefreshing] = useState(true);
-  const [messageRef, setMessageRef] = useState(null);
+  const [messageRef, setMessageRef] = useState<any>(null);
   const [jumpToBottom, setShowJumpToBottom] = useState(false);
   const [localUnreadCount, setLocalUnreadCount] = useState(0);
   const [openPlugin, setOpenPlugin] = useState<MessagePlugins>("");
@@ -289,6 +289,18 @@ export const ChatRoom = ({
           room: roomId,
         },
       });
+
+      /**
+       * Why timeout?
+       *
+       * If we dont add timeout, the user will be scrolled to the last message at
+       * that time, since the message sent by the user will be newly added.
+       * So we need to add delay for scroll.
+       */
+      const timeoutId = setTimeout(() => {
+        messageRef?.scrollToBottom?.();
+        clearTimeout(timeoutId);
+      }, 10);
 
       setActiveReply({
         parent_username: "",
