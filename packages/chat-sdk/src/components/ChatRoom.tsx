@@ -8,6 +8,7 @@ import { CHAT_MESSAGES, SUBSCRIBE } from "@coral-xyz/common";
 import { createEmptyFriendship } from "@coral-xyz/db";
 import {
   refreshChatsFor,
+  refreshUpdatesFor,
   SignalingManager,
   useChatsWithMetadata,
 } from "@coral-xyz/react-common";
@@ -115,6 +116,13 @@ export const ChatRoom = ({
         .catch((e) => {
           setRefreshing(false);
         });
+
+      refreshUpdatesFor(userId, roomId, type, nftMint || "", publicKey).catch(
+        (e) => {
+          console.error(`error while updating `);
+          console.error(e);
+        }
+      );
     }
   }, [roomId, userId, type]);
 

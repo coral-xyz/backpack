@@ -30,6 +30,13 @@ export interface MessageWithMetadata extends Message {
   parent_message_author_uuid?: string;
 }
 
+export interface MessageUpdates {
+  type: string;
+  room: string;
+  id: number;
+  client_generated_uuid: string;
+}
+
 export interface EnrichedMessage extends MessageWithMetadata {
   direction: "send" | "recv";
   received?: boolean;
