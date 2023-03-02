@@ -231,6 +231,11 @@ function MembersList({
         <LocalImage
           key={idx}
           src={member.image}
+          loadingStyles={{
+            height: 30,
+            width: 30,
+            borderRadius: "50%",
+          }}
           style={{
             border: `solid 2px ${theme.custom.colors.nav}`,
             borderRadius: "50%",
