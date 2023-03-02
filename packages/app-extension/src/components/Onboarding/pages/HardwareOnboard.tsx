@@ -96,21 +96,21 @@ export function useHardwareOnboardSteps({
     />,
     ...(hardwareType === HardwareType.Ledger
       ? [
-          <ConnectHardwareSearching
-            blockchain={blockchain}
-            onNext={(transport) => {
+        <ConnectHardwareSearching
+          blockchain={blockchain}
+          onNext={(transport) => {
               setTransport(transport);
               nextStep();
             }}
-            isConnectFailure={!!transportError}
+          isConnectFailure={!!transportError}
           />,
         ]
       : [
-          <ConnectHardwareKeystoneTutorial onNext={nextStep} />,
-          <ConnectHardwareKeystone
-            containerRef={containerRef}
-            blockchain={blockchain}
-            onNext={(ur: UR) => {
+        <ConnectHardwareKeystoneTutorial onNext={nextStep} />,
+        <ConnectHardwareKeystone
+          containerRef={containerRef}
+          blockchain={blockchain}
+          onNext={(ur: UR) => {
               setUR(ur);
               nextStep();
             }}
@@ -198,19 +198,19 @@ export function useHardwareOnboardSteps({
     ...(walletDescriptor
       ? [
           // Sign the found wallet descriptor for API submit
-          <SignMessage
-            containerRef={containerRef}
-            blockchain={blockchain}
-            walletDescriptor={walletDescriptor}
-            message={
+        <SignMessage
+          containerRef={containerRef}
+          blockchain={blockchain}
+          walletDescriptor={walletDescriptor}
+          message={
               typeof signMessage === "string"
                 ? signMessage
                 : signMessage(walletDescriptor.publicKey)
             }
-            text={signText}
-            ur={ur}
-            isInDrawer={isInDrawer}
-            onNext={(signature: string) => {
+          text={signText}
+          ur={ur}
+          isInDrawer={isInDrawer}
+          onNext={(signature: string) => {
               onComplete(
                 {
                   ...walletDescriptor,
@@ -223,7 +223,7 @@ export function useHardwareOnboardSteps({
                 nextStep();
               }
             }}
-            onError={() => {
+          onError={() => {
               prevStep();
             }}
           />,

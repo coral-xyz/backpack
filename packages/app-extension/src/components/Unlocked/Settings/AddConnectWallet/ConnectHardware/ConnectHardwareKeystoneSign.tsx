@@ -1,5 +1,5 @@
 import type { MutableRefObject } from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { SolanaKeystoneKeyring } from "@coral-xyz/blockchain-solana";
 import type { Blockchain, UR, WalletDescriptor } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -38,22 +38,20 @@ export function ConnectHardwareKeystoneSign({
   onError: () => void;
 }) {
   const [msgPlayUR, setMsgPlayUR] = useState<UR>();
-  const [xfp, setXFP] = useState<string>("");
   const [display, setDisplay] = useState(DisplayType.qrcode);
   const [isScanError, setIsScanError] = useState(false);
 
-  let readQRResolve: (ur: UR, xfp: string) => void;
+  const readQRResolve = useRef<(ur: UR) => void>();
 
   const signMsg = async () => {
     const keyring = await SolanaKeystoneKeyring.fromUR(ur);
-    setXFP(keyring.getXFP());
     keyring.onPlay(async (e) => {
       setMsgPlayUR(e);
     });
     keyring.onRead(
       () =>
         new Promise((resolve) => {
-          readQRResolve = resolve;
+          readQRResolve.current = resolve;
         })
     );
     const sig = await keyring.signMessage(
@@ -64,14 +62,15 @@ export function ConnectHardwareKeystoneSign({
   };
 
   const handleScan = useCallback((ur: UR) => {
-    readQRResolve(ur, xfp);
+    readQRResolve.current && readQRResolve.current(ur);
   }, []);
 
   useEffect(() => {
-    signMsg().catch((err) => {
-      console.error(err);
-      setIsScanError(true);
-    });
+    ur &&
+      signMsg().catch((err) => {
+        console.error(err);
+        setIsScanError(true);
+      });
   }, [ur]);
 
   return {

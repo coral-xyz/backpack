@@ -10,6 +10,7 @@ import type { InteractionProvider as KeystoneInteractionProvider } from "@keysto
 export class InteractionProvider implements KeystoneInteractionProvider {
   private static instance;
   private windowId: number | undefined;
+  private onReadCallCustom: () => Promise<UR>;
 
   constructor() {
     if (InteractionProvider.instance) {
@@ -37,7 +38,7 @@ export class InteractionProvider implements KeystoneInteractionProvider {
     this.onPlayCall = fn;
   }
 
-  private onReadCall(): Promise<UR> {
+  private onReadCallDefault(): Promise<UR> {
     return new Promise((resolve, reject) => {
       const handler = (e) => {
         if (e.type === "KEYSTONE_SCAN_UR") {
@@ -61,8 +62,14 @@ export class InteractionProvider implements KeystoneInteractionProvider {
     });
   }
 
+  private onReadCall(): Promise<UR> {
+    return this.onReadCallCustom
+      ? this.onReadCallCustom()
+      : this.onReadCallDefault();
+  }
+
   public onRead(fn: () => Promise<UR>) {
-    this.onReadCall = fn;
+    this.onReadCallCustom = fn;
   }
 
   public async requestSignature(signRequest: SolSignRequest) {

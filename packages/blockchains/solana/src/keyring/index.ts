@@ -358,6 +358,8 @@ export class SolanaKeystoneKeyring
   public async keystoneImport(ur: UR, pubKey?: string) {
     this.keyring.getInteraction().onRead(() => ur);
     await this.keyring.readKeyring();
+    // reset onRead
+    this.keyring.getInteraction().onRead();
     if (pubKey) {
       const accounts = this.getCachedAccounts();
       const i = accounts.findIndex((e) => e.publicKey === pubKey);
