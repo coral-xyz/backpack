@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   Blockchain,
   SOL_NATIVE_MINT,
@@ -24,13 +23,16 @@ import {
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandMore, SwapVert } from "@mui/icons-material";
+import Info from "@mui/icons-material/Info";
 import {
   IconButton,
   InputAdornment,
   Skeleton,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { ethers, FixedNumber } from "ethers";
+import { useEffect, useState } from "react";
 
 import { Button as XnftButton } from "../../plugin/Component";
 import { TextField } from "../common";
@@ -47,6 +49,10 @@ import { WalletDrawerButton } from "../common/WalletList";
 const { Zero } = ethers.constants;
 
 const useStyles = styles((theme) => ({
+  tooltipIcon: {
+    color: theme.custom.colors.secondary,
+    height: 14,
+  },
   container: {
     display: "flex",
     flexDirection: "column",
@@ -190,6 +196,8 @@ const useStyles = styles((theme) => ({
     lineHeight: "20px",
     fontSize: "14px",
     fontWeight: 500,
+    display: "flex",
+    alignItems: "center",
   },
   swapInfoTitleRight: {
     color: theme.custom.colors.fontColor,
@@ -659,7 +667,6 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   }
 
   const decimalDifference = fromToken.decimals - toToken.decimals;
-  const toAmountWithFees = toAmount.sub(swapFee);
 
   // Scale a FixedNumber up or down by a number of decimals
   const scale = (x: FixedNumber, decimalDifference: number) => {
@@ -674,9 +681,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   const rate = fromAmount.gt(Zero)
     ? ethers.utils.commify(
         scale(
-          FixedNumber.from(toAmountWithFees).divUnsafe(
-            FixedNumber.from(fromAmount)
-          ),
+          FixedNumber.from(toAmount).divUnsafe(FixedNumber.from(fromAmount)),
           decimalDifference
         ).toString()
       )
@@ -702,6 +707,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
         networkFee: transactionFee
           ? `${ethers.utils.formatUnits(transactionFee, 9)} SOL`
           : "-",
+        swapFee,
       }}
     />
   );
@@ -713,37 +719,58 @@ function SwapInfoRows({
   networkFee,
   priceImpact,
   compact,
+  swapFee,
 }: {
   youPay: any;
   rate: any;
   priceImpact: any;
   networkFee: any;
+  swapFee?: any;
   compact?: boolean;
 }) {
   const classes = useStyles();
   const wallet = useActiveWallet();
-  const rows = [];
-  rows.push([
-    "Wallet",
-    <WalletDrawerButton
-      key="wallet"
-      wallet={wallet}
-      style={{ height: "20px" }}
-    />,
-  ]);
+
+  const rows: Array<{
+    label: string;
+    value: string | React.ReactElement;
+    tooltip?: string;
+  }> = [
+    {
+      label: "Wallet",
+      value: <WalletDrawerButton wallet={wallet} style={{ height: "20px" }} />,
+    },
+  ];
+
   if (!compact) {
-    rows.push(["You Pay", youPay]);
+    rows.push({ label: "You Pay", value: youPay });
   }
-  rows.push(["Rate", rate]);
-  rows.push(["Network Fee", networkFee]);
-  rows.push(["Price Impact", priceImpact]);
+
+  rows.push({ label: "Rate", value: rate });
+  rows.push({
+    label: "Network Fee",
+    value: networkFee,
+    tooltip: swapFee?.pct
+      ? `Quote includes a ${swapFee?.pct}% Backpack fee`
+      : undefined,
+  });
+  rows.push({ label: "Price Impact", value: priceImpact });
 
   return (
     <>
-      {rows.map((r: any) => (
-        <div className={classes.swapInfoRow} key={r[0]}>
-          <Typography className={classes.swapInfoTitleLeft}>{r[0]}</Typography>
-          <Typography className={classes.swapInfoTitleRight}>{r[1]}</Typography>
+      {rows.map(({ label, value, tooltip }) => (
+        <div className={classes.swapInfoRow} key={label}>
+          <Typography className={classes.swapInfoTitleLeft}>
+            {label}
+            {tooltip ? (
+              <Tooltip title={tooltip}>
+                <Info className={classes.tooltipIcon} />
+              </Tooltip>
+            ) : null}
+          </Typography>
+          <Typography className={classes.swapInfoTitleRight}>
+            {value}
+          </Typography>
         </div>
       ))}
     </>
