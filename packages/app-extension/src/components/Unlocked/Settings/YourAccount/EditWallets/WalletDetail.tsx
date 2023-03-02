@@ -75,7 +75,11 @@ export const WalletDetail: React.FC<{
   // for recovery
   const isLastRecoverable =
     Object.values(publicKeyData)
-      .map((keyring) => [...keyring.hdPublicKeys, ...keyring.ledgerPublicKeys])
+      .map((keyring) => [
+        ...keyring.hdPublicKeys,
+        ...keyring.ledgerPublicKeys,
+        ...keyring.keystonePublicKeys,
+      ])
       .flat()
       .filter((n) => n.publicKey !== publicKey).length === 0;
 

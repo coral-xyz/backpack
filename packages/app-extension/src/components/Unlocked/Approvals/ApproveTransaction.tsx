@@ -208,7 +208,9 @@ export function ApproveAllTransactions({
 }) {
   const classes = useStyles();
   const _isKeyCold = useRecoilValue(isKeyCold(wallet));
-  const { keystoneSign, openKeystone } = useKeystoneSign();
+  const { keystoneSign, openKeystone } = useKeystoneSign({
+    txCount: txs.length,
+  });
 
   const onConfirm = async () => {
     onCompletion(true);

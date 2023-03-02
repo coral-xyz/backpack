@@ -77,6 +77,10 @@ export class InteractionProvider implements KeystoneInteractionProvider {
 
   public async readCryptoMultiAccounts() {
     const result = await this.onReadCall();
-    return CryptoMultiAccounts.fromCBOR(Buffer.from(result.cbor, "hex"));
+    const accounts = CryptoMultiAccounts.fromCBOR(
+      Buffer.from(result.cbor, "hex")
+    );
+    accounts.getDevice = () => "Backpack Extension";
+    return accounts;
   }
 }

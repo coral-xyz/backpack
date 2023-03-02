@@ -4473,10 +4473,10 @@
     hdkey "^2.0.1"
     uuid "^8.3.2"
 
-"@keystonehq/bc-ur-registry-sol@^0.5.1", "@keystonehq/bc-ur-registry-sol@^0.5.6":
-  version "0.5.6"
-  resolved "https://registry.yarnpkg.com/@keystonehq/bc-ur-registry-sol/-/bc-ur-registry-sol-0.5.6.tgz#50a257dee83ac1e633590d51eb94d2d7bb690221"
-  integrity sha512-ZDIjoa1mFSdISBTUh2/NwLtO10VcErhUy+cqXGGAdonbFsysILFojz5e5UpTyGUe82bODpnWj3NbSkuCjBsiYQ==
+"@keystonehq/bc-ur-registry-sol@^0.6.2":
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/@keystonehq/bc-ur-registry-sol/-/bc-ur-registry-sol-0.6.2.tgz#deb01321b79feca343251338730444d282b6d979"
+  integrity sha512-iI+OvugXchZ1D1FXuagqd5MvPhgV/9QdojA+aTKzE9GYwdAkhRqaqC+ORH58mw32dZAtRttXwH0tJsBAZfQRKw==
   dependencies:
     "@keystonehq/bc-ur-registry" "0.5.4"
     bs58check "^2.1.2"
@@ -4500,10 +4500,10 @@
     base58check "^2.0.0"
     tslib "^2.3.0"
 
-"@keystonehq/sdk@^0.15.7":
-  version "0.15.7"
-  resolved "https://registry.yarnpkg.com/@keystonehq/sdk/-/sdk-0.15.7.tgz#bf33bad9bb6b808cb4297120b6e6d6bd177ad0b6"
-  integrity sha512-jy3DBFaNOgbjAyVG08foM+Si7xItYkLtCi51L1iOyq95IrfhmyxpUWfjFW5K+YznfOT21TwYcJ/uktli6jqOZg==
+"@keystonehq/sdk@^0.16.2":
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/@keystonehq/sdk/-/sdk-0.16.2.tgz#c8d72ff054e728bfc77a3f5800002be86c0af71a"
+  integrity sha512-zlorFUVoOib47oczqy5Kl9rdc0uf198Iaz3ttlI+cy3WWwMmmIe4D4Ub+WXvL0tPRyRatN9wERYzWzWAjpHZeQ==
   dependencies:
     "@ngraveio/bc-ur" "^1.0.0"
     qrcode.react "^1.0.1"
@@ -4511,14 +4511,14 @@
     react-qr-reader "^2.2.1"
     rxjs "^6.6.3"
 
-"@keystonehq/sol-keyring@^0.5.2":
-  version "0.5.7"
-  resolved "https://registry.yarnpkg.com/@keystonehq/sol-keyring/-/sol-keyring-0.5.7.tgz#baee973c059429d111085f48e3797aadd5e17dbf"
-  integrity sha512-brFfAR0qBdZ/xYlzD5a/BPsXYp0VU53yznxjhpqriE75ab/tVg0XUkYhc6JH0hk0vNdLjPjlKBFCx02e1hlGQQ==
+"@keystonehq/sol-keyring@^0.16.2":
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/@keystonehq/sol-keyring/-/sol-keyring-0.16.2.tgz#de3b3f2559290ac4dd151bf7aa0d3c51880a852e"
+  integrity sha512-GyZUL6/5ljsPKpJc9P+MOh7LKHt1CdUdZzHHa/SUjyTe8Vfl5bryEisXgE7tbuf6WkRaJXorgnJN2bd9LqH4Sg==
   dependencies:
     "@keystonehq/bc-ur-registry" "0.5.4"
-    "@keystonehq/bc-ur-registry-sol" "^0.5.6"
-    "@keystonehq/sdk" "^0.15.7"
+    "@keystonehq/bc-ur-registry-sol" "^0.6.2"
+    "@keystonehq/sdk" "^0.16.2"
     "@solana/web3.js" "^1.36.0"
     bs58 "^5.0.0"
     uuid "^8.3.2"

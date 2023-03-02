@@ -71,7 +71,7 @@ function KeystoneBase({
               boxSizing: "content-box",
               overflow: "hidden",
               position: "relative",
-              margin: `${cardSize < 200 ? 12 : 24}px auto`,
+              margin: `${cardSize < 200 ? 12 : 20}px auto`,
             }}
           >
             {card}
@@ -79,7 +79,7 @@ function KeystoneBase({
           {help}
         </Box>
       </Box>
-      {hasFooter && <Box py={2}>{footer}</Box>}
+      {hasFooter ? <Box py={2}>{footer}</Box> : null}
     </Box>
   );
 }
@@ -167,8 +167,9 @@ export function KeystoneScanner({
             textAlign="center"
             mt={3}
           >
-            {isPermissionError === true &&
-              "Please enable your camera permission via [Settings]."}
+            {isPermissionError === true
+              ? "Please enable your camera permission via [Settings]."
+              : null}
           </Box>
           {help}
           <KeystoneScanError
@@ -281,8 +282,8 @@ export function KeystonePlayer({
     <KeystoneBase
       header={header}
       card={
-        ur && (
-          <Box p={"5px"} bgcolor="#fff">
+        ur ? (
+          <Box p="5px" bgcolor="#fff">
             <AnimatedQRCode
               type={ur.type}
               cbor={ur.cbor}
@@ -291,7 +292,7 @@ export function KeystonePlayer({
               }}
             />
           </Box>
-        )
+        ) : null
       }
       cardSize={size}
       help={

@@ -26,7 +26,7 @@ import {
   LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
   nextIndicesFromPaths,
 } from "@coral-xyz/common";
-import { Keypair, Message,PublicKey, Transaction } from "@solana/web3.js";
+import { Keypair, Message, PublicKey, Transaction } from "@solana/web3.js";
 import { mnemonicToSeedSync, validateMnemonic } from "bip39";
 import { ethers } from "ethers";
 import nacl from "tweetnacl";
@@ -381,7 +381,7 @@ export class SolanaKeystoneKeyring
           index: -1,
           pubKey: e.publicKey,
         })),
-      device: "Backpack",
+      device: "Backpack Extension",
     });
     this.setPublicKeys(accounts);
   }

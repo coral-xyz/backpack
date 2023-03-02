@@ -3,18 +3,22 @@ import type { UR } from "@coral-xyz/common";
 import { BrowserRuntimeCommon } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { URType } from "@keystonehq/animated-qr";
-import { Box, Link, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 import { KeystoneWithWordsIcon } from "../components/common/Icon";
 import { KeystonePlayer, KeystoneScanner } from "../components/common/Keystone";
 
 function KeystonePlay({
   ur,
-  onNext,
   isInDrawer,
+  txCount,
+  txIndex,
+  onNext,
 }: {
   ur: UR;
   isInDrawer?: boolean;
+  txCount?: number;
+  txIndex?: number;
   onNext: () => void;
 }) {
   const theme = useCustomTheme();
@@ -24,34 +28,18 @@ function KeystonePlay({
       header={
         <CommonHeader
           text="Scan the QR code via your Keystone Device."
-          hasTutorial={isInDrawer}
+          txCount={txCount}
+          txIndex={txIndex}
         />
       }
       help={
-        <>
-          <Box>
-            Click on the '
-            <span style={{ color: theme.custom.colors.fontColor }}>
-              Get Signature
-            </span>
-            ' button after signing the transaction with your Keystone device.
-          </Box>
-          {!isInDrawer ? (
-            <Box mt={2}>
-              <Link
-                href="https://keyst.one/t/backpack"
-                target="_blank"
-                sx={{
-                  color: theme.custom.colors.fontColor3,
-                  fontSize: "14px",
-                  lineHeight: "20px",
-                }}
-              >
-                Tutorial
-              </Link>
-            </Box>
-          ) : null}
-        </>
+        <Box pb="4px">
+          Click on the '
+          <span style={{ color: theme.custom.colors.fontColor }}>
+            Get Signature
+          </span>
+          ' button after signing the transaction with your Keystone device.
+        </Box>
       }
       ur={ur}
       size={isInDrawer ? 220 : 260}
@@ -62,15 +50,18 @@ function KeystonePlay({
 
 function KeystoneScan({
   isInDrawer,
+  txCount,
+  txIndex,
   onNext,
   onPrev,
 }: {
   isInDrawer?: boolean;
+  txCount?: number;
+  txIndex?: number;
   onNext: () => void;
   onPrev: () => void;
 }) {
   const containerRef = useRef(document.body);
-  const theme = useCustomTheme();
 
   const onScan = (ur: UR) => {
     BrowserRuntimeCommon.sendMessageToBackground({
@@ -88,25 +79,9 @@ function KeystoneScan({
       header={
         <CommonHeader
           text="Scan the QR code displayed on your Keystone Device."
-          hasTutorial={isInDrawer}
+          txCount={txCount}
+          txIndex={txIndex}
         />
-      }
-      help={
-        !isInDrawer ? (
-          <Box mt={2} textAlign="center">
-            <Link
-              href="https://keyst.one/t/backpack"
-              target="_blank"
-              sx={{
-                color: theme.custom.colors.fontColor3,
-                fontSize: "14px",
-                lineHeight: "20px",
-              }}
-            >
-              Tutorial
-            </Link>
-          </Box>
-        ) : null
       }
       urTypes={[URType.SOL_SIGNATURE]}
       size={isInDrawer ? 220 : 260}
@@ -118,10 +93,12 @@ function KeystoneScan({
 
 function CommonHeader({
   text,
-  hasTutorial,
+  txCount,
+  txIndex,
 }: {
   text: string;
-  hasTutorial?: boolean;
+  txCount?: number;
+  txIndex?: number;
 }) {
   const theme = useCustomTheme();
 
@@ -143,22 +120,6 @@ function CommonHeader({
         >
           Request Signature
         </Typography>
-        {hasTutorial ? (
-          <Link
-            href="https://keyst.one/t/backpack"
-            target="_blank"
-            sx={{
-              position: "absolute",
-              right: 0,
-              top: 0,
-              color: theme.custom.colors.fontColor3,
-              fontSize: "14px",
-              lineHeight: "24px",
-            }}
-          >
-            Tutorial
-          </Link>
-        ) : null}
       </Box>
       <Box py={2}>
         <KeystoneWithWordsIcon />
@@ -172,14 +133,40 @@ function CommonHeader({
       >
         {text}
       </Box>
+      {txCount && txCount > 1 ? (
+        <Box
+          sx={{
+            color: theme.custom.colors.fontColor,
+            marginTop: "20px",
+          }}
+        >
+          <Typography component="span">[</Typography>
+          <Typography
+            component="span"
+            sx={{
+              color:
+                txIndex === txCount
+                  ? "inherit"
+                  : theme.custom.colors.fontColor3,
+            }}
+          >
+            &nbsp;{txIndex}/{txCount}&nbsp;
+          </Typography>
+          <Typography component="span">]</Typography>
+        </Box>
+      ) : null}
     </Box>
   );
 }
 
-export function useKeystoneSign(props?: { isInDrawer?: boolean }) {
+export function useKeystoneSign(props?: {
+  isInDrawer?: boolean;
+  txCount?: number;
+}) {
   const [type, setType] = useState<"play" | "scan">();
   const [ur, setUR] = useState();
   const [open, setOpen] = useState<boolean>();
+  const [txIndex, setTxIndex] = useState(1);
 
   useEffect(() => {
     const handler = (msg: any, sender: any, sendResponse: (e: any) => void) => {
@@ -208,6 +195,14 @@ export function useKeystoneSign(props?: { isInDrawer?: boolean }) {
     setType("play");
     setUR(undefined);
     setOpen(false);
+    setTxIndex(1);
+  };
+
+  const handleScanDone = () => {
+    setType("play");
+    setUR(undefined);
+    setOpen(false);
+    setTxIndex(txIndex + 1);
   };
 
   return {
@@ -219,13 +214,17 @@ export function useKeystoneSign(props?: { isInDrawer?: boolean }) {
             ur={ur!}
             onNext={() => setType("scan")}
             isInDrawer={props?.isInDrawer}
+            txCount={props?.txCount}
+            txIndex={txIndex}
           />
         ),
         scan: (
           <KeystoneScan
             onPrev={() => setType("play")}
-            onNext={() => setOpen(false)}
+            onNext={handleScanDone}
             isInDrawer={props?.isInDrawer}
+            txCount={props?.txCount}
+            txIndex={txIndex}
           />
         ),
       }[type],

@@ -115,6 +115,7 @@ export function ApproveTransactionRequest() {
 
   const { keystoneSign, resetKeystoneSign, openKeystone } = useKeystoneSign({
     isInDrawer: true,
+    txCount: request?.data instanceof Array ? request?.data.length : 1,
   });
 
   useEffect(() => {
