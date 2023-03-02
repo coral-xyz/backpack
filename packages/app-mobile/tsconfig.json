@@ -1,7 +1,11 @@
 {
   "extends": "expo/tsconfig.base",
   "include": ["src"],
-  "exclude": ["**/node_modules", "**/.*/"],
+  "exclude": [
+    "**/node_modules",
+    "**/.*/",
+    "../../node_modules/@coral-xyz/app-extension"
+  ],
   "compilerOptions": {
     "strict": true,
     "baseUrl": ".",

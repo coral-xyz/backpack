@@ -1,5 +1,6 @@
 import type { Dispatch, MutableRefObject, SetStateAction } from "react";
 import { useRef, useState } from "react";
+import { Text, View } from "react-native";
 import {
   BACKPACK_LINK,
   DISCORD_INVITE_LINK,
@@ -16,6 +17,8 @@ import {
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, Lock, Menu, Twitter } from "@mui/icons-material";
 import { Box, IconButton, ListItemText, Toolbar } from "@mui/material";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
 import { WithContaineredDrawer } from "../common/Layout/Drawer";
 import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
@@ -23,6 +26,20 @@ import WaitingRoom from "../common/WaitingRoom";
 
 import { OnboardAccount } from "./pages/OnboardAccount";
 import { RecoverAccount } from "./pages/RecoverAccount";
+
+function TestScreen() {
+  return <View style={{ flex: 1, backgroundColor: "red" }} />;
+}
+
+const Stack = createStackNavigator();
+export function OnboardingNavigator() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Screen1" component={TestScreen} />
+      <Stack.Screen name="Screen2" component={TestScreen} />
+    </Stack.Navigator>
+  );
+}
 
 export const Onboarding = ({
   isAddingAccount,
@@ -63,24 +80,29 @@ export const Onboarding = ({
   };
 
   return (
-    <OptionsContainer innerRef={containerRef}>
-      {action === "onboard" ? (
-        <OnboardingProvider>
-          <OnboardAccount
-            onRecover={() => setAction("recover")}
-            onWaiting={() => setAction("waiting")}
-            {...defaultProps}
-          />
-        </OnboardingProvider>
-      ) : null}
-      {action === "waiting" ? <WaitingRoom /> : null}
-      {action === "recover" ? <OnboardingProvider>
-        <RecoverAccount
-          onClose={() => setAction("onboard")}
-          {...defaultProps}
-          />
-      </OnboardingProvider> : null}
-    </OptionsContainer>
+    <NavigationContainer>
+      <OnboardingNavigator />
+      <OptionsContainer innerRef={containerRef}>
+        {action === "onboard" ? (
+          <OnboardingProvider>
+            <OnboardAccount
+              onRecover={() => setAction("recover")}
+              onWaiting={() => setAction("waiting")}
+              {...defaultProps}
+            />
+          </OnboardingProvider>
+        ) : null}
+        {action === "waiting" ? <WaitingRoom /> : null}
+        {action === "recover" ? (
+          <OnboardingProvider>
+            <RecoverAccount
+              onClose={() => setAction("onboard")}
+              {...defaultProps}
+            />
+          </OnboardingProvider>
+        ) : null}
+      </OptionsContainer>
+    </NavigationContainer>
   );
 };
 

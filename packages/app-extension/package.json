@@ -4,6 +4,10 @@
   "description": "A next level crypto wallet for Solana and Ethereum",
   "private": true,
   "dependencies": {
+    "@react-navigation/bottom-tabs": "^6.4.0",
+    "@react-navigation/native": "^6.0.11",
+    "@react-navigation/native-stack": "^6.7.0",
+    "@react-navigation/stack": "^6.3.2",
     "@bonfida/spl-name-service": "^0.1.51",
     "@cardinal/token-manager": "^1.7.9",
     "@coral-xyz/background": "*",

@@ -12,6 +12,28 @@ const fs = require("fs");
 const EXTENSION_NAME =
   process.env.NODE_ENV === "development" ? "(DEV) Backpack" : "Backpack";
 
+// Inline resources as Base64 when there is less reason to parallelize their download. The
+// heuristic we use is whether the resource would fit within a TCP/IP packet that we would
+// send to request the resource.
+//
+// An Ethernet MTU is usually 1500. IP headers are 20 (v4) or 40 (v6) bytes and TCP
+// headers are 40 bytes. HTTP response headers vary and are around 400 bytes. This leaves
+// about 1000 bytes for content to fit in a packet.
+const imageInlineSizeLimit = parseInt(
+  process.env.IMAGE_INLINE_SIZE_LIMIT || "1000",
+  10
+);
+
+const imageLoaderRule = {
+  test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.svg$/],
+  type: "asset",
+  parser: {
+    dataUrlCondition: {
+      maxSize: imageInlineSizeLimit,
+    },
+  },
+};
+
 const fileExtensions = [
   "eot",
   "gif",
@@ -124,6 +146,7 @@ const options = {
           name: "assets/[name].[ext]",
         },
       },
+      imageLoaderRule,
       {
         test: /\.[jt]sx?$/,
         exclude: /node_modules/,
