@@ -13,6 +13,7 @@ import type {
   MessageMetadata,
   SubscriptionType,
 } from "@coral-xyz/common";
+import { DELETE_MESSAGE } from "@coral-xyz/common";
 
 export const postChat = (
   room: string,
@@ -179,7 +180,7 @@ export const getChatFromClientGeneratedUuid = async (
     : null;
 };
 
-export const deleteChat = async (clientGeneratedUuid) => {
+export const deleteChat = async (clientGeneratedUuid, room) => {
   await chain("mutation")({
     update_chats: [
       {
@@ -187,6 +188,18 @@ export const deleteChat = async (clientGeneratedUuid) => {
         where: { client_generated_uuid: { _eq: clientGeneratedUuid } },
       },
       { affected_rows: true },
+    ],
+    insert_chat_update_history_one: [
+      {
+        object: {
+          type: DELETE_MESSAGE,
+          client_generated_uuid: clientGeneratedUuid,
+          room,
+        },
+      },
+      {
+        id: true,
+      },
     ],
   });
 };

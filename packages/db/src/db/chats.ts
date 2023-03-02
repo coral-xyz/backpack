@@ -1,6 +1,27 @@
-import type { CollectionChatData, EnrichedMessage } from "@coral-xyz/common";
+import type {
+  CollectionChatData,
+  EnrichedMessage,
+  MessageUpdates,
+} from "@coral-xyz/common";
+import { DELETE_MESSAGE } from "@coral-xyz/common";
 
 import { getDb } from "./index";
+
+export const latestReceivedUpdate = async (
+  uuid: string,
+  roomId: string,
+  type: string
+) => {
+  return (await getDb(uuid).updates.where({ room: roomId }))[0];
+};
+
+export const resetUpdateTimestamp = async (uuid: string, roomId: string) => {
+  await getDb(uuid).updates.put({
+    last_local_reset_time: new Date().getTime(),
+    last_received_update_id: 0, // doesn't matter since we've updated the time to be the latest
+    room: roomId,
+  });
+};
 
 export const latestReceivedMessage = async (
   uuid: string,
@@ -27,6 +48,18 @@ export const oldestReceivedMessage = async (
   )[0];
 };
 
+export const processMessageUpdates = async (
+  uuid: string,
+  updates: MessageUpdates[]
+): Promise<EnrichedMessage[]> => {
+  const result = await Promise.all(
+    updates
+      .filter((x) => x.type === DELETE_MESSAGE)
+      .map((update) => deleteChat(uuid, update.client_generated_uuid))
+  );
+  return result.filter((x) => x !== null);
+};
+
 export const deleteChat = async (uuid: string, clientGeneratedUuid: string) => {
   const db = getDb(uuid);
   if (await db.messages.get(clientGeneratedUuid)) {
@@ -35,7 +68,10 @@ export const deleteChat = async (uuid: string, clientGeneratedUuid: string) => {
       message: "",
       message_metadata: {},
     });
-    return db.messages.get(clientGeneratedUuid);
+    return {
+      ...db.messages.get(clientGeneratedUuid),
+      deleted: true,
+    } as EnrichedMessage;
   }
   return null;
 };

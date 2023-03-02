@@ -1,10 +1,11 @@
-import type {
-  MessageWithMetadata,
-  SubscriptionType} from "@coral-xyz/common";
+import type { MessageWithMetadata, SubscriptionType } from "@coral-xyz/common";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
-  BACKEND_API_URL
-} from "@coral-xyz/common";
-import { bulkAddChats, clearChats, latestReceivedMessage } from "@coral-xyz/db";
+  bulkAddChats,
+  clearChats,
+  latestReceivedMessage,
+  resetUpdateTimestamp,
+} from "@coral-xyz/db";
 
 import { SignalingManager } from "./SignalingManager";
 
@@ -30,6 +31,11 @@ export const refreshChatsFor = async (
 
   const json = await response.json();
   const chats: MessageWithMetadata[] = json?.chats || [];
+
+  if (chats.length >= 40) {
+    // we received a fresh set of messages and we reset the message state locally
+    await resetUpdateTimestamp();
+  }
 
   if (chats.length >= 40) {
     SignalingManager.getInstance().onUpdateRecoil({

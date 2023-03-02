@@ -1,8 +1,10 @@
 import {
- deleteChat,  enrichMessages,
+  deleteChat,
+  enrichMessages,
   postChat,
   updateLatestMessage,
-  updateLatestMessageGroup } from "@coral-xyz/backend-common";
+  updateLatestMessageGroup,
+} from "@coral-xyz/backend-common";
 import type {
   MessageKind,
   MessageMetadata,
@@ -122,7 +124,7 @@ export class RedisSubscriptionManager {
     type: SubscriptionType,
     clientGeneratedUuid: string
   ) {
-    await deleteChat(clientGeneratedUuid);
+    await deleteChat(clientGeneratedUuid, room);
     const roomValidation =
       this.postSubscriptions.get(`${id}-${type}-${room}`) ?? null;
 

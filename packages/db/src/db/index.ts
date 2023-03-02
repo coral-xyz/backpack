@@ -14,6 +14,12 @@ export interface Friend {
   age: number;
 }
 
+interface LastReceivedUpdateTable {
+  last_received_update_id: number;
+  last_local_reset_time: number;
+  room: string;
+}
+
 export class BackpackDb extends Dexie {
   // 'friends' is added by dexie when declaring the stores()
   // We just tell the typing system this is the case
@@ -21,6 +27,7 @@ export class BackpackDb extends Dexie {
   messages!: Table<EnrichedMessage>;
   users!: Table<UserMetadata>;
   collections!: Table<CollectionChatData>;
+  updates!: Table<LastReceivedUpdateTable>;
 
   constructor(uuid) {
     super(`DB_${uuid}`);
@@ -29,6 +36,7 @@ export class BackpackDb extends Dexie {
       messages: "client_generated_uuid, room, type, from_http_server",
       users: "uuid",
       collections: "collectionId",
+      lastReceivedUpdated: "room",
     });
   }
 }

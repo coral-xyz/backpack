@@ -4,5 +4,6 @@ export * from "./getSanitizedTitle";
 export * from "./refreshChatsFor";
 export * from "./refreshGroupsAndFriendships";
 export * from "./refreshIndividualChatsFor";
+export * from "./refreshUpdatesFor";
 export * from "./Signaling";
 export * from "./SignalingManager";
