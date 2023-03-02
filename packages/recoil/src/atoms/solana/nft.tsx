@@ -118,7 +118,7 @@ export const solanaNftById = equalSelectorFamily<
         mint: nftTokenMetadata?.account.mint,
         metadataCollectionId: uriData?.metadata?.collection?.key.toString(),
         name:
-          nftTokenMetadata?.account.data.name ??
+          nftTokenMetadata?.account.data.name.replace(/\0/g, "") ??
           (uriData ? uriData.tokenMetaUriData.name : "Unknown"),
         description: uriData ? uriData.tokenMetaUriData.description : "",
         externalUrl: uriData
