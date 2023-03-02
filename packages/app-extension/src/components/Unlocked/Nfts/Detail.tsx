@@ -8,7 +8,6 @@ import {
   explorerNftUrl,
   getLogger,
   isMadLads,
-  NAV_COMPONENT_MESSAGE_CHAT,
   NAV_COMPONENT_MESSAGE_GROUP_CHAT,
   Solana,
   TAB_MESSAGES,
@@ -17,7 +16,7 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
-import {LocalImageManager, refreshGroups} from "@coral-xyz/db";
+import { LocalImageManager, refreshGroups } from "@coral-xyz/db";
 import {
   NegativeButton,
   PrimaryButton,
@@ -32,7 +31,6 @@ import {
   newAvatarAtom,
   nftById,
   useAnchorContext,
-  useAuthenticatedUser,
   useBackgroundClient,
   useDecodedSearchParams,
   useEthereumCtx,
@@ -173,7 +171,7 @@ export function NftsDetail({
           marginTop: "16px",
         }}
       >
-        {whitelistedChatCollectionId && (
+        {whitelistedChatCollectionId ? (
           <PrimaryButton
             disabled={chatJoined || joiningChat}
             label={
@@ -213,22 +211,25 @@ export function NftsDetail({
               setChatJoined(true);
             }}
           />
-        )}
+        ) : null}
         <SendButton
-          style={
-            whitelistedChatCollectionId
-              ? {
-                  backgroundColor: theme.custom.colors.secondaryButton,
-                  color: theme.custom.colors.secondaryButtonTextColor,
-                }
-              : undefined
-          }
+          invert={whitelistedChatCollectionId !== undefined}
+          // style={
+          //   whitelistedChatCollectionId
+          //     ? {
+          //         backgroundColor: theme.custom.colors.secondaryButton,
+          //         color: theme.custom.colors.secondaryButtonTextColor,
+          //       }
+          //     : undefined
+          // }
           nft={nft}
         />
       </div>
-      {xnft && <ApplicationButton xnft={xnft} mintAddress={nft.mint} />}
+      {xnft ? <ApplicationButton xnft={xnft} mintAddress={nft.mint} /> : null}
       <Description nft={nft} />
-      {nft.attributes && nft.attributes.length > 0 && <Attributes nft={nft} />}
+      {nft.attributes && nft.attributes.length > 0 ? (
+        <Attributes nft={nft} />
+      ) : null}
     </div>
   );
 }
@@ -254,7 +255,7 @@ function Image({ nft }: { nft: any }) {
           minHeight: "343px",
         }}
         src={src}
-        removeOnError={true}
+        removeOnError
       />
     </div>
   );
@@ -381,14 +382,27 @@ function Description({ nft }: { nft: any }) {
   );
 }
 
-function SendButton({ nft, style }: { nft: any; style?: CSSProperties }) {
+function SendButton({
+  invert,
+  nft,
+  style,
+}: {
+  invert: boolean;
+  nft: any;
+  style?: CSSProperties;
+}) {
   const [openDrawer, setOpenDrawer] = useState(false);
   const send = () => {
     setOpenDrawer(true);
   };
   return (
     <>
-      <PrimaryButton style={style} onClick={() => send()} label={"Send"} />
+      <PrimaryButton
+        invert={invert}
+        style={style}
+        onClick={() => send()}
+        label="Send"
+      />
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
@@ -399,7 +413,7 @@ function SendButton({ nft, style }: { nft: any; style?: CSSProperties }) {
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen
-              name={"send"}
+              name="send"
               component={() => <SendScreen nft={nft} />}
             />
           </NavStackEphemeral>
@@ -481,12 +495,12 @@ function SendScreen({ nft }: { nft: any }) {
                 marginRight: "8px",
               }}
               onClick={close}
-              label={"Cancel"}
+              label="Cancel"
             />
             <PrimaryButton
               disabled={!isValidAddress}
               onClick={() => setOpenConfirm(true)}
-              label={"Next"}
+              label="Next"
             />
           </div>
         </div>
@@ -495,7 +509,7 @@ function SendScreen({ nft }: { nft: any }) {
         openDrawer={openConfirm}
         setOpenDrawer={setOpenConfirm}
       >
-        {nft.blockchain === Blockchain.SOLANA && (
+        {nft.blockchain === Blockchain.SOLANA ? (
           <SendSolanaConfirmationCard
             token={{
               address: nft.publicKey,
@@ -507,8 +521,8 @@ function SendScreen({ nft }: { nft: any }) {
             amount={BigNumber.from(1)}
             onComplete={() => setWasSent(true)}
           />
-        )}
-        {nft.blockchain === Blockchain.ETHEREUM && (
+        ) : null}
+        {nft.blockchain === Blockchain.ETHEREUM ? (
           <SendEthereumConfirmationCard
             token={{
               logo: nft.imageUrl,
@@ -520,7 +534,7 @@ function SendScreen({ nft }: { nft: any }) {
             amount={BigNumber.from(1)}
             onComplete={() => setWasSent(true)}
           />
-        )}
+        ) : null}
       </ApproveTransactionDrawer>
     </>
   );
@@ -635,7 +649,9 @@ export function NftOptionsButton() {
   // @ts-ignore
   const isEthereum: boolean = nft && nft.contractAddress;
 
-  const explorer = isEthereum ? useEthereumExplorer() : useSolanaExplorer();
+  const ethExpl = useEthereumExplorer();
+  const solExpl = useSolanaExplorer();
+  const explorer = isEthereum ? ethExpl : solExpl;
 
   const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -807,16 +823,16 @@ function BurnConfirmationCard({
       amount={BigNumber.from(1)}
       token={token}
       signature={signature!}
-      titleOverride={"Burning"}
+      titleOverride="Burning"
     />
   ) : state === "confirmed" ? (
     <Sending
       blockchain={Blockchain.SOLANA}
-      isComplete={true}
+      isComplete
       amount={BigNumber.from(1)}
       token={token}
       signature={signature!}
-      titleOverride={"Burnt"}
+      titleOverride="Burnt"
     />
   ) : (
     <ErrorConfirmation
@@ -879,7 +895,11 @@ function BurnConfirmation({ onConfirm }: { onConfirm: () => void }) {
   );
 }
 
-export async function updateLocalNftPfp(uuid: string, username: string, nft: Nft) {
+export async function updateLocalNftPfp(
+  uuid: string,
+  username: string,
+  nft: Nft
+) {
   //
   // Only show mad lads on the lock screen in full screen view.
   //
@@ -898,9 +918,9 @@ export async function updateLocalNftPfp(uuid: string, username: string, nft: Nft
     lockScreenImageUrl = nft.imageUrl;
   }
   await LocalImageManager.getInstance().storeImageInLocalStorage(
-      lockScreenKeyImage(username),
-      true,
-      lockScreenImageUrl
+    lockScreenKeyImage(username),
+    true,
+    lockScreenImageUrl
   );
 }
 

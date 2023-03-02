@@ -19,7 +19,7 @@ export const CreateOrImportWallet = ({
       }}
     >
       <Box style={{ flex: 1, textAlign: "center", padding: "0 16px" }}>
-        <BackpackHeader disableUsername={true} />
+        <BackpackHeader disableUsername />
       </Box>
       <Box
         style={{

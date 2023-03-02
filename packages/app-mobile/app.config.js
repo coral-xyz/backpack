@@ -17,7 +17,7 @@
 // }
 
 const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
-const packageName = "peterpme.coral.backpack";
+const packageName = "app.backpack.mobile";
 
 export default {
   name: "Backpack",
@@ -70,7 +70,7 @@ export default {
   extra: {
     localWebViewUrl: "http://localhost:9333",
     remoteWebViewUrl:
-      "https://coral-xyz.github.io/backpack/background-scripts/8f1f3d8/service-worker-loader.html",
+      "https://coral-xyz.github.io/backpack/background-scripts/807d4b7/service-worker-loader.html",
     eas: {
       projectId: projectID,
     },

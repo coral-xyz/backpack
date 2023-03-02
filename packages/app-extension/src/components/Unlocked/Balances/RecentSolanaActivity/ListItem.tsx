@@ -285,7 +285,7 @@ function RecentActivityListItemData({
 
   // finish
   if (isNFTTransaction(transaction)) {
-    return <div></div>;
+    return <div />;
   }
 
   if (
@@ -341,5 +341,5 @@ function RecentActivityListItemData({
   }
 
   // default
-  return <div></div>;
+  return <div />;
 }

@@ -53,6 +53,10 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appName": "Backpack Crypto Wallet"
+      }
+    }
   }
 }

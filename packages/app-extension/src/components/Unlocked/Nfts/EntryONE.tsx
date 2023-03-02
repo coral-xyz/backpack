@@ -100,7 +100,7 @@ export default function EntryONE() {
     <Card onClick={openXNFT} className={classes.blockchainCard} elevation={0}>
       <Skeleton
         className={`${classes.skeleton}  ${!isLoading ? classes.none : ""}`}
-      ></Skeleton>
+       />
       <div
         className={`${classes.imageBackground} ${
           isLoading ? classes.hidden : ""

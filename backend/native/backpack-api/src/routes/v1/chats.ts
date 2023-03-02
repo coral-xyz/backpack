@@ -1,3 +1,4 @@
+import { enrichMessages } from "@coral-xyz/backend-common";
 import type {
   Message,
   MessageWithMetadata,
@@ -5,13 +6,8 @@ import type {
 } from "@coral-xyz/common";
 import express from "express";
 
-import { enrichMessages } from "@coral-xyz/backend-common";
-
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
-import {
-  getChats,
-  updateSecureTransfer,
-} from "../../db/chats";
+import { getChats, updateSecureTransfer } from "../../db/chats";
 import {
   updateLastReadGroup,
   updateLastReadIndividual,
@@ -35,6 +31,7 @@ router.post(
     // @ts-ignore
     const room: string = req.query.room;
 
+    //TODO: add validateMessageOwnership here
     if (type === "individual") {
       await updateLastReadIndividual(
         user1,

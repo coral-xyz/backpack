@@ -1,10 +1,5 @@
-import type {
-  CustomTheme} from "@coral-xyz/themes";
-import {
-  HOVER_OPACITY,
-  styles,
-  useCustomTheme,
-} from "@coral-xyz/themes";
+import type { CustomTheme } from "@coral-xyz/themes";
+import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Button, Typography } from "@mui/material";
 
 const useStyles = styles((theme: CustomTheme) => ({
@@ -28,16 +23,27 @@ const useStyles = styles((theme: CustomTheme) => ({
       backgroundColor: `${theme.custom.colors.primaryButton} !important,`,
     },
   },
+  secondaryButton: {
+    color: `${theme.custom.colors.secondaryButtonTextColor} !important`,
+    backgroundColor: `${theme.custom.colors.secondaryButton} !important`,
+    "&:hover": {
+      opacity: HOVER_OPACITY,
+      background: `${theme.custom.colors.secondaryButton} !important`,
+      backgroundColor: `${theme.custom.colors.secondaryButton} !important,`,
+    },
+  },
 }));
 
 export function PrimaryButton({
   buttonLabelStyle,
   label,
   className,
+  invert,
   ...buttonProps
 }: {
   buttonLabelStyle?: React.CSSProperties;
   label?: string | React.ReactNode;
+  invert?: boolean;
 } & React.ComponentProps<typeof Button>) {
   const theme = useCustomTheme();
   const classes = useStyles();
@@ -45,7 +51,9 @@ export function PrimaryButton({
     <Button
       disableRipple
       disableElevation
-      className={`${classes.button} ${className ?? classes.primaryButton}`}
+      className={`${classes.button} ${
+        className ?? (invert ? classes.secondaryButton : classes.primaryButton)
+      }`}
       variant="contained"
       {...buttonProps}
       style={{

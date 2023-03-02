@@ -117,7 +117,7 @@ export function RecentActivityButton() {
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen
-              name={"root"}
+              name="root"
               component={(props: any) => <RecentActivity {...props} />}
             />
           </NavStackEphemeral>
@@ -378,10 +378,8 @@ function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
     >
       <EmptyState
         icon={(props: any) => <FormatListBulletedIcon {...props} />}
-        title={"No Recent Activity"}
-        subtitle={
-          "Your transactions and app activity will show up here when you start using Backpack!"
-        }
+        title="No Recent Activity"
+        subtitle="Your transactions and app activity will show up here when you start using Backpack!"
         onClick={() => window.open(XNFT_GG_LINK)}
         contentStyle={{
           color: minimize ? theme.custom.colors.secondary : "inherit",

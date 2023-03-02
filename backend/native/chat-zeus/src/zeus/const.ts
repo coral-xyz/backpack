@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 export const AllTypesProps: Record<string, any> = {
+  Boolean_comparison_exp: {},
   Int_comparison_exp: {},
   String_comparison_exp: {},
   barter_poke_metadata_aggregate_order_by: {
@@ -385,6 +386,7 @@ export const AllTypesProps: Record<string, any> = {
     chat_media_messages: "chat_media_messages_bool_exp",
     client_generated_uuid: "String_comparison_exp",
     created_at: "timestamptz_comparison_exp",
+    deleted: "Boolean_comparison_exp",
     id: "Int_comparison_exp",
     message: "String_comparison_exp",
     message_kind: "String_comparison_exp",
@@ -423,6 +425,7 @@ export const AllTypesProps: Record<string, any> = {
     chat_media_messages_aggregate: "chat_media_messages_aggregate_order_by",
     client_generated_uuid: "order_by",
     created_at: "order_by",
+    deleted: "order_by",
     id: "order_by",
     message: "order_by",
     message_kind: "order_by",
@@ -436,7 +439,9 @@ export const AllTypesProps: Record<string, any> = {
     username: "order_by",
     uuid: "order_by",
   },
+  chats_pk_columns_input: {},
   chats_select_column: "enum" as const,
+  chats_set_input: {},
   chats_stream_cursor_input: {
     initial_value: "chats_stream_cursor_value_input",
     ordering: "cursor_ordering",
@@ -445,6 +450,10 @@ export const AllTypesProps: Record<string, any> = {
     created_at: "timestamptz",
   },
   chats_update_column: "enum" as const,
+  chats_updates: {
+    _set: "chats_set_input",
+    where: "chats_bool_exp",
+  },
   cursor_ordering: "enum" as const,
   mutation_root: {
     delete_room_active_chat_mapping: {
@@ -567,6 +576,17 @@ export const AllTypesProps: Record<string, any> = {
     },
     update_chat_media_messages_many: {
       updates: "chat_media_messages_updates",
+    },
+    update_chats: {
+      _set: "chats_set_input",
+      where: "chats_bool_exp",
+    },
+    update_chats_by_pk: {
+      _set: "chats_set_input",
+      pk_columns: "chats_pk_columns_input",
+    },
+    update_chats_many: {
+      updates: "chats_updates",
     },
     update_nft_sticker_metadata: {
       _inc: "nft_sticker_metadata_inc_input",
@@ -1225,6 +1245,7 @@ export const ReturnTypes: Record<string, any> = {
     chat_media_messages: "chat_media_messages",
     client_generated_uuid: "String",
     created_at: "timestamptz",
+    deleted: "Boolean",
     id: "Int",
     message: "String",
     message_kind: "String",
@@ -1276,6 +1297,9 @@ export const ReturnTypes: Record<string, any> = {
     update_chat_media_messages: "chat_media_messages_mutation_response",
     update_chat_media_messages_by_pk: "chat_media_messages",
     update_chat_media_messages_many: "chat_media_messages_mutation_response",
+    update_chats: "chats_mutation_response",
+    update_chats_by_pk: "chats",
+    update_chats_many: "chats_mutation_response",
     update_nft_sticker_metadata: "nft_sticker_metadata_mutation_response",
     update_nft_sticker_metadata_by_pk: "nft_sticker_metadata",
     update_nft_sticker_metadata_many: "nft_sticker_metadata_mutation_response",

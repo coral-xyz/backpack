@@ -27,6 +27,19 @@ export const oldestReceivedMessage = async (
   )[0];
 };
 
+export const deleteChat = async (uuid: string, clientGeneratedUuid: string) => {
+  const db = getDb(uuid);
+  if (await db.messages.get(clientGeneratedUuid)) {
+    await db.collections.update(clientGeneratedUuid, {
+      deleted: true,
+      message: "",
+      message_metadata: {},
+    });
+    return db.messages.get(clientGeneratedUuid);
+  }
+  return null;
+};
+
 export const bulkAddChats = (uuid: string, chats: EnrichedMessage[]) => {
   return getDb(uuid).messages.bulkPut(chats);
 };

@@ -104,6 +104,18 @@ export const postChat = (
         }
       : {};
 
+  const barterRequestMutation =
+    message_kind === "barter-request"
+      ? {
+          data: [
+            {
+              //@ts-ignore
+              barter_id: messageMetadata?.barter_id || "",
+            },
+          ],
+        }
+      : {};
+
   chain("mutation")({
     insert_chats_one: [
       {
@@ -113,6 +125,7 @@ export const postChat = (
           ...simpleTransferMutation,
           ...barterMessageMutation,
           ...nftStickerMutation,
+          ...barterRequestMutation,
           username: "",
           room,
           message: message,
@@ -134,6 +147,48 @@ export const postChat = (
       console.log(`Error while adding chat msg to DB`);
       console.log(e);
     });
+};
+
+export const getChatFromClientGeneratedUuid = async (
+  clientGeneratedUuid: string
+) => {
+  const response = await chain("query")({
+    chats: [
+      {
+        where: {
+          client_generated_uuid: { _eq: clientGeneratedUuid },
+        },
+      },
+      {
+        id: true,
+        room: true,
+        type: true,
+        client_generated_uuid: true,
+        uuid: true,
+      },
+    ],
+  });
+  return response.chats[0]?.id
+    ? {
+        id: response.chats[0]?.id,
+        room: response.chats[0]?.room,
+        type: response.chats[0]?.type,
+        client_generated_uuid: response.chats[0]?.client_generated_uuid,
+        uuid: response.chats[0]?.uuid,
+      }
+    : null;
+};
+
+export const deleteChat = async (clientGeneratedUuid) => {
+  await chain("mutation")({
+    update_chats: [
+      {
+        _set: { deleted: true },
+        where: { client_generated_uuid: { _eq: clientGeneratedUuid } },
+      },
+      { affected_rows: true },
+    ],
+  });
 };
 
 export const getChatsFromParentGuids = async (

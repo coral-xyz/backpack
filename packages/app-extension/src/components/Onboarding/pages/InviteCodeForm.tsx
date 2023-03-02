@@ -87,7 +87,7 @@ export const InviteCodeForm = ({
           padding: "32px 16px 0",
         }}
       >
-        <BackpackHeader disableUsername={true} />
+        <BackpackHeader disableUsername />
       </Box>
 
       <form
@@ -111,7 +111,7 @@ export const InviteCodeForm = ({
               },
               autoFocus: true,
             }}
-            placeholder={"Invite code"}
+            placeholder="Invite code"
             type="text"
             value={inviteCode}
             setValue={(e: any) => {

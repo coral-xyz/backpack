@@ -59,23 +59,21 @@ export function Nfts() {
     >
       {isEmpty ? (
         <>
-          {isONELive.isLive && <EntryONE />}
+          {isONELive.isLive ? <EntryONE /> : null}
           <EmptyState
             icon={(props: any) => <ImageIcon {...props} />}
-            title={"No NFTs"}
-            subtitle={"Get started with your first NFT"}
-            buttonText={"Browse Magic Eden"}
+            title="No NFTs"
+            subtitle="Get started with your first NFT"
+            buttonText="Browse Magic Eden"
             onClick={() => window.open("https://magiceden.io")}
             verticallyCentered={!isONELive}
             header={
-              !_isAggregateWallets && (
-                <_BalancesTableHead
-                  blockchain={activeWallet.blockchain}
-                  wallet={activeWallet}
-                  showContent={true}
-                  setShowContent={() => {}}
-                />
-              )
+              !_isAggregateWallets ? <_BalancesTableHead
+                blockchain={activeWallet.blockchain}
+                wallet={activeWallet}
+                showContent
+                setShowContent={() => {}}
+                /> : null
             }
             style={{
               height: !isONELive.isLive ? "100%" : undefined,
