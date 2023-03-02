@@ -77,6 +77,11 @@ export const CustomAutoComplete = () => {
 
   const users = useUsersMetadata({ remoteUserIds: results.map((r) => r.id) });
 
+  // if there are no users to show in mentions
+  if (activeSearch && !loading && shownResults?.length === 0) {
+    return null;
+  }
+
   return (
     <div
       style={{
