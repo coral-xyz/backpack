@@ -1,5 +1,9 @@
 import { Blockchain, XNFT_GG_LINK } from "@coral-xyz/common";
-import { EmptyState, ProxyImage } from "@coral-xyz/react-common";
+import {
+  EmptyState,
+  ProxyImage,
+  useBreakpoints,
+} from "@coral-xyz/react-common";
 import {
   filteredPlugins,
   isAggregateWallets,
@@ -15,7 +19,6 @@ import { Button, Grid, Skeleton, Typography } from "@mui/material";
 import { getSvgPath } from "figma-squircle";
 import { useRecoilValue, waitForAll } from "recoil";
 
-import { useBreakpoints } from "../../common/Layout/hooks";
 import {
   _BalancesTableHead,
   BalancesTableHead,
@@ -98,12 +101,14 @@ function PluginGrid() {
           onClick={() => {}}
           header={
             // Only show the wallet switcher if we are in single wallet mode.
-            !_isAggregateWallets ? <_BalancesTableHead
-              blockchain={wallet.blockchain}
-              wallet={wallet}
-              showContent
-              setShowContent={() => {}}
-              /> : null
+            !_isAggregateWallets ? (
+              <_BalancesTableHead
+                blockchain={wallet.blockchain}
+                wallet={wallet}
+                showContent
+                setShowContent={() => {}}
+              />
+            ) : null
           }
         />
       );
@@ -126,12 +131,14 @@ function PluginGrid() {
         buttonText="Browse xNFTs"
         onClick={() => window.open(XNFT_GG_LINK)}
         header={
-          !_isAggregateWallets ? <_BalancesTableHead
-            blockchain={activeWallet.blockchain}
-            wallet={activeWallet}
-            showContent
-            setShowContent={() => {}}
-            /> : null
+          !_isAggregateWallets ? (
+            <_BalancesTableHead
+              blockchain={activeWallet.blockchain}
+              wallet={activeWallet}
+              showContent
+              setShowContent={() => {}}
+            />
+          ) : null
         }
       />
     );
