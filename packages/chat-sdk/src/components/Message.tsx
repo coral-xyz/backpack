@@ -1094,6 +1094,8 @@ function MessageOptions({
   };
   return (
     <div>
+      {/*
+      //@ts-ignore */}
       <MoreHorizIcon
         onClick={handleClick}
         style={{
