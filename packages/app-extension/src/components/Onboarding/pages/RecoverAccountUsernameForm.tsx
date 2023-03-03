@@ -102,6 +102,7 @@ export const RecoverAccountUsernameForm = ({
           label="Continue"
           type="submit"
           style={{ marginTop: 8 }}
+          disabled={username.length < 3}
         />
       </Box>
     </form>
