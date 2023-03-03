@@ -127,6 +127,8 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
           />
         ) : null}
         <SearchBox
+          searchFilter={searchFilter}
+          setSearchFilter={setSearchFilter}
           placeholder="Search username"
           onChange={(prefix: string) => {
             setSearchFilter(prefix);
