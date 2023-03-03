@@ -48,6 +48,7 @@ export const FullScreenChat = ({
   const theme = useCustomTheme();
   const existingMessagesRef = useRef<EnrichedMessageWithMetadata[]>([]);
   const [fetchingMoreChats, setFetchingMoreChats] = useState(false);
+  const [pluginMenuOpen, setPluginMenuOpen] = useState(false);
 
   const { getRootProps, getInputProps, isDragAccept } = useDropzone({
     onDrop: (files) => {
@@ -124,7 +125,12 @@ export const FullScreenChat = ({
       })}
     >
       {isDragAccept ? <DropzonePopup /> : null}
-      <div id="messageContainer" style={{ height: "calc(100% - 50px)" }}>
+      <div
+        id="messageContainer"
+        style={{
+          height: "calc(100% - 50px)",
+        }}
+      >
         <ScrollBarImpl
           onScrollStop={async () => {
             // @ts-ignore
@@ -177,20 +183,27 @@ export const FullScreenChat = ({
           height="calc(100% - 50px)"
         >
           <div>
-            <div style={{ paddingBottom: 20 }}>
+            <div
+              style={{
+                paddingBottom: 20,
+                transform: pluginMenuOpen ? "translate(0, -35px)" : undefined,
+              }}
+            >
               <input {...getInputProps()} />
               <div>
-                {fetchingMoreChats ? <div
-                  style={{
+                {fetchingMoreChats ? (
+                  <div
+                    style={{
                       display: "flex",
                       justifyContent: "center",
                       marginBottom: 3,
                       marginTop: 3,
                     }}
                   >
-                  {" "}
-                  <CircularProgress size={20} />{" "}
-                </div> : null}
+                    {" "}
+                    <CircularProgress size={20} />{" "}
+                  </div>
+                ) : null}
                 <Banner />
                 {loading ? <MessagesSkeleton /> : null}
                 {!loading && chats?.length === 0 ? <EmptyChat /> : null}
@@ -255,6 +268,8 @@ export const FullScreenChat = ({
           onMediaSelect={onMediaSelect}
           uploadedImageUri={uploadedImageUri}
           selectedMediaKind={selectedMediaKind}
+          pluginMenuOpen={pluginMenuOpen}
+          setPluginMenuOpen={setPluginMenuOpen}
         />
       </div>
     </div>

@@ -96,6 +96,8 @@ export const SendMessage = ({
   onMediaSelect,
   selectedMediaKind,
   uploadedImageUri,
+  pluginMenuOpen,
+  setPluginMenuOpen,
 }: {
   onMediaSelect: any;
   selectedMediaKind: "video" | "image";
@@ -104,12 +106,13 @@ export const SendMessage = ({
   setSelectedFile: any;
   uploadingFile: boolean;
   setUploadingFile: any;
+  pluginMenuOpen: boolean;
+  setPluginMenuOpen: (val: boolean) => void;
 }) => {
   const classes = useStyles();
   const { uuid } = useUser();
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
-  const [pluginMenuOpen, setPluginMenuOpen] = useState(false);
 
   const theme = useCustomTheme();
   const activeSolanaWallet = useActiveSolanaWallet();
@@ -119,17 +122,13 @@ export const SendMessage = ({
     setAboveMessagePlugin,
     inputRef,
     sendMessage,
-  } = useChatContext();
-
-  const {
     remoteUserId,
     remoteUsername,
-    roomId,
     activeReply,
-    setActiveReply,
     type,
     chats,
   } = useChatContext();
+
   const remoteUsers = useUsersMetadata({ remoteUserIds: [remoteUserId] });
   const remoteUserImage = remoteUsers?.[0]?.image;
 
@@ -179,6 +178,7 @@ export const SendMessage = ({
     });
     return Object.keys(userMap).map((uuid) => userMap[uuid]);
   };
+
   return (
     <MessageInputProvider
       inputRef={inputRef}
