@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";
 
 export const PreferencesSolana: React.FC = () => {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const solanaMenuItems = {
     "RPC Connection": {
       onClick: () => nav.push("preferences-solana-rpc-connection"),
@@ -18,7 +18,7 @@ export const PreferencesSolana: React.FC = () => {
   };
 
   useEffect(() => {
-    nav.setTitle("Solana");
+    nav.setOptions({ headerTitle: "Solana" });
   }, [nav]);
 
   return <SettingsList menuItems={solanaMenuItems} />;

@@ -40,7 +40,8 @@ router.post("/", async (req, res) => {
       return res
         .status(403)
         .json({ msg: "invalid signing public key for user" });
-  } catch {
+  } catch (error) {
+    console.error(error);
     // User not found
     return res.status(403).json({ msg: "invalid user id" });
   }

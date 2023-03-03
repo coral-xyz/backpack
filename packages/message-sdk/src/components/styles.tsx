@@ -19,12 +19,6 @@ export const useStyles = styles((theme) => ({
   icon: {
     background: theme.custom.colors.textBackground,
   },
-  topLabel: {
-    fontSize: 14,
-    color: theme.custom.colors.smallTextColor,
-    marginLeft: 4,
-    marginBottom: 4,
-  },
   iconInner: {
     background: theme.custom.colors.fontColor,
   },
@@ -66,7 +60,7 @@ export const useStyles = styles((theme) => ({
   iconCircular: {
     width: "32px",
     height: "32px",
-    borderRadius: "16px",
+    borderRadius: "50%",
     marginRight: "8px",
     color: theme.custom.colors.positive,
   },
@@ -122,6 +116,8 @@ export const useStyles = styles((theme) => ({
     fontWeight: 500,
   },
   contactIconOuter: {
-    background: theme.custom.colors.textBorder,
+    "&:disabled": {
+      background: theme.custom.colors.textBorder,
+    },
   },
 }));

@@ -59,6 +59,10 @@ function Router() {
 
   const params = new URLSearchParams(window.location.search);
   const blockchain = params.get("blockchain") || Blockchain.SOLANA;
+  const action = (params.get("action") || "create") as
+    | "create"
+    | "import"
+    | "search";
   const createKeyring = params.get("create") === "true";
   const publicKey = params.get("publicKey") || undefined;
 
@@ -68,6 +72,7 @@ function Router() {
         <OptionsContainer>
           <ConnectHardware
             blockchain={blockchain as Blockchain}
+            action={action}
             createKeyring={createKeyring}
             publicKey={publicKey}
             onComplete={window.close}
@@ -77,7 +82,7 @@ function Router() {
     case QUERY_ONBOARDING:
       return <Onboarding />;
     case QUERY_ADD_USER_ACCOUNT:
-      return <Onboarding isAddingAccount={true} />;
+      return <Onboarding isAddingAccount />;
     default:
       throw new Error("invalid query param");
   }

@@ -1,5 +1,5 @@
 import type { Blockchain } from "@coral-xyz/common";
-import type { NextFunction,Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import express from "express";
 
 import { getUsersByPublicKeys } from "../../db/users";

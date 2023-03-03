@@ -1,5 +1,9 @@
+import * as dotenv from "dotenv";
+
+dotenv.config();
 export const HASURA_URL =
   process.env.HASURA_URL || "http://localhost:8112/v1/graphql";
+
 export const JWT =
   process.env.AUTH_JWT ||
   "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwczovL2hhc3VyYS5pby9qd3QvY2xhaW1zIjp7IngtaGFzdXJhLWFsbG93ZWQtcm9sZXMiOlsiYXV0aF93b3JrZXIiXSwieC1oYXN1cmEtZGVmYXVsdC1yb2xlIjoiYXV0aF93b3JrZXIifSwiaWF0IjoxNjY0MjQ3NzE2fQ.F7IMXysrX7jLs5kEekjZenixkNm8KJfzyBo4KplnSqSstWpAh4lTFNhh8Ow0bVzwphhJEPtcLMXZvYlOmwM7RcQ_8zxD-UcLPC8nru9_n-8eWO1ADwffjJ4GM7V78d-iOV3qX_bqk2L6w8Pt9XCZJ-OCvecyv1_4xndFnVO3kgOsCL78tlbw7TjiMKCKKl74Ew5mstUA7FrGolXrDvCwbeM3lHf0UJdXwTj4U18IWyEgvPWVOSJLZMRDCxhBSnKuTCkYbXkyYt_ugBg4_nAimcg116Z1MXDxC2DLK7JXh_0g11HznlUItdh7pvDIGWFQorXNIy1pY09Li6HTXBQH1oAb_wYPvZOl3Gij-P9hJkkELjmIqDlQhG9ccgPtATf62yMN5huc2fpsrqSx0e0B65XC4g8xVlXMHhxpyDrbjJ0hyBwdez5gBMOF5EWl3slzRPrmRtzMiciSPV9l44sOnD0P4-1nyjllL9v0bIPAtt-rK3ZYtKiIp-XJIOjG1jJ4K6J13jBFt5uvqoXLfxKMQSiBhp40jU4Yqjo0C_6lUkpaC5gOF9BTe8JbuDobdBGqK_gr9vJMUrGb4_LROieO6vtj6ts1mG2k3F0rpxuHMwTZIx2DuHUXXswJK7J6OXLjGFi1QjIzukfXmoBplLuqxsqLzOLH6Kxv0_WIjrkLcwA";
@@ -34,3 +38,9 @@ export const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 export const NOTIFICATIONS_QUEUE = "NOTIFICATIONS";
 
 export const HELIUS_API_KEY = process.env.HELIUS_API_KEY || "";
+
+export const DROPZONE_XNFT_SECRET = process.env.DROPZONE_XNFT_SECRET || "";
+export const DROPZONE_PERMITTED_AUTHORITIES =
+  process.env.NODE_ENV === "production"
+    ? ["DoCHcPut2WAuVEpqukF6CKh5NSnF4muJaif8zh4qfubu"]
+    : [];

@@ -9,22 +9,23 @@ export const recentNotifications = selectorFamily<
   {
     limit: number;
     offset: number;
+    uuid: string;
   }
 >({
   key: "recentNotifications",
   get:
-    ({ limit, offset }: { limit: number; offset: number }) =>
+    ({ limit, offset, uuid }: { limit: number; offset: number; uuid: string; }) =>
     async ({ get }: any) => {
       try {
-        const provider = get(anchorContext).provider;
         const notifications = (await fetchNotifications(offset, limit)) || [];
         const xnftIds = notifications.map((x) => x.xnft_id);
         const uniqueXnftIds = xnftIds.filter(
           (x, index) => xnftIds.indexOf(x) === index
         );
         const xnftMetadata = await fetchXnftsFromPubkey(
-          provider,
-          uniqueXnftIds.filter((x) => x !== "friend_requests")
+          uniqueXnftIds.filter(
+            (x) => x !== "friend_requests" && x !== "friend_requests_accept"
+          )
         );
         return notifications.map((notificaiton) => {
           const metadata = xnftMetadata.find(

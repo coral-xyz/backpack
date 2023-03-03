@@ -11,6 +11,7 @@ export * from "./notifications";
 export * from "./preferences";
 export * from "./preferences/connection-urls";
 export * from "./prices";
+export * from "./primaryWallets";
 export * from "./recent-transactions";
 export * from "./solana";
 export * from "./transaction-request";

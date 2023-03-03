@@ -1,13 +1,30 @@
 {
   "cli": {
+    "appVersionSource": "remote",
     "version": ">= 3.0.0"
   },
   "build": {
     "monorepo": {
-      "node": "18.12.0"
+      "node": "18.12.0",
+      "ios": {
+        "resourceClass": "m1-medium"
+      }
     },
     "production": {
-      "extends": "monorepo"
+      "extends": "monorepo",
+      "autoIncrement": true
+    },
+    "simulator": {
+      "extends": "monorepo",
+      "channel": "simulator",
+      "distribution": "internal",
+      "env": {
+        "APP_ENV": "production"
+      },
+      "ios": {
+        "simulator": true,
+        "resourceClass": "m1-medium"
+      }
     },
     "preview": {
       "extends": "monorepo",
@@ -15,6 +32,9 @@
       "distribution": "internal",
       "env": {
         "APP_ENV": "production"
+      },
+      "ios": {
+        "resourceClass": "m1-medium"
       }
     },
     "development": {
@@ -26,7 +46,8 @@
         "buildType": "apk"
       },
       "ios": {
-        "simulator": true
+        "simulator": true,
+        "resourceClass": "m1-medium"
       },
       "env": {
         "APP_ENV": "development"
@@ -34,6 +55,10 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appName": "Backpack Crypto Wallet"
+      }
+    }
   }
 }

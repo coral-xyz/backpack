@@ -1,0 +1,33 @@
+version: 0.2
+
+env:
+  secrets-manager:
+    AUTH_JWT: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:AUTH_JWT"
+    AUTH_JWT_PRIVATE_KEY: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:AUTH_JWT_PRIVATE_KEY"
+    AUTH_JWT_PUBLIC_KEY: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:AUTH_JWT_PUBLIC_KEY"
+    HASURA_URL: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:HASURA_URL"
+    REDIS_URL: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:REDIS_URL"
+    CHAT_HASURA_URL: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:CHAT_HASURA_URL"
+    CHAT_JWT: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:CHAT_JWT"
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 16
+  build:
+    commands:
+      - mv docker/backend-ws/Dockerfile .
+      - cd backend/native/backend-ws
+      - touch .env
+      - printf "AUTH_JWT=%s\n" "$AUTH_JWT" >> .env
+      - printf "AUTH_JWT_PRIVATE_KEY=%s\n" "$AUTH_JWT_PRIVATE_KEY" >> .env
+      - printf "AUTH_JWT_PUBLIC_KEY=%s\n" "$AUTH_JWT_PUBLIC_KEY" >> .env
+      - printf "AUTH_HASURA_URL=%s\n" "$HASURA_URL" >> .env
+      - printf "CHAT_HASURA_URL=%s\n" "$CHAT_HASURA_URL" >> .env
+      - printf "REDIS_URL=%s\n" "$REDIS_URL" >> .env
+      - printf "CHAT_JWT=%s\n" "$CHAT_JWT" >> .env
+      - cd ../../..
+artifacts:
+  files:
+    - '**/*'
+

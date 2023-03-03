@@ -14,7 +14,7 @@ export const PopoverMenu: FunctionComponent<PopoverProps> = ({
         style={{
           width: "100%",
           background: theme.custom.colors.background,
-          padding: 2,
+          padding: 1,
           display: "flex",
           flexDirection: "column",
           gap: 2,
@@ -26,7 +26,13 @@ export const PopoverMenu: FunctionComponent<PopoverProps> = ({
   );
 };
 
-export const PopoverMenuItemGroup: FunctionComponent = ({ children }) => {
+type GroupProps = {
+  children?: React.ReactNode;
+};
+
+export const PopoverMenuItemGroup: FunctionComponent<GroupProps> = ({
+  children,
+}) => {
   const theme = useCustomTheme();
   return (
     <div

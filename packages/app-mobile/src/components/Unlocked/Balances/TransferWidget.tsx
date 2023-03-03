@@ -1,23 +1,34 @@
 import { Pressable, Text, View } from "react-native";
 
 import { Token, NavTokenAction, NavTokenOptions } from "@@types/types";
-import { Blockchain /* STRIPE_ENABLED */ } from "@coral-xyz/common";
+import { Blockchain } from "@coral-xyz/common";
 import {
-  // SwapProvider, // TODO(peter): broken
+  SwapProvider, // TODO(peter): broken
   enabledBlockchains as enabledBlockchainsAtom,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRecoilValueLoadable } from "recoil";
 
-import { Margin } from "@components/index";
-import { useTheme } from "@hooks/index";
+import { Margin } from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
 const HorizontalSpacer = () => <View style={{ width: 16 }} />;
 const ENABLE_ONRAMP = false;
 
-function SwapProvider({ children, blockchain, tokenAddress }) {
-  return children;
-}
+const getRouteFromAction = (
+  action: NavTokenAction
+): "DepositList" | "SendSelectTokenModal" | "SwapModal" => {
+  switch (action) {
+    case NavTokenAction.Receive:
+      return "DepositList";
+    case NavTokenAction.Send:
+      return "SendSelectTokenModal";
+    case NavTokenAction.Swap:
+      return "SwapModal";
+    default:
+      return "DepositList";
+  }
+};
 
 export function TransferWidget({
   blockchain,
@@ -38,8 +49,10 @@ export function TransferWidget({
     blockchain !== Blockchain.ETHEREUM &&
     enabledBlockchains.includes(Blockchain.SOLANA);
 
-  const onPress = (route: NavTokenAction, options: NavTokenOptions) =>
+  const onPress = (action: NavTokenAction, options: NavTokenOptions) => {
+    const route = getRouteFromAction(action);
     onPressOption(route, options);
+  };
 
   return (
     <View
@@ -58,7 +71,7 @@ export function TransferWidget({
       <ReceiveButton onPress={onPress} blockchain={blockchain} />
       <HorizontalSpacer />
       <SendButton onPress={onPress} blockchain={blockchain} token={token} />
-      {renderSwap && (
+      {renderSwap ? (
         <>
           <HorizontalSpacer />
           <SwapButton
@@ -67,7 +80,7 @@ export function TransferWidget({
             address={address}
           />
         </>
-      )}
+      ) : null}
     </View>
   );
 }
@@ -129,7 +142,7 @@ function SwapButton({
   onPress: (route: NavTokenAction, options: NavTokenOptions) => void;
 }) {
   return (
-    <SwapProvider blockchain={Blockchain.SOLANA} tokenAddress={address}>
+    <SwapProvider tokenAddress={address}>
       <TransferButton
         label="Swap"
         icon="compare-arrows"

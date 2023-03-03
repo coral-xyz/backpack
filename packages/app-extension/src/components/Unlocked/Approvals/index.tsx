@@ -132,12 +132,12 @@ export function OriginWalletConnectIcons({
   return (
     <div className={classes.connectablesContainer}>
       <OriginConnectable
-        kind={"medium"}
+        kind="medium"
         origin={origin}
         originTitle={originTitle}
       />
       <Connectable
-        kind={"medium"}
+        kind="medium"
         title={username}
         description={`${walletName} (${walletAddressDisplay(wallet)})`}
         icon={avatarUrl}

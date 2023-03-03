@@ -10,12 +10,12 @@ import { Button, Typography } from "@mui/material";
 
 import { SubtextParagraph } from "../../../common";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation } from "../../../common/Layout/NavStack";
 
 export function ChangePassword() {
   const theme = useCustomTheme();
   const { close } = useDrawerContext();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const background = useBackgroundClient();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPw1, setNewPw1] = useState("");
@@ -27,9 +27,9 @@ export function ChangePassword() {
 
   useEffect(() => {
     const title = nav.title;
-    nav.setTitle("Change password");
+    nav.setOptions({ headerTitle: "Change password" });
     return () => {
-      nav.setTitle(title);
+      nav.setOptions({ headerTitle: title });
     };
   }, []);
 
@@ -65,14 +65,14 @@ export function ChangePassword() {
         <div style={{ flex: 1, flexGrow: 1 }}>
           <Inputs error={currentPasswordError}>
             <InputListItem
-              isFirst={true}
-              isLast={true}
+              isFirst
+              isLast
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               placeholder="Enter password"
               type="password"
               button={false}
-              title={"Current"}
+              title="Current"
             />
           </Inputs>
           <Button
@@ -100,22 +100,22 @@ export function ChangePassword() {
           </Button>
           <Inputs error={passwordMismatchError}>
             <InputListItem
-              isFirst={true}
+              isFirst
               value={newPw1}
               onChange={(e) => setNewPw1(e.target.value)}
               placeholder="Enter password"
               type="password"
               button={false}
-              title={"New"}
+              title="New"
             />
             <InputListItem
-              isLast={true}
+              isLast
               value={newPw2}
               onChange={(e) => setNewPw2(e.target.value)}
               placeholder="Re-enter password"
               type="password"
               button={false}
-              title={"Verify"}
+              title="Verify"
             />
           </Inputs>
           <SubtextParagraph

@@ -7,7 +7,6 @@
     { "path": "packages/blockchains" },
     { "path": "packages/chat-sdk" },
     { "path": "packages/common" },
-    { "path": "packages/common-public" },
     { "path": "packages/db" },
     { "path": "packages/deptool" },
     { "path": "packages/ledger-injection" },
@@ -15,11 +14,8 @@
     { "path": "packages/provider-core" },
     { "path": "packages/provider-injection" },
     { "path": "packages/react-common" },
-    { "path": "packages/react-xnft" },
-    { "path": "packages/react-xnft-dom-renderer" },
     { "path": "packages/recoil" },
     { "path": "packages/themes" },
-    { "path": "packages/wallet-standard" },
-    { "path": "packages/xnft-cli" }
+    { "path": "packages/wallet-standard" }
   ]
 }

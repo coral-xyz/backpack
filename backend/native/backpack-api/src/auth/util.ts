@@ -38,7 +38,7 @@ export const setJWTCookie = async (
   return jwt;
 };
 
-export const setCookieOnResponse = async (
+export const setCookieOnResponse = (
   req: Request,
   res: Response,
   cookieName: string,

@@ -39,6 +39,7 @@ export interface HdKeyringFactory {
 export interface HdKeyring extends Keyring {
   readonly mnemonic: string;
   addDerivationPath(derivationPath: string): string;
+  nextDerivationPath(): string;
   deriveNextKey(): {
     publicKey: string;
     derivationPath: string;
@@ -54,6 +55,7 @@ export interface LedgerKeyringFactory {
 }
 
 export interface LedgerKeyring extends LedgerKeyringBase {
+  nextDerivationPath(): string;
   signTransaction(tx: Buffer, address: string): Promise<string>;
   signMessage(tx: Buffer, address: string): Promise<string>;
   add(walletDescriptor: WalletDescriptor): Promise<void>;

@@ -1,6 +1,7 @@
 import type { CSSProperties, MouseEvent } from "react";
 import type { RemoteUserData } from "@coral-xyz/common";
 import {
+  BACKPACK_TEAM,
   NAV_COMPONENT_MESSAGE_PROFILE,
   sendFriendRequest,
   unFriend,
@@ -9,15 +10,19 @@ import {
 } from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
+  BackpackStaffIcon,
   isFirstLastListItemStyle,
   LocalImage,
-  ProxyImage,
   SignalingManager,
 } from "@coral-xyz/react-common";
-import { friendship, useNavigation, useUser } from "@coral-xyz/recoil";
+import {
+  useNavigation,
+  useUpdateFriendships,
+  useUser,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
+import VerifiedIcon from "@mui/icons-material/Verified";
 import { List, ListItem } from "@mui/material";
-import { useRecoilCallback } from "recoil";
 
 import { useStyles } from "./styles";
 
@@ -173,10 +178,11 @@ function UserListItem({
 
   const onDecline = async (ev: MouseEvent<HTMLDivElement>) => {
     ev.stopPropagation();
-    await sendFriendRequest({ to: user.id, sendRequest: true });
+    await sendFriendRequest({ to: user.id, sendRequest: false });
     await updateFriendshipIfExists(uuid, user.id, {
       requested: 0,
       areFriends: 0,
+      remoteRequested: 0,
     });
 
     setFriendshipValue({
@@ -184,6 +190,7 @@ function UserListItem({
       friendshipValue: {
         requested: false,
         areFriends: false,
+        remoteRequested: false,
       },
     });
     setMembers?.((members) =>
@@ -286,18 +293,27 @@ function UserListItem({
             >
               <UserIcon image={user.image} />
             </div>
-            <div className={classes.userText}>
-              {usernameDisplay(user.username)}{" "}
-              {user.searchedSolPubKey ? (
-                <> ({walletAddressDisplay(user.searchedSolPubKey, 2)})</>
-              ) : (
-                ""
-              )}{" "}
-              {user.searchedEthPubKey ? (
-                <>({walletAddressDisplay(user.searchedEthPubKey, 2)})</>
-              ) : (
-                ""
-              )}
+            <div className={classes.userText} style={{ display: "flex" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                }}
+              >
+                {usernameDisplay(user.username, 15)}{" "}
+                {user.searchedSolPubKey ? (
+                  <> ({walletAddressDisplay(user.searchedSolPubKey, 2)})</>
+                ) : (
+                  ""
+                )}{" "}
+                {user.searchedEthPubKey ? (
+                  <>({walletAddressDisplay(user.searchedEthPubKey, 2)})</>
+                ) : (
+                  ""
+                )}
+              </div>
+              {BACKPACK_TEAM.includes(user.id) ? <BackpackStaffIcon /> : null}
             </div>
           </div>
           <div>
@@ -354,23 +370,11 @@ function UserAction({
 
 function UserIcon({ image }: any) {
   const classes = useStyles();
-  return <LocalImage src={image} className={classes.iconCircular} />;
-}
-
-export const useUpdateFriendships = () =>
-  useRecoilCallback(
-    ({ set, snapshot }: any) =>
-      async ({
-        friendshipValue,
-        userId,
-      }: {
-        friendshipValue: any;
-        userId: string;
-      }) => {
-        const currentFriendship = snapshot.getLoadable(friendship({ userId }));
-        set(friendship({ userId }), {
-          ...(currentFriendship.valueMaybe() || {}),
-          ...friendshipValue,
-        });
-      }
+  return (
+    <LocalImage
+      src={image}
+      className={classes.iconCircular}
+      style={{ width: 32, height: 32 }}
+    />
   );
+}

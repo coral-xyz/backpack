@@ -18,12 +18,11 @@
     "emoji-picker-react": "^4.4.5",
     "eventemitter3": "^4.0.7",
     "graphql-ws": "^5.11.2",
-    "react": "^17.0.2",
+    "react": "18.2.0",
     "react-custom-scrollbars": "^4.2.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "parcel": "^2.7.0",
     "typescript": "~4.9.3"
   },
   "targets": {

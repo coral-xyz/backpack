@@ -5,13 +5,15 @@ import type {
   SubscriptionType,
 } from "@coral-xyz/common";
 import {
+  BACKPACK_TEAM,
   NAV_COMPONENT_MESSAGE_CHAT,
+  NAV_COMPONENT_MESSAGE_GROUP_CHAT,
   NAV_COMPONENT_MESSAGE_PROFILE,
   NAV_COMPONENT_MESSAGE_REQUESTS,
   parseMessage,
 } from "@coral-xyz/common";
-import { NAV_COMPONENT_MESSAGE_GROUP_CHAT } from "@coral-xyz/common/src/constants";
 import {
+  BackpackStaffIcon,
   isFirstLastListItemStyle,
   LocalImage,
   useUsersMetadata,
@@ -41,65 +43,68 @@ export const MessageList = ({
   const theme = useCustomTheme();
 
   return (
-    <>
-      <List
-        style={{
-          paddingTop: 0,
-          paddingBottom: 0,
-          borderRadius: "14px",
-          border: `${theme.custom.colors.borderFull}`,
-        }}
-      >
-        {requestCount > 0 && (
-          <RequestsChatItem
-            requestCount={requestCount}
-            isFirst={true}
-            isLast={activeChats?.length === 0}
-          />
-        )}
-        {activeChats?.map((activeChat, index) => (
-          <ChatListItem
-            toRoot={toRoot}
-            type={activeChat.chatType}
-            image={
-              activeChat.chatType === "individual"
-                ? activeChat.chatProps.remoteUserImage!
-                : activeChat.chatProps.image!
-            }
-            name={
-              activeChat.chatType === "individual"
-                ? activeChat.chatProps.remoteUsername!
-                : activeChat.chatProps.name!
-            }
-            id={
-              activeChat.chatType === "individual"
-                ? activeChat.chatProps.remoteUserId
-                : activeChat.chatProps.collectionId
-            }
-            message={
-              activeChat.chatType === "individual"
-                ? activeChat.chatProps.last_message!
-                : activeChat.chatProps.lastMessage!
-            }
-            timestamp={
-              activeChat.chatType === "individual"
-                ? activeChat.chatProps.last_message_timestamp || ""
-                : activeChat.chatProps.lastMessageTimestamp || ""
-            }
-            isFirst={requestCount === 0 && index === 0}
-            isLast={index === activeChats?.length - 1}
-            isUnread={
-              activeChat.chatType === "individual"
-                ? activeChat.chatProps.unread
-                  ? true
-                  : false
-                : activeChat.chatProps.lastMessageUuid !==
-                  activeChat.chatProps.lastReadMessage
-            }
-          />
-        ))}
-      </List>
-    </>
+    <List
+      style={{
+        paddingTop: 0,
+        paddingBottom: 0,
+        borderRadius: "14px",
+        border: `${theme.custom.colors.borderFull}`,
+      }}
+    >
+      {requestCount > 0 ? (
+        <RequestsChatItem
+          requestCount={requestCount}
+          isFirst
+          isLast={activeChats?.length === 0}
+        />
+      ) : null}
+      {activeChats?.map((activeChat, index) => (
+        <ChatListItem
+          toRoot={toRoot}
+          type={activeChat.chatType}
+          image={
+            activeChat.chatType === "individual"
+              ? activeChat.chatProps.remoteUserImage!
+              : activeChat.chatProps.image!
+          }
+          userId={
+            activeChat.chatType === "individual"
+              ? activeChat.chatProps.remoteUserId!
+              : ""
+          }
+          name={
+            activeChat.chatType === "individual"
+              ? activeChat.chatProps.remoteUsername!
+              : activeChat.chatProps.name!
+          }
+          id={
+            activeChat.chatType === "individual"
+              ? activeChat.chatProps.remoteUserId
+              : activeChat.chatProps.collectionId
+          }
+          message={
+            activeChat.chatType === "individual"
+              ? activeChat.chatProps.last_message!
+              : activeChat.chatProps.lastMessage!
+          }
+          timestamp={
+            activeChat.chatType === "individual"
+              ? activeChat.chatProps.last_message_timestamp || ""
+              : activeChat.chatProps.lastMessageTimestamp || ""
+          }
+          isFirst={requestCount === 0 ? index === 0 : false}
+          isLast={index === activeChats?.length - 1}
+          isUnread={
+            activeChat.chatType === "individual"
+              ? activeChat.chatProps.unread
+                ? true
+                : false
+              : activeChat.chatProps.lastMessageUuid !==
+                activeChat.chatProps.lastReadMessage
+          }
+        />
+      ))}
+    </List>
   );
 };
 
@@ -114,6 +119,7 @@ export function ChatListItem({
   id,
   isUnread,
   toRoot,
+  userId,
 }: {
   type: SubscriptionType;
   image: string;
@@ -125,6 +131,7 @@ export function ChatListItem({
   id: string;
   isUnread: boolean;
   toRoot: boolean;
+  userId: string;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -137,6 +144,12 @@ export function ChatListItem({
   const printText = parts
     .map((x) => (x.type === "tag" ? users[x.value]?.username : x.value))
     .join("");
+
+  let messagePreview = "";
+  if (printText) {
+    messagePreview =
+      printText.length > 25 ? printText.substring(0, 22) + "..." : printText;
+  }
 
   function formatAMPM(date: Date) {
     let hours = date.getHours();
@@ -235,28 +248,36 @@ export function ChatListItem({
                 }}
               >
                 <div>{type === "individual" ? `@${name}` : name}</div>
-                <div>
-                  {id === "backpack-chat" && (
+                {id === "backpack-chat" ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      flexDirection: "column",
+                    }}
+                  >
                     <VerifiedIcon
                       style={{
-                        fontSize: 19,
+                        fontSize: 14,
                         marginLeft: 3,
                         color: theme.custom.colors.verified,
                       }}
                     />
-                  )}
-                </div>
+                  </div>
+                ) : null}
+                {BACKPACK_TEAM.includes(userId) ? <BackpackStaffIcon /> : null}
               </div>
               <div
                 className={classes.userTextSmall}
                 style={{
+                  wordBreak: "break-all",
                   fontWeight: 500,
                   color: isUnread
                     ? theme.custom.colors.fontColor
                     : theme.custom.colors.smallTextColor,
                 }}
               >
-                {printText?.substr(0, 25) || ""}
+                {messagePreview}
               </div>
             </div>
           </div>
@@ -380,5 +401,11 @@ export function RequestsChatItem({
 
 function UserIcon({ image }: any) {
   const classes = useStyles();
-  return <LocalImage src={image} className={classes.iconCircularBig} />;
+  return (
+    <LocalImage
+      style={{ width: 40, height: 40 }}
+      src={image}
+      className={classes.iconCircularBig}
+    />
+  );
 }

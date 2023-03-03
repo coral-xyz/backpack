@@ -17,7 +17,7 @@ import {
   useSwapContext,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { useTheme } from "@hooks";
+import { useTheme } from "~hooks/useTheme";
 import { ExpandMore, SwapVert } from "@mui/icons-material";
 import { IconButton, InputAdornment, Typography } from "@mui/material";
 import { ethers, FixedNumber } from "ethers";

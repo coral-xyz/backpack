@@ -10,21 +10,34 @@
   </head>
   <body>
     <script type="module">
-      (async function setup() {
+      (function setup() {
         //
         // Kickoff the service worker.
         //
-        const registration = await navigator.serviceWorker.register(
-          new URL("./service-worker.ts", import.meta.url),
-          {
+        navigator.serviceWorker
+          .register(new URL("./service-worker.ts", import.meta.url), {
             type: "module",
-          }
-        );
+          })
+          .then((registration) => {
+            console.log("SERVICE WORKER: registered.", registration);
+          })
+          .catch((error) => {
+            console.log("SERVICE WORKER: registration failed:", error);
+          });
+
+        navigator.serviceWorker.addEventListener("install", (event) => {
+          console.log("SERVICE WORKER: installing");
+        });
+
+        navigator.serviceWorker.addEventListener("activate", (event) => {
+          console.log("SERVICE WORKER: activating");
+        });
 
         //
         // Receive messages from the service worker..
         //
         navigator.serviceWorker.onmessage = (event) => {
+          console.log("SERVICE WORKER: message received");
           window.ReactNativeWebView?.postMessage(JSON.stringify(event.data));
         };
 
@@ -32,6 +45,7 @@
         // Send a message to the background service worker.
         //
         window.postMessageToBackgroundViaWebview = (rawData) => {
+          console.log("SERVICE WORKER: message sent");
           navigator.serviceWorker.controller.postMessage(rawData);
         };
 

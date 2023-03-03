@@ -1,8 +1,8 @@
 import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
 
-import { Margin } from "@components";
+import { Margin } from "~components/index";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "@hooks";
+import { useTheme } from "~hooks/useTheme";
 
 export function IconPushDetail() {
   const theme = useTheme();

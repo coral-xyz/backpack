@@ -1,0 +1,17 @@
+# Actions that only run when opening or updating pull requests
+
+name: Docker Health Checks
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - master
+
+jobs:
+  pinning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v2
+      - run: chmod 755 ./scripts/check-docker-pin.sh
+      - run: ./scripts/check-docker-pin.sh

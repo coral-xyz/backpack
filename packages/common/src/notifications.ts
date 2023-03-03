@@ -9,4 +9,5 @@ export interface DbNotification {
   xnft_id: string;
   timestamp: number;
   id: number;
+  viewed: boolean;
 }

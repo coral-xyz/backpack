@@ -5,11 +5,10 @@ import {
 } from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { BigNumber, ethers } from "ethers";
-import { atom, atomFamily, selector, selectorFamily } from "recoil";
+import { atomFamily, selectorFamily } from "recoil";
 
-import type { TokenData, TokenNativeData } from "../../types";
+import type { TokenDataWithBalance, TokenDataWithPrice } from "../../types";
 import { ethereumPrice, pricesForErc20Addresses } from "../prices";
-import { ethereumPublicKey } from "../wallet";
 
 import { ethereumConnectionUrl } from "./preferences";
 import { ethersContext } from "./provider";
@@ -71,7 +70,7 @@ export const erc20Balances = selectorFamily<
 });
 
 export const ethereumTokenNativeBalance = selectorFamily<
-  TokenNativeData | null,
+  TokenDataWithBalance | null,
   { publicKey: string; tokenAddress: string }
 >({
   key: "ethereumTokenNativeBalance",
@@ -107,7 +106,7 @@ export const ethereumTokenNativeBalance = selectorFamily<
 });
 
 export const ethereumTokenBalance = selectorFamily<
-  TokenData | null,
+  TokenDataWithPrice | null,
   { publicKey: string; tokenAddress: string }
 >({
   key: "ethereumTokenBalance",

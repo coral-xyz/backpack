@@ -14,8 +14,11 @@ import * as bs58 from "bs58";
 import { ethers } from "ethers";
 
 import { Header, SubtextParagraph } from "../../../common";
-import { WithMiniDrawer } from "../../../common/Layout/Drawer";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import {
+  useDrawerContext,
+  WithMiniDrawer,
+} from "../../../common/Layout/Drawer";
+import { useNavigation } from "../../../common/Layout/NavStack";
 
 import { ConfirmCreateWallet } from ".";
 
@@ -28,7 +31,7 @@ export function ImportSecretKey({
 }) {
   const background = useBackgroundClient();
   const existingPublicKeys = useWalletPublicKeys();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const theme = useCustomTheme();
   const [name, setName] = useState("");
   const [secretKey, setSecretKey] = useState("");
@@ -36,12 +39,13 @@ export function ImportSecretKey({
   const [openDrawer, setOpenDrawer] = useState(false);
   const [newPublicKey, setNewPublicKey] = useState("");
   const [loading, setLoading] = useState(false);
+  const { close: closeParentDrawer } = useDrawerContext();
 
   useEffect(() => {
     const prevTitle = nav.title;
-    nav.setTitle("");
+    nav.setOptions({ headerTitle: "" });
     return () => {
-      nav.setTitle(prevTitle);
+      nav.setOptions({ headerTitle: prevTitle });
     };
   }, [theme]);
 
@@ -76,12 +80,11 @@ export function ImportSecretKey({
 
     if (privateKey) {
       try {
-        setNewPublicKey(
-          await background.request({
-            method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-            params: [blockchain, privateKey, name],
-          })
-        );
+        const newPublicKey = await background.request({
+          method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+          params: [blockchain, privateKey, name],
+        });
+        setNewPublicKey(newPublicKey);
         setOpenDrawer(true);
       } catch (error) {
         setError("Wallet address is used by another Backpack account.");
@@ -122,7 +125,7 @@ export function ImportSecretKey({
           <Box sx={{ margin: "0 16px" }}>
             <Box sx={{ marginBottom: "4px" }}>
               <TextInput
-                autoFocus={true}
+                autoFocus
                 placeholder="Name"
                 value={name}
                 setValue={(e) => setName(e.target.value)}
@@ -134,9 +137,9 @@ export function ImportSecretKey({
               setValue={(e) => {
                 setSecretKey(e.target.value);
               }}
-              onKeyDown={(e) => {
+              onKeyDown={async (e) => {
                 if (e.key === "Enter") {
-                  save(e);
+                  await save(e);
                 }
               }}
               rows={4}
@@ -161,11 +164,23 @@ export function ImportSecretKey({
           />
         </Box>
       </form>
-      <WithMiniDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+      <WithMiniDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
+        backdropProps={{
+          style: {
+            opacity: 0.8,
+            background: "#18181b",
+          },
+        }}
+      >
         <ConfirmCreateWallet
           blockchain={blockchain}
           publicKey={newPublicKey}
-          setOpenDrawer={setOpenDrawer}
+          onClose={() => {
+            setOpenDrawer(false);
+            closeParentDrawer();
+          }}
         />
       </WithMiniDrawer>
     </>

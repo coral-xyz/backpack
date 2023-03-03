@@ -25,18 +25,21 @@ export const useStyles = styles((theme) => ({
 export const SearchBox = ({
   onChange,
   placeholder,
+  searchFilter,
+  setSearchFilter,
 }: {
   onChange: any;
   placeholder?: string;
+  searchFilter: string;
+  setSearchFilter: any;
 }) => {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const [searchFilter, setSearchFilter] = useState("");
 
   return (
     <TextInput
       className={classes.searchField}
-      placeholder={placeholder ?? "Search for people"}
+      placeholder={placeholder ?? "Enter a username or address"}
       value={searchFilter}
       startAdornment={
         <InputAdornment position="start">

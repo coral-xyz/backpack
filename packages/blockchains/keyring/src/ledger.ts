@@ -1,17 +1,25 @@
-import type { WalletDescriptor } from "@coral-xyz/common";
+import type { Blockchain, WalletDescriptor } from "@coral-xyz/common";
 import {
   generateUniqueId,
+  getIndexedPath,
+  isValidEventOrigin,
   LEDGER_INJECTED_CHANNEL_REQUEST,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
+  nextIndicesFromPaths,
 } from "@coral-xyz/common";
 
 import type { LedgerKeyringJson } from "./types";
 
 export class LedgerKeyringBase {
   protected walletDescriptors: Array<WalletDescriptor>;
+  protected blockchain: Blockchain;
 
-  constructor(walletDescriptors: Array<WalletDescriptor>) {
+  constructor(
+    walletDescriptors: Array<WalletDescriptor>,
+    blockchain: Blockchain
+  ) {
     this.walletDescriptors = walletDescriptors;
+    this.blockchain = blockchain;
   }
 
   public deletePublicKey(publicKey: string) {
@@ -42,6 +50,22 @@ export class LedgerKeyringBase {
     throw new Error("ledger keyring cannot import secret keys");
   }
 
+  public nextDerivationPath(offset = 1) {
+    const derivationPaths = this.walletDescriptors.map((w) => w.derivationPath);
+    const { accountIndex, walletIndex } = nextIndicesFromPaths(derivationPaths);
+    const derivationPath = getIndexedPath(
+      this.blockchain,
+      accountIndex,
+      walletIndex! + offset
+    );
+    if (derivationPaths.includes(derivationPath)) {
+      // This key is already included for some reason, try again with
+      // incremented walletIndex
+      return this.nextDerivationPath(offset + 1);
+    }
+    return { derivationPath, offset };
+  }
+
   public toString(): string {
     return JSON.stringify({
       walletDescriptors: this.walletDescriptors,
@@ -68,7 +92,7 @@ export class LedgerKeyringBase {
           ...req,
         },
       };
-      postMessageToIframe(msg);
+      postMessageToIframe(msg, true);
     });
   }
 }
@@ -78,7 +102,8 @@ export class LedgerKeyringBase {
  * @param message object with message data
  */
 export const postMessageToIframe = (
-  message: Record<string, any> & { type: any }
+  message: Record<string, any> & { type: any },
+  requiresFocus = false
 ) => {
   globalThis.clients
     .matchAll({
@@ -89,7 +114,9 @@ export const postMessageToIframe = (
     })
     .then((clients) => {
       clients.forEach((client) => {
-        client.postMessage(message);
+        if (!requiresFocus || client.focused) {
+          client.postMessage(message);
+        }
       });
     });
 };
@@ -107,6 +134,9 @@ const responseResolvers: {
 // Handle receiving postMessages
 self.addEventListener("message", (msg) => {
   try {
+    if (!isValidEventOrigin(msg)) {
+      return;
+    }
     if (msg.data.type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
       return;
     }

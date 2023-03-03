@@ -3,13 +3,13 @@ import { InputListItem, Inputs, PrimaryButton } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 
 import { changeNetwork } from "./common";
 
 export function PreferenceEthereumCustomRpcUrl() {
   const { close } = useDrawerContext();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const background = useBackgroundClient();
   const [rpcUrl, setRpcUrl] = useState("");
   const [chainId, setChainId] = useState("");
@@ -18,9 +18,9 @@ export function PreferenceEthereumCustomRpcUrl() {
 
   useEffect(() => {
     const title = nav.title;
-    nav.setTitle("Change RPC Connection");
+    nav.setOptions({ headerTitle: "Change RPC Connection" });
     return () => {
-      nav.setTitle(title);
+      nav.setOptions({ headerTitle: title });
     };
   }, []);
 
@@ -50,21 +50,21 @@ export function PreferenceEthereumCustomRpcUrl() {
           <Inputs error={rpcUrlError}>
             <InputListItem
               isLast={false}
-              isFirst={true}
+              isFirst
               button={false}
-              title={"RPC"}
-              placeholder={"RPC URL"}
+              title="RPC"
+              placeholder="RPC URL"
               value={rpcUrl}
               onChange={(e) => {
                 setRpcUrl(e.target.value);
               }}
             />
             <InputListItem
-              isLast={true}
+              isLast
               isFirst={false}
               button={false}
-              title={"Chain"}
-              placeholder={"Chain ID"}
+              title="Chain"
+              placeholder="Chain ID"
               value={chainId}
               onChange={(e) => setChainId(e.target.value)}
             />

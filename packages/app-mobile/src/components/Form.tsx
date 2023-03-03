@@ -3,7 +3,7 @@ import type { BigNumber } from "ethers";
 import type { StyleProp, ViewStyle } from "react-native";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { useTheme } from "@hooks";
+import { useTheme } from "~hooks/useTheme";
 import { ethers } from "ethers";
 import { Controller } from "react-hook-form";
 
@@ -202,10 +202,12 @@ export const InputFieldMaxLabel = ({
   amount,
   onSetAmount,
   decimals,
+  label = "Max:",
 }: {
   amount: BigNumber | null;
   onSetAmount: (amount: BigNumber) => void;
   decimals: number;
+  label?: string;
 }) => {
   const theme = useTheme();
   return (
@@ -219,7 +221,7 @@ export const InputFieldMaxLabel = ({
           { color: theme.custom.colors.secondary },
         ]}
       >
-        Max:{" "}
+        {label}{" "}
       </Text>
       <Text
         style={[

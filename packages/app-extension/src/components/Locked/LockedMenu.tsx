@@ -1,9 +1,10 @@
+import { useEffect,useState } from "react";
 import {
   BACKPACK_LINK,
   DISCORD_INVITE_LINK,
   TWITTER_LINK,
 } from "@coral-xyz/common";
-import { DiscordIcon , List, ListItem } from "@coral-xyz/react-common";
+import { DiscordIcon, List, ListItem } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import AccountCircleIcon from "@mui/icons-material/AccountCircleOutlined";
 import CallMadeIcon from "@mui/icons-material/CallMade";
@@ -13,12 +14,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import { Box, IconButton, ListItemText, Toolbar } from "@mui/material";
 
-import { CloseButton, WithDrawer } from "../common/Layout/Drawer";
+import { CloseButton, WithMiniDrawer } from "../common/Layout/Drawer";
 import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import {
   NavStackEphemeral,
   NavStackScreen,
-  useNavStack,
+  useNavigation,
 } from "../common/Layout/NavStack";
 
 import { ResetWarning } from "./Reset/ResetWarning";
@@ -37,6 +38,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
   return (
     <Toolbar
       sx={{
+        zIndex: 2,
         display: "flex",
         flexDirection: "row-reverse",
         paddingLeft: "16px",
@@ -50,11 +52,32 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
         disableRipple
         color="inherit"
         onClick={() => setMenuOpen(true)}
-        sx={{ padding: 0 }}
+        sx={{
+          padding: 0,
+          "&:hover": {
+            background: "transparent !important",
+            backgroundColor: "transparent !important",
+          },
+        }}
       >
         <MenuIcon sx={{ color: theme.custom.colors.icon }} />
       </IconButton>
-      <WithDrawer openDrawer={menuOpen} setOpenDrawer={setMenuOpen}>
+      <WithMiniDrawer
+        openDrawer={menuOpen}
+        setOpenDrawer={setMenuOpen}
+        backdropProps={{
+          style: {
+            opacity: 0.8,
+            background: "#18181b",
+          },
+        }}
+        paperProps={{
+          sx: {
+            background: theme.custom.colors.backgroundBackdrop,
+            height: "90%",
+          },
+        }}
+      >
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
@@ -62,27 +85,27 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
             navButtonLeft={<CloseButton onClick={() => setMenuOpen(false)} />}
           >
             <NavStackScreen
-              name={"root"}
+              name="root"
               component={(props: any) => <LockedMenuList {...props} />}
             />
             <NavStackScreen
-              name={"reset"}
+              name="reset"
               component={(props: any) => <Reset {...props} />}
             />
             <NavStackScreen
-              name={"reset-warning"}
+              name="reset-warning"
               component={(props: any) => <ResetWarning {...props} />}
             />
           </NavStackEphemeral>
         </div>
-      </WithDrawer>
+      </WithMiniDrawer>
     </Toolbar>
   );
 }
 
 export function LockedMenuList() {
   const theme = useCustomTheme();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const classes = useStyles();
 
   const options = [

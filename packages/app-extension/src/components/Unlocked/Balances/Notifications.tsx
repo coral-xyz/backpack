@@ -1,25 +1,39 @@
 import { Suspense, useEffect, useState } from "react";
 import type { EnrichedNotification } from "@coral-xyz/common";
-import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
+  BACKEND_API_URL,
+  sendFriendRequest,
+  XNFT_GG_LINK,
+} from "@coral-xyz/common";
+import { updateFriendshipIfExists } from "@coral-xyz/db";
+import {
+  BubbleTopLabel,
+  DangerButton,
   EmptyState,
   isFirstLastListItemStyle,
   Loading,
   ProxyImage,
+  SuccessButton,
+  useBreakpoints,
   useUserMetadata,
 } from "@coral-xyz/react-common";
-import { unreadCount, useRecentNotifications } from "@coral-xyz/recoil";
+import {
+  unreadCount, useAuthenticatedUser,
+  useFriendship,
+  useRecentNotifications,
+  useUpdateFriendships,
+  useUser,
+} from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { IconButton, List, ListItem, Typography } from "@mui/material";
+import { Badge, IconButton, List, ListItem, Typography } from "@mui/material";
 import { useRecoilState } from "recoil";
 
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
-import { useBreakpoints } from "../../common/Layout/hooks";
 import {
   NavStackEphemeral,
   NavStackScreen,
-  useNavStack,
+  useNavigation,
 } from "../../common/Layout/NavStack";
 import { NotificationIconWithBadge } from "../../common/NotificationIconWithBadge";
 import { ContactRequests, Contacts } from "../Messages/Contacts";
@@ -30,6 +44,9 @@ const useStyles = styles((theme) => ({
     fontWeight: 500,
     fontSize: "14px",
     lineHeight: "24px",
+  },
+  customBadge: {
+    backgroundColor: "#E33E3F",
   },
   allWalletsLabel: {
     fontWeight: 500,
@@ -115,19 +132,19 @@ export function NotificationButton() {
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen
-              name={"root"}
+              name="root"
               component={(props: any) => <Notifications {...props} />}
             />
             <NavStackScreen
-              name={"contacts"}
+              name="contacts"
               component={(props: any) => <Contacts {...props} />}
             />
             <NavStackScreen
-              name={"contact-requests"}
+              name="contact-requests"
               component={(props: any) => <ContactRequests {...props} />}
             />
             <NavStackScreen
-              name={"contact-requests-sent"}
+              name="contact-requests-sent"
               component={(props: any) => <ContactRequests {...props} />}
             />
           </NavStackEphemeral>
@@ -167,7 +184,7 @@ const getGroupedNotifications = (notifications: EnrichedNotification[]) => {
   const sortedNotifications = notifications
     .slice()
     .sort((a, b) =>
-      new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime() ? -1 : 1
+      new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime() ? 1 : -1
     );
   for (let i = 0; i < sortedNotifications.length; i++) {
     const date = formatDate(new Date(sortedNotifications[i].timestamp));
@@ -190,21 +207,43 @@ const getGroupedNotifications = (notifications: EnrichedNotification[]) => {
 
 export function Notifications() {
   const { isXs } = useBreakpoints();
+  const nav = isXs ? useNavigation() : null;
+  const authenticatedUser = useAuthenticatedUser();
   const [openDrawer, setOpenDrawer] = isXs
     ? [false, () => {}]
     : useState(false);
 
-  const [_unreadCount, setUnreadCount] = useRecoilState(unreadCount);
+  const [, setUnreadCount] = useRecoilState(unreadCount);
 
   const notifications: EnrichedNotification[] = useRecentNotifications({
     limit: 50,
     offset: 0,
+    uuid: authenticatedUser?.uuid ?? "",
   });
 
   useEffect(() => {
-    const sortedNotifications = notifications
-      .slice()
-      .sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1));
+    if (isXs) {
+      nav!.setOptions({
+        headerTitle: "Notifications",
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    const allNotifications = notifications
+        .slice();
+    const uniqueNotifications = allNotifications.sort((a, b) =>
+        new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime()
+            ? -1
+            : 1
+    ).filter((x, index) => (x.xnft_id !== "friend_requests" || (
+        allNotifications.map(y => y.body).indexOf(x.body) === index
+    )))
+    const sortedNotifications = uniqueNotifications.sort((a, b) =>
+        new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime()
+          ? -1
+          : 1
+      );
     const latestNotification =
       sortedNotifications[sortedNotifications.length - 1];
     if (latestNotification && latestNotification.id) {
@@ -216,6 +255,16 @@ export function Notifications() {
         }),
       });
     }
+    fetch(`${BACKEND_API_URL}/notifications/seen`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        notificationIds: notifications
+          .filter((x) => !x.viewed)
+          .map(({ id }) => id),
+      }),
+    });
+
     setUnreadCount(0);
   }, [notifications, setUnreadCount]);
 
@@ -232,32 +281,30 @@ export function Notifications() {
           groupedNotifications={groupedNotifications}
         />
       </Suspense>
-      {!isXs && (
-        <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-          <div style={{ height: "100%" }}>
-            <NavStackEphemeral
-              initialRoute={{ name: "root" }}
-              options={() => ({ title: "Notifications" })}
-              navButtonLeft={
-                <CloseButton onClick={() => setOpenDrawer(false)} />
+      {!isXs ? <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+        <div style={{ height: "100%" }}>
+          <NavStackEphemeral
+            initialRoute={{ name: "root" }}
+            options={() => ({ title: "Notifications" })}
+            navButtonLeft={
+              <CloseButton onClick={() => setOpenDrawer(false)} />
               }
             >
-              <NavStackScreen
-                name={"root"}
-                component={(props: any) => <Contacts {...props} />}
+            <NavStackScreen
+              name="root"
+              component={(props: any) => <Contacts {...props} />}
               />
-              <NavStackScreen
-                name={"contact-requests"}
-                component={(props: any) => <ContactRequests {...props} />}
+            <NavStackScreen
+              name="contact-requests"
+              component={(props: any) => <ContactRequests {...props} />}
               />
-              <NavStackScreen
-                name={"contact-requests-sent"}
-                component={(props: any) => <ContactRequests {...props} />}
+            <NavStackScreen
+              name="contact-requests-sent"
+              component={(props: any) => <ContactRequests {...props} />}
               />
-            </NavStackEphemeral>
-          </div>
-        </WithDrawer>
-      )}
+          </NavStackEphemeral>
+        </div>
+      </WithDrawer> : null}
     </>
   );
 }
@@ -313,45 +360,43 @@ export function NotificationList({
   const theme = useCustomTheme();
 
   return groupedNotifications.length > 0 ? (
-    <>
-      <div
-        style={{
+    <div
+      style={{
           paddingBottom: "16px",
         }}
       >
-        {groupedNotifications.map(({ date, notifications }) => (
-          <div
-            style={{
+      {groupedNotifications.map(({ date, notifications }) => (
+        <div
+          style={{
               marginLeft: "16px",
               marginRight: "16px",
               marginTop: "16px",
             }}
           >
-            <div style={{ color: "#99A4B4", padding: 10 }}>{date}</div>
-            <List
-              style={{
+          <BubbleTopLabel text={date} />
+          <List
+            style={{
                 paddingTop: 0,
                 paddingBottom: 0,
                 borderRadius: "12px",
                 border: `${theme.custom.colors.borderFull}`,
               }}
             >
-              <div>
-                {notifications.map((notification: any, idx: number) => (
-                  <NotificationListItem
-                    key={idx}
-                    notification={notification}
-                    isFirst={idx === 0}
-                    isLast={idx === notifications.length - 1}
-                    onOpenDrawer={onOpenDrawer}
+            <div>
+              {notifications.map((notification: any, idx: number) => (
+                <NotificationListItem
+                  key={idx}
+                  notification={notification}
+                  isFirst={idx === 0}
+                  isLast={idx === notifications.length - 1}
+                  onOpenDrawer={onOpenDrawer}
                   />
                 ))}
-              </div>
-            </List>
-          </div>
+            </div>
+          </List>
+        </div>
         ))}
-      </div>
-    </>
+    </div>
   ) : (
     <NoNotificationsLabel minimize={false} />
   );
@@ -365,9 +410,9 @@ const getTimeStr = (timestamp: number) => {
   if (elapsedTimeSeconds / 60 < 60) {
     const min = Math.floor(elapsedTimeSeconds / 60);
     if (min === 1) {
-      return "1 minute";
+      return "1 min";
     } else {
-      return `${min} minutes`;
+      return `${min} mins`;
     }
   }
 
@@ -383,7 +428,7 @@ const getTimeStr = (timestamp: number) => {
   if (days === 1) {
     return `1 day`;
   }
-  return `${days} day`;
+  return `${days} days`;
 };
 
 function NotificationListItem({
@@ -403,6 +448,19 @@ function NotificationListItem({
   if (notification.xnft_id === "friend_requests") {
     return (
       <FriendRequestListItem
+        title="Friend request"
+        notification={notification}
+        isFirst={isFirst}
+        isLast={isLast}
+        onOpenDrawer={onOpenDrawer}
+      />
+    );
+  }
+
+  if (notification.xnft_id === "friend_requests_accept") {
+    return (
+      <FriendRequestListItem
+        title="Friend request accepted"
         notification={notification}
         isFirst={isFirst}
         isLast={isLast}
@@ -423,7 +481,9 @@ function NotificationListItem({
         paddingBottom: "10px",
         display: "flex",
         height: "68px",
-        backgroundColor: theme.custom.colors.nav,
+        backgroundColor: !notification.viewed
+          ? theme.custom.colors.unreadBackground
+          : theme.custom.colors.nav,
         borderBottom: isLast
           ? undefined
           : `solid 1pt ${theme.custom.colors.border}`,
@@ -456,10 +516,89 @@ function NotificationListItem({
             </Typography>
           </div>
         </div>
-        <div className={classes.time}>{getTimeStr(notification.timestamp)}</div>
+        <div>
+          <div className={classes.time}>
+            {getTimeStr(notification.timestamp)}
+          </div>
+        </div>
       </div>
     </ListItem>
   );
+}
+
+function AcceptRejectRequest({ userId }: { userId: string }) {
+  const friendshipValue = useFriendship({ userId });
+  const { uuid } = useUser();
+  const setFriendshipValue = useUpdateFriendships();
+  const [inProgress, setInProgress] = useState(false);
+
+  if (friendshipValue?.remoteRequested && !friendshipValue?.areFriends) {
+    return (
+      <div style={{ display: "flex", marginTop: 5 }}>
+        <SuccessButton
+          disabled={inProgress}
+          label="Accept"
+          style={{
+            marginRight: 8,
+            height: 32,
+            width: "inherit",
+            paddingLeft: 10,
+            paddingRight: 10,
+            borderRadius: 6,
+          }}
+          onClick={async (e: any) => {
+            e.stopPropagation();
+            setInProgress(true);
+            await sendFriendRequest({ to: userId, sendRequest: true });
+            await updateFriendshipIfExists(uuid, userId, {
+              requested: 0,
+              areFriends: 1,
+            });
+            await setFriendshipValue({
+              userId: userId,
+              friendshipValue: {
+                requested: false,
+                areFriends: true,
+                remoteRequested: false,
+              },
+            });
+            setInProgress(false);
+          }}
+        />
+        <DangerButton
+          disabled={inProgress}
+          style={{
+            height: 32,
+            width: "inherit",
+            paddingLeft: 10,
+            paddingRight: 10,
+            borderRadius: 6,
+          }}
+          label="Reject"
+          onClick={async (e: any) => {
+            e.stopPropagation();
+            setInProgress(true);
+            await sendFriendRequest({ to: userId, sendRequest: false });
+            await updateFriendshipIfExists(uuid, userId, {
+              requested: 0,
+              areFriends: 0,
+              remoteRequested: 0,
+            });
+            await setFriendshipValue({
+              userId: userId,
+              friendshipValue: {
+                requested: false,
+                areFriends: false,
+                remoteRequested: false,
+              },
+            });
+            setInProgress(false);
+          }}
+        />
+      </div>
+    );
+  }
+  return <div />;
 }
 
 function parseJson(body: string) {
@@ -475,16 +614,21 @@ function FriendRequestListItem({
   isFirst,
   isLast,
   onOpenDrawer,
+  title,
 }: {
   notification: EnrichedNotification;
   isFirst: boolean;
   isLast: boolean;
   onOpenDrawer?: () => void;
+  title: string;
 }) {
   const { isXs } = useBreakpoints();
-  const nav = isXs ? useNavStack() : undefined;
+  const nav = isXs ? useNavigation() : undefined;
   const user = useUserMetadata({
     remoteUserId: parseJson(notification.body).from,
+  });
+  const friendshipValue = useFriendship({
+    userId: parseJson(notification.body).from,
   });
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -500,11 +644,12 @@ function FriendRequestListItem({
         paddingTop: "10px",
         paddingBottom: "10px",
         display: "flex",
-        height: "68px",
-        backgroundColor: theme.custom.colors.nav,
+        backgroundColor: !notification.viewed
+          ? theme.custom.colors.unreadBackground
+          : theme.custom.colors.nav,
         borderBottom: isLast
           ? undefined
-          : `solid 1pt ${theme.custom.colors.border}`,
+          : `solid 1pt ${theme.custom.colors.border1}`,
         ...isFirstLastListItemStyle(isFirst, isLast, 12),
       }}
     >
@@ -516,7 +661,7 @@ function FriendRequestListItem({
           alignItems: "center",
         }}
       >
-        <div style={{ flex: 1, display: "flex" }}>
+        <div style={{ flex: 1, display: "flex", alignItems: "flex-start" }}>
           <div
             style={{
               display: "flex",
@@ -526,21 +671,24 @@ function FriendRequestListItem({
           >
             <NotificationListItemIcon image={user?.image} />
           </div>
-          <div>
-            <Typography className={classes.txSig}>Contact request</Typography>
+          <div style={{ width: "100%" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <div>
+                <Typography className={classes.txSig}>{title}</Typography>
+              </div>
+              <div className={classes.time}>
+                {getTimeStr(notification.timestamp)}
+              </div>
+            </div>
             <Typography className={classes.txBody}>@{user.username}</Typography>
+            <AcceptRejectRequest userId={parseJson(notification.body).from} />
           </div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-end",
-          }}
-          className={classes.time}
-        >
-          {getTimeStr(notification.timestamp)}
-          <span>View</span>
         </div>
       </div>
     </ListItem>
@@ -569,10 +717,10 @@ function NoNotificationsLabel({ minimize }: { minimize: boolean }) {
     >
       <EmptyState
         icon={(props: any) => <NotificationsIcon {...props} />}
-        title={"No Notifications"}
+        title="No Notifications"
         subtitle={"You don't have any notifications yet."}
-        buttonText={"Browse the xNFT Library"}
-        onClick={() => window.open("https://xnft.gg")}
+        buttonText="Browse the xNFT Library"
+        onClick={() => window.open(XNFT_GG_LINK)}
         innerStyle={{
           marginBottom: minimize !== true ? "64px" : 0, // Tab height offset.
         }}

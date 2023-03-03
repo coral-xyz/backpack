@@ -4,7 +4,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { MoreHoriz } from "@mui/icons-material";
 
 import { WalletAddress } from "../../../../common";
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 import { ImportTypeBadge } from "../../../../common/WalletList";
 
 export const WalletListItem: React.FC<{
@@ -27,7 +27,7 @@ export const WalletListItem: React.FC<{
   onClick,
 }) => {
   const theme = useCustomTheme();
-  const nav = useNavStack();
+  const nav = useNavigation();
   return (
     <ListItem
       button
@@ -73,18 +73,16 @@ export const WalletListItem: React.FC<{
           maxWidth: "75px",
         }}
       />
-      {type && (
-        <div
-          style={{
+      {type ? <div
+        style={{
             display: "flex",
             justifyContent: "center",
             flexDirection: "column",
             marginLeft: "4px",
           }}
         >
-          <ImportTypeBadge type={type} />
-        </div>
-      )}
+        <ImportTypeBadge type={type} />
+      </div> : null}
     </ListItem>
   );
 };

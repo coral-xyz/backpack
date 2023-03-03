@@ -14,7 +14,7 @@ import { PublicKey } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
 import { atomFamily, selectorFamily } from "recoil";
 
-import type { TokenData, TokenNativeData } from "../../types";
+import type { TokenDataWithBalance, TokenDataWithPrice } from "../../types";
 import { solanaPricesForIds } from "../prices";
 
 import { solanaConnectionUrl } from "./preferences";
@@ -83,6 +83,9 @@ export const customSplTokenAccounts = atomFamily({
   }),
 });
 
+/**
+ * Loads all the token accounts for fungible tokens for the given public key.
+ */
 export const solanaFungibleTokenAccounts = selectorFamily<
   Map<string, SolanaTokenAccountWithKeyString>,
   {
@@ -99,6 +102,10 @@ export const solanaFungibleTokenAccounts = selectorFamily<
     },
 });
 
+/**
+ * Loads all the token accounts for non fungible tokens for the given public
+ * key.
+ */
 export const solanaNftTokenAccounts = selectorFamily<
   Map<string, SolanaTokenAccountWithKeyString>,
   {
@@ -117,6 +124,10 @@ export const solanaNftTokenAccounts = selectorFamily<
     },
 });
 
+/**
+ * Loads NFT metadata from token URIs for all the NFT accounts on the given
+ * public key.
+ */
 export const solanaNftUriData = selectorFamily<
   Map<string, SplNftMetadataString>,
   {
@@ -147,6 +158,10 @@ export const solanaNftUriData = selectorFamily<
     },
 });
 
+/**
+ * Loads token metadata from token URIs for all the token accounts on the given
+ * public key.
+ */
 export const solanaFungibleTokenUriData = selectorFamily<
   Map<string, SplNftMetadataString>,
   {
@@ -167,11 +182,11 @@ export const solanaFungibleTokenUriData = selectorFamily<
       const { connection } = get(anchorContext);
       const { fts } = get(customSplTokenAccounts({ connectionUrl, publicKey }));
       const { fungibleTokens, fungibleTokenMetadata } = fts;
-      const nftMetadata = await connection.customSplMetadataUri(
+      const metadata = await connection.customSplMetadataUri(
         fungibleTokens,
         fungibleTokenMetadata
       );
-      return new Map(nftMetadata);
+      return new Map(metadata);
     },
 });
 
@@ -202,11 +217,10 @@ export const solanaTokenAccountsMap = selectorFamily<
       const _nftTokenAccounts = get(
         solanaNftTokenAccounts({ connectionUrl, publicKey })
       );
-      const resp = _fungibleTokenAccounts.get(tokenAddress);
-      if (resp) {
-        return resp;
-      }
-      return _nftTokenAccounts.get(tokenAddress);
+      return (
+        _fungibleTokenAccounts.get(tokenAddress) ||
+        _nftTokenAccounts.get(tokenAddress)
+      );
     },
 });
 
@@ -228,7 +242,7 @@ export const solanaFungibleTokenAccountKeys = selectorFamily<
 });
 
 export const solanaFungibleTokenNativeBalance = selectorFamily<
-  TokenNativeData | null,
+  TokenDataWithBalance | null,
   { tokenAddress: string; publicKey: string }
 >({
   key: "solanaFungibleTokenNativeBalance",
@@ -332,7 +346,7 @@ export const solanaTokenMint = selectorFamily<
 });
 
 export const solanaFungibleTokenBalance = selectorFamily<
-  TokenData | null,
+  TokenDataWithPrice | null,
   { tokenAddress: string; publicKey: string }
 >({
   key: "solanaTokenBalance",

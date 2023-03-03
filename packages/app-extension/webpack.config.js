@@ -7,6 +7,7 @@ const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const fs = require("fs");
 
 const EXTENSION_NAME =
   process.env.NODE_ENV === "development" ? "(DEV) Backpack" : "Backpack";
@@ -33,6 +34,17 @@ const {
       dir: "dev",
       devServer: {
         // watchFiles: ['src/**/*', 'webpack.config.js'],
+        host: "localhost",
+        port: 9997,
+        server: fs.existsSync("localhost.pem")
+          ? {
+              type: "https",
+              options: {
+                key: "localhost-key.pem",
+                cert: "localhost.pem",
+              },
+            }
+          : {},
         compress: false,
         static: {
           directory: path.join(__dirname, "../dev"),
@@ -142,6 +154,9 @@ const options = {
     ],
   },
   resolve: {
+    alias: {
+      "react-native$": "react-native-web",
+    },
     extensions: fileExtensions
       .map((extension) => "." + extension)
       .concat([".js", ".jsx", ".ts", ".tsx", ".css"]),

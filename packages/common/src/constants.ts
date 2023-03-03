@@ -106,8 +106,10 @@ export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD =
   "ui-rpc-method-blockchain-keyrings-add";
 export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ =
   "ui-rpc-method-blockchain-keyrings-read";
-export const UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR =
-  "ui-rpc-method-find-signed-public-key-path";
+export const UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS =
+  "ui-rpc-method-find-server-public-key-conflicts";
+export const UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR =
+  "ui-rpc-method-find-wallet-descriptor";
 export const UI_RPC_METHOD_KEY_IS_COLD_UPDATE =
   "ui-rpc-method-key-is-cold-update";
 export const UI_RPC_METHOD_KEYNAME_READ = "ui-rpc-method-keyname-read";
@@ -118,6 +120,10 @@ export const UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_READ =
   "ui-rpc-method-auto-lock-settings-read";
 export const UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_UPDATE =
   "ui-rpc-method-auto-lock-settings-update";
+export const UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH =
+  "ui-rpc-method-keyring-read-next-derivation-path";
+export const UI_RPC_METHOD_KEYRING_IMPORT_WALLET =
+  "ui-rpc-method-keyring-import-wallet";
 export const UI_RPC_METHOD_KEYRING_DERIVE_WALLET =
   "ui-rpc-method-keyring-derive";
 export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC =
@@ -125,7 +131,9 @@ export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC =
 export const UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY =
   "ui-rpc-method-export-secret-key";
 export const UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY =
-  "ui-rpc-method-keyring-import-wallet";
+  "ui-rpc-method-keyring-import-secret-key";
+export const UI_RPC_METHOD_KEYRING_HAS_MNEMONIC =
+  "ui-rpc-method-keyring-has-mnemonic";
 export const UI_RPC_METHOD_KEYRING_KEY_DELETE = "ui-rpc-method-keyring-delete";
 export const UI_RPC_METHOD_KEYRING_RESET = "ui-rpc-method-keyring-reset";
 export const UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD =
@@ -148,8 +156,6 @@ export const UI_RPC_METHOD_KEYRING_STORE_STATE =
   "ui-rpc-method-keyring-store-state";
 export const UI_RPC_METHOD_KEYRING_STORE_UNLOCK =
   "ui-rpc-method-keyring-store-unlock";
-export const UI_RPC_METHOD_KEYRING_TYPE_READ =
-  "ui-rpc-method-keyring-type-read";
 export const UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC =
   "ui-rpc-method-validate-mnemonic";
 export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
@@ -282,6 +288,8 @@ export const NOTIFICATION_KEYNAME_UPDATE = "notification-keyname-update";
 export const NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED =
   "notification-keyring-active-blockchain-updated";
 export const NOTIFICATION_KEYRING_CREATED = "notification-keyring-created";
+export const NOTIFICATION_KEYRING_IMPORTED_WALLET =
+  "notification-keyring-imported-wallet";
 export const NOTIFICATION_KEYRING_DERIVED_WALLET =
   "notification-keyring-derived-wallet";
 export const NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY =
@@ -343,6 +351,8 @@ export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
   "notification-solana-explorer-updated";
 export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
   "notification-solana-spl-tokens-did-update";
+export const NOTIFICATION_USER_ACCOUNT_AUTHENTICATED =
+  "notification-user-account-authenticated";
 export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED =
   "notification-user-account-public-keys-updated";
 export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED =
@@ -609,8 +619,15 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     id: "nokiamon",
     name: "Nokiamon",
     image:
-      "https://files.slack.com/files-pri/T0353BWC561-F04KG1AKQ4D/logo-baku.png",
+      "https://madlist-images.s3.us-west-2.amazonaws.com/nokiamon_pfp_1675332500467.png",
     collectionId: "3YysdoK6ZcJFEL5QJxccY3q8AcTUFpahgbp4HFgBtjNF",
+  },
+  {
+    id: "backpack-chat-internal",
+    name: "Backpack Team",
+    image: "https://one.xnfts.dev/BackpackTeamNFT.gif",
+
+    collectionId: "BjN9u6zneFrjzuC7LH3eLaGC9FgYLnwQJMGA1xzVBKsj",
   },
   {
     id: "bonkz",
@@ -619,8 +636,39 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
       "https://bafybeiecuemcqxzuv4ti4sgffjlwvrqedr7golppwrbbu2u5yttglath3m.ipfs.nftstorage.link/0.png",
     collectionId: "ajM4QBHtZBBRcMqqq9gawdHK28GXcb2yeRs6WBnqhay",
   },
+  {
+    id: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
+    name: "The Madlist",
+    image: "https://www.madlads.com/mad_lads_logo.svg",
+    collectionId: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
+  },
+  {
+    id: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
+    name: "The Madlist",
+    image: "https://www.madlads.com/mad_lads_logo.svg",
+    collectionId: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
+  },
 ];
 
 // Load a fixed amount of public keys for various actions, e.g. import list,
 // searching mnemonics
 export const LOAD_PUBLIC_KEY_AMOUNT = 20;
+
+export const DEFAULT_PUBKEY_STR = "11111111111111111111111111111111";
+
+export const MOBILE_CHANNEL_LOGS = "mobile-logs";
+
+export const IMAGE_PROXY_URL = "https://d1a7965zcx2lcc.cloudfront.net";
+
+export const BACKPACK_TEAM = [
+  "ee7ce804-44b2-4360-bfbb-28e14cd0499b",
+  "29c33e60-d54a-4fe4-80e9-4bbfcc6c69b8",
+  "446a5f21-35b9-4248-970f-7b4558f57e21",
+  "6ecf7d82-095d-4fa3-9830-3567b286066d",
+  "68daeda7-2c20-49ea-9dab-f7a3ebd45ab5",
+  "931fac1c-0fb1-4e0a-9119-0a9112506db1",
+  "47dd7685-8eb1-4d4e-bbab-b7790eebb2b9",
+  "b580347f-2ec8-4600-8af1-0f5982dc93e1",
+  "b6615f78-b096-4d50-b247-05db6fe74ea4",
+  "7c01a3a2-dc39-4369-afb8-0dd2189412fc",
+];

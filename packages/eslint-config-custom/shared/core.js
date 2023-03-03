@@ -172,7 +172,7 @@ module.exports = {
             position: "before",
           },
           {
-            pattern: "@{hooks,components,lib}/**",
+            pattern: "~{hooks,components,lib,screens,navigation}/**",
             group: "builtin",
             position: "after",
           },
@@ -213,7 +213,7 @@ module.exports = {
     //       // Packages `@coral-xyz` related packages come first.
     //       ["^(@|coral-xyz)(/.*|$)"],
     //       // Internal packages.
-    //       ["^(@|components|hooks|lib)(/.*|$)"],
+    //       ["^(~|components|hooks|lib)(/.*|$)"],
     //       // Side effect imports.
     //       ["^\\u0000"],
     //       // Parent imports. Put `..` last.

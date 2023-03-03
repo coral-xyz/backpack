@@ -44,6 +44,33 @@ export const legacyBip44ChangeIndexed = (
   return new BIPPath.fromPathArray(path).toString();
 };
 
+/**
+ * m/44'/60'/0'/0
+ */
+export const ethereumIndexed = (index: number) => {
+  const coinType = getCoinType(Blockchain.ETHEREUM);
+  const path = [44 + HARDENING, coinType, 0 + HARDENING, 0, index];
+  return new BIPPath.fromPathArray(path).toString();
+};
+
+/**
+ * m/44'/60'/0'
+ */
+export const legacyLedgerIndexed = (index: number) => {
+  const coinType = getCoinType(Blockchain.ETHEREUM);
+  const path = [44 + HARDENING, coinType, 0 + HARDENING, index];
+  return new BIPPath.fromPathArray(path).toString();
+};
+
+/**
+ * m/44'/60'
+ */
+export const legacyLedgerLiveIndexed = (index: number) => {
+  const coinType = getCoinType(Blockchain.ETHEREUM);
+  const path = [44 + HARDENING, coinType, index];
+  return new BIPPath.fromPathArray(path).toString();
+};
+
 export const legacySolletIndexed = (index: number) => {
   const coinType = 501 + HARDENING;
   const path = [coinType, index + HARDENING, 0, 0];
@@ -63,8 +90,7 @@ export const getIndexedPath = (
     accountIndex + HARDENING,
     0 + HARDENING,
   ];
-  // If walletIndex is 0, this is the same as legacyBip44ChangeIndexed
-  if (walletIndex > 0) path.push(walletIndex - 1 + HARDENING);
+  if (walletIndex >= 0) path.push(walletIndex + HARDENING);
   return new BIPPath.fromPathArray(path).toString();
 };
 
@@ -90,9 +116,6 @@ export const legacyBip44ChangeRecoveryPaths = (blockchain: Blockchain) => {
   );
 };
 
-//
-// New derivation path scheme
-//
 export const getAccountRecoveryPaths = (
   blockchain: Blockchain,
   accountIndex: number
@@ -105,26 +128,51 @@ export const getAccountRecoveryPaths = (
 //
 // Get a sensible account and wallet index from a list of derivation paths.
 //
-export const derivationPathsToIndexes = (
+export const nextIndicesFromPaths = (
   derivationPaths: Array<string>
 ): { accountIndex: number; walletIndex: number } => {
+  if (derivationPaths.length === 0) {
+    return { accountIndex: 0, walletIndex: 0 };
+  }
   const pathArrays = derivationPaths.map((x) =>
     BIPPath.fromString(x).toPathArray()
   );
+
+  function isDefined<T>(argument: T | undefined): argument is T {
+    return argument !== undefined;
+  }
+
+  const accountIndices = pathArrays
+    .map((p: Array<number> | undefined) => (p ? p[2] : undefined))
+    .filter(isDefined);
+
+  // If there is no account indices we likely have `m/44/501'`
+  if (accountIndices.length == 0) {
+    return { accountIndex: 0, walletIndex: -1 };
+  }
+
   const accountIndex = Math.max(
-    ...pathArrays
-      // Account index should be the element at index 2, this is not true for
-      //  deprecated sollet paths but they are 0 anyway
-      .map((p: Array<number>) => (p[2] ? p[2] : 0))
-      .map((i: number) => (i >= HARDENING ? i - HARDENING : i))
+    ...accountIndices.map((i: number) => (i >= HARDENING ? i - HARDENING : i))
   );
-  const walletIndex = Math.max(
-    ...pathArrays
-      // Account index should be the element at index 2, this is not true for
-      // deprecated sollet paths but they are 0 anyway
-      .map((p: Array<number>) => (p[4] ? p[4] + 1 : 0))
-      .map((i: number) => (i >= HARDENING ? i - HARDENING : i))
+
+  const pathsForMaxAccountIndex = pathArrays.filter(
+    (p) => p[2] === Math.max(...accountIndices) // Maintain hardening to filter
   );
+
+  const walletIndices = pathsForMaxAccountIndex
+    .map((p: Array<number> | undefined) => (p ? p[4] : undefined))
+    .filter(isDefined);
+
+  // If there are no wallet indices we likely have `m/44/501'/0'/0'`
+  if (walletIndices.length === 0) {
+    return { accountIndex: 0, walletIndex: 0 };
+  }
+
+  const walletIndex =
+    Math.max(
+      ...walletIndices.map((i: number) => (i >= HARDENING ? i - HARDENING : i))
+    ) + 1; // Increment by 1 to get the next wallet index that should be used
+
   return { accountIndex, walletIndex };
 };
 
@@ -158,6 +206,18 @@ export const getRecoveryPaths = (blockchain: Blockchain) => {
 
   // Legacy imported accounts (m/44/501'/0' and m/44/501'/0'/{0...n})
   paths = paths.concat(legacyBip44ChangeRecoveryPaths(blockchain));
+
+  if (blockchain === Blockchain.ETHEREUM) {
+    paths = paths.concat(
+      [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(ethereumIndexed)
+    );
+    paths = paths.concat(
+      [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(legacyLedgerIndexed)
+    );
+    paths = paths.concat(
+      [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(legacyLedgerLiveIndexed)
+    );
+  }
 
   // TODO
   // How many accounts should be searched before giving up? It's possible that

@@ -1,6 +1,10 @@
-import React from "react";
-import { NAV_COMPONENT_MESSAGE_PROFILE, parseMessage } from "@coral-xyz/common";
-import { useNavigation } from "@coral-xyz/recoil";
+import {
+  NAV_COMPONENT_MESSAGE_CHAT,
+  NAV_COMPONENT_MESSAGE_PROFILE,
+  NEW_COLORS,
+  parseMessage,
+} from "@coral-xyz/common";
+import { useDarkMode, useNavigation, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
 import Linkify from "linkify-react";
@@ -11,14 +15,34 @@ export function ParsedMessage({ message }) {
   const { push } = useNavigation();
   const parts = parseMessage(message);
   const theme = useCustomTheme();
-  const { usersMetadata } = useChatContext();
+  const { usersMetadata, type } = useChatContext();
+  const { uuid } = useUser();
+  const isDarkMode = useDarkMode();
   return (
-    <div style={{ display: "flex" }}>
-      {parts.map((part, i) => {
+    <>
+      {parts.map((part) => {
         if (part.type === "text") {
           return (
             <span style={{ wordBreak: "break-word" }}>
-              <Linkify options={{ target: "_blank" }}>{part.value}</Linkify>
+              {/*<Linkify*/}
+              {/*  options={{*/}
+              {/*    target: "_blank",*/}
+              {/*    render: {*/}
+              {/*      url: ({ attributes, content }) => {*/}
+              {/*        return (*/}
+              {/*          <a*/}
+              {/*            {...attributes}*/}
+              {/*            style={{ color: theme.custom.colors.linkColor }}*/}
+              {/*          >*/}
+              {/*            {content}*/}
+              {/*          </a>*/}
+              {/*        );*/}
+              {/*      },*/}
+              {/*    },*/}
+              {/*  }}*/}
+              {/*>*/}
+              {part.value}
+              {/*</Linkify>*/}
             </span>
           );
         } else {
@@ -26,28 +50,35 @@ export function ParsedMessage({ message }) {
           if (user) {
             const handle = `@${user.username}`;
             return (
-              <div
+              <span
                 onClick={() => {
+                  if (user.uuid === uuid) {
+                    return;
+                  }
                   push({
-                    title: handle,
-                    componentId: NAV_COMPONENT_MESSAGE_PROFILE,
+                    title: `@${user.username}`,
+                    componentId:
+                      type === "individual"
+                        ? NAV_COMPONENT_MESSAGE_PROFILE
+                        : NAV_COMPONENT_MESSAGE_CHAT,
                     componentProps: {
                       userId: user.uuid,
+                      title: `@${user.username}`,
                     },
                   });
                 }}
                 style={{
                   cursor: "pointer",
-                  display: "flex",
-                  color: theme.custom.colors.blue,
+                  color:
+                    user.colorIndex || user.colorIndex === 0
+                      ? NEW_COLORS[user.colorIndex || 0][
+                          isDarkMode ? "dark" : "light"
+                        ]
+                      : user.color,
                 }}
               >
-                <div>
-                  {i > 0 && <>&nbsp;</>}
-                  {handle}
-                  {i < parts.length - 1 && <>&nbsp;</>}
-                </div>
-              </div>
+                {handle}
+              </span>
             );
           } else {
             return (
@@ -64,6 +95,6 @@ export function ParsedMessage({ message }) {
           }
         }
       })}
-    </div>
+    </>
   );
 }

@@ -9,7 +9,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { Check } from "@mui/icons-material";
 
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";
 
 import { changeNetwork } from "./common";
@@ -18,10 +18,10 @@ export function PreferencesEthereumConnection() {
   const { close } = useDrawerContext();
   const background = useBackgroundClient();
   const currentUrl = useEthereumConnectionUrl();
-  const nav = useNavStack();
+  const nav = useNavigation();
 
   useEffect(() => {
-    nav.setTitle("RPC Connection");
+    nav.setOptions({ headerTitle: "RPC Connection" });
   }, [nav]);
 
   const menuItems = {

@@ -103,11 +103,11 @@ export class BlockchainKeyring {
   }
 
   public exportSecretKey(pubkey: string): string {
-    let sk = this.hdKeyring!.exportSecretKey(pubkey);
+    let sk = this.hdKeyring?.exportSecretKey(pubkey);
     if (sk) {
       return sk;
     }
-    sk = this.importedKeyring!.exportSecretKey(pubkey);
+    sk = this.importedKeyring?.exportSecretKey(pubkey);
     if (sk) {
       return sk;
     }
@@ -116,6 +116,14 @@ export class BlockchainKeyring {
 
   public mnemonic(): string {
     return this.hdKeyring!.mnemonic;
+  }
+
+  public nextDerivationPath(keyring: "hd" | "ledger") {
+    if (keyring === "hd") {
+      return this.hdKeyring!.nextDerivationPath();
+    } else {
+      return this.ledgerKeyring!.nextDerivationPath();
+    }
   }
 
   public async deriveNextKey(): Promise<{

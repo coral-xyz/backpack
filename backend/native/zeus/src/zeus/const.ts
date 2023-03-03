@@ -183,6 +183,51 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_friendships_set_input",
     where: "auth_friendships_bool_exp",
   },
+  auth_invitations: {
+    data: {},
+  },
+  auth_invitations_bool_exp: {
+    _and: "auth_invitations_bool_exp",
+    _not: "auth_invitations_bool_exp",
+    _or: "auth_invitations_bool_exp",
+    created_at: "timestamptz_comparison_exp",
+    data: "jsonb_comparison_exp",
+    id: "uuid_comparison_exp",
+    user: "auth_users_bool_exp",
+  },
+  auth_invitations_constraint: "enum" as const,
+  auth_invitations_insert_input: {
+    created_at: "timestamptz",
+    data: "jsonb",
+    id: "uuid",
+    user: "auth_users_obj_rel_insert_input",
+  },
+  auth_invitations_obj_rel_insert_input: {
+    data: "auth_invitations_insert_input",
+    on_conflict: "auth_invitations_on_conflict",
+  },
+  auth_invitations_on_conflict: {
+    constraint: "auth_invitations_constraint",
+    update_columns: "auth_invitations_update_column",
+    where: "auth_invitations_bool_exp",
+  },
+  auth_invitations_order_by: {
+    created_at: "order_by",
+    data: "order_by",
+    id: "order_by",
+    user: "auth_users_order_by",
+  },
+  auth_invitations_select_column: "enum" as const,
+  auth_invitations_stream_cursor_input: {
+    initial_value: "auth_invitations_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  auth_invitations_stream_cursor_value_input: {
+    created_at: "timestamptz",
+    data: "jsonb",
+    id: "uuid",
+  },
+  auth_invitations_update_column: "enum" as const,
   auth_notification_cursor_bool_exp: {
     _and: "auth_notification_cursor_bool_exp",
     _not: "auth_notification_cursor_bool_exp",
@@ -277,6 +322,7 @@ export const AllTypesProps: Record<string, any> = {
     title: "String_comparison_exp",
     username: "String_comparison_exp",
     uuid: "String_comparison_exp",
+    viewed: "Boolean_comparison_exp",
     xnft_id: "String_comparison_exp",
   },
   auth_notifications_constraint: "enum" as const,
@@ -297,6 +343,7 @@ export const AllTypesProps: Record<string, any> = {
     title: "order_by",
     username: "order_by",
     uuid: "order_by",
+    viewed: "order_by",
     xnft_id: "order_by",
   },
   auth_notifications_pk_columns_input: {},
@@ -316,6 +363,11 @@ export const AllTypesProps: Record<string, any> = {
     where: "auth_notifications_bool_exp",
   },
   auth_public_keys: {
+    user_active_publickey_mappings: {
+      distinct_on: "auth_user_active_publickey_mapping_select_column",
+      order_by: "auth_user_active_publickey_mapping_order_by",
+      where: "auth_user_active_publickey_mapping_bool_exp",
+    },
     user_nfts: {
       distinct_on: "auth_user_nfts_select_column",
       order_by: "auth_user_nfts_order_by",
@@ -369,6 +421,8 @@ export const AllTypesProps: Record<string, any> = {
     id: "Int_comparison_exp",
     public_key: "String_comparison_exp",
     user: "auth_users_bool_exp",
+    user_active_publickey_mappings:
+      "auth_user_active_publickey_mapping_bool_exp",
     user_id: "uuid_comparison_exp",
     user_nfts: "auth_user_nfts_bool_exp",
     user_nfts_aggregate: "auth_user_nfts_aggregate_bool_exp",
@@ -376,6 +430,8 @@ export const AllTypesProps: Record<string, any> = {
   auth_public_keys_constraint: "enum" as const,
   auth_public_keys_insert_input: {
     user: "auth_users_obj_rel_insert_input",
+    user_active_publickey_mappings:
+      "auth_user_active_publickey_mapping_arr_rel_insert_input",
     user_id: "uuid",
     user_nfts: "auth_user_nfts_arr_rel_insert_input",
   },
@@ -408,6 +464,8 @@ export const AllTypesProps: Record<string, any> = {
     id: "order_by",
     public_key: "order_by",
     user: "auth_users_order_by",
+    user_active_publickey_mappings_aggregate:
+      "auth_user_active_publickey_mapping_aggregate_order_by",
     user_id: "order_by",
     user_nfts_aggregate: "auth_user_nfts_aggregate_order_by",
   },
@@ -480,6 +538,104 @@ export const AllTypesProps: Record<string, any> = {
     _inc: "auth_stripe_onramp_inc_input",
     _set: "auth_stripe_onramp_set_input",
     where: "auth_stripe_onramp_bool_exp",
+  },
+  auth_user_active_publickey_mapping_aggregate_order_by: {
+    avg: "auth_user_active_publickey_mapping_avg_order_by",
+    count: "order_by",
+    max: "auth_user_active_publickey_mapping_max_order_by",
+    min: "auth_user_active_publickey_mapping_min_order_by",
+    stddev: "auth_user_active_publickey_mapping_stddev_order_by",
+    stddev_pop: "auth_user_active_publickey_mapping_stddev_pop_order_by",
+    stddev_samp: "auth_user_active_publickey_mapping_stddev_samp_order_by",
+    sum: "auth_user_active_publickey_mapping_sum_order_by",
+    var_pop: "auth_user_active_publickey_mapping_var_pop_order_by",
+    var_samp: "auth_user_active_publickey_mapping_var_samp_order_by",
+    variance: "auth_user_active_publickey_mapping_variance_order_by",
+  },
+  auth_user_active_publickey_mapping_arr_rel_insert_input: {
+    data: "auth_user_active_publickey_mapping_insert_input",
+    on_conflict: "auth_user_active_publickey_mapping_on_conflict",
+  },
+  auth_user_active_publickey_mapping_avg_order_by: {
+    public_key_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_bool_exp: {
+    _and: "auth_user_active_publickey_mapping_bool_exp",
+    _not: "auth_user_active_publickey_mapping_bool_exp",
+    _or: "auth_user_active_publickey_mapping_bool_exp",
+    blockchain: "String_comparison_exp",
+    public_key: "auth_public_keys_bool_exp",
+    public_key_id: "Int_comparison_exp",
+    user_id: "uuid_comparison_exp",
+  },
+  auth_user_active_publickey_mapping_constraint: "enum" as const,
+  auth_user_active_publickey_mapping_inc_input: {},
+  auth_user_active_publickey_mapping_insert_input: {
+    public_key: "auth_public_keys_obj_rel_insert_input",
+    user_id: "uuid",
+  },
+  auth_user_active_publickey_mapping_max_order_by: {
+    blockchain: "order_by",
+    public_key_id: "order_by",
+    user_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_min_order_by: {
+    blockchain: "order_by",
+    public_key_id: "order_by",
+    user_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_on_conflict: {
+    constraint: "auth_user_active_publickey_mapping_constraint",
+    update_columns: "auth_user_active_publickey_mapping_update_column",
+    where: "auth_user_active_publickey_mapping_bool_exp",
+  },
+  auth_user_active_publickey_mapping_order_by: {
+    blockchain: "order_by",
+    public_key: "auth_public_keys_order_by",
+    public_key_id: "order_by",
+    user_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_pk_columns_input: {
+    user_id: "uuid",
+  },
+  auth_user_active_publickey_mapping_select_column: "enum" as const,
+  auth_user_active_publickey_mapping_set_input: {
+    user_id: "uuid",
+  },
+  auth_user_active_publickey_mapping_stddev_order_by: {
+    public_key_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_stddev_pop_order_by: {
+    public_key_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_stddev_samp_order_by: {
+    public_key_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_stream_cursor_input: {
+    initial_value:
+      "auth_user_active_publickey_mapping_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  auth_user_active_publickey_mapping_stream_cursor_value_input: {
+    user_id: "uuid",
+  },
+  auth_user_active_publickey_mapping_sum_order_by: {
+    public_key_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_update_column: "enum" as const,
+  auth_user_active_publickey_mapping_updates: {
+    _inc: "auth_user_active_publickey_mapping_inc_input",
+    _set: "auth_user_active_publickey_mapping_set_input",
+    where: "auth_user_active_publickey_mapping_bool_exp",
+  },
+  auth_user_active_publickey_mapping_var_pop_order_by: {
+    public_key_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_var_samp_order_by: {
+    public_key_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_variance_order_by: {
+    public_key_id: "order_by",
   },
   auth_user_nfts_aggregate_bool_exp: {
     count: "auth_user_nfts_aggregate_bool_exp_count",
@@ -608,6 +764,7 @@ export const AllTypesProps: Record<string, any> = {
     created_at: "timestamptz_comparison_exp",
     dropzone_public_key: "auth_public_keys_bool_exp",
     id: "uuid_comparison_exp",
+    invitation: "auth_invitations_bool_exp",
     public_keys: "auth_public_keys_bool_exp",
     public_keys_aggregate: "auth_public_keys_aggregate_bool_exp",
     referred_users: "auth_users_bool_exp",
@@ -617,6 +774,7 @@ export const AllTypesProps: Record<string, any> = {
   },
   auth_users_constraint: "enum" as const,
   auth_users_insert_input: {
+    invitation: "auth_invitations_obj_rel_insert_input",
     invitation_id: "uuid",
     public_keys: "auth_public_keys_arr_rel_insert_input",
     referred_users: "auth_users_arr_rel_insert_input",
@@ -647,6 +805,7 @@ export const AllTypesProps: Record<string, any> = {
     created_at: "order_by",
     dropzone_public_key_aggregate: "auth_public_keys_aggregate_order_by",
     id: "order_by",
+    invitation: "auth_invitations_order_by",
     public_keys_aggregate: "auth_public_keys_aggregate_order_by",
     referred_users_aggregate: "auth_users_aggregate_order_by",
     referrer: "auth_users_order_by",
@@ -926,6 +1085,14 @@ export const AllTypesProps: Record<string, any> = {
       object: "auth_friendships_insert_input",
       on_conflict: "auth_friendships_on_conflict",
     },
+    insert_auth_invitations: {
+      objects: "auth_invitations_insert_input",
+      on_conflict: "auth_invitations_on_conflict",
+    },
+    insert_auth_invitations_one: {
+      object: "auth_invitations_insert_input",
+      on_conflict: "auth_invitations_on_conflict",
+    },
     insert_auth_notification_cursor: {
       objects: "auth_notification_cursor_insert_input",
       on_conflict: "auth_notification_cursor_on_conflict",
@@ -965,6 +1132,14 @@ export const AllTypesProps: Record<string, any> = {
     insert_auth_stripe_onramp_one: {
       object: "auth_stripe_onramp_insert_input",
       on_conflict: "auth_stripe_onramp_on_conflict",
+    },
+    insert_auth_user_active_publickey_mapping: {
+      objects: "auth_user_active_publickey_mapping_insert_input",
+      on_conflict: "auth_user_active_publickey_mapping_on_conflict",
+    },
+    insert_auth_user_active_publickey_mapping_one: {
+      object: "auth_user_active_publickey_mapping_insert_input",
+      on_conflict: "auth_user_active_publickey_mapping_on_conflict",
     },
     insert_auth_user_nfts: {
       objects: "auth_user_nfts_insert_input",
@@ -1095,6 +1270,19 @@ export const AllTypesProps: Record<string, any> = {
     update_auth_stripe_onramp_many: {
       updates: "auth_stripe_onramp_updates",
     },
+    update_auth_user_active_publickey_mapping: {
+      _inc: "auth_user_active_publickey_mapping_inc_input",
+      _set: "auth_user_active_publickey_mapping_set_input",
+      where: "auth_user_active_publickey_mapping_bool_exp",
+    },
+    update_auth_user_active_publickey_mapping_by_pk: {
+      _inc: "auth_user_active_publickey_mapping_inc_input",
+      _set: "auth_user_active_publickey_mapping_set_input",
+      pk_columns: "auth_user_active_publickey_mapping_pk_columns_input",
+    },
+    update_auth_user_active_publickey_mapping_many: {
+      updates: "auth_user_active_publickey_mapping_updates",
+    },
     update_auth_users: {
       _set: "auth_users_set_input",
       where: "auth_users_bool_exp",
@@ -1164,6 +1352,14 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_friendships_bool_exp",
     },
     auth_friendships_by_pk: {},
+    auth_invitations: {
+      distinct_on: "auth_invitations_select_column",
+      order_by: "auth_invitations_order_by",
+      where: "auth_invitations_bool_exp",
+    },
+    auth_invitations_by_pk: {
+      id: "uuid",
+    },
     auth_notification_cursor: {
       distinct_on: "auth_notification_cursor_select_column",
       order_by: "auth_notification_cursor_order_by",
@@ -1204,6 +1400,14 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_stripe_onramp_bool_exp",
     },
     auth_stripe_onramp_by_pk: {},
+    auth_user_active_publickey_mapping: {
+      distinct_on: "auth_user_active_publickey_mapping_select_column",
+      order_by: "auth_user_active_publickey_mapping_order_by",
+      where: "auth_user_active_publickey_mapping_bool_exp",
+    },
+    auth_user_active_publickey_mapping_by_pk: {
+      user_id: "uuid",
+    },
     auth_user_nfts: {
       distinct_on: "auth_user_nfts_select_column",
       order_by: "auth_user_nfts_order_by",
@@ -1320,6 +1524,18 @@ export const AllTypesProps: Record<string, any> = {
       cursor: "auth_friendships_stream_cursor_input",
       where: "auth_friendships_bool_exp",
     },
+    auth_invitations: {
+      distinct_on: "auth_invitations_select_column",
+      order_by: "auth_invitations_order_by",
+      where: "auth_invitations_bool_exp",
+    },
+    auth_invitations_by_pk: {
+      id: "uuid",
+    },
+    auth_invitations_stream: {
+      cursor: "auth_invitations_stream_cursor_input",
+      where: "auth_invitations_bool_exp",
+    },
     auth_notification_cursor: {
       distinct_on: "auth_notification_cursor_select_column",
       order_by: "auth_notification_cursor_order_by",
@@ -1379,6 +1595,18 @@ export const AllTypesProps: Record<string, any> = {
     auth_stripe_onramp_stream: {
       cursor: "auth_stripe_onramp_stream_cursor_input",
       where: "auth_stripe_onramp_bool_exp",
+    },
+    auth_user_active_publickey_mapping: {
+      distinct_on: "auth_user_active_publickey_mapping_select_column",
+      order_by: "auth_user_active_publickey_mapping_order_by",
+      where: "auth_user_active_publickey_mapping_bool_exp",
+    },
+    auth_user_active_publickey_mapping_by_pk: {
+      user_id: "uuid",
+    },
+    auth_user_active_publickey_mapping_stream: {
+      cursor: "auth_user_active_publickey_mapping_stream_cursor_input",
+      where: "auth_user_active_publickey_mapping_bool_exp",
     },
     auth_user_nfts: {
       distinct_on: "auth_user_nfts_select_column",
@@ -1619,6 +1847,16 @@ export const ReturnTypes: Record<string, any> = {
   auth_friendships_variance_fields: {
     id: "Float",
   },
+  auth_invitations: {
+    created_at: "timestamptz",
+    data: "jsonb",
+    id: "uuid",
+    user: "auth_users",
+  },
+  auth_invitations_mutation_response: {
+    affected_rows: "Int",
+    returning: "auth_invitations",
+  },
   auth_notification_cursor: {
     last_read_notificaiton: "Int",
     uuid: "String",
@@ -1649,6 +1887,7 @@ export const ReturnTypes: Record<string, any> = {
     title: "String",
     username: "String",
     uuid: "String",
+    viewed: "Boolean",
     xnft_id: "String",
   },
   auth_notifications_aggregate: {
@@ -1722,6 +1961,7 @@ export const ReturnTypes: Record<string, any> = {
     id: "Int",
     public_key: "String",
     user: "auth_users",
+    user_active_publickey_mappings: "auth_user_active_publickey_mapping",
     user_id: "uuid",
     user_nfts: "auth_user_nfts",
     user_nfts_aggregate: "auth_user_nfts_aggregate",
@@ -1796,6 +2036,16 @@ export const ReturnTypes: Record<string, any> = {
     affected_rows: "Int",
     returning: "auth_stripe_onramp",
   },
+  auth_user_active_publickey_mapping: {
+    blockchain: "String",
+    public_key: "auth_public_keys",
+    public_key_id: "Int",
+    user_id: "uuid",
+  },
+  auth_user_active_publickey_mapping_mutation_response: {
+    affected_rows: "Int",
+    returning: "auth_user_active_publickey_mapping",
+  },
   auth_user_nfts: {
     blockchain: "String",
     centralized_group: "String",
@@ -1835,6 +2085,7 @@ export const ReturnTypes: Record<string, any> = {
     created_at: "timestamptz",
     dropzone_public_key: "auth_public_keys",
     id: "uuid",
+    invitation: "auth_invitations",
     public_keys: "auth_public_keys",
     public_keys_aggregate: "auth_public_keys_aggregate",
     referred_users: "auth_users",
@@ -1968,6 +2219,8 @@ export const ReturnTypes: Record<string, any> = {
     insert_auth_friend_requests_one: "auth_friend_requests",
     insert_auth_friendships: "auth_friendships_mutation_response",
     insert_auth_friendships_one: "auth_friendships",
+    insert_auth_invitations: "auth_invitations_mutation_response",
+    insert_auth_invitations_one: "auth_invitations",
     insert_auth_notification_cursor:
       "auth_notification_cursor_mutation_response",
     insert_auth_notification_cursor_one: "auth_notification_cursor",
@@ -1981,6 +2234,10 @@ export const ReturnTypes: Record<string, any> = {
     insert_auth_public_keys_one: "auth_public_keys",
     insert_auth_stripe_onramp: "auth_stripe_onramp_mutation_response",
     insert_auth_stripe_onramp_one: "auth_stripe_onramp",
+    insert_auth_user_active_publickey_mapping:
+      "auth_user_active_publickey_mapping_mutation_response",
+    insert_auth_user_active_publickey_mapping_one:
+      "auth_user_active_publickey_mapping",
     insert_auth_user_nfts: "auth_user_nfts_mutation_response",
     insert_auth_user_nfts_one: "auth_user_nfts",
     insert_auth_users: "auth_users_mutation_response",
@@ -2019,6 +2276,12 @@ export const ReturnTypes: Record<string, any> = {
     update_auth_stripe_onramp: "auth_stripe_onramp_mutation_response",
     update_auth_stripe_onramp_by_pk: "auth_stripe_onramp",
     update_auth_stripe_onramp_many: "auth_stripe_onramp_mutation_response",
+    update_auth_user_active_publickey_mapping:
+      "auth_user_active_publickey_mapping_mutation_response",
+    update_auth_user_active_publickey_mapping_by_pk:
+      "auth_user_active_publickey_mapping",
+    update_auth_user_active_publickey_mapping_many:
+      "auth_user_active_publickey_mapping_mutation_response",
     update_auth_users: "auth_users_mutation_response",
     update_auth_users_by_pk: "auth_users",
     update_auth_users_many: "auth_users_mutation_response",
@@ -2040,6 +2303,8 @@ export const ReturnTypes: Record<string, any> = {
     auth_friendships: "auth_friendships",
     auth_friendships_aggregate: "auth_friendships_aggregate",
     auth_friendships_by_pk: "auth_friendships",
+    auth_invitations: "auth_invitations",
+    auth_invitations_by_pk: "auth_invitations",
     auth_notification_cursor: "auth_notification_cursor",
     auth_notification_cursor_by_pk: "auth_notification_cursor",
     auth_notification_subscriptions: "auth_notification_subscriptions",
@@ -2052,6 +2317,9 @@ export const ReturnTypes: Record<string, any> = {
     auth_public_keys_by_pk: "auth_public_keys",
     auth_stripe_onramp: "auth_stripe_onramp",
     auth_stripe_onramp_by_pk: "auth_stripe_onramp",
+    auth_user_active_publickey_mapping: "auth_user_active_publickey_mapping",
+    auth_user_active_publickey_mapping_by_pk:
+      "auth_user_active_publickey_mapping",
     auth_user_nfts: "auth_user_nfts",
     auth_user_nfts_aggregate: "auth_user_nfts_aggregate",
     auth_user_nfts_by_pk: "auth_user_nfts",
@@ -2084,6 +2352,9 @@ export const ReturnTypes: Record<string, any> = {
     auth_friendships_aggregate: "auth_friendships_aggregate",
     auth_friendships_by_pk: "auth_friendships",
     auth_friendships_stream: "auth_friendships",
+    auth_invitations: "auth_invitations",
+    auth_invitations_by_pk: "auth_invitations",
+    auth_invitations_stream: "auth_invitations",
     auth_notification_cursor: "auth_notification_cursor",
     auth_notification_cursor_by_pk: "auth_notification_cursor",
     auth_notification_cursor_stream: "auth_notification_cursor",
@@ -2101,6 +2372,11 @@ export const ReturnTypes: Record<string, any> = {
     auth_stripe_onramp: "auth_stripe_onramp",
     auth_stripe_onramp_by_pk: "auth_stripe_onramp",
     auth_stripe_onramp_stream: "auth_stripe_onramp",
+    auth_user_active_publickey_mapping: "auth_user_active_publickey_mapping",
+    auth_user_active_publickey_mapping_by_pk:
+      "auth_user_active_publickey_mapping",
+    auth_user_active_publickey_mapping_stream:
+      "auth_user_active_publickey_mapping",
     auth_user_nfts: "auth_user_nfts",
     auth_user_nfts_aggregate: "auth_user_nfts_aggregate",
     auth_user_nfts_by_pk: "auth_user_nfts",

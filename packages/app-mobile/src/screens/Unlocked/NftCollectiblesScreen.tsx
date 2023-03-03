@@ -30,16 +30,15 @@ import {
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
-import { WalletPickerButton } from "@screens/Unlocked/components/Balances";
-import { TableHeader } from "@screens/Unlocked/components/index";
+import { WalletPickerButton } from "~screens/Unlocked/components/Balances";
+import { TableHeader } from "~screens/Unlocked/components/index";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
-import { NFTCard, BaseCard } from "@components/NFTCard";
-import { Screen, EmptyState, Margin, CopyButtonIcon } from "@components/index";
-import { useTheme } from "@hooks/useTheme";
+import { NFTCard, BaseCard } from "~components/NFTCard";
+import { Screen, EmptyState, Margin, CopyButtonIcon } from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
 import { NftDetailScreen, NftDetailSendScreen } from "./NftDetailScreen";
-const ONE_COLLECTION_ID = "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj";
 
 type NftCollectionsWithId = {
   publicKey: string;
@@ -73,18 +72,6 @@ function NftCollectionCard({
   );
 
   const onPressItem = () => {
-    if (collection.metadataCollectionId === ONE_COLLECTION_ID) {
-      onPress({
-        type: "NFT_ONE_COLLECTION",
-        data: {
-          title: "ONE Holders Chat",
-          collectionId: collection.metadataCollectionId,
-          nftMint: collectionDisplayNft?.mint,
-        },
-      });
-      return;
-    }
-
     if (collection.itemIds.length === 1) {
       if (!collectionDisplayNft.name || !collectionDisplayNft.id) {
         throw new Error("invalid NFT data");

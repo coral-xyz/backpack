@@ -36,7 +36,7 @@ export function Loading(props: any) {
           size={props.size ?? 48}
           className={classes.loadingIndicator}
           style={props.iconStyle}
-          thickness={props.thickness ?? 6}
+          thickness={props.thickness ?? 4}
           classes={{ circle: classes.circle }}
         />
       </>

@@ -7,11 +7,11 @@ import { UI_RPC_METHOD_ACTIVE_USER_UPDATE } from "@coral-xyz/common";
 import { useAllUsers, useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
-import { SettingsRow } from "@screens/Unlocked/Settings/components/SettingsRow";
+import { SettingsRow } from "~screens/Unlocked/Settings/components/SettingsRow";
 
-import { ExpandCollapseIcon, IconCheckmark } from "@components/Icon";
-import { Avatar, Margin, RoundedContainerGroup } from "@components/index";
-import { useTheme } from "@hooks/index";
+import { ExpandCollapseIcon, IconCheckmark } from "~components/Icon";
+import { Avatar, Margin, RoundedContainerGroup } from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
 export function AccountDropdownHeader(): JSX.Element {
   const theme = useTheme();

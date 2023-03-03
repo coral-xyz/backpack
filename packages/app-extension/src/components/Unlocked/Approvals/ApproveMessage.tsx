@@ -1,9 +1,12 @@
+import { isKeyCold } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 import * as anchor from "@project-serum/anchor";
+import { useRecoilValue } from "recoil";
 
 import { TextField } from "../../../plugin/Component";
 
+import { Cold } from "./ApproveTransaction";
 import { WithApproval } from ".";
 
 const useStyles = styles((theme) => ({
@@ -42,6 +45,7 @@ export function ApproveMessage({
 }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
+  const _isKeyCold = useRecoilValue(isKeyCold(wallet));
 
   let displayMessage;
   try {
@@ -60,6 +64,10 @@ export function ApproveMessage({
     await onCompletion(false);
   };
 
+  if (_isKeyCold) {
+    return <Cold origin={origin!} />;
+  }
+
   return (
     <WithApproval
       origin={origin}
@@ -76,7 +84,7 @@ export function ApproveMessage({
           rootClass={classes.textFieldInput}
           value={displayMessage}
           rows={8}
-          disabled={true}
+          disabled
           inputProps={{
             style: {
               background: theme.custom.colors.nav,

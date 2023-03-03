@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { RichMentionsContext, RichMentionsInput } from "react-rich-mentions";
 import { useUsersMetadata } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -6,7 +6,7 @@ import { CircularProgress } from "@mui/material";
 
 import { useChatContext } from "../ChatContext";
 
-const useStyles = styles((themes) => ({
+const useStyles = styles(() => ({
   input: {
     "&:hover": {
       cursor: "text",
@@ -14,23 +14,41 @@ const useStyles = styles((themes) => ({
   },
 }));
 
-export function MessageInput({ setEmojiMenuOpen }: { setEmojiMenuOpen: any }) {
-  const defaultValue = "";
+const messageInputElementId = "backpack-message-input";
+
+export function MessageInput({
+  setPluginMenuOpen,
+  autoFocus = true,
+}: {
+  setPluginMenuOpen: any;
+  autoFocus?: boolean;
+}) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const { type, remoteUsername, activeReply } = useChatContext();
   const { activeSearch } = useContext(RichMentionsContext);
 
+  useEffect(() => {
+    if (autoFocus) {
+      const messageElement = document.getElementById(messageInputElementId);
+
+      if (messageElement) {
+        messageElement.focus();
+      }
+    }
+  }, [autoFocus]);
+
   return (
     <div style={{ width: "100%", padding: 10 }}>
       <RichMentionsInput
+        id={messageInputElementId}
         onKeyDown={(event) => {
           if (event.key === "Enter" && activeSearch) {
             event.stopPropagation();
           }
         }}
         className={classes.input}
-        onClick={() => setEmojiMenuOpen(false)}
+        onClick={() => setPluginMenuOpen(false)}
         placeholder={
           type === "individual"
             ? `Message @${remoteUsername}`
@@ -41,9 +59,9 @@ export function MessageInput({ setEmojiMenuOpen }: { setEmojiMenuOpen: any }) {
         style={{
           outline: "0px solid transparent",
           color: theme.custom.colors.fontColor,
-          fontSize: "15px",
+          fontSize: "14px",
         }}
-        defaultValue={defaultValue}
+        defaultValue=""
       />
     </div>
   );
@@ -59,21 +77,44 @@ export const CustomAutoComplete = () => {
 
   const users = useUsersMetadata({ remoteUserIds: results.map((r) => r.id) });
 
+  // if there are no users to show in mentions
+  if (activeSearch && !loading && shownResults?.length === 0) {
+    return null;
+  }
+
   return (
-    <div>
+    <div
+      style={{
+        width: 180,
+        position: "absolute",
+        bottom: 44,
+        boxShadow: theme.custom.colors.boxShadow,
+        background: theme.custom.colors.bg3,
+        paddingTop: activeSearch && 8,
+        paddingBottom: activeSearch && 8,
+        borderRadius: 8,
+        backdropFilter: "blur(20px)",
+        overflow: "hidden",
+      }}
+    >
       {shownResults.map((item, index) => (
         <button
           style={{
-            padding: 8,
+            paddingLeft: 10,
+            paddingRight: 10,
+            paddingTop: 8,
+            paddingBottom: 8,
             display: "flex",
             cursor: "pointer",
             width: "100%",
             background:
-              index === cursor ? "#1264a3" : theme.custom.colors.background,
-            color: index === cursor ? "#fff" : theme.custom.colors.fontColor,
+              index === cursor
+                ? theme.custom.colors.listItemHover
+                : "transparent",
+            color: theme.custom.colors.fontColor,
             border: "none",
-            boxShadow: `${theme.custom.colors.boxShadow}`,
             textAlign: "left",
+            alignItems: "center",
           }}
           key={item.ref}
           onClick={() => {
@@ -81,10 +122,10 @@ export const CustomAutoComplete = () => {
           }}
         >
           <img
-            style={{ height: 20, borderRadius: 10, marginRight: 5 }}
+            style={{ height: 24, borderRadius: 12, marginRight: 8 }}
             src={users[item.id]?.image}
           />
-          <div style={{ fontSize: 15 }}>{item.name}</div>
+          <div style={{ fontSize: 14 }}>@{item.name}</div>
         </button>
       ))}
       {activeSearch !== "" &&
@@ -102,9 +143,7 @@ export const CustomAutoComplete = () => {
           {" "}
           <CircularProgress size={20} />{" "}
         </div>
-      ) : (
-        <></>
-      )}
+      ) : null}
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { enrichMessages , getHistoryUpdates } from "@coral-xyz/backend-common";
 import type {
   Message,
   MessageWithMetadata,
@@ -6,11 +7,7 @@ import type {
 import express from "express";
 
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
-import {
-  getChats,
-  getChatsFromParentGuids,
-  updateSecureTransfer,
-} from "../../db/chats";
+import { getChats, updateSecureTransfer } from "../../db/chats";
 import {
   updateLastReadGroup,
   updateLastReadIndividual,
@@ -34,6 +31,7 @@ router.post(
     // @ts-ignore
     const room: string = req.query.room;
 
+    //TODO: add validateMessageOwnership here
     if (type === "individual") {
       await updateLastReadIndividual(
         user1,
@@ -87,72 +85,29 @@ router.get("/", extractUserId, ensureHasRoomAccess, async (req, res) => {
     limit,
     clientGeneratedUuid,
   });
-  const enrichedChats = await enrichMessages(chats, room, type);
+  const enrichedChats = await enrichMessages(chats, room, type, false);
   res.json({ chats: enrichedChats });
 });
 
-export const enrichMessages = async (
-  messages: Message[],
-  room: string,
-  type: SubscriptionType
-): Promise<MessageWithMetadata[]> => {
-  const replyIds: string[] = messages.map(
-    (m) => m.parent_client_generated_uuid || ""
+router.get("/updates", extractUserId, ensureHasRoomAccess, async (req, res) => {
+  // @ts-ignore
+  const room: string = req.query.room;
+  // @ts-ignore
+  const type: SubscriptionType = req.query.type;
+  // @ts-ignore
+  const lastSeen: number = parseInt(req.query.lastSeenUpdate || 0);
+  // @ts-ignore
+  const updatesSinceTimestamp = parseInt(req.query.updatesSinceTimestamp);
+
+  const updates = await getHistoryUpdates(
+    room,
+    lastSeen,
+    updatesSinceTimestamp
   );
 
-  const uniqueReplyIds = replyIds
-    .filter((x, index) => replyIds.indexOf(x) === index)
-    .filter((x) => x);
-
-  const replyToMessageMappings: Map<
-    string,
-    {
-      parent_message_text: string;
-      parent_message_author_uuid: string;
-    }
-  > = new Map<
-    string,
-    {
-      parent_message_text: string;
-      parent_message_author_uuid: string;
-    }
-  >();
-
-  if (uniqueReplyIds.length) {
-    const parentReplies = await getChatsFromParentGuids(
-      room.toString(),
-      type,
-      uniqueReplyIds
-    );
-    uniqueReplyIds.forEach((replyId) => {
-      const reply = parentReplies.find(
-        (x) => x.client_generated_uuid === replyId
-      );
-      if (reply) {
-        replyToMessageMappings.set(replyId, {
-          parent_message_text: reply.message,
-          parent_message_author_uuid: reply.uuid || "",
-        });
-      } else {
-        console.log(`reply with id ${replyId} not found`);
-      }
-    });
-  }
-
-  return messages.map((message) => {
-    return {
-      ...message,
-      parent_message_text: message.parent_client_generated_uuid
-        ? replyToMessageMappings.get(message.parent_client_generated_uuid || "")
-            ?.parent_message_text
-        : undefined,
-      parent_message_author_uuid: message.parent_client_generated_uuid
-        ? replyToMessageMappings.get(message.parent_client_generated_uuid || "")
-            ?.parent_message_author_uuid
-        : undefined,
-      created_at: new Date(message.created_at).getTime().toString(),
-    };
+  res.json({
+    updates,
   });
-};
+});
 
 export default router;

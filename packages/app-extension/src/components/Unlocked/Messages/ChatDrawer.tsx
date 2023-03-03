@@ -3,31 +3,26 @@ import { useLocation } from "react-router-dom";
 import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { UserList } from "@coral-xyz/message-sdk";
+import { LocalImage } from "@coral-xyz/react-common";
 import {
-  useActiveSolanaWallet,
   useDarkMode,
   useDecodedSearchParams,
+  useUser,
 } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { Drawer, Typography } from "@mui/material";
+import { createStyles, makeStyles } from "@mui/styles";
 
 import { SearchBox } from "./SearchBox";
 import { UserListSkeleton } from "./UserListSkeleton";
-
 const LIMIT = 25;
 let debouncedTimer = 0;
 
-export const useStyles = (isDark: boolean) =>
-  styles((theme) => ({
+const useStyles = makeStyles((theme: any) =>
+  createStyles({
     container: {
       padding: 0,
       color: theme.custom.colors.fontColor2,
-    },
-    icon: {
-      color: theme.custom.colors.icon,
-      marginRight: 10,
-      height: "24px",
-      width: "24px",
     },
     horizontalCenter: {
       justifyContent: "center",
@@ -42,32 +37,20 @@ export const useStyles = (isDark: boolean) =>
       padding: 10,
       height: "80vh",
     },
-    drawer: {
-      "& .MuiDrawer-paper": {
-        background: isDark
-          ? theme.custom.colors.background
-          : theme.custom.colors.nav,
-        height: "90vh",
-        borderTopLeftRadius: "15px",
-        borderTopRightRadius: "15px",
-        "&::-webkit-scrollbar": {
-          display: "none",
-        },
-      },
-    },
-  }));
+  })
+);
 
 export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
   const isDark = useDarkMode();
-  const classes = useStyles(isDark)();
+  const classes = useStyles({ isDark });
   const { props, title }: any = useDecodedSearchParams();
-  const { publicKey } = useActiveSolanaWallet();
   const [members, setMembers] = useState<RemoteUserData[]>([]);
   const [searchFilter, setSearchFilter] = useState("");
   const [offset, setOffset] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [staticMembers, setStaticMembers] = useState<RemoteUserData[]>([]);
+  const { username } = useUser();
   const theme = useCustomTheme();
   const pathname = useLocation().pathname;
 
@@ -86,7 +69,7 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
         pathname === "/messages/groupchat" ? props.id : props.collectionId
       }&mint=${
         props.nftMint
-      }&publicKey=${publicKey}&type=collection&limit=${LIMIT}&offset=${offset}&prefix=${prefix}`
+      }&type=collection&limit=${LIMIT}&offset=${offset}&prefix=${prefix}`
     );
     const json = await response.json();
     setMembers(json.members);
@@ -94,7 +77,7 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
     setLoading(false);
     setStaticMembers((members) => {
       if (members.length === 0) {
-        return json.members.slice(0, 4);
+        return json.members.slice(0, 3);
       }
       return members;
     });
@@ -107,19 +90,45 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
 
   return (
     <Drawer
-      className={classes.drawer}
-      anchor={"bottom"}
-      open={true}
+      sx={{
+        "& .MuiDrawer-paper": {
+          background: isDark
+            ? theme.custom.colors.background
+            : theme.custom.colors.nav,
+          height: "90vh",
+          borderTopLeftRadius: "15px",
+          borderTopRightRadius: "15px",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+        },
+      }}
+      anchor="bottom"
+      open
       onClose={() => setOpenDrawer(false)}
     >
       <div className={classes.drawerContainer}>
         <div className={classes.horizontalCenter}>
-          <Typography variant={"h5"} className={classes.title}>
+          <Typography variant="h5" className={classes.title}>
             {props.title || title}
           </Typography>
         </div>
-        {count !== 0 && <MembersList count={count} members={staticMembers} />}
+        {count !== 0 ? (
+          <MembersList
+            count={count}
+            members={[
+              ...staticMembers.map((x) => ({
+                image: x.image,
+              })),
+              {
+                image: `https://swr.xnfts.dev/avatars/${username}`,
+              },
+            ]}
+          />
+        ) : null}
         <SearchBox
+          searchFilter={searchFilter}
+          setSearchFilter={setSearchFilter}
           placeholder="Search username"
           onChange={(prefix: string) => {
             setSearchFilter(prefix);
@@ -149,7 +158,7 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
             {offset !== 0 ? "Prev" : ""}
           </div>
           {/* TODO: clean up this logic */}
-          {members.length === LIMIT && (
+          {members.length === LIMIT ? (
             <div
               style={{
                 padding: 5,
@@ -164,41 +173,39 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
             >
               Next
             </div>
-          )}
+          ) : null}
         </div>
 
-        {loading && <UserListSkeleton />}
-        {!loading && (
-          <>
-            <div className={classes.container}>
-              {members.filter((x) =>
-                x.username
-                  ?.toLocaleLowerCase()
-                  .includes(searchFilter?.toLocaleLowerCase())
-              ).length !== 0 ? (
-                <UserList
-                  style={{
-                    border: "none",
-                  }}
-                  itemStyle={{
-                    backgroundColor: isDark
-                      ? theme.custom.colors.background
-                      : undefined,
-                    border: "none",
-                  }}
-                  setMembers={setMembers}
-                  users={members.filter((x) =>
-                    x.username
-                      ?.toLocaleLowerCase()
-                      .includes(searchFilter?.toLocaleLowerCase())
-                  )}
-                />
-              ) : (
-                <></>
-              )}
-            </div>
-          </>
-        )}
+        {loading ? <UserListSkeleton /> : null}
+        {!loading ? (
+          <div className={classes.container}>
+            {members.filter((x) =>
+              x.username
+                ?.toLocaleLowerCase()
+                .includes(searchFilter?.toLocaleLowerCase())
+            ).length !== 0 ? (
+              <UserList
+                style={{
+                  border: "none",
+                }}
+                itemStyle={{
+                  backgroundColor: isDark
+                    ? theme.custom.colors.background
+                    : undefined,
+                  border: "none",
+                }}
+                setMembers={setMembers}
+                users={members.filter((x) =>
+                  x.username
+                    ?.toLocaleLowerCase()
+                    .includes(searchFilter?.toLocaleLowerCase())
+                )}
+              />
+            ) : (
+              <div />
+            )}
+          </div>
+        ) : null}
       </div>
     </Drawer>
   );
@@ -209,7 +216,7 @@ function MembersList({
   members,
 }: {
   count: number;
-  members: RemoteUserData[];
+  members: { image: string }[];
 }) {
   const theme = useCustomTheme();
   const countText = count >= 1000 ? `${(count / 1000).toFixed(1)}k` : count;
@@ -223,9 +230,14 @@ function MembersList({
       }}
     >
       {members.map((member, idx) => (
-        <img
+        <LocalImage
           key={idx}
           src={member.image}
+          loadingStyles={{
+            height: 30,
+            width: 30,
+            borderRadius: "50%",
+          }}
           style={{
             border: `solid 2px ${theme.custom.colors.nav}`,
             borderRadius: "50%",

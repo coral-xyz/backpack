@@ -1,12 +1,24 @@
-import type { CHAT_MESSAGES, SUBSCRIBE, UNSUBSCRIBE } from "./fromServer";
+import type { Blockchain } from "../types";
+
+import type { CHAT_MESSAGES, DELETE_MESSAGE,SUBSCRIBE, UNSUBSCRIBE  } from "./fromServer";
+import { BarterOffers } from "./index";
 
 export type SubscriptionType = "collection" | "individual";
 export type SubscriptionMessage = {
   type: SubscriptionType;
   room: string;
 };
+export type BarterState = "in_progress" | "cancelled" | "executed";
 
-export type MessageKind = "gif" | "text" | "secure-transfer" | "media";
+export type MessageKind =
+  | "gif"
+  | "text"
+  | "secure-transfer"
+  | "media"
+  | "transaction"
+  | "barter"
+  | "barter-request"
+  | "nft-sticker";
 
 export type MessageMetadata =
   | {
@@ -14,11 +26,25 @@ export type MessageMetadata =
       counter: string;
       escrow: string;
       final_txn_signature?: string;
-      current_state: "pending" | "cancelled" | "redeemed";
+      current_state: "pending" | ".cancelled" | "redeemed";
     }
   | {
       media_kind: "image" | "video";
       media_link: string;
+    }
+  | {
+      contract_address: string;
+    }
+  | {
+      on_chain_state: string;
+      barter_id: number;
+      state: BarterState;
+    }
+  | {
+      mint: string;
+    }
+  | {
+      barter_id: string;
     };
 
 export type SendMessagePayload = {
@@ -37,6 +63,14 @@ export type ToServer =
   | {
       type: typeof CHAT_MESSAGES;
       payload: SendMessagePayload;
+    }
+  | {
+      type: typeof DELETE_MESSAGE;
+      payload: {
+        client_generated_uuid: string;
+        room: string;
+        type: SubscriptionType;
+      };
     }
   | {
       type: typeof SUBSCRIBE;
@@ -66,6 +100,10 @@ export interface RemoteUserData {
   username: string;
   searchedSolPubKey?: string; // Returns a public key if it is searched for
   searchedEthPubKey?: string;
+  public_keys: {
+    blockchain: Blockchain;
+    publicKey: string;
+  }[];
 }
 
 export interface CollectionChatData {

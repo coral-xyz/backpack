@@ -10,8 +10,12 @@ import {
   SOL_NATIVE_MINT,
   Solana,
 } from "@coral-xyz/common";
-import { PrimaryButton } from "@coral-xyz/react-common";
-import { useSolanaCtx, useSolanaTokenMint } from "@coral-xyz/recoil";
+import { LocalImage, PrimaryButton, UserIcon } from "@coral-xyz/react-common";
+import {
+  useAvatarUrl,
+  useSolanaCtx,
+  useSolanaTokenMint,
+} from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   findMintStatePk,
@@ -45,6 +49,7 @@ const useStyles = styles((theme) => ({
 export function SendSolanaConfirmationCard({
   token,
   destinationAddress,
+  destinationUser,
   amount,
   onComplete,
 }: {
@@ -56,8 +61,12 @@ export function SendSolanaConfirmationCard({
     mint?: string;
   };
   destinationAddress: string;
+  destinationUser?: {
+    username: string;
+    image: string;
+  };
   amount: BigNumber;
-  onComplete?: () => void;
+  onComplete?: (txSig?: any) => void;
 }) {
   const [txSignature, setTxSignature] = useState<string | null>(null);
   const solanaCtx = useSolanaCtx();
@@ -164,7 +173,7 @@ export function SendSolanaConfirmationCard({
           : solanaCtx.commitment
       );
       setCardType("complete");
-      if (onComplete) onComplete();
+      if (onComplete) onComplete(txSig);
     } catch (err: any) {
       logger.error("unable to confirm", err);
       setError(err.toString());
@@ -178,6 +187,7 @@ export function SendSolanaConfirmationCard({
         <ConfirmSendSolana
           token={token}
           destinationAddress={destinationAddress}
+          destinationUser={destinationUser}
           amount={amount}
           onConfirm={onConfirm}
         />
@@ -192,7 +202,7 @@ export function SendSolanaConfirmationCard({
       ) : cardType === "complete" ? (
         <Sending
           blockchain={Blockchain.SOLANA}
-          isComplete={true}
+          isComplete
           amount={amount}
           token={token}
           signature={txSignature!}
@@ -214,6 +224,7 @@ export function ConfirmSendSolana({
   destinationAddress,
   amount,
   onConfirm,
+  destinationUser,
 }: {
   token: {
     logo?: string;
@@ -223,6 +234,10 @@ export function ConfirmSendSolana({
   destinationAddress: string;
   amount: BigNumber;
   onConfirm: () => void;
+  destinationUser?: {
+    username: string;
+    image: string;
+  };
 }) {
   const theme = useCustomTheme();
   return (
@@ -256,7 +271,10 @@ export function ConfirmSendSolana({
           amount={amount}
           token={token}
         />
-        <ConfirmSendSolanaTable destinationAddress={destinationAddress} />
+        <ConfirmSendSolanaTable
+          destinationUser={destinationUser}
+          destinationAddress={destinationAddress}
+        />
       </div>
       <PrimaryButton
         onClick={() => onConfirm()}
@@ -270,18 +288,23 @@ export function ConfirmSendSolana({
 
 const ConfirmSendSolanaTable: React.FC<{
   destinationAddress: string;
-}> = ({ destinationAddress }) => {
+  destinationUser?: { username: string; image: string };
+}> = ({ destinationAddress, destinationUser }) => {
   const theme = useCustomTheme();
   const classes = useStyles();
   const solanaCtx = useSolanaCtx();
+  const avatarUrl = useAvatarUrl();
 
   const menuItems = {
     From: {
       onClick: () => {},
       detail: (
-        <Typography>
-          {walletAddressDisplay(solanaCtx.walletPublicKey)}
-        </Typography>
+        <div style={{ display: "flex" }}>
+          <UserIcon marginRight={5} image={avatarUrl} size={24} />
+          <Typography>
+            {walletAddressDisplay(solanaCtx.walletPublicKey)}
+          </Typography>
+        </div>
       ),
       classes: { root: classes.confirmTableListItem },
       button: false,
@@ -289,7 +312,10 @@ const ConfirmSendSolanaTable: React.FC<{
     To: {
       onClick: () => {},
       detail: (
-        <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
+        <div style={{ display: "flex" }}>
+          {destinationUser ? <UserIcon marginRight={5} image={destinationUser.image} size={24} /> : null}
+          <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
+        </div>
       ),
       classes: { root: classes.confirmTableListItem },
       button: false,

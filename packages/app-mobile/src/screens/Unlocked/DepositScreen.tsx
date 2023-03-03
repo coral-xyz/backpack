@@ -17,11 +17,11 @@ import {
   ListRowSeparator,
   Margin,
   Screen,
-} from "@components";
+} from "~components/index";
 import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallets } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useBlockchainLogo, useTheme } from "@hooks";
+import { useBlockchainLogo, useTheme } from "~hooks";
 import QRCode from "react-qr-code";
 
 function BlockchainDisclaimerText({

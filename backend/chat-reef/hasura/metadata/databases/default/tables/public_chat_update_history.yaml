@@ -1,0 +1,23 @@
+table:
+  name: chat_update_history
+  schema: public
+insert_permissions:
+  - role: chat
+    permission:
+      check: {}
+      columns:
+        - id
+        - created_at
+        - client_generated_uuid
+        - type
+        - room
+select_permissions:
+  - role: chat
+    permission:
+      columns:
+        - id
+        - client_generated_uuid
+        - room
+        - type
+        - created_at
+      filter: {}

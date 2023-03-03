@@ -1,9 +1,10 @@
 import type { SubscriptionType } from "@coral-xyz/common";
-import { DEFAULT_GROUP_CHATS, parseMessage } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
+  DEFAULT_GROUP_CHATS,
+  parseMessage,
   WHITELISTED_CHAT_COLLECTIONS,
-} from "@coral-xyz/common/src/constants";
+} from "@coral-xyz/common";
 
 import { getMessages } from "./db/chats";
 import { getLatestReadMessage } from "./db/collection_messages";
@@ -135,6 +136,8 @@ export const processMessage = async ({
       );
       return;
     }
+    // Not sending group messages for now
+    return;
     const uuids = await getAllUsersInCollection(room as string);
     uuids.map(async (uuid) => {
       await Redis.getInstance().send(
@@ -227,6 +230,31 @@ export const processFriendRequest = async ({
     `New Friend request from ${
       userMetadata.find((x) => x.id === from)?.username
     }`,
+    `/popup.html#/notifications?title="Notifications"&props=%7B%7D&nav=tab`,
+    `${AVATAR_BASE_URL}/${userMetadata.find((x) => x.id === from)?.username}`
+  );
+};
+
+export const processFriendRequestAccept = async ({
+  from,
+  to,
+}: {
+  from: string;
+  to: string;
+}) => {
+  const userMetadata = await getUsersFromIds([from]);
+  await insertNotification("friend_requests_accept", to, {
+    title: "Friend request Accepted",
+    body: JSON.stringify({
+      from,
+    }),
+  });
+  await notify(
+    to,
+    `Friend request Accepted`,
+    `${
+      userMetadata.find((x) => x.id === from)?.username
+    } accepted your friend request`,
     `/popup.html#/notifications?title="Notifications"&props=%7B%7D&nav=tab`,
     `${AVATAR_BASE_URL}/${userMetadata.find((x) => x.id === from)?.username}`
   );

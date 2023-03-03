@@ -84,7 +84,7 @@ export function Token({
         blockchain={blockchain}
         address={activityAddress}
         contractAddresses={contractAddresses}
-        minimize={true}
+        minimize
         style={{ marginTop: 0 }}
       />
     </div>
@@ -173,7 +173,6 @@ export function WithHeaderButton({
             initialRoute={initialRoute}
             options={(args) => routeOptions(routes, args)}
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
-            onClose={() => setOpenDrawer(false)}
           >
             {routes.map((r: any) => (
               <NavStackScreen

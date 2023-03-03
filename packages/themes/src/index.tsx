@@ -18,7 +18,6 @@ const FONT_COLOR_3 = "#A1A1AA";
 const BRAND_COLOR = "#FFFFFF";
 const BUTTON_FONT_COLOR = FONT_COLOR;
 const BORDER_COLOR = "#393C43";
-const BORDER_COLOR_1 = "#52525B";
 const POSITIVE_COLOR = "#35A63A";
 const NEGATIVE_COLOR = "#E95050";
 const SCROLLBAR_THUMB_COLOR = "rgb(153 164 180)";
@@ -52,6 +51,12 @@ const DARK_UNREAD_BACKGROUND = "rgba(99, 96, 255, 0.1)";
 const DANGER_COLOR = "#DC2626";
 const DANGER_DARK_COLOR = "#DC2626";
 
+// Migration to colours from Figma design system
+export const LIGHT_RED_BORDER_LIGHT = "#FFEDEB";
+export const LIGHT_RED_BORDER_MED = "#FFDCD9";
+export const DARK_RED_BORDER_LIGHT = "rgba(241,50,54,0.4)";
+export const DARK_RED_BORDER_MED = "rgba(241,50,54,0.4)";
+
 type CustomColors = {
   smallTextColor: string;
   brandColor: string;
@@ -62,6 +67,7 @@ type CustomColors = {
   bg2: string;
   bg3: string;
   bg4: string;
+  invertedBg4: string;
   banner: string;
   fontColor: string;
   fontColor2: string;
@@ -84,6 +90,8 @@ type CustomColors = {
   borderColor: string;
   borderFull: string;
   borderButton: string;
+  borderRedLight: string;
+  borderRedMed: string;
   copyTooltipColor: string;
   copyTooltipTextColor: string;
   tableBorder: string;
@@ -119,11 +127,14 @@ type CustomColors = {
   unreadBackground: string;
   invertedPrimary: string;
   invertedSecondary: string;
+  invertedTertiary: string;
   avatarPopoverMenuBackground: string;
   listItemHover: string;
   walletCopyButtonHover: string;
   verified: string;
   chatFadeGradient: string;
+  chatFadeGradientStart: string;
+  linkColor: string;
 };
 
 const baseTheme = createStyles({
@@ -197,6 +208,7 @@ const DARK_COLORS: CustomColors = {
   bg2: BACKGROUND_COLOR_2,
   bg3: BACKGROUND_COLOR_0,
   bg4: "rgba(255, 255, 255, 0.2)",
+  invertedBg4: LIGHT_BACKGROUND_COLOR_0,
   nav: BACKGROUND_COLOR_1,
   fontColor: FONT_COLOR,
   fontColor2: FONT_COLOR_2,
@@ -212,6 +224,8 @@ const DARK_COLORS: CustomColors = {
   border1: BACKGROUND_COLOR_2,
   border: BACKGROUND_COLOR_1, // Don't use this.
   borderColor: BORDER_COLOR,
+  borderRedLight: DARK_RED_BORDER_LIGHT,
+  borderRedMed: DARK_RED_BORDER_MED,
   textInputBackground: BACKGROUND_COLOR_1,
   textInputBorderFull: `solid 2pt ${BACKGROUND_COLOR_1}`,
   textInputBorderFocussed: `solid 2pt ${BACKGROUND_COLOR_1}`,
@@ -255,12 +269,15 @@ const DARK_COLORS: CustomColors = {
   unreadBackground: LIGHT_UNREAD_BACKGROUND,
   invertedPrimary: "#FFFFFF",
   invertedSecondary: LIGHT_BACKGROUND_COLOR_0,
+  invertedTertiary: "white",
   avatarPopoverMenuBackground: BACKGROUND_COLOR_0,
   listItemHover: `rgba(39, 39, 42, ${HOVER_OPACITY})`,
   walletCopyButtonHover: "#18181c",
   verified: "#DFE0E5",
+  chatFadeGradientStart: "rgba(255, 255, 255, 0.04)",
   chatFadeGradient:
     "linear-gradient(180deg, rgba(255, 255, 255, 0.04) 20%, rgba(0, 0, 0, 0) 100%), #18181B",
+  linkColor: "#4C94FF",
 };
 
 const LIGHT_COLORS: CustomColors = {
@@ -274,6 +291,7 @@ const LIGHT_COLORS: CustomColors = {
   bg2: LIGHT_BACKGROUND_COLOR_2,
   bg3: LIGHT_BACKGROUND_COLOR_1,
   bg4: LIGHT_BACKGROUND_COLOR_0,
+  invertedBg4: "rgba(255, 255, 255, 0.2)",
   fontColor: LIGHT_FONT_COLOR,
   successButton: "#2ecc71",
   fontColor2: LIGHT_FONT_COLOR_2,
@@ -295,6 +313,8 @@ const LIGHT_COLORS: CustomColors = {
   borderColor: LIGHT_BORDER_COLOR_1,
   borderFull: `solid 2px ${LIGHT_BORDER_COLOR_1}`,
   borderButton: `solid 2px ${LIGHT_BORDER_COLOR_1}`,
+  borderRedLight: LIGHT_RED_BORDER_LIGHT,
+  borderRedMed: LIGHT_RED_BORDER_MED,
   copyTooltipColor: LIGHT_BRAND_COLOR,
   copyTooltipTextColor: LIGHT_BACKGROUND_COLOR_1,
   tableBorder: LIGHT_BORDER_COLOR,
@@ -331,12 +351,15 @@ const LIGHT_COLORS: CustomColors = {
   unreadBackground: DARK_UNREAD_BACKGROUND,
   invertedPrimary: "#212121",
   invertedSecondary: "rgba(255, 255, 255, 0.1)",
+  invertedTertiary: LIGHT_FONT_COLOR,
   avatarPopoverMenuBackground: LIGHT_BACKGROUND_COLOR_1,
   listItemHover: "#F8F8F9",
   walletCopyButtonHover: "#d6d6d6",
   verified: "#212938",
+  chatFadeGradientStart: "rgba(248,248,248,255)",
   chatFadeGradient:
     "linear-gradient(360deg, rgb(255, 255, 255) 20%, rgba(240, 240, 242, 0.5) 100%), #FFFFFF",
+  linkColor: "#0057EB",
 };
 
 export const darkTheme: Partial<Theme> & {

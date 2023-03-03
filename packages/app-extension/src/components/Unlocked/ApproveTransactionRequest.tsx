@@ -23,7 +23,6 @@ import {
 } from "@coral-xyz/react-common";
 import {
   isKeyCold,
-  useActivePublicKeys,
   useActiveWallet,
   useBackgroundClient,
   usePluginUrl,
@@ -118,13 +117,11 @@ export function ApproveTransactionRequest() {
   }, [request, signature]);
 
   if (!request) {
-    return <></>;
+    return null;
   }
 
   const rpcMethod = pluginUiRpcMap[request!.kind];
   const blockchain = pluginRpcBlockchainMap[request!.kind];
-
-  if (!request) return <></>;
 
   const onResolve = (signature: string) => {
     request!.resolve(signature);
@@ -162,10 +159,7 @@ export function ApproveTransactionRequest() {
       <Suspense fallback={<DisabledRequestPrompt />}>
         {_isKeyCold ? (
           <Cold
-            origin={"This xNFT"}
-            title={""}
-            wallet={publicKey}
-            onCompletion={async () => {}}
+            origin="This xNFT"
             style={{
               padding: 0,
               width: "100%",
@@ -228,7 +222,7 @@ function Request({ onConfirm, onReject, buttonsDisabled, children }: any) {
         <SecondaryButton
           disabled={buttonsDisabled}
           onClick={onReject}
-          label={"Cancel"}
+          label="Cancel"
           style={{
             marginRight: "8px",
           }}
@@ -553,7 +547,6 @@ function SignMessageRequest({
             backgroundColor: theme.custom.colors.nav,
             padding: "8px",
             borderRadius: "8px",
-            wordBreak: "break-all",
             color: theme.custom.colors.fontColor,
             border: theme.custom.colors.borderFull,
           }}
@@ -567,7 +560,7 @@ function SignMessageRequest({
 
 function DisabledRequestPrompt() {
   return (
-    <Request onConfirm={() => {}} onReject={() => {}} buttonsDisabled={true}>
+    <Request onConfirm={() => {}} onReject={() => {}} buttonsDisabled>
       <Loading />
     </Request>
   );

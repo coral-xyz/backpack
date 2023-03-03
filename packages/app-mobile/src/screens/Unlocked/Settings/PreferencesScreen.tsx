@@ -1,4 +1,4 @@
-import { Margin, RoundedContainerGroup, Screen } from "@components";
+import { Margin, RoundedContainerGroup, Screen } from "~components/index";
 import {
   BACKPACK_CONFIG_VERSION,
   BACKPACK_FEATURE_LIGHT_MODE,

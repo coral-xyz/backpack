@@ -1,4 +1,3 @@
-import type { Blockchain } from "@coral-xyz/common";
 import {
   TAB_APPS,
   TAB_BALANCES,
@@ -13,14 +12,16 @@ import type { RecoilValueReadOnly } from "recoil";
 
 import { makeUrl } from "./hooks";
 
+//
+// Client side public keys
+//
+
 export type NamedPublicKey = {
-  publicKey: string;
   name: string;
+  publicKey: string;
 };
 
-export type PublicKeyMetadata = {
-  publicKey: string;
-  name: string;
+export type PublicKeyMetadata = NamedPublicKey & {
   isCold: boolean;
 };
 
@@ -32,39 +33,49 @@ export type WalletPublicKeys = {
   };
 };
 
-export type ServerPublicKey = {
-  blockchain: Blockchain;
-  publicKey: string;
-};
+//
+// Tokens
+//
 
-export interface TokenNativeData {
+export interface TokenData {
   name: string;
   decimals: number;
-  nativeBalance: BigNumber;
-  displayBalance: string;
   ticker: string;
   logo: string;
   address: string;
+  // Mint is Solana only so is optional
   mint?: string;
 }
 
-export interface TokenData extends TokenNativeData {
+export interface TokenDataWithBalance extends TokenData {
+  nativeBalance: BigNumber;
+  displayBalance: string;
+}
+
+export interface TokenDataWithPrice extends TokenDataWithBalance {
   usdBalance: number;
   recentPercentChange: number | undefined;
   recentUsdBalanceChange: number;
   priceData: any;
 }
 
-export type TokenDisplay = {
+export type TokenDisplay = Pick<
+  TokenDataWithPrice,
+  | "name"
+  | "ticker"
+  | "logo"
+  | "displayBalance"
+  | "nativeBalance"
+  | "usdBalance"
+  | "recentUsdBalanceChange"
+  | "priceData"
+>;
+
+export interface TokenMetadata {
   name: string;
-  ticker: string;
-  displayBalance: number;
-  nativeBalance: number;
-  usdBalance: string;
-  recentUsdBalanceChange: string;
-  logo: string;
-  priceData: any;
-};
+  image: string;
+  symbol: string;
+}
 
 export const TABS = [
   [TAB_BALANCES, "Balances"],

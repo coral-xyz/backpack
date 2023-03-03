@@ -23,7 +23,6 @@ export const MessageInputProvider = ({
   const { type, remoteUsername, remoteUserId } = useChatContext();
   const { roomId } = useChatContext();
   const { props }: any = useDecodedSearchParams();
-  const { publicKey } = useActiveSolanaWallet();
   const [rerender, setRender] = useState(false);
   const configs: any = [
     {
@@ -56,9 +55,7 @@ export const MessageInputProvider = ({
         const response = await fetch(
           `${BACKEND_API_URL}/nft/members?room=${
             pathname === "/messages/groupchat" ? props.id : props.collectionId
-          }&mint=${
-            props.nftMint
-          }&publicKey=${publicKey}&type=collection&limit=${3}&prefix=${search}`,
+          }&mint=${props.nftMint}&type=collection&limit=${3}&prefix=${search}`,
           {
             method: "GET",
           }

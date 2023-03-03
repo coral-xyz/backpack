@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import type { NftCollection } from "@coral-xyz/common";
+import type { Nft, NftCollection } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
   BACKEND_API_URL,
@@ -25,6 +25,7 @@ import {
   useSolanaConnectionUrl,
   useUser,
 } from "@coral-xyz/recoil";
+import type { CustomTheme } from "@coral-xyz/themes";
 import { styled, useCustomTheme } from "@coral-xyz/themes";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { CircularProgress, Grid, IconButton } from "@mui/material";
@@ -38,8 +39,10 @@ import {
 
 import { Scrollbar } from "../../../common/Layout/Scrollbar";
 import { _BalancesTableHead } from "../../Balances/Balances";
+import { updateLocalNftPfp } from "../../Nfts/Detail";
 
 type tempAvatar = {
+  nft?: Nft;
   url: string;
   id: string;
 };
@@ -53,7 +56,7 @@ export function UpdateProfilePicture({
   const [loading, setLoading] = useState(false);
   const _isAggregateWallets = useRecoilValue(isAggregateWallets);
   const avatarUrl = useAvatarUrl();
-  const { username } = useUser();
+  const { uuid, username } = useUser();
   const activeWallet = useActiveWallet();
   const setNewAvatar = useSetRecoilState(newAvatarAtom(username));
   const theme = useCustomTheme();
@@ -96,25 +99,23 @@ export function UpdateProfilePicture({
           <AvatarWrapper>
             <Avatar src={tempAvatar?.url || avatarUrl} />
           </AvatarWrapper>
-          {!isDefaultAvatar && (
-            <IconButton
-              disableRipple
-              sx={{
+          {!isDefaultAvatar ? <IconButton
+            disableRipple
+            sx={{
                 position: "absolute",
                 top: "-8px",
                 right: "-8px",
                 color: theme.custom.colors.icon,
               }}
-              onClick={() =>
+            onClick={() =>
                 setTempAvatar({
                   id: "",
                   url: `https://avatars.xnfts.dev/v1/${username}`,
                 })
               }
             >
-              <DeleteIcon />
-            </IconButton>
-          )}
+            <DeleteIcon />
+          </IconButton> : null}
         </div>
       </div>
       <Typography
@@ -140,22 +141,20 @@ export function UpdateProfilePicture({
               <Loading size={50} />
             ) : numberOfNFTs === 0 ? (
               <>
-                {!_isAggregateWallets && (
-                  <div
-                    style={{ position: "absolute", top: 0, left: 0, right: 0 }}
+                {!_isAggregateWallets ? <div
+                  style={{ position: "absolute", top: 0, left: 0, right: 0 }}
                   >
-                    <_BalancesTableHead
-                      blockchain={activeWallet.blockchain}
-                      wallet={activeWallet}
-                      showContent={true}
-                      setShowContent={() => {}}
+                  <_BalancesTableHead
+                    blockchain={activeWallet.blockchain}
+                    wallet={activeWallet}
+                    showContent
+                    setShowContent={() => {}}
                     />
-                  </div>
-                )}
+                </div> : null}
                 <EmptyState
                   icon={(props: any) => <ImageIcon {...props} />}
-                  title={"No NFTs to use"}
-                  subtitle={"Get started with your first NFT"}
+                  title="No NFTs to use"
+                  subtitle="Get started with your first NFT"
                   onClick={() => window.open("https://magiceden.io/")}
                   contentStyle={{
                     marginBottom: 0,
@@ -165,7 +164,7 @@ export function UpdateProfilePicture({
                   innerStyle={{
                     border: "none",
                   }}
-                  buttonText={"Browse Magic Eden"}
+                  buttonText="Browse Magic Eden"
                 />
               </>
             ) : (
@@ -201,7 +200,7 @@ export function UpdateProfilePicture({
         }}
       >
         <SecondaryButton
-          label={"Cancel"}
+          label="Cancel"
           onClick={() => {
             setTempAvatar(null);
           }}
@@ -222,6 +221,9 @@ export function UpdateProfilePicture({
           }
           onClick={async () => {
             if (tempAvatar) {
+              if (!tempAvatar.nft) {
+                throw new Error("invariant violation");
+              }
               setLoading(true);
               await fetch(BACKEND_API_URL + "/users/avatar", {
                 headers: {
@@ -233,6 +235,7 @@ export function UpdateProfilePicture({
                 }),
               });
               await fetch(AVATAR_BASE_URL + "/" + username + "?bust_cache=1"); // bust edge cache
+              await updateLocalNftPfp(uuid, username, tempAvatar.nft!);
               setLoading(false);
               setNewAvatar(tempAvatar);
               setTempAvatar(null);
@@ -270,9 +273,9 @@ const BlockchainNFTs = React.memo(function BlockchainNFTs({
   const wallet = wallets.find((wallet) => wallet.publicKey === publicKey)!;
   const blockchain = wallet.blockchain;
   const connectionUrl =
-    blockchain === Blockchain.SOLANA
-      ? useSolanaConnectionUrl()
-      : useEthereumConnectionUrl();
+  blockchain === Blockchain.SOLANA
+    ? useSolanaConnectionUrl()
+    : useEthereumConnectionUrl();
 
   const nftsIds = collections.reduce<string[]>((flat, collection) => {
     flat.push(...collection.itemIds);
@@ -344,6 +347,7 @@ function RenderNFT({
                 : nft.id;
 
             setTempAvatar({
+              nft,
               url: nft.imageUrl,
               id: `${nft.blockchain}/${avatarId}`,
             });
@@ -356,7 +360,7 @@ function RenderNFT({
             border: tempAvatar?.url === nft.imageUrl ? "3px solid black" : "",
           }}
           src={nft.imageUrl}
-          removeOnError={true}
+          removeOnError
         />
       ),
     [nft, nftId, tempAvatar]
@@ -371,14 +375,16 @@ const Container = styled("div")(() => ({
   overflow: "hidden",
 }));
 
-const StyledProxyImage = styled(ProxyImage)(({ theme }) => ({
-  "&:hover": {
-    border: `3px solid ${theme.custom.colors.avatarIconBackground}`,
-    cursor: "pointer",
-  },
-}));
+const StyledProxyImage = styled(ProxyImage)(
+  ({ theme }: { theme: CustomTheme }) => ({
+    "&:hover": {
+      border: `3px solid ${theme.custom.colors.avatarIconBackground}`,
+      cursor: "pointer",
+    },
+  })
+);
 
-const FakeDrawer = styled("div")(({ theme }) => ({
+const FakeDrawer = styled("div")(({ theme }: { theme: CustomTheme }) => ({
   position: "relative",
   display: "flex",
   flexDirection: "column",
@@ -394,7 +400,7 @@ const FakeDrawer = styled("div")(({ theme }) => ({
   zIndex: "0",
   overflow: "hidden",
 }));
-const ButtonsOverlay = styled("div")(({ theme }) => ({
+const ButtonsOverlay = styled("div")(({ theme }: { theme: CustomTheme }) => ({
   position: "absolute",
   bottom: "0px",
   display: "flex",
@@ -415,7 +421,7 @@ const Avatar = styled(ProxyImage)(() => ({
   zIndex: 0,
 }));
 
-const AvatarWrapper = styled("div")(({ theme }) => ({
+const AvatarWrapper = styled("div")(({ theme }: { theme: CustomTheme }) => ({
   boxSizing: "border-box",
   position: "relative",
   borderRadius: "50px",

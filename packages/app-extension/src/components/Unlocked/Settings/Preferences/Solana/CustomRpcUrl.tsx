@@ -4,11 +4,11 @@ import { InputListItem, Inputs, PrimaryButton } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 
 export function PreferenceSolanaCustomRpcUrl() {
   const { close } = useDrawerContext();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const background = useBackgroundClient();
   const [rpcUrl, setRpcUrl] = useState("");
 
@@ -30,9 +30,9 @@ export function PreferenceSolanaCustomRpcUrl() {
 
   useEffect(() => {
     const title = nav.title;
-    nav.setTitle("Change RPC Connection");
+    nav.setOptions({ headerTitle: "Change RPC Connection" });
     return () => {
-      nav.setTitle(title);
+      nav.setOptions({ headerTitle: title });
     };
   }, []);
 
@@ -58,11 +58,11 @@ export function PreferenceSolanaCustomRpcUrl() {
         <div style={{ flex: 1, flexGrow: 1 }}>
           <Inputs error={rpcUrlError}>
             <InputListItem
-              isFirst={true}
-              isLast={true}
+              isFirst
+              isLast
               button={false}
-              title={"RPC"}
-              placeholder={"RPC URL"}
+              title="RPC"
+              placeholder="RPC URL"
               value={rpcUrl}
               onChange={(e) => {
                 setRpcUrl(e.target.value);

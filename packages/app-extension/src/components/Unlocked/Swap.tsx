@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
 import {
   Blockchain,
-  ETH_NATIVE_MINT,
   SOL_NATIVE_MINT,
   toDisplayBalance,
   WSOL_MINT,
@@ -16,23 +14,32 @@ import {
   SecondaryButton,
   TextFieldLabel,
 } from "@coral-xyz/react-common";
+import type { TokenData, TokenDataWithPrice } from "@coral-xyz/recoil";
 import {
   useActiveWallet,
-  useJupiterOutputMints,
-  useSplTokenRegistry,
+  useDarkMode,
+  useJupiterOutputTokens,
   useSwapContext,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandMore, SwapVert } from "@mui/icons-material";
-import { IconButton, InputAdornment, Typography } from "@mui/material";
+import Info from "@mui/icons-material/Info";
+import {
+  IconButton,
+  InputAdornment,
+  Skeleton,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { ethers, FixedNumber } from "ethers";
+import { useEffect, useState } from "react";
 
 import { Button as XnftButton } from "../../plugin/Component";
 import { TextField } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { BottomCard } from "../common/Layout/BottomCard";
 import { useDrawerContext } from "../common/Layout/Drawer";
-import { useNavStack } from "../common/Layout/NavStack";
+import { useNavigation } from "../common/Layout/NavStack";
 import { TokenAmountHeader } from "../common/TokenAmountHeader";
 import { TokenInputField } from "../common/TokenInput";
 import type { Token } from "../common/TokenTable";
@@ -42,6 +49,10 @@ import { WalletDrawerButton } from "../common/WalletList";
 const { Zero } = ethers.constants;
 
 const useStyles = styles((theme) => ({
+  tooltipIcon: {
+    color: theme.custom.colors.secondary,
+    height: 14,
+  },
   container: {
     display: "flex",
     flexDirection: "column",
@@ -185,6 +196,8 @@ const useStyles = styles((theme) => ({
     lineHeight: "20px",
     fontSize: "14px",
     fontWeight: 500,
+    display: "flex",
+    alignItems: "center",
   },
   swapInfoTitleRight: {
     color: theme.custom.colors.fontColor,
@@ -203,10 +216,15 @@ enum SwapState {
 }
 
 export function Swap({ blockchain }: { blockchain: Blockchain }) {
-  const nav = useNavStack();
+  const isDark = useDarkMode();
+  const nav = useNavigation();
+
   useEffect(() => {
-    nav.setTitle("Swap");
-  }, [nav]);
+    nav.setOptions({
+      headerTitle: "Swap",
+      style: isDark ? { background: "#1D1D20" } : undefined,
+    });
+  }, [nav, isDark]);
 
   if (blockchain && blockchain !== Blockchain.SOLANA) {
     throw new Error("only Solana swaps are supported currently");
@@ -216,10 +234,13 @@ export function Swap({ blockchain }: { blockchain: Blockchain }) {
 }
 
 function _Swap() {
+  const isDark = useDarkMode();
   const classes = useStyles();
-  const { swapToFromMints } = useSwapContext();
+  const { swapToFromMints, fromToken } = useSwapContext();
   const [openDrawer, setOpenDrawer] = useState(false);
   const { close } = useDrawerContext();
+
+  const isLoading = !fromToken;
 
   const onSwapButtonClick = () => {
     swapToFromMints();
@@ -237,7 +258,12 @@ function _Swap() {
 
   return (
     <>
-      <form onSubmit={onSubmit} className={classes.container} noValidate>
+      <form
+        onSubmit={onSubmit}
+        className={classes.container}
+        style={isDark ? { background: "#1D1D20" } : undefined}
+        noValidate
+      >
         <div className={classes.topHalf}>
           <SwapTokensButton
             onClick={onSwapButtonClick}
@@ -247,22 +273,30 @@ function _Swap() {
               left: "24px",
             }}
           />
-          <InputTextField />
+          {isLoading ? (
+            <Skeleton height={80} style={{ borderRadius: "12px" }} />
+          ) : (
+            <InputTextField />
+          )}
         </div>
         <div className={classes.bottomHalfWrapper}>
           <div className={classes.bottomHalf}>
-            <div>
-              <OutputTextField />
-              <div
-                style={{
-                  marginTop: "24px",
-                  marginLeft: "8px",
-                  marginRight: "8px",
-                }}
-              >
-                <SwapInfo />
+            {isLoading ? (
+              <Skeleton height={80} style={{ borderRadius: "12px" }} />
+            ) : (
+              <div>
+                <OutputTextField />
+                <div
+                  style={{
+                    marginTop: "24px",
+                    marginLeft: "8px",
+                    marginRight: "8px",
+                  }}
+                >
+                  <SwapInfo />
+                </div>
               </div>
-            </div>
+            )}
             <ConfirmSwapButton />
           </div>
         </div>
@@ -299,18 +333,18 @@ const SwapConfirmationCard: React.FC<{
 
   return (
     <div>
-      {swapState === SwapState.CONFIRMATION && (
+      {swapState === SwapState.CONFIRMATION ? (
         <SwapConfirmation onConfirm={onConfirm} />
-      )}
-      {swapState === SwapState.CONFIRMING && (
+      ) : null}
+      {swapState === SwapState.CONFIRMING ? (
         <SwapConfirming isConfirmed={false} onViewBalances={onViewBalances} />
-      )}
-      {swapState === SwapState.CONFIRMED && (
-        <SwapConfirming isConfirmed={true} onViewBalances={onViewBalances} />
-      )}
-      {swapState === SwapState.ERROR && (
+      ) : null}
+      {swapState === SwapState.CONFIRMED ? (
+        <SwapConfirming isConfirmed onViewBalances={onViewBalances} />
+      ) : null}
+      {swapState === SwapState.ERROR ? (
         <SwapError onCancel={() => onClose()} onRetry={onConfirm} />
-      )}
+      ) : null}
     </div>
   );
 };
@@ -320,7 +354,7 @@ function InputTextField() {
   const {
     fromAmount,
     setFromAmount,
-    fromMintInfo,
+    fromToken,
     availableForSwap,
     exceedsBalance,
   } = useSwapContext();
@@ -328,12 +362,12 @@ function InputTextField() {
   return (
     <>
       <TextFieldLabel
-        leftLabel={"Sending"}
+        leftLabel="Sending"
         rightLabelComponent={
           <MaxLabel
             amount={availableForSwap}
             onSetAmount={setFromAmount}
-            decimals={fromMintInfo.decimals}
+            decimals={fromToken!.decimals}
           />
         }
       />
@@ -344,7 +378,7 @@ function InputTextField() {
         rootClass={classes.fromFieldRoot}
         value={fromAmount}
         setValue={setFromAmount}
-        decimals={fromMintInfo.decimals}
+        decimals={fromToken!.decimals}
         isError={exceedsBalance}
       />
     </>
@@ -354,14 +388,14 @@ function InputTextField() {
 function OutputTextField() {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { toAmount, toMintInfo, isLoadingRoutes } = useSwapContext();
+  const { toAmount, toToken, isLoadingRoutes } = useSwapContext();
   return (
     <>
-      <TextFieldLabel leftLabel={"Receiving"} />
+      <TextFieldLabel leftLabel="Receiving" />
       <TextField
-        placeholder={"0"}
+        placeholder="0"
         startAdornment={
-          isLoadingRoutes && (
+          isLoadingRoutes ? (
             <Loading
               iconStyle={{
                 display: "flex",
@@ -371,17 +405,17 @@ function OutputTextField() {
               size={24}
               thickness={5}
             />
-          )
+          ) : null
         }
-        endAdornment={<OutputTokenSelectorButton />}
+        endAdornment={<OutputTokensSelectorButton />}
         rootClass={classes.receiveFieldRoot}
-        type={"number"}
+        type="number"
         value={
-          toAmount
-            ? ethers.utils.formatUnits(toAmount, toMintInfo.decimals)
+          toAmount && toToken
+            ? ethers.utils.formatUnits(toAmount, toToken.decimals)
             : ""
         }
-        disabled={true}
+        disabled
         inputProps={{
           style: {
             textFill: `${theme.custom.colors.fontColor} !important`,
@@ -393,19 +427,19 @@ function OutputTextField() {
 }
 
 const SwapUnavailableButton = () => {
-  return <DangerButton label="Swaps unavailable" disabled={true} />;
+  return <DangerButton label="Swaps unavailable" disabled />;
 };
 
 const SwapInvalidButton = () => {
-  return <DangerButton label="Invalid swap" disabled={true} />;
+  return <DangerButton label="Invalid swap" disabled />;
 };
 
 const InsufficientBalanceButton = () => {
-  return <DangerButton label="Insufficient balance" disabled={true} />;
+  return <DangerButton label="Insufficient balance" disabled />;
 };
 
 const InsufficientFeeButton = () => {
-  return <DangerButton label="Insufficient balance for fee" disabled={true} />;
+  return <DangerButton label="Insufficient balance for fee" disabled />;
 };
 
 const ConfirmSwapButton = () => {
@@ -420,7 +454,7 @@ const ConfirmSwapButton = () => {
     isLoadingRoutes,
     isLoadingTransactions,
   } = useSwapContext();
-  const tokenAccounts = useJupiterOutputMints(fromMint);
+  const tokenAccounts = useJupiterOutputTokens(fromMint);
 
   // Parameters aren't all entered or the swap data is loading
   const isIncomplete =
@@ -454,7 +488,7 @@ const ConfirmSwapButton = () => {
 function SwapConfirmation({ onConfirm }: { onConfirm: () => void }) {
   const classes = useStyles();
   return (
-    <BottomCard onButtonClick={onConfirm} buttonLabel={"Confirm"}>
+    <BottomCard onButtonClick={onConfirm} buttonLabel="Confirm">
       <Typography
         className={classes.confirmationTitle}
         style={{ marginTop: "32px" }}
@@ -531,7 +565,7 @@ function SwapConfirming({
           )}
         </div>
       </div>
-      {isConfirmed && (
+      {isConfirmed ? (
         <div
           style={{
             marginBottom: "16px",
@@ -541,10 +575,10 @@ function SwapConfirming({
         >
           <SecondaryButton
             onClick={() => onViewBalances()}
-            label={"View Balances"}
+            label="View Balances"
           />
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -556,9 +590,9 @@ function SwapError({ onRetry, onCancel }: any) {
   const classes = useStyles();
   return (
     <BottomCard
-      buttonLabel={"Retry"}
+      buttonLabel="Retry"
       onButtonClick={onRetry}
-      cancelButtonLabel={"Back"}
+      cancelButtonLabel="Back"
       onCancelButtonClick={onCancel}
     >
       <Typography
@@ -575,13 +609,13 @@ function SwapError({ onRetry, onCancel }: any) {
 }
 
 function SwapReceiveAmount() {
-  const { toAmount, toMintInfo } = useSwapContext();
+  const { toAmount, toToken } = useSwapContext();
   return (
     <TokenAmountHeader
       token={{
-        logo: toMintInfo.logoURI,
-        ticker: toMintInfo.symbol,
-        decimals: toMintInfo.decimals,
+        logo: toToken!.logo,
+        ticker: toToken!.ticker,
+        decimals: toToken!.decimals,
       }}
       amount={toAmount!}
     />
@@ -592,8 +626,8 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   const {
     fromAmount,
     toAmount,
-    fromMintInfo,
-    toMintInfo,
+    fromToken,
+    toToken,
     priceImpactPct,
     isLoadingRoutes,
     isLoadingTransactions,
@@ -618,7 +652,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     );
   }
 
-  if (!fromAmount || !toAmount) {
+  if (!fromAmount || !toAmount || !fromToken || !toToken) {
     return (
       <SwapInfoRows
         {...{
@@ -632,8 +666,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     );
   }
 
-  const decimalDifference = fromMintInfo.decimals - toMintInfo.decimals;
-  const toAmountWithFees = toAmount.sub(swapFee);
+  const decimalDifference = fromToken.decimals - toToken.decimals;
 
   // Scale a FixedNumber up or down by a number of decimals
   const scale = (x: FixedNumber, decimalDifference: number) => {
@@ -648,9 +681,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   const rate = fromAmount.gt(Zero)
     ? ethers.utils.commify(
         scale(
-          FixedNumber.from(toAmountWithFees).divUnsafe(
-            FixedNumber.from(fromAmount)
-          ),
+          FixedNumber.from(toAmount).divUnsafe(FixedNumber.from(fromAmount)),
           decimalDifference
         ).toString()
       )
@@ -660,10 +691,12 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     <SwapInfoRows
       {...{
         compact,
-        youPay: `${toDisplayBalance(fromAmount, fromMintInfo.decimals)} ${
-          fromMintInfo.symbol
+        youPay: `${toDisplayBalance(fromAmount, fromToken.decimals)} ${
+          fromToken.ticker
         }`,
-        rate: `1 ${fromMintInfo.symbol} = ${rate} ${toMintInfo.symbol}`,
+        rate: `1 ${fromToken.ticker} = ${rate.substring(0, 10)} ${
+          toToken.ticker
+        }`,
         priceImpact: `${
           priceImpactPct === 0
             ? 0
@@ -674,6 +707,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
         networkFee: transactionFee
           ? `${ethers.utils.formatUnits(transactionFee, 9)} SOL`
           : "-",
+        swapFee,
       }}
     />
   );
@@ -685,33 +719,58 @@ function SwapInfoRows({
   networkFee,
   priceImpact,
   compact,
+  swapFee,
 }: {
   youPay: any;
   rate: any;
   priceImpact: any;
   networkFee: any;
+  swapFee?: any;
   compact?: boolean;
 }) {
   const classes = useStyles();
   const wallet = useActiveWallet();
-  const rows = [];
-  rows.push([
-    "Wallet",
-    <WalletDrawerButton wallet={wallet} style={{ height: "20px" }} />,
-  ]);
+
+  const rows: Array<{
+    label: string;
+    value: string | React.ReactElement;
+    tooltip?: string;
+  }> = [
+    {
+      label: "Wallet",
+      value: <WalletDrawerButton wallet={wallet} style={{ height: "20px" }} />,
+    },
+  ];
+
   if (!compact) {
-    rows.push(["You Pay", youPay]);
+    rows.push({ label: "You Pay", value: youPay });
   }
-  rows.push(["Rate", rate]);
-  rows.push(["Network Fee", networkFee]);
-  rows.push(["Price Impact", priceImpact]);
+
+  rows.push({ label: "Rate", value: rate });
+  rows.push({
+    label: "Network Fee",
+    value: networkFee,
+    tooltip: swapFee?.pct
+      ? `Quote includes a ${swapFee?.pct}% Backpack fee`
+      : undefined,
+  });
+  rows.push({ label: "Price Impact", value: priceImpact });
 
   return (
     <>
-      {rows.map((r: any) => (
-        <div className={classes.swapInfoRow} key={r[0]}>
-          <Typography className={classes.swapInfoTitleLeft}>{r[0]}</Typography>
-          <Typography className={classes.swapInfoTitleRight}>{r[1]}</Typography>
+      {rows.map(({ label, value, tooltip }) => (
+        <div className={classes.swapInfoRow} key={label}>
+          <Typography className={classes.swapInfoTitleLeft}>
+            {label}
+            {tooltip ? (
+              <Tooltip title={tooltip}>
+                <Info className={classes.tooltipIcon} />
+              </Tooltip>
+            ) : null}
+          </Typography>
+          <Typography className={classes.swapInfoTitleRight}>
+            {value}
+          </Typography>
         </div>
       ))}
     </>
@@ -740,63 +799,54 @@ function SwapTokensButton({
 }
 
 function InputTokenSelectorButton() {
-  const { fromMint, setFromMint } = useSwapContext();
-  return (
-    <TokenSelectorButton
-      selectedMint={fromMint}
-      input={true}
-      setMint={setFromMint}
-    />
-  );
+  const { fromToken, setFromMint } = useSwapContext();
+  return <TokenSelectorButton token={fromToken!} input setMint={setFromMint} />;
 }
 
-function OutputTokenSelectorButton() {
-  const { toMint, setToMint } = useSwapContext();
+function OutputTokensSelectorButton() {
+  const { toToken, setToMint } = useSwapContext();
   return (
-    <TokenSelectorButton
-      selectedMint={toMint}
-      setMint={setToMint}
-      input={false}
-    />
+    <TokenSelectorButton token={toToken!} setMint={setToMint} input={false} />
   );
 }
 
 function TokenSelectorButton({
-  selectedMint,
+  token,
   setMint,
   input,
 }: {
-  selectedMint: any;
-  setMint: any;
+  token: TokenData;
+  setMint: (mint: string) => void;
   input: boolean;
 }) {
   const classes = useStyles();
-  const nav = useNavStack();
-  const tokenRegistry = useSplTokenRegistry();
-  const tokenInfo = tokenRegistry.get(selectedMint); // TODO handle null case
-  const symbol = tokenInfo ? tokenInfo.symbol : "-";
-  const logoUri = tokenInfo ? tokenInfo.logoURI : "-";
+  const nav = useNavigation();
 
   return (
     <InputAdornment position="end">
       <XnftButton
         onClick={() =>
           nav.push("select-token", {
+            // @ts-ignore
             setMint: (...args: any) => setMint(...args),
             input,
           })
         }
         style={{
           backgroundColor: "transparent",
+          width: "auto",
+          justifyContent: "right",
         }}
       >
-        <img
-          className={classes.tokenLogo}
-          src={logoUri}
-          onError={(event) => (event.currentTarget.style.display = "none")}
-        />
+        {token ? (
+          <img
+            className={classes.tokenLogo}
+            src={token.logo}
+            onError={(event) => (event.currentTarget.style.display = "none")}
+          />
+        ) : null}
         <Typography className={classes.tokenSelectorButtonLabel}>
-          {symbol}
+          {token ? token.ticker : null}
         </Typography>
         <ExpandMore className={classes.expandMore} />
       </XnftButton>
@@ -813,27 +863,27 @@ export function SwapSelectToken({
   customFilter: (token: Token) => boolean;
   input: boolean;
 }) {
-  const nav = useNavStack();
-  const { fromMint, inputTokenAccounts } = useSwapContext();
-  const tokenAccounts = !input
-    ? useJupiterOutputMints(fromMint)
-    : inputTokenAccounts.filter((token: Token) => {
-        if (token.mint && token.mint === SOL_NATIVE_MINT) {
-          return true;
-        }
-        if (token.address && token.address === ETH_NATIVE_MINT) {
-          return true;
-        }
-        return !token.nativeBalance.isZero();
-      });
+  const isDark = useDarkMode();
+  const theme = useCustomTheme();
+  const nav = useNavigation();
+  const { fromTokens, toTokens } = useSwapContext();
+  useEffect(() => {
+    nav.setOptions({
+      headerTitle: "Select Token",
+      style: isDark
+        ? { background: theme.custom.colors.background }
+        : undefined,
+    });
+  }, [nav, isDark, theme]);
+
+  const tokenAccounts = (
+    !input ? toTokens : fromTokens
+  ) as Array<TokenDataWithPrice>;
+
   const onClickRow = (_blockchain: Blockchain, token: Token) => {
     setMint(token.mint!);
     nav.pop();
   };
-
-  useEffect(() => {
-    nav.setTitle("Select Token");
-  }, [nav]);
 
   return (
     <SearchableTokenTable

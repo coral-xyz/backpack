@@ -20,11 +20,10 @@ import { useAvatarUrl } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { SvgUri } from "react-native-svg";
 
-import { ContentCopyIcon, RedBackpack } from "@components/Icon";
-import { useTheme } from "@hooks/index";
+import { ContentCopyIcon, RedBackpack } from "~components/Icon";
+import { useTheme } from "~hooks/useTheme";
 
 export { ActionCard } from "./ActionCard";
-export { BaseCheckBoxLabel, CheckBox } from "./CheckBox";
 export { MnemonicInputFields } from "./MnemonicInputFields";
 export { NavHeader } from "./NavHeader";
 export { NFTCard } from "./NFTCard";
@@ -96,7 +95,7 @@ export function BaseButton({
   label: string;
   buttonStyle?: StyleProp<ViewStyle>;
   labelStyle?: StyleProp<TextStyle>;
-  onPress: () => void;
+  onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
   icon?: JSX.Element;
@@ -154,7 +153,7 @@ export function PrimaryButton({
   ...props
 }: {
   label: string;
-  onPress: () => void;
+  onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
 }) {
@@ -433,7 +432,7 @@ export function Margin({
   right?: number | string;
   horizontal?: number | string;
   vertical?: number | string;
-  children: JSX.Element[] | JSX.Element;
+  children: any;
 }): JSX.Element {
   const style = {};
   if (bottom) {
@@ -551,7 +550,7 @@ export function DummyScreen({ route }) {
   );
 }
 
-export function FullScreenLoading() {
+export function FullScreenLoading({ label }: { label?: string }): JSX.Element {
   const theme = useTheme();
   return (
     <View
@@ -563,6 +562,11 @@ export function FullScreenLoading() {
       }}
     >
       <ActivityIndicator size="large" color={theme.custom.colors.fontColor} />
+      {label ? (
+        <Text style={{ textAlign: "center", fontSize: 16, marginTop: 16 }}>
+          {label}
+        </Text>
+      ) : null}
     </View>
   );
 }

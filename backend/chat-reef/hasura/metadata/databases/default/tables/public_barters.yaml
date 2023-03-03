@@ -1,0 +1,52 @@
+table:
+  name: barters
+  schema: public
+array_relationships:
+  - name: chat_barter_metadata
+    using:
+      foreign_key_constraint_on:
+        column: barter_id
+        table:
+          name: chat_barter_metadata
+          schema: public
+  - name: room_active_chat_mappings
+    using:
+      foreign_key_constraint_on:
+        column: barter_id
+        table:
+          name: room_active_chat_mapping
+          schema: public
+insert_permissions:
+  - role: chat
+    permission:
+      check: {}
+      columns:
+        - id
+        - on_chain_state
+        - room_id
+        - state
+        - user1_offers
+        - user2_offers
+select_permissions:
+  - role: chat
+    permission:
+      columns:
+        - id
+        - on_chain_state
+        - room_id
+        - state
+        - user1_offers
+        - user2_offers
+      filter: {}
+update_permissions:
+  - role: chat
+    permission:
+      columns:
+        - id
+        - on_chain_state
+        - room_id
+        - state
+        - user1_offers
+        - user2_offers
+      filter: {}
+      check: null

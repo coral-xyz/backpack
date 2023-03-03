@@ -1,15 +1,20 @@
 import { Alert, Text, View } from "react-native";
 
-import { Margin, PrimaryButton, Screen, SubtextParagraph } from "@components";
+import {
+  Margin,
+  PrimaryButton,
+  Screen,
+  SubtextParagraph,
+} from "~components/index";
 import {
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_PASSWORD_UPDATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { useTheme } from "@hooks";
+import { useTheme } from "~hooks/useTheme";
 import { useForm } from "react-hook-form";
 
-import { InputGroup, InputListItem } from "@components/Form";
+import { InputGroup, InputListItem } from "~components/Form";
 
 function InstructionText() {
   const theme = useTheme();

@@ -44,8 +44,12 @@ export function useConnectionUrls() {
   return useRecoilValue(atoms.connectionUrls);
 }
 
-export function useUser() {
+export function useUser(): { username: string; uuid: string; jwt: string } {
   return useRecoilValue(atoms.user);
+}
+
+export function useAuthenticatedUser() {
+  return useRecoilValue(atoms.authenticatedUser);
 }
 
 export function useXnftJwt(xnftAddress: string) {

@@ -53,29 +53,30 @@ export function ConnectHardwareSearching({
   useEffect(() => {
     (async () => {
       if (transport === null && !connectFailure) {
-        TransportWebHid.create()
-          .then(setTransport)
-          .catch(async (err) => {
-            if (err.message === "The device is already open.") {
-              const devices = await TransportWebHid.list();
-              // Close all open devices
-              await Promise.all(devices.map((d) => d.close()));
-              // Reload
-              setNavigatorStateChange(() => navigatorStateChange + 1);
-            } else if (err.message === "Access denied to use Ledger device") {
-              // User cancelled the permissions screen, or no device available in screen
-              setTimeout(() => setConnectFailure(true), 2000);
-            } else {
-              console.error(err);
-              setTimeout(() => setConnectFailure(true), 2000);
-            }
-          });
+        try {
+          setTransport(await TransportWebHid.create());
+        } catch (error: any) {
+          if (error.message === "The device is already open.") {
+            const devices = await TransportWebHid.list();
+            // Close all open devices
+            await Promise.all(devices.map((d) => d.close()));
+            // Reload to retry
+            setNavigatorStateChange(() => navigatorStateChange + 1);
+          } else if (error.message === "Access denied to use Ledger device") {
+            // User cancelled the permissions screen, or no device available in screen
+            console.debug("access denied to ledger device");
+            setTimeout(() => setConnectFailure(true), 2000);
+          } else {
+            console.debug("ledger error", error);
+            setTimeout(() => setConnectFailure(true), 2000);
+          }
+        }
       }
     })();
   }, [connectFailure, navigatorStateChange]);
 
   useEffect(() => {
-    // Auto advance is transport set
+    // Auto advance if transport set
     if (transport) {
       setTimeout(() => setConnectSuccess(true), 2000);
     }
@@ -123,7 +124,7 @@ export function ConnectHardwareSearching({
         This is just a placeholder next button so its always disabled. Screen
         will auto advance when transport is set.
         */}
-        <PrimaryButton label="Next" disabled={true} />
+        <PrimaryButton label="Next" disabled />
       </Box>
     </Box>
   );

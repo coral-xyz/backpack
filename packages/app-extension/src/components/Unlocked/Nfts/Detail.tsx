@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { type CSSProperties, useEffect, useState } from "react";
+import type { Nft } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
   BACKEND_API_URL,
@@ -6,6 +7,8 @@ import {
   confirmTransaction,
   explorerNftUrl,
   getLogger,
+  isMadLads,
+  NAV_COMPONENT_MESSAGE_GROUP_CHAT,
   Solana,
   TAB_MESSAGES,
   toTitleCase,
@@ -13,6 +16,7 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
+import { LocalImageManager, refreshGroups } from "@coral-xyz/db";
 import {
   NegativeButton,
   PrimaryButton,
@@ -21,7 +25,9 @@ import {
   TextInput,
 } from "@coral-xyz/react-common";
 import {
+  appStoreMetaTags,
   collectibleXnft,
+  isOneLive,
   newAvatarAtom,
   nftById,
   useAnchorContext,
@@ -29,6 +35,7 @@ import {
   useDecodedSearchParams,
   useEthereumCtx,
   useEthereumExplorer,
+  useNavigation,
   useOpenPlugin,
   useSolanaCtx,
   useSolanaExplorer,
@@ -37,10 +44,14 @@ import {
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Whatshot } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { IconButton, Typography } from "@mui/material";
+import { Button, IconButton, Typography } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber } from "ethers";
-import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
+import {
+  useRecoilValue,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from "recoil";
 
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
 import {
@@ -73,6 +84,25 @@ export function NftsDetail({
   connectionUrl: string;
   nftId: string;
 }) {
+  const theme = useCustomTheme();
+  const background = useBackgroundClient();
+  const onLive = useRecoilValue(isOneLive);
+  const { uuid } = useUser();
+  const WHITELISTED_CHAT_COLLECTIONS_WITH_OVERRIDE =
+    onLive.wlCollection &&
+    onLive.wlCollection !== "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tGs7vP6qczfj"
+      ? [
+          ...WHITELISTED_CHAT_COLLECTIONS,
+          {
+            id: onLive.wlCollection,
+            name: "The Madlist",
+            image: "https://www.madlads.com/mad_lads_logo.svg",
+            collectionId: onLive.wlCollection,
+            attributeMapping: {} as any,
+          },
+        ]
+      : WHITELISTED_CHAT_COLLECTIONS;
+
   const { contents, state } = useRecoilValueLoadable(
     nftById({ publicKey, connectionUrl, nftId })
   );
@@ -84,17 +114,19 @@ export function NftsDetail({
   );
   const xnft = (xnftState === "hasValue" && xnftContents) || null;
   //@ts-ignore
-  const whitelistedChatCollection = WHITELISTED_CHAT_COLLECTIONS.find(
-    (x) => x.collectionId === nft?.metadataCollectionId
-  );
+  const whitelistedChatCollection =
+    WHITELISTED_CHAT_COLLECTIONS_WITH_OVERRIDE.find(
+      (x) => x.collectionId === nft?.metadataCollectionId
+    );
   const [chatJoined, setChatJoined] = useState(false);
   const [joiningChat, setJoiningChat] = useState(false);
   const { isXs } = useBreakpoints();
+  
   let whitelistedChatCollectionId = whitelistedChatCollection?.collectionId;
-  const background = useBackgroundClient();
+  const { push } = useNavigation();
 
   if (whitelistedChatCollection) {
-    Object.keys(whitelistedChatCollection.attributeMapping || {}).forEach(
+    Object.keys(whitelistedChatCollection?.attributeMapping || {}).forEach(
       (attrName) => {
         if (
           !nft?.attributes?.find(
@@ -136,13 +168,16 @@ export function NftsDetail({
       }}
     >
       <Image nft={nft} />
-      <div style={{ flex: 1 }}>
-        <Description nft={nft} />
-        <SendButton nft={nft} />
-        {xnft && <OpenButton xnft={xnft} />}
-        {whitelistedChatCollectionId && (
-          <SecondaryButton
-            style={{ marginTop: 12 }}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "15px",
+          marginTop: "16px",
+        }}
+      >
+        {whitelistedChatCollectionId ? (
+          <PrimaryButton
             disabled={chatJoined || joiningChat}
             label={
               joiningChat ? "Joining" : chatJoined ? "Joined" : "Join chat"
@@ -163,24 +198,47 @@ export function NftsDetail({
                   ],
                 }),
               });
+              await refreshGroups(uuid);
               setJoiningChat(false);
-              background.request({
+              await background.request({
                 method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
                 params: [TAB_MESSAGES],
+              });
+              push({
+                title: whitelistedChatCollection?.name,
+                componentId: NAV_COMPONENT_MESSAGE_GROUP_CHAT,
+                componentProps: {
+                  fromInbox: true,
+                  id: whitelistedChatCollection?.id,
+                  title: whitelistedChatCollection?.name,
+                },
               });
               setChatJoined(true);
             }}
           />
-        )}
-        {nft.attributes && nft.attributes.length > 0 && (
-          <Attributes nft={nft} />
-        )}
+        ) : null}
+        <SendButton
+          invert={whitelistedChatCollectionId !== undefined}
+          // style={
+          //   whitelistedChatCollectionId
+          //     ? {
+          //         backgroundColor: theme.custom.colors.secondaryButton,
+          //         color: theme.custom.colors.secondaryButtonTextColor,
+          //       }
+          //     : undefined
+          // }
+          nft={nft}
+        />
       </div>
+      {xnft ? <ApplicationButton xnft={xnft} mintAddress={nft.mint} /> : null}
+      <Description nft={nft} />
+      {nft.attributes && nft.attributes.length > 0 ? (
+        <Attributes nft={nft} />
     </div>
   );
 }
-
 function Image({ nft }: { nft: any }) {
+  const src = isMadLads(nft) ? nft.lockScreenImageUrl : nft.imageUrl;
   return (
     <div
       style={{
@@ -200,10 +258,98 @@ function Image({ nft }: { nft: any }) {
         loadingStyles={{
           minHeight: "343px",
         }}
-        src={nft.imageUrl}
-        removeOnError={true}
+        src={src}
+        removeOnError
       />
     </div>
+  );
+}
+
+function ApplicationButton({
+  xnft,
+  mintAddress,
+}: {
+  xnft: string;
+  mintAddress?: string;
+}) {
+  const theme = useCustomTheme();
+  const openPlugin = useOpenPlugin();
+  const { contents, state } = useRecoilValueLoadable(appStoreMetaTags(xnft));
+
+  const data = (state === "hasValue" && contents) || null;
+
+  const handleClick = () => {
+    openPlugin(xnft + "/" + mintAddress);
+  };
+
+  return (
+    data && (
+      <div
+        style={{
+          marginTop: "20px",
+          position: "relative",
+        }}
+      >
+        <Typography
+          style={{
+            color: theme.custom.colors.secondary,
+            fontWeight: 500,
+            fontSize: "16px",
+            lineHeight: "24px",
+            marginBottom: "4px",
+          }}
+        >
+          Application
+        </Typography>
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            borderRadius: "12px",
+            background: theme.custom.colors.nav,
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: "12px",
+          }}
+        >
+          <img src={data.image} height={64} width={64} />
+          <div
+            style={{
+              flexGrow: 1,
+              whiteSpace: "nowrap",
+              overflowX: "hidden",
+            }}
+          >
+            <Typography sx={{ color: theme.custom.colors.fontColor }}>
+              {data.name}
+            </Typography>
+            <Typography
+              sx={{
+                color: theme.custom.colors.fontColor3,
+                fontSize: "14px",
+                lineHeight: "20px",
+                overflowX: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {data.description}
+            </Typography>
+          </div>
+          <Button
+            disableRipple
+            sx={{
+              color: theme.custom.colors.fontColor,
+              background: theme.custom.colors.bg2,
+              borderRadius: "12px",
+            }}
+            onClick={handleClick}
+          >
+            Open
+          </Button>
+        </div>
+      </div>
+    )
   );
 }
 
@@ -240,7 +386,15 @@ function Description({ nft }: { nft: any }) {
   );
 }
 
-function SendButton({ nft }: { nft: any }) {
+function SendButton({
+  invert,
+  nft,
+  style,
+}: {
+  invert: boolean;
+  nft: any;
+  style?: CSSProperties;
+}) {
   const [openDrawer, setOpenDrawer] = useState(false);
   const send = () => {
     setOpenDrawer(true);
@@ -248,11 +402,10 @@ function SendButton({ nft }: { nft: any }) {
   return (
     <>
       <PrimaryButton
-        style={{
-          marginTop: "24px",
-        }}
+        invert={invert}
+        style={style}
         onClick={() => send()}
-        label={"Send"}
+        label="Send"
       />
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         <div style={{ height: "100%" }}>
@@ -264,28 +417,12 @@ function SendButton({ nft }: { nft: any }) {
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen
-              name={"send"}
+              name="send"
               component={() => <SendScreen nft={nft} />}
             />
           </NavStackEphemeral>
         </div>
       </WithDrawer>
-    </>
-  );
-}
-
-function OpenButton({ xnft }: { xnft: string }) {
-  const openPlugin = useOpenPlugin();
-  const handleClick = () => {
-    openPlugin(xnft);
-  };
-  return (
-    <>
-      <SecondaryButton
-        style={{ marginTop: "12px" }}
-        label="Open"
-        onClick={handleClick}
-      />
     </>
   );
 }
@@ -362,12 +499,12 @@ function SendScreen({ nft }: { nft: any }) {
                 marginRight: "8px",
               }}
               onClick={close}
-              label={"Cancel"}
+              label="Cancel"
             />
             <PrimaryButton
               disabled={!isValidAddress}
               onClick={() => setOpenConfirm(true)}
-              label={"Next"}
+              label="Next"
             />
           </div>
         </div>
@@ -376,7 +513,7 @@ function SendScreen({ nft }: { nft: any }) {
         openDrawer={openConfirm}
         setOpenDrawer={setOpenConfirm}
       >
-        {nft.blockchain === Blockchain.SOLANA && (
+        {nft.blockchain === Blockchain.SOLANA ? (
           <SendSolanaConfirmationCard
             token={{
               address: nft.publicKey,
@@ -388,8 +525,8 @@ function SendScreen({ nft }: { nft: any }) {
             amount={BigNumber.from(1)}
             onComplete={() => setWasSent(true)}
           />
-        )}
-        {nft.blockchain === Blockchain.ETHEREUM && (
+        ) : null}
+        {nft.blockchain === Blockchain.ETHEREUM ? (
           <SendEthereumConfirmationCard
             token={{
               logo: nft.imageUrl,
@@ -401,7 +538,7 @@ function SendScreen({ nft }: { nft: any }) {
             amount={BigNumber.from(1)}
             onComplete={() => setWasSent(true)}
           />
-        )}
+        ) : null}
       </ApproveTransactionDrawer>
     </>
   );
@@ -480,7 +617,7 @@ function Attributes({ nft }: { nft: any }) {
 export function NftOptionsButton() {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
-  const { username } = useUser();
+  const { uuid, username } = useUser();
   const setNewAvatar = useSetRecoilState(newAvatarAtom(username));
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -516,7 +653,9 @@ export function NftOptionsButton() {
   // @ts-ignore
   const isEthereum: boolean = nft && nft.contractAddress;
 
-  const explorer = isEthereum ? useEthereumExplorer() : useSolanaExplorer();
+  const ethExpl = useEthereumExplorer();
+  const solExpl = useSolanaExplorer();
+  const explorer = isEthereum ? ethExpl : solExpl;
 
   const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -533,6 +672,14 @@ export function NftOptionsButton() {
 
   const onSetPfp = async () => {
     if (nft) {
+      //
+      // Cleanup component state.
+      //
+      setAnchorEl(null);
+
+      //
+      // Store on server.
+      //
       const id = `${nft.blockchain}/${
         nft.blockchain === "solana" ? nft.mint : nft.id
       }`;
@@ -545,6 +692,11 @@ export function NftOptionsButton() {
         body: JSON.stringify({ avatar: id }),
       });
       await fetch(`${AVATAR_BASE_URL}/${username}?bust_cache=1`);
+
+      //
+      // Store locally.
+      //
+      await updateLocalNftPfp(uuid, username, nft);
       setNewAvatar({ id, url: nft.imageUrl });
     }
   };
@@ -631,13 +783,14 @@ function BurnConfirmationCard({
           )
         ).value.amount
       );
+      setState("sending");
+
       const _signature = await Solana.burnAndCloseNft(solanaCtx, {
         solDestination: solanaCtx.walletPublicKey,
         mint: new PublicKey(nft.mint.toString()),
         amount,
       });
       setSignature(_signature);
-      setState("sending");
 
       //
       // Confirm the tx.
@@ -674,16 +827,16 @@ function BurnConfirmationCard({
       amount={BigNumber.from(1)}
       token={token}
       signature={signature!}
-      titleOverride={"Burning"}
+      titleOverride="Burning"
     />
   ) : state === "confirmed" ? (
     <Sending
       blockchain={Blockchain.SOLANA}
-      isComplete={true}
+      isComplete
       amount={BigNumber.from(1)}
       token={token}
       signature={signature!}
-      titleOverride={"Burnt"}
+      titleOverride="Burnt"
     />
   ) : (
     <ErrorConfirmation
@@ -744,4 +897,41 @@ function BurnConfirmation({ onConfirm }: { onConfirm: () => void }) {
       </div>
     </div>
   );
+}
+
+export async function updateLocalNftPfp(
+  uuid: string,
+  username: string,
+  nft: Nft
+) {
+  //
+  // Only show mad lads on the lock screen in full screen view.
+  //
+  let lockScreenImageUrl;
+  if (isMadLads(nft)) {
+    window.localStorage.setItem(
+      lockScreenKey(uuid),
+      JSON.stringify({
+        uuid,
+        nft,
+      })
+    );
+    lockScreenImageUrl = nft.lockScreenImageUrl!;
+  } else {
+    window.localStorage.removeItem(lockScreenKey(uuid));
+    lockScreenImageUrl = nft.imageUrl;
+  }
+  await LocalImageManager.getInstance().storeImageInLocalStorage(
+    lockScreenKeyImage(username),
+    true,
+    lockScreenImageUrl
+  );
+}
+
+export function lockScreenKey(uuid: string) {
+  return `${uuid}:lock-screen-nft:1`;
+}
+
+export function lockScreenKeyImage(username: string) {
+  return `https://swr.xnfts.dev/avatars/${username}`;
 }

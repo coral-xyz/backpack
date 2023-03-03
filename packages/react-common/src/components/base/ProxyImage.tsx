@@ -63,7 +63,8 @@ export const ProxyImage = React.memo(function ProxyImage({
             placeholderRef.current.style.display = "none";
           }
           image.style.position = imgProps?.style?.position ?? "inherit";
-          image.style.top = "inherit";
+          /// @ts-ignore
+          image.style.top = imgProps?.style?.top ?? "inherit";
           image.style.visibility = "visible";
         }}
         onError={(...e) => {

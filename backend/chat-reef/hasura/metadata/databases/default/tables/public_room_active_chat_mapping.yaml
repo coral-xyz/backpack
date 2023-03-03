@@ -1,0 +1,33 @@
+table:
+  name: room_active_chat_mapping
+  schema: public
+object_relationships:
+  - name: barter
+    using:
+      foreign_key_constraint_on: barter_id
+insert_permissions:
+  - role: chat
+    permission:
+      check: {}
+      columns:
+        - barter_id
+        - room_id
+select_permissions:
+  - role: chat
+    permission:
+      columns:
+        - barter_id
+        - room_id
+      filter: {}
+update_permissions:
+  - role: chat
+    permission:
+      columns:
+        - barter_id
+        - room_id
+      filter: {}
+      check: null
+delete_permissions:
+  - role: chat
+    permission:
+      filter: {}

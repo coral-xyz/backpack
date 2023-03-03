@@ -1,3 +1,4 @@
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import type {
   Connection,
   ParsedTransactionWithMeta,
@@ -21,5 +22,33 @@ export async function fetchRecentSolanaTransactions(
   } catch (err) {
     console.error(err);
     return [];
+  }
+}
+
+export async function fetchRecentSolanaTransactionDetails(
+  publicKey: string
+): Promise<any> {
+  try {
+    const response = await fetch(
+      `${BACKEND_API_URL}/tx-parsing/transactions?publicKey=${publicKey}`
+    );
+    const json = await response.json();
+    return json.transactions;
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
+}
+
+export async function fetchNftMetadata(mintID: string): Promise<any> {
+  try {
+    const nftmeta = await fetch(
+      `${BACKEND_API_URL}/tx-parsing/nftMetadata?mint=${mintID}`
+    );
+    const json = await nftmeta.json();
+    return json.metadata;
+  } catch (err) {
+    console.error(err);
+    return undefined;
   }
 }

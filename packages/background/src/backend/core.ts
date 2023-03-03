@@ -5,8 +5,8 @@ import type {
   EventEmitter,
   FEATURE_GATES_MAP,
   KeyringInit,
-  KeyringType,
   Preferences,
+  ServerPublicKey,
   SignedWalletDescriptor,
   WalletDescriptor,
   XnftPreference,
@@ -22,7 +22,6 @@ import {
   EthereumExplorer,
   getAccountRecoveryPaths,
   getAddMessage,
-  getCreateMessage,
   getRecoveryPaths,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
@@ -41,6 +40,7 @@ import {
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
+  NOTIFICATION_KEYRING_IMPORTED_WALLET,
   NOTIFICATION_KEYRING_KEY_DELETE,
   NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
   NOTIFICATION_KEYRING_STORE_CREATED,
@@ -54,6 +54,7 @@ import {
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
+  NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
@@ -106,6 +107,9 @@ export class Backend {
   private ethereumConnectionBackend: EthereumConnectionBackend;
   private events: EventEmitter;
 
+  // TODO: remove once beta is over.
+  private xnftWhitelist: Promise<Array<string>>;
+
   constructor(
     events: EventEmitter,
     solanaB: SolanaConnectionBackend,
@@ -115,6 +119,20 @@ export class Backend {
     this.solanaConnectionBackend = solanaB;
     this.ethereumConnectionBackend = ethereumB;
     this.events = events;
+
+    // TODO: remove once beta is over.
+    this.xnftWhitelist = new Promise(async (resolve, reject) => {
+      try {
+        const resp = await fetch(
+          "https://app-store-api.backpack.workers.dev/api/curation/whitelist"
+        );
+        const { whitelist } = await resp.json();
+        resolve(whitelist);
+      } catch (err) {
+        console.error(err);
+        reject(err);
+      }
+    });
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -499,10 +517,18 @@ export class Backend {
       // Create an empty keyring to init
       blockchainKeyring = keyringForBlockchain(blockchain);
       if (keyringInit.length === 2) {
-        blockchainKeyring.initFromMnemonic(keyringInit[0], keyringInit[1]);
+        // If mnemonic wasn't actually passed retrieve it from the store. This
+        // is to avoid having to pass the mnemonic to the client to make this
+        // call
+        const mnemonic =
+          // @ts-ignore to allow passing true
+          keyringInit[0] === true
+            ? this.keyringStore.activeUserKeyring.exportMnemonic()
+            : keyringInit[0];
+        await blockchainKeyring.initFromMnemonic(mnemonic, keyringInit[1]);
       } else {
         // Using a ledger
-        blockchainKeyring.initFromLedger(keyringInit[0]);
+        await blockchainKeyring.initFromLedger(keyringInit[0]);
       }
     } else {
       blockchainKeyring =
@@ -634,27 +660,29 @@ export class Backend {
     return await this.keyringStore.checkPassword(password);
   }
 
-  async keyringStoreUnlock(
-    password: string,
-    uuid: string,
-    username?: string
-  ): Promise<string> {
-    if (!username) {
-      throw new Error("invariant violation: username not found");
-    }
-
-    await this.keyringStore.tryUnlock(password, uuid);
-
+  async keyringStoreUnlock(password: string, uuid: string): Promise<string> {
+    //
+    // Note: we package the userInfo into an object so that it can be mutated
+    //       by downstream functions. This is required, e.g., for migrating
+    //       when a uuid doesn't yet exist on the client.
+    //
+    const userInfo = { password, uuid };
+    await this.keyringStore.tryUnlock(userInfo);
+    const activeUser = (await store.getUserData()).activeUser;
     const blockchainActiveWallets = await this.blockchainActiveWallets();
-
-    const ethereumConnectionUrl = await this.ethereumConnectionUrlRead(uuid);
+    const ethereumConnectionUrl = await this.ethereumConnectionUrlRead(
+      userInfo.uuid
+    );
     const ethereumChainId = await this.ethereumChainIdRead();
-    const solanaConnectionUrl = await this.solanaConnectionUrlRead(uuid);
-    const solanaCommitment = await this.solanaCommitmentRead(uuid);
+    const solanaConnectionUrl = await this.solanaConnectionUrlRead(
+      userInfo.uuid
+    );
+    const solanaCommitment = await this.solanaCommitmentRead(userInfo.uuid);
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
       data: {
+        activeUser,
         blockchainActiveWallets,
         ethereumConnectionUrl,
         ethereumChainId,
@@ -808,6 +836,57 @@ export class Backend {
         ];
       })
     );
+  }
+
+  async keyringReadNextDerivationPath(
+    blockchain: Blockchain,
+    keyring: "hd" | "ledger"
+  ): Promise<string> {
+    return this.keyringStore.nextDerivationPath(blockchain, keyring);
+  }
+
+  /**
+   * Add a new wallet to the keyring using the next derived wallet for the mnemonic.
+   * @param blockchain - Blockchain to add the wallet for
+   */
+  async keyringImportWallet(
+    blockchain: Blockchain,
+    signedWalletDescriptor: SignedWalletDescriptor
+  ): Promise<string> {
+    const { publicKey, name } = await this.keyringStore.addDerivationPath(
+      blockchain,
+      signedWalletDescriptor.derivationPath
+    );
+
+    try {
+      await this.userAccountPublicKeyCreate(
+        blockchain,
+        publicKey,
+        signedWalletDescriptor.signature
+      );
+    } catch (error) {
+      // Something went wrong persisting to server, roll back changes to the
+      // keyring. This is not a complete rollback of state changes, because
+      // the next account index gets incremented. This is the correct behaviour
+      // because it should allow for sensible retries on conflicts.
+      await this.keyringKeyDelete(blockchain, publicKey);
+      throw error;
+    }
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_KEYRING_IMPORTED_WALLET,
+      data: {
+        blockchain,
+        publicKey,
+        name,
+      },
+    });
+
+    // Set the active wallet to the newly added public key
+    await this.activeWalletUpdate(publicKey, blockchain);
+
+    // Return the newly added public key
+    return publicKey.toString();
   }
 
   /**
@@ -1093,8 +1172,8 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  keyringReset(): string {
-    this.keyringStore.reset();
+  async keyringReset(): Promise<string> {
+    await this.keyringStore.reset();
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_RESET,
     });
@@ -1143,7 +1222,6 @@ export class Backend {
       const searchPublicKeys = serverPublicKeys
         .filter((b) => b.blockchain === blockchain)
         .map((p) => p.publicKey);
-
       for (const searchPublicKey of searchPublicKeys) {
         const index = publicKeys.findIndex(
           (p: string) => p === searchPublicKey
@@ -1151,7 +1229,6 @@ export class Backend {
         if (index !== -1) {
           // There is a match among the recovery paths
           let blockchainKeyring: BlockchainKeyring | undefined = undefined;
-
           // Check if the blockchain keyring already exists
           try {
             blockchainKeyring =
@@ -1161,7 +1238,6 @@ export class Backend {
           } catch {
             // Doesn't exist, we can create it
           }
-
           if (blockchainKeyring) {
             // Exists, just add the missing derivation path
             const { publicKey, name } =
@@ -1193,10 +1269,8 @@ export class Backend {
     }
   }
 
-  keyringTypeRead(): KeyringType {
-    return this.keyringStore.activeUserKeyring.hasMnemonic()
-      ? "mnemonic"
-      : "ledger";
+  keyringHasMnemonic(): boolean {
+    return this.keyringStore.activeUserKeyring.hasMnemonic();
   }
 
   async previewPubkeys(
@@ -1214,7 +1288,7 @@ export class Backend {
   /**
    * Add a public key to a Backpack account via the Backpack API.
    */
-  async userAccountPublicKeyCreate(
+  public async userAccountPublicKeyCreate(
     blockchain: Blockchain,
     publicKey: string,
     signature?: string
@@ -1307,7 +1381,19 @@ export class Backend {
       },
     });
     if (response.status !== 200) throw new Error(`could not authenticate`);
-    return await response.json();
+
+    const json = await response.json();
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
+      data: {
+        username: json.username,
+        uuid: json.id,
+        jwt: json.jwt,
+      },
+    });
+
+    return json;
   }
 
   /**
@@ -1315,7 +1401,7 @@ export class Backend {
    */
   async userAccountLogout(uuid: string): Promise<string> {
     // Clear the jwt cookie if it exists. Don't block.
-    fetch(`${BACKEND_API_URL}/authenticate`, {
+    await fetch(`${BACKEND_API_URL}/authenticate`, {
       method: "DELETE",
     });
 
@@ -1324,7 +1410,7 @@ export class Backend {
     //
     const data = await store.getUserData();
     if (data.users.length === 1) {
-      this.keyringReset();
+      await this.keyringReset();
       return SUCCESS_RESPONSE;
     }
 
@@ -1371,16 +1457,18 @@ export class Backend {
   /**
    * Read a Backpack account from the Backpack API.
    */
-  async userAccountRead(username: string, jwt: string) {
+  async userAccountRead(jwt?: string) {
     const headers = {
       "Content-Type": "application/json",
       ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}),
     };
-    const response = await fetch(`${BACKEND_API_URL}/users/${username}`, {
+    const response = await fetch(`${BACKEND_API_URL}/users/me`, {
       method: "GET",
       headers,
     });
-    if (response.status === 404) {
+    if (response.status === 403) {
+      throw new Error("user not authenticated");
+    } else if (response.status === 404) {
       // User does not exist on server, how to handle?
       throw new Error("user does not exist");
     } else if (response.status !== 200) {
@@ -1388,6 +1476,16 @@ export class Backend {
     }
 
     const json = await response.json();
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
+      data: {
+        username: json.username,
+        uuid: json.id,
+        jwt: json.jwt,
+      },
+    });
+
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
       data: {
@@ -1398,16 +1496,37 @@ export class Backend {
   }
 
   /**
-   * Find a `SignedWalletDescriptor` that can be used to create a new account.
+   * Query the Backpack API to check if a user has already used any of the
+   * blockchain/public key pairs from a list.
+   */
+  async findServerPublicKeyConflicts(
+    serverPublicKeys: ServerPublicKey[]
+  ): Promise<string[]> {
+    const url = `${BACKEND_API_URL}/publicKeys`;
+    const response = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify(serverPublicKeys),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((r) => r.json());
+
+    return response;
+  }
+
+  /**
+   * Find a `WalletDescriptor` that can be used to create a new account.
    * This requires that the sub wallets on the account index are not used by a
    * existing user account. This is checked by querying the Backpack API.
+   *
+   * This only works for mnemonics or a keyring store unlocked with a mnemoni
+   * because the background service worker can't use a Ledger.
    */
-  async findSignedWalletDescriptor(
+  async findWalletDescriptor(
     blockchain: Blockchain,
     accountIndex = 0,
-    create = false,
     mnemonic?: string
-  ): Promise<SignedWalletDescriptor> {
+  ): Promise<WalletDescriptor> {
     // If mnemonic is not passed as an argument, use the keyring store stored mnemonic.
     // Wallet must be unlocked.
     if (!mnemonic)
@@ -1415,49 +1534,27 @@ export class Backend {
     const recoveryPaths = getAccountRecoveryPaths(blockchain, accountIndex);
     const publicKeys = await this.previewPubkeys(
       blockchain,
-      mnemonic,
+      mnemonic!,
       recoveryPaths
     );
-    const response = await fetch(`${BACKEND_API_URL}/publicKeys`, {
-      method: "POST",
-      body: JSON.stringify(
-        publicKeys.map((publicKey) => ({
-          blockchain,
-          publicKey,
-        }))
-      ),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const json = await response.json();
-    if (json.length === 0) {
+    const users = await this.findServerPublicKeyConflicts(
+      publicKeys.map((publicKey) => ({
+        blockchain,
+        publicKey,
+      }))
+    );
+    if (users.length === 0) {
       // No users for any of the passed public keys, good to go
       // Take the root for the public key path
       const publicKey = publicKeys[0];
       const derivationPath = recoveryPaths[0];
-      // TODO remove this, signing different messages is just extra friction
-      const message = create
-        ? getCreateMessage(publicKey)
-        : getAddMessage(publicKey);
       return {
-        publicKey,
         derivationPath,
-        signature: await this.signMessageForPublicKey(
-          blockchain,
-          publicKey,
-          bs58.encode(Buffer.from(message, "utf-8")),
-          [mnemonic, [derivationPath]]
-        ),
+        publicKey,
       };
     } else {
       // Iterate on account index
-      return this.findSignedWalletDescriptor(
-        blockchain,
-        accountIndex + 1,
-        create,
-        mnemonic
-      );
+      return this.findWalletDescriptor(blockchain, accountIndex + 1, mnemonic!);
     }
   }
 
@@ -1675,7 +1772,32 @@ export class Backend {
     if (!nav) {
       throw new Error("nav not found");
     }
+
     const targetTab = tab ?? nav.activeTab;
+
+    // This is a temporary measure for the duration of the private beta in order
+    // to control the xNFTs that can be opened from within Backpack AND
+    // externally using the injected provider's `openXnft` function.
+    //
+    // The whitelist is controlled internally and exposed through the xNFT
+    // library's worker API to check the address of the xNFT attempting to be
+    // opened by the user.
+    if (targetTab === TAB_XNFT) {
+      const pk = url.split("/")[1];
+      const cachedWhitelist = await this.xnftWhitelist;
+
+      if (!cachedWhitelist.includes(pk)) {
+        // Secondary lazy check to ensure there wasn't a whitelist update in-between cache updates
+        const resp = await fetch(
+          `https://app-store-api.backpack.workers.dev/api/curation/whitelist/check?address=${pk}`
+        );
+        const { whitelisted } = await resp.json();
+
+        if (!whitelisted) {
+          throw new Error("opening an xnft that is not whitelisted");
+        }
+      }
+    }
 
     nav.data[targetTab] = nav.data[targetTab] ?? { id: targetTab, urls: [] };
 

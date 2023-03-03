@@ -10,13 +10,13 @@ import {
   Screen,
   SecondaryButton,
   StyledTextInput,
-} from "@components";
+} from "~components/index";
 import { UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "@hooks";
+import { useTheme } from "~hooks/useTheme";
 
-import { EyeIcon, WarningIcon } from "@components/Icon";
+import { EyeIcon, WarningIcon } from "~components/Icon";
 
 export function ShowPrivateKeyWarningScreen({
   route,

@@ -1,4 +1,5 @@
 import type {
+  BarterOffers,
   EnrichedMessage,
   MessageWithMetadata,
   SubscriptionType,
@@ -6,19 +7,23 @@ import type {
 } from "@coral-xyz/common";
 import {
   CHAT_MESSAGES,
+  DELETE_MESSAGE,
+  EXECUTE_BARTER,
   SUBSCRIBE,
-  UNSUBSCRIBE,
+  UPDATE_ACTIVE_BARTER,
   WS_READY,
 } from "@coral-xyz/common";
 import {
   bulkAddChats,
   createDefaultFriendship,
   createOrUpdateCollection,
+  deleteChat,
   getFriendshipByRoom,
   updateFriendship,
   updateLastRead,
 } from "@coral-xyz/db";
 
+import { getSanitizedTitle } from "./getSanitizedTitle";
 import { RECONNECTING, Signaling } from "./Signaling";
 
 const DEBOUNCE_INTERVAL_MS = 500;
@@ -58,6 +63,14 @@ export class SignalingManager {
   }>();
 
   private constructor() {}
+
+  public onBarterUpdate(updatedParams: {
+    barterId: number;
+    localOffers?: BarterOffers;
+    remoteOffers?: BarterOffers;
+  }) {}
+
+  public onBarterExecute(props: { barterId: number }) {}
 
   updateUuid(uuid: string, jwt: string) {
     this.signaling?.destroy();
@@ -106,7 +119,7 @@ export class SignalingManager {
             if (friendship?.remoteUserId) {
               await updateFriendship(this.uuid, friendship?.remoteUserId, {
                 last_message_sender: message.uuid,
-                last_message: message.message,
+                last_message: getSanitizedTitle(message),
                 last_message_timestamp: new Date().toISOString(),
                 unread: message.uuid === this.uuid ? 0 : 1,
               });
@@ -121,7 +134,7 @@ export class SignalingManager {
                   {
                     last_message_sender: message.uuid,
                     last_message_timestamp: new Date().toISOString(),
-                    last_message: message.message,
+                    last_message: getSanitizedTitle(message),
                     last_message_client_uuid: message.uuid,
                   },
                   {
@@ -147,6 +160,39 @@ export class SignalingManager {
             });
           }
         });
+      }
+    );
+
+    this.signaling?.on(UPDATE_ACTIVE_BARTER, (payload) => {
+      this.onBarterUpdate(payload);
+    });
+
+    this.signaling?.on(EXECUTE_BARTER, (payload) => {
+      this.onBarterExecute(payload);
+    });
+
+    this.signaling?.on(
+      DELETE_MESSAGE,
+      async (payload: {
+        client_generated_uuid: string;
+        room: string;
+        type: SubscriptionType;
+      }) => {
+        const updatedChat = await deleteChat(
+          this.uuid,
+          payload.client_generated_uuid
+        );
+        if (updatedChat) {
+          this.onUpdateRecoil({
+            type: "chat",
+            payload: {
+              room: payload.room,
+              type: payload.type,
+              uuid: this.uuid,
+              chats: [updatedChat],
+            },
+          });
+        }
       }
     );
 
@@ -209,7 +255,7 @@ export class SignalingManager {
     return this.instance;
   }
 
-  send(message: ToServer) {
+  async send(message: ToServer) {
     this.signaling?.send(message);
     if (message.type === CHAT_MESSAGES) {
       // we only bulkify messages from the same room yet
@@ -251,7 +297,7 @@ export class SignalingManager {
           if (friendship?.remoteUserId) {
             await updateFriendship(this.uuid, friendship?.remoteUserId, {
               last_message_sender: this.uuid,
-              last_message: m.message,
+              last_message: getSanitizedTitle(m),
               last_message_timestamp: new Date().toISOString(),
               unread: 0,
             });
@@ -264,7 +310,7 @@ export class SignalingManager {
             collectionId: message.payload.room,
             lastReadMessage: m.client_generated_uuid,
             lastMessageUuid: m.client_generated_uuid,
-            lastMessage: m.message,
+            lastMessage: getSanitizedTitle(m),
             lastMessageTimestamp: new Date().toISOString(),
           });
         }
@@ -277,6 +323,24 @@ export class SignalingManager {
         mint: message.payload.mint || "",
         publicKey: message.payload.publicKey || "",
       });
+    }
+    if (message.type === DELETE_MESSAGE) {
+      const updatedChat = await deleteChat(
+        this.uuid,
+        message.payload.client_generated_uuid
+      );
+
+      if (updatedChat) {
+        this.onUpdateRecoil({
+          type: "chat",
+          payload: {
+            room: message.payload.room,
+            type: message.payload.type,
+            uuid: this.uuid,
+            chats: [updatedChat],
+          },
+        });
+      }
     }
   }
 }

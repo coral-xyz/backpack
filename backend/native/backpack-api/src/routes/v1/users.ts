@@ -9,14 +9,19 @@ import type { Request, Response } from "express";
 import express from "express";
 import jwt from "jsonwebtoken";
 
-import { extractUserId, optionallyExtractUserId } from "../../auth/middleware";
-import { clearCookie, setJWTCookie } from "../../auth/util";
+import {
+  ensureHasPubkeyAccessBody,
+  extractUserId,
+} from "../../auth/middleware";
+import { clearCookie, setJWTCookie, validateJwt } from "../../auth/util";
 import { REFERRER_COOKIE_NAME } from "../../config";
 import { getFriendshipStatus } from "../../db/friendships";
+import { getPublicKeyDetails, updatePublicKey } from "../../db/publicKey";
 import {
   createUser,
   createUserPublicKey,
   deleteUserPublicKey,
+  getReferrer,
   getUser,
   getUserByPublicKeyAndChain,
   getUserByUsername,
@@ -26,6 +31,7 @@ import {
   updateUserAvatar,
 } from "../../db/users";
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
+import { logger } from "../../logger";
 import { validatePulicKey } from "../../validation/publicKey";
 import { validateSignature } from "../../validation/signature";
 import {
@@ -41,6 +47,8 @@ router.get("/", extractUserId, async (req, res) => {
   const usernamePrefix: string = req.query.usernamePrefix;
   // @ts-ignore
   const uuid = req.id as string;
+  // @ts-ignore
+  const limit: number = req.query.limit ? parseInt(req.query.limit) : 20;
 
   const isSolPublicKey = validatePulicKey(usernamePrefix, "solana");
   const isEthPublicKey = validatePulicKey(usernamePrefix, "ethereum");
@@ -54,7 +62,7 @@ router.get("/", extractUserId, async (req, res) => {
       Blockchain.ETHEREUM
     );
   } else {
-    users = await getUsersByPrefix({ usernamePrefix, uuid });
+    users = await getUsersByPrefix({ usernamePrefix, uuid, limit });
   }
 
   const friendships: {
@@ -67,10 +75,13 @@ router.get("/", extractUserId, async (req, res) => {
     uuid
   );
 
+  const metadatas = await getUsers(users.map((x) => x.id));
   const usersWithFriendshipMetadata: RemoteUserData[] = users
     .filter((x) => x.id !== uuid)
     .map(({ id, username }) => {
       const friendship = friendships.find((x) => x.id === id);
+      const public_keys = (metadatas.find((x) => x.id === id)?.publicKeys ||
+        []) as { blockchain: string; publicKey: string }[];
 
       return {
         id,
@@ -81,6 +92,7 @@ router.get("/", extractUserId, async (req, res) => {
         areFriends: friendship?.areFriends || false,
         searchedSolPubKey: isSolPublicKey ? usernamePrefix : undefined,
         searchedEthPubKey: isEthPublicKey ? usernamePrefix : undefined,
+        public_keys,
       };
     });
 
@@ -103,7 +115,7 @@ router.get("/jwt/xnft", extractUserId, async (req, res) => {
  * Create a new user.
  */
 router.post("/", async (req, res) => {
-  const { username, inviteCode, waitlistId, blockchainPublicKeys } =
+  const { username, waitlistId, blockchainPublicKeys } =
     CreateUserWithPublicKeys.parse(req.body);
 
   // Validate all the signatures
@@ -139,8 +151,19 @@ router.post("/", async (req, res) => {
 
   const referrerId = await (async () => {
     try {
-      if (req.cookies.referrer) {
-        return (await getUser(req.cookies.referrer))?.id as string;
+      if (req.cookies[REFERRER_COOKIE_NAME]) {
+        // Store the referrer if the cookie is valid
+        return (await getUser(req.cookies[REFERRER_COOKIE_NAME]))?.id as string;
+      } else {
+        // Pass on the referrer of the current user
+        const jwt = req.cookies.jwt;
+        if (jwt) {
+          const { payload } = await validateJwt(jwt);
+          if (payload.sub) {
+            const referrer = await getReferrer(payload.sub);
+            if (referrer) return referrer.id as string;
+          }
+        }
       }
     } catch (err) {
       // TODO: log this failed referral
@@ -155,11 +178,18 @@ router.post("/", async (req, res) => {
       // Cast blockchain to correct type
       blockchain: b.blockchain as Blockchain,
     })),
-    inviteCode,
     waitlistId,
     referrerId
   );
 
+  user?.public_keys.map(async ({ blockchain, id }) => {
+    //TODO: make a bulk, single call here
+    await updatePublicKey({
+      userId: user.id,
+      blockchain,
+      publicKeyId: id,
+    });
+  });
   let jwt: string;
   if (user) {
     jwt = await setJWTCookie(req, res, user.id as string);
@@ -198,71 +228,40 @@ router.post("/", async (req, res) => {
 router.get("/userById", extractUserId, async (req: Request, res: Response) => {
   //@ts-ignore
   const remoteUserId: string = req.query.remoteUserId;
-  const user = await getUser(remoteUserId);
+  const user = await getUser(remoteUserId, true);
   return res.json({ user });
 });
 
 /**
- * Get an existing user. Checks authenticated status if a JWT cookie is passed
- * with the request.
- */
-router.get(
-  "/:username",
-  optionallyExtractUserId(false),
-  async (req: Request, res: Response) => {
-    const username = req.params.username;
-
-    let user;
-
-    if (req.id) {
-      try {
-        const userFromId = await getUser(req.id);
-        if (userFromId && userFromId.username === username) {
-          // User is authenticated as username
-          user = userFromId;
-        }
-      } catch {
-        // User not found or username did not match
-      }
-    }
-
-    // Valid JWT, user is authenticated
-    const isAuthenticated = !!user;
-
-    // If no user id was found in the JWT, we are not authenticated but still
-    // try and get the user details by username
-    if (!user) {
-      try {
-        user = await getUserByUsername(username);
-      } catch {
-        return res.status(404).json({ msg: "User not found" });
-      }
-    }
-
-    return res.json({
-      ...user,
-      isAuthenticated,
-    });
-  }
-);
-
-/**
  * Returns the user that is associated with the JWT in the cookie or query string.
  */
-router.get(
-  "/me",
-  optionallyExtractUserId(true),
-  async (req: Request, res: Response) => {
-    if (req.id) {
-      try {
-        return res.json(await getUser(req.id));
-      } catch {
-        // User not found
-      }
+router.get("/me", extractUserId, async (req: Request, res: Response) => {
+  if (req.id) {
+    try {
+      return res.json({ ...(await getUser(req.id)), jwt: req.jwt });
+    } catch {
+      // User not found
     }
+  }
+  return res.status(404).json({ msg: "User not found" });
+});
+
+/**
+ * Returns the primary public keys of the user with `username`.
+ */
+router.get("/:username", async (req: Request, res: Response) => {
+  const username = req.params.username;
+  try {
+    const user = await getUserByUsername(username);
+    return res.json({
+      id: user.id,
+      publicKeys: user.publicKeys, // .filter((k) => k.primary),
+    });
+  } catch (error) {
+    console.error(error);
     return res.status(404).json({ msg: "User not found" });
   }
-);
+});
 
 /**
  * Delete a public key/blockchain from the currently authenticated user.
@@ -353,5 +352,34 @@ router.post("/metadata", async (req: Request, res: Response) => {
     })),
   });
 });
+
+/**
+ * Update the public key for the authenticated user.
+ */
+router.post(
+  "/activePubkey",
+  extractUserId,
+  ensureHasPubkeyAccessBody,
+  async (req: Request, res: Response) => {
+    const publicKey: string = req.body.publicKey;
+    const userId: string = req.id!;
+
+    //TODO: optimise this to a single call
+    const publicKeyDetails = await getPublicKeyDetails({ publicKey });
+    if (!publicKeyDetails.id) {
+      logger.log(
+        `Public key not found in the DB ${publicKey}, user trying ${userId}`
+      );
+    }
+
+    await updatePublicKey({
+      userId: userId,
+      blockchain: publicKeyDetails.blockchain,
+      publicKeyId: publicKeyDetails.id,
+    });
+
+    return res.json({});
+  }
+);
 
 export default router;

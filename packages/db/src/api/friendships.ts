@@ -15,6 +15,15 @@ export const refreshFriendships = async (uuid: string) => {
     const res = await fetch(`${BACKEND_API_URL}/inbox/all?uuid=${uuid}`);
     const json = await res.json();
     const chats: EnrichedInboxDb[] = json.chats;
+    if (!chats) {
+      return;
+    }
+    const existingChats = await db.inbox.toArray();
+    existingChats.forEach((existingChat) => {
+      if (!chats.find((x) => x.remoteUserId === existingChat.remoteUserId)) {
+        db.inbox.delete(existingChat.remoteUserId);
+      }
+    });
     if (chats) {
       chats?.forEach((chat) => {
         db.inbox.put(chat);

@@ -6,6 +6,8 @@ import type {
 } from "@coral-xyz/common";
 import { getLogger } from "@coral-xyz/common";
 
+import { isValidEventOrigin } from ".";
+
 const logger = getLogger("common/request-manager");
 
 export class RequestManager {
@@ -37,7 +39,9 @@ export class RequestManager {
   }
 
   private _handleRpcResponse(event: Event) {
+    if (!isValidEventOrigin(event)) return;
     if (event.data.type !== this._responseChannel) return;
+
     const { id, result, error } = event.data.detail;
     const resolver = this._responseResolvers[id];
     if (!resolver) {

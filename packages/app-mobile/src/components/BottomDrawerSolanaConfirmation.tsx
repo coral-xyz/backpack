@@ -18,7 +18,7 @@ import {
   Metadata,
   TokenStandard,
 } from "@metaplex-foundation/mpl-token-metadata";
-import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
+import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 import { PublicKey } from "@solana/web3.js";
 
 import {
@@ -26,9 +26,9 @@ import {
   Sending,
   Header,
   Container,
-} from "@components/BottomDrawerCards";
-import { Margin, PrimaryButton, TokenAmountHeader } from "@components/index";
-import { useTheme } from "@hooks/index";
+} from "~components/BottomDrawerCards";
+import { Margin, PrimaryButton, TokenAmountHeader } from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
 type Step = "confirm" | "sending" | "complete" | "error";
 

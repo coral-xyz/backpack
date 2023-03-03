@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useBreakpoints } from "@coral-xyz/app-extension/src/components/common/Layout/hooks";
+import { useBreakpoints } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import CloseIcon from "@mui/icons-material/Close";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -92,7 +92,7 @@ export const MediaContent = ({
           </>
         </Modal>
       )}
-      <div style={{ marginTop: 3 }}>
+      <div style={{ marginTop: 3, width: 1 }}>
         {mediaKind === "video" ? (
           <div style={{ display: "flex" }}>
             <div style={{ position: "relative" }}>

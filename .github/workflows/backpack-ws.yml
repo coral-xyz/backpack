@@ -1,0 +1,55 @@
+name: Deploy backpack-ws
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: "mv docker/backend-ws/Dockerfile ."
+
+      - name: add secrets
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: |
+          cd backend/native/backend-ws
+          touch .env
+          printf 'AUTH_JWT=%s\n' '${{secrets.AUTH_JWT}}' >> .env
+          printf 'AUTH_JWT_PRIVATE_KEY=%s\n' '${{secrets.AUTH_JWT_PRIVATE_KEY}}' >> .env
+          printf 'AUTH_JWT_PUBLIC_KEY=%s\n' '${{secrets.AUTH_JWT_PUBLIC_KEY}}' >> .env
+          printf 'AUTH_HASURA_URL=%s\n' '${{secrets.HASURA_URL}}' >> .env
+          printf 'CHAT_HASURA_URL=%s\n' '${{secrets.CHAT_HASURA_URL}}' >> .env
+          printf 'REDIS_URL=%s\n' '${{secrets.REDIS_URL}}' >> .env
+          printf 'CHAT_JWT=%s\n' '${{secrets.CHAT_JWT}}' >> .env
+          printf 'PORT=%s\n' '8080' >> .env
+          cd ../../..
+
+      - name: docker login
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: |
+          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+      - name: Build the Docker image
+        run: docker build . --tag backpackapp/backend-ws:${{ github.sha }}-ws
+
+      - name: Docker Push
+        run: docker push backpackapp/backend-ws:${{ github.sha }}-ws
+
+      - name: Create zip
+        run: "mkdir deploy && cp ./docker/backend-ws/docker-compose.yml ./deploy && cp ./docker/Dockerrun.aws.json ./deploy && sed 's/{{tag}}/${{ github.sha }}-ws/g' ./deploy/docker-compose.yml > ./deploy/temp.yml && mv ./deploy/temp.yml ./deploy/docker-compose.yml && cd deploy && zip deploy.zip * && cd .. && mv ./deploy/deploy.zip ."
+
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v20
+        with:
+          aws_access_key: ${{ secrets.AWS_EB_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_EB_SECRET_ACCESS_KEY }}
+          application_name: backend-api
+          environment_name: backend-ws-dockerhub
+          version_label: ${{ github.sha }}-ws
+          region: us-west-1
+          deployment_package: deploy.zip

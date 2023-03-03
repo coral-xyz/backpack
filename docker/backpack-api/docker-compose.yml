@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  backendapi:
+    image: backpackapp/backpack-api:{{tag}}
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    command: "node ./dist/index.js"
+

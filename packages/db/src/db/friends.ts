@@ -64,6 +64,7 @@ export const updateFriendshipIfExists = async (
   updatedProps: {
     areFriends?: 0 | 1;
     requested?: 0 | 1;
+    remoteRequested?: 0 | 1;
   }
 ) => {
   const friendship = await getFriendshipByUserId(uuid, remoteUserId);

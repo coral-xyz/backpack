@@ -1,3 +1,5 @@
+export * from "./BackpackStaffIcon";
+export * from "./BubbleTopLabel";
 export * from "./DangerButton";
 export * from "./EmptyState";
 export * from "./Inputs";
@@ -10,3 +12,4 @@ export * from "./PrimaryButton";
 export * from "./ProxyImage";
 export * from "./SecondaryButton";
 export * from "./SuccessButton";
+export * from "./UserIcon";

@@ -1,4 +1,8 @@
-export const PORT = 8082;
+import * as dotenv from "dotenv";
+dotenv.config();
+
+export const PORT = process.env.PORT || 8082;
+
 export const CHAT_HASURA_URL =
   process.env.CHAT_HASURA_URL || "http://localhost:8113/v1/graphql";
 

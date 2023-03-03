@@ -1,24 +1,20 @@
-import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useRef, useState } from "react";
 import Autosizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
-import type { Blockchain,   CollectionChatData,NftCollection } from "@coral-xyz/common";
+import type { Blockchain, NftCollection } from "@coral-xyz/common";
 import {
-  BACKEND_API_URL,
   NAV_COMPONENT_NFT_COLLECTION,
   NAV_COMPONENT_NFT_DETAIL,
-  SolanaTokenAccountWithKey,
-  TokenMetadata,
 } from "@coral-xyz/common";
-import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
 import { Loading } from "@coral-xyz/react-common";
 import {
   nftById,
   useAllWallets,
   useBlockchainConnectionUrl,
-  useGroupCollections,
   useNavigation,
   useUser,
 } from "@coral-xyz/recoil";
+import type { CustomTheme } from "@coral-xyz/themes";
 import { styled } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
 import { useRecoilValue } from "recoil";
@@ -34,7 +30,6 @@ type AllWalletCollections = Array<{
 }>;
 type CollapsedCollections = boolean[];
 
-const ONE_COLLECTION_ID = "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj";
 type Row = {
   height: number;
   key: string;
@@ -165,23 +160,21 @@ const HeaderRow = function HeaderRow({
   const wallet = wallets.find((wallet) => wallet.publicKey === c.publicKey);
   const blockchain = wallet?.blockchain;
   return (
-    <>
-      <CustomCard top={true} bottom={isCollapsed}>
-        <_BalancesTableHead
-          blockchain={blockchain as Blockchain}
-          wallet={wallet!}
-          showContent={!isCollapsed}
-          setShowContent={(isCollapsed) => {
-            collapseSingleCollection(listIndex, blockchainIndex, !isCollapsed);
-          }}
-        />
-      </CustomCard>
-    </>
+    <CustomCard top bottom={isCollapsed}>
+      <_BalancesTableHead
+        blockchain={blockchain as Blockchain}
+        wallet={wallet!}
+        showContent={!isCollapsed}
+        setShowContent={(isCollapsed) => {
+          collapseSingleCollection(listIndex, blockchainIndex, !isCollapsed);
+        }}
+      />
+    </CustomCard>
   );
 };
 
 const FooterRow = function () {
-  return <CustomCard top={false} bottom={true} />;
+  return <CustomCard top={false} bottom />;
 };
 
 const LoadingRow = function ({ itemsPerRow }: { itemsPerRow: number }) {
@@ -277,7 +270,7 @@ const ItemRow = function ({
                 margin: "0px 6px",
               }}
             >
-              {collection && (
+              {collection ? (
                 <Suspense fallback={<Loading />}>
                   <NftCollectionCard
                     publicKey={c.publicKey}
@@ -285,7 +278,7 @@ const ItemRow = function ({
                     collection={collection}
                   />
                 </Suspense>
-              )}
+              ) : null}
             </div>
           );
         })}
@@ -295,7 +288,7 @@ const ItemRow = function ({
 };
 
 const CustomCard = styled("div")(
-  ({ theme }) =>
+  ({ theme }: { theme: CustomTheme }) =>
     ({ top, bottom }: { top: boolean; bottom: boolean }) => ({
       position: "relative",
       backgroundColor: "inherit",
@@ -344,49 +337,12 @@ function NftCollectionCard({
       nftId: collectionDisplayNftId,
     })
   );
-  const collectionsChatMetadata = useGroupCollections({ uuid });
-
-  const init = async () => {
-    await fetch(`${BACKEND_API_URL}/nft/bulk`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        publicKey: publicKey,
-        nfts: [
-          {
-            collectionId: collection.metadataCollectionId,
-            // @ts-ignore
-            nftId: collectionDisplayNft?.mint,
-          },
-        ],
-      }),
-    });
-  };
-
-  useEffect(() => {
-    if (collection.metadataCollectionId !== ONE_COLLECTION_ID) {
-      return;
-    }
-    init();
-  }, [collection.metadataCollectionId]);
 
   if (!collectionDisplayNft) {
     return null;
   }
+
   const onClick = () => {
-    if (collection.metadataCollectionId === ONE_COLLECTION_ID) {
-      push({
-        title: "ONE Holders Chat",
-        componentId: NAV_COMPONENT_NFT_CHAT,
-        componentProps: {
-          collectionId: collection.metadataCollectionId,
-          //@ts-ignore
-          nftMint: collectionDisplayNft?.mint,
-          title: "ONE Holders Chat",
-        },
-      });
-      return;
-    }
     if (collection.itemIds.length === 1) {
       if (!collectionDisplayNft.name || !collectionDisplayNft.id) {
         throw new Error("invalid NFT data");
@@ -417,17 +373,12 @@ function NftCollectionCard({
 
   return (
     <GridCard
-      showNotificationBubble={collectionsChatMetadata?.find(
-        (x: CollectionChatData) =>
-          x.collectionId === collection.metadataCollectionId &&
-          x.lastMessageUuid !== x.lastReadMessage
-      )}
       metadataCollectionId={false}
       onClick={onClick}
       nft={collectionDisplayNft}
       subtitle={{
-        name: collectionDisplayNft.collectionName,
         length: collection.itemIds.length,
+        name: collectionDisplayNft.collectionName,
       }}
     />
   );
