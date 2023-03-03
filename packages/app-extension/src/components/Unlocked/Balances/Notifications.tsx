@@ -230,9 +230,16 @@ export function Notifications() {
   }, []);
 
   useEffect(() => {
-    const sortedNotifications = notifications
-      .slice()
-      .sort((a, b) =>
+    const allNotifications = notifications
+        .slice();
+    const uniqueNotifications = allNotifications.sort((a, b) =>
+        new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime()
+            ? -1
+            : 1
+    ).filter((x, index) => (x.xnft_id !== "friend_requests" || (
+        allNotifications.map(y => y.body).indexOf(x.body) === index
+    )))
+    const sortedNotifications = uniqueNotifications.sort((a, b) =>
         new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime()
           ? -1
           : 1
