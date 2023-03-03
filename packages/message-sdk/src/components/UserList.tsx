@@ -294,7 +294,13 @@ function UserListItem({
               <UserIcon image={user.image} />
             </div>
             <div className={classes.userText} style={{ display: "flex" }}>
-              <div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                }}
+              >
                 {usernameDisplay(user.username, 15)}{" "}
                 {user.searchedSolPubKey ? (
                   <> ({walletAddressDisplay(user.searchedSolPubKey, 2)})</>
