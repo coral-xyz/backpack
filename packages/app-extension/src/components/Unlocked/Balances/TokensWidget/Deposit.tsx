@@ -456,12 +456,8 @@ export function _Deposit({
       </div>
       <div>
         <Typography className={classes.subtext}>
-          {blockchain === Blockchain.SOLANA && (
-            <>This address can only receive SOL and SPL tokens on Solana.</>
-          )}
-          {blockchain === Blockchain.ETHEREUM && (
-            <>This address can only receive ETH and ERC20 tokens on Ethereum.</>
-          )}
+          {blockchain === Blockchain.SOLANA ? <>This address can only receive SOL and SPL tokens on Solana.</> : null}
+          {blockchain === Blockchain.ETHEREUM ? <>This address can only receive ETH and ERC20 tokens on Ethereum.</> : null}
         </Typography>
       </div>
     </div>

@@ -73,15 +73,13 @@ export const Onboarding = ({
           />
         </OnboardingProvider>
       ) : null}
-      {action === "waiting" && <WaitingRoom />}
-      {action === "recover" && (
-        <OnboardingProvider>
-          <RecoverAccount
-            onClose={() => setAction("onboard")}
-            {...defaultProps}
+      {action === "waiting" ? <WaitingRoom /> : null}
+      {action === "recover" ? <OnboardingProvider>
+        <RecoverAccount
+          onClose={() => setAction("onboard")}
+          {...defaultProps}
           />
-        </OnboardingProvider>
-      )}
+      </OnboardingProvider> : null}
     </OptionsContainer>
   );
 };

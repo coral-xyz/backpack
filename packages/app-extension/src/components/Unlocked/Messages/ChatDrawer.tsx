@@ -127,6 +127,8 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
           />
         ) : null}
         <SearchBox
+          searchFilter={searchFilter}
+          setSearchFilter={setSearchFilter}
           placeholder="Search username"
           onChange={(prefix: string) => {
             setSearchFilter(prefix);
@@ -231,6 +233,11 @@ function MembersList({
         <LocalImage
           key={idx}
           src={member.image}
+          loadingStyles={{
+            height: 30,
+            width: 30,
+            borderRadius: "50%",
+          }}
           style={{
             border: `solid 2px ${theme.custom.colors.nav}`,
             borderRadius: "50%",

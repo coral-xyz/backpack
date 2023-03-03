@@ -2,6 +2,7 @@
 - "!include public_barters.yaml"
 - "!include public_chat_barter_metadata.yaml"
 - "!include public_chat_media_messages.yaml"
+- "!include public_chat_update_history.yaml"
 - "!include public_chats.yaml"
 - "!include public_nft_sticker_metadata.yaml"
 - "!include public_room_active_chat_mapping.yaml"

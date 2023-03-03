@@ -1,3 +1,4 @@
+import { enrichMessages , getHistoryUpdates } from "@coral-xyz/backend-common";
 import type {
   Message,
   MessageWithMetadata,
@@ -5,13 +6,8 @@ import type {
 } from "@coral-xyz/common";
 import express from "express";
 
-import { enrichMessages } from "@coral-xyz/backend-common";
-
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
-import {
-  getChats,
-  updateSecureTransfer,
-} from "../../db/chats";
+import { getChats, updateSecureTransfer } from "../../db/chats";
 import {
   updateLastReadGroup,
   updateLastReadIndividual,
@@ -35,6 +31,7 @@ router.post(
     // @ts-ignore
     const room: string = req.query.room;
 
+    //TODO: add validateMessageOwnership here
     if (type === "individual") {
       await updateLastReadIndividual(
         user1,
@@ -90,6 +87,27 @@ router.get("/", extractUserId, ensureHasRoomAccess, async (req, res) => {
   });
   const enrichedChats = await enrichMessages(chats, room, type, false);
   res.json({ chats: enrichedChats });
+});
+
+router.get("/updates", extractUserId, ensureHasRoomAccess, async (req, res) => {
+  // @ts-ignore
+  const room: string = req.query.room;
+  // @ts-ignore
+  const type: SubscriptionType = req.query.type;
+  // @ts-ignore
+  const lastSeen: number = parseInt(req.query.lastSeenUpdate || 0);
+  // @ts-ignore
+  const updatesSinceTimestamp = parseInt(req.query.updatesSinceTimestamp);
+
+  const updates = await getHistoryUpdates(
+    room,
+    lastSeen,
+    updatesSinceTimestamp
+  );
+
+  res.json({
+    updates,
+  });
 });
 
 export default router;

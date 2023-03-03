@@ -5,6 +5,7 @@ import type {
   SubscriptionType,
 } from "@coral-xyz/common";
 import {
+  BACKPACK_TEAM,
   NAV_COMPONENT_MESSAGE_CHAT,
   NAV_COMPONENT_MESSAGE_GROUP_CHAT,
   NAV_COMPONENT_MESSAGE_PROFILE,
@@ -12,6 +13,7 @@ import {
   parseMessage,
 } from "@coral-xyz/common";
 import {
+  BackpackStaffIcon,
   isFirstLastListItemStyle,
   LocalImage,
   useUsersMetadata,
@@ -65,6 +67,11 @@ export const MessageList = ({
               ? activeChat.chatProps.remoteUserImage!
               : activeChat.chatProps.image!
           }
+          userId={
+            activeChat.chatType === "individual"
+              ? activeChat.chatProps.remoteUserId!
+              : ""
+          }
           name={
             activeChat.chatType === "individual"
               ? activeChat.chatProps.remoteUsername!
@@ -112,6 +119,7 @@ export function ChatListItem({
   id,
   isUnread,
   toRoot,
+  userId,
 }: {
   type: SubscriptionType;
   image: string;
@@ -123,6 +131,7 @@ export function ChatListItem({
   id: string;
   isUnread: boolean;
   toRoot: boolean;
+  userId: string;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -239,17 +248,24 @@ export function ChatListItem({
                 }}
               >
                 <div>{type === "individual" ? `@${name}` : name}</div>
-                <div>
-                  {id === "backpack-chat" ? (
+                {id === "backpack-chat" ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      flexDirection: "column",
+                    }}
+                  >
                     <VerifiedIcon
                       style={{
-                        fontSize: 19,
+                        fontSize: 14,
                         marginLeft: 3,
                         color: theme.custom.colors.verified,
                       }}
                     />
-                  ) : null}
-                </div>
+                  </div>
+                ) : null}
+                {BACKPACK_TEAM.includes(userId) ? <BackpackStaffIcon /> : null}
               </div>
               <div
                 className={classes.userTextSmall}

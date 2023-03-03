@@ -62,8 +62,7 @@ export function SettingsList({
               alignItems: "center",
             }}
           >
-            {val.icon &&
-              val.icon({
+            {val.icon ? val.icon({
                 style: {
                   color: theme.custom.colors.icon,
                   height: "24px",
@@ -71,7 +70,7 @@ export function SettingsList({
                   marginRight: "8px",
                 },
                 fill: theme.custom.colors.icon,
-              })}
+              }) : null}
             <Typography style={{ fontWeight: 500, ...textStyle }}>
               {val.label ?? key}
             </Typography>

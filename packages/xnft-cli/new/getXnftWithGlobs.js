@@ -14,9 +14,9 @@ module.exports = async (xnftPath) => {
     ...Object.values(xnft.icon ?? {}).filter(
       (path) => !isExternalPath.test(path)
     ),
-    ...Object.values(xnft.splash ?? {}).filter(
-      (path) => !isExternalPath.test(path)
-    ),
+    ...Object.values(xnft.splash ?? {})
+      .filter((splash) => !isExternalPath.test(splash.src))
+      .map((splash) => splash.src),
     ...(xnft.screenshots ?? []).filter((path) => !isExternalPath.test(path)),
   ];
 

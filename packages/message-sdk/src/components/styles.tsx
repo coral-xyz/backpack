@@ -116,6 +116,8 @@ export const useStyles = styles((theme) => ({
     fontWeight: 500,
   },
   contactIconOuter: {
-    background: theme.custom.colors.textBorder,
+    "&:disabled": {
+      background: theme.custom.colors.textBorder,
+    },
   },
 }));

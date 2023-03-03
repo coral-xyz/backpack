@@ -23,31 +23,25 @@ export const KeyringTypeSelector = ({
     >
       <Box sx={{ margin: "56px 24px 0 24px", textAlign: "center" }}>
         <HeaderIcon icon={<HardwareWalletIcon />} />
-        {action === "create" && (
-          <>
-            <Header text="Create a new wallet" />
-            <SubtextParagraph>
-              Choose a wallet type. If you're not sure, using a recovery phrase
-              is the most common option.
-            </SubtextParagraph>
-          </>
-        )}
-        {action === "import" && (
-          <>
-            <Header text="Import an existing wallet" />
-            <SubtextParagraph>
-              Choose a method to import your wallet.
-            </SubtextParagraph>
-          </>
-        )}
-        {action === "recover" && (
-          <>
-            <Header text="Recover a username" />
-            <SubtextParagraph>
-              Choose a method to recover your username.
-            </SubtextParagraph>
-          </>
-        )}
+        {action === "create" ? <>
+          <Header text="Create a new wallet" />
+          <SubtextParagraph>
+            Choose a wallet type. If you're not sure, using a recovery phrase
+            is the most common option.
+          </SubtextParagraph>
+        </> : null}
+        {action === "import" ? <>
+          <Header text="Import an existing wallet" />
+          <SubtextParagraph>
+            Choose a method to import your wallet.
+          </SubtextParagraph>
+        </> : null}
+        {action === "recover" ? <>
+          <Header text="Recover a username" />
+          <SubtextParagraph>
+            Choose a method to recover your username.
+          </SubtextParagraph>
+        </> : null}
       </Box>
       <Box
         style={{

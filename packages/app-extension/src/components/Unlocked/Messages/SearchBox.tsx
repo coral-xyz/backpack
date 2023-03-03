@@ -25,13 +25,16 @@ export const useStyles = styles((theme) => ({
 export const SearchBox = ({
   onChange,
   placeholder,
+  searchFilter,
+  setSearchFilter,
 }: {
   onChange: any;
   placeholder?: string;
+  searchFilter: string;
+  setSearchFilter: any;
 }) => {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const [searchFilter, setSearchFilter] = useState("");
 
   return (
     <TextInput

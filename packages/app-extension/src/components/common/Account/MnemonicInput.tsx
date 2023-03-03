@@ -241,15 +241,16 @@ export function MnemonicInput({
             icon={
               <ContentCopyIcon
                 style={{ color: theme.custom.colors.fontColor }}
+
               />
             }
-            disabled={!copyEnabled}
+          disabled={!copyEnabled}
           />
-          <Box sx={{ margin: "12px" }}>
-            <CheckboxForm
-              checked={checked}
-              setChecked={setChecked}
-              label="I saved my secret recovery phrase"
+        <Box sx={{ margin: "12px" }}>
+          <CheckboxForm
+            checked={checked}
+            setChecked={setChecked}
+            label="I saved my secret recovery phrase"
             />
           </Box>
         </>
@@ -258,6 +259,7 @@ export function MnemonicInput({
         {error ? (
           <Typography className={classes.errorMsg}>{error}</Typography>
         ) : null}
+
 
         <PrimaryButton
           label={buttonLabel}

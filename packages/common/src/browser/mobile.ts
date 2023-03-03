@@ -1,10 +1,8 @@
-import type { RpcRequestMsg, RpcResponseData } from "@coral-xyz/common";
+import EventEmitter from "eventemitter3";
+// use expo-secure-store if in react-native, otherwise fake-expo-secure-store.ts
+import { getItemAsync, setItemAsync } from "expo-secure-store";
+
 import {
-  BrowserRuntimeCommon,
-  generateUniqueId,
-  getLogger,
-  IS_MOBILE,
-  isServiceWorker,
   MOBILE_CHANNEL_BG_REQUEST,
   MOBILE_CHANNEL_BG_RESPONSE,
   MOBILE_CHANNEL_BG_RESPONSE_INNER,
@@ -12,11 +10,14 @@ import {
   MOBILE_CHANNEL_FE_RESPONSE,
   MOBILE_CHANNEL_FE_RESPONSE_INNER,
   MOBILE_CHANNEL_HOST_RPC_REQUEST,
-  vanillaStore,
-} from "@coral-xyz/common";
-import EventEmitter from "eventemitter3";
-// use expo-secure-store if in react-native, otherwise fake-expo-secure-store.ts
-import { getItemAsync, setItemAsync } from "expo-secure-store";
+} from "../constants";
+import { getLogger } from "../logging";
+import type { RpcRequestMsg, RpcResponseData } from "../types";
+import { generateUniqueId, IS_MOBILE, isServiceWorker } from "../utils";
+import { useStore } from "../zustand-store";
+
+import { BrowserRuntimeCommon } from "./common";
+
 const logger = getLogger("common/mobile");
 
 /**
@@ -345,7 +346,7 @@ async function postMsgFromWorker(msg: any) {
 }
 
 async function postMsgFromAppUi(msg: any) {
-  vanillaStore
+  useStore
     .getState()
     ?.injectJavaScript?.(
       `window.postMessageToBackgroundViaWebview(${JSON.stringify(msg)}); true;`

@@ -96,13 +96,13 @@ export const xnfts = atomFamily<
         const _activeWallets = get(activePublicKeys);
         const _connectionUrls = get(connectionUrls);
         const provider = get(anchorContext).provider;
-        const { SWAP_FEES_ENABLED } = get(featureGates);
+        const { DROPZONE_ENABLED } = get(featureGates);
 
         if (!publicKey) {
           return [];
         }
         const isDropzoneWallet =
-          SWAP_FEES_ENABLED &&
+          DROPZONE_ENABLED &&
           get(primaryWallets).some(
             (w) =>
               w.blockchain === Blockchain.SOLANA && w.publicKey === publicKey

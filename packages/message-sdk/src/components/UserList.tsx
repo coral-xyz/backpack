@@ -1,6 +1,7 @@
 import type { CSSProperties, MouseEvent } from "react";
 import type { RemoteUserData } from "@coral-xyz/common";
 import {
+  BACKPACK_TEAM,
   NAV_COMPONENT_MESSAGE_PROFILE,
   sendFriendRequest,
   unFriend,
@@ -9,6 +10,7 @@ import {
 } from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
+  BackpackStaffIcon,
   isFirstLastListItemStyle,
   LocalImage,
   SignalingManager,
@@ -19,6 +21,7 @@ import {
   useUser,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
+import VerifiedIcon from "@mui/icons-material/Verified";
 import { List, ListItem } from "@mui/material";
 
 import { useStyles } from "./styles";
@@ -290,18 +293,27 @@ function UserListItem({
             >
               <UserIcon image={user.image} />
             </div>
-            <div className={classes.userText}>
-              {usernameDisplay(user.username, 15)}{" "}
-              {user.searchedSolPubKey ? (
-                <> ({walletAddressDisplay(user.searchedSolPubKey, 2)})</>
-              ) : (
-                ""
-              )}{" "}
-              {user.searchedEthPubKey ? (
-                <>({walletAddressDisplay(user.searchedEthPubKey, 2)})</>
-              ) : (
-                ""
-              )}
+            <div className={classes.userText} style={{ display: "flex" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                }}
+              >
+                {usernameDisplay(user.username, 15)}{" "}
+                {user.searchedSolPubKey ? (
+                  <> ({walletAddressDisplay(user.searchedSolPubKey, 2)})</>
+                ) : (
+                  ""
+                )}{" "}
+                {user.searchedEthPubKey ? (
+                  <>({walletAddressDisplay(user.searchedEthPubKey, 2)})</>
+                ) : (
+                  ""
+                )}
+              </div>
+              {BACKPACK_TEAM.includes(user.id) ? <BackpackStaffIcon /> : null}
             </div>
           </div>
           <div>

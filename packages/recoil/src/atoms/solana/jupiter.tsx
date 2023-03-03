@@ -4,31 +4,50 @@ import { selector, selectorFamily } from "recoil";
 
 import type { TokenDataWithBalance } from "../../types";
 import { blockchainBalancesSorted } from "../balance";
-import { featureGates } from "../feature-gates";
 
 import { splTokenRegistry } from "./token-registry";
-
-export const jupiterUrl = (useProxy: boolean) =>
-  useProxy ? "https://jupiter.xnfts.dev/v4/" : "https://quote-api.jup.ag/v4/";
 
 // Load the route map from the Jupiter API
 const jupiterRouteMap = selector({
   key: "jupiterRouteMap",
-  get: async ({ get }) => {
+  get: async () => {
     try {
-      const JUPITER_BASE_URL = jupiterUrl(get(featureGates).SWAP_FEES_ENABLED);
+      const [response, topTokensReversed] = await (async () => {
+        const url =
+          "https://quote-api.jup.ag/v4/indexed-route-map?onlyDirectRoutes=true";
+        try {
+          // Try to fetch the routes & top token list in parallel to reduce wait,
+          // but fall back to just routes and an empty top token list if it fails
+          return await Promise.all([
+            (async () => {
+              const res = await fetch(url);
+              return await res.json();
+            })(),
+            (async () => {
+              // Fetch the top token list so that it can be used to reorder the
+              // list of available output tokens with the most popular ones first
+              const res = await fetch(`https://cache.jup.ag/top-tokens`);
+              const topTokens = await res.json();
+              // Reverse the list so it makes the .sort() below a little easier
+              return topTokens.reverse();
+            })(),
+          ]);
+        } catch (err) {
+          const res = await fetch(url);
+          return [await res.json(), []];
+        }
+      })();
 
-      const response = await (
-        await fetch(
-          `${JUPITER_BASE_URL}indexed-route-map?onlyDirectRoutes=true`
-        )
-      ).json();
       const getMint = (index: number) => response["mintKeys"][index];
+
       // Replace indices with mint addresses
       return Object.keys(response["indexedRouteMap"]).reduce((acc, key) => {
-        acc[getMint(parseInt(key))] = response["indexedRouteMap"][key].map(
-          (i: number) => getMint(i)
-        );
+        acc[getMint(parseInt(key))] = response["indexedRouteMap"][key]
+          .map((i: number) => getMint(i))
+          .sort(
+            (a, b) =>
+              topTokensReversed.indexOf(b) - topTokensReversed.indexOf(a)
+          );
         return acc;
       }, {});
     } catch (e) {

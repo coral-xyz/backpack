@@ -51,6 +51,7 @@ insert_permissions:
       columns:
         - client_generated_uuid
         - created_at
+        - deleted
         - id
         - message
         - message_kind
@@ -65,6 +66,7 @@ select_permissions:
       columns:
         - client_generated_uuid
         - created_at
+        - deleted
         - id
         - message
         - message_kind
@@ -74,3 +76,10 @@ select_permissions:
         - username
         - uuid
       filter: {}
+update_permissions:
+  - role: chat
+    permission:
+      columns:
+        - deleted
+      filter: {}
+      check: null
