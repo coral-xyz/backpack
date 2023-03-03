@@ -48,6 +48,7 @@ import {
   useDrawerContext,
   WithDrawer,
 } from "../../common/Layout/Drawer";
+import { useBreakpoints } from "../../common/Layout/hooks";
 import {
   NavStackEphemeral,
   NavStackScreen,
@@ -88,6 +89,7 @@ export function NftsDetail({
   );
   const [chatJoined, setChatJoined] = useState(false);
   const [joiningChat, setJoiningChat] = useState(false);
+  const { isXs } = useBreakpoints();
   let whitelistedChatCollectionId = whitelistedChatCollection?.collectionId;
   const background = useBackgroundClient();
 
@@ -125,46 +127,55 @@ export function NftsDetail({
   return (
     <div
       style={{
+        display: "flex",
+        flexDirection: isXs ? "column" : "row",
+        gap: isXs ? "" : "16px",
         paddingLeft: "16px",
         paddingRight: "16px",
         paddingBottom: "8px",
       }}
     >
       <Image nft={nft} />
-      <Description nft={nft} />
-      <SendButton nft={nft} />
-      {xnft && <OpenButton xnft={xnft} />}
-      {whitelistedChatCollectionId && (
-        <SecondaryButton
-          style={{ marginTop: 12 }}
-          disabled={chatJoined || joiningChat}
-          label={joiningChat ? "Joining" : chatJoined ? "Joined" : "Join chat"}
-          onClick={async () => {
-            setJoiningChat(true);
-            await fetch(`${BACKEND_API_URL}/nft/bulk`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                publicKey: publicKey,
-                nfts: [
-                  {
-                    collectionId: whitelistedChatCollection?.collectionId,
-                    nftId: nft?.mint,
-                    centralizedGroup: whitelistedChatCollection?.id,
-                  },
-                ],
-              }),
-            });
-            setJoiningChat(false);
-            background.request({
-              method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-              params: [TAB_MESSAGES],
-            });
-            setChatJoined(true);
-          }}
-        />
-      )}
-      {nft.attributes && nft.attributes.length > 0 && <Attributes nft={nft} />}
+      <div style={{ flex: 1 }}>
+        <Description nft={nft} />
+        <SendButton nft={nft} />
+        {xnft && <OpenButton xnft={xnft} />}
+        {whitelistedChatCollectionId && (
+          <SecondaryButton
+            style={{ marginTop: 12 }}
+            disabled={chatJoined || joiningChat}
+            label={
+              joiningChat ? "Joining" : chatJoined ? "Joined" : "Join chat"
+            }
+            onClick={async () => {
+              setJoiningChat(true);
+              await fetch(`${BACKEND_API_URL}/nft/bulk`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  publicKey: publicKey,
+                  nfts: [
+                    {
+                      collectionId: whitelistedChatCollection?.collectionId,
+                      nftId: nft?.mint,
+                      centralizedGroup: whitelistedChatCollection?.id,
+                    },
+                  ],
+                }),
+              });
+              setJoiningChat(false);
+              background.request({
+                method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+                params: [TAB_MESSAGES],
+              });
+              setChatJoined(true);
+            }}
+          />
+        )}
+        {nft.attributes && nft.attributes.length > 0 && (
+          <Attributes nft={nft} />
+        )}
+      </div>
     </div>
   );
 }
@@ -176,6 +187,7 @@ function Image({ nft }: { nft: any }) {
         width: "100%",
         minHeight: "343px",
         display: "flex",
+        flex: 1,
         position: "relative",
         alignItems: "center",
       }}

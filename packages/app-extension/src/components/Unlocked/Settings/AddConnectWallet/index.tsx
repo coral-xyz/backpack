@@ -66,6 +66,7 @@ export function AddConnectPreview() {
             marginBottom: "16px",
             marginTop: "8px",
             width: "72px",
+            height: "72px",
             borderRadius: "36px",
             marginLeft: "auto",
             marginRight: "auto",

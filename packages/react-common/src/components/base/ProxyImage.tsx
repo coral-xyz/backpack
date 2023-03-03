@@ -55,6 +55,7 @@ export const ProxyImage = React.memo(function ProxyImage({
         style={{
           ...(imgProps.style ?? {}),
           ...visuallyHidden,
+          objectFit: "cover",
         }}
         onLoad={(...e) => {
           const image = e[0].target as HTMLImageElement;
