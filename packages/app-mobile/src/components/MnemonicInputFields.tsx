@@ -50,7 +50,6 @@ export function MnemonicInputFields({
   mnemonicWords: string[];
   onChange?: (mnemonicWords: string[]) => void;
 }) {
-  console.log("mnemonicWords", mnemonicWords);
   const gap = 6;
   return (
     <FlatList
@@ -58,7 +57,7 @@ export function MnemonicInputFields({
       numColumns={3}
       initialNumToRender={mnemonicWords.length}
       scrollEnabled={false}
-      keyExtractor={(word, index) => `${word}${index}`}
+      keyExtractor={(_, index) => index.toString()}
       contentContainerStyle={{ gap }}
       columnWrapperStyle={{ gap }}
       renderItem={({ item: word, index }) => {

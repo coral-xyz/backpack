@@ -74,6 +74,7 @@ import {
   MnemonicInputFields,
   PasswordInput,
   PrimaryButton,
+  SecondaryButton,
   LinkButton,
   Screen,
   StyledText,
@@ -463,7 +464,11 @@ function OnboardingMnemonicInputScreen({
           {readOnly ? (
             <CopyButton text={mnemonicWords.join(", ")} />
           ) : (
-            <PasteButton onPaste={console.log} />
+            <PasteButton
+              onPaste={(words) => {
+                setMnemonicWords(words.split(" "));
+              }}
+            />
           )}
         </Margin>
       </View>
@@ -504,6 +509,12 @@ function OnboardingMnemonicInputScreen({
           disabled={!nextEnabled}
           label={action === "create" ? "Next" : "Import"}
           onPress={next}
+        />
+        <LinkButton
+          label="Start over"
+          onPress={() => {
+            setMnemonicWords([...Array(12).fill("")]);
+          }}
         />
       </View>
     </OnboardingScreen>
