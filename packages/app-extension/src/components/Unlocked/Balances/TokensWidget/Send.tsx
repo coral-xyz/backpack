@@ -10,6 +10,7 @@ import {
   ETH_NATIVE_MINT,
   explorerUrl,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
+  NAV_COMPONENT_MESSAGE_PROFILE,
   SOL_NATIVE_MINT,
   toDisplayBalance,
   toTitleCase,
@@ -73,6 +74,7 @@ const useStyles = styles((theme) => ({
     borderRadius: "50%",
     display: "inline-block",
     overflow: "hidden",
+    cursor: "pointer",
   },
   horizontalCenter: {
     display: "flex",
@@ -519,6 +521,21 @@ function SendV2({
   const isDarkMode = useDarkMode();
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [_amount, _setAmount] = useState<string>("");
+  const { push } = useNavigation();
+
+  const openProfilePage = (props: { uuid: string }) => {
+    if (uuid === props.uuid) {
+      return;
+    }
+
+    push({
+      title: `@${to.username}`,
+      componentId: NAV_COMPONENT_MESSAGE_PROFILE,
+      componentProps: {
+        userId: props.uuid,
+      },
+    });
+  };
 
   return (
     <>
@@ -530,7 +547,12 @@ function SendV2({
       >
         <div>
           <div className={classes.horizontalCenter} style={{ marginBottom: 6 }}>
-            <div className={classes.topImageOuter}>
+            <div
+              className={classes.topImageOuter}
+              onClick={() => {
+                if (to?.uuid) openProfilePage({ uuid: to.uuid });
+              }}
+            >
               <LocalImage
                 className={classes.topImage}
                 src={
@@ -548,6 +570,10 @@ function SendV2({
                   color: theme.custom.colors.fontColor,
                   fontSize: 16,
                   fontWeight: 500,
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  openProfilePage({ uuid: to.uuid });
                 }}
               >
                 @{`${to.username}`}
