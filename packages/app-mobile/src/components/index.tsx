@@ -33,6 +33,52 @@ export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { StyledTokenTextInput } from "./TokenInputField";
 
+export function CallToAction({
+  icon,
+  title,
+  onPress,
+}: {
+  icon: JSX.Element;
+  title: string;
+  onPress: () => void;
+}) {
+  const theme = useTheme();
+  return (
+    <Pressable
+      style={[
+        ctaStyles.container,
+        {
+          borderColor: theme.custom.colors.borderFull,
+          backgroundColor: theme.custom.colors.nav,
+        },
+      ]}
+      onPress={onPress}
+    >
+      <View style={ctaStyles.iconContainer}>{icon}</View>
+      <Text style={[ctaStyles.text, { color: theme.custom.colors.fontColor }]}>
+        {title}
+      </Text>
+    </Pressable>
+  );
+}
+
+const ctaStyles = StyleSheet.create({
+  container: {
+    padding: 12,
+    borderWidth: 2,
+    borderRadius: 12,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  iconContainer: {
+    marginRight: 8,
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+});
+
 export function StyledText({
   children,
   style,

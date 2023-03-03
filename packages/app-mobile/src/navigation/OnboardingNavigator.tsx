@@ -13,7 +13,6 @@ import {
   DevSettings,
   StyleProp,
   ViewStyle,
-  Alert,
 } from "react-native";
 
 import * as Linking from "expo-linking";
@@ -76,6 +75,7 @@ import {
   CopyButton,
   PasteButton,
   EmptyState,
+  CallToAction,
 } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { maybeRender } from "~lib/index";
@@ -701,73 +701,28 @@ function OnboardingCreateAccountLoadingScreen(
       const res = await maybeCreateUser({ ...onboardingData });
       if (!res.ok) {
         setError(true);
-        Alert.alert(
-          "There was an issue setting up your account. Please try again."
-        );
       }
     })();
   }, [onboardingData, background, maybeCreateUser]);
 
   if (error) {
     return (
-      <EmptyState
-        icon={(props: any) => <MaterialIcons name="error" {...props} />}
-        title="Something went wrong."
-        subtitle="Please get in touch ASAP or try again"
-        buttonText="Start Over"
-        onPress={() => {
-          DevSettings.reload();
-        }}
-      />
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <EmptyState
+          icon={(props: any) => <MaterialIcons name="error" {...props} />}
+          title="Something went wrong."
+          subtitle="Please get in touch ASAP or try again"
+          buttonText="Start Over"
+          onPress={() => {
+            DevSettings.reload();
+          }}
+        />
+      </View>
     );
   }
 
   return <FullScreenLoading label="Creating your wallet..." />;
 }
-
-function CallToAction({
-  icon,
-  title,
-  onPress,
-}: {
-  icon: JSX.Element;
-  title: string;
-  onPress: () => void;
-}) {
-  const theme = useTheme();
-  return (
-    <Pressable
-      style={[
-        ctaStyles.container,
-        {
-          borderColor: theme.custom.colors.borderFull,
-          backgroundColor: theme.custom.colors.nav,
-        },
-      ]}
-      onPress={onPress}
-    >
-      <View style={ctaStyles.iconContainer}>{icon}</View>
-      <Text style={[ctaStyles.text, { color: theme.custom.colors.fontColor }]}>
-        {title}
-      </Text>
-    </Pressable>
-  );
-}
-
-const ctaStyles = StyleSheet.create({
-  container: {
-    padding: 12,
-    borderWidth: 2,
-    borderRadius: 12,
-    flexDirection: "row",
-  },
-  iconContainer: {
-    marginRight: 12,
-  },
-  text: {
-    fontSize: 16,
-  },
-});
 
 export function OnboardingCompleteWelcome({
   onComplete,
@@ -782,18 +737,18 @@ export function OnboardingCompleteWelcome({
       subtitle="We recommend downloading a few xNFTs to get started."
       style={{
         paddingTop: insets.top + 36,
-        paddingBottom: insets.bottom,
+        paddingBottom: insets.bottom + 24,
       }}
     >
       <View>
-        <Margin bottom={12}>
+        <Margin bottom={8}>
           <CallToAction
             icon={<WidgetIcon />}
             title="Browse the xNFT library"
             onPress={() => Linking.openURL(XNFT_GG_LINK)}
           />
         </Margin>
-        <Margin bottom={12}>
+        <Margin bottom={8}>
           <CallToAction
             icon={<TwitterIcon />}
             title="Follow us on Twitter"
