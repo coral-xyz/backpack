@@ -124,7 +124,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
           </div>
           <div>
             <IconButton
-              style={{ cursor: "auto" }}
+              style={{ cursor: "not-allowed" }}
               size="large"
               className={classes.icon}
             >
