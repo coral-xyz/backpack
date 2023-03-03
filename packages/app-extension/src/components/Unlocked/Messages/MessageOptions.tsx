@@ -99,7 +99,7 @@ export const MessageOptions = () => {
             }}
           >
             {friendshipValue?.areFriends
-              ? "Remove from Friends"
+              ? "Remove from contacts"
               : friendshipValue?.requested
               ? "Cancel Pending Request"
               : friendshipValue?.remoteRequested

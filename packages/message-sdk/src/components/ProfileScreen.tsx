@@ -146,15 +146,22 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
         </div>
         <br />
         {friendship ? (
-          <ContactSection
-            icon={<VerifiedIcon style={{ color: theme.custom.colors.icon }} />}
-            title="Connected"
-            subtitle={`You and @${user.username} are mutual friends`}
+          <ContactSection 
+            title={
+              <div 
+                style={{ alignItems: "center", display: "flex" }}
+              >
+                <span>Connected</span>
+                <VerifiedIcon
+                  style={{ color: theme.custom.colors.icon, fontSize: "1rem", marginLeft: 4 }}
+                />
+              </div>
+            }
+            subtitle={`You and @${user.username} are mutual contacts`}
           />
         ) : null}
         {!friendship && requestSent ? (
           <ContactSection
-            icon={<LockIcon style={{ color: theme.custom.colors.icon }} />}
             title="Friend pending request"
             subtitle={`You can still message and send things to @${user.username}.`}
           />
@@ -198,19 +205,26 @@ function ContactSection({
   title,
   subtitle,
 }: {
-  icon: any;
-  title: string;
-  subtitle: string;
+  icon?: any;
+  title: React.ReactNode;
+  subtitle: string; 
 }) {
   const classes = useStyles();
+
   return (
     <div>
-      <div className={classes.horizontalCenter} style={{ marginBottom: 16 }}>
-        <IconButton disabled className={classes.contactIconOuter} size="large">
-          {" "}
-          {icon}{" "}
-        </IconButton>
-      </div>
+      {icon ? (
+        <div className={classes.horizontalCenter} style={{ marginBottom: 16 }}>
+          <IconButton
+            disabled
+            className={classes.contactIconOuter}
+            size="large"
+          >
+            {" "}
+            {icon}{" "}
+          </IconButton>
+        </div>
+      ) : null}
       <div className={classes.horizontalCenter} style={{ marginBottom: 16 }}>
         <div className={classes.smallTitle}>{title}</div>
       </div>
