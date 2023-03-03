@@ -63,8 +63,7 @@ export const CustomAutoComplete = () => {
   const shownResults = useMemo(() => results, [results]);
 
   const users = useUsersMetadata({ remoteUserIds: results.map((r) => r.id) });
-
-  return (
+  return shownResults.length ? (
     <div
       style={{
         width: 180,
@@ -129,5 +128,5 @@ export const CustomAutoComplete = () => {
         <></>
       )}
     </div>
-  );
+  ) : null;
 };
