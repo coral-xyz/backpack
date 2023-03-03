@@ -26,7 +26,6 @@ import { SecureTransfer } from "./SecureTransfer";
 
 const BARTER_ENABLED = false;
 const SECURE_TRANSFER_ENABLED = false;
-const STICKER_ENABLED = false;
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
@@ -334,14 +333,12 @@ export const SendMessage = ({
                 height: "28px",
               }}
             />
-            {STICKER_ENABLED ? (
-              <NftSticker
-                buttonStyle={{
-                  height: "28px",
-                }}
-                setAboveMessagePlugin={setAboveMessagePlugin}
-              />
-            ) : null}
+            <NftSticker
+              buttonStyle={{
+                height: "28px",
+              }}
+              setAboveMessagePlugin={setAboveMessagePlugin}
+            />
             {type === "individual" && BARTER_ENABLED ? (
               <Barter
                 setOpenPlugin={setOpenPlugin}
