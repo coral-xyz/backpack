@@ -13,22 +13,17 @@ import {
   DevSettings,
   StyleProp,
   ViewStyle,
+  Alert,
 } from "react-native";
 
 import * as Linking from "expo-linking";
 
 import {
-  BACKEND_API_URL,
-  BACKPACK_FEATURE_XNFT,
-  getAuthMessage,
-  getBlockchainFromPath,
   DISCORD_INVITE_LINK,
   toTitleCase,
   TWITTER_LINK,
-  UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
-  UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
@@ -41,7 +36,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { v4 as uuidv4 } from "uuid";
 
 import {
   BottomSheetHelpModal,
@@ -83,17 +77,8 @@ import {
   PasteButton,
   EmptyState,
 } from "~components/index";
-import { useAuthentication } from "~hooks/useAuthentication";
 import { useTheme } from "~hooks/useTheme";
 import { maybeRender } from "~lib/index";
-
-function Cell({ children, style }: any): JSX.Element {
-  return (
-    <View style={[{ alignSelf: "flex-start", marginBottom: 12 }, style]}>
-      {children}
-    </View>
-  );
-}
 
 function Network({
   id,
@@ -142,10 +127,6 @@ function Network({
       />
     </View>
   );
-}
-
-function getWaitlistId() {
-  return undefined;
 }
 
 type OnboardingStackParamList = {
@@ -530,7 +511,6 @@ function OnboardingMnemonicInputScreen({
 function OnboardingBlockchainSelectScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "SelectBlockchain">) {
-  const background = useBackgroundClient();
   const { onboardingData, handleSelectBlockchain } = useOnboarding();
   const { blockchainOptions, selectedBlockchains } = onboardingData;
   const numColumns = 2;
@@ -553,12 +533,17 @@ function OnboardingBlockchainSelectScreen({
         renderItem={({ item }) => {
           return (
             <Network
-              id={item.id}
-              selected={selectedBlockchains.includes(item.id)}
+              id={item.id as Blockchain}
+              selected={selectedBlockchains.includes(item.id as Blockchain)}
               enabled={item.enabled}
               label={item.label}
-              onSelect={(blockchain) =>
-                handleSelectBlockchain({ blockchain, background })
+              onSelect={async (blockchain) =>
+                await handleSelectBlockchain({
+                  blockchain,
+                  // onSelectImport: () => {
+                  //   console.log("import");
+                  // },
+                })
               }
             />
           );
@@ -686,31 +671,15 @@ function OnboardingImportAccountsScreen({
   );
 }
 
-function OnboardingCreateAccountLoadingScreen({
-  navigation,
-}: StackScreenProps<
-  OnboardingStackParamList,
-  "OnboardingCreateAccountLoading"
->): JSX.Element {
+function OnboardingCreateAccountLoadingScreen(
+  _p: StackScreenProps<
+    OnboardingStackParamList,
+    "OnboardingCreateAccountLoading"
+  >
+): JSX.Element {
   const background = useBackgroundClient();
-  const { authenticate } = useAuthentication();
-  const { onboardingData } = useOnboarding();
-  const [error, setError] = useState(null);
-
-  const {
-    password,
-    mnemonic,
-    username,
-    inviteCode,
-    isAddingAccount,
-    userId,
-    signedWalletDescriptors,
-  } = onboardingData;
-
-  const keyringInit = {
-    mnemonic,
-    signedWalletDescriptors,
-  };
+  const { onboardingData, maybeCreateUser } = useOnboarding();
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -723,109 +692,27 @@ function OnboardingCreateAccountLoadingScreen({
       // rollback on the client.
       //
       // An improvement for the future!
-      if (isAddingAccount) {
+      if (onboardingData.isAddingAccount) {
         await background.request({
           method: UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
           params: [],
         });
       }
-      const { id, jwt } = await createUser();
-      await createStore(id, jwt);
-    })();
-  }, []);
-
-  //
-  // Create the user in the backend
-  //
-  async function createUser(): Promise<{ id: string; jwt: string }> {
-    // If userId is provided, then we are onboarding via the recover flow.
-    if (userId) {
-      // Authenticate the user that the recovery has a JWT.
-      // Take the first keyring init to fetch the JWT, it doesn't matter which
-      // we use if there are multiple.
-      const { derivationPath, publicKey, signature } =
-        keyringInit.signedWalletDescriptors[0];
-      const authData = {
-        blockchain: getBlockchainFromPath(derivationPath),
-        publicKey,
-        signature,
-        message: getAuthMessage(userId),
-      };
-      const { jwt } = await authenticate(authData!);
-      return { id: userId, jwt };
-    }
-
-    // If userId is not provided and an invite code is not provided, then
-    // this is dev mode.
-    if (!inviteCode) {
-      return { id: uuidv4(), jwt: "" };
-    }
-
-    //
-    // If we're down here, then we are creating a user for the first time.
-    //
-    const body = JSON.stringify({
-      username,
-      inviteCode,
-      waitlistId: getWaitlistId?.(),
-      blockchainPublicKeys: keyringInit.signedWalletDescriptors.map((b) => ({
-        blockchain: getBlockchainFromPath(b.derivationPath),
-        publicKey: b.publicKey,
-        signature: b.signature,
-      })),
-    });
-
-    try {
-      const res = await fetch(`${BACKEND_API_URL}/users`, {
-        method: "POST",
-        body,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
+      const res = await maybeCreateUser({ ...onboardingData });
       if (!res.ok) {
-        throw new Error(await res.json());
+        setError(true);
+        Alert.alert(
+          "There was an issue setting up your account. Please try again."
+        );
       }
-
-      return await res.json();
-    } catch (err: any) {
-      setError(err);
-      console.error("OnboardingNavigator:createUser::error", err);
-      throw new Error("error creating account");
-    }
-  }
-
-  //
-  // Create the local store for the wallets
-  //
-  async function createStore(uuid: string, jwt: string) {
-    try {
-      if (isAddingAccount) {
-        // Add a new account if needed, this will also create the new keyring
-        // store
-        await background.request({
-          method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
-          params: [username, keyringInit, uuid, jwt],
-        });
-      } else {
-        // Add a new keyring store under the new account
-        await background.request({
-          method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-          params: [username, password, keyringInit, uuid, jwt],
-        });
-      }
-    } catch (err: any) {
-      setError(err);
-      console.error("OnboardingNavigator:createStore::error", err);
-    }
-  }
+    })();
+  }, [onboardingData, background, maybeCreateUser]);
 
   if (error) {
     return (
       <EmptyState
         icon={(props: any) => <MaterialIcons name="error" {...props} />}
-        title={error}
+        title="Something went wrong."
         subtitle="Please get in touch ASAP or try again"
         buttonText="Start Over"
         onPress={() => {
@@ -838,44 +725,86 @@ function OnboardingCreateAccountLoadingScreen({
   return <FullScreenLoading label="Creating your wallet..." />;
 }
 
-export function OnboardingCompleteWelcome({ onComplete }): JSX.Element {
+function CallToAction({
+  icon,
+  title,
+  onPress,
+}: {
+  icon: JSX.Element;
+  title: string;
+  onPress: () => void;
+}) {
+  const theme = useTheme();
+  return (
+    <Pressable
+      style={[
+        ctaStyles.container,
+        {
+          borderColor: theme.custom.colors.borderFull,
+          backgroundColor: theme.custom.colors.nav,
+        },
+      ]}
+      onPress={onPress}
+    >
+      <View style={ctaStyles.iconContainer}>{icon}</View>
+      <Text style={[ctaStyles.text, { color: theme.custom.colors.fontColor }]}>
+        {title}
+      </Text>
+    </Pressable>
+  );
+}
+
+const ctaStyles = StyleSheet.create({
+  container: {
+    padding: 12,
+    borderWidth: 2,
+    borderRadius: 12,
+    flexDirection: "row",
+  },
+  iconContainer: {
+    marginRight: 12,
+  },
+  text: {
+    fontSize: 16,
+  },
+});
+
+export function OnboardingCompleteWelcome({
+  onComplete,
+}: {
+  onComplete: (path: string) => void;
+}): JSX.Element {
   const insets = useSafeAreaInsets();
 
   return (
     <OnboardingScreen
       title="You've set up Backpack!"
-      subtitle="Now get started exploring what your Backpack can do."
+      subtitle="We recommend downloading a few xNFTs to get started."
       style={{
         paddingTop: insets.top + 36,
         paddingBottom: insets.bottom,
       }}
     >
-      <View
-        style={{ flexDirection: "row", flexWrap: "wrap", columnGap: "12%" }}
-      >
-        {BACKPACK_FEATURE_XNFT ? (
-          <Cell style={{ width: "48%" }}>
-            <ActionCard
-              icon={<WidgetIcon />}
-              text="Browse the xNFT library"
-              onPress={() => Linking.openURL(XNFT_GG_LINK)}
-            />
-          </Cell>
-        ) : null}
-        <Cell style={{ width: "48%" }}>
-          <ActionCard
+      <View>
+        <Margin bottom={12}>
+          <CallToAction
+            icon={<WidgetIcon />}
+            title="Browse the xNFT library"
+            onPress={() => Linking.openURL(XNFT_GG_LINK)}
+          />
+        </Margin>
+        <Margin bottom={12}>
+          <CallToAction
             icon={<TwitterIcon />}
-            text="Follow us on Twitter"
+            title="Follow us on Twitter"
             onPress={() => Linking.openURL(TWITTER_LINK)}
           />
-        </Cell>
-        <Cell style={{ width: "48%" }}>
-          <ActionCard
-            icon={<DiscordIcon />}
-            text="Join the Discord community"
-            onPress={() => Linking.openURL(DISCORD_INVITE_LINK)}
-          />
-        </Cell>
+        </Margin>
+        <CallToAction
+          icon={<DiscordIcon />}
+          title="Join the Discord"
+          onPress={() => Linking.openURL(DISCORD_INVITE_LINK)}
+        />
       </View>
       <View style={{ flex: 1 }} />
       <PrimaryButton
@@ -889,7 +818,11 @@ export function OnboardingCompleteWelcome({ onComplete }): JSX.Element {
   );
 }
 
-export function OnboardingNavigator({ onStart }): JSX.Element {
+export function OnboardingNavigator({
+  onStart,
+}: {
+  onStart: (path: string) => void;
+}): JSX.Element {
   useEffect(() => {
     onStart("onboarding");
   }, [onStart]);
