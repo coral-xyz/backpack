@@ -10,7 +10,7 @@ import {
 
 // TODO: move reused styles into classes
 export const ListItemIcons = {
-  SWAP: ({
+  Swap: ({
     tokenLogoOne,
     tokenLogoTwo,
   }: {
@@ -43,7 +43,7 @@ export const ListItemIcons = {
       </div>
     );
   },
-  TRANSFER: ({ tokenLogo }: { tokenLogo?: string }) => {
+  Transfer: ({ tokenLogo }: { tokenLogo?: string }) => {
     return (
       <img
         style={{
@@ -56,7 +56,7 @@ export const ListItemIcons = {
       />
     );
   },
-  SOL: () => {
+  Sol: () => {
     return (
       <img
         style={{
@@ -69,7 +69,7 @@ export const ListItemIcons = {
       />
     );
   },
-  NFT: ({ nftUrl }: { nftUrl?: string }) => {
+  Nft: ({ nftUrl }: { nftUrl?: string }) => {
     return (
       <img
         style={{
@@ -82,7 +82,7 @@ export const ListItemIcons = {
       />
     );
   },
-  SENT: () => {
+  Sent: () => {
     return (
       <div
         style={{
@@ -105,7 +105,7 @@ export const ListItemIcons = {
       </div>
     );
   },
-  RECEIVED: () => {
+  Received: () => {
     return (
       <div
         style={{
@@ -128,7 +128,7 @@ export const ListItemIcons = {
       </div>
     );
   },
-  NFT_DEFAULT: () => {
+  NftDefault: () => {
     return (
       <Image
         style={{
@@ -141,7 +141,7 @@ export const ListItemIcons = {
       />
     );
   },
-  ERROR: () => {
+  Error: () => {
     return (
       <div
         style={{
@@ -164,7 +164,7 @@ export const ListItemIcons = {
       </div>
     );
   },
-  BURN: () => {
+  Burn: () => {
     return (
       <div
         style={{
@@ -187,7 +187,7 @@ export const ListItemIcons = {
       </div>
     );
   },
-  DEFAULT: () => {
+  Default: () => {
     return (
       <div
         style={{
