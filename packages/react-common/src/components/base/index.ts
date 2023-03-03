@@ -1,3 +1,4 @@
+export * from "./BackpackStaffIcon";
 export * from "./BubbleTopLabel";
 export * from "./DangerButton";
 export * from "./EmptyState";

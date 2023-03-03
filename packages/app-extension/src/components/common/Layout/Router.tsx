@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import type { SubscriptionType } from "@coral-xyz/common";
 import {
+  BACKPACK_TEAM,
   MESSAGING_COMMUNICATION_FETCH_RESPONSE,
   NAV_COMPONENT_MESSAGE_PROFILE,
 } from "@coral-xyz/common";
@@ -469,7 +470,8 @@ function useNavBar() {
         ? "https://user-images.githubusercontent.com/321395/206757416-a80e662a-0ccc-41cc-a20f-ff397755d47f.png"
         : undefined,
     isVerified:
-      pathname === "/messages/groupchat" && props.id === "backpack-chat",
+      (pathname === "/messages/groupchat" && props.id === "backpack-chat") ||
+      (pathname === "/messages/chat" && BACKPACK_TEAM.includes(props.userId)),
     onClick,
   };
 }

@@ -13,6 +13,7 @@ import {
   parseMessage,
 } from "@coral-xyz/common";
 import {
+  BackpackStaffIcon,
   isFirstLastListItemStyle,
   LocalImage,
   useUsersMetadata,
@@ -247,17 +248,24 @@ export function ChatListItem({
                 }}
               >
                 <div>{type === "individual" ? `@${name}` : name}</div>
-                <div>
-                  {BACKPACK_TEAM.includes(userId) || id === "backpack-chat" ? (
+                {id === "backpack-chat" ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      flexDirection: "column",
+                    }}
+                  >
                     <VerifiedIcon
                       style={{
-                        fontSize: 19,
+                        fontSize: 14,
                         marginLeft: 3,
                         color: theme.custom.colors.verified,
                       }}
                     />
-                  ) : null}
-                </div>
+                  </div>
+                ) : null}
+                {BACKPACK_TEAM.includes(userId) ? <BackpackStaffIcon /> : null}
               </div>
               <div
                 className={classes.userTextSmall}

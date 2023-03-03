@@ -8,6 +8,7 @@ import {
   NEW_COLORS,
 } from "@coral-xyz/common";
 import {
+  BackpackStaffIcon,
   LocalImage,
   refreshIndividualChatsFor,
   SignalingManager,
@@ -428,14 +429,7 @@ export const MessageLine = (props) => {
                   <div style={{ display: "flex" }}>
                     <div>@{displayName} </div>{" "}
                     {BACKPACK_TEAM.includes(props.uuid) ? (
-                      <VerifiedIcon
-                        style={{
-                          fontSize: 14,
-                          marginLeft: 2,
-                          marginTop: 1,
-                          color: theme.custom.colors.verified,
-                        }}
-                      />
+                      <BackpackStaffIcon />
                     ) : null}
                   </div>
                 ) : (

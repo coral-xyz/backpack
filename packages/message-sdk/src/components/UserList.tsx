@@ -10,6 +10,7 @@ import {
 } from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
+  BackpackStaffIcon,
   isFirstLastListItemStyle,
   LocalImage,
   SignalingManager,
@@ -306,14 +307,7 @@ function UserListItem({
                   ""
                 )}
               </div>
-              {BACKPACK_TEAM.includes(user.id) ? <VerifiedIcon
-                style={{
-                    fontSize: 18,
-                    marginLeft: 3,
-                    marginTop: 3,
-                    color: theme.custom.colors.verified,
-                  }}
-                /> : null}
+              {BACKPACK_TEAM.includes(user.id) ? <BackpackStaffIcon /> : null}
             </div>
           </div>
           <div>
