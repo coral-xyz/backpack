@@ -62,15 +62,17 @@ export function SettingsList({
               alignItems: "center",
             }}
           >
-            {val.icon ? val.icon({
-                style: {
-                  color: theme.custom.colors.icon,
-                  height: "24px",
-                  width: "24px",
-                  marginRight: "8px",
-                },
-                fill: theme.custom.colors.icon,
-              }) : null}
+            {val.icon
+              ? val.icon({
+                  style: {
+                    color: theme.custom.colors.icon,
+                    height: "24px",
+                    width: "24px",
+                    marginRight: "8px",
+                  },
+                  fill: theme.custom.colors.icon,
+                })
+              : null}
             <Typography style={{ fontWeight: 500, ...textStyle }}>
               {val.label ?? key}
             </Typography>

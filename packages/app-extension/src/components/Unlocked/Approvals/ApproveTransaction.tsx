@@ -136,7 +136,11 @@ export function ApproveTransaction({
         <Loading />
       ) : (
         <div
-          style={{ marginTop: "24px", marginLeft: "8px", marginRight: "8px" }}
+          style={{
+            marginTop: "24px",
+            marginLeft: "8px",
+            marginRight: "8px",
+          }}
         >
           <Typography className={classes.listDescription}>
             Transaction details

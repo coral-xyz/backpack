@@ -160,28 +160,28 @@ export function TransactionData({
                 disabled={transactionData.solanaFeeConfig?.disabled}
                 placeholder="Compute units"
                 value={
-                    transactionData.solanaFeeConfig?.config?.computeUnits.toString() ||
-                    0
-                  }
+                  transactionData.solanaFeeConfig?.config?.computeUnits.toString() ||
+                  0
+                }
                 onChange={(e: any) => {
-                    const computeUnits = parseInt(e.target.value || "0");
-                    if (
-                      computeUnits < 0 ||
-                      computeUnits > 1200000 ||
-                      isNaN(parseInt(e.target.value))
-                    ) {
-                      return;
-                    }
-                    const updatedValue = {
-                      ...(transactionData.solanaFeeConfig?.config || {}),
-                      computeUnits: computeUnits,
-                    };
-                    transactionData.setSolanaFeeConfig((x: any) => ({
-                      config: updatedValue,
-                      disabled: x.disabled,
-                    }));
-                  }}
-                />
+                  const computeUnits = parseInt(e.target.value || "0");
+                  if (
+                    computeUnits < 0 ||
+                    computeUnits > 1200000 ||
+                    isNaN(parseInt(e.target.value))
+                  ) {
+                    return;
+                  }
+                  const updatedValue = {
+                    ...(transactionData.solanaFeeConfig?.config || {}),
+                    computeUnits: computeUnits,
+                  };
+                  transactionData.setSolanaFeeConfig((x: any) => ({
+                    config: updatedValue,
+                    disabled: x.disabled,
+                  }));
+                }}
+              />
             ),
             button: false,
             classes: menuItemClasses,
@@ -193,24 +193,24 @@ export function TransactionData({
                 disabled={transactionData.solanaFeeConfig?.disabled}
                 placeholder="Priority fee"
                 value={
-                    transactionData.solanaFeeConfig.config?.priorityFee?.toString() ||
-                    0
-                  }
+                  transactionData.solanaFeeConfig.config?.priorityFee?.toString() ||
+                  0
+                }
                 onChange={(e: any) => {
-                    const priorityFee = parseInt(e.target.value || "0");
-                    if (priorityFee < 0 || isNaN(parseInt(e.target.value))) {
-                      return;
-                    }
-                    const updatedValue = {
-                      ...(transactionData.solanaFeeConfig?.config || {}),
-                      priorityFee: BigInt(priorityFee),
-                    };
-                    transactionData.setSolanaFeeConfig((x: any) => ({
-                      disabled: x.disabled,
-                      config: updatedValue,
-                    }));
-                  }}
-                />
+                  const priorityFee = parseInt(e.target.value || "0");
+                  if (priorityFee < 0 || isNaN(parseInt(e.target.value))) {
+                    return;
+                  }
+                  const updatedValue = {
+                    ...(transactionData.solanaFeeConfig?.config || {}),
+                    priorityFee: BigInt(priorityFee),
+                  };
+                  transactionData.setSolanaFeeConfig((x: any) => ({
+                    disabled: x.disabled,
+                    config: updatedValue,
+                  }));
+                }}
+              />
             ),
             button: false,
             classes: menuItemClasses,
@@ -220,13 +220,13 @@ export function TransactionData({
             detail: (
               <Typography>
                 {transactionData.solanaFeeConfig?.config?.computeUnits
-                    ? transactionData.solanaFeeConfig?.config?.computeUnits *
-                      (Number(
-                        transactionData.solanaFeeConfig?.config?.priorityFee
-                      ) /
-                        LAMPORTS_PER_SOL /
-                        1000000 || 0)
-                    : 0}{" "}
+                  ? transactionData.solanaFeeConfig?.config?.computeUnits *
+                    (Number(
+                      transactionData.solanaFeeConfig?.config?.priorityFee
+                    ) /
+                      LAMPORTS_PER_SOL /
+                      1000000 || 0)
+                  : 0}{" "}
                 SOL
               </Typography>
             ),
@@ -244,30 +244,36 @@ export function TransactionData({
         menuItems={{ ...menuItems, ...defaultMenuItems }}
         style={{
           margin: 0,
+          overflowY: "scroll",
+          maxHeight: "40vh",
         }}
         textStyle={{
           color: theme.custom.colors.secondary,
         }}
       />
-      {simulationError ? <Typography
-        style={{
+      {simulationError ? (
+        <Typography
+          style={{
             color: theme.custom.colors.negative,
             marginTop: "8px",
             textAlign: "center",
             fontSize: "14px",
           }}
         >
-        This transaction is unlikely to succeed.
-      </Typography> : null}
-      {network === "Ethereum" && !loading ? <EthereumSettingsDrawer
-        mode={mode}
-        setMode={setMode}
-        transactionOverrides={transactionOverrides}
-        setTransactionOverrides={setTransactionOverrides}
-        networkFeeUsd={networkFeeUsd}
-        openDrawer={ethSettingsDrawerOpen}
-        setOpenDrawer={setEthSettingsDrawerOpen}
-        /> : null}
+          This transaction is unlikely to succeed.
+        </Typography>
+      ) : null}
+      {network === "Ethereum" && !loading ? (
+        <EthereumSettingsDrawer
+          mode={mode}
+          setMode={setMode}
+          transactionOverrides={transactionOverrides}
+          setTransactionOverrides={setTransactionOverrides}
+          networkFeeUsd={networkFeeUsd}
+          openDrawer={ethSettingsDrawerOpen}
+          setOpenDrawer={setEthSettingsDrawerOpen}
+        />
+      ) : null}
     </>
   );
 }
@@ -399,7 +405,7 @@ export function EthereumSettingsDrawer({
           }}
           value={maxFeePerGas}
           onChange={(e) => setMaxFeePerGas(e.target.value)}
-         />
+        />
       ) : (
         <ValueWithUnit
           value={ethers.utils.formatUnits(transactionOverrides.maxFeePerGas, 9)}
@@ -429,7 +435,7 @@ export function EthereumSettingsDrawer({
           }}
           value={maxPriorityFeePerGas}
           onChange={(e) => setMaxPriorityFeePerGas(e.target.value)}
-         />
+        />
       ) : (
         <ValueWithUnit
           value={ethers.utils.formatUnits(
@@ -462,7 +468,7 @@ export function EthereumSettingsDrawer({
           }}
           value={gasLimit}
           onChange={(e) => setGasLimit(e.target.value)}
-         />
+        />
       ) : (
         <Typography
           style={{ cursor: gasEditOnClick ? "pointer" : "inherit" }}
@@ -491,7 +497,7 @@ export function EthereumSettingsDrawer({
           value={nonce}
           type="number"
           onChange={(e) => setNonce(e.target.value)}
-         />
+        />
       ) : (
         <Typography
           style={{ cursor: nonceEditOnClick ? "pointer" : "inherit" }}
@@ -611,11 +617,13 @@ export function EthereumSettingsDrawer({
               </div>
             </div>
             <div style={{ margin: "0 16px" }}>
-              {((mode === "custom" && editingGas) || editingNonce) ? <PrimaryButton
-                style={{ marginBottom: "12px" }}
-                label="Save"
-                onClick={handleSave}
-                /> : null}
+              {(mode === "custom" && editingGas) || editingNonce ? (
+                <PrimaryButton
+                  style={{ marginBottom: "12px" }}
+                  label="Save"
+                  onClick={handleSave}
+                />
+              ) : null}
               <SecondaryButton
                 label="Close"
                 onClick={() => setOpenDrawer(false)}
