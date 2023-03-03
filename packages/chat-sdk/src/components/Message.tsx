@@ -8,6 +8,7 @@ import {
   NEW_COLORS,
 } from "@coral-xyz/common";
 import {
+  BackpackStaffIcon,
   LocalImage,
   refreshIndividualChatsFor,
   SignalingManager,
@@ -30,6 +31,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import CallMadeIcon from "@mui/icons-material/CallMade";
+import DeleteIcon from "@mui/icons-material/Delete";
 import DoneIcon from "@mui/icons-material/Done";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
@@ -209,7 +211,7 @@ const GifDemo = ({
 
 export const MessageLine = (props) => {
   const { push } = useNavigation();
-  const { isDarkMode } = useChatContext();
+  const { isDarkMode, roomId, type } = useChatContext();
   const message = props.message ? props.message : "";
   const timestamp = props.timestamp
     ? new Date(parseInt(props.timestamp))
@@ -333,44 +335,49 @@ export const MessageLine = (props) => {
                 <div>
                   {props.messageKind === "text" ? (
                     <div
-                      style={{
-                        marginLeft: 10,
-                        marginTop: 3,
-                        cursor: "pointer",
-                      }}
+                      style={{ display: "flex" }}
                       className={classes.hoverChild}
-                      onClick={() => {
-                        setActiveReply({
-                          parent_client_generated_uuid:
-                            props.client_generated_uuid,
-                          text: message,
-                          parent_username: `@${props.username}`,
-                          parent_message_author_uuid: props.userId,
-                        });
-                      }}
                     >
-                      <ReplyIcon fill={theme.custom.colors.icon} />
+                      <div
+                        style={{
+                          marginLeft: 10,
+                          marginTop: 3,
+                          cursor: "pointer",
+                          marginRight: 5,
+                        }}
+                        onClick={() => {
+                          setActiveReply({
+                            parent_client_generated_uuid:
+                              props.client_generated_uuid,
+                            text: message,
+                            parent_username: `@${props.username}`,
+                            parent_message_author_uuid: props.userId,
+                          });
+                        }}
+                      >
+                        <ReplyIcon fill={theme.custom.colors.icon} />
+                      </div>
+                      <div style={{ marginLeft: 3 }}>
+                        <DeleteIconInternal
+                          client_generated_uuid={props.client_generated_uuid}
+                          messageSender={props.uuid}
+                        />
+                      </div>
                     </div>
-                  ) : null}
+                  ) : (
+                    <div
+                      style={{ marginLeft: 5 }}
+                      className={classes.hoverChild}
+                    >
+                      {" "}
+                      <DeleteIconInternal
+                        client_generated_uuid={props.client_generated_uuid}
+                        messageSender={props.uuid}
+                      />{" "}
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
-          </div>
-          <div style={{ minWidth: 63 }}>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row-reverse",
-                marginTop: 5,
-              }}
-            >
-              {
-                /*props.uuid === uuid && */ BACKPACK_TEAM.includes(uuid) ? (
-                  <MessageOptions
-                    clientGeneratedUuid={props.client_generated_uuid}
-                  />
-                ) : null
-              }
             </div>
           </div>
         </div>
@@ -422,14 +429,7 @@ export const MessageLine = (props) => {
                   <div style={{ display: "flex" }}>
                     <div>@{displayName} </div>{" "}
                     {BACKPACK_TEAM.includes(props.uuid) ? (
-                      <VerifiedIcon
-                        style={{
-                          fontSize: 14,
-                          marginLeft: 2,
-                          marginTop: 1,
-                          color: theme.custom.colors.verified,
-                        }}
-                      />
+                      <BackpackStaffIcon />
                     ) : null}
                   </div>
                 ) : (
@@ -519,26 +519,48 @@ export const MessageLine = (props) => {
                 >
                   {props.messageKind === "text" ? (
                     <div
-                      style={{
-                        marginLeft: 10,
-                        marginTop: 3,
-                        cursor: "pointer",
-                      }}
+                      style={{ display: "flex" }}
                       className={classes.hoverChild}
-                      onClick={() => {
-                        setActiveReply({
-                          parent_client_generated_uuid:
-                            props.client_generated_uuid,
-                          text: message,
-                          parent_username: `@${props.username}`,
-                          parent_message_author_uuid: props.userId,
-                        });
-                        document.getElementById("message-input")?.focus();
-                      }}
                     >
-                      <ReplyIcon fill={theme.custom.colors.icon} />
+                      <div
+                        style={{
+                          marginLeft: 10,
+                          marginTop: 3,
+                          cursor: "pointer",
+                        }}
+                        className={classes.hoverChild}
+                        onClick={() => {
+                          setActiveReply({
+                            parent_client_generated_uuid:
+                              props.client_generated_uuid,
+                            text: message,
+                            parent_username: `@${props.username}`,
+                            parent_message_author_uuid: props.userId,
+                          });
+                          document.getElementById("message-input")?.focus();
+                        }}
+                      >
+                        <ReplyIcon fill={theme.custom.colors.icon} />
+                      </div>
+                      <div style={{ marginLeft: 3 }}>
+                        <DeleteIconInternal
+                          client_generated_uuid={props.client_generated_uuid}
+                          messageSender={props.uuid}
+                        />
+                      </div>
                     </div>
-                  ) : null}
+                  ) : (
+                    <div
+                      style={{ marginLeft: 5 }}
+                      className={classes.hoverChild}
+                    >
+                      {" "}
+                      <DeleteIconInternal
+                        client_generated_uuid={props.client_generated_uuid}
+                        messageSender={props.uuid}
+                      />{" "}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -565,13 +587,6 @@ export const MessageLine = (props) => {
                     style={{ color: theme.custom.colors.icon, fontSize: 13 }}
                   />
                 )}
-                {
-                  /*props.uuid === uuid && */ BACKPACK_TEAM.includes(uuid) ? (
-                    <MessageOptions
-                      clientGeneratedUuid={props.client_generated_uuid}
-                    />
-                  ) : null
-                }
               </div>
             </div>
           </div>
@@ -1099,59 +1114,34 @@ function MessageRight(props) {
   );
 }
 
-function MessageOptions({
-  clientGeneratedUuid,
+function DeleteIconInternal({
+  client_generated_uuid,
+  messageSender,
 }: {
-  clientGeneratedUuid: string;
+  client_generated_uuid: string;
+  messageSender: string;
 }) {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const theme = useCustomTheme();
   const { roomId, type } = useChatContext();
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const theme = useCustomTheme();
+  const { uuid } = useUser();
+
   return (
     <div>
-      {/*
-      //@ts-ignore */}
-      <MoreHorizIcon
-        onClick={handleClick}
-        style={{
-          color: theme.custom.colors.icon,
-          cursor: "pointer",
-          marginTop: -5,
-          marginRight: 3,
-        }}
-      />
-      <Menu
-        id="fade-menu"
-        MenuListProps={{
-          "aria-labelledby": "fade-button",
-        }}
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-      >
-        <MenuItem
+      {BACKPACK_TEAM.includes(uuid) ? (
+        <DeleteIcon
+          style={{ color: theme.custom.colors.icon, cursor: "pointer" }}
           onClick={() => {
             SignalingManager.getInstance().send({
               type: DELETE_MESSAGE,
               payload: {
-                client_generated_uuid: clientGeneratedUuid,
+                client_generated_uuid: client_generated_uuid,
                 room: roomId,
                 type: type,
               },
             });
-            handleClose();
           }}
-        >
-          Delete
-        </MenuItem>
-      </Menu>
+        />
+      ) : null}
     </div>
   );
 }
@@ -1162,11 +1152,14 @@ function DeletedMessage() {
     <div
       style={{
         background: theme.custom.colors.background,
+        color: theme.custom.colors.icon,
         borderRadius: 5,
         display: "inline-flex",
+        padding: "2px 6px",
+        marginLeft: -6,
       }}
     >
-      This message has been deleted...
+      Message removed
     </div>
   );
 }

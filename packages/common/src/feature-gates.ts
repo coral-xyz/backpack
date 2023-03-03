@@ -6,6 +6,7 @@ export const DEFAULT_FEATURE_GATES = {
   STRIPE_ENABLED: false,
   PRIMARY_PUBKEY_ENABLED: true,
   SWAP_FEES_ENABLED: false,
+  DROPZONE_ENABLED: false,
 } as const;
 
 export type FEATURE_GATES_MAP = typeof DEFAULT_FEATURE_GATES;

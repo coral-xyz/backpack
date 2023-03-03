@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { UserList } from "@coral-xyz/message-sdk";
-import { LocalImage } from "@coral-xyz/react-common";
+import { LocalImage , SearchBox } from "@coral-xyz/react-common";
 import {
   useDarkMode,
   useDecodedSearchParams,
@@ -13,7 +13,6 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { Drawer, Typography } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 
-import { SearchBox } from "./SearchBox";
 import { UserListSkeleton } from "./UserListSkeleton";
 const LIMIT = 25;
 let debouncedTimer = 0;
@@ -127,6 +126,8 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
           />
         ) : null}
         <SearchBox
+          searchFilter={searchFilter}
+          setSearchFilter={setSearchFilter}
           placeholder="Search username"
           onChange={(prefix: string) => {
             setSearchFilter(prefix);
