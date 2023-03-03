@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { SearchBox } from "@coral-xyz/app-extension/src/components/Unlocked/Messages/SearchBox";
 import type {
   CollectionChatData,
   EnrichedInboxDb,
   RemoteUserData,
 } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { BubbleTopLabel, EmptyState } from "@coral-xyz/react-common";
+import { BubbleTopLabel, EmptyState,SearchBox  } from "@coral-xyz/react-common";
 import {
   useFriendships,
   useGroupCollections,

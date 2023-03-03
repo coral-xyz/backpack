@@ -10,6 +10,7 @@ export * from "./LocalImage";
 export * from "./NegativeButton";
 export * from "./PrimaryButton";
 export * from "./ProxyImage";
+export * from "./SearchBox";
 export * from "./SecondaryButton";
 export * from "./SuccessButton";
 export * from "./UserIcon";
