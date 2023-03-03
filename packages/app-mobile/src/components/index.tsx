@@ -31,14 +31,6 @@ export { PasswordInput } from "./PasswordInput";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { StyledTokenTextInput } from "./TokenInputField";
-//
-// function getRandomColor() { var letters = "0123456789ABCDEF";
-//   var color = "#";
-//   for (var i = 0; i < 6; i++) {
-//     color += letters[Math.floor(Math.random() * 16)];
-//   }
-//   return color;
-// }
 
 export function StyledText({
   children,
@@ -124,7 +116,7 @@ export function BaseButton({
       >
         {loading ? "loading..." : label}
       </Text>
-      {icon}
+      {icon ? <Margin left={8}>{icon}</Margin> : null}
     </Pressable>
   );
 }
@@ -144,6 +136,34 @@ const baseButtonStyles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+export function LinkButton({
+  label,
+  onPress,
+  disabled,
+  loading,
+  ...props
+}: {
+  label: string;
+  onPress?: () => void;
+  disabled?: boolean;
+  loading?: boolean;
+}) {
+  const theme = useTheme();
+  return (
+    <BaseButton
+      label={label}
+      onPress={onPress}
+      disabled={disabled}
+      loading={loading}
+      buttonStyle={{ backgroundColor: "transparent" }}
+      labelStyle={{
+        color: theme.custom.colors.secondaryButtonTextColor,
+      }}
+      {...props}
+    />
+  );
+}
 
 export function PrimaryButton({
   label,
@@ -702,6 +722,23 @@ export function CopyButton({ text }: { text: string }): JSX.Element {
       onPress={async () => {
         await Clipboard.setStringAsync(text);
         Alert.alert("Copied to clipboard", text);
+      }}
+    />
+  );
+}
+
+export function PasteButton({
+  onPaste,
+}: {
+  onPaste: (text: string) => void;
+}): JSX.Element {
+  return (
+    <SecondaryButton
+      label="Paste from clipboard"
+      icon={<ContentCopyIcon size={18} />}
+      onPress={async () => {
+        const string = await Clipboard.getStringAsync();
+        onPaste(string);
       }}
     />
   );

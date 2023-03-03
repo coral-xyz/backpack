@@ -74,11 +74,13 @@ import {
   MnemonicInputFields,
   PasswordInput,
   PrimaryButton,
+  LinkButton,
   Screen,
   StyledText,
   SubtextParagraph,
   WelcomeLogoHeader,
   CopyButton,
+  PasteButton,
   EmptyState,
 } from "~components/index";
 import { useAuthentication } from "~hooks/useAuthentication";
@@ -126,7 +128,7 @@ function Network({
   }
 
   return (
-    <View style={{ flex: 1, margin: 6 }}>
+    <View style={{ flex: 1 }}>
       <ActionCard
         text={label}
         disabled={!enabled}
@@ -176,7 +178,7 @@ function OnboardingScreen({
       style={[
         styles.container,
         {
-          paddingBottom: insets.bottom,
+          paddingBottom: insets.bottom + 16,
         },
         style,
       ]}
@@ -231,16 +233,13 @@ function OnboardingCreateOrImportWalletScreen({
               navigation.push("OnboardingUsername");
             }}
           />
-          <Margin top={8}>
-            <SubtextParagraph
-              onPress={() => {
-                setOnboardingData({ action: "import" });
-                navigation.push("MnemonicInput");
-              }}
-            >
-              I already have a wallet
-            </SubtextParagraph>
-          </Margin>
+          <LinkButton
+            label="I already have a wallet"
+            onPress={() => {
+              setOnboardingData({ action: "import" });
+              navigation.push("MnemonicInput");
+            }}
+          />
         </View>
       </Screen>
       <BottomSheetHelpModal
@@ -461,7 +460,11 @@ function OnboardingMnemonicInputScreen({
           onChange={readOnly ? undefined : setMnemonicWords}
         />
         <Margin top={12}>
-          <CopyButton text={mnemonicWords.join(", ")} />
+          {readOnly ? (
+            <CopyButton text={mnemonicWords.join(", ")} />
+          ) : (
+            <PasteButton onPaste={console.log} />
+          )}
         </Margin>
       </View>
       <View style={{ flex: 1 }} />
@@ -513,6 +516,8 @@ function OnboardingBlockchainSelectScreen({
   const background = useBackgroundClient();
   const { onboardingData, handleSelectBlockchain } = useOnboarding();
   const { blockchainOptions, selectedBlockchains } = onboardingData;
+  const numColumns = 2;
+  const gap = 8;
 
   return (
     <OnboardingScreen
@@ -520,12 +525,14 @@ function OnboardingBlockchainSelectScreen({
       subtitle="You can always add additional networks later through the settings menu."
     >
       <FlatList
-        numColumns={2}
+        numColumns={numColumns}
         data={blockchainOptions}
         keyExtractor={(item) => item.id}
         extraData={selectedBlockchains}
         scrollEnabled={false}
         initialNumToRender={blockchainOptions.length}
+        contentContainerStyle={{ gap }}
+        columnWrapperStyle={{ gap }}
         renderItem={({ item }) => {
           return (
             <Network

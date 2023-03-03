@@ -1,9 +1,16 @@
-// function MnemonicInputFields from app-extension/.../common/Account/MnemonicInput.tsx
 import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { useTheme } from "~hooks/useTheme";
 
-function Item({ item, index }) {
+function ItemTextInput({
+  word,
+  index,
+  onChangeText,
+}: {
+  word: string;
+  index: number;
+  onChangeText: (word: string) => void;
+}) {
   const theme = useTheme();
   return (
     <View
@@ -23,7 +30,8 @@ function Item({ item, index }) {
         {index + 1}
       </Text>
       <TextInput
-        value={item}
+        onChangeText={onChangeText}
+        value={word}
         style={[
           styles.input,
           {
@@ -42,16 +50,32 @@ export function MnemonicInputFields({
   mnemonicWords: string[];
   onChange?: (mnemonicWords: string[]) => void;
 }) {
+  console.log("mnemonicWords", mnemonicWords);
+  const gap = 6;
   return (
     <FlatList
       data={mnemonicWords}
       numColumns={3}
-      renderItem={({ item, index }) => <Item item={item} index={index} />}
-      keyExtractor={(item, index) => {
-        return `${item}.${index}`.toString();
-      }}
       initialNumToRender={mnemonicWords.length}
       scrollEnabled={false}
+      keyExtractor={(word, index) => `${word}${index}`}
+      contentContainerStyle={{ gap }}
+      columnWrapperStyle={{ gap }}
+      renderItem={({ item: word, index }) => {
+        return (
+          <ItemTextInput
+            word={word}
+            index={index}
+            onChangeText={(word) => {
+              if (onChange) {
+                const newMnemonicWords = [...mnemonicWords];
+                newMnemonicWords[index] = word;
+                onChange(newMnemonicWords);
+              }
+            }}
+          />
+        );
+      }}
     />
   );
 }
@@ -60,8 +84,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 6,
-    paddingVertical: 12,
-    margin: 4,
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 8,
@@ -69,9 +91,10 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   input: {
-    marginLeft: 4,
+    paddingLeft: 4,
     fontWeight: "700",
     fontSize: 14,
-    paddingBottom: 2,
+    width: "100%",
+    paddingVertical: 12,
   },
 });
