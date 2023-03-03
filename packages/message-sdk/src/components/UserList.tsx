@@ -10,6 +10,7 @@ import {
 } from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
+  BackpackStaffIcon,
   isFirstLastListItemStyle,
   LocalImage,
   SignalingManager,
@@ -293,7 +294,13 @@ function UserListItem({
               <UserIcon image={user.image} />
             </div>
             <div className={classes.userText} style={{ display: "flex" }}>
-              <div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                }}
+              >
                 {usernameDisplay(user.username, 15)}{" "}
                 {user.searchedSolPubKey ? (
                   <> ({walletAddressDisplay(user.searchedSolPubKey, 2)})</>
@@ -306,14 +313,7 @@ function UserListItem({
                   ""
                 )}
               </div>
-              {BACKPACK_TEAM.includes(user.id) ? <VerifiedIcon
-                style={{
-                    fontSize: 18,
-                    marginLeft: 3,
-                    marginTop: 3,
-                    color: theme.custom.colors.verified,
-                  }}
-                /> : null}
+              {BACKPACK_TEAM.includes(user.id) ? <BackpackStaffIcon /> : null}
             </div>
           </div>
           <div>
