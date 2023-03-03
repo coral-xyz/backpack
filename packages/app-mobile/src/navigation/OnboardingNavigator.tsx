@@ -74,7 +74,6 @@ import {
   MnemonicInputFields,
   PasswordInput,
   PrimaryButton,
-  SecondaryButton,
   LinkButton,
   Screen,
   StyledText,
@@ -167,15 +166,18 @@ function OnboardingScreen({
   subtitle,
   children,
   style,
+  scrollable,
 }: {
   title: string;
   subtitle?: string;
   children?: any;
   style?: StyleProp<ViewStyle>;
+  scrollable?: boolean;
 }) {
   const insets = useSafeAreaInsets();
   return (
     <Screen
+      scrollable={scrollable}
       style={[
         styles.container,
         {
@@ -454,7 +456,11 @@ function OnboardingMnemonicInputScreen({
   };
 
   return (
-    <OnboardingScreen title="Secret recovery phrase" subtitle={subtitle}>
+    <OnboardingScreen
+      scrollable
+      title="Secret recovery phrase"
+      subtitle={subtitle}
+    >
       <View>
         <MnemonicInputFields
           mnemonicWords={mnemonicWords}

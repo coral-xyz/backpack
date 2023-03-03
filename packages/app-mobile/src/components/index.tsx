@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Text,
   View,
+  ScrollView,
 } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
@@ -50,21 +51,37 @@ export function StyledText({
 }
 
 export function Screen({
+  scrollable,
   children,
   style,
 }: {
+  scrollable?: boolean;
   children: JSX.Element | JSX.Element[];
   style?: StyleProp<ViewStyle>;
 }) {
   const theme = useTheme();
+  if (scrollable) {
+    return (
+      <ScrollView
+        contentContainerStyle={[screenStyles.scrollContainer, style]}
+        style={[
+          screenStyles.container,
+          {
+            backgroundColor: theme.custom.colors.background,
+          },
+        ]}
+      >
+        {children}
+      </ScrollView>
+    );
+  }
+
   return (
     <View
       style={[
+        screenStyles.container,
         {
-          flex: 1,
           backgroundColor: theme.custom.colors.background,
-          paddingHorizontal: 16,
-          paddingVertical: 16,
         },
         style,
       ]}
@@ -73,6 +90,17 @@ export function Screen({
     </View>
   );
 }
+
+const screenStyles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+  },
+});
 
 export function BaseButton({
   label,
