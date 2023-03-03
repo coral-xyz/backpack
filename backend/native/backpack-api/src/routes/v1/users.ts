@@ -278,7 +278,7 @@ router.get("/:username", async (req: Request, res: Response) => {
     const user = await getUserByUsername(username);
     return res.json({
       id: user.id,
-      publicKeys: user.publicKeys, // .filter((k) => k.primary),
+      publicKeys: user.publicKeys.filter((k) => k.primary),
     });
   } catch (error) {
     console.error(error);
