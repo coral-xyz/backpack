@@ -1158,12 +1158,18 @@ function DeletedMessage() {
         display: "inline-flex",
         padding: "2px 6px",
         marginLeft: -6,
-        alignItems: "center"
+        alignItems: "center",
       }}
     >
       <span>Message removed</span>
       <Tooltip title="This was probably a spam">
-        <Info style={{ fontSize: "1rem", marginLeft: 4 }} />
+        <Info
+          style={{
+            fontSize: "1rem",
+            marginLeft: 4,
+            color: theme.custom.colors.icon,
+          }}
+        />
       </Tooltip>
     </div>
   );
