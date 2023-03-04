@@ -1,4 +1,4 @@
-import { getImage,putImage } from "../db/images";
+import { getImage, putImage } from "../db/images";
 
 export class LocalImageManager {
   static instance: LocalImageManager;
@@ -41,6 +41,8 @@ export class LocalImageManager {
           timestamp: parsedEl.timestamp,
           fullImage: parsedEl.fullImage || false,
         });
+      } else {
+        this.queue.push({ image, timestamp: 0 });
       }
     } catch (e) {
       this.queue.push({ image, timestamp: 0 });

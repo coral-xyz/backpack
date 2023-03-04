@@ -18,3 +18,7 @@ export const putImage = async (
   const imageData = await getDb(uuid).localImageData.put({ key, ...data });
   return imageData;
 };
+
+export const bulkGetImages = async (uuid: string) => {
+  return getDb(uuid).localImageData.offset(0).keys();
+};
