@@ -79,14 +79,7 @@ export class LocalImageManager {
           timestamp: new Date().getTime(),
           fullImage: fullImage ? true : false,
         });
-        // localStorage.setItem(
-        //   `image-${url}`,
-        //   JSON.stringify({
-        //     url: dataURL,
-        //     timestamp: new Date().getTime(),
-        //     fullImage: fullImage ? true : false,
-        //   })
-        // );
+
         resolve("");
       };
       base_image.src = overridenUrl || url;
