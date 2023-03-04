@@ -17,7 +17,7 @@ export class RecoilSync {
     return this.instance;
   }
 
-  getActiveChats(uuid: string) {
+  async getActiveChats(uuid: string) {
     return getDb(uuid)
       .inbox.where({ blocked: 0 })
       .filter(

@@ -110,7 +110,7 @@ export class SignalingManager {
             from_http_server: 0,
           }))
         );
-        payload.messages.forEach(async (message) => {
+        for (const message of payload.messages) {
           if (message.type === "individual") {
             const friendship = await getFriendshipByRoom(
               this.uuid,
@@ -122,6 +122,7 @@ export class SignalingManager {
                 last_message: getSanitizedTitle(message),
                 last_message_timestamp: new Date().toISOString(),
                 unread: message.uuid === this.uuid ? 0 : 1,
+                remoteInteracted: 1,
               });
               this.onUpdateRecoil({
                 type: "friendship",
@@ -159,7 +160,7 @@ export class SignalingManager {
               type: "collection",
             });
           }
-        });
+        }
       }
     );
 
