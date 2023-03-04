@@ -1,5 +1,12 @@
 import type { CSSProperties, MouseEvent } from "react";
-import { useStyles } from "@coral-xyz/message-sdk/dist/esm/components/styles";
+import { styles } from "@coral-xyz/themes";
+
+const useStyles = styles((theme) => ({
+    userRequestText: {
+        color: theme.custom.colors.textPlaceholder,
+    },
+}));
+
 
 export function UserAction({
   text,

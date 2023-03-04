@@ -14,7 +14,7 @@ import {
   Loading,
   ProxyImage,
   SuccessButton,
-  useBreakpoints,
+  useBreakpoints, UserAction,
   useUserMetadata,
 } from "@coral-xyz/react-common";
 import {
@@ -530,71 +530,53 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
   const friendshipValue = useFriendship({ userId });
   const { uuid } = useUser();
   const setFriendshipValue = useUpdateFriendships();
+  const theme = useCustomTheme();
   const [inProgress, setInProgress] = useState(false);
 
   if (friendshipValue?.remoteRequested && !friendshipValue?.areFriends) {
     return (
       <div style={{ display: "flex", marginTop: 5 }}>
-        <SuccessButton
-          disabled={inProgress}
-          label="Accept"
-          style={{
-            marginRight: 8,
-            height: 32,
-            width: "inherit",
-            paddingLeft: 10,
-            paddingRight: 10,
-            borderRadius: 6,
-          }}
-          onClick={async (e: any) => {
-            e.stopPropagation();
-            setInProgress(true);
-            await sendFriendRequest({ to: userId, sendRequest: true });
-            await updateFriendshipIfExists(uuid, userId, {
-              requested: 0,
-              areFriends: 1,
-            });
-            await setFriendshipValue({
-              userId: userId,
-              friendshipValue: {
-                requested: false,
-                areFriends: true,
-                remoteRequested: false,
-              },
-            });
-            setInProgress(false);
-          }}
+        <UserAction
+            style={{ color: theme.custom.colors.blue, marginRight: 10 }}
+            text="Accept"
+            onClick={async (e: any) => {
+              e.stopPropagation();
+              setInProgress(true);
+              await sendFriendRequest({ to: userId, sendRequest: true });
+              await updateFriendshipIfExists(uuid, userId, {
+                requested: 0,
+                areFriends: 1,
+              });
+              await setFriendshipValue({
+                userId: userId,
+                friendshipValue: {
+                  requested: false,
+                  areFriends: true,
+                  remoteRequested: false,
+                },
+              });
+              setInProgress(false);
+            }}
         />
-        <DangerButton
-          disabled={inProgress}
-          style={{
-            height: 32,
-            width: "inherit",
-            paddingLeft: 10,
-            paddingRight: 10,
-            borderRadius: 6,
-          }}
-          label="Reject"
-          onClick={async (e: any) => {
-            e.stopPropagation();
-            setInProgress(true);
-            await sendFriendRequest({ to: userId, sendRequest: false });
-            await updateFriendshipIfExists(uuid, userId, {
-              requested: 0,
-              areFriends: 0,
-              remoteRequested: 0,
-            });
-            await setFriendshipValue({
-              userId: userId,
-              friendshipValue: {
-                requested: false,
-                areFriends: false,
-                remoteRequested: false,
-              },
-            });
-            setInProgress(false);
-          }}
-        />
+        <UserAction text="Decline" onClick={async (e: any) => {
+          e.stopPropagation();
+          setInProgress(true);
+          await sendFriendRequest({ to: userId, sendRequest: false });
+          await updateFriendshipIfExists(uuid, userId, {
+            requested: 0,
+            areFriends: 0,
+            remoteRequested: 0,
+          });
+          await setFriendshipValue({
+            userId: userId,
+            friendshipValue: {
+              requested: false,
+              areFriends: false,
+              remoteRequested: false,
+            },
+          });
+          setInProgress(false);
+        }} />
       </div>
     );
   }
