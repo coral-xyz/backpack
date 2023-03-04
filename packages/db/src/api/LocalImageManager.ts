@@ -1,3 +1,5 @@
+import { getImage,putImage } from "../db/images";
+
 export class LocalImageManager {
   static instance: LocalImageManager;
   queue: { image: string; timestamp: number; fullImage?: boolean }[] = [];
@@ -26,14 +28,13 @@ export class LocalImageManager {
     elements.forEach((el) => this.addToQueue(el));
   }
 
-  addToQueue({ image }: { image: string }) {
+  async addToQueue({ image }: { image: string }) {
     if (this.queue.find((x) => x.image === image)) {
       return;
     }
 
     try {
-      const imageEl = localStorage.getItem(`image-${image}`) || "";
-      const parsedEl = JSON.parse(imageEl);
+      const parsedEl = await getImage("images", `image-${image}`);
       if (parsedEl) {
         this.queue.push({
           image,
@@ -61,7 +62,7 @@ export class LocalImageManager {
       const context = canvas.getContext("2d");
       const base_image = new Image();
       base_image.crossOrigin = "anonymous";
-      base_image.onload = function () {
+      base_image.onload = async function () {
         const aspectRatio = base_image.width / base_image.height;
         canvas.width = fullImage ? base_image.width : 200;
         canvas.height = fullImage ? base_image.height : 200 / aspectRatio;
@@ -71,14 +72,19 @@ export class LocalImageManager {
         context.drawImage(base_image, 0, 0, canvas.width, canvas.height);
         // @ts-ignore
         const dataURL = canvas.toDataURL("image/webp");
-        localStorage.setItem(
-          `image-${url}`,
-          JSON.stringify({
-            url: dataURL,
-            timestamp: new Date().getTime(),
-            fullImage: fullImage ? true : false,
-          })
-        );
+        await putImage("images", `image-${url}`, {
+          url: dataURL,
+          timestamp: new Date().getTime(),
+          fullImage: fullImage ? true : false,
+        });
+        // localStorage.setItem(
+        //   `image-${url}`,
+        //   JSON.stringify({
+        //     url: dataURL,
+        //     timestamp: new Date().getTime(),
+        //     fullImage: fullImage ? true : false,
+        //   })
+        // );
         resolve("");
       };
       base_image.src = overridenUrl || url;
