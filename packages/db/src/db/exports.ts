@@ -10,4 +10,5 @@ export {
   resetUpdateTimestamp,
 } from "./chats";
 export * from "./friends";
+export * from "./images";
 export { bulkAddUsers, getBulkUsers } from "./users";
