@@ -9,11 +9,11 @@ import {
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
-import {
-  BackpackStaffIcon,
+import {   BackpackStaffIcon,
   isFirstLastListItemStyle,
   LocalImage,
   SignalingManager,
+UserAction ,
 } from "@coral-xyz/react-common";
 import {
   useNavigation,
@@ -337,34 +337,6 @@ function UserListItem({
         </div>
       </div>
     </ListItem>
-  );
-}
-
-function UserAction({
-  text,
-  onClick,
-  style,
-}: {
-  text: string;
-  onClick: (ev: MouseEvent) => void;
-  style?: CSSProperties;
-}) {
-  const classes = useStyles();
-  return (
-    <div
-      className={classes.userRequestText}
-      style={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        fontSize: "14px",
-        ...style,
-      }}
-      onClick={onClick}
-    >
-      {text}
-    </div>
   );
 }
 

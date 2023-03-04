@@ -14,7 +14,6 @@ export const putImage = async (
     fullImage: boolean;
   }
 ) => {
-  console.error(data);
   const imageData = await getDb(uuid).localImageData.put({ key, ...data });
   return imageData;
 };
