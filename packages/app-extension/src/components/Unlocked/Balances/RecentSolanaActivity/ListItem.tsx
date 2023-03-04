@@ -1,4 +1,7 @@
-import { walletAddressDisplay } from "@coral-xyz/common";
+import {
+  reverseScientificNotation,
+  walletAddressDisplay,
+} from "@coral-xyz/common";
 import { isFirstLastListItemStyle } from "@coral-xyz/react-common";
 import {
   metadataForRecentSolanaTransaction,
@@ -297,7 +300,10 @@ function RecentActivityListItemData({
       if (transaction.source === Source.SYSTEM_PROGRAM) {
         return (
           <div className={classes.textSent}>
-            -{transaction?.nativeTransfers[0]?.amount / 10 ** 9 + " SOL"}
+            -
+            {reverseScientificNotation(
+              transaction?.nativeTransfers[0]?.amount / 10 ** 9
+            ) + " SOL"}
           </div>
         );
       }
@@ -320,7 +326,10 @@ function RecentActivityListItemData({
       if (transaction.source === Source.SYSTEM_PROGRAM) {
         return (
           <div className={classes.textReceived}>
-            +{transaction?.nativeTransfers[0]?.amount / 10 ** 9 + " SOL"}
+            +
+            {reverseScientificNotation(
+              transaction?.nativeTransfers[0]?.amount / 10 ** 9
+            ) + " SOL"}
           </div>
         );
       }
