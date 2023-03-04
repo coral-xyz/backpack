@@ -1,12 +1,11 @@
-import { useState } from "react";
-import { SearchBox } from "@coral-xyz/app-extension/src/components/Unlocked/Messages/SearchBox";
+import { useEffect, useState } from "react";
 import type {
   CollectionChatData,
   EnrichedInboxDb,
   RemoteUserData,
 } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { BubbleTopLabel, EmptyState } from "@coral-xyz/react-common";
+import { BubbleTopLabel, EmptyState,SearchBox  } from "@coral-xyz/react-common";
 import {
   useFriendships,
   useGroupCollections,
@@ -88,6 +87,10 @@ export function InboxInner() {
     }
   };
 
+  useEffect(() => {
+    setSearchFilter("");
+  }, [uuid]);
+
   return (
     <div
       className={classes.container}
@@ -98,73 +101,82 @@ export function InboxInner() {
       }}
     >
       <SearchBox
+        searchFilter={searchFilter}
+        setSearchFilter={setSearchFilter}
         onChange={async (prefix: string) => {
-          setSearchFilter(prefix);
           debouncedInit(prefix);
         }}
       />
-      {(!allChats || !allChats.length) ? <MessagesSkeleton /> : null}
+      {!allChats || !allChats.length ? <MessagesSkeleton /> : null}
       {allChats &&
-        allChats.length !== 0 &&
-        (allChats.filter((x) =>
-          (x.chatType === "individual"
-            ? x.chatProps.remoteUsername || ""
-            : x.chatProps.name
-          )?.includes(searchFilter)
-        ).length > 0 ||
-          requestCount > 0) ? <>
-            {searchFilter.length >= 3 ? <BubbleTopLabel text="Your friends" /> : null}
+      allChats.length !== 0 &&
+      (allChats.filter((x) =>
+        (x.chatType === "individual"
+          ? x.chatProps.remoteUsername || ""
+          : x.chatProps.name
+        )?.includes(searchFilter)
+      ).length > 0 ||
+        requestCount > 0) ? (
+          <>
+            {searchFilter.length >= 3 ? (
+              <BubbleTopLabel text="Your friends" />
+          ) : null}
             <div style={{ paddingBottom: "16px" }}>
               <MessageList
                 requestCount={searchFilter.length < 3 ? requestCount : 0}
                 activeChats={allChats.filter((x) => {
-                  const displayName =
-                    x.chatType === "individual"
-                      ? x.chatProps.remoteUsername
-                      : x.chatProps.name;
-                  if (displayName?.includes(searchFilter)) {
-                    return true;
-                  }
-                  if (
-                    x.chatType === "individual" &&
-                    x.chatProps.public_keys
-                      ?.map((x) => x.publicKey)
-                      ?.includes(searchFilter)
-                  ) {
-                    return true;
-                  }
-                  return false;
-                })}
-              />
+                const displayName =
+                  x.chatType === "individual"
+                    ? x.chatProps.remoteUsername
+                    : x.chatProps.name;
+                if (displayName?.includes(searchFilter)) {
+                  return true;
+                }
+                if (
+                  x.chatType === "individual" &&
+                  x.chatProps.public_keys
+                    ?.map((x) => x.publicKey)
+                    ?.includes(searchFilter)
+                ) {
+                  return true;
+                }
+                return false;
+              })}
+            />
             </div>
-          </> : null}
-      {searchFilter.length >= 3 && searchedUsersDistinct.length !== 0 ? <>
-        <BubbleTopLabel text="Other people" />
-        <UserList
-          users={searchedUsersDistinct}
-          setMembers={setSearchResults}
+          </>
+      ) : null}
+      {searchFilter.length >= 3 && searchedUsersDistinct.length !== 0 ? (
+        <>
+          <BubbleTopLabel text="Other people" />
+          <UserList
+            users={searchedUsersDistinct}
+            setMembers={setSearchResults}
           />
-      </> : null}
+        </>
+      ) : null}
       {allChats &&
-        allChats.length !== 0 &&
-        searchFilter.length < 3 &&
-        requestCount === 0 &&
-        allChats.length === 0 ? <div
+      allChats.length !== 0 &&
+      searchFilter.length < 3 &&
+      requestCount === 0 &&
+      allChats.length === 0 ? (
+        <div
           style={{
-              flexGrow: 1,
-              justifyContent: "center",
-              flexDirection: "column",
-              display: "flex",
-              paddingBottom: 50,
-            }}
-          >
+            flexGrow: 1,
+            justifyContent: "center",
+            flexDirection: "column",
+            display: "flex",
+            paddingBottom: 50,
+          }}
+        >
           {" "}
           <EmptyState
             icon={(props: any) => <ChatBubbleIcon {...props} />}
             title="No messages"
             subtitle="Search for someone to send a message!"
-            />
-        </div> : null}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }

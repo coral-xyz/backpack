@@ -42,7 +42,7 @@ export function AvatarHeader() {
             borderRadius: "50%",
           }}
         />
-        <EditOverlay className={"editOverlay"}>
+        <EditOverlay className="editOverlay">
           <Edit />
         </EditOverlay>
       </AvatarWrapper>
@@ -68,8 +68,8 @@ export function AvatarHeader() {
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen
-              key={"update"}
-              name={"UpdateProfilePicture"}
+              key="update"
+              name="UpdateProfilePicture"
               component={() => (
                 <UpdateProfilePicture setOpenDrawer={setOpenDrawer} />
               )}

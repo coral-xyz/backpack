@@ -87,12 +87,13 @@ export function usePluginUrl(address?: string) {
   const [cached] = useState<Plugin | undefined>(
     PLUGIN_CACHE.get(address ?? "")
   );
-
   useEffect(() => {
     (async () => {
-      if (cached) setUrl(cached.iframeRootUrl);
-
-      if (address) {
+      if (address?.toString() === "11111111111111111111111111111111") {
+        setUrl("Simulator");
+      } else if (cached) {
+        setUrl(cached.iframeRootUrl);
+      } else if (address) {
         try {
           const xnft = await fetchXnft(new PublicKey(address));
           setUrl(xnft!.xnft.manifest.entrypoints.default.web);

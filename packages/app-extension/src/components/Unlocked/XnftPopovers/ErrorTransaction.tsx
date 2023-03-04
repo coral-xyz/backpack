@@ -59,22 +59,20 @@ export function ErrorTransaction({
         >
           <CrossIcon />
         </div>
-        {explorer && connectionUrl && signature && (
-          <SecondaryButton
-            buttonLabelStyle={{
+        {explorer && connectionUrl && signature ? <SecondaryButton
+          buttonLabelStyle={{
               fontSize: "14px",
             }}
-            label={"View Explorer"}
-            onClick={() =>
+          label="View Explorer"
+          onClick={() =>
               window.open(
                 explorerUrl(explorer, signature, connectionUrl),
                 "_blank"
               )
             }
-          />
-        )}
+          /> : null}
       </div>
-      <PrimaryButton label={"Retry"} onClick={() => onRetry()} />
+      <PrimaryButton label="Retry" onClick={() => onRetry()} />
     </div>
   );
 }

@@ -103,7 +103,7 @@ export function PluginRenderer({
         backgroundSize: "cover",
         backgroundPosition: "center center",
       }}
-    ></div>
+     />
   );
 }
 

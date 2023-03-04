@@ -62,7 +62,7 @@ export const BlockchainSelector = ({
             <Grid item xs={6}>
               <ActionCard
                 icon={<EthereumIcon />}
-                text={`Ethereum`}
+                text="Ethereum"
                 textAdornment={
                   selectedBlockchains.includes(Blockchain.ETHEREUM) ? (
                     <CheckBadge />
@@ -76,7 +76,7 @@ export const BlockchainSelector = ({
             <Grid item xs={6}>
               <ActionCard
                 icon={<SolanaIcon />}
-                text={`Solana`}
+                text="Solana"
                 textAdornment={
                   selectedBlockchains.includes(Blockchain.SOLANA) ? (
                     <CheckBadge />
@@ -93,7 +93,7 @@ export const BlockchainSelector = ({
                 text="Polygon"
                 textAdornment={<SoonBadge />}
                 onClick={() => {}}
-                disabled={true}
+                disabled
               />
             </Grid>
             <Grid item xs={6}>
@@ -102,7 +102,7 @@ export const BlockchainSelector = ({
                 text="BSC"
                 textAdornment={<SoonBadge />}
                 onClick={() => {}}
-                disabled={true}
+                disabled
               />
             </Grid>
             {/*

@@ -4,6 +4,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import GifIcon from "@mui/icons-material/Gif";
 import { IconButton } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
 
 export const Attachment = ({
   buttonStyle,
@@ -33,7 +34,7 @@ export const Attachment = ({
       }}
     >
       <IconButton
-        size={"small"}
+        size="small"
         sx={{
           color: theme.custom.colors.icon,
           "&:hover": {
@@ -46,9 +47,11 @@ export const Attachment = ({
         }}
       >
         {" "}
-        <AttachFileIcon
-          style={{ color: theme.custom.colors.icon, fontSize: 20 }}
-        />{" "}
+        <Tooltip title="Attach">
+          <AttachFileIcon
+            style={{ color: theme.custom.colors.icon, fontSize: 20 }}
+          />
+        </Tooltip>
         <input
           onClick={(e) => {
             // @ts-ignore

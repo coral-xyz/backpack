@@ -124,7 +124,7 @@ export function ConnectHardwareSearching({
         This is just a placeholder next button so its always disabled. Screen
         will auto advance when transport is set.
         */}
-        <PrimaryButton label="Next" disabled={true} />
+        <PrimaryButton label="Next" disabled />
       </Box>
     </Box>
   );

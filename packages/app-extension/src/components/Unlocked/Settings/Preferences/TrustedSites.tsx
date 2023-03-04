@@ -25,8 +25,8 @@ export function PreferencesTrustedSites() {
   return approvedOrigins.length === 0 ? (
     <EmptyState
       icon={(props: any) => <GppBad {...props} />}
-      title={"No trusted sites"}
-      subtitle={"Trusted sites will be listed here"}
+      title="No trusted sites"
+      subtitle="Trusted sites will be listed here"
       contentStyle={{
         marginBottom: "64px", // Tab height offset.
       }}

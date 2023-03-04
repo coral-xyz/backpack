@@ -1,4 +1,7 @@
-import { walletAddressDisplay } from "@coral-xyz/common";
+import {
+  reverseScientificNotation,
+  walletAddressDisplay,
+} from "@coral-xyz/common";
 import { isFirstLastListItemStyle } from "@coral-xyz/react-common";
 import {
   metadataForRecentSolanaTransaction,
@@ -181,11 +184,11 @@ function RecentActivityListItemIcon({
     );
   }
 
-  if (transaction?.transactionError) return <ListItemIcons.ERROR />;
+  if (transaction?.transactionError) return <ListItemIcons.Error />;
 
   if (transaction.type === TransactionType.SWAP) {
     return (
-      <ListItemIcons.SWAP
+      <ListItemIcons.Swap
         tokenLogoOne={tokenData[0]?.logoURI || UNKNOWN_ICON_SRC}
         tokenLogoTwo={tokenData[1]?.logoURI || UNKNOWN_ICON_SRC}
       />
@@ -196,41 +199,41 @@ function RecentActivityListItemIcon({
   const nftImage = undefined; // FIXME: metadata?.onChainMetadata?.metadata?.data?.uri;
 
   if (isNFTTransaction(transaction) && nftImage) {
-    return <ListItemIcons.NFT nftUrl={nftImage} />;
+    return <ListItemIcons.Nft nftUrl={nftImage} />;
   }
 
   if (transaction.type === TransactionType.TRANSFER) {
     //SOL transfer
     if (transaction.source === Source.SYSTEM_PROGRAM) {
-      return <ListItemIcons.SOL />;
+      return <ListItemIcons.Sol />;
     }
 
     // other SPL token Transfer. Check tokenRegistry first, then Helius metadata
     const transferIcon = tokenData[0]?.logoURI; // FIXME: metadata offchain image
 
     if (transferIcon) {
-      return <ListItemIcons.TRANSFER tokenLogo={transferIcon} />;
+      return <ListItemIcons.Transfer tokenLogo={transferIcon} />;
     }
 
     // if it is an NFT transfer and no NFT image was found above, show default Icon
     if (transaction?.tokenTransfers?.[0]?.tokenStandard === "NonFungible") {
-      return <ListItemIcons.NFT_DEFAULT />;
+      return <ListItemIcons.NftDefault />;
     }
     // default
     if (isUserTxnSender(transaction, activeWallet)) {
-      return <ListItemIcons.SENT />;
+      return <ListItemIcons.Sent />;
     }
 
-    return <ListItemIcons.RECEIVED />;
+    return <ListItemIcons.Received />;
   }
 
   if (
     transaction?.type === TransactionType.BURN ||
     transaction?.type === TransactionType.BURN_NFT
   )
-    return <ListItemIcons.BURN />;
+    return <ListItemIcons.Burn />;
 
-  return <ListItemIcons.DEFAULT />;
+  return <ListItemIcons.Default />;
 }
 
 // Controls data displayed on right side of 'Transactions' list
@@ -255,22 +258,21 @@ function RecentActivityListItemData({
     return (
       <>
         <div className={classes.textReceived}>
-          {"+ " +
-            transaction?.tokenTransfers?.[1]?.tokenAmount.toFixed(5) +
-            " " +
-            (tokenData[1]?.symbol ||
-              walletAddressDisplay(transaction?.tokenTransfers?.[1]?.mint))}
+          {`+${transaction?.tokenTransfers?.[1]?.tokenAmount.toFixed(5)} ${
+            tokenData[1]?.symbol ||
+            walletAddressDisplay(transaction?.tokenTransfers?.[1]?.mint)
+          }`}
         </div>
         <div className={classes.textSecondary}>
-          {"- " +
-            transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
-            " " +
-            (tokenData[0]?.symbol ||
-              walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint))}
+          {`-${transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5)} ${
+            tokenData[0]?.symbol ||
+            walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint)
+          }`}
         </div>
       </>
     );
   }
+
   // BURN
   if (
     transaction?.type === TransactionType.BURN ||
@@ -285,7 +287,7 @@ function RecentActivityListItemData({
 
   // finish
   if (isNFTTransaction(transaction)) {
-    return <div></div>;
+    return <div />;
   }
 
   if (
@@ -298,13 +300,16 @@ function RecentActivityListItemData({
       if (transaction.source === Source.SYSTEM_PROGRAM) {
         return (
           <div className={classes.textSent}>
-            - {transaction?.nativeTransfers[0]?.amount / 10 ** 9 + " SOL"}
+            -
+            {reverseScientificNotation(
+              transaction?.nativeTransfers[0]?.amount / 10 ** 9
+            ) + " SOL"}
           </div>
         );
       }
       return (
         <div className={classes.textSent}>
-          -{" "}
+          -
           {new Number(
             transaction?.tokenTransfers?.[0]?.tokenAmount.toFixed(5)
           ) +
@@ -321,13 +326,16 @@ function RecentActivityListItemData({
       if (transaction.source === Source.SYSTEM_PROGRAM) {
         return (
           <div className={classes.textReceived}>
-            + {transaction?.nativeTransfers[0]?.amount / 10 ** 9 + " SOL"}
+            +
+            {reverseScientificNotation(
+              transaction?.nativeTransfers[0]?.amount / 10 ** 9
+            ) + " SOL"}
           </div>
         );
       }
       return (
         <div className={classes.textReceived}>
-          +{" "}
+          +
           {new Number(
             transaction?.tokenTransfers?.[0]?.tokenAmount.toFixed(5)
           ) +
@@ -341,5 +349,5 @@ function RecentActivityListItemData({
   }
 
   // default
-  return <div></div>;
+  return <div />;
 }

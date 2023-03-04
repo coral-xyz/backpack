@@ -51,19 +51,15 @@ export const Requests = ({ searchFilter }: { searchFilter: string }) => {
 
   return (
     <div style={{ marginTop: 5 }}>
-      {filteredRequests.length !== 0 && (
-        <UserList
-          setMembers={setRequests}
-          users={filteredRequests as RemoteUserData[]}
-        />
-      )}
-      {filteredRequests.length === 0 && (
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <div style={{ color: theme.custom.colors.fontColor }}>
-            You have no pending requests
-          </div>
+      {filteredRequests.length !== 0 ? <UserList
+        setMembers={setRequests}
+        users={filteredRequests as RemoteUserData[]}
+        /> : null}
+      {filteredRequests.length === 0 ? <div style={{ display: "flex", justifyContent: "center" }}>
+        <div style={{ color: theme.custom.colors.fontColor }}>
+          You have no pending requests
         </div>
-      )}
+      </div> : null}
     </div>
   );
 };
@@ -71,10 +67,10 @@ export const Requests = ({ searchFilter }: { searchFilter: string }) => {
 export function SkeletonContainer() {
   return (
     <>
-      <UserSkeleton isFirst={true} isLast={false} />
+      <UserSkeleton isFirst isLast={false} />
       <UserSkeleton isFirst={false} isLast={false} />
       <UserSkeleton isFirst={false} isLast={false} />
-      <UserSkeleton isFirst={false} isLast={true} />
+      <UserSkeleton isFirst={false} isLast />
     </>
   );
 }

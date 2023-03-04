@@ -56,7 +56,7 @@ export function SearchableTokenTables({
     <>
       <TextInput
         className={classes.searchField}
-        placeholder={"Search"}
+        placeholder="Search"
         value={searchFilter}
         setValue={(e) => setSearchFilter(e.target.value)}
         inputProps={{
@@ -89,7 +89,7 @@ export function SearchableTokenTable({
     <>
       <TextInput
         className={classes.searchField}
-        placeholder={"Search"}
+        placeholder="Search"
         value={searchFilter}
         setValue={(e) => setSearchFilter(e.target.value)}
         inputProps={{

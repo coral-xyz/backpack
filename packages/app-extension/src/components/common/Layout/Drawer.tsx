@@ -82,7 +82,7 @@ export function WithDrawer(
   return (
     <DrawerProvider setOpenDrawer={setOpenDrawer}>
       <Drawer
-        anchor={"bottom"}
+        anchor="bottom"
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
         classes={{
@@ -122,7 +122,7 @@ export function WithMiniDrawer(props: any) {
   return (
     <DrawerProvider setOpenDrawer={setOpenDrawer}>
       <Drawer
-        anchor={"bottom"}
+        anchor="bottom"
         open={openDrawer}
         onClose={() => (onClose ? onClose() : setOpenDrawer(false))}
         classes={{
@@ -190,7 +190,7 @@ export function WithDrawerNoHeader(props: any) {
           height: EXTENSION_HEIGHT - NAV_BAR_HEIGHT,
         },
       }}
-      anchor={"bottom"}
+      anchor="bottom"
       open={openDrawer}
       onClose={() => setOpenDrawer(false)}
       classes={{
@@ -199,15 +199,13 @@ export function WithDrawerNoHeader(props: any) {
     >
       <div className={classes.withDrawerNoHeader}>
         <div className={classes.withDrawerContent}>{children}</div>
-        {!props.skipFooter && (
-          <Button
-            onClick={() => setOpenDrawer(false)}
-            variant="contained"
-            className={classes.closeDrawerButton}
+        {!props.skipFooter ? <Button
+          onClick={() => setOpenDrawer(false)}
+          variant="contained"
+          className={classes.closeDrawerButton}
           >
-            Close
-          </Button>
-        )}
+          Close
+        </Button> : null}
       </div>
     </Drawer>
   );

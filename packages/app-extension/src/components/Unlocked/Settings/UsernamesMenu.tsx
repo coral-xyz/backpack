@@ -186,22 +186,20 @@ function UserAccountListItem({
             @{username}
           </Typography>
         </div>
-        {isActive && (
-          <div
-            style={{
+        {isActive ? <div
+          style={{
               display: "flex",
               justifyContent: "center",
               flexDirection: "column",
             }}
           >
-            <Check
-              style={{
+          <Check
+            style={{
                 opacity: 0.8,
                 color: theme.custom.colors.fontColor,
               }}
             />
-          </div>
-        )}
+        </div> : null}
       </div>
     </ListItem>
   );

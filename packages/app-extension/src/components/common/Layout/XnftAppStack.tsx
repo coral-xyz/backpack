@@ -30,7 +30,7 @@ export function XnftAppStack() {
       }}
       variants={XNFT_MOTION}
       initial={navAction === "pop" ? {} : "initial"}
-      animate={"animate"}
+      animate="animate"
       exit={navAction === "push" ? {} : "exit"}
     >
       <PluginApp xnftAddress={xnftAddress} deepXnftPath={deepXnftPath} />

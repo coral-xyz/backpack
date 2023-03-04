@@ -2,6 +2,8 @@ import React, { useContext } from "react";
 import type {
   EnrichedMessage,
   EnrichedMessageWithMetadata,
+  MessageKind,
+  MessageMetadata,
   SubscriptionType,
   UserMetadata,
 } from "@coral-xyz/common";
@@ -44,47 +46,29 @@ type ChatContext = {
   setAboveMessagePlugin: React.Dispatch<
     React.SetStateAction<AboveMessagePlugin>
   >;
+  selectedFile: any;
+  setSelectedFile: any;
+  uploadingFile: boolean;
+  setUploadingFile: any;
+  inputRef: any;
+  selectedMediaKind: any;
+  setSelectedMediaKind: any;
+  uploadedImageUri: any;
+  setUploadedImageUri: any;
+  sendMessage: (
+    messageTxt: string,
+    messageKind?: MessageKind,
+    messageMetadata?: MessageMetadata
+  ) => void;
 };
+
+interface ChatContextWithChildren extends ChatContext {
+  children: any;
+}
 
 export const _ChatContext = React.createContext<ChatContext | null>(null);
 
-export function ChatProvider(props: {
-  setActiveReply: any;
-  activeReply: {
-    parent_client_generated_uuid: string | null;
-    text: string;
-    parent_username: string;
-    parent_message_author_uuid: string;
-  };
-  roomId: string;
-  chats: EnrichedMessageWithMetadata[];
-  userId: string;
-  children: any;
-  loading: boolean;
-  username: string;
-  areFriends: boolean;
-  requested: boolean;
-  remoteRequested: boolean;
-  remoteUserId: string;
-  type: SubscriptionType;
-  blocked?: boolean;
-  spam?: boolean;
-  setRequested?: any;
-  setSpam?: any;
-  setBlocked?: any;
-  isDarkMode: boolean;
-  remoteUsername?: string;
-  reconnecting: boolean;
-  nftMint?: string;
-  publicKey?: string;
-  usersMetadata: { [key: string]: UserMetadata };
-  openPlugin: MessagePlugins;
-  setOpenPlugin: any;
-  aboveMessagePlugin: AboveMessagePlugin;
-  setAboveMessagePlugin: React.Dispatch<
-    React.SetStateAction<AboveMessagePlugin>
-  >;
-}) {
+export function ChatProvider(props: ChatContextWithChildren) {
   return (
     <_ChatContext.Provider
       value={{
@@ -115,6 +99,16 @@ export function ChatProvider(props: {
         setOpenPlugin: props.setOpenPlugin,
         aboveMessagePlugin: props.aboveMessagePlugin,
         setAboveMessagePlugin: props.setAboveMessagePlugin,
+        selectedFile: props.selectedFile,
+        setSelectedFile: props.setSelectedFile,
+        uploadingFile: props.uploadingFile,
+        setUploadingFile: props.setUploadingFile,
+        inputRef: props.inputRef,
+        selectedMediaKind: props.selectedMediaKind,
+        setSelectedMediaKind: props.setSelectedMediaKind,
+        uploadedImageUri: props.uploadedImageUri,
+        setUploadedImageUri: props.setUploadedImageUri,
+        sendMessage: props.sendMessage,
       }}
     >
       {props.children}

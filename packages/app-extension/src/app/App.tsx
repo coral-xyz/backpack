@@ -81,7 +81,7 @@ function _Router() {
             ...BACKDROP_STYLE,
             background: theme.custom.colors.backgroundBackdrop,
           }}
-        ></div>
+         />
       }
     >
       <Router />
