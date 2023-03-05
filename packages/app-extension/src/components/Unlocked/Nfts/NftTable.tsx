@@ -160,23 +160,21 @@ const HeaderRow = function HeaderRow({
   const wallet = wallets.find((wallet) => wallet.publicKey === c.publicKey);
   const blockchain = wallet?.blockchain;
   return (
-    <>
-      <CustomCard top={true} bottom={isCollapsed}>
-        <_BalancesTableHead
-          blockchain={blockchain as Blockchain}
-          wallet={wallet!}
-          showContent={!isCollapsed}
-          setShowContent={(isCollapsed) => {
-            collapseSingleCollection(listIndex, blockchainIndex, !isCollapsed);
-          }}
-        />
-      </CustomCard>
-    </>
+    <CustomCard top bottom={isCollapsed}>
+      <_BalancesTableHead
+        blockchain={blockchain as Blockchain}
+        wallet={wallet!}
+        showContent={!isCollapsed}
+        setShowContent={(isCollapsed) => {
+          collapseSingleCollection(listIndex, blockchainIndex, !isCollapsed);
+        }}
+      />
+    </CustomCard>
   );
 };
 
 const FooterRow = function () {
-  return <CustomCard top={false} bottom={true} />;
+  return <CustomCard top={false} bottom />;
 };
 
 const LoadingRow = function ({ itemsPerRow }: { itemsPerRow: number }) {
@@ -272,7 +270,7 @@ const ItemRow = function ({
                 margin: "0px 6px",
               }}
             >
-              {collection && (
+              {collection ? (
                 <Suspense fallback={<Loading />}>
                   <NftCollectionCard
                     publicKey={c.publicKey}
@@ -280,7 +278,7 @@ const ItemRow = function ({
                     collection={collection}
                   />
                 </Suspense>
-              )}
+              ) : null}
             </div>
           );
         })}

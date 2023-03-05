@@ -125,7 +125,7 @@ export function ImportSecretKey({
           <Box sx={{ margin: "0 16px" }}>
             <Box sx={{ marginBottom: "4px" }}>
               <TextInput
-                autoFocus={true}
+                autoFocus
                 placeholder="Name"
                 value={name}
                 setValue={(e) => setName(e.target.value)}

@@ -1,0 +1,1 @@
+CREATE TABLE "public"."chat_update_history" ("id" serial NOT NULL, "created_at" timestamptz NOT NULL DEFAULT now(), "client_generated_uuid" text NOT NULL, "type" text NOT NULL, "room" text NOT NULL, PRIMARY KEY ("id") );

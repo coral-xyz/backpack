@@ -26,6 +26,7 @@ import { SecureTransfer } from "./SecureTransfer";
 
 const BARTER_ENABLED = false;
 const SECURE_TRANSFER_ENABLED = false;
+const STICKER_ENABLED = false;
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
@@ -95,6 +96,8 @@ export const SendMessage = ({
   onMediaSelect,
   selectedMediaKind,
   uploadedImageUri,
+  pluginMenuOpen,
+  setPluginMenuOpen,
 }: {
   onMediaSelect: any;
   selectedMediaKind: "video" | "image";
@@ -103,120 +106,31 @@ export const SendMessage = ({
   setSelectedFile: any;
   uploadingFile: boolean;
   setUploadingFile: any;
+  pluginMenuOpen: boolean;
+  setPluginMenuOpen: (val: boolean) => void;
 }) => {
   const classes = useStyles();
   const { uuid } = useUser();
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
-  const [pluginMenuOpen, setPluginMenuOpen] = useState(false);
 
   const theme = useCustomTheme();
   const activeSolanaWallet = useActiveSolanaWallet();
-  const inputRef = useRef<any>(null);
-  const { setOpenPlugin, aboveMessagePlugin, setAboveMessagePlugin } =
-    useChatContext();
-
   const {
+    setOpenPlugin,
+    aboveMessagePlugin,
+    setAboveMessagePlugin,
+    inputRef,
+    sendMessage,
     remoteUserId,
     remoteUsername,
-    roomId,
     activeReply,
-    setActiveReply,
     type,
     chats,
   } = useChatContext();
+
   const remoteUsers = useUsersMetadata({ remoteUserIds: [remoteUserId] });
   const remoteUserImage = remoteUsers?.[0]?.image;
-
-  const sendMessage = async (
-    messageTxt,
-    messageKind: MessageKind = "text",
-    messageMetadata?: MessageMetadata
-  ) => {
-    if (selectedFile && uploadingFile) {
-      return;
-    }
-    if (
-      messageTxt ||
-      selectedFile ||
-      aboveMessagePlugin.type === "nft-sticker"
-    ) {
-      if (selectedFile) {
-        messageKind = "media";
-        messageMetadata = {
-          media_kind: selectedMediaKind,
-          media_link: uploadedImageUri,
-        };
-        setSelectedFile(null);
-      }
-      if (aboveMessagePlugin.type === "nft-sticker") {
-        messageKind = "nft-sticker";
-        messageMetadata = {
-          mint: aboveMessagePlugin.metadata.mint,
-        };
-        setAboveMessagePlugin({
-          type: "",
-          metadata: {},
-        });
-        setOpenPlugin(false);
-      }
-      const client_generated_uuid = uuidv4();
-      if (chats.length === 0 && type === "individual") {
-        // If it's the first time the user is interacting,
-        // create an in memory friendship
-        createEmptyFriendship(uuid, remoteUserId, {
-          last_message_sender: uuid,
-          last_message_timestamp: new Date().toISOString(),
-          last_message:
-            messageKind === "gif"
-              ? "GIF"
-              : messageKind === "secure-transfer"
-              ? "Secure Transfer"
-              : messageKind === "media"
-              ? "Media"
-              : messageTxt,
-          last_message_client_uuid: client_generated_uuid,
-        });
-      }
-      SignalingManager.getInstance()?.send({
-        type: CHAT_MESSAGES,
-        payload: {
-          messages: [
-            {
-              client_generated_uuid: client_generated_uuid,
-              message: messageTxt,
-              message_kind: messageKind,
-              message_metadata: messageMetadata,
-              parent_client_generated_uuid:
-                activeReply.parent_client_generated_uuid
-                  ? activeReply.parent_client_generated_uuid
-                  : undefined,
-              //@ts-ignore
-              parent_message_author_username:
-                activeReply.parent_client_generated_uuid
-                  ? activeReply.parent_username?.slice(1)
-                  : undefined,
-              //@ts-ignore
-              parent_message_text: activeReply.parent_client_generated_uuid
-                ? activeReply.text
-                : undefined,
-              parent_message_author_uuid:
-                activeReply.parent_message_author_uuid,
-            },
-          ],
-          type: type,
-          room: roomId,
-        },
-      });
-
-      setActiveReply({
-        parent_username: "",
-        parent_client_generated_uuid: null,
-        text: "",
-      });
-      inputRef.current.setValue("");
-    }
-  };
 
   useEffect(() => {
     function keyDownTextField(event) {
@@ -264,6 +178,7 @@ export const SendMessage = ({
     });
     return Object.keys(userMap).map((uuid) => userMap[uuid]);
   };
+
   return (
     <MessageInputProvider
       inputRef={inputRef}
@@ -419,12 +334,14 @@ export const SendMessage = ({
                 height: "28px",
               }}
             />
-            <NftSticker
-              buttonStyle={{
-                height: "28px",
-              }}
-              setAboveMessagePlugin={setAboveMessagePlugin}
-            />
+            {STICKER_ENABLED ? (
+              <NftSticker
+                buttonStyle={{
+                  height: "28px",
+                }}
+                setAboveMessagePlugin={setAboveMessagePlugin}
+              />
+            ) : null}
             {type === "individual" && BARTER_ENABLED ? (
               <Barter
                 setOpenPlugin={setOpenPlugin}

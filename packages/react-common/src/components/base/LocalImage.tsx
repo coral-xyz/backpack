@@ -1,25 +1,28 @@
 import { useEffect, useState } from "react";
-import { LocalImageManager } from "@coral-xyz/db";
+import { getImage, LocalImageManager } from "@coral-xyz/db";
 
 import { ProxyImage } from "./ProxyImage";
 
 export const LocalImage = (props) => {
   const [imageUrl, setImageUrl] = useState("");
 
-  useEffect(() => {
-    if (props.src) {
+  const fetchData = async (src) => {
+    if (src) {
       try {
-        const parsedEl = JSON.parse(
-          localStorage.getItem(`image-${props.src}`) || ""
-        );
-        LocalImageManager.getInstance().addToQueue({
-          image: parsedEl.image,
-        });
-        setImageUrl(parsedEl?.url || props.src);
+        const parsedEl = await getImage("images", `image-${src}`);
+        if (parsedEl) {
+          LocalImageManager.getInstance().addToQueue({
+            image: src,
+          });
+        }
+        setImageUrl(parsedEl?.url || src);
       } catch (e) {
-        setImageUrl(props.src);
+        setImageUrl(src);
       }
     }
+  };
+  useEffect(() => {
+    fetchData(props.src);
   }, [props.src]);
 
   return (

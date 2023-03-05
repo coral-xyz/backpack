@@ -6,8 +6,11 @@ import * as Device from "expo-device";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 
-import { BACKGROUND_SERVICE_WORKER_READY, useStore } from "@coral-xyz/common";
-import { WEB_VIEW_EVENTS } from "@coral-xyz/common-mobile";
+import {
+  BACKGROUND_SERVICE_WORKER_READY,
+  useStore,
+  WEB_VIEW_EVENTS,
+} from "@coral-xyz/common";
 import { NotificationsProvider } from "@coral-xyz/recoil";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -167,9 +170,9 @@ function maybeParseLog({
         const [name, ...rest] = data;
         const color = name.includes("ERROR") ? "red" : "brown";
         console.group(`${channel}:${name}`);
-        console.log("%c" + `${channel}:` + name, `color: ${color}`);
+        console.log(`%c${channel}:${name}`, `color: ${color}`);
         console.log(rest);
-        console.log("%c" + "---", `color: ${color}`);
+        console.log(`%c---`, `color: ${color}`);
         console.groupEnd();
         break;
       }
@@ -178,9 +181,9 @@ function maybeParseLog({
       case "mobile-fe-response": {
         const name = data.wrappedEvent.channel;
         const color = "orange";
-        console.log("%c" + `${channel}:${name}`, `color: ${color}`);
+        console.log(`%c${channel}:${name}`, `color: ${color}`);
         console.log(data.wrappedEvent.data);
-        console.log("%c" + "---", `color: ${color}`);
+        console.log(`%c---`, `color: ${color}`);
         break;
       }
       default: {
@@ -204,7 +207,7 @@ function BackgroundHiddenWebView(): JSX.Element {
     Constants?.expoConfig?.extra || {};
 
   const webViewUrl = Device.isDevice ? remoteWebViewUrl : localWebViewUrl;
-  console.log("webviewUrl", webViewUrl);
+  console.log("webviewUrl", webViewUrl, remoteWebViewUrl);
 
   return (
     <View style={styles.webview}>

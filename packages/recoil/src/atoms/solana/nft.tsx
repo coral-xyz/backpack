@@ -118,7 +118,7 @@ export const solanaNftById = equalSelectorFamily<
         mint: nftTokenMetadata?.account.mint,
         metadataCollectionId: uriData?.metadata?.collection?.key.toString(),
         name:
-          nftTokenMetadata?.account.data.name ??
+          nftTokenMetadata?.account.data.name.replace(/\0/g, "") ??
           (uriData ? uriData.tokenMetaUriData.name : "Unknown"),
         description: uriData ? uriData.tokenMetaUriData.description : "",
         externalUrl: uriData
@@ -132,14 +132,16 @@ export const solanaNftById = equalSelectorFamily<
                 uriData.tokenMetaUriData.image?.replace(/\0/g, "")
               )
             : UNKNOWN_NFT_ICON_SRC,
-        attributes: uriData
-          ? uriData.tokenMetaUriData.attributes?.map(
-              (a: { trait_type: string; value: string }) => ({
-                traitType: a.trait_type,
-                value: a.value,
-              })
-            )
-          : [],
+        // ensuring attributes is an array
+        attributes:
+          uriData && uriData?.tokenMetaUriData?.attributes?.map
+            ? uriData?.tokenMetaUriData?.attributes?.map(
+                (a: { trait_type: string; value: string }) => ({
+                  traitType: a.trait_type,
+                  value: a.value,
+                })
+              )
+            : [],
         collectionName,
       };
       if (isMadLads(nft)) {

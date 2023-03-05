@@ -47,9 +47,9 @@ class ErrorBoundaryWithHooks extends React.Component<Props, State> {
         <div className={this.props.classes.appContainer}>
           <EmptyState
             icon={(props: any) => <ErrorOutlineIcon {...props} />}
-            title={"There was an error"}
-            subtitle={"Hang tight while we work to fix it!"}
-            buttonText={"Go back"}
+            title="There was an error"
+            subtitle="Hang tight while we work to fix it!"
+            buttonText="Go back"
             onClick={async () => {
               await this.props.background.request({
                 method: UI_RPC_METHOD_NAVIGATION_TO_DEFAULT,

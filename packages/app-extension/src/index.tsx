@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
-import { BACKPACK_FEATURE_POP_MODE,openPopupWindow  } from "@coral-xyz/common";
+import { BACKPACK_FEATURE_POP_MODE, openPopupWindow } from "@coral-xyz/common";
 
 import "./index.css";
 
@@ -13,12 +13,13 @@ chrome.runtime.connect();
 //
 // Configure event listeners.
 //
-document.addEventListener("keypress", async function onPress(event) {
+document.addEventListener("keydown", async function onKeyDown(event) {
   //
   // Pop open the window.
   //
   if (BACKPACK_FEATURE_POP_MODE) {
     if (event.key === "g" && event.ctrlKey) {
+      event.preventDefault();
       const currentWindow = await chrome.windows.getCurrent();
       const popupWindow = await openPopupWindow("popup.html");
       if (currentWindow.id !== popupWindow.id) {

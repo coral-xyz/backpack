@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { TextInput } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import SearchIcon from "@mui/icons-material/Search";
 import InputAdornment from "@mui/material/InputAdornment";
+
+import { TextInput } from "./Inputs";
 
 export const useStyles = styles((theme) => ({
   searchField: {
@@ -25,13 +26,16 @@ export const useStyles = styles((theme) => ({
 export const SearchBox = ({
   onChange,
   placeholder,
+  searchFilter,
+  setSearchFilter,
 }: {
   onChange: any;
   placeholder?: string;
+  searchFilter: string;
+  setSearchFilter: any;
 }) => {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const [searchFilter, setSearchFilter] = useState("");
 
   return (
     <TextInput

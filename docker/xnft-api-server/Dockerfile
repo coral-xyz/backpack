@@ -27,9 +27,9 @@ RUN cd /base
 RUN yarn install
 RUN yarn run build
 RUN cd /base/backend/native/xnft-api-server && yarn run build
-ENV VAPID_PUBLIC_KEY=BDW-VH2Acel5JQXyL80lna43up_0HfXSg_7A5TwhJ9WX_MZPzr9DhNvR7tzH16LT1XPXWMfemZdYHl_wPUGT1DQ
-ENV VAPID_PRIVATE_KEY=LZ2o02-xNzos7djkyyQaWmfpDH0xXa646uGWqg7PPwE
 
 EXPOSE 8080
 
-CMD ["node", "/base/backend/native/xnft-api-server/dist/index.js"]
+WORKDIR /base/backend/native/xnft-api-server
+
+CMD ["node", "./dist/index.js"]

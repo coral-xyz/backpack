@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { type ChangeEvent, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { RichMentionsInput } from "react-rich-mentions";
 import {
   getHashedName,
   getNameAccountKey,
@@ -11,16 +10,11 @@ import {
   ETH_NATIVE_MINT,
   explorerUrl,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
-  NAV_COMPONENT_MESSAGE_CHAT,
-  NAV_COMPONENT_MESSAGE_PROFILE,
   SOL_NATIVE_MINT,
-  TAB_MESSAGES,
   toDisplayBalance,
   toTitleCase,
-  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   walletAddressDisplay,
 } from "@coral-xyz/common";
-import { createEmptyFriendship } from "@coral-xyz/db";
 import {
   CheckIcon,
   CrossIcon,
@@ -30,10 +24,8 @@ import {
   MaxLabel,
   PrimaryButton,
   SecondaryButton,
-  SignalingManager,
   TextFieldLabel,
   TextInput,
-  UserIcon,
 } from "@coral-xyz/react-common";
 import type { TokenDataWithPrice } from "@coral-xyz/recoil";
 import {
@@ -41,7 +33,6 @@ import {
   useActiveWallet,
   useAnchorContext,
   useBackgroundClient,
-  useBlockchainActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
   useBlockchainTokenAccount,
@@ -53,12 +44,11 @@ import {
   useUser,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { TextField, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { TldParser } from "@onsol/tldparser";
 import type { Connection } from "@solana/web3.js";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
-import { v4 as uuidv4 } from "uuid";
 
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
@@ -151,15 +141,18 @@ export function SendButton({
 }) {
   // publicKey should only be undefined if the user is in single-wallet mode
   // (rather than aggregate mode).
-  publicKey = publicKey ?? useActiveWallet().publicKey;
+  const activeWallet = useActiveWallet();
+  publicKey = publicKey ?? activeWallet.publicKey;
+
   const token = useBlockchainTokenAccount({
     publicKey,
     blockchain,
     tokenAddress: address,
   });
+
   return (
     <WithHeaderButton
-      label={"Send"}
+      label="Send"
       routes={[
         {
           name: "send",
@@ -187,7 +180,9 @@ export function SendLoader({
 }) {
   // publicKey should only be undefined if the user is in single-wallet mode
   // (rather than aggregate mode).
-  const publicKeyStr = publicKey ?? useActiveWallet().publicKey;
+  const activeWallet = useActiveWallet();
+  const publicKeyStr = publicKey ?? activeWallet.publicKey;
+
   const [token] = useLoader(
     blockchainTokenData({
       publicKey: publicKeyStr,
@@ -196,7 +191,8 @@ export function SendLoader({
     }),
     null
   );
-  if (!token) return <></>;
+
+  if (!token) return null;
   return <Send blockchain={blockchain} token={token} />;
 }
 
@@ -289,9 +285,9 @@ export function Send({
 
   let sendButton;
   if (isErrorAddress) {
-    sendButton = <DangerButton disabled={true} label="Invalid Address" />;
+    sendButton = <DangerButton disabled label="Invalid Address" />;
   } else if (isAmountError) {
-    sendButton = <DangerButton disabled={true} label="Insufficient Balance" />;
+    sendButton = <DangerButton disabled label="Insufficient Balance" />;
   } else {
     sendButton = (
       <PrimaryButton
@@ -317,105 +313,103 @@ export function Send({
       }}
       noValidate
     >
-      <>
-        {!to && (
-          <SendV1
-            address={address}
-            sendButton={sendButton}
-            amount={amount}
-            token={token}
-            blockchain={blockchain}
-            isAmountError={isAmountError}
-            isErrorAddress={isAmountError}
-            maxAmount={maxAmount}
-            setAddress={setAddress}
-            setAmount={setAmount}
-          />
-        )}
-        {to && (
-          <SendV2
-            to={to}
-            message={message}
-            setMessage={setMessage}
-            sendButton={sendButton}
-            amount={amount}
-            token={token}
-            blockchain={blockchain}
-            isAmountError={isAmountError}
-            isErrorAddress={isAmountError}
-            maxAmount={maxAmount}
-            setAddress={setAddress}
-            setAmount={setAmount}
-          />
-        )}
-        <ApproveTransactionDrawer
-          openDrawer={openDrawer}
-          setOpenDrawer={setOpenDrawer}
-        >
-          <SendConfirmComponent
-            onComplete={async (txSig) => {
-              if (
-                to?.uuid &&
-                to?.uuid !== uuid &&
-                friendship?.id &&
-                to?.uuid !== uuid &&
-                blockchain === Blockchain.SOLANA
-              ) {
-                // const client_generated_uuid = uuidv4();
-                // createEmptyFriendship(uuid, to?.uuid, {
-                //   last_message_sender: uuid,
-                //   last_message_timestamp: new Date().toISOString(),
-                //   last_message: message,
-                //   last_message_client_uuid: client_generated_uuid,
-                // });
-                //
-                // SignalingManager.getInstance().send({
-                //   type: "CHAT_MESSAGES",
-                //   payload: {
-                //     room: friendship?.id?.toString(),
-                //     type: "individual",
-                //     messages: [
-                //       {
-                //         client_generated_uuid: client_generated_uuid,
-                //         message,
-                //         message_kind: "transaction",
-                //         message_metadata: {
-                //           final_tx_signature: txSig,
-                //         },
-                //       },
-                //     ],
-                //   },
-                // });
-                // await navOuter.toRoot();
-                // await background.request({
-                //   method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-                //   params: [TAB_MESSAGES],
-                // });
-                // push({
-                //   title: `@${to?.username}`,
-                //   componentId: NAV_COMPONENT_MESSAGE_CHAT,
-                //   componentProps: {
-                //     userId: to?.uuid,
-                //     id: to?.uuid,
-                //     username: to?.username,
-                //   },
-                // });
-              }
-            }}
-            token={token}
-            destinationAddress={destinationAddress}
-            destinationUser={
-              to?.uuid && to?.username && to?.image
-                ? {
-                    username: to.username,
-                    image: to.image,
-                  }
-                : undefined
+      {!to ? (
+        <SendV1
+          address={address}
+          sendButton={sendButton}
+          amount={amount}
+          token={token}
+          blockchain={blockchain}
+          isAmountError={isAmountError}
+          isErrorAddress={isAmountError}
+          maxAmount={maxAmount}
+          setAddress={setAddress}
+          setAmount={setAmount}
+        />
+      ) : null}
+      {to ? (
+        <SendV2
+          to={to}
+          message={message}
+          setMessage={setMessage}
+          sendButton={sendButton}
+          amount={amount}
+          token={token}
+          blockchain={blockchain}
+          isAmountError={isAmountError}
+          isErrorAddress={isAmountError}
+          maxAmount={maxAmount}
+          setAddress={setAddress}
+          setAmount={setAmount}
+        />
+      ) : null}
+      <ApproveTransactionDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
+      >
+        <SendConfirmComponent
+          onComplete={async (txSig) => {
+            if (
+              to?.uuid &&
+              to?.uuid !== uuid &&
+              friendship?.id &&
+              to?.uuid !== uuid &&
+              blockchain === Blockchain.SOLANA
+            ) {
+              // const client_generated_uuid = uuidv4();
+              // createEmptyFriendship(uuid, to?.uuid, {
+              //   last_message_sender: uuid,
+              //   last_message_timestamp: new Date().toISOString(),
+              //   last_message: message,
+              //   last_message_client_uuid: client_generated_uuid,
+              // });
+              //
+              // SignalingManager.getInstance().send({
+              //   type: "CHAT_MESSAGES",
+              //   payload: {
+              //     room: friendship?.id?.toString(),
+              //     type: "individual",
+              //     messages: [
+              //       {
+              //         client_generated_uuid: client_generated_uuid,
+              //         message,
+              //         message_kind: "transaction",
+              //         message_metadata: {
+              //           final_tx_signature: txSig,
+              //         },
+              //       },
+              //     ],
+              //   },
+              // });
+              // await navOuter.toRoot();
+              // await background.request({
+              //   method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+              //   params: [TAB_MESSAGES],
+              // });
+              // push({
+              //   title: `@${to?.username}`,
+              //   componentId: NAV_COMPONENT_MESSAGE_CHAT,
+              //   componentProps: {
+              //     userId: to?.uuid,
+              //     id: to?.uuid,
+              //     username: to?.username,
+              //   },
+              // });
             }
-            amount={amount!}
-          />
-        </ApproveTransactionDrawer>
-      </>
+          }}
+          token={token}
+          destinationAddress={destinationAddress}
+          destinationUser={
+            to?.uuid && to?.username && to?.image
+              ? {
+                  username: to.username,
+                  image: to.image,
+                }
+              : undefined
+          }
+          amount={amount!}
+        />
+      </ApproveTransactionDrawer>
     </form>
   );
 }
@@ -438,8 +432,8 @@ function SendV1({
       <div className={classes.topHalf}>
         <div style={{ marginBottom: "40px" }}>
           <TextFieldLabel
-            leftLabel={"Send to"}
-            rightLabel={""}
+            leftLabel="Send to"
+            rightLabel=""
             style={{ marginLeft: "24px", marginRight: "24px" }}
           />
           <div style={{ margin: "0 12px" }}>
@@ -464,7 +458,7 @@ function SendV1({
         </div>
         <div>
           <TextFieldLabel
-            leftLabel={"Amount"}
+            leftLabel="Amount"
             rightLabel={`${token.displayBalance} ${token.ticker}`}
             rightLabelComponent={
               <MaxLabel
@@ -548,7 +542,7 @@ function SendV2({
             </div>
           </div>
           <div className={classes.horizontalCenter}>
-            {to.username && (
+            {to.username ? (
               <div
                 style={{
                   color: theme.custom.colors.fontColor,
@@ -558,7 +552,7 @@ function SendV2({
               >
                 @{`${to.username}`}
               </div>
-            )}
+            ) : null}
           </div>
           <div className={classes.horizontalCenter} style={{ marginTop: 4 }}>
             <WithCopyTooltip tooltipOpen={tooltipOpen}>
@@ -600,12 +594,21 @@ function SendV2({
                 fontFamily: theme.typography.fontFamily,
               }}
               value={_amount}
-              onChange={(e: any) => {
+              onChange={({
+                target: { value },
+              }: ChangeEvent<HTMLInputElement>) => {
                 try {
+                  const parsedVal =
+                    value.length === 1 && value[0] === "." ? "0." : value;
+
+                  _setAmount(parsedVal);
+
                   const num =
-                    e.target.value !== "" ? parseFloat(e.target.value) : 0.0;
+                    parsedVal === "" || parsedVal === "0."
+                      ? 0.0
+                      : parseFloat(parsedVal);
+
                   if (num >= 0) {
-                    _setAmount(e.target.value);
                     setAmount(
                       ethers.utils.parseUnits(num.toString(), token.decimals)
                     );
@@ -749,7 +752,7 @@ export function Sending({
           marginRight: "16px",
         }}
       >
-        {explorer && connectionUrl && (
+        {explorer && connectionUrl ? (
           <SecondaryButton
             onClick={() => {
               if (isComplete) {
@@ -761,7 +764,7 @@ export function Sending({
             }}
             label={isComplete ? "View Balances" : "View Explorer"}
           />
-        )}
+        ) : null}
       </div>
     </div>
   );
@@ -824,7 +827,7 @@ export function Error({
         >
           {error}
         </Typography>
-        {explorer && connectionUrl && signature && (
+        {explorer && connectionUrl && signature ? (
           <SecondaryButton
             style={{
               height: "40px",
@@ -833,7 +836,7 @@ export function Error({
             buttonLabelStyle={{
               fontSize: "14px",
             }}
-            label={"View Explorer"}
+            label="View Explorer"
             onClick={() =>
               window.open(
                 explorerUrl(explorer, signature, connectionUrl),
@@ -841,9 +844,9 @@ export function Error({
               )
             }
           />
-        )}
+        ) : null}
       </div>
-      <PrimaryButton label={"Retry"} onClick={() => onRetry()} />
+      <PrimaryButton label="Retry" onClick={() => onRetry()} />
     </div>
   );
 }

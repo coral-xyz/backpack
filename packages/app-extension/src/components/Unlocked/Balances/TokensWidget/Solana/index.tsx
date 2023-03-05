@@ -202,7 +202,7 @@ export function SendSolanaConfirmationCard({
       ) : cardType === "complete" ? (
         <Sending
           blockchain={Blockchain.SOLANA}
-          isComplete={true}
+          isComplete
           amount={amount}
           token={token}
           signature={txSignature!}
@@ -313,9 +313,7 @@ const ConfirmSendSolanaTable: React.FC<{
       onClick: () => {},
       detail: (
         <div style={{ display: "flex" }}>
-          {destinationUser && (
-            <UserIcon marginRight={5} image={destinationUser.image} size={24} />
-          )}
+          {destinationUser ? <UserIcon marginRight={5} image={destinationUser.image} size={24} /> : null}
           <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
         </div>
       ),

@@ -1,6 +1,7 @@
 import type { Blockchain } from "@coral-xyz/common";
 import { AVATAR_BASE_URL } from "@coral-xyz/common";
 import { Chain } from "@coral-xyz/zeus";
+import { v4 as uuidv4 } from "uuid";
 
 import { HASURA_URL, JWT } from "../config";
 
@@ -217,7 +218,6 @@ const transformUser = (
 export const createUser = async (
   username: string,
   blockchainPublicKeys: Array<{ blockchain: Blockchain; publicKey: string }>,
-  inviteCode?: string,
   waitlistId?: string | null,
   referrerId?: string
 ): Promise<{
@@ -225,6 +225,20 @@ export const createUser = async (
   username: string;
   public_keys: { blockchain: "solana" | "ethereum"; id: number }[];
 }> => {
+  const inviteCode = uuidv4();
+  await chain("mutation")({
+    insert_auth_invitations_one: [
+      {
+        object: {
+          id: inviteCode,
+        },
+      },
+      {
+        id: true,
+      },
+    ],
+  });
+
   const response = await chain("mutation")({
     insert_auth_users_one: [
       {

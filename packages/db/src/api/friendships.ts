@@ -80,6 +80,8 @@ export const createEmptyFriendship = async (
     last_message_timestamp?: string;
     last_message?: string;
     last_message_client_uuid?: string;
+    remoteUsername?: string;
+    id?: string;
   }
 ) => {
   const existingFriendship = await getFriendshipByUserId(uuid, remoteUserId);

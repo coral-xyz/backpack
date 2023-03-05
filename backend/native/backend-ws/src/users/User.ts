@@ -1,7 +1,14 @@
+import {
+  getChatFromClientGeneratedUuid,
+  validateMessageOwnership,
+  validateRoom,
+} from "@coral-xyz/backend-common";
 import type { FromServer, ToServer } from "@coral-xyz/common";
 import {
+  BACKPACK_TEAM,
   CHAT_MESSAGES,
   DEFAULT_GROUP_CHATS,
+  DELETE_MESSAGE,
   SUBSCRIBE,
   UNSUBSCRIBE,
   WHITELISTED_CHAT_COLLECTIONS,
@@ -10,7 +17,6 @@ import {
 import type { SubscriptionType } from "@coral-xyz/common/dist/esm/messages/toServer";
 import type WebSocket from "ws";
 
-import { validateRoom } from "@coral-xyz/backend-common";
 import {
   getNftCollections,
   validateCentralizedGroupOwnership,
@@ -97,6 +103,53 @@ export class User {
             m
           );
         });
+        break;
+      case DELETE_MESSAGE:
+        //TODO: merge the subscription section into a single fn
+        const subscription2 = this.subscriptions.find(
+          (x) =>
+            x.room === message.payload.room && x.type === message.payload.type
+        );
+        if (!subscription2) {
+          await this.validateOwnership(
+            message.payload.room,
+            message.payload.type,
+            message.payload.publicKey,
+            message.payload.mint
+          );
+          const updatedSubs = this.subscriptions.find(
+            (x) =>
+              x.room === message.payload.room && x.type === message.payload.type
+          );
+          if (!updatedSubs) {
+            console.log(
+              `User has not yet post subscribed to the room ${message.payload.room}`
+            );
+            return;
+          }
+        }
+
+        const messageDetails = await getChatFromClientGeneratedUuid(
+          message.payload.client_generated_uuid
+        );
+        if (
+          !messageDetails ||
+          !BACKPACK_TEAM.includes(
+            this.userId
+          ) /* messageDetails.uuid !== this.userId */
+        ) {
+          console.error(
+            `Someone sending errorneous input sending uuid ${messageDetails?.uuid} for ${message.payload.client_generated_uuid}`
+          );
+          return;
+        }
+        RedisSubscriptionManager.getInstance().deleteChatMessage(
+          this.id,
+          this.userId,
+          messageDetails.room,
+          messageDetails.type,
+          messageDetails.client_generated_uuid
+        );
         break;
       case SUBSCRIBE:
         if (

@@ -1,6 +1,8 @@
 import type { SubscriptionType } from "@coral-xyz/common";
-import {   AVATAR_BASE_URL,
-DEFAULT_GROUP_CHATS, parseMessage ,
+import {
+  AVATAR_BASE_URL,
+  DEFAULT_GROUP_CHATS,
+  parseMessage,
   WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
 
@@ -134,6 +136,8 @@ export const processMessage = async ({
       );
       return;
     }
+    // Not sending group messages for now
+    return;
     const uuids = await getAllUsersInCollection(room as string);
     uuids.map(async (uuid) => {
       await Redis.getInstance().send(

@@ -32,7 +32,7 @@ import {
 } from "../../db/users";
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
 import { logger } from "../../logger";
-import { validatePulicKey } from "../../validation/publicKey";
+import { validatePublicKey } from "../../validation/publicKey";
 import { validateSignature } from "../../validation/signature";
 import {
   BlockchainPublicKey,
@@ -50,8 +50,8 @@ router.get("/", extractUserId, async (req, res) => {
   // @ts-ignore
   const limit: number = req.query.limit ? parseInt(req.query.limit) : 20;
 
-  const isSolPublicKey = validatePulicKey(usernamePrefix, "solana");
-  const isEthPublicKey = validatePulicKey(usernamePrefix, "ethereum");
+  const isSolPublicKey = validatePublicKey(usernamePrefix, "solana");
+  const isEthPublicKey = validatePublicKey(usernamePrefix, "ethereum");
 
   let users;
   if (isSolPublicKey) {
@@ -115,7 +115,7 @@ router.get("/jwt/xnft", extractUserId, async (req, res) => {
  * Create a new user.
  */
 router.post("/", async (req, res) => {
-  const { username, inviteCode, waitlistId, blockchainPublicKeys } =
+  const { username, waitlistId, blockchainPublicKeys } =
     CreateUserWithPublicKeys.parse(req.body);
 
   // Validate all the signatures
@@ -178,7 +178,6 @@ router.post("/", async (req, res) => {
       // Cast blockchain to correct type
       blockchain: b.blockchain as Blockchain,
     })),
-    inviteCode,
     waitlistId,
     referrerId
   );
@@ -247,6 +246,29 @@ router.get("/me", extractUserId, async (req: Request, res: Response) => {
   return res.status(404).json({ msg: "User not found" });
 });
 
+router.get("/primarySolPubkey/:username", async (req, res) => {
+  const username = req.params.username;
+  try {
+    const user = await getUserByUsername(username);
+    if (!user) {
+      return res.status(411).json({ msg: "User not found" });
+    }
+    const pubKey = user.publicKeys.find(
+      (x) => x.blockchain === Blockchain.SOLANA && x.primary
+    );
+    if (!pubKey)
+      return res
+        .status(411)
+        .json({ msg: "No active pubkey on SOL for this user" });
+
+    return res.json({
+      publicKey: pubKey.publicKey,
+    });
+  } catch (e) {
+    return res.status(411).json({ msg: "User not found" });
+  }
+});
+
 /**
  * Returns the primary public keys of the user with `username`.
  */
@@ -256,7 +278,7 @@ router.get("/:username", async (req: Request, res: Response) => {
     const user = await getUserByUsername(username);
     return res.json({
       id: user.id,
-      publicKeys: user.publicKeys, // .filter((k) => k.primary),
+      publicKeys: user.publicKeys.filter((k) => k.primary),
     });
   } catch (error) {
     console.error(error);

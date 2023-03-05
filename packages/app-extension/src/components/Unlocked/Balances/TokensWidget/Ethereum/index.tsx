@@ -146,7 +146,7 @@ export function SendEthereumConfirmationCard({
       ) : cardType === "complete" ? (
         <Sending
           blockchain={Blockchain.ETHEREUM}
-          isComplete={true}
+          isComplete
           amount={amount}
           token={token}
           signature={txSignature!}
@@ -208,9 +208,7 @@ export function ConfirmSendEthereum({
       onClick: () => {},
       detail: (
         <div style={{ display: "flex" }}>
-          {destinationUser && (
-            <UserIcon marginRight={5} image={destinationUser.image} size={22} />
-          )}
+          {destinationUser ? <UserIcon marginRight={5} image={destinationUser.image} size={22} /> : null}
           <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
         </div>
       ),

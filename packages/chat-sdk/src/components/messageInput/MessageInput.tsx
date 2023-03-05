@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { RichMentionsContext, RichMentionsInput } from "react-rich-mentions";
 import { useUsersMetadata } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -14,21 +14,34 @@ const useStyles = styles(() => ({
   },
 }));
 
+const messageInputElementId = "backpack-message-input";
+
 export function MessageInput({
   setPluginMenuOpen,
+  autoFocus = true,
 }: {
   setPluginMenuOpen: any;
+  autoFocus?: boolean;
 }) {
-  const defaultValue = "";
   const classes = useStyles();
   const theme = useCustomTheme();
   const { type, remoteUsername, activeReply } = useChatContext();
   const { activeSearch } = useContext(RichMentionsContext);
 
+  useEffect(() => {
+    if (autoFocus) {
+      const messageElement = document.getElementById(messageInputElementId);
+
+      if (messageElement) {
+        messageElement.focus();
+      }
+    }
+  }, [autoFocus]);
+
   return (
     <div style={{ width: "100%", padding: 10 }}>
       <RichMentionsInput
-        id="message-input"
+        id={messageInputElementId}
         onKeyDown={(event) => {
           if (event.key === "Enter" && activeSearch) {
             event.stopPropagation();
@@ -48,7 +61,7 @@ export function MessageInput({
           color: theme.custom.colors.fontColor,
           fontSize: "14px",
         }}
-        defaultValue={defaultValue}
+        defaultValue=""
       />
     </div>
   );
@@ -63,6 +76,11 @@ export const CustomAutoComplete = () => {
   const shownResults = useMemo(() => results, [results]);
 
   const users = useUsersMetadata({ remoteUserIds: results.map((r) => r.id) });
+
+  // if there are no users to show in mentions
+  if (activeSearch && !loading && shownResults?.length === 0) {
+    return null;
+  }
 
   return (
     <div
@@ -125,9 +143,7 @@ export const CustomAutoComplete = () => {
           {" "}
           <CircularProgress size={20} />{" "}
         </div>
-      ) : (
-        <></>
-      )}
+      ) : null}
     </div>
   );
 };
