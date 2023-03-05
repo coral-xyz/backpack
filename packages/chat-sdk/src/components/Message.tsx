@@ -50,6 +50,7 @@ import {
 
 import { BarterModal } from "./barter/BarterModal";
 import { BarterPoke } from "./barter/BarterPoke";
+import { chatMessageInputId } from "./messageInput/MessageInput";
 import { useChatContext } from "./ChatContext";
 import { ReplyIcon } from "./Icons";
 import { MediaContent } from "./MediaContent";
@@ -537,7 +538,7 @@ export const MessageLine = (props) => {
                             parent_username: `@${props.username}`,
                             parent_message_author_uuid: props.userId,
                           });
-                          document.getElementById("message-input")?.focus();
+                          document.getElementById(chatMessageInputId)?.focus();
                         }}
                       >
                         <ReplyIcon fill={theme.custom.colors.icon} />
