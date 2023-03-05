@@ -87,7 +87,7 @@ function _Grid({
             alignItems: "center",
             cursor: "pointer",
             fontSize: "12px",
-            padding: "8px",
+            padding: "8px 8px 16px 8px",
             color: theme.custom.colors.fontColor,
           }}
           onClick={async (e: any) => {
