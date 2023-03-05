@@ -25,8 +25,8 @@ import {
 } from "@coral-xyz/react-common";
 import {
   appStoreMetaTags,
+  chatByNftId,
   collectibleXnft,
-  collectionChatWL,
   newAvatarAtom,
   nftById,
   useActiveWallet,
@@ -123,7 +123,9 @@ export function NftsDetail({
   nftId: string;
 }) {
   const theme = useCustomTheme();
-  const chatWL = useRecoilValue(collectionChatWL);
+  const whitelistedChatCollection = useRecoilValue(
+    chatByNftId({ publicKey, connectionUrl, nftId })
+  );
   const openChat = useOpenChat();
 
   const { contents, state } = useRecoilValueLoadable(
@@ -136,30 +138,10 @@ export function NftsDetail({
     )
   );
   const xnft = (xnftState === "hasValue" && xnftContents) || null;
-  const whitelistedChatCollection = chatWL.find(
-    (x) => x.collectionId === nft?.metadataCollectionId
-  );
   const [chatJoined, setChatJoined] = useState(false);
   const [joiningChat, setJoiningChat] = useState(false);
 
-  let whitelistedChatCollectionId = whitelistedChatCollection?.collectionId;
-
-  if (whitelistedChatCollection) {
-    Object.keys(whitelistedChatCollection?.attributeMapping || {}).forEach(
-      (attrName) => {
-        if (
-          !nft?.attributes?.find(
-            (x) =>
-              x.traitType === attrName &&
-              x.value ===
-                whitelistedChatCollection?.attributeMapping?.[attrName]
-          )
-        ) {
-          whitelistedChatCollectionId = "";
-        }
-      }
-    );
-  }
+  const whitelistedChatCollectionId = whitelistedChatCollection?.collectionId;
 
   // Hack: needed because this is undefined due to framer-motion animation.
   if (!nftId) {

@@ -22,7 +22,7 @@ import { useRecoilValue } from "recoil";
 import { Scrollbar } from "../../common/Layout/Scrollbar";
 import { _BalancesTableHead } from "../Balances/Balances";
 
-import { CollectionCard, NFTCard } from "./Common";
+import { CollectionCard, NFTCard } from "./Cards";
 
 type AllWalletCollections = Array<{
   publicKey: string;
@@ -353,6 +353,7 @@ function NftCollectionCard({
         length: collection.itemIds.length,
         name: collectionDisplayNft.collectionName,
       }}
+      showCollectionChat
     />
   );
 }

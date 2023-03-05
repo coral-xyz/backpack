@@ -11,13 +11,14 @@ import {
   UNKNOWN_NFT_ICON_SRC,
 } from "@coral-xyz/common";
 import {
-  GridIcon,
+  AppsColorIcon,
   MessageBubbleUnreadIcon,
   ProxyImage,
 } from "@coral-xyz/react-common";
 import {
+  chatByCollectionId,
+  chatByNftId,
   collectibleXnft,
-  collectionChatWL,
   nftsByIds,
   useActiveWallet,
   useBackgroundClient,
@@ -37,9 +38,9 @@ import {
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
 import { useOpenChat } from "./Detail";
-const useStyles = styles(() => ({
+const useStyles = styles((theme) => ({
   button: {
-    "&:hover": {
+    "&:hover .nftImage": {
       opacity: HOVER_OPACITY,
     },
   },
@@ -48,14 +49,14 @@ const useStyles = styles(() => ({
 export function NFTCard({
   nft,
   subtitle,
-  showChat,
+  showCollectionChat,
 }: {
-  nft: Nft | null;
+  nft: Nft;
   subtitle?: {
     length: number;
     name: string;
   };
-  showChat?: boolean;
+  showCollectionChat?: boolean;
 }) {
   const activeWallet = useActiveWallet();
   const connectionUrl = useBlockchainConnectionUrl(activeWallet.blockchain);
@@ -63,7 +64,16 @@ export function NFTCard({
   const theme = useCustomTheme();
   const { push } = useNavigation();
   const openPlugin = useOpenPlugin();
-  const chatWL = useRecoilValue(collectionChatWL);
+  const whitelistedNftChat = useRecoilValue(
+    chatByNftId({
+      publicKey: activeWallet.publicKey,
+      nftId: nft.id,
+      connectionUrl,
+    })
+  );
+  const whitelistedCollectionChat = useRecoilValue(
+    chatByCollectionId(nft.metadataCollectionId)
+  );
   const openChat = useOpenChat();
   const [joiningChat, setJoiningChat] = useState(false);
 
@@ -77,9 +87,9 @@ export function NFTCard({
     return null;
   }
 
-  const whitelistedChatCollection = chatWL.find(
-    (x) => x.collectionId === nft?.metadataCollectionId
-  );
+  const chat =
+    whitelistedNftChat ?? showCollectionChat ? whitelistedCollectionChat : null;
+
   const xnft = (state === "hasValue" && contents) || null;
 
   const onOpenXnft = (e: MouseEvent) => {
@@ -103,10 +113,9 @@ export function NFTCard({
 
   return (
     <div>
-      <Button
+      <div
         className={classes.button}
         onClick={xnft ? onOpenXnft : openDetails}
-        disableRipple
         style={{
           textTransform: "none",
           padding: 0,
@@ -122,6 +131,7 @@ export function NFTCard({
         }}
       >
         <ProxyImage
+          className="nftImage"
           style={{
             width: "100%",
           }}
@@ -149,25 +159,25 @@ export function NFTCard({
         >
           {xnft ? (
             <div
+              className="xnftIcon"
               style={{
                 background: theme.custom.colors.nav,
                 display: "flex",
                 alignItems: "center",
                 borderRadius: "50%",
-                padding: "6px",
+                padding: "5px",
               }}
             >
-              <GridIcon
+              <AppsColorIcon
                 style={{
                   width: "16px",
                   height: "16px",
                 }}
-                fill={theme.custom.colors.fontColor}
               />
             </div>
           ) : null}
         </div>
-      </Button>
+      </div>
       <div
         style={{
           padding: "0px",
@@ -213,7 +223,7 @@ export function NFTCard({
             </span>
           ) : null}
         </Typography>
-        {showChat && whitelistedChatCollection && nft.mint ? (
+        {chat && nft.mint ? (
           <div
             style={{
               height: "24px",
@@ -225,7 +235,7 @@ export function NFTCard({
             }}
             onClick={async (e: any) => {
               setJoiningChat(true);
-              await openChat(whitelistedChatCollection, nft.mint!);
+              await openChat(chat, nft.mint!);
               setJoiningChat(false);
               e.stopPropagation();
             }}
@@ -260,12 +270,13 @@ export function CollectionCard({ collection }: { collection: NftCollection }) {
   const activeWallet = useActiveWallet();
   const connectionUrl = useBlockchainConnectionUrl(activeWallet.blockchain);
   const classes = useStyles();
-  const theme = useCustomTheme();
   const { push } = useNavigation();
-  const chatWL = useRecoilValue(collectionChatWL);
+  const whitelistedChatCollection = useRecoilValue(
+    chatByCollectionId(collection.metadataCollectionId)
+  );
+  const theme = useCustomTheme();
   const openChat = useOpenChat();
   const [joiningChat, setJoiningChat] = useState(false);
-
   const collectionDisplayNftIds: {
     publicKey: string;
     nftId: string;
@@ -291,10 +302,6 @@ export function CollectionCard({ collection }: { collection: NftCollection }) {
     null,
   ];
   paddedCollectionDisplayNfts.length = 4;
-
-  const whitelistedChatCollection = chatWL.find(
-    (x) => x.collectionId === collection.metadataCollectionId
-  );
 
   if (!collectionDisplayNfts) {
     return null;

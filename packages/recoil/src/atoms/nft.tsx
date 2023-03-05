@@ -1,5 +1,6 @@
 import type { Nft, NftCollection } from "@coral-xyz/common";
 import {
+  BACKEND_API_URL,
   Blockchain,
   EnrichedNotification,
   fetchXnftsFromPubkey,
@@ -17,6 +18,7 @@ import { equalSelectorFamily } from "../equals";
 
 import { ethereumNftById, ethereumWalletCollections } from "./ethereum/nft";
 import { ethereumConnectionUrl } from "./ethereum";
+import { xnftJwt } from "./preferences";
 import {
   anchorContext,
   isOneLive,
@@ -160,7 +162,7 @@ export const collectionChatWL = selector<
     attributeMapping?: { [key: string]: string };
   }[]
 >({
-  key: "wlCollectionChat",
+  key: "collectionChatWL",
   get: async ({ get }: any) => {
     const onLive = get(isOneLive);
     return onLive.wlCollection &&
@@ -172,9 +174,111 @@ export const collectionChatWL = selector<
             name: "The Madlist",
             image: "https://www.madlads.com/mad_lads_logo.svg",
             collectionId: onLive.wlCollection,
-            attributeMapping: {} as any,
           },
         ]
       : WHITELISTED_CHAT_COLLECTIONS;
   },
+});
+
+export const chatByCollectionId = selectorFamily<
+  {
+    id: string;
+    name: string;
+    image: string;
+    collectionId: string;
+    attributeMapping?: { [key: string]: string };
+    memberCount: number;
+  } | null,
+  string | undefined
+>({
+  key: "chatByCollectionId",
+  get:
+    (metadataCollectionId) =>
+    async ({ get }: any) => {
+      if (!metadataCollectionId) {
+        return null;
+      }
+      const whitelistedChatCollections = get(collectionChatWL);
+
+      const whitelistedChatCollection = whitelistedChatCollections.find(
+        (x) => x.collectionId === metadataCollectionId && !x.attributeMapping
+      );
+      const chatInfo = whitelistedChatCollection ?? null;
+
+      if (!chatInfo) {
+        return null;
+      }
+
+      const response = await fetch(
+        `${BACKEND_API_URL}/nft/members?room=${
+          chatInfo.id
+        }&type=collection&limit=${0}`
+      );
+      const json = await response.json();
+      return { ...chatInfo, memberCount: json.count };
+    },
+});
+
+export const chatByNftId = selectorFamily<
+  {
+    id: string;
+    name: string;
+    image: string;
+    collectionId: string;
+    attributeMapping?: { [key: string]: string };
+    memberCount: number;
+  } | null,
+  { publicKey: string; connectionUrl: string; nftId: string }
+>({
+  key: "chatByNftId",
+  get:
+    (nftId) =>
+    async ({ get }: any) => {
+      const nft = get(nftById(nftId));
+
+      const whitelistedChatCollections = get(collectionChatWL);
+
+      const whitelistedChatCollection = whitelistedChatCollections.find((x) => {
+        if (
+          x.collectionId !== nft?.metadataCollectionId ||
+          !x.attributeMapping
+        ) {
+          return false;
+        }
+
+        const doesNOThaveAttributes = Object.keys(
+          x.attributeMapping || {}
+        ).find((attrName) => {
+          if (
+            !nft?.attributes?.find(
+              (y) =>
+                y.traitType === attrName &&
+                y.value === x?.attributeMapping?.[attrName]
+            )
+          ) {
+            return true;
+          }
+          return false;
+        });
+
+        if (doesNOThaveAttributes) {
+          return false;
+        }
+
+        return true;
+      });
+
+      if (!whitelistedChatCollection) {
+        return null;
+      }
+
+      const response = await fetch(
+        `${BACKEND_API_URL}/nft/members?room=${
+          whitelistedChatCollection.id
+        }&limit=${0}`
+      );
+      const json = await response.json();
+
+      return { ...whitelistedChatCollection, memberCount: json.count };
+    },
 });
