@@ -11,7 +11,6 @@ import {
 import type { TokenDataWithPrice } from "@coral-xyz/recoil";
 import {
   blockchainBalancesSorted,
-  nftsByIds,
   nftsByOwner,
   useActiveSolanaWallet,
   useLoader,

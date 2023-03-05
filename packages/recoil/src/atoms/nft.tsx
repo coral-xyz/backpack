@@ -3,6 +3,7 @@ import {
   Blockchain,
   EnrichedNotification,
   fetchXnftsFromPubkey,
+  WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
 import {
   selector,
@@ -18,6 +19,7 @@ import { ethereumNftById, ethereumWalletCollections } from "./ethereum/nft";
 import { ethereumConnectionUrl } from "./ethereum";
 import {
   anchorContext,
+  isOneLive,
   solanaConnectionUrl,
   solanaNftById,
   solanaWalletCollections,
@@ -113,7 +115,7 @@ export const nftsByOwner = selectorFamily<
 });
 
 export const nftsByIds = selectorFamily<
-  { nfts: Array<Nft> },
+  Array<Nft>,
   {
     nftIds: { nftId: string; publicKey: string }[];
     blockchain: Blockchain;
@@ -134,24 +136,45 @@ export const nftsByIds = selectorFamily<
           ? get(ethereumConnectionUrl)
           : get(solanaConnectionUrl);
 
-      try {
-        const allNfts = get(
-          waitForAll(
-            nftIds.map(({ nftId, publicKey }) => {
-              if (blockchain === Blockchain.SOLANA) {
-                return get(solanaNftById({ publicKey, connectionUrl, nftId }));
-              } else {
-                return get(
-                  ethereumNftById({ publicKey, connectionUrl, nftId })
-                );
-              }
-            })
-          )
-        );
-        return allNfts;
-      } catch (e) {
-        console.error(e);
-        return [];
-      }
+      const allNfts = get(
+        waitForAll(
+          nftIds.map(({ nftId, publicKey }) => {
+            if (blockchain === Blockchain.SOLANA) {
+              return solanaNftById({ publicKey, connectionUrl, nftId });
+            } else {
+              return ethereumNftById({ publicKey, connectionUrl, nftId });
+            }
+          })
+        )
+      );
+      return allNfts;
     },
+});
+
+export const collectionChatWL = selector<
+  {
+    id: string;
+    name: string;
+    image: string;
+    collectionId: string;
+    attributeMapping?: { [key: string]: string };
+  }[]
+>({
+  key: "wlCollectionChat",
+  get: async ({ get }: any) => {
+    const onLive = get(isOneLive);
+    return onLive.wlCollection &&
+      onLive.wlCollection !== "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tGs7vP6qczfj"
+      ? [
+          ...WHITELISTED_CHAT_COLLECTIONS,
+          {
+            id: onLive.wlCollection,
+            name: "The Madlist",
+            image: "https://www.madlads.com/mad_lads_logo.svg",
+            collectionId: onLive.wlCollection,
+            attributeMapping: {} as any,
+          },
+        ]
+      : WHITELISTED_CHAT_COLLECTIONS;
+  },
 });

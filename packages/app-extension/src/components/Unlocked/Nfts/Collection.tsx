@@ -8,7 +8,7 @@ import { Grid } from "@mui/material";
 import type { UnwrapRecoilValue } from "recoil";
 import { useRecoilValueLoadable } from "recoil";
 
-import { GridCard } from "./Common";
+import { NFTCard } from "./Common";
 
 export function NftsCollection({
   publicKey,
@@ -91,17 +91,5 @@ function NftCard({
   );
   const nft = (state === "hasValue" && contents) || null;
 
-  const { push } = useNavigation();
-  const onClick = () => {
-    push({
-      title: nft?.name || "",
-      componentId: NAV_COMPONENT_NFT_DETAIL,
-      componentProps: {
-        nftId,
-        publicKey,
-        connectionUrl,
-      },
-    });
-  };
-  return <GridCard onClick={onClick} nft={nft} />;
+  return <NFTCard nft={nft} />;
 }
