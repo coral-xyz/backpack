@@ -16,6 +16,7 @@ import { walletAddressDisplay } from "../../../../common";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
 import { TransactionData } from "../../../../common/TransactionData";
 import { Error, Sending } from "../Send";
+import { CopyableTypography } from "../../../../common/CopyableTypography";
 
 const logger = getLogger("send-ethereum-confirmation-card");
 const { base58: bs58 } = ethers.utils;
@@ -192,6 +193,10 @@ export function ConfirmSendEthereum({
 
   const { from, loading, transaction: transactionToSend } = transactionData;
 
+  const onCopy = async (text: string) => {
+    await navigator.clipboard.writeText(text);
+  }
+
   const menuItems = {
     From: {
       onClick: () => {},
@@ -199,7 +204,9 @@ export function ConfirmSendEthereum({
         <div style={{ display: "flex" }}>
           {" "}
           <UserIcon marginRight={5} image={avatarUrl} size={22} />{" "}
-          <Typography>{walletAddressDisplay(from)}</Typography>
+          <CopyableTypography onCopy={() => onCopy(from)}>
+            {walletAddressDisplay(from)}
+          </CopyableTypography>
         </div>
       ),
       button: false,
@@ -209,7 +216,9 @@ export function ConfirmSendEthereum({
       detail: (
         <div style={{ display: "flex" }}>
           {destinationUser ? <UserIcon marginRight={5} image={destinationUser.image} size={22} /> : null}
-          <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
+          <CopyableTypography onCopy={() => onCopy(destinationAddress)}>
+            {walletAddressDisplay(destinationAddress)}
+          </CopyableTypography>
         </div>
       ),
       button: false,

@@ -34,6 +34,7 @@ import { walletAddressDisplay } from "../../../../common";
 import { SettingsList } from "../../../../common/Settings/List";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
 import { Error, Sending } from "../Send";
+import { CopyableTypography } from "../../../../common/CopyableTypography";
 
 const logger = getLogger("send-solana-confirmation-card");
 
@@ -295,15 +296,19 @@ const ConfirmSendSolanaTable: React.FC<{
   const solanaCtx = useSolanaCtx();
   const avatarUrl = useAvatarUrl();
 
+  const onCopy = async (text: string) => {
+    await navigator.clipboard.writeText(text);
+  }
+
   const menuItems = {
     From: {
       onClick: () => {},
       detail: (
         <div style={{ display: "flex" }}>
           <UserIcon marginRight={5} image={avatarUrl} size={24} />
-          <Typography>
+          <CopyableTypography onCopy={() => onCopy(solanaCtx.walletPublicKey.toBase58())}>
             {walletAddressDisplay(solanaCtx.walletPublicKey)}
-          </Typography>
+          </CopyableTypography>
         </div>
       ),
       classes: { root: classes.confirmTableListItem },
@@ -314,7 +319,9 @@ const ConfirmSendSolanaTable: React.FC<{
       detail: (
         <div style={{ display: "flex" }}>
           {destinationUser ? <UserIcon marginRight={5} image={destinationUser.image} size={24} /> : null}
-          <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
+          <CopyableTypography onCopy={() => onCopy(destinationAddress)}>
+            {walletAddressDisplay(destinationAddress)}
+          </CopyableTypography>
         </div>
       ),
       classes: { root: classes.confirmTableListItem },
