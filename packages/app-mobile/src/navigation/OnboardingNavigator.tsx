@@ -1,3 +1,4 @@
+import { MyView } from "@coral-xyz/react-native-core";
 import type { Blockchain } from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 
@@ -210,6 +211,7 @@ function OnboardingCreateOrImportWalletScreen({
             alignItems: "center",
           }}
         >
+          <MyView />
           <PrimaryButton
             label="Create a new wallet"
             onPress={() => {

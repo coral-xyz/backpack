@@ -12,6 +12,7 @@
     "@coral-xyz/db": "*",
     "@coral-xyz/message-sdk": "*",
     "@coral-xyz/react-common": "*",
+    "@coral-xyz/react-native-core": "*",
     "@coral-xyz/recoil": "*",
     "@coral-xyz/themes": "*",
     "@emotion/react": "^11.10.6",
