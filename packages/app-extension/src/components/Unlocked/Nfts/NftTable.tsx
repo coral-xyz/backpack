@@ -24,7 +24,7 @@ import { _BalancesTableHead } from "../Balances/Balances";
 
 import { CollectionCard, NFTCard } from "./Cards";
 
-type AllWalletCollections = Array<{
+export type AllWalletCollections = Array<{
   publicKey: string;
   collections: null | Array<NftCollection>;
 }>;

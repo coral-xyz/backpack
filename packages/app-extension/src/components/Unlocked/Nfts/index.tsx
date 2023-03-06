@@ -16,7 +16,7 @@ import EntryONE from "./EntryONE";
 import { NftTable } from "./NftTable";
 
 export function Nfts() {
-  const isONELive = useRecoilValue(isOneLive);
+  const oneLive = useRecoilValue(isOneLive);
   const activeWallet = useActiveWallet();
   const wallets = useAllWalletsDisplayed();
   const _isAggregateWallets = useRecoilValue(isAggregateWallets);
@@ -28,8 +28,16 @@ export function Nfts() {
     return (
       <NftTable
         prependItems={
-          isONELive.isLive
-            ? [{ height: 129, key: "oneEntry", component: <EntryONE /> }]
+          oneLive.isLive
+            ? [
+                {
+                  height: 129,
+                  key: "oneEntry",
+                  component: (
+                    <EntryONE allWalletCollections={allWalletCollections} />
+                  ),
+                },
+              ]
             : []
         }
         blockchainCollections={
@@ -38,7 +46,7 @@ export function Nfts() {
         }
       />
     );
-  }, [isONELive, allWalletCollections]);
+  }, [oneLive, allWalletCollections]);
 
   const nftCount = allWalletCollections
     ? allWalletCollections
@@ -60,14 +68,16 @@ export function Nfts() {
     >
       {isEmpty ? (
         <>
-          {isONELive.isLive ? <EntryONE /> : null}
+          {oneLive.isLive ? (
+            <EntryONE allWalletCollections={allWalletCollections} />
+          ) : null}
           <EmptyState
             icon={(props: any) => <ImageIcon {...props} />}
             title="No NFTs"
             subtitle="Get started with your first NFT"
             buttonText="Browse Magic Eden"
             onClick={() => window.open("https://magiceden.io")}
-            verticallyCentered={!isONELive}
+            verticallyCentered={!oneLive}
             header={
               !_isAggregateWallets ? (
                 <_BalancesTableHead
@@ -79,7 +89,7 @@ export function Nfts() {
               ) : null
             }
             style={{
-              height: !isONELive.isLive ? "100%" : undefined,
+              height: !oneLive.isLive ? "100%" : undefined,
             }}
           />
         </>
