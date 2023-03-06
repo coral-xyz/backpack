@@ -1,5 +1,7 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
-import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
+import { TextInput } from "@coral-xyz/react-common";
+// @ts-ignore
+import { PrimaryButton } from "@coral-xyz/react-native-core";
 import { styles } from "@coral-xyz/themes";
 import { ArrowForward } from "@mui/icons-material";
 import { Box } from "@mui/material";

@@ -1,4 +1,5 @@
-import { PrimaryButton } from "@coral-xyz/react-common";
+// @ts-ignore
+import { PrimaryButton } from "@coral-xyz/react-native-core";
 import { Box } from "@mui/material";
 
 import { SubtextParagraph } from "../../common";
@@ -31,7 +32,7 @@ export const CreateOrImportWallet = ({
         <Box sx={{ mb: "16px" }}>
           <PrimaryButton
             label="Create a new wallet"
-            onClick={() => onNext("create")}
+            onPress={() => onNext("create")}
           />
         </Box>
         <SubtextParagraph onClick={() => onNext("import")}>

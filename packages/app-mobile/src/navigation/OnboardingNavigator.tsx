@@ -26,8 +26,6 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
-// @ts-ignore
-import { MyView } from "@coral-xyz/react-native-core";
 import {
   useBackgroundClient,
   OnboardingProvider,
@@ -212,7 +210,6 @@ function OnboardingCreateOrImportWalletScreen({
             alignItems: "center",
           }}
         >
-          <MyView />
           <PrimaryButton
             label="Create a new wallet"
             onPress={() => {
