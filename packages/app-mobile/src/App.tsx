@@ -213,25 +213,25 @@ function BackgroundHiddenWebView(): JSX.Element {
     <View style={styles.webview}>
       <WebView
         ref={ref}
-        // useWebView2
-        // originWhitelist={["*", "https://*", "https://backpack-api.xnfts.dev/*"]}
-        // cacheMode="LOAD_CACHE_ELSE_NETWORK"
-        // cacheEnabled
+          // useWebView2
+          // originWhitelist={["*", "https://*", "https://backpack-api.xnfts.dev/*"]}
+          // cacheMode="LOAD_CACHE_ELSE_NETWORK"
+          // cacheEnabled
         limitsNavigationsToAppBoundDomains
         source={{
-          uri: webViewUrl,
-        }}
+            uri: webViewUrl,
+          }}
         onMessage={(event) => {
-          const msg = JSON.parse(event.nativeEvent.data);
-          maybeParseLog(msg);
-          if (msg.type === BACKGROUND_SERVICE_WORKER_READY) {
-            // @ts-expect-error
-            setInjectJavaScript(ref.current?.injectJavaScript);
-          } else {
-            WEB_VIEW_EVENTS.emit("message", msg);
-          }
-        }}
-      />
+            const msg = JSON.parse(event.nativeEvent.data);
+            maybeParseLog(msg);
+            if (msg.type === BACKGROUND_SERVICE_WORKER_READY) {
+              // @ts-expect-error
+              setInjectJavaScript(ref.current?.injectJavaScript);
+            } else {
+              WEB_VIEW_EVENTS.emit("message", msg);
+            }
+          }}
+        />
     </View>
   );
 }

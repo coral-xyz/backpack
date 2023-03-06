@@ -1,4 +1,3 @@
-import { MyView } from "@coral-xyz/react-native-core";
 import type { Blockchain } from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 
@@ -27,6 +26,8 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
+// @ts-ignore
+import { MyView } from "@coral-xyz/react-native-core";
 import {
   useBackgroundClient,
   OnboardingProvider,

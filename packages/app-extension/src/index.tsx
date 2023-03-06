@@ -1,7 +1,10 @@
 import React, { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BACKPACK_FEATURE_POP_MODE, openPopupWindow } from "@coral-xyz/common";
+// @ts-ignore
+import { MyView } from "@coral-xyz/react-native-core";
 
+// import { MyView } from "./MyView";
 import "./index.css";
 
 const App = lazy(() => import("./app/App"));
@@ -35,6 +38,7 @@ const root = createRoot(container!);
 root.render(
   <>
     <Suspense fallback={null}>
+      <MyView />
       <App />
     </Suspense>
     <Suspense fallback={null}>

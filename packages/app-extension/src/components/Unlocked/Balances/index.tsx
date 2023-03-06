@@ -5,8 +5,6 @@ import {
   SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
-// @ts-ignore
-import { MyView } from "@coral-xyz/react-native-core";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import { useAllWalletsDisplayed, useNavigation } from "@coral-xyz/recoil";
 
@@ -50,7 +48,6 @@ export function Balances() {
       >
         <TransferWidget rampEnabled swapEnabled={swapEnabled} />
       </div>
-      <MyView />
       <TokenTables
         onClickRow={onClickTokenRow}
         customFilter={(token) => {
