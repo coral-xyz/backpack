@@ -40,7 +40,7 @@ import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 import { useOpenChat } from "./Detail";
 const useStyles = styles((theme) => ({
   button: {
-    "&:hover .nftImage": {
+    "&:hover": {
       opacity: HOVER_OPACITY,
     },
   },
@@ -113,9 +113,10 @@ export function NFTCard({
 
   return (
     <div>
-      <div
+      <Button
         className={classes.button}
         onClick={xnft ? onOpenXnft : openDetails}
+        disableRipple
         style={{
           textTransform: "none",
           padding: 0,
@@ -177,7 +178,7 @@ export function NFTCard({
             </div>
           ) : null}
         </div>
-      </div>
+      </Button>
       <div
         style={{
           padding: "0px",
