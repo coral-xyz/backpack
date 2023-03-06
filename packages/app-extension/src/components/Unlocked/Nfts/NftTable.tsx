@@ -22,7 +22,7 @@ import { useRecoilValue } from "recoil";
 import { Scrollbar } from "../../common/Layout/Scrollbar";
 import { _BalancesTableHead } from "../Balances/Balances";
 
-import { GridCard } from "./Common";
+import { CollectionCard, NFTCard } from "./Cards";
 
 type AllWalletCollections = Array<{
   publicKey: string;
@@ -185,7 +185,7 @@ const LoadingRow = function ({ itemsPerRow }: { itemsPerRow: number }) {
       <div
         style={{
           display: "flex",
-          padding: "6px",
+          padding: `6px 6px ${6 + 26}px 6px`,
           justifyContent: "space-evenly",
           flex: "0 0 auto",
         }}
@@ -196,7 +196,7 @@ const LoadingRow = function ({ itemsPerRow }: { itemsPerRow: number }) {
               style={{
                 position: "relative",
                 width: "153.5px",
-                height: "153.5px",
+                height: `${153.5}px`,
                 margin: "0px 6px",
                 borderRadius: "8px",
                 overflow: "hidden",
@@ -265,7 +265,7 @@ const ItemRow = function ({
               style={{
                 position: "relative",
                 width: "153.5px",
-                height: "153.5px",
+                height: `${153.5 + 26}px`,
                 overflow: "hidden",
                 margin: "0px 6px",
               }}
@@ -342,44 +342,18 @@ function NftCollectionCard({
     return null;
   }
 
-  const onClick = () => {
-    if (collection.itemIds.length === 1) {
-      if (!collectionDisplayNft.name || !collectionDisplayNft.id) {
-        throw new Error("invalid NFT data");
-      }
-      // If there is only one item in the collection, link straight to its detail page
-      push({
-        title: collectionDisplayNft.name || "",
-        componentId: NAV_COMPONENT_NFT_DETAIL,
-        componentProps: {
-          nftId: collectionDisplayNft.id,
-          publicKey,
-          connectionUrl,
-        },
-      });
-    } else {
-      // Multiple items in connection, display a grid
-      push({
-        title: collectionDisplayNft.collectionName,
-        componentId: NAV_COMPONENT_NFT_COLLECTION,
-        componentProps: {
-          id: collection.id,
-          publicKey,
-          connectionUrl,
-        },
-      });
-    }
-  };
+  if (collection.itemIds.length > 1) {
+    return <CollectionCard collection={collection} />;
+  }
 
   return (
-    <GridCard
-      metadataCollectionId={false}
-      onClick={onClick}
+    <NFTCard
       nft={collectionDisplayNft}
       subtitle={{
         length: collection.itemIds.length,
         name: collectionDisplayNft.collectionName,
       }}
+      showCollectionChat
     />
   );
 }
@@ -483,14 +457,14 @@ const getItemForIndex = (
 
   if (!collectionItems) {
     return {
-      height: 165.5,
+      height: 165.5 + 26,
       key: `loading${blockchainIndex}${itemsPerRow}`,
       component: <LoadingRow itemsPerRow={itemsPerRow} />,
     };
   }
 
   return {
-    height: 165.5,
+    height: 165.5 + 26,
     key: `items${blockchainIndex}${startIndex}${itemsPerRow}`,
     component: (
       <ItemRow

@@ -55,6 +55,7 @@ export function Nfts() {
         display: "flex",
         flexDirection: "column",
         height: "100%",
+        zIndex: 0,
       }}
     >
       {isEmpty ? (
@@ -68,12 +69,14 @@ export function Nfts() {
             onClick={() => window.open("https://magiceden.io")}
             verticallyCentered={!isONELive}
             header={
-              !_isAggregateWallets ? <_BalancesTableHead
-                blockchain={activeWallet.blockchain}
-                wallet={activeWallet}
-                showContent
-                setShowContent={() => {}}
-                /> : null
+              !_isAggregateWallets ? (
+                <_BalancesTableHead
+                  blockchain={activeWallet.blockchain}
+                  wallet={activeWallet}
+                  showContent
+                  setShowContent={() => {}}
+                />
+              ) : null
             }
             style={{
               height: !isONELive.isLive ? "100%" : undefined,

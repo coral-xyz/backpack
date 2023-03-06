@@ -1,10 +1,11 @@
 import { useContext, useEffect, useMemo } from "react";
 import { RichMentionsContext, RichMentionsInput } from "react-rich-mentions";
-import { useUsersMetadata } from "@coral-xyz/react-common";
+import { BackpackStaffIcon, useUsersMetadata } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CircularProgress } from "@mui/material";
 
 import { useChatContext } from "../ChatContext";
+import { BACKPACK_TEAM } from "@coral-xyz/common";
 
 const useStyles = styles(() => ({
   input: {
@@ -127,6 +128,7 @@ export const CustomAutoComplete = () => {
             src={users[item.id]?.image}
           />
           <div style={{ fontSize: 14 }}>@{item.name}</div>
+          {BACKPACK_TEAM.includes(item.id) ? <BackpackStaffIcon /> : null}
         </button>
       ))}
       {activeSearch !== "" &&
