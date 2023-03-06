@@ -14,7 +14,6 @@ import {
   toTitleCase,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
-  WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
 import { LocalImageManager, refreshGroups } from "@coral-xyz/db";
 import {
@@ -26,10 +25,11 @@ import {
 } from "@coral-xyz/react-common";
 import {
   appStoreMetaTags,
+  chatByNftId,
   collectibleXnft,
-  isOneLive,
   newAvatarAtom,
   nftById,
+  useActiveWallet,
   useAnchorContext,
   useBackgroundClient,
   useDecodedSearchParams,
@@ -74,6 +74,45 @@ import { SendSolanaConfirmationCard } from "../Balances/TokensWidget/Solana";
 
 const logger = getLogger("app-extension/nft-detail");
 
+export function useOpenChat() {
+  const { uuid } = useUser();
+  const activeWallet = useActiveWallet();
+  const background = useBackgroundClient();
+  const { push } = useNavigation();
+
+  return async (whitelistedChatCollection: any, mint: string) => {
+    await fetch(`${BACKEND_API_URL}/nft/bulk`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        publicKey: activeWallet.publicKey,
+        nfts: [
+          {
+            collectionId: whitelistedChatCollection?.collectionId,
+            nftId: mint,
+            centralizedGroup: whitelistedChatCollection?.id,
+          },
+        ],
+      }),
+    });
+    await refreshGroups(uuid);
+
+    await background.request({
+      method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+      params: [TAB_MESSAGES],
+    });
+    push({
+      title: whitelistedChatCollection?.name,
+      componentId: NAV_COMPONENT_MESSAGE_GROUP_CHAT,
+      componentProps: {
+        fromInbox: true,
+        id: whitelistedChatCollection?.id,
+        title: whitelistedChatCollection?.name,
+      },
+    });
+  };
+}
+
 export function NftsDetail({
   publicKey,
   connectionUrl,
@@ -84,23 +123,10 @@ export function NftsDetail({
   nftId: string;
 }) {
   const theme = useCustomTheme();
-  const background = useBackgroundClient();
-  const onLive = useRecoilValue(isOneLive);
-  const { uuid } = useUser();
-  const WHITELISTED_CHAT_COLLECTIONS_WITH_OVERRIDE =
-    onLive.wlCollection &&
-    onLive.wlCollection !== "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tGs7vP6qczfj"
-      ? [
-          ...WHITELISTED_CHAT_COLLECTIONS,
-          {
-            id: onLive.wlCollection,
-            name: "The Madlist",
-            image: "https://www.madlads.com/mad_lads_logo.svg",
-            collectionId: onLive.wlCollection,
-            attributeMapping: {} as any,
-          },
-        ]
-      : WHITELISTED_CHAT_COLLECTIONS;
+  const whitelistedChatCollection = useRecoilValue(
+    chatByNftId({ publicKey, connectionUrl, nftId })
+  );
+  const openChat = useOpenChat();
 
   const { contents, state } = useRecoilValueLoadable(
     nftById({ publicKey, connectionUrl, nftId })
@@ -112,33 +138,10 @@ export function NftsDetail({
     )
   );
   const xnft = (xnftState === "hasValue" && xnftContents) || null;
-  //@ts-ignore
-  const whitelistedChatCollection =
-    WHITELISTED_CHAT_COLLECTIONS_WITH_OVERRIDE.find(
-      (x) => x.collectionId === nft?.metadataCollectionId
-    );
   const [chatJoined, setChatJoined] = useState(false);
   const [joiningChat, setJoiningChat] = useState(false);
 
-  let whitelistedChatCollectionId = whitelistedChatCollection?.collectionId;
-  const { push } = useNavigation();
-
-  if (whitelistedChatCollection) {
-    Object.keys(whitelistedChatCollection?.attributeMapping || {}).forEach(
-      (attrName) => {
-        if (
-          !nft?.attributes?.find(
-            (x) =>
-              x.traitType === attrName &&
-              x.value ===
-                whitelistedChatCollection?.attributeMapping?.[attrName]
-          )
-        ) {
-          whitelistedChatCollectionId = "";
-        }
-      }
-    );
-  }
+  const whitelistedChatCollectionId = whitelistedChatCollection?.collectionId;
 
   // Hack: needed because this is undefined due to framer-motion animation.
   if (!nftId) {
@@ -179,35 +182,7 @@ export function NftsDetail({
             }
             onClick={async () => {
               setJoiningChat(true);
-              await fetch(`${BACKEND_API_URL}/nft/bulk`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  publicKey: publicKey,
-                  nfts: [
-                    {
-                      collectionId: whitelistedChatCollection?.collectionId,
-                      nftId: nft?.mint,
-                      centralizedGroup: whitelistedChatCollection?.id,
-                    },
-                  ],
-                }),
-              });
-              await refreshGroups(uuid);
-              setJoiningChat(false);
-              await background.request({
-                method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-                params: [TAB_MESSAGES],
-              });
-              push({
-                title: whitelistedChatCollection?.name,
-                componentId: NAV_COMPONENT_MESSAGE_GROUP_CHAT,
-                componentProps: {
-                  fromInbox: true,
-                  id: whitelistedChatCollection?.id,
-                  title: whitelistedChatCollection?.name,
-                },
-              });
+              await openChat(whitelistedChatCollection, nft.mint!);
               setChatJoined(true);
             }}
           />

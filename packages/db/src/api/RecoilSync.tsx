@@ -1,6 +1,7 @@
 import type { SubscriptionType } from "@coral-xyz/common";
 
 import { getDb } from "../db";
+import { bulkGetImages } from "../db/images";
 
 import { LocalImageManager } from "./LocalImageManager";
 import { refreshUsers } from "./users";
@@ -16,7 +17,7 @@ export class RecoilSync {
     return this.instance;
   }
 
-  getActiveChats(uuid: string) {
+  async getActiveChats(uuid: string) {
     return getDb(uuid)
       .inbox.where({ blocked: 0 })
       .filter(
@@ -49,8 +50,10 @@ export class RecoilSync {
       true
     );
 
+    const allImageData = await bulkGetImages("images");
+
     const sortedUsersMetadata = newUsersMetadata?.sort((a) => {
-      if (localStorage.getItem(`image-${a.image}`)) {
+      if (allImageData.includes(`image-${a.image}`)) {
         return 1;
       }
       return -1;

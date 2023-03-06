@@ -46,7 +46,7 @@ const swcLoaderConfiguration = {
   use: {
     loader: "swc-loader",
     options: {
-      parseMap: true, // required when using with babel-loader
+      // parseMap: true, // required when using with babel-loader
       env: {
         targets: require("./package.json").browserslist,
       },

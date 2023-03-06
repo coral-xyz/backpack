@@ -253,7 +253,7 @@ export const ChatRoom = ({
       if (chats.length === 0 && type === "individual") {
         // If it's the first time the user is interacting,
         // create an in memory friendship
-        createEmptyFriendship(uuid, remoteUserId || "", {
+        await createEmptyFriendship(uuid, remoteUserId || "", {
           last_message_sender: uuid,
           last_message_timestamp: new Date().toISOString(),
           last_message:
@@ -265,6 +265,11 @@ export const ChatRoom = ({
               ? "Media"
               : messageTxt,
           last_message_client_uuid: client_generated_uuid,
+          remoteUsername: remoteUsername,
+          id: roomId,
+        });
+        SignalingManager.getInstance().onUpdateRecoil({
+          type: "friendship",
         });
       }
       SignalingManager.getInstance()?.send({

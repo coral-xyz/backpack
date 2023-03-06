@@ -1,10 +1,11 @@
 import { useContext, useEffect, useMemo } from "react";
 import { RichMentionsContext, RichMentionsInput } from "react-rich-mentions";
-import { useUsersMetadata } from "@coral-xyz/react-common";
+import { BackpackStaffIcon, useUsersMetadata } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CircularProgress } from "@mui/material";
 
 import { useChatContext } from "../ChatContext";
+import { BACKPACK_TEAM } from "@coral-xyz/common";
 
 const useStyles = styles(() => ({
   input: {
@@ -14,7 +15,7 @@ const useStyles = styles(() => ({
   },
 }));
 
-const messageInputElementId = "backpack-message-input";
+export const chatMessageInputId = "backpack-message-input";
 
 export function MessageInput({
   setPluginMenuOpen,
@@ -30,7 +31,7 @@ export function MessageInput({
 
   useEffect(() => {
     if (autoFocus) {
-      const messageElement = document.getElementById(messageInputElementId);
+      const messageElement = document.getElementById(chatMessageInputId);
 
       if (messageElement) {
         messageElement.focus();
@@ -41,7 +42,7 @@ export function MessageInput({
   return (
     <div style={{ width: "100%", padding: 10 }}>
       <RichMentionsInput
-        id={messageInputElementId}
+        id={chatMessageInputId}
         onKeyDown={(event) => {
           if (event.key === "Enter" && activeSearch) {
             event.stopPropagation();
@@ -60,6 +61,7 @@ export function MessageInput({
           outline: "0px solid transparent",
           color: theme.custom.colors.fontColor,
           fontSize: "14px",
+          wordBreak: "break-word",
         }}
         defaultValue=""
       />
@@ -126,6 +128,7 @@ export const CustomAutoComplete = () => {
             src={users[item.id]?.image}
           />
           <div style={{ fontSize: 14 }}>@{item.name}</div>
+          {BACKPACK_TEAM.includes(item.id) ? <BackpackStaffIcon /> : null}
         </button>
       ))}
       {activeSearch !== "" &&

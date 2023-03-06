@@ -111,3 +111,26 @@ export function toDisplayBalance(
 
   return ethers.utils.commify(displayBalance);
 }
+
+export function reverseScientificNotation(n: number): string {
+  const str = n.toString();
+  if (!str.includes("e")) {
+    return str;
+  }
+
+  const [base, exp] = str.split("e");
+  const decimals = parseInt(exp);
+
+  if (decimals < 0) {
+    const sign = base[0] === "-" ? "-" : "";
+    return `${sign}0.${Array(Math.abs(decimals) - 1)
+      .fill("0")
+      .join("")}${base.replace(/[-.]/g, "")}`;
+  }
+
+  const baseSplit = base.split(".");
+  const baseDecimals = baseSplit.length === 1 ? 0 : baseSplit[1].length;
+  return `${base.replace(".", "")}${Array(decimals - baseDecimals)
+    .fill("0")
+    .join("")}`;
+}
