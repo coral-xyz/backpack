@@ -14,7 +14,7 @@ const useStyles = styles(() => ({
   },
 }));
 
-const messageInputElementId = "backpack-message-input";
+export const chatMessageInputId = "backpack-message-input";
 
 export function MessageInput({
   setPluginMenuOpen,
@@ -30,7 +30,7 @@ export function MessageInput({
 
   useEffect(() => {
     if (autoFocus) {
-      const messageElement = document.getElementById(messageInputElementId);
+      const messageElement = document.getElementById(chatMessageInputId);
 
       if (messageElement) {
         messageElement.focus();
@@ -41,7 +41,7 @@ export function MessageInput({
   return (
     <div style={{ width: "100%", padding: 10 }}>
       <RichMentionsInput
-        id={messageInputElementId}
+        id={chatMessageInputId}
         onKeyDown={(event) => {
           if (event.key === "Enter" && activeSearch) {
             event.stopPropagation();
