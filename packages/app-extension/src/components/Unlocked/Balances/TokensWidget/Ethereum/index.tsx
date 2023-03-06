@@ -1,7 +1,10 @@
+// TODO: remove the following line
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { Blockchain, Ethereum, getLogger } from "@coral-xyz/common";
 import { PrimaryButton, UserIcon } from "@coral-xyz/react-common";
 import {
+  useAuthenticatedUser,
   useAvatarUrl,
   useEthereumCtx,
   useTransactionData,
@@ -13,6 +16,7 @@ import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 
 import { walletAddressDisplay } from "../../../../common";
+import { CopyablePublicKey } from "../../../../common/CopyablePublicKey";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
 import { TransactionData } from "../../../../common/TransactionData";
 import { Error, Sending } from "../Send";
@@ -119,7 +123,7 @@ export function SendEthereumConfirmationCard({
 
   if (!transaction) {
     // TODO loader
-    return <></>;
+    return null;
   }
 
   const retry = () => onConfirm(transaction);
@@ -189,6 +193,7 @@ export function ConfirmSendEthereum({
     bs58.encode(ethers.utils.serializeTransaction(transaction))
   );
   const avatarUrl = useAvatarUrl();
+  const user = useAuthenticatedUser();
 
   const { from, loading, transaction: transactionToSend } = transactionData;
 
@@ -196,10 +201,12 @@ export function ConfirmSendEthereum({
     From: {
       onClick: () => {},
       detail: (
-        <div style={{ display: "flex" }}>
-          {" "}
-          <UserIcon marginRight={5} image={avatarUrl} size={22} />{" "}
-          <Typography>{walletAddressDisplay(from)}</Typography>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <UserIcon marginRight={5} image={avatarUrl} size={24} />
+          <Typography variant="body2" style={{ marginRight: 5 }}>
+            @{user?.username}
+          </Typography>
+          <CopyablePublicKey publicKey={from} />
         </div>
       ),
       button: false,
@@ -207,9 +214,22 @@ export function ConfirmSendEthereum({
     To: {
       onClick: () => {},
       detail: (
-        <div style={{ display: "flex" }}>
-          {destinationUser ? <UserIcon marginRight={5} image={destinationUser.image} size={22} /> : null}
-          <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {destinationUser ? (
+            <>
+              <UserIcon
+                marginRight={5}
+                image={destinationUser.image}
+                size={24}
+              />
+              <Typography variant="body2" style={{ marginRight: 5 }}>
+                @{destinationUser.username}
+              </Typography>
+              <CopyablePublicKey publicKey={destinationAddress} />
+            </>
+          ) : (
+            <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
+          )}
         </div>
       ),
       button: false,

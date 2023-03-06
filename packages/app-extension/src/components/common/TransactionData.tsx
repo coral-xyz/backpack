@@ -1,3 +1,5 @@
+// TODO: remove the following line
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from "react";
 import {
   PrimaryButton,
@@ -244,7 +246,7 @@ export function TransactionData({
         menuItems={{ ...menuItems, ...defaultMenuItems }}
         style={{
           margin: 0,
-          overflowY: "scroll",
+          overflowY: "auto",
           maxHeight: "40vh",
         }}
         textStyle={{
