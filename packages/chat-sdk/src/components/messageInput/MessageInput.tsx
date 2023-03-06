@@ -60,6 +60,7 @@ export function MessageInput({
           outline: "0px solid transparent",
           color: theme.custom.colors.fontColor,
           fontSize: "14px",
+          wordBreak: "break-word",
         }}
         defaultValue=""
       />
