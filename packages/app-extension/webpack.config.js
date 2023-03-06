@@ -188,10 +188,10 @@ const options = {
       "react-native$": "react-native-web",
     },
     extensions: [
-      ".web.tsx",
       ".web.js",
-      ".web.ts",
       ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
       ...fileExtensions.map((e) => `.${e}`),
       ...[".js", ".jsx", ".ts", ".tsx", ".css"],
     ],
