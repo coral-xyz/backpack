@@ -18,6 +18,7 @@
     "@cardinal/token-manager": "^1.7.9",
     "@coral-xyz/common": "*",
     "@coral-xyz/recoil": "*",
+    "@coral-xyz/react-native-core": "*",
     "@ethersproject/shims": "^5.7.0",
     "@expo/react-native-action-sheet": "^4.0.1",
     "@expo/vector-icons": "^13.0.0",

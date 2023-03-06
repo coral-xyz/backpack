@@ -10,8 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "@coral-xyz/common": "*",
-    "@coral-xyz/recoil": "*",
     "@coral-xyz/db": "*",
+    "@coral-xyz/recoil": "*",
     "@coral-xyz/themes": "*",
     "@mui/icons-material": "^5.10.14",
     "@mui/material": "^5.10.14",

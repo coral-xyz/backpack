@@ -215,8 +215,8 @@ function BackgroundHiddenWebView(): JSX.Element {
         ref={ref}
         // useWebView2
         // originWhitelist={["*", "https://*", "https://backpack-api.xnfts.dev/*"]}
-        // cacheMode="LOAD_CACHE_ELSE_NETWORK"
-        // cacheEnabled
+        cacheMode="LOAD_CACHE_ELSE_NETWORK"
+        cacheEnabled
         limitsNavigationsToAppBoundDomains
         source={{
           uri: webViewUrl,
