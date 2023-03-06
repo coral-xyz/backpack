@@ -12,6 +12,7 @@ const fs = require("fs");
 const EXTENSION_NAME =
   process.env.NODE_ENV === "development" ? "(DEV) Backpack" : "Backpack";
 
+const isDevelopment = process.env.NODE_ENV === "development";
 const appDirectory = path.resolve(__dirname);
 
 // This is needed for webpack to compile JavaScript.
@@ -23,7 +24,7 @@ const babelLoaderConfiguration = {
   test: /\.js$/,
   // Add every directory that needs to be compiled by Babel during the build.
   include: [
-    path.resolve(appDirectory, "index.web.js"),
+    // path.resolve(appDirectory, "index.web.js"),
     // path.resolve(appDirectory, "src"),
     path.resolve(appDirectory, "node_modules/react-native-uncompiled"),
   ],
@@ -43,12 +44,13 @@ const swcLoaderConfiguration = {
   test: [".jsx", ".js", ".tsx", ".ts"].map((ext) => new RegExp(`${ext}$`)),
   exclude: /node_modules/,
   use: {
-    loader: require.resolve("swc-loader"),
+    loader: "swc-loader",
     options: {
+      parseMap: true, // required when using with babel-loader
       env: {
         targets: require("./package.json").browserslist,
       },
-      sourceMap: process.env.NODE_ENV === "development",
+      sourceMap: isDevelopment,
       jsc: {
         target: "es2022",
         parser: {
@@ -58,8 +60,8 @@ const swcLoaderConfiguration = {
         },
         transform: {
           react: {
-            development: process.env.NODE_ENV === "development",
-            refresh: process.env.NODE_ENV === "development",
+            development: isDevelopment,
+            refresh: isDevelopment,
           },
         },
       },
@@ -84,7 +86,7 @@ const {
   dir,
   plugins = [],
   ...extras
-} = process.env.NODE_ENV === "development"
+} = isDevelopment
   ? {
       dir: "dev",
       devServer: {
@@ -187,6 +189,7 @@ const options = {
     alias: {
       "react-native$": "react-native-web",
     },
+    // Add support for web-based extensions so we can share code between mobile/extension
     extensions: [
       ".web.js",
       ".web.jsx",
