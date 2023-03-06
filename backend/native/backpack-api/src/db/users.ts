@@ -55,19 +55,82 @@ export const getUsers = async (
       {
         id: true,
         username: true,
-        public_keys: [
-          {},
-          {
-            blockchain: true,
-            id: true,
-            public_key: true,
-            user_active_publickey_mappings: [{}, { user_id: true }],
-          },
-        ],
       },
     ],
   });
-  return transformUsers(response.auth_users, true);
+  const publicKeysResponse = await chain("query")({
+    auth_public_keys: [
+      {
+        where: { user: { id: { _in: userIds } } },
+      },
+      {
+        public_key: true,
+        id: true,
+        blockchain: true,
+        user_id: true,
+      },
+    ],
+  });
+  const userToPublicKeyResponse = await chain("query")({
+    auth_user_active_publickey_mapping: [
+      {
+        where: {
+          user_id: {
+            _in: userIds,
+          },
+        },
+      },
+      {
+        user_id: true,
+        public_key_id: true,
+      },
+    ],
+  });
+  const publicKeyMapping: { [public_key_id: string]: true } = {};
+  const userToPublicKeyMapping: {
+    [user_id: string]: {
+      public_key: string;
+      id: number;
+      blockchain: string;
+    }[];
+  } = {};
+
+  userToPublicKeyResponse.auth_user_active_publickey_mapping.map((x) => {
+    publicKeyMapping[x.public_key_id] = true;
+  });
+
+  publicKeysResponse.auth_public_keys.map((x) => {
+    //@ts-ignore
+    const userId: string = x.user_id;
+    if (!userToPublicKeyMapping[userId]) {
+      userToPublicKeyMapping[userId] = [];
+    }
+    userToPublicKeyMapping[userId].push({
+      public_key: x.public_key,
+      blockchain: x.blockchain,
+      id: x.id,
+    });
+  });
+
+  const transformUserResponseInput = response.auth_users.map(
+    (userResponse) => ({
+      id: userResponse.id,
+      username: userResponse.username,
+      public_keys:
+        userToPublicKeyMapping[userResponse.id as string].map((x) => ({
+          blockchain: x.blockchain,
+          public_key: x.public_key,
+          user_active_publickey_mappings: publicKeyMapping[x.id]
+            ? [
+                {
+                  user_id: userResponse.id as string,
+                },
+              ]
+            : undefined,
+        })) || [],
+    })
+  );
+  return transformUsers(transformUserResponseInput, true);
 };
 
 /**
