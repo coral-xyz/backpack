@@ -1,8 +1,8 @@
-import React from "react";
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTheme } from "../hooks/useTheme";
+// @ts-expect-error
+import { HOVER_OPACITY, useTheme } from "../hooks/useTheme";
 export function Margin({
   bottom,
   top,
@@ -76,13 +76,15 @@ export function BaseButton({
     <Pressable
       disabled={disabled}
       onPress={onPress}
-      style={[
-        baseButtonStyles.button,
-        {
-          opacity: disabled ? 0.7 : 1,
-        },
-        buttonStyle,
-      ]}
+      style={({ hovered }: any) => {
+        return [
+          baseButtonStyles.button,
+          {
+            opacity: hovered ? HOVER_OPACITY : disabled ? 0.7 : 1,
+          },
+          buttonStyle,
+        ];
+      }}
       {...props}
     >
       <Text
@@ -103,6 +105,7 @@ export function BaseButton({
 
 const baseButtonStyles = StyleSheet.create({
   button: {
+    userSelect: "none",
     height: 48,
     paddingHorizontal: 12,
     borderRadius: 12,
@@ -148,12 +151,14 @@ export function LinkButton({
 export function PrimaryButton({
   label,
   onPress,
+  onClick,
   disabled,
   loading,
   ...props
 }: {
   label: string;
   onPress?: () => void;
+  onClick?: () => void;
   disabled?: boolean;
   loading?: boolean;
 }) {
@@ -161,7 +166,7 @@ export function PrimaryButton({
   return (
     <BaseButton
       label={label}
-      onPress={onPress}
+      onPress={onClick || onPress}
       disabled={disabled}
       loading={loading}
       buttonStyle={{ backgroundColor: theme.custom.colors.primaryButton }}

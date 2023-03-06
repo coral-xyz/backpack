@@ -4,7 +4,7 @@
   "description": "react native core components",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
-  "types": "lib/typescript/src/index.d.ts",
+  "types": "lib/typescript/index.d.ts",
   "react-native": "src/index.tsx",
   "source": "src/index.tsx",
   "files": [
@@ -32,34 +32,21 @@
     "url": "https://github.com/coral-xyz/backpack/issues"
   },
   "homepage": "https://github.com/coral-xyz/backpack#readme",
-  "dependencies": {},
+  "dependencies": {
+    "@coral-xyz/recoil": "*"
+  },
   "devDependencies": {
+    "@types/react": "^18.0.28",
+    "@types/react-native": "~0.70.6",
     "react-native-builder-bob": "^0.20.4"
   },
   "react-native-builder-bob": {
-    "declarationMap": false,
     "source": "src",
     "output": "lib",
     "targets": [
-      [
-        "commonjs",
-        {
-          "sourceMaps": false
-        }
-      ],
-      [
-        "module",
-        {
-          "sourceMaps": false
-        }
-      ],
-      [
-        "typescript",
-        {
-          "project": "tsconfig.build.json",
-          "tsc": "../../node_modules/typescript/bin/tsc"
-        }
-      ]
+      "commonjs",
+      "module",
+      "typescript"
     ]
   }
 }
