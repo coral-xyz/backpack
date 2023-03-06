@@ -42,7 +42,7 @@ export function AvatarPopoverButton({
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const [anchorEl, setAnchorEl] = useState<any | null>(null);
+  const [anchorEl, setAnchorEl] = useState<any | undefined>(undefined);
   const avatarUrl = useAvatarUrl(32);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { isXs } = useBreakpoints();
@@ -78,7 +78,7 @@ export function AvatarPopoverButton({
       <Popover
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
-        onClose={() => setAnchorEl(false)}
+        onClose={() => setAnchorEl(undefined)}
         anchorOrigin={{
           vertical: isXs ? "bottom" : "top",
           horizontal: "left",
@@ -101,7 +101,7 @@ export function AvatarPopoverButton({
         transitionDuration={0}
       >
         <PopoverProvider
-          close={() => setAnchorEl(null)}
+          close={() => setAnchorEl(undefined)}
           openSettings={() => setSettingsOpen(true)}
         >
           <AvatarMenu />
@@ -349,22 +349,24 @@ function UserMenuItem({ user, onClick }: { user: any; onClick: () => void }) {
             @{user.username}
           </Typography>
         </div>
-        {isCurrentUser ? <div
-          style={{
+        {isCurrentUser ? (
+          <div
+            style={{
               display: "flex",
               justifyContent: "center",
               flexDirection: "column",
             }}
           >
-          <Check
-            style={{
+            <Check
+              style={{
                 width: "20px",
                 height: "20px",
                 opacity: 0.8,
                 color: theme.custom.colors.fontColor,
               }}
             />
-        </div> : null}
+          </div>
+        ) : null}
       </div>
     </MenuListItem>
   );
