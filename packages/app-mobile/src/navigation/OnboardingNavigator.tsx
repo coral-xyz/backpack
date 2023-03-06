@@ -13,6 +13,7 @@ import {
   DevSettings,
   StyleProp,
   ViewStyle,
+  Alert,
 } from "react-native";
 
 import * as Linking from "expo-linking";
@@ -453,7 +454,12 @@ function OnboardingMnemonicInputScreen({
           ) : (
             <PasteButton
               onPaste={(words) => {
-                setMnemonicWords(words.split(" "));
+                const split = words.split(" ");
+                if ([12, 24].includes(split.length)) {
+                  setMnemonicWords(words.split(" "));
+                } else {
+                  Alert.alert("Mnemonic should be either 12 or 24 words");
+                }
               }}
             />
           )}
