@@ -13,6 +13,31 @@ const chain = Chain(HASURA_URL, {
   },
 });
 
+export const getUsersMetadata = async (
+  userIds: string[]
+): Promise<
+  {
+    username: unknown;
+    id: unknown;
+  }[]
+> => {
+  const response = await chain("query")({
+    auth_users: [
+      {
+        where: { id: { _in: userIds } },
+      },
+      {
+        id: true,
+        username: true,
+      },
+    ],
+  });
+  return response.auth_users.map((x) => ({
+    username: x.username,
+    id: x.id,
+  }));
+};
+
 export const getUsers = async (
   userIds: string[]
 ): Promise<

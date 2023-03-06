@@ -28,6 +28,7 @@ import {
   getUsers,
   getUsersByPrefix,
   getUsersByPublicKeys,
+  getUsersMetadata,
   updateUserAvatar,
 } from "../../db/users";
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
@@ -366,7 +367,7 @@ router.post("/avatar", extractUserId, async (req: Request, res: Response) => {
 });
 
 router.post("/metadata", async (req: Request, res: Response) => {
-  const users = await getUsers(req.body.uuids);
+  const users = await getUsersMetadata(req.body.uuids);
   return res.json({
     users: (users || []).map((user) => ({
       uuid: user.id,
