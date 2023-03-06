@@ -60,6 +60,14 @@
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
     "lint:fix": "yarn run lint --fix"
   },
+  "bundlewatch": {
+    "files": [
+      {
+        "path": "build/*.js",
+        "maxSize": "5mb"
+      }
+    ]
+  },
   "browserslist": "last 2 chrome versions",
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.10",
@@ -76,6 +84,7 @@
     "@types/react-window": "^1.8.5",
     "babel-loader": "^9.1.2",
     "babel-plugin-react-native-web": "^0.18.12",
+    "bundlewatch": "^0.3.3",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "cross-env": "^7.0.3",
