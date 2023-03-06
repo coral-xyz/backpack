@@ -1,9 +1,12 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { isOneLive, useOpenPlugin } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
+import { CollectionsTwoTone } from "@mui/icons-material";
 import { Skeleton } from "@mui/material";
 import Card from "@mui/material/Card";
 import { useRecoilValue } from "recoil";
+
+import type { AllWalletCollections } from "./NftTable";
 
 const useStyles = styles((theme) => ({
   blockchainCard: {
@@ -67,10 +70,14 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export default function EntryONE() {
+export default function EntryONE({
+  allWalletCollections,
+}: {
+  allWalletCollections: AllWalletCollections | null;
+}) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const ref = useRef<HTMLImageElement>(null);
-  const isONELive = useRecoilValue(isOneLive);
+  const oneLive = useRecoilValue(isOneLive);
   const classes = useStyles();
   const openPlugin = useOpenPlugin();
 
@@ -94,8 +101,20 @@ export default function EntryONE() {
 
   const isLoading = false || !imageLoaded;
 
+  const hasNft = !!allWalletCollections?.find((wallet) => {
+    return !!wallet.collections?.find((collection) => {
+      return (
+        collection.metadataCollectionId === oneLive.madCollection &&
+        collection.itemIds.length > 0
+      );
+    });
+  });
+
+  const banner =
+    hasNft && oneLive.byeBanner ? oneLive.byeBanner : oneLive.banner;
+
   const openXNFT = () => {
-    if (isONELive.isLive) {
+    if (oneLive.isLive) {
       openPlugin("CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8");
     }
   };
@@ -113,15 +132,11 @@ export default function EntryONE() {
         <div
           className={`${classes.image}`}
           style={{
-            backgroundImage: `url(${isONELive.banner})`,
+            backgroundImage: `url(${banner})`,
           }}
         />
       </div>
-      <img
-        ref={ref}
-        className={classes.visuallyHidden}
-        src={isONELive.banner}
-      />
+      <img ref={ref} className={classes.visuallyHidden} src={banner} />
     </Card>
   );
 }
