@@ -10,8 +10,9 @@ import {
   SOL_NATIVE_MINT,
   Solana,
 } from "@coral-xyz/common";
-import { LocalImage, PrimaryButton, UserIcon } from "@coral-xyz/react-common";
+import { PrimaryButton, UserIcon } from "@coral-xyz/react-common";
 import {
+  useAuthenticatedUser,
   useAvatarUrl,
   useSolanaCtx,
   useSolanaTokenMint,
@@ -31,6 +32,7 @@ import { PublicKey } from "@solana/web3.js";
 import type { BigNumber } from "ethers";
 
 import { walletAddressDisplay } from "../../../../common";
+import { CopyablePublicKey } from "../../../../common/CopyablePublicKey";
 import { SettingsList } from "../../../../common/Settings/List";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
 import { Error, Sending } from "../Send";
@@ -294,16 +296,18 @@ const ConfirmSendSolanaTable: React.FC<{
   const classes = useStyles();
   const solanaCtx = useSolanaCtx();
   const avatarUrl = useAvatarUrl();
+  const user = useAuthenticatedUser();
 
   const menuItems = {
     From: {
       onClick: () => {},
       detail: (
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
           <UserIcon marginRight={5} image={avatarUrl} size={24} />
-          <Typography>
-            {walletAddressDisplay(solanaCtx.walletPublicKey)}
+          <Typography variant="body2" style={{ marginRight: 5 }}>
+            @{user?.username}
           </Typography>
+          <CopyablePublicKey publicKey={solanaCtx.walletPublicKey} />
         </div>
       ),
       classes: { root: classes.confirmTableListItem },
@@ -312,9 +316,22 @@ const ConfirmSendSolanaTable: React.FC<{
     To: {
       onClick: () => {},
       detail: (
-        <div style={{ display: "flex" }}>
-          {destinationUser ? <UserIcon marginRight={5} image={destinationUser.image} size={24} /> : null}
-          <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {destinationUser ? (
+            <>
+              <UserIcon
+                marginRight={5}
+                image={destinationUser.image}
+                size={24}
+              />
+              <Typography variant="body2" style={{ marginRight: 5 }}>
+                @{destinationUser.username}
+              </Typography>
+              <CopyablePublicKey publicKey={destinationAddress} />
+            </>
+          ) : (
+            <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
+          )}
         </div>
       ),
       classes: { root: classes.confirmTableListItem },
@@ -331,7 +348,7 @@ const ConfirmSendSolanaTable: React.FC<{
       classes: { root: classes.confirmTableListItem },
       button: false,
     },
-  };
+  } satisfies React.ComponentProps<typeof SettingsList>["menuItems"];
 
   return (
     <SettingsList

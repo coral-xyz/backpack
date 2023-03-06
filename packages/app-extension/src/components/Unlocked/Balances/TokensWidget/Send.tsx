@@ -13,7 +13,6 @@ import {
   SOL_NATIVE_MINT,
   toDisplayBalance,
   toTitleCase,
-  walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
   CheckIcon,
@@ -32,7 +31,6 @@ import {
   blockchainTokenData,
   useActiveWallet,
   useAnchorContext,
-  useBackgroundClient,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
   useBlockchainTokenAccount,
@@ -51,16 +49,15 @@ import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
 
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
+import { CopyablePublicKey } from "../../../common/CopyablePublicKey";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavigation as useNavigationEphemeral } from "../../../common/Layout/NavStack";
 import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 import { TokenInputField } from "../../../common/TokenInput";
-import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 
 import { SendEthereumConfirmationCard } from "./Ethereum";
 import { SendSolanaConfirmationCard } from "./Solana";
 import { WithHeaderButton } from "./Token";
-import { TokenBadge } from "./TokenBadge";
 
 const useStyles = styles((theme) => ({
   topImage: {
@@ -213,7 +210,6 @@ export function Send({
   const classes = useStyles() as any;
   const { uuid } = useUser();
   const nav = useNavigationEphemeral();
-  const navOuter = useNavigation();
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -222,9 +218,7 @@ export function Send({
   const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
   const [message, setMessage] = useState("");
   const friendship = useFriendship({ userId: to?.uuid || "" });
-  const theme = useCustomTheme();
   const { push } = useNavigation();
-  const background = useBackgroundClient();
 
   useEffect(() => {
     const prev = nav.title;
@@ -348,7 +342,7 @@ export function Send({
         setOpenDrawer={setOpenDrawer}
       >
         <SendConfirmComponent
-          onComplete={async (txSig) => {
+          onComplete={async () => {
             if (
               to?.uuid &&
               to?.uuid !== uuid &&
@@ -503,21 +497,10 @@ const buttonContainerStyles = StyleSheet.create({
   },
 });
 
-function SendV2({
-  token,
-  maxAmount,
-  setAmount,
-  sendButton,
-  to,
-  message,
-  setMessage,
-  blockchain,
-}: any) {
+function SendV2({ token, maxAmount, setAmount, sendButton, to }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { uuid } = useUser();
   const isDarkMode = useDarkMode();
-  const [tooltipOpen, setTooltipOpen] = useState(false);
   const [_amount, _setAmount] = useState<string>("");
 
   return (
@@ -555,20 +538,7 @@ function SendV2({
             ) : null}
           </div>
           <div className={classes.horizontalCenter} style={{ marginTop: 4 }}>
-            <WithCopyTooltip tooltipOpen={tooltipOpen}>
-              <div>
-                <TokenBadge
-                  fontSize={13}
-                  overwriteBackground={theme.custom.colors.bg2}
-                  onClick={async () => {
-                    setTooltipOpen(true);
-                    setTimeout(() => setTooltipOpen(false), 1000);
-                    await navigator.clipboard.writeText(to.address);
-                  }}
-                  label={walletAddressDisplay(to?.address)}
-                />
-              </div>
-            </WithCopyTooltip>
+            <CopyablePublicKey publicKey={to?.address} />
           </div>
         </div>
         <div>
