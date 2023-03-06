@@ -2,21 +2,21 @@
   "name": "@coral-xyz/react-native-core",
   "version": "1.0.0",
   "description": "react native core components",
-  "main": "lib/commonjs/index.js",
-  "module": "lib/module/index.js",
-  "types": "lib/typescript/index.d.ts",
+  "main": "dist/commonjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/index.d.ts",
   "react-native": "src/index.tsx",
   "source": "src/index.tsx",
   "files": [
     "src",
-    "lib",
+    "dist",
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__"
   ],
   "scripts": {
     "build": "bob build",
-    "clean": "rimraf lib",
+    "clean": "rimraf dist",
     "clean:modules": "rimraf node_modules"
   },
   "keywords": [
@@ -42,7 +42,7 @@
   },
   "react-native-builder-bob": {
     "source": "src",
-    "output": "lib",
+    "output": "dist",
     "targets": [
       "commonjs",
       "module",
