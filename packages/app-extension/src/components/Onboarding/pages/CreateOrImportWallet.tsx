@@ -1,3 +1,4 @@
+// @ts-expect-error
 import { PrimaryButton } from "@coral-xyz/react-native-core";
 import { Box } from "@mui/material";
 
