@@ -2,7 +2,7 @@ name: Deploy xnft-api-server
 on:
   push:
     branches:
-      - master
+      - production
 
 jobs:
   deploy:
