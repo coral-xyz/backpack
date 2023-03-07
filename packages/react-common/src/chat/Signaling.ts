@@ -3,6 +3,7 @@ import {
   CHAT_MESSAGES,
   DELETE_MESSAGE,
   EXECUTE_BARTER,
+  NOTIFICATION_ADD,
   UPDATE_ACTIVE_BARTER,
   WS_READY,
 } from "@coral-xyz/common";
@@ -76,6 +77,9 @@ export class Signaling extends EventEmitter {
           break;
         case WS_READY:
           this.emit(SIGNALING_CONNECTED);
+          break;
+        case NOTIFICATION_ADD:
+          this.emit(NOTIFICATION_ADD, message.payload);
           break;
         case DELETE_MESSAGE:
           this.emit(DELETE_MESSAGE, message.payload);

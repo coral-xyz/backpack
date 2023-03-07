@@ -9,6 +9,7 @@ import {
   CHAT_MESSAGES,
   DELETE_MESSAGE,
   EXECUTE_BARTER,
+  NOTIFICATION_ADD,
   SUBSCRIBE,
   UPDATE_ACTIVE_BARTER,
   WS_READY,
@@ -47,6 +48,17 @@ export class SignalingManager {
             type: SubscriptionType;
             chats: EnrichedMessage[];
             clear?: boolean;
+          };
+        }
+      | {
+          type: "add-notifications";
+          payload: {
+            id: number;
+            title: string;
+            body: string;
+            xnft_id: string;
+            timestamp: string;
+            uuid: string;
           };
         }
   ) => {};
@@ -163,6 +175,13 @@ export class SignalingManager {
         }
       }
     );
+
+    this.signaling?.on(NOTIFICATION_ADD, (payload) => {
+      this.onUpdateRecoil({
+        type: "add-notifications",
+        payload,
+      });
+    });
 
     this.signaling?.on(UPDATE_ACTIVE_BARTER, (payload) => {
       this.onBarterUpdate(payload);
