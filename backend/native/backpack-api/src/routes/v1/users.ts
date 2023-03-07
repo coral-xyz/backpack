@@ -141,7 +141,9 @@ router.post("/", async (req, res) => {
     blockchainPublicKeys.map((b) => ({
       blockchain: b.blockchain as Blockchain,
       publicKey: b.publicKey,
-    }))
+    })),
+    // Don't restrict to primary public key only, we want any conflicts
+    false
   );
   if (conflictingUsers.length > 0) {
     // Another user already uses this public key
