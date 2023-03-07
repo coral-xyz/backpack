@@ -368,7 +368,7 @@ export const MessageLine = (props) => {
                   ) : (
                     <div
                       style={{ marginLeft: 5 }}
-                      className={classes.hoverChild}
+                      className={!props.deleted ? classes.hoverChild : ""}
                     >
                       {" "}
                       <DeleteIconInternal
@@ -553,7 +553,7 @@ export const MessageLine = (props) => {
                   ) : (
                     <div
                       style={{ marginLeft: 5 }}
-                      className={classes.hoverChild}
+                      className={!props.deleted ? classes.hoverChild : ""}
                     >
                       {" "}
                       <DeleteIconInternal
