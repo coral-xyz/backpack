@@ -340,12 +340,13 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
               {
                 // TODO: Standardize the parsed ethereum and solana transactions
                 //       so that `transaction.date` can be used for both of them
-                (transaction.date
-                  ? // ethereum transactions provide a date
-                    transaction.date
-                  : // solana transactions provide a timestamp in seconds
-                    new Date(transaction.timestamp * 1000)
-                ).toLocaleDateString()
+                (
+                  (transaction.date
+                    ? // ethereum transactions provide a date
+                      transaction.date
+                    : // solana transactions provide a timestamp in seconds
+                      new Date(transaction.timestamp * 1000)) as Date
+                ).toLocaleString()
               }
             </Typography>
           </div>
