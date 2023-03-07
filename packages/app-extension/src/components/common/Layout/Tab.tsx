@@ -118,11 +118,13 @@ export function WithTabs(props: any) {
         {props.children}
       </div>
       {!location.pathname.startsWith("/xnft/") &&
-        location.pathname !== "/nfts/experience" &&
-        location.pathname !== "/nfts/chat" &&
-        (!isXs || location.pathname !== "/messages/chat") &&
-        (!isXs || location.pathname !== "/messages/groupchat") &&
-        (!isXs || location.pathname !== "/messages/profile") ? <TabBar /> : null}
+      location.pathname !== "/nfts/experience" &&
+      location.pathname !== "/nfts/chat" &&
+      (!isXs || location.pathname !== "/messages/chat") &&
+      (!isXs || location.pathname !== "/messages/groupchat") &&
+      (!isXs || location.pathname !== "/messages/profile") ? (
+        <TabBar />
+      ) : null}
     </div>
   );
 }
@@ -202,25 +204,27 @@ function TabBar() {
               />
             }
           />
-          {BACKPACK_FEATURE_XNFT ? <Tab
-            onClick={() => onTabClick(TAB_APPS)}
-            value={TAB_APPS}
-            disableRipple
-            className={isXs ? classes.tabXs : classes.tab}
-            icon={
-              <GridIcon
-                fill={
+          {BACKPACK_FEATURE_XNFT ? (
+            <Tab
+              onClick={() => onTabClick(TAB_APPS)}
+              value={TAB_APPS}
+              disableRipple
+              className={isXs ? classes.tabXs : classes.tab}
+              icon={
+                <GridIcon
+                  fill={
                     tab === TAB_APPS
                       ? theme.custom.colors.brandColor
                       : theme.custom.colors.icon
                   }
-                style={{
+                  style={{
                     width: "20px",
                     height: "20px",
                   }}
                 />
               }
-            /> : null}
+            />
+          ) : null}
           <Tab
             onClick={() => onTabClick(TAB_NFTS)}
             value={TAB_NFTS}
@@ -251,17 +255,18 @@ function TabBar() {
             }`}
             icon={<LocalMessageIcon />}
           />
-          {!isXs ? <>
-            <Tab
-              onClick={() => onTabClick(TAB_NOTIFICATIONS)}
-              value={TAB_NOTIFICATIONS}
-              disableRipple
-              className={`${isXs ? classes.tabXs : classes.tab} ${
+          {!isXs ? (
+            <>
+              <Tab
+                onClick={() => onTabClick(TAB_NOTIFICATIONS)}
+                value={TAB_NOTIFICATIONS}
+                disableRipple
+                className={`${isXs ? classes.tabXs : classes.tab} ${
                   tab === TAB_MESSAGES ? classes.activeTab : ""
                 }`}
-              icon={
-                <NotificationIconWithBadge
-                  style={{
+                icon={
+                  <NotificationIconWithBadge
+                    style={{
                       width: "28px",
                       height: "28px",
                       color:
@@ -272,16 +277,16 @@ function TabBar() {
                   />
                 }
               />
-            <Tab
-              onClick={() => onTabClick(TAB_RECENT_ACTIVITY)}
-              value={TAB_RECENT_ACTIVITY}
-              disableRipple
-              className={`${isXs ? classes.tabXs : classes.tab} ${
+              <Tab
+                onClick={() => onTabClick(TAB_RECENT_ACTIVITY)}
+                value={TAB_RECENT_ACTIVITY}
+                disableRipple
+                className={`${isXs ? classes.tabXs : classes.tab} ${
                   tab === TAB_MESSAGES ? classes.activeTab : ""
                 }`}
-              icon={
-                <FormatListBulletedIcon
-                  style={{
+                icon={
+                  <FormatListBulletedIcon
+                    style={{
                       width: "28px",
                       height: "28px",
                       color:
@@ -292,25 +297,28 @@ function TabBar() {
                   />
                 }
               />
-          </> : null}
+            </>
+          ) : null}
         </div>
-        {!isXs ? <div
-          style={{
+        {!isXs ? (
+          <div
+            style={{
               marginBottom: "16px",
             }}
           >
-          <AvatarPopoverButton
-            imgStyle={{
+            <AvatarPopoverButton
+              imgStyle={{
                 width: "38px",
                 height: "38px",
                 borderRadius: "20px",
               }}
-            buttonStyle={{
+              buttonStyle={{
                 marginLeft: "auto",
                 marginRight: "auto",
               }}
             />
-        </div> : null}
+          </div>
+        ) : null}
       </div>
     </Tabs>
   );
@@ -329,14 +337,13 @@ function LocalMessageIcon() {
     <>
       {!messagesUnread ? (
         <MessageBubbleIcon
-          fill={
-            tab === TAB_MESSAGES
-              ? theme.custom.colors.brandColor
-              : theme.custom.colors.icon
-          }
-          style={{
+          sx={{
             width: "20px",
             height: "20px",
+            color:
+              tab === TAB_MESSAGES
+                ? theme.custom.colors.brandColor
+                : theme.custom.colors.icon,
           }}
         />
       ) : (
@@ -357,14 +364,13 @@ function LocalMessageIcon() {
           color="secondary"
         >
           <MessageBubbleIcon
-            fill={
-              tab === TAB_MESSAGES
-                ? theme.custom.colors.brandColor
-                : theme.custom.colors.icon
-            }
-            style={{
+            sx={{
               width: "20px",
               height: "20px",
+              color:
+                tab === TAB_MESSAGES
+                  ? theme.custom.colors.brandColor
+                  : theme.custom.colors.icon,
             }}
           />
         </Badge>
