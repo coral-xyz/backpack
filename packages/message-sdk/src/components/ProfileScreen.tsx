@@ -107,7 +107,8 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
               }}
             >
               <MessageBubbleIcon
-                sx={{ padding: 2, color: theme.custom.colors.fontColor }}
+                style={{ padding: 2, height: 21 }}
+                fill={theme.custom.colors.fontColor}
               />
             </IconButton>
             <div
