@@ -11,7 +11,7 @@ const LedgerIframe = lazy(() => import("./components/LedgerIframe"));
 chrome.runtime
   .sendMessage("new-instance-was-opened")
   .then(() => {
-    // Close all existing extension instances so only this one is running
+    // Close all existing extension instances so only the newest is running
     chrome.runtime.onMessage.addListener((msg) => {
       if (msg === "new-instance-was-opened") window.close();
     });
