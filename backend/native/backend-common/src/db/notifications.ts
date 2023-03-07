@@ -8,12 +8,12 @@ const chain = Chain(AUTH_HASURA_URL, {
   },
 });
 
-export const insertNotification = (
+export const insertNotification = async (
   xnftId: string,
   uuid: string,
   { title, body }: { title: string; body: string }
 ) => {
-  return chain("mutation")({
+  const response = await chain("mutation")({
     insert_auth_notifications_one: [
       {
         object: {
@@ -28,7 +28,13 @@ export const insertNotification = (
       },
       {
         id: true,
+        title: true,
+        body: true,
+        xnft_id: true,
+        timestamp: true,
+        uuid: true,
       },
     ],
   });
+  return response.insert_auth_notifications_one;
 };

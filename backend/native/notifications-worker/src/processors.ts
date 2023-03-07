@@ -218,12 +218,7 @@ export const processFriendRequest = async ({
   to: string;
 }) => {
   const userMetadata = await getUsersFromIds([from]);
-  await insertNotification("friend_requests", to, {
-    title: "Friend request",
-    body: JSON.stringify({
-      from,
-    }),
-  });
+
   await notify(
     to,
     `Friend Request`,

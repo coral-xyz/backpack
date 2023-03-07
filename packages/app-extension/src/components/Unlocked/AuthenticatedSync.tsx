@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import type { EnrichedMessage, SubscriptionType } from "@coral-xyz/common";
+import type { EnrichedMessage, EnrichedNotification,SubscriptionType  } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { RecoilSync } from "@coral-xyz/db";
 import {
@@ -10,10 +10,12 @@ import {
 import {
   friendships,
   groupCollections,
+  recentNotifications,
   requestCount,
   roomChats,
   unreadCount,
   useAuthenticatedUser,
+  useRecentNotifications,
 } from "@coral-xyz/recoil";
 import { useRecoilCallback, useSetRecoilState } from "recoil";
 
@@ -51,6 +53,7 @@ export const ChatSync = ({ uuid, jwt }: { uuid: string; jwt: string }) => {
 
 export const DbRecoilSync = ({ uuid }: { uuid: string }) => {
   const updateChats = useUpdateChats();
+  const updateNotifications = useUpdateNotifications();
 
   const setFriendshipsValue = useSetRecoilState(friendships({ uuid }));
   const setRequestCountValue = useSetRecoilState(requestCount({ uuid }));
@@ -58,6 +61,12 @@ export const DbRecoilSync = ({ uuid }: { uuid: string }) => {
     groupCollections({ uuid })
   );
   const setUnreadCount = useSetRecoilState(unreadCount);
+  // initialize the recoil store with 50 notifications from the server
+  const notifications: EnrichedNotification[] = useRecentNotifications({
+    limit: 50,
+    offset: 0,
+    uuid: uuid,
+  });
 
   const updateUnread = async () => {
     const response = await fetch(
@@ -145,6 +154,17 @@ export const DbRecoilSync = ({ uuid }: { uuid: string }) => {
               chats: EnrichedMessage[];
             };
           }
+        | {
+            type: "add-notifications";
+            payload: {
+              id: number;
+              title: string;
+              body: string;
+              xnft_id: string;
+              timestamp: string;
+              uuid: string;
+            };
+          }
     ) => {
       switch (props.type) {
         case "friendship":
@@ -167,12 +187,52 @@ export const DbRecoilSync = ({ uuid }: { uuid: string }) => {
             chats: props.payload.chats,
             clear: props.payload.clear,
           });
+          break;
+        case "add-notifications":
+          setUnreadCount((x) => x + 1);
+          updateNotifications({
+            uuid: props.payload.uuid,
+            notificationPayload: props.payload,
+          });
       }
     };
   }, [uuid]);
 
   return null;
 };
+
+export const useUpdateNotifications = () =>
+  useRecoilCallback(
+    ({ set, snapshot }: any) =>
+      async ({
+        uuid,
+        notificationPayload,
+      }: {
+        uuid: string;
+        notificationPayload: {
+          id: number;
+          title: string;
+          body: string;
+          xnft_id: string;
+          timestamp: string;
+          uuid: string;
+        };
+      }) => {
+        const currentNotifications = snapshot.getLoadable(
+          recentNotifications({
+            limit: 50,
+            offset: 0,
+            uuid: uuid,
+          })
+        );
+        // const allChats = merge(clear ? [] : currentChats.valueMaybe(), chats);
+        // set(roomChats({ uuid, room, type }), allChats);
+        set(recentNotifications({ limit: 50, offset: 0, uuid: uuid }), [
+          notificationPayload,
+          ...currentNotifications,
+        ]);
+      }
+  );
 
 export const useUpdateChats = () =>
   useRecoilCallback(
