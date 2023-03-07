@@ -181,11 +181,19 @@ const getGroupedNotifications = (notifications: EnrichedNotification[]) => {
     notifications: EnrichedNotification[];
   }[] = [];
 
-  const sortedNotifications = notifications
-    .slice()
-    .sort((a, b) =>
-      new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime() ? 1 : -1
-    );
+  const uniqueNotifications = notifications.slice().sort((a, b) =>
+      new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime()
+          ? 1
+          : -1
+  ).filter((x, index) => (x.xnft_id !== "friend_requests" || (
+      notifications.map(y => y.body).indexOf(x.body) === index
+  )))
+  const sortedNotifications = uniqueNotifications.sort((a, b) =>
+      new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime()
+          ? 1
+          : -1
+  );
+
   for (let i = 0; i < sortedNotifications.length; i++) {
     const date = formatDate(new Date(sortedNotifications[i].timestamp));
     if (
@@ -234,18 +242,18 @@ export function Notifications() {
         .slice();
     const uniqueNotifications = allNotifications.sort((a, b) =>
         new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime()
-            ? -1
-            : 1
+            ? 1
+            : -1
     ).filter((x, index) => (x.xnft_id !== "friend_requests" || (
         allNotifications.map(y => y.body).indexOf(x.body) === index
     )))
     const sortedNotifications = uniqueNotifications.sort((a, b) =>
         new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime()
-          ? -1
-          : 1
+          ? 1
+          : -1
       );
     const latestNotification =
-      sortedNotifications[sortedNotifications.length - 1];
+      sortedNotifications[0];
     if (latestNotification && latestNotification.id) {
       fetch(`${BACKEND_API_URL}/notifications/cursor`, {
         method: "PUT",

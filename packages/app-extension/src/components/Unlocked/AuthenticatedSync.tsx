@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import type { EnrichedMessage, EnrichedNotification,SubscriptionType  } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { RecoilSync } from "@coral-xyz/db";
@@ -62,11 +62,6 @@ export const DbRecoilSync = ({ uuid }: { uuid: string }) => {
   );
   const setUnreadCount = useSetRecoilState(unreadCount);
   // initialize the recoil store with 50 notifications from the server
-  const notifications: EnrichedNotification[] = useRecentNotifications({
-    limit: 50,
-    offset: 0,
-    uuid: uuid,
-  });
 
   const updateUnread = async () => {
     const response = await fetch(
@@ -198,8 +193,17 @@ export const DbRecoilSync = ({ uuid }: { uuid: string }) => {
     };
   }, [uuid]);
 
-  return null;
+  return <Suspense fallback={null}> <NotificationsWrapper uuid={uuid} /> </Suspense>;
 };
+
+function NotificationsWrapper({uuid}: {uuid: string;}) {
+  const _notifications: EnrichedNotification[] = useRecentNotifications({
+    limit: 50,
+    offset: 0,
+    uuid: uuid,
+  });
+  return null;
+}
 
 export const useUpdateNotifications = () =>
   useRecoilCallback(
@@ -225,11 +229,9 @@ export const useUpdateNotifications = () =>
             uuid: uuid,
           })
         );
-        // const allChats = merge(clear ? [] : currentChats.valueMaybe(), chats);
-        // set(roomChats({ uuid, room, type }), allChats);
         set(recentNotifications({ limit: 50, offset: 0, uuid: uuid }), [
-          notificationPayload,
-          ...currentNotifications,
+          {...notificationPayload, timestamp: new Date(notificationPayload.timestamp).getTime()},
+          ...(currentNotifications.valueMaybe() ?? []),
         ]);
       }
   );
