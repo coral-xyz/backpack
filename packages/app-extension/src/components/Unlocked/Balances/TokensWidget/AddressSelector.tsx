@@ -27,7 +27,7 @@ import {
 import { useCustomTheme } from "@coral-xyz/themes";
 import BlockIcon from "@mui/icons-material/Block";
 import SearchIcon from "@mui/icons-material/Search";
-import { List, ListItem } from "@mui/material";
+import { List, ListItemButton } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import { createStyles, makeStyles } from "@mui/styles";
 
@@ -266,8 +266,7 @@ function NotSelected({
   return (
     <div style={{ padding: 10 }}>
       <BubbleTopLabel text="Users without a primary wallet" />
-      <ListItem
-        button
+      <ListItemButton
         disableRipple
         onClick={() => {}}
         style={{
@@ -289,7 +288,7 @@ function NotSelected({
             }))}
           />
         </div>
-      </ListItem>
+      </ListItemButton>
     </div>
   );
 }
@@ -410,7 +409,7 @@ const YourAddresses = ({
   searchFilter: string;
 }) => {
   const wallets = useAllWallets().filter((x) => x.blockchain === blockchain);
-  const { uuid } = useUser();
+  const { uuid, username } = useUser();
   const avatarUrl = useAvatarUrl();
   const activeSolWallet = useActiveSolanaWallet();
   const activeEthWallet = useActiveEthereumWallet();
@@ -434,7 +433,8 @@ const YourAddresses = ({
               x.publicKey.includes(searchFilter)
           )
           .map((wallet) => ({
-            username: wallet.name,
+            username,
+            walletName: wallet.name,
             image: avatarUrl,
             uuid: uuid,
             addresses: [wallet.publicKey],
@@ -449,6 +449,7 @@ function AddressList({
 }: {
   wallets: {
     username: string;
+    walletName?: string;
     image: string;
     addresses: string[];
     uuid: string;
@@ -469,10 +470,11 @@ function AddressList({
     >
       {walletsWithPrimary.map((wallet, index) => (
         <AddressListItem
-          key={wallet.username}
+          key={[wallet.username, wallet.walletName].join(":")}
           isFirst={index === 0}
           isLast={index === walletsWithPrimary.length - 1}
           user={{
+            walletName: wallet.walletName,
             username: wallet.username,
             image: wallet.image,
             uuid: wallet.uuid,
@@ -492,6 +494,7 @@ const AddressListItem = ({
 }: {
   user: {
     username: string;
+    walletName?: string;
     image: string;
     uuid: string;
   };
@@ -505,8 +508,7 @@ const AddressListItem = ({
   const { blockchain, token } = useAddressSelectorContext();
 
   return (
-    <ListItem
-      button
+    <ListItemButton
       disableRipple
       onClick={() => {
         if (!address) {
@@ -518,6 +520,7 @@ const AddressListItem = ({
           to: {
             address: address,
             username: user.username,
+            walletName: user.walletName,
             image: user.image,
             uuid: user.uuid,
           },
@@ -553,13 +556,15 @@ const AddressListItem = ({
           <UserIcon size={32} image={user.image} />
         </div>
         <div style={{ display: "flex" }}>
-          <div className={classes.userText}>{user.username}</div>
+          <div className={classes.userText}>
+            {user.walletName || user.username}
+          </div>
           {!address ? (
             <BlockIcon style={{ color: "#E33E3F", marginLeft: 10 }} />
           ) : null}
         </div>
       </div>
-    </ListItem>
+    </ListItemButton>
   );
 };
 

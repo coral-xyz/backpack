@@ -12,7 +12,7 @@ import {
 } from "@coral-xyz/common";
 import { PrimaryButton, UserIcon } from "@coral-xyz/react-common";
 import {
-  useAuthenticatedUser,
+  useActiveWallet,
   useAvatarUrl,
   useSolanaCtx,
   useSolanaTokenMint,
@@ -31,7 +31,6 @@ import type { AccountInfo, Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import type { BigNumber } from "ethers";
 
-import { walletAddressDisplay } from "../../../../common";
 import { CopyablePublicKey } from "../../../../common/CopyablePublicKey";
 import { SettingsList } from "../../../../common/Settings/List";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
@@ -65,6 +64,7 @@ export function SendSolanaConfirmationCard({
   destinationAddress: string;
   destinationUser?: {
     username: string;
+    walletName?: string;
     image: string;
   };
   amount: BigNumber;
@@ -290,13 +290,13 @@ export function ConfirmSendSolana({
 
 const ConfirmSendSolanaTable: React.FC<{
   destinationAddress: string;
-  destinationUser?: { username: string; image: string };
+  destinationUser?: { username: string; image: string; walletName?: string };
 }> = ({ destinationAddress, destinationUser }) => {
   const theme = useCustomTheme();
   const classes = useStyles();
   const solanaCtx = useSolanaCtx();
   const avatarUrl = useAvatarUrl();
-  const user = useAuthenticatedUser();
+  const wallet = useActiveWallet();
 
   const menuItems = {
     From: {
@@ -305,7 +305,7 @@ const ConfirmSendSolanaTable: React.FC<{
         <div style={{ display: "flex", alignItems: "center" }}>
           <UserIcon marginRight={5} image={avatarUrl} size={24} />
           <Typography variant="body2" style={{ marginRight: 5 }}>
-            @{user?.username}
+            {wallet.name}
           </Typography>
           <CopyablePublicKey publicKey={solanaCtx.walletPublicKey} />
         </div>
@@ -325,13 +325,13 @@ const ConfirmSendSolanaTable: React.FC<{
                 size={24}
               />
               <Typography variant="body2" style={{ marginRight: 5 }}>
-                @{destinationUser.username}
+                {destinationUser.walletName
+                  ? destinationUser.walletName
+                  : `@${destinationUser.username}`}
               </Typography>
-              <CopyablePublicKey publicKey={destinationAddress} />
             </>
-          ) : (
-            <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
-          )}
+          ) : null}
+          <CopyablePublicKey publicKey={destinationAddress} />
         </div>
       ),
       classes: { root: classes.confirmTableListItem },

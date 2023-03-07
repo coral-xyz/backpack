@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Blockchain, Ethereum, getLogger } from "@coral-xyz/common";
 import { PrimaryButton, UserIcon } from "@coral-xyz/react-common";
 import {
-  useAuthenticatedUser,
+  useActiveWallet,
   useAvatarUrl,
   useEthereumCtx,
   useTransactionData,
@@ -15,7 +15,6 @@ import { Typography } from "@mui/material";
 import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 
-import { walletAddressDisplay } from "../../../../common";
 import { CopyablePublicKey } from "../../../../common/CopyablePublicKey";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
 import { TransactionData } from "../../../../common/TransactionData";
@@ -193,7 +192,7 @@ export function ConfirmSendEthereum({
     bs58.encode(ethers.utils.serializeTransaction(transaction))
   );
   const avatarUrl = useAvatarUrl();
-  const user = useAuthenticatedUser();
+  const wallet = useActiveWallet();
 
   const { from, loading, transaction: transactionToSend } = transactionData;
 
@@ -204,7 +203,7 @@ export function ConfirmSendEthereum({
         <div style={{ display: "flex", alignItems: "center" }}>
           <UserIcon marginRight={5} image={avatarUrl} size={24} />
           <Typography variant="body2" style={{ marginRight: 5 }}>
-            @{user?.username}
+            {wallet.name}
           </Typography>
           <CopyablePublicKey publicKey={from} />
         </div>
@@ -225,11 +224,9 @@ export function ConfirmSendEthereum({
               <Typography variant="body2" style={{ marginRight: 5 }}>
                 @{destinationUser.username}
               </Typography>
-              <CopyablePublicKey publicKey={destinationAddress} />
             </>
-          ) : (
-            <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
-          )}
+          ) : null}
+          <CopyablePublicKey publicKey={destinationAddress} />
         </div>
       ),
       button: false,

@@ -1,4 +1,4 @@
-import React, { type ChangeEvent, useEffect, useState } from "react";
+import React, { type ChangeEvent,useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {
   getHashedName,
@@ -203,6 +203,7 @@ export function Send({
   to?: {
     address: string;
     username?: string;
+    walletName?: string;
     image?: string;
     uuid?: string;
   };
@@ -218,7 +219,6 @@ export function Send({
   const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
   const [message, setMessage] = useState("");
   const friendship = useFriendship({ userId: to?.uuid || "" });
-  const { push } = useNavigation();
 
   useEffect(() => {
     const prev = nav.title;
@@ -394,12 +394,11 @@ export function Send({
           token={token}
           destinationAddress={destinationAddress}
           destinationUser={
-            to?.uuid && to?.username && to?.image
-              ? {
-                  username: to.username,
-                  image: to.image,
-                }
-              : undefined
+            (to && to.uuid && to.username && to.image
+              ? to
+              : undefined) as React.ComponentProps<
+              typeof SendConfirmComponent
+            >["destinationUser"]
           }
           amount={amount!}
         />
@@ -525,7 +524,7 @@ function SendV2({ token, maxAmount, setAmount, sendButton, to }: any) {
             </div>
           </div>
           <div className={classes.horizontalCenter}>
-            {to.username ? (
+            {to.walletName || to.username ? (
               <div
                 style={{
                   color: theme.custom.colors.fontColor,
@@ -533,7 +532,7 @@ function SendV2({ token, maxAmount, setAmount, sendButton, to }: any) {
                   fontWeight: 500,
                 }}
               >
-                @{`${to.username}`}
+                {to.walletName ? to.walletName : `@${to.username}`}
               </div>
             ) : null}
           </div>
