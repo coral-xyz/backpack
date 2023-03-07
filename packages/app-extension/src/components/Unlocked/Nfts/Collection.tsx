@@ -1,16 +1,14 @@
 import { useState } from "react";
-import { NAV_COMPONENT_NFT_DETAIL } from "@coral-xyz/common";
+import { MessageBubbleIcon } from "@coral-xyz/react-common";
 import {
   chatByCollectionId,
   nftById,
   nftCollectionsWithIds,
-  useNavigation,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Sms } from "@mui/icons-material";
 import { CircularProgress, Grid, Typography } from "@mui/material";
 import type { UnwrapRecoilValue } from "recoil";
-import { useRecoilValue, useRecoilValueLoadable } from "recoil";
+import { useRecoilValueLoadable } from "recoil";
 
 import { NFTCard } from "./Cards";
 import { useOpenChat } from "./Detail";
@@ -86,7 +84,7 @@ function _Grid({
             justifyContent: "center",
             alignItems: "center",
             cursor: "pointer",
-            fontSize: "12px",
+            fontSize: "14px",
             padding: "8px 8px 16px 8px",
             color: theme.custom.colors.fontColor,
           }}
@@ -118,11 +116,13 @@ function _Grid({
                 thickness={3}
               />
             ) : (
-              <Sms
-                fontSize="small"
+              <MessageBubbleIcon
                 sx={{
-                  fontSize: "18px",
+                  width: "18px",
                   color: theme.custom.colors.fontColor,
+                  "&:hover": {
+                    color: `${theme.custom.colors.fontColor3} !important`,
+                  },
                 }}
               />
             )}

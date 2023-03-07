@@ -264,6 +264,7 @@ export const MessageLine = (props) => {
           className={`${classes.messageContainer} ${classes.hoverParent}`}
           style={{ display: "flex", paddingTop: "4px" }}
         >
+
           <div style={{ width: "calc(100% - 80px)" }}>
             <div>
               {props.parent_message_author_uuid ? (
@@ -318,7 +319,7 @@ export const MessageLine = (props) => {
                           mediaLink={props.metadata?.media_link}
                           mediaKind={props.metadata?.media_kind}
                         />
-                        <div>{message}</div>
+                        <ParsedMessage message={message} />
                       </div>
                     ) : props.messageKind === "nft-sticker" ? (
                       <div>
@@ -381,6 +382,7 @@ export const MessageLine = (props) => {
               </div>
             </div>
           </div>
+
         </div>
       ) : (
         <>
@@ -427,12 +429,14 @@ export const MessageLine = (props) => {
                 }}
               >
                 {displayName ? (
+
                   <div style={{ display: "flex" }}>
                     <div>@{displayName} </div>{" "}
                     {BACKPACK_TEAM.includes(props.uuid) ? (
                       <BackpackStaffIcon />
                     ) : null}
                   </div>
+
                 ) : (
                   <Skeleton
                     width={50}
@@ -461,9 +465,11 @@ export const MessageLine = (props) => {
                   ) : null}
                   <div>
                     <p className={classes.messageContent}>
+
                       {props.deleted ? (
                         <DeletedMessage />
                       ) : props.messageKind === "gif" ? (
+
                         <div
                           style={{
                             height: 150,
@@ -483,8 +489,10 @@ export const MessageLine = (props) => {
                           remoteUsername={props.username}
                           finalTxId={props.metadata.final_txn_signature}
                         />
+
                       ) : props.messageKind === "barter-request" ? (
                         <BarterPoke barterId={props.metadata?.barter_id} />
+
                       ) : props.messageKind === "barter" ? (
                         <BarterModal barterId={props.metadata?.barter_id} />
                       ) : props.messageKind === "transaction" ? (
@@ -507,7 +515,9 @@ export const MessageLine = (props) => {
                             mediaLink={props.metadata?.media_link}
                             mediaKind={props.metadata?.media_kind}
                           />
-                          <div>{message}</div>
+
+                          <ParsedMessage message={message} />
+
                         </div>
                       ) : (
                         <ParsedMessage message={message} />
@@ -515,6 +525,7 @@ export const MessageLine = (props) => {
                     </p>
                   </div>
                 </div>
+
                 <div
                   style={{ display: "flex", justifyContent: "space-between" }}
                 >
