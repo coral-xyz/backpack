@@ -45,3 +45,4 @@ test-ledger/
 .tsbuildinfo
 
 .dev.vars
+.tamagui

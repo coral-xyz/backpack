@@ -14,6 +14,7 @@
     "@coral-xyz/react-common": "*",
     "@coral-xyz/react-native-core": "*",
     "@coral-xyz/recoil": "*",
+    "@coral-xyz/tamagui": "*",
     "@coral-xyz/themes": "*",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
@@ -53,9 +54,9 @@
     "web-push": "^3.5.0"
   },
   "scripts": {
-    "start": "cross-env NODE_ENV=development webpack serve --config webpack.dev.config.js",
-    "build": "cross-env NODE_ENV=production webpack",
-    "build:release": "cross-env NODE_ENV=production webpack",
+    "start": "cross-env NODE_ENV=development TAMAGUI_TARGET=web webpack serve --config webpack.dev.config.js",
+    "build": "cross-env NODE_ENV=production TAMAGUI_TARGET=web webpack",
+    "build:release": "cross-env NODE_ENV=production TAMAGUI_TARGET=web webpack",
     "e2e": "jest --maxWorkers 1 --detectOpenHandles --forceExit --verbose",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
     "lint:fix": "yarn run lint --fix"
@@ -105,6 +106,7 @@
     "stream-browserify": "^3.0.0",
     "style-loader": "^3.3.1",
     "swc-loader": "^0.2.3",
+    "tamagui-loader": "^1.7.1",
     "typescript": "~4.9.3",
     "webpack": "^5.75.0",
     "webpack-bundle-analyzer": "^4.7.0",

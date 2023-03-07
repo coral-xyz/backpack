@@ -1,3 +1,4 @@
+// import "@tamagui/core/reset.css";
 import { Suspense, useCallback, useEffect, useRef } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 
@@ -12,6 +13,7 @@ import {
   WEB_VIEW_EVENTS,
 } from "@coral-xyz/common";
 import { NotificationsProvider } from "@coral-xyz/recoil";
+import { TamaguiProvider, config } from "@coral-xyz/tamagui";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -78,13 +80,15 @@ export function App(): JSX.Element {
 
 function Providers({ children }: { children: JSX.Element }): JSX.Element {
   return (
-    <SafeAreaProvider>
-      <NotificationsProvider>
-        <ActionSheetProvider>
-          <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
-        </ActionSheetProvider>
-      </NotificationsProvider>
-    </SafeAreaProvider>
+    <TamaguiProvider config={config}>
+      <SafeAreaProvider>
+        <NotificationsProvider>
+          <ActionSheetProvider>
+            <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
+          </ActionSheetProvider>
+        </NotificationsProvider>
+      </SafeAreaProvider>
+    </TamaguiProvider>
   );
 }
 
