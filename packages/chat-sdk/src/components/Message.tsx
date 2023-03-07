@@ -333,51 +333,53 @@ export const MessageLine = (props) => {
                     )}
                   </p>
                 </div>
-                <div>
-                  {props.messageKind === "text" ? (
-                    <div
-                      style={{ display: "flex" }}
-                      className={classes.hoverChild}
-                    >
+                {props.deleted ? null : (
+                  <div>
+                    {props.messageKind === "text" ? (
                       <div
-                        style={{
-                          marginLeft: 10,
-                          marginTop: 3,
-                          cursor: "pointer",
-                          marginRight: 5,
-                        }}
-                        onClick={() => {
-                          setActiveReply({
-                            parent_client_generated_uuid:
-                              props.client_generated_uuid,
-                            text: message,
-                            parent_username: `@${props.username}`,
-                            parent_message_author_uuid: props.userId,
-                          });
-                        }}
+                        style={{ display: "flex" }}
+                        className={classes.hoverChild}
                       >
-                        <ReplyIcon fill={theme.custom.colors.icon} />
+                        <div
+                          style={{
+                            marginLeft: 10,
+                            marginTop: 3,
+                            cursor: "pointer",
+                            marginRight: 5,
+                          }}
+                          onClick={() => {
+                            setActiveReply({
+                              parent_client_generated_uuid:
+                                props.client_generated_uuid,
+                              text: message,
+                              parent_username: `@${props.username}`,
+                              parent_message_author_uuid: props.userId,
+                            });
+                          }}
+                        >
+                          <ReplyIcon fill={theme.custom.colors.icon} />
+                        </div>
+                        <div style={{ marginLeft: 3 }}>
+                          <DeleteIconInternal
+                            client_generated_uuid={props.client_generated_uuid}
+                            messageSender={props.uuid}
+                          />
+                        </div>
                       </div>
-                      <div style={{ marginLeft: 3 }}>
+                    ) : (
+                      <div
+                        style={{ marginLeft: 5 }}
+                        className={classes.hoverChild}
+                      >
+                        {" "}
                         <DeleteIconInternal
                           client_generated_uuid={props.client_generated_uuid}
                           messageSender={props.uuid}
-                        />
+                        />{" "}
                       </div>
-                    </div>
-                  ) : (
-                    <div
-                      style={{ marginLeft: 5 }}
-                      className={classes.hoverChild}
-                    >
-                      {" "}
-                      <DeleteIconInternal
-                        client_generated_uuid={props.client_generated_uuid}
-                        messageSender={props.uuid}
-                      />{" "}
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
