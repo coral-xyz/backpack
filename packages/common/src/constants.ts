@@ -575,8 +575,8 @@ export const ALCHEMY_ETHEREUM_MAINNET_API_KEY =
   "DlJr6QuBC2EaE-L60-iqQQGq9hi9-XSZ";
 
 export const AVATAR_BASE_URL = "https://swr.xnfts.dev/avatars";
-export const BACKEND_API_URL = "http://localhost:8080";
-export const REALTIME_API_URL = "http://localhost:8082";
+export const BACKEND_API_URL = "https://backpack-api.xnfts.dev";
+export const REALTIME_API_URL = "https://backend-ws.xnfts.dev";
 export const MESSAGING_COMMUNICATION_PUSH = "MESSAGING_COMMUNICATION_PUSH";
 export const MESSAGING_COMMUNICATION_FETCH = "MESSAGING_COMMUNICATION_FETCH";
 export const MESSAGING_COMMUNICATION_FETCH_RESPONSE =
