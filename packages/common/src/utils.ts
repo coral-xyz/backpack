@@ -5,6 +5,11 @@ import { v1 } from "uuid";
 
 import { IMAGE_PROXY_URL } from "./constants";
 
+const usd = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
 export function toTitleCase(str: string) {
   return str?.slice(0, 1)?.toUpperCase() + str?.toLowerCase()?.slice(1);
 }
@@ -21,10 +26,7 @@ export function formatUSD(amount: number | string) {
   } else {
     amountNumber = amount;
   }
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(amountNumber);
+  return usd.format(amountNumber);
 }
 
 /**

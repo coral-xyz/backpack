@@ -2,7 +2,7 @@ import { ETH_NATIVE_MINT } from "@coral-xyz/common";
 import { ethers } from "ethers";
 import { selector, selectorFamily } from "recoil";
 
-import { equalSelector, equalSelectorFamily } from "../equals";
+import { equalSelectorFamily } from "../equals";
 
 import { erc20Balances } from "./ethereum/token";
 import { solanaConnectionUrl } from "./solana/preferences";
