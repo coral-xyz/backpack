@@ -159,16 +159,18 @@ export function WalletTokenTable({
 }) {
   const blockchain = wallet.blockchain;
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
+  const loader = useLoader(
+    blockchainBalancesSorted({
+      publicKey: wallet.publicKey.toString(),
+      blockchain,
+    }),
+    [],
+    [wallet.publicKey, connectionUrl]
+  );
+
   const [_tokenAccounts, , isLoading] = tokenAccounts
     ? [tokenAccounts, "hasValue"]
-    : useLoader(
-        blockchainBalancesSorted({
-          publicKey: wallet.publicKey.toString(),
-          blockchain,
-        }),
-        [],
-        [wallet.publicKey, connectionUrl]
-      );
+    : loader;
 
   const [search, setSearch] = useState(searchFilter);
 
@@ -335,7 +337,7 @@ export function TokenRow({
           title: token.name,
           subtitle,
           usdValue: token.usdBalance,
-          percentChange: token.recentUsdBalanceChange,
+          balanceChange: token.recentUsdBalanceChange,
         }}
       />
     </BalancesTableRow>

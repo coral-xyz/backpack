@@ -351,10 +351,11 @@ function LocalMessageIcon() {
           sx={{
             "& .MuiBadge-badge": {
               padding: 0,
-              fontSize: 10,
-              height: 10,
-              width: 10,
-              minWidth: 10,
+              fontSize: 12,
+              height: 12,
+              width: 12,
+              minWidth: 12,
+              border: "2px solid white",
               borderRadius: "50%",
               backgroundColor: "#E33E3F",
               paddingBottom: "2px",
