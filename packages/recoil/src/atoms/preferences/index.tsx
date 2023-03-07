@@ -128,6 +128,7 @@ export const user = atom<{ username: string; uuid: string; jwt: string }>({
 export const authenticatedUser = atom<{
   username: string;
   uuid: string;
+  jwt: string;
 } | null>({
   key: "authenticatedUser",
   default: null,

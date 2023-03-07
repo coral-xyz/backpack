@@ -32,6 +32,7 @@ export const PrimaryPubkeySelector = () => {
     [Blockchain.SOLANA]: "",
   });
   const setServerPublicKeys = useSetRecoilState(serverPublicKeys);
+  const [migrationDone, setMigrationDone] = useState(false);
 
   blockchains.forEach((blockchain) => {
     const allBlockchainWallets = wallets.filter(
@@ -48,7 +49,7 @@ export const PrimaryPubkeySelector = () => {
   });
 
   if (!gates["PRIMARY_PUBKEY_ENABLED"]) {
-    return <></>;
+    return null;
   }
 
   return (
@@ -58,7 +59,7 @@ export const PrimaryPubkeySelector = () => {
         borderTopRightRadius: "12px",
         height: "80%",
       }}
-      openDrawer={needsMigration.length > 0}
+      openDrawer={needsMigration.length > 0 ? !migrationDone : false}
       setOpenDrawer={() => {}}
     >
       <div
@@ -111,7 +112,7 @@ export const PrimaryPubkeySelector = () => {
             }
             onClick={() => {
               needsMigration.forEach(async (blockchain) => {
-                await fetch(`${BACKEND_API_URL}/users/activePubkey`, {
+                fetch(`${BACKEND_API_URL}/users/activePubkey`, {
                   method: "POST",
                   body: JSON.stringify({
                     publicKey: selectedAddresses[blockchain],
@@ -144,6 +145,7 @@ export const PrimaryPubkeySelector = () => {
                   })
                 );
               });
+              setMigrationDone(true);
             }}
           />
         </Box>

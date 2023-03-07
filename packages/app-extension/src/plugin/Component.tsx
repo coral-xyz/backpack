@@ -8,12 +8,6 @@ import { motion } from "framer-motion";
 import { MOTION_VARIANTS } from "../app/Router";
 
 const useStyles = styles((theme) => ({
-  textFieldInput: {
-    fontWeight: 500,
-    borderRadius: "12px",
-    fontSize: "16px",
-    lineHeight: "24px",
-  },
   textAreaInput: {
     fontWeight: 500,
     borderRadius: "12px",
@@ -76,12 +70,18 @@ export function TextArea({
   className = "",
 }: any) {
   const classes = useStyles();
+  const theme = useCustomTheme();
   className =
     className +
     `${classes.textAreaInput} ${
       value ? classes.textFieldInputColor : classes.textFieldInputColorEmpty
     }
     `;
+
+  const textColor = value
+    ? theme.custom.colors.textPlaceholder
+    : theme.custom.colors.fontColor2;
+
   return (
     <MuiTextArea
       maxRows={maxRows}
@@ -90,6 +90,7 @@ export function TextArea({
       placeholder={placeholder}
       style={{
         width: "100%",
+        color: textColor,
         ...style,
       }}
       value={value}
@@ -116,16 +117,19 @@ export function TextField({
   style,
 }: any) {
   const classes = useStyles();
-  inputProps = Object.assign(
-    {
-      className: `${classes.textFieldInput} ${
-        value ? classes.textFieldInputColor : classes.textFieldInputColorEmpty
-      }`,
-    },
-    inputProps
-  );
+  const theme = useCustomTheme();
+  const textColor = value
+    ? theme.custom.colors.textPlaceholder
+    : theme.custom.colors.fontColor2;
+
   return (
     <MuiTextField
+      sx={{
+        fontWeight: 500,
+        borderRadius: "12px",
+        fontSize: "16px",
+        lineHeight: "24px",
+      }}
       autoFocus={autoFocus}
       multiline={!!rows}
       rows={rows}
@@ -136,7 +140,13 @@ export function TextField({
       required
       fullWidth
       type={type}
-      inputProps={inputProps}
+      inputProps={{
+        ...inputProps,
+        style: {
+          ...(inputProps?.style || {}),
+          color: textColor,
+        },
+      }}
       classes={{
         root: `${isError ? classes.textRootError : ""} ${
           classes.textFieldRoot

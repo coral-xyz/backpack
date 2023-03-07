@@ -1,5 +1,6 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
+import { BubbleTopLabel } from "@coral-xyz/react-common";
 import { useRecentTransactions } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List } from "@mui/material";
@@ -59,25 +60,22 @@ export function _RecentSolanaActivityList({
     >
       {txnsGroupedByDate.map((group: HeliusParsedTransaction[], i: number) => {
         return (
-          <Fragment key={i}>
-            <div
-              style={{
-                fontSize: "16px",
-                color: theme.custom.colors.alpha,
-                lineHeight: "24px",
-                marginLeft: "28px",
-                marginTop: "16px",
-              }}
-            >
-              {formatTimestampListView(group[0].timestamp)}
-            </div>
+          <div
+            key={i}
+            style={{
+              marginLeft: "16px",
+              marginTop: "16px",
+              marginRight: "16px",
+            }}
+          >
+            <BubbleTopLabel
+              text={formatTimestampListView(group[0].timestamp)}
+            />
             <List
               style={{
                 marginTop: "5px",
                 paddingTop: 0,
                 paddingBottom: 0,
-                marginLeft: "16px",
-                marginRight: "16px",
                 borderRadius: "14px",
                 border: `${theme.custom.colors.borderFull}`,
                 ...style,
@@ -94,7 +92,7 @@ export function _RecentSolanaActivityList({
                 />
               ))}
             </List>
-          </Fragment>
+          </div>
         );
       })}
     </div>

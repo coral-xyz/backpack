@@ -1,7 +1,12 @@
 import { useState } from "react";
 import type { EnrichedInboxDb, RemoteUserData } from "@coral-xyz/common";
 import { UserList } from "@coral-xyz/message-sdk";
-import { ContactsIcon, EmptyState, TextInput } from "@coral-xyz/react-common";
+import {
+  BubbleTopLabel,
+  ContactsIcon,
+  EmptyState,
+  TextInput,
+} from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import SearchIcon from "@mui/icons-material/Search";
 import { Typography } from "@mui/material";
@@ -38,7 +43,7 @@ export const SearchUsers = ({
     <div className={classes.container}>
       <TextInput
         className={classes.searchField}
-        placeholder={"Search"}
+        placeholder="Search"
         startAdornment={
           <SearchIcon sx={{ color: theme.custom.colors.icon, mr: "10px" }} />
         }
@@ -55,54 +60,50 @@ export const SearchUsers = ({
       />
       {filteredFriends.length > 0 ? (
         <div style={{ marginTop: "24px" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "8px",
-            }}
-          >
-            <Typography color={theme.custom.colors.fontColor} fontSize={14}>
-              Your contacts
-            </Typography>
-            {requests.received.length > 0 && (
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <BubbleTopLabel text="Your friends" />
+            {requests.received.length > 0 ? (
               <RequestHeader requests={requests} />
-            )}
+            ) : null}
           </div>
-          <UserList users={filteredFriends as RemoteUserData[]} />
+          <div style={{ marginBottom: 15 }}>
+            <UserList users={filteredFriends as RemoteUserData[]} />
+          </div>
         </div>
       ) : (
         <>
-          {requests.received.length > 0 && (
+          {requests.received.length > 0 ? (
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
+                flexDirection: "row-reverse",
                 justifyContent: "space-between",
                 marginBottom: "8px",
+                marginTop: "24px",
               }}
             >
-              <div></div>
               <RequestHeader requests={requests} />
             </div>
-          )}
+          ) : null}
           <EmptyState
             icon={(props: any) => (
               <ContactsIcon fill={theme.custom.colors.icon} {...props} />
             )}
             title={
               searchFilter === ""
-                ? "No contacts"
+                ? "No friends"
                 : `No results for '${searchFilter}'`
             }
-            subtitle={searchFilter === "" ? "Search for people to add." : ""}
+            subtitle={
+              searchFilter === ""
+                ? "Request users to become friends in the messaging tab"
+                : ""
+            }
+            style={{ paddingLeft: 0, paddingRight: 0, marginTop: "24px" }}
           />
         </>
       )}
-      {/* <br />
-      <div style={{ color: theme.custom.colors.fontColor }}>Requests</div>
-      <Requests searchFilter={searchFilter} /> */}
     </div>
   );
 };
@@ -115,23 +116,32 @@ const RequestHeader = ({
   const theme = useCustomTheme();
   const nav = useNavigation();
   return (
-    <Typography
-      sx={{ cursor: "pointer" }}
-      color={theme.custom.colors.fontColor3}
-      fontSize={14}
-      onClick={() =>
-        nav.push("contact-requests", {
-          description: (
-            <>
-              These people wanted to add you as a contact.
-              <br /> Click someone to view their profile.
-            </>
-          ),
-          requests,
-        })
-      }
+    <div
+      style={{
+        marginLeft: "4px",
+        display: "flex",
+        flexDirection: "row-reverse",
+      }}
     >
-      Requests ({requests.received.length})
-    </Typography>
+      <Typography
+        sx={{ cursor: "pointer" }}
+        color={theme.custom.colors.fontColor3}
+        fontSize={14}
+        onClick={() =>
+          nav.push("contact-requests", {
+            description: (
+              <>
+                These people wanted to add you as a friend.
+                <br /> Click someone to view their profile.
+              </>
+            ),
+            requests,
+          })
+        }
+      >
+        Request{requests.received.length > 1 ? "s" : ""} (
+        {requests.received.length})
+      </Typography>
+    </div>
   );
 };

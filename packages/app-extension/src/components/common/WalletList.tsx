@@ -220,57 +220,57 @@ function WalletNavStack({
       options={() => ({ title: "" })}
     >
       <NavStackScreen
-        name={"root"}
+        name="root"
         component={(props: any) => (
           <AllWalletsList filter={filter} {...props} />
         )}
       />
       <NavStackScreen
-        name={"add-connect-wallet"}
+        name="add-connect-wallet"
         component={(props: any) => <AddConnectWalletMenu {...props} />}
       />
       <NavStackScreen
-        name={"edit-wallets-wallet-detail"}
+        name="edit-wallets-wallet-detail"
         component={(props: any) => <WalletDetail {...props} />}
       />
       <NavStackScreen
-        name={"edit-wallets-remove"}
+        name="edit-wallets-remove"
         component={(props: any) => <RemoveWallet {...props} />}
       />
       <NavStackScreen
-        name={"edit-wallets-rename"}
+        name="edit-wallets-rename"
         component={(props: any) => <RenameWallet {...props} />}
       />
       <NavStackScreen
-        name={"edit-wallets-add-connect-preview"}
+        name="edit-wallets-add-connect-preview"
         component={(props: any) => <AddConnectPreview {...props} />}
       />
       <NavStackScreen
-        name={"edit-wallets-blockchain-selector"}
+        name="edit-wallets-blockchain-selector"
         component={(props: any) => <WalletListBlockchainSelector {...props} />}
       />
       <NavStackScreen
-        name={"create-wallet"}
+        name="create-wallet"
         component={(props: any) => <CreateMenu {...props} />}
       />
       <NavStackScreen
-        name={"import-wallet"}
+        name="import-wallet"
         component={(props: any) => <ImportMenu {...props} />}
       />
       <NavStackScreen
-        name={"import-from-mnemonic"}
+        name="import-from-mnemonic"
         component={(props: any) => <ImportMnemonic {...props} />}
       />
       <NavStackScreen
-        name={"import-from-secret-key"}
+        name="import-from-secret-key"
         component={(props: any) => <ImportSecretKey {...props} />}
       />
       <NavStackScreen
-        name={"show-private-key-warning"}
+        name="show-private-key-warning"
         component={(props: any) => <ShowPrivateKeyWarning {...props} />}
       />
       <NavStackScreen
-        name={"show-private-key"}
+        name="show-private-key"
         component={(props: any) => <ShowPrivateKey {...props} />}
       />
     </NavStackEphemeral>
@@ -355,14 +355,14 @@ export function WalletListBlockchainSelector() {
         <Grid item xs={6}>
           <ActionCard
             icon={<EthereumIcon />}
-            text={`Ethereum`}
+            text="Ethereum"
             onClick={() => onClick(Blockchain.ETHEREUM)}
           />
         </Grid>
         <Grid item xs={6}>
           <ActionCard
             icon={<SolanaIcon />}
-            text={`Solana`}
+            text="Solana"
             onClick={() => onClick(Blockchain.SOLANA)}
           />
         </Grid>
@@ -449,27 +449,26 @@ function _WalletList({
           />
         )}
       </div>
-      {coldWallets.length > 0 && (
-        <div
-          style={{
+      {coldWallets.length > 0 ? <div
+        style={{
             background: theme.custom.colorsInverted.background,
             padding: "16px",
           }}
         >
-          <div
-            style={{
+        <div
+          style={{
               display: "flex",
               justifyContent: "space-between",
             }}
           >
-            <div
-              style={{
+          <div
+            style={{
                 marginBottom: "12px",
                 display: "flex",
               }}
             >
-              <Typography
-                style={{
+            <Typography
+              style={{
                   fontWeight: 500,
                   color: theme.custom.colorsInverted.fontColor,
                   fontSize: "14px",
@@ -479,13 +478,13 @@ function _WalletList({
                   justifyContent: "center",
                 }}
               >
-                Disabled app signing
-              </Typography>
-              <Tooltip
-                placement="right"
-                arrow
-                title={"These wallets can't sign for apps."}
-                componentsProps={{
+              Disabled app signing
+            </Typography>
+            <Tooltip
+              placement="bottom"
+              arrow
+              title={"These wallets can't sign for apps."}
+              componentsProps={{
                   tooltip: {
                     sx: {
                       width: "250px",
@@ -499,35 +498,34 @@ function _WalletList({
                   },
                 }}
               >
-                <InfoIcon
-                  style={{
+              <InfoIcon
+                style={{
                     width: "16px",
                     marginLeft: "5px",
                     color: theme.custom.colorsInverted.secondary,
                   }}
                 />
-              </Tooltip>
-            </div>
+            </Tooltip>
           </div>
-          <WalletList
-            inverted={true}
-            wallets={coldWallets}
-            clickWallet={async (wallet) => {
+        </div>
+        <WalletList
+          inverted
+          wallets={coldWallets}
+          clickWallet={async (wallet) => {
               if (wallet.type !== "dehydrated") {
                 await onChange(wallet);
                 close();
               }
             }}
-            style={{
+          style={{
               borderRadius: "10px",
               overflow: "hidden",
               marginLeft: 0,
               marginRight: 0,
             }}
-            selectedWalletPublicKey={activeWallet.publicKey}
+          selectedWalletPublicKey={activeWallet.publicKey}
           />
-        </div>
-      )}
+      </div> : null}
     </div>
   );
 }
@@ -633,7 +631,7 @@ export function WalletListItem({
       onClick={() => onClick(wallet)}
       isFirst={isFirst}
       isLast={isLast}
-      disableBottomBorder={true}
+      disableBottomBorder
       style={{
         padding: "12px",
         height: "72px",
@@ -897,9 +895,8 @@ export function StackedWalletAddress({
         >
           {type === "dehydrated" ? "Not recovered" : name}
         </Typography>
-        {type !== "dehydrated" && isPrimary && (
-          <Typography
-            style={{
+        {type !== "dehydrated" && isPrimary ? <Typography
+          style={{
               marginLeft: "4px",
               fontSize: "14px",
               fontWeight: 500,
@@ -911,9 +908,8 @@ export function StackedWalletAddress({
               justifyContent: "center",
             }}
           >
-            (primary)
-          </Typography>
-        )}
+          (primary)
+        </Typography> : null}
       </div>
       <div
         style={{

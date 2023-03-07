@@ -9,6 +9,7 @@
     "@cardinal/common": "^6.0.1",
     "@coral-xyz/chat-zeus": "*",
     "@coral-xyz/common": "*",
+    "@coral-xyz/backend-common": "*",
     "@coral-xyz/zeus": "*",
     "@metaplex-foundation/js": "0.16.1",
     "@metaplex-foundation/mpl-token-metadata": "^2.8.1",

@@ -8,6 +8,7 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import FileUploadIcon from "@mui/icons-material/FileUploadRounded";
 import { CircularProgress, Typography } from "@mui/material";
 
+import { MessagePluginRenderer } from "../MessagePluginRenderer";
 import { base64ToArrayBuffer } from "../utils/imageUploadUtils";
 
 import { Banner } from "./Banner";
@@ -26,18 +27,28 @@ export const FullScreenChat = ({
   setShowJumpToBottom,
   localUnreadCount,
 }) => {
-  const { loading, chats, userId, roomId, type, nftMint, publicKey } =
-    useChatContext();
+  const {
+    loading,
+    chats,
+    userId,
+    roomId,
+    type,
+    nftMint,
+    publicKey,
+    selectedFile,
+    setSelectedFile,
+    uploadingFile,
+    setUploadingFile,
+    selectedMediaKind,
+    setSelectedMediaKind,
+    uploadedImageUri,
+    setUploadedImageUri,
+  } = useChatContext();
   const [autoScroll, setAutoScroll] = useState(true);
   const theme = useCustomTheme();
   const existingMessagesRef = useRef<EnrichedMessageWithMetadata[]>([]);
   const [fetchingMoreChats, setFetchingMoreChats] = useState(false);
-  const [selectedMediaKind, setSelectedMediaKind] = useState<"image" | "video">(
-    "image"
-  );
-  const [selectedFile, setSelectedFile] = useState<any>(null);
-  const [uploadingFile, setUploadingFile] = useState(false);
-  const [uploadedImageUri, setUploadedImageUri] = useState("");
+  const [pluginMenuOpen, setPluginMenuOpen] = useState(false);
 
   const { getRootProps, getInputProps, isDragAccept } = useDropzone({
     onDrop: (files) => {
@@ -108,12 +119,18 @@ export const FullScreenChat = ({
           display: "flex",
           flexFlow: "column",
           height: "100%",
+          position: "relative",
           background: theme.custom.colors.chatFadeGradient,
         },
       })}
     >
-      {isDragAccept && <DropzonePopup />}
-      <div id={"messageContainer"} style={{ height: "calc(100% - 50px)" }}>
+      {isDragAccept ? <DropzonePopup /> : null}
+      <div
+        id="messageContainer"
+        style={{
+          height: "calc(100% - 50px)",
+        }}
+      >
         <ScrollBarImpl
           onScrollStop={async () => {
             // @ts-ignore
@@ -163,13 +180,18 @@ export const FullScreenChat = ({
             }
           }}
           setRef={setMessageRef}
-          height={"calc(100% - 50px)"}
+          height="calc(100% - 50px)"
         >
           <div>
-            <div style={{ paddingBottom: 20 }}>
+            <div
+              style={{
+                paddingBottom: 20,
+                transform: pluginMenuOpen ? "translate(0, -35px)" : undefined,
+              }}
+            >
               <input {...getInputProps()} />
               <div>
-                {fetchingMoreChats && (
+                {fetchingMoreChats ? (
                   <div
                     style={{
                       display: "flex",
@@ -181,11 +203,11 @@ export const FullScreenChat = ({
                     {" "}
                     <CircularProgress size={20} />{" "}
                   </div>
-                )}
+                ) : null}
                 <Banner />
-                {loading && <MessagesSkeleton />}
-                {!loading && chats?.length === 0 && <EmptyChat />}
-                {!loading && chats?.length !== 0 && <ChatMessages />}
+                {loading ? <MessagesSkeleton /> : null}
+                {!loading && chats?.length === 0 ? <EmptyChat /> : null}
+                {!loading && chats?.length !== 0 ? <ChatMessages /> : null}
               </div>
             </div>
           </div>
@@ -236,6 +258,7 @@ export const FullScreenChat = ({
           </div>
         </div>
       </div>
+
       <div style={{ position: "absolute", bottom: 0, width: "100%" }}>
         <SendMessage
           uploadingFile={uploadingFile}
@@ -245,6 +268,8 @@ export const FullScreenChat = ({
           onMediaSelect={onMediaSelect}
           uploadedImageUri={uploadedImageUri}
           selectedMediaKind={selectedMediaKind}
+          pluginMenuOpen={pluginMenuOpen}
+          setPluginMenuOpen={setPluginMenuOpen}
         />
       </div>
     </div>

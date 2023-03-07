@@ -3,8 +3,8 @@ import {
   AVATAR_BASE_URL,
   Blockchain,
   DEFAULT_GROUP_CHATS,
+  WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
-import { WHITELISTED_CHAT_COLLECTIONS } from "@coral-xyz/common/src/constants";
 import express from "express";
 
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
@@ -18,7 +18,7 @@ import {
   getNftMembers,
 } from "../../db/nft";
 import { getUsersByPublicKeys } from "../../db/users";
-import { validateOwnership } from "../../utils/metaplex";
+import { getNftOwner, validateOwnership } from "../../utils/metaplex";
 
 const router = express.Router();
 
@@ -119,6 +119,43 @@ router.get("/bulk", extractUserId, async (req, res) => {
 
   res.json({
     collections,
+  });
+});
+
+router.get("/validateOwner", extractUserId, async (req, res) => {
+  //@ts-ignore
+  const mint: string = req.query.mint;
+  //@ts-ignore
+  const ownerUuid: string = req.query.ownerUuid;
+  //@ts-ignore
+  const blockchain: Blockchain = req.query.blockchain || "solana";
+
+  const ownerPubkey = await getNftOwner(mint);
+
+  if (!ownerPubkey) {
+    console.error(`No owner found for nft ${ownerPubkey}`);
+    res.json({
+      isOwner: false,
+    });
+    return;
+  }
+
+  const users = await getUsersByPublicKeys([
+    {
+      blockchain,
+      publicKey: ownerPubkey,
+    },
+  ]);
+
+  if (users && users[0] && users[0].user_id === ownerUuid) {
+    res.json({
+      isOwner: true,
+    });
+    return;
+  }
+
+  res.json({
+    isOwner: false,
   });
 });
 

@@ -5,6 +5,7 @@ import {
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
 } from "@coral-xyz/common";
 import {
+  BackpackMnemonicIcon,
   HardwareIcon,
   MnemonicIcon,
   PushDetail,
@@ -54,21 +55,21 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
   const importMenu = {
     ...(allowOwnPhrase
       ? {
-          "My secret recovery phrase": {
+          "Backpack recovery phrase": {
             onClick: () =>
               navigation.push("import-from-mnemonic", {
                 blockchain,
                 keyringExists,
                 inputMnemonic: false,
               }),
-            icon: (props: any) => <MnemonicIcon {...props} />,
+            icon: (props: any) => <BackpackMnemonicIcon {...props} />,
             detailIcon: <PushDetail />,
           },
         }
       : {}),
     ...(allowOtherPhrase
       ? {
-          "Other secret recovery phrase": {
+          "Other recovery phrase": {
             onClick: () =>
               navigation.push("import-from-mnemonic", {
                 blockchain,

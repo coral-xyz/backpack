@@ -636,8 +636,15 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     id: "nokiamon",
     name: "Nokiamon",
     image:
-      "https://files.slack.com/files-pri/T0353BWC561-F04KG1AKQ4D/logo-baku.png",
+      "https://madlist-images.s3.us-west-2.amazonaws.com/nokiamon_pfp_1675332500467.png",
     collectionId: "3YysdoK6ZcJFEL5QJxccY3q8AcTUFpahgbp4HFgBtjNF",
+  },
+  {
+    id: "backpack-chat-internal",
+    name: "Backpack Team",
+    image: "https://one.xnfts.dev/BackpackTeamNFT.gif",
+
+    collectionId: "BjN9u6zneFrjzuC7LH3eLaGC9FgYLnwQJMGA1xzVBKsj",
   },
   {
     id: "bonkz",
@@ -648,9 +655,15 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
   },
   {
     id: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
-    name: "Mad Lads WL",
-    image: "https://mad-lads-web.vercel.app/mad_lads_logo.svg",
+    name: "The Madlist",
+    image: "https://www.madlads.com/mad_lads_logo.svg",
     collectionId: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
+  },
+  {
+    id: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
+    name: "The Madlist",
+    image: "https://www.madlads.com/mad_lads_logo.svg",
+    collectionId: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
   },
 ];
 
@@ -659,3 +672,20 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
 export const LOAD_PUBLIC_KEY_AMOUNT = 20;
 
 export const DEFAULT_PUBKEY_STR = "11111111111111111111111111111111";
+
+export const MOBILE_CHANNEL_LOGS = "mobile-logs";
+
+export const IMAGE_PROXY_URL = "https://d1a7965zcx2lcc.cloudfront.net";
+
+export const BACKPACK_TEAM = [
+  "ee7ce804-44b2-4360-bfbb-28e14cd0499b",
+  "29c33e60-d54a-4fe4-80e9-4bbfcc6c69b8",
+  "446a5f21-35b9-4248-970f-7b4558f57e21",
+  "6ecf7d82-095d-4fa3-9830-3567b286066d",
+  "68daeda7-2c20-49ea-9dab-f7a3ebd45ab5",
+  "931fac1c-0fb1-4e0a-9119-0a9112506db1",
+  "47dd7685-8eb1-4d4e-bbab-b7790eebb2b9",
+  "b580347f-2ec8-4600-8af1-0f5982dc93e1",
+  "b6615f78-b096-4d50-b247-05db6fe74ea4",
+  "7c01a3a2-dc39-4369-afb8-0dd2189412fc",
+];

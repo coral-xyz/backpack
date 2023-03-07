@@ -1,23 +1,23 @@
+import {
+  deleteChat,
+  enrichMessages,
+  postChat,
+  updateLatestMessage,
+  updateLatestMessageGroup,
+} from "@coral-xyz/backend-common";
 import type {
   MessageKind,
   MessageMetadata,
   SubscriptionType,
   ToPubsub,
 } from "@coral-xyz/common";
-import { CHAT_MESSAGES } from "@coral-xyz/common";
+import { CHAT_MESSAGES, DELETE_MESSAGE } from "@coral-xyz/common";
 import type { RedisClientType } from "redis";
 import { createClient } from "redis";
 
 import { REDIS_URL } from "../config";
-import { postChat } from "../db/chats";
-import {
-  updateLatestMessage,
-  updateLatestMessageGroup,
-} from "../db/friendships";
 import { Redis } from "../redis/Redis";
 import type { User } from "../users/User";
-
-import { enrichMessages } from "./Room";
 
 export class RedisSubscriptionManager {
   private static instance: RedisSubscriptionManager;
@@ -117,6 +117,40 @@ export class RedisSubscriptionManager {
     userSubscriptions?.forEach((room) => this.unsubscribe(userId, room));
   }
 
+  async deleteChatMessage(
+    id: string,
+    userId: string,
+    room: string,
+    type: SubscriptionType,
+    clientGeneratedUuid: string
+  ) {
+    await deleteChat(clientGeneratedUuid, room);
+    const roomValidation =
+      this.postSubscriptions.get(`${id}-${type}-${room}`) ?? null;
+
+    const emittedMessage = {
+      client_generated_uuid: clientGeneratedUuid,
+      room,
+      type,
+    };
+
+    if (type === "individual") {
+      this.publish(`INDIVIDUAL_${roomValidation?.user2}`, {
+        type: DELETE_MESSAGE,
+        payload: emittedMessage,
+      });
+      this.publish(`INDIVIDUAL_${roomValidation?.user1}`, {
+        type: DELETE_MESSAGE,
+        payload: emittedMessage,
+      });
+    } else {
+      this.publish(`COLLECTION_${room}`, {
+        type: DELETE_MESSAGE,
+        payload: emittedMessage,
+      });
+    }
+  }
+
   async addChatMessage(
     id: string,
     userId: string,
@@ -196,7 +230,8 @@ export class RedisSubscriptionManager {
           },
         ],
         room,
-        type
+        type,
+        true
       )
     )[0];
 

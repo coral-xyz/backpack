@@ -55,7 +55,7 @@ export function BottomCard({
             justifyContent: "space-between",
           }}
         >
-          {cancelButtonLabel && (
+          {cancelButtonLabel ? (
             <SecondaryButton
               style={{
                 marginRight: "8px",
@@ -65,15 +65,15 @@ export function BottomCard({
               onClick={onCancelButtonClick}
               label={cancelButtonLabel}
             />
-          )}
-          {buttonLabel && (
+          ) : null}
+          {buttonLabel ? (
             <PrimaryButton
               style={buttonStyle}
               buttonLabelStyle={buttonLabelStyle}
               onClick={onButtonClick}
               label={buttonLabel}
             />
-          )}
+          ) : null}
         </div>
       </div>
     </div>

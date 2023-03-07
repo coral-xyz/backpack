@@ -16,8 +16,8 @@ export function Unlocked() {
 
   return (
     <WithVersion>
-      <WithTabs>
-        <WalletDrawerProvider>
+      <WalletDrawerProvider>
+        <WithTabs>
           <div
             style={{
               display: "flex",
@@ -29,8 +29,8 @@ export function Unlocked() {
             <ApproveTransactionRequest />
             <PrimaryPubkeySelector />
           </div>
-        </WalletDrawerProvider>
-      </WithTabs>
+        </WithTabs>
+      </WalletDrawerProvider>
     </WithVersion>
   );
 }

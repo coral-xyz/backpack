@@ -14,14 +14,8 @@ import {
   QUERY_LOCKED_APPROVAL,
   toTitleCase,
 } from "@coral-xyz/common";
+import { EmptyState } from "@coral-xyz/react-common";
 import {
-  BackgroundChatsSync,
-  EmptyState,
-  refreshGroupsAndFriendships,
-  SignalingManager,
-} from "@coral-xyz/react-common";
-import {
-  isKeyCold,
   KeyringStoreStateEnum,
   useApprovedOrigins,
   useBackgroundClient,
@@ -30,12 +24,10 @@ import {
   useDarkMode,
   useEnabledBlockchains,
   useKeyringStoreState,
-  useUser,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { AnimatePresence, motion } from "framer-motion";
-import { useRecoilValue } from "recoil";
 
 import { refreshXnftPreferences } from "../api/preferences";
 import { Locked } from "../components/Locked";
@@ -45,13 +37,11 @@ import { ApproveOrigin } from "../components/Unlocked/Approvals/ApproveOrigin";
 import {
   ApproveAllTransactions,
   ApproveTransaction,
-  Cold,
 } from "../components/Unlocked/Approvals/ApproveTransaction";
+import { AuthenticatedSync } from "../components/Unlocked/AuthenticatedSync";
 import { WithAuth } from "../components/Unlocked/WithAuth";
 import { refreshFeatureGates } from "../gates/FEATURES";
 import { sanitizeTransactionWithFeeConfig } from "../utils/solana";
-
-import { DbRecoilSync } from "./DbRecoilSync";
 
 import "./App.css";
 
@@ -67,28 +57,27 @@ export default function Router() {
           toastStyle={{ backgroundColor: theme.custom.colors.swapTokensButton }}
           theme={isDarkMode ? "dark" : "light"}
         />
-        <DbRecoilSync />
         <_Router />
       </>
     </WithSuspense>
   );
 }
 
+// Hack: we use this lock variable to ensure that the onboarding flow
+//       can only open once per second. This is to avoid multiple
+//       windows opening up at once.
+let lock = 0;
 function _Router() {
   const needsOnboarding =
     useKeyringStoreState() === KeyringStoreStateEnum.NeedsOnboarding;
-  const { uuid, jwt } = useUser();
 
   useEffect(() => {
-    refreshGroupsAndFriendships(uuid).then(() => {
-      BackgroundChatsSync.getInstance().updateUuid(uuid);
-    });
-    SignalingManager.getInstance().updateUuid(uuid, jwt);
-  }, [uuid, jwt]);
-
-  useEffect(() => {
+    const current = Date.now();
     // if the user needs onboarding then open the expanded view
-    if (needsOnboarding) openOnboarding();
+    if (needsOnboarding && current - lock > 1000) {
+      lock = current;
+      openOnboarding();
+    }
   }, [needsOnboarding]);
 
   return needsOnboarding ? null : <PopupView />;
@@ -161,8 +150,9 @@ function QueryLocked() {
 
   // Wallet is unlocked so close the window. We're done.
   if (!isLocked) {
-    return <></>;
+    return null;
   }
+
   return (
     <LockedBootstrap
       onUnlock={async () => {
@@ -199,8 +189,8 @@ function QueryApproval() {
   }
 
   return (
-    <WithUnlock>
-      <WithEnabledBlockchain blockchain={blockchain!}>
+    <WithEnabledBlockchain blockchain={blockchain!}>
+      <WithUnlock>
         <ApproveOrigin
           origin={origin}
           title={title}
@@ -212,8 +202,8 @@ function QueryApproval() {
             });
           }}
         />
-      </WithEnabledBlockchain>
-    </WithUnlock>
+      </WithUnlock>
+    </WithEnabledBlockchain>
   );
 }
 
@@ -227,18 +217,10 @@ function QueryApproveTransaction() {
   const tx = url.searchParams.get("tx");
   const wallet = url.searchParams.get("wallet")!;
   const blockchain = url.searchParams.get("blockchain")! as Blockchain;
-  const _isKeyCold = useRecoilValue(isKeyCold(wallet));
 
-  return _isKeyCold ? (
-    <Cold
-      title={title!}
-      origin={origin!}
-      wallet={wallet}
-      onCompletion={async () => {}}
-    />
-  ) : (
-    <WithEnabledBlockchain blockchain={blockchain}>
-      <WithUnlock>
+  return (
+    <WithUnlock>
+      <WithEnabledBlockchain blockchain={blockchain}>
         <ApproveTransaction
           origin={origin!}
           title={title!}
@@ -280,8 +262,8 @@ function QueryApproveTransaction() {
             });
           }}
         />
-      </WithUnlock>
-    </WithEnabledBlockchain>
+      </WithEnabledBlockchain>
+    </WithUnlock>
   );
 }
 
@@ -295,18 +277,10 @@ function QueryApproveAllTransactions() {
   const txs = JSON.parse(url.searchParams.get("txs")!);
   const wallet = url.searchParams.get("wallet")!;
   const blockchain = url.searchParams.get("blockchain")! as Blockchain;
-  const _isKeyCold = useRecoilValue(isKeyCold(wallet));
 
-  return _isKeyCold ? (
-    <Cold
-      title={title!}
-      origin={origin!}
-      wallet={wallet}
-      onCompletion={async () => {}}
-    />
-  ) : (
-    <WithEnabledBlockchain blockchain={blockchain}>
-      <WithUnlock>
+  return (
+    <WithUnlock>
+      <WithEnabledBlockchain blockchain={blockchain}>
         <ApproveAllTransactions
           origin={origin!}
           title={title!}
@@ -319,8 +293,8 @@ function QueryApproveAllTransactions() {
             });
           }}
         />
-      </WithUnlock>
-    </WithEnabledBlockchain>
+      </WithEnabledBlockchain>
+    </WithUnlock>
   );
 }
 
@@ -334,18 +308,10 @@ function QueryApproveMessage() {
   const requestId = url.searchParams.get("requestId")!;
   const wallet = url.searchParams.get("wallet")!;
   const blockchain = url.searchParams.get("blockchain")! as Blockchain;
-  const _isKeyCold = useRecoilValue(isKeyCold(wallet));
 
-  return _isKeyCold ? (
-    <Cold
-      title={title!}
-      origin={origin!}
-      wallet={wallet}
-      onCompletion={async () => {}}
-    />
-  ) : (
-    <WithEnabledBlockchain blockchain={blockchain}>
-      <WithUnlock>
+  return (
+    <WithUnlock>
+      <WithEnabledBlockchain blockchain={blockchain}>
         <ApproveMessage
           origin={origin}
           title={title}
@@ -358,8 +324,8 @@ function QueryApproveMessage() {
             });
           }}
         />
-      </WithUnlock>
-    </WithEnabledBlockchain>
+      </WithEnabledBlockchain>
+    </WithUnlock>
   );
 }
 
@@ -368,8 +334,12 @@ function FullApp() {
   const background = useBackgroundClient();
 
   useEffect(() => {
-    refreshFeatureGates(background);
-    refreshXnftPreferences(background);
+    (async () => {
+      await Promise.all([
+        refreshFeatureGates(background),
+        refreshXnftPreferences(background),
+      ]);
+    })();
   }, [background]);
 
   return (
@@ -413,8 +383,15 @@ function WithUnlock({ children }: { children: React.ReactElement }) {
   return (
     <AnimatePresence initial={false}>
       <WithLockMotion id={isLocked ? "locked" : "unlocked"}>
-        <Suspense fallback={<div style={{ display: "none" }}></div>}>
-          {isLocked ? <Locked /> : <WithAuth>{children}</WithAuth>}
+        <Suspense fallback={<div style={{ display: "none" }} />}>
+          {isLocked ? (
+            <Locked />
+          ) : (
+            <>
+              <AuthenticatedSync />
+              <WithAuth>{children}</WithAuth>
+            </>
+          )}
         </Suspense>
       </WithLockMotion>
     </AnimatePresence>
@@ -433,9 +410,9 @@ function WithLockMotion({ children, id }: any) {
       }}
       key={id}
       variants={MOTION_VARIANTS}
-      initial={"initial"}
-      animate={"animate"}
-      exit={"exit"}
+      initial="initial"
+      animate="animate"
+      exit="exit"
     >
       {children}
     </motion.div>
@@ -453,7 +430,7 @@ export function WithSuspense(props: any) {
 
 export function BlankApp() {
   const classes = useStyles();
-  return <div className={classes.appContainer}></div>;
+  return <div className={classes.appContainer} />;
 }
 
 const useStyles = styles((theme) => {

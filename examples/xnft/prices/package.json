@@ -1,5 +1,5 @@
 {
-  "name": "xnft-quickstart",
+  "name": "xnft-prices",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,12 +11,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@coral-xyz/xnft-cli": "0.2.0-latest.3331",
     "@types/d3": "^7.4.0",
     "d3-scale": "^4.0.2",
     "d3-shape": "^3.1.0",
     "debounce": "^1.2.1",
-    "react": "^17.0.2",
-    "react-xnft": "*",
+    "react": "18.2.0",
+    "react-xnft": "0.2.0-latest.3318",
     "recoil": "^0.7.6",
     "reselect": "^4.1.6",
     "superstruct": "^0.16.5",

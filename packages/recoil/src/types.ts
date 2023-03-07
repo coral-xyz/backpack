@@ -73,6 +73,8 @@ export type TokenDisplay = Pick<
 
 export interface TokenMetadata {
   name: string;
+  image: string;
+  symbol: string;
 }
 
 export const TABS = [

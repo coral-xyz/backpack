@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
-  BACKPACK_FEATURE_REFERRAL_FEES,
   Blockchain,
   confirmTransaction,
   generateUnwrapSolTx,
@@ -14,11 +13,12 @@ import {
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { Transaction } from "@solana/web3.js";
 import * as bs58 from "bs58";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber, ethers, FixedNumber } from "ethers";
 
 import { blockchainTokenData } from "../atoms/balance";
-import { JUPITER_BASE_URL, jupiterInputTokens } from "../atoms/solana/jupiter";
+import { jupiterInputTokens } from "../atoms/solana/jupiter";
 import {
+  useFeatureGates,
   useJupiterOutputTokens,
   useJupiterTokenList,
   useLoader,
@@ -33,13 +33,32 @@ const DEFAULT_SLIPPAGE_PERCENT = 1;
 const ROUTE_POLL_INTERVAL = 30000;
 
 type JupiterRoute = {
-  amount: string;
   inAmount: string;
-  otherAmountThreshold: string;
   outAmount: string;
-  // deprecated field
-  outAmountWithSlippage: string;
   priceImpactPct: number;
+  marketInfos: Array<{
+    id: string;
+    label: string;
+    inputMint: string;
+    outputMint: string;
+    notEnoughLiquidity: boolean;
+    inAmount: string;
+    outAmount: string;
+    priceImpactPct: number;
+    lpFee: {
+      amount: string;
+      mint: string;
+      pct: number;
+    };
+    platformFee: {
+      amount: string;
+      mint: string;
+      pct: number;
+    };
+  }>;
+  amount: string;
+  slippageBps: number;
+  otherAmountThreshold: string;
   swapMode: string;
 };
 
@@ -68,7 +87,7 @@ type SwapContext = {
   executeSwap: () => Promise<boolean>;
   // Fees
   transactionFee: BigNumber | undefined;
-  swapFee: BigNumber;
+  swapFee: JupiterRoute["marketInfos"][number]["platformFee"];
   availableForSwap: BigNumber;
   exceedsBalance: boolean | undefined;
   feeExceedsBalance: boolean | undefined;
@@ -104,12 +123,18 @@ export function SwapProvider({
   const solanaCtx = useSolanaCtx();
   const { backgroundClient, connection, walletPublicKey } = solanaCtx;
   const jupiterTokenList = useJupiterTokenList();
+  const { SWAP_FEES_ENABLED } = useFeatureGates();
+  const JUPITER_BASE_URL = SWAP_FEES_ENABLED
+    ? "https://jupiter.xnfts.dev/v4/"
+    : "https://quote-api.jup.ag/v4/";
   const [fromTokens] = useLoader(
     jupiterInputTokens({ publicKey: walletPublicKey.toString() }),
     []
   );
   const [token] = tokenAddress
-    ? useLoader(
+    ? // TODO: refactor so this hook isn't behind a conditional
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      useLoader(
         blockchainTokenData({
           publicKey: walletPublicKey.toString(),
           blockchain,
@@ -121,12 +146,8 @@ export function SwapProvider({
 
   // Swap setttings
   const [[fromMint, toMint], setFromMintToMint] = useState([
-    token ? token.mint! : SOL_NATIVE_MINT,
-    token
-      ? token.mint! === USDC_MINT.toString()
-        ? SOL_NATIVE_MINT
-        : USDC_MINT
-      : USDC_MINT,
+    SOL_NATIVE_MINT,
+    USDC_MINT,
   ]);
   const [fromAmount, _setFromAmount] = useState<BigNumber | undefined>(
     undefined
@@ -135,7 +156,6 @@ export function SwapProvider({
 
   // Jupiter data
   const [routes, setRoutes] = useState<JupiterRoute[]>([]);
-
   const [transaction, setTransaction] = useState<string | undefined>(undefined);
   const [transactionFee, setTransactionFee] = useState<BigNumber | undefined>(
     undefined
@@ -154,10 +174,40 @@ export function SwapProvider({
   const isJupiterSwap = !isWrap && !isUnwrap;
 
   const route = routes && routes[0];
-  // If not a Jupiter swap then 1:1
-  const toAmount = isJupiterSwap
-    ? route && BigNumber.from(route.outAmount)
-    : fromAmount;
+
+  const swapFee = route?.marketInfos[route.marketInfos.length - 1].platformFee;
+
+  const toAmount = (() => {
+    if (isJupiterSwap) {
+      if (route) {
+        if (swapFee.pct > 0) {
+          // It's a Jupiter swap with fees, the output amount is
+          // swapFeeTotal * (100 / swapFeePercentage)
+          return BigNumber.from(
+            FixedNumber.from(BigNumber.from(swapFee.amount))
+              .mulUnsafe(
+                FixedNumber.from(100).divUnsafe(
+                  FixedNumber.fromString(swapFee.pct.toString())
+                )
+              )
+              .ceiling()
+              .toString()
+              .split(".")[0]
+          );
+        } else {
+          // It's a Jupiter swap with no fees
+          return BigNumber.from(route.outAmount);
+        }
+      } else {
+        // Error case
+        return undefined;
+      }
+    } else {
+      // If not a Jupiter swap then 1:1
+      return fromAmount;
+    }
+  })();
+
   // If not a Jupiter swap then no price impact
   const priceImpactPct = isJupiterSwap ? route && route.priceImpactPct : 0;
 
@@ -220,6 +270,20 @@ export function SwapProvider({
 
   // Debounce fromAmount to avoid excessive Jupiter API requests
   const debouncedFromAmount = useDebounce(fromAmount);
+
+  useEffect(() => {
+    const defaultFromMint = token ? token.mint! : SOL_NATIVE_MINT;
+    const defaultToMint = token
+      ? token.mint! === USDC_MINT.toString()
+        ? // wSOL for output not native SOL because the Jupiter output mint will
+          // be wSOL, note this is unwrapped anyway because the `wrapUnwrapSOL`
+          // parameter is set in the API call
+          WSOL_MINT
+        : USDC_MINT
+      : USDC_MINT;
+
+    setFromMintToMint([defaultFromMint, defaultToMint]);
+  }, [token]);
 
   useEffect(() => {
     (async () => {
@@ -367,7 +431,13 @@ export function SwapProvider({
   // Switch the trade direction.
   //
   const swapToFromMints = () => {
-    setFromMintToMint([toMint, fromMint]);
+    if (fromMint === SOL_NATIVE_MINT) {
+      setFromMintToMint([toMint, WSOL_MINT]);
+    } else if (toMint === WSOL_MINT) {
+      setFromMintToMint([SOL_NATIVE_MINT, fromMint]);
+    } else {
+      setFromMintToMint([toMint, fromMint]);
+    }
     setFromAmount(toAmount ?? Zero);
   };
 
@@ -395,7 +465,7 @@ export function SwapProvider({
     try {
       const signature = await sendAndConfirmTransaction(transaction);
 
-      if (BACKPACK_FEATURE_REFERRAL_FEES) {
+      if (SWAP_FEES_ENABLED) {
         try {
           await fetch("https://jupiter.xnfts.dev/swap", {
             method: "POST",
@@ -452,8 +522,7 @@ export function SwapProvider({
         isLoadingRoutes,
         isLoadingTransactions,
         transactionFee,
-        // TODO backpack fees
-        swapFee: Zero,
+        swapFee,
         isJupiterError,
         availableForSwap,
         exceedsBalance,

@@ -5,13 +5,15 @@ import type {
   SubscriptionType,
 } from "@coral-xyz/common";
 import {
+  BACKPACK_TEAM,
   NAV_COMPONENT_MESSAGE_CHAT,
+  NAV_COMPONENT_MESSAGE_GROUP_CHAT,
   NAV_COMPONENT_MESSAGE_PROFILE,
   NAV_COMPONENT_MESSAGE_REQUESTS,
   parseMessage,
 } from "@coral-xyz/common";
-import { NAV_COMPONENT_MESSAGE_GROUP_CHAT } from "@coral-xyz/common/src/constants";
 import {
+  BackpackStaffIcon,
   isFirstLastListItemStyle,
   LocalImage,
   useUsersMetadata,
@@ -49,13 +51,13 @@ export const MessageList = ({
         border: `${theme.custom.colors.borderFull}`,
       }}
     >
-      {requestCount > 0 && (
+      {requestCount > 0 ? (
         <RequestsChatItem
           requestCount={requestCount}
-          isFirst={true}
+          isFirst
           isLast={activeChats?.length === 0}
         />
-      )}
+      ) : null}
       {activeChats?.map((activeChat, index) => (
         <ChatListItem
           toRoot={toRoot}
@@ -64,6 +66,11 @@ export const MessageList = ({
             activeChat.chatType === "individual"
               ? activeChat.chatProps.remoteUserImage!
               : activeChat.chatProps.image!
+          }
+          userId={
+            activeChat.chatType === "individual"
+              ? activeChat.chatProps.remoteUserId!
+              : ""
           }
           name={
             activeChat.chatType === "individual"
@@ -85,7 +92,7 @@ export const MessageList = ({
               ? activeChat.chatProps.last_message_timestamp || ""
               : activeChat.chatProps.lastMessageTimestamp || ""
           }
-          isFirst={requestCount === 0 && index === 0}
+          isFirst={requestCount === 0 ? index === 0 : false}
           isLast={index === activeChats?.length - 1}
           isUnread={
             activeChat.chatType === "individual"
@@ -112,6 +119,7 @@ export function ChatListItem({
   id,
   isUnread,
   toRoot,
+  userId,
 }: {
   type: SubscriptionType;
   image: string;
@@ -123,6 +131,7 @@ export function ChatListItem({
   id: string;
   isUnread: boolean;
   toRoot: boolean;
+  userId: string;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -135,6 +144,12 @@ export function ChatListItem({
   const printText = parts
     .map((x) => (x.type === "tag" ? users[x.value]?.username : x.value))
     .join("");
+
+  let messagePreview = "";
+  if (printText) {
+    messagePreview =
+      printText.length > 25 ? printText.substring(0, 22) + "..." : printText;
+  }
 
   function formatAMPM(date: Date) {
     let hours = date.getHours();
@@ -233,17 +248,24 @@ export function ChatListItem({
                 }}
               >
                 <div>{type === "individual" ? `@${name}` : name}</div>
-                <div>
-                  {id === "backpack-chat" && (
+                {id === "backpack-chat" ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      flexDirection: "column",
+                    }}
+                  >
                     <VerifiedIcon
                       style={{
-                        fontSize: 19,
+                        fontSize: 14,
                         marginLeft: 3,
                         color: theme.custom.colors.verified,
                       }}
                     />
-                  )}
-                </div>
+                  </div>
+                ) : null}
+                {BACKPACK_TEAM.includes(userId) ? <BackpackStaffIcon /> : null}
               </div>
               <div
                 className={classes.userTextSmall}
@@ -255,7 +277,7 @@ export function ChatListItem({
                     : theme.custom.colors.smallTextColor,
                 }}
               >
-                {printText?.substr(0, 25) || ""}
+                {messagePreview}
               </div>
             </div>
           </div>

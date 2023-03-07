@@ -1,4 +1,3 @@
-import type { RpcRequest } from "@coral-xyz/common-public";
 import type { PublicKey } from "@solana/web3.js";
 
 import type { Event } from ".";
@@ -7,7 +6,14 @@ import {
   BACKPACK_CONFIG_EXTENSION_KEY,
   BACKPACK_CONFIG_VERSION,
 } from "./generated-config";
-import type { Context, EventEmitter, RpcResponse, Sender } from "./types";
+import type {
+  Context,
+  EventEmitter,
+  Nft,
+  RpcRequest,
+  RpcResponse,
+  Sender,
+} from "./types";
 
 export * from "./api";
 export * from "./browser";
@@ -17,13 +23,15 @@ export * from "./crypto";
 export * from "./ethereum";
 export * from "./explorer";
 export * from "./feature-gates";
+export * from "./logging";
 export * from "./messages";
 export * from "./notifications";
 export * from "./plugin";
 export * from "./preferences";
 export * from "./solana";
 export * from "./types";
-export * from "@coral-xyz/common-public";
+export * from "./utils";
+export { useStore } from "./zustand-store";
 
 // Generated pre-build step.
 export * from "./generated-config";
@@ -55,6 +63,7 @@ export function walletAddressDisplay(
   publicKey: PublicKey | string,
   numDigits = 4
 ): string {
+  if (!publicKey) return "";
   const pubkeyStr: string =
     typeof publicKey === "string" ? publicKey : publicKey.toString();
   return `${pubkeyStr.slice(0, numDigits)}...${pubkeyStr.slice(
@@ -135,4 +144,9 @@ export function isValidEventOrigin(event: Event): boolean {
   }
 
   return false;
+}
+
+export function isMadLads(nft: Nft) {
+  // TODO
+  return nft.id === "FLMYJnabb2HvyGzE6EgXfLu4bHxugkwVyeEmSitisWKa";
 }

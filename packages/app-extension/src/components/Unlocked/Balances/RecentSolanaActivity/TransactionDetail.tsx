@@ -1,13 +1,19 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Blockchain, explorerUrl } from "@coral-xyz/common";
+import {
+  Blockchain,
+  exploreAddressUrl,
+  explorerUrl,
+  walletAddressDisplay,
+} from "@coral-xyz/common";
 import { PrimaryButton } from "@coral-xyz/react-common";
 import {
   SOL_LOGO_URI,
   useActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
+  useJupiterTokenMap,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
@@ -24,6 +30,7 @@ import { Card, List } from "@mui/material";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { Source, TransactionType } from "helius-sdk/dist/types";
 
+import { UNKNOWN_ICON_SRC } from "../../../common/Icon";
 import { WithDrawer } from "../../../common/Layout/Drawer";
 import { NavBackButton } from "../../../common/Layout/Nav";
 import {
@@ -36,7 +43,6 @@ import {
   getTokenData,
   getTransactionDetailTitle,
   getTransactionTitle,
-  getTruncatedAddress,
   isNFTTransaction,
   isUserTxnSender,
 } from "./detail-parser";
@@ -136,6 +142,11 @@ const useStyles = styles((theme) => ({
     width: "56px",
     height: "56px",
   },
+  addressExplorerRow: {
+    "&:hover": {
+      cursor: "pointer",
+    },
+  },
 }));
 
 export function TransactionDetail({
@@ -151,12 +162,13 @@ export function TransactionDetail({
 }) {
   const theme = useCustomTheme();
   const classes = useStyles();
+  const registry = useJupiterTokenMap();
   const activeWallet = useActiveWallet();
   const navigate = useNavigate();
   const [openDrawer, setOpenDrawer] = useState(true);
 
   // TODO - this is duplicated in ListItem.tsx, better to pass in setTransactionDetail state
-  const tokenData = getTokenData(transaction);
+  const tokenData = getTokenData(registry, transaction);
 
   return (
     <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
@@ -185,7 +197,7 @@ export function TransactionDetail({
           }
         >
           <NavStackScreen
-            name={"transactionDetails"}
+            name="transactionDetails"
             component={(props: any) => (
               <Card {...props} className={classes.transactionCard}>
                 <div
@@ -209,15 +221,13 @@ export function TransactionDetail({
                 create mappings for 'verified' sites to determine correct URL*/}
                 {transaction?.type === TransactionType.NFT_SALE &&
                   transaction?.events?.nft?.buyer ===
-                    activeWallet.publicKey && (
-                    <PrimaryButton
+                    activeWallet.publicKey ? <PrimaryButton
                       className={classes.ctaButton}
                       label="View in your gallery"
                       onClick={() => {
                         navigate("/nfts");
                       }}
-                    />
-                  )}
+                    /> : null}
 
                 <DetailTable transaction={transaction} tokenData={tokenData} />
               </Card>
@@ -267,7 +277,7 @@ function DetailCardHeader({
         >
           <img
             className={classes.tokenLogo}
-            src={tokenData[0] && tokenData[0]?.logoURI}
+            src={(tokenData[0] && tokenData[0]?.logoURI) || UNKNOWN_ICON_SRC}
           />
 
           <div
@@ -276,13 +286,13 @@ function DetailCardHeader({
               lineHeight: "24px",
               color: theme.custom.colors.fontColor,
               marginTop: "5px",
+              textAlign: "center",
             }}
           >
             {transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
               " " +
-              tokenData[0]?.symbol ||
-              getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint) ||
-              "UNKWN"}
+              (tokenData[0]?.symbol ||
+                walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint))}
           </div>
         </div>
 
@@ -303,7 +313,7 @@ function DetailCardHeader({
         >
           <img
             className={classes.tokenLogo}
-            src={tokenData[1] && tokenData[1]?.logoURI}
+            src={(tokenData[1] && tokenData[1]?.logoURI) || UNKNOWN_ICON_SRC}
           />
           <div
             style={{
@@ -311,13 +321,13 @@ function DetailCardHeader({
               lineHeight: "24px",
               color: theme.custom.colors.fontColor,
               marginTop: "5px",
+              textAlign: "center",
             }}
           >
             {transaction?.tokenTransfers[1]?.tokenAmount.toFixed(5) +
               " " +
-              tokenData[1]?.symbol ||
-              getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint) ||
-              "UNKWN"}
+              (tokenData[1]?.symbol ||
+                walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint))}
           </div>
         </div>
       </div>
@@ -325,8 +335,7 @@ function DetailCardHeader({
   }
 
   // if NFT url available, display it. Check on-chain data first
-  const nftImage = undefined;
-  // FIXME: metadata?.onChainMetadata?.metadata?.data?.uri || metadata?.offChainData?.image;
+  const nftImage = undefined; // FIXME: metadata?.onChainMetadata?.metadata?.data?.uri;
 
   const nftPrice = transaction?.events?.nft?.amount
     ? transaction?.events?.nft?.amount / 10 ** 9
@@ -345,27 +354,25 @@ function DetailCardHeader({
         >
           {getTransactionTitle(activeWallet, transaction)}
         </div>
-        {nftPrice && (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <img
-              style={{
+        {nftPrice ? <div style={{ display: "flex", alignItems: "center" }}>
+          <img
+            style={{
                 borderRadius: "50%",
                 width: "16px",
                 height: "16px",
                 marginRight: "5px",
               }}
-              src={SOL_LOGO_URI}
+            src={SOL_LOGO_URI}
             />
-            <div
-              style={{
+          <div
+            style={{
                 fontSize: "16px",
                 color: theme.custom.colors.fontColor,
               }}
             >
-              {nftPrice + " SOL"}
-            </div>
+            {nftPrice + " SOL"}
           </div>
-        )}
+        </div> : null}
       </>
     );
   }
@@ -389,14 +396,10 @@ function DetailCardHeader({
       );
     }
     // other SPL token Transfer. Check tokenRegistry first, then Helius metadata
-    const transferIcon = undefined;
-    //   FIXME: tokenData[0]?.logoURI ||
-    //   metadata?.onChaindata?.data?.uri ||
-    //   metadata?.offChainData?.image;
+    const transferIcon = tokenData[0]?.logoURI || UNKNOWN_ICON_SRC; // FIXME: || metadata?.onChainMetadata?.metadata?.data?.uri;
 
     const transferSymbol =
       tokenData[0]?.symbol || metadata?.onChainMetadata?.metadata?.data?.symbol;
-    // FIXME: || metadata?.offChainData?.symbol;
 
     if (transferIcon) {
       return (
@@ -498,67 +501,82 @@ function DetailTable({
 
       {(transaction?.type === TransactionType.UNKNOWN ||
         transaction.type === TransactionType.TRANSFER) &&
-        isUserTxnSender(transaction, activeWallet) && (
-          <div className={classes.middleRow}>
+        isUserTxnSender(transaction, activeWallet) ? <div className={classes.addressExplorerRow}>
+          <div
+            className={classes.middleRow}
+            onClick={() => {
+                window.open(
+                  exploreAddressUrl(
+                    explorer!,
+                    transaction?.tokenTransfers?.[0]?.toUserAccount ||
+                      transaction?.nativeTransfers?.[0]?.toUserAccount,
+                    connectionUrl!
+                  )
+                );
+              }}
+            >
             <div className={classes.cell}>
               <div className={classes.label}>To</div>
-
               <div className={classes.cellValue}>
-                {getTruncatedAddress(
-                  transaction?.tokenTransfers?.[0]?.toUserAccount ||
-                    transaction?.nativeTransfers?.[0]?.toUserAccount
-                )}
+                {walletAddressDisplay(
+                    transaction?.tokenTransfers?.[0]?.toUserAccount ||
+                      transaction?.nativeTransfers?.[0]?.toUserAccount
+                  )}
+                <CallMade
+                  style={{
+                      color: theme.custom.colors.icon,
+                      paddingLeft: "2px",
+                    }}
+                  />
               </div>
             </div>
           </div>
-        )}
+        </div> : null}
       {(transaction?.type === TransactionType.UNKNOWN ||
         transaction.type === TransactionType.TRANSFER) &&
-        isUserTxnSender(transaction, activeWallet) === false && (
-          <div className={classes.middleRow}>
-            <div className={classes.cell}>
-              <div className={classes.label}>From</div>
+        isUserTxnSender(transaction, activeWallet) === false ? <div className={classes.middleRow}>
+          <div className={classes.cell}>
+            <div className={classes.label}>From</div>
 
-              <div className={classes.cellValue}>
-                {getTruncatedAddress(
+            <div className={classes.cellValue}>
+              {walletAddressDisplay(
                   transaction?.tokenTransfers?.[0]?.fromUserAccount ||
                     transaction?.nativeTransfers?.[0]?.fromUserAccount
                 )}
-              </div>
             </div>
           </div>
-        )}
+        </div> : null}
 
-      {transaction?.type === TransactionType.SWAP && (
-        <>
-          <div className={classes.middleRow}>
-            <div className={classes.cell}>
-              <div className={classes.label}>You paid</div>
+      {transaction?.type === TransactionType.SWAP ? <>
+        <div className={classes.middleRow}>
+          <div className={classes.cell}>
+            <div className={classes.label}>You paid</div>
 
-              <div className={classes.cellValue}>
-                {transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
+            <div className={classes.cellValue}>
+              {transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
                   " " +
-                  tokenData[0]?.symbol ||
-                  getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint) ||
-                  "UKNWN"}
-              </div>
+                  (tokenData[0]?.symbol ||
+                    walletAddressDisplay(
+                      transaction?.tokenTransfers?.[0]?.mint
+                    ))}
             </div>
           </div>
-          <div className={classes.middleRow}>
-            <div className={classes.cell}>
-              <div className={classes.label}>You Received</div>
+        </div>
+        <div className={classes.middleRow}>
+          <div className={classes.cell}>
+            <div className={classes.label}>You Received</div>
 
-              <div className={classes.confirmedStatus}>
-                {transaction?.tokenTransfers[1]?.tokenAmount.toFixed(5) +
+            <div className={classes.confirmedStatus}>
+              {transaction?.tokenTransfers[1]?.tokenAmount.toFixed(5) +
                   " " +
-                  tokenData[1]?.symbol ||
-                  getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint) ||
-                  "UNKWN"}
-              </div>
+                  (tokenData[1]?.symbol ||
+                    walletAddressDisplay(
+                      transaction?.tokenTransfers?.[0]?.mint
+                    ))}
             </div>
           </div>
-        </>
-      )}
+        </div>
+      </> : null}
       {/* ALL txn types have  first row (Date) rest of data
       rows below (Network Fee, Status, Signature)*/}
       <div className={classes.middleRow}>
@@ -593,7 +611,7 @@ function DetailTable({
           <div className={classes.label}>Signature</div>
 
           <div className={classes.cellValue}>
-            {getTruncatedAddress(transaction?.signature)}
+            {walletAddressDisplay(transaction?.signature)}
             <CallMade
               style={{
                 color: theme.custom.colors.icon,

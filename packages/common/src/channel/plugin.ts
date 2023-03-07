@@ -2,9 +2,7 @@
 // Communication channels for xNFT plugins and the host.
 //
 
-import type { Event } from "@coral-xyz/common-public";
-
-import type { RpcResponse } from "../types";
+import type { Event, RpcResponse } from "../types";
 
 export class PluginServer {
   private window?: any;
@@ -39,10 +37,12 @@ export class PluginServer {
   ): () => void {
     const handle = async (event: Event) => {
       const url = new URL(this.url);
+      const eventUrl = new URL(event.data.href);
       if (
         // TODO: hardcode allowed origin(s)
         (!url.origin.startsWith("http://localhost:9933") &&
-          (event.origin !== url.origin || event.data.href !== url.href)) ||
+          (eventUrl.origin !== url.origin ||
+            eventUrl.pathname !== url.pathname)) ||
         event.data.type !== this.requestChannel
       ) {
         throw new Error("Unknown Origin or channel");

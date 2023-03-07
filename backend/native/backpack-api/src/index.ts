@@ -5,6 +5,7 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 import { ZodError } from "zod";
 
 import authenticateRouter from "./routes/v1/authenticate";
+import barterRouter from "./routes/v1/barter";
 import chatRouter from "./routes/v1/chats";
 import dropzoneRouter from "./routes/v1/dropzone";
 import friendsRouter from "./routes/v1/friends";
@@ -35,6 +36,7 @@ app.use("/chat", chatRouter);
 app.use("/dropzone", dropzoneRouter);
 app.use("/friends", friendsRouter);
 app.use("/inbox", inboxRouter);
+app.use("/barter", barterRouter);
 app.use("/nft", nftsRouter);
 app.use("/notifications/", notificationRoutes);
 app.use("/preferences", preferenceRoutes);
@@ -53,6 +55,14 @@ app.use(
   })
 );
 app.get("/_health", (_req, res) => {
+  return res.status(200).json({
+    uptime: process.uptime(),
+    message: "OK",
+    timestamp: Date.now(),
+  });
+});
+
+app.get("/", (_req, res) => {
   return res.status(200).json({
     uptime: process.uptime(),
     message: "OK",

@@ -1,5 +1,3 @@
-import type { Event, XnftMetadata } from "@coral-xyz/common-public";
-import { externalResourceUri, getLogger } from "@coral-xyz/common-public";
 import type { ConfirmOptions, SendOptions } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import base32Encode from "base32-encode";
@@ -43,8 +41,10 @@ import {
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
 } from "./constants";
-import type { RpcResponse, XnftPreference } from "./types";
+import { getLogger } from "./logging";
+import type { Event, RpcResponse, XnftMetadata, XnftPreference } from "./types";
 import { Blockchain } from "./types";
+import { externalResourceUri } from "./utils";
 
 const logger = getLogger("common/plugin");
 
@@ -61,8 +61,6 @@ export class Plugin {
   private _rpcServer: PluginServer;
   public iframeRoot?: HTMLIFrameElement;
   private _iframeActive?: HTMLIFrameElement;
-  private _nextRenderId?: number;
-  private _pendingBridgeRequests?: Array<any>;
 
   public didFinishSetup?: Promise<void>;
   private _didFinishSetupResolver?: () => void;
@@ -125,6 +123,14 @@ export class Plugin {
           `https://${xnftAddressB32}.gateway.xnfts.dev`
         : externalResourceUri(url);
 
+    const whitelistedProtocols = ["ar://", "ipfs://", "https://", "http://"];
+    const isWhitelisted = whitelistedProtocols.find((p) =>
+      iframeRootUrl.startsWith(p)
+    );
+    if (!isWhitelisted) {
+      throw new Error("invalid xnft url");
+    }
+
     this.iframeRootUrl = iframeRootUrl;
 
     //
@@ -161,7 +167,6 @@ export class Plugin {
       // url.searchParams.set("deepXnftPath", deepXnftPath);
       url.hash = deepXnftPath;
     }
-    this._nextRenderId = 0;
     this.iframeRoot = document.createElement("iframe");
     this.iframeRoot.style.width = "100%";
     this.iframeRoot.style.height = "100vh";
@@ -184,7 +189,7 @@ export class Plugin {
   // Onload handler for the top level iframe representing the xNFT.
   private handleRootIframeOnLoad() {
     logger.debug("iframe on load");
-    this._pendingBridgeRequests = [];
+
     //
     // Context switch to this iframe.
     //
@@ -232,8 +237,6 @@ export class Plugin {
     // Don't need to remove the active iframe because we've removed the root.
     this._iframeActive = undefined;
     this._rpcServer.destroyWindow();
-    this._nextRenderId = undefined;
-    this._pendingBridgeRequests = undefined;
     this._didFinishSetupResolver = undefined;
     this.didFinishSetup = undefined;
   }

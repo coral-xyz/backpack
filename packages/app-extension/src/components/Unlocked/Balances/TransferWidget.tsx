@@ -1,3 +1,4 @@
+import React from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   ETH_NATIVE_MINT,
@@ -5,11 +6,7 @@ import {
   STRIPE_ENABLED,
 } from "@coral-xyz/common";
 import { Dollar } from "@coral-xyz/react-common";
-import {
-  SwapProvider,
-  useActiveSolanaWallet,
-  useFeatureGates,
-} from "@coral-xyz/recoil";
+import { SwapProvider, useFeatureGates } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ArrowDownward, ArrowUpward, SwapHoriz } from "@mui/icons-material";
 import { Typography } from "@mui/material";
@@ -50,39 +47,24 @@ export function TransferWidget({
     <div
       style={{
         display: "flex",
-        width:
-          enableOnramp && swapEnabled
-            ? "256px"
-            : swapEnabled || enableOnramp
-            ? "188px"
-            : "120px",
         marginLeft: "auto",
         marginRight: "auto",
+        justifyContent: "center",
+        gap: "16px",
       }}
     >
-      {enableOnramp && (
-        <>
-          <RampButton blockchain={blockchain} address={address} />
-          <div style={{ width: "16px" }} />
-        </>
-      )}
+      {enableOnramp ? (
+        <RampButton blockchain={blockchain} address={address} />
+      ) : null}
       <ReceiveButton blockchain={blockchain} publicKey={publicKey} />
-      <div style={{ width: "16px" }} />
       <SendButton
         blockchain={blockchain}
         address={address}
         publicKey={publicKey}
       />
-      {swapEnabled && (
-        <>
-          <div style={{ width: "16px" }} />
-          <SwapButton
-            blockchain={blockchain}
-            address={address}
-            publicKey={publicKey}
-          />
-        </>
-      )}
+      {swapEnabled ? (
+        <SwapButton blockchain={blockchain} address={address} />
+      ) : null}
     </div>
   );
 }
@@ -90,47 +72,57 @@ export function TransferWidget({
 function SwapButton({
   blockchain,
   address,
-  publicKey,
 }: {
   blockchain?: Blockchain;
   address?: string;
-  publicKey?: string;
 }) {
   const theme = useCustomTheme();
-  // Aggregate view swapper can just default to the current (global) active key.
-  publicKey = publicKey ?? useActiveSolanaWallet()?.publicKey;
 
+  const SwapButtonComponent = ({
+    routes = [],
+  }: {
+    routes?: React.ComponentProps<typeof TransferButton>["routes"];
+  }) => (
+    <TransferButton
+      label="Swap"
+      labelComponent={
+        <SwapHoriz
+          style={{
+            color: theme.custom.colors.fontColor,
+            display: "flex",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        />
+      }
+      routes={routes}
+      disabled={routes.length === 0}
+    />
+  );
+
+  // Wrap in Suspense so it doesn't block if Jupiter is slow or down.
   return (
-    <SwapProvider tokenAddress={address}>
-      <TransferButton
-        label={"Swap"}
-        labelComponent={
-          <SwapHoriz
-            style={{
-              color: theme.custom.colors.fontColor,
-              display: "flex",
-              marginLeft: "auto",
-              marginRight: "auto",
-            }}
-          />
-        }
-        routes={[
-          {
-            name: "swap",
-            component: (props: any) => <Swap {...props} />,
-            title: `Swap`,
-            props: {
-              blockchain,
+    <React.Suspense fallback={<SwapButtonComponent />}>
+      <SwapProvider tokenAddress={address}>
+        <SwapButtonComponent
+          routes={[
+            {
+              name: "swap",
+              component: (props: any) => <Swap {...props} />,
+              title: `Swap`,
+              props: {
+                blockchain,
+              },
             },
-          },
-          {
-            title: `Select Token`,
-            name: "select-token",
-            component: (props: any) => <SwapSelectToken {...props} />,
-          },
-        ]}
-      />
-    </SwapProvider>
+            {
+              title: `Select Token`,
+              name: "select-token",
+              component: (props: any) => <SwapSelectToken {...props} />,
+            },
+          ]}
+        />
+      </SwapProvider>
+    </React.Suspense>
   );
 }
 
@@ -146,7 +138,7 @@ function SendButton({
   const theme = useCustomTheme();
   return (
     <TransferButton
-      label={"Send"}
+      label="Send"
       labelComponent={
         <ArrowUpward
           style={{
@@ -208,7 +200,7 @@ function ReceiveButton({
   const theme = useCustomTheme();
   return (
     <TransferButton
-      label={"Receive"}
+      label="Receive"
       labelComponent={
         <ArrowDownward
           style={{
@@ -244,7 +236,7 @@ function RampButton({
   const theme = useCustomTheme();
   return (
     <TransferButton
-      label={"Buy"}
+      label="Buy"
       labelComponent={
         <Dollar
           fill={theme.custom.colors.fontColor}
@@ -293,10 +285,12 @@ function TransferButton({
   label,
   labelComponent,
   routes,
+  disabled = false,
 }: {
   label: string;
   labelComponent: any;
-  routes: Array<{ props?: any; component: any; title: string; name: string }>;
+  routes?: Array<{ props?: any; component: any; title: string; name: string }>;
+  disabled?: boolean;
 }) {
   const theme = useCustomTheme();
   return (
@@ -304,6 +298,9 @@ function TransferButton({
       style={{
         width: "52px",
         height: "70px",
+        // semi-transparent and unclickable when disabled=true
+        opacity: disabled ? 0.5 : 1,
+        pointerEvents: disabled ? "none" : "auto",
       }}
     >
       <WithHeaderButton
@@ -319,7 +316,7 @@ function TransferButton({
           display: "block",
           marginBottom: "8px",
         }}
-        label={""}
+        label=""
         labelComponent={labelComponent}
         routes={routes}
       />

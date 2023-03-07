@@ -13,12 +13,11 @@
     "@coral-xyz/common": "*",
     "dexie": "^3.2.2",
     "dexie-react-hooks": "^1.1.1",
-    "react": "^17.0.2",
+    "react": "18.2.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "typescript": "~4.9.3",
-    "parcel": "^2.7.0"
+    "typescript": "~4.9.3"
   },
   "targets": {
     "module": false,

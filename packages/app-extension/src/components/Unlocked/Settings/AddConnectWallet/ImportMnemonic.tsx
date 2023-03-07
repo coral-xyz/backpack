@@ -12,11 +12,13 @@ import {
   UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
 } from "@coral-xyz/common";
 import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import {
+  useBackgroundClient,
+  useSignMessageForWallet,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
 
-import { useSignMessageForWallet } from "../../../../hooks/useSignMessageForWallet";
 import { useSteps } from "../../../../hooks/useSteps";
 import { Header } from "../../../common";
 import { ImportWallets } from "../../../common/Account/ImportWallets";
@@ -98,17 +100,17 @@ export function ImportMnemonic({
     // Show the seed phrase if we are creating based on a mnemonic
     ...(inputMnemonic
       ? [
-          <MnemonicInput
-            buttonLabel="Next"
-            onNext={(mnemonic) => {
+        <MnemonicInput
+          buttonLabel="Next"
+          onNext={(mnemonic) => {
               setMnemonic(mnemonic);
               nextStep();
             }}
           />,
           // Must prompt for a name if using an input mnemonic, because we can't
           // easily generate one
-          <InputName
-            onNext={(name) => {
+        <InputName
+          onNext={(name) => {
               setName(name);
               nextStep();
             }}
@@ -177,7 +179,7 @@ export function InputName({ onNext }: { onNext: (name: string) => void }) {
 
       <Box sx={{ margin: "0 16px" }}>
         <TextInput
-          autoFocus={true}
+          autoFocus
           placeholder="Name"
           value={name}
           setValue={(e: any) => setName(e.target.value)}

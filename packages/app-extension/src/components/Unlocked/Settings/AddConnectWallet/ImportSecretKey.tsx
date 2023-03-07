@@ -125,7 +125,7 @@ export function ImportSecretKey({
           <Box sx={{ margin: "0 16px" }}>
             <Box sx={{ marginBottom: "4px" }}>
               <TextInput
-                autoFocus={true}
+                autoFocus
                 placeholder="Name"
                 value={name}
                 setValue={(e) => setName(e.target.value)}
@@ -164,7 +164,16 @@ export function ImportSecretKey({
           />
         </Box>
       </form>
-      <WithMiniDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+      <WithMiniDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
+        backdropProps={{
+          style: {
+            opacity: 0.8,
+            background: "#18181b",
+          },
+        }}
+      >
         <ConfirmCreateWallet
           blockchain={blockchain}
           publicKey={newPublicKey}

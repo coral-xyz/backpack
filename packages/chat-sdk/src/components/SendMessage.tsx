@@ -14,12 +14,19 @@ import { v4 as uuidv4 } from "uuid";
 
 import { CustomAutoComplete, MessageInput } from "./messageInput/MessageInput";
 import { MessageInputProvider } from "./messageInput/MessageInputProvider";
+import { AboveMessagePluginRenderer } from "./AboveMessagePluginRenderer";
 import { Attachment } from "./Attachment";
+import { Barter } from "./Barter";
 import { useChatContext } from "./ChatContext";
 import { EmojiPickerComponent } from "./EmojiPicker";
 import { GifPicker } from "./GifPicker";
+import { NftSticker } from "./NftSticker";
 import { ReplyContainer } from "./ReplyContainer";
 import { SecureTransfer } from "./SecureTransfer";
+
+const BARTER_ENABLED = false;
+const SECURE_TRANSFER_ENABLED = false;
+const STICKER_ENABLED = false;
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
@@ -89,6 +96,8 @@ export const SendMessage = ({
   onMediaSelect,
   selectedMediaKind,
   uploadedImageUri,
+  pluginMenuOpen,
+  setPluginMenuOpen,
 }: {
   onMediaSelect: any;
   selectedMediaKind: "video" | "image";
@@ -97,103 +106,31 @@ export const SendMessage = ({
   setSelectedFile: any;
   uploadingFile: boolean;
   setUploadingFile: any;
+  pluginMenuOpen: boolean;
+  setPluginMenuOpen: (val: boolean) => void;
 }) => {
   const classes = useStyles();
   const { uuid } = useUser();
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
-  const [emojiMenuOpen, setEmojiMenuOpen] = useState(false);
 
   const theme = useCustomTheme();
   const activeSolanaWallet = useActiveSolanaWallet();
-  const inputRef = useRef<any>(null);
-
   const {
+    setOpenPlugin,
+    aboveMessagePlugin,
+    setAboveMessagePlugin,
+    inputRef,
+    sendMessage,
     remoteUserId,
     remoteUsername,
-    roomId,
     activeReply,
-    setActiveReply,
     type,
     chats,
   } = useChatContext();
+
   const remoteUsers = useUsersMetadata({ remoteUserIds: [remoteUserId] });
   const remoteUserImage = remoteUsers?.[0]?.image;
-
-  const sendMessage = async (
-    messageTxt,
-    messageKind: MessageKind = "text",
-    messageMetadata?: MessageMetadata
-  ) => {
-    if (selectedFile && uploadingFile) {
-      return;
-    }
-    if (messageTxt || selectedFile) {
-      if (selectedFile) {
-        messageKind = "media";
-        messageMetadata = {
-          media_kind: selectedMediaKind,
-          media_link: uploadedImageUri,
-        };
-        setSelectedFile(null);
-      }
-      const client_generated_uuid = uuidv4();
-      if (chats.length === 0 && type === "individual") {
-        // If it's the first time the user is interacting,
-        // create an in memory friendship
-        createEmptyFriendship(uuid, remoteUserId, {
-          last_message_sender: uuid,
-          last_message_timestamp: new Date().toISOString(),
-          last_message:
-            messageKind === "gif"
-              ? "GIF"
-              : messageKind === "secure-transfer"
-              ? "Secure Transfer"
-              : messageKind === "media"
-              ? "Media"
-              : messageTxt,
-          last_message_client_uuid: client_generated_uuid,
-        });
-      }
-      SignalingManager.getInstance()?.send({
-        type: CHAT_MESSAGES,
-        payload: {
-          messages: [
-            {
-              client_generated_uuid: client_generated_uuid,
-              message: messageTxt,
-              message_kind: messageKind,
-              message_metadata: messageMetadata,
-              parent_client_generated_uuid:
-                activeReply.parent_client_generated_uuid
-                  ? activeReply.parent_client_generated_uuid
-                  : undefined,
-              //@ts-ignore
-              parent_message_author_username:
-                activeReply.parent_client_generated_uuid
-                  ? activeReply.parent_username?.slice(1)
-                  : undefined,
-              //@ts-ignore
-              parent_message_text: activeReply.parent_client_generated_uuid
-                ? activeReply.text
-                : undefined,
-              parent_message_author_uuid:
-                activeReply.parent_message_author_uuid,
-            },
-          ],
-          type: type,
-          room: roomId,
-        },
-      });
-
-      setActiveReply({
-        parent_username: "",
-        parent_client_generated_uuid: null,
-        text: "",
-      });
-      inputRef.current.setValue("");
-    }
-  };
 
   useEffect(() => {
     function keyDownTextField(event) {
@@ -241,13 +178,14 @@ export const SendMessage = ({
     });
     return Object.keys(userMap).map((uuid) => userMap[uuid]);
   };
+
   return (
     <MessageInputProvider
       inputRef={inputRef}
       offlineMembers={getOfflineMembers().slice(0, 5)}
     >
       <div className={classes.outerDiv}>
-        {selectedFile && (
+        {selectedFile ? (
           <div>
             <div style={{ background: theme.custom.colors.bg3 }}>
               <div
@@ -284,7 +222,7 @@ export const SendMessage = ({
                 ) : (
                   <video
                     style={{ maxHeight: 300, maxWidth: 300 }}
-                    controls={true}
+                    controls
                     src={selectedFile}
                   />
                 )}
@@ -296,7 +234,7 @@ export const SendMessage = ({
                   marginTop: 3,
                 }}
               >
-                {uploadingFile && (
+                {uploadingFile ? (
                   <>
                     {" "}
                     <div
@@ -311,20 +249,26 @@ export const SendMessage = ({
                       <CircularProgress size={20} color="secondary" />{" "}
                     </div>{" "}
                   </>
-                )}
+                ) : null}
               </div>
             </div>
           </div>
-        )}
-        {activeReply.parent_client_generated_uuid && (
+        ) : null}
+        {activeReply.parent_client_generated_uuid ? (
           <ReplyContainer
             marginBottom={6}
             padding={12}
             parent_username={activeReply.parent_username || ""}
-            showCloseBtn={true}
+            showCloseBtn
             text={activeReply.text}
           />
-        )}
+        ) : null}
+        {aboveMessagePlugin ? (
+          <AboveMessagePluginRenderer
+            sendMessage={sendMessage}
+            setAboveMessagePlugin={setAboveMessagePlugin}
+          />
+        ) : null}
         <CustomAutoComplete />
         <div style={{ display: "flex" }}>
           <div
@@ -345,19 +289,19 @@ export const SendMessage = ({
                 },
               }}
               onClick={() => {
-                setEmojiMenuOpen(!emojiMenuOpen);
+                setPluginMenuOpen(!pluginMenuOpen);
               }}
             >
-              {emojiMenuOpen ? (
+              {pluginMenuOpen ? (
                 <CloseIcon style={{ fontSize: 24 }} />
               ) : (
                 <AddIcon style={{ fontSize: 24 }} />
               )}
             </IconButton>
           </div>
-          <MessageInput setEmojiMenuOpen={setEmojiMenuOpen} />
+          <MessageInput setPluginMenuOpen={setPluginMenuOpen} />
         </div>
-        {emojiMenuOpen && (
+        {pluginMenuOpen ? (
           <div style={{ display: "flex", marginLeft: 8, paddingBottom: 5 }}>
             <div
               style={{
@@ -365,7 +309,7 @@ export const SendMessage = ({
                 flexDirection: "column",
                 justifyContent: "center",
               }}
-            ></div>
+            />
             <EmojiPickerComponent
               setEmojiPicker={setEmojiPicker}
               emojiPicker={emojiPicker}
@@ -390,24 +334,35 @@ export const SendMessage = ({
                 height: "28px",
               }}
             />
-            {activeSolanaWallet?.publicKey && (
+            {STICKER_ENABLED ? (
+              <NftSticker
+                buttonStyle={{
+                  height: "28px",
+                }}
+                setAboveMessagePlugin={setAboveMessagePlugin}
+              />
+            ) : null}
+            {type === "individual" && BARTER_ENABLED ? (
+              <Barter
+                setOpenPlugin={setOpenPlugin}
+                onMediaSelect={onMediaSelect}
+                buttonStyle={{
+                  height: "28px",
+                }}
+              />
+            ) : null}
+            {SECURE_TRANSFER_ENABLED &&
+            activeSolanaWallet?.publicKey &&
+            type === "individual" ? (
               <SecureTransfer
                 buttonStyle={{
                   height: "28px",
                 }}
-                remoteUserId={remoteUserId}
-                onTxFinalized={({ signature, counter, escrow }) => {
-                  sendMessage("Secure transfer", "secure-transfer", {
-                    signature,
-                    counter,
-                    escrow,
-                    current_state: "pending",
-                  });
-                }}
+                setAboveMessagePlugin={setAboveMessagePlugin}
               />
-            )}
+            ) : null}
           </div>
-        )}
+        ) : null}
       </div>
     </MessageInputProvider>
   );

@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import type {
   AutolockSettings,
   Blockchain,
-  FEATURE_GATES_MAP,
   Notification,
 } from "@coral-xyz/common";
 import {
@@ -633,6 +632,7 @@ export function NotificationsProvider(props: any) {
       setAuthenticatedUser({
         username: notif.data.username,
         uuid: notif.data.uuid,
+        jwt: notif.data.jwt,
       });
     };
 
@@ -694,7 +694,7 @@ export function NotificationsProvider(props: any) {
     const handleSetFeatureGates = (notif: Notification) => {
       setFeatureGates((current) => ({
         ...current,
-        ...featureGates,
+        ...notif.data.gates,
       }));
     };
 

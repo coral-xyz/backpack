@@ -8,14 +8,10 @@ import {
 } from "react-router-dom";
 import type { SubscriptionType } from "@coral-xyz/common";
 import {
-  MESSAGE_IFRAME_ENABLED,
+  BACKPACK_TEAM,
   MESSAGING_COMMUNICATION_FETCH_RESPONSE,
   NAV_COMPONENT_MESSAGE_PROFILE,
 } from "@coral-xyz/common";
-import {
-  MESSAGING_COMMUNICATION_FETCH,
-  MESSAGING_COMMUNICATION_PUSH,
-} from "@coral-xyz/common/src/constants";
 import {
   ChatScreen,
   Inbox,
@@ -23,12 +19,11 @@ import {
   ProfileScreen,
   RequestsScreen,
 } from "@coral-xyz/message-sdk";
-import { useUsersMetadata } from "@coral-xyz/react-common";
+import { useBreakpoints, useUsersMetadata } from "@coral-xyz/react-common";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   useDarkMode,
   useDecodedSearchParams,
-  useFeatureGates,
   useNavigation,
   useRedirectUrl,
   useUser,
@@ -50,7 +45,6 @@ import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/Detail";
 import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
 import { SettingsButton } from "../../Unlocked/Settings";
 
-import { useBreakpoints } from "./hooks";
 import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
 import { Scrollbar } from "./Scrollbar";
@@ -71,12 +65,12 @@ export function Router() {
         <Route path="/nfts/experience" element={<NftsExperiencePage />} />
         <Route path="/nfts/chat" element={<NftsChatPage />} />
         <Route path="/nfts/detail" element={<NftsDetailPage />} />
-        {!isXs && (
+        {!isXs ? (
           <>
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/recent-activity" element={<RecentActivityPage />} />
           </>
-        )}
+        ) : null}
         {/*
           Auto-lock functionality is dependent on checking if the URL contains
           "xnft", if this changes then please verify that it still works
@@ -112,7 +106,7 @@ export function Redirect() {
 export function RedirectXs() {
   let url = useRedirectUrl();
   if (url.startsWith("/notifications") || url.startsWith("/recent-activity")) {
-    return <Navigate to={"/balances"} replace />;
+    return <Navigate to="/balances" replace />;
   }
   return <Navigate to={url} replace />;
 }
@@ -122,7 +116,7 @@ function BalancesPage() {
 }
 
 function NftsPage() {
-  return <NavScreen noScrollbars={true} component={<Nfts />} />;
+  return <NavScreen noScrollbars component={<Nfts />} />;
 }
 
 function NftsChatPage() {
@@ -156,16 +150,6 @@ function NftsDetailPage() {
 }
 
 function Messages() {
-  const featureGates = useFeatureGates();
-
-  if (featureGates[MESSAGE_IFRAME_ENABLED]) {
-    return <MessagesIframe />;
-  }
-
-  return <MessagesNative />;
-}
-
-function MessagesNative() {
   const { push, pop } = useNavigation();
   const { isXs } = useBreakpoints();
 
@@ -184,18 +168,18 @@ function MessagesNative() {
 function MessageNativeInner() {
   const isDarkMode = useDarkMode();
   const hash = location.hash.slice(1);
-  const { uuid, username } = useUser();
+  const { uuid } = useUser();
   const { props } = useDecodedSearchParams<any>();
   const { isXs } = useBreakpoints();
 
   if (hash.startsWith("/messages/requests")) {
-    return <NavScreen noMotion={true} component={<RequestsScreen />} />;
+    return <NavScreen noMotion component={<RequestsScreen />} />;
   }
 
   if (hash.startsWith("/messages/chat")) {
     return (
       <NavScreen
-        noMotion={true}
+        noMotion
         component={
           <ChatScreen
             isDarkMode={isDarkMode}
@@ -211,7 +195,7 @@ function MessageNativeInner() {
   if (hash.startsWith("/messages/groupchat")) {
     return (
       <NavScreen
-        noMotion={true}
+        noMotion
         component={<NftChat collectionId={props.id} {...props} />}
       />
     );
@@ -219,18 +203,15 @@ function MessageNativeInner() {
 
   if (hash.startsWith("/messages/profile")) {
     return (
-      <NavScreen
-        noMotion={true}
-        component={<ProfileScreen userId={props.userId} />}
-      />
+      <NavScreen noMotion component={<ProfileScreen userId={props.userId} />} />
     );
   }
 
   if (!isXs) {
-    return <></>;
+    return <div />;
   }
 
-  return <NavScreen noMotion={true} component={<Inbox />} />;
+  return <NavScreen noMotion component={<Inbox />} />;
 }
 
 function FullChatPage() {
@@ -269,90 +250,6 @@ function FullChatPage() {
         <MessageNativeInner />
       </div>
     </div>
-  );
-}
-
-function MessagesIframe() {
-  const MESSAGING_URL = "http://localhost:3000";
-  const iframeRef = useRef<any>();
-  const { push } = useNavigation();
-  const location = useLocation();
-  const { props }: any = useDecodedSearchParams();
-  const { uuid, username } = useUser();
-  const isDarkMode = useDarkMode();
-
-  useEffect(() => {
-    if (iframeRef && iframeRef.current) {
-      window.addEventListener(
-        "message",
-        async (event) => {
-          if (event.origin !== MESSAGING_URL) return;
-
-          if (event.data.type === MESSAGING_COMMUNICATION_FETCH) {
-            try {
-              const response = await fetch(
-                event.data.payload.url,
-                event.data.payload.args
-              );
-              iframeRef.current?.contentWindow?.postMessage(
-                {
-                  type: MESSAGING_COMMUNICATION_FETCH_RESPONSE,
-                  payload: {
-                    counter: event.data.payload.counter,
-                    data: await response.json(),
-                    success: true,
-                  },
-                },
-                "*"
-              );
-            } catch (e) {
-              iframeRef.current?.contentWindow?.postMessage(
-                {
-                  type: MESSAGING_COMMUNICATION_FETCH_RESPONSE,
-                  payload: {
-                    counter: event.data.payload.counter,
-                    success: false,
-                  },
-                },
-                "*"
-              );
-            }
-          }
-          if (event.data.type === MESSAGING_COMMUNICATION_PUSH) {
-            push(event.data.payload);
-          }
-        },
-        false
-      );
-    }
-  }, [iframeRef]);
-
-  const route = location.pathname;
-
-  return (
-    <NavScreen
-      component={
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
-          }}
-        >
-          <iframe
-            ref={iframeRef}
-            frameBorder="0"
-            src={`${MESSAGING_URL}/#${route}?parentUrl=${
-              window.location.origin
-            }&userId=${
-              props.userId || ""
-            }&uuid=${uuid}&username=${username}&isDarkMode=${isDarkMode}`}
-            width={"100%"}
-            height={"100%"}
-          />
-        </div>
-      }
-    />
   );
 }
 
@@ -510,6 +407,7 @@ function useNavBar() {
       <div style={{ display: "flex" }}>
         <Typography
           style={{
+            userSelect: "none",
             fontSize: "18px",
             color: theme.custom.colors.fontColor,
             fontWeight: 600,
@@ -572,7 +470,8 @@ function useNavBar() {
         ? "https://user-images.githubusercontent.com/321395/206757416-a80e662a-0ccc-41cc-a20f-ff397755d47f.png"
         : undefined,
     isVerified:
-      pathname === "/messages/groupchat" && props.id === "backpack-chat",
+      (pathname === "/messages/groupchat" && props.id === "backpack-chat") ||
+      (pathname === "/messages/chat" && BACKPACK_TEAM.includes(props.userId)),
     onClick,
   };
 }

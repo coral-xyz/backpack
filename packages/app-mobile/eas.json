@@ -1,5 +1,6 @@
 {
   "cli": {
+    "appVersionSource": "remote",
     "version": ">= 3.0.0"
   },
   "build": {
@@ -10,7 +11,8 @@
       }
     },
     "production": {
-      "extends": "monorepo"
+      "extends": "monorepo",
+      "autoIncrement": true
     },
     "simulator": {
       "extends": "monorepo",
@@ -53,6 +55,10 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appName": "Backpack Crypto Wallet"
+      }
+    }
   }
 }

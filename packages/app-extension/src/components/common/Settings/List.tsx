@@ -19,7 +19,7 @@ export function SettingsList({
       style?: React.CSSProperties;
       classes?: any;
       button?: boolean;
-      icon?: React.ReactNode;
+      icon?: any;
       label?: string;
       allowOnclickPropagation?: boolean;
     };
@@ -62,16 +62,17 @@ export function SettingsList({
               alignItems: "center",
             }}
           >
-            {val.icon &&
-              val.icon({
-                style: {
-                  color: theme.custom.colors.icon,
-                  height: "24px",
-                  width: "24px",
-                  marginRight: "8px",
-                },
-                fill: theme.custom.colors.icon,
-              })}
+            {val.icon
+              ? val.icon({
+                  style: {
+                    color: theme.custom.colors.icon,
+                    height: "24px",
+                    width: "24px",
+                    marginRight: "8px",
+                  },
+                  fill: theme.custom.colors.icon,
+                })
+              : null}
             <Typography style={{ fontWeight: 500, ...textStyle }}>
               {val.label ?? key}
             </Typography>

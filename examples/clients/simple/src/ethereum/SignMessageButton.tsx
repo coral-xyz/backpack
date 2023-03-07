@@ -11,8 +11,8 @@ export const SignMessageButton: FC = () => {
       <button disabled={isLoading} onClick={() => signMessage()}>
         Sign the message: Hello, world!
       </button>
-      {isSuccess && <div>Signature: {data}</div>}
-      {isError && <div>Error signing message</div>}
+      {isSuccess ? <div>Signature: {data}</div> : null}
+      {isError ? <div>Error signing message</div> : null}
     </div>
   );
 };

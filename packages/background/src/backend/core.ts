@@ -1290,7 +1290,7 @@ export class Backend {
   /**
    * Add a public key to a Backpack account via the Backpack API.
    */
-  async userAccountPublicKeyCreate(
+  public async userAccountPublicKeyCreate(
     blockchain: Blockchain,
     publicKey: string,
     signature?: string
@@ -1383,7 +1383,19 @@ export class Backend {
       },
     });
     if (response.status !== 200) throw new Error(`could not authenticate`);
-    return await response.json();
+
+    const json = await response.json();
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
+      data: {
+        username: json.username,
+        uuid: json.id,
+        jwt: json.jwt,
+      },
+    });
+
+    return json;
   }
 
   /**
@@ -1467,15 +1479,14 @@ export class Backend {
 
     const json = await response.json();
 
-    if (json.isAuthenticated) {
-      this.events.emit(BACKEND_EVENT, {
-        name: NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
-        data: {
-          username: json.username,
-          uuid: json.id,
-        },
-      });
-    }
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
+      data: {
+        username: json.username,
+        uuid: json.id,
+        jwt: json.jwt,
+      },
+    });
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,

@@ -33,6 +33,39 @@ export function explorerUrl(
       throw new Error("unknown explorer base");
   }
 }
+// returns explorer url to explore addresses
+export function exploreAddressUrl(
+  base: string,
+  address: string,
+  connectionUrl: string
+): string {
+  switch (base) {
+    case EthereumExplorer.ETHERSCAN:
+      return join(EthereumExplorer.ETHERSCAN, `address/${address}`);
+    case SolanaExplorer.SOLANA_EXPLORER:
+      return join(
+        SolanaExplorer.SOLANA_EXPLORER,
+        `address/${address}${clusterSuffix(base, connectionUrl)}`
+      );
+    case SolanaExplorer.SOLSCAN:
+      return join(
+        SolanaExplorer.SOLSCAN,
+        `account/${address}${clusterSuffix(base, connectionUrl)}`
+      );
+    case SolanaExplorer.SOLANA_BEACH:
+      return join(
+        SolanaExplorer.SOLANA_BEACH,
+        `address/${address}${clusterSuffix(base, connectionUrl)}`
+      );
+    case SolanaExplorer.SOLANA_FM:
+      return join(
+        SolanaExplorer.SOLANA_FM,
+        `address/${address}${clusterSuffix(base, connectionUrl)}`
+      );
+    default:
+      throw new Error("unknown explorer base");
+  }
+}
 
 // Returns the explorer url to display the given nft.
 export function explorerNftUrl(

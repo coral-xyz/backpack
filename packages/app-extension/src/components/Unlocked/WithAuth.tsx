@@ -14,6 +14,7 @@ import {
   UI_RPC_METHOD_USER_JWT_UPDATE,
 } from "@coral-xyz/common";
 import {
+  useAuthentication,
   useBackgroundClient,
   useDehydratedWallets,
   useKeyringHasMnemonic,
@@ -21,7 +22,6 @@ import {
 } from "@coral-xyz/recoil";
 import { ethers } from "ethers";
 
-import { useAuthentication } from "../../hooks/useAuthentication";
 import { WithDrawer } from "../common/Layout/Drawer";
 import { HardwareOnboard } from "../Onboarding/pages/HardwareOnboard";
 
@@ -41,7 +41,6 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   } | null>(null);
   const [authSignature, setAuthSignature] = useState<string | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [serverPublicKeys, setServerPublicKeys] = useState<Array<{
     blockchain: Blockchain;
     publicKey: string;
@@ -57,15 +56,14 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
    * not authenticated.
    */
   useEffect(() => {
+    setAuthSignature(null);
+    setServerPublicKeys(null);
     (async () => {
-      setAuthSignature(null);
-      setServerPublicKeys(null);
       setClientPublicKeys(await getSigners());
-      const result = await checkAuthentication(user.jwt);
+      const result = user.jwt ? await checkAuthentication(user.jwt) : null;
       // These set state calls should be batched
       if (result) {
         const { publicKeys } = result;
-        setIsAuthenticated(true);
         setServerPublicKeys(publicKeys);
       } else {
         // Not authenticated so couldn't get public keys, get the primary
@@ -75,7 +73,6 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
         );
         const serverPublicKeys = (await response.json()).publicKeys;
         setServerPublicKeys(serverPublicKeys);
-        setIsAuthenticated(false);
         // Find a local signer that exists on the client and server and
         // set the auth data
         const signer = await getAuthSigner(
@@ -217,28 +214,26 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   return (
     <>
       {children}
-      {authData && (
-        <WithDrawer
-          openDrawer={openDrawer}
-          setOpenDrawer={setOpenDrawer}
-          paperStyles={{
+      {authData ? <WithDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
+        paperStyles={{
             height: "calc(100% - 56px)",
             borderTopLeftRadius: "12px",
             borderTopRightRadius: "12px",
           }}
         >
-          <HardwareOnboard
-            blockchain={authData!.blockchain}
-            action="search"
-            searchPublicKey={authData!.publicKey}
-            signMessage={authData!.message}
-            signText="Sign the message to authenticate with Backpack."
-            onComplete={(signedWalletDescriptor: SignedWalletDescriptor) => {
+        <HardwareOnboard
+          blockchain={authData!.blockchain}
+          action="search"
+          searchPublicKey={authData!.publicKey}
+          signMessage={authData!.message}
+          signText="Sign the message to authenticate with Backpack."
+          onComplete={(signedWalletDescriptor: SignedWalletDescriptor) => {
               setAuthSignature(signedWalletDescriptor.signature);
             }}
           />
-        </WithDrawer>
-      )}
+      </WithDrawer> : null}
     </>
   );
 }

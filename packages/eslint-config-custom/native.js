@@ -12,6 +12,7 @@ const allExtensions = computeExpoExtensions(
 
 module.exports = {
   extends: [
+    "./shared/backpack.js",
     "./shared/core.js",
     "./shared/typescript.js",
     "./shared/react.js",

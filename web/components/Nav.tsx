@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Disclosure } from '@headlessui/react';
 import { ExternalLinkIcon, MenuIcon, XIcon } from '@heroicons/react/outline';
-import Image from 'next/image';
+import Image from 'next/legacy/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 

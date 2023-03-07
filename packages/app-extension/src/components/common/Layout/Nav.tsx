@@ -228,44 +228,73 @@ function CenterDisplay({
   const notchViewComponentWithProps = notchViewComponent
     ? React.cloneElement(notchViewComponent, { setOpenDrawer: setNotchEnabled })
     : null;
+
   const theme = useCustomTheme();
+  const handleOpenDrawer = () => {
+    setNotchEnabled((x) => !x);
+  };
 
   return (
-    <Suspense fallback={<div></div>}>
+    <Suspense fallback={<div />}>
       <div
         style={{
+          userSelect: "none",
           visibility: title ? undefined : "hidden",
           overflow: "hidden",
           maxWidth: `calc(100% - ${NAV_BUTTON_WIDTH * 2}px)`,
           margin: "0 auto",
           display: "flex",
           alignItems: "center",
-          cursor: onClick ? "pointer" : "",
+          cursor: onClick ? "pointer" : "default",
         }}
         onClick={onClick ? onClick : () => {}}
       >
-        {image && (
-          <img
+        {image ? (
+          <button
             style={{
+              background: "transparent",
+              border: "none",
+              padding: 0,
+              margin: 0,
+              cursor: "pointer",
               width: 25,
               height: 25,
               marginRight: 5,
-              borderRadius: "50%",
             }}
-            src={image}
-          />
-        )}
-        <NavTitleLabel title={title} />
-        {notchViewComponent && (
+            onClick={handleOpenDrawer}
+          >
+            <img
+              style={{
+                width: 25,
+                height: 25,
+                borderRadius: "50%",
+              }}
+              src={image}
+            />
+          </button>
+        ) : null}
+        <button
+          style={{
+            background: "transparent",
+            border: "none",
+            padding: 0,
+            margin: 0,
+            cursor: "pointer",
+          }}
+          onClick={handleOpenDrawer}
+        >
+          <NavTitleLabel title={title} />
+        </button>
+        {notchViewComponent ? (
           <KeyboardArrowDownSharpIcon
-            onClick={() => setNotchEnabled((x) => !x)}
+            onClick={handleOpenDrawer}
             style={{ cursor: "pointer", color: theme.custom.colors.fontColor }}
           />
-        )}
-        {notchEnabled && notchViewComponentWithProps && (
+        ) : null}
+        {notchEnabled && notchViewComponentWithProps ? (
           <>{notchViewComponentWithProps}</>
-        )}
-        {isVerified && (
+        ) : null}
+        {isVerified ? (
           <VerifiedIcon
             style={{
               fontSize: 19,
@@ -273,7 +302,7 @@ function CenterDisplay({
               color: theme.custom.colors.verified,
             }}
           />
-        )}
+        ) : null}
       </div>
     </Suspense>
   );
@@ -307,5 +336,5 @@ export function NavTitleLabel({ title }: any) {
 
 export function DummyButton() {
   const classes = useStyles();
-  return <div className={classes.menuButtonContainer}></div>;
+  return <div className={classes.menuButtonContainer} />;
 }

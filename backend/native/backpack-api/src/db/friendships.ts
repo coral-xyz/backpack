@@ -9,6 +9,27 @@ const chain = Chain(HASURA_URL, {
   },
 });
 
+export const getFriendshipById = async ({
+  roomId,
+}: {
+  roomId: number;
+}): Promise<null | { user1: string; user2: string }> => {
+  const friendship = await chain("query")({
+    auth_friendships: [
+      {
+        where: { id: { _eq: roomId } },
+        limit: 1,
+      },
+      {
+        user1: true,
+        user2: true,
+      },
+    ],
+  });
+
+  return friendship.auth_friendships[0] || null;
+};
+
 export const getOrCreateFriendship = async ({
   from,
   to,
@@ -145,8 +166,8 @@ export const getAllFriendships = async ({
             },
           ],
         },
-        limit,
-        offset,
+        // limit,
+        // offset,
         //@ts-ignore
         order_by: [{ last_message_timestamp: "desc" }],
       },
@@ -763,40 +784,6 @@ export const getFriendship = async ({
     blocked: existingFriendship.auth_friendships[0]?.[blockedLabel] ?? false,
     request_sent: existingFriendship.auth_friend_requests[0] ? true : false,
   };
-};
-
-export const validateRoom = async (uuid: string, roomId: number) => {
-  const response = await chain("query")({
-    auth_friendships: [
-      {
-        where: {
-          _or: [
-            {
-              id: { _eq: roomId },
-              user1: { _eq: uuid },
-            },
-            {
-              id: { _eq: roomId },
-              user2: { _eq: uuid },
-            },
-          ],
-        },
-      },
-      {
-        id: true,
-        user1: true,
-        user2: true,
-      },
-    ],
-  });
-
-  const friendship = response.auth_friendships[0];
-
-  if (friendship) {
-    return { user1: friendship.user1, user2: friendship.user2 };
-  }
-
-  return null;
 };
 
 export const updateLastReadGroup = async (

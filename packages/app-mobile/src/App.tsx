@@ -14,12 +14,12 @@ import {
 import { NotificationsProvider } from "@coral-xyz/recoil";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { useTheme } from "~hooks/useTheme";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import { RecoilRoot, useRecoilCallback, useRecoilSnapshot } from "recoil";
 
 import { ErrorBoundary } from "~components/ErrorBoundary";
+import { useTheme } from "~hooks/useTheme";
 
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import { RootNavigation } from "./navigation/RootNavigator";
@@ -170,9 +170,9 @@ function maybeParseLog({
         const [name, ...rest] = data;
         const color = name.includes("ERROR") ? "red" : "brown";
         console.group(`${channel}:${name}`);
-        console.log("%c" + `${channel}:` + name, `color: ${color}`);
+        console.log(`%c${channel}:${name}`, `color: ${color}`);
         console.log(rest);
-        console.log("%c" + "---", `color: ${color}`);
+        console.log(`%c---`, `color: ${color}`);
         console.groupEnd();
         break;
       }
@@ -181,9 +181,9 @@ function maybeParseLog({
       case "mobile-fe-response": {
         const name = data.wrappedEvent.channel;
         const color = "orange";
-        console.log("%c" + `${channel}:${name}`, `color: ${color}`);
+        console.log(`%c${channel}:${name}`, `color: ${color}`);
         console.log(data.wrappedEvent.data);
-        console.log("%c" + "---", `color: ${color}`);
+        console.log(`%c---`, `color: ${color}`);
         break;
       }
       default: {
@@ -207,7 +207,7 @@ function BackgroundHiddenWebView(): JSX.Element {
     Constants?.expoConfig?.extra || {};
 
   const webViewUrl = Device.isDevice ? remoteWebViewUrl : localWebViewUrl;
-  console.log("webviewUrl", webViewUrl);
+  console.log("webviewUrl", webViewUrl, remoteWebViewUrl);
 
   return (
     <View style={styles.webview}>
@@ -215,8 +215,8 @@ function BackgroundHiddenWebView(): JSX.Element {
         ref={ref}
         // useWebView2
         // originWhitelist={["*", "https://*", "https://backpack-api.xnfts.dev/*"]}
-        // cacheMode="LOAD_CACHE_ELSE_NETWORK"
-        // cacheEnabled
+        cacheMode="LOAD_CACHE_ELSE_NETWORK"
+        cacheEnabled
         limitsNavigationsToAppBoundDomains
         source={{
           uri: webViewUrl,

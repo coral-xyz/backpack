@@ -15,11 +15,9 @@ export function SendWeiButton() {
       <button onClick={() => sendTransaction?.()}>
         Send 1 WEI to zero address
       </button>
-      {isSuccess && (
-        <div style={{ marginBottom: "8px" }}>
-          Transaction: {JSON.stringify(data)}
-        </div>
-      )}
+      {isSuccess ? <div style={{ marginBottom: "8px" }}>
+        Transaction: {JSON.stringify(data)}
+      </div> : null}
     </div>
   );
 }

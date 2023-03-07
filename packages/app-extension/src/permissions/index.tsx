@@ -1,14 +1,9 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 
 import Permissions from "./Permissions";
 
-//
 // Render the UI.
-//
-ReactDOM.render(
-  <React.StrictMode>
-    <Permissions />
-  </React.StrictMode>,
-  document.getElementById("permissions")
-);
+// TOOD(react) createRoot is required: https://reactjs.org/blog/2022/03/08/react-18-upgrade-guide.html#updates-to-client-rendering-apis
+const container = document.getElementById("permissions");
+const root = createRoot(container!);
+root.render(<Permissions />);

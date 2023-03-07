@@ -19,7 +19,7 @@ export function YourAccount() {
           },
         }
       : {}),
-    Logout: {
+    "Log out": {
       onClick: () => nav.push("logout"),
     },
   };

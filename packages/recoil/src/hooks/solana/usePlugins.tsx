@@ -10,7 +10,7 @@ import {
 } from "@coral-xyz/common";
 // XXX: this full path is currently necessary as it avoids loading the jsx in
 //      react-xnft-renderer/src/Component.tsx in the background service worker
-import { Plugin } from "@coral-xyz/common/dist/esm/plugin";
+import { Plugin } from "@coral-xyz/common";
 import { PublicKey } from "@solana/web3.js";
 import {
   useRecoilValue,
@@ -87,12 +87,13 @@ export function usePluginUrl(address?: string) {
   const [cached] = useState<Plugin | undefined>(
     PLUGIN_CACHE.get(address ?? "")
   );
-
-  if (cached) return cached.iframeRootUrl;
-
   useEffect(() => {
     (async () => {
-      if (address) {
+      if (address?.toString() === "11111111111111111111111111111111") {
+        setUrl("Simulator");
+      } else if (cached) {
+        setUrl(cached.iframeRootUrl);
+      } else if (address) {
         try {
           const xnft = await fetchXnft(new PublicKey(address));
           setUrl(xnft!.xnft.manifest.entrypoints.default.web);
@@ -101,7 +102,7 @@ export function usePluginUrl(address?: string) {
         }
       }
     })();
-  });
+  }, [cached]);
 
   return url;
 }

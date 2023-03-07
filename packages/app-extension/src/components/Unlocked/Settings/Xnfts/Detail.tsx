@@ -232,7 +232,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
         </Typography>
         <NegativeButton
           disabled={isDisabled}
-          label={"Uninstall xNFT"}
+          label="Uninstall xNFT"
           onClick={() => setOpenConfirm(true)}
         />
       </div>
@@ -301,7 +301,7 @@ const UninstallConfirmationCard = ({ xnft }: { xnft: any }) => {
   ) : cardType === "sending" ? (
     <Sending signature={txSignature!} isComplete={false} />
   ) : cardType === "complete" ? (
-    <Sending signature={txSignature!} isComplete={true} />
+    <Sending signature={txSignature!} isComplete />
   ) : (
     <Error
       blockchain={Blockchain.SOLANA}
@@ -347,7 +347,7 @@ const ConfirmUninstall = ({
           Are you sure you want to uninstall {xnft.title}?
         </Typography>
       </div>
-      <NegativeButton label={"Confirm"} onClick={() => onConfirm()} />
+      <NegativeButton label="Confirm" onClick={() => onConfirm()} />
     </div>
   );
 };

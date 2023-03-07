@@ -183,6 +183,51 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_friendships_set_input",
     where: "auth_friendships_bool_exp",
   },
+  auth_invitations: {
+    data: {},
+  },
+  auth_invitations_bool_exp: {
+    _and: "auth_invitations_bool_exp",
+    _not: "auth_invitations_bool_exp",
+    _or: "auth_invitations_bool_exp",
+    created_at: "timestamptz_comparison_exp",
+    data: "jsonb_comparison_exp",
+    id: "uuid_comparison_exp",
+    user: "auth_users_bool_exp",
+  },
+  auth_invitations_constraint: "enum" as const,
+  auth_invitations_insert_input: {
+    created_at: "timestamptz",
+    data: "jsonb",
+    id: "uuid",
+    user: "auth_users_obj_rel_insert_input",
+  },
+  auth_invitations_obj_rel_insert_input: {
+    data: "auth_invitations_insert_input",
+    on_conflict: "auth_invitations_on_conflict",
+  },
+  auth_invitations_on_conflict: {
+    constraint: "auth_invitations_constraint",
+    update_columns: "auth_invitations_update_column",
+    where: "auth_invitations_bool_exp",
+  },
+  auth_invitations_order_by: {
+    created_at: "order_by",
+    data: "order_by",
+    id: "order_by",
+    user: "auth_users_order_by",
+  },
+  auth_invitations_select_column: "enum" as const,
+  auth_invitations_stream_cursor_input: {
+    initial_value: "auth_invitations_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  auth_invitations_stream_cursor_value_input: {
+    created_at: "timestamptz",
+    data: "jsonb",
+    id: "uuid",
+  },
+  auth_invitations_update_column: "enum" as const,
   auth_notification_cursor_bool_exp: {
     _and: "auth_notification_cursor_bool_exp",
     _not: "auth_notification_cursor_bool_exp",
@@ -719,6 +764,7 @@ export const AllTypesProps: Record<string, any> = {
     created_at: "timestamptz_comparison_exp",
     dropzone_public_key: "auth_public_keys_bool_exp",
     id: "uuid_comparison_exp",
+    invitation: "auth_invitations_bool_exp",
     public_keys: "auth_public_keys_bool_exp",
     public_keys_aggregate: "auth_public_keys_aggregate_bool_exp",
     referred_users: "auth_users_bool_exp",
@@ -728,6 +774,7 @@ export const AllTypesProps: Record<string, any> = {
   },
   auth_users_constraint: "enum" as const,
   auth_users_insert_input: {
+    invitation: "auth_invitations_obj_rel_insert_input",
     invitation_id: "uuid",
     public_keys: "auth_public_keys_arr_rel_insert_input",
     referred_users: "auth_users_arr_rel_insert_input",
@@ -758,6 +805,7 @@ export const AllTypesProps: Record<string, any> = {
     created_at: "order_by",
     dropzone_public_key_aggregate: "auth_public_keys_aggregate_order_by",
     id: "order_by",
+    invitation: "auth_invitations_order_by",
     public_keys_aggregate: "auth_public_keys_aggregate_order_by",
     referred_users_aggregate: "auth_users_aggregate_order_by",
     referrer: "auth_users_order_by",
@@ -1037,6 +1085,14 @@ export const AllTypesProps: Record<string, any> = {
       object: "auth_friendships_insert_input",
       on_conflict: "auth_friendships_on_conflict",
     },
+    insert_auth_invitations: {
+      objects: "auth_invitations_insert_input",
+      on_conflict: "auth_invitations_on_conflict",
+    },
+    insert_auth_invitations_one: {
+      object: "auth_invitations_insert_input",
+      on_conflict: "auth_invitations_on_conflict",
+    },
     insert_auth_notification_cursor: {
       objects: "auth_notification_cursor_insert_input",
       on_conflict: "auth_notification_cursor_on_conflict",
@@ -1296,6 +1352,14 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_friendships_bool_exp",
     },
     auth_friendships_by_pk: {},
+    auth_invitations: {
+      distinct_on: "auth_invitations_select_column",
+      order_by: "auth_invitations_order_by",
+      where: "auth_invitations_bool_exp",
+    },
+    auth_invitations_by_pk: {
+      id: "uuid",
+    },
     auth_notification_cursor: {
       distinct_on: "auth_notification_cursor_select_column",
       order_by: "auth_notification_cursor_order_by",
@@ -1459,6 +1523,18 @@ export const AllTypesProps: Record<string, any> = {
     auth_friendships_stream: {
       cursor: "auth_friendships_stream_cursor_input",
       where: "auth_friendships_bool_exp",
+    },
+    auth_invitations: {
+      distinct_on: "auth_invitations_select_column",
+      order_by: "auth_invitations_order_by",
+      where: "auth_invitations_bool_exp",
+    },
+    auth_invitations_by_pk: {
+      id: "uuid",
+    },
+    auth_invitations_stream: {
+      cursor: "auth_invitations_stream_cursor_input",
+      where: "auth_invitations_bool_exp",
     },
     auth_notification_cursor: {
       distinct_on: "auth_notification_cursor_select_column",
@@ -1771,6 +1847,16 @@ export const ReturnTypes: Record<string, any> = {
   auth_friendships_variance_fields: {
     id: "Float",
   },
+  auth_invitations: {
+    created_at: "timestamptz",
+    data: "jsonb",
+    id: "uuid",
+    user: "auth_users",
+  },
+  auth_invitations_mutation_response: {
+    affected_rows: "Int",
+    returning: "auth_invitations",
+  },
   auth_notification_cursor: {
     last_read_notificaiton: "Int",
     uuid: "String",
@@ -1999,6 +2085,7 @@ export const ReturnTypes: Record<string, any> = {
     created_at: "timestamptz",
     dropzone_public_key: "auth_public_keys",
     id: "uuid",
+    invitation: "auth_invitations",
     public_keys: "auth_public_keys",
     public_keys_aggregate: "auth_public_keys_aggregate",
     referred_users: "auth_users",
@@ -2132,6 +2219,8 @@ export const ReturnTypes: Record<string, any> = {
     insert_auth_friend_requests_one: "auth_friend_requests",
     insert_auth_friendships: "auth_friendships_mutation_response",
     insert_auth_friendships_one: "auth_friendships",
+    insert_auth_invitations: "auth_invitations_mutation_response",
+    insert_auth_invitations_one: "auth_invitations",
     insert_auth_notification_cursor:
       "auth_notification_cursor_mutation_response",
     insert_auth_notification_cursor_one: "auth_notification_cursor",
@@ -2214,6 +2303,8 @@ export const ReturnTypes: Record<string, any> = {
     auth_friendships: "auth_friendships",
     auth_friendships_aggregate: "auth_friendships_aggregate",
     auth_friendships_by_pk: "auth_friendships",
+    auth_invitations: "auth_invitations",
+    auth_invitations_by_pk: "auth_invitations",
     auth_notification_cursor: "auth_notification_cursor",
     auth_notification_cursor_by_pk: "auth_notification_cursor",
     auth_notification_subscriptions: "auth_notification_subscriptions",
@@ -2261,6 +2352,9 @@ export const ReturnTypes: Record<string, any> = {
     auth_friendships_aggregate: "auth_friendships_aggregate",
     auth_friendships_by_pk: "auth_friendships",
     auth_friendships_stream: "auth_friendships",
+    auth_invitations: "auth_invitations",
+    auth_invitations_by_pk: "auth_invitations",
+    auth_invitations_stream: "auth_invitations",
     auth_notification_cursor: "auth_notification_cursor",
     auth_notification_cursor_by_pk: "auth_notification_cursor",
     auth_notification_cursor_stream: "auth_notification_cursor",

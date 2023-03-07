@@ -7,6 +7,7 @@ import type {
 import {
   Blockchain,
   externalResourceUri,
+  isMadLads,
   metadataAddress,
   UNKNOWN_NFT_ICON_SRC,
 } from "@coral-xyz/common";
@@ -117,7 +118,7 @@ export const solanaNftById = equalSelectorFamily<
         mint: nftTokenMetadata?.account.mint,
         metadataCollectionId: uriData?.metadata?.collection?.key.toString(),
         name:
-          nftTokenMetadata?.account.data.name ??
+          nftTokenMetadata?.account.data.name.replace(/\0/g, "") ??
           (uriData ? uriData.tokenMetaUriData.name : "Unknown"),
         description: uriData ? uriData.tokenMetaUriData.description : "",
         externalUrl: uriData
@@ -131,16 +132,24 @@ export const solanaNftById = equalSelectorFamily<
                 uriData.tokenMetaUriData.image?.replace(/\0/g, "")
               )
             : UNKNOWN_NFT_ICON_SRC,
-        attributes: uriData
-          ? uriData.tokenMetaUriData.attributes?.map(
-              (a: { trait_type: string; value: string }) => ({
-                traitType: a.trait_type,
-                value: a.value,
-              })
-            )
-          : [],
+        // ensuring attributes is an array
+        attributes:
+          uriData && uriData?.tokenMetaUriData?.attributes?.map
+            ? uriData?.tokenMetaUriData?.attributes?.map(
+                (a: { trait_type: string; value: string }) => ({
+                  traitType: a.trait_type,
+                  value: a.value,
+                })
+              )
+            : [],
         collectionName,
       };
+      if (isMadLads(nft)) {
+        // TODO. We hack it below so that we can have something for testing.
+        // @ts-ignore
+        nft.lockScreenImageUrl =
+          "https://user-images.githubusercontent.com/6990215/219967480-36e7d05d-3a63-41eb-a480-6475c562da24.jpeg";
+      }
       return nft;
     },
   equals: (m1, m2) => JSON.stringify(m1) === JSON.stringify(m2),

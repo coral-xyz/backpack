@@ -17,6 +17,13 @@ export type Notification = {
 export type EventHandler = (notif: any) => void;
 export type EventEmitter = any;
 export type ResponseHandler = [any, any];
+export type Event = any;
+
+export type RpcRequest = {
+  id?: number;
+  method: string;
+  params: any[];
+};
 
 export type RpcRequestMsg = {
   channel: string;
@@ -70,6 +77,7 @@ export type Nft = {
   metadataCollectionId?: string;
   tokenId?: string; // Ethereum only.
   contractAddress?: string; // Ethereum only.
+  lockScreenImageUrl?: string; // MadLads only.
 };
 
 export type SolanaNft = Nft & {
@@ -122,6 +130,15 @@ export interface XnftPreference {
   disabled: boolean;
   mediaPermissions: boolean;
   pushNotifications: boolean;
+}
+
+export interface XnftMetadata {
+  isDarkMode: boolean;
+  username?: string;
+  userId: string;
+  avatarUrl: string;
+  jwt?: string;
+  version: number;
 }
 
 export type XnftPreferenceStore = { [key: string]: XnftPreference };

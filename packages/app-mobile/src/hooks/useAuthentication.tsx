@@ -49,7 +49,6 @@ export const useAuthentication = () => {
     | {
         id: string;
         publicKeys: { blockchain: Blockchain; publicKey: string }[];
-        isAuthenticated: boolean;
       }
     | undefined
   > => {

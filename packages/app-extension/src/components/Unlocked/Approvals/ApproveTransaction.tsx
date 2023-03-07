@@ -1,10 +1,15 @@
 import type { Blockchain, FeeConfig } from "@coral-xyz/common";
 import { EmptyState, Loading } from "@coral-xyz/react-common";
-import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
+import {
+  isKeyCold,
+  useTransactionData,
+  useWalletBlockchain,
+} from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
+import { useRecoilValue } from "recoil";
 
 import { TransactionData } from "../../common/TransactionData";
 import { WithApproval } from "../../Unlocked/Approvals";
@@ -69,9 +74,14 @@ export function ApproveTransaction({
   const transactionData = useTransactionData(blockchain as Blockchain, tx);
   const { loading, balanceChanges, transaction, solanaFeeConfig } =
     transactionData;
+  const _isKeyCold = useRecoilValue(isKeyCold(wallet));
 
   if (loading) {
     return <Loading />;
+  }
+
+  if (_isKeyCold) {
+    return <Cold origin={origin!} />;
   }
 
   const menuItems = balanceChanges
@@ -126,7 +136,11 @@ export function ApproveTransaction({
         <Loading />
       ) : (
         <div
-          style={{ marginTop: "24px", marginLeft: "8px", marginRight: "8px" }}
+          style={{
+            marginTop: "24px",
+            marginLeft: "8px",
+            marginRight: "8px",
+          }}
         >
           <Typography className={classes.listDescription}>
             Transaction details
@@ -144,15 +158,9 @@ export function ApproveTransaction({
 
 export function Cold({
   origin,
-  title,
-  wallet,
-  onCompletion,
   style,
 }: {
   origin: string;
-  title: string;
-  wallet: string;
-  onCompletion: () => Promise<void>;
   style?: React.CSSProperties;
 }) {
   return (
@@ -173,13 +181,12 @@ export function Cold({
       >
         <EmptyState
           icon={(props: any) => <BlockIcon {...props} />}
-          title={"Request Rejected"}
+          title="Request Rejected"
           subtitle={`WARNING: ${origin} is trying to sign with your cold wallet. This may be dangerous. To enable, see your wallet settings and enable "App Signing". Do so with caution!`}
-          buttonText={""}
+          buttonText=""
           onClick={() => {}}
           style={style}
         />
-        <div></div>
       </div>
     </div>
   );
@@ -200,6 +207,7 @@ export function ApproveAllTransactions({
   onCompletion: (confirmed: boolean) => void;
 }) {
   const classes = useStyles();
+  const _isKeyCold = useRecoilValue(isKeyCold(wallet));
 
   const onConfirm = async () => {
     onCompletion(true);
@@ -208,6 +216,10 @@ export function ApproveAllTransactions({
   const onDeny = async () => {
     onCompletion(false);
   };
+
+  if (_isKeyCold) {
+    return <Cold origin={origin!} />;
+  }
 
   return (
     <WithApproval

@@ -20,18 +20,13 @@ const useStyles = styles((theme) => ({
       },
     },
   },
-  textFieldInputColorEmpty: {
-    color: theme.custom.colors.textPlaceholder,
-  },
-  textFieldInputColor: {
-    color: theme.custom.colors.fontColor2,
-  },
   smallInput: {
     "& .Mui-disabled": {
       "-webkit-text-fill-color": theme.custom.colors.fontColor2,
     },
   },
   listParent: {
+    borderRadius: "10px",
     border: (props) =>
       overrideErrBorder(
         theme.custom.colors.textInputBorderFull,
@@ -56,58 +51,6 @@ const useStyles = styles((theme) => ({
           props.error,
           theme
         ),
-    },
-    borderRadius: "10px",
-  },
-  textInputRoot: {
-    fontWeight: 500,
-    borderRadius: "12px",
-    fontSize: "16px",
-    lineHeight: "24px",
-    "& .MuiOutlinedInput-root": {
-      background: theme.custom.colors.textBackground,
-      borderRadius: "12px",
-      "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-        border: (props) =>
-          overrideErrBorder(
-            theme.custom.colors.textInputBorderFocussed,
-            //@ts-ignore
-            props.error,
-            theme
-          ),
-        outline: "none",
-      },
-      "& fieldset": {
-        border: (props) =>
-          overrideErrBorder(
-            theme.custom.colors.borderFull,
-            //@ts-ignore
-            props.error,
-            theme
-          ),
-      },
-      "&:hover fieldset": {
-        border: (props) =>
-          overrideErrBorder(
-            theme.custom.colors.textInputBorderHovered,
-            //@ts-ignore
-            props.error,
-            theme
-          ),
-      },
-      "&.Mui-focused fieldset": {
-        border: (props) =>
-          overrideErrBorder(
-            theme.custom.colors.textInputBorderFocussed,
-            //@ts-ignore
-            props.error,
-            theme
-          ),
-      },
-      "&:active": {
-        outline: "none",
-      },
-      outline: "none",
     },
   },
 }));
@@ -144,7 +87,10 @@ export const InputListItem = ({
   type = "text",
 }: InputListItemProps) => {
   const theme = useCustomTheme();
-  const classes = useStyles();
+  const textColor = value
+    ? theme.custom.colors.fontColor2
+    : theme.custom.colors.textPlaceholder;
+
   return (
     <ListItem
       isLast={isLast}
@@ -159,23 +105,25 @@ export const InputListItem = ({
       <Typography style={{ width: "80px" }}>{title}</Typography>
       <TextField
         placeholder={placeholder}
-        classes={{
-          root: classes.textFieldRoot,
-        }}
-        className={classes.textField}
+        value={value}
+        onChange={onChange}
         type={type}
         inputProps={{
           style: {
             padding: 0,
+            color: textColor,
           },
-          className: `${classes.textFieldInput} ${
-            value
-              ? classes.textFieldInputColor
-              : classes.textFieldInputColorEmpty
-          }`,
         }}
-        value={value}
-        onChange={onChange}
+        sx={(theme: any) => ({
+          color: theme.custom.colors.secondary,
+          "& .MuiOutlinedInput-root": {
+            backgroundColor: theme.custom.colors.textInputBorderFocussed,
+            "& fieldset": {
+              border: "none",
+              color: theme.custom.colors.secondary,
+            },
+          },
+        })}
       />
     </ListItem>
   );
@@ -222,16 +170,11 @@ export const TextInput = ({
   margin,
   required = true,
 }: InputProps) => {
-  const classes = useStyles({ error });
   const theme = useCustomTheme();
-  inputProps = Object.assign(
-    {
-      className: `${classes.textFieldInput} ${
-        value ? classes.textFieldInputColor : classes.textFieldInputColorEmpty
-      }`,
-    },
-    inputProps
-  );
+  const textColor = value
+    ? theme.custom.colors.fontColor2
+    : theme.custom.colors.textPlaceholder;
+
   return (
     <>
       <TextField
@@ -242,8 +185,57 @@ export const TextInput = ({
         value={value}
         onChange={setValue}
         onKeyDown={onKeyDown}
-        inputProps={inputProps}
-        className={`${classes.textInputRoot} ${classes.textField} ${className}`}
+        inputProps={{
+          ...inputProps,
+          style: {
+            color: textColor,
+            ...inputProps.style,
+          },
+        }}
+        className={className}
+        sx={(theme: any) => ({
+          fontWeight: 500,
+          borderRadius: "24px",
+          fontSize: "16px",
+          lineHeight: "24px",
+          "& .MuiOutlinedInput-root": {
+            background: theme.custom.colors.textBackground,
+            borderRadius: "12px",
+            outline: "none",
+            "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+              border: overrideErrBorder(
+                theme.custom.colors.textInputBorderFocussed,
+                error,
+                theme
+              ),
+              outline: "none",
+            },
+            "& fieldset": {
+              border: overrideErrBorder(
+                theme.custom.colors.borderFull,
+                error,
+                theme
+              ),
+            },
+            "&:hover fieldset": {
+              border: overrideErrBorder(
+                theme.custom.colors.textInputBorderHovered,
+                error,
+                theme
+              ),
+            },
+            "&.Mui-focused fieldset": {
+              border: overrideErrBorder(
+                theme.custom.colors.textInputBorderFocussed,
+                error,
+                theme
+              ),
+            },
+            "&:active": {
+              outline: "none",
+            },
+          },
+        })}
         variant="outlined"
         fullWidth
         required={required}
@@ -302,6 +294,16 @@ export const SmallInput = ({
           fontSize: "14px",
         },
       }}
+      // sx={{
+      //   // textFieldRoot
+      //   color: theme.custom.colors.secondary,
+      //   "& .MuiOutlinedInput-root": {
+      //     "& fieldset": {
+      //       border: "none",
+      //       color: theme.custom.colors.secondary,
+      //     },
+      //   },
+      // }}
       classes={{
         root: classes.textFieldRoot,
       }}

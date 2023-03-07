@@ -1,5 +1,6 @@
-import { Screen } from "~components/index";
 import { useKeyringHasMnemonic } from "@coral-xyz/recoil";
+
+import { Screen } from "~components/index";
 import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 
 export function YourAccountScreen({ navigation }) {
@@ -16,7 +17,7 @@ export function YourAccountScreen({ navigation }) {
           },
         }
       : {}),
-    Logout: {
+    "Log out": {
       onPress: () => navigation.push("reset-warning"),
     },
   };

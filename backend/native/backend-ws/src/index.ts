@@ -15,6 +15,13 @@ const server = http.createServer(app);
 
 const wss = new WebSocketServer({ server });
 app.get("/healthcheck", (req, res) => res.json({}));
+app.get("/", (_req, res) => {
+  return res.status(200).json({
+    uptime: process.uptime(),
+    message: "OK",
+    timestamp: Date.now(),
+  });
+});
 app.get("/cookie", (req, res) => {
   const cookie = req.headers.cookie || "";
   if (cookie) {
@@ -57,4 +64,5 @@ process.on("uncaughtException", function (err) {
 
 server.listen(port);
 
+console.log(`listening on port ${port}`);
 const instance = RedisSubscriptionManager.getInstance();

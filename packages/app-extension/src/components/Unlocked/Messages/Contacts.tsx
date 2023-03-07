@@ -36,7 +36,7 @@ export const Contacts = () => {
   }, []);
 
   useEffect(() => {
-    nav.setOptions({ headerTitle: "Contacts" });
+    nav.setOptions({ headerTitle: "Friends" });
   }, [nav]);
 
   return (
@@ -84,17 +84,16 @@ export const ContactRequests = ({
         {description}
       </Typography>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        {!isSent && requests.sent.length > 0 && (
-          <Typography
-            sx={{ cursor: "pointer", alignSelf: "flex-end", mb: "8px" }}
-            fontSize={14}
-            fontWeight={600}
-            color={theme.custom.colors.fontColor3}
-            onClick={() =>
+        {!isSent && requests.sent.length > 0 ? <Typography
+          sx={{ cursor: "pointer", alignSelf: "flex-end", mb: "8px" }}
+          fontSize={14}
+          fontWeight={600}
+          color={theme.custom.colors.fontColor3}
+          onClick={() =>
               nav.push("contact-requests-sent", {
                 description: (
                   <>
-                    People you added as contacts.
+                    People you added as friends.
                     <br /> Click someone to view their profile.
                   </>
                 ),
@@ -103,9 +102,8 @@ export const ContactRequests = ({
               })
             }
           >
-            Sent ({requests.sent.length})
-          </Typography>
-        )}
+          Sent ({requests.sent.length})
+        </Typography> : null}
         <UserList
           setMembers={isSent ? setLocalSentRequests : setLocalReceivedRequests}
           users={isSent ? localSentRequests : localReceivedRequests}

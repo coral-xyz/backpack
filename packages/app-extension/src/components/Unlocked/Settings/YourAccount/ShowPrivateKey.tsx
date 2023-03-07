@@ -200,12 +200,12 @@ export function ShowPrivateKeyWarning({ publicKey }: { publicKey: string }) {
       >
         <Box sx={{ marginBottom: "8px" }}>
           <TextInput
-            autoFocus={true}
+            autoFocus
             error={error}
             placeholder="Password"
             inputProps={{ name: "password" }}
             value={password}
-            type={"password"}
+            type="password"
             setValue={(e) => setPassword(e.target.value)}
           />
         </Box>
@@ -252,7 +252,7 @@ export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
         <Box sx={{ margin: "0 16px" }}>
           <TextField
             rows={3}
-            readOnly={true}
+            readOnly
             value={privateKey}
             rootClass={classes.privateKeyField}
           />

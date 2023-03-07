@@ -1,12 +1,13 @@
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { RichMentionsContext, RichMentionsInput } from "react-rich-mentions";
-import { useUsersMetadata } from "@coral-xyz/react-common";
+import { BackpackStaffIcon, useUsersMetadata } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { CircularProgress, Hidden } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 
 import { useChatContext } from "../ChatContext";
+import { BACKPACK_TEAM } from "@coral-xyz/common";
 
-const useStyles = styles((themes) => ({
+const useStyles = styles(() => ({
   input: {
     "&:hover": {
       cursor: "text",
@@ -14,24 +15,41 @@ const useStyles = styles((themes) => ({
   },
 }));
 
-export function MessageInput({ setEmojiMenuOpen }: { setEmojiMenuOpen: any }) {
-  const defaultValue = "";
+export const chatMessageInputId = "backpack-message-input";
+
+export function MessageInput({
+  setPluginMenuOpen,
+  autoFocus = true,
+}: {
+  setPluginMenuOpen: any;
+  autoFocus?: boolean;
+}) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const { type, remoteUsername, activeReply } = useChatContext();
   const { activeSearch } = useContext(RichMentionsContext);
 
+  useEffect(() => {
+    if (autoFocus) {
+      const messageElement = document.getElementById(chatMessageInputId);
+
+      if (messageElement) {
+        messageElement.focus();
+      }
+    }
+  }, [autoFocus]);
+
   return (
     <div style={{ width: "100%", padding: 10 }}>
       <RichMentionsInput
-        id="message-input"
+        id={chatMessageInputId}
         onKeyDown={(event) => {
           if (event.key === "Enter" && activeSearch) {
             event.stopPropagation();
           }
         }}
         className={classes.input}
-        onClick={() => setEmojiMenuOpen(false)}
+        onClick={() => setPluginMenuOpen(false)}
         placeholder={
           type === "individual"
             ? `Message @${remoteUsername}`
@@ -42,9 +60,10 @@ export function MessageInput({ setEmojiMenuOpen }: { setEmojiMenuOpen: any }) {
         style={{
           outline: "0px solid transparent",
           color: theme.custom.colors.fontColor,
-          fontSize: "15px",
+          fontSize: "14px",
+          wordBreak: "break-word",
         }}
-        defaultValue={defaultValue}
+        defaultValue=""
       />
     </div>
   );
@@ -59,6 +78,11 @@ export const CustomAutoComplete = () => {
   const shownResults = useMemo(() => results, [results]);
 
   const users = useUsersMetadata({ remoteUserIds: results.map((r) => r.id) });
+
+  // if there are no users to show in mentions
+  if (activeSearch && !loading && shownResults?.length === 0) {
+    return null;
+  }
 
   return (
     <div
@@ -92,6 +116,7 @@ export const CustomAutoComplete = () => {
             color: theme.custom.colors.fontColor,
             border: "none",
             textAlign: "left",
+            alignItems: "center",
           }}
           key={item.ref}
           onClick={() => {
@@ -102,7 +127,8 @@ export const CustomAutoComplete = () => {
             style={{ height: 24, borderRadius: 12, marginRight: 8 }}
             src={users[item.id]?.image}
           />
-          <div style={{ fontSize: 15 }}>@{item.name}</div>
+          <div style={{ fontSize: 14 }}>@{item.name}</div>
+          {BACKPACK_TEAM.includes(item.id) ? <BackpackStaffIcon /> : null}
         </button>
       ))}
       {activeSearch !== "" &&
@@ -120,9 +146,7 @@ export const CustomAutoComplete = () => {
           {" "}
           <CircularProgress size={20} />{" "}
         </div>
-      ) : (
-        <></>
-      )}
+      ) : null}
     </div>
   );
 };

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { ProxyImage } from "@coral-xyz/react-common";
-import { useAvatarUrl } from "@coral-xyz/recoil";
-import { styled } from "@coral-xyz/themes";
+import { useAvatarUrl, useUser } from "@coral-xyz/recoil";
+import type { CustomTheme } from "@coral-xyz/themes";
+import { styled, useCustomTheme } from "@coral-xyz/themes";
 import { Edit } from "@mui/icons-material";
+import { Typography } from "@mui/material";
 
 import { CloseButton, WithDrawer } from "../../../common/Layout/Drawer";
 import {
@@ -15,6 +17,8 @@ import { UpdateProfilePicture } from "./UpdateProfilePicture";
 const title = "Change Profile Picture";
 
 export function AvatarHeader() {
+  const user = useUser();
+  const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
   const avatarUrl = useAvatarUrl(64);
 
@@ -23,25 +27,34 @@ export function AvatarHeader() {
   };
 
   return (
-    <div style={{ marginTop: "12px", marginBottom: "24px" }}>
+    <div style={{ marginBottom: "24px" }}>
       <AvatarWrapper onClick={onClick}>
         <ProxyImage
           key={avatarUrl}
           src={avatarUrl}
           style={{
-            width: "64px",
-            height: "64px",
+            width: "74px",
+            height: "74px",
             marginLeft: "auto",
             marginRight: "auto",
             display: "block",
             zIndex: 0,
-            borderRadius: 32,
+            borderRadius: "50%",
           }}
         />
-        <EditOverlay className={"editOverlay"}>
+        <EditOverlay className="editOverlay">
           <Edit />
         </EditOverlay>
       </AvatarWrapper>
+      <Typography
+        style={{
+          color: theme.custom.colors.fontColor,
+          textAlign: "center",
+          marginTop: "4px",
+        }}
+      >
+        @{user.username}
+      </Typography>
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
@@ -55,8 +68,8 @@ export function AvatarHeader() {
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen
-              key={"update"}
-              name={"UpdateProfilePicture"}
+              key="update"
+              name="UpdateProfilePicture"
               component={() => (
                 <UpdateProfilePicture setOpenDrawer={setOpenDrawer} />
               )}
@@ -68,13 +81,13 @@ export function AvatarHeader() {
   );
 }
 
-const AvatarWrapper = styled("div")(({ theme }) => ({
+const AvatarWrapper = styled("div")(({ theme }: { theme: CustomTheme }) => ({
   position: "relative",
   background: theme.custom.colors.avatarIconBackground,
   borderRadius: "40px",
   padding: "3px",
-  width: "70px",
-  height: "70px",
+  width: "80px",
+  height: "80px",
   marginLeft: "auto",
   marginRight: "auto",
   overflow: "hidden",

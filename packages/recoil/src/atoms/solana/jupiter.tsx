@@ -1,9 +1,4 @@
-import {
-  BACKPACK_FEATURE_REFERRAL_FEES,
-  Blockchain,
-  SOL_NATIVE_MINT,
-  WSOL_MINT,
-} from "@coral-xyz/common";
+import { Blockchain, SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { selector, selectorFamily } from "recoil";
 
@@ -12,26 +7,47 @@ import { blockchainBalancesSorted } from "../balance";
 
 import { splTokenRegistry } from "./token-registry";
 
-export const JUPITER_BASE_URL = BACKPACK_FEATURE_REFERRAL_FEES
-  ? "https://jupiter.xnfts.dev/v4/"
-  : "https://quote-api.jup.ag/v4/";
-
 // Load the route map from the Jupiter API
-export const jupiterRouteMap = selector({
+const jupiterRouteMap = selector({
   key: "jupiterRouteMap",
   get: async () => {
     try {
-      const response = await (
-        await fetch(
-          `${JUPITER_BASE_URL}indexed-route-map?onlyDirectRoutes=true`
-        )
-      ).json();
+      const [response, topTokensReversed] = await (async () => {
+        const url =
+          "https://quote-api.jup.ag/v4/indexed-route-map?onlyDirectRoutes=true";
+        try {
+          // Try to fetch the routes & top token list in parallel to reduce wait,
+          // but fall back to just routes and an empty top token list if it fails
+          return await Promise.all([
+            (async () => {
+              const res = await fetch(url);
+              return await res.json();
+            })(),
+            (async () => {
+              // Fetch the top token list so that it can be used to reorder the
+              // list of available output tokens with the most popular ones first
+              const res = await fetch(`https://cache.jup.ag/top-tokens`);
+              const topTokens = await res.json();
+              // Reverse the list so it makes the .sort() below a little easier
+              return topTokens.reverse();
+            })(),
+          ]);
+        } catch (err) {
+          const res = await fetch(url);
+          return [await res.json(), []];
+        }
+      })();
+
       const getMint = (index: number) => response["mintKeys"][index];
+
       // Replace indices with mint addresses
       return Object.keys(response["indexedRouteMap"]).reduce((acc, key) => {
-        acc[getMint(parseInt(key))] = response["indexedRouteMap"][key].map(
-          (i: number) => getMint(i)
-        );
+        acc[getMint(parseInt(key))] = response["indexedRouteMap"][key]
+          .map((i: number) => getMint(i))
+          .sort(
+            (a, b) =>
+              topTokensReversed.indexOf(b) - topTokensReversed.indexOf(a)
+          );
         return acc;
       }, {});
     } catch (e) {
@@ -41,7 +57,7 @@ export const jupiterRouteMap = selector({
   },
 });
 
-export const jupiterTokenList = selector({
+export const jupiterTokenList = selector<TokenInfo[]>({
   key: "jupiterTokenList",
   get: async () => {
     try {
@@ -53,8 +69,20 @@ export const jupiterTokenList = selector({
   },
 });
 
+export const jupiterTokenMap = selector<Map<string, TokenInfo>>({
+  key: "jupterTokenMap",
+  get: ({ get }) => {
+    const tokens = get(jupiterTokenList);
+    const m = new Map();
+    for (const t of tokens) {
+      m.set(t.address, t);
+    }
+    return m;
+  },
+});
+
 // All input tokens for Jupiter
-export const allJupiterInputMints = selector({
+const allJupiterInputMints = selector({
   key: "allJupiterInputMints",
   get: async ({ get }) => {
     const routeMap = get(jupiterRouteMap);
@@ -84,9 +112,7 @@ export const jupiterInputTokens = selectorFamily({
       // balance for, and always display native SOL.
       return walletTokens.filter(
         (token: TokenDataWithBalance) =>
-          (inputMints.includes(token.mint!) ||
-            token.mint === SOL_NATIVE_MINT) &&
-          !token.nativeBalance.isZero()
+          inputMints.includes(token.mint!) || token.mint === SOL_NATIVE_MINT
       ) as Array<TokenDataWithBalance>;
     },
 });

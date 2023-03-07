@@ -10,12 +10,22 @@ import {
   StyleSheet,
   Text,
   View,
+  ScrollView,
 } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
 import Constants from "expo-constants";
 
 import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
+import {
+  Margin,
+  BaseButton,
+  LinkButton,
+  PrimaryButton,
+  SecondaryButton,
+  NegativeButton,
+  DangerButton,
+} from "@coral-xyz/react-native-core";
 import { useAvatarUrl } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { SvgUri } from "react-native-svg";
@@ -31,14 +41,61 @@ export { PasswordInput } from "./PasswordInput";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { StyledTokenTextInput } from "./TokenInputField";
-//
-// function getRandomColor() { var letters = "0123456789ABCDEF";
-//   var color = "#";
-//   for (var i = 0; i < 6; i++) {
-//     color += letters[Math.floor(Math.random() * 16)];
-//   }
-//   return color;
-// }
+export {
+  Margin,
+  BaseButton,
+  LinkButton,
+  PrimaryButton,
+  SecondaryButton,
+  NegativeButton,
+  DangerButton,
+};
+
+export function CallToAction({
+  icon,
+  title,
+  onPress,
+}: {
+  icon: JSX.Element;
+  title: string;
+  onPress: () => void;
+}) {
+  const theme = useTheme();
+  return (
+    <Pressable
+      style={[
+        ctaStyles.container,
+        {
+          borderColor: theme.custom.colors.borderFull,
+          backgroundColor: theme.custom.colors.nav,
+        },
+      ]}
+      onPress={onPress}
+    >
+      <View style={ctaStyles.iconContainer}>{icon}</View>
+      <Text style={[ctaStyles.text, { color: theme.custom.colors.fontColor }]}>
+        {title}
+      </Text>
+    </Pressable>
+  );
+}
+
+const ctaStyles = StyleSheet.create({
+  container: {
+    padding: 12,
+    borderWidth: 2,
+    borderRadius: 12,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  iconContainer: {
+    marginRight: 8,
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+});
 
 export function StyledText({
   children,
@@ -58,21 +115,37 @@ export function StyledText({
 }
 
 export function Screen({
+  scrollable,
   children,
   style,
 }: {
+  scrollable?: boolean;
   children: JSX.Element | JSX.Element[];
   style?: StyleProp<ViewStyle>;
 }) {
   const theme = useTheme();
+  if (scrollable) {
+    return (
+      <ScrollView
+        contentContainerStyle={[screenStyles.scrollContainer, style]}
+        style={[
+          screenStyles.container,
+          {
+            backgroundColor: theme.custom.colors.background,
+          },
+        ]}
+      >
+        {children}
+      </ScrollView>
+    );
+  }
+
   return (
     <View
       style={[
+        screenStyles.container,
         {
-          flex: 1,
           backgroundColor: theme.custom.colors.background,
-          paddingHorizontal: 16,
-          paddingVertical: 16,
         },
         style,
       ]}
@@ -82,183 +155,16 @@ export function Screen({
   );
 }
 
-export function BaseButton({
-  label,
-  buttonStyle,
-  labelStyle,
-  onPress,
-  disabled,
-  loading,
-  icon,
-  ...props
-}: {
-  label: string;
-  buttonStyle?: StyleProp<ViewStyle>;
-  labelStyle?: StyleProp<TextStyle>;
-  onPress?: () => void;
-  disabled?: boolean;
-  loading?: boolean;
-  icon?: JSX.Element;
-}) {
-  return (
-    <Pressable
-      disabled={disabled}
-      onPress={onPress}
-      style={[
-        baseButtonStyles.button,
-        {
-          opacity: disabled ? 0.7 : 1,
-        },
-        buttonStyle,
-      ]}
-      {...props}
-    >
-      <Text
-        style={[
-          baseButtonStyles.label,
-          {
-            opacity: disabled ? 0.5 : 1,
-          },
-          labelStyle,
-        ]}
-      >
-        {loading ? "loading..." : label}
-      </Text>
-      {icon}
-    </Pressable>
-  );
-}
-
-const baseButtonStyles = StyleSheet.create({
-  button: {
-    height: 48,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    width: "100%",
+const screenStyles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
   },
-  label: {
-    fontWeight: "500",
-    fontSize: 16,
+  container: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
   },
 });
-
-export function PrimaryButton({
-  label,
-  onPress,
-  disabled,
-  loading,
-  ...props
-}: {
-  label: string;
-  onPress?: () => void;
-  disabled?: boolean;
-  loading?: boolean;
-}) {
-  const theme = useTheme();
-  return (
-    <BaseButton
-      label={label}
-      onPress={onPress}
-      disabled={disabled}
-      loading={loading}
-      buttonStyle={{ backgroundColor: theme.custom.colors.primaryButton }}
-      labelStyle={{
-        color: theme.custom.colors.primaryButtonTextColor,
-      }}
-      {...props}
-    />
-  );
-}
-
-export function SecondaryButton({
-  label,
-  onPress,
-  disabled,
-  loading,
-  icon,
-  ...props
-}: {
-  label: string;
-  onPress: () => void;
-  disabled?: boolean;
-  loading?: boolean;
-  icon?: JSX.Element;
-}) {
-  const theme = useTheme();
-  return (
-    <BaseButton
-      label={label}
-      onPress={onPress}
-      disabled={disabled}
-      loading={loading}
-      buttonStyle={{ backgroundColor: theme.custom.colors.secondaryButton }}
-      labelStyle={{
-        color: theme.custom.colors.secondaryButtonTextColor,
-      }}
-      icon={icon}
-      {...props}
-    />
-  );
-}
-
-export function NegativeButton({
-  label,
-  onPress,
-  disabled,
-  loading,
-  ...props
-}: {
-  label: string;
-  onPress: () => void;
-  disabled: boolean;
-  loading?: boolean;
-}) {
-  const theme = useTheme();
-  return (
-    <BaseButton
-      label={label}
-      onPress={onPress}
-      disabled={disabled}
-      loading={loading}
-      buttonStyle={{ backgroundColor: theme.custom.colors.negative }}
-      labelStyle={{
-        color: theme.custom.colors.negativeButtonTextColor,
-      }}
-      {...props}
-    />
-  );
-}
-
-export function DangerButton({
-  label,
-  onPress,
-  disabled,
-  loading,
-  ...props
-}: {
-  label: string;
-  onPress: () => void;
-  disabled: boolean;
-  loading?: boolean;
-}) {
-  const theme = useTheme();
-  return (
-    <BaseButton
-      label={label}
-      onPress={onPress}
-      disabled={disabled}
-      loading={loading}
-      buttonStyle={{ backgroundColor: theme.custom.colors.negative }}
-      labelStyle={{
-        color: theme.custom.colors.fontColor,
-      }}
-      {...props}
-    />
-  );
-}
 
 export function Header({ text }: { text: string }) {
   const theme = useTheme();
@@ -415,57 +321,6 @@ export function ProxyImage({
       {...props}
     />
   );
-}
-
-export function Margin({
-  bottom,
-  top,
-  left,
-  right,
-  horizontal,
-  vertical,
-  children,
-}: {
-  bottom?: number | string;
-  top?: number | string;
-  left?: number | string;
-  right?: number | string;
-  horizontal?: number | string;
-  vertical?: number | string;
-  children: any;
-}): JSX.Element {
-  const style = {};
-  if (bottom) {
-    // @ts-ignore
-    style.marginBottom = bottom;
-  }
-
-  if (top) {
-    // @ts-ignore
-    style.marginTop = top;
-  }
-
-  if (left) {
-    // @ts-ignore
-    style.marginLeft = left;
-  }
-
-  if (right) {
-    // @ts-ignore
-    style.marginRight = right;
-  }
-
-  if (horizontal) {
-    // @ts-ignore
-    style.marginHorizontal = horizontal;
-  }
-
-  if (vertical) {
-    // @ts-ignore
-    style.marginVertical = vertical;
-  }
-
-  return <View style={style}>{children}</View>;
 }
 
 export function WalletAddressLabel({
@@ -702,6 +557,23 @@ export function CopyButton({ text }: { text: string }): JSX.Element {
       onPress={async () => {
         await Clipboard.setStringAsync(text);
         Alert.alert("Copied to clipboard", text);
+      }}
+    />
+  );
+}
+
+export function PasteButton({
+  onPaste,
+}: {
+  onPaste: (text: string) => void;
+}): JSX.Element {
+  return (
+    <SecondaryButton
+      label="Paste from clipboard"
+      icon={<ContentCopyIcon size={18} />}
+      onPress={async () => {
+        const string = await Clipboard.getStringAsync();
+        onPaste(string);
       }}
     />
   );
