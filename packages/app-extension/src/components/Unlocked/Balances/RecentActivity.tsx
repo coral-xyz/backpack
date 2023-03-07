@@ -1,3 +1,5 @@
+// TODO: remove the line below
+/* eslint-disable react-hooks/rules-of-hooks */
 import { Suspense, useState } from "react";
 import { Blockchain, explorerUrl, XNFT_GG_LINK } from "@coral-xyz/common";
 import {
@@ -335,7 +337,10 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
               {transaction.signature.slice(transaction.signature.length - 5)}
             </Typography>
             <Typography className={classes.txDate}>
-              {new Date(transaction.timestamp * 1000).toLocaleDateString()}
+              {(transaction.date
+                ? transaction.date
+                : new Date(transaction.timestamp * 1000)
+              ).toLocaleDateString()}
             </Typography>
           </div>
         </div>
