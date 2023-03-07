@@ -337,10 +337,16 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
               {transaction.signature.slice(transaction.signature.length - 5)}
             </Typography>
             <Typography className={classes.txDate}>
-              {(transaction.date
-                ? transaction.date
-                : new Date(transaction.timestamp * 1000)
-              ).toLocaleDateString()}
+              {
+                // TODO: Standardize the parsed ethereum and solana transactions
+                //       so that `transaction.date` can be used for both of them
+                (transaction.date
+                  ? // ethereum transactions provide a date
+                    transaction.date
+                  : // solana transactions provide a timestamp in seconds
+                    new Date(transaction.timestamp * 1000)
+                ).toLocaleDateString()
+              }
             </Typography>
           </div>
         </div>
