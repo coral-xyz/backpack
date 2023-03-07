@@ -2,17 +2,13 @@ import type { MouseEvent } from "react";
 import { useState } from "react";
 import type { Nft, NftCollection } from "@coral-xyz/common";
 import {
-  NAV_COMPONENT_MESSAGE_GROUP_CHAT,
-  NAV_COMPONENT_NFT_CHAT,
   NAV_COMPONENT_NFT_COLLECTION,
   NAV_COMPONENT_NFT_DETAIL,
-  TAB_MESSAGES,
-  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UNKNOWN_NFT_ICON_SRC,
 } from "@coral-xyz/common";
 import {
   AppsColorIcon,
-  MessageBubbleUnreadIcon,
+  MessageBubbleIcon,
   ProxyImage,
 } from "@coral-xyz/react-common";
 import {
@@ -21,23 +17,16 @@ import {
   collectibleXnft,
   nftsByIds,
   useActiveWallet,
-  useBackgroundClient,
   useBlockchainConnectionUrl,
   useNavigation,
   useOpenPlugin,
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
-import { Sms } from "@mui/icons-material";
-import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
-import {
-  Button,
-  CircularProgress,
-  IconButton,
-  Typography,
-} from "@mui/material";
+import { Button, CircularProgress, Typography } from "@mui/material";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
 import { useOpenChat } from "./Detail";
+
 const useStyles = styles((theme) => ({
   button: {
     "&:hover": {
@@ -194,7 +183,7 @@ export function NFTCard({
           style={{
             display: "flex",
             justifyContent: "flex-start",
-            fontSize: "12px",
+            fontSize: "14px",
             color: theme.custom.colors.fontColor,
             textOverflow: "ellipsis",
             overflow: "hidden",
@@ -252,11 +241,13 @@ export function NFTCard({
                 thickness={3}
               />
             ) : (
-              <Sms
-                fontSize="small"
+              <MessageBubbleIcon
                 sx={{
-                  fontSize: "18px",
+                  width: "18px",
                   color: theme.custom.colors.fontColor,
+                  "&:hover": {
+                    color: `${theme.custom.colors.fontColor3} !important`,
+                  },
                 }}
               />
             )}
@@ -432,7 +423,7 @@ export function CollectionCard({ collection }: { collection: NftCollection }) {
           style={{
             display: "flex",
             justifyContent: "flex-start",
-            fontSize: "12px",
+            fontSize: "14px",
             color: theme.custom.colors.fontColor,
             textOverflow: "ellipsis",
             overflow: "hidden",
@@ -490,11 +481,13 @@ export function CollectionCard({ collection }: { collection: NftCollection }) {
                 thickness={3}
               />
             ) : (
-              <Sms
-                fontSize="small"
+              <MessageBubbleIcon
                 sx={{
-                  fontSize: "18px",
+                  width: "18px",
                   color: theme.custom.colors.fontColor,
+                  "&:hover": {
+                    color: `${theme.custom.colors.fontColor3} !important`,
+                  },
                 }}
               />
             )}
