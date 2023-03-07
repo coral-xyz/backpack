@@ -57,7 +57,7 @@ export function Token({
   const ethereumWallet = useActiveEthereumWallet();
   // Hack: This is hit for some reason due to the framer-motion animation.
   if (!blockchain || !tokenAddress) {
-    return <></>;
+    return null;
   }
 
   const activityAddress =
@@ -106,7 +106,7 @@ function TokenHeader({
     null
   );
 
-  if (!token) return <></>;
+  if (!token) return null;
 
   const percentClass =
     token.recentPercentChange === undefined
@@ -129,7 +129,8 @@ function TokenHeader({
           displayLogo={false}
         />
         <Typography className={classes.usdBalanceLabel}>
-          ${parseFloat(token.usdBalance.toFixed(2)).toLocaleString()}{" "}
+          ${parseFloat(token.usdBalance.toFixed(2)).toLocaleString()}
+          &nbsp;&nbsp;&nbsp;
           <span className={percentClass}>{token.recentPercentChange}%</span>
         </Typography>
       </div>
