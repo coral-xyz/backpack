@@ -7,7 +7,8 @@ import "./index.css";
 const App = lazy(() => import("./app/App"));
 const LedgerIframe = lazy(() => import("./components/LedgerIframe"));
 
-// Tell all existing extension instances that this instance now exists
+// Tell all existing extension instances that this instance now exists.
+// This block ensures a single extension window is open at any given time.
 chrome.runtime
   .sendMessage("new-instance-was-opened")
   .then(() => {
