@@ -1,0 +1,32 @@
+table:
+  name: barter_poke_metadata
+  schema: public
+object_relationships:
+  - name: chat
+    using:
+      foreign_key_constraint_on: message_client_generated_uuid
+insert_permissions:
+  - role: chat
+    permission:
+      check: {}
+      columns:
+        - id
+        - message_client_generated_uuid
+        - barter_id
+select_permissions:
+  - role: chat
+    permission:
+      columns:
+        - barter_id
+        - id
+        - message_client_generated_uuid
+      filter: {}
+update_permissions:
+  - role: chat
+    permission:
+      columns:
+        - barter_id
+        - id
+        - message_client_generated_uuid
+      filter: {}
+      check: null
