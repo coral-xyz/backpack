@@ -637,6 +637,11 @@ const SearchInput = ({
         inputProps={{
           name: "to",
           spellCheck: "false",
+          style: {
+            height: "48px",
+            paddingTop: 0,
+            paddingBottom: 0,
+          },
         }}
         margin="none"
       />
