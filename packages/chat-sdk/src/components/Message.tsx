@@ -334,7 +334,7 @@ export const MessageLine = (props) => {
                   </p>
                 </div>
                 <div>
-                  {props.messageKind === "text" && props.deleted ? (
+                  {props.messageKind === "text" && !props.deleted ? (
                     <div
                       style={{ display: "flex" }}
                       className={classes.hoverChild}
@@ -518,7 +518,7 @@ export const MessageLine = (props) => {
                 <div
                   style={{ display: "flex", justifyContent: "space-between" }}
                 >
-                  {props.messageKind === "text" && props.deleted ? (
+                  {props.messageKind === "text" && !props.deleted ? (
                     <div
                       style={{ display: "flex" }}
                       className={classes.hoverChild}
