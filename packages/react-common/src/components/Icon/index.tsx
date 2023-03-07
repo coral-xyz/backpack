@@ -690,14 +690,14 @@ export function BarterIcon({
   );
 }
 
-export function MessageBubbleIcon({ fill = "#99A4B4", sx, ...props }) {
+export function MessageBubbleIcon({ fill = "#99A4B4", ...props }) {
   return (
     <SvgIcon
       xmlns="http://www.w3.org/2000/svg"
       width="22"
       height="21"
       viewBox="0 0 22 21"
-      sx={{ color: fill, ...sx }}
+      sx={{ color: fill, ...(props.sx ?? {}) }}
       {...props}
     >
       <path d="M0.150024 17.9V3.15C0.150024 2.26667 0.454024 1.52067 1.06202 0.912C1.67069 0.304 2.41669 0 3.30002 0H18.7C19.5834 0 20.3294 0.304 20.938 0.912C21.546 1.52067 21.85 2.26667 21.85 3.15V14.55C21.85 15.4333 21.546 16.1793 20.938 16.788C20.3294 17.396 19.5834 17.7 18.7 17.7H4.15002L2.82502 19.025C2.32502 19.525 1.75436 19.6377 1.11302 19.363C0.471024 19.0877 0.150024 18.6 0.150024 17.9V17.9Z" />
