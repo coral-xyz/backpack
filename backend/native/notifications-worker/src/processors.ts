@@ -1,3 +1,4 @@
+import { insertNotification } from "@coral-xyz/backend-common";
 import type { SubscriptionType } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
@@ -10,7 +11,6 @@ import { getMessages } from "./db/chats";
 import { getLatestReadMessage } from "./db/collection_messages";
 import { getFriendship } from "./db/friendships";
 import { getAllUsersInCollection } from "./db/nft";
-import { insertNotification } from "./db/notifications";
 import { getUsersFromIds } from "./db/users";
 import { notify } from "./notifier";
 import { Redis } from "./Redis";
