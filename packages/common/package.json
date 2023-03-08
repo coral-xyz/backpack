@@ -17,6 +17,11 @@
   "dependencies": {
     "@cardinal/creator-standard": "^2.1.10",
     "@cardinal/token-manager": "^1.7.9",
+    "@ethersproject/abstract-provider": "^5.7.0",
+    "@ethersproject/bignumber": "^5.7.0",
+    "@ethersproject/properties": "^5.7.0",
+    "@ethersproject/providers": "^5.7.2",
+    "@ethersproject/transactions": "^5.7.0",
     "@magiceden-oss/open_creator_protocol": "^0.3.2",
     "@metaplex-foundation/mpl-core": "^0.6.1",
     "@metaplex-foundation/mpl-token-metadata": "^2.7.0",
@@ -47,6 +52,7 @@
     "@types/firefox-webext-browser": "^94.0.1",
     "@types/uuid": "^8.3.4",
     "eslint-config-custom": "*",
+    "eslint-plugin-simple-import-sort": "*",
     "tsc-alias": "^1.7.0",
     "typescript": "~4.9.3"
   }
