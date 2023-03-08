@@ -238,12 +238,6 @@ export const processFriendRequestAccept = async ({
   to: string;
 }) => {
   const userMetadata = await getUsersFromIds([from]);
-  await insertNotification("friend_requests_accept", to, {
-    title: "Friend request Accepted",
-    body: JSON.stringify({
-      from,
-    }),
-  });
   await notify(
     to,
     `Friend request Accepted`,
