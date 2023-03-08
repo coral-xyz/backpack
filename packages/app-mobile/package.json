@@ -50,7 +50,7 @@
     "expo-status-bar": "~1.4.4",
     "expo-updates": "~0.16.1",
     "react": "18.2.0",
-    "react-dom": "^18.2.0",
+    "react-dom": "18.2.0",
     "react-hook-form": "^7.40.0",
     "react-native": "0.71.3",
     "react-native-gesture-handler": "~2.9.0",

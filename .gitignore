@@ -47,3 +47,4 @@ test-ledger/
 .dev.vars
 .tamagui
 .d.ts
+.d.ts.map
