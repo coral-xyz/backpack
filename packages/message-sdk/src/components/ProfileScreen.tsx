@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BACKEND_API_URL,
   NAV_COMPONENT_MESSAGE_CHAT,
@@ -27,7 +27,7 @@ import { useStyles } from "./styles";
 async function getActiveWalletsForUser(
   username: string
 ): Promise<{ blockchain: string; publicKey: string }[]> {
-  const res = await fetch(`https://backpack-api.xnfts.dev/users/${username}`);
+  const res = await fetch(`${BACKEND_API_URL}/users/${username}`);
   const json = await res.json();
   return json.publicKeys;
 }
