@@ -27,15 +27,12 @@ router.post("/bulk", extractUserId, async (req, res) => {
   const userId: string = req.id;
   const nfts = req.body.nfts;
   const publicKey: string = req.body.publicKey;
-  const users = await getUsersByPublicKeys(
-    [
-      {
-        blockchain: Blockchain.SOLANA,
-        publicKey,
-      },
-    ],
-    false
-  );
+  const users = await getUsersByPublicKeys([
+    {
+      blockchain: Blockchain.SOLANA,
+      publicKey,
+    },
+  ]);
   if (users[0].user_id !== userId) {
     return res.status(403).json({
       msg: "User doesn't own this public key",
