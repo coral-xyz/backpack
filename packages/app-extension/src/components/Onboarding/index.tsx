@@ -34,9 +34,9 @@ export const Onboarding = ({
   const [action, setAction] = useState<"onboard" | "recover" | "waiting">(
     "onboard"
   );
+  const _ks = useKeyringStoreState();
   const isOnboarded =
-    !isAddingAccount &&
-    useKeyringStoreState() !== KeyringStoreStateEnum.NeedsOnboarding;
+    !isAddingAccount && _ks == KeyringStoreStateEnum.NeedsOnboarding;
 
   const defaultProps = {
     containerRef,

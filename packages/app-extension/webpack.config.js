@@ -1,6 +1,4 @@
-const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const { DuplicatesPlugin } = require("inspectpack/plugin");
 const { ProgressPlugin, ProvidePlugin, DefinePlugin } = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
@@ -9,11 +7,11 @@ const path = require("path");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const fs = require("fs");
 
-const EXTENSION_NAME =
-  process.env.NODE_ENV === "development" ? "(DEV) Backpack" : "Backpack";
-
 const NODE_ENV = process.env.NODE_ENV || "development";
-const isDevelopment = process.env.NODE_ENV === "development";
+const EXTENSION_NAME =
+  NODE_ENV === "development" ? "(DEV) Backpack" : "Backpack";
+
+const isDevelopment = NODE_ENV === "development";
 const appDirectory = path.resolve(__dirname);
 
 // This is needed for webpack to compile JavaScript.
@@ -140,7 +138,7 @@ const {
     };
 
 const options = {
-  mode: process.env.NODE_ENV,
+  mode: NODE_ENV,
   entry: {
     background: "./src/background/index.ts",
     options: "./src/options/index.tsx",
@@ -262,7 +260,7 @@ const options = {
         },
         {
           // use a different icon depending on the NODE_ENV
-          from: `src/anchor-${process.env.NODE_ENV}.png`,
+          from: `src/anchor-${NODE_ENV}.png`,
           to: "anchor.png",
           force: true,
         },

@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
-    "@types/react-native": "~0.70.6",
+    "@types/react-native": "~0.71.3",
     "react-native-builder-bob": "^0.20.4"
   },
   "react-native-builder-bob": {

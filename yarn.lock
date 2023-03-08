@@ -9248,10 +9248,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-native@~0.70.6":
-  version "0.70.11"
-  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.70.11.tgz#50c3d81e1351aac0562c3341c9bd57885651a2fe"
-  integrity sha512-FobPtzoNPNHugBKMfzs4Li0Q9ei4tgU8SI1M5Ayg7+t5/+noCm2sknI8uwij22wMkcHcefv8RFx4q28nNVJtCQ==
+"@types/react-native@^0.71.3", "@types/react-native@~0.71.3":
+  version "0.71.3"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.71.3.tgz#537f669ed6b38b5ae47444bd9d253c4cff23bed7"
+  integrity sha512-0Uqw1YZ0qbVla0MMWFTANFm6W8KYWNvGQmYfucdecbXivLMcQ2v4PovuYFKr7bE6Bc5nDCUEaga962Y8gcDF7A==
   dependencies:
     "@types/react" "*"
 
@@ -26951,9 +26951,9 @@ wordwrapjs@^4.0.0:
     typical "^5.2.0"
 
 wrangler@2.1.9, wrangler@^2.0.15, wrangler@^2.1.6, wrangler@^2.1.9, wrangler@^2.10.0, wrangler@^2.7.1:
-  version "2.12.1"
-  resolved "https://registry.yarnpkg.com/wrangler/-/wrangler-2.12.1.tgz#29efcb53d6d8802628c21e917987368891a2fdc3"
-  integrity sha512-u0GNyPRc6oabd7dQf8BSj1ztJtDlvvHJMVTuCuFDUFbQQKCDXmCnlLk/ZzPE0sfBsMH9LdyMqx4inRiJt6LbjQ==
+  version "2.12.2"
+  resolved "https://registry.yarnpkg.com/wrangler/-/wrangler-2.12.2.tgz#2b3dbe0af012510aa81e1cab167a838e20da4a38"
+  integrity sha512-pjdZvcjiFD6mI3Nncsw3hBv3rxjMx0n4Mtp+Tsql/hvr0LpOmHKlW/aMeYx/fVUmjEKfWBSULc1vgM02O2UTWQ==
   dependencies:
     "@cloudflare/kv-asset-handler" "^0.2.0"
     "@esbuild-plugins/node-globals-polyfill" "^0.1.1"
