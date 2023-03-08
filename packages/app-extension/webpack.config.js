@@ -13,8 +13,6 @@ const EXTENSION_NAME =
   process.env.NODE_ENV === "development" ? "(DEV) Backpack" : "Backpack";
 
 const NODE_ENV = process.env.NODE_ENV || "development";
-const target = "web";
-const isProduction = NODE_ENV === "production";
 const isDevelopment = process.env.NODE_ENV === "development";
 const appDirectory = path.resolve(__dirname);
 
@@ -69,6 +67,14 @@ const swcLoaderConfiguration = {
         },
       },
     },
+  },
+};
+
+const tamaguiLoaderConfiguration = {
+  loader: "tamagui-loader",
+  options: {
+    config: "./tamagui.config.ts",
+    components: ["@coral-xyz/tamagui", "tamagui"],
   },
 };
 
@@ -186,6 +192,7 @@ const options = {
       },
       babelLoaderConfiguration,
       swcLoaderConfiguration,
+      tamaguiLoaderConfiguration,
     ],
   },
   resolve: {
@@ -214,7 +221,7 @@ const options = {
           __DEV__: NODE_ENV === "development" ? "true" : "false",
           IS_STATIC: '""',
           NODE_ENV: JSON.stringify(NODE_ENV),
-          TAMAGUI_TARGET: JSON.stringify(target),
+          TAMAGUI_TARGET: "web",
           DEBUG: JSON.stringify(process.env.DEBUG || "0"),
         },
       },
