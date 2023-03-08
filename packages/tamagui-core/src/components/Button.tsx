@@ -14,4 +14,4 @@ export const BaseButton = styled(Button, {
   fontSize: 16,
 });
 
-export type ButtonProps = GetProps<typeof BaseButton>;
+export type BaseButtonProps = GetProps<typeof BaseButton>;

@@ -221,7 +221,7 @@ const options = {
           __DEV__: NODE_ENV === "development" ? "true" : "false",
           IS_STATIC: '""',
           NODE_ENV: JSON.stringify(NODE_ENV),
-          TAMAGUI_TARGET: "web",
+          TAMAGUI_TARGET: JSON.stringify("web"),
           DEBUG: JSON.stringify(process.env.DEBUG || "0"),
         },
       },

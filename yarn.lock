@@ -15307,7 +15307,7 @@ expo-file-system@~15.2.0, expo-file-system@~15.2.2:
   dependencies:
     uuid "^3.4.0"
 
-expo-font@^11.1.1, expo-font@~11.1.1:
+expo-font@~11.1.1:
   version "11.1.1"
   resolved "https://registry.yarnpkg.com/expo-font/-/expo-font-11.1.1.tgz#268eed407e94f6e88083c01b68c357d010748d23"
   integrity sha512-X+aICqYY69hiiDDtcNrjq8KutHrH2TrHuMqk0Rfq0P7hF6hMd+YefwLBNkvIrqrgmTAuqiLjMUwj2rHLqmgluw==
@@ -23061,7 +23061,7 @@ react-devtools-core@^4.26.1:
     shell-quote "^1.6.1"
     ws "^7"
 
-react-dom@18.2.0, react-dom@^18.2.0:
+react-dom@18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-18.2.0.tgz#22aaf38708db2674ed9ada224ca4aa708d821e3d"
   integrity sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==
