@@ -32,7 +32,7 @@ import {
   OnboardingProvider,
   useOnboarding,
 } from "@coral-xyz/recoil";
-import { Circle } from "@coral-xyz/tamagui";
+import { Circle2, BaseButton } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useForm } from "react-hook-form";
@@ -238,6 +238,7 @@ function OnboardingCreateOrImportWalletScreen({
           <WelcomeLogoHeader />
         </Margin>
         <Margin horizontal={16}>
+          <BaseButton>create a new account</BaseButton>
           <PrimaryButton
             label="Create a new account"
             onPress={() => {
@@ -245,7 +246,7 @@ function OnboardingCreateOrImportWalletScreen({
               navigation.push("OnboardingUsername");
             }}
           />
-          <Circle size="$16" backgroundColor="$green8" />
+          <Circle2 size="$5" />
           <LinkButton
             label="I already have an account"
             onPress={() => {

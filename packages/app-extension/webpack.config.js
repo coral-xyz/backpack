@@ -1,7 +1,7 @@
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const { DuplicatesPlugin } = require("inspectpack/plugin");
-const { ProgressPlugin, ProvidePlugin } = require("webpack");
+const { ProgressPlugin, ProvidePlugin, DefinePlugin } = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -12,6 +12,9 @@ const fs = require("fs");
 const EXTENSION_NAME =
   process.env.NODE_ENV === "development" ? "(DEV) Backpack" : "Backpack";
 
+const NODE_ENV = process.env.NODE_ENV || "development";
+const target = "web";
+const isProduction = NODE_ENV === "production";
 const isDevelopment = process.env.NODE_ENV === "development";
 const appDirectory = path.resolve(__dirname);
 
@@ -205,6 +208,17 @@ const options = {
     },
   },
   plugins: [
+    new DefinePlugin({
+      process: {
+        env: {
+          __DEV__: NODE_ENV === "development" ? "true" : "false",
+          IS_STATIC: '""',
+          NODE_ENV: JSON.stringify(NODE_ENV),
+          TAMAGUI_TARGET: JSON.stringify(target),
+          DEBUG: JSON.stringify(process.env.DEBUG || "0"),
+        },
+      },
+    }),
     new CleanWebpackPlugin(),
     ...plugins,
     new MiniCssExtractPlugin(),
