@@ -47,7 +47,7 @@ export const enrichMessages = async (
       if (reply) {
         replyToMessageMappings.set(replyId, {
           parent_message_text: reply.deleted
-            ? "This message has been deleted"
+            ? "This message has been removed"
             : reply.message,
           parent_message_author_uuid: reply.uuid || "",
         });
