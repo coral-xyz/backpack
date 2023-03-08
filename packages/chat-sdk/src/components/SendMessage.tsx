@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useUsersMetadata } from "@coral-xyz/react-common";
-import { useActiveSolanaWallet, useUser } from "@coral-xyz/recoil";
+import {
+  useActiveSolanaWallet,
+  useFeatureGates,
+  useUser,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
@@ -22,7 +26,6 @@ import { SecureTransfer } from "./SecureTransfer";
 
 const BARTER_ENABLED = false;
 const SECURE_TRANSFER_ENABLED = false;
-const STICKER_ENABLED = true;
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
@@ -109,6 +112,7 @@ export const SendMessage = ({
   const { uuid } = useUser();
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
+  const { stickerEnabled } = useFeatureGates();
 
   const theme = useCustomTheme();
   const activeSolanaWallet = useActiveSolanaWallet();
@@ -330,7 +334,7 @@ export const SendMessage = ({
                 height: "28px",
               }}
             />
-            {STICKER_ENABLED ? (
+            {stickerEnabled ? (
               <NftSticker
                 buttonStyle={{
                   height: "28px",
