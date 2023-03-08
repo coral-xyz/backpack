@@ -58,6 +58,9 @@ export class BlockchainKeyring {
     };
   }
 
+  /**
+   * Set up a new blockchain keyring using a mnemonic.
+   */
   public async initFromMnemonic(
     mnemonic: string,
     derivationPaths: Array<string>
@@ -70,23 +73,9 @@ export class BlockchainKeyring {
     return this.initHdKeyring(mnemonic, derivationPaths);
   }
 
-  public async initHdKeyring(
-    mnemonic: string,
-    derivationPaths: Array<string>
-  ): Promise<Array<[string, string]>> {
-    // Initialize keyrings.
-    this.hdKeyring = this.hdKeyringFactory.init(mnemonic, derivationPaths);
-    this.activeWallet = this.hdKeyring!.publicKeys()[0];
-    // Persist a given name for this wallet.
-    const newAccounts: Array<[string, string]> = [];
-    for (const [index, publicKey] of this.hdKeyring!.publicKeys().entries()) {
-      const name = DefaultKeyname.defaultDerived(index + 1);
-      await store.setKeyname(publicKey, name);
-      newAccounts.push([publicKey, name]);
-    }
-    return newAccounts;
-  }
-
+  /**
+   * Set up a new blockchain keyring using a Ledger.
+   */
   public async initFromLedger(
     walletDescriptors: Array<WalletDescriptor>
   ): Promise<Array<[string, string]>> {
@@ -96,7 +85,6 @@ export class BlockchainKeyring {
     this.importedKeyring = this.keyringFactory.init([]);
     this.activeWallet = this.ledgerKeyring.publicKeys()[0];
     this.deletedWallets = [];
-
     // Persist a given name for this wallet.
     const newAccounts: Array<[string, string]> = [];
     for (const [index, walletDescriptor] of walletDescriptors.entries()) {
@@ -104,6 +92,45 @@ export class BlockchainKeyring {
       await store.setKeyname(walletDescriptor.publicKey, name);
       await store.setIsCold(walletDescriptor.publicKey, true);
       newAccounts.push([walletDescriptor.publicKey, name]);
+    }
+    return newAccounts;
+  }
+
+  /**
+   * Set up a new blockchain keyring using a single private key.
+   */
+  public async initFromPrivateKey(
+    privateKey: string
+  ): Promise<Array<[string, string]>> {
+    // Empty ledger keyring to hold one off ledger imports
+    this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
+    this.importedKeyring = this.keyringFactory.init([privateKey]);
+    this.activeWallet = this.importedKeyring.publicKeys()[0];
+    this.deletedWallets = [];
+    const name = DefaultKeyname.defaultImported(1);
+    await store.setKeyname(this.activeWallet, name);
+    return [[name, this.activeWallet]];
+  }
+
+  /**
+   * Utility method to init a hd keyring on a blockchain keyring.
+   * This is used when initialising by mnemonic, but it is also used when the
+   * user initialised with a private key or ledger and they later want to add
+   * a mnemonic.
+   */
+  public async initHdKeyring(
+    mnemonic: string,
+    derivationPaths: Array<string>
+  ): Promise<Array<[string, string]>> {
+    // Initialize keyrings.
+    this.hdKeyring = this.hdKeyringFactory.init(mnemonic, derivationPaths);
+    this.activeWallet = this.hdKeyring!.publicKeys()[0];
+    // Persist a given name for this wallet.
+    const newAccounts: Array<[string, string]> = [];
+    for (const [index, publicKey] of this.hdKeyring.publicKeys().entries()) {
+      const name = DefaultKeyname.defaultDerived(index + 1);
+      await store.setKeyname(publicKey, name);
+      newAccounts.push([publicKey, name]);
     }
     return newAccounts;
   }
@@ -150,7 +177,7 @@ export class BlockchainKeyring {
     derivationPath: string
   ): Promise<{ publicKey: string; name: string }> {
     if (!this.hdKeyring) {
-      throw new Error("hd keyring not initialised")
+      throw new Error("hd keyring not initialised");
     }
 
     const publicKey = this.hdKeyring.addDerivationPath(derivationPath);

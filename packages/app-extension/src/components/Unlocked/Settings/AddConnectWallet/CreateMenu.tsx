@@ -86,9 +86,6 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
     })();
   }, [background, blockchain]);
 
-  console.log(keyringExists)
-  console.log(hasHdPublicKeys)
-
   const createNewWithPhrase = async () => {
     // Mnemonic based keyring. This is the simple case because we don't
     // need to prompt for the user to open their Ledger app to get the
@@ -137,10 +134,9 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
     } else {
       nav.push("create-mnemonic", {
         blockchain,
-        keyringExists
-      })
+        keyringExists,
+      });
     }
-
   };
 
   const createMenu = {

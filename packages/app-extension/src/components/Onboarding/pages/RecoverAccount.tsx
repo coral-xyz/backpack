@@ -113,7 +113,9 @@ export const RecoverAccount = ({
           onRetry={prevStep}
           />,
         ]
-      : hardwareOnboardSteps),
+      : []),
+    ...(keyringType === "ledger" ? hardwareOnboardSteps : []),
+    ...(keyringType === "private-key" ? [] : []),
     ...(!isAddingAccount
       ? [
         <CreatePassword

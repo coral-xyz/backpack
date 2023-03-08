@@ -47,7 +47,7 @@ export function ImportSecretKey({
     return () => {
       nav.setOptions({ headerTitle: prevTitle });
     };
-  }, [theme]);
+  }, [nav, theme]);
 
   useEffect(() => {
     // Clear error on form input changes

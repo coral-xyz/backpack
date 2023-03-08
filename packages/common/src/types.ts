@@ -95,7 +95,7 @@ export type NftAttribute = {
   value: string;
 };
 
-export type KeyringType = "mnemonic" | "ledger";
+export type KeyringType = "mnemonic" | "ledger" | "private-key";
 
 export type KeyringInit = {
   signedWalletDescriptors: Array<SignedWalletDescriptor>;

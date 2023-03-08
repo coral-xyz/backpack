@@ -1,10 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-import {
-  openAddUserAccount,
-  openConnectHardware,
-  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
-} from "@coral-xyz/common";
+import { openAddUserAccount, openConnectHardware } from "@coral-xyz/common";
 import {
   CheckIcon,
   HardwareIcon,
@@ -16,12 +12,7 @@ import {
   PushDetail,
   SecondaryButton,
 } from "@coral-xyz/react-common";
-import {
-  useAvatarUrl,
-  useBackgroundClient,
-  useUser,
-  useWalletName,
-} from "@coral-xyz/recoil";
+import { useAvatarUrl, useUser, useWalletName } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box, Typography } from "@mui/material";
 
@@ -139,7 +130,7 @@ export function AddConnectWalletMenu({
     return () => {
       nav.setOptions({ headerTitle: prevTitle });
     };
-  }, [nav.setOptions]);
+  }, [nav]);
 
   // If a public key prop exists then attempting to recover an existing wallet
   if (publicKey) {
@@ -193,18 +184,6 @@ export function RecoverWalletMenu({
   publicKey: string;
 }) {
   const nav = useNavigation();
-  const background = useBackgroundClient();
-  const [keyringExists, setKeyringExists] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      const blockchainKeyrings = await background.request({
-        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
-        params: [],
-      });
-      setKeyringExists(blockchainKeyrings.includes(blockchain));
-    })();
-  }, [blockchain]);
 
   const recoverMenu = {
     "Hardware wallet": {
@@ -215,19 +194,15 @@ export function RecoverWalletMenu({
       icon: (props: any) => <HardwareIcon {...props} />,
       detailIcon: <PushDetail />,
     },
-    ...(keyringExists
-      ? {
-        "Private key": {
-          onClick: () =>
-            nav.push("import-from-secret-key", {
-              blockchain,
-              publicKey,
-            }),
-          icon: (props: any) => <PlusCircleIcon {...props} />,
-          detailIcon: <PushDetail />,
-        },
-      }
-      : {}),
+    "Private key": {
+      onClick: () =>
+        nav.push("import-from-secret-key", {
+          blockchain,
+          publicKey,
+        }),
+      icon: (props: any) => <PlusCircleIcon {...props} />,
+      detailIcon: <PushDetail />,
+    },
   };
 
   return (
