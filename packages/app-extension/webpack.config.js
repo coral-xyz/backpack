@@ -190,7 +190,7 @@ const options = {
       },
       babelLoaderConfiguration,
       swcLoaderConfiguration,
-      tamaguiLoaderConfiguration,
+      // tamaguiLoaderConfiguration,
     ],
   },
   resolve: {
