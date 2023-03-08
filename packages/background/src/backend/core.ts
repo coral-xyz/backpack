@@ -42,6 +42,7 @@ import {
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
   NOTIFICATION_KEYRING_IMPORTED_WALLET,
   NOTIFICATION_KEYRING_KEY_DELETE,
+  NOTIFICATION_KEYRING_SET_MNEMONIC,
   NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
@@ -205,11 +206,11 @@ export class Backend {
     const signersOrConf =
       "message" in tx
         ? ({
-            accounts: {
-              encoding: "base64",
-              addresses,
-            },
-          } as SimulateTransactionConfig)
+          accounts: {
+            encoding: "base64",
+            addresses,
+          },
+        } as SimulateTransactionConfig)
         : undefined;
     return await this.solanaConnectionBackend.simulateTransaction(
       tx,
@@ -461,7 +462,7 @@ export class Backend {
     return data.ethereum && data.ethereum.chainId
       ? data.ethereum.chainId
       : // Default to mainnet
-        "0x1";
+      "0x1";
   }
 
   async ethereumChainIdUpdate(chainId: string): Promise<string> {
@@ -1271,6 +1272,15 @@ export class Backend {
 
   keyringHasMnemonic(): boolean {
     return this.keyringStore.activeUserKeyring.hasMnemonic();
+  }
+
+  keyringSetMnemonic(mnemonic: string) {
+    this.keyringStore.activeUserKeyring.setMnemonic(mnemonic);
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_KEYRING_SET_MNEMONIC,
+    });
+
+
   }
 
   async previewPubkeys(

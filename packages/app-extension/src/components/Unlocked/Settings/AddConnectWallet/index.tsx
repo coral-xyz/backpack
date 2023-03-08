@@ -217,16 +217,16 @@ export function RecoverWalletMenu({
     },
     ...(keyringExists
       ? {
-          "Private key": {
-            onClick: () =>
-              nav.push("import-from-secret-key", {
-                blockchain,
-                publicKey,
-              }),
-            icon: (props: any) => <PlusCircleIcon {...props} />,
-            detailIcon: <PushDetail />,
-          },
-        }
+        "Private key": {
+          onClick: () =>
+            nav.push("import-from-secret-key", {
+              blockchain,
+              publicKey,
+            }),
+          icon: (props: any) => <PlusCircleIcon {...props} />,
+          detailIcon: <PushDetail />,
+        },
+      }
       : {}),
   };
 

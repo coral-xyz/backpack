@@ -5,10 +5,8 @@ import React, {
   type PropsWithChildren,
   type SetStateAction,
   useContext,
-  useEffect,
 } from "react";
 import { EXTENSION_HEIGHT } from "@coral-xyz/common";
-import { useEphemeralNav } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import { Close } from "@mui/icons-material";
 import { Button, Drawer, IconButton } from "@mui/material";
@@ -203,7 +201,7 @@ export function WithDrawerNoHeader(props: any) {
           onClick={() => setOpenDrawer(false)}
           variant="contained"
           className={classes.closeDrawerButton}
-          >
+        >
           Close
         </Button> : null}
       </div>

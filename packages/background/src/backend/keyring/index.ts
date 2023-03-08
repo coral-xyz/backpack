@@ -353,6 +353,25 @@ export class KeyringStore {
     });
   }
 
+  /**
+    * Create a random mnemonic.
+    */
+  public createMnemonic(strength: number): string {
+    return generateMnemonic(strength);
+  }
+
+  public async activeUserUpdate(uuid: string): Promise<User> {
+    const userData = await store.getUserData();
+    const user = userData.users.filter((u) => u.uuid === uuid)[0];
+    this.activeUserUuid = uuid;
+    await store.setActiveUser(user);
+    return user;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  // Locking methods methods
+  ///////////////////////////////////////////////////////////////////////////////
+
   public async autoLockSettingsUpdate(
     seconds?: number,
     option?: AutolockSettingsOption
@@ -372,20 +391,7 @@ export class KeyringStore {
   }
 
   public keepAlive() {
-    return this.withUnlock(() => {});
-  }
-
-  public createMnemonic(strength: number): string {
-    const mnemonic = generateMnemonic(strength);
-    return mnemonic;
-  }
-
-  public async activeUserUpdate(uuid: string): Promise<User> {
-    const userData = await store.getUserData();
-    const user = userData.users.filter((u) => u.uuid === uuid)[0];
-    this.activeUserUuid = uuid;
-    await store.setActiveUser(user);
-    return user;
+    return this.withUnlock(() => { });
   }
 
   public autoLockCountdownToggle(enable: boolean) {
@@ -552,6 +558,16 @@ export class KeyringStore {
     return this.withPassword(password, () => {
       return this.activeUserKeyring.exportMnemonic();
     });
+  }
+
+  /**
+    * Set the mnemonic to be used by the hd keyring.
+    */
+  public async setMnemonic(mnemonic: string) {
+    return await this.withUnlockAndPersist(async () => {
+      this.activeUserKeyring.setMnemonic(mnemonic)
+    })
+
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -824,13 +840,23 @@ class UserKeyring {
     }
   }
 
-  public addDerivationPath(
+  public async addDerivationPath(
     blockchain: Blockchain,
     derivationPath: string
   ): Promise<{ publicKey: string; name: string }> {
     let blockchainKeyring = this.blockchains.get(blockchain);
     if (!blockchainKeyring) {
       throw new Error("blockchain keyring not initialised");
+    } else if (!blockchainKeyring.hasHdKeyring()) {
+      // Hd keyring not initialised, ibitialise it if possible
+      if (!this.mnemonic) {
+        throw new Error("hd keyring not initialised")
+      }
+      const accounts = await blockchainKeyring.initHdKeyring(this.mnemonic, [derivationPath])
+      return {
+        publicKey: accounts[0][0],
+        name: accounts[0][1]
+      }
     } else {
       return blockchainKeyring.addDerivationPath(derivationPath);
     }
@@ -856,8 +882,17 @@ class UserKeyring {
   }
 
   public exportMnemonic(): string {
-    if (!this.mnemonic) throw new Error("keyring does not have a mnemonic");
+    if (!this.mnemonic) {
+      throw new Error("keyring does not have a mnemonic");
+    }
     return this.mnemonic;
+  }
+
+  public setMnemonic(mnemonic: string) {
+    if (this.mnemonic) {
+      throw new Error("keyring already has a mnemonic set");
+    }
+    this.mnemonic = mnemonic
   }
 
   public async ledgerImport(

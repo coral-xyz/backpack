@@ -68,11 +68,13 @@ export function MnemonicInput({
   readOnly = false,
   buttonLabel,
   customError,
+  subtitle
 }: {
   onNext: (mnemonic: string) => void;
   readOnly?: boolean;
   buttonLabel: string;
   customError?: string;
+  subtitle?: string;
 }) {
   const theme = useCustomTheme();
   const classes = useStyles();
@@ -173,7 +175,7 @@ export function MnemonicInput({
             }}
           />
           <SubtextParagraph>
-            {readOnly
+            {subtitle ? subtitle : readOnly
               ? "This is the only way to recover your account if you lose your device. Write it down and store it in a safe place."
               : "Enter your 12 or 24-word secret recovery mnemonic to add an existing wallet."}
           </SubtextParagraph>
@@ -213,16 +215,16 @@ export function MnemonicInput({
           icon={
             <ContentCopyIcon
               style={{ color: theme.custom.colors.fontColor }}
-              />
-            }
+            />
+          }
           disabled={!copyEnabled}
-          />
+        />
         <Box sx={{ margin: "12px" }}>
           <CheckboxForm
             checked={checked}
             setChecked={setChecked}
             label="I saved my secret recovery phrase"
-            />
+          />
         </Box>
       </> : null}
       <Box>

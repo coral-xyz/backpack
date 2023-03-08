@@ -1,4 +1,3 @@
-import type { KeyringType } from "@coral-xyz/common";
 import {
   UI_RPC_METHOD_KEYRING_HAS_MNEMONIC,
   UI_RPC_METHOD_KEYRING_STORE_STATE,
