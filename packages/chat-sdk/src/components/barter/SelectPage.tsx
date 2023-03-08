@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { BarterOffers, Nft } from "@coral-xyz/common";
 import { BACKEND_API_URL, Blockchain } from "@coral-xyz/common";
 import {
+  Loading,
   PrimaryButton,
   ProxyImage,
   SecondaryButton,
@@ -215,7 +216,7 @@ export function NftSkeleton({ dimension }: { dimension?: number }) {
   );
 }
 
-export function Nfts({ localSelection, onSelect }: any) {
+export function Nfts({ localSelection, onSelect, rounded }: any) {
   const activeSolWallet = useActiveSolanaWallet();
   const { contents, state }: any = useRecoilValueLoadable(
     nftsByOwner({
@@ -223,11 +224,59 @@ export function Nfts({ localSelection, onSelect }: any) {
       blockchain: Blockchain.SOLANA,
     })
   );
+  // contents sometimes returns an empty array even if the user has nfts.
+  // This variable makes sure the loader shows up instead of `you dont have any nfts`
+  const [loadingThreshold, setloadingThreshold] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setloadingThreshold(false);
+    }, 1500);
+  }, []);
 
   const theme = useCustomTheme();
 
   if (state === "loading" || state === "hasError") {
-    return <NftsSkeleton />;
+    return (
+      <div style={{ height: "100%", marginTop: 60 }}>
+        {" "}
+        <Loading />{" "}
+      </div>
+    );
+  }
+
+  if (!contents.length && loadingThreshold) {
+    return (
+      <div style={{ height: "100%", marginTop: 60 }}>
+        {" "}
+        <Loading />{" "}
+      </div>
+    );
+  }
+
+  if (!contents.length) {
+    return (
+      <div
+        style={{
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            fontSize: 18,
+            color: theme.custom.colors.fontColor,
+            marginTop: 80,
+          }}
+        >
+          You don't own any NFTs yet
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -245,6 +294,7 @@ export function Nfts({ localSelection, onSelect }: any) {
             {contents?.map((nft) => (
               <div>
                 <RenderNFT
+                  rounded={rounded}
                   nft={nft}
                   selected={localSelection
                     .map((x) => x.mint)
@@ -413,17 +463,19 @@ function RenderNFT({
   nft,
   selected,
   onSelect,
+  rounded = false,
 }: {
   nft: Nft;
   selected: boolean;
   onSelect: any;
+  rounded?: boolean;
 }) {
-  const activeSolWallet = useActiveSolanaWallet();
   const { isXs } = useBreakpoints();
+  const theme = useCustomTheme();
 
   const getDimensions = () => {
     if (isXs) {
-      return 80;
+      return 72;
     }
     return 120;
   };
@@ -436,8 +488,10 @@ function RenderNFT({
         }}
         style={{
           width: getDimensions(),
-          borderRadius: 8,
-          border: selected ? "3px solid #4C94FF" : "",
+          borderRadius: rounded ? "50%" : 8,
+          boxShadow:
+            "0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -1px rgba(0, 0, 0, 0.06);",
+          border: `3px solid ${theme.custom.colors.background}`,
         }}
         src={nft.imageUrl}
         removeOnError

@@ -1,62 +1,81 @@
 import type { Nft } from "@coral-xyz/common";
+import { useBreakpoints } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import CloseIcon from "@mui/icons-material/Close";
+import Info from "@mui/icons-material/Info";
+import { Tooltip } from "@mui/material";
 
 import { Nfts } from "../barter/SelectPage";
 import { useChatContext } from "../ChatContext";
+import { ScrollBarImpl } from "../ScrollbarImpl";
 
-export const NftStickerPlugin = () => {
-  const { setOpenPlugin, setAboveMessagePlugin } = useChatContext();
+export const NftStickerPlugin = ({ setPluginMenuOpen }) => {
+  const { setOpenPlugin, setAboveMessagePlugin, sendMessage } =
+    useChatContext();
   const theme = useCustomTheme();
+  const { isXs } = useBreakpoints();
 
   return (
-    <div style={{ height: "100%" }}>
+    <div style={{ padding: isXs ? 10 : 20 }}>
       <div style={{ display: "flex" }}>
-        <div style={{ margin: 4 }}>
-          <CloseIcon
-            style={{ color: theme.custom.colors.icon, cursor: "pointer" }}
-            onClick={() => {
-              setAboveMessagePlugin({ type: "", metadata: {} });
-              setOpenPlugin("");
-            }}
-          />
-        </div>
-        <div style={{ flex: 1 }}>
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            marginTop: 10,
+            paddingLeft: isXs ? 10 : 0,
+          }}
+        >
           <div
             style={{
               display: "flex",
               justifyContent: "center",
               fontSize: 18,
               color: theme.custom.colors.fontColor,
-              marginTop: 10,
             }}
           >
-            Send Stickers
+            NFT Stickers
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Tooltip title="Made from your NFTs">
+              <Info
+                style={{
+                  fontSize: "1.2rem",
+                  marginLeft: 4,
+                  color: theme.custom.colors.icon,
+                }}
+              />
+            </Tooltip>
           </div>
         </div>
       </div>
-      <div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            flexDirection: "column",
-            height: "100%",
-          }}
-        >
-          <Nfts
-            localSelection={[]}
-            onSelect={(nft: Nft) => {
-              setAboveMessagePlugin({
-                type: "nft-sticker",
-                metadata: {
-                  mint: nft.mint || "",
-                },
-              });
-              setOpenPlugin("");
-            }}
-          />
-        </div>
+      <div style={{ position: "relative", height: 200 }}>
+        <ScrollBarImpl height="100%">
+          <div style={{ height: "100%" }}>
+            <div>
+              <Nfts
+                localSelection={[]}
+                rounded
+                onSelect={(nft: Nft) => {
+                  sendMessage("NFT Sticker", "nft-sticker", {
+                    mint: nft.mint || "",
+                  });
+                  setAboveMessagePlugin({
+                    type: "",
+                    metadata: {},
+                  });
+                  setOpenPlugin("");
+                  setPluginMenuOpen(false);
+                }}
+              />
+            </div>
+          </div>
+        </ScrollBarImpl>
       </div>
     </div>
   );

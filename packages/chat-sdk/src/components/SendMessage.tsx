@@ -265,6 +265,7 @@ export const SendMessage = ({
         ) : null}
         {aboveMessagePlugin ? (
           <AboveMessagePluginRenderer
+            setPluginMenuOpen={setPluginMenuOpen}
             sendMessage={sendMessage}
             setAboveMessagePlugin={setAboveMessagePlugin}
           />
@@ -289,6 +290,12 @@ export const SendMessage = ({
                 },
               }}
               onClick={() => {
+                if (pluginMenuOpen) {
+                  setAboveMessagePlugin({
+                    type: "",
+                    metadata: {},
+                  });
+                }
                 setPluginMenuOpen(!pluginMenuOpen);
               }}
             >
@@ -339,6 +346,7 @@ export const SendMessage = ({
                 buttonStyle={{
                   height: "28px",
                 }}
+                setPluginMenuOpen={setPluginMenuOpen}
                 setAboveMessagePlugin={setAboveMessagePlugin}
               />
             ) : null}

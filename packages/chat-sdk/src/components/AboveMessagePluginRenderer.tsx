@@ -39,10 +39,18 @@ import { useChatContext } from "./ChatContext";
 export const AboveMessagePluginRenderer = ({
   sendMessage,
   setAboveMessagePlugin,
+  setPluginMenuOpen,
 }) => {
   const { aboveMessagePlugin } = useChatContext();
+  const theme = useCustomTheme();
   return (
-    <>
+    <div
+      style={{
+        background: theme.custom.colors.bg3,
+        borderRadius: 12,
+        boxShadow: `0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -1px rgba(0, 0, 0, 0.06)`,
+      }}
+    >
       {aboveMessagePlugin.type === "secure-transfer" ? (
         <SecureTransferPlugin
           sendMessage={sendMessage}
@@ -50,51 +58,16 @@ export const AboveMessagePluginRenderer = ({
         />
       ) : null}
       {aboveMessagePlugin.type === "nft-sticker" ? (
-        <AboveNftStickerPlugin />
+        <AboveNftStickerPlugin setPluginMenuOpen={setPluginMenuOpen} />
       ) : null}
-    </>
+    </div>
   );
 };
 
-function AboveNftStickerPlugin() {
-  const { aboveMessagePlugin, setAboveMessagePlugin, setOpenPlugin } =
-    useChatContext();
-  const { isXs } = useBreakpoints();
-  const theme = useCustomTheme();
-
-  const mint =
-    aboveMessagePlugin.type === "nft-sticker"
-      ? aboveMessagePlugin?.metadata?.mint
-      : "";
-
-  const getDimensions = () => {
-    if (isXs) {
-      return 140;
-    }
-    return 170;
-  };
-
+function AboveNftStickerPlugin({ setPluginMenuOpen }) {
   return (
     <div>
-      <div style={{ margin: 4 }}>
-        <CloseIcon
-          style={{ color: theme.custom.colors.icon, cursor: "pointer" }}
-          onClick={() => {
-            setAboveMessagePlugin({ type: "", metadata: "" });
-            setOpenPlugin("");
-          }}
-        />
-      </div>
-      <div style={{ display: "flex", justifyContent: "center", marginTop: -5 }}>
-        <div style={{ width: getDimensions(), position: "relative" }}>
-          <RemoteNftWithSuspense mint={mint} />
-          <ExplorerLink mint={mint} />
-          <div style={{ position: "absolute", right: 10, top: 8 }}>
-            {" "}
-            <CheckMark />{" "}
-          </div>
-        </div>
-      </div>
+      <NftStickerPlugin setPluginMenuOpen={setPluginMenuOpen} />
     </div>
   );
 }
