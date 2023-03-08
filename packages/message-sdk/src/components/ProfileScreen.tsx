@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import {
   BACKEND_API_URL,
   NAV_COMPONENT_MESSAGE_CHAT,
   sendFriendRequest,
+  walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
   Loading,
@@ -14,13 +15,22 @@ import {
 import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ContentCopy from "@mui/icons-material/ContentCopy";
 import LockIcon from "@mui/icons-material/Lock";
 import VerifiedIcon from "@mui/icons-material/Verified";
-import { IconButton } from "@mui/material";
+import { Button, IconButton, Tooltip } from "@mui/material";
 
 import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
 import { useStyles } from "./styles";
+
+async function getActiveWalletsForUser(
+  username: string
+): Promise<{ blockchain: string; publicKey: string }[]> {
+  const res = await fetch(`https://backpack-api.xnfts.dev/users/${username}`);
+  const json = await res.json();
+  return json.publicKeys;
+}
 
 export const ProfileScreen = ({ userId }: { userId: string }) => {
   const [friendship, setFriendship] = useState(false);
@@ -30,6 +40,9 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
     image?: string;
     id?: string;
   }>({});
+  const [userWallets, setUserWallets] = useState<
+    { blockchain: string; publicKey: string }[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -46,7 +59,6 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
       setUser(json.user);
       setRequestSent(json.request_sent);
     }
-    setLoading(false);
   }
 
   const send = async (sendRequest: boolean) => {
@@ -60,6 +72,17 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
   useEffect(() => {
     getChatRoom();
   }, []);
+
+  useEffect(() => {
+    if (!user.username) {
+      return;
+    }
+
+    getActiveWalletsForUser(user.username)
+      .then(setUserWallets)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [user.username]);
 
   if (loading) {
     return (
@@ -79,7 +102,27 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
         padding: 16,
       }}
     >
-      <div style={{ flex: 1 }}>
+      {userWallets.length > 0 ? (
+        <div
+          style={{
+            flex: 0.5,
+            marginTop: -16,
+            display: "flex",
+            justifyContent: "center",
+            gap: 8,
+          }}
+        >
+          {userWallets.map((w) => (
+            <PrimaryNetworkWallet
+              key={w.blockchain}
+              blockchain={w.blockchain}
+              publicKey={w.publicKey}
+              title="Copy address"
+            />
+          ))}
+        </div>
+      ) : null}
+      <div>
         <div className={classes.horizontalCenter}>
           <div className={classes.topImageOuter}>
             <LocalImage
@@ -156,14 +199,14 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
           <ContactSection
             icon={<LockIcon style={{ color: theme.custom.colors.icon }} />}
             title="Friend pending request"
-            subtitle={`You can still message and send things to @${user.username}.`}
+            subtitle="You can still send messages and interact"
           />
         ) : null}
         {!friendship && !requestSent ? (
           <ContactSection
             icon={<LockIcon style={{ color: theme.custom.colors.icon }} />}
             title="This is not a friend"
-            subtitle="You can message and send crypto to anyone on Backpack, but we suggest only adding friends you know and trust."
+            subtitle="Only add friends you know and trust"
           />
         ) : null}
       </div>
@@ -192,6 +235,63 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
     </div>
   );
 };
+
+function PrimaryNetworkWallet({
+  blockchain,
+  publicKey,
+  title,
+}: {
+  blockchain: string;
+  publicKey: string;
+  title: string;
+}) {
+  const theme = useCustomTheme();
+  const [open, setOpen] = useState<boolean | undefined>(undefined);
+
+  const icon =
+    blockchain === "solana" ? (
+      <img style={{ height: 10 }} src="/solana.png" />
+    ) : blockchain === "ethereum" ? (
+      <img style={{ height: 12 }} src="/ethereum.png" />
+    ) : null;
+
+  return (
+    <Tooltip title={open ? "Copied!" : title} open={open}>
+      <Button
+        disableElevation
+        disableRipple
+        style={{
+          background: theme.custom.colors.nav,
+          borderRadius: 15,
+          color: theme.custom.colors.fontColor3,
+          fontWeight: 600,
+          fontSize: 12,
+          padding: "4px 10px",
+          height: "fit-content",
+          textTransform: "none",
+        }}
+        onClick={async () => {
+          await navigator.clipboard.writeText(publicKey);
+          setOpen(true);
+          setTimeout(() => setOpen(undefined), 2000);
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 4,
+          }}
+        >
+          {icon}
+          {walletAddressDisplay(publicKey)}
+          <ContentCopy sx={{ color: theme.custom.colors.icon, fontSize: 14 }} />
+        </div>
+      </Button>
+    </Tooltip>
+  );
+}
 
 function ContactSection({
   icon,
