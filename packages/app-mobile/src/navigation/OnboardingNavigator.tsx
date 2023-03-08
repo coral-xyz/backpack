@@ -32,7 +32,6 @@ import {
   OnboardingProvider,
   useOnboarding,
 } from "@coral-xyz/recoil";
-import { Circle2, BaseButton } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useForm } from "react-hook-form";
@@ -81,40 +80,6 @@ import {
 } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { maybeRender } from "~lib/index";
-
-function OnboardingScreen({
-  title,
-  subtitle,
-  children,
-  style,
-  scrollable,
-}: {
-  title: string;
-  subtitle?: string;
-  children?: any;
-  style?: StyleProp<ViewStyle>;
-  scrollable?: boolean;
-}) {
-  const insets = useSafeAreaInsets();
-  return (
-    <Screen
-      scrollable={scrollable}
-      style={[
-        styles.container,
-        {
-          paddingBottom: insets.bottom + 16,
-        },
-        style,
-      ]}
-    >
-      <Margin bottom={12}>
-        <Header text={title} />
-        {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
-      </Margin>
-      {children}
-    </Screen>
-  );
-}
 
 function Network({
   id,
@@ -166,7 +131,6 @@ function Network({
 }
 
 type OnboardingStackParamList = {
-  RecoverUsername: undefined;
   CreateOrImportWallet: undefined;
   OnboardingUsername: undefined;
   KeyringTypeSelector: undefined;
@@ -179,33 +143,37 @@ type OnboardingStackParamList = {
 
 const Stack = createStackNavigator<OnboardingStackParamList>();
 
-function OnboardingUsernameRecoveryScreen({ navigation }) {
-  const { onboardingData, setOnboardingData } = useOnboarding();
+function OnboardingScreen({
+  title,
+  subtitle,
+  children,
+  style,
+  scrollable,
+}: {
+  title: string;
+  subtitle?: string;
+  children?: any;
+  style?: StyleProp<ViewStyle>;
+  scrollable?: boolean;
+}) {
+  const insets = useSafeAreaInsets();
   return (
-    <OnboardingScreen
-      title="Username recovery"
-      subtitle="Enter your username below, you will then be asked for your secret recovery phrase to verify that you own the public key that was initially associated with it.
-"
+    <Screen
+      scrollable={scrollable}
+      style={[
+        styles.container,
+        {
+          paddingBottom: insets.bottom + 16,
+        },
+        style,
+      ]}
     >
-      <View>
-        <Margin bottom={18}>
-          <StyledTextInput
-            autoFocus
-            placeholder="@Username"
-            returnKeyType="next"
-            value={onboardingData.username ?? ""}
-            onChangeText={(username) => setOnboardingData({ username })}
-          />
-        </Margin>
-        <PrimaryButton
-          disabled={!onboardingData.username?.length}
-          label="Continue"
-          onPress={() => {
-            navigation.push("MnemonicInput");
-          }}
-        />
-      </View>
-    </OnboardingScreen>
+      <Margin bottom={24}>
+        <Header text={title} />
+        {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
+      </Margin>
+      {children}
+    </Screen>
   );
 }
 
@@ -237,24 +205,27 @@ function OnboardingCreateOrImportWalletScreen({
         <Margin top={48} bottom={24}>
           <WelcomeLogoHeader />
         </Margin>
-        <Margin horizontal={16}>
-          <BaseButton>create a new account</BaseButton>
+        <View
+          style={{
+            padding: 16,
+            alignItems: "center",
+          }}
+        >
           <PrimaryButton
-            label="Create a new account"
+            label="Create a new wallet"
             onPress={() => {
               setOnboardingData({ action: "create" });
               navigation.push("OnboardingUsername");
             }}
           />
-          <Circle2 size="$5" />
           <LinkButton
-            label="I already have an account"
+            label="I already have a wallet"
             onPress={() => {
-              setOnboardingData({ action: "recover" });
+              setOnboardingData({ action: "import" });
               navigation.push("MnemonicInput");
             }}
           />
-        </Margin>
+        </View>
       </Screen>
       <BottomSheetHelpModal
         isVisible={isModalVisible}
@@ -837,10 +808,6 @@ export function OnboardingNavigator({
             headerBackTitleVisible: false,
           }}
         >
-          <Stack.Screen
-            name="RecoverUsername"
-            component={OnboardingUsernameRecoveryScreen}
-          />
           <Stack.Screen
             name="KeyringTypeSelector"
             component={OnboardingKeyringTypeSelectorScreen}
