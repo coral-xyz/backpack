@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import type { MessageKind, MessageMetadata } from "@coral-xyz/common";
-import { CHAT_MESSAGES } from "@coral-xyz/common";
-import { createEmptyFriendship } from "@coral-xyz/db";
-import { SignalingManager, useUsersMetadata } from "@coral-xyz/react-common";
-import { useActiveSolanaWallet, useUser } from "@coral-xyz/recoil";
+import { useUsersMetadata } from "@coral-xyz/react-common";
+import {
+  useActiveSolanaWallet,
+  useFeatureGates,
+  useUser,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { CircularProgress, IconButton } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
-import { v4 as uuidv4 } from "uuid";
 
 import { CustomAutoComplete, MessageInput } from "./messageInput/MessageInput";
 import { MessageInputProvider } from "./messageInput/MessageInputProvider";
@@ -26,7 +26,6 @@ import { SecureTransfer } from "./SecureTransfer";
 
 const BARTER_ENABLED = false;
 const SECURE_TRANSFER_ENABLED = false;
-const STICKER_ENABLED = false;
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
@@ -113,6 +112,7 @@ export const SendMessage = ({
   const { uuid } = useUser();
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
+  const featureGates = useFeatureGates();
 
   const theme = useCustomTheme();
   const activeSolanaWallet = useActiveSolanaWallet();
@@ -265,6 +265,7 @@ export const SendMessage = ({
         ) : null}
         {aboveMessagePlugin ? (
           <AboveMessagePluginRenderer
+            setPluginMenuOpen={setPluginMenuOpen}
             sendMessage={sendMessage}
             setAboveMessagePlugin={setAboveMessagePlugin}
           />
@@ -289,6 +290,12 @@ export const SendMessage = ({
                 },
               }}
               onClick={() => {
+                if (pluginMenuOpen) {
+                  setAboveMessagePlugin({
+                    type: "",
+                    metadata: {},
+                  });
+                }
                 setPluginMenuOpen(!pluginMenuOpen);
               }}
             >
@@ -334,11 +341,12 @@ export const SendMessage = ({
                 height: "28px",
               }}
             />
-            {STICKER_ENABLED ? (
+            {featureGates["STICKER_ENABLED"] ? (
               <NftSticker
                 buttonStyle={{
                   height: "28px",
                 }}
+                setPluginMenuOpen={setPluginMenuOpen}
                 setAboveMessagePlugin={setAboveMessagePlugin}
               />
             ) : null}

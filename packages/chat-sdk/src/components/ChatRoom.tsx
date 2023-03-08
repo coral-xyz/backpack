@@ -51,7 +51,7 @@ export type AboveMessagePlugin =
   | {
       type: "nft-sticker";
       metadata: {
-        mint: string;
+        // mint: string;
       };
     }
   | {
@@ -225,11 +225,7 @@ export const ChatRoom = ({
     if (selectedFile && uploadingFile) {
       return;
     }
-    if (
-      messageTxt ||
-      selectedFile ||
-      aboveMessagePlugin.type === "nft-sticker"
-    ) {
+    if (messageTxt || selectedFile) {
       if (selectedFile) {
         messageKind = "media";
         messageMetadata = {
@@ -237,17 +233,6 @@ export const ChatRoom = ({
           media_link: uploadedImageUri,
         };
         setSelectedFile(null);
-      }
-      if (aboveMessagePlugin.type === "nft-sticker") {
-        messageKind = "nft-sticker";
-        messageMetadata = {
-          mint: aboveMessagePlugin.metadata.mint,
-        };
-        setAboveMessagePlugin({
-          type: "",
-          metadata: {},
-        });
-        setOpenPlugin("");
       }
       const client_generated_uuid = uuidv4();
       if (chats.length === 0 && type === "individual") {
