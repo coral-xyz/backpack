@@ -1,9 +1,13 @@
+import type { WalletPublicKeys } from "@coral-xyz/recoil";
 import type { BigNumberish } from "@ethersproject/bignumber";
+import { Keypair } from "@solana/web3.js";
+import * as bs58 from "bs58";
 import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 import { v1 } from "uuid";
 
 import { IMAGE_PROXY_URL } from "./constants";
+import { Blockchain } from "./types";
 
 const usd = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -135,4 +139,55 @@ export function reverseScientificNotation(n: number): string {
   return `${base.replace(".", "")}${Array(decimals - baseDecimals)
     .fill("0")
     .join("")}`;
+}
+
+/**
+ * Validate a private key
+ */
+export function validatePrivateKey(
+  blockchain: Blockchain,
+  secretKey: string,
+  keyring: WalletPublicKeys
+): { privateKey: string; publicKey: string } {
+  // Extract public keys from keychain object into array of strings
+  const existingPublicKeys = Object.values(keyring[blockchain])
+    .map((k) => k.map((i) => i.publicKey))
+    .flat();
+
+  if (blockchain === Blockchain.SOLANA) {
+    let keypair: Keypair | null = null;
+    try {
+      // Attempt to create a keypair from JSON secret key
+      keypair = Keypair.fromSecretKey(new Uint8Array(JSON.parse(secretKey)));
+    } catch (_) {
+      try {
+        // Attempt to create a keypair from bs58 decode of secret key
+        keypair = Keypair.fromSecretKey(new Uint8Array(bs58.decode(secretKey)));
+      } catch (_) {
+        // Failure
+        throw new Error("Invalid private key");
+      }
+    }
+
+    if (existingPublicKeys.includes(keypair.publicKey.toString())) {
+      throw new Error("Key already exists");
+    }
+
+    return {
+      privateKey: Buffer.from(keypair.secretKey).toString("hex"),
+      publicKey: keypair.publicKey.toString(),
+    };
+  } else if (blockchain === Blockchain.ETHEREUM) {
+    let wallet: ethers.Wallet;
+    try {
+      wallet = new ethers.Wallet(secretKey);
+    } catch (_) {
+      throw new Error("Invalid private key");
+    }
+    if (existingPublicKeys.includes(wallet.address)) {
+      throw new Error("Key already exists");
+    }
+    return { privateKey: wallet.privateKey, publicKey: wallet.address };
+  }
+  throw new Error("secret key validation not implemented for blockchain");
 }
