@@ -5150,7 +5150,7 @@
     "@mui/utils" "^5.11.12"
     prop-types "^15.8.1"
 
-"@mui/styled-engine@^5.11.11", "@mui/styled-engine@^5.11.9":
+"@mui/styled-engine@^5.11.11":
   version "5.11.11"
   resolved "https://registry.yarnpkg.com/@mui/styled-engine/-/styled-engine-5.11.11.tgz#9084c331fdcff2210ec33adf37f34e94d67202e4"
   integrity sha512-wV0UgW4lN5FkDBXefN8eTYeuE9sjyQdg5h94vtwZCUamGQEzmCOtir4AakgmbWMy0x8OLjdEUESn9wnf5J9MOg==
