@@ -217,7 +217,7 @@ export function OnboardingProvider({
         }
       }
     },
-    [data]
+    [background, data, setOnboardingData]
   );
 
   //

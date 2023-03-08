@@ -62,7 +62,7 @@ export const KeyringTypeSelector = ({
             onClick={() => onNext("mnemonic")}
           />
         </Box>
-        {action === "import" ? (
+        {action === "import" || action === "recover" ? (
           <Box style={{ marginBottom: "16px" }}>
             <PrimaryButton
               label={`${toTitleCase(action)} with private key`}

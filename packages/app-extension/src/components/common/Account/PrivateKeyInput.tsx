@@ -1,25 +1,30 @@
 import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-import { validatePrivateKey, walletAddressDisplay } from "@coral-xyz/common";
+import {
+  UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
+  validatePrivateKey,
+  walletAddressDisplay,
+} from "@coral-xyz/common";
 import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
-import { useWalletPublicKeys } from "@coral-xyz/recoil";
+import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
 
 import { Header, SubtextParagraph } from "../../common";
 
 export const PrivateKeyInput = ({
   blockchain,
-  onComplete,
+  onNext,
   publicKey,
   error,
   setError,
 }: {
   blockchain: Blockchain;
-  onComplete: (publicKey: string, privateKey: string) => void;
+  onNext: (publicKey: string, privateKey: string) => void;
   publicKey?: string;
   error: string | null;
   setError: (error: string | null) => void;
 }) => {
+  const background = useBackgroundClient();
   const existingPublicKeys = useWalletPublicKeys();
   const [name, setName] = useState("");
   const [privateKey, setPrivateKey] = useState("");
@@ -54,9 +59,20 @@ export const PrivateKeyInput = ({
       setLoading(false);
       setError(`Incorrect private key for ${walletAddressDisplay(publicKey)}`);
       return;
+    } else {
+      // If we aren't searching for a public key we are adding it to the account,
+      // check for conflicts.
+      const response = await background.request({
+        method: UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
+        params: [{ blockchain, publicKey: _publicKey }],
+      });
+      if (response.length > 0) {
+        setError("Wallet address is used by another Backpack account");
+        return;
+      }
     }
 
-    onComplete(_privateKey, _publicKey);
+    onNext(_privateKey, _publicKey);
   };
 
   return (

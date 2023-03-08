@@ -65,6 +65,8 @@ export const RecoverAccount = ({
     prevStep,
   });
 
+  console.log("recovery");
+
   const steps = [
     <RecoverAccountUsernameForm
       key="RecoverAccountUsernameForm"

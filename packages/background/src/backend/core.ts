@@ -206,11 +206,11 @@ export class Backend {
     const signersOrConf =
       "message" in tx
         ? ({
-          accounts: {
-            encoding: "base64",
-            addresses,
-          },
-        } as SimulateTransactionConfig)
+            accounts: {
+              encoding: "base64",
+              addresses,
+            },
+          } as SimulateTransactionConfig)
         : undefined;
     return await this.solanaConnectionBackend.simulateTransaction(
       tx,
@@ -462,7 +462,7 @@ export class Backend {
     return data.ethereum && data.ethereum.chainId
       ? data.ethereum.chainId
       : // Default to mainnet
-      "0x1";
+        "0x1";
   }
 
   async ethereumChainIdUpdate(chainId: string): Promise<string> {
@@ -1279,8 +1279,6 @@ export class Backend {
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_SET_MNEMONIC,
     });
-
-
   }
 
   async previewPubkeys(
@@ -1513,15 +1511,13 @@ export class Backend {
     serverPublicKeys: ServerPublicKey[]
   ): Promise<string[]> {
     const url = `${BACKEND_API_URL}/publicKeys`;
-    const response = await fetch(url, {
+    return await fetch(url, {
       method: "POST",
       body: JSON.stringify(serverPublicKeys),
       headers: {
         "Content-Type": "application/json",
       },
     }).then((r) => r.json());
-
-    return response;
   }
 
   /**

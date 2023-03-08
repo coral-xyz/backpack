@@ -36,24 +36,24 @@ export function ImportSecretKey({
     };
   }, [nav, theme]);
 
-  const onComplete = async (privateKey: string, publicKey: string) => {
-    try {
-      const newPublicKey = await background.request({
-        method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-        params: [blockchain, privateKey, name],
-      });
-      setNewPublicKey(newPublicKey);
-      setOpenDrawer(true);
-    } catch (error) {
-      setError("Wallet address is used by another Backpack account.");
-    }
+  const onNext = async (
+    privateKey: string,
+    publicKey: string,
+    name: String
+  ) => {
+    const newPublicKey = await background.request({
+      method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+      params: [blockchain, privateKey, name],
+    });
+    setNewPublicKey(newPublicKey);
+    setOpenDrawer(true);
   };
 
   return (
     <>
       <PrivateKeyInput
         blockchain={blockchain}
-        onComplete={onComplete}
+        onNext={onNext}
         publicKey={publicKey}
         error={error}
         setError={setError}

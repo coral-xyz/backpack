@@ -4,18 +4,14 @@ import type {
   SignedWalletDescriptor,
   WalletDescriptor,
 } from "@coral-xyz/common";
-import {
-  getCreateMessage,
-} from "@coral-xyz/common";
-import {
-  useOnboarding,
-  useSignMessageForWallet,
-} from "@coral-xyz/recoil";
+import { getCreateMessage } from "@coral-xyz/common";
+import { useOnboarding, useSignMessageForWallet } from "@coral-xyz/recoil";
 
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
 import { ImportWallets } from "../../common/Account/ImportWallets";
 import { MnemonicInput } from "../../common/Account/MnemonicInput";
+import { PrivateKeyInput } from "../../common/Account/PrivateKeyInput";
 import { WithContaineredDrawer } from "../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 
@@ -107,11 +103,11 @@ export const OnboardAccount = ({
           readOnly={action === "create"}
           buttonLabel={action === "create" ? "Next" : "Import"}
           onNext={(mnemonic) => {
-            setOnboardingData({ mnemonic });
-            nextStep();
-          }}
-        />,
-      ]
+              setOnboardingData({ mnemonic });
+              nextStep();
+            }}
+          />,
+        ]
       : []),
     <BlockchainSelector
       key="BlockchainSelector"
@@ -119,23 +115,31 @@ export const OnboardAccount = ({
       onClick={async (blockchain) => {
         await handleSelectBlockchain({
           blockchain,
-          onSelectImport: () => {
-            setOpenDrawer(true);
-          },
+          // Mnemonic and ledger keyring types have an optional component that allows
+          // selection of the accounts to import that ppos up in a drawer
+          onSelectImport:
+            keyringType === "mnemonic" || keyringType === "ledger"
+              ? () => {
+                  setOpenDrawer(true);
+                }
+              : undefined,
         });
       }}
       onNext={nextStep}
     />,
+    ...(keyringType === "private-key"
+      ? [<PrivateKeyInput key="PrivateKeyInput" />]
+      : []),
     ...(!isAddingAccount
       ? [
         <CreatePassword
           key="CreatePassword"
           onNext={async (password) => {
-            setOnboardingData({ password });
-            nextStep();
-          }}
-        />,
-      ]
+              setOnboardingData({ password });
+              nextStep();
+            }}
+          />,
+        ]
       : []),
     <NotificationsPermission key="NotificationsPermission" onNext={nextStep} />,
     <Finish key="Finish" isAddingAccount={isAddingAccount} />,
@@ -157,7 +161,6 @@ export const OnboardAccount = ({
       navButtonRight={step === 0 ? navProps.navButtonRight : undefined}
     >
       {steps[step]}
-
       <WithContaineredDrawer
         containerRef={containerRef}
         openDrawer={openDrawer}

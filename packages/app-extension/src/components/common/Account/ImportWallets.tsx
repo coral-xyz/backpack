@@ -195,15 +195,14 @@ export function ImportWallets({
         });
         setConflictingPublicKeys(
           response.map(
-            (r: { user_id: string; public_key: string; blockchain: string }) =>
-              r.public_key
+            (r: { public_key: string; blockchain: string }) => r.public_key
           )
         );
       } catch {
         // If the query failed assume all are valid
       }
     })();
-  }, [walletDescriptors]);
+  }, [background, blockchain, walletDescriptors]);
 
   //
   // Load a list of accounts and their associated balances
