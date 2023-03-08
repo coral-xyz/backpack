@@ -1,0 +1,30 @@
+table:
+  name: chat_barter_metadata
+  schema: public
+object_relationships:
+  - name: barter
+    using:
+      foreign_key_constraint_on: barter_id
+  - name: chat
+    using:
+      foreign_key_constraint_on: chat_client_generated_uuid
+insert_permissions:
+  - role: chat
+    permission:
+      check: {}
+      columns:
+        - barter_id
+        - chat_client_generated_uuid
+select_permissions:
+  - role: chat
+    permission:
+      columns:
+        - barter_id
+        - chat_client_generated_uuid
+      filter: {}
+update_permissions:
+  - role: chat
+    permission:
+      columns: []
+      filter: {}
+      check: null

@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import { Margin } from "@components";
+import { Margin } from "~components/index";
 import { formatUSD } from "@coral-xyz/common";
-import { useTheme } from "@hooks";
+import { useTheme } from "~hooks/useTheme";
 
-import { useTotalBalance } from "@hooks/recoil";
+import { useTotalBalance } from "~hooks/recoil";
 
 function TextTotalChange({
   totalChange,
@@ -102,13 +102,13 @@ const styles = StyleSheet.create({
   totalChangeText: {
     fontSize: 12,
     lineHeight: 24,
-    paddingVeritcal: 12,
+    paddingVertical: 12,
   },
   percentChangeText: {
     fontSize: 12,
     lineHeight: 24,
     borderRadius: 28,
     paddingHorizontal: 8,
-    paddingVeritcal: 2,
+    paddingVertical: 2,
   },
 });

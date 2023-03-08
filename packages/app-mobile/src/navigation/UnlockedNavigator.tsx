@@ -2,25 +2,25 @@ import type { Token } from "@@types/types";
 import type { Blockchain } from "@coral-xyz/common";
 
 import { useCallback } from "react";
-import { Text, View } from "react-native";
 
-import { AccountSettingsNavigator } from "@navigation/AccountSettingsNavigator";
+import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
-import AppListScreen from "@screens/Unlocked/AppListScreen";
-import { BalancesNavigator } from "@screens/Unlocked/BalancesScreen";
+import AppListScreen from "~screens/Unlocked/AppListScreen";
+import { BalancesNavigator } from "~screens/Unlocked/BalancesScreen";
 import {
   DepositListScreen,
   DepositSingleScreen,
-} from "@screens/Unlocked/DepositScreen";
-import { NftCollectiblesNavigator } from "@screens/Unlocked/NftCollectiblesScreen";
-import { RecentActivityScreen } from "@screens/Unlocked/RecentActivityScreen";
+} from "~screens/Unlocked/DepositScreen";
+import { NftCollectiblesNavigator } from "~screens/Unlocked/NftCollectiblesScreen";
+import { RecentActivityScreen } from "~screens/Unlocked/RecentActivityScreen";
 import {
   SendTokenDetailScreen,
   SendTokenListScreen,
-} from "@screens/Unlocked/SendTokenScreen";
-import { WalletListScreen } from "@screens/Unlocked/WalletListScreen";
+} from "~screens/Unlocked/SendTokenScreen";
+import { SwapTokenScreen } from "~screens/Unlocked/SwapTokenScreen";
+import { WalletListScreen } from "~screens/Unlocked/WalletListScreen";
 
 import {
   IconCloseModal,
@@ -28,9 +28,9 @@ import {
   TabIconApps,
   TabIconNfts,
   TabIconMessages,
-} from "@components/Icon";
-import { NavHeader } from "@components/index";
-import { useTheme } from "@hooks/index";
+} from "~components/Icon";
+import { NavHeader } from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
 export type UnlockedNavigatorStackParamList = {
   Tabs: undefined;
@@ -101,7 +101,7 @@ export function UnlockedNavigator(): JSX.Element {
         <Stack.Screen
           options={{ title: "Swap" }}
           name="SwapModal"
-          component={RecentActivityModal}
+          component={SwapTokenScreen}
         />
         <Stack.Screen
           options={{ title: "Wallets" }}
@@ -110,14 +110,6 @@ export function UnlockedNavigator(): JSX.Element {
         />
       </Stack.Group>
     </Stack.Navigator>
-  );
-}
-
-function RecentActivityModal() {
-  return (
-    <View style={{ flex: 1, backgroundColor: "pink", alignItems: "center" }}>
-      <Text>Recent Activity</Text>
-    </View>
   );
 }
 

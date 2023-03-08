@@ -19,8 +19,9 @@ export function SettingsList({
       style?: React.CSSProperties;
       classes?: any;
       button?: boolean;
-      icon?: React.ReactNode;
+      icon?: any;
       label?: string;
+      allowOnclickPropagation?: boolean;
     };
   };
   className?: string;
@@ -52,11 +53,30 @@ export function SettingsList({
           classes={val.classes}
           detail={val.detail ?? <PushDetail />}
           borderColor={borderColor}
+          allowOnclickPropagation={val.allowOnclickPropagation}
         >
-          {val.icon && val.icon()}
-          <Typography style={{ fontWeight: 500, ...textStyle }}>
-            {val.label ?? key}
-          </Typography>
+          <div
+            style={{
+              display: "flex",
+              flex: 1,
+              alignItems: "center",
+            }}
+          >
+            {val.icon
+              ? val.icon({
+                  style: {
+                    color: theme.custom.colors.icon,
+                    height: "24px",
+                    width: "24px",
+                    marginRight: "8px",
+                  },
+                  fill: theme.custom.colors.icon,
+                })
+              : null}
+            <Typography style={{ fontWeight: 500, ...textStyle }}>
+              {val.label ?? key}
+            </Typography>
+          </div>
         </ListItem>
       ))}
     </List>

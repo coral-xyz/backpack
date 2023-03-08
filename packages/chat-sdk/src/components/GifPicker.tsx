@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { TextInput } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { GiphyFetch } from "@giphy/js-fetch-api";
-import { Carousel, SearchContextManager } from "@giphy/react-components";
-import GifIcon from "@mui/icons-material/Gif";
+import { Carousel } from "@giphy/react-components";
+import GifIcon from "@mui/icons-material/GifBoxOutlined";
 import SearchIcon from "@mui/icons-material/Search";
-import { IconButton } from "@mui/material";
+import { IconButton, Tooltip } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import Popover from "@mui/material/Popover";
 
@@ -71,24 +71,32 @@ export const GifPicker = ({
         flexDirection: "column",
       }}
     >
-      <IconButton
-        size={"small"}
-        style={{ color: theme.custom.colors.icon, ...buttonStyle }}
-        onClick={(e) => {
-          setGifPicker((x) => !x);
-          if (!gifPicker) {
-            setEmojiPicker(false);
-          }
-          setAnchorEl(e.currentTarget);
-        }}
-      >
-        {" "}
-        <GifIcon
-          style={{ color: theme.custom.colors.icon, fontSize: 20 }}
-        />{" "}
-      </IconButton>
+      <Tooltip title="GIF">
+        <IconButton
+          size="small"
+          sx={{
+            color: theme.custom.colors.icon,
+            "&:hover": {
+              background: `${theme.custom.colors.avatarIconBackground} !important`,
+            },
+          }}
+          style={buttonStyle}
+          onClick={(e) => {
+            setGifPicker((x) => !x);
+            if (!gifPicker) {
+              setEmojiPicker(false);
+            }
+            setAnchorEl(e.currentTarget);
+          }}
+        >
+          {" "}
+          <GifIcon
+            style={{ color: theme.custom.colors.icon, fontSize: 20 }}
+          />{" "}
+        </IconButton>
+      </Tooltip>
       <Popover
-        id={"popover2"}
+        id="popover2"
         open={gifPicker}
         anchorEl={anchorEl}
         onClose={() => setGifPicker(false)}
@@ -114,26 +122,22 @@ export const GifPicker = ({
                 <SearchIcon style={{ color: theme.custom.colors.icon }} />
               </InputAdornment>
             }
-            placeholder={"Search for GIFs"}
+            placeholder="Search for GIFs"
             className={classes.searchField}
             value={searchFilter}
             setValue={(e) => setSearchFilter(e.target.value)}
           />
-          {loading && <div style={{ height: 100 }}></div>}
-          {!loading && (
-            <>
-              <Carousel
-                onGifClick={(x, e) => {
+          {loading ? <div style={{ height: 100 }} /> : null}
+          {!loading ? <Carousel
+            onGifClick={(x, e) => {
                   sendMessage(x.id, "gif");
                   setGifPicker(false);
                   e.preventDefault();
                 }}
-                gifHeight={100}
-                gutter={6}
-                fetchGifs={fetchGifs}
-              />
-            </>
-          )}
+            gifHeight={100}
+            gutter={6}
+            fetchGifs={fetchGifs}
+              /> : null}
         </div>
       </Popover>
     </div>

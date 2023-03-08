@@ -1,7 +1,8 @@
-import type { Blockchain, BlockchainKeyringInit } from "@coral-xyz/common";
+import type { Blockchain, SignedWalletDescriptor } from "@coral-xyz/common";
 import {
   getAddMessage,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_LEDGER_IMPORT,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
@@ -12,11 +13,12 @@ import { ConnectHardwareSuccess } from "./ConnectHardwareSuccess";
 
 export function ConnectHardware({
   blockchain,
-  createKeyring,
+  action,
   publicKey,
   onComplete,
 }: {
   blockchain: Blockchain;
+  action: "create" | "import" | "search";
   createKeyring: boolean;
   publicKey?: string;
   onComplete: () => void;
@@ -24,37 +26,29 @@ export function ConnectHardware({
   const background = useBackgroundClient();
 
   const handleHardwareOnboardComplete = async (
-    keyringInit: BlockchainKeyringInit
+    signedWalletDescriptor: SignedWalletDescriptor
   ) => {
-    if (createKeyring) {
-      await background.request({
-        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-        params: [
-          keyringInit.blockchain,
-          keyringInit.derivationPath,
-          keyringInit.accountIndex,
-          keyringInit.publicKey,
-          keyringInit.signature,
-        ],
-      });
-    } else {
-      await background.request({
-        method: UI_RPC_METHOD_LEDGER_IMPORT,
-        params: [
-          keyringInit.blockchain,
-          keyringInit.derivationPath,
-          keyringInit.accountIndex,
-          keyringInit.publicKey,
-          keyringInit.signature,
-        ],
-      });
-    }
+    const blockchainKeyrings = await background.request({
+      method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
+      params: [],
+    });
+    const keyringExists = blockchainKeyrings.includes(blockchain);
+
+    const method = keyringExists
+      ? // Just import the wallet because the keyring already exists
+        UI_RPC_METHOD_LEDGER_IMPORT
+      : // Create the keyring
+        UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD;
+    await background.request({
+      method,
+      params: [blockchain, signedWalletDescriptor],
+    });
   };
 
   return (
     <HardwareOnboard
       blockchain={blockchain}
-      action={publicKey ? "search" : "import"}
+      action={action}
       signMessage={getAddMessage}
       signText="Sign the message to add the wallet to your Backpack account."
       successComponent={<ConnectHardwareSuccess onNext={onComplete} />}

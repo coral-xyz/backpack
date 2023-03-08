@@ -1,15 +1,15 @@
 import { useEffect } from "react";
 
 import { useDrawerContext } from "../../common/Layout/Drawer";
-import { useNavStack } from "../../common/Layout/NavStack";
+import { useNavigation } from "../../common/Layout/NavStack";
 
 import { ResetWelcome } from "./ResetWelcome";
 
 export function Reset() {
   const { close } = useDrawerContext();
-  const nav = useNavStack();
+  const nav = useNavigation();
   useEffect(() => {
-    nav.setTitle("");
+    nav.setOptions({ headerTitle: "" });
   }, []);
   return <ResetWelcome onClose={close} />;
 }

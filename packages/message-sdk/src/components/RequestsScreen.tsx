@@ -24,18 +24,17 @@ export const RequestsScreen = () => {
           margin: 15,
         }}
       >
-        These are not from your contacts. Click into a message to reply or view
+        These are not from your friends. Click into a message to reply or view
         their profile.
       </div>
-      {activeChats.length !== 0 && (
-        <MessageList
-          activeChats={activeChats.map((x) => ({
+      {activeChats.length !== 0 ? <MessageList
+        toRoot={false}
+        activeChats={activeChats.map((x) => ({
             chatType: "individual",
             chatProps: x,
           }))}
-        />
-      )}
-      {activeChats.length === 0 && <EmptyRequests />}
+        /> : null}
+      {activeChats.length === 0 ? <EmptyRequests /> : null}
     </div>
   );
 };

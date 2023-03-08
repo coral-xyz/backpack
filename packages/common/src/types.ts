@@ -1,9 +1,7 @@
 import type { Commitment } from "@solana/web3.js";
 
-import type { DerivationPath } from "./crypto";
-
 export type Context<Backend> = {
-  sender: any;
+  sender: Sender;
   backend: Backend;
   events: EventEmitter;
 };
@@ -19,6 +17,13 @@ export type Notification = {
 export type EventHandler = (notif: any) => void;
 export type EventEmitter = any;
 export type ResponseHandler = [any, any];
+export type Event = any;
+
+export type RpcRequest = {
+  id?: number;
+  method: string;
+  params: any[];
+};
 
 export type RpcRequestMsg = {
   channel: string;
@@ -72,6 +77,7 @@ export type Nft = {
   metadataCollectionId?: string;
   tokenId?: string; // Ethereum only.
   contractAddress?: string; // Ethereum only.
+  lockScreenImageUrl?: string; // MadLads only.
 };
 
 export type SolanaNft = Nft & {
@@ -92,23 +98,47 @@ export type NftAttribute = {
 export type KeyringType = "mnemonic" | "ledger";
 
 export type KeyringInit = {
+  signedWalletDescriptors: Array<SignedWalletDescriptor>;
   // No mnemonic means this is a hardware wallet keyring
   mnemonic?: string;
-  blockchainKeyrings: Array<BlockchainKeyringInit>;
 };
 
-export type BlockchainKeyringInit = {
-  blockchain: Blockchain;
-  derivationPath: DerivationPath;
-  accountIndex: number;
+// Location of a public key including the public key
+export type WalletDescriptor = {
+  derivationPath: string;
   publicKey: string;
+};
+
+// Path to a public key including a signature from the public key
+export type SignedWalletDescriptor = {
   signature: string;
+} & WalletDescriptor;
+
+// The way public keys are stored on the API
+export type ServerPublicKey = {
+  blockchain: Blockchain;
+  publicKey: string;
+  primary?: boolean;
+};
+
+export type NamedPublicKey = {
+  blockchain: Blockchain;
+  name: string;
 };
 
 export interface XnftPreference {
   disabled: boolean;
   mediaPermissions: boolean;
   pushNotifications: boolean;
+}
+
+export interface XnftMetadata {
+  isDarkMode: boolean;
+  username?: string;
+  userId: string;
+  avatarUrl: string;
+  jwt?: string;
+  version: number;
 }
 
 export type XnftPreferenceStore = { [key: string]: XnftPreference };
@@ -134,18 +164,13 @@ export type KeyringJson = {
 export type HdKeyringJson = {
   mnemonic: string;
   seed: string;
-  accountIndices: Array<number>;
-  derivationPath: DerivationPath;
+  derivationPaths: Array<string>;
+  accountIndex?: number;
+  walletIndex?: number;
 };
 
 export type LedgerKeyringJson = {
-  derivationPaths: Array<ImportedDerivationPath>;
-};
-
-export type ImportedDerivationPath = {
-  path: string;
-  account: number;
-  publicKey: string;
+  walletDescriptors: Array<WalletDescriptor>;
 };
 
 export type SolanaFeeConfig = { computeUnits: number; priorityFee: bigint };
@@ -168,7 +193,7 @@ export type AutolockSettings = {
 };
 
 // Legacy types. Don't use these.
-type DeprecatedWalletDataDoNotUse = {
+export type DeprecatedWalletDataDoNotUse = {
   username?: string;
   autoLockSecs?: number; // Used in releases <=0.4.0
 };
@@ -183,4 +208,42 @@ type EthereumData = {
   explorer: string;
   connectionUrl: string;
   chainId: string;
+};
+
+// Sender is the trusted descriptor of the sender of a message into
+// the service worker. This is provided as part of the API from the
+// chrome.runtime APIs.
+//
+// See https://developer.chrome.com/docs/extensions/reference/runtime/#type-MessageSender
+export type Sender = {
+  id: string; // This is the extension id, if applicable.
+  url: string;
+
+  origin?: string;
+
+  documentId?: string;
+  documentLifeCycle?: string;
+  frameId?: number;
+  tab?: {
+    active: boolean;
+    audible: boolean;
+    autoDiscardable: boolean;
+    favIconUrl: string;
+    groupId: number;
+    height: number;
+    highlighted: boolean;
+    id: number;
+    incognito: boolean;
+    index: number;
+    mutedInfo: {
+      muted: boolean;
+    };
+    pinned: boolean;
+    selected: boolean;
+    status: string;
+    title: string;
+    url: string;
+    width: number;
+    windowId: number;
+  };
 };

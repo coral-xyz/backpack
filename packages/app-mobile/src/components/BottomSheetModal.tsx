@@ -9,7 +9,7 @@ import {
   BottomSheetModal as _BottomSheetModal,
 } from "@gorhom/bottom-sheet";
 
-import { useTheme } from "@hooks/useTheme";
+import { useTheme } from "~hooks/useTheme";
 
 export function HelpModalMenuButton({
   onPress,

@@ -1,65 +1,47 @@
 import {
-  BACKPACK_CONFIG_XNFT_PROXY,
   Blockchain,
+  DEFAULT_PUBKEY_STR,
+  externalResourceUri,
   fetchXnfts,
   SIMULATOR_PORT,
+  XNFT_GG_LINK,
   XNFT_PROGRAM_ID,
 } from "@coral-xyz/common";
-import { externalResourceUri } from "@coral-xyz/common-public";
 import { PublicKey } from "@solana/web3.js";
-import { atom, atomFamily, selector, selectorFamily } from "recoil";
+import * as cheerio from "cheerio";
+import { atomFamily, selectorFamily } from "recoil";
 
+import { featureGates } from "../feature-gates";
 import { isDeveloperMode } from "../preferences";
 import { connectionUrls } from "../preferences/connection-urls";
-import {
-  activePublicKeys,
-  allWalletsDisplayed,
-  solanaPublicKey,
-} from "../wallet";
+import { primaryWallets } from "../primaryWallets";
+import { activePublicKeys } from "../wallet";
 
 import { anchorContext } from "./wallet";
 
-//
-// Private dev plugins.
-//
 export const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
-const MANGO_TABLE_PLUGIN_URL = pluginURL("xnft/mango");
-const PRICES_PLUGIN_URL = pluginURL("xnft/prices");
-const PSYFI_PLUGIN_URL = pluginURL("xnft/psyfi");
-const AURORY_PLUGIN_URL = pluginURL("xnft/aurory");
 
-//
-// xnft-program-library
-//
-const DEGODS_TABLE_PLUGIN_URL = pluginURL(
-  "xnft-program-library/packages/deadgods"
-);
+export const appStoreMetaTags = selectorFamily<
+  { name?: string; description?: string; image?: string },
+  string
+>({
+  key: "appStoreMetaTags",
+  get: (xnft) => async () => {
+    const res = await fetch(`${XNFT_GG_LINK}/app/${xnft}`);
+    const html = await res.text();
 
-const NETWORK_MONITOR = pluginURL(
-  "xnft-program-library/packages/network-monitor"
-);
+    const $ = cheerio.load(html);
+    const name = $('meta[name="title"]').attr("content")?.split(" - ")[0];
+    const description = $('meta[name="description"]').attr("content");
+    const image = $('meta[property="og:image"]').attr("content");
 
-//
-// Cached bundle proxy.
-//
-const PROXY_URL =
-  BACKPACK_CONFIG_XNFT_PROXY === "development"
-    ? "https://localhost:9999?inline=1&v2=true&bundle="
-    : "https://embed.xnfts.dev?inline=1&v2=true&bundle=";
-
-function pluginURL(pluginName: string) {
-  return [
-    // xnft wrapper
-    "https://localhost:9999?inline=1&bundle=",
-    // [pluginName]'s JS delivered by the local plugin server
-    `http://localhost:8001/${pluginName}/dist/index.js`,
-  ].join("");
-}
-
-export function xnftUrl(url: string) {
-  const uri = externalResourceUri(url);
-  return [PROXY_URL, uri].join("");
-}
+    return {
+      name,
+      description,
+      image,
+    };
+  },
+});
 
 export const collectibleXnft = selectorFamily<
   string | undefined,
@@ -109,30 +91,38 @@ export const xnfts = atomFamily<
   default: selectorFamily({
     key: "xnftsDefault",
     get:
-      ({
-        connectionUrl,
-        publicKey,
-      }: {
-        connectionUrl: string;
-        publicKey: string;
-      }) =>
+      ({ publicKey }: { connectionUrl: string; publicKey: string }) =>
       async ({ get }) => {
         const _activeWallets = get(activePublicKeys);
         const _connectionUrls = get(connectionUrls);
         const provider = get(anchorContext).provider;
-        const xnfts = await fetchXnfts(provider, new PublicKey(publicKey));
+        const { DROPZONE_ENABLED } = get(featureGates);
+
+        if (!publicKey) {
+          return [];
+        }
+        const isDropzoneWallet =
+          DROPZONE_ENABLED &&
+          get(primaryWallets).some(
+            (w) =>
+              w.blockchain === Blockchain.SOLANA && w.publicKey === publicKey
+          );
+        const xnfts = await fetchXnfts(
+          provider,
+          new PublicKey(publicKey),
+          isDropzoneWallet
+        );
         return xnfts.map((xnft) => {
           return {
             ...xnft,
-            url: xnftUrl(
-              xnft.metadataBlob.xnft.manifest.entrypoints.default.web
-            ),
-            iconUrl: externalResourceUri(xnft.metadataBlob.image),
+            url: xnft.xnft.xnft.manifest.entrypoints.default.web,
+            splashUrls: xnft.xnft.xnft.manifest.splash ?? {},
+            iconUrl: externalResourceUri(xnft.metadata.image),
             activeWallet: _activeWallets[Blockchain.SOLANA],
             activeWallets: _activeWallets,
             connectionUrl: _connectionUrls[Blockchain.SOLANA],
             connectionUrls: _connectionUrls,
-            title: xnft.metadataBlob.name,
+            title: xnft.metadata.name,
           };
         });
       },
@@ -160,16 +150,20 @@ export const plugins = selectorFamily<
         const simulator = {
           url: SIMULATOR_URL,
           iconUrl: "assets/simulator.png",
+          splashUrls: {},
+          // splashUrls: {
+          //   lg: "assets/one/distressed-background.png",
+          // },
           title: "Simulator",
           activeWallets: get(activePublicKeys),
           connectionUrls: get(connectionUrls),
           install: {
-            publicKey: PublicKey.default.toString(),
+            publicKey: DEFAULT_PUBKEY_STR,
             account: {
-              xnft: PublicKey.default.toString(),
+              xnft: DEFAULT_PUBKEY_STR,
             },
           },
-        } as typeof plugins[0];
+        } as (typeof plugins)[0];
 
         plugins.push(simulator);
       }

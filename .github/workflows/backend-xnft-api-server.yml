@@ -1,16 +1,59 @@
 name: Deploy xnft-api-server
 on:
   push:
-    branches: ["master"]
-    paths: ["backend/native/xnft-api-server/**"]
-
-env:
-  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+    branches:
+      - production
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: "mv docker/xnft-api-server/fly.toml . && flyctl deploy --remote-only"
+      - run: "mv docker/xnft-api-server/Dockerfile ."
+
+      - name: add secrets
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: |
+          cd backend/native/xnft-api-server
+          touch .env
+          printf 'AUTH_JWT=%s\n' '${{secrets.AUTH_JWT}}' >> .env
+          printf 'AUTH_JWT_PRIVATE_KEY=%s\n' '${{secrets.AUTH_JWT_PRIVATE_KEY}}' >> .env
+          printf 'AUTH_JWT_PUBLIC_KEY=%s\n' '${{secrets.AUTH_JWT_PUBLIC_KEY}}' >> .env
+          printf 'AWS_S3_KEY_ID=%s\n' '${{secrets.AWS_S3_KEY_ID}}' >> .env
+          printf 'AWS_S3_KEY_SECRET=%s\n' '${{secrets.AWS_S3_KEY_SECRET}}' >> .env
+          printf 'HASURA_URL=%s\n' '${{secrets.HASURA_URL}}' >> .env
+          printf 'CHAT_HASURA_URL=%s\n' '${{secrets.CHAT_HASURA_URL}}' >> .env
+          printf 'REDIS_URL=%s\n' '${{secrets.REDIS_URL}}' >> .env
+          printf 'CHAT_JWT=%s\n' '${{secrets.CHAT_JWT}}' >> .env
+          printf 'HELIUS_API_KEY=%s\n' '${{secrets.HELIUS_API_KEY}}' >> .env
+          printf 'VAPID_PRIVATE_KEY=%s\n' '${{secrets.VAPID_PRIVATE_KEY}}' >> .env
+          printf 'VAPID_PUBLIC_KEY=%s\n' '${{secrets.VAPID_PUBLIC_KEY}}' >> .env
+          cd ../../..
+
+      - name: docker login
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: |
+          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+      - name: Build the Docker image
+        run: docker build . --tag backpackapp/xnft-api-server:${{ github.sha }}-xas
+
+      - name: Docker Push
+        run: docker push backpackapp/xnft-api-server:${{ github.sha }}-xas
+
+      - name: Create zip
+        run: "mkdir deploy && cp ./docker/xnft-api-server/docker-compose.yml ./deploy && cp ./docker/Dockerrun.aws.json ./deploy && sed 's/{{tag}}/${{ github.sha }}-xas/g' ./deploy/docker-compose.yml > ./deploy/temp.yml && mv ./deploy/temp.yml ./deploy/docker-compose.yml && cd deploy && zip deploy.zip * && cd .. && mv ./deploy/deploy.zip ."
+
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v20
+        with:
+          aws_access_key: ${{ secrets.AWS_EB_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_EB_SECRET_ACCESS_KEY }}
+          application_name: backend-api
+          environment_name: xnft-server-dockerhub
+          version_label: ${{ github.sha }}-xas
+          region: us-west-1
+          deployment_package: deploy.zip

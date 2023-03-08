@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useBreakpoints } from "@coral-xyz/app-extension/src/components/common/Layout/hooks";
+import { useBreakpoints } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import CloseIcon from "@mui/icons-material/Close";
 import DownloadIcon from "@mui/icons-material/Download";
 import OpenInFullIcon from "@mui/icons-material/OpenInFull";
-import { Box, Modal } from "@mui/material";
+import { Modal } from "@mui/material";
 
 export const MediaContent = ({
   mediaLink,
@@ -24,6 +24,17 @@ export const MediaContent = ({
           open={modalOpen}
           onClose={() => setModalOpen(false)}
           componentsProps={{
+            root: {
+              style: {
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "0 10px",
+                height: "100vh",
+                gap: 4,
+              },
+            },
             backdrop: {
               style: {
                 background: "rgba(24, 24, 27, 0.9)",
@@ -32,33 +43,23 @@ export const MediaContent = ({
             },
           }}
         >
-          <Box
-            sx={{
-              width: "100vw",
-              height: "100vh",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              p: isXs ? 1 : 3,
-              outline: "none",
-            }}
-          >
+          <>
             <CloseIcon
               style={{
                 color: theme.custom.colors.icon,
                 cursor: "pointer",
-                alignSelf: "flex-end",
-                marginTop: 10,
+                position: "absolute",
+                top: 10,
+                right: 10,
               }}
               onClick={() => setModalOpen(false)}
             />
             {mediaKind === "video" ? (
               <video
                 style={{
-                  borderRadius: 15,
+                  borderRadius: 5,
                   objectFit: "contain",
                   maxHeight: "85vh",
-                  padding: 10,
                 }}
                 controls={true}
                 src={mediaLink}
@@ -66,16 +67,20 @@ export const MediaContent = ({
             ) : (
               <img
                 style={{
-                  borderRadius: 15,
+                  borderRadius: 5,
                   objectFit: "contain",
                   maxHeight: "85vh",
-                  padding: 10,
+                  maxWidth: "85vw",
                 }}
                 src={mediaLink}
               />
             )}
             <a
-              style={{ alignSelf: "flex-end", marginBottom: 10 }}
+              style={{
+                position: "absolute",
+                right: 10,
+                bottom: 10,
+              }}
               href={mediaLink}
               download="AwesomeImage.png"
             >
@@ -84,10 +89,10 @@ export const MediaContent = ({
                 onClick={() => setModalOpen(false)}
               />
             </a>
-          </Box>
+          </>
         </Modal>
       )}
-      <div style={{ marginTop: 3 }}>
+      <div style={{ marginTop: 3, width: 1 }}>
         {mediaKind === "video" ? (
           <div style={{ display: "flex" }}>
             <div style={{ position: "relative" }}>

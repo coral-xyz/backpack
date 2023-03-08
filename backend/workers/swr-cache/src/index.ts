@@ -101,6 +101,18 @@ const executeRequest: (c: ExecutionContext, env: Env) => ExecuteRequest =
       return response;
     }
 
+    if (service === "1hr") {
+      const proxiedUrl = url.pathname.slice(1);
+      console.log("1hr", proxiedUrl);
+      const fetched = await fetch(proxiedUrl);
+      const response = new Response(fetched.body, fetched);
+      response.headers.set(
+        "Cache-Control",
+        `max-age=${60 * 60}, s-maxage=${60 * 60}, stale-while-revalidate=${60}`
+      );
+      return response;
+    }
+
     if (service === "images") {
       url.host = `images.xnfts.dev`;
       // return new Response("hello");
@@ -167,13 +179,17 @@ export default {
         ? request.clone().json()
         : Promise.resolve(null);
 
-    return swr(
+    const swrResponse = await swr(
       request,
       ctx,
       executeRequest(ctx, env),
       shouldCache(ctx, env, body),
       toCacheKey(ctx, env, body)
     );
+
+    const response = new Response(swrResponse.body, swrResponse);
+    response.headers.set("Access-Control-Allow-Origin", `*`);
+    return response;
   },
 };
 

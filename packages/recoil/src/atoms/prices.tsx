@@ -2,7 +2,7 @@ import { ETH_NATIVE_MINT } from "@coral-xyz/common";
 import { ethers } from "ethers";
 import { selector, selectorFamily } from "recoil";
 
-import { equalSelector, equalSelectorFamily } from "../equals";
+import { equalSelectorFamily } from "../equals";
 
 import { erc20Balances } from "./ethereum/token";
 import { solanaConnectionUrl } from "./solana/preferences";
@@ -24,6 +24,7 @@ const coingeckoIdOverride = {
   DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263: "bonk",
   bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1: "blazestake-staked-sol",
   "5yxNbU8DgYJZNi3mPD9rs4XLh9ckXrhPjJ5VCujUWg5H": "fronk",
+  CvB1ztJvpYQPvdPBePtRzjL4aQidjydtUz61NWgcgQtP: "epics-token",
 };
 
 // Coingecko API query for all Coingecko IDs (for Solana).

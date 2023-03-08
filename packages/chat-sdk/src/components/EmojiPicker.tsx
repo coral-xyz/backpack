@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useCustomTheme } from "@coral-xyz/themes";
-import SentimentVerySatisfiedIcon from "@mui/icons-material/SentimentVerySatisfied";
+import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticonRounded";
 import { IconButton } from "@mui/material";
 import Popover from "@mui/material/Popover";
+import Tooltip from "@mui/material/Tooltip";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 
 import { useChatContext } from "./ChatContext";
@@ -26,24 +27,32 @@ export const EmojiPickerComponent = ({
         justifyContent: "center",
       }}
     >
-      <IconButton
-        size={"small"}
-        style={{ color: theme.custom.colors.icon, ...buttonStyle }}
-        onClick={(e) => {
-          setEmojiPicker((x) => !x);
-          if (!emojiPicker) {
-            setGifPicker(false);
-          }
-          setAnchorEl(e.currentTarget);
-        }}
-      >
-        {" "}
-        <SentimentVerySatisfiedIcon
-          style={{ color: theme.custom.colors.icon, fontSize: 20 }}
-        />{" "}
-      </IconButton>
+      <Tooltip title="Emoji">
+        <IconButton
+          size="small"
+          sx={{
+            color: theme.custom.colors.icon,
+            "&:hover": {
+              background: `${theme.custom.colors.avatarIconBackground} !important`,
+            },
+          }}
+          style={buttonStyle}
+          onClick={(e) => {
+            setEmojiPicker((x) => !x);
+            if (!emojiPicker) {
+              setGifPicker(false);
+            }
+            setAnchorEl(e.currentTarget);
+          }}
+        >
+          {" "}
+          <InsertEmoticonIcon
+            style={{ color: theme.custom.colors.icon, fontSize: 20 }}
+          />{" "}
+        </IconButton>
+      </Tooltip>
       <Popover
-        id={"popover"}
+        id="popover"
         open={emojiPicker}
         anchorEl={anchorEl}
         onClose={() => setEmojiPicker(false)}
@@ -57,7 +66,7 @@ export const EmojiPickerComponent = ({
           previewConfig={{ showPreview: false }}
           theme={isDarkMode ? Theme.DARK : Theme.LIGHT}
           height={400}
-          width={"100%"}
+          width="100%"
           onEmojiClick={(e) => {
             inputRef.current.setValue(
               `${inputRef.current.getTransformedValue()} ${e.emoji}`

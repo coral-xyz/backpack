@@ -2,36 +2,52 @@
 // Communication channels for xNFT plugins and the host.
 //
 
-import type { Event } from "@coral-xyz/common-public";
-
-import type { RpcResponse } from "../types";
+import type { Event, RpcResponse } from "../types";
 
 export class PluginServer {
   private window?: any;
+  private destroy: () => void;
   constructor(
     private url: string,
     private requestChannel: string,
     private responseChannel?: string
-  ) {}
+  ) {
+    this.destroy = () => {};
+  }
 
-  public setWindow(window: any, url?: string) {
+  public setWindow(
+    window: any,
+    url: string | undefined,
+    handlerFn: (event: Event) => Promise<RpcResponse>
+  ) {
     this.window = window;
+    this.destroy = this.handler(handlerFn);
     if (url) {
       this.url = url;
     }
   }
 
-  public handler(handlerFn: (event: Event) => Promise<RpcResponse>) {
-    return window.addEventListener("message", async (event: Event) => {
+  public destroyWindow() {
+    this.destroy();
+    this.window = undefined;
+  }
+
+  private handler(
+    handlerFn: (event: Event) => Promise<RpcResponse>
+  ): () => void {
+    const handle = async (event: Event) => {
       const url = new URL(this.url);
+      const eventUrl = new URL(event.data.href);
       if (
         // TODO: hardcode allowed origin(s)
-        event.origin !== url.origin ||
-        event.data.href !== url.href ||
+        (!url.origin.startsWith("http://localhost:9933") &&
+          (eventUrl.origin !== url.origin ||
+            eventUrl.pathname !== url.pathname)) ||
         event.data.type !== this.requestChannel
       ) {
-        return;
+        throw new Error("Unknown Origin or channel");
       }
+
       const id = event.data.detail.id;
       const iframeIdentifiers = event.data.iframeIdentifiers;
       const [result, error] = await handlerFn(event);
@@ -50,6 +66,9 @@ export class PluginServer {
         }
         this.window.postMessage(msg, "*");
       }
-    });
+    };
+    window.addEventListener("message", handle);
+
+    return () => window.removeEventListener("message", handle);
   }
 }

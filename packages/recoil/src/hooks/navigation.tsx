@@ -12,6 +12,8 @@ import { useRecoilValue } from "recoil";
 
 import * as atoms from "../atoms";
 
+import { useBreakpoints } from "./useBreakpoints";
+
 type NavigationContext = {
   isRoot: boolean;
   title: string;
@@ -22,14 +24,15 @@ type NavigationContext = {
 
 export function useNavigation(): NavigationContext {
   const location = useLocation();
+
   const { push, pop, toRoot } = useNavigationSegue();
 
   const pathname = location.pathname;
   const isRoot = TAB_SET.has(pathname.slice(1));
   const params = new URLSearchParams(location.search);
-  const title = isRoot
-    ? ""
-    : useDecodedSearchParams<ExtensionSearchParams>(params).title || "";
+  const paramsTitle =
+    useDecodedSearchParams<ExtensionSearchParams>(params).title || "";
+  const title = isRoot ? "" : paramsTitle;
 
   return {
     isRoot,
@@ -71,16 +74,19 @@ export function useUpdateSearchParams(): (params: URLSearchParams) => void {
 
 export function useNavigationSegue() {
   const background = useRecoilValue(atoms.backgroundClient);
+  const { isXs } = useBreakpoints();
 
   const push = async (
     {
       title,
       componentId,
       componentProps,
+      pushAboveRoot,
     }: {
       title: string;
       componentId: string;
       componentProps: any;
+      pushAboveRoot?: boolean;
     },
     tab?: string
   ) => {
@@ -90,7 +96,7 @@ export function useNavigationSegue() {
     });
     return await background.request({
       method: UI_RPC_METHOD_NAVIGATION_PUSH,
-      params: [url, tab],
+      params: [url, tab, !isXs && pushAboveRoot ? true : false],
     });
   };
   const pop = async (tab?: string) => {
@@ -121,9 +127,8 @@ export function useNavigationSegue() {
 export function useDecodedSearchParams<
   SearchParamsType extends ExtensionSearchParams
 >(urlSearchParams?: URLSearchParams) {
-  const [searchParams] = urlSearchParams
-    ? [urlSearchParams]
-    : useSearchParams();
+  const _searchParams = useSearchParams();
+  const [searchParams] = urlSearchParams ? [urlSearchParams] : _searchParams;
   const ob = {};
   searchParams.forEach((v, k) => {
     if (k !== "nav") {

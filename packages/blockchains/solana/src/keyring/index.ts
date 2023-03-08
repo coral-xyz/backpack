@@ -2,7 +2,6 @@ import type {
   HdKeyring,
   HdKeyringFactory,
   HdKeyringJson,
-  ImportedDerivationPath,
   Keyring,
   KeyringFactory,
   KeyringJson,
@@ -10,31 +9,33 @@ import type {
   LedgerKeyringJson,
 } from "@coral-xyz/blockchain-keyring";
 import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
+import type { WalletDescriptor } from "@coral-xyz/common";
 import {
-  DerivationPath,
+  Blockchain,
+  getIndexedPath,
   LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
   LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
+  nextIndicesFromPaths,
 } from "@coral-xyz/common";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { mnemonicToSeedSync, validateMnemonic } from "bip39";
-import * as bs58 from "bs58";
+import { ethers } from "ethers";
 import nacl from "tweetnacl";
 
-import { deriveSolanaKeypair, deriveSolanaKeypairs } from "../util";
+import { deriveSolanaKeypair } from "../util";
+
+const { base58 } = ethers.utils;
 
 export class SolanaKeyringFactory implements KeyringFactory {
-  /**
-   *
-   */
-  public fromJson(payload: KeyringJson): SolanaKeyring {
-    const keypairs = payload.secretKeys.map((secret: string) =>
+  public init(secretKeys: Array<string>): SolanaKeyring {
+    const keypairs = secretKeys.map((secret: string) =>
       Keypair.fromSecretKey(Buffer.from(secret, "hex"))
     );
     return new SolanaKeyring(keypairs);
   }
 
-  public fromSecretKeys(secretKeys: Array<string>): SolanaKeyring {
-    const keypairs = secretKeys.map((secret: string) =>
+  public fromJson(payload: KeyringJson): SolanaKeyring {
+    const keypairs = payload.secretKeys.map((secret: string) =>
       Keypair.fromSecretKey(Buffer.from(secret, "hex"))
     );
     return new SolanaKeyring(keypairs);
@@ -61,7 +62,7 @@ class SolanaKeyring implements Keyring {
     if (!kp) {
       throw new Error(`unable to find ${address.toString()}`);
     }
-    return bs58.encode(nacl.sign.detached(new Uint8Array(tx), kp.secretKey));
+    return base58.encode(nacl.sign.detached(new Uint8Array(tx), kp.secretKey));
   }
 
   public async signMessage(tx: Buffer, address: string): Promise<string> {
@@ -77,7 +78,7 @@ class SolanaKeyring implements Keyring {
     if (!kp) {
       return null;
     }
-    return bs58.encode(kp.secretKey);
+    return base58.encode(kp.secretKey);
   }
 
   public importSecretKey(secretKey: string): string {
@@ -96,128 +97,153 @@ class SolanaKeyring implements Keyring {
 }
 
 export class SolanaHdKeyringFactory implements HdKeyringFactory {
-  public fromMnemonic(
+  public init(
     mnemonic: string,
-    derivationPath?: DerivationPath,
-    accountIndices: Array<number> = [0]
+    derivationPaths: Array<string>,
+    accountIndex?: number,
+    walletIndex?: number
   ): HdKeyring {
-    if (!derivationPath) {
-      derivationPath = DerivationPath.Default;
-    }
     if (!validateMnemonic(mnemonic)) {
       throw new Error("Invalid seed words");
     }
-    const seed = mnemonicToSeedSync(mnemonic);
-    const keypairs = deriveSolanaKeypairs(seed, derivationPath, accountIndices);
     return new SolanaHdKeyring({
       mnemonic,
-      seed,
-      accountIndices,
-      keypairs,
-      derivationPath,
+      seed: mnemonicToSeedSync(mnemonic),
+      derivationPaths,
+      accountIndex,
+      walletIndex,
     });
   }
 
-  public fromJson(obj: HdKeyringJson): HdKeyring {
-    const { mnemonic, seed: seedStr, accountIndices, derivationPath } = obj;
-    const seed = Buffer.from(seedStr, "hex");
-    const keypairs = deriveSolanaKeypairs(seed, derivationPath, accountIndices);
+  public fromJson({
+    mnemonic,
+    seed,
+    derivationPaths,
+    accountIndex,
+    walletIndex,
+  }: HdKeyringJson): HdKeyring {
     return new SolanaHdKeyring({
       mnemonic,
-      seed,
-      derivationPath,
-      keypairs,
-      accountIndices,
+      seed: Buffer.from(seed, "hex"),
+      derivationPaths,
+      accountIndex,
+      walletIndex,
     });
   }
 }
 
 class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   readonly mnemonic: string;
-  readonly derivationPath: DerivationPath;
   private seed: Buffer;
-  // Invariant: the order of these indices *must* match the order of these
-  //            super classes' keypairs.
-  private accountIndices: Array<number>;
+  private derivationPaths: Array<string>;
+  private accountIndex?: number;
+  private walletIndex?: number;
 
   constructor({
     mnemonic,
     seed,
-    accountIndices,
-    keypairs,
-    derivationPath,
+    derivationPaths,
+    accountIndex,
+    walletIndex,
   }: {
     mnemonic: string;
     seed: Buffer;
-    keypairs: Array<Keypair>;
-    derivationPath: DerivationPath;
-    accountIndices: Array<number>;
+    derivationPaths: Array<string>;
+    accountIndex?: number;
+    walletIndex?: number;
   }) {
+    const keypairs = derivationPaths.map((d) => deriveSolanaKeypair(seed, d));
     super(keypairs);
     this.mnemonic = mnemonic;
     this.seed = seed;
-    this.derivationPath = derivationPath;
-    this.accountIndices = accountIndices;
+    this.derivationPaths = derivationPaths;
+    this.accountIndex = accountIndex;
+    this.walletIndex = walletIndex;
   }
 
   public deletePublicKey(publicKey: string) {
-    const idx = this.keypairs.findIndex(
+    const index = this.keypairs.findIndex(
       (kp) => kp.publicKey.toString() === publicKey
     );
-    if (idx < 0) {
+    if (index < 0) {
       return;
     }
-    this.accountIndices = this.accountIndices
-      .slice(0, idx)
-      .concat(this.accountIndices.slice(idx + 1));
+    this.derivationPaths = this.derivationPaths
+      .slice(0, index)
+      .concat(this.derivationPaths.slice(index + 1));
     super.deletePublicKey(publicKey);
   }
 
-  /**
-   * Import a new wallet using an account index. if the account index is not
-   * given the next available account index is used.
-   */
-  public importAccountIndex(accountIndex?: number): [string, number] {
-    if (accountIndex === undefined) {
-      accountIndex = Math.max(...this.accountIndices) + 1;
-    }
-    const kp = deriveSolanaKeypair(
-      this.seed.toString("hex"),
-      accountIndex,
-      this.derivationPath
+  public nextDerivationPath(offset = 1) {
+    this.ensureIndices();
+    const derivationPath = getIndexedPath(
+      Blockchain.ETHEREUM,
+      this.accountIndex,
+      this.walletIndex! + offset
     );
-    this.keypairs.push(kp);
-    this.accountIndices.push(accountIndex);
-    return [kp.publicKey.toString(), accountIndex];
+    if (this.derivationPaths.includes(derivationPath)) {
+      // This key is already included for some reason, try again with
+      // incremented walletIndex
+      return this.nextDerivationPath(offset + 1);
+    }
+    return { derivationPath, offset };
   }
 
-  public getPublicKey(accountIndex: number): string {
-    // This might not be true once we implement account deletion.
-    // One solution is to simply make that a UI detail.
-    if (this.keypairs.length !== this.accountIndices.length) {
-      throw new Error("invariant violation");
+  public deriveNextKey(): {
+    publicKey: string;
+    derivationPath: string;
+  } {
+    const { derivationPath, offset } = this.nextDerivationPath();
+    // Save the offset to the wallet index
+    this.walletIndex! += offset;
+    const publicKey = this.addDerivationPath(derivationPath);
+    return {
+      publicKey,
+      derivationPath,
+    };
+  }
+
+  public addDerivationPath(derivationPath: string): string {
+    const keypair = deriveSolanaKeypair(this.seed, derivationPath);
+    if (!this.derivationPaths.includes(derivationPath)) {
+      // Don't persist duplicate public keys
+      this.keypairs.push(keypair);
+      this.derivationPaths.push(derivationPath);
     }
-    const kp = this.keypairs[this.accountIndices.indexOf(accountIndex)];
-    return kp.publicKey.toString();
+    return keypair.publicKey.toString();
+  }
+
+  // TODO duplicated in the evm keyring
+  ensureIndices() {
+    // If account index and wallet index don't exist, make a best guess based
+    // on the existing derivation paths for the keyring
+    if (this.accountIndex === undefined || this.walletIndex === undefined) {
+      const { accountIndex, walletIndex } = nextIndicesFromPaths(
+        this.derivationPaths
+      );
+      if (!this.accountIndex) this.accountIndex = accountIndex;
+      if (!this.walletIndex) this.walletIndex = walletIndex;
+    }
   }
 
   public toJson(): HdKeyringJson {
     return {
       mnemonic: this.mnemonic,
       seed: this.seed.toString("hex"),
-      accountIndices: this.accountIndices,
-      derivationPath: this.derivationPath,
+      derivationPaths: this.derivationPaths,
+      accountIndex: this.accountIndex,
+      walletIndex: this.walletIndex,
     };
   }
 }
 
 export class SolanaLedgerKeyringFactory {
-  public fromAccounts(accounts: Array<ImportedDerivationPath>): LedgerKeyring {
-    return new SolanaLedgerKeyring(accounts);
+  public init(walletDescriptors: Array<WalletDescriptor>): LedgerKeyring {
+    return new SolanaLedgerKeyring(walletDescriptors, Blockchain.SOLANA);
   }
 
   public fromJson(obj: LedgerKeyringJson): LedgerKeyring {
-    return new SolanaLedgerKeyring(obj.derivationPaths);
+    return new SolanaLedgerKeyring(obj.walletDescriptors, Blockchain.SOLANA);
   }
 }
 
@@ -225,30 +251,35 @@ export class SolanaLedgerKeyring
   extends LedgerKeyringBase
   implements LedgerKeyring
 {
-  public async signTransaction(tx: Buffer, address: string): Promise<string> {
-    const path = this.derivationPaths.find((p) => p.publicKey === address);
-    if (!path) {
+  public async signTransaction(tx: Buffer, publicKey: string): Promise<string> {
+    const walletDescriptor = this.walletDescriptors.find(
+      (p) => p.publicKey === publicKey
+    );
+    if (!walletDescriptor) {
       throw new Error("ledger address not found");
     }
     return await this.request({
       method: LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
-      params: [bs58.encode(tx), path.path, path.account],
+      params: [
+        base58.encode(tx),
+        walletDescriptor.derivationPath.replace("m/", ""),
+      ],
     });
   }
 
-  public async signMessage(msg: Buffer, address: string): Promise<string> {
-    const path = this.derivationPaths.find((p) => p.publicKey === address);
-    if (!path) {
-      throw new Error("ledger address not found");
+  public async signMessage(msg: Buffer, publicKey: string): Promise<string> {
+    const walletDescriptor = this.walletDescriptors.find(
+      (p) => p.publicKey === publicKey
+    );
+    if (!walletDescriptor) {
+      throw new Error("ledger public key not found");
     }
     return await this.request({
       method: LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
-      params: [bs58.encode(msg), path.path, path.account],
+      params: [
+        base58.encode(msg),
+        walletDescriptor.derivationPath.replace("m/", ""),
+      ],
     });
-  }
-
-  public static fromString(str: string): SolanaLedgerKeyring {
-    const { derivationPaths } = JSON.parse(str);
-    return new SolanaLedgerKeyring(derivationPaths);
   }
 }

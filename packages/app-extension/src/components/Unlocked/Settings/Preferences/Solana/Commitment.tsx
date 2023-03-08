@@ -3,18 +3,18 @@ import { UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE } from "@coral-xyz/common";
 import { useBackgroundClient, useSolanaCommitment } from "@coral-xyz/recoil";
 import type { Commitment } from "@solana/web3.js";
 
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";
 
 import { Checkmark } from "./ConnectionSwitch";
 
 export function PreferencesSolanaCommitment() {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const commitment = useSolanaCommitment();
   const background = useBackgroundClient();
 
   useEffect(() => {
-    nav.setTitle("Confirmation Commitment");
+    nav.setOptions({ headerTitle: "Confirmation Commitment" });
   }, [nav]);
 
   const menuItems = {

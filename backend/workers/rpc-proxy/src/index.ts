@@ -52,6 +52,7 @@ const sanitizeHeaders = (headers: Headers) => {
     "accept",
     "cache-control",
     "connection",
+    "content-encoding",
     "content-length",
     "content-type",
     "solana-client",

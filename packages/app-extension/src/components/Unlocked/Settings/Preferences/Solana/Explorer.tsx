@@ -5,7 +5,7 @@ import {
 } from "@coral-xyz/common";
 import { useBackgroundClient, useSolanaExplorer } from "@coral-xyz/recoil";
 
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";
 
 import { Checkmark } from "./ConnectionSwitch";
@@ -13,10 +13,10 @@ import { Checkmark } from "./ConnectionSwitch";
 export function PreferencesSolanaExplorer() {
   const background = useBackgroundClient();
   const explorer = useSolanaExplorer();
-  const nav = useNavStack();
+  const nav = useNavigation();
 
   useEffect(() => {
-    nav.setTitle("Explorer");
+    nav.setOptions({ headerTitle: "Explorer" });
   }, [nav]);
 
   const menuItems = {

@@ -1,14 +1,21 @@
+// TODO: remove the following line
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { Blockchain, Ethereum, getLogger } from "@coral-xyz/common";
-import { PrimaryButton } from "@coral-xyz/react-common";
-import { useEthereumCtx, useTransactionData } from "@coral-xyz/recoil";
+import { PrimaryButton, UserIcon } from "@coral-xyz/react-common";
+import {
+  useActiveWallet,
+  useAvatarUrl,
+  useEthereumCtx,
+  useTransactionData,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type { UnsignedTransaction } from "@ethersproject/transactions";
 import { Typography } from "@mui/material";
 import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 
-import { walletAddressDisplay } from "../../../../common";
+import { CopyablePublicKey } from "../../../../common/CopyablePublicKey";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
 import { TransactionData } from "../../../../common/TransactionData";
 import { Error, Sending } from "../Send";
@@ -19,6 +26,7 @@ const { base58: bs58 } = ethers.utils;
 export function SendEthereumConfirmationCard({
   token,
   destinationAddress,
+  destinationUser,
   amount,
   onComplete,
 }: {
@@ -28,6 +36,10 @@ export function SendEthereumConfirmationCard({
     decimals: number;
     // For ERC721 sends
     tokenId?: string;
+  };
+  destinationUser?: {
+    username: string;
+    image: string;
   };
   destinationAddress: string;
   amount: BigNumber;
@@ -110,7 +122,7 @@ export function SendEthereumConfirmationCard({
 
   if (!transaction) {
     // TODO loader
-    return <></>;
+    return null;
   }
 
   const retry = () => onConfirm(transaction);
@@ -121,6 +133,7 @@ export function SendEthereumConfirmationCard({
         <ConfirmSendEthereum
           token={token}
           destinationAddress={destinationAddress}
+          destinationUser={destinationUser}
           transaction={transaction}
           amount={amount}
           onConfirm={onConfirm}
@@ -136,7 +149,7 @@ export function SendEthereumConfirmationCard({
       ) : cardType === "complete" ? (
         <Sending
           blockchain={Blockchain.ETHEREUM}
-          isComplete={true}
+          isComplete
           amount={amount}
           token={token}
           signature={txSignature!}
@@ -159,6 +172,7 @@ export function ConfirmSendEthereum({
   amount,
   transaction,
   onConfirm,
+  destinationUser,
 }: {
   token: {
     address?: string;
@@ -167,6 +181,7 @@ export function ConfirmSendEthereum({
     decimals: number;
   };
   destinationAddress: string;
+  destinationUser?: { image: string; username: string };
   amount: BigNumber;
   transaction: UnsignedTransaction;
   onConfirm: (transactionToSend: UnsignedTransaction) => void;
@@ -176,19 +191,43 @@ export function ConfirmSendEthereum({
     Blockchain.ETHEREUM,
     bs58.encode(ethers.utils.serializeTransaction(transaction))
   );
+  const avatarUrl = useAvatarUrl();
+  const wallet = useActiveWallet();
 
   const { from, loading, transaction: transactionToSend } = transactionData;
 
   const menuItems = {
     From: {
       onClick: () => {},
-      detail: <Typography>{walletAddressDisplay(from)}</Typography>,
+      detail: (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <UserIcon marginRight={5} image={avatarUrl} size={24} />
+          <Typography variant="body2" style={{ marginRight: 5 }}>
+            {wallet.name}
+          </Typography>
+          <CopyablePublicKey publicKey={from} />
+        </div>
+      ),
       button: false,
     },
     To: {
       onClick: () => {},
       detail: (
-        <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {destinationUser ? (
+            <>
+              <UserIcon
+                marginRight={5}
+                image={destinationUser.image}
+                size={24}
+              />
+              <Typography variant="body2" style={{ marginRight: 5 }}>
+                @{destinationUser.username}
+              </Typography>
+            </>
+          ) : null}
+          <CopyablePublicKey publicKey={destinationAddress} />
+        </div>
       ),
       button: false,
     },

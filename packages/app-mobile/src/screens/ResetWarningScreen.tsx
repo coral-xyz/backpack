@@ -8,7 +8,7 @@ import {
   SecondaryButton,
   SubtextParagraph,
   TwoButtonFooter,
-} from "@components";
+} from "~components/index";
 import {
   UI_RPC_METHOD_KEYRING_RESET,
   UI_RPC_METHOD_USER_ACCOUNT_LOGOUT,
@@ -16,7 +16,7 @@ import {
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useNavigation } from "@react-navigation/native";
 
-import { WarningIcon } from "@components/Icon";
+import { WarningIcon } from "~components/Icon";
 
 export function LogoutWarningScreen({ navigation }): JSX.Element {
   const background = useBackgroundClient();

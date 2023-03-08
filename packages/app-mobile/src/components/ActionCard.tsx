@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTheme } from "@hooks";
+import { useTheme } from "~hooks/useTheme";
 
 export function ActionCard({
   icon,
@@ -45,10 +45,11 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     borderRadius: 12,
+    minHeight: 100,
   },
   iconContainer: {
-    width: 24,
-    height: 24,
+    width: 32,
+    height: 32,
     marginBottom: 6,
   },
   text: {

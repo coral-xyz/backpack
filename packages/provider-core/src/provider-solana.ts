@@ -32,6 +32,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 import * as cmn from "./common/solana";
 import { RequestManager } from "./request-manager";
+import { isValidEventOrigin } from ".";
 
 const logger = getLogger("provider-solana-injection");
 
@@ -90,6 +91,7 @@ export class ProviderSolanaInjection
   }
 
   #handleNotification(event: Event) {
+    if (!isValidEventOrigin(event)) return;
     if (event.data.type !== CHANNEL_SOLANA_NOTIFICATION) return;
     logger.debug("notification", event);
 
@@ -161,7 +163,7 @@ export class ProviderSolanaInjection
     this.#connection = this.defaultConnection();
   }
 
-  async openXnft(xnftAddress: PublicKey) {
+  async openXnft(xnftAddress: string | PublicKey) {
     await this.#requestManager.request({
       method: SOLANA_RPC_METHOD_OPEN_XNFT,
       params: [xnftAddress.toString()],

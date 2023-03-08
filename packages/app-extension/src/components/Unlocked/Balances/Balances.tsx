@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import { formatUSD, proxyImageUrl, toTitleCase } from "@coral-xyz/common";
 import { isAggregateWallets, useBlockchainLogo } from "@coral-xyz/recoil";
@@ -146,16 +146,31 @@ const useStyles = styles((theme) => ({
 }));
 
 export function BalancesTableCell({ props }: any) {
-  const { icon, title, subtitle, usdValue, percentChange } = props;
+  const { icon, title, subtitle, usdValue, balanceChange } = props;
   const classes = useStyles();
 
-  const positive = percentChange && percentChange > 0 ? true : false;
-  const negative = percentChange && percentChange < 0 ? true : false;
-  const neutral = percentChange && percentChange === 0 ? true : false;
+  // Determine the balance change polarity with a 100th rounding margin of 0.00
+  const polarity =
+    (balanceChange ?? 0) > 0.004
+      ? "positive"
+      : (balanceChange ?? 0) < -0.004
+      ? "negative"
+      : "neutral";
+
+  const changeLabel =
+    polarity === "positive" ? (
+      <Typography className={classes.tokenBalanceChangePositive}>
+        +{formatUSD(balanceChange.toLocaleString())}
+      </Typography>
+    ) : polarity === "negative" ? (
+      <Typography className={classes.tokenBalanceChangeNegative}>
+        {formatUSD(balanceChange.toLocaleString())}
+      </Typography>
+    ) : null;
 
   return (
     <div className={classes.balancesTableCellContainer}>
-      {!!icon && (
+      {icon ? (
         <ListItemIcon
           className={classes.tokenListItemIcon}
           classes={{ root: classes.tokenListItemIconRoot }}
@@ -168,7 +183,7 @@ export function BalancesTableCell({ props }: any) {
             }}
           />
         </ListItemIcon>
-      )}
+      ) : null}
       <div className={classes.tokenListItemContent}>
         <div className={classes.tokenListItemRow}>
           <Typography className={classes.tokenName}>{title}</Typography>
@@ -177,29 +192,15 @@ export function BalancesTableCell({ props }: any) {
           </Typography>
         </div>
         <div className={classes.tokenListItemRow}>
-          {subtitle && (
+          {subtitle ? (
             <Typography className={classes.tokenAmount}>{subtitle}</Typography>
-          )}
-          {percentChange !== undefined && positive && (
-            <Typography className={classes.tokenBalanceChangePositive}>
-              +{formatUSD(percentChange.toLocaleString())}
-            </Typography>
-          )}
-          {percentChange !== undefined && negative && (
-            <Typography className={classes.tokenBalanceChangeNegative}>
-              {formatUSD(percentChange.toLocaleString())}
-            </Typography>
-          )}
-          {percentChange !== undefined && neutral && (
+          ) : null}
+          {changeLabel}
+          {!usdValue ? (
             <Typography className={classes.tokenBalanceChangeNeutral}>
-              {formatUSD(percentChange.toLocaleString())}
+              -
             </Typography>
-          )}
-          {!usdValue && (
-            <Typography className={classes.tokenBalanceChangeNeutral}>
-              {"-"}
-            </Typography>
-          )}
+          ) : null}
         </div>
       </div>
     </div>
@@ -324,7 +325,7 @@ export function _BalancesTableHead({
               </Typography>
               <WalletDrawerButton wallet={wallet} />
             </div>
-            {_isAggregateWallets && (
+            {_isAggregateWallets ? (
               <MuiButton
                 disableRipple
                 style={{
@@ -341,7 +342,7 @@ export function _BalancesTableHead({
                   <ExpandMore className={classes.expand} />
                 )}
               </MuiButton>
-            )}
+            ) : null}
           </div>
         }
         classes={{

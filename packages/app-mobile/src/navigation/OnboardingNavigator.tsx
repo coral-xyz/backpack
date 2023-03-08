@@ -1,45 +1,51 @@
-import type { Blockchain, BlockchainKeyringInit } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useEffect, useState } from "react";
 import {
-  Alert,
   FlatList,
   StyleSheet,
   View,
   Platform,
   KeyboardAvoidingView,
+  Pressable,
+  Text,
+  DevSettings,
+  StyleProp,
+  ViewStyle,
+  Alert,
 } from "react-native";
 
 import * as Linking from "expo-linking";
 
 import {
-  BACKEND_API_URL,
-  BACKPACK_FEATURE_XNFT,
-  DerivationPath,
   DISCORD_INVITE_LINK,
   toTitleCase,
   TWITTER_LINK,
-  UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
-  UI_RPC_METHOD_PREVIEW_PUBKEYS,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-  UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
+  UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import {
+  useBackgroundClient,
+  OnboardingProvider,
+  useOnboarding,
+} from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
-import { encode } from "bs58";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { v4 as uuidv4 } from "uuid";
 
 import {
   BottomSheetHelpModal,
   HelpModalMenuButton,
-} from "@components/BottomSheetHelpModal";
-import { ErrorMessage } from "@components/ErrorMessage";
+} from "~components/BottomSheetHelpModal";
+import {
+  BaseCheckBoxLabel,
+  ControlledCheckBoxLabel,
+} from "~components/CheckBox";
+import { ErrorMessage } from "~components/ErrorMessage";
 import {
   AvalancheIcon,
   BscIcon,
@@ -51,40 +57,77 @@ import {
   SolanaIcon,
   TwitterIcon,
   WidgetIcon,
-} from "@components/Icon";
-import { StyledTextInput } from "@components/StyledTextInput";
+} from "~components/Icon";
+import { StyledTextInput } from "~components/StyledTextInput";
 import {
   ActionCard,
-  BaseCheckBoxLabel,
   Box,
-  CheckBox,
   FullScreenLoading,
   Header,
   Margin,
   MnemonicInputFields,
   PasswordInput,
   PrimaryButton,
+  LinkButton,
   Screen,
   StyledText,
   SubtextParagraph,
   WelcomeLogoHeader,
-} from "@components/index";
-import { useTheme } from "@hooks/useTheme";
-import { OnboardingProvider, useOnboardingData } from "@lib/OnboardingProvider";
+  CopyButton,
+  PasteButton,
+  EmptyState,
+  CallToAction,
+} from "~components/index";
+import { useTheme } from "~hooks/useTheme";
+import { maybeRender } from "~lib/index";
 
-function maybeRender(
-  condition: boolean,
-  fn: () => JSX.Element
-): JSX.Element | null {
-  if (condition) {
-    return fn() as JSX.Element;
+function Network({
+  id,
+  label,
+  enabled,
+  selected,
+  onSelect,
+}: {
+  id: Blockchain;
+  label: string;
+  enabled: boolean;
+  selected: boolean;
+  onSelect: (b: Blockchain) => void;
+}) {
+  function getIcon(id: string): JSX.Element | null {
+    switch (id) {
+      case "ethereum":
+        return <EthereumIcon width={32} height={32} />;
+      case "solana":
+        return <SolanaIcon width={32} height={32} />;
+      case "polygon":
+        return <PolygonIcon width={32} height={32} />;
+      case "bsc":
+        return <BscIcon width={32} height={32} />;
+      case "cosmos":
+        return <CosmosIcon width={32} height={32} />;
+      case "avalanche":
+        return <AvalancheIcon width={32} height={32} />;
+      default:
+        return null;
+    }
   }
 
-  return null;
-}
-
-function getWaitlistId() {
-  return undefined;
+  return (
+    <View style={{ flex: 1 }}>
+      <ActionCard
+        text={label}
+        disabled={!enabled}
+        icon={getIcon(id)}
+        textAdornment={selected ? <CheckBadge /> : ""}
+        onPress={() => {
+          if (enabled) {
+            onSelect(id);
+          }
+        }}
+      />
+    </View>
+  );
 }
 
 type OnboardingStackParamList = {
@@ -95,7 +138,7 @@ type OnboardingStackParamList = {
   SelectBlockchain: undefined;
   ImportAccounts: undefined;
   CreatePassword: undefined;
-  Finished: undefined;
+  OnboardingCreateAccountLoading: undefined;
 };
 
 const Stack = createStackNavigator<OnboardingStackParamList>();
@@ -104,19 +147,25 @@ function OnboardingScreen({
   title,
   subtitle,
   children,
+  style,
+  scrollable,
 }: {
   title: string;
   subtitle?: string;
-  children?: JSX.Element[] | JSX.Element;
+  children?: any;
+  style?: StyleProp<ViewStyle>;
+  scrollable?: boolean;
 }) {
   const insets = useSafeAreaInsets();
   return (
     <Screen
+      scrollable={scrollable}
       style={[
         styles.container,
         {
-          paddingBottom: insets.bottom,
+          paddingBottom: insets.bottom + 16,
         },
+        style,
       ]}
     >
       <Margin bottom={24}>
@@ -128,14 +177,12 @@ function OnboardingScreen({
   );
 }
 
-// https://github.com/gorhom/react-native-bottom-sheet
 function OnboardingCreateOrImportWalletScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "CreateOrImportWallet">) {
   const insets = useSafeAreaInsets();
-  const { setOnboardingData } = useOnboardingData();
+  const { setOnboardingData } = useOnboarding();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [showDebug, setShowDebug] = useState(false);
 
   const handlePresentModalPress = () => {
     setIsModalVisible((last) => !last);
@@ -171,16 +218,13 @@ function OnboardingCreateOrImportWalletScreen({
               navigation.push("OnboardingUsername");
             }}
           />
-          <Margin top={8}>
-            <SubtextParagraph
-              onPress={() => {
-                setOnboardingData({ action: "import" });
-                navigation.push("MnemonicInput");
-              }}
-            >
-              I already have a wallet
-            </SubtextParagraph>
-          </Margin>
+          <LinkButton
+            label="I already have a wallet"
+            onPress={() => {
+              setOnboardingData({ action: "import" });
+              navigation.push("MnemonicInput");
+            }}
+          />
         </View>
       </Screen>
       <BottomSheetHelpModal
@@ -196,7 +240,7 @@ function OnboardingCreateOrImportWalletScreen({
 function OnboardingKeyringTypeSelectorScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "KeyringTypeSelector">) {
-  const { onboardingData, setOnboardingData } = useOnboardingData();
+  const { onboardingData, setOnboardingData } = useOnboarding();
   const { action } = onboardingData;
 
   return (
@@ -262,12 +306,12 @@ function OnboardingUsernameScreen({
   OnboardingStackParamList,
   "OnboardingUsername"
 >): JSX.Element {
-  const { onboardingData, setOnboardingData } = useOnboardingData();
+  const { onboardingData, setOnboardingData } = useOnboarding();
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={18}
+      keyboardVerticalOffset={78}
     >
       <OnboardingScreen title="Claim your username">
         <View style={{ flex: 1 }}>
@@ -310,7 +354,7 @@ function OnboardingUsernameScreen({
 function OnboardingMnemonicInputScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "MnemonicInput">) {
-  const { onboardingData, setOnboardingData } = useOnboardingData();
+  const { onboardingData, setOnboardingData } = useOnboarding();
   const { action } = onboardingData;
   const readOnly = action === "create";
 
@@ -394,192 +438,89 @@ function OnboardingMnemonicInputScreen({
   };
 
   return (
-    <OnboardingScreen title="Secret recovery phrase" subtitle={subtitle}>
-      <MnemonicInputFields
-        mnemonicWords={mnemonicWords}
-        onChange={readOnly ? undefined : setMnemonicWords}
-      />
-      {maybeRender(!readOnly, () => (
-        <StyledText>
-          Use a {mnemonicWords.length === 12 ? "24" : "12"}-word recovery
-          mnemonic
-        </StyledText>
-      ))}
-      {maybeRender(readOnly, () => (
-        <Margin bottom={12}>
-          <BaseCheckBoxLabel
-            label="I saved my secret recovery phrase"
-            value={checked}
-            onPress={() => {
-              setChecked(!checked);
-            }}
-          />
+    <OnboardingScreen
+      scrollable
+      title="Secret recovery phrase"
+      subtitle={subtitle}
+    >
+      <View>
+        <MnemonicInputFields
+          mnemonicWords={mnemonicWords}
+          onChange={readOnly ? undefined : setMnemonicWords}
+        />
+        <Margin top={12}>
+          {readOnly ? (
+            <CopyButton text={mnemonicWords.join(", ")} />
+          ) : (
+            <PasteButton
+              onPaste={(words) => {
+                const split = words.split(" ");
+                if ([12, 24].includes(split.length)) {
+                  setMnemonicWords(words.split(" "));
+                } else {
+                  Alert.alert("Mnemonic should be either 12 or 24 words");
+                }
+              }}
+            />
+          )}
         </Margin>
-      ))}
-      {maybeRender(Boolean(error), () => (
-        <ErrorMessage for={{ message: error }} />
-      ))}
-      <PrimaryButton
-        disabled={!nextEnabled}
-        label={action === "create" ? "Next" : "Import"}
-        onPress={next}
-      />
+      </View>
+      <View style={{ flex: 1 }} />
+      <View>
+        {maybeRender(!readOnly, () => (
+          <Pressable
+            style={{ alignSelf: "center", marginBottom: 18 }}
+            onPress={() => {
+              setMnemonicWords([
+                ...Array(mnemonicWords.length === 12 ? 24 : 12).fill(""),
+              ]);
+            }}
+          >
+            <Text style={{ fontSize: 18 }}>
+              Use a {mnemonicWords.length === 12 ? "24" : "12"}-word recovery
+              mnemonic
+            </Text>
+          </Pressable>
+        ))}
+        {maybeRender(readOnly, () => (
+          <View style={{ alignSelf: "center" }}>
+            <Margin bottom={18}>
+              <BaseCheckBoxLabel
+                label="I saved my secret recovery phrase"
+                value={checked}
+                onPress={() => {
+                  setChecked(!checked);
+                }}
+              />
+            </Margin>
+          </View>
+        ))}
+        {maybeRender(Boolean(error), () => (
+          <ErrorMessage for={{ message: error }} />
+        ))}
+        <PrimaryButton
+          disabled={!nextEnabled}
+          label={action === "create" ? "Next" : "Import"}
+          onPress={next}
+        />
+        <LinkButton
+          label="Start over"
+          onPress={() => {
+            setMnemonicWords([...Array(12).fill("")]);
+          }}
+        />
+      </View>
     </OnboardingScreen>
   );
 }
 
-// params.blockchain (string)
-// TODO(peter) isRecovery flow
 function OnboardingBlockchainSelectScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "SelectBlockchain">) {
-  const background = useBackgroundClient();
-  const { onboardingData, setOnboardingData } = useOnboardingData();
-  const {
-    mnemonic,
-    action,
-    inviteCode,
-    keyringType,
-    blockchainKeyrings,
-    blockchainOptions,
-  } = onboardingData;
-
-  const selectedBlockchains = blockchainKeyrings.map((b) => b.blockchain);
-
-  const handleBlockchainClick = async (blockchain: Blockchain) => {
-    if (selectedBlockchains.includes(blockchain)) {
-      // Blockchain is being deselected
-      setOnboardingData({
-        blockchain: null,
-        blockchainKeyrings: blockchainKeyrings.filter(
-          (b) => b.blockchain !== blockchain
-        ),
-      });
-    } else {
-      // Blockchain is being selected
-      if (keyringType === "ledger" || action === "import") {
-        // If wallet is a ledger, step through the ledger onboarding flow
-        // OR if action is an import then open the drawer with the import accounts
-        // component
-        setOnboardingData({ blockchain });
-        // setOpenDrawer(true);
-      } else if (action === "create") {
-        // We are creating a new wallet, generate the signature using a default
-        // derivation path and account index
-        signForWallet(blockchain, DerivationPath.Default, 0);
-      }
-    }
-  };
-
-  const signForWallet = async (
-    blockchain: Blockchain,
-    derivationPath: DerivationPath,
-    accountIndex: number,
-    publicKey?: string
-  ) => {
-    if (!publicKey) {
-      // No publicKey given, this is a create action, so preview the public keys
-      // and grab the one at the index
-      const publicKeys = await background.request({
-        method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-        params: [blockchain, mnemonic, derivationPath, accountIndex + 1],
-      });
-
-      publicKey = publicKeys[accountIndex];
-    }
-
-    const signature = await background.request({
-      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-      params: [
-        blockchain,
-        // Sign the invite code, or an empty string if no invite code
-        // TODO setup a nonce based system
-        encode(Buffer.from(inviteCode ? inviteCode : "", "utf-8")),
-        publicKey!,
-        {
-          derivationPath,
-          accountIndex,
-          mnemonic,
-        },
-      ],
-    });
-
-    addBlockchainKeyring({
-      blockchain: blockchain!,
-      derivationPath,
-      accountIndex,
-      publicKey: publicKey!,
-      signature,
-    });
-  };
-
-  // Add the initialisation parameters for a blockchain keyring to state
-  const addBlockchainKeyring = (blockchainKeyring: BlockchainKeyringInit) => {
-    setOnboardingData({
-      blockchainKeyrings: [...blockchainKeyrings, blockchainKeyring],
-    });
-  };
-
-  function Network({
-    id,
-    label,
-    enabled,
-    selected,
-    onSelect,
-  }: {
-    id: Blockchain;
-    label: string;
-    enabled: boolean;
-    selected: boolean;
-    onSelect: (b: Blockchain) => void;
-  }) {
-    function getIcon(id) {
-      switch (id) {
-        case "ethereum":
-          return <EthereumIcon width={24} height={24} />;
-        case "solana":
-          return <SolanaIcon width={24} height={24} />;
-        case "polygon":
-          return <PolygonIcon width={24} height={24} />;
-        case "bsc":
-          return <BscIcon width={24} height={24} />;
-        case "cosmos":
-          return <CosmosIcon width={24} height={24} />;
-        case "valanache":
-          return <AvalancheIcon width={24} height={24} />;
-        default:
-          return null;
-      }
-    }
-
-    return (
-      <View style={{ flex: 1, margin: 6 }}>
-        <ActionCard
-          text={label}
-          disabled={!enabled}
-          icon={getIcon(id)}
-          textAdornment={selected ? <CheckBadge /> : ""}
-          onPress={() => {
-            if (enabled) {
-              onSelect(id);
-            }
-          }}
-        />
-      </View>
-    );
-  }
-
-  function renderItem({ item }) {
-    return (
-      <Network
-        id={item.id}
-        selected={selectedBlockchains.includes(item.id)}
-        enabled={item.enabled}
-        label={item.label}
-        onSelect={(b: Blockchain) => handleBlockchainClick(b)}
-      />
-    );
-  }
+  const { onboardingData, handleSelectBlockchain } = useOnboarding();
+  const { blockchainOptions, selectedBlockchains } = onboardingData;
+  const numColumns = 2;
+  const gap = 8;
 
   return (
     <OnboardingScreen
@@ -587,19 +528,37 @@ function OnboardingBlockchainSelectScreen({
       subtitle="You can always add additional networks later through the settings menu."
     >
       <FlatList
-        numColumns={2}
+        numColumns={numColumns}
         data={blockchainOptions}
-        renderItem={renderItem}
         keyExtractor={(item) => item.id}
         extraData={selectedBlockchains}
         scrollEnabled={false}
         initialNumToRender={blockchainOptions.length}
+        contentContainerStyle={{ gap }}
+        columnWrapperStyle={{ gap }}
+        renderItem={({ item }) => {
+          return (
+            <Network
+              id={item.id as Blockchain}
+              selected={selectedBlockchains.includes(item.id as Blockchain)}
+              enabled={item.enabled}
+              label={item.label}
+              onSelect={async (blockchain) =>
+                await handleSelectBlockchain({
+                  blockchain,
+                  // onSelectImport: () => {
+                  //   console.log("import");
+                  // },
+                })
+              }
+            />
+          );
+        }}
       />
       <PrimaryButton
         disabled={selectedBlockchains.length === 0}
         label="Next"
         onPress={() => {
-          setOnboardingData({ blockchainKeyrings });
           navigation.push("CreatePassword");
         }}
       />
@@ -613,72 +572,81 @@ type CreatePasswordFormData = {
   agreedToTerms: boolean;
 };
 
-// TODO(peter) KeyboardAvoidingView
 function OnboardingCreatePasswordScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "CreatePassword">) {
-  const { setOnboardingData } = useOnboardingData();
+  const { setOnboardingData } = useOnboarding();
 
   const { control, handleSubmit, formState, watch } =
     useForm<CreatePasswordFormData>();
   const { errors, isValid } = formState;
 
   const onSubmit = ({ password }: CreatePasswordFormData) => {
-    Alert.alert("password", JSON.stringify({ isValid, password }));
     setOnboardingData({ password, complete: true });
-    navigation.push("Finished");
+    navigation.push("OnboardingCreateAccountLoading");
   };
 
-  // TODO(peter) some fk'd up shit is happening here where the hook claims to be invalid when it's not
   return (
-    <OnboardingScreen
-      title="Create a password"
-      subtitle="It should be at least 8 characters. You'll need this to unlock Backpack."
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={78}
     >
-      <View style={{ flex: 1, justifyContent: "flex-start" }}>
-        <Margin bottom={12}>
+      <OnboardingScreen
+        title="Create a password"
+        subtitle="It should be at least 8 characters. You'll need this to unlock Backpack."
+      >
+        <View style={{ flex: 1, justifyContent: "flex-start" }}>
+          <Margin bottom={12}>
+            <PasswordInput
+              autoFocus
+              name="password"
+              placeholder="Password"
+              control={control}
+              returnKeyType="next"
+              rules={{
+                required: "You must specify a password",
+                minLength: {
+                  value: 8,
+                  message: "Password must be at least 8 characters",
+                },
+              }}
+            />
+            <ErrorMessage for={errors.password} />
+          </Margin>
           <PasswordInput
-            name="password"
-            placeholder="Password"
+            name="passwordConfirmation"
+            placeholder="Confirm Password"
+            returnKeyType="done"
             control={control}
             rules={{
-              required: "You must specify a password",
-              minLength: {
-                value: 8,
-                message: "Password must be at least 8 characters",
+              validate: (val: string) => {
+                if (val !== watch("password")) {
+                  return "Passwords do not match";
+                }
               },
             }}
           />
-          <ErrorMessage for={errors.password} />
-        </Margin>
-        <PasswordInput
-          name="passwordConfirmation"
-          placeholder="Confirm Password"
-          control={control}
-          rules={{
-            validate: (val: string) => {
-              if (val !== watch("password")) {
-                return "Passwords do not match";
-              }
-            },
-          }}
+          <ErrorMessage for={errors.passwordConfirmation} />
+        </View>
+
+        <View style={{ alignSelf: "center" }}>
+          <Margin bottom={18}>
+            <ControlledCheckBoxLabel
+              name="agreedToTerms"
+              control={control}
+              label="I agree to the terms of service"
+            />
+            <ErrorMessage for={errors.agreedToTerms} />
+          </Margin>
+        </View>
+        <PrimaryButton
+          disabled={!isValid}
+          label="Next"
+          onPress={handleSubmit(onSubmit)}
         />
-        <ErrorMessage for={errors.passwordConfirmation} />
-      </View>
-      <View style={{ marginBottom: 24 }}>
-        <CheckBox
-          name="agreedToTerms"
-          control={control}
-          label="I agree to the terms of service"
-        />
-        <ErrorMessage for={errors.agreedToTerms} />
-      </View>
-      <PrimaryButton
-        // disabled={!isValid}
-        label="Next (TODO fix isValid)"
-        onPress={handleSubmit(onSubmit)}
-      />
-    </OnboardingScreen>
+      </OnboardingScreen>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -686,7 +654,7 @@ function OnboardingCreatePasswordScreen({
 function OnboardingImportAccountsScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "ImportAccounts">) {
-  // const { onboardingData} = useOnboardingData();
+  // const { onboardingData} = useOnboarding();
   // const { mnemonic, blockchain } = onboardingData;
   // const allowMultiple = false;
 
@@ -709,157 +677,117 @@ function OnboardingImportAccountsScreen({
   );
 }
 
-function OnboardingFinishedScreen() {
+function OnboardingCreateAccountLoadingScreen(
+  _p: StackScreenProps<
+    OnboardingStackParamList,
+    "OnboardingCreateAccountLoading"
+  >
+): JSX.Element {
   const background = useBackgroundClient();
-  const { onboardingData } = useOnboardingData();
-  const {
-    password,
-    mnemonic,
-    blockchainKeyrings,
-    username,
-    inviteCode,
-    waitlistId,
-    isAddingAccount,
-    userId,
-  } = onboardingData;
-
-  const [isValid, setIsValid] = useState(false);
-
-  const keyringInit = {
-    mnemonic,
-    blockchainKeyrings,
-  };
+  const { onboardingData, maybeCreateUser } = useOnboarding();
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const { id } = await createUser();
-      createStore(id);
-    })();
-  }, []);
-
-  //
-  // Create the user in the backend
-  //
-  async function createUser(): Promise<{ id: string }> {
-    // If userId is provided, then we are onboarding via the recover flow.
-    if (userId) {
-      return { id: userId };
-    }
-    // If userId is not provided and an invite code is not provided, then
-    // this is dev mode.
-    if (!inviteCode) {
-      return { id: uuidv4() };
-    }
-
-    //
-    // If we're down here, then we are creating a user for the first time.
-    //
-    const body = JSON.stringify({
-      username,
-      inviteCode,
-      waitlistId: getWaitlistId?.(),
-      blockchainPublicKeys: keyringInit.blockchainKeyrings.map((b) => ({
-        blockchain: b.blockchain,
-        publicKey: b.publicKey,
-        signature: b.signature,
-      })),
-    });
-
-    try {
-      const res = await fetch(`${BACKEND_API_URL}/users`, {
-        method: "POST",
-        body,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
+      // This is a mitigation to ensure the keyring store doesn't lock before
+      // creating the user on the server.
+      //
+      // Would be better (though probably not a priority atm) to ensure atomicity.
+      // E.g. we could generate the UUID here on the client, create the keyring store,
+      // and only then create the user on the server. If the server fails, then
+      // rollback on the client.
+      //
+      // An improvement for the future!
+      if (onboardingData.isAddingAccount) {
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
+          params: [],
+        });
+      }
+      const res = await maybeCreateUser({ ...onboardingData });
       if (!res.ok) {
-        throw new Error(await res.json());
+        setError(true);
       }
-      return await res.json();
-    } catch (err) {
-      throw new Error("error creating account");
-    }
-  }
+    })();
+  }, [onboardingData, background, maybeCreateUser]);
 
-  //
-  // Create the local store for the wallets
-  //
-  async function createStore(uuid: string) {
-    try {
-      //
-      // If usernames are disabled, use a default one for developing.
-      //
-      if (isAddingAccount) {
-        await background.request({
-          method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
-          params: [username, keyringInit, uuid],
-        });
-      } else {
-        await background.request({
-          method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-          params: [username, password, keyringInit, uuid],
-        });
-      }
-
-      setIsValid(true);
-    } catch (err) {
-      console.log("account setup error", err);
-      // if (
-      //   confirm("There was an issue setting up your account. Please try again.")
-      // ) {
-      //   // window.location.reload();
-      // }
-    }
-  }
-
-  function Cell({ children, style }: any): JSX.Element {
+  if (error) {
     return (
-      <View style={[{ alignSelf: "flex-start", marginBottom: 12 }, style]}>
-        {children}
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <EmptyState
+          icon={(props: any) => <MaterialIcons name="error" {...props} />}
+          title="Something went wrong."
+          subtitle="Please get in touch ASAP or try again"
+          buttonText="Start Over"
+          onPress={() => {
+            DevSettings.reload();
+          }}
+        />
       </View>
     );
   }
 
-  return !isValid ? (
-    <FullScreenLoading />
-  ) : (
+  return <FullScreenLoading label="Creating your wallet..." />;
+}
+
+export function OnboardingCompleteWelcome({
+  onComplete,
+}: {
+  onComplete: (path: string) => void;
+}): JSX.Element {
+  const insets = useSafeAreaInsets();
+
+  return (
     <OnboardingScreen
       title="You've set up Backpack!"
-      subtitle="Now get started exploring what your Backpack can do."
+      subtitle="We recommend downloading a few xNFTs to get started."
+      style={{
+        paddingTop: insets.top + 36,
+        paddingBottom: insets.bottom + 24,
+      }}
     >
-      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-        {BACKPACK_FEATURE_XNFT ? (
-          <Cell style={{ paddingRight: 6 }}>
-            <ActionCard
-              icon={<WidgetIcon />}
-              text="Browse the xNFT library"
-              onPress={() => Linking.openURL(XNFT_GG_LINK)}
-            />
-          </Cell>
-        ) : null}
-        <Cell style={{ paddingLeft: 6 }}>
-          <ActionCard
+      <View>
+        <Margin bottom={8}>
+          <CallToAction
+            icon={<WidgetIcon />}
+            title="Browse the xNFT library"
+            onPress={() => Linking.openURL(XNFT_GG_LINK)}
+          />
+        </Margin>
+        <Margin bottom={8}>
+          <CallToAction
             icon={<TwitterIcon />}
-            text="Follow us on Twitter"
+            title="Follow us on Twitter"
             onPress={() => Linking.openURL(TWITTER_LINK)}
           />
-        </Cell>
-        <Cell>
-          <ActionCard
-            icon={<DiscordIcon />}
-            text="Join the Discord community"
-            onPress={() => Linking.openURL(DISCORD_INVITE_LINK)}
-          />
-        </Cell>
+        </Margin>
+        <CallToAction
+          icon={<DiscordIcon />}
+          title="Join the Discord"
+          onPress={() => Linking.openURL(DISCORD_INVITE_LINK)}
+        />
       </View>
-      <PrimaryButton disabled={false} label="Finish" onPress={console.log} />
+      <View style={{ flex: 1 }} />
+      <PrimaryButton
+        disabled={false}
+        label="Finish"
+        onPress={() => {
+          onComplete("finished");
+        }}
+      />
     </OnboardingScreen>
   );
 }
 
-export default function OnboardingNavigator(): JSX.Element {
+export function OnboardingNavigator({
+  onStart,
+}: {
+  onStart: (path: string) => void;
+}): JSX.Element {
+  useEffect(() => {
+    onStart("onboarding");
+  }, [onStart]);
+
   const theme = useTheme();
   return (
     <OnboardingProvider>
@@ -904,7 +832,13 @@ export default function OnboardingNavigator(): JSX.Element {
             name="CreatePassword"
             component={OnboardingCreatePasswordScreen}
           />
-          <Stack.Screen name="Finished" component={OnboardingFinishedScreen} />
+          <Stack.Screen
+            name="OnboardingCreateAccountLoading"
+            component={OnboardingCreateAccountLoadingScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
         </Stack.Group>
       </Stack.Navigator>
     </OnboardingProvider>

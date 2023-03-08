@@ -39,28 +39,3 @@ export const deleteSubscription = (id: number) => {
     ],
   });
 };
-
-export const insertNotification = (
-  xnftId: string,
-  uuid: string,
-  { title, body }: { title: string; body: string }
-) => {
-  return chain("mutation")({
-    insert_auth_notifications_one: [
-      {
-        object: {
-          title,
-          body,
-          uuid,
-          xnft_id: xnftId,
-          timestamp: new Date(),
-          username: "",
-          image: "",
-        },
-      },
-      {
-        id: true,
-      },
-    ],
-  });
-};

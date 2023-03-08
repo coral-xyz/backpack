@@ -1,9 +1,9 @@
-import { externalResourceUri } from "@coral-xyz/common-public";
-import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import type { Provider } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
+
+import { externalResourceUri } from "../../utils";
 
 export const XNFT_PROGRAM_ID = new PublicKey(
   "xnft5aaToUM4UFETUQfj7NUDUBdvYHTVhNFThEYTm55"
@@ -11,12 +11,21 @@ export const XNFT_PROGRAM_ID = new PublicKey(
 
 export async function fetchXnfts(
   provider: Provider,
-  wallet: PublicKey
-): Promise<Array<{ publicKey: PublicKey; medtadata: any; metadataBlob: any }>> {
+  wallet: PublicKey,
+  isDropzoneWallet: boolean
+): Promise<
+  Array<{
+    xnftAccount: any;
+    xnft: any;
+    metadataPublicKey: any;
+    metadataAccount: any;
+    metadata: any;
+    install: any;
+  }>
+> {
   const client = xnftClient(provider);
-  //
+
   // Fetch all xnfts installed by this user.
-  //
   const xnftInstalls = await client.account.install.all([
     {
       memcmp: {
@@ -26,7 +35,7 @@ export async function fetchXnfts(
     },
   ]);
 
-  /// HACK to get ONE xNft installed for everyone
+  // HACK to get ONE xNFT installed for everyone
   xnftInstalls.push({
     // @ts-ignore
     publicKey: "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8",
@@ -42,7 +51,7 @@ export async function fetchXnfts(
     },
   });
 
-  /// HACK to get Explorer xNft installed for everyone
+  // HACK to get Explorer xNFT installed for everyone
   xnftInstalls.push({
     // @ts-ignore
     publicKey: "oRN37pXigdDzpSPTe9ma5UWz9pZ4srKgS8To3juBNRi",
@@ -58,6 +67,40 @@ export async function fetchXnfts(
     },
   });
 
+  // HACK to get Prices xNFT installed for everyone
+  xnftInstalls.push({
+    // @ts-ignore
+    publicKey: "4GWq6KwrSmi3boGVayz4LM2Mz12GHQ3bpB1W2i7F5GRR",
+    // @ts-ignore
+    account: {
+      authority: PublicKey.default,
+      xnft: new PublicKey("4GWq6KwrSmi3boGVayz4LM2Mz12GHQ3bpB1W2i7F5GRR"),
+      masterMetadata: new PublicKey(
+        "9tHKPiFsXy4kpXL4es9PUJ5w9bnzu8rHPdMNF5WyfJSD"
+      ),
+      edition: new anchor.BN("00"),
+      reserved: Array(64).fill(0),
+    },
+  });
+
+  if (isDropzoneWallet) {
+    // HACK to get Dropzone xNFT installed for everyone
+    xnftInstalls.push({
+      // @ts-ignore
+      publicKey: "CVkbt7dscJdjAJFF2uKrtin6ve9M8DA4gsUccAjePUHH",
+      // @ts-ignore
+      account: {
+        authority: PublicKey.default,
+        xnft: new PublicKey("CVkbt7dscJdjAJFF2uKrtin6ve9M8DA4gsUccAjePUHH"),
+        masterMetadata: new PublicKey(
+          "3ir4m8m51eWdLTx5e1XSkiwzu6TF24DYEi5ar5XnYK9u"
+        ),
+        edition: new anchor.BN("00"),
+        reserved: Array(64).fill(0),
+      },
+    });
+  }
+
   if (xnftInstalls.length === 0) {
     return [];
   }
@@ -65,135 +108,61 @@ export async function fetchXnfts(
   //
   // Get the metadata accounts for all xnfts.
   //
-  const metadataPubkeys = xnftInstalls.map(
-    ({ account }) => account.masterMetadata
-  );
-  const xnftMetadata = (
-    await anchor.utils.rpc.getMultipleAccounts(
-      provider.connection,
-      metadataPubkeys
-    )
-  ).map((t) => {
-    if (!t) {
-      return null;
-    }
-    return Metadata.deserialize(t.account.data)[0];
-  });
-
-  //
-  // Fetch the metadata uri blob.
-  //
-  const xnftMetadataBlob = await Promise.all(
-    xnftMetadata.map((m) => {
-      if (!m) {
-        return null;
-      }
-      return fetch(externalResourceUri(m.data.uri)).then((r) => r.json());
-    })
+  const xnftMetadata = await Promise.all(
+    xnftInstalls.map(({ account }) => fetchXnft(account.xnft))
   );
 
-  //
-  // Combine it all into a single list.
-  //
-  const xnfts = [] as any;
-  metadataPubkeys.forEach((metadataPublicKey, idx) => {
-    xnfts.push({
-      metadataPublicKey,
-      metadata: xnftMetadata[idx],
-      metadataBlob: xnftMetadataBlob[idx],
-      install: xnftInstalls[idx],
-    });
-  });
-
-  return xnfts;
+  return xnftMetadata?.map((metadata, idx) => ({
+    ...metadata,
+    install: xnftInstalls[idx],
+  })) as any;
 }
 
 export async function fetchXnftsFromPubkey(
-  provider: Provider,
   xnfts: string[]
 ): Promise<{ xnftId: string; image?: string; title?: string }[]> {
-  const client = xnftClient(provider);
   const accounts = await Promise.all(
     xnfts.map(async (xnft) => ({
       xnftId: xnft,
-      account: await client.account.xnft.fetch(xnft),
+      metadata: await fetchXnft(xnft),
     }))
   );
 
-  const metadataAccounts = (
-    await anchor.utils.rpc.getMultipleAccounts(
-      provider.connection,
-      accounts.map((x) => x.account.masterMetadata)
-    )
-  ).map((t, index) => {
-    if (!t) {
-      return null;
-    }
-
-    return {
-      xnftMetadata: Metadata.deserialize(t.account.data)[0],
-      xnftId: accounts[index].xnftId,
-    };
-  });
-
-  const xnftMetadataBlobs = await Promise.all(
-    metadataAccounts.map(async (blob) => {
-      if (blob?.xnftMetadata) {
-        return {
-          externalMetadata: await fetch(
-            externalResourceUri(blob.xnftMetadata.data.uri)
-          ).then((r) => r.json()),
-          xnftId: blob.xnftId,
-        };
-      }
-      return {
-        xnftId: blob?.xnftId,
-        externalMetadata: {}, // TODO: Add default image here?
-      };
-    })
-  );
-
-  return xnfts.map((xnftId) => {
-    const metadataBlob = xnftMetadataBlobs.find(
-      (blob) => blob.xnftId === xnftId
-    )?.externalMetadata;
+  return accounts.map(({ xnftId, metadata }) => {
     return {
       xnftId,
-      image: externalResourceUri(metadataBlob.image),
-      title: metadataBlob.name,
+      image: externalResourceUri(metadata?.metadata?.image),
+      title: metadata?.metadata?.name,
     };
   });
 }
 
-export async function fetchXnft(
-  provider: Provider,
-  xnft: PublicKey
-): Promise<{
+export async function fetchXnft(xnft: PublicKey | string): Promise<{
   xnftAccount: any;
+  xnft: any;
   metadataPublicKey: any;
+  metadataAccount: any;
   metadata: any;
-  metadataBlob: any;
-}> {
-  const client = xnftClient(provider);
-  const xnftAccount = await client.account.xnft.fetch(xnft);
+} | null> {
+  const xnftMetadata: any | null = await fetch(
+    `https://swr.xnfts.dev/nft-data/xnft/${new PublicKey(xnft).toBase58()}`
+  )
+    .then((r) => r.json())
+    .catch((e) => {
+      console.error(e);
+      return null;
+    });
 
-  const metadataPublicKey = xnftAccount.masterMetadata;
-  const xnftMetadata = await (async () => {
-    const info = await provider.connection.getAccountInfo(metadataPublicKey);
-    if (!info) {
-      throw new Error("account info not found");
-    }
-    return Metadata.deserialize(info.data)[0];
-  })();
+  if (!xnftMetadata) {
+    return null;
+  }
 
-  const xnftMetadataBlob = await fetch(
-    externalResourceUri(xnftAccount.uri)
-  ).then((r) => r.json());
   return {
-    metadataPublicKey,
-    metadata: xnftMetadata,
-    metadataBlob: xnftMetadataBlob,
-    xnftAccount,
+    metadataPublicKey: xnftMetadata.masterMetadata,
+    metadataAccount: xnftMetadata.metadataAccount,
+    metadata: xnftMetadata.metadata,
+    xnftAccount: xnftMetadata.xnftAccount,
+    xnft: xnftMetadata.xnft,
   };
 }
 

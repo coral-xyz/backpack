@@ -1,10 +1,12 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { useOpenPlugin } from "@coral-xyz/recoil";
+import { isOneLive, useOpenPlugin } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
+import { CollectionsTwoTone } from "@mui/icons-material";
 import { Skeleton } from "@mui/material";
 import Card from "@mui/material/Card";
+import { useRecoilValue } from "recoil";
 
-import { useIsONELive } from "../../../hooks/useIsONELive";
+import type { AllWalletCollections } from "./NftTable";
 
 const useStyles = styles((theme) => ({
   blockchainCard: {
@@ -22,6 +24,7 @@ const useStyles = styles((theme) => ({
     },
   },
   imageBackground: {
+    zIndex: 2,
     position: "relative",
     height: "100%",
     display: "flex",
@@ -31,10 +34,10 @@ const useStyles = styles((theme) => ({
     backgroundColor: "#000",
   },
   image: {
-    zIndex: "1",
+    zIndex: 1,
+    position: "relative",
     height: "117px",
     width: "547px",
-    backgroundImage: "url(https://xnft.wao.gg/one-entry-bg.png)",
     backgroundSize: "547px 234px",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "0px 0px",
@@ -59,16 +62,22 @@ const useStyles = styles((theme) => ({
     display: "none",
   },
   visuallyHidden: {
+    zIndex: -1,
+    pointerEvents: "none",
     visibility: "hidden",
     position: "absolute",
-    top: "0px",
+    top: "1000px",
   },
 }));
 
-export default function EntryONE() {
+export default function EntryONE({
+  allWalletCollections,
+}: {
+  allWalletCollections: AllWalletCollections | null;
+}) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const ref = useRef<HTMLImageElement>(null);
-  const isONELive = useIsONELive();
+  const oneLive = useRecoilValue(isOneLive);
   const classes = useStyles();
   const openPlugin = useOpenPlugin();
 
@@ -90,29 +99,44 @@ export default function EntryONE() {
     };
   }, []);
 
-  const isLoading = false || !imageLoaded || isONELive === "loading";
+  const isLoading = false || !imageLoaded;
+
+  const hasNft = !!allWalletCollections?.find((wallet) => {
+    return !!wallet.collections?.find((collection) => {
+      return (
+        collection.metadataCollectionId === oneLive.madCollection &&
+        collection.itemIds.length > 0
+      );
+    });
+  });
+
+  const banner =
+    hasNft && oneLive.byeBanner ? oneLive.byeBanner : oneLive.banner;
 
   const openXNFT = () => {
-    openPlugin("CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8");
+    if (oneLive.isLive) {
+      openPlugin("CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8");
+    }
   };
 
   return (
     <Card onClick={openXNFT} className={classes.blockchainCard} elevation={0}>
       <Skeleton
         className={`${classes.skeleton}  ${!isLoading ? classes.none : ""}`}
-      ></Skeleton>
+      />
       <div
         className={`${classes.imageBackground} ${
           isLoading ? classes.hidden : ""
         }`}
       >
-        <div className={`${classes.image}`} />
+        <div
+          className={`${classes.image}`}
+          style={{
+            backgroundImage: `url(${banner})`,
+          }}
+        />
       </div>
-      <img
-        ref={ref}
-        className={classes.visuallyHidden}
-        src="https://xnft.wao.gg/one-entry-bg.png"
-      />
+      <img ref={ref} className={classes.visuallyHidden} src={banner} />
     </Card>
   );
 }

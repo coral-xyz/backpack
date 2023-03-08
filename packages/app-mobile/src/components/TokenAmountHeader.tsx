@@ -5,8 +5,8 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { ethers } from "ethers";
 
-import { ProxyImage } from "@components/index";
-import { useTheme } from "@hooks/index";
+import { ProxyImage } from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
 //
 // Displays token amount header with logo.

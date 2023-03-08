@@ -2,20 +2,11 @@ import { useEffect, useState } from "react";
 import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { UserList } from "@coral-xyz/message-sdk";
-import {
-  isFirstLastListItemStyle,
-  Loading,
-  TextInput,
-} from "@coral-xyz/react-common";
+import { isFirstLastListItemStyle } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
 
-import { useNavStack } from "../../common/Layout/NavStack";
-
-import { useStyles } from "./styles";
-
 export const Requests = ({ searchFilter }: { searchFilter: string }) => {
-  const classes = useStyles();
   const [requests, setRequests] = useState<RemoteUserData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const theme = useCustomTheme();
@@ -60,19 +51,15 @@ export const Requests = ({ searchFilter }: { searchFilter: string }) => {
 
   return (
     <div style={{ marginTop: 5 }}>
-      {filteredRequests.length !== 0 && (
-        <UserList
-          setMembers={setRequests}
-          users={filteredRequests as RemoteUserData[]}
-        />
-      )}
-      {filteredRequests.length === 0 && (
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <div style={{ color: theme.custom.colors.fontColor }}>
-            You have no pending requests
-          </div>
+      {filteredRequests.length !== 0 ? <UserList
+        setMembers={setRequests}
+        users={filteredRequests as RemoteUserData[]}
+        /> : null}
+      {filteredRequests.length === 0 ? <div style={{ display: "flex", justifyContent: "center" }}>
+        <div style={{ color: theme.custom.colors.fontColor }}>
+          You have no pending requests
         </div>
-      )}
+      </div> : null}
     </div>
   );
 };
@@ -80,10 +67,10 @@ export const Requests = ({ searchFilter }: { searchFilter: string }) => {
 export function SkeletonContainer() {
   return (
     <>
-      <UserSkeleton isFirst={true} isLast={false} />
+      <UserSkeleton isFirst isLast={false} />
       <UserSkeleton isFirst={false} isLast={false} />
       <UserSkeleton isFirst={false} isLast={false} />
-      <UserSkeleton isFirst={false} isLast={true} />
+      <UserSkeleton isFirst={false} isLast />
     </>
   );
 }

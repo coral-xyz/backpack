@@ -4,7 +4,11 @@ import type {
   Friendship,
   SubscriptionType,
 } from "@coral-xyz/common";
-import { BACKEND_API_URL, getRandomColor } from "@coral-xyz/common";
+import {
+  BACKEND_API_URL,
+  fetchFriendship,
+  getRandomColor,
+} from "@coral-xyz/common";
 import type { EnrichedInboxDb } from "@coral-xyz/common/dist/esm/messages/db";
 import { getFriendshipByUserId } from "@coral-xyz/db";
 import { atomFamily, selectorFamily } from "recoil";
@@ -23,7 +27,7 @@ export const friendship = atomFamily<Friendship | null, { userId: string }>({
           return null;
         }
         const friendship = await getFriendshipByUserId(localUser.uuid, userId);
-        if (friendship) {
+        if (friendship && friendship.friendshipId) {
           return {
             id: friendship.friendshipId,
             areFriends: friendship.areFriends === 1 ? true : false,
@@ -34,12 +38,7 @@ export const friendship = atomFamily<Friendship | null, { userId: string }>({
           };
         }
         try {
-          const res = await fetch(`${BACKEND_API_URL}/inbox`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ to: userId }),
-          });
-          const json = await res.json();
+          const json = await fetchFriendship({ userId });
           return {
             id: json.friendshipId,
             areFriends: json.areFriends,
@@ -67,6 +66,25 @@ export const friendships = atomFamily<
       async ({ get }: any) => {
         return [];
       },
+  }),
+});
+
+export const messageUnreadCount = atomFamily<number, { uuid: string }>({
+  key: "messageUnreadCount",
+  default: selectorFamily({
+    get:
+      ({ uuid }: { uuid: string }) =>
+      async ({ get }: any) => {
+        const activeChats = get(friendships({ uuid }));
+        const groupChats = get(groupCollections({ uuid }));
+        return (
+          (activeChats.filter((x) => (x.unread ? true : false))?.length || 0) +
+          (groupChats
+            .filter((x) => x.lastMessageUuid !== x.lastReadMessage)
+            .filter((x) => x.name && x.image).length || 0)
+        );
+      },
+    key: "messageUnreadCountDefault",
   }),
 });
 

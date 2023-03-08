@@ -1,11 +1,12 @@
+import { insertNotification } from "@coral-xyz/backend-common";
 import webpush from "web-push";
+
+import { VAPID_PRIVATE_KEY, VAPID_PUBLIC_KEY } from "../config";
 import {
   deleteSubscription,
   getSubscriptions,
   hasNotificationAccess,
-  insertNotification,
 } from "../db";
-import { VAPID_PRIVATE_KEY, VAPID_PUBLIC_KEY } from "../config";
 
 export interface NotificationProps {
   title: string;
@@ -62,11 +63,16 @@ export const sendPushNotification = async (
           JSON.stringify({
             title,
             body,
+            href: `/popup.html#/notifications?title="Notifications"&props=%7B%7D&nav=tab`,
           })
         );
       } catch (e) {
         // @ts-ignore
         if (e?.statusCode === 410 && e.body?.includes("unsubscribed")) {
+          await deleteSubscription(response.id);
+        }
+        // @ts-ignore
+        if (e?.statusCode === 403) {
           await deleteSubscription(response.id);
         }
       }

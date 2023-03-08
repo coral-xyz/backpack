@@ -15,6 +15,8 @@ import {
 } from "@coral-xyz/common";
 import { PrimaryButton } from "@coral-xyz/react-common";
 import {
+  useActiveWallet,
+  useAvatarUrl,
   useSolanaCtx,
   useSolanaTokenAccount,
   useSolanaTokenMint,
@@ -33,7 +35,7 @@ import type { AccountInfo, Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import type { BigNumber } from "ethers";
 
-import { walletAddressDisplay } from "../../../../common";
+import { CopyablePublicKey } from "../../../../common/CopyablePublicKey";
 import { SettingsList } from "../../../../common/Settings/List";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
 import { Error, Sending } from "../Send";
@@ -52,6 +54,7 @@ const useStyles = styles((theme) => ({
 export function SendSolanaConfirmationCard({
   token,
   destinationAddress,
+  destinationUser,
   amount,
   onComplete,
 }: {
@@ -63,8 +66,13 @@ export function SendSolanaConfirmationCard({
     mint?: string;
   };
   destinationAddress: string;
+  destinationUser?: {
+    username: string;
+    walletName?: string;
+    image: string;
+  };
   amount: BigNumber;
-  onComplete?: () => void;
+  onComplete?: (txSig?: any) => void;
 }) {
   const [txSignature, setTxSignature] = useState<string | null>(null);
   const solanaCtx = useSolanaCtx();
@@ -199,7 +207,7 @@ export function SendSolanaConfirmationCard({
           : solanaCtx.commitment
       );
       setCardType("complete");
-      if (onComplete) onComplete();
+      if (onComplete) onComplete(txSig);
     } catch (err: any) {
       logger.error("unable to confirm", err);
       setError(err.toString());
@@ -213,6 +221,7 @@ export function SendSolanaConfirmationCard({
         <ConfirmSendSolana
           token={token}
           destinationAddress={destinationAddress}
+          destinationUser={destinationUser}
           amount={amount}
           onConfirm={onConfirm}
         />
@@ -227,7 +236,7 @@ export function SendSolanaConfirmationCard({
       ) : cardType === "complete" ? (
         <Sending
           blockchain={Blockchain.SOLANA}
-          isComplete={true}
+          isComplete
           amount={amount}
           token={token}
           signature={txSignature!}
@@ -249,6 +258,7 @@ export function ConfirmSendSolana({
   destinationAddress,
   amount,
   onConfirm,
+  destinationUser,
 }: {
   token: {
     logo?: string;
@@ -258,6 +268,10 @@ export function ConfirmSendSolana({
   destinationAddress: string;
   amount: BigNumber;
   onConfirm: () => void;
+  destinationUser?: {
+    username: string;
+    image: string;
+  };
 }) {
   const theme = useCustomTheme();
   return (
@@ -291,7 +305,10 @@ export function ConfirmSendSolana({
           amount={amount}
           token={token}
         />
-        <ConfirmSendSolanaTable destinationAddress={destinationAddress} />
+        <ConfirmSendSolanaTable
+          destinationUser={destinationUser}
+          destinationAddress={destinationAddress}
+        />
       </div>
       <PrimaryButton
         onClick={() => onConfirm()}
@@ -305,18 +322,25 @@ export function ConfirmSendSolana({
 
 const ConfirmSendSolanaTable: React.FC<{
   destinationAddress: string;
-}> = ({ destinationAddress }) => {
+  destinationUser?: { username: string; image: string; walletName?: string };
+}> = ({ destinationAddress, destinationUser }) => {
   const theme = useCustomTheme();
   const classes = useStyles();
   const solanaCtx = useSolanaCtx();
+  const avatarUrl = useAvatarUrl();
+  const wallet = useActiveWallet();
 
   const menuItems = {
     From: {
       onClick: () => {},
       detail: (
-        <Typography>
-          {walletAddressDisplay(solanaCtx.walletPublicKey)}
-        </Typography>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <UserIcon marginRight={5} image={avatarUrl} size={24} />
+          <Typography variant="body2" style={{ marginRight: 5 }}>
+            {wallet.name}
+          </Typography>
+          <CopyablePublicKey publicKey={solanaCtx.walletPublicKey} />
+        </div>
       ),
       classes: { root: classes.confirmTableListItem },
       button: false,
@@ -324,7 +348,23 @@ const ConfirmSendSolanaTable: React.FC<{
     To: {
       onClick: () => {},
       detail: (
-        <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {destinationUser ? (
+            <>
+              <UserIcon
+                marginRight={5}
+                image={destinationUser.image}
+                size={24}
+              />
+              <Typography variant="body2" style={{ marginRight: 5 }}>
+                {destinationUser.walletName
+                  ? destinationUser.walletName
+                  : `@${destinationUser.username}`}
+              </Typography>
+            </>
+          ) : null}
+          <CopyablePublicKey publicKey={destinationAddress} />
+        </div>
       ),
       classes: { root: classes.confirmTableListItem },
       button: false,
@@ -340,7 +380,7 @@ const ConfirmSendSolanaTable: React.FC<{
       classes: { root: classes.confirmTableListItem },
       button: false,
     },
-  };
+  } satisfies React.ComponentProps<typeof SettingsList>["menuItems"];
 
   return (
     <SettingsList

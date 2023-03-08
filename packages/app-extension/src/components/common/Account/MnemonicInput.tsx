@@ -59,6 +59,7 @@ const useStyles = makeStyles((theme: any) => ({
   errorMsg: {
     color: "red",
     marginBottom: "12px",
+    textAlign: "center",
   },
 }));
 
@@ -206,28 +207,26 @@ export function MnemonicInput({
           </Box>
         )}
       </Box>
-      {readOnly && (
-        <>
-          <CopyButton
-            text={mnemonic}
-            icon={
-              <ContentCopyIcon
-                style={{ color: theme.custom.colors.fontColor }}
+      {readOnly ? <>
+        <CopyButton
+          text={mnemonic}
+          icon={
+            <ContentCopyIcon
+              style={{ color: theme.custom.colors.fontColor }}
               />
             }
-            disabled={!copyEnabled}
+          disabled={!copyEnabled}
           />
-          <Box sx={{ margin: "12px" }}>
-            <CheckboxForm
-              checked={checked}
-              setChecked={setChecked}
-              label="I saved my secret recovery phrase"
+        <Box sx={{ margin: "12px" }}>
+          <CheckboxForm
+            checked={checked}
+            setChecked={setChecked}
+            label="I saved my secret recovery phrase"
             />
-          </Box>
-        </>
-      )}
+        </Box>
+      </> : null}
       <Box>
-        {error && <Typography className={classes.errorMsg}>{error}</Typography>}
+        {error ? <Typography className={classes.errorMsg}>{error}</Typography> : null}
 
         <PrimaryButton
           label={buttonLabel}

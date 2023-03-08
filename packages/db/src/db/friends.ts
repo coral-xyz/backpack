@@ -12,6 +12,7 @@ export const updateFriendship = (
     last_message?: string;
     unread?: 0 | 1;
     interacted?: 0 | 1;
+    remoteInteracted?: 0 | 1;
   }
 ) => {
   return getDb(uuid).inbox.update(remoteUserId, updatedProps);
@@ -64,6 +65,7 @@ export const updateFriendshipIfExists = async (
   updatedProps: {
     areFriends?: 0 | 1;
     requested?: 0 | 1;
+    remoteRequested?: 0 | 1;
   }
 ) => {
   const friendship = await getFriendshipByUserId(uuid, remoteUserId);

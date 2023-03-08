@@ -2,12 +2,33 @@ table:
   name: chats
   schema: public
 array_relationships:
+  - name: barter_poke_metadata
+    using:
+      foreign_key_constraint_on:
+        column: message_client_generated_uuid
+        table:
+          name: barter_poke_metadata
+          schema: public
+  - name: chat_barter_metadata
+    using:
+      foreign_key_constraint_on:
+        column: chat_client_generated_uuid
+        table:
+          name: chat_barter_metadata
+          schema: public
   - name: chat_media_messages
     using:
       foreign_key_constraint_on:
         column: message_client_generated_uuid
         table:
           name: chat_media_messages
+          schema: public
+  - name: nft_sticker_metadata
+    using:
+      foreign_key_constraint_on:
+        column: chat_client_generated_uuid
+        table:
+          name: nft_sticker_metadata
           schema: public
   - name: secure_transfer_transactions
     using:
@@ -16,6 +37,13 @@ array_relationships:
         table:
           name: secure_transfer_transactions
           schema: public
+  - name: simple_transactions
+    using:
+      foreign_key_constraint_on:
+        column: client_generated_uuid
+        table:
+          name: simple_transactions
+          schema: public
 insert_permissions:
   - role: chat
     permission:
@@ -23,6 +51,7 @@ insert_permissions:
       columns:
         - client_generated_uuid
         - created_at
+        - deleted
         - id
         - message
         - message_kind
@@ -37,6 +66,7 @@ select_permissions:
       columns:
         - client_generated_uuid
         - created_at
+        - deleted
         - id
         - message
         - message_kind
@@ -46,3 +76,10 @@ select_permissions:
         - username
         - uuid
       filter: {}
+update_permissions:
+  - role: chat
+    permission:
+      columns:
+        - deleted
+      filter: {}
+      check: null

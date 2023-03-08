@@ -1,4 +1,3 @@
-import React from "react";
 import Close from "@mui/icons-material/Close";
 import { createStyles, makeStyles } from "@mui/styles";
 
@@ -19,6 +18,12 @@ const useStyles = makeStyles((theme: any) =>
       color: theme.custom.colors.icon,
       width: "0.8em",
     },
+    replyTo: {
+      color: theme.custom.colors.fontColor3,
+      fontWeight: 500,
+      fontSize: 14,
+      marginBottom: 8,
+    },
   })
 );
 
@@ -31,8 +36,8 @@ export const ReplyContainer = ({
   align = "left",
 }) => {
   const { setActiveReply } = useChatContext();
-
   const classes = useStyles();
+
   return (
     <div
       style={{
@@ -45,18 +50,18 @@ export const ReplyContainer = ({
       }}
     >
       <div>
-        <div
-          className={classes.text}
-          style={{ fontWeight: 500, fontSize: 14, marginBottom: 8 }}
-        >
-          Replying to {parent_username || ""}
+        <div className={classes.replyTo}>
+          Replying to{" "}
+          <span className={classes.text}>{parent_username || ""}</span>
         </div>
         <div
           className={classes.text}
           style={{
             borderLeft: "2px solid #DFE0E6",
-            fontWeight: 600,
+            fontWeight: 400,
             paddingLeft: 12,
+            lineHeight: 1.4,
+            fontSize: 14,
           }}
         >
           <ParsedMessage message={text} />

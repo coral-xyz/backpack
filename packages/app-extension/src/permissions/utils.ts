@@ -27,6 +27,37 @@ export const registerNotificationServiceWorker = () => {
   );
 };
 
+export const unregisterNotificationServiceWorker = () => {
+  return navigator.serviceWorker.ready.then(
+    async (serviceWorkerRegistration) => {
+      const applicationServerKey = urlB64ToUint8Array(
+        BACKPACK_NOTIFICATION_PUBKEY
+      );
+      const sub = await serviceWorkerRegistration.pushManager.getSubscription();
+      if (sub && sub.options.applicationServerKey === applicationServerKey) {
+        await sub.unsubscribe();
+      }
+    }
+  );
+};
+
+export const hasActiveSubscription = async (): Promise<boolean> => {
+  const response = await fetch(
+    `${BACKEND_API_URL}/notifications/subscriptions`
+  );
+  const json = await response.json();
+  return json.auth_notification_subscriptions
+    ? json.auth_notification_subscriptions.length > 0
+    : false;
+};
+
+export const deleteSubscription = async () => {
+  const response = await fetch(`${BACKEND_API_URL}/notifications`, {
+    method: "DELETE",
+  });
+  return response.json();
+};
+
 export const saveSubscription = async (subscription: any) => {
   const response = await fetch(`${BACKEND_API_URL}/notifications/register`, {
     method: "post",

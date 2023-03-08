@@ -1,0 +1,21 @@
+{
+  "name": "@coral-xyz/backend-common",
+  "version": "1.0.0",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "description": "",
+  "private": true,
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@coral-xyz/common": "*",
+    "@coral-xyz/chat-zeus": "*",
+    "@coral-xyz/zeus": "*",
+    "dotenv": "^16.0.3"
+  },
+  "keywords": [],
+  "author": "",
+  "scripts": {
+    "build": "tsc && tsc-alias"
+  }
+}

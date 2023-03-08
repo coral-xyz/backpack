@@ -1,12 +1,13 @@
-import { Fragment, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { RichMentionsContext, RichMentionsInput } from "react-rich-mentions";
-import { useUsersMetadata } from "@coral-xyz/react-common";
+import { BackpackStaffIcon, useUsersMetadata } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CircularProgress } from "@mui/material";
 
 import { useChatContext } from "../ChatContext";
+import { BACKPACK_TEAM } from "@coral-xyz/common";
 
-const useStyles = styles((themes) => ({
+const useStyles = styles(() => ({
   input: {
     "&:hover": {
       cursor: "text",
@@ -14,110 +15,122 @@ const useStyles = styles((themes) => ({
   },
 }));
 
-export function MessageInput({ setEmojiMenuOpen }: { setEmojiMenuOpen: any }) {
-  const defaultValue = "";
+export const chatMessageInputId = "backpack-message-input";
+
+export function MessageInput({
+  setPluginMenuOpen,
+  autoFocus = true,
+}: {
+  setPluginMenuOpen: any;
+  autoFocus?: boolean;
+}) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { type, remoteUsername } = useChatContext();
+  const { type, remoteUsername, activeReply } = useChatContext();
+  const { activeSearch } = useContext(RichMentionsContext);
+
+  useEffect(() => {
+    if (autoFocus) {
+      const messageElement = document.getElementById(chatMessageInputId);
+
+      if (messageElement) {
+        messageElement.focus();
+      }
+    }
+  }, [autoFocus]);
 
   return (
     <div style={{ width: "100%", padding: 10 }}>
       <RichMentionsInput
+        id={chatMessageInputId}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" && activeSearch) {
+            event.stopPropagation();
+          }
+        }}
         className={classes.input}
-        onClick={() => setEmojiMenuOpen(false)}
+        onClick={() => setPluginMenuOpen(false)}
         placeholder={
           type === "individual"
             ? `Message @${remoteUsername}`
+            : activeReply?.parent_username
+            ? "Reply"
             : "Write a message..."
         }
         style={{
           outline: "0px solid transparent",
           color: theme.custom.colors.fontColor,
-          fontSize: "15px",
+          fontSize: "14px",
+          wordBreak: "break-word",
         }}
-        defaultValue={defaultValue}
+        defaultValue=""
       />
     </div>
   );
 }
 
-export const CustomAutoComplete = ({
-  offlineMembers,
-}: {
-  offlineMembers: { username: string; uuid: string; image: string }[];
-}) => {
+export const CustomAutoComplete = () => {
   const theme = useCustomTheme();
-  const { loading, results, activeSearch, selectItem } =
+  const { loading, results, activeSearch, selectItem, index } =
     useContext(RichMentionsContext);
+  const cursor = index;
+
+  const shownResults = useMemo(() => results, [results]);
 
   const users = useUsersMetadata({ remoteUserIds: results.map((r) => r.id) });
 
-  return (
-    <div>
-      {activeSearch !== "" && activeSearch && activeSearch.length !== 0 && (
-        <div>
-          {" "}
-          {offlineMembers
-            .filter((x) => x.username.includes(activeSearch.slice(1)))
-            .map((item) => (
-              <button
-                style={{
-                  display: "flex",
-                  padding: 8,
-                  cursor: "pointer",
-                  width: "100%",
-                  background: theme.custom.colors.background,
-                  color: theme.custom.colors.fontColor,
-                  textAlign: "left",
-                  border: "none",
-                  boxShadow: `${theme.custom.colors.boxShadow}`,
-                }}
-                key={item.uuid}
-                onClick={() => {
-                  selectItem({
-                    name: item.username,
-                    id: item.uuid,
-                    ref: `<@${item.username}|u${item.uuid}>`,
-                  });
-                }}
-              >
-                <img
-                  style={{ height: 20, borderRadius: 10, marginRight: 5 }}
-                  src={item.image}
-                />
-                <div style={{ fontSize: 15 }}>{item.username}</div>
-              </button>
-            ))}
-        </div>
-      )}
+  // if there are no users to show in mentions
+  if (activeSearch && !loading && shownResults?.length === 0) {
+    return null;
+  }
 
-      {results
-        .filter((x) => !offlineMembers.map((x) => x.uuid).includes(x.id))
-        .map((item, i) => (
-          <button
-            style={{
-              padding: 8,
-              display: "flex",
-              cursor: "pointer",
-              width: "100%",
-              background: theme.custom.colors.background,
-              color: theme.custom.colors.fontColor,
-              border: "none",
-              boxShadow: `${theme.custom.colors.boxShadow}`,
-              textAlign: "left",
-            }}
-            key={item.ref}
-            onClick={() => {
-              selectItem(item);
-            }}
-          >
-            <img
-              style={{ height: 20, borderRadius: 10, marginRight: 5 }}
-              src={users[item.id]?.image}
-            />
-            <div style={{ fontSize: 15 }}>{item.name}</div>
-          </button>
-        ))}
+  return (
+    <div
+      style={{
+        width: 180,
+        position: "absolute",
+        bottom: 44,
+        boxShadow: theme.custom.colors.boxShadow,
+        background: theme.custom.colors.bg3,
+        paddingTop: activeSearch && 8,
+        paddingBottom: activeSearch && 8,
+        borderRadius: 8,
+        backdropFilter: "blur(20px)",
+        overflow: "hidden",
+      }}
+    >
+      {shownResults.map((item, index) => (
+        <button
+          style={{
+            paddingLeft: 10,
+            paddingRight: 10,
+            paddingTop: 8,
+            paddingBottom: 8,
+            display: "flex",
+            cursor: "pointer",
+            width: "100%",
+            background:
+              index === cursor
+                ? theme.custom.colors.listItemHover
+                : "transparent",
+            color: theme.custom.colors.fontColor,
+            border: "none",
+            textAlign: "left",
+            alignItems: "center",
+          }}
+          key={item.ref}
+          onClick={() => {
+            selectItem(item);
+          }}
+        >
+          <img
+            style={{ height: 24, borderRadius: 12, marginRight: 8 }}
+            src={users[item.id]?.image}
+          />
+          <div style={{ fontSize: 14 }}>@{item.name}</div>
+          {BACKPACK_TEAM.includes(item.id) ? <BackpackStaffIcon /> : null}
+        </button>
+      ))}
       {activeSearch !== "" &&
       activeSearch &&
       activeSearch.length !== 0 &&
@@ -133,9 +146,7 @@ export const CustomAutoComplete = ({
           {" "}
           <CircularProgress size={20} />{" "}
         </div>
-      ) : (
-        <></>
-      )}
+      ) : null}
     </div>
   );
 };

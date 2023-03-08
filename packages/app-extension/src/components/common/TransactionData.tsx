@@ -1,3 +1,5 @@
+// TODO: remove the following line
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from "react";
 import {
   PrimaryButton,
@@ -156,34 +158,32 @@ export function TransactionData({
           "Max Compute units": {
             onClick: () => {},
             detail: (
-              <>
-                <SmallInput
-                  disabled={transactionData.solanaFeeConfig?.disabled}
-                  placeholder="Compute units"
-                  value={
-                    transactionData.solanaFeeConfig?.config?.computeUnits.toString() ||
-                    0
+              <SmallInput
+                disabled={transactionData.solanaFeeConfig?.disabled}
+                placeholder="Compute units"
+                value={
+                  transactionData.solanaFeeConfig?.config?.computeUnits.toString() ||
+                  0
+                }
+                onChange={(e: any) => {
+                  const computeUnits = parseInt(e.target.value || "0");
+                  if (
+                    computeUnits < 0 ||
+                    computeUnits > 1200000 ||
+                    isNaN(parseInt(e.target.value))
+                  ) {
+                    return;
                   }
-                  onChange={(e: any) => {
-                    const computeUnits = parseInt(e.target.value || "0");
-                    if (
-                      computeUnits < 0 ||
-                      computeUnits > 1200000 ||
-                      isNaN(parseInt(e.target.value))
-                    ) {
-                      return;
-                    }
-                    const updatedValue = {
-                      ...(transactionData.solanaFeeConfig?.config || {}),
-                      computeUnits: computeUnits,
-                    };
-                    transactionData.setSolanaFeeConfig((x: any) => ({
-                      config: updatedValue,
-                      disabled: x.disabled,
-                    }));
-                  }}
-                />
-              </>
+                  const updatedValue = {
+                    ...(transactionData.solanaFeeConfig?.config || {}),
+                    computeUnits: computeUnits,
+                  };
+                  transactionData.setSolanaFeeConfig((x: any) => ({
+                    config: updatedValue,
+                    disabled: x.disabled,
+                  }));
+                }}
+              />
             ),
             button: false,
             classes: menuItemClasses,
@@ -191,30 +191,28 @@ export function TransactionData({
           "Priority fee (micro lamports)": {
             onClick: () => {},
             detail: (
-              <>
-                <SmallInput
-                  disabled={transactionData.solanaFeeConfig?.disabled}
-                  placeholder="Priority fee"
-                  value={
-                    transactionData.solanaFeeConfig.config?.priorityFee?.toString() ||
-                    0
+              <SmallInput
+                disabled={transactionData.solanaFeeConfig?.disabled}
+                placeholder="Priority fee"
+                value={
+                  transactionData.solanaFeeConfig.config?.priorityFee?.toString() ||
+                  0
+                }
+                onChange={(e: any) => {
+                  const priorityFee = parseInt(e.target.value || "0");
+                  if (priorityFee < 0 || isNaN(parseInt(e.target.value))) {
+                    return;
                   }
-                  onChange={(e: any) => {
-                    const priorityFee = parseInt(e.target.value || "0");
-                    if (priorityFee < 0 || isNaN(parseInt(e.target.value))) {
-                      return;
-                    }
-                    const updatedValue = {
-                      ...(transactionData.solanaFeeConfig?.config || {}),
-                      priorityFee: BigInt(priorityFee),
-                    };
-                    transactionData.setSolanaFeeConfig((x: any) => ({
-                      disabled: x.disabled,
-                      config: updatedValue,
-                    }));
-                  }}
-                />
-              </>
+                  const updatedValue = {
+                    ...(transactionData.solanaFeeConfig?.config || {}),
+                    priorityFee: BigInt(priorityFee),
+                  };
+                  transactionData.setSolanaFeeConfig((x: any) => ({
+                    disabled: x.disabled,
+                    config: updatedValue,
+                  }));
+                }}
+              />
             ),
             button: false,
             classes: menuItemClasses,
@@ -222,19 +220,17 @@ export function TransactionData({
           "Max Priority fee": {
             onClick: () => {},
             detail: (
-              <>
-                <Typography>
-                  {transactionData.solanaFeeConfig?.config?.computeUnits
-                    ? transactionData.solanaFeeConfig?.config?.computeUnits *
-                      (Number(
-                        transactionData.solanaFeeConfig?.config?.priorityFee
-                      ) /
-                        LAMPORTS_PER_SOL /
-                        1000000 || 0)
-                    : 0}{" "}
-                  SOL
-                </Typography>
-              </>
+              <Typography>
+                {transactionData.solanaFeeConfig?.config?.computeUnits
+                  ? transactionData.solanaFeeConfig?.config?.computeUnits *
+                    (Number(
+                      transactionData.solanaFeeConfig?.config?.priorityFee
+                    ) /
+                      LAMPORTS_PER_SOL /
+                      1000000 || 0)
+                  : 0}{" "}
+                SOL
+              </Typography>
             ),
             button: false,
             classes: menuItemClasses,
@@ -250,12 +246,14 @@ export function TransactionData({
         menuItems={{ ...menuItems, ...defaultMenuItems }}
         style={{
           margin: 0,
+          overflowY: "auto",
+          maxHeight: "40vh",
         }}
         textStyle={{
           color: theme.custom.colors.secondary,
         }}
       />
-      {simulationError && (
+      {simulationError ? (
         <Typography
           style={{
             color: theme.custom.colors.negative,
@@ -266,8 +264,8 @@ export function TransactionData({
         >
           This transaction is unlikely to succeed.
         </Typography>
-      )}
-      {network === "Ethereum" && !loading && (
+      ) : null}
+      {network === "Ethereum" && !loading ? (
         <EthereumSettingsDrawer
           mode={mode}
           setMode={setMode}
@@ -277,7 +275,7 @@ export function TransactionData({
           openDrawer={ethSettingsDrawerOpen}
           setOpenDrawer={setEthSettingsDrawerOpen}
         />
-      )}
+      ) : null}
     </>
   );
 }
@@ -409,7 +407,7 @@ export function EthereumSettingsDrawer({
           }}
           value={maxFeePerGas}
           onChange={(e) => setMaxFeePerGas(e.target.value)}
-        ></TextField>
+        />
       ) : (
         <ValueWithUnit
           value={ethers.utils.formatUnits(transactionOverrides.maxFeePerGas, 9)}
@@ -439,7 +437,7 @@ export function EthereumSettingsDrawer({
           }}
           value={maxPriorityFeePerGas}
           onChange={(e) => setMaxPriorityFeePerGas(e.target.value)}
-        ></TextField>
+        />
       ) : (
         <ValueWithUnit
           value={ethers.utils.formatUnits(
@@ -472,7 +470,7 @@ export function EthereumSettingsDrawer({
           }}
           value={gasLimit}
           onChange={(e) => setGasLimit(e.target.value)}
-        ></TextField>
+        />
       ) : (
         <Typography
           style={{ cursor: gasEditOnClick ? "pointer" : "inherit" }}
@@ -501,7 +499,7 @@ export function EthereumSettingsDrawer({
           value={nonce}
           type="number"
           onChange={(e) => setNonce(e.target.value)}
-        ></TextField>
+        />
       ) : (
         <Typography
           style={{ cursor: nonceEditOnClick ? "pointer" : "inherit" }}
@@ -621,13 +619,13 @@ export function EthereumSettingsDrawer({
               </div>
             </div>
             <div style={{ margin: "0 16px" }}>
-              {((mode === "custom" && editingGas) || editingNonce) && (
+              {(mode === "custom" && editingGas) || editingNonce ? (
                 <PrimaryButton
                   style={{ marginBottom: "12px" }}
                   label="Save"
                   onClick={handleSave}
                 />
-              )}
+              ) : null}
               <SecondaryButton
                 label="Close"
                 onClick={() => setOpenDrawer(false)}

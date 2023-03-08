@@ -1,13 +1,15 @@
 import * as store from "@coral-xyz/background/src/backend/store";
 import { DefaultKeyname } from "@coral-xyz/background/src/backend/store";
-import type { BlockchainKeyringJson, DerivationPath } from "@coral-xyz/common";
+import type {
+  BlockchainKeyringJson,
+  WalletDescriptor,
+} from "@coral-xyz/common";
 import { getLogger } from "@coral-xyz/common";
 import * as bs58 from "bs58";
 
 import type {
   HdKeyring,
   HdKeyringFactory,
-  ImportedDerivationPath,
   Keyring,
   KeyringFactory,
   LedgerKeyring,
@@ -58,60 +60,54 @@ export class BlockchainKeyring {
 
   public async initFromMnemonic(
     mnemonic: string,
-    derivationPath: DerivationPath,
-    accountIndices: Array<number>
+    derivationPaths: Array<string>
   ): Promise<Array<[string, string]>> {
     // Initialize keyrings.
-    this.hdKeyring = this.hdKeyringFactory.fromMnemonic(
-      mnemonic,
-      derivationPath,
-      accountIndices
-    );
+    this.hdKeyring = this.hdKeyringFactory.init(mnemonic, derivationPaths);
     // Empty ledger keyring to hold one off ledger imports
-    this.ledgerKeyring = this.ledgerKeyringFactory.fromAccounts([]);
+    this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
     // Empty imported keyring to hold imported secret keys
-    this.importedKeyring = this.keyringFactory.fromSecretKeys([]);
-    this.activeWallet = this.hdKeyring.getPublicKey(accountIndices[0]);
+    this.importedKeyring = this.keyringFactory.init([]);
+    this.activeWallet = this.hdKeyring.publicKeys()[0];
     this.deletedWallets = [];
 
     // Persist a given name for this wallet.
     const newAccounts: Array<[string, string]> = [];
-    for (const index of accountIndices) {
-      const name = DefaultKeyname.defaultDerived(index);
-      const pubkey = this.hdKeyring.getPublicKey(index);
-      await store.setKeyname(pubkey, name);
-      newAccounts.push([pubkey, name]);
+    for (const [index, publicKey] of this.hdKeyring.publicKeys().entries()) {
+      const name = DefaultKeyname.defaultDerived(index + 1);
+      await store.setKeyname(publicKey, name);
+      newAccounts.push([publicKey, name]);
     }
     return newAccounts;
   }
 
   public async initFromLedger(
-    accounts: Array<ImportedDerivationPath>
+    walletDescriptors: Array<WalletDescriptor>
   ): Promise<Array<[string, string]>> {
     // Empty ledger keyring to hold one off ledger imports
-    this.ledgerKeyring = this.ledgerKeyringFactory.fromAccounts(accounts);
+    this.ledgerKeyring = this.ledgerKeyringFactory.init(walletDescriptors);
     // Empty imported keyring to hold imported secret keys
-    this.importedKeyring = this.keyringFactory.fromSecretKeys([]);
-    this.activeWallet = accounts[0].publicKey;
+    this.importedKeyring = this.keyringFactory.init([]);
+    this.activeWallet = this.ledgerKeyring.publicKeys()[0];
     this.deletedWallets = [];
 
     // Persist a given name for this wallet.
     const newAccounts: Array<[string, string]> = [];
-    for (const account of accounts) {
-      const name = DefaultKeyname.defaultLedger(account.account);
-      await store.setKeyname(account.publicKey, name);
-      await store.setIsCold(account.publicKey, true);
-      newAccounts.push([account.publicKey, name]);
+    for (const [index, walletDescriptor] of walletDescriptors.entries()) {
+      const name = DefaultKeyname.defaultLedger(index + 1);
+      await store.setKeyname(walletDescriptor.publicKey, name);
+      await store.setIsCold(walletDescriptor.publicKey, true);
+      newAccounts.push([walletDescriptor.publicKey, name]);
     }
     return newAccounts;
   }
 
   public exportSecretKey(pubkey: string): string {
-    let sk = this.hdKeyring!.exportSecretKey(pubkey);
+    let sk = this.hdKeyring?.exportSecretKey(pubkey);
     if (sk) {
       return sk;
     }
-    sk = this.importedKeyring!.exportSecretKey(pubkey);
+    sk = this.importedKeyring?.exportSecretKey(pubkey);
     if (sk) {
       return sk;
     }
@@ -122,21 +118,43 @@ export class BlockchainKeyring {
     return this.hdKeyring!.mnemonic;
   }
 
-  public derivationPath(): string {
-    return this.hdKeyring!.derivationPath;
+  public nextDerivationPath(keyring: "hd" | "ledger") {
+    if (keyring === "hd") {
+      return this.hdKeyring!.nextDerivationPath();
+    } else {
+      return this.ledgerKeyring!.nextDerivationPath();
+    }
   }
 
-  public async importAccountIndex(
-    _accountIndex?: number
-  ): Promise<[string, string, number]> {
-    const [publicKey, accountIndex] =
-      this.hdKeyring!.importAccountIndex(_accountIndex);
+  public async deriveNextKey(): Promise<{
+    publicKey: string;
+    derivationPath: string;
+    name: string;
+  }> {
+    const { publicKey, derivationPath } = this.hdKeyring!.deriveNextKey();
+    // Save a default name.
+    const name = DefaultKeyname.defaultDerived(
+      this.hdKeyring!.publicKeys().length
+    );
+    await store.setKeyname(publicKey, name);
+    return { publicKey, derivationPath, name };
+  }
+
+  public async addDerivationPath(
+    derivationPath: string
+  ): Promise<{ publicKey: string; name: string }> {
+    const publicKey = this.hdKeyring!.addDerivationPath(derivationPath);
 
     // Save a default name.
-    const name = DefaultKeyname.defaultDerived(accountIndex);
+    const name = DefaultKeyname.defaultDerived(
+      this.hdKeyring!.publicKeys().length
+    );
     await store.setKeyname(publicKey, name);
 
-    return [publicKey, name, accountIndex];
+    return {
+      publicKey,
+      name,
+    };
   }
 
   public async importSecretKey(
@@ -169,7 +187,6 @@ export class BlockchainKeyring {
       );
       throw new Error("public key not found");
     }
-
     keyring.deletePublicKey(publicKey);
   }
 

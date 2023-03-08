@@ -1,0 +1,32 @@
+table:
+  name: nft_sticker_metadata
+  schema: public
+object_relationships:
+  - name: chat
+    using:
+      foreign_key_constraint_on: chat_client_generated_uuid
+insert_permissions:
+  - role: chat
+    permission:
+      check: {}
+      columns:
+        - chat_client_generated_uuid
+        - id
+        - mint
+select_permissions:
+  - role: chat
+    permission:
+      columns:
+        - id
+        - chat_client_generated_uuid
+        - mint
+      filter: {}
+update_permissions:
+  - role: chat
+    permission:
+      columns:
+        - id
+        - chat_client_generated_uuid
+        - mint
+      filter: {}
+      check: null

@@ -2,7 +2,9 @@
   "name": "rpc-proxy",
   "version": "0.0.0",
   "devDependencies": {
-    "wrangler": "^2.1.9"
+    "@cloudflare/workers-types": "^4.20221111.1",
+    "eslint-config-custom": "*",
+    "wrangler": "^2.7.1"
   },
   "private": true,
   "scripts": {

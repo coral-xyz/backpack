@@ -5,11 +5,10 @@ import {
 } from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { BigNumber, ethers } from "ethers";
-import { atom, atomFamily, selector, selectorFamily } from "recoil";
+import { atomFamily, selectorFamily } from "recoil";
 
-import type { TokenData, TokenNativeData } from "../../types";
+import type { TokenDataWithBalance, TokenDataWithPrice } from "../../types";
 import { ethereumPrice, pricesForErc20Addresses } from "../prices";
-import { ethereumPublicKey } from "../wallet";
 
 import { ethereumConnectionUrl } from "./preferences";
 import { ethersContext } from "./provider";
@@ -71,7 +70,7 @@ export const erc20Balances = selectorFamily<
 });
 
 export const ethereumTokenNativeBalance = selectorFamily<
-  TokenNativeData | null,
+  TokenDataWithBalance | null,
   { publicKey: string; tokenAddress: string }
 >({
   key: "ethereumTokenNativeBalance",
@@ -107,7 +106,7 @@ export const ethereumTokenNativeBalance = selectorFamily<
 });
 
 export const ethereumTokenBalance = selectorFamily<
-  TokenData | null,
+  TokenDataWithPrice | null,
   { publicKey: string; tokenAddress: string }
 >({
   key: "ethereumTokenBalance",
@@ -128,6 +127,7 @@ export const ethereumTokenBalance = selectorFamily<
           : (get(pricesForErc20Addresses({ publicKey })).get(
               contractAddress
             ) as any);
+
       const usdBalance =
         (price?.usd ?? 0) *
         parseFloat(
@@ -136,15 +136,17 @@ export const ethereumTokenBalance = selectorFamily<
             nativeTokenBalance.decimals
           )
         );
+
+      const recentPercentChange = parseFloat(
+        (price?.usd_24h_change ?? 0).toFixed(2)
+      );
+
       const oldUsdBalance =
         usdBalance === 0
           ? 0
-          : usdBalance - usdBalance * (price.usd_24h_change / 100);
+          : usdBalance - usdBalance * (recentPercentChange / 100);
+
       const recentUsdBalanceChange = usdBalance - oldUsdBalance;
-      const recentPercentChange =
-        price && price.usd_24h_change
-          ? parseFloat(price.usd_24h_change.toFixed(2))
-          : undefined;
 
       return {
         ...nativeTokenBalance,

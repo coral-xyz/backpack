@@ -3,11 +3,15 @@
 // the background script.
 //
 
-import type { RpcRequest } from "@coral-xyz/common-public";
-import { generateUniqueId, isMobile } from "@coral-xyz/common-public";
-
 import { BrowserRuntimeCommon } from "../browser";
-import type { Notification, RpcResponse, RpcResponseData } from "../types";
+import type {
+  Notification,
+  RpcRequest,
+  RpcResponse,
+  RpcResponseData,
+  Sender,
+} from "../types";
+import { generateUniqueId, isMobile } from "../utils";
 
 export interface BackgroundClient {
   request<T = any>({ method, params }: RpcRequest): Promise<RpcResponse<T>>;
@@ -34,23 +38,27 @@ export class ChannelAppUi {
 export class ChannelAppUiServer {
   constructor(private name: string) {}
 
-  public handler(handlerFn: (req: RpcRequest) => Promise<RpcResponse>) {
+  public handler(
+    handlerFn: (req: RpcRequest, sender: Sender) => Promise<RpcResponse>
+  ) {
     BrowserRuntimeCommon.addEventListenerFromBackground(
-      (msg: any, sender: any, sendResponse: any) => {
+      (msg: any, sender: Sender, sendResponse: any) => {
         if (msg.channel !== this.name) {
           return;
         }
 
         if (!isMobile()) {
+          //
+          // Message must come from the extension UI -> service worker.
+          //
           if (chrome && chrome?.runtime?.id) {
             if (sender.id !== chrome.runtime.id) {
               return;
             }
           }
         }
-
         const id = msg.data.id;
-        handlerFn(msg.data)
+        handlerFn(msg.data, sender)
           .then((resp) => {
             const [result, error] = resp;
             sendResponse({ id, result, error });
@@ -69,12 +77,15 @@ export class ChannelAppUiNotifications {
 
   public onNotification(handlerFn: (notif: Notification) => void) {
     BrowserRuntimeCommon.addEventListenerFromAppUi(
-      (msg: any, sender: any, sendResponse: any) => {
+      (msg: any, sender: Sender, sendResponse: any) => {
         if (msg.channel !== this.name) {
           return;
         }
 
         if (!isMobile()) {
+          //
+          // Message must come from the extension UI -> service worker.
+          //
           if (chrome && chrome?.runtime?.id) {
             if (sender.id !== chrome.runtime.id) {
               return;
@@ -129,7 +140,7 @@ export class ChannelAppUiResponder {
     id,
     result,
   }: RpcResponse): Promise<RpcResponse<T>> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       BrowserRuntimeCommon.sendMessageToBackground(
         {
           channel: this.name,

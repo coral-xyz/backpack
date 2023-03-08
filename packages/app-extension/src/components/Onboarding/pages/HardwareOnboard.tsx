@@ -1,22 +1,22 @@
 import { useState } from "react";
 import type {
   Blockchain,
-  BlockchainKeyringInit,
-  DerivationPath,
+  SignedWalletDescriptor,
+  WalletDescriptor,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type Transport from "@ledgerhq/hw-transport";
 
 import { useSteps } from "../../../hooks/useSteps";
-import type { SelectedAccount } from "../../common/Account/ImportAccounts";
-import { ImportAccounts } from "../../common/Account/ImportAccounts";
+import { ImportWallets } from "../../common/Account/ImportWallets";
 import { CloseButton } from "../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
 import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
 
-import { HardwareDefaultAccount } from "./HardwareDefaultAccount";
-import { HardwareSearch } from "./HardwareSearch";
+import { HardwareDefaultWallet } from "./HardwareDefaultWallet";
+import { HardwareDeriveWallet } from "./HardwareDeriveWallet";
+import { HardwareSearchWallet } from "./HardwareSearchWallet";
 import { HardwareSign } from "./HardwareSign";
 
 // We are using a hook here to generate the steps for the hardware onboard
@@ -34,25 +34,19 @@ export function useHardwareOnboardSteps({
   prevStep,
 }: {
   blockchain: Blockchain;
-  action: "create" | "search" | "import";
+  action: "create" | "derive" | "search" | "import";
   searchPublicKey?: string;
   signMessage: string | ((publicKey: string) => string);
   signText: string;
   successComponent?: React.ReactElement;
-  onComplete: (keyringInit: BlockchainKeyringInit) => void;
+  onComplete: (signedWalletDescriptor: SignedWalletDescriptor) => void;
   nextStep: () => void;
   prevStep: () => void;
 }) {
   const [transport, setTransport] = useState<Transport | null>(null);
   const [transportError, setTransportError] = useState(false);
-  const [accounts, setAccounts] = useState<Array<SelectedAccount>>();
-  const [derivationPath, setDerivationPath] = useState<DerivationPath>();
-
-  // Component only allows onboarding of a singular selected account at this
-  // time, the signing prompt needs to be reworked to handle multiple accounts
-  // and handle failures to sign (or optional skipping the signatures) to allow
-  // this component to handle multiple accounts
-  const account = accounts ? accounts[0] : undefined;
+  const [walletDescriptor, setWalletDescriptor] =
+    useState<WalletDescriptor | null>(null);
 
   //
   // Flow for onboarding a hardware wallet.
@@ -68,21 +62,36 @@ export function useHardwareOnboardSteps({
       isConnectFailure={!!transportError}
     />,
     //
-    // Use one of multiple components to get a wallet to proceed with
+    // Use a component to get a wallet to proceed with. The create flow uses a
+    // component that gets a default wallet on an unused account index, the search
+    // flow searches a hardware wallet for a given public key, and the import flow
+    // allows the user to select a wallet.
     //
     {
-      // The "create" flow uses a component that selects the first found public
-      // key. This step auto-proceeds and there is no user intervention
+      // The "create" flow uses a component that finds an unused account index for
+      // creating a new account. This step automatically proceeds to the next step
+      // and and there is no user input required.
       create: (
-        <HardwareDefaultAccount
+        <HardwareDefaultWallet
           blockchain={blockchain}
           transport={transport!}
-          onNext={async (
-            accounts: SelectedAccount[],
-            derivationPath: DerivationPath
-          ) => {
-            setAccounts(accounts);
-            setDerivationPath(derivationPath);
+          onNext={(walletDescriptor: WalletDescriptor) => {
+            setWalletDescriptor(walletDescriptor);
+            nextStep();
+          }}
+          onError={() => {
+            setTransportError(true);
+            prevStep();
+          }}
+        />
+      ),
+      derive: (
+        // Derive the next wallet that an account should use.
+        <HardwareDeriveWallet
+          blockchain={blockchain}
+          transport={transport!}
+          onNext={(walletDescriptor: WalletDescriptor) => {
+            setWalletDescriptor(walletDescriptor);
             nextStep();
           }}
           onError={() => {
@@ -92,18 +101,14 @@ export function useHardwareOnboardSteps({
         />
       ),
       // The search flow searches the wallet for a given public key to proceed
-      // with
+      // with.
       search: (
-        <HardwareSearch
+        <HardwareSearchWallet
           blockchain={blockchain!}
           transport={transport!}
           publicKey={searchPublicKey!}
-          onNext={async (
-            accounts: SelectedAccount[],
-            derivationPath: DerivationPath
-          ) => {
-            setAccounts(accounts);
-            setDerivationPath(derivationPath);
+          onNext={(walletDescriptor: WalletDescriptor) => {
+            setWalletDescriptor(walletDescriptor);
             nextStep();
           }}
           onError={() => {
@@ -114,18 +119,15 @@ export function useHardwareOnboardSteps({
         />
       ),
       // The import flow displays a table and allows the user to select a public
-      // key to proceed with
+      // key to proceed with. This component works with either a mnemonic or a
+      // hardware wallet.
       import: (
-        <ImportAccounts
+        <ImportWallets
           blockchain={blockchain}
-          transport={transport}
-          allowMultiple={false}
-          onNext={async (
-            accounts: SelectedAccount[],
-            derivationPath: DerivationPath
-          ) => {
-            setAccounts(accounts);
-            setDerivationPath(derivationPath);
+          transport={transport!}
+          allowMultiple={false} // Only allow a single wallet to be selected
+          onNext={(walletDescriptors: Array<WalletDescriptor>) => {
+            setWalletDescriptor(walletDescriptors[0]);
             nextStep();
           }}
           onError={() => {
@@ -135,25 +137,21 @@ export function useHardwareOnboardSteps({
         />
       ),
     }[action],
-    ...(account && derivationPath
+    ...(walletDescriptor
       ? [
-          <HardwareSign
-            blockchain={blockchain}
-            message={
+          // Sign the found wallet descriptor for API submit
+        <HardwareSign
+          blockchain={blockchain}
+          walletDescriptor={walletDescriptor}
+          message={
               typeof signMessage === "string"
                 ? signMessage
-                : signMessage(account!.publicKey)
+                : signMessage(walletDescriptor.publicKey)
             }
-            publicKey={account!.publicKey}
-            derivationPath={derivationPath}
-            accountIndex={account!.index}
-            text={signText}
-            onNext={(signature: string) => {
+          text={signText}
+          onNext={(signature: string) => {
               onComplete({
-                blockchain,
-                publicKey: account.publicKey,
-                derivationPath: derivationPath,
-                accountIndex: account.index,
+                ...walletDescriptor,
                 signature,
               });
               if (successComponent) {
@@ -165,6 +163,7 @@ export function useHardwareOnboardSteps({
       : []),
   ];
 
+  // Optional component displayed on success of hardware onboarding
   if (successComponent) {
     steps.push(successComponent);
   }
@@ -183,12 +182,12 @@ export function HardwareOnboard({
   onClose,
 }: {
   blockchain: Blockchain;
-  action: "create" | "search" | "import";
+  action: "create" | "derive" | "search" | "import";
   searchPublicKey?: string;
   signMessage: string | ((publicKey: string) => string);
   signText: string;
   successComponent?: React.ReactElement;
-  onComplete: (keyringInit: BlockchainKeyringInit) => void;
+  onComplete: (signedWalletDescriptor: SignedWalletDescriptor) => void;
   onClose?: () => void;
 }) {
   const theme = useCustomTheme();

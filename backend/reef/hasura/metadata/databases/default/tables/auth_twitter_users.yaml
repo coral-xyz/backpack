@@ -27,6 +27,12 @@ select_permissions:
         - pfp_staked_since
         - pfp_staked_cumulative
       filter: {}
+  - role: public_avatar
+    permission:
+      columns:
+        - backpack_username
+        - pfp_staked_hash
+      filter: {}
 update_permissions:
   - role: one_xnft
     permission:

@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and run tests
     env:
-      RELEASE_PREFIX: "0.2.0"
+      RELEASE_PREFIX: "0.5.1"
     steps:
       ##########################################################################
       # Setup environment.
@@ -39,12 +39,13 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn
+
       ##########################################################################
       # Yarn install.
       ##########################################################################
 
       - name: yarn install
-        run: yarn install --frozen-lockfile --prefer-offline
+        run: yarn install --frozen-lockfile
 
       ##########################################################################
       # Build extension.
@@ -56,10 +57,12 @@ jobs:
       - name: "build beta"
         env:
           BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-beta-${{ github.run_number }}"
+          BACKPACK_CONFIG_GITHUB_RUN_NUMBER: "${{ github.run_number }}"
           BACKPACK_CONFIG_LOG_LEVEL: "info"
           BACKPACK_FEATURE_LIGHT_MODE: "true"
           BACKPACK_FEATURE_POP_MODE: "true"
           BACKPACK_FEATURE_XNFT: "true"
+          BACKPACK_FEATURE_FORCE_LATEST_VERSION: "true"
           # CI!=true so that build warnings aren't treated like errors (for now)
           CI: ""
         run: yarn build
@@ -89,7 +92,7 @@ jobs:
         run: echo "commit_sha=${{ github.sha }}" >> $GITHUB_ENV
 
       - name: "set env.short_sha"
-        run: echo "short_sha=`echo "${{ env.commit_sha }}" | cut -c1-8`" >> $GITHUB_ENV
+        run: echo "short_sha=`echo "${{ env.commit_sha }}" | cut -c1-7`" >> $GITHUB_ENV
 
       - name: (Github Pages) Deploy background-service-worker.html
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -185,13 +188,6 @@ jobs:
           token: ${{ secrets.NPM_ACCESS_TOKEN }}
           tag: latest
           package: packages/common/package.json
-      - name: "publish to npm: common-public"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_ACCESS_TOKEN }}
-          tag: latest
-          package: packages/common-public/package.json
       - name: "publish to npm: themes"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: JS-DevTools/npm-publish@v1
@@ -199,13 +195,6 @@ jobs:
           token: ${{ secrets.NPM_ACCESS_TOKEN }}
           tag: latest
           package: packages/themes/package.json
-      - name: "publish to npm: react-xnft"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_ACCESS_TOKEN }}
-          tag: latest
-          package: packages/react-xnft/package.json
       - name: "publish to npm: @coral-xyz/xnft-cli"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: JS-DevTools/npm-publish@v1
@@ -223,13 +212,6 @@ jobs:
           token: ${{ secrets.NPM_ACCESS_TOKEN }}
           tag: latest
           package: packages/xnft-cli/package.json
-      - name: "publish to npm: react-xnft-dom-renderer"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_ACCESS_TOKEN }}
-          tag: latest
-          package: packages/react-xnft-dom-renderer/package.json
       - name: "publish to npm: chat-sdk"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: JS-DevTools/npm-publish@v1

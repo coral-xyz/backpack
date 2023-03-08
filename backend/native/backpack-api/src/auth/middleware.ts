@@ -1,8 +1,11 @@
-import { DEFAULT_GROUP_CHATS } from "@coral-xyz/common";
-import { WHITELISTED_CHAT_COLLECTIONS } from "@coral-xyz/common/src/constants";
+import { validateRoom } from "@coral-xyz/backend-common";
+import {
+  DEFAULT_GROUP_CHATS,
+  WHITELISTED_CHAT_COLLECTIONS,
+} from "@coral-xyz/common";
 import type { NextFunction, Request, Response } from "express";
 
-import { validateRoom } from "../db/friendships";
+import { getActiveBarter } from "../db/barter";
 import {
   validateCentralizedGroupOwnership,
   validateCollectionOwnership,
@@ -19,6 +22,22 @@ export const ensureHasPubkeyAccess = async (
   const hasAccess = await validatePublicKeyOwnership(
     req.id!,
     req.query.publicKey as string
+  );
+  if (hasAccess) {
+    next();
+    return;
+  }
+  res.status(403).json({ msg: "You dont have access to this public key" });
+};
+
+export const ensureHasPubkeyAccessBody = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const hasAccess = await validatePublicKeyOwnership(
+    req.id!,
+    req.body.publicKey as string
   );
   if (hasAccess) {
     next();
@@ -64,84 +83,59 @@ export const ensureHasRoomAccess = async (
   }
 };
 
+export const ensureIsActiveBarter = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const barterId: string = req.body.barterId;
+  //@ts-ignore
+  const room: string = req.query.room;
+  const activeBarter = await getActiveBarter({
+    roomId: room,
+  });
+
+  if (activeBarter?.id?.toString() !== barterId.toString()) {
+    return res.status(403).json({ msg: "This isn't the active barter id" });
+  }
+  next();
+};
+
 export const extractUserId = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const {
-    headers: { cookie },
-  } = req;
-  if (cookie) {
+  let jwt = "";
+
+  // Header takes precedence
+  const authHeader = req.headers["authorization"];
+  if (authHeader && authHeader.split(" ")[0] === "Bearer") {
+    jwt = authHeader.split(" ")[1];
+  } else if (req.cookies.jwt) {
+    jwt = req.cookies.jwt;
+  } else if (req.query.jwt) {
+    jwt = req.query.jwt as string;
+  }
+
+  if (jwt) {
     try {
-      let jwt = "";
-      cookie.split(";").forEach((item) => {
-        const cookie = item.trim().split("=");
-        if (cookie[0] === "jwt") {
-          jwt = cookie[1];
-        }
-      });
       const payloadRes = await validateJwt(jwt);
       if (payloadRes.payload.sub) {
-        // Extend cookie
-        setJWTCookie(req, res, payloadRes.payload.sub);
+        // Extend cookie or set it if not set
+        await setJWTCookie(req, res, payloadRes.payload.sub);
         // Set id on request
         req.id = payloadRes.payload.sub;
-        next();
-      } else {
-        return res.status(403).json({ msg: "No id found" });
+        // Set jwt  on request
+        req.jwt = jwt;
       }
-    } catch (e) {
+    } catch {
       clearCookie(res, "jwt");
       return res.status(403).json({ msg: "Auth error" });
     }
   } else {
-    return res.status(403).json({ msg: "No cookie present" });
+    return res.status(403).json({ msg: "No authentication token found" });
   }
-};
 
-export const optionallyExtractUserId = (allowQueryString: boolean) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      headers: { cookie },
-    } = req;
-
-    let jwt = "";
-
-    // Header takes precedence
-    const authHeader = req.headers["authorization"];
-    if (authHeader && authHeader.split(" ")[0] === "Bearer") {
-      jwt = authHeader.split(" ")[1];
-    } else if (cookie) {
-      // Extract JWT from cookie
-      try {
-        cookie.split(";").forEach((item) => {
-          const cookie = item.trim().split("=");
-          if (cookie[0] === "jwt") {
-            jwt = cookie[1];
-          }
-        });
-      } catch {
-        // Pass
-      }
-    } else if (req.query.jwt && allowQueryString) {
-      jwt = req.query.jwt as string;
-    }
-
-    if (jwt) {
-      try {
-        const payloadRes = await validateJwt(jwt);
-        if (payloadRes.payload.sub) {
-          // Extend cookie or set it if not set
-          setJWTCookie(req, res, payloadRes.payload.sub);
-          // Set id on request
-          req.id = payloadRes.payload.sub;
-        }
-      } catch {
-        clearCookie(res, "jwt");
-      }
-    }
-
-    next();
-  };
+  next();
 };

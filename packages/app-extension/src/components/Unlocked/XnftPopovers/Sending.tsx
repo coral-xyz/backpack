@@ -63,14 +63,12 @@ export function Sending({
           marginRight: "16px",
         }}
       >
-        {explorer && connectionUrl && (
-          <SecondaryButton
-            onClick={() => {
+        {explorer && connectionUrl ? <SecondaryButton
+          onClick={() => {
               window.open(explorerUrl(explorer, signature, connectionUrl));
             }}
-            label={"View Explorer"}
-          />
-        )}
+          label="View Explorer"
+          /> : null}
       </div>
     </div>
   );

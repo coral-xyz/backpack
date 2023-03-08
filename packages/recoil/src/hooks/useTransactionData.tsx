@@ -442,10 +442,13 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
                     existingNativeBalance
                   );
 
-                  result[token.symbol] = {
-                    nativeChange,
-                    decimals: token.decimals,
-                  };
+                  // Filter out zero change
+                  if (!nativeChange.eq(ethers.constants.Zero)) {
+                    result[token.symbol] = {
+                      nativeChange,
+                      decimals: token.decimals,
+                    };
+                  }
                 } catch (err) {
                   // ignore, probably not a token account or some other
                   // failure, we don't want to fail displaying the popup

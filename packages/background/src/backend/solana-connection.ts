@@ -98,6 +98,7 @@ const logger = getLogger("solana-connection-backend");
 
 export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
 export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;
+
 // Time until cached values expire. This is arbitrary.
 const CACHE_EXPIRY = 15000;
 const NFT_CACHE_EXPIRY = 15 * 60000;
@@ -368,19 +369,19 @@ export class SolanaConnectionBackend {
   }
 
   async customSplMetadataUri(
-    nftTokens: Array<SolanaTokenAccountWithKeyString>,
-    nftTokenMetadata: Array<TokenMetadataString | null>
+    tokens: Array<SolanaTokenAccountWithKeyString>,
+    tokenMetadata: Array<TokenMetadataString | null>
   ): Promise<Array<[string, SplNftMetadataString]>> {
     const key = JSON.stringify({
       url: this.url,
       method: "customSplMetadataUri",
-      args: [nftTokens.map((t) => t.key).sort()],
+      args: [tokens.map((t) => t.key).sort()],
     });
     const value = this.cache.get(key);
     if (value && value.ts + NFT_CACHE_EXPIRY > Date.now()) {
       return value.value;
     }
-    const resp = await fetchSplMetadataUri(nftTokens, nftTokenMetadata);
+    const resp = await fetchSplMetadataUri(tokens, tokenMetadata);
     this.cache.set(key, {
       ts: Date.now(),
       value: resp,

@@ -9,19 +9,19 @@ import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 
 export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
   publicKey,
   name,
 }) => {
   const [walletName, setWalletName] = useState(name);
-  const nav = useNavStack();
+  const nav = useNavigation();
   const theme = useCustomTheme();
   const background = useBackgroundClient();
 
   useEffect(() => {
-    nav.setTitle("Rename Wallet");
+    nav.setOptions({ headerTitle: "Rename Wallet" });
   }, [nav]);
 
   const cancel = () => {
@@ -60,7 +60,7 @@ export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
         }}
       >
         <TextInput
-          autoFocus={true}
+          autoFocus
           value={walletName}
           setValue={(e) => setWalletName(e.target.value)}
         />

@@ -7,7 +7,7 @@ import { NotificationPermissions } from "./NotificationPermissions";
 
 const Permissions = () => {
   const params = new URLSearchParams(window.location.search);
-  const notifications = params.get("notifications") || false;
+  const notifications = params.get("notifications") === "true" || false;
 
   if (notifications) {
     return <NotificationPermissions />;

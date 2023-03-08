@@ -10,6 +10,6 @@
       // incompatible with regualar react code.
       "expo-secure-store": ["fake-expo-secure-store"]
     },
-    "types": ["chrome", "firefox-webext-browser"]
+    "types": ["chrome", "firefox-webext-browser", "jest"]
   }
 }

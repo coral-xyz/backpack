@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import React, { type ChangeEvent,useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import {
   getHashedName,
   getNameAccountKey,
@@ -10,6 +11,7 @@ import {
   explorerUrl,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
   SOL_NATIVE_MINT,
+  toDisplayBalance,
   toTitleCase,
 } from "@coral-xyz/common";
 import {
@@ -17,24 +19,27 @@ import {
   CrossIcon,
   DangerButton,
   Loading,
+  LocalImage,
   MaxLabel,
   PrimaryButton,
   SecondaryButton,
   TextFieldLabel,
   TextInput,
 } from "@coral-xyz/react-common";
-import type { TokenData } from "@coral-xyz/recoil";
+import type { TokenDataWithPrice } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useActiveWallet,
   useAnchorContext,
-  useBlockchainActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
   useBlockchainTokenAccount,
+  useDarkMode,
   useEthereumCtx,
+  useFriendship,
   useLoader,
   useNavigation,
+  useUser,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
@@ -44,8 +49,9 @@ import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
 
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
+import { CopyablePublicKey } from "../../../common/CopyablePublicKey";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation as useNavigationEphemeral } from "../../../common/Layout/NavStack";
 import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 import { TokenInputField } from "../../../common/TokenInput";
 
@@ -54,7 +60,23 @@ import { SendSolanaConfirmationCard } from "./Solana";
 import { WithHeaderButton } from "./Token";
 
 const useStyles = styles((theme) => ({
+  topImage: {
+    width: 80,
+  },
+  topImageOuter: {
+    width: 80,
+    height: 80,
+    border: `solid 3px ${theme.custom.colors.avatarIconBackground}`,
+    borderRadius: "50%",
+    display: "inline-block",
+    overflow: "hidden",
+  },
+  horizontalCenter: {
+    display: "flex",
+    justifyContent: "center",
+  },
   container: {
+    alignItems: "center",
     display: "flex",
     flexDirection: "column",
     height: "100%",
@@ -63,13 +85,10 @@ const useStyles = styles((theme) => ({
     paddingTop: "24px",
     flex: 1,
   },
-  buttonContainer: {
-    display: "flex",
+  inputContainer: {
     paddingLeft: "12px",
     paddingRight: "12px",
-    paddingBottom: "24px",
-    paddingTop: "25px",
-    justifyContent: "space-between",
+    marginBottom: -10,
   },
   textRoot: {
     marginTop: "0 !important",
@@ -119,15 +138,18 @@ export function SendButton({
 }) {
   // publicKey should only be undefined if the user is in single-wallet mode
   // (rather than aggregate mode).
-  publicKey = publicKey ?? useActiveWallet().publicKey;
+  const activeWallet = useActiveWallet();
+  publicKey = publicKey ?? activeWallet.publicKey;
+
   const token = useBlockchainTokenAccount({
     publicKey,
     blockchain,
     tokenAddress: address,
   });
+
   return (
     <WithHeaderButton
-      label={"Send"}
+      label="Send"
       routes={[
         {
           name: "send",
@@ -155,7 +177,9 @@ export function SendLoader({
 }) {
   // publicKey should only be undefined if the user is in single-wallet mode
   // (rather than aggregate mode).
-  const publicKeyStr = publicKey ?? useActiveWallet().publicKey;
+  const activeWallet = useActiveWallet();
+  const publicKeyStr = publicKey ?? activeWallet.publicKey;
+
   const [token] = useLoader(
     blockchainTokenData({
       publicKey: publicKeyStr,
@@ -164,31 +188,43 @@ export function SendLoader({
     }),
     null
   );
-  if (!token) return <></>;
+
+  if (!token) return null;
   return <Send blockchain={blockchain} token={token} />;
 }
 
 export function Send({
   blockchain,
   token,
+  to,
 }: {
   blockchain: Blockchain;
-  token: TokenData;
+  token: TokenDataWithPrice;
+  to?: {
+    address: string;
+    username?: string;
+    walletName?: string;
+    image?: string;
+    uuid?: string;
+  };
 }) {
   const classes = useStyles() as any;
-  const { title, setTitle } = useNavStack();
+  const { uuid } = useUser();
+  const nav = useNavigationEphemeral();
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [address, setAddress] = useState("");
-  const [amount, setAmount] = useState<BigNumber | undefined>(undefined);
+  const [address, setAddress] = useState(to?.address || "");
+  const [amount, setAmount] = useState<BigNumber | null>(null);
   const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
+  const [message, setMessage] = useState("");
+  const friendship = useFriendship({ userId: to?.uuid || "" });
 
   useEffect(() => {
-    const prev = title;
-    setTitle(`Send ${token.ticker}`);
+    const prev = nav.title;
+    nav.setOptions({ headerTitle: `Send ${token.ticker}` });
     return () => {
-      setTitle(prev);
+      nav.setOptions({ headerTitle: prev });
     };
   }, []);
 
@@ -229,7 +265,8 @@ export function Send({
   const amountSubFee = BigNumber.from(token!.nativeBalance).sub(feeOffset);
   const maxAmount = amountSubFee.gt(0) ? amountSubFee : BigNumber.from(0);
   const exceedsBalance = amount && amount.gt(maxAmount);
-  const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
+  const isSendDisabled =
+    !isValidAddress || amount === null || amount.eq(0) || !!exceedsBalance;
   const isAmountError = amount && exceedsBalance;
 
   // On click handler.
@@ -242,14 +279,14 @@ export function Send({
 
   let sendButton;
   if (isErrorAddress) {
-    sendButton = <DangerButton disabled={true} label="Invalid Address" />;
+    sendButton = <DangerButton disabled label="Invalid Address" />;
   } else if (isAmountError) {
-    sendButton = <DangerButton disabled={true} label="Insufficient Balance" />;
+    sendButton = <DangerButton disabled label="Insufficient Balance" />;
   } else {
     sendButton = (
       <PrimaryButton
         disabled={isSendDisabled}
-        label="Send"
+        label="Review"
         type="submit"
         data-testid="Send"
       />
@@ -270,30 +307,151 @@ export function Send({
       }}
       noValidate
     >
+      {!to ? (
+        <SendV1
+          address={address}
+          sendButton={sendButton}
+          amount={amount}
+          token={token}
+          blockchain={blockchain}
+          isAmountError={isAmountError}
+          isErrorAddress={isAmountError}
+          maxAmount={maxAmount}
+          setAddress={setAddress}
+          setAmount={setAmount}
+        />
+      ) : null}
+      {to ? (
+        <SendV2
+          to={to}
+          message={message}
+          setMessage={setMessage}
+          sendButton={sendButton}
+          amount={amount}
+          token={token}
+          blockchain={blockchain}
+          isAmountError={isAmountError}
+          isErrorAddress={isAmountError}
+          maxAmount={maxAmount}
+          setAddress={setAddress}
+          setAmount={setAmount}
+        />
+      ) : null}
+      <ApproveTransactionDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
+      >
+        <SendConfirmComponent
+          onComplete={async () => {
+            if (
+              to?.uuid &&
+              to?.uuid !== uuid &&
+              friendship?.id &&
+              to?.uuid !== uuid &&
+              blockchain === Blockchain.SOLANA
+            ) {
+              // const client_generated_uuid = uuidv4();
+              // createEmptyFriendship(uuid, to?.uuid, {
+              //   last_message_sender: uuid,
+              //   last_message_timestamp: new Date().toISOString(),
+              //   last_message: message,
+              //   last_message_client_uuid: client_generated_uuid,
+              // });
+              //
+              // SignalingManager.getInstance().send({
+              //   type: "CHAT_MESSAGES",
+              //   payload: {
+              //     room: friendship?.id?.toString(),
+              //     type: "individual",
+              //     messages: [
+              //       {
+              //         client_generated_uuid: client_generated_uuid,
+              //         message,
+              //         message_kind: "transaction",
+              //         message_metadata: {
+              //           final_tx_signature: txSig,
+              //         },
+              //       },
+              //     ],
+              //   },
+              // });
+              // await navOuter.toRoot();
+              // await background.request({
+              //   method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+              //   params: [TAB_MESSAGES],
+              // });
+              // push({
+              //   title: `@${to?.username}`,
+              //   componentId: NAV_COMPONENT_MESSAGE_CHAT,
+              //   componentProps: {
+              //     userId: to?.uuid,
+              //     id: to?.uuid,
+              //     username: to?.username,
+              //   },
+              // });
+            }
+          }}
+          token={token}
+          destinationAddress={destinationAddress}
+          destinationUser={
+            (to && to.uuid && to.username && to.image
+              ? to
+              : undefined) as React.ComponentProps<
+              typeof SendConfirmComponent
+            >["destinationUser"]
+          }
+          amount={amount!}
+        />
+      </ApproveTransactionDrawer>
+    </form>
+  );
+}
+
+function SendV1({
+  blockchain,
+  address,
+  isErrorAddress,
+  token,
+  maxAmount,
+  setAmount,
+  amount,
+  isAmountError,
+  sendButton,
+  setAddress,
+}: any) {
+  const classes = useStyles();
+  return (
+    <>
       <div className={classes.topHalf}>
         <div style={{ marginBottom: "40px" }}>
           <TextFieldLabel
-            leftLabel={"Send to"}
-            rightLabel={""}
+            leftLabel="Send to"
+            rightLabel=""
             style={{ marginLeft: "24px", marginRight: "24px" }}
           />
           <div style={{ margin: "0 12px" }}>
             <TextInput
               placeholder={`${toTitleCase(blockchain)} address`}
               value={address}
-              setValue={(e) => setAddress(e.target.value.trim())}
+              setValue={(e) => {
+                setAddress(e.target.value.trim());
+              }}
               error={isErrorAddress}
               inputProps={{
                 name: "to",
                 spellCheck: "false",
+                // readOnly: to ? true : false,
               }}
+              // startAdornment={
+              //   to?.image ? <UserIcon size={32} image={to?.image} /> : <></>
+              // }
               margin="none"
             />
           </div>
         </div>
         <div>
           <TextFieldLabel
-            leftLabel={"Amount"}
+            leftLabel="Amount"
             rightLabel={`${token.displayBalance} ${token.ticker}`}
             rightLabelComponent={
               <MaxLabel
@@ -320,20 +478,168 @@ export function Send({
           </div>
         </div>
       </div>
-      <div className={classes.buttonContainer}>
-        {sendButton}
-        <ApproveTransactionDrawer
-          openDrawer={openDrawer}
-          setOpenDrawer={setOpenDrawer}
-        >
-          <SendConfirmComponent
-            token={token}
-            destinationAddress={destinationAddress}
-            amount={amount!}
-          />
-        </ApproveTransactionDrawer>
+      <ButtonContainer>{sendButton}</ButtonContainer>
+    </>
+  );
+}
+
+function ButtonContainer({ children }: { children: React.ReactNode }) {
+  return <View style={buttonContainerStyles.container}>{children}</View>;
+}
+
+const buttonContainerStyles = StyleSheet.create({
+  container: {
+    width: "100%",
+    paddingHorizontal: 12,
+    paddingBottom: 16,
+    paddingTop: 25,
+  },
+});
+
+function SendV2({ token, maxAmount, setAmount, sendButton, to }: any) {
+  const classes = useStyles();
+  const theme = useCustomTheme();
+  const isDarkMode = useDarkMode();
+  const [_amount, _setAmount] = useState<string>("");
+
+  return (
+    <>
+      <div
+        style={{
+          paddingTop: "40px",
+          flex: 1,
+        }}
+      >
+        <div>
+          <div className={classes.horizontalCenter} style={{ marginBottom: 6 }}>
+            <div className={classes.topImageOuter}>
+              <LocalImage
+                className={classes.topImage}
+                src={
+                  to?.image ||
+                  `https://avatars.backpack.workers.dev/${to?.address}`
+                }
+                style={{ width: 80, height: 80 }}
+              />
+            </div>
+          </div>
+          <div className={classes.horizontalCenter}>
+            {to.walletName || to.username ? (
+              <div
+                style={{
+                  color: theme.custom.colors.fontColor,
+                  fontSize: 16,
+                  fontWeight: 500,
+                }}
+              >
+                {to.walletName ? to.walletName : `@${to.username}`}
+              </div>
+            ) : null}
+          </div>
+          <div className={classes.horizontalCenter} style={{ marginTop: 4 }}>
+            <CopyablePublicKey publicKey={to?.address} />
+          </div>
+        </div>
+        <div>
+          <div
+            style={{ display: "flex", justifyContent: "center", width: "100" }}
+          >
+            <input
+              placeholder="0"
+              autoFocus
+              type="text"
+              style={{
+                marginTop: "40px",
+                outline: "none",
+                background: "transparent",
+                border: "none",
+                fontWeight: 600,
+                fontSize: 48,
+                height: 48,
+                color: theme.custom.colors.fontColor,
+                textAlign: "center",
+                width: "100%",
+                // @ts-ignore
+                fontFamily: theme.typography.fontFamily,
+              }}
+              value={_amount}
+              onChange={({
+                target: { value },
+              }: ChangeEvent<HTMLInputElement>) => {
+                try {
+                  const parsedVal =
+                    value.length === 1 && value[0] === "." ? "0." : value;
+
+                  _setAmount(parsedVal);
+
+                  const num =
+                    parsedVal === "" || parsedVal === "0."
+                      ? 0.0
+                      : parseFloat(parsedVal);
+
+                  if (num >= 0) {
+                    setAmount(
+                      ethers.utils.parseUnits(num.toString(), token.decimals)
+                    );
+                  }
+                } catch (err) {
+                  // Do nothing.
+                }
+              }}
+            />
+          </div>
+          <div
+            style={{ display: "flex", justifyContent: "center", marginTop: 20 }}
+          >
+            <img
+              src={token.logo}
+              style={{
+                height: 35,
+                borderRadius: "50%",
+                marginRight: 5,
+              }}
+            />
+            <div
+              style={{
+                color: theme.custom.colors.smallTextColor,
+                fontSize: 24,
+              }}
+            >
+              {token.ticker}
+            </div>
+          </div>
+          <div
+            style={{ display: "flex", justifyContent: "center", marginTop: 20 }}
+          >
+            <div
+              style={{
+                display: "inline-flex",
+                color: theme.custom.colors.fontColor,
+                cursor: "pointer",
+                fontSize: 14,
+                border: `2px solid ${
+                  isDarkMode
+                    ? theme.custom.colors.bg2
+                    : theme.custom.colors.border1
+                }`,
+                padding: "4px 12px",
+                borderRadius: 8,
+                marginTop: 5,
+                background: theme.custom.colors.bg3,
+              }}
+              onClick={() => {
+                const a = toDisplayBalance(maxAmount, token.decimals);
+                _setAmount(a);
+                setAmount(maxAmount);
+              }}
+            >
+              Max: {toDisplayBalance(maxAmount, token.decimals)} {token.ticker}
+            </div>
+          </div>
+        </div>
       </div>
-    </form>
+      <ButtonContainer>{sendButton}</ButtonContainer>
+    </>
   );
 }
 
@@ -405,7 +711,6 @@ export function Sending({
               marginLeft: "auto",
               marginRight: "auto",
             }}
-            thickness={6}
           />
         )}
       </div>
@@ -416,7 +721,7 @@ export function Sending({
           marginRight: "16px",
         }}
       >
-        {explorer && connectionUrl && (
+        {explorer && connectionUrl ? (
           <SecondaryButton
             onClick={() => {
               if (isComplete) {
@@ -428,7 +733,7 @@ export function Sending({
             }}
             label={isComplete ? "View Balances" : "View Explorer"}
           />
-        )}
+        ) : null}
       </div>
     </div>
   );
@@ -491,7 +796,7 @@ export function Error({
         >
           {error}
         </Typography>
-        {explorer && connectionUrl && signature && (
+        {explorer && connectionUrl && signature ? (
           <SecondaryButton
             style={{
               height: "40px",
@@ -500,7 +805,7 @@ export function Error({
             buttonLabelStyle={{
               fontSize: "14px",
             }}
-            label={"View Explorer"}
+            label="View Explorer"
             onClick={() =>
               window.open(
                 explorerUrl(explorer, signature, connectionUrl),
@@ -508,9 +813,9 @@ export function Error({
               )
             }
           />
-        )}
+        ) : null}
       </div>
-      <PrimaryButton label={"Retry"} onClick={() => onRetry()} />
+      <PrimaryButton label="Retry" onClick={() => onRetry()} />
     </div>
   );
 }
@@ -546,7 +851,7 @@ export function useIsValidAddress(
         }
 
         // SNS Domain
-        if (address.includes(".sol")) {
+        if (address.endsWith(".sol")) {
           try {
             const hashedName = await getHashedName(address.replace(".sol", ""));
             const nameAccountKey = await getNameAccountKey(
@@ -597,7 +902,6 @@ export function useIsValidAddress(
         }
 
         const account = await solanaConnection?.getAccountInfo(pubkey);
-        console.log("ext:account", account);
 
         // Null data means the account has no lamports. This is valid.
         if (!account) {

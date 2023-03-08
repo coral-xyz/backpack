@@ -1,7 +1,6 @@
 import { useLocation } from "react-router-dom";
 import {
   BACKPACK_FEATURE_XNFT,
-  MESSAGES_ENABLED,
   TAB_APPS,
   TAB_BALANCES,
   TAB_MESSAGES,
@@ -18,21 +17,22 @@ import {
   ImageIcon,
   MessageBubbleIcon,
   MessageBubbleUnreadIcon,
+  useBreakpoints,
 } from "@coral-xyz/react-common";
 import {
+  useAuthenticatedUser,
   useBackgroundClient,
-  useFeatureGates,
+  useMessageUnreadCount,
   useTab,
   useUser,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import { Tab, Tabs } from "@mui/material";
+import Badge from "@mui/material/Badge";
 
 import { AvatarPopoverButton } from "../../Unlocked/Settings/AvatarPopover";
-
-import { useBreakpoints } from "./hooks";
+import { NotificationIconWithBadge } from "../NotificationIconWithBadge";
 
 const TAB_HEIGHT = 64;
 
@@ -118,11 +118,13 @@ export function WithTabs(props: any) {
         {props.children}
       </div>
       {!location.pathname.startsWith("/xnft/") &&
-        location.pathname !== "/nfts/experience" &&
-        location.pathname !== "/nfts/chat" &&
-        (!isXs || location.pathname !== "/messages/chat") &&
-        (!isXs || location.pathname !== "/messages/groupchat") &&
-        (!isXs || location.pathname !== "/messages/profile") && <TabBar />}
+      location.pathname !== "/nfts/experience" &&
+      location.pathname !== "/nfts/chat" &&
+      (!isXs || location.pathname !== "/messages/chat") &&
+      (!isXs || location.pathname !== "/messages/groupchat") &&
+      (!isXs || location.pathname !== "/messages/profile") ? (
+        <TabBar />
+      ) : null}
     </div>
   );
 }
@@ -130,21 +132,18 @@ export function WithTabs(props: any) {
 function TabBar() {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { uuid } = useUser();
   const tab = useTab();
   const background = useBackgroundClient();
-  const featureGates = useFeatureGates();
-  const messagesUnread = useUnreadGlobal(uuid);
   const { isXs } = useBreakpoints();
 
-  const onTabClick = (tabValue: string) => {
+  const onTabClick = async (tabValue: string) => {
     if (tabValue === tab) {
-      background.request({
+      await background.request({
         method: UI_RPC_METHOD_NAVIGATION_TO_ROOT,
         params: [],
       });
     } else {
-      background.request({
+      await background.request({
         method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
         params: [tabValue],
       });
@@ -205,7 +204,7 @@ function TabBar() {
               />
             }
           />
-          {BACKPACK_FEATURE_XNFT && (
+          {BACKPACK_FEATURE_XNFT ? (
             <Tab
               onClick={() => onTabClick(TAB_APPS)}
               value={TAB_APPS}
@@ -225,7 +224,7 @@ function TabBar() {
                 />
               }
             />
-          )}
+          ) : null}
           <Tab
             onClick={() => onTabClick(TAB_NFTS)}
             value={TAB_NFTS}
@@ -247,44 +246,16 @@ function TabBar() {
               />
             }
           />
-          {featureGates[MESSAGES_ENABLED] && (
-            <Tab
-              onClick={() => onTabClick(TAB_MESSAGES)}
-              value={TAB_MESSAGES}
-              disableRipple
-              className={`${isXs ? classes.tabXs : classes.tab} ${
-                tab === TAB_MESSAGES ? classes.activeTab : ""
-              }`}
-              icon={
-                !messagesUnread ? (
-                  <MessageBubbleIcon
-                    fill={
-                      tab === TAB_MESSAGES
-                        ? theme.custom.colors.brandColor
-                        : theme.custom.colors.icon
-                    }
-                    style={{
-                      width: "20px",
-                      height: "20px",
-                    }}
-                  />
-                ) : (
-                  <MessageBubbleUnreadIcon
-                    fill={
-                      tab === TAB_MESSAGES
-                        ? theme.custom.colors.brandColor
-                        : theme.custom.colors.icon
-                    }
-                    style={{
-                      width: "20px",
-                      height: "20px",
-                    }}
-                  />
-                )
-              }
-            />
-          )}
-          {!isXs && (
+          <Tab
+            onClick={() => onTabClick(TAB_MESSAGES)}
+            value={TAB_MESSAGES}
+            disableRipple
+            className={`${isXs ? classes.tabXs : classes.tab} ${
+              tab === TAB_MESSAGES ? classes.activeTab : ""
+            }`}
+            icon={<LocalMessageIcon />}
+          />
+          {!isXs ? (
             <>
               <Tab
                 onClick={() => onTabClick(TAB_NOTIFICATIONS)}
@@ -294,7 +265,7 @@ function TabBar() {
                   tab === TAB_MESSAGES ? classes.activeTab : ""
                 }`}
                 icon={
-                  <NotificationsIcon
+                  <NotificationIconWithBadge
                     style={{
                       width: "28px",
                       height: "28px",
@@ -327,9 +298,9 @@ function TabBar() {
                 }
               />
             </>
-          )}
+          ) : null}
         </div>
-        {!isXs && (
+        {!isXs ? (
           <div
             style={{
               marginBottom: "16px",
@@ -337,8 +308,8 @@ function TabBar() {
           >
             <AvatarPopoverButton
               imgStyle={{
-                width: "40px",
-                height: "40px",
+                width: "38px",
+                height: "38px",
                 borderRadius: "20px",
               }}
               buttonStyle={{
@@ -347,8 +318,64 @@ function TabBar() {
               }}
             />
           </div>
-        )}
+        ) : null}
       </div>
     </Tabs>
+  );
+}
+
+function LocalMessageIcon() {
+  const theme = useCustomTheme();
+  const tab = useTab();
+  const authenticatedUser = useAuthenticatedUser();
+
+  const messagesUnread = useUnreadGlobal(
+    authenticatedUser ? authenticatedUser.uuid : null
+  );
+
+  return (
+    <>
+      {!messagesUnread ? (
+        <MessageBubbleIcon
+          sx={{
+            width: "20px",
+            height: "20px",
+            color:
+              tab === TAB_MESSAGES
+                ? theme.custom.colors.brandColor
+                : theme.custom.colors.icon,
+          }}
+        />
+      ) : (
+        <Badge
+          sx={{
+            "& .MuiBadge-badge": {
+              padding: 0,
+              fontSize: 12,
+              height: 12,
+              width: 12,
+              minWidth: 12,
+              border: "2px solid white",
+              borderRadius: "50%",
+              backgroundColor: "#E33E3F",
+              paddingBottom: "2px",
+            },
+          }}
+          badgeContent={" "}
+          color="secondary"
+        >
+          <MessageBubbleIcon
+            sx={{
+              width: "20px",
+              height: "20px",
+              color:
+                tab === TAB_MESSAGES
+                  ? theme.custom.colors.brandColor
+                  : theme.custom.colors.icon,
+            }}
+          />
+        </Badge>
+      )}
+    </>
   );
 }

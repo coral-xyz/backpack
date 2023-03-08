@@ -2,7 +2,6 @@ import type {
   HdKeyring,
   HdKeyringFactory,
   HdKeyringJson,
-  ImportedDerivationPath,
   Keyring,
   KeyringFactory,
   KeyringJson,
@@ -10,28 +9,31 @@ import type {
   LedgerKeyringJson,
 } from "@coral-xyz/blockchain-keyring";
 import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
+import type { WalletDescriptor } from "@coral-xyz/common";
 import {
-  DerivationPath,
+  Blockchain,
+  getIndexedPath,
   LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
   LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
+  nextIndicesFromPaths,
 } from "@coral-xyz/common";
 import { mnemonicToSeedSync, validateMnemonic } from "bip39";
 import type { Wallet } from "ethers";
 import { ethers } from "ethers";
 
-import { deriveEthereumWallet, deriveEthereumWallets } from "../util";
+import { deriveEthereumWallet } from "../util";
 
 export class EthereumKeyringFactory implements KeyringFactory {
-  fromJson(payload: KeyringJson): Keyring {
-    const wallets = payload.secretKeys.map((secret: string) => {
-      return new ethers.Wallet(Buffer.from(secret, "hex").toString());
+  init(secretKeys: Array<string>): Keyring {
+    const wallets = secretKeys.map((secretKey) => {
+      return new ethers.Wallet(secretKey);
     });
     return new EthereumKeyring(wallets);
   }
 
-  fromSecretKeys(secretKeys: Array<string>): Keyring {
-    const wallets = secretKeys.map((secretKey) => {
-      return new ethers.Wallet(secretKey);
+  fromJson(payload: KeyringJson): Keyring {
+    const wallets = payload.secretKeys.map((secret: string) => {
+      return new ethers.Wallet(Buffer.from(secret, "hex").toString());
     });
     return new EthereumKeyring(wallets);
   }
@@ -97,94 +99,125 @@ export class EthereumKeyring implements Keyring {
 }
 
 export class EthereumHdKeyringFactory implements HdKeyringFactory {
-  public fromMnemonic(
-    mnemonic: string,
-    derivationPath?: DerivationPath,
-    accountIndices: Array<number> = [0]
-  ): HdKeyring {
-    if (!derivationPath) {
-      derivationPath = DerivationPath.Default;
-    }
+  public init(mnemonic: string, derivationPaths: Array<string>): HdKeyring {
     if (!validateMnemonic(mnemonic)) {
       throw new Error("Invalid seed words");
     }
     const seed = mnemonicToSeedSync(mnemonic);
-    const wallets = deriveEthereumWallets(seed, derivationPath, accountIndices);
     return new EthereumHdKeyring({
       mnemonic,
       seed,
-      accountIndices,
-      wallets,
-      derivationPath,
+      derivationPaths,
     });
   }
 
   // @ts-ignore
-  public fromJson(obj: HdKeyringJson): HdKeyring {
-    const { mnemonic, seed: seedStr, accountIndices, derivationPath } = obj;
-    const seed = Buffer.from(seedStr, "hex");
-    const wallets = deriveEthereumWallets(seed, derivationPath, accountIndices);
+  public fromJson({
+    mnemonic,
+    seed,
+    derivationPaths,
+    accountIndex,
+    walletIndex,
+  }: HdKeyringJson): HdKeyring {
     return new EthereumHdKeyring({
       mnemonic,
-      seed,
-      accountIndices,
-      wallets,
-      derivationPath,
+      seed: Buffer.from(seed, "hex"),
+      derivationPaths,
+      accountIndex,
+      walletIndex,
     });
   }
 }
 
 export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
   readonly mnemonic: string;
-  readonly derivationPath: DerivationPath;
+  private derivationPaths: Array<string>;
   private seed: Buffer;
-  private accountIndices: Array<number>;
+  private accountIndex?: number;
+  private walletIndex?: number;
 
   constructor({
     mnemonic,
     seed,
-    accountIndices,
-    wallets,
-    derivationPath,
+    derivationPaths,
+    accountIndex,
+    walletIndex,
   }: {
     mnemonic: string;
     seed: Buffer;
-    accountIndices: Array<number>;
-    wallets: Array<Wallet>;
-    derivationPath: DerivationPath;
+    derivationPaths: Array<string>;
+    accountIndex?: number;
+    walletIndex?: number;
   }) {
+    const wallets = derivationPaths.map((d) => deriveEthereumWallet(seed, d));
     super(wallets);
     this.mnemonic = mnemonic;
     this.seed = seed;
-    this.accountIndices = accountIndices;
-    this.derivationPath = derivationPath;
+    this.derivationPaths = derivationPaths;
+    this.accountIndex = accountIndex;
+    this.walletIndex = walletIndex;
   }
 
-  /**
-   * Import a new wallet using an account index. if the account index is not
-   * given the next available account index is used.
-   */
-  public importAccountIndex(accountIndex?: number): [string, number] {
-    if (accountIndex === undefined) {
-      accountIndex = Math.max(...this.accountIndices) + 1;
+  public deletePublicKey(publicKey: string) {
+    const index = this.wallets.findIndex((w) => w.address === publicKey);
+    if (index < 0) {
+      return;
     }
-    const wallet = deriveEthereumWallet(
-      this.seed,
-      accountIndex,
-      this.derivationPath
+    this.derivationPaths = this.derivationPaths
+      .slice(0, index)
+      .concat(this.derivationPaths.slice(index + 1));
+    super.deletePublicKey(publicKey);
+  }
+
+  public nextDerivationPath(offset = 1) {
+    this.ensureIndices();
+    const derivationPath = getIndexedPath(
+      Blockchain.ETHEREUM,
+      this.accountIndex,
+      this.walletIndex! + offset
     );
-    this.wallets.push(wallet);
-    this.accountIndices.push(accountIndex);
-    return [wallet.address, accountIndex];
+    if (this.derivationPaths.includes(derivationPath)) {
+      // This key is already included for some reason, try again with
+      // incremented walletIndex
+      return this.nextDerivationPath(offset + 1);
+    }
+    return { derivationPath, offset };
   }
 
-  // @ts-ignore
-  public getPublicKey(accountIndex: number): string {
-    if (this.wallets.length !== this.accountIndices.length) {
-      throw new Error("invariant violation");
+  deriveNextKey(): {
+    publicKey: string;
+    derivationPath: string;
+  } {
+    const { derivationPath, offset } = this.nextDerivationPath();
+    // Save the offset to the wallet index
+    this.walletIndex! += offset;
+    const publicKey = this.addDerivationPath(derivationPath);
+    return {
+      publicKey,
+      derivationPath,
+    };
+  }
+
+  addDerivationPath(derivationPath: string): string {
+    const wallet = ethers.Wallet.fromMnemonic(this.mnemonic, derivationPath);
+    if (!this.derivationPaths.includes(derivationPath)) {
+      // Don't persist duplicate public keys
+      this.derivationPaths.push(derivationPath);
+      this.wallets.push(wallet);
     }
-    const wallet = this.wallets[this.accountIndices.indexOf(accountIndex)];
     return wallet.address;
+  }
+
+  ensureIndices() {
+    // If account index and wallet index don't exist, make a best guess based
+    // on the existing derivation paths for the keyring
+    if (this.accountIndex === undefined || this.walletIndex === undefined) {
+      const { accountIndex, walletIndex } = nextIndicesFromPaths(
+        this.derivationPaths
+      );
+      if (!this.accountIndex) this.accountIndex = accountIndex;
+      if (!this.walletIndex) this.walletIndex = walletIndex;
+    }
   }
 
   // @ts-ignore
@@ -192,19 +225,23 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     return {
       mnemonic: this.mnemonic,
       seed: this.seed.toString("hex"),
-      accountIndices: this.accountIndices,
-      derivationPath: this.derivationPath,
+      derivationPaths: this.derivationPaths,
+      accountIndex: this.accountIndex,
+      walletIndex: this.walletIndex,
     };
   }
 }
 
 export class EthereumLedgerKeyringFactory {
-  public fromAccounts(accounts: Array<ImportedDerivationPath>): LedgerKeyring {
-    return new EthereumLedgerKeyring(accounts);
+  public init(walletDescriptors: Array<WalletDescriptor>): LedgerKeyring {
+    return new EthereumLedgerKeyring(walletDescriptors, Blockchain.ETHEREUM);
   }
 
   public fromJson(obj: LedgerKeyringJson): LedgerKeyring {
-    return new EthereumLedgerKeyring(obj.derivationPaths);
+    return new EthereumLedgerKeyring(
+      obj.walletDescriptors,
+      Blockchain.ETHEREUM
+    );
   }
 }
 
@@ -214,35 +251,33 @@ export class EthereumLedgerKeyring
 {
   public async signTransaction(
     serializedTx: Buffer,
-    address: string
+    publicKey: string
   ): Promise<string> {
-    const path = this.derivationPaths.find((p) => p.publicKey === address);
-    if (!path) {
-      throw new Error("ledger address not found");
+    const walletDescriptor = this.walletDescriptors.find(
+      (p) => p.publicKey === publicKey
+    );
+    if (!walletDescriptor) {
+      throw new Error("ledger public key not found");
     }
     const tx = ethers.utils.parseTransaction(
       ethers.utils.hexlify(serializedTx)
     );
-    const result = await this.request({
+    return await this.request({
       method: LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
-      params: [tx, path.path, path.account],
+      params: [tx, walletDescriptor.derivationPath],
     });
-    return result;
   }
 
-  public async signMessage(msg: Buffer, address: string): Promise<string> {
-    const path = this.derivationPaths.find((p) => p.publicKey === address);
-    if (!path) {
-      throw new Error("ledger address not found");
+  public async signMessage(msg: Buffer, publicKey: string): Promise<string> {
+    const walletDescriptor = this.walletDescriptors.find(
+      (p) => p.publicKey === publicKey
+    );
+    if (!walletDescriptor) {
+      throw new Error("ledger public key not found");
     }
     return await this.request({
       method: LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
-      params: [msg, path.path, path.account],
+      params: [msg, walletDescriptor.derivationPath],
     });
-  }
-
-  public static fromString(str: string): EthereumLedgerKeyring {
-    const { derivationPaths } = JSON.parse(str);
-    return new EthereumLedgerKeyring(derivationPaths);
   }
 }

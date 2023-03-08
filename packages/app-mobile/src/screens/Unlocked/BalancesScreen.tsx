@@ -10,15 +10,15 @@ import {
   toTitleCase,
 } from "@coral-xyz/common";
 import { createStackNavigator } from "@react-navigation/stack";
-import { RecentActivityList } from "@screens/Unlocked/RecentActivityScreen";
+import { RecentActivityList } from "~screens/Unlocked/RecentActivityScreen";
 
-import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
-import { Margin, Screen, TokenAmountHeader } from "@components/index";
+import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
+import { Margin, Screen, TokenAmountHeader } from "~components/index";
 import {
   useBlockchainTokenData,
   useBlockchainActiveWallet,
   useActiveEthereumWallet,
-} from "@hooks/recoil";
+} from "~hooks/recoil";
 
 import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";
@@ -99,12 +99,8 @@ function BalanceDetailScreen({
       <TokenHeader
         blockchain={blockchain}
         address={tokenAddress}
-        onPressOption={(route: NavTokenAction, options: NavTokenOptions) => {
-          const name =
-            route === NavTokenAction.Receive
-              ? "DepositSingle"
-              : "SendTokenModal";
-          navigation.push(name, options);
+        onPressOption={(route: string, options: NavTokenOptions) => {
+          navigation.push(route, options);
         }}
       />
       <RecentActivityList
@@ -129,13 +125,8 @@ function BalanceListScreen({
       <Margin bottom={18}>
         <TransferWidget
           rampEnabled={false}
-          onPressOption={(route: NavTokenAction, options: NavTokenOptions) => {
-            const name =
-              route === NavTokenAction.Receive
-                ? "DepositList"
-                : "SendSelectTokenModal";
-
-            navigation.push(name, options);
+          onPressOption={(route: string, options: NavTokenOptions) => {
+            navigation.push(route, options);
           }}
         />
       </Margin>

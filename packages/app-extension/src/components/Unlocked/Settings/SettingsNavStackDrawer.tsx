@@ -1,6 +1,5 @@
 import {
   AllWalletsList,
-  WalletList as _WalletList,
   WalletListBlockchainSelector,
 } from "../../../components/common/WalletList";
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
@@ -10,9 +9,12 @@ import {
 } from "../../common/Layout/NavStack";
 import { Logout, ResetWarning } from "../../Locked/Reset/ResetWarning";
 import { ResetWelcome } from "../../Locked/Reset/ResetWelcome";
-import { Contacts } from "../Messages/Contacts";
+import { ContactRequests, Contacts } from "../Messages/Contacts";
 import { Requests } from "../Messages/Requests";
 
+import { CreateMenu } from "./AddConnectWallet/CreateMenu";
+import { ImportMenu } from "./AddConnectWallet/ImportMenu";
+import { ImportMnemonic } from "./AddConnectWallet/ImportMnemonic";
 import { ImportSecretKey } from "./AddConnectWallet/ImportSecretKey";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
 import { PreferencesEthereum } from "./Preferences/Ethereum";
@@ -60,152 +62,171 @@ export function SettingsNavStackDrawer({
           navButtonLeft={<CloseButton onClick={() => setSettingsOpen(false)} />}
         >
           <NavStackScreen
-            name={"root"}
+            name="root"
             component={(props: any) => <SettingsMenu {...props} />}
           />
           <NavStackScreen
-            name={"add-connect-wallet"}
+            name="add-connect-wallet"
             component={(props: any) => <AddConnectWalletMenu {...props} />}
           />
           <NavStackScreen
-            name={"import-secret-key"}
+            name="create-wallet"
+            component={(props: any) => <CreateMenu {...props} />}
+          />
+          <NavStackScreen
+            name="import-wallet"
+            component={(props: any) => <ImportMenu {...props} />}
+          />
+          <NavStackScreen
+            name="import-from-mnemonic"
+            component={(props: any) => <ImportMnemonic {...props} />}
+          />
+          <NavStackScreen
+            name="import-from-secret-key"
             component={(props: any) => <ImportSecretKey {...props} />}
           />
           <NavStackScreen
-            name={"your-account"}
+            name="your-account"
             component={(props: any) => <YourAccount {...props} />}
           />
           <NavStackScreen
-            name={"preferences"}
+            name="preferences"
             component={(props: any) => <Preferences {...props} />}
           />
           <NavStackScreen
-            name={"preferences-auto-lock"}
+            name="preferences-auto-lock"
             component={(props: any) => <PreferencesAutoLock {...props} />}
           />
           <NavStackScreen
-            name={"preferences-trusted-sites"}
+            name="preferences-trusted-sites"
             component={(props: any) => <PreferencesTrustedSites {...props} />}
           />
           <NavStackScreen
-            name={"preferences-solana"}
+            name="preferences-solana"
             component={(props: any) => <PreferencesSolana {...props} />}
           />
           <NavStackScreen
-            name={"preferences-ethereum"}
+            name="preferences-ethereum"
             component={(props: any) => <PreferencesEthereum {...props} />}
           />
           <NavStackScreen
-            name={"preferences-solana-rpc-connection"}
+            name="preferences-solana-rpc-connection"
             component={(props: any) => (
               <PreferencesSolanaConnection {...props} />
             )}
           />
           <NavStackScreen
-            name={"preferences-solana-edit-rpc-connection"}
+            name="preferences-solana-edit-rpc-connection"
             component={(props: any) => (
               <PreferenceSolanaCustomRpcUrl {...props} />
             )}
           />
           <NavStackScreen
-            name={"preferences-solana-commitment"}
+            name="preferences-solana-commitment"
             component={(props: any) => (
               <PreferencesSolanaCommitment {...props} />
             )}
           />
           <NavStackScreen
-            name={"preferences-solana-explorer"}
+            name="preferences-solana-explorer"
             component={(props: any) => <PreferencesSolanaExplorer {...props} />}
           />
           <NavStackScreen
-            name={"preferences-ethereum-rpc-connection"}
+            name="preferences-ethereum-rpc-connection"
             component={(props: any) => (
               <PreferencesEthereumConnection {...props} />
             )}
           />
           <NavStackScreen
-            name={"preferences-ethereum-edit-rpc-connection"}
+            name="preferences-ethereum-edit-rpc-connection"
             component={(props: any) => (
               <PreferenceEthereumCustomRpcUrl {...props} />
             )}
           />
           <NavStackScreen
-            name={"change-password"}
+            name="change-password"
             component={(props: any) => <ChangePassword {...props} />}
           />
           <NavStackScreen
-            name={"reset"}
+            name="reset"
             component={(props: any) => <ResetWelcome {...props} />}
           />
           <NavStackScreen
-            name={"edit-wallets"}
+            name="edit-wallets"
             component={(props: any) => <AllWalletsList {...props} />}
           />
           <NavStackScreen
-            name={"edit-wallets-add-connect-preview"}
+            name="edit-wallets-add-connect-preview"
             component={(props: any) => <AddConnectPreview {...props} />}
           />
           <NavStackScreen
-            name={"edit-wallets-wallet-detail"}
+            name="edit-wallets-wallet-detail"
             component={(props: any) => <WalletDetail {...props} />}
           />
           <NavStackScreen
-            name={"edit-wallets-remove"}
+            name="edit-wallets-remove"
             component={(props: any) => <RemoveWallet {...props} />}
           />
           <NavStackScreen
-            name={"edit-wallets-rename"}
+            name="edit-wallets-rename"
             component={(props: any) => <RenameWallet {...props} />}
           />
           <NavStackScreen
-            name={"edit-wallets-blockchain-selector"}
+            name="edit-wallets-blockchain-selector"
             component={(props: any) => (
               <WalletListBlockchainSelector {...props} />
             )}
           />
           <NavStackScreen
-            name={"show-private-key-warning"}
+            name="show-private-key-warning"
             component={(props: any) => <ShowPrivateKeyWarning {...props} />}
           />
           <NavStackScreen
-            name={"show-private-key"}
+            name="show-private-key"
             component={(props: any) => <ShowPrivateKey {...props} />}
           />
           <NavStackScreen
-            name={"show-secret-phrase-warning"}
+            name="show-secret-phrase-warning"
             component={(props: any) => <ShowRecoveryPhraseWarning {...props} />}
           />
           <NavStackScreen
-            name={"show-secret-phrase"}
+            name="show-secret-phrase"
             component={(props: any) => <ShowRecoveryPhrase {...props} />}
           />
           <NavStackScreen
-            name={"reset-warning"}
+            name="reset-warning"
             component={(props: any) => <ResetWarning {...props} />}
           />
           <NavStackScreen
-            name={"logout"}
+            name="logout"
             component={(props: any) => <Logout {...props} />}
           />
           <NavStackScreen
-            name={"xnfts"}
+            name="xnfts"
             component={(props: any) => <XnftSettings {...props} />}
           />
           <NavStackScreen
-            name={"xnfts-detail"}
+            name="xnfts-detail"
             component={(props: any) => <XnftDetail {...props} />}
           />
           <NavStackScreen
-            name={"contacts"}
+            name="contacts"
             component={(props: any) => <Contacts {...props} />}
           />
-
           <NavStackScreen
-            name={"requests"}
+            name="contact-requests"
+            component={(props: any) => <ContactRequests {...props} />}
+          />
+          <NavStackScreen
+            name="contact-requests-sent"
+            component={(props: any) => <ContactRequests {...props} />}
+          />
+          <NavStackScreen
+            name="requests"
             component={(props: any) => <Requests {...props} />}
           />
           <NavStackScreen
-            name={"about-backpack"}
+            name="about-backpack"
             component={(props: any) => <AboutBackpack {...props} />}
           />
         </NavStackEphemeral>

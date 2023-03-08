@@ -27,8 +27,9 @@ update_permissions:
   - role: one_xnft
     permission:
       columns:
+        - username
         - eligible_count
         - minted_count
         - tx_list
       filter: {}
-      check: null
+      check: {}

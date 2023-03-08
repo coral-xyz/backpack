@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { updateSession, createSession, getSession } from "./db";
 import { BlockChain, CreateSessionRequest } from "./zodTypes";
-import { validatePulicKey } from "./validate";
+import { validatePublicKey } from "./validate";
 import stripe from "stripe";
 
 const STRIPE_PROD_URL = "https://api.stripe.com/v1";
@@ -44,7 +44,7 @@ export const registerOnRampHandlers = (app: Hono) => {
       return c.json({ message: "invalid input" }, 411);
     }
 
-    if (!validatePulicKey(publicKey, chain)) {
+    if (!validatePublicKey(publicKey, chain)) {
       return c.json({ message: "invalid public key" }, 411);
     }
     try {

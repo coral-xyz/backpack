@@ -1,3 +1,8 @@
+import type { Blockchain } from "../types";
+
+import type { BarterOffers } from "./index";
+import type { BarterState } from "./toServer";
+
 export interface InboxDb {
   id: string;
   last_message?: string;
@@ -9,6 +14,10 @@ export interface InboxDb {
   last_message_client_uuid: string;
   user1_last_read_message_id: boolean;
   user2_last_read_message_id: boolean;
+  public_keys: {
+    blockchain: Blockchain;
+    publicKey: string;
+  }[];
 }
 
 export interface EnrichedInboxDb extends InboxDb {
@@ -33,4 +42,11 @@ export interface Friendship {
   requested: boolean;
   remoteRequested: boolean;
   spam: boolean;
+}
+
+export interface BarterResponse {
+  id: number;
+  state: BarterState;
+  localOffers: BarterOffers;
+  remoteOffers: BarterOffers;
 }

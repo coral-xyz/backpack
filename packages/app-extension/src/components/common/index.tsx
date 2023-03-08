@@ -4,6 +4,7 @@ import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Box, Button, Checkbox as _Checkbox, Typography } from "@mui/material";
 import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
+import { useDarkMode } from "@coral-xyz/recoil";
 
 import { TextField } from "../../plugin/Component";
 
@@ -71,6 +72,10 @@ const useStyles = styles((theme: CustomTheme) => ({
     color: `${theme.custom.colors.primaryButton} !important`,
     background: "white",
   },
+  darkCheckboxChecked: {
+    color: `white !important`,
+    background: `${theme.custom.colors.smallTextColor} !important`,
+  },
   subtext: {
     color: theme.custom.colors.subtext,
   },
@@ -97,11 +102,9 @@ export function WalletAddress({ publicKey, name, style, nameStyle }: any) {
       <Typography style={{ ...nameStyle, marginRight: "8px" }}>
         {name}
       </Typography>
-      {publicKey && (
-        <Typography style={{ color: theme.custom.colors.secondary }}>
-          ({walletAddressDisplay(publicKey)})
-        </Typography>
-      )}
+      {publicKey ? <Typography style={{ color: theme.custom.colors.secondary }}>
+        ({walletAddressDisplay(publicKey)})
+      </Typography> : null}
     </div>
   );
 }
@@ -216,6 +219,7 @@ export function Checkbox({
   setChecked?: (value: boolean) => void;
 } & React.ComponentProps<typeof _Checkbox>) {
   const classes = useStyles();
+  const isDark = useDarkMode();
   return (
     <_Checkbox
       disableRipple
@@ -223,7 +227,7 @@ export function Checkbox({
       checked={checked}
       onChange={() => setChecked(!checked)}
       classes={{
-        checked: classes.checkBoxChecked,
+        checked: isDark ? classes.darkCheckboxChecked : classes.checkBoxChecked,
         root: classes.checkBoxRoot,
       }}
       {...checkboxProps}

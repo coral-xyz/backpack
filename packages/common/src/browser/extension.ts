@@ -14,6 +14,7 @@ import {
 import type { Blockchain } from "../types";
 
 import { BrowserRuntimeCommon } from "./common";
+import { UiActionRequestManager } from "./uiActionRequestManager";
 
 //
 // Browser apis that can be used on extension only.
@@ -46,26 +47,30 @@ export class BrowserRuntimeExtension {
     });
   }
 
-  public static async openWindow(options: chrome.windows.CreateData) {
+  static async _openWindow(options: chrome.windows.CreateData) {
+    //
+    // Whenever a new window is opened, we reject all outstanding ui action
+    // requests--e.g., for tx signing--as a way to deal with stale state so
+    // that those promises can properly resolve with the right state,
+    // i.e. user denied the request.
+    //
+    UiActionRequestManager.cancelAllRequests();
+
     return new Promise(async (resolve, reject) => {
       // try to reuse existing popup window
       try {
         const popupWindowId: number | undefined =
           await BrowserRuntimeCommon.getLocalStorage("popupWindowId");
-
         if (popupWindowId) {
           const popupWindow = await chrome?.windows.get(popupWindowId);
-
           if (popupWindow) {
             const tabs = await chrome.tabs.query({ windowId: popupWindowId });
-
             if (tabs.length === 1) {
               const tab = tabs[0];
               const url: string = Array.isArray(options.url)
                 ? options.url[0]!
                 : options.url!;
               const updatedTab = await chrome.tabs.update(tab.id!, { url });
-
               if (updatedTab) {
                 const popupWindow = await chrome?.windows.update(
                   updatedTab.windowId,
@@ -138,7 +143,7 @@ const EXPANDED_HTML = "options.html";
 export async function openLockedPopupWindow(
   origin: string,
   title: string,
-  requestId: number,
+  requestId: string,
   blockchain: Blockchain
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
@@ -149,7 +154,7 @@ export async function openLockedPopupWindow(
 export function openLockedApprovalPopupWindow(
   origin: string,
   title: string,
-  requestId: number,
+  requestId: string,
   blockchain: Blockchain
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
@@ -160,7 +165,7 @@ export function openLockedApprovalPopupWindow(
 export async function openApprovalPopupWindow(
   origin: string,
   title: string,
-  requestId: number,
+  requestId: string,
   blockchain: Blockchain
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
@@ -171,7 +176,7 @@ export async function openApprovalPopupWindow(
 export async function openApproveTransactionPopupWindow(
   origin: string,
   title: string,
-  requestId: number,
+  requestId: string,
   tx: string,
   walletAddress: string,
   blockchain: Blockchain
@@ -184,7 +189,7 @@ export async function openApproveTransactionPopupWindow(
 export async function openApproveAllTransactionsPopupWindow(
   origin: string,
   title: string,
-  requestId: number,
+  requestId: string,
   txs: Array<string>,
   walletAddress: string,
   blockchain: Blockchain
@@ -198,7 +203,7 @@ export async function openApproveAllTransactionsPopupWindow(
 export async function openApproveMessagePopupWindow(
   origin: string,
   title: string,
-  requestId: number,
+  requestId: string,
   message: string,
   walletAddress: string,
   blockchain: Blockchain
@@ -226,7 +231,7 @@ export async function openPopupWindow(
 
   return new Promise((resolve) => {
     BrowserRuntimeExtension.getLastFocusedWindow().then((window: any) => {
-      BrowserRuntimeExtension.openWindow({
+      BrowserRuntimeExtension._openWindow({
         url: `${url}`,
         type: "popup",
         width: EXTENSION_WIDTH,
@@ -263,12 +268,12 @@ export function openAddUserAccount() {
 
 export function openConnectHardware(
   blockchain: Blockchain,
-  createKeyring = false,
+  action: "create" | "derive" | "import" | "search",
   publicKey?: string
 ) {
-  const url = `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}&blockchain=${blockchain}${
-    createKeyring ? `&create=true` : ``
-  }${publicKey ? "&publicKey=" + publicKey : ""}`;
+  const url = `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}&blockchain=${blockchain}&action=${action}${
+    publicKey ? "&publicKey=" + publicKey : ""
+  }`;
   BrowserRuntimeExtension.openTab({
     url: chrome.runtime.getURL(url),
   });

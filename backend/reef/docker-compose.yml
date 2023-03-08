@@ -1,8 +1,12 @@
 version: "3.8"
 
+# This is a development config. It is not used in production.
+# The images do not include SHA256 digests to maximize compatibility
+# with local development environments by supporting every achitecture.
+
 services:
   postgres:
-    image: postgres:14-alpine
+    image: postgres:15.0-alpine
     restart: unless-stopped
     ports:
       - 4446:5432
@@ -20,7 +24,7 @@ services:
       POSTGRES_USER: user
 
   hasura:
-    image: hasura/graphql-engine:v2.16.0.cli-migrations-v3
+    image: hasura/graphql-engine:v2.18.0.cli-migrations-v3
     ports:
       - 8112:8080
     depends_on:
@@ -31,11 +35,10 @@ services:
     restart: always
     environment:
       HASURA_GRAPHQL_CORS_DOMAIN: "*"
-      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://user:pass@postgres/reef_dev
       HASURA_GRAPHQL_DATABASE_URL: postgres://user:pass@postgres/reef_dev
+      READONLY_DATABASE_URL: postgres://user:pass@postgres/reef_dev
       HASURA_GRAPHQL_DEV_MODE: "true"
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
-      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anon
       HASURA_GRAPHQL_JWT_SECRET: '{ "type": "RS256", "key": "-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAylHKUmdK1oOl/LqeoYNY\nH9PUR9+cJYKG0XlCLdk47svWDpJA0BKPHq0GfJqPZxTFUOAgnN7Rq2ho1mujsMmy\nq2IENXU1Il7K4tY9Skg8DiWMQGZcS8EycWrfVGPNpMXp+pfUFs4ZtXlPj4lHydVU\ndvyAaTw1bJ7jNZbMzEoeWkAJiwqgJTW715C+DFErczMR1Fu6CE1lwLRnpLejWc1J\n54KtQ8FSKossO7JBvwJqpT/j5jXiO2c852VwygjzO+3mTLUPXjYZC9X3KjZqbE0s\nkAoHoZ+Zc+eHI4mVbyK890fX8IDJ3riUWBrbJvkeXag9WjGifxf0o1tXwO/f0YCk\nFbtDJNhesaOgjuU+4KMdpULWolNy5tRbl50ypkqqwGVtJXL4VF4tb3Zj9BLbogn9\nLacFOJoCpINiYNm1sGpneBajODHWyLnlNL/jR0iygzEI6wjXv9A5dhBuTAs9SNE0\nXV9pgJzgXrPPy5y9SOIDSYrG3ymYjAD0zLGwPXo1pvN0G50fZMk42sniq1N5ghsd\ntfY6L8Z+mn6KNkJzg1vQSc6U3EtOlp432kyhPpDaqZ86Mg0jG17HidY/G8OUsTXh\n+L47q5usE/jDeyIqEmQAqa6ltDx4qTZhZOaB8kzxqoHAT2Xx5ZynnPS0UHk53PDD\nwmA77DSVcvQNDJ62XkSAPiMCAwEAAQ==\n-----END PUBLIC KEY-----" }'

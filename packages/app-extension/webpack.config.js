@@ -7,9 +7,67 @@ const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const fs = require("fs");
 
 const EXTENSION_NAME =
   process.env.NODE_ENV === "development" ? "(DEV) Backpack" : "Backpack";
+
+const isDevelopment = process.env.NODE_ENV === "development";
+const appDirectory = path.resolve(__dirname);
+
+// This is needed for webpack to compile JavaScript.
+// Many OSS React Native packages are not compiled to ES5 before being
+// published. If you depend on uncompiled packages they may cause webpack build
+// errors. To fix this webpack can be configured to compile to the necessary
+// `node_module`.
+const babelLoaderConfiguration = {
+  test: /\.js$/,
+  // Add every directory that needs to be compiled by Babel during the build.
+  include: [
+    // path.resolve(appDirectory, "index.web.js"),
+    // path.resolve(appDirectory, "src"),
+    path.resolve(appDirectory, "node_modules/react-native-uncompiled"),
+  ],
+  use: {
+    loader: "babel-loader",
+    options: {
+      cacheDirectory: true,
+      // The 'metro-react-native-babel-preset' preset is recommended to match React Native's packager
+      presets: ["module:metro-react-native-babel-preset"],
+      // Re-write paths to import only the modules needed by the app
+      plugins: ["react-native-web"],
+    },
+  },
+};
+
+const swcLoaderConfiguration = {
+  test: [".jsx", ".js", ".tsx", ".ts"].map((ext) => new RegExp(`${ext}$`)),
+  exclude: /node_modules/,
+  use: {
+    loader: "swc-loader",
+    options: {
+      // parseMap: true, // required when using with babel-loader
+      env: {
+        targets: require("./package.json").browserslist,
+      },
+      sourceMap: isDevelopment,
+      jsc: {
+        target: "es2022",
+        parser: {
+          syntax: "typescript",
+          tsx: true,
+          dynamicImport: true,
+        },
+        transform: {
+          react: {
+            development: isDevelopment,
+            refresh: isDevelopment,
+          },
+        },
+      },
+    },
+  },
+};
 
 const fileExtensions = [
   "eot",
@@ -28,11 +86,22 @@ const {
   dir,
   plugins = [],
   ...extras
-} = process.env.NODE_ENV === "development"
+} = isDevelopment
   ? {
       dir: "dev",
       devServer: {
         // watchFiles: ['src/**/*', 'webpack.config.js'],
+        host: "localhost",
+        port: 9997,
+        server: fs.existsSync("localhost.pem")
+          ? {
+              type: "https",
+              options: {
+                key: "localhost-key.pem",
+                cert: "localhost.pem",
+              },
+            }
+          : {},
         compress: false,
         static: {
           directory: path.join(__dirname, "../dev"),
@@ -112,39 +181,23 @@ const options = {
           name: "assets/[name].[ext]",
         },
       },
-      {
-        test: /\.[jt]sx?$/,
-        exclude: /node_modules/,
-        use: {
-          loader: require.resolve("swc-loader"),
-          options: {
-            env: {
-              targets: require("./package.json").browserslist,
-            },
-            sourceMap: process.env.NODE_ENV === "development",
-            jsc: {
-              target: "es2022",
-              parser: {
-                syntax: "typescript",
-                tsx: true,
-                dynamicImport: true,
-              },
-              transform: {
-                react: {
-                  development: process.env.NODE_ENV === "development",
-                  refresh: process.env.NODE_ENV === "development",
-                },
-              },
-            },
-          },
-        },
-      },
+      babelLoaderConfiguration,
+      swcLoaderConfiguration,
     ],
   },
   resolve: {
-    extensions: fileExtensions
-      .map((extension) => "." + extension)
-      .concat([".js", ".jsx", ".ts", ".tsx", ".css"]),
+    alias: {
+      "react-native$": "react-native-web",
+    },
+    // Add support for web-based extensions so we can share code between mobile/extension
+    extensions: [
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ...fileExtensions.map((e) => `.${e}`),
+      ...[".js", ".jsx", ".ts", ".tsx", ".css"],
+    ],
     fallback: {
       buffer: require.resolve("buffer/"), // trailing slash is intentional
       crypto: require.resolve("crypto-browserify"),

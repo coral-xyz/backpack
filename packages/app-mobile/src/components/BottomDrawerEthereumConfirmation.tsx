@@ -18,9 +18,9 @@ import {
   Sending,
   Header,
   Container,
-} from "@components/BottomDrawerCards";
-import { TransactionData } from "@components/TransactionData";
-import { PrimaryButton, TokenAmountHeader, Margin } from "@components/index";
+} from "~components/BottomDrawerCards";
+import { TransactionData } from "~components/TransactionData";
+import { PrimaryButton, TokenAmountHeader, Margin } from "~components/index";
 
 const logger = getLogger("send-ethereum-confirmation-card");
 const { base58: bs58 } = ethers.utils;

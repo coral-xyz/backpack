@@ -66,3 +66,7 @@ body {
   content: attr(placeholder);
   opacity: 0.2;
 }
+
+[contenteditable]:focus {
+  outline: 0px solid transparent;
+}

@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Blockchain } from "@coral-xyz/common";
 import { SecondaryButton } from "@coral-xyz/react-common";
 import {
-  useActiveWallets,
   useAllWalletsDisplayed,
   useBlockchainLogo,
   useWalletName,
@@ -14,7 +13,6 @@ import { IconButton, Modal, Typography } from "@mui/material";
 
 import { TextField, walletAddressDisplay } from "../../../common";
 import { CloseButton, useDrawerContext } from "../../../common/Layout/Drawer";
-import { useNavStack } from "../../../common/Layout/NavStack";
 import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 
 export function Deposit({ ...props }: any) {
@@ -32,15 +30,9 @@ export function Deposit({ ...props }: any) {
 }
 
 function DepositMultiWallet() {
-  const nav = useNavStack();
   const { close } = useDrawerContext();
   const activeWallets = useAllWalletsDisplayed();
 
-  useEffect(() => {
-    nav.setStyle({
-      borderBottom: "none",
-    });
-  }, []);
   return (
     <div
       style={{
@@ -464,12 +456,8 @@ export function _Deposit({
       </div>
       <div>
         <Typography className={classes.subtext}>
-          {blockchain === Blockchain.SOLANA && (
-            <>This address can only receive SOL and SPL tokens on Solana.</>
-          )}
-          {blockchain === Blockchain.ETHEREUM && (
-            <>This address can only receive ETH and ERC20 tokens on Ethereum.</>
-          )}
+          {blockchain === Blockchain.SOLANA ? <>This address can only receive SOL and SPL tokens on Solana.</> : null}
+          {blockchain === Blockchain.ETHEREUM ? <>This address can only receive ETH and ERC20 tokens on Ethereum.</> : null}
         </Typography>
       </div>
     </div>

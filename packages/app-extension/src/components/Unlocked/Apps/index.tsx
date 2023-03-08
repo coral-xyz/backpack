@@ -1,5 +1,9 @@
-import { Blockchain } from "@coral-xyz/common";
-import { EmptyState, ProxyImage } from "@coral-xyz/react-common";
+import { Blockchain, XNFT_GG_LINK } from "@coral-xyz/common";
+import {
+  EmptyState,
+  ProxyImage,
+  useBreakpoints,
+} from "@coral-xyz/react-common";
 import {
   filteredPlugins,
   isAggregateWallets,
@@ -91,20 +95,20 @@ function PluginGrid() {
       return (
         <EmptyState
           icon={(props: any) => <BlockIcon {...props} />}
-          title={"Ethereum xNFTs not yet supported"}
-          subtitle={"Switch to Solana to use xNFTs"}
-          buttonText={""}
+          title="Ethereum xNFTs not yet supported"
+          subtitle="Switch to Solana to use xNFTs"
+          buttonText=""
           onClick={() => {}}
           header={
             // Only show the wallet switcher if we are in single wallet mode.
-            !_isAggregateWallets && (
+            !_isAggregateWallets ? (
               <_BalancesTableHead
                 blockchain={wallet.blockchain}
                 wallet={wallet}
-                showContent={true}
+                showContent
                 setShowContent={() => {}}
               />
-            )
+            ) : null
           }
         />
       );
@@ -122,19 +126,19 @@ function PluginGrid() {
     return (
       <EmptyState
         icon={(props: any) => <BlockIcon {...props} />}
-        title={"No xNFTs"}
-        subtitle={"Get started with your first xNFT"}
-        buttonText={"Browse xNFTs"}
-        onClick={() => window.open("https://xnft.gg")}
+        title="No xNFTs"
+        subtitle="Get started with your first xNFT"
+        buttonText="Browse xNFTs"
+        onClick={() => window.open(XNFT_GG_LINK)}
         header={
-          !_isAggregateWallets && (
+          !_isAggregateWallets ? (
             <_BalancesTableHead
               blockchain={activeWallet.blockchain}
               wallet={activeWallet}
-              showContent={true}
+              showContent
               setShowContent={() => {}}
             />
-          )
+          ) : null
         }
       />
     );
@@ -199,17 +203,18 @@ function _WalletXnftGrid({
   plugins: Array<any>;
 }) {
   const theme = useCustomTheme();
+  const { isXs } = useBreakpoints();
   const openPlugin = useOpenPlugin();
   const { showContent } = useBalancesContext();
   const onClickPlugin = (p: any) => {
     openPlugin(p.install.account.xnft.toString());
   };
+  const iconsPerRow = isXs ? 4 : 6;
   return (
     <>
       <BalancesTableHead wallet={wallet} />
-      {showContent && (
-        <div
-          style={{
+      {showContent ? <div
+        style={{
             paddingTop: "8px",
             paddingBottom: "18px",
             paddingLeft: "10px",
@@ -219,16 +224,16 @@ function _WalletXnftGrid({
             borderBottomRightRadius: "10px",
           }}
         >
-          <Grid container>
-            {isLoading
-              ? Array.from(Array(4).keys()).map((_, idx) => {
+        <Grid container>
+          {isLoading
+              ? Array.from(Array(iconsPerRow).keys()).map((_, idx) => {
                   return (
                     <Grid
                       item
                       key={idx}
-                      xs={3}
+                      xs={isXs ? 3 : 2}
                       style={{
-                        marginTop: idx >= 4 ? "24px" : 0,
+                        marginTop: idx >= iconsPerRow ? "24px" : 0,
                       }}
                     >
                       <SkeletonAppIcon />
@@ -240,18 +245,17 @@ function _WalletXnftGrid({
                     <Grid
                       item
                       key={p.url}
-                      xs={3}
+                      xs={isXs ? 3 : 2}
                       style={{
-                        marginTop: idx >= 4 ? "24px" : 0,
+                        marginTop: idx >= iconsPerRow ? "24px" : 0,
                       }}
                     >
                       <PluginIcon plugin={p} onClick={() => onClickPlugin(p)} />
                     </Grid>
                   );
                 })}
-          </Grid>
-        </div>
-      )}
+        </Grid>
+      </div> : null}
     </>
   );
 }

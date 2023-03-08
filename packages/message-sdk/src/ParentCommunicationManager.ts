@@ -87,7 +87,12 @@ export class ParentCommunicationManager {
     this.nativePop?.();
   }
 
-  push(props: { title: string; componentId: string; componentProps: any }) {
+  push(props: {
+    title: string;
+    componentId: string;
+    componentProps: any;
+    pushAboveRoot?: boolean;
+  }) {
     if (IFRAME_HOSTED) {
       window.parent.postMessage(
         {

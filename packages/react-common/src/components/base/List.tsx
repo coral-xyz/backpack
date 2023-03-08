@@ -1,4 +1,5 @@
-import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
+import { type MouseEvent, useCallback } from "react";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, ChevronRight } from "@mui/icons-material";
 import {
   Divider,
@@ -61,10 +62,21 @@ export function ListItem({
   detail,
   inverted,
   classes,
+  allowOnclickPropagation,
 }: any) {
   const _classes = useStyles();
   const theme = useCustomTheme();
   const buttonProps = button ? { disableRipple: true } : {};
+  const handleClick = useCallback(
+    (ev: MouseEvent<HTMLDivElement>) => {
+      if (!allowOnclickPropagation) {
+        ev.preventDefault();
+      }
+      onClick?.(ev);
+    },
+    [onClick]
+  );
+
   return (
     <>
       <MuiListItem
@@ -76,7 +88,7 @@ export function ListItem({
             ? _classes.settingsContentListItemInverted
             : _classes.settingsContentListItem
         }
-        onClick={onClick}
+        onClick={handleClick}
         style={{
           ...isFirstLastListItemStyle(isFirst, isLast),
           ...style,

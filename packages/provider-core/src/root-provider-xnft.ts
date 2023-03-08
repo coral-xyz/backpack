@@ -1,4 +1,4 @@
-import type { Event } from "@coral-xyz/common";
+import type { Event, XnftMetadata } from "@coral-xyz/common";
 import {
   Blockchain,
   CHANNEL_PLUGIN_NOTIFICATION,
@@ -17,7 +17,6 @@ import {
   PLUGIN_RPC_METHOD_POP_OUT,
   PLUGIN_RPC_METHOD_WINDOW_OPEN,
 } from "@coral-xyz/common";
-import type { XnftMetadata } from "@coral-xyz/common-public";
 import type {
   Commitment,
   SendOptions,
@@ -31,6 +30,7 @@ import type {
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 import type { ChainedRequestManager } from "./chained-request-manager";
 import { RequestManager } from "./request-manager";
+import { isValidEventOrigin } from ".";
 
 const logger = getLogger("provider-xnft-injection");
 
@@ -121,6 +121,13 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
       );
     }
 
+    if (this.#cachedNotifications[PLUGIN_NOTIFICATION_UPDATE_METADATA]) {
+      iframeEl.contentWindow?.postMessage(
+        this.#cachedNotifications[PLUGIN_NOTIFICATION_UPDATE_METADATA],
+        "*"
+      );
+    }
+
     this.#requestManager.addChildIframe({
       element: iframeEl,
       url,
@@ -148,6 +155,7 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
   // Notifications from the extension UI -> plugin.
   //
   async #handleNotifications(event: Event) {
+    if (!isValidEventOrigin(event)) return;
     if (event.data.type !== CHANNEL_PLUGIN_NOTIFICATION) return;
 
     // Send RPC message to all child iframes

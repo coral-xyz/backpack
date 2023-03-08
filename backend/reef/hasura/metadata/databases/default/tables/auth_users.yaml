@@ -81,6 +81,7 @@ select_permissions:
   - role: auth_worker
     permission:
       columns:
+        - created_at
         - id
         - username
       filter: {}
@@ -91,8 +92,10 @@ select_permissions:
         - created_at
         - id
         - is_internal
+        - referrer_id
         - username
       filter: {}
+      allow_aggregations: true
   - role: public_avatar
     permission:
       columns:

@@ -23,6 +23,12 @@ export const xnftPreferences = atom<XnftPreferenceStore | null>({
           pushNotifications: true,
           mediaPermissions: false,
         },
+        // And for the Dropzone xNFT
+        CVkbt7dscJdjAJFF2uKrtin6ve9M8DA4gsUccAjePUHH: {
+          disabled: false,
+          pushNotifications: true,
+          mediaPermissions: false,
+        },
         ...(response ?? null),
       };
 

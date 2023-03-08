@@ -50,8 +50,13 @@ export const hasNotificationAccess = async (
 
   // if no preferences found.
   if (!response.auth_xnft_preferences?.[0]) {
-    // allow notifications by default for ONE xNFT
-    if (xnftId === "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4") {
+    // allow notifications by default for ONE and Dropzone xNFTs
+    if (
+      [
+        "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4",
+        "CVkbt7dscJdjAJFF2uKrtin6ve9M8DA4gsUccAjePUHH",
+      ].includes(xnftId)
+    ) {
       return true;
     }
   }

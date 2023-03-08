@@ -1,6 +1,10 @@
 import type { SubscriptionType } from "@coral-xyz/common";
 
 import { getDb } from "../db";
+import { bulkGetImages } from "../db/images";
+
+import { LocalImageManager } from "./LocalImageManager";
+import { refreshUsers } from "./users";
 
 export class RecoilSync {
   private static instance: RecoilSync;
@@ -13,7 +17,7 @@ export class RecoilSync {
     return this.instance;
   }
 
-  getActiveChats(uuid: string) {
+  async getActiveChats(uuid: string) {
     return getDb(uuid)
       .inbox.where({ blocked: 0 })
       .filter(
@@ -36,6 +40,38 @@ export class RecoilSync {
 
   getAllChats(uuid: string) {
     return getDb(uuid).messages.toArray();
+  }
+
+  async refreshUsersMetadata(uuid: string) {
+    const users = await getDb(uuid).users.toArray();
+    const newUsersMetadata = await refreshUsers(
+      uuid,
+      users.map((x) => x.uuid),
+      true
+    );
+
+    const allImageData = await bulkGetImages("images");
+
+    const sortedUsersMetadata = newUsersMetadata?.sort((a) => {
+      if (allImageData.includes(`image-${a.image}`)) {
+        return 1;
+      }
+      return -1;
+    });
+
+    if (sortedUsersMetadata) {
+      LocalImageManager.getInstance().bulkAddToQueue(
+        sortedUsersMetadata.map((x) => {
+          return {
+            image: x.image,
+          };
+        })
+      );
+    }
+  }
+
+  async sleep(timer) {
+    await new Promise((resolve) => setTimeout(resolve, timer * 1000));
   }
 
   getChatsForRoom(uuid: string, room: string, type: SubscriptionType) {

@@ -14,21 +14,22 @@ import {
 import { Apps } from "@mui/icons-material";
 import { useRecoilValueLoadable } from "recoil";
 
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 
 export function XnftSettings() {
-  const nav = useNavStack();
+  const nav = useNavigation();
   // TODO: Aggregate view.
-  const { publicKey } = useActiveSolanaWallet();
+  const activeSolanaWallet = useActiveSolanaWallet();
   const connectionUrl = useSolanaConnectionUrl();
+  const publicKey = activeSolanaWallet?.publicKey;
   const { contents, state } = useRecoilValueLoadable(
     filteredPlugins({ publicKey, connectionUrl })
   );
 
   useEffect(() => {
-    nav.setTitle("xNFTs");
-  }, [nav.setTitle]);
+    nav.setOptions({ headerTitle: "xNFTs" });
+  }, [nav.setOptions]);
 
   if (state !== "hasValue" && state === "loading") {
     return (
@@ -45,7 +46,7 @@ export function XnftSettings() {
     );
   }
 
-  const xnfts = contents;
+  const xnfts = contents || [];
   const settingsMenu = {} as any;
   xnfts.forEach((xnft: any) => {
     const pubkeyStr = xnft.install.publicKey.toString();
@@ -73,12 +74,12 @@ export function XnftSettings() {
   return xnfts.length === 0 ? (
     <EmptyState
       icon={(props: any) => <Apps {...props} />}
-      title={"No xNFTs"}
-      subtitle={"Get started by adding your first xNFT"}
+      title="No xNFTs"
+      subtitle="Get started by adding your first xNFT"
       contentStyle={{
         marginBottom: "64px", // Tab height offset.
       }}
-      buttonText={"Browse the xNFT Library"}
+      buttonText="Browse the xNFT Library"
       onClick={() => window.open(XNFT_GG_LINK, "_blank")}
     />
   ) : (

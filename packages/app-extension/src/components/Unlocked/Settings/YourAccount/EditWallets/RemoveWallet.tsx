@@ -16,7 +16,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 
 import { WithMiniDrawer } from "../../../../common/Layout/Drawer";
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 
 export const RemoveWallet: React.FC<{
   blockchain: Blockchain;
@@ -24,13 +24,13 @@ export const RemoveWallet: React.FC<{
   type: string;
 }> = ({ blockchain, publicKey, type }) => {
   const theme = useCustomTheme();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const background = useBackgroundClient();
   const [showSuccess, setShowSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    nav.setTitle("Remove Wallet");
+    nav.setOptions({ headerTitle: "Remove Wallet" });
   }, [nav]);
 
   const onRemove = async () => {
@@ -128,12 +128,12 @@ export const RemoveWallet: React.FC<{
           }}
         >
           <SecondaryButton
-            label={"Cancel"}
+            label="Cancel"
             style={{ marginRight: "8px" }}
             onClick={() => nav.pop()}
           />
           <PrimaryButton
-            label={"Remove"}
+            label="Remove"
             style={{ backgroundColor: theme.custom.colors.negative }}
             onClick={onRemove}
             disabled={loading}
@@ -198,7 +198,7 @@ export const RemoveWallet: React.FC<{
                 Wallet removed
               </Typography>
               <PrimaryButton
-                label={"Done"}
+                label="Done"
                 onClick={() => {
                   nav.pop(2);
                 }}

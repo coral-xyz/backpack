@@ -1,10 +1,5 @@
-import type {
-  CustomTheme} from "@coral-xyz/themes";
-import {
-  HOVER_OPACITY,
-  styles,
-  useCustomTheme,
-} from "@coral-xyz/themes";
+import type { CustomTheme } from "@coral-xyz/themes";
+import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 
 import { PrimaryButton } from "./PrimaryButton";
 

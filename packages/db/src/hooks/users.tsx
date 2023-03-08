@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import type { UserMetadata } from "@coral-xyz/common";
 import { useLiveQuery } from "dexie-react-hooks";
 

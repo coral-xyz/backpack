@@ -6,7 +6,6 @@ import { TextInput } from "@coral-xyz/react-common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import {
   blockchainBalancesSorted,
-  useActiveWallets,
   useAllWalletsDisplayed,
   useBlockchainConnectionUrl,
   useLoader,
@@ -24,7 +23,7 @@ import {
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
-const useStyles = styles((theme) => ({
+const useStyles = styles(() => ({
   searchField: {
     marginLeft: "12px",
     marginRight: "12px",
@@ -57,7 +56,7 @@ export function SearchableTokenTables({
     <>
       <TextInput
         className={classes.searchField}
-        placeholder={"Search"}
+        placeholder="Search"
         value={searchFilter}
         setValue={(e) => setSearchFilter(e.target.value)}
         inputProps={{
@@ -90,7 +89,7 @@ export function SearchableTokenTable({
     <>
       <TextInput
         className={classes.searchField}
-        placeholder={"Search"}
+        placeholder="Search"
         value={searchFilter}
         setValue={(e) => setSearchFilter(e.target.value)}
         inputProps={{
@@ -160,16 +159,18 @@ export function WalletTokenTable({
 }) {
   const blockchain = wallet.blockchain;
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
+  const loader = useLoader(
+    blockchainBalancesSorted({
+      publicKey: wallet.publicKey.toString(),
+      blockchain,
+    }),
+    [],
+    [wallet.publicKey, connectionUrl]
+  );
+
   const [_tokenAccounts, , isLoading] = tokenAccounts
     ? [tokenAccounts, "hasValue"]
-    : useLoader(
-        blockchainBalancesSorted({
-          publicKey: wallet.publicKey.toString(),
-          blockchain,
-        }),
-        [],
-        [wallet.publicKey, connectionUrl]
-      );
+    : loader;
 
   const [search, setSearch] = useState(searchFilter);
 
@@ -336,7 +337,7 @@ export function TokenRow({
           title: token.name,
           subtitle,
           usdValue: token.usdBalance,
-          percentChange: token.recentUsdBalanceChange,
+          balanceChange: token.recentUsdBalanceChange,
         }}
       />
     </BalancesTableRow>

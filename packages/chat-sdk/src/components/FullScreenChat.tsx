@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import Dropzone from "react-dropzone";
+import { useDropzone } from "react-dropzone";
 import type { EnrichedMessageWithMetadata } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { fetchMoreChatsFor, Loading } from "@coral-xyz/react-common";
+import { fetchMoreChatsFor } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Loader } from "@giphy/react-components";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import { CircularProgress } from "@mui/material";
+import FileUploadIcon from "@mui/icons-material/FileUploadRounded";
+import { CircularProgress, Typography } from "@mui/material";
 
+import { MessagePluginRenderer } from "../MessagePluginRenderer";
 import { base64ToArrayBuffer } from "../utils/imageUploadUtils";
 
 import { Banner } from "./Banner";
@@ -26,18 +27,35 @@ export const FullScreenChat = ({
   setShowJumpToBottom,
   localUnreadCount,
 }) => {
-  const { loading, chats, userId, roomId, type, nftMint, publicKey } =
-    useChatContext();
+  const {
+    loading,
+    chats,
+    userId,
+    roomId,
+    type,
+    nftMint,
+    publicKey,
+    selectedFile,
+    setSelectedFile,
+    uploadingFile,
+    setUploadingFile,
+    selectedMediaKind,
+    setSelectedMediaKind,
+    uploadedImageUri,
+    setUploadedImageUri,
+  } = useChatContext();
   const [autoScroll, setAutoScroll] = useState(true);
   const theme = useCustomTheme();
   const existingMessagesRef = useRef<EnrichedMessageWithMetadata[]>([]);
   const [fetchingMoreChats, setFetchingMoreChats] = useState(false);
-  const [selectedMediaKind, setSelectedMediaKind] = useState<"image" | "video">(
-    "image"
-  );
-  const [selectedFile, setSelectedFile] = useState<any>(null);
-  const [uploadingFile, setUploadingFile] = useState(false);
-  const [uploadedImageUri, setUploadedImageUri] = useState("");
+  const [pluginMenuOpen, setPluginMenuOpen] = useState(false);
+
+  const { getRootProps, getInputProps, isDragAccept } = useDropzone({
+    onDrop: (files) => {
+      const selectedFile = files[0];
+      onMediaSelect(selectedFile);
+    },
+  });
 
   useEffect(() => {
     if (messageRef && autoScroll) {
@@ -95,18 +113,22 @@ export const FullScreenChat = ({
 
   return (
     <div
-      style={{
-        display: "flex",
-        flexFlow: "column",
-        height: "100%",
-        background: theme.custom.colors.bg3,
-      }}
+      {...getRootProps({
+        onClick: (event) => event.stopPropagation(),
+        style: {
+          display: "flex",
+          flexFlow: "column",
+          height: "100%",
+          position: "relative",
+          background: theme.custom.colors.chatFadeGradient,
+        },
+      })}
     >
+      {isDragAccept ? <DropzonePopup /> : null}
       <div
-        id={"messageContainer"}
+        id="messageContainer"
         style={{
-          height: "calc(100% - 40px)",
-          background: theme.custom.colors.bg3,
+          height: "calc(100% - 50px)",
         }}
       >
         <ScrollBarImpl
@@ -158,47 +180,36 @@ export const FullScreenChat = ({
             }
           }}
           setRef={setMessageRef}
-          height={"calc(100% - 40px)"}
+          height="calc(100% - 50px)"
         >
           <div>
-            <Dropzone
-              onDrop={(files) => {
-                const selectedFile = files[0];
-                onMediaSelect(selectedFile);
+            <div
+              style={{
+                paddingBottom: 20,
+                transform: pluginMenuOpen ? "translate(0, -35px)" : undefined,
               }}
             >
-              {({ getRootProps, getInputProps, isFocused }) => (
-                <div
-                  style={{
-                    paddingBottom: 20,
-                  }}
-                  {...getRootProps({
-                    onClick: (event) => event.stopPropagation(),
-                  })}
-                >
-                  <input {...getInputProps()} />
-                  <div>
-                    {fetchingMoreChats && (
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          marginBottom: 3,
-                          marginTop: 3,
-                        }}
-                      >
-                        {" "}
-                        <CircularProgress size={20} />{" "}
-                      </div>
-                    )}
-                    <Banner />
-                    {loading && <MessagesSkeleton />}
-                    {!loading && chats?.length === 0 && <EmptyChat />}
-                    {!loading && chats?.length !== 0 && <ChatMessages />}
+              <input {...getInputProps()} />
+              <div>
+                {fetchingMoreChats ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      marginBottom: 3,
+                      marginTop: 3,
+                    }}
+                  >
+                    {" "}
+                    <CircularProgress size={20} />{" "}
                   </div>
-                </div>
-              )}
-            </Dropzone>
+                ) : null}
+                <Banner />
+                {loading ? <MessagesSkeleton /> : null}
+                {!loading && chats?.length === 0 ? <EmptyChat /> : null}
+                {!loading && chats?.length !== 0 ? <ChatMessages /> : null}
+              </div>
+            </div>
           </div>
         </ScrollBarImpl>
       </div>
@@ -206,7 +217,7 @@ export const FullScreenChat = ({
         style={{
           position: "absolute",
           bottom: 70,
-          width: "100%",
+          right: 0,
           transition: "opacity 0.1s",
           opacity: jumpToBottom ? 1 : 0,
         }}
@@ -247,6 +258,7 @@ export const FullScreenChat = ({
           </div>
         </div>
       </div>
+
       <div style={{ position: "absolute", bottom: 0, width: "100%" }}>
         <SendMessage
           uploadingFile={uploadingFile}
@@ -256,8 +268,57 @@ export const FullScreenChat = ({
           onMediaSelect={onMediaSelect}
           uploadedImageUri={uploadedImageUri}
           selectedMediaKind={selectedMediaKind}
+          pluginMenuOpen={pluginMenuOpen}
+          setPluginMenuOpen={setPluginMenuOpen}
         />
       </div>
     </div>
   );
 };
+
+function DropzonePopup() {
+  const theme = useCustomTheme();
+  return (
+    <div
+      style={{
+        position: "absolute",
+        height: "100%",
+        width: "100%",
+        background: `${theme.custom.colors.nav}85`,
+        backdropFilter: "blur(20px)",
+        zIndex: 50,
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          width: "80%",
+          textAlign: "center",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <FileUploadIcon
+          sx={{
+            color: theme.custom.colors.icon,
+            fontSize: "38px",
+            mb: "8px",
+          }}
+        />
+        <Typography
+          fontSize="24px"
+          sx={{ color: theme.custom.colors.fontColor, mb: "8px" }}
+        >
+          Upload
+        </Typography>
+        <Typography sx={{ color: theme.custom.colors.fontColor3 }}>
+          Drop photos, GIFs, and videos anywhere to upload.
+        </Typography>
+      </div>
+    </div>
+  );
+}

@@ -26,12 +26,12 @@
 - [Installing the Latest Release](#installing-the-latest-release)
 - [Developing Locally](#developing-locally)
   - [Pull the code](#pull-the-code)
-  - [Temporary preliminary steps](temporary-preliminary-steps)
-  - [Install dependencies](install-dependencies)
-  - [Build all packages for production](build-all-packages-for-production)
-  - [Start packages for development](start-packages-for-development)
-  - [Install the development version of the extension](install-the-development-version-of-the-extension)
-  - [Optionally install the built extension](optionally-install-the-built-extension)
+  - [Temporary preliminary steps](#temporary-preliminary-steps)
+  - [Install dependencies](#install-dependencies)
+  - [Build all packages for production](#build-all-packages-for-production)
+  - [Start packages for development](#start-everything-inside-packages-for-development)
+  - [Install the development version of the extension](#install-the-development-version-of-the-extension)
+  - [Optionally install the built extension](#optionally-install-the-built-extension)
 - [License](#license)
 
 ## Installing the Latest Release
@@ -80,7 +80,29 @@ yarn start
 
 Note: In a fresh repo, you should run `yarn build` before `yarn start`.
 
+#### Troubleshooting
+
 _If you run into issues with builds try running `yarn clean` and then start again._
+
+<details>
+  <summary>Seeing `WebSocket connection to 'wss://localhost:9997/ws' failed` error messages in your console?</summary>
+
+You need to install a SSL certificate for localhost as the one provided by [webpack-dev-server is considered invalid](https://github.com/webpack/webpack-dev-server/issues/2957). This step is optional as `react-refresh` will still function without it, but it's a good idea to try and fix this error because otherwise your browser will be making a lot of failed requests and `webpack-dev-server` might not be functioning to its full capabilities.
+
+A relatively simple way of doing this is using [mkcert](https://github.com/FiloSottile/mkcert)
+
+Instructions for how to install a trusted self-signed cert on macOS -
+
+```
+cd packages/app-extension
+brew install mkcert
+mkcert localhost
+mkcert -install
+```
+
+Now the next time you run `yarn start` the errors should no longer appear.
+
+</details>
 
 ### Install the development version of the extension
 

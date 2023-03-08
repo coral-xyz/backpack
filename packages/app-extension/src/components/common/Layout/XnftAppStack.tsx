@@ -9,10 +9,11 @@ import { PluginApp } from "../../Unlocked/Apps/Plugin";
 
 export function XnftAppStack() {
   let { xnftAddress } = useParams();
-  const closePlugin = useClosePlugin();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const navAction = searchParams.get("nav");
   const theme = useCustomTheme();
+  const deepXnftPath = location.pathname.split(xnftAddress ?? "")[1] ?? "";
 
   return (
     <motion.div
@@ -29,15 +30,10 @@ export function XnftAppStack() {
       }}
       variants={XNFT_MOTION}
       initial={navAction === "pop" ? {} : "initial"}
-      animate={"animate"}
+      animate="animate"
       exit={navAction === "push" ? {} : "exit"}
     >
-      <PluginApp
-        xnftAddress={xnftAddress}
-        closePlugin={() => {
-          closePlugin();
-        }}
-      />
+      <PluginApp xnftAddress={xnftAddress} deepXnftPath={deepXnftPath} />
     </motion.div>
   );
 }

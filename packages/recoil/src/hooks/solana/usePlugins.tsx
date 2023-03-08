@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import {
+  externalResourceUri,
   fetchXnft,
   TAB_SET,
   TAB_XNFT,
@@ -9,7 +10,7 @@ import {
 } from "@coral-xyz/common";
 // XXX: this full path is currently necessary as it avoids loading the jsx in
 //      react-xnft-renderer/src/Component.tsx in the background service worker
-import { Plugin } from "@coral-xyz/common/dist/esm/plugin";
+import { Plugin } from "@coral-xyz/common";
 import { PublicKey } from "@solana/web3.js";
 import {
   useRecoilValue,
@@ -18,14 +19,12 @@ import {
 } from "recoil";
 
 import * as atoms from "../../atoms";
-import { xnftUrl } from "../../atoms/solana/xnft";
 import { useConnectionUrls } from "../preferences";
 import {
   useActivePublicKeys,
   useBackgroundClient,
   useConnectionBackgroundClient,
   useNavigationSegue,
-  useUpdateSearchParams,
 } from "../";
 
 import {
@@ -84,28 +83,26 @@ export function useOpenPlugin(): (xnftAddress: string) => void {
 }
 
 export function usePluginUrl(address?: string) {
-  const { provider } = useAnchorContext();
   const [url, setUrl] = useState<string | null>(null);
   const [cached] = useState<Plugin | undefined>(
     PLUGIN_CACHE.get(address ?? "")
   );
-
-  if (cached) return cached.iframeRootUrl;
-
   useEffect(() => {
     (async () => {
-      if (address) {
+      if (address?.toString() === "11111111111111111111111111111111") {
+        setUrl("Simulator");
+      } else if (cached) {
+        setUrl(cached.iframeRootUrl);
+      } else if (address) {
         try {
-          const xnft = await fetchXnft(provider, new PublicKey(address));
-          setUrl(
-            xnftUrl(xnft.metadataBlob.xnft.manifest.entrypoints.default.web)
-          );
+          const xnft = await fetchXnft(new PublicKey(address));
+          setUrl(xnft!.xnft.manifest.entrypoints.default.web);
         } catch (error) {
           console.error(error);
         }
       }
     })();
-  });
+  }, [cached]);
 
   return url;
 }
@@ -137,13 +134,14 @@ export function useFreshPlugin(address?: string): {
     }
     (async () => {
       try {
-        const xnft = await fetchXnft(provider, new PublicKey(address));
+        const xnft = await fetchXnft(new PublicKey(address));
         const plugin = new Plugin(
           new PublicKey(address),
-          xnft.xnftAccount.publicKey,
-          xnftUrl(xnft.metadataBlob.xnft.manifest.entrypoints.default.web),
-          xnft.metadataBlob.image,
-          xnft.metadataBlob.name,
+          xnft!.xnftAccount.masterMetadata,
+          xnft!.xnft.xnft.manifest.entrypoints.default.web,
+          xnft!.metadata.image,
+          xnft!.xnft.xnft.manifest.splash ?? {},
+          xnft!.metadata.name,
           activePublicKeys,
           connectionUrls
         );
@@ -159,6 +157,7 @@ export function useFreshPlugin(address?: string): {
         setResult(plugin);
         setState("done");
       } catch (err) {
+        console.error(err);
         setState("error");
       }
     })();
@@ -178,6 +177,7 @@ export function getPlugin(p: any): Plugin {
       p.install.publicKey,
       p.url,
       p.iconUrl,
+      p.splashUrls ?? {},
       p.title,
       p.activeWallets,
       p.connectionUrls

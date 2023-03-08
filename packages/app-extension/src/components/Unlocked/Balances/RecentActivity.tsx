@@ -1,5 +1,7 @@
+// TODO: remove the line below
+/* eslint-disable react-hooks/rules-of-hooks */
 import { Suspense, useState } from "react";
-import { Blockchain, explorerUrl } from "@coral-xyz/common";
+import { Blockchain, explorerUrl, XNFT_GG_LINK } from "@coral-xyz/common";
 import {
   EmptyState,
   isFirstLastListItemStyle,
@@ -24,6 +26,8 @@ import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
+
+import { _RecentSolanaActivityList } from "./RecentSolanaActivity/RecentSolanaActivityList";
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {
@@ -111,11 +115,11 @@ export function RecentActivityButton() {
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
-            options={() => ({ title: "Recent Activity" })}
+            options={() => ({ title: "Transactions" })}
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen
-              name={"root"}
+              name="root"
               component={(props: any) => <RecentActivity {...props} />}
             />
           </NavStackEphemeral>
@@ -127,21 +131,37 @@ export function RecentActivityButton() {
 
 export function RecentActivity() {
   const activeWallet = useActiveWallet();
+
   const recentTransactions =
-    activeWallet.blockchain === Blockchain.SOLANA
+    (activeWallet.blockchain === Blockchain.SOLANA
       ? useRecentSolanaTransactions({
           address: activeWallet.publicKey,
         })
       : useRecentEthereumTransactions({
           address: activeWallet.publicKey,
-        });
-  const mergedTransactions = [...recentTransactions].sort(
-    (a, b) => b.date.getTime() - a.date.getTime()
+        })) ?? [];
+
+  // Used since Solana transactions have a timestamp and Ethereum transactions have a date.
+  const extractTime = (tx: any) => {
+    if (tx?.timestamp) {
+      return tx.timestamp;
+    } else if (tx?.date) {
+      return tx.date.getTime();
+    }
+    return 0;
+  };
+
+  const mergedTransactions = [...recentTransactions].sort((a, b) =>
+    extractTime(a) > extractTime(b) ? -1 : 1
   );
 
   return (
     <Suspense fallback={<RecentActivityLoading />}>
-      <_RecentActivityList transactions={mergedTransactions} />
+      {activeWallet.blockchain === Blockchain.SOLANA ? (
+        <_RecentSolanaActivityList transactions={mergedTransactions} />
+      ) : (
+        <_RecentActivityList transactions={mergedTransactions} />
+      )}
     </Suspense>
   );
 }
@@ -264,11 +284,9 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
   const explorer = useBlockchainExplorer(transaction.blockchain);
   const connectionUrl = useBlockchainConnectionUrl(transaction.blockchain);
   const blockchainLogo = useBlockchainLogo(transaction.blockchain);
-
   const onClick = () => {
     window.open(explorerUrl(explorer!, transaction.signature, connectionUrl!));
   };
-
   return (
     <ListItem
       button
@@ -319,7 +337,17 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
               {transaction.signature.slice(transaction.signature.length - 5)}
             </Typography>
             <Typography className={classes.txDate}>
-              {transaction.date.toLocaleDateString()}
+              {
+                // TODO: Standardize the parsed ethereum and solana transactions
+                //       so that `transaction.date` can be used for both of them
+                (
+                  (transaction.date
+                    ? // ethereum transactions provide a date
+                      transaction.date
+                    : // solana transactions provide a timestamp in seconds
+                      new Date(transaction.timestamp * 1000)) as Date
+                ).toLocaleString()
+              }
             </Typography>
           </div>
         </div>
@@ -352,6 +380,7 @@ function RecentActivityListItemIcon({ transaction }: any) {
 
 function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
   const theme = useCustomTheme();
+
   return (
     <div
       style={{
@@ -361,11 +390,9 @@ function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
     >
       <EmptyState
         icon={(props: any) => <FormatListBulletedIcon {...props} />}
-        title={"No Recent Activity"}
-        subtitle={
-          "Your transactions and app activity will show up here when you start using Backpack!"
-        }
-        onClick={() => window.open("https://xnft.gg")}
+        title="No Recent Activity"
+        subtitle="Your transactions and app activity will show up here when you start using Backpack!"
+        onClick={() => window.open(XNFT_GG_LINK)}
         contentStyle={{
           color: minimize ? theme.custom.colors.secondary : "inherit",
         }}

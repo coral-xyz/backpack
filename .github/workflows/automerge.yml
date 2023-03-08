@@ -1,0 +1,30 @@
+name: Automerge
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+env:
+  MY_REPO: https://coral-xyz:${{secrets.GITHUB_TOKEN}}@github.com/coral-xyz/backpack.git
+
+  MY_BRANCH: production
+
+  MASTER_REPO: https://github.com/coral-xyz/backpack.git
+
+  MASTER_BRANCH: master
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Merge with master
+        run: |
+          git clone ${{env.MY_REPO}} -b ${{env.MY_BRANCH}} tmp
+          cd tmp
+          git config user.name "Automerge Bot"
+          git config user.email "bot@example.com"
+          git config pull.rebase false
+          git pull ${{env.MASTER_REPO}} ${{env.MASTER_BRANCH}}
+          git push

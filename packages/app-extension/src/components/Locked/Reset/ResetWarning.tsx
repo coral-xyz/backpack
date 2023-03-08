@@ -14,31 +14,29 @@ import { Box } from "@mui/material";
 
 import { Header, HeaderIcon, SubtextParagraph } from "../../common";
 import { useDrawerContext } from "../../common/Layout/Drawer";
-import { useNavStack } from "../../common/Layout/NavStack";
+import { useNavigation } from "../../common/Layout/NavStack";
 
 export function Logout() {
   const background = useBackgroundClient();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const user = useUser();
   const { close } = useDrawerContext();
 
   useEffect(() => {
-    nav.setTitle(`Logout ${user.username}`);
+    nav.setOptions({ headerTitle: `Log out ${user.username}` });
   }, []);
 
   return (
     <Warning
-      buttonTitle={"Logout"}
-      title={"Logout"}
-      subtext={
-        "This will remove all the wallets you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
-      }
+      buttonTitle="Log out"
+      title="Log out"
+      subtext="This will remove all the wallets you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
       onNext={async () => {
+        close();
         await background.request({
           method: UI_RPC_METHOD_USER_ACCOUNT_LOGOUT,
           params: [user.uuid],
         });
-        close();
       }}
     />
   );
@@ -46,19 +44,17 @@ export function Logout() {
 
 export function ResetWarning() {
   const background = useBackgroundClient();
-  const nav = useNavStack();
+  const nav = useNavigation();
 
   useEffect(() => {
-    nav.setTitle("Reset Backpack");
+    nav.setOptions({ headerTitle: "Reset Backpack" });
   }, []);
 
   return (
     <Warning
-      buttonTitle={"Reset"}
-      title={"Reset Backpack"}
-      subtext={
-        "This will remove all the user accounts you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
-      }
+      buttonTitle="Reset"
+      title="Reset Backpack"
+      subtext="This will remove all the user accounts you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
       onNext={async () => {
         await background.request({
           method: UI_RPC_METHOD_KEYRING_RESET,

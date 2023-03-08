@@ -6,6 +6,13 @@ object_relationships:
     using:
       foreign_key_constraint_on: user_id
 array_relationships:
+  - name: user_active_publickey_mappings
+    using:
+      foreign_key_constraint_on:
+        column: public_key_id
+        table:
+          name: user_active_publickey_mapping
+          schema: auth
   - name: user_nfts
     using:
       manual_configuration:

@@ -8,7 +8,8 @@ import { useUser } from "./preferences";
 const sessionCacheBuster = Date.now();
 
 export function useAvatarUrl(size?: number, givenUsername?: string): string {
-  const username = givenUsername ?? useUser().username;
+  const user = useUser();
+  const username = givenUsername ?? user.username;
   const newAvatar = useRecoilValue(newAvatarAtom(username)); // reload images when avatar changed.
   const _username = username === "" || username === null ? "dev" : username;
   return newAvatar?.url

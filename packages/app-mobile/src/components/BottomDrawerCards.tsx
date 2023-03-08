@@ -11,15 +11,15 @@ import {
   useBlockchainExplorer,
 } from "@coral-xyz/recoil";
 
-import { CheckIcon, CrossIcon } from "@components/Icon";
+import { CheckIcon, CrossIcon } from "~components/Icon";
 import {
   Margin,
   Loading,
   PrimaryButton,
   SecondaryButton,
   TokenAmountHeader,
-} from "@components/index";
-import { useTheme } from "@hooks/index";
+} from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
 export function Container({
   children,

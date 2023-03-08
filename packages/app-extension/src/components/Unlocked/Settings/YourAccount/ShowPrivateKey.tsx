@@ -5,7 +5,9 @@ import {
   DangerButton,
   EyeIcon,
   SecondaryButton,
- TextInput,  WarningIcon } from "@coral-xyz/react-common";
+  TextInput,
+  WarningIcon,
+} from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -22,7 +24,7 @@ import {
 } from "../../../common";
 import { CopyButton } from "../../../common/Account/MnemonicInput";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation } from "../../../common/Layout/NavStack";
 
 const useStyles = styles((theme: any) => ({
   passwordField: {
@@ -104,15 +106,15 @@ const useStyles = styles((theme: any) => ({
 export function ShowPrivateKeyWarning({ publicKey }: { publicKey: string }) {
   const classes = useStyles();
   const background = useBackgroundClient();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
 
   useEffect(() => {
     const navButton = nav.navButtonRight;
-    nav.setTitle("Show private key");
+    nav.setOptions({ headerTitle: "Show private key" });
     return () => {
-      nav.setNavButtonRight(navButton);
+      nav.setOptions({ headerRight: navButton });
     };
   }, []);
 
@@ -198,12 +200,12 @@ export function ShowPrivateKeyWarning({ publicKey }: { publicKey: string }) {
       >
         <Box sx={{ marginBottom: "8px" }}>
           <TextInput
-            autoFocus={true}
+            autoFocus
             error={error}
             placeholder="Password"
             inputProps={{ name: "password" }}
             value={password}
-            type={"password"}
+            type="password"
             setValue={(e) => setPassword(e.target.value)}
           />
         </Box>
@@ -221,10 +223,10 @@ export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
   const theme = useCustomTheme();
   const classes = useStyles();
   const { close } = useDrawerContext();
-  const nav = useNavStack();
+  const nav = useNavigation();
 
   useEffect(() => {
-    nav.setTitle("Private key");
+    nav.setOptions({ headerTitle: "Private key" });
   }, []);
 
   return (
@@ -250,7 +252,7 @@ export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
         <Box sx={{ margin: "0 16px" }}>
           <TextField
             rows={3}
-            readOnly={true}
+            readOnly
             value={privateKey}
             rootClass={classes.privateKeyField}
           />

@@ -19,7 +19,7 @@ export const getUsers = async (
         id: true,
         username: true,
       },
-    ],
+     ],
   });
   return response.auth_users || [];
 };

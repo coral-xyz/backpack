@@ -1,4 +1,5 @@
-import { PrimaryButton } from "@coral-xyz/react-common";
+// @ts-expect-error
+import { PrimaryButton } from "@coral-xyz/react-native-core";
 import { Box } from "@mui/material";
 
 import { SubtextParagraph } from "../../common";
@@ -19,7 +20,7 @@ export const CreateOrImportWallet = ({
       }}
     >
       <Box style={{ flex: 1, textAlign: "center", padding: "0 16px" }}>
-        <BackpackHeader disableUsername={true} />
+        <BackpackHeader disableUsername />
       </Box>
       <Box
         style={{
@@ -31,7 +32,7 @@ export const CreateOrImportWallet = ({
         <Box sx={{ mb: "16px" }}>
           <PrimaryButton
             label="Create a new wallet"
-            onClick={() => onNext("create")}
+            onPress={() => onNext("create")}
           />
         </Box>
         <SubtextParagraph onClick={() => onNext("import")}>

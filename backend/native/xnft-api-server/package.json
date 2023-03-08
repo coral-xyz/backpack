@@ -5,6 +5,8 @@
   "license": "MIT",
   "dependencies": {
     "@coral-xyz/common": "*",
+    "@coral-xyz/backend-common": "*",
+    "dotenv": "^16.0.3",
     "@coral-xyz/zeus": "*",
     "@project-serum/anchor": "^0.25.0",
     "@solana/wallet-adapter-react": "^0.15.25",

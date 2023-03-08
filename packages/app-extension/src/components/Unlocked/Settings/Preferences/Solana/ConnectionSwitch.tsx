@@ -8,32 +8,30 @@ import { useBackgroundClient, useSolanaConnectionUrl } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Check } from "@mui/icons-material";
 
-import { useDrawerContext } from "../../../../common/Layout/Drawer";
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";
 
 export function PreferencesSolanaConnection() {
-  const { close } = useDrawerContext();
   const background = useBackgroundClient();
   const currentUrl = useSolanaConnectionUrl();
-  const nav = useNavStack();
+  const nav = useNavigation();
 
   useEffect(() => {
-    nav.setTitle("RPC Connection");
+    nav.setOptions({ headerTitle: "RPC Connection" });
   }, [nav]);
 
   const menuItems = {
     "Mainnet (Beta)": {
       onClick: () => changeNetwork(SolanaCluster.MAINNET),
-      detail: currentUrl === SolanaCluster.MAINNET ? <Checkmark /> : <></>,
+      detail: currentUrl === SolanaCluster.MAINNET ? <Checkmark /> : null,
     },
     Devnet: {
       onClick: () => changeNetwork(SolanaCluster.DEVNET),
-      detail: currentUrl === SolanaCluster.DEVNET ? <Checkmark /> : <></>,
+      detail: currentUrl === SolanaCluster.DEVNET ? <Checkmark /> : null,
     },
     Localnet: {
       onClick: () => changeNetwork(SolanaCluster.LOCALNET),
-      detail: currentUrl === SolanaCluster.LOCALNET ? <Checkmark /> : <></>,
+      detail: currentUrl === SolanaCluster.LOCALNET ? <Checkmark /> : null,
     },
     Custom: {
       onClick: () => {
@@ -60,7 +58,6 @@ export function PreferencesSolanaConnection() {
           method: UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
           params: [url],
         })
-        .then(close)
         .catch(console.error);
     } catch (err) {
       console.error(err);

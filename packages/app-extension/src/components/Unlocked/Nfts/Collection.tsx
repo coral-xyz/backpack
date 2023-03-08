@@ -1,14 +1,17 @@
-import { NAV_COMPONENT_NFT_DETAIL } from "@coral-xyz/common";
+import { useState } from "react";
+import { MessageBubbleIcon } from "@coral-xyz/react-common";
 import {
+  chatByCollectionId,
   nftById,
   nftCollectionsWithIds,
-  useNavigation,
 } from "@coral-xyz/recoil";
-import { Grid } from "@mui/material";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { CircularProgress, Grid, Typography } from "@mui/material";
 import type { UnwrapRecoilValue } from "recoil";
 import { useRecoilValueLoadable } from "recoil";
 
-import { GridCard } from "./Common";
+import { NFTCard } from "./Cards";
+import { useOpenChat } from "./Detail";
 
 export function NftsCollection({
   publicKey,
@@ -40,6 +43,9 @@ function _Grid({
   connectionUrl: string;
   id: string;
 }) {
+  const theme = useCustomTheme();
+  const openChat = useOpenChat();
+  const [joiningChat, setJoiningChat] = useState(false);
   const { contents, state } = useRecoilValueLoadable<
     UnwrapRecoilValue<typeof nftCollectionsWithIds>
   >(nftCollectionsWithIds);
@@ -51,6 +57,12 @@ function _Grid({
         .flat()
         .find((c: any) => c.id === id);
 
+  const whitelistedCollectionChat = useRecoilValueLoadable(
+    chatByCollectionId(collection?.metadataCollectionId)
+  );
+
+  const chat = whitelistedCollectionChat.contents;
+
   // Hack: id can be undefined due to framer-motion animation, and
   // collection can be undefined when looking at a collection not in current
   // wallet.
@@ -58,18 +70,92 @@ function _Grid({
     return null;
   }
 
+  const countText =
+    chat?.memberCount >= 1000
+      ? `${(chat?.memberCount / 1000).toFixed(1)}k`
+      : chat?.memberCount ?? "0";
+
   return (
-    <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
-      {collection.itemIds.map((collectionId: string) => (
-        <Grid item xs={6} sm={4} md={3} lg={2} key={collectionId}>
-          <NftCard
-            publicKey={publicKey}
-            connectionUrl={connectionUrl}
-            nftId={collectionId}
-          />
-        </Grid>
-      ))}
-    </Grid>
+    <>
+      {chat ? (
+        <Typography
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "pointer",
+            fontSize: "14px",
+            padding: "8px 8px 16px 8px",
+            color: theme.custom.colors.fontColor,
+          }}
+          onClick={async (e: any) => {
+            setJoiningChat(true);
+            await openChat(chat, collection.itemIds[0]);
+            setJoiningChat(false);
+            e.stopPropagation();
+          }}
+        >
+          <div
+            style={{
+              height: "24px",
+              width: "24px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {joiningChat ? (
+              // eslint-disable-next-line react/jsx-no-undef
+              <CircularProgress
+                sx={{
+                  color: theme.custom.colors.fontColor,
+                  height: "13px",
+                  width: "13px",
+                }}
+                size="small"
+                thickness={3}
+              />
+            ) : (
+              <MessageBubbleIcon
+                sx={{
+                  width: "18px",
+                  color: theme.custom.colors.fontColor,
+                  "&:hover": {
+                    color: `${theme.custom.colors.fontColor3} !important`,
+                  },
+                }}
+              />
+            )}
+          </div>
+          <div
+            style={{
+              padding: "0px 8px",
+              opacity: 0.8,
+            }}
+          >
+            {`${chat.name} ⸱ ${countText} members`}
+          </div>
+          <div
+            style={{
+              fontWeight: "bold",
+            }}
+          >
+            Join
+          </div>
+        </Typography>
+      ) : null}
+      <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
+        {collection.itemIds.map((nftId: string) => (
+          <Grid item xs={6} sm={4} md={3} lg={2} key={nftId}>
+            <NftCard
+              publicKey={publicKey}
+              connectionUrl={connectionUrl}
+              nftId={nftId}
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </>
   );
 }
 
@@ -90,18 +176,8 @@ function NftCard({
     })
   );
   const nft = (state === "hasValue" && contents) || null;
-
-  const { push } = useNavigation();
-  const onClick = () => {
-    push({
-      title: nft?.name || "",
-      componentId: NAV_COMPONENT_NFT_DETAIL,
-      componentProps: {
-        nftId,
-        publicKey,
-        connectionUrl,
-      },
-    });
-  };
-  return <GridCard onClick={onClick} nft={nft} />;
+  if (!nft) {
+    return null;
+  }
+  return <NFTCard nft={nft} />;
 }
