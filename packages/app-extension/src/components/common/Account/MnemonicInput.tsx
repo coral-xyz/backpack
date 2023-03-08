@@ -219,7 +219,7 @@ export function MnemonicInput({
           }
           disabled={!copyEnabled}
         />
-        <Box sx={{ margin: "12px" }}>
+        <Box sx={{ margin: "6px" }}>
           <CheckboxForm
             checked={checked}
             setChecked={setChecked}

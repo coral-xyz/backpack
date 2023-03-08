@@ -112,7 +112,13 @@ export function CreateMnemonic({
       />
       <WithMiniDrawer
         openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
+        setOpenDrawer={(open: boolean) => {
+          // Must close parent when the confirm create wallet drawer closes because
+          // the next button in the mnemonic input screen is no longer valid as the users
+          // keyring has a mnemonic once it has been clicked once
+          if (!open) closeParentDrawer()
+          setOpenDrawer(open)
+        }}
         backdropProps={{
           style: {
             opacity: 0.8,
