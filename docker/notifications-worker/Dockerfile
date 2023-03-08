@@ -31,4 +31,6 @@ RUN cd /base/backend/native/notifications-worker && yarn run build
 
 EXPOSE 8080
 
+WORKDIR /base/backend/native/notifications-worker
+
 CMD ["node", "./dist/index.js"]
