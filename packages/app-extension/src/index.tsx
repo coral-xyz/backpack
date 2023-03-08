@@ -1,11 +1,29 @@
-import React, { lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
-import { BACKPACK_FEATURE_POP_MODE, openPopupWindow } from "@coral-xyz/common";
+import {
+  BACKPACK_FEATURE_POP_MODE,
+  isValidEventOrigin,
+  openPopupWindow,
+} from "@coral-xyz/common";
 
 import "./index.css";
 
 const App = lazy(() => import("./app/App"));
 const LedgerIframe = lazy(() => import("./components/LedgerIframe"));
+
+// Tell all existing extension instances that this instance now exists.
+// This block ensures a single extension window is open at any given time.
+chrome.runtime
+  .sendMessage("new-instance-was-opened")
+  .then(() => {
+    // Close all existing extension instances so only the newest is running
+    chrome.runtime.onMessage.addListener((msg, sender) => {
+      if (isValidEventOrigin(sender) && msg === "new-instance-was-opened") {
+        window.close();
+      }
+    });
+  })
+  .catch(console.error);
 
 // Connect to the background script so it can detect if the popup is closed
 chrome.runtime.connect();
