@@ -112,7 +112,7 @@ export const SendMessage = ({
   const { uuid } = useUser();
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
-  const { stickerEnabled } = useFeatureGates();
+  const featureGates = useFeatureGates();
 
   const theme = useCustomTheme();
   const activeSolanaWallet = useActiveSolanaWallet();
@@ -341,7 +341,7 @@ export const SendMessage = ({
                 height: "28px",
               }}
             />
-            {stickerEnabled ? (
+            {featureGates["STICKER_ENABLED"] ? (
               <NftSticker
                 buttonStyle={{
                   height: "28px",
