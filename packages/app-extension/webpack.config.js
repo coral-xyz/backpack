@@ -198,8 +198,8 @@ const options = {
       // // NOTE(peter): for whatever reason react is being installed in multiple places and breaking tamagui
       // // this was the best i could do to ensure it pulls the correct version until i figure out why. this is what's supposed to happen anyway
       // // if you find yourself here, run `ls node_modules/react` and if the folder exists, this stays, if it doesn't, you can safely remove
-      // react: path.resolve("../../node_modules/react"),
-      // "react-dom": path.resolve("../../node_modules/react-dom"),
+      react: path.resolve("../../node_modules/react"),
+      "react-dom": path.resolve("../../node_modules/react-dom"),
       "react-native$": "react-native-web",
     },
     // Add support for web-based extensions so we can share code between mobile/extension
