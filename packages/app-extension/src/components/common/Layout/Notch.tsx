@@ -1,9 +1,7 @@
-import { useActiveWallet, useBlockchainLogo } from "@coral-xyz/recoil";
+import { useActiveWallet, useBlockchainLogo , useBreakpoints, useWindowSize } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 
 import { WalletDrawerButton } from "../WalletList";
-
-import { useBreakpoints, useWindowSize } from "./hooks";
 
 // This component wraps a set of component children, cutting out a "notch" at
 // the top of the view.
@@ -182,7 +180,7 @@ function Notch() {
             borderBottomLeftRadius: "14px",
             flex: 1,
           }}
-          useNotch={true}
+          useNotch
         />
       </div>
     </div>
