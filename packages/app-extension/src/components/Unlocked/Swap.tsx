@@ -36,6 +36,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import type { BigNumberish } from "ethers";
 import { ethers, FixedNumber } from "ethers";
 
 import { Button as XnftButton } from "../../plugin/Component";
@@ -709,7 +710,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
         youPay: `${toDisplayBalance(fromAmount, fromToken.decimals)} ${
           fromToken.ticker
         }`,
-        rate: `1 ${fromToken.ticker} = ${rate.substring(0, 10)} ${
+        rate: `1 ${fromToken.ticker} ≈ ${rate.substring(0, 10)} ${
           toToken.ticker
         }`,
         priceImpact: `${
@@ -720,7 +721,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
             : "< 0.1"
         }%`,
         networkFee: transactionFees
-          ? `${ethers.utils.formatUnits(transactionFees.total, 9)} SOL`
+          ? `~ ${approximateAmount(transactionFees.total)} SOL`
           : "-",
         swapFee,
         transactionFees,
@@ -768,7 +769,7 @@ function SwapInfoRows({
 
   rows.push({ label: "Rate", value: rate });
   rows.push({
-    label: "Network Fee",
+    label: "Estimated Fees",
     value: networkFee,
     // @ts-ignore - tooltip's supposed to be a string, can be a component for now
     tooltip:
@@ -782,18 +783,14 @@ function SwapInfoRows({
                     {description}
                   </th>
                   <td className={classes.feesTooltipTableValue}>
-                    {ethers.utils
-                      .formatUnits(value, 9)
-                      // hide miniscule amounts of SOL, 0.000203928 => 0.0002
-                      .replace(/(0.0{3,}[1-9])(\d+)/, "$1")}{" "}
-                    SOL
+                    {approximateAmount(value)} SOL
                   </td>
                 </tr>
               )
             )}
             {swapFee.pct > 0 ? (
               <tr>
-                <td colSpan={2} style={{ fontStyle: "italic", opacity: 0.6 }}>
+                <td colSpan={2} style={{ opacity: 0.5 }}>
                   Quote includes a {swapFee.pct}% Backpack fee
                 </td>
               </tr>
@@ -954,3 +951,11 @@ export function SwapSelectToken({
     />
   );
 }
+
+/**
+ * Hides miniscule amounts of SOL
+ * @example approximateAmount(0.000203928) = "0.0002"
+ * @param value BigNumberish amount of Solana Lamports
+ */
+const approximateAmount = (value: BigNumberish) =>
+  ethers.utils.formatUnits(value, 9).replace(/(0.0{3,}[1-9])(\d+)/, "$1");
