@@ -34,9 +34,10 @@ import CallMadeIcon from "@mui/icons-material/CallMade";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoneIcon from "@mui/icons-material/Done";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+import Info from "@mui/icons-material/Info";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import VerifiedIcon from "@mui/icons-material/Verified";
-import { Button, IconButton, Skeleton } from "@mui/material";
+import { Button, IconButton, Skeleton, Tooltip } from "@mui/material";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { createStyles, makeStyles } from "@mui/styles";
@@ -332,20 +333,21 @@ export const MessageLine = (props) => {
                     )}
                   </p>
                 </div>
-                {!props.deleted ? <div>
-                  {props.messageKind === "text" ? (
-                    <div
-                      style={{ display: "flex" }}
-                      className={classes.hoverChild}
-                      >
+                {!props.deleted ? (
+                  <div>
+                    {props.messageKind === "text" ? (
                       <div
-                        style={{
+                        style={{ display: "flex" }}
+                        className={classes.hoverChild}
+                      >
+                        <div
+                          style={{
                             marginLeft: 10,
                             marginTop: 3,
                             cursor: "pointer",
                             marginRight: 5,
                           }}
-                        onClick={() => {
+                          onClick={() => {
                             setActiveReply({
                               parent_client_generated_uuid:
                                 props.client_generated_uuid,
@@ -355,15 +357,15 @@ export const MessageLine = (props) => {
                             });
                           }}
                         >
-                        <ReplyIcon fill={theme.custom.colors.icon} />
-                      </div>
-                      <div style={{ marginLeft: 3 }}>
-                        <DeleteIconInternal
-                          client_generated_uuid={props.client_generated_uuid}
-                          messageSender={props.uuid}
+                          <ReplyIcon fill={theme.custom.colors.icon} />
+                        </div>
+                        <div style={{ marginLeft: 3 }}>
+                          <DeleteIconInternal
+                            client_generated_uuid={props.client_generated_uuid}
+                            messageSender={props.uuid}
                           />
+                        </div>
                       </div>
-                    </div>
                     ) : (
                       <div
                         style={{ marginLeft: 5 }}
@@ -376,7 +378,8 @@ export const MessageLine = (props) => {
                         />{" "}
                       </div>
                     )}
-                </div> : null}
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>
@@ -515,22 +518,23 @@ export const MessageLine = (props) => {
                   </div>
                 </div>
 
-                {!props.deleted ? <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
+                {!props.deleted ? (
+                  <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
                   >
-                  {props.messageKind === "text" ? (
-                    <div
-                      style={{ display: "flex" }}
-                      className={classes.hoverChild}
-                      >
+                    {props.messageKind === "text" ? (
                       <div
-                        style={{
+                        style={{ display: "flex" }}
+                        className={classes.hoverChild}
+                      >
+                        <div
+                          style={{
                             marginLeft: 10,
                             marginTop: 3,
                             cursor: "pointer",
                           }}
-                        className={classes.hoverChild}
-                        onClick={() => {
+                          className={classes.hoverChild}
+                          onClick={() => {
                             setActiveReply({
                               parent_client_generated_uuid:
                                 props.client_generated_uuid,
@@ -543,15 +547,15 @@ export const MessageLine = (props) => {
                               ?.focus();
                           }}
                         >
-                        <ReplyIcon fill={theme.custom.colors.icon} />
-                      </div>
-                      <div style={{ marginLeft: 3 }}>
-                        <DeleteIconInternal
-                          client_generated_uuid={props.client_generated_uuid}
-                          messageSender={props.uuid}
+                          <ReplyIcon fill={theme.custom.colors.icon} />
+                        </div>
+                        <div style={{ marginLeft: 3 }}>
+                          <DeleteIconInternal
+                            client_generated_uuid={props.client_generated_uuid}
+                            messageSender={props.uuid}
                           />
+                        </div>
                       </div>
-                    </div>
                     ) : (
                       <div
                         style={{ marginLeft: 5 }}
@@ -564,7 +568,8 @@ export const MessageLine = (props) => {
                         />{" "}
                       </div>
                     )}
-                </div> : null}
+                  </div>
+                ) : null}
               </div>
             </div>
             <div style={{ minWidth: 63 }}>
@@ -1160,9 +1165,19 @@ function DeletedMessage() {
         display: "inline-flex",
         padding: "2px 6px",
         marginLeft: -6,
+        alignItems: "center",
       }}
     >
-      Message removed
+      <span>Message removed</span>
+      <Tooltip title="This was probably spam">
+        <Info
+          style={{
+            fontSize: "1rem",
+            marginLeft: 4,
+            color: theme.custom.colors.icon,
+          }}
+        />
+      </Tooltip>
     </div>
   );
 }

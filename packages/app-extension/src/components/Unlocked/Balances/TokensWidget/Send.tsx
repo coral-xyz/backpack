@@ -1,4 +1,4 @@
-import React, { type ChangeEvent,useEffect, useState } from "react";
+import React, { type ChangeEvent, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {
   getHashedName,

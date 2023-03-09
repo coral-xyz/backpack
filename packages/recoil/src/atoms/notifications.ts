@@ -1,50 +1,63 @@
 import type { DbNotification, EnrichedNotification } from "@coral-xyz/common";
-import {BACKEND_API_URL, EnrichedMessage, fetchXnftsFromPubkey, SubscriptionType} from "@coral-xyz/common";
+import {
+  BACKEND_API_URL,
+  EnrichedMessage,
+  fetchXnftsFromPubkey,
+  SubscriptionType,
+} from "@coral-xyz/common";
 import { atomFamily, selectorFamily } from "recoil";
 
 import { anchorContext } from "./solana/wallet";
 
 export const recentNotifications = atomFamily<
-    Array<EnrichedNotification>,
-    {
+  Array<EnrichedNotification>,
+  {
+    limit: number;
+    offset: number;
+    uuid: string;
+  }
+>({
+  key: "recentNotifications",
+  default: selectorFamily({
+    key: "recentNotificationsDefault",
+    get:
+      ({
+        limit,
+        offset,
+        uuid,
+      }: {
         limit: number;
         offset: number;
         uuid: string;
-    }
-    >({
-    key: "recentNotifications",
-    default: selectorFamily({
-        key: "recentNotificationsDefault",
-        get:
-            ({ limit, offset, uuid }: { limit: number; offset: number; uuid: string; }) =>
-            async ({ get }: any) => {
-                try {
-                    const notifications = (await fetchNotifications(offset, limit)) || [];
-                    const xnftIds = notifications.map((x) => x.xnft_id);
-                    const uniqueXnftIds = xnftIds.filter(
-                        (x, index) => xnftIds.indexOf(x) === index
-                    );
-                    const xnftMetadata = await fetchXnftsFromPubkey(
-                        uniqueXnftIds.filter(
-                            (x) => x !== "friend_requests" && x !== "friend_requests_accept"
-                        )
-                    );
-                    return notifications.map((notificaiton) => {
-                        const metadata = xnftMetadata.find(
-                            (x) => x.xnftId === notificaiton.xnft_id
-                        );
-                        return {
-                            ...notificaiton,
-                            xnftImage: metadata?.image || "",
-                            xnftTitle: metadata?.title || "",
-                            timestamp: new Date(notificaiton.timestamp).getTime(),
-                        };
-                    });
-                } catch (e) {
-                    return [];
-                }
-            },
-    }),
+      }) =>
+      async ({ get }: any) => {
+        try {
+          const notifications = (await fetchNotifications(offset, limit)) || [];
+          const xnftIds = notifications.map((x) => x.xnft_id);
+          const uniqueXnftIds = xnftIds.filter(
+            (x, index) => xnftIds.indexOf(x) === index
+          );
+          const xnftMetadata = await fetchXnftsFromPubkey(
+            uniqueXnftIds.filter(
+              (x) => x !== "friend_requests" && x !== "friend_requests_accept"
+            )
+          );
+          return notifications.map((notificaiton) => {
+            const metadata = xnftMetadata.find(
+              (x) => x.xnftId === notificaiton.xnft_id
+            );
+            return {
+              ...notificaiton,
+              xnftImage: metadata?.image || "",
+              xnftTitle: metadata?.title || "",
+              timestamp: new Date(notificaiton.timestamp).getTime(),
+            };
+          });
+        } catch (e) {
+          return [];
+        }
+      },
+  }),
 });
 
 const fetchNotifications = (
