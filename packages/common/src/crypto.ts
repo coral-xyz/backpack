@@ -90,7 +90,7 @@ export const getIndexedPath = (
     accountIndex + HARDENING,
     0 + HARDENING,
   ];
-  if (walletIndex >= 0) path.push(walletIndex + HARDENING);
+  if (walletIndex > 0) path.push(walletIndex - 1 + HARDENING);
   return new BIPPath.fromPathArray(path).toString();
 };
 

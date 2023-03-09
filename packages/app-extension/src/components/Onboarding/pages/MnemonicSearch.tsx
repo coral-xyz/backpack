@@ -59,7 +59,7 @@ export const MnemonicSearch = ({
         setError(true);
       }
     })();
-  }, [serverPublicKeys, mnemonic]);
+  }, [background, serverPublicKeys, mnemonic, onNext]);
 
   if (!error) {
     return <Loading />;
