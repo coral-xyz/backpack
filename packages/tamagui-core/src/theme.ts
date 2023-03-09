@@ -37,6 +37,14 @@ const LIGHT_ICON_HOVER_COLOR = "#787C89";
 
 const DANGER_COLOR = "#DC2626";
 
+export const baseTheme = {
+  borderRadius: {
+    container: 16,
+    large: 12,
+    medium: 8,
+  },
+};
+
 type Theme = {
   custom: {
     borderRadius: {
@@ -99,10 +107,7 @@ type Theme = {
 
 export const darkTheme: Theme = {
   custom: {
-    borderRadius: {
-      large: 12,
-      medium: 8,
-    },
+    borderRadius: baseTheme.borderRadius,
     colors: {
       brandColor: BRAND_COLOR,
       background: BACKGROUND_COLOR_0,
@@ -165,10 +170,7 @@ export const darkTheme: Theme = {
 
 export const lightTheme: Theme = {
   custom: {
-    borderRadius: {
-      large: 12,
-      medium: 8,
-    },
+    borderRadius: baseTheme.borderRadius,
     colors: {
       brandColor: LIGHT_BRAND_COLOR,
       backgroundBackdrop: LIGHT_BACKGROUND_BACKDROP_COLOR,

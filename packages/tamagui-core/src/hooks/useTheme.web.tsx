@@ -1,6 +1,6 @@
 import { useDarkMode } from "@coral-xyz/recoil";
 
-import { darkTheme, lightTheme } from "./theme";
+import { darkTheme, lightTheme } from "../theme";
 
 export function useCustomTheme() {
   const isDarkMode = useDarkMode();

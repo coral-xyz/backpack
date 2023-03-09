@@ -1,7 +1,8 @@
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { HOVER_OPACITY, useCustomTheme } from "../hooks";
+import { useCustomTheme } from "../hooks/index";
+import { HOVER_OPACITY } from "../theme";
 
 export function Margin({
   bottom,
