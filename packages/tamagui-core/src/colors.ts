@@ -1,0 +1,38 @@
+export const HOVER_OPACITY = 0.8;
+
+export const BACKGROUND_COLOR_0 = "#18181b";
+export const BACKGROUND_BACKDROP_COLOR = BACKGROUND_COLOR_0;
+export const BACKGROUND_COLOR_1 = "#27272a";
+export const BACKGROUND_COLOR_2 = "#3F3F46";
+export const FONT_COLOR = "#FFFFFF";
+export const FONT_COLOR_1 = "#71717A";
+export const FONT_COLOR_2 = "#D4D4D8";
+export const FONT_COLOR_3 = "#A1A1AA";
+export const BRAND_COLOR = "#FFFFFF";
+export const BUTTON_FONT_COLOR = FONT_COLOR;
+export const BORDER_COLOR = "#393C43";
+// export const BORDER_COLOR_1 = "#52525B";
+export const POSITIVE_COLOR = "#35A63A";
+export const NEGATIVE_COLOR = "#E95050";
+export const SCROLLBAR_THUMB_COLOR = "rgb(153 164 180)";
+
+export const LIGHT_BACKGROUND_BACKDROP_COLOR = "#f8f8f9";
+// export const LIGHT_BACKGROUND_BACKDROP_COLOR =
+//   "linear-gradient(180deg, #F8F8F9 0%, #F0F0F2 100%), #FFFFFF";
+export const LIGHT_BACKGROUND_COLOR_0 = "#F0F0F2";
+export const LIGHT_BACKGROUND_COLOR_1 = "#ffffff";
+export const LIGHT_BACKGROUND_COLOR_2 = LIGHT_BACKGROUND_COLOR_0;
+export const LIGHT_FONT_COLOR = "#030A19";
+export const LIGHT_FONT_COLOR_1 = "#4E5768";
+export const LIGHT_FONT_COLOR_2 = LIGHT_FONT_COLOR;
+export const LIGHT_FONT_COLOR_3 = LIGHT_FONT_COLOR_1;
+export const LIGHT_BRAND_COLOR = LIGHT_FONT_COLOR;
+export const LIGHT_BUTTON_FONT_COLOR = FONT_COLOR;
+export const LIGHT_BORDER_COLOR = "#DFE0E6";
+export const LIGHT_BORDER_COLOR_1 = "#F0F0F2";
+export const LIGHT_POSITIVE_COLOR = POSITIVE_COLOR;
+export const LIGHT_NEGATIVE_COLOR = NEGATIVE_COLOR;
+export const LIGHT_SCROLLBAR_THUMB_COLOR = SCROLLBAR_THUMB_COLOR;
+export const LIGHT_ICON_HOVER_COLOR = "#787C89";
+
+export const DANGER_COLOR = "#DC2626";
