@@ -1,9 +1,17 @@
+import { useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 
 import { useChatContext } from "../ChatContext";
 
-export function BarterPoke({ barterId }: { barterId: string }) {
+export function BarterPoke({
+  barterId,
+  sender,
+}: {
+  barterId: string;
+  sender: string;
+}) {
   const { remoteUsername, setOpenPlugin } = useChatContext();
+  const { username, uuid } = useUser();
   const theme = useCustomTheme();
   return (
     <div
@@ -22,7 +30,11 @@ export function BarterPoke({ barterId }: { barterId: string }) {
           borderRadius: 16,
         }}
       >
-        <div style={{ flex: 1 }}>{remoteUsername} wants to trade </div>
+        <div style={{ flex: 1 }}>
+          {sender === uuid
+            ? `You poked ${remoteUsername}`
+            : `${remoteUsername} wants to trade`}{" "}
+        </div>
         <div
           style={{
             marginLeft: 10,

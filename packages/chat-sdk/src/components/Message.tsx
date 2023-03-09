@@ -252,6 +252,11 @@ export const MessageLine = (props) => {
     });
   };
 
+  if (props.messageKind === "barter-request") {
+    return (
+      <BarterPoke sender={props.uuid} barterId={props.metadata?.barter_id} />
+    );
+  }
   return (
     <div
       className={classes.messageRow}
@@ -279,7 +284,7 @@ export const MessageLine = (props) => {
                 </div>
               ) : null}
               <div style={{ display: "flex" }}>
-                <div style={{ width: "100%" }}>
+                <div>
                   <p className={classes.messageContent}>
                     {props.deleted ? (
                       <DeletedMessage />
@@ -303,8 +308,6 @@ export const MessageLine = (props) => {
                         remoteUsername={props.username}
                         finalTxId={props.metadata.final_txn_signature}
                       />
-                    ) : props.messageKind === "barter-request" ? (
-                      <BarterPoke barterId={props.metadata?.barter_id} />
                     ) : props.messageKind === "barter" ? (
                       <BarterModal barterId={props.metadata?.barter_id} />
                     ) : props.messageKind === "transaction" ? (
@@ -447,7 +450,7 @@ export const MessageLine = (props) => {
                 className={`${classes.messageContainer} ${classes.hoverParent}`}
                 style={{ display: "flex" }}
               >
-                <div style={{ width: "100%" }}>
+                <div>
                   {props.parent_message_author_uuid ? (
                     <div style={{}}>
                       <ReplyContainer
@@ -485,8 +488,6 @@ export const MessageLine = (props) => {
                           remoteUsername={props.username}
                           finalTxId={props.metadata.final_txn_signature}
                         />
-                      ) : props.messageKind === "barter-request" ? (
-                        <BarterPoke barterId={props.metadata?.barter_id} />
                       ) : props.messageKind === "barter" ? (
                         <BarterModal barterId={props.metadata?.barter_id} />
                       ) : props.messageKind === "transaction" ? (
