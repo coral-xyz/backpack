@@ -279,7 +279,7 @@ export const MessageLine = (props) => {
                 </div>
               ) : null}
               <div style={{ display: "flex" }}>
-                <div>
+                <div style={{ width: "100%" }}>
                   <p className={classes.messageContent}>
                     {props.deleted ? (
                       <DeletedMessage />
@@ -447,7 +447,7 @@ export const MessageLine = (props) => {
                 className={`${classes.messageContainer} ${classes.hoverParent}`}
                 style={{ display: "flex" }}
               >
-                <div>
+                <div style={{ width: "100%" }}>
                   {props.parent_message_author_uuid ? (
                     <div style={{}}>
                       <ReplyContainer

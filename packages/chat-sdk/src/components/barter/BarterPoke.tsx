@@ -3,24 +3,43 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { useChatContext } from "../ChatContext";
 
 export function BarterPoke({ barterId }: { barterId: string }) {
-  const { remoteUsername } = useChatContext();
+  const { remoteUsername, setOpenPlugin } = useChatContext();
   const theme = useCustomTheme();
   return (
     <div
       style={{
-        background: theme.custom.colors.linkColor,
-        padding: "12px 16px",
-        color: "#fff",
-        borderRadius: 16,
+        display: "flex",
+        justifyContent: "center",
       }}
     >
-      <div>{remoteUsername} wants to trade </div>
       <div
-        onClick={() => {
-          barterId;
+        style={{
+          display: "inline-flex",
+          background: theme.custom.colors.linkColor,
+          padding: "12px 16px",
+          color: "#fff",
+          marginTop: 5,
+          borderRadius: 16,
         }}
       >
-        View{" "}
+        <div style={{ flex: 1 }}>{remoteUsername} wants to trade </div>
+        <div
+          style={{
+            marginLeft: 10,
+            cursor: "pointer",
+            color: theme.custom.colors.icon,
+          }}
+          onClick={() => {
+            setOpenPlugin({
+              type: "barter",
+              metadata: {
+                barterId,
+              },
+            });
+          }}
+        >
+          View{" "}
+        </div>
       </div>
     </div>
   );
