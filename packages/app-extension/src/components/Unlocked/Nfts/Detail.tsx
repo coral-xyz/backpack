@@ -41,7 +41,7 @@ import {
   useSolanaExplorer,
   useUser,
 } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Whatshot } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Button, IconButton, Typography } from "@mui/material";
@@ -54,6 +54,7 @@ import {
 } from "recoil";
 
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
+import { CopyablePublicKey } from "../../common/CopyablePublicKey";
 import {
   CloseButton,
   useDrawerContext,
@@ -65,11 +66,8 @@ import {
   useNavigation as useNavigationEphemeral,
 } from "../../common/Layout/NavStack";
 import PopoverMenu from "../../common/PopoverMenu";
-import type {
-  SendData} from "../Balances/TokensWidget/AddressSelector";
-import {
-  AddressSelector
-} from "../Balances/TokensWidget/AddressSelector";
+import type { SendData } from "../Balances/TokensWidget/AddressSelector";
+import { AddressSelector } from "../Balances/TokensWidget/AddressSelector";
 import { SendEthereumConfirmationCard } from "../Balances/TokensWidget/Ethereum";
 import {
   Error as ErrorConfirmation,
@@ -427,10 +425,18 @@ function NftAddressSelector({ nft }: { nft: any }) {
   );
 }
 
+const useStyles = styles((theme) => ({
+  horizontalCenter: {
+    display: "flex",
+    justifyContent: "center",
+  },
+}));
+
 function SendScreen({ nft, to }: { nft: any; to: SendData }) {
   const background = useBackgroundClient();
   const { close } = useDrawerContext();
   const { provider: solanaProvider } = useAnchorContext();
+  const classes = useStyles();
   const ethereumCtx = useEthereumCtx();
   const destinationAddress = to.address;
   const [openConfirm, setOpenConfirm] = useState(false);
@@ -475,6 +481,12 @@ function SendScreen({ nft, to }: { nft: any; to: SendData }) {
         >
           <div>
             <Image nft={nft} />
+            <div className={classes.horizontalCenter} style={{ marginTop: 4 }}>
+              Sending to
+            </div>
+            <div className={classes.horizontalCenter} style={{ marginTop: 4 }}>
+              <CopyablePublicKey publicKey={to?.address} />
+            </div>
           </div>
           <div
             style={{
