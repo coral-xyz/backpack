@@ -1,3 +1,4 @@
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   Blockchain,
   confirmTransaction,
@@ -9,11 +10,11 @@ import {
   USDC_MINT,
   WSOL_MINT,
 } from "@coral-xyz/common";
+import { getAssociatedTokenAddress } from "@solana/spl-token";
 import type { TokenInfo } from "@solana/spl-token-registry";
-import { Transaction } from "@solana/web3.js";
+import { PublicKey, Transaction } from "@solana/web3.js";
 import * as bs58 from "bs58";
 import { BigNumber, ethers, FixedNumber } from "ethers";
-import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { blockchainTokenData } from "../atoms/balance";
 import { jupiterInputTokens } from "../atoms/solana/jupiter";
@@ -347,6 +348,25 @@ export function SwapProvider({
         fee = 5000;
       }
     }
+
+    try {
+      // if the output mint token account contains no lamports then we must create it
+      if (
+        !(await connection.getBalance(
+          await getAssociatedTokenAddress(
+            new PublicKey(toMint),
+            walletPublicKey
+          )
+        ))
+      ) {
+        // rent-exemption lamports required for SPL Token V2 (0.00203928 SOL)
+        fee += 203928;
+      }
+    } catch (err) {
+      // don't throw on this until it's undergone further testing
+      console.error(err);
+    }
+
     return BigNumber.from(fee);
   };
 
