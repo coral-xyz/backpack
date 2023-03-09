@@ -34,10 +34,10 @@ import CallMadeIcon from "@mui/icons-material/CallMade";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoneIcon from "@mui/icons-material/Done";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+import Info from "@mui/icons-material/Info";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { Button, IconButton, Skeleton, Tooltip } from "@mui/material";
-import Info from "@mui/icons-material/Info";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { createStyles, makeStyles } from "@mui/styles";
@@ -1154,7 +1154,6 @@ function DeleteIconInternal({
   );
 }
 
-
 function DeletedMessage() {
   const theme = useCustomTheme();
   return (
@@ -1170,7 +1169,7 @@ function DeletedMessage() {
       }}
     >
       <span>Message removed</span>
-      <Tooltip title="This was probably a spam">
+      <Tooltip title="This was probably spam">
         <Info
           style={{
             fontSize: "1rem",
