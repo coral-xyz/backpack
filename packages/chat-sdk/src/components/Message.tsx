@@ -36,7 +36,8 @@ import DoneIcon from "@mui/icons-material/Done";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import VerifiedIcon from "@mui/icons-material/Verified";
-import { Button, IconButton, Skeleton } from "@mui/material";
+import { Button, IconButton, Skeleton, Tooltip } from "@mui/material";
+import Info from "@mui/icons-material/Info";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { createStyles, makeStyles } from "@mui/styles";
@@ -1153,6 +1154,7 @@ function DeleteIconInternal({
   );
 }
 
+
 function DeletedMessage() {
   const theme = useCustomTheme();
   return (
@@ -1164,9 +1166,19 @@ function DeletedMessage() {
         display: "inline-flex",
         padding: "2px 6px",
         marginLeft: -6,
+        alignItems: "center",
       }}
     >
-      Message removed
+      <span>Message removed</span>
+      <Tooltip title="This was probably a spam">
+        <Info
+          style={{
+            fontSize: "1rem",
+            marginLeft: 4,
+            color: theme.custom.colors.icon,
+          }}
+        />
+      </Tooltip>
     </div>
   );
 }
