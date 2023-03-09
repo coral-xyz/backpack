@@ -4,8 +4,13 @@ import type {
   SignedWalletDescriptor,
   WalletDescriptor,
 } from "@coral-xyz/common";
-import { Blockchain, getAuthMessage } from "@coral-xyz/common";
-import { useOnboarding, useSignMessageForWallet } from "@coral-xyz/recoil";
+import {
+  Blockchain,
+  getAuthMessage,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+} from "@coral-xyz/common";
+import { useBackgroundClient, useOnboarding } from "@coral-xyz/recoil";
+import { ethers } from "ethers";
 
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
@@ -31,6 +36,7 @@ export const RecoverAccount = ({
   isOnboarded?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
+  const background = useBackgroundClient();
   const { onboardingData, setOnboardingData } = useOnboarding();
   const {
     userId,
@@ -41,7 +47,6 @@ export const RecoverAccount = ({
   } = onboardingData;
 
   const authMessage = userId ? getAuthMessage(userId) : "";
-  const signMessageForWallet = useSignMessageForWallet(mnemonic);
   const hardwareOnboardSteps = useHardwareOnboardSteps({
     blockchain:
       serverPublicKeys.length > 0
@@ -87,42 +92,61 @@ export const RecoverAccount = ({
     />,
     ...(keyringType === "mnemonic"
       ? [
-          // Using a mnemonic
+        // Using a mnemonic
         <MnemonicInput
           key="MnemonicInput"
           buttonLabel="Next"
           onNext={(mnemonic: string) => {
-              setOnboardingData({ mnemonic });
-              nextStep();
-            }}
-          />,
+            setOnboardingData({ mnemonic });
+            nextStep();
+          }}
+        />,
         <MnemonicSearch
           key="MnemonicSearch"
           serverPublicKeys={serverPublicKeys!}
           mnemonic={mnemonic!}
-          onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
-              const signedWalletDescriptors = await Promise.all(
-                walletDescriptors.map(async (w) => ({
-                  ...w,
-                  signature: await signMessageForWallet(w, authMessage),
-                }))
-              );
-              setOnboardingData({ signedWalletDescriptors });
-              nextStep();
-            }}
+          onNext={async (
+            wallets: Array<{
+              blockchain: Blockchain;
+              descriptor: WalletDescriptor;
+            }>
+          ) => {
+            const signedWalletDescriptors = await Promise.all(
+              wallets.map(async ({ blockchain, descriptor }) => {
+                const signature = await background.request({
+                  method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+                  params: [
+                    blockchain,
+                    descriptor.publicKey,
+                    ethers.utils.base58.encode(
+                      Buffer.from(authMessage, "utf-8")
+                    ),
+                    [mnemonic, [descriptor.derivationPath]],
+                  ],
+                });
+                return {
+                  ...descriptor,
+                  signature,
+                };
+              })
+            );
+            setOnboardingData({ signedWalletDescriptors });
+            nextStep();
+          }}
           onRetry={prevStep}
-          />,
-        ]
+        />,
+      ]
       : hardwareOnboardSteps),
     ...(!isAddingAccount
       ? [
         <CreatePassword
           key="CreatePassword"
           onNext={async (password) => {
-              setOnboardingData({ password });
-              nextStep();
-            }}
-          />,
+            
+            setOnboardingData({ password });
+            nextStep();
+          }}
+        />,
         ]
       : []),
     ...(signedWalletDescriptors.length > 0

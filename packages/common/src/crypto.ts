@@ -90,7 +90,7 @@ export const getIndexedPath = (
     accountIndex + HARDENING,
     0 + HARDENING,
   ];
-  if (walletIndex > 0) path.push(walletIndex - 1 + HARDENING);
+  if (walletIndex >= 0) path.push(walletIndex + HARDENING);
   return new BIPPath.fromPathArray(path).toString();
 };
 
@@ -120,8 +120,8 @@ export const getAccountRecoveryPaths = (
   blockchain: Blockchain,
   accountIndex: number
 ) => {
-  return [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map((j) =>
-    getIndexedPath(blockchain, accountIndex, j)
+  return [...Array(LOAD_PUBLIC_KEY_AMOUNT + 1).keys()].map((j) =>
+    getIndexedPath(blockchain, accountIndex, j - 1)
   );
 };
 
@@ -207,7 +207,15 @@ export const getRecoveryPaths = (blockchain: Blockchain) => {
   // Legacy imported accounts (m/44/501'/0' and m/44/501'/0'/{0...n})
   paths = paths.concat(legacyBip44ChangeRecoveryPaths(blockchain));
 
-  if (blockchain === Blockchain.ETHEREUM) {
+  if (blockchain === Blockchain.SOLANA) {
+    // Handle legacy Solana wallets that were created in 0.5.0 that had
+    // Ethereum derivation paths
+    paths = paths.concat(
+      getAccountRecoveryPaths(Blockchain.SOLANA, 0).map((d) =>
+        d.replace("501", "60")
+      )
+    );
+  } else if (blockchain === Blockchain.ETHEREUM) {
     paths = paths.concat(
       [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(ethereumIndexed)
     );

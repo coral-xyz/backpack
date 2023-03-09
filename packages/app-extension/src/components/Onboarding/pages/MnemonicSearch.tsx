@@ -2,7 +2,11 @@
 // a loading indicator until it is found (or an error if it not found).
 
 import { useEffect, useState } from "react";
-import type { ServerPublicKey, WalletDescriptor } from "@coral-xyz/common";
+import type {
+  Blockchain,
+  ServerPublicKey,
+  WalletDescriptor,
+} from "@coral-xyz/common";
 import {
   getRecoveryPaths,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
@@ -22,7 +26,9 @@ export const MnemonicSearch = ({
 }: {
   serverPublicKeys: Array<ServerPublicKey>;
   mnemonic: string;
-  onNext: (walletDescriptors: Array<WalletDescriptor>) => void;
+  onNext: (
+    wallets: Array<{ blockchain: Blockchain; descriptor: WalletDescriptor }>
+  ) => void;
   onRetry: () => void;
 }) => {
   const [error, setError] = useState(false);
@@ -30,7 +36,10 @@ export const MnemonicSearch = ({
 
   useEffect(() => {
     (async () => {
-      const walletDescriptors: Array<WalletDescriptor> = [];
+      const wallets: Array<{
+        blockchain: Blockchain;
+        descriptor: WalletDescriptor;
+      }> = [];
       const blockchains = [
         ...new Set(serverPublicKeys.map((x) => x.blockchain)),
       ];
@@ -46,15 +55,18 @@ export const MnemonicSearch = ({
         for (const publicKey of searchPublicKeys) {
           const index = publicKeys.findIndex((p: string) => p === publicKey);
           if (index !== -1) {
-            walletDescriptors.push({
-              derivationPath: recoveryPaths[index],
-              publicKey,
+            wallets.push({
+              blockchain,
+              descriptor: {
+                derivationPath: recoveryPaths[index],
+                publicKey,
+              },
             });
           }
         }
       }
-      if (walletDescriptors.length > 0) {
-        onNext(walletDescriptors);
+      if (wallets.length > 0) {
+        onNext(wallets);
       } else {
         setError(true);
       }

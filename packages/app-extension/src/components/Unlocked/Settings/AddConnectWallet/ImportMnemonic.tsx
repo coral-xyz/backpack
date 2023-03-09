@@ -54,7 +54,7 @@ export function ImportMnemonic({
     publicKey ?? null
   );
   const [name, setName] = useState<string | null>(null);
-  const signMessageForWallet = useSignMessageForWallet(mnemonic);
+  const signMessageForWallet = useSignMessageForWallet(blockchain, mnemonic);
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -62,7 +62,7 @@ export function ImportMnemonic({
     return () => {
       nav.setOptions({ headerTitle: prevTitle });
     };
-  }, [theme]);
+  }, [nav, theme]);
 
   // TODO replace the left nav button to go to the previous step if step > 0
 
@@ -106,6 +106,7 @@ export function ImportMnemonic({
     ...(inputMnemonic
       ? [
         <MnemonicInput
+          key="MnemonicInput"
           buttonLabel="Next"
           onNext={(mnemonic) => {
               setMnemonic(mnemonic);
@@ -115,6 +116,7 @@ export function ImportMnemonic({
           // Must prompt for a name if using an input mnemonic, because we can't
           // easily generate one
         <InputName
+          key="InputName"
           onNext={(name) => {
               setName(name);
               nextStep();
@@ -123,7 +125,8 @@ export function ImportMnemonic({
         ]
       : []),
     <ImportWallets
-      blockchain={blockchain!}
+      key="ImportWallets"
+      blockchain={blockchain}
       mnemonic={mnemonic}
       recovery={publicKey}
       allowMultiple={false}
