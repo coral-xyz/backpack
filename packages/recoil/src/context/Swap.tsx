@@ -63,7 +63,7 @@ type JupiterRoute = {
   swapMode: string;
 };
 
-type SwapContext = {
+export type SwapContext = {
   // Mint settings
   fromMint: string;
   setFromMint: (mint: string) => void;
@@ -87,7 +87,9 @@ type SwapContext = {
   // Execute the function
   executeSwap: () => Promise<boolean>;
   // Fees
-  transactionFee: BigNumber | undefined;
+  transactionFees:
+    | { fees: Record<string, BigNumber>; total: BigNumber }
+    | undefined;
   swapFee: JupiterRoute["marketInfos"][number]["platformFee"];
   availableForSwap: BigNumber;
   exceedsBalance: boolean | undefined;
@@ -158,9 +160,8 @@ export function SwapProvider({
   // Jupiter data
   const [routes, setRoutes] = useState<JupiterRoute[]>([]);
   const [transaction, setTransaction] = useState<string | undefined>(undefined);
-  const [transactionFee, setTransactionFee] = useState<BigNumber | undefined>(
-    undefined
-  );
+  const [transactionFees, setTransactionFees] =
+    useState<SwapContext["transactionFees"]>(undefined);
   const [isLoadingRoutes, setIsLoadingRoutes] = useState(false);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
 
@@ -244,9 +245,9 @@ export function SwapProvider({
 
   // If from mint is native SOL, remove the transaction fee and rent exemption
   // from from the max swap amount
-  if (fromMint === SOL_NATIVE_MINT && transactionFee) {
+  if (fromMint === SOL_NATIVE_MINT && transactionFees) {
     availableForSwap = availableForSwap
-      .sub(transactionFee)
+      .sub(transactionFees.total)
       .sub(BigNumber.from(NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS));
     if (availableForSwap.lt(Zero)) {
       availableForSwap = Zero;
@@ -259,8 +260,8 @@ export function SwapProvider({
 
   const solanaToken = fromTokens.find((t) => t.mint === SOL_NATIVE_MINT);
   const feeExceedsBalance =
-    transactionFee && solanaToken
-      ? transactionFee.gt(solanaToken.nativeBalance)
+    transactionFees && solanaToken
+      ? transactionFees.total.gt(solanaToken.nativeBalance)
       : undefined;
 
   const stopRoutePolling = () => {
@@ -320,7 +321,7 @@ export function SwapProvider({
     (async () => {
       const transaction = await fetchTransaction();
       setTransaction(transaction);
-      setTransactionFee(await estimateFee(transaction));
+      setTransactionFees(await estimateFees(transaction));
       setIsLoadingTransactions(false);
     })();
   }, [routes]);
@@ -328,46 +329,66 @@ export function SwapProvider({
   //
   // Estimate the network fees the transactions will incur.
   //
-  const estimateFee = async (transaction: string) => {
-    let fee = 0;
-    if (!isJupiterSwap) {
-      // Simple wrap or unwrap, assume 5000
-      fee += 5000;
-    } else if (!routes || routes.length === 0 || transaction === undefined) {
-      // Haven't got routes yet, assume 5000 for swap
-      fee += 5000;
-    } else {
-      // Estimate fees for the existing transactions by querying
-      try {
-        const tx = Transaction.from(Buffer.from(transaction, "base64"));
-        // Under the hood this just calls connection.getFeeForMessage with
-        // the message, it's a convenience method
-        fee += await tx.getEstimatedFee(connection);
-      } catch (e) {
-        // Couldn't load fees, assume 5000, not worth failing over
-        fee = 5000;
-      }
-    }
+  const estimateFees = async (transaction: string) => {
+    const [solanaNetworkFee, tokenAccountCreationFee] = await Promise.all([
+      (async () => {
+        if (!isJupiterSwap) {
+          // Simple wrap or unwrap, assume 5000
+          return 5000;
+        } else if (
+          !routes ||
+          routes.length === 0 ||
+          transaction === undefined
+        ) {
+          // Haven't got routes yet, assume 5000 for swap
+          return 5000;
+        } else {
+          // Estimate fees for the existing transactions by querying
+          try {
+            const tx = Transaction.from(Buffer.from(transaction, "base64"));
+            // Under the hood this just calls connection.getFeeForMessage with
+            // the message, it's a convenience method
+            return await tx.getEstimatedFee(connection);
+          } catch (e) {
+            // Couldn't load fees, assume 5000, not worth failing over
+            return 5000;
+          }
+        }
+      })(),
+      (async () => {
+        try {
+          if (!toMint || [SOL_NATIVE_MINT, WSOL_MINT].includes(toMint)) {
+            return 0;
+          }
+          // if the output mint token account contains no lamports then we must create it
+          else if (
+            !(await connection.getBalance(
+              await getAssociatedTokenAddress(
+                new PublicKey(toMint),
+                walletPublicKey
+              )
+            ))
+          ) {
+            // rent-exemption lamports required for SPL Token V2 (0.00203928 SOL)
+            return 203928;
+          }
+        } catch (err) {
+          // don't throw on this until it's undergone further testing
+          console.error(err);
+        }
+        return 0;
+      })(),
+    ]);
 
-    try {
-      // if the output mint token account contains no lamports then we must create it
-      if (
-        !(await connection.getBalance(
-          await getAssociatedTokenAddress(
-            new PublicKey(toMint),
-            walletPublicKey
-          )
-        ))
-      ) {
-        // rent-exemption lamports required for SPL Token V2 (0.00203928 SOL)
-        fee += 203928;
-      }
-    } catch (err) {
-      // don't throw on this until it's undergone further testing
-      console.error(err);
-    }
-
-    return BigNumber.from(fee);
+    return {
+      fees: {
+        "Solana network": BigNumber.from(solanaNetworkFee),
+        ...(tokenAccountCreationFee > 0 && {
+          "One-time token account": BigNumber.from(tokenAccountCreationFee),
+        }),
+      },
+      total: BigNumber.from(solanaNetworkFee + tokenAccountCreationFee),
+    };
   };
 
   //
@@ -541,7 +562,7 @@ export function SwapProvider({
         priceImpactPct,
         isLoadingRoutes,
         isLoadingTransactions,
-        transactionFee,
+        transactionFees,
         swapFee,
         isJupiterError,
         availableForSwap,
