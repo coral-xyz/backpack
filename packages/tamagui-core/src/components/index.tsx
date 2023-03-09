@@ -1,8 +1,6 @@
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-export * from "./Circle";
-
 import { HOVER_OPACITY, useCustomTheme } from "../hooks";
 
 export function Margin({
