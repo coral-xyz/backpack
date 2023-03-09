@@ -366,15 +366,19 @@ export const MessageLine = (props) => {
                       </div>
                     </div>
                   ) : (
-                    <div
-                      style={{ marginLeft: 5 }}
-                      className={!props.deleted ? classes.hoverChild : ""}
-                    >
-                      {" "}
-                      <DeleteIconInternal
-                        client_generated_uuid={props.client_generated_uuid}
-                        messageSender={props.uuid}
-                      />{" "}
+                    <div>
+                      {!props.deleted ? (
+                        <div
+                          style={{ marginLeft: 5 }}
+                          className={classes.hoverChild}
+                        >
+                          {" "}
+                          <DeleteIconInternal
+                            client_generated_uuid={props.client_generated_uuid}
+                            messageSender={props.uuid}
+                          />{" "}
+                        </div>
+                      ) : null}
                     </div>
                   )}
                 </div>
@@ -551,15 +555,19 @@ export const MessageLine = (props) => {
                       </div>
                     </div>
                   ) : (
-                    <div
-                      style={{ marginLeft: 5 }}
-                      className={!props.deleted ? classes.hoverChild : ""}
-                    >
-                      {" "}
-                      <DeleteIconInternal
-                        client_generated_uuid={props.client_generated_uuid}
-                        messageSender={props.uuid}
-                      />{" "}
+                    <div>
+                      {!props.deleted ? (
+                        <div
+                          style={{ marginLeft: 5 }}
+                          className={classes.hoverChild}
+                        >
+                          {" "}
+                          <DeleteIconInternal
+                            client_generated_uuid={props.client_generated_uuid}
+                            messageSender={props.uuid}
+                          />{" "}
+                        </div>
+                      ) : null}
                     </div>
                   )}
                 </div>
