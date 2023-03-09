@@ -21,8 +21,8 @@ import {
   PrimaryButton,
   DangerButton,
   // SearchBox,
-  YStack,
-  Input,
+  // YStack,
+  // Input,
   ScrollView,
   Box,
   Text,
@@ -62,12 +62,18 @@ export function SendTokenSelectUserScreen({ navigation, route }): JSX.Element {
     ethereumCtx.provider
   );
 
+  console.log("blockchain", blockchain);
+  console.log("inputContent", inputContent);
+  console.log("isValidAddress", isValidAddress);
+  console.log("normalizedAddress", normalizedAddress);
+
   const hasInputError = !isValidAddress && inputContent.length > 15;
   console.log("searchResults", searchResults);
 
   return (
     <ScrollView p={16} f={1} jc="space-between">
       <SearchInput
+        blockchain={blockchain}
         searchResults={searchResults}
         inputContent={inputContent}
         setInputContent={setInputContent}
@@ -114,11 +120,9 @@ const SearchInput = ({
   inputContent: string;
   setInputContent: any;
   setSearchResults: any;
-  searchResults: any[];
+  searchResults: RemoteUserData[];
   blockchain: Blockchain;
 }) => {
-  // const theme = useCustomTheme();
-
   const fetchUserDetails = async (address: string, blockchain: Blockchain) => {
     try {
       const response = await fetch(
@@ -132,6 +136,7 @@ const SearchInput = ({
       );
     } catch (e) {
       console.error(e);
+      return [];
     }
   };
 
