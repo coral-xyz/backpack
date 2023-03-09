@@ -6,12 +6,13 @@ import type { Program, Provider, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { AnchorProvider, BN, Spl } from "@project-serum/anchor";
 import type { RawMint } from "@solana/spl-token";
-import { getAssociatedTokenAddress , MintLayout } from "@solana/spl-token";
-import type { Connection} from "@solana/web3.js";
-import { Keypair , PublicKey } from "@solana/web3.js";
+import { getAssociatedTokenAddress, MintLayout } from "@solana/spl-token";
+import type { Connection } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 
 import { getLogger } from "../../logging";
 import { externalResourceUri } from "../../utils";
+import type { ReadApiConnection } from "../read-api-connection";
 import type {
   ReplaceTypes,
   SolanaTokenAccount,
@@ -87,17 +88,35 @@ export async function customSplTokenAccounts(
     fetchSplMetadata(tokenClient.provider, tokenAccountsArray),
   ]);
 
-  //
-  // Separate out fungible and non-fungible tokens.
-  //
-  const { fungibleTokens, fungibleTokenMetadata } = splitOutNfts(
-    tokenAccountsArray,
-    tokenMetadata,
-    new Map(mintsMap) as Map<string, RawMint>
-  );
+  let fungibleTokens;
+  let fungibleTokenMetadata;
+  let nftTokens;
+  let nftTokenMetadata;
+  if (connection.constructor.name === "ReadApiConnection") {
+    //
+    // Separate out fungible and non-fungible tokens.
+    //
+    ({ fungibleTokens, fungibleTokenMetadata } = splitOutNfts(
+      tokenAccountsArray,
+      tokenMetadata,
+      new Map(mintsMap) as Map<string, RawMint>
+    ));
 
-  // TODO(jon): Add a feature-flag here
-  const { nftTokens, nftTokenMetadata } = await fetchReadApiNfts(publicKey);
+    ({ nftTokens, nftTokenMetadata } = await fetchReadApiNfts(
+      connection as ReadApiConnection,
+      publicKey
+    ));
+  } else {
+    //
+    // Separate out fungible and non-fungible tokens.
+    //
+    ({ fungibleTokens, fungibleTokenMetadata, nftTokens, nftTokenMetadata } =
+      splitOutNfts(
+        tokenAccountsArray,
+        tokenMetadata,
+        new Map(mintsMap) as Map<string, RawMint>
+      ));
+  }
 
   //
   // Add native SOL to the token and metadata list.
@@ -197,37 +216,15 @@ export async function fetchSplMetadata(
   return tokenMetaAccounts;
 }
 
-export async function fetchReadApiNfts(publicKey: PublicKey) {
-  const options = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      method: "get_assets_by_owner",
-      // TODO(jon): This should uniquely identify this operation
-      id: "rpd-op-123",
-      params: [
-        // publicKey,
-        new PublicKey("6kPuZ1ZU684dwUSnJFXXFsCJfxKSaWnHRn2V5k4PgYm6"),
-        { sortBy: "updated", sortDirection: "desc" },
-        // change limit
-        5,
-        // change page
-        0,
-        "",
-        "",
-      ],
-    }),
-  };
+export async function fetchReadApiNfts(
+  connection: ReadApiConnection,
+  publicKey: PublicKey
+) {
+  const result = await connection.getAssetsByOwner(publicKey);
 
-  // The Metaplex Read API is surfaced on the same connection URL as the typical Solana RPC
-  const json =
-    await // TODO(jon): Make this replaceable / use the existing providers RPC methods
-    (await fetch("https://rpc-devnet.aws.metaplex.com/", options)).json();
-  const nftTokens: any[] = [];
-  const nftTokenMetadata: any[] = [];
-
-  for (const nft of json.result.items) {
+  let nftTokens: any[] = [];
+  let nftTokenMetadata: any[] = [];
+  for (const nft of result.items) {
     nftTokens.push({
       mint: nft.id,
       authority: nft.ownership.owner,

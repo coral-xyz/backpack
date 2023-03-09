@@ -79,6 +79,7 @@ export * from "./cluster";
 export * from "./explorer";
 export * from "./programs";
 export * from "./provider";
+export * from "./read-api-connection";
 export * from "./rpc-helpers";
 export * from "./transaction-helpers";
 export * from "./types";

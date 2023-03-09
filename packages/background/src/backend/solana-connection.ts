@@ -22,6 +22,7 @@ import {
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
+  ReadApiConnection,
 } from "@coral-xyz/common";
 import type {
   AccountBalancePair,
@@ -109,6 +110,20 @@ export function start(events: EventEmitter): SolanaConnectionBackend {
   return b;
 }
 
+const initConnection = (
+  solanaConnectionUrl,
+  solanaCommitment?,
+  { solanaCompressedNftsEnabled }: { solanaCompressedNftsEnabled: boolean } = {
+    solanaCompressedNftsEnabled: false,
+  }
+) => {
+  if (solanaCompressedNftsEnabled) {
+    return new ReadApiConnection(solanaConnectionUrl, solanaCommitment);
+  } else {
+    return new Connection(solanaConnectionUrl, solanaCommitment);
+  }
+};
+
 export class SolanaConnectionBackend {
   private cache = new Map<string, CachedValue<any>>();
   private connection?: Connection;
@@ -167,11 +182,19 @@ export class SolanaConnectionBackend {
       handleKeyringStoreUnlocked(notif);
     };
 
+    // This is what i want
     const handleKeyringStoreUnlocked = (notif: Notification) => {
-      const { blockchainActiveWallets, solanaConnectionUrl, solanaCommitment } =
-        notif.data;
+      const {
+        blockchainActiveWallets,
+        solanaConnectionUrl,
+        solanaCommitment,
+        solanaCompressedNftsEnabled,
+      } = notif.data;
 
-      this.connection = new Connection(solanaConnectionUrl, solanaCommitment);
+      this.connection = initConnection(solanaConnectionUrl, solanaCommitment, {
+        solanaCompressedNftsEnabled,
+      });
+
       this.url = solanaConnectionUrl;
 
       this.hookRpcRequest();
@@ -193,8 +216,10 @@ export class SolanaConnectionBackend {
     };
 
     const handleConnectionUrlUpdated = (notif: Notification) => {
-      const { activeWallet, url } = notif.data;
-      this.connection = new Connection(url, this.connection!.commitment);
+      const { activeWallet, url, solanaCompressedNftsEnabled } = notif.data;
+      this.connection = initConnection(url, this.connection!.commitment, {
+        solanaCompressedNftsEnabled,
+      });
       this.url = url;
       // activeWallet can be null if the blockchain is disabled, in that case
       // we don't want to start polling

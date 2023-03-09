@@ -292,6 +292,7 @@ export class Backend {
       data: {
         activeWallet,
         url: cluster,
+        solanaCompressedNftsEnabled: data.solana.compressedNfts,
       },
     });
 
@@ -679,6 +680,9 @@ export class Backend {
       userInfo.uuid
     );
     const solanaCommitment = await this.solanaCommitmentRead(userInfo.uuid);
+    const solanaCompressedNftsEnabled = await this.solanaCompressedNftsRead(
+      userInfo.uuid
+    );
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
@@ -689,6 +693,7 @@ export class Backend {
         ethereumChainId,
         solanaConnectionUrl,
         solanaCommitment,
+        solanaCompressedNftsEnabled,
       },
     });
 
