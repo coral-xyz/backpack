@@ -205,15 +205,10 @@ function OnboardingCreateOrImportWalletScreen({
         ]}
       >
         <HelpModalMenuButton onPress={handlePresentModalPress} />
-        <Margin top={48} bottom={24}>
+        <Box marginTop={48} marginBottom={24}>
           <WelcomeLogoHeader />
-        </Margin>
-        <View
-          style={{
-            padding: 16,
-            alignItems: "center",
-          }}
-        >
+        </Box>
+        <Box padding={16} alignItems="center">
           <PrimaryButton
             label="Create a new account"
             onPress={() => {
@@ -228,7 +223,7 @@ function OnboardingCreateOrImportWalletScreen({
               navigation.push("OnboardingUsername", { action: "recover" });
             }}
           />
-        </View>
+        </Box>
       </Screen>
       <BottomSheetHelpModal
         isVisible={isModalVisible}
