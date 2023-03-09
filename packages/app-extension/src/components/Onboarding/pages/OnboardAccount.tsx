@@ -128,7 +128,16 @@ export const OnboardAccount = ({
       onNext={nextStep}
     />,
     ...(keyringType === "private-key"
-      ? [<PrivateKeyInput key="PrivateKeyInput" />]
+      ? [
+        <PrivateKeyInput
+          key="PrivateKeyInput"
+          blockchain={blockchain!}
+          onNext={(privateKey) => {
+              setOnboardingData({ privateKey });
+              nextStep();
+            }}
+          />,
+        ]
       : []),
     ...(!isAddingAccount
       ? [

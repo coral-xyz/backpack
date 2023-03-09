@@ -50,12 +50,12 @@ import {
   UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC,
   UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_HAS_MNEMONIC,
-  UI_RPC_METHOD_KEYRING_SET_MNEMONIC,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
   UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH,
   UI_RPC_METHOD_KEYRING_RESET,
+  UI_RPC_METHOD_KEYRING_SET_MNEMONIC,
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
@@ -718,7 +718,10 @@ function handleKeyringHasMnemonic(ctx: Context<Backend>): RpcResponse<string> {
   return [resp];
 }
 
-function handleKeyringSetMnemonic(ctx: Context<Backend>, mnemonic: string): RpcResponse<string> {
+function handleKeyringSetMnemonic(
+  ctx: Context<Backend>,
+  mnemonic: string
+): RpcResponse<string> {
   const resp = ctx.backend.keyringSetMnemonic(mnemonic);
   return [resp];
 }

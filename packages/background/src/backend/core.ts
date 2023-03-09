@@ -1119,14 +1119,18 @@ export class Backend {
       name
     );
 
+    console.log("a");
     try {
+      console.log("b");
       await this.userAccountPublicKeyCreate(blockchain, publicKey);
     } catch (error) {
       // Something went wrong persisting to server, roll back changes to the
       // keyring.
+      console.log("c");
       await this.keyringKeyDelete(blockchain, publicKey);
       throw error;
     }
+    console.log("d");
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
@@ -1136,6 +1140,8 @@ export class Backend {
         name: _name,
       },
     });
+
+    console.log("e");
 
     // Set the active wallet to the newly added public key
     await this.activeWalletUpdate(publicKey, blockchain);

@@ -10,6 +10,7 @@ import { useOnboarding, useSignMessageForWallet } from "@coral-xyz/recoil";
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
 import { MnemonicInput } from "../../common/Account/MnemonicInput";
+import { PrivateKeyInput } from "../../common/Account/PrivateKeyInput";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 import { useHardwareOnboardSteps } from "../../Onboarding/pages/HardwareOnboard";
 
@@ -65,8 +66,6 @@ export const RecoverAccount = ({
     prevStep,
   });
 
-  console.log("recovery");
-
   const steps = [
     <RecoverAccountUsernameForm
       key="RecoverAccountUsernameForm"
@@ -117,7 +116,18 @@ export const RecoverAccount = ({
         ]
       : []),
     ...(keyringType === "ledger" ? hardwareOnboardSteps : []),
-    ...(keyringType === "private-key" ? [] : []),
+    ...(keyringType === "private-key"
+      ? [
+        <PrivateKeyInput
+          key="PrivateKeyInput"
+          blockchain={Blockchain.SOLANA}
+          onNext={(privateKey: string) => {
+              setOnboardingData({ privateKey });
+              nextStep();
+            }}
+          />,
+        ]
+      : []),
     ...(!isAddingAccount
       ? [
         <CreatePassword

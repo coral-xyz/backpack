@@ -25,7 +25,6 @@ export function ImportSecretKey({
   const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [newPublicKey, setNewPublicKey] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const { close: closeParentDrawer } = useDrawerContext();
 
   useEffect(() => {
@@ -36,17 +35,18 @@ export function ImportSecretKey({
     };
   }, [nav, theme]);
 
-  const onNext = async (
-    privateKey: string,
-    publicKey: string,
-    name: String
-  ) => {
+  const onNext = async (privateKey: string) => {
+    const name = "New";
+    console.log("a");
     const newPublicKey = await background.request({
       method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
       params: [blockchain, privateKey, name],
     });
+    console.log("a");
     setNewPublicKey(newPublicKey);
+    console.log("a");
     setOpenDrawer(true);
+    console.log("a");
   };
 
   return (
@@ -55,8 +55,6 @@ export function ImportSecretKey({
         blockchain={blockchain}
         onNext={onNext}
         publicKey={publicKey}
-        error={error}
-        setError={setError}
       />
       <WithMiniDrawer
         openDrawer={openDrawer}
