@@ -1,2 +1,3 @@
+export * from "./theme";
 // @ts-expect-error
-export { useTheme } from "./useTheme";
+export { useCustomTheme } from "./useTheme";

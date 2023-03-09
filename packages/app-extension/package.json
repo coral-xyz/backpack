@@ -51,6 +51,7 @@
     "react-virtualized-auto-sizer": "^1.0.7",
     "react-window": "^1.8.8",
     "recoil": "^0.7.6",
+    "tamagui": "^1.7.3",
     "web-push": "^3.5.0"
   },
   "scripts": {
