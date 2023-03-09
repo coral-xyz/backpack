@@ -14,6 +14,7 @@
     "*.css"
   ],
   "dependencies": {
+    "@coral-xyz/recoil": "*",
     "@tamagui/animations-react-native": "^1.7.1",
     "@tamagui/babel-plugin": "^1.7.1",
     "@tamagui/config": "^1.7.1",

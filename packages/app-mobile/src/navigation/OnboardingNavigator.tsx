@@ -153,7 +153,7 @@ function OnboardingScreen({
   style,
   scrollable,
 }: {
-  title: string;
+  title?: string;
   subtitle?: string;
   children?: any;
   style?: StyleProp<ViewStyle>;
@@ -171,10 +171,12 @@ function OnboardingScreen({
         style,
       ]}
     >
-      <Box marginBottom={24}>
-        <Header text={title} />
-        {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
-      </Box>
+      {title || subtitle ? (
+        <Box mb={24}>
+          {title ? <Header text={title} /> : null}
+          {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
+        </Box>
+      ) : null}
       {children}
     </Screen>
   );
@@ -242,7 +244,7 @@ function OnboardingKeyringTypeSelectorScreen({
   const { action } = onboardingData;
 
   return (
-    <OnboardingScreen title="Keyring Selector">
+    <OnboardingScreen>
       {maybeRender(action === "create", () => (
         <>
           <Header text="Create a new wallet" />
@@ -268,7 +270,7 @@ function OnboardingKeyringTypeSelectorScreen({
           </SubtextParagraph>
         </>
       ))}
-      <Box alignItems="center" padding={16}>
+      <Box alignItems="center" p={16}>
         <PrimaryButton
           label={`${toTitleCase(action as string)} with recovery phrase`}
           onPress={() => {
