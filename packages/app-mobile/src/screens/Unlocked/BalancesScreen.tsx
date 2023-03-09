@@ -10,7 +10,6 @@ import {
   toTitleCase,
 } from "@coral-xyz/common";
 import { createStackNavigator } from "@react-navigation/stack";
-import { RecentActivityList } from "~screens/Unlocked/RecentActivityScreen";
 
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import { Margin, Screen, TokenAmountHeader } from "~components/index";
@@ -19,6 +18,7 @@ import {
   useBlockchainActiveWallet,
   useActiveEthereumWallet,
 } from "~hooks/recoil";
+import { RecentActivityList } from "~screens/Unlocked/RecentActivityScreen";
 
 import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";
@@ -124,6 +124,7 @@ function BalanceListScreen({
       </Margin>
       <Margin bottom={18}>
         <TransferWidget
+          swapEnabled={false}
           rampEnabled={false}
           onPressOption={(route: string, options: NavTokenOptions) => {
             navigation.push(route, options);

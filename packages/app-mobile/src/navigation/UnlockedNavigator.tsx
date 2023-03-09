@@ -3,11 +3,21 @@ import type { Blockchain } from "@coral-xyz/common";
 
 import { useCallback } from "react";
 
-import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
-import AppListScreen from "~screens/Unlocked/AppListScreen";
+
+import {
+  IconCloseModal,
+  TabIconBalances,
+  TabIconApps,
+  TabIconNfts,
+  TabIconMessages,
+} from "~components/Icon";
+import { NavHeader } from "~components/index";
+import { useTheme } from "~hooks/useTheme";
+import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
+// import AppListScreen from "~screens/Unlocked/AppListScreen"; // TURNED off bc of app store restrictions (temporarily)
 import { BalancesNavigator } from "~screens/Unlocked/BalancesScreen";
 import {
   DepositListScreen,
@@ -21,16 +31,6 @@ import {
 } from "~screens/Unlocked/SendTokenScreen";
 import { SwapTokenScreen } from "~screens/Unlocked/SwapTokenScreen";
 import { WalletListScreen } from "~screens/Unlocked/WalletListScreen";
-
-import {
-  IconCloseModal,
-  TabIconBalances,
-  TabIconApps,
-  TabIconNfts,
-  TabIconMessages,
-} from "~components/Icon";
-import { NavHeader } from "~components/index";
-import { useTheme } from "~hooks/useTheme";
 
 export type UnlockedNavigatorStackParamList = {
   Tabs: undefined;
@@ -67,9 +67,6 @@ export function UnlockedNavigator(): JSX.Element {
           headerBackTitleVisible: false,
           headerTintColor: theme.custom.colors.fontColor,
           headerBackImage: IconCloseModal,
-          // headerStyle: {
-          //   backgroundColor: theme.custom.colors.background,
-          // },
         }}
       >
         <Stack.Screen name="RecentActivity" component={RecentActivityScreen} />
@@ -154,7 +151,6 @@ function UnlockedBottomTabNavigator(): JSX.Element {
       })}
     >
       <Tab.Screen name="Balances" component={BalancesNavigator} />
-      <Tab.Screen name="Applications" component={AppListScreen} />
       <Tab.Screen name="Collectibles" component={NftCollectiblesNavigator} />
     </Tab.Navigator>
   );
