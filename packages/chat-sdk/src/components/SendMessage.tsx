@@ -350,7 +350,7 @@ export const SendMessage = ({
                 setAboveMessagePlugin={setAboveMessagePlugin}
               />
             ) : null}
-            {type === "individual" && BARTER_ENABLED ? (
+            {type === "individual" && featureGates["BARTER_ENABLED"] ? (
               <Barter
                 setOpenPlugin={setOpenPlugin}
                 onMediaSelect={onMediaSelect}

@@ -8,6 +8,7 @@ export const DEFAULT_FEATURE_GATES = {
   SWAP_FEES_ENABLED: false,
   DROPZONE_ENABLED: false,
   STICKER_ENABLED: false,
+  BARTER_ENABLED: false,
 } as const;
 
 export type FEATURE_GATES_MAP = typeof DEFAULT_FEATURE_GATES;
