@@ -332,20 +332,21 @@ export const MessageLine = (props) => {
                     )}
                   </p>
                 </div>
-                {!props.deleted ? <div>
-                  {props.messageKind === "text" ? (
-                    <div
-                      style={{ display: "flex" }}
-                      className={classes.hoverChild}
-                      >
+                {!props.deleted ? (
+                  <div>
+                    {props.messageKind === "text" ? (
                       <div
-                        style={{
+                        style={{ display: "flex" }}
+                        className={classes.hoverChild}
+                      >
+                        <div
+                          style={{
                             marginLeft: 10,
                             marginTop: 3,
                             cursor: "pointer",
                             marginRight: 5,
                           }}
-                        onClick={() => {
+                          onClick={() => {
                             setActiveReply({
                               parent_client_generated_uuid:
                                 props.client_generated_uuid,
@@ -355,15 +356,15 @@ export const MessageLine = (props) => {
                             });
                           }}
                         >
-                        <ReplyIcon fill={theme.custom.colors.icon} />
-                      </div>
-                      <div style={{ marginLeft: 3 }}>
-                        <DeleteIconInternal
-                          client_generated_uuid={props.client_generated_uuid}
-                          messageSender={props.uuid}
+                          <ReplyIcon fill={theme.custom.colors.icon} />
+                        </div>
+                        <div style={{ marginLeft: 3 }}>
+                          <DeleteIconInternal
+                            client_generated_uuid={props.client_generated_uuid}
+                            messageSender={props.uuid}
                           />
+                        </div>
                       </div>
-                    </div>
                     ) : (
                       <div
                         style={{ marginLeft: 5 }}
@@ -376,7 +377,8 @@ export const MessageLine = (props) => {
                         />{" "}
                       </div>
                     )}
-                </div> : null}
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>
@@ -515,22 +517,23 @@ export const MessageLine = (props) => {
                   </div>
                 </div>
 
-                {!props.deleted ? <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
+                {!props.deleted ? (
+                  <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
                   >
-                  {props.messageKind === "text" ? (
-                    <div
-                      style={{ display: "flex" }}
-                      className={classes.hoverChild}
-                      >
+                    {props.messageKind === "text" ? (
                       <div
-                        style={{
+                        style={{ display: "flex" }}
+                        className={classes.hoverChild}
+                      >
+                        <div
+                          style={{
                             marginLeft: 10,
                             marginTop: 3,
                             cursor: "pointer",
                           }}
-                        className={classes.hoverChild}
-                        onClick={() => {
+                          className={classes.hoverChild}
+                          onClick={() => {
                             setActiveReply({
                               parent_client_generated_uuid:
                                 props.client_generated_uuid,
@@ -543,15 +546,15 @@ export const MessageLine = (props) => {
                               ?.focus();
                           }}
                         >
-                        <ReplyIcon fill={theme.custom.colors.icon} />
-                      </div>
-                      <div style={{ marginLeft: 3 }}>
-                        <DeleteIconInternal
-                          client_generated_uuid={props.client_generated_uuid}
-                          messageSender={props.uuid}
+                          <ReplyIcon fill={theme.custom.colors.icon} />
+                        </div>
+                        <div style={{ marginLeft: 3 }}>
+                          <DeleteIconInternal
+                            client_generated_uuid={props.client_generated_uuid}
+                            messageSender={props.uuid}
                           />
+                        </div>
                       </div>
-                    </div>
                     ) : (
                       <div
                         style={{ marginLeft: 5 }}
@@ -564,7 +567,8 @@ export const MessageLine = (props) => {
                         />{" "}
                       </div>
                     )}
-                </div> : null}
+                  </div>
+                ) : null}
               </div>
             </div>
             <div style={{ minWidth: 63 }}>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { useBreakpoints } from "@coral-xyz/react-common";
-import { styles,useCustomTheme  } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import CheckIcon from "@mui/icons-material/Check";
 
 import { RemoteNftWithSuspense } from "./barter/SwapPage";

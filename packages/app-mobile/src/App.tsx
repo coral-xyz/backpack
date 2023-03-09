@@ -1,5 +1,5 @@
-import { Suspense, useCallback, useEffect, useRef } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
+import { Suspense, useCallback, useRef } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
 import Constants from "expo-constants";
 import * as Device from "expo-device";
@@ -12,56 +12,21 @@ import {
   WEB_VIEW_EVENTS,
 } from "@coral-xyz/common";
 import { NotificationsProvider } from "@coral-xyz/recoil";
+import { TamaguiProvider, config } from "@coral-xyz/tamagui";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
-import { RecoilRoot, useRecoilCallback, useRecoilSnapshot } from "recoil";
+import { RecoilRoot } from "recoil";
 
 import { ErrorBoundary } from "~components/ErrorBoundary";
 import { useTheme } from "~hooks/useTheme";
+import { maybeParseLog } from "~lib/helpers";
 
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import { RootNavigation } from "./navigation/RootNavigator";
 
 SplashScreen.preventAutoHideAsync();
-
-// eslint-disable-next-line
-function DebugObserver(): null {
-  const snapshot = useRecoilSnapshot();
-  useEffect(() => {
-    console.debug("recoil::start");
-    for (const node of snapshot.getNodes_UNSTABLE({ isModified: true })) {
-      console.debug("recoil::", node.key, snapshot.getLoadable(node));
-    }
-    console.debug("recoil::end");
-  }, [snapshot]);
-
-  return null;
-}
-
-// eslint-disable-next-line
-function DebugButton(): JSX.Element {
-  const onPress = useRecoilCallback(
-    ({ snapshot }) =>
-      async () => {
-        console.group("recoil");
-        console.debug("Atom values:");
-        for (const node of snapshot.getNodes_UNSTABLE()) {
-          const value = await snapshot.getPromise(node);
-          console.debug(node.key, value);
-        }
-        console.groupEnd();
-      },
-    []
-  );
-
-  return (
-    <View style={{ position: "absolute", top: 60, zIndex: 9999 }}>
-      <Button onPress={onPress} title="Dump recoil state" />
-    </View>
-  );
-}
 
 export function App(): JSX.Element {
   return (
@@ -77,14 +42,17 @@ export function App(): JSX.Element {
 }
 
 function Providers({ children }: { children: JSX.Element }): JSX.Element {
+  const theme = useTheme();
   return (
-    <SafeAreaProvider>
-      <NotificationsProvider>
-        <ActionSheetProvider>
-          <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
-        </ActionSheetProvider>
-      </NotificationsProvider>
-    </SafeAreaProvider>
+    <TamaguiProvider config={config} defaultTheme={theme.colorScheme}>
+      <SafeAreaProvider>
+        <NotificationsProvider>
+          <ActionSheetProvider>
+            <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
+          </ActionSheetProvider>
+        </NotificationsProvider>
+      </SafeAreaProvider>
+    </TamaguiProvider>
   );
 }
 
@@ -147,55 +115,10 @@ function Main(): JSX.Element | null {
         ]}
       >
         <StatusBar style={theme.colorScheme === "dark" ? "light" : "dark"} />
-        <RootNavigation colorScheme={theme.colorScheme} />
+        <RootNavigation colorScheme={theme.colorScheme as "dark" | "light"} />
       </View>
     </Providers>
   );
-}
-
-function maybeParseLog({
-  channel,
-  data,
-}: {
-  channel:
-    | "mobile-logs"
-    | "mobile-fe-response"
-    | "mobile-bg-response"
-    | "mobile-bg-request";
-  data: any;
-}): void {
-  try {
-    switch (channel) {
-      case "mobile-logs": {
-        const [name, ...rest] = data;
-        const color = name.includes("ERROR") ? "red" : "brown";
-        console.group(`${channel}:${name}`);
-        console.log(`%c${channel}:${name}`, `color: ${color}`);
-        console.log(rest);
-        console.log(`%c---`, `color: ${color}`);
-        console.groupEnd();
-        break;
-      }
-      case "mobile-bg-response":
-      case "mobile-bg-request":
-      case "mobile-fe-response": {
-        const name = data.wrappedEvent.channel;
-        const color = "orange";
-        console.log(`%c${channel}:${name}`, `color: ${color}`);
-        console.log(data.wrappedEvent.data);
-        console.log(`%c---`, `color: ${color}`);
-        break;
-      }
-      default: {
-        console.group(channel);
-        console.log("%c" + channel, `color: green`);
-        console.log(data);
-        console.groupEnd();
-      }
-    }
-  } catch (error) {
-    console.error(channel, error);
-  }
 }
 
 function BackgroundHiddenWebView(): JSX.Element {
@@ -207,7 +130,6 @@ function BackgroundHiddenWebView(): JSX.Element {
     Constants?.expoConfig?.extra || {};
 
   const webViewUrl = Device.isDevice ? remoteWebViewUrl : localWebViewUrl;
-  console.log("webviewUrl", webViewUrl, remoteWebViewUrl);
 
   return (
     <View style={styles.webview}>

@@ -8,7 +8,7 @@ export function useTheme() {
 
   return {
     custom: theme.custom,
-    colorScheme,
+    colorScheme: colorScheme === "dark" ? "dark" : "light",
   };
 }
 
