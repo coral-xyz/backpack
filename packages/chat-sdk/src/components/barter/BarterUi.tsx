@@ -58,7 +58,9 @@ export const BarterUi = ({ roomId }: { roomId: string }) => {
   };
 
   useEffect(() => {
-    getActiveBarter(openPlugin.metadata?.barterId);
+    getActiveBarter(
+      openPlugin.type === "barter" ? openPlugin.metadata?.barterId ?? "" : ""
+    );
   }, [openPlugin?.metadata]);
 
   return (
