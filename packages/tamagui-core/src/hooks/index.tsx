@@ -1,2 +1,2 @@
 // @ts-expect-error
-export * from "./useTheme";
+export { useTheme } from "./useTheme";

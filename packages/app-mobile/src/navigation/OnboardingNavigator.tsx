@@ -32,6 +32,7 @@ import {
   OnboardingProvider,
   useOnboarding,
 } from "@coral-xyz/recoil";
+import { Stack as Box } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useForm } from "react-hook-form";
@@ -61,7 +62,7 @@ import {
 import { StyledTextInput } from "~components/StyledTextInput";
 import {
   ActionCard,
-  Box,
+  // Box,
   FullScreenLoading,
   Header,
   Margin,
@@ -132,7 +133,9 @@ function Network({
 
 type OnboardingStackParamList = {
   CreateOrImportWallet: undefined;
-  OnboardingUsername: undefined;
+  OnboardingUsername: {
+    action: "create" | "recover";
+  };
   KeyringTypeSelector: undefined;
   MnemonicInput: undefined;
   SelectBlockchain: undefined;
@@ -168,10 +171,10 @@ function OnboardingScreen({
         style,
       ]}
     >
-      <Margin bottom={24}>
+      <Box marginBottom={24}>
         <Header text={title} />
         {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
-      </Margin>
+      </Box>
       {children}
     </Screen>
   );
@@ -212,17 +215,17 @@ function OnboardingCreateOrImportWalletScreen({
           }}
         >
           <PrimaryButton
-            label="Create a new wallet"
+            label="Create a new account"
             onPress={() => {
               setOnboardingData({ action: "create" });
-              navigation.push("OnboardingUsername");
+              navigation.push("OnboardingUsername", { action: "create" });
             }}
           />
           <LinkButton
-            label="I already have a wallet"
+            label="I already have an account"
             onPress={() => {
-              setOnboardingData({ action: "import" });
-              navigation.push("MnemonicInput");
+              setOnboardingData({ action: "recover" });
+              navigation.push("OnboardingUsername", { action: "recover" });
             }}
           />
         </View>
@@ -270,12 +273,7 @@ function OnboardingKeyringTypeSelectorScreen({
           </SubtextParagraph>
         </>
       ))}
-      <Box
-        style={{
-          padding: 16,
-          alignItems: "center",
-        }}
-      >
+      <Box alignItems="center" padding={16}>
         <PrimaryButton
           label={`${toTitleCase(action as string)} with recovery phrase`}
           onPress={() => {
@@ -302,34 +300,53 @@ function OnboardingKeyringTypeSelectorScreen({
 
 function OnboardingUsernameScreen({
   navigation,
+  route,
 }: StackScreenProps<
   OnboardingStackParamList,
   "OnboardingUsername"
 >): JSX.Element {
   const { onboardingData, setOnboardingData } = useOnboarding();
+  const screenTitle =
+    route.params.action === "create"
+      ? "Claim your username"
+      : "Username recovery";
+
+  const text =
+    route.params.action === "create" ? (
+      <View style={{ flex: 1 }}>
+        <Box marginBottom={12}>
+          <SubtextParagraph>
+            Others can see and find you by this username, and it will be
+            associated with your primary wallet address.
+          </SubtextParagraph>
+        </Box>
+        <Box marginBottom={12}>
+          <SubtextParagraph>
+            Choose wisely if you'd like to remain anonymous.
+          </SubtextParagraph>
+        </Box>
+        <SubtextParagraph>Have fun!</SubtextParagraph>
+      </View>
+    ) : (
+      <View style={{ flex: 1 }}>
+        <SubtextParagraph>
+          Enter your username below, you will then be asked for your secret
+          recovery phrase to verify that you own the public key that was
+          initially associated with it.
+        </SubtextParagraph>
+      </View>
+    );
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={78}
     >
-      <OnboardingScreen title="Claim your username">
-        <View style={{ flex: 1 }}>
-          <Margin bottom={12}>
-            <SubtextParagraph>
-              Others can see and find you by this username, and it will be
-              associated with your primary wallet address.
-            </SubtextParagraph>
-          </Margin>
-          <Margin bottom={12}>
-            <SubtextParagraph>
-              Choose wisely if you'd like to remain anonymous.
-            </SubtextParagraph>
-          </Margin>
-          <SubtextParagraph>Have fun!</SubtextParagraph>
-        </View>
+      <OnboardingScreen title={screenTitle}>
+        {text}
         <View>
-          <Margin bottom={18}>
+          <Box marginBottom={18}>
             <StyledTextInput
               autoFocus
               placeholder="@Username"
@@ -337,7 +354,7 @@ function OnboardingUsernameScreen({
               value={onboardingData.username ?? ""}
               onChangeText={(username) => setOnboardingData({ username })}
             />
-          </Margin>
+          </Box>
           <PrimaryButton
             disabled={!onboardingData.username?.length}
             label="Continue"
