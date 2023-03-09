@@ -29,3 +29,11 @@ export const solanaConnectionUrl = selector<string>({
     return p.solana.cluster;
   },
 });
+
+export const solanaCompressedNftsEnabled = selector<boolean>({
+  key: "solanaCompressedNftsEnabled",
+  get: async ({ get }) => {
+    const p = get(preferences);
+    return p.solana.compressedNfts;
+  },
+});

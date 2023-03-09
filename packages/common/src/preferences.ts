@@ -1,6 +1,6 @@
 import { EthereumConnectionUrl, EthereumExplorer } from "./ethereum";
 import { SolanaCluster, SolanaExplorer } from "./solana";
-import type { Blockchain, Preferences } from "./types";
+import type { Preferences } from "./types";
 
 export const DEFAULT_DARK_MODE = false;
 export const DEFAULT_DEVELOPER_MODE = false;
@@ -21,6 +21,7 @@ export function defaultPreferences(): Preferences {
       explorer: SolanaExplorer.DEFAULT,
       cluster: SolanaCluster.DEFAULT,
       commitment: "confirmed",
+      compressedNfts: false,
     },
     ethereum: {
       explorer: EthereumExplorer.DEFAULT,

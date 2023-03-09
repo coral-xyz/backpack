@@ -2,8 +2,7 @@ import React, { useEffect } from "react";
 import type {
   AutolockSettings,
   Blockchain,
-  Notification,
-} from "@coral-xyz/common";
+  Notification} from "@coral-xyz/common";
 import {
   BackgroundSolanaConnection,
   CHANNEL_POPUP_NOTIFICATIONS,
@@ -39,6 +38,7 @@ import {
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
+  NOTIFICATION_SOLANA_COMPRESSED_NFTS_UPDATED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
@@ -181,6 +181,18 @@ export function NotificationsProvider(props: any) {
       };
     });
   };
+
+  const setSolanaCompressedNfts = (isCompressedNftsEnabled: boolean) => {
+    setPreferences((current) => {
+      return {
+        ...current,
+        solana: {
+          ...current.solana,
+          compressedNfts: isCompressedNftsEnabled,
+        },
+      };
+    });
+  };
   // Ethereum
   const setEthereumConnectionUrl = (connectionUrl: string) => {
     setPreferences((current) => {
@@ -288,6 +300,9 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
           handleSolanaActiveWalletUpdated(notif);
+          break;
+        case NOTIFICATION_SOLANA_COMPRESSED_NFTS_UPDATED:
+          handleSolanaCompressedNftsUpdated(notif);
           break;
         case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
           handleEthereumActiveWalletUpdated(notif);
@@ -547,6 +562,10 @@ export function NotificationsProvider(props: any) {
         p.pushSolanaPublicKeyChangedNotification(notif.data.activeWallet);
       });
       setActivePublicKeys(notif.data.activeWallets);
+    };
+
+    const handleSolanaCompressedNftsUpdated = (notif: Notification) => {
+      setSolanaCompressedNfts(notif.data.compressedNfts);
     };
 
     const handleReset = () => {

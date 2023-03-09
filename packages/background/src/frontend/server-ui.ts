@@ -87,6 +87,8 @@ import {
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
   UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_READ,
   UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
+  UI_RPC_METHOD_SETTINGS_SOLANA_COMPRESSED_NFTS_READ,
+  UI_RPC_METHOD_SETTINGS_SOLANA_COMPRESSED_NFTS_UPDATE,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
@@ -289,6 +291,10 @@ async function handle<T = any>(
       return await handleDeveloperModeUpdate(ctx, params[0]);
     case UI_RPC_METHOD_SETTINGS_AGGREGATE_WALLETS_UPDATE:
       return await handleAggregateWalletsUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_SETTINGS_SOLANA_COMPRESSED_NFTS_READ:
+      return await handleSolanaCompressedNftsRead(ctx, params[0]);
+    case UI_RPC_METHOD_SETTINGS_SOLANA_COMPRESSED_NFTS_UPDATE:
+      return await handleSolanaCompressedNftsUpdate(ctx, params[0]);
     case UI_RPC_METHOD_APPROVED_ORIGINS_READ:
       return await handleApprovedOriginsRead(ctx, params[0]);
     case UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE:
@@ -871,6 +877,24 @@ async function handleAggregateWalletsUpdate(
   aggregateWallets: boolean
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.aggregateWalletsUpdate(aggregateWallets);
+  return [resp];
+}
+
+async function handleSolanaCompressedNftsRead(
+  ctx: Context<Backend>,
+  uuid: string
+): Promise<RpcResponse<boolean>> {
+  const resp = await ctx.backend.solanaCompressedNftsRead(uuid);
+  return [resp];
+}
+
+async function handleSolanaCompressedNftsUpdate(
+  ctx: Context<Backend>,
+  isCompressedNftsEnabled: boolean
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.solanaCompressedNftsUpdate(
+    isCompressedNftsEnabled
+  );
   return [resp];
 }
 

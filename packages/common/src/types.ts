@@ -202,6 +202,7 @@ type SolanaData = {
   explorer: string;
   commitment: Commitment;
   cluster: string;
+  compressedNfts: boolean;
 };
 
 type EthereumData = {

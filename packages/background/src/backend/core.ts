@@ -52,6 +52,7 @@ import {
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
+  NOTIFICATION_SOLANA_COMPRESSED_NFTS_UPDATED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
@@ -1619,6 +1620,32 @@ export class Backend {
       name: NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
       data: {
         aggregateWallets,
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
+  async solanaCompressedNftsRead(uuid: string): Promise<boolean> {
+    const data = await store.getWalletDataForUser(uuid);
+    return data.solana.compressedNfts ?? false;
+  }
+
+  async solanaCompressedNftsUpdate(
+    isCompressedNftsEnabled: boolean
+  ): Promise<string> {
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
+    const data = await store.getWalletDataForUser(uuid);
+    await store.setWalletDataForUser(uuid, {
+      ...data,
+      solana: {
+        ...data.solana,
+        compressedNfts: isCompressedNftsEnabled,
+      },
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_SOLANA_COMPRESSED_NFTS_UPDATED,
+      data: {
+        compressedNfts: isCompressedNftsEnabled,
       },
     });
     return SUCCESS_RESPONSE;

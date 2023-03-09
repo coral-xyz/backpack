@@ -13,7 +13,7 @@ import {
   SOL_NATIVE_MINT,
   Solana,
 } from "@coral-xyz/common";
-import { PrimaryButton } from "@coral-xyz/react-common";
+import { PrimaryButton, UserIcon } from "@coral-xyz/react-common";
 import {
   useActiveWallet,
   useAvatarUrl,

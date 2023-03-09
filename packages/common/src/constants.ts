@@ -243,6 +243,10 @@ export const UI_RPC_METHOD_SOLANA_SIGN_MESSAGE =
 export const UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION =
   "ui-rpc-method-solana-sign-tx";
 export const UI_RPC_METHOD_SOLANA_SIMULATE = "ui-rpc-method-solana-simulate";
+export const UI_RPC_METHOD_SETTINGS_SOLANA_COMPRESSED_NFTS_READ =
+  "ui-rpc-method-settings-solana-compressed-nfts-read";
+export const UI_RPC_METHOD_SETTINGS_SOLANA_COMPRESSED_NFTS_UPDATE =
+  "ui-rpc-method-settings-solana-compressed-nfts-update";
 // Ethereum
 export const UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ =
   "ui-rpc-method-ethereum-chain-id-read";
@@ -359,6 +363,8 @@ export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED =
   "notification-user-account-public-key-created";
 export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED =
   "notification-user-account-public-key-deleted";
+export const NOTIFICATION_SOLANA_COMPRESSED_NFTS_UPDATED =
+  "notification-solana-compressed-nfts-updated";
 
 //
 // Ethereum web injected provider API.
