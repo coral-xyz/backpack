@@ -95,7 +95,10 @@ export const ChatRoom = ({
   const [messageRef, setMessageRef] = useState<any>(null);
   const [jumpToBottom, setShowJumpToBottom] = useState(false);
   const [localUnreadCount, setLocalUnreadCount] = useState(0);
-  const [openPlugin, setOpenPlugin] = useState<MessagePlugins>("");
+  const [openPlugin, setOpenPlugin] = useState<MessagePlugins>({
+    type: "",
+    metadata: {},
+  });
   const [aboveMessagePlugin, setAboveMessagePlugin] =
     useState<AboveMessagePlugin>({ type: "", metadata: {} });
   const [selectedFile, setSelectedFile] = useState<any>(null);
@@ -360,7 +363,7 @@ export const ChatRoom = ({
       >
         <div
           style={{
-            height: !openPlugin
+            height: !openPlugin.type
               ? "100vh"
               : `${100 - PLUGIN_HEIGHT_PERCENTAGE}vh`,
           }}

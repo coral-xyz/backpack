@@ -24,7 +24,7 @@ import { NftSticker } from "./NftSticker";
 import { ReplyContainer } from "./ReplyContainer";
 import { SecureTransfer } from "./SecureTransfer";
 
-const BARTER_ENABLED = false;
+const BARTER_ENABLED = true;
 const SECURE_TRANSFER_ENABLED = false;
 
 const useStyles = makeStyles((theme: any) =>

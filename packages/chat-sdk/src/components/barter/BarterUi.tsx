@@ -47,7 +47,7 @@ export const BarterUi = ({ roomId }: { roomId: string }) => {
         barterId: number;
       }) => {
         if (props.barterId === json.barter.id) {
-          setOpenPlugin("");
+          setOpenPlugin({ type: "", metadata: {} });
         }
       };
     } catch (e) {
@@ -83,31 +83,23 @@ export const BarterUi = ({ roomId }: { roomId: string }) => {
                 height: "100%",
               }}
             >
-              {!barterState && (
-                <>
+              {!barterState ? <>
+                <BarterHeader />
+                <Loading />
+              </> : null}
+              {barterState ? <>
+                {!selectNft ? <>
                   <BarterHeader />
-                  <Loading />
-                </>
-              )}
-              {barterState && (
-                <>
-                  {!selectNft && (
-                    <>
-                      <BarterHeader />
-                      <SwapPage
-                        localSelection={barterState?.localOffers || []}
-                        remoteSelection={barterState?.remoteOffers || []}
+                  <SwapPage
+                    localSelection={barterState?.localOffers || []}
+                    remoteSelection={barterState?.remoteOffers || []}
                       />
-                    </>
-                  )}
-                  {selectNft && (
-                    <SelectPage
-                      setBarterState={setBarterState}
-                      currentSelection={barterState?.localOffers || []}
-                    />
-                  )}
-                </>
-              )}
+                </> : null}
+                {selectNft ? <SelectPage
+                  setBarterState={setBarterState}
+                  currentSelection={barterState?.localOffers || []}
+                    /> : null}
+              </> : null}
             </div>
           </div>
         </ScrollBarImpl>
