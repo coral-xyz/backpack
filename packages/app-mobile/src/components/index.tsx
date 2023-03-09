@@ -17,6 +17,7 @@ import * as Clipboard from "expo-clipboard";
 import Constants from "expo-constants";
 
 import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
+import { useAvatarUrl } from "@coral-xyz/recoil";
 import {
   Margin,
   BaseButton,
@@ -25,8 +26,7 @@ import {
   SecondaryButton,
   NegativeButton,
   DangerButton,
-} from "@coral-xyz/react-native-core";
-import { useAvatarUrl } from "@coral-xyz/recoil";
+} from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { SvgUri } from "react-native-svg";
 

@@ -17,7 +17,6 @@
     "@cardinal/payment-manager": "^1.7.9",
     "@cardinal/token-manager": "^1.7.9",
     "@coral-xyz/common": "*",
-    "@coral-xyz/react-native-core": "*",
     "@coral-xyz/tamagui": "*",
     "@coral-xyz/recoil": "*",
     "@ethersproject/shims": "^5.7.0",
