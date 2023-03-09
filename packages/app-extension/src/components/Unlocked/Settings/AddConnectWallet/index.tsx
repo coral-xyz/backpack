@@ -10,6 +10,7 @@ import {
   HardwareIcon,
   ImportedIcon,
   Loading,
+  MnemonicIcon,
   PlusCircleIcon,
   PrimaryButton,
   ProxyImage,
@@ -217,6 +218,17 @@ export function RecoverWalletMenu({
     },
     ...(keyringExists
       ? {
+          "Other recovery phrase": {
+            onClick: () =>
+              nav.push("import-from-mnemonic", {
+                blockchain,
+                inputMnemonic: true,
+                keyringExists: true,
+                publicKey,
+              }),
+            icon: (props: any) => <MnemonicIcon {...props} />,
+            detailIcon: <PushDetail />,
+          },
           "Private key": {
             onClick: () =>
               nav.push("import-from-secret-key", {

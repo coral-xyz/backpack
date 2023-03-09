@@ -35,10 +35,12 @@ export function ImportMnemonic({
   blockchain,
   keyringExists,
   inputMnemonic,
+  publicKey,
 }: {
   blockchain: Blockchain;
   keyringExists: boolean;
   inputMnemonic: boolean;
+  publicKey?: string;
 }) {
   const nav = useNavigation();
   const theme = useCustomTheme();
@@ -48,7 +50,9 @@ export function ImportMnemonic({
 
   const [openDrawer, setOpenDrawer] = useState(false);
   const [mnemonic, setMnemonic] = useState<string | true>(true);
-  const [publicKey, setPublicKey] = useState<string | null>(null);
+  const [selectedPublicKey, setSelectedPublicKey] = useState<string | null>(
+    publicKey ?? null
+  );
   const [name, setName] = useState<string | null>(null);
   const signMessageForWallet = useSignMessageForWallet(mnemonic);
 
@@ -63,18 +67,18 @@ export function ImportMnemonic({
   // TODO replace the left nav button to go to the previous step if step > 0
 
   const onComplete = async (signedWalletDescriptor: SignedWalletDescriptor) => {
-    let publicKey: string;
+    let pk: string;
     if (!inputMnemonic) {
       if (keyringExists) {
         // Using the keyring mnemonic and the blockchain keyring exists, just
         // import the path
-        publicKey = await background.request({
+        pk = await background.request({
           method: UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
           params: [blockchain, signedWalletDescriptor],
         });
       } else {
         // Blockchain keyring doesn't exist, init
-        publicKey = await background.request({
+        pk = await background.request({
           method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
           params: [blockchain, signedWalletDescriptor],
         });
@@ -87,12 +91,13 @@ export function ImportMnemonic({
         mnemonic as string,
         signedWalletDescriptor.derivationPath
       );
-      publicKey = await background.request({
+
+      pk = await background.request({
         method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
         params: [blockchain, privateKey, name],
       });
     }
-    setPublicKey(publicKey);
+    setSelectedPublicKey(pk);
     setOpenDrawer(true);
   };
 
@@ -120,6 +125,7 @@ export function ImportMnemonic({
     <ImportWallets
       blockchain={blockchain!}
       mnemonic={mnemonic}
+      recovery={publicKey}
       allowMultiple={false}
       onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
         // Should only be one wallet descriptor
@@ -149,7 +155,7 @@ export function ImportMnemonic({
       >
         <ConfirmCreateWallet
           blockchain={blockchain}
-          publicKey={publicKey!}
+          publicKey={selectedPublicKey!}
           onClose={() => {
             setOpenDrawer(false);
             closeParentDrawer();
