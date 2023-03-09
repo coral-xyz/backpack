@@ -1,4 +1,3 @@
-import type { UnlockedNavigatorStackParamList } from "~navigation/UnlockedNavigator";
 import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useCallback, useEffect, useState } from "react";
@@ -19,6 +18,7 @@ import {
   toTitleCase,
 } from "@coral-xyz/common";
 import { useAnchorContext, useEthereumCtx } from "@coral-xyz/recoil";
+import { SearchBox } from "@coral-xyz/tamagui";
 import { BigNumber } from "ethers";
 
 import { SendEthereumConfirmationCard } from "~components/BottomDrawerEthereumConfirmation";
@@ -33,6 +33,7 @@ import {
   StyledTokenTextInput,
 } from "~components/index";
 import { useIsValidAddress } from "~hooks/index";
+import type { UnlockedNavigatorStackParamList } from "~navigation/UnlockedNavigator";
 
 import { SearchableTokenTables } from "./components/Balances";
 

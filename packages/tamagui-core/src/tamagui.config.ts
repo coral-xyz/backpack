@@ -9,6 +9,10 @@ import * as BackpackTheme from "./theme";
 
 const tokens = createTokens({
   ...tTokens,
+  size: {
+    ...tTokens.size,
+    input: 48,
+  },
   radius: {
     ...tTokens.radius,
     ...BackpackTheme.baseTheme.borderRadius,

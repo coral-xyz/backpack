@@ -29,6 +29,7 @@ import {
   SendTokenDetailScreen,
   SendTokenListScreen,
 } from "~screens/Unlocked/SendTokenScreen";
+import { SendTokenSelectUserScreen } from "~screens/Unlocked/SendTokenScreen2";
 import { SwapTokenScreen } from "~screens/Unlocked/SwapTokenScreen";
 import { WalletListScreen } from "~screens/Unlocked/WalletListScreen";
 
@@ -87,7 +88,7 @@ export function UnlockedNavigator(): JSX.Element {
         />
         <Stack.Screen
           name="SendTokenModal"
-          component={SendTokenDetailScreen}
+          component={SendTokenSelectUserScreen}
           options={({ route }) => {
             const { title } = route.params;
             return {
