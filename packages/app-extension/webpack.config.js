@@ -190,7 +190,7 @@ const options = {
       },
       babelLoaderConfiguration,
       swcLoaderConfiguration,
-      // tamaguiLoaderConfiguration,
+      // tamaguiLoaderConfiguration, // NOTE(peter) turned off for now bc it's not working with our webpack conifg. it's just an optimization compiler that we can configure later once i figure it out
     ],
   },
   resolve: {
