@@ -160,8 +160,8 @@ export const lightTheme = createTheme({
 });
 
 const allThemes = {
-  darkTheme,
-  lightTheme,
+  dark: darkTheme,
+  light: lightTheme,
 };
 
 type BaseTheme = typeof lightTheme;

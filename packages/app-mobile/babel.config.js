@@ -8,7 +8,7 @@ module.exports = function(api) {
       [
         "@tamagui/babel-plugin",
         {
-          exclude: /node_modules/,
+          // exclude: /node_modules/,
           components: ["@coral-xyz/tamagui", "tamagui"],
           config: "./tamagui.config.ts",
         },

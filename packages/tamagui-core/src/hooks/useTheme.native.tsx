@@ -1,14 +1,72 @@
-// import { useDarkMode } from "@coral-xyz/recoil";
 import { useColorScheme } from "react-native";
 
+type Theme = {
+  custom: {
+    borderRadius: {
+      large: number;
+      medium: number;
+    };
+    colors: {
+      brandColor: string;
+      backgroundBackdrop: string;
+      background: string;
+      nav: string;
+      bg2: string;
+      bg3: string;
+      fontColor: string;
+      fontColor2: string;
+      fontColor3: string;
+      subtext: string;
+      secondary: string;
+      primaryButton: string;
+      primaryButtonTextColor: string;
+      secondaryButton: string;
+      secondaryButtonTextColor: string;
+      buttonFontColor: string;
+      textInputBorderFull: string;
+      textInputBorderFocussed: string;
+      textInputBorderHovered: string;
+      border: string;
+      border1: string;
+      borderColor: string;
+      borderFull: string;
+      // borderButton: `solid 2px ${LIGHT_BORDER_COLOR_1}`,
+      copyTooltipColor: string;
+      copyTooltipTextColor: string;
+      tableBorder: string;
+      balanceSkeleton: string;
+      balanceChangeNegative: string;
+      balanceChangePositive: string;
+      balanceChangeNeutral: string;
+      textBackground: string;
+      textBorder: string;
+      textPlaceholder: string;
+      swapTokensButton: string;
+      icon: string;
+      approveTransactionTableBackground: string;
+      approveTransactionCloseBackground: string;
+      hoverIconBackground: string;
+      avatarIconBackground: string;
+
+      dangerButton: string;
+      alpha: string;
+      scrollbarTrack: string;
+      scrollbarThumb: string;
+      positive: string;
+      negative: string;
+      neutral: string;
+      negativeButtonTextColor: string;
+    };
+  };
+};
+
 export function useTheme() {
-  // const isDarkMode = useDarkMode();
   const colorScheme = useColorScheme();
   const theme = colorScheme === "dark" ? darkTheme : lightTheme;
 
   return {
     custom: theme.custom,
-    colorScheme: colorScheme === "dark" ? "dark" : "light",
+    colorScheme,
   };
 }
 
@@ -51,7 +109,7 @@ const LIGHT_ICON_HOVER_COLOR = "#787C89";
 
 const DANGER_COLOR = "#DC2626";
 
-export const darkTheme: any = {
+const darkTheme: Theme = {
   custom: {
     borderRadius: {
       large: 12,
@@ -81,8 +139,8 @@ export const darkTheme: any = {
       textInputBorderFocussed: `rgba(255, 255, 255, 0.1)`,
       textInputBorderHovered: `rgba(255, 255, 255, 0.2)`,
       borderFull: BACKGROUND_COLOR_1,
-      borderButton: undefined,
-      textFieldTextColor: FONT_COLOR_2,
+      // borderButton: undefined,
+      // textFieldTextColor: FONT_COLOR_2,
       copyTooltipColor: BRAND_COLOR,
       copyTooltipTextColor: BACKGROUND_COLOR_1,
       tableBorder: BACKGROUND_COLOR_0,
@@ -108,17 +166,16 @@ export const darkTheme: any = {
       negative: NEGATIVE_COLOR,
       neutral: "rgb(78, 87, 104)",
       negativeButtonTextColor: "#fff",
-      drawerGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
-      boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
-      tabBarBoxShadow: "0px -4px 4px rgba(3, 10, 25, 0.02)",
-      coralGradient:
-        "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
+      // drawerGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
+      // boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
+      // tabBarBoxShadow: "0px -4px 4px rgba(3, 10, 25, 0.02)",
+      // coralGradient:
+      //   "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
     },
   },
 };
 
-export const lightTheme: any = {
-  // ...baseTheme,
+const lightTheme: Theme = {
   custom: {
     borderRadius: {
       large: 12,
@@ -148,7 +205,7 @@ export const lightTheme: any = {
       border1: LIGHT_BORDER_COLOR_1,
       borderColor: LIGHT_BORDER_COLOR_1,
       borderFull: LIGHT_BORDER_COLOR_1,
-      borderButton: `solid 2px ${LIGHT_BORDER_COLOR_1}`,
+      // borderButton: `solid 2px ${LIGHT_BORDER_COLOR_1}`,
       copyTooltipColor: LIGHT_BRAND_COLOR,
       copyTooltipTextColor: LIGHT_BACKGROUND_COLOR_1,
       tableBorder: LIGHT_BORDER_COLOR,
@@ -174,13 +231,11 @@ export const lightTheme: any = {
       negative: LIGHT_NEGATIVE_COLOR,
       neutral: "rgb(78, 87, 104)",
       negativeButtonTextColor: "#fff",
-      drawerGradient: `linear-gradient(180deg, ${LIGHT_BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
-      boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
-      tabBarBoxShadow: "0px -4px 4px rgba(3, 10, 25, 0.02)",
-      coralGradient:
-        "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
+      // drawerGradient: `linear-gradient(180deg, ${LIGHT_BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
+      // boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
+      // tabBarBoxShadow: "0px -4px 4px rgba(3, 10, 25, 0.02)",
+      // coralGradient:
+      //   "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
     },
   },
 };
-
-export type CustomTheme = typeof lightTheme & typeof darkTheme;
