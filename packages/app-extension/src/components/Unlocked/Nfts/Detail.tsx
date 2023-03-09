@@ -1,4 +1,4 @@
-import { type CSSProperties, useEffect, useState } from "react";
+import React, { type CSSProperties, useEffect, useState } from "react";
 import type { Nft } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
@@ -62,8 +62,14 @@ import {
 import {
   NavStackEphemeral,
   NavStackScreen,
+  useNavigation as useNavigationEphemeral,
 } from "../../common/Layout/NavStack";
 import PopoverMenu from "../../common/PopoverMenu";
+import type {
+  SendData} from "../Balances/TokensWidget/AddressSelector";
+import {
+  AddressSelector
+} from "../Balances/TokensWidget/AddressSelector";
 import { SendEthereumConfirmationCard } from "../Balances/TokensWidget/Ethereum";
 import {
   Error as ErrorConfirmation,
@@ -381,7 +387,7 @@ function SendButton({
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
-            initialRoute={{ name: "send" }}
+            initialRoute={{ name: "select-address" }}
             options={() => ({
               title: nft.name ? `${nft.name} / Send` : "Send",
             })}
@@ -389,7 +395,12 @@ function SendButton({
           >
             <NavStackScreen
               name="send"
-              component={() => <SendScreen nft={nft} />}
+              component={(props) => <SendScreen {...props} nft={nft} />}
+            />
+
+            <NavStackScreen
+              name="select-address"
+              component={() => <NftAddressSelector nft={nft} />}
             />
           </NavStackEphemeral>
         </div>
@@ -398,12 +409,30 @@ function SendButton({
   );
 }
 
-function SendScreen({ nft }: { nft: any }) {
+function NftAddressSelector({ nft }: { nft: any }) {
+  const { push } = useNavigationEphemeral();
+
+  return (
+    <div>
+      <AddressSelector
+        onSelect={(sendData: SendData) => {
+          push("send", {
+            to: sendData,
+          });
+        }}
+        blockchain={nft.blockchain}
+        name={nft.name}
+      />
+    </div>
+  );
+}
+
+function SendScreen({ nft, to }: { nft: any; to: SendData }) {
   const background = useBackgroundClient();
   const { close } = useDrawerContext();
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
-  const [destinationAddress, setDestinationAddress] = useState("");
+  const destinationAddress = to.address;
   const [openConfirm, setOpenConfirm] = useState(false);
   const [wasSent, setWasSent] = useState(false);
   const { isValidAddress, isErrorAddress } = useIsValidAddress(
@@ -446,16 +475,6 @@ function SendScreen({ nft }: { nft: any }) {
         >
           <div>
             <Image nft={nft} />
-            <TextInput
-              autoFocus
-              placeholder={`Recipient's ${toTitleCase(nft.blockchain)} Address`}
-              value={destinationAddress}
-              setValue={(e) => setDestinationAddress(e.target.value)}
-              error={isErrorAddress}
-              inputProps={{
-                name: "to",
-              }}
-            />
           </div>
           <div
             style={{
@@ -492,6 +511,13 @@ function SendScreen({ nft }: { nft: any }) {
               decimals: 0, // Are there any NFTs that don't use decimals 0?
               mint: nft.mint,
             }}
+            destinationUser={
+              (to && to.uuid && to.username && to.image
+                ? to
+                : undefined) as React.ComponentProps<
+                typeof SendSolanaConfirmationCard
+              >["destinationUser"]
+            }
             destinationAddress={destinationAddress}
             amount={BigNumber.from(1)}
             onComplete={() => setWasSent(true)}
@@ -505,6 +531,13 @@ function SendScreen({ nft }: { nft: any }) {
               address: nft.contractAddress,
               tokenId: nft.tokenId,
             }}
+            destinationUser={
+              (to && to.uuid && to.username && to.image
+                ? to
+                : undefined) as React.ComponentProps<
+                typeof SendEthereumConfirmationCard
+              >["destinationUser"]
+            }
             destinationAddress={destinationAddress}
             amount={BigNumber.from(1)}
             onComplete={() => setWasSent(true)}
