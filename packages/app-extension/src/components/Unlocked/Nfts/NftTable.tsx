@@ -2,10 +2,6 @@ import { Suspense, useCallback, useRef, useState } from "react";
 import Autosizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
 import type { Blockchain, NftCollection } from "@coral-xyz/common";
-import {
-  NAV_COMPONENT_NFT_COLLECTION,
-  NAV_COMPONENT_NFT_DETAIL,
-} from "@coral-xyz/common";
 import { Loading } from "@coral-xyz/react-common";
 import {
   nftById,

@@ -146,27 +146,44 @@ const useStyles = styles((theme) => ({
 }));
 
 export function BalancesTableCell({ props }: any) {
-  const { icon, title, subtitle, usdValue, percentChange } = props;
+  const { icon, title, subtitle, usdValue, balanceChange } = props;
   const classes = useStyles();
 
-  const positive = percentChange && percentChange > 0 ? true : false;
-  const negative = percentChange && percentChange < 0 ? true : false;
-  const neutral = percentChange && percentChange === 0 ? true : false;
+  // Determine the balance change polarity with a 100th rounding margin of 0.00
+  const polarity =
+    (balanceChange ?? 0) > 0.004
+      ? "positive"
+      : (balanceChange ?? 0) < -0.004
+      ? "negative"
+      : "neutral";
+
+  const changeLabel =
+    polarity === "positive" ? (
+      <Typography className={classes.tokenBalanceChangePositive}>
+        +{formatUSD(balanceChange.toLocaleString())}
+      </Typography>
+    ) : polarity === "negative" ? (
+      <Typography className={classes.tokenBalanceChangeNegative}>
+        {formatUSD(balanceChange.toLocaleString())}
+      </Typography>
+    ) : null;
 
   return (
     <div className={classes.balancesTableCellContainer}>
-      {icon ? <ListItemIcon
-        className={classes.tokenListItemIcon}
-        classes={{ root: classes.tokenListItemIconRoot }}
+      {icon ? (
+        <ListItemIcon
+          className={classes.tokenListItemIcon}
+          classes={{ root: classes.tokenListItemIconRoot }}
         >
-        <ProxyImage
-          src={icon}
-          className={classes.logoIcon}
-          onError={(event: any) => {
+          <ProxyImage
+            src={icon}
+            className={classes.logoIcon}
+            onError={(event: any) => {
               event.currentTarget.src = UNKNOWN_ICON_SRC;
             }}
           />
-      </ListItemIcon> : null}
+        </ListItemIcon>
+      ) : null}
       <div className={classes.tokenListItemContent}>
         <div className={classes.tokenListItemRow}>
           <Typography className={classes.tokenName}>{title}</Typography>
@@ -175,19 +192,15 @@ export function BalancesTableCell({ props }: any) {
           </Typography>
         </div>
         <div className={classes.tokenListItemRow}>
-          {subtitle ? <Typography className={classes.tokenAmount}>{subtitle}</Typography> : null}
-          {percentChange !== undefined && positive ? <Typography className={classes.tokenBalanceChangePositive}>
-            +{formatUSD(percentChange.toLocaleString())}
-          </Typography> : null}
-          {percentChange !== undefined && negative ? <Typography className={classes.tokenBalanceChangeNegative}>
-            {formatUSD(percentChange.toLocaleString())}
-          </Typography> : null}
-          {percentChange !== undefined && neutral ? <Typography className={classes.tokenBalanceChangeNeutral}>
-            {formatUSD(percentChange.toLocaleString())}
-          </Typography> : null}
-          {!usdValue ? <Typography className={classes.tokenBalanceChangeNeutral}>
-            -
-          </Typography> : null}
+          {subtitle ? (
+            <Typography className={classes.tokenAmount}>{subtitle}</Typography>
+          ) : null}
+          {changeLabel}
+          {!usdValue ? (
+            <Typography className={classes.tokenBalanceChangeNeutral}>
+              -
+            </Typography>
+          ) : null}
         </div>
       </div>
     </div>
@@ -312,22 +325,24 @@ export function _BalancesTableHead({
               </Typography>
               <WalletDrawerButton wallet={wallet} />
             </div>
-            {_isAggregateWallets ? <MuiButton
-              disableRipple
-              style={{
+            {_isAggregateWallets ? (
+              <MuiButton
+                disableRipple
+                style={{
                   width: "18px",
                   minWidth: "18px",
                   marginLeft: "8px",
                   padding: 0,
                 }}
-              onClick={() => !disableToggle && setShowContent(!showContent)}
+                onClick={() => !disableToggle && setShowContent(!showContent)}
               >
-              {showContent ? (
-                <ExpandLess className={classes.expand} />
+                {showContent ? (
+                  <ExpandLess className={classes.expand} />
                 ) : (
                   <ExpandMore className={classes.expand} />
                 )}
-            </MuiButton> : null}
+              </MuiButton>
+            ) : null}
           </div>
         }
         classes={{

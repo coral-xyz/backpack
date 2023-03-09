@@ -1,4 +1,4 @@
-import React, { type ChangeEvent,useEffect, useState } from "react";
+import React, { type ChangeEvent, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {
   getHashedName,
@@ -555,7 +555,7 @@ function SendV2({ token, maxAmount, setAmount, sendButton, to }: any) {
                 border: "none",
                 fontWeight: 600,
                 fontSize: 48,
-                height: 50,
+                height: 48,
                 color: theme.custom.colors.fontColor,
                 textAlign: "center",
                 width: "100%",
@@ -851,7 +851,7 @@ export function useIsValidAddress(
         }
 
         // SNS Domain
-        if (address.includes(".sol")) {
+        if (address.endsWith(".sol")) {
           try {
             const hashedName = await getHashedName(address.replace(".sol", ""));
             const nameAccountKey = await getNameAccountKey(

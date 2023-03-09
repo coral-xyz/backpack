@@ -1,5 +1,10 @@
+import { insertNotification } from "@coral-xyz/backend-common";
 import type { RemoteUserData } from "@coral-xyz/common";
-import { AVATAR_BASE_URL } from "@coral-xyz/common";
+import {
+  AVATAR_BASE_URL,
+  EXECUTE_BARTER,
+  NOTIFICATION_ADD,
+} from "@coral-xyz/common";
 import express from "express";
 
 import { extractUserId } from "../../auth/middleware";
@@ -135,6 +140,19 @@ router.post("/request", extractUserId, async (req, res) => {
   const areFriends = await setFriendship({ from: uuid, to, sendRequest });
   if (sendRequest) {
     if (areFriends) {
+      // entry in DB
+      const notificationData = await insertNotification(
+        "friend_requests_accept",
+        to,
+        {
+          title: "Friend request Accepted",
+          body: JSON.stringify({
+            from: uuid,
+          }),
+        }
+      );
+
+      // Push notification
       await Redis.getInstance().send(
         JSON.stringify({
           type: "friend_request_accept",
@@ -144,7 +162,22 @@ router.post("/request", extractUserId, async (req, res) => {
           },
         })
       );
+
+      // websocket notification
+      await Redis.getInstance().publish(`INDIVIDUAL_${to}`, {
+        type: NOTIFICATION_ADD,
+        payload: notificationData,
+      });
     } else {
+      // entry in DB
+      const notificationData = await insertNotification("friend_requests", to, {
+        title: "Friend request",
+        body: JSON.stringify({
+          from: uuid,
+        }),
+      });
+
+      // Push notification
       await Redis.getInstance().send(
         JSON.stringify({
           type: "friend_request",
@@ -154,6 +187,12 @@ router.post("/request", extractUserId, async (req, res) => {
           },
         })
       );
+
+      // websocket notification
+      await Redis.getInstance().publish(`INDIVIDUAL_${to}`, {
+        type: NOTIFICATION_ADD,
+        payload: notificationData,
+      });
     }
   }
   res.json({});

@@ -16,7 +16,7 @@ import {
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
 } from "@coral-xyz/common";
 import { Loading, PrimaryButton, TextInput } from "@coral-xyz/react-common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useBackgroundClient, useDehydratedWallets } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import Ethereum from "@ledgerhq/hw-app-eth";
 import Solana from "@ledgerhq/hw-app-solana";
@@ -48,6 +48,7 @@ export function ImportWallets({
   transport,
   onNext,
   onError,
+  recovery,
   allowMultiple = true,
 }: {
   blockchain: Blockchain;
@@ -55,10 +56,16 @@ export function ImportWallets({
   transport?: Transport;
   onNext: (walletDescriptor: Array<WalletDescriptor>) => void;
   onError?: (error: Error) => void;
+  recovery?: string;
   allowMultiple?: boolean;
 }) {
   const background = useBackgroundClient();
   const theme = useCustomTheme();
+
+  const dehydrated = useDehydratedWallets();
+  const dehydratedPubkeys = dehydrated
+    .filter((d) => d.blockchain === blockchain)
+    .map((d) => d.publicKey);
 
   // Loaded balances for each public key
   const [balances, setBalances] = useState<{ [publicKey: string]: BigNumber }>(
@@ -363,6 +370,13 @@ export function ImportWallets({
     );
   };
 
+  const isDisabledPublicKey = (pk: string): boolean => {
+    if (recovery === undefined) {
+      return disabledPublicKeys.includes(pk);
+    }
+    return pk !== recovery || !dehydratedPubkeys.includes(pk);
+  };
+
   //
   // Handles checkbox clicks to select accounts to import.
   //
@@ -468,6 +482,7 @@ export function ImportWallets({
                 })
                 .map(({ publicKey, derivationPath }) => (
                   <ListItemButton
+                    disableRipple
                     key={publicKey.toString()}
                     onClick={handleSelect(publicKey, derivationPath)}
                     sx={{
@@ -477,8 +492,7 @@ export function ImportWallets({
                       paddingTop: "5px",
                       paddingBottom: "5px",
                     }}
-                    disableRipple
-                    disabled={disabledPublicKeys.includes(publicKey.toString())}
+                    disabled={isDisabledPublicKey(publicKey.toString())}
                   >
                     <Box style={{ display: "flex", width: "100%" }}>
                       <div
@@ -497,9 +511,7 @@ export function ImportWallets({
                             importedPublicKeys.includes(publicKey.toString())
                           }
                           tabIndex={-1}
-                          disabled={disabledPublicKeys.includes(
-                            publicKey.toString()
-                          )}
+                          disabled={isDisabledPublicKey(publicKey.toString())}
                           disableRipple
                           style={{ marginLeft: 0 }}
                         />
@@ -548,7 +560,7 @@ export function ImportWallets({
         <PrimaryButton
           label={`Import Wallet${allowMultiple ? "s" : ""}`}
           onClick={() => onNext(checkedWalletDescriptors)}
-          disabled={walletDescriptors.length === 0}
+          disabled={checkedWalletDescriptors.length === 0}
         />
       </Box>
     </Box>

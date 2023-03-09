@@ -1,3 +1,5 @@
+// TODO: remove the line below
+/* eslint-disable react-hooks/rules-of-hooks */
 import { Suspense, useState } from "react";
 import { Blockchain, explorerUrl, XNFT_GG_LINK } from "@coral-xyz/common";
 import {
@@ -335,7 +337,17 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
               {transaction.signature.slice(transaction.signature.length - 5)}
             </Typography>
             <Typography className={classes.txDate}>
-              {new Date(transaction.timestamp * 1000).toLocaleDateString()}
+              {
+                // TODO: Standardize the parsed ethereum and solana transactions
+                //       so that `transaction.date` can be used for both of them
+                (
+                  (transaction.date
+                    ? // ethereum transactions provide a date
+                      transaction.date
+                    : // solana transactions provide a timestamp in seconds
+                      new Date(transaction.timestamp * 1000)) as Date
+                ).toLocaleString()
+              }
             </Typography>
           </div>
         </div>

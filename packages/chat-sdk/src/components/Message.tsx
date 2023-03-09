@@ -318,7 +318,7 @@ export const MessageLine = (props) => {
                           mediaLink={props.metadata?.media_link}
                           mediaKind={props.metadata?.media_kind}
                         />
-                        <div>{message}</div>
+                        <ParsedMessage message={message} />
                       </div>
                     ) : props.messageKind === "nft-sticker" ? (
                       <div>
@@ -326,58 +326,59 @@ export const MessageLine = (props) => {
                           uuid={props.uuid}
                           mint={props.metadata?.mint}
                         />
-                        <ParsedMessage message={message} />
                       </div>
                     ) : (
                       <ParsedMessage message={message} />
                     )}
                   </p>
                 </div>
-                <div>
-                  {props.messageKind === "text" ? (
-                    <div
-                      style={{ display: "flex" }}
-                      className={classes.hoverChild}
-                    >
+                {!props.deleted ? (
+                  <div>
+                    {props.messageKind === "text" ? (
                       <div
-                        style={{
-                          marginLeft: 10,
-                          marginTop: 3,
-                          cursor: "pointer",
-                          marginRight: 5,
-                        }}
-                        onClick={() => {
-                          setActiveReply({
-                            parent_client_generated_uuid:
-                              props.client_generated_uuid,
-                            text: message,
-                            parent_username: `@${props.username}`,
-                            parent_message_author_uuid: props.userId,
-                          });
-                        }}
+                        style={{ display: "flex" }}
+                        className={classes.hoverChild}
                       >
-                        <ReplyIcon fill={theme.custom.colors.icon} />
+                        <div
+                          style={{
+                            marginLeft: 10,
+                            marginTop: 3,
+                            cursor: "pointer",
+                            marginRight: 5,
+                          }}
+                          onClick={() => {
+                            setActiveReply({
+                              parent_client_generated_uuid:
+                                props.client_generated_uuid,
+                              text: message,
+                              parent_username: `@${props.username}`,
+                              parent_message_author_uuid: props.userId,
+                            });
+                          }}
+                        >
+                          <ReplyIcon fill={theme.custom.colors.icon} />
+                        </div>
+                        <div style={{ marginLeft: 3 }}>
+                          <DeleteIconInternal
+                            client_generated_uuid={props.client_generated_uuid}
+                            messageSender={props.uuid}
+                          />
+                        </div>
                       </div>
-                      <div style={{ marginLeft: 3 }}>
+                    ) : (
+                      <div
+                        style={{ marginLeft: 5 }}
+                        className={classes.hoverChild}
+                      >
+                        {" "}
                         <DeleteIconInternal
                           client_generated_uuid={props.client_generated_uuid}
                           messageSender={props.uuid}
-                        />
+                        />{" "}
                       </div>
-                    </div>
-                  ) : (
-                    <div
-                      style={{ marginLeft: 5 }}
-                      className={classes.hoverChild}
-                    >
-                      {" "}
-                      <DeleteIconInternal
-                        client_generated_uuid={props.client_generated_uuid}
-                        messageSender={props.uuid}
-                      />{" "}
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>
@@ -499,7 +500,6 @@ export const MessageLine = (props) => {
                             mint={props.metadata?.mint}
                             uuid={props.uuid}
                           />
-                          <ParsedMessage message={message} />
                         </div>
                       ) : props.messageKind === "media" ? (
                         <div>
@@ -507,7 +507,8 @@ export const MessageLine = (props) => {
                             mediaLink={props.metadata?.media_link}
                             mediaKind={props.metadata?.media_kind}
                           />
-                          <div>{message}</div>
+
+                          <ParsedMessage message={message} />
                         </div>
                       ) : (
                         <ParsedMessage message={message} />
@@ -515,54 +516,59 @@ export const MessageLine = (props) => {
                     </p>
                   </div>
                 </div>
-                <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
-                >
-                  {props.messageKind === "text" ? (
-                    <div
-                      style={{ display: "flex" }}
-                      className={classes.hoverChild}
-                    >
+
+                {!props.deleted ? (
+                  <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    {props.messageKind === "text" ? (
                       <div
-                        style={{
-                          marginLeft: 10,
-                          marginTop: 3,
-                          cursor: "pointer",
-                        }}
+                        style={{ display: "flex" }}
                         className={classes.hoverChild}
-                        onClick={() => {
-                          setActiveReply({
-                            parent_client_generated_uuid:
-                              props.client_generated_uuid,
-                            text: message,
-                            parent_username: `@${props.username}`,
-                            parent_message_author_uuid: props.userId,
-                          });
-                          document.getElementById(chatMessageInputId)?.focus();
-                        }}
                       >
-                        <ReplyIcon fill={theme.custom.colors.icon} />
+                        <div
+                          style={{
+                            marginLeft: 10,
+                            marginTop: 3,
+                            cursor: "pointer",
+                          }}
+                          className={classes.hoverChild}
+                          onClick={() => {
+                            setActiveReply({
+                              parent_client_generated_uuid:
+                                props.client_generated_uuid,
+                              text: message,
+                              parent_username: `@${props.username}`,
+                              parent_message_author_uuid: props.userId,
+                            });
+                            document
+                              .getElementById(chatMessageInputId)
+                              ?.focus();
+                          }}
+                        >
+                          <ReplyIcon fill={theme.custom.colors.icon} />
+                        </div>
+                        <div style={{ marginLeft: 3 }}>
+                          <DeleteIconInternal
+                            client_generated_uuid={props.client_generated_uuid}
+                            messageSender={props.uuid}
+                          />
+                        </div>
                       </div>
-                      <div style={{ marginLeft: 3 }}>
+                    ) : (
+                      <div
+                        style={{ marginLeft: 5 }}
+                        className={classes.hoverChild}
+                      >
+                        {" "}
                         <DeleteIconInternal
                           client_generated_uuid={props.client_generated_uuid}
                           messageSender={props.uuid}
-                        />
+                        />{" "}
                       </div>
-                    </div>
-                  ) : (
-                    <div
-                      style={{ marginLeft: 5 }}
-                      className={classes.hoverChild}
-                    >
-                      {" "}
-                      <DeleteIconInternal
-                        client_generated_uuid={props.client_generated_uuid}
-                        messageSender={props.uuid}
-                      />{" "}
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                ) : null}
               </div>
             </div>
             <div style={{ minWidth: 63 }}>
@@ -1026,7 +1032,7 @@ function MessageLeft(props) {
             message
           )}
         </div>
-        {props.messageKind === "text" ? (
+        {!props.deleted && props.messageKind === "text" ? (
           <div
             style={{ marginLeft: 10, marginTop: 10, cursor: "pointer" }}
             className={classes.hoverChild}
@@ -1076,7 +1082,7 @@ function MessageRight(props) {
             alignItems: "flex-start",
           }}
         >
-          {props.messageKind !== "gif" ? (
+          {!props.deleted && props.messageKind !== "gif" ? (
             <div
               style={{ marginRight: 10, marginTop: 10, cursor: "pointer" }}
               className={classes.hoverChild}

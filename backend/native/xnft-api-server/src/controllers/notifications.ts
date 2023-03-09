@@ -1,3 +1,4 @@
+import { insertNotification } from "@coral-xyz/backend-common";
 import webpush from "web-push";
 
 import { VAPID_PRIVATE_KEY, VAPID_PUBLIC_KEY } from "../config";
@@ -5,7 +6,6 @@ import {
   deleteSubscription,
   getSubscriptions,
   hasNotificationAccess,
-  insertNotification,
 } from "../db";
 
 export interface NotificationProps {

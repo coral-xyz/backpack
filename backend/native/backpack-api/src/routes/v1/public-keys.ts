@@ -26,7 +26,12 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
     }))
   );
 
-  return res.status(200).json(users);
+  return res.status(200).json(
+    users.map((u) => ({
+      blockchain: u.blockchain,
+      public_key: u.public_key,
+    }))
+  );
 });
 
 export default router;
