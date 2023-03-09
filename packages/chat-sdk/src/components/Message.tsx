@@ -27,7 +27,6 @@ import {
 import { useCustomTheme } from "@coral-xyz/themes";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Gif as GifComponent } from "@giphy/react-components";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import CallMadeIcon from "@mui/icons-material/CallMade";
@@ -35,11 +34,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import DoneIcon from "@mui/icons-material/Done";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import Info from "@mui/icons-material/Info";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import VerifiedIcon from "@mui/icons-material/Verified";
-import { Button, IconButton, Skeleton, Tooltip } from "@mui/material";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
+import { Skeleton, Tooltip } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
@@ -257,6 +252,11 @@ export const MessageLine = (props) => {
       <BarterPoke sender={props.uuid} barterId={props.metadata?.barter_id} />
     );
   }
+
+  if (props.messageKind === "barter") {
+    return <BarterModal barterId={props.metadata?.barter_id} />;
+  }
+
   return (
     <div
       className={classes.messageRow}
@@ -308,8 +308,6 @@ export const MessageLine = (props) => {
                         remoteUsername={props.username}
                         finalTxId={props.metadata.final_txn_signature}
                       />
-                    ) : props.messageKind === "barter" ? (
-                      <BarterModal barterId={props.metadata?.barter_id} />
                     ) : props.messageKind === "transaction" ? (
                       <SimpleTransaction
                         remoteUserId={props.uuid}
@@ -488,8 +486,6 @@ export const MessageLine = (props) => {
                           remoteUsername={props.username}
                           finalTxId={props.metadata.final_txn_signature}
                         />
-                      ) : props.messageKind === "barter" ? (
-                        <BarterModal barterId={props.metadata?.barter_id} />
                       ) : props.messageKind === "transaction" ? (
                         <SimpleTransaction
                           remoteUserId={props.uuid}
