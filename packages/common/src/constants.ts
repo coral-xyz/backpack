@@ -658,8 +658,6 @@ export const DEFAULT_PUBKEY_STR = "11111111111111111111111111111111";
 
 export const MOBILE_CHANNEL_LOGS = "mobile-logs";
 
-export const IMAGE_PROXY_URL = "https://d1a7965zcx2lcc.cloudfront.net";
-
 export const BACKPACK_TEAM = [
   "ee7ce804-44b2-4360-bfbb-28e14cd0499b",
   "29c33e60-d54a-4fe4-80e9-4bbfcc6c69b8",
