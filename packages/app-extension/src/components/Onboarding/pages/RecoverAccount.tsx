@@ -31,6 +31,7 @@ export const RecoverAccount = ({
   isAddingAccount?: boolean;
   isOnboarded?: boolean;
 }) => {
+  console.log("render");
   const { step, nextStep, prevStep } = useSteps();
   const { onboardingData, setOnboardingData } = useOnboarding();
   const {
@@ -122,6 +123,7 @@ export const RecoverAccount = ({
           key="PrivateKeyInput"
           blockchain={Blockchain.SOLANA}
           onNext={(privateKey: string) => {
+              console.log("next");
               setOnboardingData({ privateKey });
               nextStep();
             }}

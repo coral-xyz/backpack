@@ -6,22 +6,19 @@ import {
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
-import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
 
 import { Header, SubtextParagraph } from "../../common";
 
 export const PrivateKeyInput = ({
-  blockchain,
   onNext,
   publicKey,
 }: {
-  blockchain: Blockchain;
   onNext: (publicKey: string, privateKey: string) => void;
   publicKey?: string;
 }) => {
   const background = useBackgroundClient();
-  const existingPublicKeys = useWalletPublicKeys();
   const [name, setName] = useState("");
   const [privateKey, setPrivateKey] = useState("");
   const [loading, setLoading] = useState(false);
@@ -37,13 +34,13 @@ export const PrivateKeyInput = ({
     setLoading(true);
 
     // Do some validation of the private key
-    let _privateKey, _publicKey;
+    let _privateKey, _publicKey, blockchain;
     try {
-      ({ privateKey: _privateKey, publicKey: _publicKey } = validatePrivateKey(
+      ({
+        privateKey: _privateKey,
+        publicKey: _publicKey,
         blockchain,
-        privateKey,
-        existingPublicKeys
-      ));
+      } = validatePrivateKey(privateKey));
     } catch (e) {
       setLoading(false);
       setError((e as Error).message);

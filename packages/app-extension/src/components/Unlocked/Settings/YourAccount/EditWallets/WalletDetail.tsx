@@ -9,7 +9,6 @@ import {
 import {
   PrimaryButton,
   SecondaryButton,
-  toast,
   WarningIcon,
 } from "@coral-xyz/react-common";
 import {
@@ -62,12 +61,12 @@ export const WalletDetail: React.FC<{
       setWalletName(keyname);
       nav.setOptions({ headerTitle: keyname });
     })();
-  }, []);
+  }, [background, nav, publicKey]);
 
-  const copyAddress = () => {
+  const copyAddress = async () => {
     setTooltipOpen(true);
     setTimeout(() => setTooltipOpen(false), 1000);
-    navigator.clipboard.writeText(publicKey);
+    await navigator.clipboard.writeText(publicKey);
   };
 
   // Account recovery is not possible for private key imports, so prevent
@@ -206,50 +205,48 @@ export const WalletDetail: React.FC<{
         <SettingsList menuItems={secrets} />
       ) : null}
       {!isLastRecoverable ? <SettingsList menuItems={removeWallet} /> : null}
-      {type !== "imported" ? (
-        <div
-          style={{
-            padding: "16px",
-          }}
-        >
-          <PrimaryButton
-            fullWidth
-            label={isPrimary ? "This is your primary wallet" : "Set as primary"}
-            disabled={isPrimary || type === "dehydrated"}
-            onClick={async () => {
-              await fetch(`${BACKEND_API_URL}/users/activePubkey`, {
-                method: "POST",
-                body: JSON.stringify({
-                  publicKey: publicKey,
-                }),
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              });
-              setServerPublicKeys((current) =>
-                current.map((c) => {
-                  if (c.blockchain !== blockchain) {
-                    return c;
-                  }
-                  if (c.primary && c.publicKey !== publicKey) {
-                    return {
-                      ...c,
-                      primary: false,
-                    };
-                  }
-                  if (c.publicKey === publicKey) {
-                    return {
-                      ...c,
-                      primary: true,
-                    };
-                  }
+      <div
+        style={{
+          padding: "16px",
+        }}
+      >
+        <PrimaryButton
+          fullWidth
+          label={isPrimary ? "This is your primary wallet" : "Set as primary"}
+          disabled={isPrimary || type === "dehydrated"}
+          onClick={async () => {
+            await fetch(`${BACKEND_API_URL}/users/activePubkey`, {
+              method: "POST",
+              body: JSON.stringify({
+                publicKey: publicKey,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            setServerPublicKeys((current) =>
+              current.map((c) => {
+                if (c.blockchain !== blockchain) {
                   return c;
-                })
-              );
-            }}
-          />
-        </div>
-      ) : null}
+                }
+                if (c.primary && c.publicKey !== publicKey) {
+                  return {
+                    ...c,
+                    primary: false,
+                  };
+                }
+                if (c.publicKey === publicKey) {
+                  return {
+                    ...c,
+                    primary: true,
+                  };
+                }
+                return c;
+              })
+            );
+          }}
+        />
+      </div>
     </div>
   );
 };

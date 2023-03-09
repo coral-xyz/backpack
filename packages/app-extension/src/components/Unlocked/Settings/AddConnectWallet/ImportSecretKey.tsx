@@ -37,16 +37,12 @@ export function ImportSecretKey({
 
   const onNext = async (privateKey: string) => {
     const name = "New";
-    console.log("a");
     const newPublicKey = await background.request({
       method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
       params: [blockchain, privateKey, name],
     });
-    console.log("a");
     setNewPublicKey(newPublicKey);
-    console.log("a");
     setOpenDrawer(true);
-    console.log("a");
   };
 
   return (

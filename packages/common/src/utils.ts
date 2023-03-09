@@ -144,50 +144,65 @@ export function reverseScientificNotation(n: number): string {
 /**
  * Validate a private key
  */
-export function validatePrivateKey(
-  blockchain: Blockchain,
-  secretKey: string,
-  keyring: WalletPublicKeys
-): { privateKey: string; publicKey: string } {
-  // Extract public keys from keychain object into array of strings
-  const existingPublicKeys = Object.values(keyring[blockchain])
-    .map((k) => k.map((i) => i.publicKey))
-    .flat();
-
-  if (blockchain === Blockchain.SOLANA) {
-    let keypair: Keypair | null = null;
-    try {
-      // Attempt to create a keypair from JSON secret key
-      keypair = Keypair.fromSecretKey(new Uint8Array(JSON.parse(secretKey)));
-    } catch (_) {
-      try {
-        // Attempt to create a keypair from bs58 decode of secret key
-        keypair = Keypair.fromSecretKey(new Uint8Array(bs58.decode(secretKey)));
-      } catch (_) {
-        // Failure
-        throw new Error("Invalid private key");
-      }
-    }
-
-    if (existingPublicKeys.includes(keypair.publicKey.toString())) {
-      throw new Error("Key already exists");
-    }
-
-    return {
-      privateKey: Buffer.from(keypair.secretKey).toString("hex"),
-      publicKey: keypair.publicKey.toString(),
-    };
-  } else if (blockchain === Blockchain.ETHEREUM) {
-    let wallet: ethers.Wallet;
-    try {
-      wallet = new ethers.Wallet(secretKey);
-    } catch (_) {
-      throw new Error("Invalid private key");
-    }
-    if (existingPublicKeys.includes(wallet.address)) {
-      throw new Error("Key already exists");
-    }
-    return { privateKey: wallet.privateKey, publicKey: wallet.address };
+export function validatePrivateKey(privateKey: string): {
+  privateKey: string;
+  publicKey: string;
+  blockchain: Blockchain;
+} {
+  try {
+    return validateSolanaPrivateKey(privateKey);
+  } catch {
+    return validateEthereumPrivateKey(privateKey);
   }
-  throw new Error("secret key validation not implemented for blockchain");
+}
+
+/**
+ * Validate an Ethereum private key
+ */
+export function validateEthereumPrivateKey(privateKey: string): {
+  privateKey: string;
+  publicKey: string;
+  blockchain: Blockchain;
+} {
+  let wallet: ethers.Wallet;
+  try {
+    wallet = new ethers.Wallet(privateKey);
+  } catch (_) {
+    throw new Error("Invalid private key");
+  }
+  return {
+    privateKey: wallet.privateKey,
+    publicKey: wallet.address,
+    blockchain: Blockchain.ETHEREUM,
+  };
+}
+
+/**
+ * Validate a Solana private key
+ */
+export function validateSolanaPrivateKey(privateKey: string): {
+  privateKey: string;
+  publicKey: string;
+  blockchain: Blockchain;
+} {
+  let keypair: Keypair | null = null;
+  try {
+    // Attempt to create a keypair from JSON secret key
+    keypair = Keypair.fromSecretKey(new Uint8Array(JSON.parse(privateKey)));
+  } catch (_) {
+    // Try the next method
+  }
+
+  try {
+    // Attempt to create a keypair from bs58 decode of secret key
+    keypair = Keypair.fromSecretKey(new Uint8Array(bs58.decode(privateKey)));
+  } catch (_) {
+    // Failure
+    throw new Error("Invalid private key");
+  }
+  return {
+    privateKey: Buffer.from(keypair.secretKey).toString("hex"),
+    publicKey: keypair.publicKey.toString(),
+    blockchain: Blockchain.SOLANA,
+  };
 }
