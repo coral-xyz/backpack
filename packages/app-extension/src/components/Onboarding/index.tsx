@@ -13,7 +13,6 @@ import {
   OnboardingProvider,
   useKeyringStoreState,
 } from "@coral-xyz/recoil";
-import { config, TamaguiProvider, Theme } from "@coral-xyz/tamagui";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, Lock, Menu, Twitter } from "@mui/icons-material";
 import { Box, IconButton, ListItemText, Toolbar } from "@mui/material";
@@ -66,28 +65,24 @@ export const Onboarding = ({
 
   return (
     <OptionsContainer innerRef={containerRef}>
-      <TamaguiProvider config={config}>
-        <Theme name="light">
-          {action === "onboard" ? (
-            <OnboardingProvider>
-              <OnboardAccount
-                onRecover={() => setAction("recover")}
-                onWaiting={() => setAction("waiting")}
-                {...defaultProps}
-              />
-            </OnboardingProvider>
-          ) : null}
-          {action === "waiting" ? <WaitingRoom /> : null}
-          {action === "recover" ? (
-            <OnboardingProvider>
-              <RecoverAccount
-                onClose={() => setAction("onboard")}
-                {...defaultProps}
-              />
-            </OnboardingProvider>
-          ) : null}
-        </Theme>
-      </TamaguiProvider>
+      {action === "onboard" ? (
+        <OnboardingProvider>
+          <OnboardAccount
+            onRecover={() => setAction("recover")}
+            onWaiting={() => setAction("waiting")}
+            {...defaultProps}
+          />
+        </OnboardingProvider>
+      ) : null}
+      {action === "waiting" ? <WaitingRoom /> : null}
+      {action === "recover" ? (
+        <OnboardingProvider>
+          <RecoverAccount
+            onClose={() => setAction("onboard")}
+            {...defaultProps}
+          />
+        </OnboardingProvider>
+      ) : null}
     </OptionsContainer>
   );
 };

@@ -197,8 +197,9 @@ export function SubtextParagraph({
       onPress={onPress}
       style={[
         {
+          fontSize: 18,
+          lineHeight: 24,
           fontWeight: "500",
-          marginTop: 8,
           color: theme.custom.colors.subtext,
         },
         style,

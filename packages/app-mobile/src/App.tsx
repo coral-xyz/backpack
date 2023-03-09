@@ -12,7 +12,7 @@ import {
   WEB_VIEW_EVENTS,
 } from "@coral-xyz/common";
 import { NotificationsProvider } from "@coral-xyz/recoil";
-import { TamaguiProvider, Theme, config } from "@coral-xyz/tamagui";
+import { TamaguiProvider, config } from "@coral-xyz/tamagui";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -42,8 +42,9 @@ export function App(): JSX.Element {
 }
 
 function Providers({ children }: { children: JSX.Element }): JSX.Element {
+  const theme = useTheme();
   return (
-    <TamaguiProvider config={config}>
+    <TamaguiProvider config={config} defaultTheme={theme.colorScheme}>
       <SafeAreaProvider>
         <NotificationsProvider>
           <ActionSheetProvider>
@@ -104,20 +105,18 @@ function Main(): JSX.Element | null {
 
   return (
     <Providers>
-      <Theme name={theme.colorScheme}>
-        <View
-          onLayout={onLayoutRootView}
-          style={[
-            styles.container,
-            {
-              backgroundColor: theme.custom.colors.background,
-            },
-          ]}
-        >
-          <StatusBar style={theme.colorScheme === "dark" ? "light" : "dark"} />
-          <RootNavigation colorScheme={theme.colorScheme as "dark" | "light"} />
-        </View>
-      </Theme>
+      <View
+        onLayout={onLayoutRootView}
+        style={[
+          styles.container,
+          {
+            backgroundColor: theme.custom.colors.background,
+          },
+        ]}
+      >
+        <StatusBar style={theme.colorScheme === "dark" ? "light" : "dark"} />
+        <RootNavigation colorScheme={theme.colorScheme as "dark" | "light"} />
+      </View>
     </Providers>
   );
 }
