@@ -817,11 +817,10 @@ const SwapInfoRow = ({ label, value, tooltip }: SwapInfoRowProps) => {
   return (
     <div className={classes.swapInfoRow}>
       <div
-        className={classes.swapInfoTitleLeft}
         onMouseOver={() => setTooltipVisible(true)}
         onMouseOut={() => setTooltipVisible(false)}
       >
-        <Typography>
+        <Typography className={classes.swapInfoTitleLeft}>
           {label}
           {tooltip ? (
             <Tooltip title={tooltip} arrow open={tooltipVisible}>
@@ -954,8 +953,8 @@ export function SwapSelectToken({
 
 /**
  * Hides miniscule amounts of SOL
- * @example approximateAmount(0.000203928) = "0.0002"
+ * @example approximateAmount(0.00203928) = "0.002"
  * @param value BigNumberish amount of Solana Lamports
  */
 const approximateAmount = (value: BigNumberish) =>
-  ethers.utils.formatUnits(value, 9).replace(/(0.0{3,}[1-9])(\d+)/, "$1");
+  ethers.utils.formatUnits(value, 9).replace(/(0.0{2,}[1-9])(\d+)/, "$1");

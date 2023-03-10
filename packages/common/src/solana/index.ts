@@ -16,12 +16,13 @@ import {
 } from "@magiceden-oss/open_creator_protocol";
 import type {
   TransferInstructionAccounts,
-  TransferInstructionArgs} from "@metaplex-foundation/mpl-token-metadata";
+  TransferInstructionArgs,
+} from "@metaplex-foundation/mpl-token-metadata";
 import {
   createTransferInstruction as createTokenMetadataTransferInstruction,
   Metadata,
   TokenRecord,
-  TokenState
+  TokenState,
 } from "@metaplex-foundation/mpl-token-metadata";
 import type { Program, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
@@ -50,6 +51,7 @@ import {
 import BN from "bn.js";
 
 import type { BackgroundClient } from "../";
+import { TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS } from "../constants";
 
 import * as assertOwner from "./programs/assert-owner";
 import {
@@ -678,13 +680,12 @@ export const generateUnwrapSolTx = async (
     );
   } else {
     const newAccount = Keypair.generate();
-    const rentExemptionLamports = 2039280;
     // Create a new account to transfer wSOL into and then close
     tx.instructions.push(
       SystemProgram.createAccount({
         fromPubkey: walletPublicKey,
         newAccountPubkey: newAccount.publicKey,
-        lamports: rentExemptionLamports,
+        lamports: TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
         space: 165,
         programId: TOKEN_PROGRAM_ID,
       })

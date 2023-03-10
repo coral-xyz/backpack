@@ -6,6 +6,7 @@ import {
   generateWrapSolTx,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
   SOL_NATIVE_MINT,
+  TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
   USDC_MINT,
   WSOL_MINT,
@@ -369,8 +370,7 @@ export function SwapProvider({
               )
             ))
           ) {
-            // rent-exemption lamports required for SPL Token V2 (0.00203928 SOL)
-            return 203928;
+            return TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS;
           }
         } catch (err) {
           // don't throw on this until it's undergone further testing
