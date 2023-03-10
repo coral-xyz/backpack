@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { type ChangeEvent, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {
@@ -41,7 +42,7 @@ import {
   useNavigation,
   useUser,
 } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 import { TldParser } from "@onsol/tldparser";
 import type { Connection } from "@solana/web3.js";
@@ -59,7 +60,7 @@ import { SendEthereumConfirmationCard } from "./Ethereum";
 import { SendSolanaConfirmationCard } from "./Solana";
 import { WithHeaderButton } from "./Token";
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   topImage: {
     width: 80,
   },
@@ -85,44 +86,11 @@ const useStyles = styles((theme) => ({
     paddingTop: "24px",
     flex: 1,
   },
-  inputContainer: {
-    paddingLeft: "12px",
-    paddingRight: "12px",
-    marginBottom: -10,
-  },
   textRoot: {
     marginTop: "0 !important",
     marginBottom: "0 !important",
     "& .MuiOutlinedInput-root": {
       backgroundColor: `${theme.custom.colors.nav} !important`,
-    },
-  },
-  bottomHalfLabel: {
-    fontWeight: 500,
-    color: theme.custom.colors.secondary,
-    fontSize: "12px",
-    lineHeight: "16px",
-  },
-  confirmRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: "8px",
-  },
-  confirmRowLabelLeft: {
-    fontSize: "12px",
-    lineHeight: "16px",
-    fontWeight: 500,
-    color: theme.custom.colors.secondary,
-  },
-  confirmRowLabelRight: {
-    fontSize: "12px",
-    lineHeight: "16px",
-    fontWeight: 500,
-    color: theme.custom.colors.fontColor,
-  },
-  confirmTableListItem: {
-    "&:hover": {
-      opacity: 1,
     },
   },
 }));
@@ -208,7 +176,7 @@ export function Send({
     uuid?: string;
   };
 }) {
-  const classes = useStyles() as any;
+  const classes = useStyles();
   const { uuid } = useUser();
   const nav = useNavigationEphemeral();
   const { provider: solanaProvider } = useAnchorContext();
@@ -500,6 +468,7 @@ function SendV2({ token, maxAmount, setAmount, sendButton, to }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const isDarkMode = useDarkMode();
+  // eslint-disable-next-line react/hook-use-state
   const [_amount, _setAmount] = useState<string>("");
 
   return (

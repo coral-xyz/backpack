@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-no-useless-fragment */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
 import {
   Blockchain,
@@ -12,10 +14,10 @@ import {
   SecretKeyIcon,
 } from "@coral-xyz/react-common";
 import {
+  getBlockchainLogo,
   useActiveWallet,
   useAllWallets,
   useBackgroundClient,
-  useBlockchainLogo,
   useDehydratedWallets,
   usePrimaryWallets,
 } from "@coral-xyz/recoil";
@@ -42,9 +44,9 @@ import {
   AddConnectWalletMenu,
 } from "../Unlocked/Settings/AddConnectWallet";
 import { CreateMenu } from "../Unlocked/Settings/AddConnectWallet/CreateMenu";
+import { CreateMnemonic } from "../Unlocked/Settings/AddConnectWallet/CreateMnemonic";
 import { ImportMenu } from "../Unlocked/Settings/AddConnectWallet/ImportMenu";
 import { ImportMnemonic } from "../Unlocked/Settings/AddConnectWallet/ImportMnemonic";
-import { CreateMnemonic } from "../Unlocked/Settings/AddConnectWallet/CreateMnemonic";
 import { ImportSecretKey } from "../Unlocked/Settings/AddConnectWallet/ImportSecretKey";
 import { RemoveWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RenameWallet";
@@ -451,26 +453,27 @@ function _WalletList({
           />
         )}
       </div>
-      {coldWallets.length > 0 ? <div
-        style={{
+      {coldWallets.length > 0 ? (
+        <div
+          style={{
             background: theme.custom.colorsInverted.background,
             padding: "16px",
           }}
         >
-        <div
-          style={{
+          <div
+            style={{
               display: "flex",
               justifyContent: "space-between",
             }}
           >
-          <div
-            style={{
+            <div
+              style={{
                 marginBottom: "12px",
                 display: "flex",
               }}
             >
-            <Typography
-              style={{
+              <Typography
+                style={{
                   fontWeight: 500,
                   color: theme.custom.colorsInverted.fontColor,
                   fontSize: "14px",
@@ -480,13 +483,13 @@ function _WalletList({
                   justifyContent: "center",
                 }}
               >
-              Disabled app signing
-            </Typography>
-            <Tooltip
-              placement="bottom"
-              arrow
-              title={"These wallets can't sign for apps."}
-              componentsProps={{
+                Disabled app signing
+              </Typography>
+              <Tooltip
+                placement="bottom"
+                arrow
+                title={"These wallets can't sign for apps."}
+                componentsProps={{
                   tooltip: {
                     sx: {
                       width: "250px",
@@ -500,34 +503,35 @@ function _WalletList({
                   },
                 }}
               >
-              <InfoIcon
-                style={{
+                <InfoIcon
+                  style={{
                     width: "16px",
                     marginLeft: "5px",
                     color: theme.custom.colorsInverted.secondary,
                   }}
                 />
-            </Tooltip>
+              </Tooltip>
+            </div>
           </div>
-        </div>
-        <WalletList
-          inverted
-          wallets={coldWallets}
-          clickWallet={async (wallet) => {
+          <WalletList
+            inverted
+            wallets={coldWallets}
+            clickWallet={async (wallet) => {
               if (wallet.type !== "dehydrated") {
                 await onChange(wallet);
                 close();
               }
             }}
-          style={{
+            style={{
               borderRadius: "10px",
               overflow: "hidden",
               marginLeft: 0,
               marginRight: 0,
             }}
-          selectedWalletPublicKey={activeWallet.publicKey}
+            selectedWalletPublicKey={activeWallet.publicKey}
           />
-      </div> : null}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -897,8 +901,9 @@ export function StackedWalletAddress({
         >
           {type === "dehydrated" ? "Not recovered" : name}
         </Typography>
-        {type !== "dehydrated" && isPrimary ? <Typography
-          style={{
+        {type !== "dehydrated" && isPrimary ? (
+          <Typography
+            style={{
               marginLeft: "4px",
               fontSize: "14px",
               fontWeight: 500,
@@ -910,8 +915,9 @@ export function StackedWalletAddress({
               justifyContent: "center",
             }}
           >
-          (primary)
-        </Typography> : null}
+            (primary)
+          </Typography>
+        ) : null}
       </div>
       <div
         style={{
@@ -1005,7 +1011,7 @@ function NetworkIcon({
   blockchain: Blockchain;
   style?: React.CSSProperties;
 }) {
-  const blockchainLogo = useBlockchainLogo(blockchain);
+  const blockchainLogo = getBlockchainLogo(blockchain);
   return <img src={blockchainLogo} style={style} />;
 }
 
