@@ -1,10 +1,10 @@
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import { Close } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 
 import { WithMiniDrawer } from "./Layout/Drawer";
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   paperAnchorBottom: {
     boxShadow: "none",
   },

@@ -5,7 +5,7 @@ import {
   useTransactionData,
   useWalletBlockchain,
 } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
+import { styles as makeStyles } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
@@ -16,7 +16,7 @@ import { WithApproval } from "../../Unlocked/Approvals";
 
 const { Zero } = ethers.constants;
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   title: {
     fontWeight: 500,
     fontSize: "18px",
@@ -36,11 +36,6 @@ const useStyles = styles((theme) => ({
     fontSize: "14px",
     textAlign: "center",
     marginTop: "8px",
-  },
-  link: {
-    cursor: "pointer",
-    color: theme.custom.colors.secondary,
-    textDecoration: "underline",
   },
   negative: {
     color: theme.custom.colors.negative,

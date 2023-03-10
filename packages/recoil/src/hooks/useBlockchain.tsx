@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { Blockchain } from "@coral-xyz/common";
 import { useRecoilValue } from "recoil";
 
@@ -35,7 +36,7 @@ export function useBlockchainConnectionUrl(blockchain: Blockchain) {
 }
 
 // TODO(peter) consolidate between extension/mobile-app or just live on S3
-export function useBlockchainLogo(blockchain: Blockchain): string {
+export function blockchainLogo(blockchain: Blockchain): string {
   switch (blockchain) {
     case Blockchain.ETHEREUM:
       return "./ethereum.png";

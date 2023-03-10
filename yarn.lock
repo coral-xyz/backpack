@@ -15261,10 +15261,10 @@ eslint-plugin-jsx-a11y@^6.5.1:
     object.fromentries "^2.0.6"
     semver "^6.3.0"
 
-eslint-plugin-mui-unused-classes@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-mui-unused-classes/-/eslint-plugin-mui-unused-classes-1.0.3.tgz#5601c17ac6094b36452117fe84792eeaaddc23a8"
-  integrity sha512-hsvoxxcL189LSyUyBvak+tK7XHKvoAiUBQpnCRyx6hLf4FTE+WWNtE9cRwcUwZvdh+E/wLHGp9JpNveQcQpUTw==
+eslint-plugin-mui-unused-classes@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-mui-unused-classes/-/eslint-plugin-mui-unused-classes-2.0.0.tgz#03466473c470a4173ff89ab6a6998f63f175433e"
+  integrity sha512-rXhwgF2KLq+LP0rhbVWd4s9BTr/Nfr9ysuRtJXqSnZGTde49Up9Js8NNU8hkzfiTBsJwSoHdtL+q1GNpdkvZKg==
 
 eslint-plugin-node@^11.1.0:
   version "11.1.0"

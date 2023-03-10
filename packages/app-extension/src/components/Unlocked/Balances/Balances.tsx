@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import { formatUSD, proxyImageUrl, toTitleCase } from "@coral-xyz/common";
-import { isAggregateWallets, useBlockchainLogo } from "@coral-xyz/recoil";
+import { blockchainLogo, isAggregateWallets } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import {
@@ -281,7 +281,7 @@ export function _BalancesTableHead({
   const classes = useStyles();
   const theme = useCustomTheme();
   const title = toTitleCase(blockchain);
-  const iconUrl = useBlockchainLogo(blockchain);
+  const iconUrl = blockchainLogo(blockchain);
   const _isAggregateWallets = useRecoilValue(isAggregateWallets);
   return (
     <div

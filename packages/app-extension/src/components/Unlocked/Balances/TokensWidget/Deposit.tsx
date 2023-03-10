@@ -1,12 +1,8 @@
 import { useState } from "react";
 import { Blockchain } from "@coral-xyz/common";
 import { SecondaryButton } from "@coral-xyz/react-common";
-import {
-  useAllWalletsDisplayed,
-  useBlockchainLogo,
-  useWalletName,
-} from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { useAllWalletsDisplayed, useWalletName } from "@coral-xyz/recoil";
+import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import { IconButton, Modal, Typography } from "@mui/material";
@@ -73,19 +69,19 @@ function BlockchainDepositCard({
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [tooltipOpenModal, setTooltipOpenModal] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
-  const blockchainLogo = useBlockchainLogo(blockchain);
+  const blockchainLogo = blockchainLogo(blockchain);
   const blockchainDisplay =
     blockchain.slice(0, 1).toUpperCase() + blockchain.slice(1);
 
-  const onCopy = () => {
+  const onCopy = async () => {
     setTooltipOpen(true);
     setTimeout(() => setTooltipOpen(false), 1000);
-    navigator.clipboard.writeText(publicKey.toString());
+    await navigator.clipboard.writeText(publicKey.toString());
   };
-  const onCopyModal = () => {
+  const onCopyModal = async () => {
     setTooltipOpenModal(true);
     setTimeout(() => setTooltipOpenModal(false), 1000);
-    navigator.clipboard.writeText(publicKey.toString());
+    await navigator.clipboard.writeText(publicKey.toString());
   };
   const onQrCode = () => {
     setShowQrCode(true);
@@ -305,7 +301,7 @@ function BlockchainDepositCard({
   );
 }
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   subtext: {
     width: "264px",
     marginLeft: "auto",
@@ -350,17 +346,6 @@ const useStyles = styles((theme) => ({
       cursor: "pointer",
     },
   },
-  copyButton: {
-    background: "transparent",
-    padding: 0,
-  },
-  copyButtonLabel: {
-    color: theme.custom.colors.brandColor,
-    fontWeight: 500,
-    fontSize: "14px",
-    lineHeight: "24px",
-    textTransform: "none",
-  },
 }));
 
 export function _Deposit({
@@ -380,10 +365,10 @@ export function _Deposit({
     "..." +
     publicKey.toString().slice(publicKey.toString().length - 12);
 
-  const onCopy = () => {
+  const onCopy = async () => {
     setTooltipOpen(true);
     setTimeout(() => setTooltipOpen(false), 1000);
-    navigator.clipboard.writeText(publicKey.toString());
+    await navigator.clipboard.writeText(publicKey.toString());
   };
 
   return (
@@ -456,8 +441,12 @@ export function _Deposit({
       </div>
       <div>
         <Typography className={classes.subtext}>
-          {blockchain === Blockchain.SOLANA ? <>This address can only receive SOL and SPL tokens on Solana.</> : null}
-          {blockchain === Blockchain.ETHEREUM ? <>This address can only receive ETH and ERC20 tokens on Ethereum.</> : null}
+          {blockchain === Blockchain.SOLANA ? (
+            <>This address can only receive SOL and SPL tokens on Solana.</>
+          ) : null}
+          {blockchain === Blockchain.ETHEREUM ? (
+            <>This address can only receive ETH and ERC20 tokens on Ethereum.</>
+          ) : null}
         </Typography>
       </div>
     </div>

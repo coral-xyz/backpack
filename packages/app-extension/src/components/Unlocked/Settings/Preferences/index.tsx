@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import {
   BACKPACK_FEATURE_AGGREGATE_WALLETS,
@@ -9,7 +10,6 @@ import {
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
-  useBlockchainLogo,
   useDarkMode,
   useDeveloperMode,
   useIsAggregateWallets,
@@ -139,7 +139,7 @@ export function Preferences() {
     Solana: {
       onClick: () => nav.push("preferences-solana"),
       icon: () => {
-        const blockchainLogo = useBlockchainLogo(Blockchain.SOLANA);
+        const blockchainLogo = blockchainLogo(Blockchain.SOLANA);
         return (
           <img
             src={blockchainLogo}
@@ -155,7 +155,7 @@ export function Preferences() {
     Ethereum: {
       onClick: () => nav.push("preferences-ethereum"),
       icon: () => {
-        const blockchainLogo = useBlockchainLogo(Blockchain.ETHEREUM);
+        const blockchainLogo = blockchainLogo(Blockchain.ETHEREUM);
         return (
           <img
             src={blockchainLogo}
