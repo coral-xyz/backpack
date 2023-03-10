@@ -1110,13 +1110,9 @@ async function handleSetXnftPreferences(
 
 async function handleBlockchainKeyringsAdd(
   ctx: Context<Backend>,
-  blockchain: Blockchain,
   signedWalletDescriptor: SignedWalletDescriptor
 ): Promise<RpcResponse<Array<string>>> {
-  const resp = await ctx.backend.blockchainKeyringsAdd(
-    blockchain,
-    signedWalletDescriptor
-  );
+  const resp = await ctx.backend.blockchainKeyringsAdd(signedWalletDescriptor);
   return [resp];
 }
 

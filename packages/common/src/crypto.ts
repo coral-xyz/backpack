@@ -19,15 +19,6 @@ export const getCoinType = (blockchain: Blockchain) => {
   return coinType + HARDENING;
 };
 
-export const getBlockchainFromPath = (derivationPath: string): Blockchain => {
-  const coinType = BIPPath.fromString(derivationPath).toPathArray()[1];
-  return Object.keys(blockchainCoinType).find(
-    (key) =>
-      blockchainCoinType[key] === coinType ||
-      blockchainCoinType[key] === coinType - HARDENING
-  ) as Blockchain;
-};
-
 export const legacyBip44Indexed = (blockchain: Blockchain, index: number) => {
   const coinType = getCoinType(blockchain);
   const path = [44 + HARDENING, coinType];
@@ -120,8 +111,8 @@ export const getAccountRecoveryPaths = (
   blockchain: Blockchain,
   accountIndex: number
 ) => {
-  return [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map((j) =>
-    getIndexedPath(blockchain, accountIndex, j)
+  return [...Array(LOAD_PUBLIC_KEY_AMOUNT + 1).keys()].map((j) =>
+    getIndexedPath(blockchain, accountIndex, j - 1)
   );
 };
 
@@ -207,7 +198,15 @@ export const getRecoveryPaths = (blockchain: Blockchain) => {
   // Legacy imported accounts (m/44/501'/0' and m/44/501'/0'/{0...n})
   paths = paths.concat(legacyBip44ChangeRecoveryPaths(blockchain));
 
-  if (blockchain === Blockchain.ETHEREUM) {
+  if (blockchain === Blockchain.SOLANA) {
+    // Handle legacy Solana wallets that were created in 0.5.0 that had
+    // Ethereum derivation paths
+    paths = paths.concat(
+      getAccountRecoveryPaths(Blockchain.SOLANA, 0).map((d) =>
+        d.replace("501", "60")
+      )
+    );
+  } else if (blockchain === Blockchain.ETHEREUM) {
     paths = paths.concat(
       [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(ethereumIndexed)
     );

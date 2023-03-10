@@ -1180,13 +1180,10 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async ledgerImport(
-    blockchain: Blockchain,
-    signedWalletDescriptor: SignedWalletDescriptor
-  ) {
+  async ledgerImport(signedWalletDescriptor: SignedWalletDescriptor) {
     const { signature, ...walletDescriptor } = signedWalletDescriptor;
-    const { publicKey } = walletDescriptor;
-    await this.keyringStore.ledgerImport(blockchain, walletDescriptor);
+    const { blockchain, publicKey } = walletDescriptor;
+    await this.keyringStore.ledgerImport(walletDescriptor);
     try {
       await this.userAccountPublicKeyCreate(blockchain, publicKey, signature);
     } catch (error) {
@@ -1259,7 +1256,7 @@ export class Backend {
               publicKey: publicKeys[index],
               derivationPath: recoveryPaths[index],
             };
-            await this.blockchainKeyringsAdd(blockchain, {
+            await this.blockchainKeyringsAdd({
               ...walletDescriptor,
               signature: "",
             });
@@ -1549,6 +1546,7 @@ export class Backend {
       const publicKey = publicKeys[0];
       const derivationPath = recoveryPaths[0];
       return {
+        blockchain,
         derivationPath,
         publicKey,
       };
@@ -1681,15 +1679,13 @@ export class Backend {
    * Add a new blockchain keyring to the keyring store (i.e. initialize it).
    */
   async blockchainKeyringsAdd(
-    blockchain: Blockchain,
     signedWalletDescriptor: SignedWalletDescriptor
   ): Promise<string> {
     await this.keyringStore.blockchainKeyringAdd(
-      blockchain,
       signedWalletDescriptor as WalletDescriptor
     );
 
-    const { signature, publicKey } = signedWalletDescriptor;
+    const { blockchain, signature, publicKey } = signedWalletDescriptor;
 
     // Add the new public key to the API
     try {

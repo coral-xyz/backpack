@@ -4,15 +4,8 @@ import type {
   SignedWalletDescriptor,
   WalletDescriptor,
 } from "@coral-xyz/common";
-import {
-  getCreateMessage,
-  UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
-} from "@coral-xyz/common";
-import {
-  useBackgroundClient,
-  useOnboarding,
-  useSignMessageForWallet,
-} from "@coral-xyz/recoil";
+import { getCreateMessage } from "@coral-xyz/common";
+import { useOnboarding, useSignMessageForWallet } from "@coral-xyz/recoil";
 
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
@@ -59,6 +52,7 @@ export const OnboardAccount = ({
     signedWalletDescriptors,
     selectedBlockchains,
   } = onboardingData;
+
   const signMessageForWallet = useSignMessageForWallet(mnemonic);
 
   useEffect(() => {
@@ -66,7 +60,7 @@ export const OnboardAccount = ({
     setOnboardingData({
       signedWalletDescriptors: [],
     });
-  }, [action, keyringType, mnemonic]);
+  }, [action, keyringType, mnemonic, setOnboardingData]);
 
   const steps = [
     <InviteCodeForm
