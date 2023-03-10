@@ -54,7 +54,7 @@ export function ImportMnemonic({
     publicKey ?? null
   );
   const [name, setName] = useState<string | null>(null);
-  const signMessageForWallet = useSignMessageForWallet(blockchain, mnemonic);
+  const signMessageForWallet = useSignMessageForWallet(mnemonic);
 
   useEffect(() => {
     const prevTitle = nav.title;

@@ -53,14 +53,14 @@ export const OnboardAccount = ({
     selectedBlockchains,
   } = onboardingData;
 
-  const signMessageForWallet = useSignMessageForWallet(blockchain!, mnemonic);
+  const signMessageForWallet = useSignMessageForWallet(mnemonic);
 
   useEffect(() => {
     // Reset blockchain keyrings on certain changes that invalidate the addresses
     setOnboardingData({
       signedWalletDescriptors: [],
     });
-  }, [action, keyringType, mnemonic]);
+  }, [action, keyringType, mnemonic, setOnboardingData]);
 
   const steps = [
     <InviteCodeForm

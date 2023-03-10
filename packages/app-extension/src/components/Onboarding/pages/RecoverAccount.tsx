@@ -4,13 +4,8 @@ import type {
   SignedWalletDescriptor,
   WalletDescriptor,
 } from "@coral-xyz/common";
-import {
-  Blockchain,
-  getAuthMessage,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-} from "@coral-xyz/common";
-import { useBackgroundClient, useOnboarding } from "@coral-xyz/recoil";
-import { ethers } from "ethers";
+import { Blockchain, getAuthMessage } from "@coral-xyz/common";
+import { useOnboarding, useSignMessageForWallet } from "@coral-xyz/recoil";
 
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
@@ -36,7 +31,6 @@ export const RecoverAccount = ({
   isOnboarded?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
-  const background = useBackgroundClient();
   const { onboardingData, setOnboardingData } = useOnboarding();
   const {
     userId,
@@ -47,6 +41,7 @@ export const RecoverAccount = ({
   } = onboardingData;
 
   const authMessage = userId ? getAuthMessage(userId) : "";
+  const signMessageForWallet = useSignMessageForWallet(mnemonic);
   const hardwareOnboardSteps = useHardwareOnboardSteps({
     blockchain:
       serverPublicKeys.length > 0
@@ -107,27 +102,10 @@ export const RecoverAccount = ({
           mnemonic={mnemonic!}
           onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
               const signedWalletDescriptors = await Promise.all(
-                walletDescriptors.map(
-                  async ({ blockchain, derivationPath, publicKey }) => {
-                    const signature = await background.request({
-                      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-                      params: [
-                        blockchain,
-                        publicKey,
-                        ethers.utils.base58.encode(
-                          Buffer.from(authMessage, "utf-8")
-                        ),
-                        [mnemonic, [derivationPath]],
-                      ],
-                    });
-                    return {
-                      blockchain,
-                      derivationPath,
-                      publicKey,
-                      signature,
-                    };
-                  }
-                )
+                walletDescriptors.map(async (w) => ({
+                  ...w,
+                  signature: await signMessageForWallet(w, authMessage),
+                }))
               );
               setOnboardingData({ signedWalletDescriptors });
               nextStep();
