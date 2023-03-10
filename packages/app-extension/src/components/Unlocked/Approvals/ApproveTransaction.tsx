@@ -29,6 +29,14 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "16px",
     textAlign: "center",
   },
+  advancedDetailsLabel: {
+    textAlign: "center",
+    color: theme.custom.colors.secondary,
+    fontSize: "12px",
+    marginTop: "6px",
+    marginBottom: "8px",
+    cursor: "pointer",
+  },
   listDescription: {
     color: theme.custom.colors.secondary,
     fontSize: "14px",
@@ -181,6 +189,7 @@ export function ApproveAllTransactions({
   );
   const _isKeyCold = useRecoilValue(isKeyCold(wallet));
   const [loading, setLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
   const [consolidated, setConsolidated] = useState<TransactionDataType | null>(
     null
   );
@@ -226,6 +235,10 @@ export function ApproveAllTransactions({
     onCompletion(false);
   };
 
+  const onToggleAdvanced = () => {
+    setShowAll((val) => !val);
+  };
+
   if (_isKeyCold) {
     return <Cold origin={origin!} />;
   }
@@ -246,43 +259,52 @@ export function ApproveAllTransactions({
         <div
           style={{
             marginTop: "24px",
-            marginLeft: "8px",
-            marginRight: "8px",
+            ...(showAll ? { height: "250px", overflowY: "scroll" } : {}),
           }}
         >
-          <Typography className={classes.listDescription}>
-            Transaction Aggregate Details ({transactionsData.length})
-          </Typography>
-          <TransactionData
-            transactionData={consolidated}
-            menuItems={createTransactionDataMenuItems(consolidated, classes)}
-            menuItemClasses={{ root: classes.txMenuItemRoot }}
-          />
-        </div>
-      )}
-      {/* {transactionsData.map((tx, i) =>
-        loading ? (
-          <Loading key={i} />
-        ) : (
           <div
-            key={i}
+            key={0}
             style={{
-              marginTop: "24px",
               marginLeft: "8px",
               marginRight: "8px",
             }}
           >
             <Typography className={classes.listDescription}>
-              Transaction details #{i + 1}
+              Transaction Aggregate Details ({transactionsData.length})
             </Typography>
             <TransactionData
-              transactionData={tx}
-              menuItems={createTransactionDataMenuItems(tx, classes)}
+              transactionData={consolidated}
+              menuItems={createTransactionDataMenuItems(consolidated, classes)}
               menuItemClasses={{ root: classes.txMenuItemRoot }}
             />
           </div>
-        )
-      )} */}
+          {showAll ? transactionsData.map((tx, i) => (
+            <div
+              key={i + 1}
+              style={{
+                  marginTop: "10px",
+                  marginLeft: "8px",
+                  marginRight: "8px",
+                }}
+              >
+              <Typography className={classes.listDescription}>
+                [{i + 1}] Transaction details
+              </Typography>
+              <TransactionData
+                transactionData={tx}
+                menuItems={createTransactionDataMenuItems(tx, classes)}
+                menuItemClasses={{ root: classes.txMenuItemRoot }}
+                />
+            </div>
+            )) : null}
+        </div>
+      )}
+      <Typography
+        className={classes.advancedDetailsLabel}
+        onClick={onToggleAdvanced}
+      >
+        {showAll ? "Hide Advanced Details" : "View Advanced Details"}
+      </Typography>
     </WithApproval>
   );
 }
