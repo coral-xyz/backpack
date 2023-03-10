@@ -9,7 +9,6 @@ import {
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-  UI_RPC_METHOD_USER_ACCOUNT_READ,
 } from "@coral-xyz/common";
 import {
   HardwareIcon,
@@ -17,7 +16,6 @@ import {
   PushDetail,
 } from "@coral-xyz/react-common";
 import {
-  useAuthenticatedUser,
   useBackgroundClient,
   useKeyringHasMnemonic,
   useUser,
@@ -42,7 +40,6 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
   const background = useBackgroundClient();
   const hasMnemonic = useKeyringHasMnemonic();
   const user = useUser();
-  const authenticatedUser = useAuthenticatedUser();
   const [keyringExists, setKeyringExists] = useState(false);
   const [newPublicKey, setNewPublicKey] = useState("");
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -132,17 +129,13 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
           params: [blockchain],
         });
       }
-      await background.request({
-        method: UI_RPC_METHOD_USER_ACCOUNT_READ,
-        params: [authenticatedUser?.jwt],
-      });
       setNewPublicKey(newPublicKey);
       setLoading(false);
     } else {
       nav.push("create-mnemonic", {
         blockchain,
-        keyringExists
-      })
+        keyringExists,
+      });
     }
   };
 

@@ -44,6 +44,7 @@ import {
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
+  NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
@@ -96,7 +97,7 @@ export function NotificationsProvider(props: any) {
       };
     });
   };
-  const setKeyringHasMnemonic = useSetRecoilState(atoms.keyringHasMnemonic)
+  const setKeyringHasMnemonic = useSetRecoilState(atoms.keyringHasMnemonic);
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveUser = useSetRecoilState(atoms.user);
   const setAuthenticatedUser = useSetRecoilState(atoms.authenticatedUser);
@@ -333,6 +334,9 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_USER_ACCOUNT_AUTHENTICATED:
           handleUserAccountAuthenticated(notif);
           break;
+        case NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED:
+          handleUserAccountPublicKeyCreated(notif);
+          break;
         case NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED:
           handleUserAccountPublicKeyDeleted(notif);
           break;
@@ -352,8 +356,8 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleKeyringSetMnemonic = () => {
-      setKeyringHasMnemonic(true)
-    }
+      setKeyringHasMnemonic(true);
+    };
 
     const handleKeyringStoreCreated = (notif: Notification) => {
       setPreferences(notif.data.preferences);
@@ -626,6 +630,10 @@ export function NotificationsProvider(props: any) {
         uuid: notif.data.uuid,
         jwt: notif.data.jwt,
       });
+    };
+
+    const handleUserAccountPublicKeyCreated = (notif: Notification) => {
+      setServerPublicKeys((current) => [...current, notif.data]);
     };
 
     const handleUserAccountPublicKeyDeleted = (notif: Notification) => {
