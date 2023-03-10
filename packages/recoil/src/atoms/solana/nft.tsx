@@ -109,7 +109,7 @@ export const solanaNftById = equalSelectorFamily<
         } else {
           return uriData.metadata.data.name;
         }
-      })();
+      })().replace(/\0/g, "");
 
       const nft = {
         id: nftTokenMetadata?.publicKey ?? "",
@@ -117,9 +117,10 @@ export const solanaNftById = equalSelectorFamily<
         publicKey: nftToken.key,
         mint: nftTokenMetadata?.account.mint,
         metadataCollectionId: uriData?.metadata?.collection?.key.toString(),
-        name:
-          nftTokenMetadata?.account.data.name.replace(/\0/g, "") ??
-          (uriData ? uriData.tokenMetaUriData.name : "Unknown"),
+        name: (
+          nftTokenMetadata?.account.data.name ??
+          (uriData ? uriData.tokenMetaUriData.name : "Unknown")
+        ).replace(/\0/g, ""),
         description: uriData ? uriData.tokenMetaUriData.description : "",
         externalUrl: uriData
           ? externalResourceUri(
