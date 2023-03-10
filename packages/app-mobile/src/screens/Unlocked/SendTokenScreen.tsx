@@ -1,62 +1,71 @@
+// TODO(peter) share between extension, put this into recoil
 import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useCallback, useEffect, useState } from "react";
 import {
-  StyleSheet,
-  View,
-  KeyboardAvoidingView,
   Platform,
+  TextInput,
+  Pressable,
+  Image,
+  View,
   Keyboard,
+  KeyboardAvoidingView,
 } from "react-native";
 
 import { Token } from "@@types/types";
 import {
   Blockchain,
   ETH_NATIVE_MINT,
-  NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
   SOL_NATIVE_MINT,
+  walletAddressDisplay,
+  toDisplayBalance,
   toTitleCase,
+  NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
 } from "@coral-xyz/common";
 import { useAnchorContext, useEthereumCtx } from "@coral-xyz/recoil";
-import { SearchBox } from "@coral-xyz/tamagui";
-import { BigNumber } from "ethers";
+import {
+  PrimaryButton,
+  DangerButton,
+  // SearchBox,
+  // YStack,
+  // Input,
+  ScrollView,
+  Box,
+  Text,
+  XStack,
+  YGroup,
+  ListItem,
+  YStack,
+  Separator,
+} from "@coral-xyz/tamagui";
+import ethers, { BigNumber } from "ethers";
 
 import { SendEthereumConfirmationCard } from "~components/BottomDrawerEthereumConfirmation";
 import { SendSolanaConfirmationCard } from "~components/BottomDrawerSolanaConfirmation";
 import { BottomSheetModal } from "~components/BottomSheetModal";
-import { InputField, InputFieldMaxLabel } from "~components/Form";
-import {
-  DangerButton,
-  PrimaryButton,
-  Screen,
-  StyledTextInput,
-  StyledTokenTextInput,
-} from "~components/index";
-import { useIsValidAddress } from "~hooks/index";
+import { UnstyledTokenTextInput } from "~components/TokenInputField";
+import { Screen } from "~components/index";
+import { useIsValidAddress } from "~hooks/useIsValidAddress";
+import { useTheme as useCustomTheme } from "~hooks/useTheme";
 import type { UnlockedNavigatorStackParamList } from "~navigation/UnlockedNavigator";
 
+import { SendTokenSelectUserScreen } from "./SendTokenScreen2";
 import { SearchableTokenTables } from "./components/Balances";
 
-export function SendTokenDetailScreen({
+export function SendTokenSelectRecipientScreen({
   route,
 }: StackScreenProps<
   UnlockedNavigatorStackParamList,
   "SendTokenModal"
 >): JSX.Element {
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [address, setAddress] = useState<string>("");
   const { blockchain, token } = route.params;
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
 
-  const [address, setAddress] = useState<string>("");
-  const [amount, setAmount] = useState<BigNumber | null | undefined>(
-    BigNumber.from(0)
-  );
-  const [feeOffset, setFeeOffset] = useState<BigNumber>(BigNumber.from(0));
-
   const {
     isValidAddress,
-    isErrorAddress,
+    _isErrorAddress,
     normalizedAddress: destinationAddress,
   } = useIsValidAddress(
     blockchain,
@@ -64,6 +73,205 @@ export function SendTokenDetailScreen({
     solanaProvider.connection,
     ethereumCtx.provider
   );
+
+  const hasInputError = !isValidAddress && address.length > 15;
+
+  return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <Screen style={{ paddingHorizontal: 12, paddingVertical: 16 }}>
+        <SendTokenSelectUserScreen
+          blockchain={blockchain}
+          token={token}
+          inputContent={address}
+          setInputContent={setAddress}
+          hasInputError={hasInputError}
+          normalizedAddress={destinationAddress}
+        />
+      </Screen>
+    </KeyboardAvoidingView>
+  );
+}
+
+export function SendTokenListScreen({ navigation }): JSX.Element {
+  return (
+    <Screen>
+      <SearchableTokenTables
+        onPressRow={(blockchain: Blockchain, token: Token) => {
+          navigation.push("SendTokenModal", {
+            blockchain,
+            token: {
+              ...token,
+              nativeBalance: token.nativeBalance.toString(),
+            },
+          });
+        }}
+        customFilter={(token: Token) => {
+          if (token.mint && token.mint === SOL_NATIVE_MINT) {
+            return true;
+          }
+          if (token.address && token.address === ETH_NATIVE_MINT) {
+            return true;
+          }
+          return !token.nativeBalance.isZero();
+        }}
+      />
+    </Screen>
+  );
+}
+
+function CopyablePublicKey({ address }): JSX.Element {
+  const theme = useCustomTheme();
+  return (
+    <Pressable
+      style={{}}
+      onPress={async () => {
+        console.log("copy clipboard");
+      }}
+    >
+      <Text
+        style={{
+          fontSize: 13,
+          padding: 4,
+          backgroundColor: theme.custom.colors.bg2,
+        }}
+      >
+        {walletAddressDisplay(address)}
+      </Text>
+    </Pressable>
+  );
+}
+
+function AvatarHeader({
+  walletName,
+  username,
+  address,
+  image,
+}: {
+  walletName?: string | undefined;
+  username?: string | undefined;
+  address?: string | undefined;
+  image?: string | undefined;
+}): JSX.Element {
+  const theme = useCustomTheme();
+  return (
+    <YStack ai="center">
+      <Image
+        source={{ uri: image }}
+        style={{
+          width: 80,
+          height: 80,
+          borderRadius: 40,
+          backgroundColor: "yellow",
+          marginBottom: 12,
+        }}
+      />
+      {walletName || username ? (
+        <Text
+          style={{
+            color: theme.custom.colors.fontColor,
+            fontSize: 16,
+            fontWeight: "500",
+          }}
+        >
+          {walletName ? walletName : `@${username}`}
+        </Text>
+      ) : null}
+      <Box mt={8}>
+        <CopyablePublicKey address={address} />
+      </Box>
+    </YStack>
+  );
+}
+
+function TokenLabel({
+  logo,
+  ticker,
+}: {
+  logo: string;
+  ticker: string;
+}): JSX.Element {
+  const theme = useCustomTheme();
+  return (
+    <XStack ai="center" jc="center" mt={8}>
+      <Image
+        source={{ uri: logo }}
+        style={{
+          height: 36,
+          width: 36,
+          aspectRatio: 1,
+          borderRadius: 18,
+          marginRight: 6,
+        }}
+      />
+      <Text
+        style={{
+          fontSize: 24,
+          fontWeight: "600",
+          color: theme.custom.colors.smallTextColor,
+        }}
+      >
+        {ticker}
+      </Text>
+    </XStack>
+  );
+}
+
+function MaxAmountLabel({
+  token,
+  amount,
+  onSetAmount,
+}: {
+  token: Token;
+  amount: BigNumber | null;
+  onSetAmount: (amount: BigNumber) => void;
+}): JSX.Element {
+  const theme = useCustomTheme();
+  return (
+    <View style={{ alignItems: "center" }}>
+      <Pressable
+        onPress={() => amount && onSetAmount(amount)}
+        style={{
+          borderRadius: 8,
+          backgroundColor: theme.custom.colors.bg3,
+          paddingHorizontal: 12,
+          paddingVertical: 4,
+          // @ts-ignore
+          cursor: "pointer",
+          borderColor: theme.custom.colors.borderFull,
+        }}
+      >
+        <Text
+          style={{
+            color: theme.custom.colors.fontColor,
+            fontSize: 14,
+          }}
+        >
+          Max: {amount ? toDisplayBalance(amount, token.decimals) : "0.0"}{" "}
+          {token.ticker}
+        </Text>
+      </Pressable>
+    </View>
+  );
+}
+
+export function SendTokenConfirmScreen({
+  route,
+}: StackScreenProps<
+  UnlockedNavigatorStackParamList,
+  "SendTokenConfirm"
+>): JSX.Element {
+  const theme = useCustomTheme();
+  const { blockchain, token, to } = route.params;
+  const { address, walletName, image, username } = to;
+  const ethereumCtx = useEthereumCtx();
+
+  const [modalIndex, setModalIndex] = useState(0);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [feeOffset, setFeeOffset] = useState<BigNumber>(BigNumber.from(0));
+  const [amount, setAmount] = useState<BigNumber | null>(BigNumber.from(0));
 
   useEffect(() => {
     if (!token || !ethereumCtx?.feeData) {
@@ -93,26 +301,17 @@ export function SendTokenDetailScreen({
   const amountSubFee = BigNumber.from(token.nativeBalance).sub(feeOffset);
   const maxAmount = amountSubFee.gt(0) ? amountSubFee : BigNumber.from(0);
   const exceedsBalance = amount && amount.gt(maxAmount);
-  const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
+  const isSendDisabled = amount === null || !!exceedsBalance;
   const isAmountError = Boolean(amount && exceedsBalance);
-  const [modalIndex, setModalIndex] = useState(0);
 
   const getButton = useCallback(
-    (
-      isErrorAddress: boolean,
-      isSendDisabled: boolean,
-      isAmountError: boolean
-    ): JSX.Element => {
+    (isSendDisabled: boolean, isAmountError: boolean): JSX.Element => {
       const handleShowPreviewConfirmation = () => {
         setIsModalVisible(() => true);
         Keyboard.dismiss();
       };
 
-      if (isErrorAddress) {
-        return (
-          <DangerButton disabled label="Invalid Address" onPress={() => {}} />
-        );
-      } else if (isAmountError) {
+      if (isAmountError) {
         return (
           <DangerButton
             disabled
@@ -124,7 +323,7 @@ export function SendTokenDetailScreen({
         return (
           <PrimaryButton
             disabled={isSendDisabled}
-            label="Send"
+            label="Review"
             onPress={handleShowPreviewConfirmation}
           />
         );
@@ -140,40 +339,46 @@ export function SendTokenDetailScreen({
 
   return (
     <>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <Screen style={styles.container}>
-          <View>
-            <InputField leftLabel="Send to">
-              <StyledTextInput
-                value={address}
-                placeholder={`${toTitleCase(blockchain)} address`}
-                onChangeText={(address: string) => setAddress(address.trim())}
-              />
-            </InputField>
-            <InputField
-              leftLabel="Amount"
-              rightLabelComponent={
-                <InputFieldMaxLabel
-                  amount={maxAmount}
-                  onSetAmount={setAmount}
-                  decimals={token.decimals}
-                />
-              }
-            >
-              <StyledTokenTextInput
-                value={amount}
-                decimals={token.decimals}
-                placeholder="Amount"
-                onChangeText={setAmount}
-              />
-            </InputField>
-            {getButton(isErrorAddress, isSendDisabled, isAmountError)}
-          </View>
-        </Screen>
-      </KeyboardAvoidingView>
+      <Screen style={{ justifyContent: "space-between" }}>
+        <Text>
+          {JSON.stringify({
+            amount: JSON.stringify(amount),
+            isAmountError,
+            exceedsBalance,
+            maxAmount: JSON.stringify(maxAmount),
+          })}
+        </Text>
+        <AvatarHeader
+          walletName={walletName}
+          address={address}
+          username={username}
+          image={image}
+        />
+        <View>
+          <UnstyledTokenTextInput
+            decimals={token.decimals}
+            amount={amount}
+            onChangeAmount={setAmount}
+            style={{
+              fontSize: 48,
+              height: 48,
+              fontWeight: "600",
+              color: theme.custom.colors.fontColor,
+              textAlign: "center",
+              width: "100%",
+            }}
+          />
+          <Box mt={24} mb={12}>
+            <TokenLabel logo={token.logo} ticker={token.ticker} />
+          </Box>
+          <MaxAmountLabel
+            amount={maxAmount}
+            token={token}
+            onSetAmount={setAmount}
+          />
+        </View>
+        {getButton(isSendDisabled, isAmountError)}
+      </Screen>
       <BottomSheetModal
         snapPoints={[400, 320]}
         isVisible={isModalVisible}
@@ -184,9 +389,9 @@ export function SendTokenDetailScreen({
       >
         <SendConfirmComponent
           token={token}
-          destinationAddress={destinationAddress}
+          destinationAddress={address}
           amount={amount!}
-          onCompleteStep={(step) => {
+          onCompleteStep={(step: string) => {
             if (step !== "confirm") {
               setModalIndex(() => 1);
             }
@@ -196,38 +401,3 @@ export function SendTokenDetailScreen({
     </>
   );
 }
-
-export function SendTokenListScreen({ navigation }): JSX.Element {
-  return (
-    <Screen>
-      <SearchableTokenTables
-        onPressRow={(blockchain: Blockchain, token: Token) => {
-          const title = `Send ${toTitleCase(blockchain)} / ${token.ticker}`;
-          navigation.push("SendTokenModal", {
-            title,
-            blockchain,
-            token: {
-              ...token,
-              nativeBalance: token.nativeBalance.toString(),
-            },
-          });
-        }}
-        customFilter={(token: Token) => {
-          if (token.mint && token.mint === SOL_NATIVE_MINT) {
-            return true;
-          }
-          if (token.address && token.address === ETH_NATIVE_MINT) {
-            return true;
-          }
-          return !token.nativeBalance.isZero();
-        }}
-      />
-    </Screen>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    justifyContent: "space-between",
-  },
-});

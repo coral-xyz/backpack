@@ -34,6 +34,7 @@ import {
 } from "@coral-xyz/recoil";
 import { Stack as Box } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -719,6 +720,8 @@ function OnboardingCreateAccountLoadingScreen(
         });
       }
       const res = await maybeCreateUser({ ...onboardingData });
+      console.log("res", res);
+      await AsyncStorage.setItem("@bk-jwt", res.jwt);
       if (!res.ok) {
         setError(true);
       }

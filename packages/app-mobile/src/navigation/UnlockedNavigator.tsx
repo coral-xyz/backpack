@@ -26,10 +26,10 @@ import {
 import { NftCollectiblesNavigator } from "~screens/Unlocked/NftCollectiblesScreen";
 import { RecentActivityScreen } from "~screens/Unlocked/RecentActivityScreen";
 import {
-  SendTokenDetailScreen,
+  SendTokenSelectRecipientScreen,
   SendTokenListScreen,
+  SendTokenConfirmScreen,
 } from "~screens/Unlocked/SendTokenScreen";
-import { SendTokenSelectUserScreen } from "~screens/Unlocked/SendTokenScreen2";
 import { SwapTokenScreen } from "~screens/Unlocked/SwapTokenScreen";
 import { WalletListScreen } from "~screens/Unlocked/WalletListScreen";
 
@@ -47,6 +47,17 @@ export type UnlockedNavigatorStackParamList = {
     token: Token;
   };
   SwapModal: undefined;
+  SendTokenConfirm: {
+    blockchain: Blockchain;
+    token: Token;
+    to: {
+      walletName?: string | undefined; // TBD
+      address: string;
+      username: string;
+      image: string;
+      uuid: string;
+    };
+  };
 };
 
 const Stack = createStackNavigator<UnlockedNavigatorStackParamList>();
@@ -88,11 +99,21 @@ export function UnlockedNavigator(): JSX.Element {
         />
         <Stack.Screen
           name="SendTokenModal"
-          component={SendTokenSelectUserScreen}
+          component={SendTokenSelectRecipientScreen}
           options={({ route }) => {
-            const { title } = route.params;
+            const { token } = route.params;
             return {
-              title,
+              title: `Send ${token.ticker}`,
+            };
+          }}
+        />
+        <Stack.Screen
+          name="SendTokenConfirm"
+          component={SendTokenConfirmScreen}
+          options={({ route }) => {
+            const { token } = route.params;
+            return {
+              title: `Send ${token.ticker}`,
             };
           }}
         />

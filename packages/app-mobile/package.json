@@ -27,6 +27,7 @@
     "@gorhom/bottom-sheet": "^4.4.5",
     "@metaplex-foundation/mpl-token-metadata": "^2.7.0",
     "@project-serum/anchor": "^0.24.2",
+    "@react-native-async-storage/async-storage": "1.17.11",
     "@react-navigation/bottom-tabs": "^6.4.0",
     "@react-navigation/native": "^6.0.11",
     "@react-navigation/native-stack": "^6.7.0",
