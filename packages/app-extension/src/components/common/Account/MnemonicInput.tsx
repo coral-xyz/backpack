@@ -68,11 +68,13 @@ export function MnemonicInput({
   readOnly = false,
   buttonLabel,
   customError,
+  subtitle,
 }: {
-  onNext: (mnemonic: string) => void;
+  onNext: (mnemonic: string) => Promise<void>;
   readOnly?: boolean;
   buttonLabel: string;
   customError?: string;
+  subtitle?: string;
 }) {
   const theme = useCustomTheme();
   const classes = useStyles();
@@ -82,6 +84,7 @@ export function MnemonicInput({
   ]);
   const [error, setError] = useState<string>();
   const [checked, setChecked] = useState(false);
+  const [loading, setLoading] = useState(false)
 
   const mnemonic = mnemonicWords.map((f) => f.trim()).join(" ");
   // Only enable copy all fields populated
@@ -125,32 +128,29 @@ export function MnemonicInput({
   //
   // Validate the mnemonic and call the onNext handler.
   //
-  const next = () => {
-    background
+  const next = async () => {
+    const isValid = await background
       .request({
         method: UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
         params: [mnemonic],
       })
-      .then((isValid: boolean) => {
-        return isValid
-          ? onNext(mnemonic)
-          : setError("Invalid secret recovery phrase");
-      });
+    if (!isValid) {
+      setError("Invalid secret recovery phrase");
+    } else {
+      await onNext(mnemonic)
+    }
   };
 
   //
   // Generate a random mnemonic and populate state.
   //
-  const generateRandom = () => {
-    background
+  const generateRandom = async () => {
+    const words = await background
       .request({
         method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
         params: [mnemonicWords.length === 12 ? 128 : 256],
       })
-      .then((m: string) => {
-        const words = m.split(" ");
-        setMnemonicWords(words);
-      });
+    setMnemonicWords(words.split(" "))
   };
 
   return (
@@ -173,7 +173,7 @@ export function MnemonicInput({
             }}
           />
           <SubtextParagraph>
-            {readOnly
+            {subtitle ? subtitle : readOnly
               ? "This is the only way to recover your account if you lose your device. Write it down and store it in a safe place."
               : "Enter your 12 or 24-word secret recovery mnemonic to add an existing wallet."}
           </SubtextParagraph>
@@ -189,21 +189,19 @@ export function MnemonicInput({
               margin: "32px 0",
             }}
           >
-            <>
-              <Box sx={{ flex: 1 }}>
-                <Link
-                  className={classes.link}
-                  onClick={() =>
-                    setMnemonicWords([
-                      ...Array(mnemonicWords.length === 12 ? 24 : 12).fill(""),
-                    ])
-                  }
-                >
-                  Use a {mnemonicWords.length === 12 ? "24" : "12"}-word
-                  recovery mnemonic
-                </Link>
-              </Box>
-            </>
+            <Box sx={{ flex: 1 }}>
+              <Link
+                className={classes.link}
+                onClick={() =>
+                  setMnemonicWords([
+                    ...Array(mnemonicWords.length === 12 ? 24 : 12).fill(""),
+                  ])
+                }
+              >
+                Use a {mnemonicWords.length === 12 ? "24" : "12"}-word
+                recovery mnemonic
+              </Link>
+            </Box>
           </Box>
         )}
       </Box>
@@ -213,16 +211,16 @@ export function MnemonicInput({
           icon={
             <ContentCopyIcon
               style={{ color: theme.custom.colors.fontColor }}
-              />
-            }
+            />
+          }
           disabled={!copyEnabled}
-          />
-        <Box sx={{ margin: "12px" }}>
+        />
+        <Box sx={{ margin: "6px" }}>
           <CheckboxForm
             checked={checked}
             setChecked={setChecked}
             label="I saved my secret recovery phrase"
-            />
+          />
         </Box>
       </> : null}
       <Box>
@@ -230,8 +228,12 @@ export function MnemonicInput({
 
         <PrimaryButton
           label={buttonLabel}
-          onClick={next}
-          disabled={!nextEnabled}
+          onClick={async () => {
+            setLoading(true)
+            await next()
+            setLoading(false)
+          }}
+          disabled={!nextEnabled || loading}
           buttonLabelStyle={{
             fontWeight: 600,
           }}
@@ -311,10 +313,10 @@ export function CopyButton({
   style?: React.CSSProperties;
 }) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
-  const onCopy = () => {
+  const onCopy = async () => {
     setTooltipOpen(true);
     setTimeout(() => setTooltipOpen(false), 1000);
-    navigator.clipboard.writeText(text);
+    await navigator.clipboard.writeText(text);
   };
   return (
     <WithCopyTooltip tooltipOpen={tooltipOpen} setToolTipOpen={setTooltipOpen}>

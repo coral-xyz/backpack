@@ -108,21 +108,21 @@ export function ImportMnemonic({
         <MnemonicInput
           key="MnemonicInput"
           buttonLabel="Next"
-          onNext={(mnemonic) => {
-              setMnemonic(mnemonic);
-              nextStep();
-            }}
-          />,
-          // Must prompt for a name if using an input mnemonic, because we can't
-          // easily generate one
+          onNext={async (mnemonic) => {
+            setMnemonic(mnemonic);
+            nextStep();
+          }}
+        />,
+        // Must prompt for a name if using an input mnemonic, because we can't
+        // easily generate one
         <InputName
           key="InputName"
           onNext={(name) => {
-              setName(name);
-              nextStep();
-            }}
-          />,
-        ]
+            setName(name);
+            nextStep();
+          }}
+        />,
+      ]
       : []),
     <ImportWallets
       key="ImportWallets"
