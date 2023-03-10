@@ -1,8 +1,9 @@
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-// @ts-expect-error
-import { HOVER_OPACITY, useTheme } from "../hooks/useTheme";
+import { useCustomTheme } from "../hooks/index";
+import { HOVER_OPACITY } from "../theme";
+
 export function Margin({
   bottom,
   top,
@@ -132,7 +133,7 @@ export function LinkButton({
   disabled?: boolean;
   loading?: boolean;
 }) {
-  const theme = useTheme();
+  const theme = useCustomTheme();
   return (
     <BaseButton
       label={label}
@@ -162,7 +163,7 @@ export function PrimaryButton({
   disabled?: boolean;
   loading?: boolean;
 }) {
-  const theme = useTheme();
+  const theme = useCustomTheme();
   return (
     <BaseButton
       label={label}
@@ -192,7 +193,7 @@ export function SecondaryButton({
   loading?: boolean;
   icon?: JSX.Element;
 }) {
-  const theme = useTheme();
+  const theme = useCustomTheme();
   return (
     <BaseButton
       label={label}
@@ -221,7 +222,7 @@ export function NegativeButton({
   disabled: boolean;
   loading?: boolean;
 }) {
-  const theme = useTheme();
+  const theme = useCustomTheme();
   return (
     <BaseButton
       label={label}
@@ -249,7 +250,7 @@ export function DangerButton({
   disabled: boolean;
   loading?: boolean;
 }) {
-  const theme = useTheme();
+  const theme = useCustomTheme();
   return (
     <BaseButton
       label={label}

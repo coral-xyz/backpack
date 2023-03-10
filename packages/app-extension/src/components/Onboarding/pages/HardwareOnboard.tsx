@@ -52,8 +52,9 @@ export function useHardwareOnboardSteps({
   // Flow for onboarding a hardware wallet.
   //
   const steps = [
-    <ConnectHardwareWelcome onNext={nextStep} />,
+    <ConnectHardwareWelcome key="ConnectHardwareWelcome" onNext={nextStep} />,
     <ConnectHardwareSearching
+      key="ConnectHardwareSearching"
       blockchain={blockchain}
       onNext={(transport) => {
         setTransport(transport);
@@ -141,6 +142,7 @@ export function useHardwareOnboardSteps({
       ? [
           // Sign the found wallet descriptor for API submit
         <HardwareSign
+          key="HardwareSign"
           blockchain={blockchain}
           walletDescriptor={walletDescriptor}
           message={

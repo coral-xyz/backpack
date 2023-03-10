@@ -6,6 +6,7 @@ COPY ["yarn.lock", "./yarn.lock"]
 COPY ["tsconfig.json", "./tsconfig.json"]
 COPY ["tsconfig.base.json", "./tsconfig.base.json"]
 COPY ["backend/native/notifications-worker", "./backend/native/notifications-worker"]
+COPY ["backend/native/backend-common", "./backend/native/backend-common"]
 COPY ["backend/native/zeus", "./backend/native/zeus"]
 COPY ["backend/native/chat-zeus", "./backend/native/chat-zeus"]
 COPY ["backend/native/tsconfig.json", "./backend/native/tsconfig.json"]
@@ -29,5 +30,7 @@ RUN cd /base && yarn install && yarn run build
 RUN cd /base/backend/native/notifications-worker && yarn run build
 
 EXPOSE 8080
+
+WORKDIR /base/backend/native/notifications-worker
 
 CMD ["node", "./dist/index.js"]

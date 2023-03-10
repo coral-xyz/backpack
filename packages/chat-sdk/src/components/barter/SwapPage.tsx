@@ -200,20 +200,33 @@ export function ExplorerLink({ mint }: { mint: string }) {
 export function RemoteNftWithSuspense({
   mint,
   dimension,
+  rounded = false,
+  onClick,
 }: {
   mint: string;
   dimension?: number;
+  rounded?: boolean;
+  onClick?: any;
 }) {
   const theme = useCustomTheme();
 
   return (
     <Suspense fallback={<NftSkeleton dimension={dimension} />}>
-      <RemoteNft mint={mint} />
+      <RemoteNft onClick={onClick} mint={mint} rounded={rounded} />
     </Suspense>
   );
 }
 
-export function RemoteNft({ mint }: { mint: string }) {
+export function RemoteNft({
+  mint,
+  rounded,
+  onClick,
+}: {
+  mint: string;
+  rounded?: boolean;
+  onClick?: any;
+}) {
+  const theme = useCustomTheme();
   const tokenData = useTokenMetadata({
     mintAddress: mint,
     blockchain: Blockchain.SOLANA,
@@ -221,9 +234,13 @@ export function RemoteNft({ mint }: { mint: string }) {
 
   return (
     <ProxyImage
+      onClick={onClick}
       style={{
-        borderRadius: 8,
         width: "100%",
+        borderRadius: rounded ? "50%" : 8,
+        border: rounded ? `3px solid ${theme.custom.colors.bg3}` : "",
+        boxShadow:
+          "0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -1px rgba(0, 0, 0, 0.06)",
       }}
       src={tokenData?.image}
       removeOnError

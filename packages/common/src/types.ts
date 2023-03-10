@@ -105,6 +105,7 @@ export type KeyringInit = {
 
 // Location of a public key including the public key
 export type WalletDescriptor = {
+  blockchain: Blockchain;
   derivationPath: string;
   publicKey: string;
 };

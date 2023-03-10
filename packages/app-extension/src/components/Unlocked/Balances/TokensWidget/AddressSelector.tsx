@@ -153,7 +153,7 @@ export const AddressSelector = ({
   const ethereumCtx = useEthereumCtx();
   const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
   const { push } = useNavigation();
-  const { isValidAddress } = useIsValidAddress(
+  const { isValidAddress, normalizedAddress } = useIsValidAddress(
     blockchain,
     inputContent,
     solanaProvider.connection,
@@ -209,7 +209,7 @@ export const AddressSelector = ({
                   blockchain,
                   token,
                   to: {
-                    address: inputContent,
+                    address: normalizedAddress || inputContent,
                     username: user?.username,
                     image: user?.image,
                     uuid: user?.id,

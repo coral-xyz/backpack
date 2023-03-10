@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import type {
-  EnrichedMessage,
   EnrichedMessageWithMetadata,
   MessageKind,
   MessageMetadata,
@@ -9,7 +8,18 @@ import type {
 } from "@coral-xyz/common";
 
 import type { AboveMessagePlugin } from "./ChatRoom";
-export type MessagePlugins = "secure-transfer" | "barter" | "nft-sticker" | "";
+
+export type MessagePlugins =
+  | {
+      type: "barter";
+      metadata: {
+        barterId?: string;
+      };
+    }
+  | {
+      type: "";
+      metadata: {};
+    };
 
 type ChatContext = {
   setActiveReply: any;

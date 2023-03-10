@@ -1,5 +1,4 @@
-// @ts-expect-error
-import { PrimaryButton } from "@coral-xyz/react-native-core";
+import { PrimaryButton } from "@coral-xyz/tamagui";
 import { Box } from "@mui/material";
 
 import { SubtextParagraph } from "../../common";

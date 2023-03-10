@@ -4,13 +4,8 @@ import type {
   SignedWalletDescriptor,
   WalletDescriptor,
 } from "@coral-xyz/common";
-import {
-  getCreateMessage,
-} from "@coral-xyz/common";
-import {
-  useOnboarding,
-  useSignMessageForWallet,
-} from "@coral-xyz/recoil";
+import { getCreateMessage } from "@coral-xyz/common";
+import { useOnboarding, useSignMessageForWallet } from "@coral-xyz/recoil";
 
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
@@ -57,6 +52,7 @@ export const OnboardAccount = ({
     signedWalletDescriptors,
     selectedBlockchains,
   } = onboardingData;
+
   const signMessageForWallet = useSignMessageForWallet(mnemonic);
 
   useEffect(() => {
@@ -106,7 +102,7 @@ export const OnboardAccount = ({
           key="MnemonicInput"
           readOnly={action === "create"}
           buttonLabel={action === "create" ? "Next" : "Import"}
-          onNext={(mnemonic) => {
+          onNext={async (mnemonic) => {
             setOnboardingData({ mnemonic });
             nextStep();
           }}

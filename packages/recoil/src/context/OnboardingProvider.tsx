@@ -14,7 +14,6 @@ import {
   BACKEND_API_URL,
   Blockchain,
   getAuthMessage,
-  getBlockchainFromPath,
   getCreateMessage,
   UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
@@ -147,8 +146,8 @@ export function OnboardingProvider({
       selectedBlockchains: data.signedWalletDescriptors
         ? [
             ...new Set(
-              data.signedWalletDescriptors.map((s: SignedWalletDescriptor) =>
-                getBlockchainFromPath(s.derivationPath)
+              data.signedWalletDescriptors.map(
+                (s: SignedWalletDescriptor) => s.blockchain
               )
             ),
           ]
@@ -171,7 +170,7 @@ export function OnboardingProvider({
         setOnboardingData({
           blockchain: null,
           signedWalletDescriptors: signedWalletDescriptors.filter(
-            (s) => getBlockchainFromPath(s.derivationPath) !== blockchain
+            (s) => s.blockchain !== blockchain
           ),
         });
       } else {
@@ -238,11 +237,11 @@ export function OnboardingProvider({
         // Authenticate the user that the recovery has a JWT.
         // Take the first keyring init to fetch the JWT, it doesn't matter which
         // we use if there are multiple.
-        const { derivationPath, publicKey, signature } =
+        const { blockchain, publicKey, signature } =
           keyringInit.signedWalletDescriptors[0];
 
         const authData = {
-          blockchain: getBlockchainFromPath(derivationPath),
+          blockchain: blockchain!,
           publicKey,
           signature,
           message: getAuthMessage(userId),
@@ -264,11 +263,7 @@ export function OnboardingProvider({
         username,
         inviteCode,
         waitlistId: getWaitlistId?.(),
-        blockchainPublicKeys: keyringInit.signedWalletDescriptors.map((b) => ({
-          blockchain: getBlockchainFromPath(b.derivationPath),
-          publicKey: b.publicKey,
-          signature: b.signature,
-        })),
+        blockchainPublicKeys: keyringInit.signedWalletDescriptors,
       });
 
       try {

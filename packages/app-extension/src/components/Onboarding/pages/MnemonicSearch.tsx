@@ -47,6 +47,7 @@ export const MnemonicSearch = ({
           const index = publicKeys.findIndex((p: string) => p === publicKey);
           if (index !== -1) {
             walletDescriptors.push({
+              blockchain,
               derivationPath: recoveryPaths[index],
               publicKey,
             });
@@ -59,7 +60,7 @@ export const MnemonicSearch = ({
         setError(true);
       }
     })();
-  }, [serverPublicKeys, mnemonic]);
+  }, [background, serverPublicKeys, mnemonic, onNext]);
 
   if (!error) {
     return <Loading />;

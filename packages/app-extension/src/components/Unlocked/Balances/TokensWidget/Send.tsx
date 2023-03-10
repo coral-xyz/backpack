@@ -851,7 +851,7 @@ export function useIsValidAddress(
         }
 
         // SNS Domain
-        if (address.includes(".sol")) {
+        if (address.endsWith(".sol")) {
           try {
             const hashedName = await getHashedName(address.replace(".sol", ""));
             const nameAccountKey = await getNameAccountKey(

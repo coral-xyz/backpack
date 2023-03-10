@@ -6,6 +6,7 @@
   "dependencies": {
     "@coral-xyz/common": "*",
     "@coral-xyz/zeus": "*",
+    "@coral-xyz/backend-common": "*",
     "@project-serum/anchor": "^0.25.0",
     "@solana/wallet-adapter-react": "^0.15.25",
     "@types/express": "^4.17.15",

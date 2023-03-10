@@ -6,15 +6,16 @@ import type {
 import {
   getAddMessage,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+  UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
   UI_RPC_METHOD_KEYRING_SET_MNEMONIC,
-  UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { ethers } from "ethers";
 
 import { MnemonicInput } from "../../../common/Account/MnemonicInput";
 import {
@@ -22,7 +23,6 @@ import {
   WithMiniDrawer,
 } from "../../../common/Layout/Drawer";
 import { useNavigation } from "../../../common/Layout/NavStack";
-import { ethers } from "ethers";
 
 const { base58 } = ethers.utils;
 
@@ -80,10 +80,10 @@ export function CreateMnemonic({
   return (
     <>
       <MnemonicInput
-        readOnly={true}
+        readOnly
         buttonLabel="Next"
-        subtitle="You'll need this to recover your wallet. Write it down and store it in a safe place."
-        onNext={async (mnemonic) => {
+        subtitle="Write it down and store it in a safe place."
+        onNext={async (mnemonic: string) => {
           const walletDescriptor = await background.request({
             method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
             params: [blockchain, 0, mnemonic],
@@ -104,7 +104,7 @@ export function CreateMnemonic({
             ]
           })
 
-          onComplete(mnemonic, {
+          await onComplete(mnemonic, {
             ...walletDescriptor,
             signature
           })
