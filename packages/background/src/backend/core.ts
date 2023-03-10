@@ -1180,13 +1180,10 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async ledgerImport(
-    blockchain: Blockchain,
-    signedWalletDescriptor: SignedWalletDescriptor
-  ) {
+  async ledgerImport(signedWalletDescriptor: SignedWalletDescriptor) {
     const { signature, ...walletDescriptor } = signedWalletDescriptor;
-    const { publicKey } = walletDescriptor;
-    await this.keyringStore.ledgerImport(blockchain, walletDescriptor);
+    const { blockchain, publicKey } = walletDescriptor;
+    await this.keyringStore.ledgerImport(walletDescriptor);
     try {
       await this.userAccountPublicKeyCreate(blockchain, publicKey, signature);
     } catch (error) {

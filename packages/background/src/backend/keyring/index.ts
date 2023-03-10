@@ -486,15 +486,9 @@ export class KeyringStore {
     });
   }
 
-  public async ledgerImport(
-    blockchain: Blockchain,
-    walletDescriptor: WalletDescriptor
-  ) {
+  public async ledgerImport(walletDescriptor: WalletDescriptor) {
     return await this.withUnlockAndPersist(async () => {
-      return await this.activeUserKeyring.ledgerImport(
-        blockchain,
-        walletDescriptor
-      );
+      return await this.activeUserKeyring.ledgerImport(walletDescriptor);
     });
   }
 
@@ -850,11 +844,8 @@ class UserKeyring {
     return this.mnemonic;
   }
 
-  public async ledgerImport(
-    blockchain: Blockchain,
-    walletDescriptor: WalletDescriptor
-  ) {
-    const blockchainKeyring = this.blockchains.get(blockchain);
+  public async ledgerImport(walletDescriptor: WalletDescriptor) {
+    const blockchainKeyring = this.blockchains.get(walletDescriptor.blockchain);
     const ledgerKeyring = blockchainKeyring!.ledgerKeyring!;
     await ledgerKeyring.add(walletDescriptor);
     const name = DefaultKeyname.defaultLedger(

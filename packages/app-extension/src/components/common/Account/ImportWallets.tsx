@@ -389,9 +389,10 @@ export function ImportWallets({
     if (currentIndex === -1) {
       // Not selected, add it
       const walletDescriptor = {
+        blockchain,
         derivationPath,
         publicKey,
-      } as WalletDescriptor;
+      };
       // Adding the account
       if (allowMultiple) {
         newCheckedWalletDescriptors.push(walletDescriptor);
@@ -449,8 +450,8 @@ export function ImportWallets({
             select
             disabled={ledgerLocked}
           >
-            {derivationPathOptions.map((o, index) => (
-              <MenuItem value={o.label} key={index}>
+            {derivationPathOptions.map((o) => (
+              <MenuItem value={o.label} key={o.label}>
                 {o.label}
               </MenuItem>
             ))}
