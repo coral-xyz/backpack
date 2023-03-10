@@ -6,7 +6,7 @@ import { toTitleCase } from "@coral-xyz/common";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import { Row } from "~components/index";
-import { useBlockchainLogo, useTheme } from "~hooks/index";
+import { getBlockchainLogo, useTheme } from "~hooks/index";
 
 export function TableHeader({
   onPress,
@@ -25,7 +25,7 @@ export function TableHeader({
 }) {
   const theme = useTheme();
   const title = toTitleCase(blockchain);
-  const logo = useBlockchainLogo(blockchain);
+  const logo = getBlockchainLogo(blockchain);
 
   return (
     <Pressable
