@@ -36,7 +36,7 @@ export function useBlockchainConnectionUrl(blockchain: Blockchain) {
 }
 
 // TODO(peter) consolidate between extension/mobile-app or just live on S3
-export function blockchainLogo(blockchain: Blockchain): string {
+export function getBlockchainLogo(blockchain: Blockchain): string {
   switch (blockchain) {
     case Blockchain.ETHEREUM:
       return "./ethereum.png";

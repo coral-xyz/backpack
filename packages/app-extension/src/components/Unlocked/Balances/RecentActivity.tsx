@@ -8,6 +8,7 @@ import {
   Loading,
 } from "@coral-xyz/react-common";
 import {
+  getBlockchainLogo,
   useActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
@@ -265,7 +266,7 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
   const theme = useCustomTheme();
   const explorer = useBlockchainExplorer(transaction.blockchain);
   const connectionUrl = useBlockchainConnectionUrl(transaction.blockchain);
-  const blockchainLogo = blockchainLogo(transaction.blockchain);
+  const blockchainLogo = getBlockchainLogo(transaction.blockchain);
   const onClick = () => {
     window.open(explorerUrl(explorer!, transaction.signature, connectionUrl!));
   };

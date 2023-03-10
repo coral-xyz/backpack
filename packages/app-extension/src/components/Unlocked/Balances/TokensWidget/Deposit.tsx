@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { Blockchain } from "@coral-xyz/common";
 import { SecondaryButton } from "@coral-xyz/react-common";
-import { useAllWalletsDisplayed, useWalletName } from "@coral-xyz/recoil";
+import {
+  getBlockchainLogo,
+  useAllWalletsDisplayed,
+  useWalletName,
+} from "@coral-xyz/recoil";
 import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import QrCodeIcon from "@mui/icons-material/QrCode";
@@ -69,7 +73,7 @@ function BlockchainDepositCard({
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [tooltipOpenModal, setTooltipOpenModal] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
-  const blockchainLogo = blockchainLogo(blockchain);
+  const blockchainLogo = getBlockchainLogo(blockchain);
   const blockchainDisplay =
     blockchain.slice(0, 1).toUpperCase() + blockchain.slice(1);
 

@@ -9,6 +9,7 @@ import {
   UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
 } from "@coral-xyz/common";
 import {
+  getBlockchainLogo,
   useBackgroundClient,
   useDarkMode,
   useDeveloperMode,
@@ -139,7 +140,7 @@ export function Preferences() {
     Solana: {
       onClick: () => nav.push("preferences-solana"),
       icon: () => {
-        const blockchainLogo = blockchainLogo(Blockchain.SOLANA);
+        const blockchainLogo = getBlockchainLogo(Blockchain.SOLANA);
         return (
           <img
             src={blockchainLogo}
@@ -155,7 +156,7 @@ export function Preferences() {
     Ethereum: {
       onClick: () => nav.push("preferences-ethereum"),
       icon: () => {
-        const blockchainLogo = blockchainLogo(Blockchain.ETHEREUM);
+        const blockchainLogo = getBlockchainLogo(Blockchain.ETHEREUM);
         return (
           <img
             src={blockchainLogo}

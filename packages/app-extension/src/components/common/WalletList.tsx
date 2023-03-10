@@ -14,6 +14,7 @@ import {
   SecretKeyIcon,
 } from "@coral-xyz/react-common";
 import {
+  getBlockchainLogo,
   useActiveWallet,
   useAllWallets,
   useBackgroundClient,
@@ -1010,7 +1011,7 @@ function NetworkIcon({
   blockchain: Blockchain;
   style?: React.CSSProperties;
 }) {
-  const blockchainLogo = blockchainLogo(blockchain);
+  const blockchainLogo = getBlockchainLogo(blockchain);
   return <img src={blockchainLogo} style={style} />;
 }
 
