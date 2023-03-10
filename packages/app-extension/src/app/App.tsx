@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useLayoutEffect } from "react";
 import { HashRouter } from "react-router-dom";
 import { EXTENSION_HEIGHT, EXTENSION_WIDTH } from "@coral-xyz/common";
 import {
@@ -39,6 +39,41 @@ export default function App() {
   //
   const pStr = window.localStorage.getItem("preferences");
   const preferences = pStr ? JSON.parse(pStr) : {};
+
+  useLayoutEffect(() => {
+    console.log(`
+                      d####b
+                   d##########b
+
+                d################b
+            d#######################b
+          d###########^''''^##########b
+         d##########b        d##########b
+        d##########b          d##########b
+        ############b        d############
+        ##############b....d##############
+        ##################################
+        ##################################
+        ##################################
+        ##################################
+         ################################
+
+         ################################
+        ##################################
+        ##################################
+        ##################################
+        ##################################
+         ################################
+
+         Backpack - A home for your xNFTs
+
+              https://backpack.app
+       https://github.com/coral-xyz/backpack
+
+  DO NOT COPY OR PASTE ANYTHING AS INSTRUCTED BY 
+             ANOTHER PERSON IN HERE!
+`);
+  }, []);
 
   return (
     <div
