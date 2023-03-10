@@ -89,7 +89,12 @@ import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { Nav, User } from "./store";
-import { getNav , getWalletDataForUser, setUser, setWalletDataForUser } from "./store";
+import {
+  getNav,
+  getWalletDataForUser,
+  setUser,
+  setWalletDataForUser,
+} from "./store";
 import * as store from "./store";
 
 const { base58: bs58 } = ethers.utils;
@@ -206,11 +211,11 @@ export class Backend {
     const signersOrConf =
       "message" in tx
         ? ({
-          accounts: {
-            encoding: "base64",
-            addresses,
-          },
-        } as SimulateTransactionConfig)
+            accounts: {
+              encoding: "base64",
+              addresses,
+            },
+          } as SimulateTransactionConfig)
         : undefined;
     return await this.solanaConnectionBackend.simulateTransaction(
       tx,
@@ -462,7 +467,7 @@ export class Backend {
     return data.ethereum && data.ethereum.chainId
       ? data.ethereum.chainId
       : // Default to mainnet
-      "0x1";
+        "0x1";
   }
 
   async ethereumChainIdUpdate(chainId: string): Promise<string> {
@@ -866,9 +871,9 @@ export class Backend {
    * @param blockchain - Blockchain to add the wallet for
    */
   async keyringImportWallet(
-    blockchain: Blockchain,
     signedWalletDescriptor: SignedWalletDescriptor
   ): Promise<string> {
+    const { blockchain } = signedWalletDescriptor;
     const { publicKey, name } = await this.keyringStore.addDerivationPath(
       blockchain,
       signedWalletDescriptor.derivationPath
@@ -1291,8 +1296,6 @@ export class Backend {
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_SET_MNEMONIC,
     });
-
-
   }
 
   async previewPubkeys(
