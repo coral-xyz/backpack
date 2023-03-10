@@ -189,8 +189,6 @@ export function OnboardingProvider({
             params: [blockchain, 0, mnemonic],
           });
 
-          console.log(walletDescriptor);
-
           const signature = await background.request({
             method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
             params: [
@@ -218,7 +216,7 @@ export function OnboardingProvider({
         }
       }
     },
-    [background, data, setOnboardingData]
+    [data]
   );
 
   //
@@ -226,7 +224,7 @@ export function OnboardingProvider({
   //
   const createUser = useCallback(
     async (data: Partial<OnboardingData>) => {
-      const { blockchain, inviteCode, userId, username, mnemonic } = data;
+      const { inviteCode, userId, username, mnemonic } = data;
 
       const keyringInit = {
         signedWalletDescriptors: data.signedWalletDescriptors!,
@@ -239,7 +237,8 @@ export function OnboardingProvider({
         // Authenticate the user that the recovery has a JWT.
         // Take the first keyring init to fetch the JWT, it doesn't matter which
         // we use if there are multiple.
-        const { publicKey, signature } = keyringInit.signedWalletDescriptors[0];
+        const { blockchain, publicKey, signature } =
+          keyringInit.signedWalletDescriptors[0];
 
         const authData = {
           blockchain: blockchain!,
@@ -285,7 +284,7 @@ export function OnboardingProvider({
         throw new Error(`error creating user`);
       }
     },
-    [authenticate]
+    [data]
   );
 
   //
@@ -320,7 +319,7 @@ export function OnboardingProvider({
         throw new Error(`error creating account`);
       }
     },
-    [background]
+    [data]
   );
 
   const maybeCreateUser = useCallback(
@@ -334,7 +333,7 @@ export function OnboardingProvider({
         return { ok: false };
       }
     },
-    [createStore, createUser]
+    [data]
   );
 
   const contextValue = useMemo(
