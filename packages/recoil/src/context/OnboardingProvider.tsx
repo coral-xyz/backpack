@@ -14,7 +14,6 @@ import {
   BACKEND_API_URL,
   Blockchain,
   getAuthMessage,
-  getBlockchainFromPath,
   getCreateMessage,
   UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
@@ -147,8 +146,8 @@ export function OnboardingProvider({
       selectedBlockchains: data.signedWalletDescriptors
         ? [
             ...new Set(
-              data.signedWalletDescriptors.map((s: SignedWalletDescriptor) =>
-                getBlockchainFromPath(s.derivationPath)
+              data.signedWalletDescriptors.map(
+                (s: SignedWalletDescriptor) => s.blockchain
               )
             ),
           ]
@@ -171,7 +170,7 @@ export function OnboardingProvider({
         setOnboardingData({
           blockchain: null,
           signedWalletDescriptors: signedWalletDescriptors.filter(
-            (s) => getBlockchainFromPath(s.derivationPath) !== blockchain
+            (s) => s.blockchain !== blockchain
           ),
         });
       } else {
@@ -189,6 +188,8 @@ export function OnboardingProvider({
             method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
             params: [blockchain, 0, mnemonic],
           });
+
+          console.log(walletDescriptor);
 
           const signature = await background.request({
             method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
@@ -217,7 +218,7 @@ export function OnboardingProvider({
         }
       }
     },
-    [data]
+    [background, data, setOnboardingData]
   );
 
   //
@@ -225,7 +226,7 @@ export function OnboardingProvider({
   //
   const createUser = useCallback(
     async (data: Partial<OnboardingData>) => {
-      const { inviteCode, userId, username, mnemonic } = data;
+      const { blockchain, inviteCode, userId, username, mnemonic } = data;
 
       const keyringInit = {
         signedWalletDescriptors: data.signedWalletDescriptors!,
@@ -238,11 +239,10 @@ export function OnboardingProvider({
         // Authenticate the user that the recovery has a JWT.
         // Take the first keyring init to fetch the JWT, it doesn't matter which
         // we use if there are multiple.
-        const { derivationPath, publicKey, signature } =
-          keyringInit.signedWalletDescriptors[0];
+        const { publicKey, signature } = keyringInit.signedWalletDescriptors[0];
 
         const authData = {
-          blockchain: getBlockchainFromPath(derivationPath),
+          blockchain: blockchain!,
           publicKey,
           signature,
           message: getAuthMessage(userId),
@@ -264,11 +264,7 @@ export function OnboardingProvider({
         username,
         inviteCode,
         waitlistId: getWaitlistId?.(),
-        blockchainPublicKeys: keyringInit.signedWalletDescriptors.map((b) => ({
-          blockchain: getBlockchainFromPath(b.derivationPath),
-          publicKey: b.publicKey,
-          signature: b.signature,
-        })),
+        blockchainPublicKeys: keyringInit.signedWalletDescriptors,
       });
 
       try {
@@ -289,7 +285,7 @@ export function OnboardingProvider({
         throw new Error(`error creating user`);
       }
     },
-    [data]
+    [authenticate]
   );
 
   //
@@ -324,7 +320,7 @@ export function OnboardingProvider({
         throw new Error(`error creating account`);
       }
     },
-    [data]
+    [background]
   );
 
   const maybeCreateUser = useCallback(
@@ -338,7 +334,7 @@ export function OnboardingProvider({
         return { ok: false };
       }
     },
-    [data]
+    [createStore, createUser]
   );
 
   const contextValue = useMemo(

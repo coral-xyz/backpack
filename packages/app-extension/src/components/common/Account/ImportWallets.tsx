@@ -210,7 +210,7 @@ export function ImportWallets({
         // If the query failed assume all are valid
       }
     })();
-  }, [walletDescriptors]);
+  }, [background, blockchain, walletDescriptors]);
 
   //
   // Load a list of accounts and their associated balances
@@ -239,6 +239,7 @@ export function ImportWallets({
       .then(async (publicKeys: string[]) => {
         setWalletDescriptors(
           derivationPaths.map((derivationPath, i) => ({
+            blockchain,
             publicKey: publicKeys[i],
             derivationPath,
           }))

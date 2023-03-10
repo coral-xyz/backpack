@@ -15,7 +15,6 @@ import {
   BACKEND_EVENT,
   DEFAULT_AUTO_LOCK_INTERVAL_SECS,
   defaultPreferences,
-  getBlockchainFromPath,
   NOTIFICATION_KEYRING_STORE_LOCKED,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
@@ -408,14 +407,10 @@ export class KeyringStore {
    * Initialise a blockchain keyring.
    */
   public async blockchainKeyringAdd(
-    blockchain: Blockchain,
     walletDescriptor: WalletDescriptor,
     persist = true
   ): Promise<string> {
-    await this.activeUserKeyring.blockchainKeyringAdd(
-      blockchain,
-      walletDescriptor
-    );
+    await this.activeUserKeyring.blockchainKeyringAdd(walletDescriptor);
     if (persist) {
       await this.persist();
     }
@@ -668,7 +663,7 @@ class UserKeyring {
     keyring.mnemonic = keyringInit.mnemonic;
     for (const signedWalletDescriptor of keyringInit.signedWalletDescriptors) {
       const blockchainKeyring = keyring.blockchains.get(
-        getBlockchainFromPath(signedWalletDescriptor.derivationPath)
+        signedWalletDescriptor.blockchain
       );
       if (blockchainKeyring) {
         // Blockchain keyring already exists, just add the derivation path
@@ -677,16 +672,12 @@ class UserKeyring {
         );
       } else {
         // No blockchain keyring, create it
-        await keyring.blockchainKeyringAdd(
-          getBlockchainFromPath(signedWalletDescriptor.derivationPath),
-          signedWalletDescriptor
-        );
+        await keyring.blockchainKeyringAdd(signedWalletDescriptor);
       }
     }
     // Set the active wallet to be the first keyring.
-    keyring.activeBlockchain = getBlockchainFromPath(
-      keyringInit.signedWalletDescriptors[0].derivationPath
-    );
+    keyring.activeBlockchain =
+      keyringInit.signedWalletDescriptors[0].blockchain;
     return keyring;
   }
 
@@ -768,10 +759,9 @@ class UserKeyring {
   ///////////////////////////////////////////////////////////////////////////////
 
   public async blockchainKeyringAdd(
-    blockchain: Blockchain,
     walletDescriptor: WalletDescriptor
   ): Promise<string> {
-    const keyring = keyringForBlockchain(blockchain);
+    const keyring = keyringForBlockchain(walletDescriptor.blockchain);
     if (this.mnemonic) {
       // Initialising using a mnemonic
       await keyring.initFromMnemonic(this.mnemonic, [
@@ -781,7 +771,7 @@ class UserKeyring {
       // Initialising using a hardware wallet
       await keyring.initFromLedger([walletDescriptor]);
     }
-    this.blockchains.set(blockchain, keyring);
+    this.blockchains.set(walletDescriptor.blockchain, keyring);
     return walletDescriptor.publicKey;
   }
 

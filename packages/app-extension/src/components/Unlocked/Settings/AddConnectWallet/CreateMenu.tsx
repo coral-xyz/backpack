@@ -66,7 +66,7 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
         );
       }
     })();
-  }, [blockchain]);
+  }, [background, blockchain]);
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -74,7 +74,7 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
     return () => {
       nav.setOptions({ headerTitle: prevTitle });
     };
-  }, [nav.setOptions]);
+  }, [nav]);
 
   useEffect(() => {
     (async () => {
@@ -84,7 +84,7 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
       });
       setKeyringExists(blockchainKeyrings.includes(blockchain));
     })();
-  }, [blockchain]);
+  }, [background, blockchain]);
 
   const createNewWithPhrase = async () => {
     // Mnemonic based keyring. This is the simple case because we don't
@@ -117,7 +117,7 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
       });
       await background.request({
         method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-        params: [blockchain, { ...walletDescriptor, signature }],
+        params: [{ ...walletDescriptor, signature }],
       });
       newPublicKey = walletDescriptor.publicKey;
       // Keyring now exists, toggle to other options

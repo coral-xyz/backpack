@@ -92,61 +92,59 @@ export const RecoverAccount = ({
     />,
     ...(keyringType === "mnemonic"
       ? [
-        // Using a mnemonic
+          // Using a mnemonic
         <MnemonicInput
           key="MnemonicInput"
           buttonLabel="Next"
           onNext={(mnemonic: string) => {
-            setOnboardingData({ mnemonic });
-            nextStep();
-          }}
-        />,
+              setOnboardingData({ mnemonic });
+              nextStep();
+            }}
+          />,
         <MnemonicSearch
           key="MnemonicSearch"
           serverPublicKeys={serverPublicKeys!}
           mnemonic={mnemonic!}
-          onNext={async (
-            wallets: Array<{
-              blockchain: Blockchain;
-              descriptor: WalletDescriptor;
-            }>
-          ) => {
-            const signedWalletDescriptors = await Promise.all(
-              wallets.map(async ({ blockchain, descriptor }) => {
-                const signature = await background.request({
-                  method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-                  params: [
-                    blockchain,
-                    descriptor.publicKey,
-                    ethers.utils.base58.encode(
-                      Buffer.from(authMessage, "utf-8")
-                    ),
-                    [mnemonic, [descriptor.derivationPath]],
-                  ],
-                });
-                return {
-                  ...descriptor,
-                  signature,
-                };
-              })
-            );
-            setOnboardingData({ signedWalletDescriptors });
-            nextStep();
-          }}
+          onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
+              const signedWalletDescriptors = await Promise.all(
+                walletDescriptors.map(
+                  async ({ blockchain, derivationPath, publicKey }) => {
+                    const signature = await background.request({
+                      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+                      params: [
+                        blockchain,
+                        publicKey,
+                        ethers.utils.base58.encode(
+                          Buffer.from(authMessage, "utf-8")
+                        ),
+                        [mnemonic, [derivationPath]],
+                      ],
+                    });
+                    return {
+                      blockchain,
+                      derivationPath,
+                      publicKey,
+                      signature,
+                    };
+                  }
+                )
+              );
+              setOnboardingData({ signedWalletDescriptors });
+              nextStep();
+            }}
           onRetry={prevStep}
-        />,
-      ]
+          />,
+        ]
       : hardwareOnboardSteps),
     ...(!isAddingAccount
       ? [
         <CreatePassword
           key="CreatePassword"
           onNext={async (password) => {
-            
-            setOnboardingData({ password });
-            nextStep();
-          }}
-        />,
+              setOnboardingData({ password });
+              nextStep();
+            }}
+          />,
         ]
       : []),
     ...(signedWalletDescriptors.length > 0

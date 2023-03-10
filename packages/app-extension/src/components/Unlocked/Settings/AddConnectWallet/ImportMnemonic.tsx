@@ -74,13 +74,13 @@ export function ImportMnemonic({
         // import the path
         pk = await background.request({
           method: UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
-          params: [blockchain, signedWalletDescriptor],
+          params: [signedWalletDescriptor],
         });
       } else {
         // Blockchain keyring doesn't exist, init
         pk = await background.request({
           method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-          params: [blockchain, signedWalletDescriptor],
+          params: [signedWalletDescriptor],
         });
       }
     } else {

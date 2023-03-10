@@ -19,15 +19,6 @@ export const getCoinType = (blockchain: Blockchain) => {
   return coinType + HARDENING;
 };
 
-export const getBlockchainFromPath = (derivationPath: string): Blockchain => {
-  const coinType = BIPPath.fromString(derivationPath).toPathArray()[1];
-  return Object.keys(blockchainCoinType).find(
-    (key) =>
-      blockchainCoinType[key] === coinType ||
-      blockchainCoinType[key] === coinType - HARDENING
-  ) as Blockchain;
-};
-
 export const legacyBip44Indexed = (blockchain: Blockchain, index: number) => {
   const coinType = getCoinType(blockchain);
   const path = [44 + HARDENING, coinType];

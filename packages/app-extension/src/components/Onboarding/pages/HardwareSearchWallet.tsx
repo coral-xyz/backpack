@@ -58,13 +58,13 @@ export const HardwareSearchWallet = ({
           }
         }
         if (bs58.encode(ledgerAddress) === publicKey) {
-          onNext({ derivationPath, publicKey });
+          onNext({ blockchain, derivationPath, publicKey });
           return;
         }
       }
       setError(true);
     })();
-  }, [publicKey]);
+  }, [blockchain, publicKey, onError, onNext, transport]);
 
   if (!error) {
     return <Loading />;
