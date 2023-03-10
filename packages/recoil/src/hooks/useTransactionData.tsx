@@ -31,7 +31,7 @@ import {
 const { base58: bs58 } = ethers.utils;
 const DEFAULT_GAS_LIMIT = BigNumber.from("150000");
 
-type TransactionData = {
+export type TransactionData = {
   loading: boolean;
   transaction: string;
   solanaFeeConfig?: { config: SolanaFeeConfig; disabled: boolean };
@@ -68,6 +68,18 @@ export function useTransactionData(
       useEthereumTxData(transaction)
     : // eslint-disable-next-line react-hooks/rules-of-hooks
       useSolanaTxData(transaction);
+}
+
+export function useMultipleTransactionsData(
+  blockchain: Blockchain,
+  transactions: string[]
+): TransactionData[] {
+  // FIXME: remove lint blocker
+  return blockchain === Blockchain.ETHEREUM
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      transactions.map((tx) => useEthereumTxData(tx))
+    : // eslint-disable-next-line react-hooks/rules-of-hooks
+      transactions.map((tx) => useSolanaTxData(tx));
 }
 
 //
