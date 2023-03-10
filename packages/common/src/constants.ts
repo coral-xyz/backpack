@@ -565,8 +565,8 @@ export const QUERY_ADD_USER_ACCOUNT = "add-user-account=true";
 
 export const SIMULATOR_PORT = 9933;
 
-export const NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 890880;
-export const TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 2039280;
+export const NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 890880 as const;
+export const TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 2039280 as const;
 
 export const DISCORD_INVITE_LINK = "https://discord.gg/RhKxgS8SaD";
 export const TWITTER_LINK = "https://twitter.com/xNFT_Backpack";
@@ -595,13 +595,13 @@ export const DEFAULT_GROUP_CHATS: {
   name: string;
   image: string;
 }[] = [
-    {
-      id: "backpack-chat",
-      name: "Backpack",
-      image:
-        "https://user-images.githubusercontent.com/321395/206757416-a80e662a-0ccc-41cc-a20f-ff397755d47f.png",
-    },
-  ];
+  {
+    id: "backpack-chat",
+    name: "Backpack",
+    image:
+      "https://user-images.githubusercontent.com/321395/206757416-a80e662a-0ccc-41cc-a20f-ff397755d47f.png",
+  },
+];
 
 export const WHITELISTED_CHAT_COLLECTIONS: {
   id: string;
@@ -610,49 +610,49 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
   collectionId: string;
   attributeMapping?: { [key: string]: string };
 }[] = [
-    {
-      id: "nouns",
-      name: "Y00ts + Nouns",
-      image: "https://metadata.y00ts.com/y/12189.png",
-      collectionId: "4mKSoDDqApmF1DqXvVTSL6tu2zixrSSNjqMxUnwvVzy2",
-      attributeMapping: {
-        Eyewear: "Nouns",
-      },
+  {
+    id: "nouns",
+    name: "Y00ts + Nouns",
+    image: "https://metadata.y00ts.com/y/12189.png",
+    collectionId: "4mKSoDDqApmF1DqXvVTSL6tu2zixrSSNjqMxUnwvVzy2",
+    attributeMapping: {
+      Eyewear: "Nouns",
     },
-    {
-      id: "nokiamon",
-      name: "Nokiamon",
-      image:
-        "https://madlist-images.s3.us-west-2.amazonaws.com/nokiamon_pfp_1675332500467.png",
-      collectionId: "3YysdoK6ZcJFEL5QJxccY3q8AcTUFpahgbp4HFgBtjNF",
-    },
-    {
-      id: "backpack-chat-internal",
-      name: "Backpack Team",
-      image: "https://one.xnfts.dev/BackpackTeamNFT.gif",
+  },
+  {
+    id: "nokiamon",
+    name: "Nokiamon",
+    image:
+      "https://madlist-images.s3.us-west-2.amazonaws.com/nokiamon_pfp_1675332500467.png",
+    collectionId: "3YysdoK6ZcJFEL5QJxccY3q8AcTUFpahgbp4HFgBtjNF",
+  },
+  {
+    id: "backpack-chat-internal",
+    name: "Backpack Team",
+    image: "https://one.xnfts.dev/BackpackTeamNFT.gif",
 
-      collectionId: "BjN9u6zneFrjzuC7LH3eLaGC9FgYLnwQJMGA1xzVBKsj",
-    },
-    {
-      id: "bonkz",
-      name: "BONKz",
-      image:
-        "https://bafybeiecuemcqxzuv4ti4sgffjlwvrqedr7golppwrbbu2u5yttglath3m.ipfs.nftstorage.link/0.png",
-      collectionId: "ajM4QBHtZBBRcMqqq9gawdHK28GXcb2yeRs6WBnqhay",
-    },
-    {
-      id: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
-      name: "The Madlist",
-      image: "https://www.madlads.com/mad_lads_logo.svg",
-      collectionId: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
-    },
-    {
-      id: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
-      name: "The Madlist",
-      image: "https://www.madlads.com/mad_lads_logo.svg",
-      collectionId: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
-    },
-  ];
+    collectionId: "BjN9u6zneFrjzuC7LH3eLaGC9FgYLnwQJMGA1xzVBKsj",
+  },
+  {
+    id: "bonkz",
+    name: "BONKz",
+    image:
+      "https://bafybeiecuemcqxzuv4ti4sgffjlwvrqedr7golppwrbbu2u5yttglath3m.ipfs.nftstorage.link/0.png",
+    collectionId: "ajM4QBHtZBBRcMqqq9gawdHK28GXcb2yeRs6WBnqhay",
+  },
+  {
+    id: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
+    name: "The Madlist",
+    image: "https://www.madlads.com/mad_lads_logo.svg",
+    collectionId: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
+  },
+  {
+    id: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
+    name: "The Madlist",
+    image: "https://www.madlads.com/mad_lads_logo.svg",
+    collectionId: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
+  },
+];
 
 // Load a fixed amount of public keys for various actions, e.g. import list,
 // searching mnemonics
