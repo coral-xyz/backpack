@@ -291,6 +291,7 @@ const AddressListItem = ({
         px={8}
         py={8}
         title={title}
+        icon={<ImageSvg width={32} height={32} uri={user.image} />}
         onPress={() => {
           if (!address) {
             return;
