@@ -333,6 +333,7 @@ function WalletSettingsButton() {
         width: "24px",
         height: "24px",
       }}
+      aria-label="edit-wallets-add-connect-preview"
     >
       <Add
         style={{
@@ -797,6 +798,7 @@ function WalletListButtonBase({
         ...sx,
       }}
       onClick={onClick}
+      aria-label="wallet-list-button-base"
     >
       {children}
     </Button>
