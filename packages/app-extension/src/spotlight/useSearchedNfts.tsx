@@ -18,8 +18,10 @@ export const useSearchedNfts = (searchFilter: string) => {
   }
 
   return contents
-    .filter((x: Nft) =>
-      x.name?.toLowerCase()?.includes(searchFilter.toLowerCase())
+    .filter(
+      (x: Nft) =>
+        x.name?.toLowerCase()?.includes(searchFilter.toLowerCase()) ||
+        x.collectionName?.toLowerCase()?.includes(searchFilter.toLowerCase())
     )
     .map((x: Nft) => ({
       name: x.name || "",
