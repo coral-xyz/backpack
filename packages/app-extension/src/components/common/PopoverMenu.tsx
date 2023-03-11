@@ -66,6 +66,7 @@ export const PopoverMenuItem: FunctionComponent<ButtonProps> = ({
         display: "inline",
         ...style,
       }}
+      aria-label="popover-menu-button"
       {...rest}
     >
       <div style={{ display: "flex", alignItems: "center" }}>{children}</div>
