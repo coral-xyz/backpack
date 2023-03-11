@@ -1,32 +1,32 @@
-import { NAV_COMPONENT_MESSAGE_GROUP_CHAT } from "@coral-xyz/common";
+import { NAV_COMPONENT_NFT_DETAIL } from "@coral-xyz/common";
 import { UserIcon } from "@coral-xyz/react-common";
-import { useNavigation } from "@coral-xyz/recoil";
+import {
+  useActiveWallet,
+  useBlockchainConnectionUrl,
+  useNavigation,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 
 import { SELECTED_BLUE } from "./colors";
 import { GroupIdentifier } from "./GroupIdentifier";
 
-export const SpotlightGroups = ({
-  groups,
+export const SpotlightNfts = ({
+  nfts,
   selectedIndex,
   setOpen,
 }: {
-  groups: {
-    name: string;
-    image: string;
-    collectionId: string;
-  }[];
+  nfts: { name: string; image: string; id: string }[];
   selectedIndex: number | null;
   setOpen: any;
 }) => {
-  if (!groups.length) return null;
+  if (!nfts.length) return null;
   return (
     <div>
-      <GroupIdentifier name="Group chats" />
-      {groups.map((group, index) => (
-        <SpotlightGroup
-          group={group}
+      <GroupIdentifier name="NFTs" />
+      {nfts.map((nft, index) => (
+        <SpotlightNft
           selected={selectedIndex === index}
+          nft={nft}
           setOpen={setOpen}
         />
       ))}
@@ -34,18 +34,20 @@ export const SpotlightGroups = ({
   );
 };
 
-function SpotlightGroup({
-  group,
+function SpotlightNft({
+  nft,
   selected,
   setOpen,
 }: {
-  group: { name: string; image: string; collectionId: string };
+  nft: { name: string; image: string; id: string };
   selected: boolean;
   setOpen: any;
 }) {
-  const theme = useCustomTheme();
-  const { push, toRoot } = useNavigation();
+  const activeWallet = useActiveWallet();
+  const connectionUrl = useBlockchainConnectionUrl(activeWallet.blockchain);
+  const { push } = useNavigation();
 
+  const theme = useCustomTheme();
   return (
     <div
       style={{
@@ -58,18 +60,18 @@ function SpotlightGroup({
       }}
       onClick={() => {
         push({
-          title: group?.name,
-          componentId: NAV_COMPONENT_MESSAGE_GROUP_CHAT,
+          title: nft?.name,
+          componentId: NAV_COMPONENT_NFT_DETAIL,
           componentProps: {
-            fromInbox: true,
-            id: group.collectionId,
-            title: group?.name,
+            nftId: nft.id,
+            publicKey: activeWallet.publicKey,
+            connectionUrl,
           },
         });
         setOpen(false);
       }}
     >
-      <UserIcon size={55} image={group.image} />
+      <UserIcon size={55} image={nft.image} />
       <div
         style={{
           display: "flex",
@@ -77,7 +79,7 @@ function SpotlightGroup({
           flexDirection: "column",
         }}
       >
-        {group.name}
+        {nft.name}
       </div>
     </div>
   );

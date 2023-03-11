@@ -1,32 +1,32 @@
-import { NAV_COMPONENT_MESSAGE_GROUP_CHAT } from "@coral-xyz/common";
+import {
+  Blockchain,
+  NAV_COMPONENT_TOKEN,
+  toTitleCase,
+} from "@coral-xyz/common";
 import { UserIcon } from "@coral-xyz/react-common";
-import { useNavigation } from "@coral-xyz/recoil";
+import { useActiveWallet, useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 
 import { SELECTED_BLUE } from "./colors";
 import { GroupIdentifier } from "./GroupIdentifier";
 
-export const SpotlightGroups = ({
-  groups,
+export const SpotlightTokens = ({
   selectedIndex,
+  tokens,
   setOpen,
 }: {
-  groups: {
-    name: string;
-    image: string;
-    collectionId: string;
-  }[];
   selectedIndex: number | null;
+  tokens: { image: string; id: string; name: string; address: string }[];
   setOpen: any;
 }) => {
-  if (!groups.length) return null;
+  if (!tokens.length) return null;
   return (
     <div>
-      <GroupIdentifier name="Group chats" />
-      {groups.map((group, index) => (
-        <SpotlightGroup
-          group={group}
+      <GroupIdentifier name="Tokens" />
+      {tokens.map((token, index) => (
+        <SpotlightToken
           selected={selectedIndex === index}
+          token={token}
           setOpen={setOpen}
         />
       ))}
@@ -34,17 +34,18 @@ export const SpotlightGroups = ({
   );
 };
 
-function SpotlightGroup({
-  group,
+function SpotlightToken({
   selected,
+  token,
   setOpen,
 }: {
-  group: { name: string; image: string; collectionId: string };
   selected: boolean;
+  token: { image: string; id: string; name: string; address: string };
   setOpen: any;
 }) {
   const theme = useCustomTheme();
-  const { push, toRoot } = useNavigation();
+  const { push } = useNavigation();
+  const activeWallet = useActiveWallet();
 
   return (
     <div
@@ -58,18 +59,18 @@ function SpotlightGroup({
       }}
       onClick={() => {
         push({
-          title: group?.name,
-          componentId: NAV_COMPONENT_MESSAGE_GROUP_CHAT,
+          title: `${toTitleCase(Blockchain.SOLANA)} / ${token.name}`,
+          componentId: NAV_COMPONENT_TOKEN,
           componentProps: {
-            fromInbox: true,
-            id: group.collectionId,
-            title: group?.name,
+            blockchain: "solana",
+            tokenAddress: token.address,
+            publicKey: activeWallet.publicKey,
           },
         });
         setOpen(false);
       }}
     >
-      <UserIcon size={55} image={group.image} />
+      <UserIcon size={55} image={token.image} />
       <div
         style={{
           display: "flex",
@@ -77,7 +78,7 @@ function SpotlightGroup({
           flexDirection: "column",
         }}
       >
-        {group.name}
+        {token.name}
       </div>
     </div>
   );

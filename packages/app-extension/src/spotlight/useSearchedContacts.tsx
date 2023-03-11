@@ -6,7 +6,9 @@ export const useSearchedContacts = (searchFilter: string) => {
   const contacts = useContacts(uuid);
 
   return contacts
-    .filter((x) => x.remoteUsername.includes(searchFilter))
+    .filter((x) =>
+      x.remoteUsername?.toLowerCase().includes(searchFilter?.toLowerCase())
+    )
     .map((x) => ({
       username: x.remoteUsername,
       image: x.remoteUserImage,

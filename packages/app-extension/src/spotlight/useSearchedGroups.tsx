@@ -5,7 +5,7 @@ export const useSearchedGroupsCollections = (searchFilter: string) => {
   const collections = useGroupCollections({ uuid });
 
   return collections
-    .filter((x) => x.name?.includes(searchFilter))
+    .filter((x) => x.name?.toLowerCase()?.includes(searchFilter.toLowerCase()))
     .map((x) => ({
       name: x.name || "",
       image: x.image || "",
