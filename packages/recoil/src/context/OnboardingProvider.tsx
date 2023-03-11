@@ -85,6 +85,7 @@ export type OnboardingData = {
   blockchain: Blockchain | null;
   password: string | null;
   mnemonic: string | undefined;
+  privateKey: string | undefined;
   blockchainOptions: BlockchainSelectOption[];
   waitlistId: string | undefined;
   signedWalletDescriptors: SignedWalletDescriptor[];
@@ -103,6 +104,7 @@ const defaultState = {
   blockchain: null,
   password: null,
   mnemonic: undefined,
+  privateKey: undefined,
   blockchainOptions: BLOCKCHAIN_OPTIONS,
   waitlistId: undefined,
   signedWalletDescriptors: [],

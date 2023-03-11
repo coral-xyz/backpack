@@ -29,18 +29,13 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
   const user = useUser();
   const [keyringExists, setKeyringExists] = useState(false);
 
-  // Can only init a new blockchain keyring if there is a mnemonic
-  const allowOwnPhrase = hasMnemonic;
-  // Can only do imports via secret key if there is no existing mnemonic on the keyring
-  const allowOtherPhrase = keyringExists;
-
   useEffect(() => {
     const prevTitle = navigation.title;
     navigation.setOptions({ headerTitle: "" });
     return () => {
       navigation.setOptions({ headerTitle: prevTitle });
     };
-  }, [navigation.setOptions]);
+  }, [navigation]);
 
   useEffect(() => {
     (async () => {
@@ -50,10 +45,10 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
       });
       setKeyringExists(blockchainKeyrings.includes(blockchain));
     })();
-  }, [blockchain]);
+  }, [background, blockchain]);
 
   const importMenu = {
-    ...(allowOwnPhrase
+    ...(hasMnemonic
       ? {
           "Backpack recovery phrase": {
             onClick: () =>
@@ -67,20 +62,16 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
           },
         }
       : {}),
-    ...(allowOtherPhrase
-      ? {
-          "Other recovery phrase": {
-            onClick: () =>
-              navigation.push("import-from-mnemonic", {
-                blockchain,
-                keyringExists,
-                inputMnemonic: true,
-              }),
-            icon: (props: any) => <MnemonicIcon {...props} />,
-            detailIcon: <PushDetail />,
-          },
-        }
-      : {}),
+    "Other recovery phrase": {
+      onClick: () =>
+        navigation.push("import-from-mnemonic", {
+          blockchain,
+          keyringExists,
+          inputMnemonic: true,
+        }),
+      icon: (props: any) => <MnemonicIcon {...props} />,
+      detailIcon: <PushDetail />,
+    },
     "Hardware wallet": {
       onClick: () => {
         openConnectHardware(blockchain, "import");
@@ -90,18 +81,11 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
       icon: (props: any) => <HardwareIcon {...props} />,
       detailIcon: <PushDetail />,
     },
-    ...(keyringExists
-      ? // TODO allow creating a keyring from just a private key
-        // https://github.com/coral-xyz/backpack/issues/2164
-        {
-          "Private key": {
-            onClick: () =>
-              navigation.push("import-from-secret-key", { blockchain }),
-            icon: (props: any) => <SecretKeyIcon {...props} />,
-            detailIcon: <PushDetail />,
-          },
-        }
-      : {}),
+    "Private key": {
+      onClick: () => navigation.push("import-from-secret-key", { blockchain }),
+      icon: (props: any) => <SecretKeyIcon {...props} />,
+      detailIcon: <PushDetail />,
+    },
   };
 
   return (

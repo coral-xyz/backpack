@@ -11,6 +11,7 @@ import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
 import { ImportWallets } from "../../common/Account/ImportWallets";
 import { MnemonicInput } from "../../common/Account/MnemonicInput";
+import { PrivateKeyInput } from "../../common/Account/PrivateKeyInput";
 import { WithContaineredDrawer } from "../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 
@@ -103,11 +104,11 @@ export const OnboardAccount = ({
           readOnly={action === "create"}
           buttonLabel={action === "create" ? "Next" : "Import"}
           onNext={async (mnemonic) => {
-            setOnboardingData({ mnemonic });
-            nextStep();
-          }}
-        />,
-      ]
+              setOnboardingData({ mnemonic });
+              nextStep();
+            }}
+          />,
+        ]
       : []),
     <BlockchainSelector
       key="BlockchainSelector"
@@ -115,23 +116,41 @@ export const OnboardAccount = ({
       onClick={async (blockchain) => {
         await handleSelectBlockchain({
           blockchain,
-          onSelectImport: () => {
-            setOpenDrawer(true);
-          },
+          onSelectImport:
+            keyringType === "mnemonic" || keyringType === "ledger"
+              ? // Mnemonic and ledger keyring types have an optional component that allows
+                // selection of the accounts to import that pops up in a drawer
+                () => {
+                  setOpenDrawer(true);
+                }
+              : // Private key keyring type, advance to the private key input
+                nextStep,
         });
       }}
       onNext={nextStep}
     />,
+    ...(keyringType === "private-key"
+      ? [
+        <PrivateKeyInput
+          key="PrivateKeyInput"
+          blockchain={blockchain!}
+          onNext={(privateKey: string) => {
+              setOnboardingData({ privateKey });
+              nextStep();
+            }}
+          />,
+        ]
+      : []),
     ...(!isAddingAccount
       ? [
         <CreatePassword
           key="CreatePassword"
           onNext={async (password) => {
-            setOnboardingData({ password });
-            nextStep();
-          }}
-        />,
-      ]
+              setOnboardingData({ password });
+              nextStep();
+            }}
+          />,
+        ]
       : []),
     <NotificationsPermission key="NotificationsPermission" onNext={nextStep} />,
     <Finish key="Finish" isAddingAccount={isAddingAccount} />,

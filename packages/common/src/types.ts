@@ -95,12 +95,13 @@ export type NftAttribute = {
   value: string;
 };
 
-export type KeyringType = "mnemonic" | "ledger";
+export type KeyringType = "mnemonic" | "ledger" | "private-key";
 
 export type KeyringInit = {
   signedWalletDescriptors: Array<SignedWalletDescriptor>;
-  // No mnemonic means this is a hardware wallet keyring
+  // Mnemonic and private key used for respective init methods
   mnemonic?: string;
+  privateKey?: string;
 };
 
 // Location of a public key including the public key

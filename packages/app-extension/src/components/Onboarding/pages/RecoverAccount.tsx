@@ -10,6 +10,7 @@ import { useOnboarding, useSignMessageForWallet } from "@coral-xyz/recoil";
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
 import { MnemonicInput } from "../../common/Account/MnemonicInput";
+import { PrivateKeyInput } from "../../common/Account/PrivateKeyInput";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 import { useHardwareOnboardSteps } from "../../Onboarding/pages/HardwareOnboard";
 
@@ -87,44 +88,55 @@ export const RecoverAccount = ({
     />,
     ...(keyringType === "mnemonic"
       ? [
-        // Using a mnemonic
+          // Using a mnemonic
         <MnemonicInput
           key="MnemonicInput"
           buttonLabel="Next"
           onNext={async (mnemonic: string) => {
-            setOnboardingData({ mnemonic });
-            nextStep();
-          }}
-        />,
+              setOnboardingData({ mnemonic });
+              nextStep();
+            }}
+          />,
         <MnemonicSearch
           key="MnemonicSearch"
           serverPublicKeys={serverPublicKeys!}
           mnemonic={mnemonic!}
           onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
-            const signedWalletDescriptors = await Promise.all(
-              walletDescriptors.map(async (w) => ({
-                ...w,
-                signature: await signMessageForWallet(w, authMessage),
-              }))
-            );
-            console.log(signedWalletDescriptors)
-            setOnboardingData({ signedWalletDescriptors });
-            nextStep();
-          }}
+              const signedWalletDescriptors = await Promise.all(
+                walletDescriptors.map(async (w) => ({
+                  ...w,
+                  signature: await signMessageForWallet(w, authMessage),
+                }))
+              );
+              setOnboardingData({ signedWalletDescriptors });
+              nextStep();
+            }}
           onRetry={prevStep}
-        />,
-      ]
-      : hardwareOnboardSteps),
+          />,
+        ]
+      : []),
+    ...(keyringType === "ledger" ? hardwareOnboardSteps : []),
+    ...(keyringType === "private-key"
+      ? [
+        <PrivateKeyInput
+          key="PrivateKeyInput"
+          onNext={(privateKey: string) => {
+              setOnboardingData({ privateKey });
+              nextStep();
+            }}
+          />,
+        ]
+      : []),
     ...(!isAddingAccount
       ? [
         <CreatePassword
           key="CreatePassword"
           onNext={async (password) => {
-            setOnboardingData({ password });
-            nextStep();
-          }}
-        />,
-      ]
+              setOnboardingData({ password });
+              nextStep();
+            }}
+          />,
+        ]
       : []),
     ...(signedWalletDescriptors.length > 0
       ? [<Finish key="Finish" isAddingAccount={isAddingAccount} />]
