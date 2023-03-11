@@ -812,19 +812,33 @@ function CopyButton({
   onClick: () => void;
   inverted?: boolean;
 }) {
-  const [isCopying, setIsCopying] = useState(false);
+  const classes = useStyles();
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   return (
-    <WalletListButtonBase
-      onClick={(e: any) => {
-        e.stopPropagation();
-        setIsCopying(true);
-        setTimeout(() => setIsCopying(false), 1000);
-        onClick();
-      }}
-      inverted={inverted}
-    >
-      <>{isCopying ? "Copied!" : "Copy"}</>
-    </WalletListButtonBase>
+    <WithCopyTooltip tooltipOpen={tooltipOpen}>
+      <Button
+        disableRipple
+        style={{
+          display: "flex",
+          padding: 0,
+          minWidth: "16px",
+        }}
+        aria-label="copy-button"
+        className={classes.addressButton}
+        onClick={(e: any) => {
+          e.stopPropagation();
+          setTooltipOpen(true);
+          setTimeout(() => setTooltipOpen(false), 1000);
+          onClick();
+        }}
+      >
+        <ContentCopyIcon
+          style={{
+            width: "20px",
+          }}
+        />
+      </Button>
+    </WithCopyTooltip>
   );
 }
 
