@@ -202,6 +202,7 @@ export function PluginControl({ plugin }: { plugin: any | null }) {
             alignItems: "center",
             minWidth: "41.67px",
           }}
+          aria-label="close-plugin"
         >
           {isLoading ? (
             <div
