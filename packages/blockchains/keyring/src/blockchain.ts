@@ -2,7 +2,10 @@ import * as store from "@coral-xyz/background/src/backend/store";
 import { DefaultKeyname } from "@coral-xyz/background/src/backend/store";
 import type {
   BlockchainKeyringJson,
-  WalletDescriptor,
+  LedgerKeyringInit,
+  MnemonicKeyringInit,
+  PrivateKeyKeyringInit,
+  SignedWalletDescriptor,
 } from "@coral-xyz/common";
 import { getLogger } from "@coral-xyz/common";
 import * as bs58 from "bs58";
@@ -62,25 +65,29 @@ export class BlockchainKeyring {
    * Set up a new blockchain keyring using a mnemonic and array of derivation paths.
    */
   public async initFromMnemonic(
-    mnemonic: string,
-    derivationPaths: Array<string>
+    keyringInit: MnemonicKeyringInit
   ): Promise<Array<[string, string]>> {
     // Empty ledger keyring to hold one off ledger imports
     this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
     // Empty imported keyring to hold imported secret keys
     this.importedKeyring = this.keyringFactory.init([]);
     this.deletedWallets = [];
-    return this.initHdKeyring(mnemonic, derivationPaths);
+    return this.initHdKeyring(
+      keyringInit.mnemonic,
+      keyringInit.signedWalletDescriptors.map((s) => s.derivationPath)
+    );
   }
 
   /**
    * Set up a new blockchain keyring using an array of wallet descriptors.
    */
   public async initFromLedger(
-    walletDescriptors: Array<WalletDescriptor>
+    keyringInit: LedgerKeyringInit
   ): Promise<Array<[string, string]>> {
     // Empty ledger keyring to hold one off ledger imports
-    this.ledgerKeyring = this.ledgerKeyringFactory.init(walletDescriptors);
+    this.ledgerKeyring = this.ledgerKeyringFactory.init(
+      keyringInit.signedWalletDescriptors
+    );
     // Empty imported keyring to hold imported secret keys
     this.importedKeyring = this.keyringFactory.init([]);
     this.activeWallet = this.ledgerKeyring.publicKeys()[0];
@@ -88,7 +95,10 @@ export class BlockchainKeyring {
 
     // Persist a given name for this wallet.
     const newAccounts: Array<[string, string]> = [];
-    for (const [index, walletDescriptor] of walletDescriptors.entries()) {
+    for (const [
+      index,
+      walletDescriptor,
+    ] of keyringInit.signedWalletDescriptors.entries()) {
       const name = DefaultKeyname.defaultLedger(index + 1);
       await store.setKeyname(walletDescriptor.publicKey, name);
       await store.setIsCold(walletDescriptor.publicKey, true);
@@ -101,11 +111,11 @@ export class BlockchainKeyring {
    * Set up a new blockchain keyring using a single private key.
    */
   public async initFromPrivateKey(
-    privateKey: string
+    keyringInit: PrivateKeyKeyringInit
   ): Promise<Array<[string, string]>> {
     // Empty ledger keyring to hold one off ledger imports
     this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
-    this.importedKeyring = this.keyringFactory.init([privateKey]);
+    this.importedKeyring = this.keyringFactory.init([keyringInit.privateKey]);
     this.activeWallet = this.importedKeyring.publicKeys()[0];
     this.deletedWallets = [];
     const name = DefaultKeyname.defaultImported(1);
@@ -136,6 +146,11 @@ export class BlockchainKeyring {
     return newAccounts;
   }
 
+  /**
+   * Export a private key for the given public key. If the public key is found
+   * on the hd keyring it exports the secret key from there, otherwise it looks
+   * on the imported keyring.
+   */
   public exportSecretKey(pubkey: string): string {
     let sk = this.hdKeyring?.exportSecretKey(pubkey);
     if (sk) {

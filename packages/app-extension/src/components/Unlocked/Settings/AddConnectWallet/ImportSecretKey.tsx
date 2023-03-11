@@ -35,8 +35,15 @@ export function ImportSecretKey({
     };
   }, [nav, theme]);
 
-  const onNext = async (privateKey: string) => {
-    const name = "New";
+  const onNext = async ({
+    blockchain,
+    privateKey,
+    name,
+  }: {
+    blockchain: Blockchain;
+    privateKey: string;
+    name: string;
+  }) => {
     const newPublicKey = await background.request({
       method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
       params: [blockchain, privateKey, name],

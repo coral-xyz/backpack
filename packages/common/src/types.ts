@@ -97,24 +97,40 @@ export type NftAttribute = {
 
 export type KeyringType = "mnemonic" | "ledger" | "private-key";
 
-export type KeyringInit = {
+export type MnemonicKeyringInit = {
   signedWalletDescriptors: Array<SignedWalletDescriptor>;
-  // Mnemonic and private key used for respective init methods
-  mnemonic?: string;
-  privateKey?: string;
+  // true is for indicating the backend should just load the existing
+  // keyring mnemonic
+  mnemonic: string | true;
 };
+
+export type LedgerKeyringInit = {
+  signedWalletDescriptors: Array<SignedWalletDescriptor>;
+};
+
+export type PrivateKeyKeyringInit = SignedPrivateKeyWalletDescriptor;
 
 // Location of a public key including the public key
 export type WalletDescriptor = {
   blockchain: Blockchain;
-  derivationPath: string;
   publicKey: string;
+  derivationPath: string;
 };
 
 // Path to a public key including a signature from the public key
 export type SignedWalletDescriptor = {
   signature: string;
 } & WalletDescriptor;
+
+export type PrivateKeyWalletDescriptor = {
+  blockchain: Blockchain;
+  publicKey: string;
+  privateKey: string;
+};
+
+export type SignedPrivateKeyWalletDescriptor = {
+  signature: string;
+} & PrivateKeyWalletDescriptor;
 
 // The way public keys are stored on the API
 export type ServerPublicKey = {

@@ -4,8 +4,10 @@ import type {
   AutolockSettingsOption,
   EventEmitter,
   FEATURE_GATES_MAP,
-  KeyringInit,
+  LedgerKeyringInit,
+  MnemonicKeyringInit,
   Preferences,
+  PrivateKeyKeyringInit,
   ServerPublicKey,
   SignedWalletDescriptor,
   WalletDescriptor,
@@ -89,12 +91,7 @@ import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { Nav, User } from "./store";
-import {
-  getNav,
-  getWalletDataForUser,
-  setUser,
-  setWalletDataForUser,
-} from "./store";
+import { getWalletDataForUser, setUser, setWalletDataForUser } from "./store";
 import * as store from "./store";
 
 const { base58: bs58 } = ethers.utils;
@@ -505,8 +502,9 @@ export class Backend {
     publicKey: string,
     msg: string,
     keyringInit?:
-      | Parameters<BlockchainKeyring["initFromMnemonic"]>
-      | Parameters<BlockchainKeyring["initFromLedger"]>
+      | MnemonicKeyringInit
+      | LedgerKeyringInit
+      | PrivateKeyKeyringInit
   ) {
     if (
       !keyringInit &&
@@ -522,21 +520,25 @@ export class Backend {
     if (keyringInit) {
       // Create an empty keyring to init
       blockchainKeyring = keyringForBlockchain(blockchain);
-      if (keyringInit.length === 2) {
+
+      if ("mnemonic" in keyringInit) {
         // If mnemonic wasn't actually passed retrieve it from the store. This
         // is to avoid having to pass the mnemonic to the client to make this
         // call
-        const mnemonic =
-          // @ts-ignore to allow passing true
-          keyringInit[0] === true
-            ? this.keyringStore.activeUserKeyring.exportMnemonic()
-            : keyringInit[0];
-        await blockchainKeyring.initFromMnemonic(mnemonic, keyringInit[1]);
+        if (keyringInit.mnemonic === "") {
+          keyringInit.mnemonic =
+            this.keyringStore.activeUserKeyring.exportMnemonic();
+        }
+        await blockchainKeyring.initFromMnemonic(keyringInit);
+      } else if ("privateKey" in keyringInit) {
+        // Array of derivation paths, init using ledger
+        await blockchainKeyring.initFromPrivateKey(keyringInit);
       } else {
-        // Using a ledger
-        await blockchainKeyring.initFromLedger(keyringInit[0]);
+        // Init using private key
+        await blockchainKeyring.initFromLedger(keyringInit);
       }
     } else {
+      // We are unlocked, just use the keyring
       blockchainKeyring =
         this.keyringStore.activeUserKeyring.keyringForBlockchain(blockchain);
     }
@@ -576,7 +578,10 @@ export class Backend {
   async keyringStoreCreate(
     username: string,
     password: string,
-    keyringInit: KeyringInit,
+    keyringInit:
+      | MnemonicKeyringInit
+      | LedgerKeyringInit
+      | PrivateKeyKeyringInit,
     uuid: string,
     jwt: string
   ): Promise<string> {
@@ -599,7 +604,10 @@ export class Backend {
 
   async usernameAccountCreate(
     username: string,
-    keyringInit: KeyringInit,
+    keyringInit:
+      | MnemonicKeyringInit
+      | LedgerKeyringInit
+      | PrivateKeyKeyringInit,
     uuid: string,
     jwt: string
   ): Promise<string> {
@@ -1226,15 +1234,19 @@ export class Backend {
     return this.keyringStore.createMnemonic(strength);
   }
 
+  /**
+   * Attempt to recover unrecovered wallets that exist on the keyring mnemonic.
+   */
   async mnemonicSync(
     serverPublicKeys: Array<{ blockchain: Blockchain; publicKey: string }>
   ) {
     const blockchains = [...new Set(serverPublicKeys.map((x) => x.blockchain))];
     for (const blockchain of blockchains) {
       const recoveryPaths = getRecoveryPaths(blockchain);
+      const mnemonic = this.keyringStore.activeUserKeyring.exportMnemonic();
       const publicKeys = await this.previewPubkeys(
         blockchain,
-        this.keyringStore.activeUserKeyring.exportMnemonic(),
+        mnemonic,
         recoveryPaths
       );
       const searchPublicKeys = serverPublicKeys
@@ -1278,8 +1290,13 @@ export class Backend {
               derivationPath: recoveryPaths[index],
             };
             await this.blockchainKeyringsAdd({
-              ...walletDescriptor,
-              signature: "",
+              mnemonic,
+              signedWalletDescriptors: [
+                {
+                  ...walletDescriptor,
+                  signature: "",
+                },
+              ],
             });
           }
         }
@@ -1707,13 +1724,14 @@ export class Backend {
    * Add a new blockchain keyring to the keyring store (i.e. initialize it).
    */
   async blockchainKeyringsAdd(
-    signedWalletDescriptor: SignedWalletDescriptor
+    keyringInit: MnemonicKeyringInit | LedgerKeyringInit | PrivateKeyKeyringInit
   ): Promise<string> {
-    await this.keyringStore.blockchainKeyringAdd(
-      signedWalletDescriptor as WalletDescriptor
-    );
+    await this.keyringStore.blockchainKeyringAdd(keyringInit);
 
-    const { blockchain, signature, publicKey } = signedWalletDescriptor;
+    const { blockchain, signature, publicKey } =
+      "signedWalletDescriptors" in keyringInit
+        ? keyringInit.signedWalletDescriptors[0]
+        : keyringInit;
 
     // Add the new public key to the API
     try {

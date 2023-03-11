@@ -34,15 +34,18 @@ export function ConnectHardware({
     });
     const keyringExists = blockchainKeyrings.includes(blockchain);
 
-    const method = keyringExists
-      ? // Just import the wallet because the keyring already exists
-        UI_RPC_METHOD_LEDGER_IMPORT
-      : // Create the keyring
-        UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD;
-    await background.request({
-      method,
-      params: [signedWalletDescriptor],
-    });
+    if (keyringExists) {
+      // Just import the wallet because the keyring already exists
+      await background.request({
+        method: UI_RPC_METHOD_LEDGER_IMPORT,
+        params: [signedWalletDescriptor],
+      });
+    } else {
+      await background.request({
+        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+        params: [[signedWalletDescriptor]],
+      });
+    }
   };
 
   return (

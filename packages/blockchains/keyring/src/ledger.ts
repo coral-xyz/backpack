@@ -52,7 +52,9 @@ export class LedgerKeyringBase {
 
   public nextDerivationPath(offset = 1) {
     const derivationPaths = this.walletDescriptors.map((w) => w.derivationPath);
-    const { accountIndex, walletIndex } = nextIndicesFromPaths(derivationPaths);
+    const { accountIndex, walletIndex } = nextIndicesFromPaths(
+      derivationPaths.filter(Boolean) as string[]
+    );
     const derivationPath = getIndexedPath(
       this.blockchain,
       accountIndex,

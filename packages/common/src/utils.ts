@@ -205,15 +205,15 @@ export function validateSolanaPrivateKey(privateKey: string): {
     keypair = Keypair.fromSecretKey(new Uint8Array(JSON.parse(privateKey)));
   } catch (_) {
     // Try the next method
+    try {
+      // Attempt to create a keypair from bs58 decode of secret key
+      keypair = Keypair.fromSecretKey(new Uint8Array(bs58.decode(privateKey)));
+    } catch (_) {
+      // Failure, no other ways to interpret
+      throw new Error("Invalid Solana private key");
+    }
   }
 
-  try {
-    // Attempt to create a keypair from bs58 decode of secret key
-    keypair = Keypair.fromSecretKey(new Uint8Array(bs58.decode(privateKey)));
-  } catch (_) {
-    // Failure
-    throw new Error("Invalid Solana private key");
-  }
   return {
     privateKey: Buffer.from(keypair.secretKey).toString("hex"),
     publicKey: keypair.publicKey.toString(),

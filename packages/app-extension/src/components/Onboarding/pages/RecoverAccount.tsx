@@ -1,5 +1,6 @@
 import type {
   KeyringType,
+  PrivateKeyWalletDescriptor,
   ServerPublicKey,
   SignedWalletDescriptor,
   WalletDescriptor,
@@ -32,7 +33,8 @@ export const RecoverAccount = ({
   isOnboarded?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
-  const { onboardingData, setOnboardingData } = useOnboarding();
+  const { onboardingData, setOnboardingData, handlePrivateKeyInput } =
+    useOnboarding();
   const {
     userId,
     keyringType,
@@ -120,8 +122,8 @@ export const RecoverAccount = ({
       ? [
         <PrivateKeyInput
           key="PrivateKeyInput"
-          onNext={(privateKey: string) => {
-              setOnboardingData({ privateKey });
+          onNext={(result: PrivateKeyWalletDescriptor) => {
+              handlePrivateKeyInput(result);
               nextStep();
             }}
           />,

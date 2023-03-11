@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type {
   KeyringType,
+  PrivateKeyWalletDescriptor,
   SignedWalletDescriptor,
   WalletDescriptor,
 } from "@coral-xyz/common";
@@ -42,8 +43,12 @@ export const OnboardAccount = ({
 }) => {
   const { step, nextStep, prevStep } = useSteps();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const { onboardingData, setOnboardingData, handleSelectBlockchain } =
-    useOnboarding();
+  const {
+    onboardingData,
+    setOnboardingData,
+    handleSelectBlockchain,
+    handlePrivateKeyInput,
+  } = useOnboarding();
   const {
     inviteCode,
     action,
@@ -110,37 +115,36 @@ export const OnboardAccount = ({
           />,
         ]
       : []),
-    <BlockchainSelector
-      key="BlockchainSelector"
-      selectedBlockchains={selectedBlockchains}
-      onClick={async (blockchain) => {
-        await handleSelectBlockchain({
-          blockchain,
-          onSelectImport:
-            keyringType === "mnemonic" || keyringType === "ledger"
-              ? // Mnemonic and ledger keyring types have an optional component that allows
-                // selection of the accounts to import that pops up in a drawer
-                () => {
-                  setOpenDrawer(true);
-                }
-              : // Private key keyring type, advance to the private key input
-                nextStep,
-        });
-      }}
-      onNext={nextStep}
-    />,
     ...(keyringType === "private-key"
-      ? [
-        <PrivateKeyInput
-          key="PrivateKeyInput"
-          blockchain={blockchain!}
-          onNext={(privateKey: string) => {
-              setOnboardingData({ privateKey });
+      ? // If keyring type is a private key we don't need to display the blockchain
+        // selector
+        [
+          <PrivateKeyInput
+            key="PrivateKeyInput"
+            onNext={(result: PrivateKeyWalletDescriptor) => {
+              handlePrivateKeyInput(result);
               nextStep();
             }}
           />,
         ]
-      : []),
+      : [
+        <BlockchainSelector
+          key="BlockchainSelector"
+          selectedBlockchains={selectedBlockchains}
+          onClick={async (blockchain) => {
+              await handleSelectBlockchain({
+                blockchain,
+              });
+              // If wallet is a ledger, step through the ledger onboarding flow
+              // OR if action is an import then open the drawer with the import accounts
+              // component
+              if (keyringType === "ledger" || action === "import") {
+                setOpenDrawer(true);
+              }
+            }}
+          onNext={nextStep}
+          />,
+        ]),
     ...(!isAddingAccount
       ? [
         <CreatePassword

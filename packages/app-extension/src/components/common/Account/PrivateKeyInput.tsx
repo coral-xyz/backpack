@@ -18,11 +18,17 @@ export const PrivateKeyInput = ({
   displayNameInput = false,
 }: {
   blockchain?: Blockchain;
-  onNext: (
-    publicKey: string,
-    privateKey: string,
-    blockchain: Blockchain
-  ) => void;
+  onNext: ({
+    blockchain,
+    publicKey,
+    privateKey,
+    name,
+  }: {
+    blockchain: Blockchain;
+    publicKey: string;
+    privateKey: string;
+    name: string;
+  }) => void;
   publicKey?: string;
   displayNameInput?: boolean;
 }) => {
@@ -74,7 +80,12 @@ export const PrivateKeyInput = ({
       }
     }
 
-    onNext(_privateKey, _publicKey, _blockchain);
+    onNext({
+      blockchain: _blockchain,
+      publicKey: _publicKey,
+      privateKey: _privateKey,
+      name,
+    });
   };
 
   return (

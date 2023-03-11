@@ -80,7 +80,12 @@ export function ImportMnemonic({
         // Blockchain keyring doesn't exist, init
         pk = await background.request({
           method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-          params: [signedWalletDescriptor],
+          params: [
+            {
+              mnemonic: true,
+              signedWalletDescriptors: [signedWalletDescriptor],
+            },
+          ],
         });
       }
     } else {
@@ -109,20 +114,20 @@ export function ImportMnemonic({
           key="MnemonicInput"
           buttonLabel="Next"
           onNext={async (mnemonic) => {
-            setMnemonic(mnemonic);
-            nextStep();
-          }}
-        />,
-        // Must prompt for a name if using an input mnemonic, because we can't
-        // easily generate one
+              setMnemonic(mnemonic);
+              nextStep();
+            }}
+          />,
+          // Must prompt for a name if using an input mnemonic, because we can't
+          // easily generate one
         <InputName
           key="InputName"
           onNext={(name) => {
-            setName(name);
-            nextStep();
-          }}
-        />,
-      ]
+              setName(name);
+              nextStep();
+            }}
+          />,
+        ]
       : []),
     <ImportWallets
       key="ImportWallets"
