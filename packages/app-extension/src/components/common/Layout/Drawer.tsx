@@ -199,13 +199,16 @@ export function WithDrawerNoHeader(props: any) {
     >
       <div className={classes.withDrawerNoHeader}>
         <div className={classes.withDrawerContent}>{children}</div>
-        {!props.skipFooter ? <Button
-          onClick={() => setOpenDrawer(false)}
-          variant="contained"
-          className={classes.closeDrawerButton}
+        {!props.skipFooter ? (
+          <Button
+            onClick={() => setOpenDrawer(false)}
+            variant="contained"
+            className={classes.closeDrawerButton}
+            aria-label="Close"
           >
-          Close
-        </Button> : null}
+            Close
+          </Button>
+        ) : null}
       </div>
     </Drawer>
   );
