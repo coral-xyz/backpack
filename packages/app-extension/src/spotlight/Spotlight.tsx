@@ -17,6 +17,8 @@ import { Divider } from "@mui/material";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 
+import { Scrollbar } from "../components/common/Layout/Scrollbar";
+
 import { FriendCard } from "./FriendCard";
 import { SpotlightSearchBar } from "./SearchBar";
 import { SearchBody } from "./SearchBody";
@@ -27,7 +29,7 @@ import { useSearchedTokens } from "./useSearchedTokens";
 import { getCurrentCounter } from "./utils";
 
 const style = {
-  boxShadow: 24,
+  //  boxShadow: 24,
   marginLeft: "auto",
   marginRight: "auto",
 };
@@ -35,7 +37,6 @@ const style = {
 export const Spotlight = () => {
   const [open, setOpen] = useState(false);
   const theme = useCustomTheme();
-  const { isXs } = useBreakpoints();
   const [arrowIndex, setArrowIndex] = useState(0);
   const [selectedContact, setSelectedContact] = useState<{
     username: string;
@@ -83,7 +84,13 @@ export const Spotlight = () => {
         }
       }}
     >
-      <div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+        }}
+      >
         <div
           style={{
             zIndex: 1,
@@ -95,22 +102,35 @@ export const Spotlight = () => {
             display: "flex",
           }}
           onClick={() => setOpen(false)}
-         />
-        <Box
-          sx={{ ...style }}
+        />
+        <div style={{ flex: 1 }}>
+          <Box
+            sx={{ ...style }}
+            style={{
+              height: "100%",
+            }}
+            onClick={() => setOpen(false)}
+          >
+            <SpotlightInner
+              setOpen={setOpen}
+              arrowIndex={arrowIndex}
+              selectedContact={selectedContact}
+              setSelectedContact={setSelectedContact}
+            />
+          </Box>
+        </div>
+        <div
           style={{
-            background: theme.custom.colors.backgroundBackdrop,
-            width: isXs ? 343 : 500,
-            borderRadius: "12px",
+            zIndex: 1,
+            paddingLeft: "16px",
+            paddingRight: "16px",
+            paddingTop: "10px",
+            paddingBottom: "10px",
+            height: "56px",
+            display: "flex",
           }}
-        >
-          <SpotlightInner
-            setOpen={setOpen}
-            arrowIndex={arrowIndex}
-            selectedContact={selectedContact}
-            setSelectedContact={setSelectedContact}
-          />
-        </Box>
+          onClick={() => setOpen(false)}
+        />
       </div>
     </Modal>
   );
@@ -138,6 +158,7 @@ function SpotlightInner({
   const activeWallet = useActiveWallet();
   const connectionUrl = useBlockchainConnectionUrl(activeWallet.blockchain);
   const theme = useCustomTheme();
+  const { isXs } = useBreakpoints();
 
   if (selectedContact) {
     return (
@@ -222,6 +243,22 @@ function SpotlightInner({
           }
         }
       }}
+      style={{
+        // @ts-ignore
+        boxShadow: 24,
+        height: searchFilter.trim() !== "" ? "100%" : undefined,
+        background: theme.custom.colors.backgroundBackdrop,
+        borderRadius: "12px",
+        display: "flex",
+        flexDirection: "column",
+        width: isXs ? 343 : 500,
+        marginLeft: "auto",
+        marginRight: "auto",
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
     >
       <SpotlightSearchBar
         searchFilter={searchFilter}
@@ -234,12 +271,16 @@ function SpotlightInner({
               backgroundColor: theme.custom.colors.nav,
             }}
           />
-          <SearchBody
-            arrowIndex={arrowIndex}
-            searchFilter={searchFilter}
-            setOpen={setOpen}
-            setSelectedContact={setSelectedContact}
-          />
+          <div style={{ flex: 1 }}>
+            <Scrollbar>
+              <SearchBody
+                arrowIndex={arrowIndex}
+                searchFilter={searchFilter}
+                setOpen={setOpen}
+                setSelectedContact={setSelectedContact}
+              />
+            </Scrollbar>
+          </div>
         </>
       ) : null}
     </div>
