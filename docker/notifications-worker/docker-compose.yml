@@ -7,3 +7,19 @@ services:
     ports:
       - 8080:8080
     command: "node ./dist/index.js"
+
+  agent:
+    image: newrelic/infrastructure:latest
+    container_name: newrelic-infra
+    cap_add:
+      - SYS_PTRACE
+    network_mode: host
+    pid: host
+    privileged: true
+    environment:
+      NRIA_LICENSE_KEY: {{NRIA_LICENSE_KEY}}
+      NEW_RELIC_APP_NAME: notifications-worker
+    volumes:
+      - "/:/host:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    restart: unless-stopped
