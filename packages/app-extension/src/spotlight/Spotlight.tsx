@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import {   Blockchain,
-NAV_COMPONENT_MESSAGE_CHAT ,
+import {
+  Blockchain,
+  NAV_COMPONENT_MESSAGE_CHAT,
   NAV_COMPONENT_MESSAGE_GROUP_CHAT,
   NAV_COMPONENT_NFT_DETAIL,
   NAV_COMPONENT_TOKEN,
@@ -62,7 +63,7 @@ export const Spotlight = () => {
     return () => {
       document.removeEventListener("keydown", keyDownTextField);
     };
-  }, []);
+  }, [keyringState]);
 
   return (
     <Modal
