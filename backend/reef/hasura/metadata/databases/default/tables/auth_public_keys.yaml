@@ -60,6 +60,7 @@ select_permissions:
         - created_at
         - user_id
       filter: {}
+      allow_aggregations: true
 delete_permissions:
   - role: auth_worker
     permission:
