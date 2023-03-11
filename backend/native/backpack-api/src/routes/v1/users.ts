@@ -62,7 +62,6 @@ router.get("/", extractUserId, async (req, res) => {
   const isSolPublicKey = validatePublicKey(usernamePrefix, "solana");
   const isEthPublicKey = validatePublicKey(usernamePrefix, "ethereum");
 
-  console.log("first");
   let users;
   if (isSolPublicKey) {
     users = await getUserByPublicKeyAndChain(usernamePrefix, Blockchain.SOLANA);
@@ -72,12 +71,8 @@ router.get("/", extractUserId, async (req, res) => {
       Blockchain.ETHEREUM
     );
   } else {
-    console.log("before 1 ");
     users = await getUsersByPrefix({ usernamePrefix, uuid, limit });
-    console.log("after 1 ");
   }
-
-  console.log("second");
 
   const friendships: {
     id: string;
