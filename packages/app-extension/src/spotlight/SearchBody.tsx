@@ -1,3 +1,6 @@
+import { useCustomTheme } from "@coral-xyz/themes";
+import { Divider } from "@mui/material";
+
 import { SpotlightContacts } from "./SpotlightContacts";
 import { SpotlightGroups } from "./SpotlightGroups";
 import { SpotlightNfts } from "./SpotlightNfts";
@@ -19,6 +22,7 @@ export const SearchBody = ({
   setOpen: any;
   setSelectedContact: any;
 }) => {
+  const theme = useCustomTheme();
   const contacts = useSearchedContacts(searchFilter);
   const groups = useSearchedGroupsCollections(searchFilter);
   const nfts = useSearchedNfts(searchFilter);
@@ -30,7 +34,11 @@ export const SearchBody = ({
   if (!searchFilter) return <div />;
 
   return (
-    <div>
+    <div
+      style={{
+        padding: 16,
+      }}
+    >
       <div>
         <SpotlightContacts
           selectedIndex={
@@ -40,43 +48,74 @@ export const SearchBody = ({
           setSelectedContact={setSelectedContact}
         />
       </div>
-      <div style={{ marginTop: 10 }}>
-        <SpotlightGroups
-          selectedIndex={
-            currentCounter >= contacts.length &&
-            currentCounter < contacts.length + groups.length
-              ? currentCounter - contacts.length
-              : null
-          }
-          groups={groups}
-          setOpen={setOpen}
-        />
-      </div>
-      <div style={{ marginTop: 10 }}>
-        <SpotlightNfts
-          selectedIndex={
-            currentCounter >= contacts.length + groups.length &&
-            currentCounter < contacts.length + groups.length + nfts.length
-              ? currentCounter - contacts.length - groups.length
-              : null
-          }
-          nfts={nfts}
-          setOpen={setOpen}
-        />
-      </div>
-      <div style={{ marginTop: 10 }}>
-        <SpotlightTokens
-          selectedIndex={
-            currentCounter >= contacts.length + groups.length + nfts.length &&
-            currentCounter <
-              contacts.length + groups.length + nfts.length + tokens.length
-              ? currentCounter - contacts.length - groups.length - nfts.length
-              : null
-          }
-          tokens={tokens}
-          setOpen={setOpen}
-        />
-      </div>
+      {groups.length > 0 ? <>
+        <Divider
+          style={{
+              backgroundColor: theme.custom.colors.nav,
+              marginTop: 12,
+              marginBottom: 12,
+            }}
+          />
+        <div>
+          <SpotlightGroups
+            selectedIndex={
+                currentCounter >= contacts.length &&
+                currentCounter < contacts.length + groups.length
+                  ? currentCounter - contacts.length
+                  : null
+              }
+            groups={groups}
+            setOpen={setOpen}
+            />
+        </div>
+      </> : null}
+      {nfts.length > 0 ? <>
+        <Divider
+          style={{
+              backgroundColor: theme.custom.colors.nav,
+              marginTop: 12,
+              marginBottom: 12,
+            }}
+          />
+        <div>
+          <SpotlightNfts
+            selectedIndex={
+                currentCounter >= contacts.length + groups.length &&
+                currentCounter < contacts.length + groups.length + nfts.length
+                  ? currentCounter - contacts.length - groups.length
+                  : null
+              }
+            nfts={nfts}
+            setOpen={setOpen}
+            />
+        </div>
+      </> : null}
+      {tokens.length > 0 ? <>
+        <Divider
+          style={{
+              backgroundColor: theme.custom.colors.nav,
+              marginTop: 12,
+              marginBottom: 12,
+            }}
+          />
+        <div>
+          <SpotlightTokens
+            selectedIndex={
+                currentCounter >=
+                  contacts.length + groups.length + nfts.length &&
+                currentCounter <
+                  contacts.length + groups.length + nfts.length + tokens.length
+                  ? currentCounter -
+                    contacts.length -
+                    groups.length -
+                    nfts.length
+                  : null
+              }
+            tokens={tokens}
+            setOpen={setOpen}
+            />
+        </div>
+      </> : null}
     </div>
   );
 };

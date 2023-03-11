@@ -2,14 +2,19 @@ import { styles } from "@coral-xyz/themes";
 
 export const useStyles = styles((theme) => ({
   searchField: {
-    marginTop: "16px",
-    marginBottom: "16px",
+    marginTop: 0,
+    marginBottom: 0,
     width: "inherit",
     display: "flex",
     "& .MuiOutlinedInput-root": {
+      border: "none !important",
+      background: "transparent",
       "& input": {
-        paddingTop: 0,
-        paddingBottom: 0,
+        paddingTop: 4,
+        paddingBottom: 4,
+      },
+      "& fieldset": {
+        border: "none !important",
       },
     },
   },

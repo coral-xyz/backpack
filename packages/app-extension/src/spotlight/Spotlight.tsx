@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import {
   Blockchain,
@@ -14,6 +13,7 @@ import {
   useNavigation,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { Divider } from "@mui/material";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 
@@ -82,8 +82,8 @@ export const Spotlight = () => {
         sx={{ ...style }}
         style={{
           background: theme.custom.colors.background,
-          width: isXs ? 350 : 400,
-          padding: 20,
+          width: isXs ? 343 : 400,
+          borderRadius: "12px",
         }}
       >
         <SpotlightInner
@@ -118,6 +118,7 @@ function SpotlightInner({
   const { push, toRoot } = useNavigation();
   const activeWallet = useActiveWallet();
   const connectionUrl = useBlockchainConnectionUrl(activeWallet.blockchain);
+  const theme = useCustomTheme();
 
   if (selectedContact) {
     return (
@@ -207,12 +208,19 @@ function SpotlightInner({
         searchFilter={searchFilter}
         setSearchFilter={setSearchFilter}
       />
-      <SearchBody
-        arrowIndex={arrowIndex}
-        searchFilter={searchFilter}
-        setOpen={setOpen}
-        setSelectedContact={setSelectedContact}
-      />
+      {searchFilter.trim() !== "" ? <>
+        <Divider
+          style={{
+              backgroundColor: theme.custom.colors.nav,
+            }}
+          />
+        <SearchBody
+          arrowIndex={arrowIndex}
+          searchFilter={searchFilter}
+          setOpen={setOpen}
+          setSelectedContact={setSelectedContact}
+          />
+      </> : null}
     </div>
   );
 }
