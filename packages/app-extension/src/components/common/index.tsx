@@ -255,7 +255,7 @@ export function CheckboxForm({
         textTransform: "none",
       }}
       onClick={() => setChecked(!checked)}
-      aria-label={label}
+      aria-label={label?.toString()}
       disableRipple
     >
       <div
