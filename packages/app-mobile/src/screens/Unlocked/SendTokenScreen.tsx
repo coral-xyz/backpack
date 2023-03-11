@@ -1,15 +1,14 @@
-// TODO(peter) share between extension, put this into recoil
 import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useCallback, useEffect, useState } from "react";
 import {
   Platform,
-  TextInput,
   Pressable,
   Image,
   View,
   Keyboard,
   KeyboardAvoidingView,
+  Text,
 } from "react-native";
 
 import { Token } from "@@types/types";
@@ -19,26 +18,17 @@ import {
   SOL_NATIVE_MINT,
   walletAddressDisplay,
   toDisplayBalance,
-  toTitleCase,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
 } from "@coral-xyz/common";
 import { useAnchorContext, useEthereumCtx } from "@coral-xyz/recoil";
 import {
   PrimaryButton,
   DangerButton,
-  // SearchBox,
-  // YStack,
-  // Input,
-  ScrollView,
   Box,
-  Text,
   XStack,
-  YGroup,
-  ListItem,
   YStack,
-  Separator,
 } from "@coral-xyz/tamagui";
-import ethers, { BigNumber } from "ethers";
+import { BigNumber } from "ethers";
 
 import { SendEthereumConfirmationCard } from "~components/BottomDrawerEthereumConfirmation";
 import { SendSolanaConfirmationCard } from "~components/BottomDrawerSolanaConfirmation";
@@ -271,7 +261,7 @@ export function SendTokenConfirmScreen({
   const [modalIndex, setModalIndex] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [feeOffset, setFeeOffset] = useState<BigNumber>(BigNumber.from(0));
-  const [amount, setAmount] = useState<BigNumber | null>(BigNumber.from(0));
+  const [amount, setAmount] = useState<BigNumber | null>(null);
 
   useEffect(() => {
     if (!token || !ethereumCtx?.feeData) {
@@ -340,21 +330,15 @@ export function SendTokenConfirmScreen({
   return (
     <>
       <Screen style={{ justifyContent: "space-between" }}>
-        <Text>
-          {JSON.stringify({
-            amount: JSON.stringify(amount),
-            isAmountError,
-            exceedsBalance,
-            maxAmount: JSON.stringify(maxAmount),
-          })}
-        </Text>
-        <AvatarHeader
-          walletName={walletName}
-          address={address}
-          username={username}
-          image={image}
-        />
-        <View>
+        <YStack f={1} jc="center">
+          <Box mb={18}>
+            <AvatarHeader
+              walletName={walletName}
+              address={address}
+              username={username}
+              image={image}
+            />
+          </Box>
           <UnstyledTokenTextInput
             decimals={token.decimals}
             amount={amount}
@@ -368,7 +352,7 @@ export function SendTokenConfirmScreen({
               width: "100%",
             }}
           />
-          <Box mt={24} mb={12}>
+          <Box mb={12}>
             <TokenLabel logo={token.logo} ticker={token.ticker} />
           </Box>
           <MaxAmountLabel
@@ -376,7 +360,7 @@ export function SendTokenConfirmScreen({
             token={token}
             onSetAmount={setAmount}
           />
-        </View>
+        </YStack>
         {getButton(isSendDisabled, isAmountError)}
       </Screen>
       <BottomSheetModal

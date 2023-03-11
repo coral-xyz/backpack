@@ -1,58 +1,31 @@
 import type { Token } from "@@types/types";
 import type { RemoteUserData } from "@coral-xyz/common";
-import type { TokenDataWithPrice } from "@coral-xyz/recoil";
 
-import { useCallback, useEffect, useState } from "react";
-import {
-  TextInput,
-  Pressable,
-  Image,
-  View,
-  Keyboard,
-  KeyboardAvoidingView,
-} from "react-native";
+import { useEffect } from "react";
+import { View } from "react-native";
 
-import {
-  BACKEND_API_URL,
-  toDisplayBalance,
-  Blockchain,
-  ETH_NATIVE_MINT,
-  NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
-  SOL_NATIVE_MINT,
-  toTitleCase,
-  walletAddressDisplay,
-} from "@coral-xyz/common";
+import { BACKEND_API_URL, Blockchain } from "@coral-xyz/common";
 import { useContacts } from "@coral-xyz/db";
 import {
-  blockchainTokenData,
   useActiveEthereumWallet,
   useActiveSolanaWallet,
-  useActiveWallet,
   useAllWallets,
-  useAnchorContext,
   useAvatarUrl,
-  useEthereumCtx,
-  useLoader,
   useUser,
 } from "@coral-xyz/recoil";
 import {
   PrimaryButton,
   DangerButton,
-  // SearchBox,
-  // YStack,
-  // Input,
-  ScrollView,
   Box,
   Text,
-  XStack,
   YGroup,
   ListItem,
   YStack,
-  Separator,
 } from "@coral-xyz/tamagui";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 
+import { ImageSvg } from "~components/ImageSvg";
 import { StyledTextInput } from "~components/StyledTextInput";
 
 export const BubbleTopLabel = ({ text }: { text: string }) => {
@@ -60,8 +33,6 @@ export const BubbleTopLabel = ({ text }: { text: string }) => {
 };
 
 let debouncedTimer = 0;
-
-// import { Screen } from "~components/index";
 
 function NotSelected() {
   return null;
@@ -336,29 +307,7 @@ const AddressListItem = ({
             },
           });
         }}
-        icon={
-          <Image
-            source={{ uri: user.image }}
-            onError={({ nativeEvent: { error } }) => {
-              console.error("error", error);
-            }}
-            onLoad={({
-              nativeEvent: {
-                source: { width, height },
-              },
-            }) => {
-              console.log("width", width);
-              console.log("height", height);
-            }}
-            style={{
-              backgroundColor: "yellow",
-              aspectRatio: 1,
-              width: 32,
-              height: 32,
-              borderRadius: 16,
-            }}
-          />
-        }
+        icon={<ImageSvg uri={user.image} />}
       >
         {!address ? (
           <View
