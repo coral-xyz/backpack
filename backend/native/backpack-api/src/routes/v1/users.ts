@@ -7,6 +7,7 @@ import {
 } from "@coral-xyz/common";
 import type { Request, Response } from "express";
 import express from "express";
+import rateLimit from "express-rate-limit";
 import jwt from "jsonwebtoken";
 
 import {
@@ -41,6 +42,13 @@ import {
   CreateUserWithPublicKeys,
 } from "../../validation/user";
 
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
 const router = express.Router();
 
 router.get("/", extractUserId, async (req, res) => {
@@ -54,6 +62,7 @@ router.get("/", extractUserId, async (req, res) => {
   const isSolPublicKey = validatePublicKey(usernamePrefix, "solana");
   const isEthPublicKey = validatePublicKey(usernamePrefix, "ethereum");
 
+  console.log("first");
   let users;
   if (isSolPublicKey) {
     users = await getUserByPublicKeyAndChain(usernamePrefix, Blockchain.SOLANA);
@@ -63,8 +72,12 @@ router.get("/", extractUserId, async (req, res) => {
       Blockchain.ETHEREUM
     );
   } else {
+    console.log("before 1 ");
     users = await getUsersByPrefix({ usernamePrefix, uuid, limit });
+    console.log("after 1 ");
   }
+
+  console.log("second");
 
   const friendships: {
     id: string;
@@ -115,7 +128,7 @@ router.get("/jwt/xnft", extractUserId, async (req, res) => {
 /**
  * Create a new user.
  */
-router.post("/", async (req, res) => {
+router.post("/", apiLimiter, async (req, res) => {
   const { username, waitlistId, blockchainPublicKeys } =
     CreateUserWithPublicKeys.parse(req.body);
 
