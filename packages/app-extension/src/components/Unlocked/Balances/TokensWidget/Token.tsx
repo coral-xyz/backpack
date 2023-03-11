@@ -161,7 +161,7 @@ export function WithHeaderButton({
   const initialRoute = routes[0];
   return (
     <>
-      <Button style={style} onClick={() => setOpenDrawer(true)}>
+      <Button style={style} onClick={() => setOpenDrawer(true)} aria-label="open-drawer">
         {labelComponent ? (
           labelComponent
         ) : (

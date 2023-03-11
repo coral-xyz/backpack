@@ -119,6 +119,7 @@ export function NFTCard({
           flexDirection: "column",
           background: theme.custom.colors.background,
         }}
+        aria-label="nft-card-button"
       >
         <ProxyImage
           className="nftImage"
@@ -332,6 +333,7 @@ export function CollectionCard({ collection }: { collection: NftCollection }) {
           flexDirection: "column",
           background: theme.custom.colors.background,
         }}
+        aria-label="nft-collections-list"
       >
         <div
           style={{

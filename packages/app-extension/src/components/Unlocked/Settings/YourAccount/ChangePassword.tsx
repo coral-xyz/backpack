@@ -87,6 +87,7 @@ export function ChangePassword() {
               textTransform: "none",
               color: theme.custom.colors.brandColor,
             }}
+            aria-label="change-password-button"
           >
             <Typography
               style={{

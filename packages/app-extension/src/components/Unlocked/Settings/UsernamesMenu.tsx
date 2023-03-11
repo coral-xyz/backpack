@@ -43,6 +43,7 @@ export function UserAccountsMenuButton() {
           fontSize: "18px",
         }}
         onClick={() => setOpenDrawer(!openDrawer)}
+        aria-label={user.username}
       >
         @{user.username}
         <ExpandMore
@@ -186,20 +187,22 @@ function UserAccountListItem({
             @{username}
           </Typography>
         </div>
-        {isActive ? <div
-          style={{
+        {isActive ? (
+          <div
+            style={{
               display: "flex",
               justifyContent: "center",
               flexDirection: "column",
             }}
           >
-          <Check
-            style={{
+            <Check
+              style={{
                 opacity: 0.8,
                 color: theme.custom.colors.fontColor,
               }}
             />
-        </div> : null}
+          </div>
+        ) : null}
       </div>
     </ListItem>
   );
@@ -250,6 +253,7 @@ function AddAnotherAccountButton() {
       onClick={() => {
         openAddUserAccount();
       }}
+      aria-label="add-another-account"
     >
       <Add
         style={{

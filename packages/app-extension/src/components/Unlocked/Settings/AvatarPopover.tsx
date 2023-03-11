@@ -170,6 +170,7 @@ function MenuListItem({
         width: "100%",
         display: "inline",
       }}
+      aria-label="menu-list-item-button"
     >
       <div
         style={{

@@ -315,6 +315,7 @@ function ApplicationButton({
               borderRadius: "12px",
             }}
             onClick={handleClick}
+            aria-label="open-button"
           >
             Open
           </Button>

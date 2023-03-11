@@ -196,6 +196,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
             opacity: isDisabled ? 0.5 : undefined,
             boxShadow: "none",
           }}
+          aria-label="view-in-library-button"
           onClick={() =>
             window.open(
               `${XNFT_GG_LINK}/app/${xnft.install.account.xnft.toString()}`
