@@ -18,6 +18,7 @@ services:
     privileged: true
     environment:
       NRIA_LICENSE_KEY: {{NRIA_LICENSE_KEY}}
+      NEW_RELIC_APP_NAME: notifications-worker
     volumes:
       - "/:/host:ro"
       - "/var/run/docker.sock:/var/run/docker.sock"
