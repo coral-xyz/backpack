@@ -46,7 +46,7 @@ export const Spotlight = () => {
         return;
       }
       if (e.key === "k" && e.metaKey) {
-        setOpen(true);
+        setOpen((o) => !o);
         e.preventDefault();
       }
       if (e.which === 27 || e.keyCode === 27) {
