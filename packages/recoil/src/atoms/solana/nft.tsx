@@ -109,7 +109,7 @@ export const solanaNftById = equalSelectorFamily<
         } else {
           return uriData.metadata.data.name;
         }
-      })().replace(/\0/g, "");
+      })()?.replace(/\0/g, "");
 
       const nft = {
         id: nftTokenMetadata?.publicKey ?? "",
@@ -120,7 +120,7 @@ export const solanaNftById = equalSelectorFamily<
         name: (
           nftTokenMetadata?.account.data.name ??
           (uriData ? uriData.tokenMetaUriData.name : "Unknown")
-        ).replace(/\0/g, ""),
+        )?.replace(/\0/g, ""),
         description: uriData ? uriData.tokenMetaUriData.description : "",
         externalUrl: uriData
           ? externalResourceUri(
