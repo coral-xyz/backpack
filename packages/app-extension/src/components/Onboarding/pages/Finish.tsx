@@ -43,7 +43,7 @@ export const Finish = ({ isAddingAccount }: { isAddingAccount?: boolean }) => {
       }
       setLoading(false);
     })();
-  }, [onboardingData, isAddingAccount]);
+  }, [background, isAddingAccount, onboardingData, maybeCreateUser]);
 
   return !loading ? (
     <SetupComplete

@@ -34,9 +34,10 @@ export const Onboarding = ({
   const [action, setAction] = useState<"onboard" | "recover" | "waiting">(
     "onboard"
   );
+
+  const _ks = useKeyringStoreState();
   const isOnboarded =
-    !isAddingAccount &&
-    useKeyringStoreState() !== KeyringStoreStateEnum.NeedsOnboarding;
+    !isAddingAccount && _ks !== KeyringStoreStateEnum.NeedsOnboarding;
 
   const defaultProps = {
     containerRef,
@@ -74,12 +75,14 @@ export const Onboarding = ({
         </OnboardingProvider>
       ) : null}
       {action === "waiting" ? <WaitingRoom /> : null}
-      {action === "recover" ? <OnboardingProvider>
-        <RecoverAccount
-          onClose={() => setAction("onboard")}
-          {...defaultProps}
+      {action === "recover" ? (
+        <OnboardingProvider>
+          <RecoverAccount
+            onClose={() => setAction("onboard")}
+            {...defaultProps}
           />
-      </OnboardingProvider> : null}
+        </OnboardingProvider>
+      ) : null}
     </OptionsContainer>
   );
 };

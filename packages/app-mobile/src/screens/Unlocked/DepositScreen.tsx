@@ -12,17 +12,19 @@ import {
 
 import * as Clipboard from "expo-clipboard";
 
+import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
+import { useActiveWallets } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
+import QRCode from "react-qr-code";
+
 import {
   CopyWalletFieldInput,
   ListRowSeparator,
   Margin,
   Screen,
 } from "~components/index";
-import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
-import { useActiveWallets } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useBlockchainLogo, useTheme } from "~hooks";
-import QRCode from "react-qr-code";
+
+import { getBlockchainLogo, useTheme } from "~hooks";
 
 function BlockchainDisclaimerText({
   blockchain,
@@ -37,12 +39,8 @@ function BlockchainDisclaimerText({
         { color: theme.custom.colors.secondary },
       ]}
     >
-      {blockchain === Blockchain.SOLANA && (
-        <>This address can only receive SOL and SPL tokens on Solana.</>
-      )}
-      {blockchain === Blockchain.ETHEREUM && (
-        <>This address can only receive ETH and ERC20 tokens on Ethereum.</>
-      )}
+      {blockchain === Blockchain.SOLANA ? <>This address can only receive SOL and SPL tokens on Solana.</> : null}
+      {blockchain === Blockchain.ETHEREUM ? <>This address can only receive ETH and ERC20 tokens on Ethereum.</> : null}
     </Text>
   );
 }
@@ -235,7 +233,7 @@ function BlockchainDepositCard({
   const theme = useTheme();
   const [showQrCode, setShowQrCode] = useState(false);
 
-  const blockchainLogo = useBlockchainLogo(blockchain);
+  const blockchainLogo = getBlockchainLogo(blockchain);
   const blockchainDisplay =
     blockchain.slice(0, 1).toUpperCase() + blockchain.slice(1);
 

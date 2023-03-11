@@ -1,0 +1,36 @@
+{
+  "name": "@coral-xyz/tamagui",
+  "version": "1.0.0",
+  "types": "./types/index.d.ts",
+  "main": "src/index.tsx",
+  "module:jsx": "src",
+  "module": "dist/esm",
+  "files": [
+    "types",
+    "src",
+    "dist"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "dependencies": {
+    "@coral-xyz/recoil": "*",
+    "@tamagui/animations-react-native": "^1.7.1",
+    "@tamagui/babel-plugin": "^1.7.1",
+    "@tamagui/config": "^1.7.1",
+    "@tamagui/core": "*",
+    "@tamagui/font-inter": "^1.7.1",
+    "@tamagui/shorthands": "^1.7.1",
+    "@tamagui/theme-base": "^1.7.1",
+    "@tamagui/themes": "^1.7.1",
+    "tamagui": "^1.7.1"
+  },
+  "scripts": {
+    "build": "tamagui-build",
+    "start": "tamagui-build --watch"
+  },
+  "devDependencies": {
+    "@tamagui/build": "*",
+    "@types/react-native": "^0.71.3"
+  }
+}

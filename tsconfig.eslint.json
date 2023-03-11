@@ -12,6 +12,7 @@
     "jest.preset.js",
     "metro.config.js",
     "babel.config.js",
+    "tamagui.config.ts",
     "examples/**/*"
   ]
 }

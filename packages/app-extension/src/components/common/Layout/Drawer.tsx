@@ -5,22 +5,15 @@ import React, {
   type PropsWithChildren,
   type SetStateAction,
   useContext,
-  useEffect,
 } from "react";
 import { EXTENSION_HEIGHT } from "@coral-xyz/common";
-import { useEphemeralNav } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
+import { styles as makeStyles } from "@coral-xyz/themes";
 import { Close } from "@mui/icons-material";
 import { Button, Drawer, IconButton } from "@mui/material";
 
 import { NAV_BAR_HEIGHT, NAV_BUTTON_WIDTH } from "./Nav";
 
-const useStyles = styles((theme) => ({
-  withDrawer: {
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-  },
+const useStyles = makeStyles((theme) => ({
   withDrawerNoHeader: {
     height: EXTENSION_HEIGHT - NAV_BAR_HEIGHT,
     padding: "20px",

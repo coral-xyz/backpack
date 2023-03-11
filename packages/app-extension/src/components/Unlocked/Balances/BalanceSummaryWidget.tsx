@@ -3,19 +3,10 @@ import {
   totalBalance as totalBalanceSelector,
   useLoader,
 } from "@coral-xyz/recoil";
-import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import { Skeleton, Typography } from "@mui/material";
 
-const useStyles = styles((theme) => ({
-  button: {
-    color: "#fff",
-    "&:hover": {
-      opacity: 1,
-    },
-    "&:hover p": {
-      opacity: HOVER_OPACITY,
-    },
-  },
+const useStyles = makeStyles(() => ({
   balancesHeaderContainer: {
     paddingLeft: "24px",
     paddingRight: "24px",
@@ -23,26 +14,11 @@ const useStyles = styles((theme) => ({
     width: "100%",
     borderRadius: "12px",
   },
-  headerLabel: {
-    fontSize: "16px",
-    fontWeight: 500,
-    lineHeight: "24px",
-  },
   totalBalance: {
     fontWeight: 600,
     fontSize: "40px",
     lineHeight: "36px",
     color: "inherit",
-  },
-  positive: {
-    color: `${theme.custom.colors.positive} !important`,
-    fontSize: "12px",
-    lineHeight: "24px",
-  },
-  negative: {
-    color: theme.custom.colors.negative,
-    fontSize: "12px",
-    lineHeight: "24px",
   },
 }));
 

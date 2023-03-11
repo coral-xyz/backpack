@@ -1,5 +1,9 @@
-import { useEffect, Suspense } from "react";
-import type { EnrichedMessage, EnrichedNotification,SubscriptionType  } from "@coral-xyz/common";
+import { Suspense,useEffect } from "react";
+import type {
+  EnrichedMessage,
+  EnrichedNotification,
+  SubscriptionType,
+} from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { RecoilSync } from "@coral-xyz/db";
 import {
@@ -193,10 +197,15 @@ export const DbRecoilSync = ({ uuid }: { uuid: string }) => {
     };
   }, [uuid]);
 
-  return <Suspense fallback={null}> <NotificationsWrapper uuid={uuid} /> </Suspense>;
+  return (
+    <Suspense fallback={null}>
+      {" "}
+      <NotificationsWrapper uuid={uuid} />{" "}
+    </Suspense>
+  );
 };
 
-function NotificationsWrapper({uuid}: {uuid: string;}) {
+function NotificationsWrapper({ uuid }: { uuid: string }) {
   const _notifications: EnrichedNotification[] = useRecentNotifications({
     limit: 50,
     offset: 0,
@@ -230,7 +239,10 @@ export const useUpdateNotifications = () =>
           })
         );
         set(recentNotifications({ limit: 50, offset: 0, uuid: uuid }), [
-          {...notificationPayload, timestamp: new Date(notificationPayload.timestamp).getTime()},
+          {
+            ...notificationPayload,
+            timestamp: new Date(notificationPayload.timestamp).getTime(),
+          },
           ...(currentNotifications.valueMaybe() ?? []),
         ]);
       }

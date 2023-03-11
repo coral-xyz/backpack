@@ -1,56 +1,17 @@
 import { walletAddressDisplay } from "@coral-xyz/common";
 import { useDarkMode } from "@coral-xyz/recoil";
 import type { CustomTheme } from "@coral-xyz/themes";
-import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import { Box, Button, Checkbox as _Checkbox, Typography } from "@mui/material";
 import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 
 import { TextField } from "../../plugin/Component";
 
-export { TextField };
 export { walletAddressDisplay } from "@coral-xyz/common";
+export { TextField };
 
-const useStyles = styles((theme: CustomTheme) => ({
-  leftLabel: {
-    color: theme.custom.colors.fontColor,
-    fontSize: "16px",
-    lineHeight: "16px",
-    fontWeight: 500,
-  },
-  rightLabel: {
-    fontWeight: 500,
-    fontSize: "12px",
-    lineHeight: "16px",
-    color: theme.custom.colors.fontColor,
-  },
-  button: {
-    width: "100%",
-    height: "48px",
-    borderRadius: "12px",
-    backgroundColor: theme.custom.colors.primaryButton,
-    "&.Mui-disabled": {
-      opacity: 0.5,
-      backgroundColor: theme.custom.colors.primaryButton,
-    },
-    "&:hover": {
-      backgroundColor: theme.custom.colors.primaryButton,
-    },
-  },
-  primaryButton: {
-    "&:hover": {
-      opacity: HOVER_OPACITY,
-      background: `${theme.custom.colors.primaryButton} !important`,
-      backgroundColor: `${theme.custom.colors.primaryButton} !important,`,
-    },
-  },
-  negativeButton: {
-    "&:hover": {
-      opacity: HOVER_OPACITY,
-      background: `${theme.custom.colors.negative} !important`,
-      backgroundColor: `${theme.custom.colors.negative} !important,`,
-    },
-  },
+const useStyles = makeStyles((theme: CustomTheme) => ({
   header: {
     color: theme.custom.colors.fontColor,
     fontSize: "24px",

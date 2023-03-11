@@ -30,7 +30,7 @@ import {
   useTransactionData,
   useTransactionRequest,
 } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 import * as anchor from "@project-serum/anchor";
 import type { ConfirmOptions, SendOptions } from "@solana/web3.js";
@@ -47,24 +47,7 @@ import { ErrorTransaction } from "./XnftPopovers/ErrorTransaction";
 import { Sending } from "./XnftPopovers/Sending";
 import { Success } from "./XnftPopovers/Success";
 
-const useStyles = styles((theme) => ({
-  confirmRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: "8px",
-  },
-  confirmRowLabelLeft: {
-    fontSize: "12px",
-    lineHeight: "16px",
-    fontWeight: 500,
-    color: theme.custom.colors.secondary,
-  },
-  confirmRowLabelRight: {
-    fontSize: "12px",
-    lineHeight: "16px",
-    fontWeight: 500,
-    color: theme.custom.colors.fontColor,
-  },
+const useStyles = makeStyles((theme) => ({
   approveTableRoot: {
     backgroundColor: `${theme.custom.colors.approveTransactionTableBackground} !important`,
     "&:hover": {

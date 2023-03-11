@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Navigate,
   Route,
@@ -9,7 +9,6 @@ import {
 import type { SubscriptionType } from "@coral-xyz/common";
 import {
   BACKPACK_TEAM,
-  MESSAGING_COMMUNICATION_FETCH_RESPONSE,
   NAV_COMPONENT_MESSAGE_PROFILE,
 } from "@coral-xyz/common";
 import {
@@ -419,16 +418,16 @@ function useNavBar() {
           {pathname.startsWith("/balances")
             ? "Balances"
             : pathname.startsWith("/apps")
-            ? "Applications"
-            : pathname.startsWith("/messages") && !isXs
-            ? ""
-            : pathname.startsWith("/messages")
-            ? "Messages"
-            : pathname.startsWith("/nfts")
-            ? "Collectibles"
-            : pathname.startsWith("/notifications")
-            ? "Notifications"
-            : "Recent Activity"}
+              ? "Applications"
+              : pathname.startsWith("/messages") && !isXs
+                ? ""
+                : pathname.startsWith("/messages")
+                  ? "Messages"
+                  : pathname.startsWith("/nfts")
+                    ? "Collectibles"
+                    : pathname.startsWith("/notifications")
+                      ? "Notifications"
+                      : "Recent Activity"}
         </Typography>
       </div>
     );
@@ -455,7 +454,7 @@ function useNavBar() {
 
   const notchViewComponent =
     pathname === "/nfts/chat" || pathname === "/messages/groupchat" ? (
-      <ChatDrawer setOpenDrawer={() => {}} />
+      <ChatDrawer setOpenDrawer={() => { }} />
     ) : null;
 
   return {
@@ -467,8 +466,8 @@ function useNavBar() {
       pathname === "/messages/chat"
         ? image
         : pathname === "/messages/groupchat" && props.id === "backpack-chat"
-        ? "https://user-images.githubusercontent.com/321395/206757416-a80e662a-0ccc-41cc-a20f-ff397755d47f.png"
-        : undefined,
+          ? "https://user-images.githubusercontent.com/321395/206757416-a80e662a-0ccc-41cc-a20f-ff397755d47f.png"
+          : undefined,
     isVerified:
       (pathname === "/messages/groupchat" && props.id === "backpack-chat") ||
       (pathname === "/messages/chat" && BACKPACK_TEAM.includes(props.userId)),

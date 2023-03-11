@@ -24,7 +24,7 @@ import { NftSticker } from "./NftSticker";
 import { ReplyContainer } from "./ReplyContainer";
 import { SecureTransfer } from "./SecureTransfer";
 
-const BARTER_ENABLED = false;
+const BARTER_ENABLED = true;
 const SECURE_TRANSFER_ENABLED = false;
 
 const useStyles = makeStyles((theme: any) =>
@@ -350,7 +350,7 @@ export const SendMessage = ({
                 setAboveMessagePlugin={setAboveMessagePlugin}
               />
             ) : null}
-            {type === "individual" && BARTER_ENABLED ? (
+            {type === "individual" && featureGates["BARTER_ENABLED"] ? (
               <Barter
                 setOpenPlugin={setOpenPlugin}
                 onMediaSelect={onMediaSelect}

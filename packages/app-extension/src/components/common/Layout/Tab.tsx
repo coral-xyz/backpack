@@ -16,17 +16,14 @@ import {
   GridIcon,
   ImageIcon,
   MessageBubbleIcon,
-  MessageBubbleUnreadIcon,
   useBreakpoints,
 } from "@coral-xyz/react-common";
 import {
   useAuthenticatedUser,
   useBackgroundClient,
-  useMessageUnreadCount,
   useTab,
-  useUser,
 } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { Tab, Tabs } from "@mui/material";
 import Badge from "@mui/material/Badge";
@@ -36,7 +33,7 @@ import { NotificationIconWithBadge } from "../NotificationIconWithBadge";
 
 const TAB_HEIGHT = 64;
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   tabXs: {
     opacity: "1 !important",
     height: `${TAB_HEIGHT}px`,
@@ -87,13 +84,6 @@ const useStyles = styles((theme) => ({
   },
   tabIndicator: {
     color: "none",
-  },
-  tabSelected: {
-    color: theme.custom.colors.brandColor,
-  },
-  tabUnselected: {},
-  tabButton: {
-    padding: 0,
   },
   activeTab: {},
 }));

@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-no-useless-fragment */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
 import {
   Blockchain,
@@ -12,23 +14,19 @@ import {
   SecretKeyIcon,
 } from "@coral-xyz/react-common";
 import {
-  serverPublicKeys,
+  getBlockchainLogo,
   useActiveWallet,
   useAllWallets,
   useBackgroundClient,
-  useBlockchainLogo,
   useDehydratedWallets,
   usePrimaryWallets,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import DownloadIcon from "@mui/icons-material/Download";
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
 import type { SxProps, Theme } from "@mui/material/styles";
-import { useRecoilValue } from "recoil";
 
 import {
   EthereumIconOnboarding as EthereumIcon,
@@ -46,6 +44,7 @@ import {
   AddConnectWalletMenu,
 } from "../Unlocked/Settings/AddConnectWallet";
 import { CreateMenu } from "../Unlocked/Settings/AddConnectWallet/CreateMenu";
+import { CreateMnemonic } from "../Unlocked/Settings/AddConnectWallet/CreateMnemonic";
 import { ImportMenu } from "../Unlocked/Settings/AddConnectWallet/ImportMenu";
 import { ImportMnemonic } from "../Unlocked/Settings/AddConnectWallet/ImportMnemonic";
 import { ImportSecretKey } from "../Unlocked/Settings/AddConnectWallet/ImportSecretKey";
@@ -263,6 +262,11 @@ function WalletNavStack({
         name="import-wallet"
         component={(props: any) => <ImportMenu {...props} />}
       />
+      <NavStackScreen
+        name="create-mnemonic"
+        component={(props: any) => <CreateMnemonic {...props} />}
+      />
+
       <NavStackScreen
         name="import-from-mnemonic"
         component={(props: any) => <ImportMnemonic {...props} />}
@@ -1029,7 +1033,7 @@ function NetworkIcon({
   blockchain: Blockchain;
   style?: React.CSSProperties;
 }) {
-  const blockchainLogo = useBlockchainLogo(blockchain);
+  const blockchainLogo = getBlockchainLogo(blockchain);
   return <img src={blockchainLogo} style={style} />;
 }
 
