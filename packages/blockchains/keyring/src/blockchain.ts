@@ -67,6 +67,9 @@ export class BlockchainKeyring {
   public async initFromMnemonic(
     keyringInit: MnemonicKeyringInit
   ): Promise<Array<[string, string]>> {
+    if (typeof keyringInit.mnemonic !== "string") {
+      throw new Error("invalid mnemonic");
+    }
     // Empty ledger keyring to hold one off ledger imports
     this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
     // Empty imported keyring to hold imported secret keys
