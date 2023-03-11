@@ -360,23 +360,35 @@ export const MessageLine = (props) => {
                         >
                           <ReplyIcon fill={theme.custom.colors.icon} />
                         </div>
-                        <div style={{ marginLeft: 3 }}>
-                          <DeleteIconInternal
-                            client_generated_uuid={props.client_generated_uuid}
-                            messageSender={props.uuid}
-                          />
-                        </div>
+                        {type === "individual" &&
+                        BACKPACK_TEAM.includes(props.uuid) ? null : (
+                          <div style={{ marginLeft: 3 }}>
+                            <DeleteIconInternal
+                              client_generated_uuid={
+                                props.client_generated_uuid
+                              }
+                              messageSender={props.uuid}
+                            />
+                          </div>
+                        )}
                       </div>
                     ) : (
-                      <div
-                        style={{ marginLeft: 5 }}
-                        className={classes.hoverChild}
-                      >
-                        {" "}
-                        <DeleteIconInternal
-                          client_generated_uuid={props.client_generated_uuid}
-                          messageSender={props.uuid}
-                        />{" "}
+                      <div>
+                        {type === "individual" &&
+                        BACKPACK_TEAM.includes(props.uuid) ? null : (
+                          <div
+                            style={{ marginLeft: 5 }}
+                            className={classes.hoverChild}
+                          >
+                            {" "}
+                            <DeleteIconInternal
+                              client_generated_uuid={
+                                props.client_generated_uuid
+                              }
+                              messageSender={props.uuid}
+                            />{" "}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -546,23 +558,35 @@ export const MessageLine = (props) => {
                         >
                           <ReplyIcon fill={theme.custom.colors.icon} />
                         </div>
-                        <div style={{ marginLeft: 3 }}>
-                          <DeleteIconInternal
-                            client_generated_uuid={props.client_generated_uuid}
-                            messageSender={props.uuid}
-                          />
-                        </div>
+                        {type === "individual" &&
+                        BACKPACK_TEAM.includes(props.uuid) ? null : (
+                          <div style={{ marginLeft: 3 }}>
+                            <DeleteIconInternal
+                              client_generated_uuid={
+                                props.client_generated_uuid
+                              }
+                              messageSender={props.uuid}
+                            />
+                          </div>
+                        )}
                       </div>
                     ) : (
-                      <div
-                        style={{ marginLeft: 5 }}
-                        className={classes.hoverChild}
-                      >
-                        {" "}
-                        <DeleteIconInternal
-                          client_generated_uuid={props.client_generated_uuid}
-                          messageSender={props.uuid}
-                        />{" "}
+                      <div>
+                        {type === "individual" &&
+                        BACKPACK_TEAM.includes(props.uuid) ? null : (
+                          <div
+                            style={{ marginLeft: 5 }}
+                            className={classes.hoverChild}
+                          >
+                            {" "}
+                            <DeleteIconInternal
+                              client_generated_uuid={
+                                props.client_generated_uuid
+                              }
+                              messageSender={props.uuid}
+                            />{" "}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
