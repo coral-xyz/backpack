@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  Blockchain,
+import {   Blockchain,
+NAV_COMPONENT_MESSAGE_CHAT ,
   NAV_COMPONENT_MESSAGE_GROUP_CHAT,
   NAV_COMPONENT_NFT_DETAIL,
   NAV_COMPONENT_TOKEN,
@@ -10,6 +10,7 @@ import {
   useActiveWallet,
   useBlockchainConnectionUrl,
   useBreakpoints,
+  useKeyringStoreState,
   useNavigation,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -19,7 +20,6 @@ import Modal from "@mui/material/Modal";
 
 import { Scrollbar } from "../components/common/Layout/Scrollbar";
 
-import { FriendCard } from "./FriendCard";
 import { SpotlightSearchBar } from "./SearchBar";
 import { SearchBody } from "./SearchBody";
 import { useSearchedContacts } from "./useSearchedContacts";
@@ -36,16 +36,14 @@ const style = {
 
 export const Spotlight = () => {
   const [open, setOpen] = useState(false);
-  const theme = useCustomTheme();
+  const keyringState = useKeyringStoreState();
   const [arrowIndex, setArrowIndex] = useState(0);
-  const [selectedContact, setSelectedContact] = useState<{
-    username: string;
-    image: string;
-    uuid: string;
-  } | null>(null);
 
   useEffect(() => {
     function keyDownTextField(e: any) {
+      if (keyringState !== "unlocked") {
+        return;
+      }
       if (e.key === "k" && e.metaKey) {
         setOpen(true);
         e.preventDefault();
@@ -76,13 +74,6 @@ export const Spotlight = () => {
         },
       }}
       open={open}
-      onClose={() => {
-        if (selectedContact) {
-          setSelectedContact(null);
-        } else {
-          setOpen(false);
-        }
-      }}
     >
       <div
         style={{
@@ -111,12 +102,7 @@ export const Spotlight = () => {
             }}
             onClick={() => setOpen(false)}
           >
-            <SpotlightInner
-              setOpen={setOpen}
-              arrowIndex={arrowIndex}
-              selectedContact={selectedContact}
-              setSelectedContact={setSelectedContact}
-            />
+            <SpotlightInner setOpen={setOpen} arrowIndex={arrowIndex} />
           </Box>
         </div>
         <div
@@ -138,13 +124,9 @@ export const Spotlight = () => {
 
 function SpotlightInner({
   arrowIndex,
-  selectedContact,
-  setSelectedContact,
   setOpen,
 }: {
   arrowIndex: number;
-  selectedContact: { username: string; image: string; uuid: string } | null;
-  setSelectedContact: any;
   setOpen: any;
 }) {
   const [searchFilter, setSearchFilter] = useState("");
@@ -160,13 +142,18 @@ function SpotlightInner({
   const theme = useCustomTheme();
   const { isXs } = useBreakpoints();
 
-  if (selectedContact) {
-    return (
-      <div>
-        <FriendCard setOpen={setOpen} friend={selectedContact} />
-      </div>
-    );
-  }
+  const setSelectedContact = (contact: any) => {
+    push({
+      title: `@${contact?.username}`,
+      componentId: NAV_COMPONENT_MESSAGE_CHAT,
+      componentProps: {
+        userId: contact?.uuid,
+        id: contact?.uuid,
+        username: contact?.username,
+      },
+    });
+    setOpen(false);
+  };
 
   return (
     <div
@@ -196,7 +183,17 @@ function SpotlightInner({
               : null;
 
           if (selectedContactIndex || selectedContactIndex === 0) {
-            setSelectedContact(contacts[selectedContactIndex]);
+            const contact = contacts[selectedContactIndex];
+            push({
+              title: `@${contact?.username}`,
+              componentId: NAV_COMPONENT_MESSAGE_CHAT,
+              componentProps: {
+                userId: contact?.uuid,
+                id: contact?.uuid,
+                username: contact?.username,
+              },
+            });
+            setOpen(false);
             return;
           }
           if (selectedGroupChatIndex || selectedGroupChatIndex === 0) {
