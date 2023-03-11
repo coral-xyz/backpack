@@ -307,7 +307,6 @@ const AddressListItem = ({
             },
           });
         }}
-        icon={<ImageSvg uri={user.image} />}
       >
         {!address ? (
           <View

@@ -33,6 +33,7 @@ import { BigNumber } from "ethers";
 import { SendEthereumConfirmationCard } from "~components/BottomDrawerEthereumConfirmation";
 import { SendSolanaConfirmationCard } from "~components/BottomDrawerSolanaConfirmation";
 import { BottomSheetModal } from "~components/BottomSheetModal";
+import { ImageSvg } from "~components/ImageSvg";
 import { UnstyledTokenTextInput } from "~components/TokenInputField";
 import { Screen } from "~components/index";
 import { useIsValidAddress } from "~hooks/useIsValidAddress";
@@ -143,18 +144,16 @@ function AvatarHeader({
   walletName?: string | undefined;
   username?: string | undefined;
   address?: string | undefined;
-  image?: string | undefined;
+  image: string;
 }): JSX.Element {
   const theme = useCustomTheme();
   return (
     <YStack ai="center">
-      <Image
-        source={{ uri: image }}
+      <ImageSvg
+        uri={image}
+        width={80}
+        height={80}
         style={{
-          width: 80,
-          height: 80,
-          borderRadius: 40,
-          backgroundColor: "yellow",
           marginBottom: 12,
         }}
       />
