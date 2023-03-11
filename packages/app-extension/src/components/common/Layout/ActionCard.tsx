@@ -23,7 +23,6 @@ export function ActionCard({
       sx={{
         p: 1,
         color: theme.custom.colors.fontColor,
-
         padding: "16px",
         boxShadow: "none",
         backgroundColor: "transparent",

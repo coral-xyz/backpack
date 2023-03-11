@@ -1,10 +1,10 @@
 import { walletAddressDisplay } from "@coral-xyz/common";
+import { useDarkMode } from "@coral-xyz/recoil";
 import type { CustomTheme } from "@coral-xyz/themes";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Box, Button, Checkbox as _Checkbox, Typography } from "@mui/material";
 import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
-import { useDarkMode } from "@coral-xyz/recoil";
 
 import { TextField } from "../../plugin/Component";
 
@@ -102,9 +102,11 @@ export function WalletAddress({ publicKey, name, style, nameStyle }: any) {
       <Typography style={{ ...nameStyle, marginRight: "8px" }}>
         {name}
       </Typography>
-      {publicKey ? <Typography style={{ color: theme.custom.colors.secondary }}>
-        ({walletAddressDisplay(publicKey)})
-      </Typography> : null}
+      {publicKey ? (
+        <Typography style={{ color: theme.custom.colors.secondary }}>
+          ({walletAddressDisplay(publicKey)})
+        </Typography>
+      ) : null}
     </div>
   );
 }
@@ -253,6 +255,7 @@ export function CheckboxForm({
         textTransform: "none",
       }}
       onClick={() => setChecked(!checked)}
+      aria-label={label}
       disableRipple
     >
       <div
