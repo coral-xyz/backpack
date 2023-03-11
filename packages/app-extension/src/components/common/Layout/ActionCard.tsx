@@ -1,5 +1,5 @@
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Box, Button, Card, CardContent, Typography } from "@mui/material";
+import { Box, Card, CardContent, Checkbox, Typography } from "@mui/material";
 
 export function ActionCard({
   icon,
@@ -17,57 +17,63 @@ export function ActionCard({
   disabled?: boolean;
 }) {
   const theme = useCustomTheme();
+  const label = { inputProps: { "aria-label": "Checkbox demo" } };
   return (
-    <Button
-      disableRipple
-      onClick={onClick}
-      style={{
-        padding: 0,
+    <Card
+      sx={{
+        p: 1,
+        color: theme.custom.colors.fontColor,
+
+        padding: "16px",
+        boxShadow: "none",
+        backgroundColor: "transparent",
         textTransform: "none",
         border: `${theme.custom.colors.borderFull}`,
         borderRadius: "12px",
         background: theme.custom.colors.nav,
         width: "100%",
         opacity: disabled ? 0.5 : 1,
+        position: "relative",
       }}
-      disabled={disabled}
     >
-      <Card
-        sx={{
-          p: 1,
-          color: theme.custom.colors.fontColor,
-          cursor: "pointer",
-          padding: "16px",
-          boxShadow: "none",
-          backgroundColor: "transparent",
-          width: "100%",
-        }}
-      >
-        <CardContent style={{ padding: 0 }}>
-          {icon ? <Box sx={{ mb: 1, display: "flex" }}>{icon}</Box> : null}
-          <Box
-            style={{
-              fontWeight: 500,
-              fontSize: "16px",
-              lineHeight: "24px",
-              textAlign: "left",
-            }}
-          >
-            {text}
-            {textAdornment}
-            {subtext ? (
-              <Typography
-                style={{
-                  fontSize: "14px",
-                  color: theme.custom.colors.fontColor3,
-                }}
-              >
-                {subtext}
-              </Typography>
-            ) : null}
-          </Box>
-        </CardContent>
-      </Card>
-    </Button>
+      <CardContent style={{ padding: 0 }}>
+        <Box
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            cursor: "pointer",
+          }}
+        >
+          <Checkbox
+            {...label}
+            onClick={onClick}
+            icon={textAdornment}
+            checkedIcon={textAdornment}
+          />
+        </Box>
+        {icon ? <Box sx={{ mb: 1, display: "flex" }}>{icon}</Box> : null}
+        <Box
+          style={{
+            fontWeight: 500,
+            fontSize: "16px",
+            lineHeight: "24px",
+            textAlign: "left",
+          }}
+        >
+          {text}
+          {subtext ? (
+            <Typography
+              style={{
+                fontSize: "14px",
+                color: theme.custom.colors.fontColor3,
+              }}
+            >
+              {subtext}
+            </Typography>
+          ) : null}
+        </Box>
+      </CardContent>
+    </Card>
   );
 }
