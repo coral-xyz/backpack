@@ -27,11 +27,9 @@ import { useSearchedTokens } from "./useSearchedTokens";
 import { getCurrentCounter } from "./utils";
 
 const style = {
-  position: "fixed",
-  top: 50,
-  left: "50%",
-  transform: "translate(-50%, 0)",
   boxShadow: 24,
+  marginLeft: "auto",
+  marginRight: "auto",
 };
 
 export const Spotlight = () => {
@@ -69,6 +67,13 @@ export const Spotlight = () => {
 
   return (
     <Modal
+      slotProps={{
+        backdrop: {
+          style: {
+            backdropFilter: "blur(6px)",
+          },
+        },
+      }}
       open={open}
       onClose={() => {
         if (selectedContact) {
@@ -78,21 +83,35 @@ export const Spotlight = () => {
         }
       }}
     >
-      <Box
-        sx={{ ...style }}
-        style={{
-          background: theme.custom.colors.background,
-          width: isXs ? 343 : 500,
-          borderRadius: "12px",
-        }}
-      >
-        <SpotlightInner
-          setOpen={setOpen}
-          arrowIndex={arrowIndex}
-          selectedContact={selectedContact}
-          setSelectedContact={setSelectedContact}
-        />
-      </Box>
+      <div>
+        <div
+          style={{
+            zIndex: 1,
+            paddingLeft: "16px",
+            paddingRight: "16px",
+            paddingTop: "10px",
+            paddingBottom: "10px",
+            height: "56px",
+            display: "flex",
+          }}
+          onClick={() => setOpen(false)}
+         />
+        <Box
+          sx={{ ...style }}
+          style={{
+            background: theme.custom.colors.backgroundBackdrop,
+            width: isXs ? 343 : 500,
+            borderRadius: "12px",
+          }}
+        >
+          <SpotlightInner
+            setOpen={setOpen}
+            arrowIndex={arrowIndex}
+            selectedContact={selectedContact}
+            setSelectedContact={setSelectedContact}
+          />
+        </Box>
+      </div>
     </Modal>
   );
 };
