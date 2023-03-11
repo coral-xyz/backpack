@@ -82,7 +82,7 @@ export const Spotlight = () => {
         sx={{ ...style }}
         style={{
           background: theme.custom.colors.background,
-          width: isXs ? 343 : 400,
+          width: isXs ? 343 : 500,
           borderRadius: "12px",
         }}
       >
@@ -208,19 +208,21 @@ function SpotlightInner({
         searchFilter={searchFilter}
         setSearchFilter={setSearchFilter}
       />
-      {searchFilter.trim() !== "" ? <>
-        <Divider
-          style={{
+      {searchFilter.trim() !== "" ? (
+        <>
+          <Divider
+            style={{
               backgroundColor: theme.custom.colors.nav,
             }}
           />
-        <SearchBody
-          arrowIndex={arrowIndex}
-          searchFilter={searchFilter}
-          setOpen={setOpen}
-          setSelectedContact={setSelectedContact}
+          <SearchBody
+            arrowIndex={arrowIndex}
+            searchFilter={searchFilter}
+            setOpen={setOpen}
+            setSelectedContact={setSelectedContact}
           />
-      </> : null}
+        </>
+      ) : null}
     </div>
   );
 }

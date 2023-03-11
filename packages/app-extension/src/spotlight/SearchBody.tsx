@@ -33,89 +33,101 @@ export const SearchBody = ({
 
   if (!searchFilter) return <div />;
 
+  const rows = [
+    {
+      component: (
+        <div>
+          <SpotlightContacts
+            selectedIndex={
+              currentCounter < contacts.length ? currentCounter : null
+            }
+            contacts={contacts}
+            setSelectedContact={setSelectedContact}
+          />
+        </div>
+      ),
+      count: contacts.length,
+      isFirst: contacts.length > 0,
+    },
+    {
+      component: (
+        <div>
+          <SpotlightGroups
+            selectedIndex={
+              currentCounter >= contacts.length &&
+              currentCounter < contacts.length + groups.length
+                ? currentCounter - contacts.length
+                : null
+            }
+            groups={groups}
+            setOpen={setOpen}
+          />
+        </div>
+      ),
+      count: groups.length,
+      isFirst: contacts.length === 0 && groups.length > 0,
+    },
+    {
+      component: (
+        <div>
+          <SpotlightNfts
+            selectedIndex={
+              currentCounter >= contacts.length + groups.length &&
+              currentCounter < contacts.length + groups.length + nfts.length
+                ? currentCounter - contacts.length - groups.length
+                : null
+            }
+            nfts={nfts}
+            setOpen={setOpen}
+          />
+        </div>
+      ),
+      count: nfts.length,
+      isFirst: contacts.length === 0 && groups.length === 0 && nfts.length > 0,
+    },
+    {
+      component: (
+        <div>
+          <SpotlightTokens
+            selectedIndex={
+              currentCounter >= contacts.length + groups.length + nfts.length &&
+              currentCounter <
+                contacts.length + groups.length + nfts.length + tokens.length
+                ? currentCounter - contacts.length - groups.length - nfts.length
+                : null
+            }
+            tokens={tokens}
+            setOpen={setOpen}
+          />
+        </div>
+      ),
+      count: tokens.length,
+      isFirst:
+        contacts.length === 0 &&
+        groups.length === 0 &&
+        nfts.length === 0 &&
+        tokens.length > 0,
+    },
+  ];
+
   return (
     <div
       style={{
         padding: 16,
       }}
     >
-      <div>
-        <SpotlightContacts
-          selectedIndex={
-            currentCounter < contacts.length ? currentCounter : null
-          }
-          contacts={contacts}
-          setSelectedContact={setSelectedContact}
-        />
-      </div>
-      {groups.length > 0 ? <>
-        <Divider
-          style={{
-              backgroundColor: theme.custom.colors.nav,
-              marginTop: 12,
-              marginBottom: 12,
-            }}
-          />
-        <div>
-          <SpotlightGroups
-            selectedIndex={
-                currentCounter >= contacts.length &&
-                currentCounter < contacts.length + groups.length
-                  ? currentCounter - contacts.length
-                  : null
-              }
-            groups={groups}
-            setOpen={setOpen}
-            />
-        </div>
-      </> : null}
-      {nfts.length > 0 ? <>
-        <Divider
-          style={{
-              backgroundColor: theme.custom.colors.nav,
-              marginTop: 12,
-              marginBottom: 12,
-            }}
-          />
-        <div>
-          <SpotlightNfts
-            selectedIndex={
-                currentCounter >= contacts.length + groups.length &&
-                currentCounter < contacts.length + groups.length + nfts.length
-                  ? currentCounter - contacts.length - groups.length
-                  : null
-              }
-            nfts={nfts}
-            setOpen={setOpen}
-            />
-        </div>
-      </> : null}
-      {tokens.length > 0 ? <>
-        <Divider
-          style={{
-              backgroundColor: theme.custom.colors.nav,
-              marginTop: 12,
-              marginBottom: 12,
-            }}
-          />
-        <div>
-          <SpotlightTokens
-            selectedIndex={
-                currentCounter >=
-                  contacts.length + groups.length + nfts.length &&
-                currentCounter <
-                  contacts.length + groups.length + nfts.length + tokens.length
-                  ? currentCounter -
-                    contacts.length -
-                    groups.length -
-                    nfts.length
-                  : null
-              }
-            tokens={tokens}
-            setOpen={setOpen}
-            />
-        </div>
-      </> : null}
+      {rows.map((row) => (
+        <>
+          {row.count > 0 && !row.isFirst ? <Divider
+            style={{
+                backgroundColor: theme.custom.colors.nav,
+                marginTop: 12,
+                marginBottom: 12,
+              }}
+            /> : null}
+          {row.component}
+        </>
+      ))}
     </div>
   );
 };
