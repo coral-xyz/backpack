@@ -284,6 +284,9 @@ export const solanaFungibleTokenNativeBalance = selectorFamily<
             decimals: tokenMint.decimals,
           }
         : tokenRegistryItem ?? ({} as TokenInfo);
+
+      decimals = tokenMint ? tokenMint.decimals : tokenRegistryItem.decimals;
+
       if (tokenRegistryItem) {
         if (ticker === "") {
           ticker = tokenRegistryItem.symbol;
