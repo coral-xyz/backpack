@@ -143,6 +143,7 @@ export function TransactionData({
                 disableRipple
                 disableElevation
                 className={`${classes.chip} ${classes.backgroundChip}`}
+                aria-label={mode}
                 disabled={loading}
               >
                 {mode} <ArrowDropDown />
@@ -662,6 +663,7 @@ function ModeChip({
           ? classes.primaryChip
           : classes.secondaryChip
       }`}
+      aria-label={mode}
       size="small"
       disabled={disabled}
     >

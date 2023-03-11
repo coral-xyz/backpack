@@ -126,7 +126,12 @@ function WalletButton({
         ...style,
       }}
     >
-      <Button disableRipple className={classes.addressButton} onClick={onClick}>
+      <Button
+        disableRipple
+        className={classes.addressButton}
+        onClick={onClick}
+        aria-label={wallet.name}
+      >
         {wallet.name}
         <ExpandMore
           style={{
@@ -143,6 +148,7 @@ function WalletButton({
             padding: 0,
             minWidth: "16px",
           }}
+          aria-label="copy-button"
           className={classes.addressButton}
           onClick={async (e) => {
             e.stopPropagation();
@@ -449,26 +455,27 @@ function _WalletList({
           />
         )}
       </div>
-      {coldWallets.length > 0 ? <div
-        style={{
+      {coldWallets.length > 0 ? (
+        <div
+          style={{
             background: theme.custom.colorsInverted.background,
             padding: "16px",
           }}
         >
-        <div
-          style={{
+          <div
+            style={{
               display: "flex",
               justifyContent: "space-between",
             }}
           >
-          <div
-            style={{
+            <div
+              style={{
                 marginBottom: "12px",
                 display: "flex",
               }}
             >
-            <Typography
-              style={{
+              <Typography
+                style={{
                   fontWeight: 500,
                   color: theme.custom.colorsInverted.fontColor,
                   fontSize: "14px",
@@ -478,13 +485,13 @@ function _WalletList({
                   justifyContent: "center",
                 }}
               >
-              Disabled app signing
-            </Typography>
-            <Tooltip
-              placement="bottom"
-              arrow
-              title={"These wallets can't sign for apps."}
-              componentsProps={{
+                Disabled app signing
+              </Typography>
+              <Tooltip
+                placement="bottom"
+                arrow
+                title={"These wallets can't sign for apps."}
+                componentsProps={{
                   tooltip: {
                     sx: {
                       width: "250px",
@@ -498,34 +505,35 @@ function _WalletList({
                   },
                 }}
               >
-              <InfoIcon
-                style={{
+                <InfoIcon
+                  style={{
                     width: "16px",
                     marginLeft: "5px",
                     color: theme.custom.colorsInverted.secondary,
                   }}
                 />
-            </Tooltip>
+              </Tooltip>
+            </div>
           </div>
-        </div>
-        <WalletList
-          inverted
-          wallets={coldWallets}
-          clickWallet={async (wallet) => {
+          <WalletList
+            inverted
+            wallets={coldWallets}
+            clickWallet={async (wallet) => {
               if (wallet.type !== "dehydrated") {
                 await onChange(wallet);
                 close();
               }
             }}
-          style={{
+            style={{
               borderRadius: "10px",
               overflow: "hidden",
               marginLeft: 0,
               marginRight: 0,
             }}
-          selectedWalletPublicKey={activeWallet.publicKey}
+            selectedWalletPublicKey={activeWallet.publicKey}
           />
-      </div> : null}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -895,8 +903,9 @@ export function StackedWalletAddress({
         >
           {type === "dehydrated" ? "Not recovered" : name}
         </Typography>
-        {type !== "dehydrated" && isPrimary ? <Typography
-          style={{
+        {type !== "dehydrated" && isPrimary ? (
+          <Typography
+            style={{
               marginLeft: "4px",
               fontSize: "14px",
               fontWeight: 500,
@@ -908,8 +917,9 @@ export function StackedWalletAddress({
               justifyContent: "center",
             }}
           >
-          (primary)
-        </Typography> : null}
+            (primary)
+          </Typography>
+        ) : null}
       </div>
       <div
         style={{
