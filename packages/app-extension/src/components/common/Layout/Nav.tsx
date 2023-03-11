@@ -177,6 +177,7 @@ export function NavBackButton({ onClick }: { onClick: () => void }) {
         className={classes.backButton}
         size="large"
         data-testid="back-button"
+        aria-label="back"
       >
         <ArrowBack style={{ color: theme.custom.colors.icon }} />
       </IconButton>
@@ -262,6 +263,7 @@ function CenterDisplay({
               marginRight: 5,
             }}
             onClick={handleOpenDrawer}
+            aria-label="nav-button"
           >
             <img
               style={{
@@ -282,6 +284,7 @@ function CenterDisplay({
             cursor: "pointer",
           }}
           onClick={handleOpenDrawer}
+          aria-label={title}
         >
           <NavTitleLabel title={title} />
         </button>

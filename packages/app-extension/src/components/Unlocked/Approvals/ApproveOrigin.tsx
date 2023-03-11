@@ -207,6 +207,7 @@ function WalletSelectorButton({
           fontSize: "18px",
         }}
         onClick={onClick}
+        aria-label={wallet.name}
       >
         <AvatarWithBlockchainImage
           blockchain={wallet.blockchain as Blockchain}
