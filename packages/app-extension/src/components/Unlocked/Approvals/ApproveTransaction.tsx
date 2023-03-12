@@ -278,27 +278,25 @@ export function ApproveAllTransactions({
               menuItemClasses={{ root: classes.txMenuItemRoot }}
             />
           </div>
-          {showAll
-            ? transactionsData.map((tx, i) => (
-              <div
-                key={i + 1}
-                style={{
-                    marginTop: "10px",
-                    marginLeft: "8px",
-                    marginRight: "8px",
-                  }}
-                >
-                <Typography className={classes.listDescription}>
-                  [{i + 1}] Transaction details
-                </Typography>
-                <TransactionData
-                  transactionData={tx}
-                  menuItems={createTransactionDataMenuItems(tx, classes)}
-                  menuItemClasses={{ root: classes.txMenuItemRoot }}
-                  />
-              </div>
-              ))
-            : null}
+          {showAll ? transactionsData.map((tx, i) => (
+            <div
+              key={i + 1}
+              style={{
+                  marginTop: "10px",
+                  marginLeft: "8px",
+                  marginRight: "8px",
+                }}
+              >
+              <Typography className={classes.listDescription}>
+                [{i + 1}] Transaction details
+              </Typography>
+              <TransactionData
+                transactionData={tx}
+                menuItems={createTransactionDataMenuItems(tx, classes)}
+                menuItemClasses={{ root: classes.txMenuItemRoot }}
+                />
+            </div>
+            )) : null}
         </div>
       )}
       <Typography

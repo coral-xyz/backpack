@@ -87,44 +87,44 @@ export const RecoverAccount = ({
     />,
     ...(keyringType === "mnemonic"
       ? [
-          // Using a mnemonic
+        // Using a mnemonic
         <MnemonicInput
           key="MnemonicInput"
           buttonLabel="Next"
           onNext={async (mnemonic: string) => {
-              setOnboardingData({ mnemonic });
-              nextStep();
-            }}
-          />,
+            setOnboardingData({ mnemonic });
+            nextStep();
+          }}
+        />,
         <MnemonicSearch
           key="MnemonicSearch"
           serverPublicKeys={serverPublicKeys!}
           mnemonic={mnemonic!}
           onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
-              const signedWalletDescriptors = await Promise.all(
-                walletDescriptors.map(async (w) => ({
-                  ...w,
-                  signature: await signMessageForWallet(w, authMessage),
-                }))
-              );
-              console.log(signedWalletDescriptors);
-              setOnboardingData({ signedWalletDescriptors });
-              nextStep();
-            }}
+            const signedWalletDescriptors = await Promise.all(
+              walletDescriptors.map(async (w) => ({
+                ...w,
+                signature: await signMessageForWallet(w, authMessage),
+              }))
+            );
+            console.log(signedWalletDescriptors)
+            setOnboardingData({ signedWalletDescriptors });
+            nextStep();
+          }}
           onRetry={prevStep}
-          />,
-        ]
+        />,
+      ]
       : hardwareOnboardSteps),
     ...(!isAddingAccount
       ? [
         <CreatePassword
           key="CreatePassword"
           onNext={async (password) => {
-              setOnboardingData({ password });
-              nextStep();
-            }}
-          />,
-        ]
+            setOnboardingData({ password });
+            nextStep();
+          }}
+        />,
+      ]
       : []),
     ...(signedWalletDescriptors.length > 0
       ? [<Finish key="Finish" isAddingAccount={isAddingAccount} />]

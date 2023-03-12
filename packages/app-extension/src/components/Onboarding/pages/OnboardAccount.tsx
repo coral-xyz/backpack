@@ -103,11 +103,11 @@ export const OnboardAccount = ({
           readOnly={action === "create"}
           buttonLabel={action === "create" ? "Next" : "Import"}
           onNext={async (mnemonic) => {
-              setOnboardingData({ mnemonic });
-              nextStep();
-            }}
-          />,
-        ]
+            setOnboardingData({ mnemonic });
+            nextStep();
+          }}
+        />,
+      ]
       : []),
     <BlockchainSelector
       key="BlockchainSelector"
@@ -127,11 +127,11 @@ export const OnboardAccount = ({
         <CreatePassword
           key="CreatePassword"
           onNext={async (password) => {
-              setOnboardingData({ password });
-              nextStep();
-            }}
-          />,
-        ]
+            setOnboardingData({ password });
+            nextStep();
+          }}
+        />,
+      ]
       : []),
     <NotificationsPermission key="NotificationsPermission" onNext={nextStep} />,
     <Finish key="Finish" isAddingAccount={isAddingAccount} />,

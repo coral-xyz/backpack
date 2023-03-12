@@ -19,7 +19,7 @@ import {
   Settings,
 } from "@mui/icons-material";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import { IconButton, Typography } from "@mui/material";
+import { IconButton,Typography } from "@mui/material";
 
 import { useNavigation } from "../../common/Layout/NavStack";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
