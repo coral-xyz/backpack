@@ -18,7 +18,7 @@ export function SpotlightXnfts({
   if (!xnfts.length) return null;
   return (
     <div>
-      <GroupIdentifier name="xNFTs" />
+      <GroupIdentifier name="Applications" />
       {xnfts.map((xnft, index) => (
         <SpotlightXnft
           selected={selectedIndex === index}

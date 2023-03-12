@@ -22,7 +22,7 @@ export const SpotlightNfts = ({
   if (!nfts.length) return null;
   return (
     <div>
-      <GroupIdentifier name="NFTs" />
+      <GroupIdentifier name="Collectibles" />
       {nfts.map((nft, index) => (
         <SpotlightNft
           selected={selectedIndex === index}
