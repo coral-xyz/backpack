@@ -1,10 +1,8 @@
-import { NAV_COMPONENT_NFT_DETAIL } from "@coral-xyz/common";
 import { UserIcon } from "@coral-xyz/react-common";
 import { useOpenPlugin } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
 
-import { SELECTED_BLUE } from "./colors";
 import { GroupIdentifier } from "./GroupIdentifier";
+import { SpotlightCell } from "./SpotlightCell";
 
 export function SpotlightXnfts({
   xnfts,
@@ -39,19 +37,11 @@ function SpotlightXnft({
   selected: boolean;
   setOpen: any;
 }) {
-  const theme = useCustomTheme();
   const openPlugin = useOpenPlugin();
 
   return (
-    <div
-      style={{
-        display: "flex",
-        padding: 12,
-        background: selected ? SELECTED_BLUE : "",
-        borderRadius: 8,
-        color: theme.custom.colors.fontColor,
-        cursor: "pointer",
-      }}
+    <SpotlightCell
+      selected={selected}
       onClick={() => {
         setOpen(false);
         openPlugin(xnft.publicKey);
@@ -67,6 +57,6 @@ function SpotlightXnft({
       >
         {xnft.name}
       </div>
-    </div>
+    </SpotlightCell>
   );
 }
