@@ -13,6 +13,7 @@ import {
   useBreakpoints,
   useKeyringStoreState,
   useNavigation,
+  useOpenPlugin,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Divider } from "@mui/material";
@@ -27,6 +28,7 @@ import { useSearchedContacts } from "./useSearchedContacts";
 import { useSearchedGroupsCollections } from "./useSearchedGroups";
 import { useSearchedNfts } from "./useSearchedNfts";
 import { useSearchedTokens } from "./useSearchedTokens";
+import { useSearchedXnfts } from "./useSearchedXnfts";
 import { getCurrentCounter } from "./utils";
 
 const style = {
@@ -134,14 +136,20 @@ function SpotlightInner({
   const contacts = useSearchedContacts(searchFilter);
   const groups = useSearchedGroupsCollections(searchFilter);
   const nfts = useSearchedNfts(searchFilter);
+  const xnfts = useSearchedXnfts(searchFilter);
   const tokens = useSearchedTokens(searchFilter);
   const allResultsLength =
-    contacts.length + groups.length + nfts.length + tokens.length;
+    contacts.length +
+    groups.length +
+    nfts.length +
+    xnfts.length +
+    tokens.length;
   const { push, toRoot } = useNavigation();
   const activeWallet = useActiveWallet();
   const connectionUrl = useBlockchainConnectionUrl(activeWallet.blockchain);
   const theme = useCustomTheme();
   const { isXs } = useBreakpoints();
+  const openPlugin = useOpenPlugin();
 
   const setSelectedContact = (contact: any) => {
     push({
@@ -176,11 +184,26 @@ function SpotlightInner({
             currentCounter - contacts.length - groups.length < nfts.length
               ? currentCounter - contacts.length - groups.length
               : null;
-          const selectedTokenIndex =
+          const selectedXnftChatIndex =
             currentCounter >= contacts.length + groups.length + nfts.length &&
             currentCounter - contacts.length - groups.length - nfts.length <
-              tokens.length
+              xnfts.length
               ? currentCounter - contacts.length - groups.length - nfts.length
+              : null;
+          const selectedTokenIndex =
+            currentCounter >=
+              contacts.length + groups.length + nfts.length + xnfts.length &&
+            currentCounter -
+              contacts.length -
+              groups.length -
+              nfts.length -
+              xnfts.length <
+              tokens.length
+              ? currentCounter -
+                contacts.length -
+                groups.length -
+                nfts.length -
+                xnfts.length
               : null;
 
           if (selectedContactIndex || selectedContactIndex === 0) {
@@ -224,6 +247,11 @@ function SpotlightInner({
             });
             setOpen(false);
             return;
+          }
+          if (selectedXnftChatIndex || selectedXnftChatIndex === 0) {
+            const xnft = xnfts[selectedXnftChatIndex];
+            setOpen(false);
+            openPlugin(xnft.publicKey);
           }
           if (selectedTokenIndex || selectedTokenIndex === 0) {
             const token = tokens[selectedTokenIndex];

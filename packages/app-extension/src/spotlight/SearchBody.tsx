@@ -5,10 +5,12 @@ import { SpotlightContacts } from "./SpotlightContacts";
 import { SpotlightGroups } from "./SpotlightGroups";
 import { SpotlightNfts } from "./SpotlightNfts";
 import { SpotlightTokens } from "./SpotlightTokens";
+import { SpotlightXnfts } from "./SpotlightXnfts";
 import { useSearchedContacts } from "./useSearchedContacts";
 import { useSearchedGroupsCollections } from "./useSearchedGroups";
 import { useSearchedNfts } from "./useSearchedNfts";
 import { useSearchedTokens } from "./useSearchedTokens";
+import { useSearchedXnfts } from "./useSearchedXnfts";
 import { getCurrentCounter } from "./utils";
 
 export const SearchBody = ({
@@ -26,9 +28,14 @@ export const SearchBody = ({
   const contacts = useSearchedContacts(searchFilter);
   const groups = useSearchedGroupsCollections(searchFilter);
   const nfts = useSearchedNfts(searchFilter);
+  const xnfts = useSearchedXnfts(searchFilter);
   const tokens = useSearchedTokens(searchFilter);
   const allResultsLength =
-    contacts.length + groups.length + nfts.length + tokens.length;
+    contacts.length +
+    groups.length +
+    nfts.length +
+    xnfts.length +
+    tokens.length;
   const currentCounter = getCurrentCounter(arrowIndex, allResultsLength);
 
   if (!searchFilter) return <div />;
@@ -88,12 +95,44 @@ export const SearchBody = ({
     {
       component: (
         <div>
-          <SpotlightTokens
+          <SpotlightXnfts
             selectedIndex={
               currentCounter >= contacts.length + groups.length + nfts.length &&
               currentCounter <
-                contacts.length + groups.length + nfts.length + tokens.length
+                contacts.length + groups.length + nfts.length + xnfts.length
                 ? currentCounter - contacts.length - groups.length - nfts.length
+                : null
+            }
+            xnfts={xnfts}
+            setOpen={setOpen}
+          />
+        </div>
+      ),
+      count: xnfts.length,
+      isFirst:
+        contacts.length === 0 &&
+        groups.length === 0 &&
+        nfts.length === 0 &&
+        xnfts.length > 0,
+    },
+    {
+      component: (
+        <div>
+          <SpotlightTokens
+            selectedIndex={
+              currentCounter >=
+                contacts.length + groups.length + nfts.length + xnfts.length &&
+              currentCounter <
+                contacts.length +
+                  groups.length +
+                  nfts.length +
+                  xnfts.length +
+                  tokens.length
+                ? currentCounter -
+                  contacts.length -
+                  groups.length -
+                  nfts.length -
+                  xnfts.length
                 : null
             }
             tokens={tokens}
@@ -106,6 +145,7 @@ export const SearchBody = ({
         contacts.length === 0 &&
         groups.length === 0 &&
         nfts.length === 0 &&
+        xnfts.length === 0 &&
         tokens.length > 0,
     },
   ];
@@ -118,13 +158,15 @@ export const SearchBody = ({
     >
       {rows.map((row) => (
         <>
-          {row.count > 0 && !row.isFirst ? <Divider
-            style={{
+          {row.count > 0 && !row.isFirst ? (
+            <Divider
+              style={{
                 backgroundColor: theme.custom.colors.nav,
                 marginTop: 12,
                 marginBottom: 12,
               }}
-            /> : null}
+            />
+          ) : null}
           {row.component}
         </>
       ))}
