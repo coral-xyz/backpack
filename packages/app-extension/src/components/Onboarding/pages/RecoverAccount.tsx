@@ -129,8 +129,9 @@ export const RecoverAccount = ({
       ? [
         <PrivateKeyInput
           key="PrivateKeyInput"
-          onNext={(result: PrivateKeyWalletDescriptor) => {
-              handlePrivateKeyInput(result);
+          serverPublicKeys={serverPublicKeys}
+          onNext={async (result: PrivateKeyWalletDescriptor) => {
+              await handlePrivateKeyInput(result);
               nextStep();
             }}
           />,
@@ -147,9 +148,7 @@ export const RecoverAccount = ({
           />,
         ]
       : []),
-    ...(signedWalletDescriptors.length > 0
-      ? [<Finish key="Finish" isAddingAccount={isAddingAccount} />]
-      : []),
+    <Finish key="Finish" isAddingAccount={isAddingAccount} />,
   ];
 
   // Cant go backwards from the last step as the keyring is already created

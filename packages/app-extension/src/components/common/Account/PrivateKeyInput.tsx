@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Blockchain } from "@coral-xyz/common";
+import type { Blockchain, ServerPublicKey } from "@coral-xyz/common";
 import {
   UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
   validatePrivateKey,
@@ -14,7 +14,7 @@ import { Header, SubtextParagraph } from "../../common";
 export const PrivateKeyInput = ({
   blockchain,
   onNext,
-  publicKey,
+  serverPublicKeys,
   displayNameInput = false,
 }: {
   blockchain?: Blockchain;
@@ -29,7 +29,7 @@ export const PrivateKeyInput = ({
     privateKey: string;
     name: string;
   }) => void;
-  publicKey?: string;
+  serverPublicKeys?: Array<ServerPublicKey>;
   displayNameInput?: boolean;
 }) => {
   const background = useBackgroundClient();
@@ -48,7 +48,7 @@ export const PrivateKeyInput = ({
     setLoading(true);
 
     // Do some validation of the private key
-    let _privateKey, _publicKey, _blockchain;
+    let _privateKey: string, _publicKey: string, _blockchain: Blockchain;
     try {
       ({
         privateKey: _privateKey,
@@ -63,10 +63,27 @@ export const PrivateKeyInput = ({
 
     // Check if the public key we have is the public key we wanted (if we were
     // looking for a specific public key)
-    if (publicKey && publicKey !== _publicKey) {
+    if (serverPublicKeys && serverPublicKeys.length > 0) {
       setLoading(false);
-      setError(`Incorrect private key for ${walletAddressDisplay(publicKey)}`);
-      return;
+      const found = !!serverPublicKeys.find(
+        (s: { publicKey: string; blockchain: Blockchain }) =>
+          s.publicKey === _publicKey && s.blockchain === _blockchain
+      );
+      if (!found) {
+        if (serverPublicKeys.length === 1) {
+          setError(
+            `Incorrect private key for ${walletAddressDisplay(
+              serverPublicKeys[0].publicKey
+            )}. The public key was ${walletAddressDisplay(_publicKey)}.`
+          );
+        } else {
+          setError(
+            `Public key ${walletAddressDisplay(
+              _publicKey
+            )} not found on your Backpack account.`
+          );
+        }
+      }
     } else {
       // If we aren't searching for a public key we are adding it to the account,
       // check for conflicts.
@@ -101,12 +118,13 @@ export const PrivateKeyInput = ({
     >
       <Box sx={{ margin: "24px 0" }}>
         <Box sx={{ margin: "0 24px" }}>
-          <Header text="Import private key" />
+          <Header text="Enter private key" />
           <SubtextParagraph style={{ marginBottom: "32px" }}>
-            {publicKey ? (
+            {serverPublicKeys && serverPublicKeys.length === 1 ? (
               <>
-                Enter the private key for {walletAddressDisplay(publicKey)} to
-                recover the wallet.
+                Enter the private key for{" "}
+                {walletAddressDisplay(serverPublicKeys[0].publicKey)} to recover
+                the wallet.
               </>
             ) : (
               <>

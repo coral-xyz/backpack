@@ -54,7 +54,6 @@ export function CreateMnemonic({
       method: UI_RPC_METHOD_KEYRING_SET_MNEMONIC,
       params: [mnemonic],
     });
-    console.log(keyringExists);
     if (keyringExists) {
       // Using the keyring mnemonic and the blockchain keyring exists, just
       // import the path

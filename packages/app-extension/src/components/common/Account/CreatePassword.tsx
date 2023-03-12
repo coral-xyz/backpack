@@ -40,7 +40,7 @@ export function CreatePassword({
       }
       onNext(password);
     },
-    [password, passwordConfirm]
+    [onNext, password, passwordConfirm]
   );
 
   const isNextDisabled = !checked;

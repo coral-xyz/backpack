@@ -10,7 +10,6 @@ import type {
   Preferences,
   RpcRequest,
   RpcResponse,
-  SignedWalletDescriptor,
   XnftPreference,
 } from "@coral-xyz/common";
 import {

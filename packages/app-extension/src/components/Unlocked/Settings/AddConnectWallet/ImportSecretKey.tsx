@@ -52,12 +52,14 @@ export function ImportSecretKey({
     setOpenDrawer(true);
   };
 
+  let serverPublicKeys = publicKey ? [{ blockchain, publicKey }] : undefined;
+
   return (
     <>
       <PrivateKeyInput
         blockchain={blockchain}
         onNext={onNext}
-        publicKey={publicKey}
+        serverPublicKeys={serverPublicKeys}
       />
       <WithMiniDrawer
         openDrawer={openDrawer}

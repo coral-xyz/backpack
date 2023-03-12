@@ -28,6 +28,8 @@ import { ethers } from "ethers";
 
 import { useBackgroundClient } from "../hooks/client";
 import { useAuthentication } from "../hooks/useAuthentication";
+import { useRpcRequests } from "../hooks/useRpcRequests";
+
 const { base58 } = ethers.utils;
 
 export const getWaitlistId = () => {
@@ -146,6 +148,7 @@ export function OnboardingProvider({
 }) {
   const background = useBackgroundClient();
   const { authenticate } = useAuthentication();
+  const { signMessageForWallet } = useRpcRequests();
   const [data, setData] = useState<OnboardingData>(defaultState);
 
   const setOnboardingData = useCallback((data: Partial<OnboardingData>) => {
@@ -196,20 +199,15 @@ export function OnboardingProvider({
             params: [blockchain, 0, mnemonic],
           });
 
-          const signature = await background.request({
-            method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-            params: [
-              blockchain,
-              walletDescriptor.publicKey,
-              base58.encode(
-                Buffer.from(
-                  getCreateMessage(walletDescriptor.publicKey),
-                  "utf-8"
-                )
-              ),
-              [mnemonic, [walletDescriptor.derivationPath]],
-            ],
-          });
+          const signature = await signMessageForWallet(
+            blockchain,
+            walletDescriptor.publicKey,
+            getCreateMessage(walletDescriptor.publicKey),
+            {
+              mnemonic,
+              signedWalletDescriptors: [{ ...walletDescriptor, signature: "" }],
+            }
+          );
 
           setOnboardingData({
             signedWalletDescriptors: [
@@ -237,15 +235,13 @@ export function OnboardingProvider({
       privateKey: string;
     }) => {
       setOnboardingData({ blockchain });
-      const signature = await background.request({
-        method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-        params: [
-          blockchain,
-          publicKey,
-          base58.encode(Buffer.from(getCreateMessage(publicKey), "utf-8")),
-          { blockchain, publicKey, privateKey },
-        ],
-      });
+      const signature = await signMessageForWallet(
+        blockchain,
+        publicKey,
+        // Recover or create
+        data.userId ? getAuthMessage(data.userId) : getCreateMessage(publicKey),
+        { blockchain, publicKey, privateKey, signature: "" }
+      );
 
       setOnboardingData({
         privateKeyKeyringInit: {

@@ -67,7 +67,6 @@ export class BlockchainKeyring {
   public async init(
     keyringInit: MnemonicKeyringInit | LedgerKeyringInit | PrivateKeyKeyringInit
   ): Promise<Array<[string, string]>> {
-    console.log(keyringInit);
     if ("mnemonic" in keyringInit) {
       // Don't accept `true` for mnemonic initialisation
       if (typeof keyringInit.mnemonic !== "string") {
