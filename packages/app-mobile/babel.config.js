@@ -6,7 +6,6 @@ module.exports = function (api) {
     presets: ["babel-preset-expo"],
     plugins: [
       [
-        "module:react-native-dotenv",
         "@tamagui/babel-plugin",
         {
           // exclude: /node_modules/,

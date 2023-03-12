@@ -28,7 +28,7 @@ import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import { RootNavigation } from "./navigation/RootNavigator";
 
 Sentry.init({
-  dsn: process.env.SENTRY_DSN,
+  dsn: Constants?.expoConfig?.extra?.SENTRY_DSN,
   enableInExpoDevelopment: true,
   debug: true,
 });
