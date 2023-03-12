@@ -1,5 +1,7 @@
+import * as Sentry from "@sentry/node";
+import * as Tracing from "@sentry/tracing";
 import cors from "cors";
-import type { NextFunction, Request, Response } from "express";
+import type { Request, Response } from "express";
 import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import { ZodError } from "zod";
@@ -19,9 +21,33 @@ import referralsRouter from "./routes/v1/referrals";
 import s3Router from "./routes/v1/s3";
 import txParsingRouter from "./routes/v1/tx-parsing";
 import usersRouter from "./routes/v1/users";
+import { SENTRY_DSN } from "./config";
 import { zodErrorToString } from "./util";
 
 const app = express();
+
+// Must happen as close to the top as possible
+Sentry.init({
+  dsn: SENTRY_DSN,
+  integrations: [
+    // enable HTTP calls tracing
+    new Sentry.Integrations.Http({ tracing: true }),
+    // enable Express.js middleware tracing
+    new Tracing.Integrations.Express({ app }),
+  ],
+
+  // Set tracesSampleRate to 1.0 to capture 100%
+  // of transactions for performance monitoring.
+  // We recommend adjusting this value in production
+  tracesSampleRate: 0.5,
+});
+
+// RequestHandler creates a separate execution context using domains, so that every
+// transaction/span/breadcrumb is attached to its own Hub instance
+app.use(Sentry.Handlers.requestHandler());
+// TracingHandler creates a trace for every incoming request
+app.use(Sentry.Handlers.tracingHandler());
+
 // eslint-disable-next-line
 const bodyParser = require("body-parser");
 // eslint-disable-next-line
@@ -70,8 +96,10 @@ app.get("/", (_req, res) => {
   });
 });
 
-// @ts-ignore
-app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
+// The error handler must be before any other error middleware and after all controllers
+app.use(Sentry.Handlers.errorHandler());
+
+app.use((err: any, _req: Request, res: Response) => {
   if (err instanceof ZodError) {
     return res.status(400).json({
       message: zodErrorToString(err),

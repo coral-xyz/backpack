@@ -8,6 +8,7 @@ import {
   toTitleCase,
 } from "@coral-xyz/common";
 import {
+  showSpotlight,
   useActiveWallet,
   useBlockchainConnectionUrl,
   useBreakpoints,
@@ -19,6 +20,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { Divider } from "@mui/material";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
+import { useRecoilState } from "recoil";
 
 import { Scrollbar } from "../components/common/Layout/Scrollbar";
 
@@ -38,7 +40,7 @@ const style = {
 };
 
 export const Spotlight = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useRecoilState(showSpotlight);
   const keyringState = useKeyringStoreState();
   const [arrowIndex, setArrowIndex] = useState(0);
 
