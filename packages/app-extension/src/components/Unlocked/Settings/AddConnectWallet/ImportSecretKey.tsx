@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-import { UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import {
+  getAddMessage,
+  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
+  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+} from "@coral-xyz/common";
+import { useBackgroundClient, useRpcRequests } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 
 import { PrivateKeyInput } from "../../../common/Account/PrivateKeyInput";
@@ -23,9 +28,21 @@ export function ImportSecretKey({
   const background = useBackgroundClient();
   const nav = useNavigation();
   const theme = useCustomTheme();
+  const [keyringExists, setKeyringExists] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [newPublicKey, setNewPublicKey] = useState("");
+  const { signMessageForWallet } = useRpcRequests();
   const { close: closeParentDrawer } = useDrawerContext();
+
+  useEffect(() => {
+    (async () => {
+      const blockchainKeyrings = await background.request({
+        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
+        params: [],
+      });
+      setKeyringExists(blockchainKeyrings.includes(blockchain));
+    })();
+  }, [background, blockchain]);
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -38,17 +55,38 @@ export function ImportSecretKey({
   const onNext = async ({
     blockchain,
     privateKey,
+    publicKey,
     name,
   }: {
     blockchain: Blockchain;
     privateKey: string;
+    publicKey: string;
     name: string;
   }) => {
-    const newPublicKey = await background.request({
-      method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-      params: [blockchain, privateKey, name],
-    });
-    setNewPublicKey(newPublicKey);
+    if (keyringExists) {
+      publicKey = await background.request({
+        method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+        params: [blockchain, privateKey, name],
+      });
+    } else {
+      // Blockchain keyring doesn't exist, init
+      const signature = await signMessageForWallet(
+        blockchain,
+        publicKey,
+        getAddMessage(publicKey),
+        {
+          blockchain,
+          publicKey,
+          privateKey,
+          signature: "",
+        }
+      );
+      publicKey = await background.request({
+        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+        params: [{ blockchain, publicKey, privateKey, signature }],
+      });
+    }
+    setNewPublicKey(publicKey);
     setOpenDrawer(true);
   };
 

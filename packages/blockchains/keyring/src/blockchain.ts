@@ -67,37 +67,31 @@ export class BlockchainKeyring {
   public async init(
     keyringInit: MnemonicKeyringInit | LedgerKeyringInit | PrivateKeyKeyringInit
   ): Promise<Array<[string, string]>> {
+    let newAccounts: Array<[string, string]> = [];
     if ("mnemonic" in keyringInit) {
       // Don't accept `true` for mnemonic initialisation
       if (typeof keyringInit.mnemonic !== "string") {
         throw new Error("invalid mnemonic");
       }
-      this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
-      this.importedKeyring = this.keyringFactory.init([]);
-      this.deletedWallets = [];
-      return this.initHdKeyring(
+      newAccounts = await this.initHdKeyring(
         keyringInit.mnemonic,
         keyringInit.signedWalletDescriptors.map((s) => s.derivationPath)
       );
+      this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
+      this.importedKeyring = this.keyringFactory.init([]);
     } else if ("privateKey" in keyringInit) {
       // Init using private key
       this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
       this.importedKeyring = this.keyringFactory.init([keyringInit.privateKey]);
-      this.activeWallet = this.importedKeyring.publicKeys()[0];
-      this.deletedWallets = [];
       const name = DefaultKeyname.defaultImported(1);
-      await store.setKeyname(this.activeWallet, name);
-      return [[name, this.activeWallet]];
+      await store.setKeyname(keyringInit.publicKey, name);
+      newAccounts = [[name, keyringInit.publicKey]];
     } else {
       // Init using ledger
       this.ledgerKeyring = this.ledgerKeyringFactory.init(
         keyringInit.signedWalletDescriptors
       );
-      // Empty imported keyring to hold imported secret keys
       this.importedKeyring = this.keyringFactory.init([]);
-      this.activeWallet = this.ledgerKeyring.publicKeys()[0];
-      this.deletedWallets = [];
-      const newAccounts: Array<[string, string]> = [];
       for (const [
         index,
         walletDescriptor,
@@ -107,8 +101,10 @@ export class BlockchainKeyring {
         await store.setIsCold(walletDescriptor.publicKey, true);
         newAccounts.push([walletDescriptor.publicKey, name]);
       }
-      return newAccounts;
     }
+    this.activeWallet = Object.values(this.publicKeys()).flat()[0];
+    this.deletedWallets = [];
+    return newAccounts;
   }
 
   /**

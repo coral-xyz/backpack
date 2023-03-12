@@ -1351,6 +1351,9 @@ export class Backend {
       },
     });
 
+    const blockchainKeyrings = await this.blockchainKeyringsRead();
+    const blockchainKeyring = blockchainKeyrings[blockchain];
+
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
       data: {
