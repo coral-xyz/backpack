@@ -8,15 +8,15 @@ import {
   Loading,
 } from "@coral-xyz/react-common";
 import {
+  getBlockchainLogo,
   useActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
-  useBlockchainLogo,
   useRecentEthereumTransactions,
   useRecentSolanaTransactions,
   useRecentTransactions,
 } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, Check, Clear } from "@mui/icons-material";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { IconButton, List, ListItem, Typography } from "@mui/material";
@@ -29,25 +29,7 @@ import {
 
 import { _RecentSolanaActivityList } from "./RecentSolanaActivity/RecentSolanaActivityList";
 
-const useStyles = styles((theme) => ({
-  recentActivityLabel: {
-    color: theme.custom.colors.fontColor,
-    fontWeight: 500,
-    fontSize: "14px",
-    lineHeight: "24px",
-  },
-  allWalletsLabel: {
-    fontWeight: 500,
-    fontSize: "12px",
-    color: theme.custom.colors.secondary,
-  },
-  noRecentActivityLabel: {
-    fontWeight: 500,
-    fontSize: "16px",
-    padding: "16px",
-    textAlign: "center",
-    color: theme.custom.colors.secondary,
-  },
+const useStyles = makeStyles((theme) => ({
   recentActivityListItemIconContainer: {
     width: "44px",
     height: "44px",
@@ -265,6 +247,7 @@ export function _RecentActivityList({
       >
         {transactions.map((tx: any, idx: number) => (
           <RecentActivityListItem
+            // eslint-disable-next-line react/no-array-index-key
             key={idx}
             transaction={tx}
             isFirst={idx === 0}
@@ -283,7 +266,7 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
   const theme = useCustomTheme();
   const explorer = useBlockchainExplorer(transaction.blockchain);
   const connectionUrl = useBlockchainConnectionUrl(transaction.blockchain);
-  const blockchainLogo = useBlockchainLogo(transaction.blockchain);
+  const blockchainLogo = getBlockchainLogo(transaction.blockchain);
   const onClick = () => {
     window.open(explorerUrl(explorer!, transaction.signature, connectionUrl!));
   };

@@ -15,7 +15,6 @@ import {
   BACKEND_EVENT,
   DEFAULT_AUTO_LOCK_INTERVAL_SECS,
   defaultPreferences,
-  getBlockchainFromPath,
   NOTIFICATION_KEYRING_STORE_LOCKED,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
@@ -353,6 +352,25 @@ export class KeyringStore {
     });
   }
 
+  /**
+   * Create a random mnemonic.
+   */
+  public createMnemonic(strength: number): string {
+    return generateMnemonic(strength);
+  }
+
+  public async activeUserUpdate(uuid: string): Promise<User> {
+    const userData = await store.getUserData();
+    const user = userData.users.filter((u) => u.uuid === uuid)[0];
+    this.activeUserUuid = uuid;
+    await store.setActiveUser(user);
+    return user;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  // Locking methods methods
+  ///////////////////////////////////////////////////////////////////////////////
+
   public async autoLockSettingsUpdate(
     seconds?: number,
     option?: AutolockSettingsOption
@@ -375,19 +393,6 @@ export class KeyringStore {
     return this.withUnlock(() => {});
   }
 
-  public createMnemonic(strength: number): string {
-    const mnemonic = generateMnemonic(strength);
-    return mnemonic;
-  }
-
-  public async activeUserUpdate(uuid: string): Promise<User> {
-    const userData = await store.getUserData();
-    const user = userData.users.filter((u) => u.uuid === uuid)[0];
-    this.activeUserUuid = uuid;
-    await store.setActiveUser(user);
-    return user;
-  }
-
   public autoLockCountdownToggle(enable: boolean) {
     this.autoLockCountdown.toggle(enable);
   }
@@ -408,14 +413,10 @@ export class KeyringStore {
    * Initialise a blockchain keyring.
    */
   public async blockchainKeyringAdd(
-    blockchain: Blockchain,
     walletDescriptor: WalletDescriptor,
     persist = true
   ): Promise<string> {
-    await this.activeUserKeyring.blockchainKeyringAdd(
-      blockchain,
-      walletDescriptor
-    );
+    await this.activeUserKeyring.blockchainKeyringAdd(walletDescriptor);
     if (persist) {
       await this.persist();
     }
@@ -491,15 +492,9 @@ export class KeyringStore {
     });
   }
 
-  public async ledgerImport(
-    blockchain: Blockchain,
-    walletDescriptor: WalletDescriptor
-  ) {
+  public async ledgerImport(walletDescriptor: WalletDescriptor) {
     return await this.withUnlockAndPersist(async () => {
-      return await this.activeUserKeyring.ledgerImport(
-        blockchain,
-        walletDescriptor
-      );
+      return await this.activeUserKeyring.ledgerImport(walletDescriptor);
     });
   }
 
@@ -551,6 +546,15 @@ export class KeyringStore {
   public exportMnemonic(password: string): string {
     return this.withPassword(password, () => {
       return this.activeUserKeyring.exportMnemonic();
+    });
+  }
+
+  /**
+   * Set the mnemonic to be used by the hd keyring.
+   */
+  public async setMnemonic(mnemonic: string) {
+    return await this.withUnlockAndPersist(async () => {
+      this.activeUserKeyring.setMnemonic(mnemonic);
     });
   }
 
@@ -668,7 +672,7 @@ class UserKeyring {
     keyring.mnemonic = keyringInit.mnemonic;
     for (const signedWalletDescriptor of keyringInit.signedWalletDescriptors) {
       const blockchainKeyring = keyring.blockchains.get(
-        getBlockchainFromPath(signedWalletDescriptor.derivationPath)
+        signedWalletDescriptor.blockchain
       );
       if (blockchainKeyring) {
         // Blockchain keyring already exists, just add the derivation path
@@ -677,16 +681,12 @@ class UserKeyring {
         );
       } else {
         // No blockchain keyring, create it
-        await keyring.blockchainKeyringAdd(
-          getBlockchainFromPath(signedWalletDescriptor.derivationPath),
-          signedWalletDescriptor
-        );
+        await keyring.blockchainKeyringAdd(signedWalletDescriptor);
       }
     }
     // Set the active wallet to be the first keyring.
-    keyring.activeBlockchain = getBlockchainFromPath(
-      keyringInit.signedWalletDescriptors[0].derivationPath
-    );
+    keyring.activeBlockchain =
+      keyringInit.signedWalletDescriptors[0].blockchain;
     return keyring;
   }
 
@@ -768,10 +768,9 @@ class UserKeyring {
   ///////////////////////////////////////////////////////////////////////////////
 
   public async blockchainKeyringAdd(
-    blockchain: Blockchain,
     walletDescriptor: WalletDescriptor
   ): Promise<string> {
-    const keyring = keyringForBlockchain(blockchain);
+    const keyring = keyringForBlockchain(walletDescriptor.blockchain);
     if (this.mnemonic) {
       // Initialising using a mnemonic
       await keyring.initFromMnemonic(this.mnemonic, [
@@ -781,7 +780,7 @@ class UserKeyring {
       // Initialising using a hardware wallet
       await keyring.initFromLedger([walletDescriptor]);
     }
-    this.blockchains.set(blockchain, keyring);
+    this.blockchains.set(walletDescriptor.blockchain, keyring);
     return walletDescriptor.publicKey;
   }
 
@@ -824,13 +823,25 @@ class UserKeyring {
     }
   }
 
-  public addDerivationPath(
+  public async addDerivationPath(
     blockchain: Blockchain,
     derivationPath: string
   ): Promise<{ publicKey: string; name: string }> {
     let blockchainKeyring = this.blockchains.get(blockchain);
     if (!blockchainKeyring) {
       throw new Error("blockchain keyring not initialised");
+    } else if (!blockchainKeyring.hasHdKeyring()) {
+      // Hd keyring not initialised, ibitialise it if possible
+      if (!this.mnemonic) {
+        throw new Error("hd keyring not initialised");
+      }
+      const accounts = await blockchainKeyring.initHdKeyring(this.mnemonic, [
+        derivationPath,
+      ]);
+      return {
+        publicKey: accounts[0][0],
+        name: accounts[0][1],
+      };
     } else {
       return blockchainKeyring.addDerivationPath(derivationPath);
     }
@@ -856,15 +867,21 @@ class UserKeyring {
   }
 
   public exportMnemonic(): string {
-    if (!this.mnemonic) throw new Error("keyring does not have a mnemonic");
+    if (!this.mnemonic) {
+      throw new Error("keyring does not have a mnemonic");
+    }
     return this.mnemonic;
   }
 
-  public async ledgerImport(
-    blockchain: Blockchain,
-    walletDescriptor: WalletDescriptor
-  ) {
-    const blockchainKeyring = this.blockchains.get(blockchain);
+  public setMnemonic(mnemonic: string) {
+    if (this.mnemonic) {
+      throw new Error("keyring already has a mnemonic set");
+    }
+    this.mnemonic = mnemonic;
+  }
+
+  public async ledgerImport(walletDescriptor: WalletDescriptor) {
+    const blockchainKeyring = this.blockchains.get(walletDescriptor.blockchain);
     const ledgerKeyring = blockchainKeyring!.ledgerKeyring!;
     await ledgerKeyring.add(walletDescriptor);
     const name = DefaultKeyname.defaultLedger(

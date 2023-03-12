@@ -7,6 +7,7 @@ import {
 } from "@coral-xyz/common";
 import type { Request, Response } from "express";
 import express from "express";
+import rateLimit from "express-rate-limit";
 import jwt from "jsonwebtoken";
 
 import {
@@ -40,6 +41,13 @@ import {
   CreatePublicKeys,
   CreateUserWithPublicKeys,
 } from "../../validation/user";
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 const router = express.Router();
 

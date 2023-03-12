@@ -91,7 +91,7 @@ export const RecoverAccount = ({
         <MnemonicInput
           key="MnemonicInput"
           buttonLabel="Next"
-          onNext={(mnemonic: string) => {
+          onNext={async (mnemonic: string) => {
               setOnboardingData({ mnemonic });
               nextStep();
             }}
@@ -107,6 +107,7 @@ export const RecoverAccount = ({
                   signature: await signMessageForWallet(w, authMessage),
                 }))
               );
+              console.log(signedWalletDescriptors);
               setOnboardingData({ signedWalletDescriptors });
               nextStep();
             }}

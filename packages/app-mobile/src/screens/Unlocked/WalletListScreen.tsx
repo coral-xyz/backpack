@@ -28,7 +28,7 @@ import {
   Row,
   Screen,
 } from "~components/index";
-import { useBlockchainLogo, useTheme } from "~hooks/index";
+import { getBlockchainLogo, useTheme } from "~hooks/index";
 
 type Wallet = {
   publicKey: string;
@@ -133,7 +133,7 @@ function WalletListItem({
 }
 
 function NetworkIcon({ blockchain }: { blockchain: Blockchain }) {
-  const logo = useBlockchainLogo(blockchain);
+  const logo = getBlockchainLogo(blockchain);
   return <Image style={styles.logoContainer} source={logo} />;
 }
 
@@ -149,10 +149,6 @@ function WalletTypeIcon({ type, fill }: { type: string; fill?: string }) {
 }
 
 const styles = StyleSheet.create({
-  sectionHeaderTitle: {
-    fontWeight: "500",
-    marginBottom: 8,
-  },
   listItem: {
     flexDirection: "row",
     justifyContent: "space-between",

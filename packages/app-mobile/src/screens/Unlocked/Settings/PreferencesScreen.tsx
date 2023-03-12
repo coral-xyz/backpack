@@ -1,20 +1,19 @@
-import { Margin, RoundedContainerGroup, Screen } from "~components/index";
 import {
   BACKPACK_CONFIG_VERSION,
-  BACKPACK_FEATURE_LIGHT_MODE,
   Blockchain,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
   UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
-  // useBlockchainLogo,
+  // getBlockchainLogo,
   useDarkMode,
   useDeveloperMode,
 } from "@coral-xyz/recoil";
 
+import { Margin, RoundedContainerGroup, Screen } from "~components/index";
+
 import {
-  IconLeft,
   IconPushDetail,
   SettingsRow,
   SettingsRowSwitch,

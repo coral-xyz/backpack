@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Navigate,
   Route,
@@ -9,7 +9,6 @@ import {
 import type { SubscriptionType } from "@coral-xyz/common";
 import {
   BACKPACK_TEAM,
-  MESSAGING_COMMUNICATION_FETCH_RESPONSE,
   NAV_COMPONENT_MESSAGE_PROFILE,
 } from "@coral-xyz/common";
 import {

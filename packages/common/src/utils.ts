@@ -3,8 +3,6 @@ import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 import { v1 } from "uuid";
 
-import { IMAGE_PROXY_URL } from "./constants";
-
 const usd = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -89,7 +87,7 @@ export function externalResourceUri(
 
 export function proxyImageUrl(url: string): string {
   if (url && (url.startsWith("http://") || url.startsWith("https://"))) {
-    return `${IMAGE_PROXY_URL}/insecure/rs:fit:400:400:0:0/plain/${url}`;
+    return `https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=400,height=400,quality=85/${url}`;
   }
   return url;
 }

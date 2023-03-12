@@ -13,6 +13,7 @@ import { ContactRequests, Contacts } from "../Messages/Contacts";
 import { Requests } from "../Messages/Requests";
 
 import { CreateMenu } from "./AddConnectWallet/CreateMenu";
+import { CreateMnemonic } from "./AddConnectWallet/CreateMnemonic";
 import { ImportMenu } from "./AddConnectWallet/ImportMenu";
 import { ImportMnemonic } from "./AddConnectWallet/ImportMnemonic";
 import { ImportSecretKey } from "./AddConnectWallet/ImportSecretKey";
@@ -72,6 +73,10 @@ export function SettingsNavStackDrawer({
           <NavStackScreen
             name="create-wallet"
             component={(props: any) => <CreateMenu {...props} />}
+          />
+          <NavStackScreen
+            name="create-mnemonic"
+            component={(props: any) => <CreateMnemonic {...props} />}
           />
           <NavStackScreen
             name="import-wallet"

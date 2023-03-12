@@ -29,6 +29,7 @@ import {
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
   NOTIFICATION_KEYRING_IMPORTED_WALLET,
   NOTIFICATION_KEYRING_KEY_DELETE,
+  NOTIFICATION_KEYRING_SET_MNEMONIC,
   NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
@@ -43,6 +44,7 @@ import {
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
+  NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
@@ -95,6 +97,7 @@ export function NotificationsProvider(props: any) {
       };
     });
   };
+  const setKeyringHasMnemonic = useSetRecoilState(atoms.keyringHasMnemonic);
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveUser = useSetRecoilState(atoms.user);
   const setAuthenticatedUser = useSetRecoilState(atoms.authenticatedUser);
@@ -226,6 +229,9 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_KEY_IS_COLD_UPDATE:
           handleKeyIsColdUpdate(notif);
           break;
+        case NOTIFICATION_KEYRING_SET_MNEMONIC:
+          handleKeyringSetMnemonic();
+          break;
         case NOTIFICATION_KEYRING_STORE_CREATED:
           handleKeyringStoreCreated(notif);
           break;
@@ -328,6 +334,9 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_USER_ACCOUNT_AUTHENTICATED:
           handleUserAccountAuthenticated(notif);
           break;
+        case NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED:
+          handleUserAccountPublicKeyCreated(notif);
+          break;
         case NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED:
           handleUserAccountPublicKeyDeleted(notif);
           break;
@@ -345,6 +354,11 @@ export function NotificationsProvider(props: any) {
     const handleKeyIsColdUpdate = (notif: Notification) => {
       setWalletData(notif.data.walletData);
     };
+
+    const handleKeyringSetMnemonic = () => {
+      setKeyringHasMnemonic(true);
+    };
+
     const handleKeyringStoreCreated = (notif: Notification) => {
       setPreferences(notif.data.preferences);
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
@@ -616,6 +630,10 @@ export function NotificationsProvider(props: any) {
         uuid: notif.data.uuid,
         jwt: notif.data.jwt,
       });
+    };
+
+    const handleUserAccountPublicKeyCreated = (notif: Notification) => {
+      setServerPublicKeys((current) => [...current, notif.data]);
     };
 
     const handleUserAccountPublicKeyDeleted = (notif: Notification) => {

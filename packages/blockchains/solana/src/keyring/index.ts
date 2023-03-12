@@ -177,7 +177,7 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   public nextDerivationPath(offset = 1) {
     this.ensureIndices();
     const derivationPath = getIndexedPath(
-      Blockchain.ETHEREUM,
+      Blockchain.SOLANA,
       this.accountIndex,
       this.walletIndex! + offset
     );

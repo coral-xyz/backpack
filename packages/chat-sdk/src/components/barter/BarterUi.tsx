@@ -17,12 +17,14 @@ export const BarterUi = ({ roomId }: { roomId: string }) => {
   const theme = useCustomTheme();
   const [selectNft, setSelectNft] = useState(false);
   const [barterState, setBarterState] = useState<BarterResponse | null>(null);
-  const { setOpenPlugin } = useChatContext();
+  const { openPlugin, setOpenPlugin } = useChatContext();
 
-  const getActiveBarter = async () => {
+  const getActiveBarter = async (barterId: string) => {
     try {
       const res = await fetch(
-        `${BACKEND_API_URL}/barter/active?room=${roomId}&type=individual`,
+        barterId
+          ? `${BACKEND_API_URL}/barter/?barterId=${barterId}`
+          : `${BACKEND_API_URL}/barter/active?room=${roomId}&type=individual`,
         {
           method: "GET",
         }
@@ -47,7 +49,7 @@ export const BarterUi = ({ roomId }: { roomId: string }) => {
         barterId: number;
       }) => {
         if (props.barterId === json.barter.id) {
-          setOpenPlugin("");
+          setOpenPlugin({ type: "", metadata: {} });
         }
       };
     } catch (e) {
@@ -56,8 +58,10 @@ export const BarterUi = ({ roomId }: { roomId: string }) => {
   };
 
   useEffect(() => {
-    getActiveBarter();
-  }, []);
+    getActiveBarter(
+      openPlugin.type === "barter" ? openPlugin.metadata?.barterId ?? "" : ""
+    );
+  }, [openPlugin?.metadata]);
 
   return (
     <BarterProvider
@@ -83,15 +87,15 @@ export const BarterUi = ({ roomId }: { roomId: string }) => {
                 height: "100%",
               }}
             >
-              {!barterState && (
+              {!barterState ? (
                 <>
                   <BarterHeader />
                   <Loading />
                 </>
-              )}
-              {barterState && (
+              ) : null}
+              {barterState ? (
                 <>
-                  {!selectNft && (
+                  {!selectNft ? (
                     <>
                       <BarterHeader />
                       <SwapPage
@@ -99,15 +103,15 @@ export const BarterUi = ({ roomId }: { roomId: string }) => {
                         remoteSelection={barterState?.remoteOffers || []}
                       />
                     </>
-                  )}
-                  {selectNft && (
+                  ) : null}
+                  {selectNft ? (
                     <SelectPage
                       setBarterState={setBarterState}
                       currentSelection={barterState?.localOffers || []}
                     />
-                  )}
+                  ) : null}
                 </>
-              )}
+              ) : null}
             </div>
           </div>
         </ScrollBarImpl>

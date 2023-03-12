@@ -169,25 +169,25 @@ export async function openApproveMessagePopupWindow(
 export async function openPopupWindow(
   url: string
 ): Promise<chrome.windows.Window> {
-  const _window = await BrowserRuntimeExtension.getLastFocusedWindow();
+  const lastWindow = await BrowserRuntimeExtension.getLastFocusedWindow();
 
   const [EXTRA_HEIGHT, EXTRA_WIDTH] =
     (navigator as any).userAgentData.platform === "Windows"
       ? [36, 12]
       : [28, 0];
 
-  await BrowserRuntimeExtension._openWindow({
+  const popupWindow = await BrowserRuntimeExtension._openWindow({
     url: `${url}`,
     type: "popup",
     width: EXTENSION_WIDTH + EXTRA_WIDTH,
     height: EXTENSION_HEIGHT + EXTRA_HEIGHT,
-    top: _window.top,
+    top: lastWindow.top,
     left:
-      (_window.left ?? 0) +
-      ((_window.width ?? 0) - EXTENSION_WIDTH - EXTRA_WIDTH),
+      (lastWindow.left ?? 0) +
+      ((lastWindow.width ?? 0) - EXTENSION_WIDTH - EXTRA_WIDTH),
     focused: true,
   });
-  return _window;
+  return popupWindow;
 }
 
 export function openOnboarding() {

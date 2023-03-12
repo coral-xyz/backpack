@@ -106,7 +106,7 @@ export function ListItem({
         </div>
         {detail}
       </MuiListItem>
-      {!isLast && !disableBottomBorder && (
+      {!isLast && !disableBottomBorder ? (
         <Divider
           style={{
             backgroundColor: borderColor
@@ -116,12 +116,12 @@ export function ListItem({
           }}
           classes={{ root: _classes.dividerRoot }}
         />
-      )}
+      ) : null}
     </>
   );
 }
 
-export function PushDetail() {
+export function PushDetail({ style }: { style?: React.CSSProperties }) {
   const theme = useCustomTheme();
   return (
     <div
@@ -134,6 +134,7 @@ export function PushDetail() {
       <ChevronRight
         style={{
           color: theme.custom.colors.icon,
+          ...style,
         }}
       />
     </div>

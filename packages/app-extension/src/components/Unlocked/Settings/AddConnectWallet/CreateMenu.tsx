@@ -9,7 +9,6 @@ import {
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-  UI_RPC_METHOD_USER_ACCOUNT_READ,
 } from "@coral-xyz/common";
 import {
   HardwareIcon,
@@ -17,7 +16,6 @@ import {
   PushDetail,
 } from "@coral-xyz/react-common";
 import {
-  useAuthenticatedUser,
   useBackgroundClient,
   useKeyringHasMnemonic,
   useUser,
@@ -42,7 +40,6 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
   const background = useBackgroundClient();
   const hasMnemonic = useKeyringHasMnemonic();
   const user = useUser();
-  const authenticatedUser = useAuthenticatedUser();
   const [keyringExists, setKeyringExists] = useState(false);
   const [newPublicKey, setNewPublicKey] = useState("");
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -69,7 +66,7 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
         );
       }
     })();
-  }, [blockchain]);
+  }, [background, blockchain]);
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -77,7 +74,7 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
     return () => {
       nav.setOptions({ headerTitle: prevTitle });
     };
-  }, [nav.setOptions]);
+  }, [nav]);
 
   useEffect(() => {
     (async () => {
@@ -87,7 +84,7 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
       });
       setKeyringExists(blockchainKeyrings.includes(blockchain));
     })();
-  }, [blockchain]);
+  }, [background, blockchain]);
 
   const createNewWithPhrase = async () => {
     // Mnemonic based keyring. This is the simple case because we don't
@@ -98,62 +95,56 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
     if (loading) {
       return;
     }
-    setOpenDrawer(true);
-    setLoading(true);
-    let newPublicKey;
-    if (!keyringExists || !hasHdPublicKeys) {
-      // No keyring or no existing mnemonic public keys so can't derive next
-      const walletDescriptor = await background.request({
-        method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
-        params: [blockchain, 0],
-      });
-      const signature = await background.request({
-        method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-        params: [
-          blockchain,
-          walletDescriptor.publicKey,
-          base58.encode(
-            Buffer.from(getAddMessage(walletDescriptor.publicKey), "utf-8")
-          ),
-          [true, [walletDescriptor.derivationPath]],
-        ],
-      });
-      await background.request({
-        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-        params: [blockchain, { ...walletDescriptor, signature }],
-      });
-      newPublicKey = walletDescriptor.publicKey;
-      // Keyring now exists, toggle to other options
-      setKeyringExists(true);
+    if (hasMnemonic) {
+      setOpenDrawer(true);
+      setLoading(true);
+      let newPublicKey;
+      if (!keyringExists || !hasHdPublicKeys) {
+        // No keyring or no existing mnemonic public keys so can't derive next
+        const walletDescriptor = await background.request({
+          method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
+          params: [blockchain, 0],
+        });
+        const signature = await background.request({
+          method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+          params: [
+            blockchain,
+            walletDescriptor.publicKey,
+            base58.encode(
+              Buffer.from(getAddMessage(walletDescriptor.publicKey), "utf-8")
+            ),
+            [true, [walletDescriptor.derivationPath]],
+          ],
+        });
+        await background.request({
+          method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+          params: [blockchain, { ...walletDescriptor, signature }],
+        });
+        newPublicKey = walletDescriptor.publicKey;
+        // Keyring now exists, toggle to other options
+        setKeyringExists(true);
+      } else {
+        newPublicKey = await background.request({
+          method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+          params: [blockchain],
+        });
+      }
+      setNewPublicKey(newPublicKey);
+      setLoading(false);
     } else {
-      newPublicKey = await background.request({
-        method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-        params: [blockchain],
+      nav.push("create-mnemonic", {
+        blockchain,
+        keyringExists,
       });
     }
-
-    await background.request({
-      method: UI_RPC_METHOD_USER_ACCOUNT_READ,
-      params: [authenticatedUser?.jwt],
-    });
-
-    setNewPublicKey(newPublicKey);
-    setLoading(false);
   };
 
   const createMenu = {
-    ...(hasMnemonic
-      ? // TODO user should be guided through mnemonic creation flow if
-        // they don't have a mnemonic
-        // https://github.com/coral-xyz/backpack/issues/1464
-        {
-          "Secret recovery phrase": {
-            onClick: createNewWithPhrase,
-            icon: (props: any) => <MnemonicIcon {...props} />,
-            detailIcon: <PushDetail />,
-          },
-        }
-      : {}),
+    "Secret recovery phrase": {
+      onClick: createNewWithPhrase,
+      icon: (props: any) => <MnemonicIcon {...props} />,
+      detailIcon: <PushDetail />,
+    },
     "Hardware wallet": {
       onClick: () => {
         openConnectHardware(

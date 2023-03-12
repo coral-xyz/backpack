@@ -1,5 +1,5 @@
 import { isKeyCold } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 import * as anchor from "@project-serum/anchor";
 import { useRecoilValue } from "recoil";
@@ -9,7 +9,7 @@ import { TextField } from "../../../plugin/Component";
 import { Cold } from "./ApproveTransaction";
 import { WithApproval } from ".";
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   title: {
     fontWeight: 500,
     fontSize: "18px",

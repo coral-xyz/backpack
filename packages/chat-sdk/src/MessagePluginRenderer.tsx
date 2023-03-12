@@ -11,5 +11,7 @@ export const MessagePluginRenderer = () => {
     return <div />;
   }
 
-  return <>{openPlugin === "barter" ? <BarterUi roomId={roomId} /> : null}</>;
+  return (
+    <>{openPlugin.type === "barter" ? <BarterUi roomId={roomId} /> : null}</>
+  );
 };

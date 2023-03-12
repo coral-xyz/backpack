@@ -62,18 +62,24 @@ export class BlockchainKeyring {
     mnemonic: string,
     derivationPaths: Array<string>
   ): Promise<Array<[string, string]>> {
-    // Initialize keyrings.
-    this.hdKeyring = this.hdKeyringFactory.init(mnemonic, derivationPaths);
     // Empty ledger keyring to hold one off ledger imports
     this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
     // Empty imported keyring to hold imported secret keys
     this.importedKeyring = this.keyringFactory.init([]);
-    this.activeWallet = this.hdKeyring.publicKeys()[0];
     this.deletedWallets = [];
+    return this.initHdKeyring(mnemonic, derivationPaths);
+  }
 
+  public async initHdKeyring(
+    mnemonic: string,
+    derivationPaths: Array<string>
+  ): Promise<Array<[string, string]>> {
+    // Initialize keyrings.
+    this.hdKeyring = this.hdKeyringFactory.init(mnemonic, derivationPaths);
+    this.activeWallet = this.hdKeyring!.publicKeys()[0];
     // Persist a given name for this wallet.
     const newAccounts: Array<[string, string]> = [];
-    for (const [index, publicKey] of this.hdKeyring.publicKeys().entries()) {
+    for (const [index, publicKey] of this.hdKeyring!.publicKeys().entries()) {
       const name = DefaultKeyname.defaultDerived(index + 1);
       await store.setKeyname(publicKey, name);
       newAccounts.push([publicKey, name]);
@@ -143,11 +149,15 @@ export class BlockchainKeyring {
   public async addDerivationPath(
     derivationPath: string
   ): Promise<{ publicKey: string; name: string }> {
-    const publicKey = this.hdKeyring!.addDerivationPath(derivationPath);
+    if (!this.hdKeyring) {
+      throw new Error("hd keyring not initialised");
+    }
+
+    const publicKey = this.hdKeyring.addDerivationPath(derivationPath);
 
     // Save a default name.
     const name = DefaultKeyname.defaultDerived(
-      this.hdKeyring!.publicKeys().length
+      this.hdKeyring.publicKeys().length
     );
     await store.setKeyname(publicKey, name);
 
@@ -263,5 +273,9 @@ export class BlockchainKeyring {
     } catch {
       return false;
     }
+  }
+
+  public hasHdKeyring(): boolean {
+    return !!this.hdKeyring;
   }
 }
