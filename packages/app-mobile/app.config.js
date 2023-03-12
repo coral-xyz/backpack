@@ -50,6 +50,7 @@ export default {
     favicon: "./assets/favicon.png",
   },
   extra: {
+    SENTRY_DSN: process.env.SENTRY_DSN,
     localWebViewUrl: "http://localhost:9333",
     remoteWebViewUrl:
       "https://coral-xyz.github.io/backpack/background-scripts/807d4b7/service-worker-loader.html",

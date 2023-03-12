@@ -1,13 +1,5 @@
 import { registerRootComponent } from "expo";
-import * as Sentry from "sentry-expo";
-
 import "./src/crypto-shim";
-
-Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  enableInExpoDevelopment: true,
-  debug: true,
-});
 
 if (typeof Buffer === "undefined") {
   global.Buffer = require("buffer/").Buffer;
