@@ -106,17 +106,15 @@ export function ListItem({
         </div>
         {detail}
       </MuiListItem>
-      {!isLast && !disableBottomBorder ? (
-        <Divider
-          style={{
+      {!isLast && !disableBottomBorder ? <Divider
+        style={{
             backgroundColor: borderColor
               ? borderColor
               : theme.custom.colors.border,
             height: "1px",
           }}
-          classes={{ root: _classes.dividerRoot }}
-        />
-      ) : null}
+        classes={{ root: _classes.dividerRoot }}
+        /> : null}
     </>
   );
 }

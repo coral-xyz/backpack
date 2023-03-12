@@ -150,7 +150,7 @@ export class BlockchainKeyring {
     derivationPath: string
   ): Promise<{ publicKey: string; name: string }> {
     if (!this.hdKeyring) {
-      throw new Error("hd keyring not initialised");
+      throw new Error("hd keyring not initialised")
     }
 
     const publicKey = this.hdKeyring.addDerivationPath(derivationPath);

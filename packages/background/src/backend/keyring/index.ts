@@ -353,8 +353,8 @@ export class KeyringStore {
   }
 
   /**
-   * Create a random mnemonic.
-   */
+    * Create a random mnemonic.
+    */
   public createMnemonic(strength: number): string {
     return generateMnemonic(strength);
   }
@@ -390,7 +390,7 @@ export class KeyringStore {
   }
 
   public keepAlive() {
-    return this.withUnlock(() => {});
+    return this.withUnlock(() => { });
   }
 
   public autoLockCountdownToggle(enable: boolean) {
@@ -550,12 +550,13 @@ export class KeyringStore {
   }
 
   /**
-   * Set the mnemonic to be used by the hd keyring.
-   */
+    * Set the mnemonic to be used by the hd keyring.
+    */
   public async setMnemonic(mnemonic: string) {
     return await this.withUnlockAndPersist(async () => {
-      this.activeUserKeyring.setMnemonic(mnemonic);
-    });
+      this.activeUserKeyring.setMnemonic(mnemonic)
+    })
+
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -833,15 +834,13 @@ class UserKeyring {
     } else if (!blockchainKeyring.hasHdKeyring()) {
       // Hd keyring not initialised, ibitialise it if possible
       if (!this.mnemonic) {
-        throw new Error("hd keyring not initialised");
+        throw new Error("hd keyring not initialised")
       }
-      const accounts = await blockchainKeyring.initHdKeyring(this.mnemonic, [
-        derivationPath,
-      ]);
+      const accounts = await blockchainKeyring.initHdKeyring(this.mnemonic, [derivationPath])
       return {
         publicKey: accounts[0][0],
-        name: accounts[0][1],
-      };
+        name: accounts[0][1]
+      }
     } else {
       return blockchainKeyring.addDerivationPath(derivationPath);
     }
@@ -877,7 +876,7 @@ class UserKeyring {
     if (this.mnemonic) {
       throw new Error("keyring already has a mnemonic set");
     }
-    this.mnemonic = mnemonic;
+    this.mnemonic = mnemonic
   }
 
   public async ledgerImport(walletDescriptor: WalletDescriptor) {
