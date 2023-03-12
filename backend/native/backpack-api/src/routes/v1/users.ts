@@ -123,7 +123,7 @@ router.get("/jwt/xnft", extractUserId, async (req, res) => {
 /**
  * Create a new user.
  */
-router.post("/", apiLimiter, async (req, res) => {
+router.post("/", async (req, res) => {
   const { username, waitlistId, blockchainPublicKeys } =
     CreateUserWithPublicKeys.parse(req.body);
 
