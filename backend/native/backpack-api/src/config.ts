@@ -1,7 +1,6 @@
 import * as dotenv from "dotenv";
 
 dotenv.config();
-export const SENTRY_DSN = process.env.SENTRY_DSN;
 export const HASURA_URL =
   process.env.HASURA_URL || "http://localhost:8112/v1/graphql";
 
