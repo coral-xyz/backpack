@@ -30,6 +30,7 @@ jobs:
           printf 'HELIUS_API_KEY=%s\n' '${{secrets.HELIUS_API_KEY}}' >> .env
           printf 'VAPID_PRIVATE_KEY=%s\n' '${{secrets.VAPID_PRIVATE_KEY}}' >> .env
           printf 'VAPID_PUBLIC_KEY=%s\n' '${{secrets.VAPID_PUBLIC_KEY}}' >> .env
+          printf 'SENTRY_DSN=%s\n' '${{secrets.SENTRY_DSN}}' >> .env
           cd ../../..
 
       - name: docker login
