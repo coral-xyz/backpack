@@ -18,7 +18,6 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import { RecoilRoot } from "recoil";
-import * as Sentry from "sentry-expo";
 
 import { ErrorBoundary } from "~components/ErrorBoundary";
 import { useTheme } from "~hooks/useTheme";
@@ -26,12 +25,6 @@ import { maybeParseLog } from "~lib/helpers";
 
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import { RootNavigation } from "./navigation/RootNavigator";
-
-Sentry.init({
-  dsn: Constants?.expoConfig?.extra?.SENTRY_DSN,
-  enableInExpoDevelopment: true,
-  debug: true,
-});
 
 SplashScreen.preventAutoHideAsync();
 
