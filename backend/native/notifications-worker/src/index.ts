@@ -1,5 +1,3 @@
-require("newrelic");
-
 import cluster from "cluster";
 import express from "express";
 import os from "os";
