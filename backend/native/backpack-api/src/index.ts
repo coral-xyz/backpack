@@ -21,12 +21,14 @@ import referralsRouter from "./routes/v1/referrals";
 import s3Router from "./routes/v1/s3";
 import txParsingRouter from "./routes/v1/tx-parsing";
 import usersRouter from "./routes/v1/users";
+import { SENTRY_DSN } from "./config";
 import { zodErrorToString } from "./util";
 
 const app = express();
 
+// Must happen as close to the top as possible
 Sentry.init({
-  dsn: process.env.SENTRY_DSN,
+  dsn: SENTRY_DSN,
   integrations: [
     // enable HTTP calls tracing
     new Sentry.Integrations.Http({ tracing: true }),
