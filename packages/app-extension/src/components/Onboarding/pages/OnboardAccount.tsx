@@ -6,7 +6,7 @@ import type {
   WalletDescriptor,
 } from "@coral-xyz/common";
 import { getCreateMessage } from "@coral-xyz/common";
-import { useOnboarding, useSignMessageForWallet } from "@coral-xyz/recoil";
+import { useOnboarding, useRpcRequests } from "@coral-xyz/recoil";
 
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
@@ -49,6 +49,7 @@ export const OnboardAccount = ({
     handleSelectBlockchain,
     handlePrivateKeyInput,
   } = useOnboarding();
+  const { signMessageForWallet } = useRpcRequests();
   const {
     inviteCode,
     action,
@@ -58,8 +59,6 @@ export const OnboardAccount = ({
     signedWalletDescriptors,
     selectedBlockchains,
   } = onboardingData;
-
-  const signMessageForWallet = useSignMessageForWallet(mnemonic);
 
   useEffect(() => {
     // Reset blockchain keyrings on certain changes that invalidate the addresses
@@ -214,8 +213,15 @@ export const OnboardAccount = ({
               // Should only be one public key path
               const walletDescriptor = walletDescriptors[0];
               const signature = await signMessageForWallet(
-                walletDescriptor,
-                getCreateMessage(walletDescriptor.publicKey)
+                walletDescriptor.blockchain,
+                walletDescriptor.publicKey,
+                getCreateMessage(walletDescriptor.publicKey),
+                {
+                  mnemonic: mnemonic!,
+                  signedWalletDescriptors: [
+                    { ...walletDescriptor, signature: "" },
+                  ],
+                }
               );
               setOnboardingData({
                 signedWalletDescriptors: [

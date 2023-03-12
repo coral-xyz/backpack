@@ -18,6 +18,7 @@ import {
 import {
   useBackgroundClient,
   useKeyringHasMnemonic,
+  useRpcRequests,
   useUser,
 } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
@@ -45,6 +46,7 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [loading, setLoading] = useState(false);
   const { close: closeParentDrawer } = useDrawerContext();
+  const { signMessageForWallet } = useRpcRequests();
 
   // If the keyring or if we don't have any public keys of the type we are
   // adding then additional logic is required to select the account index of
@@ -105,21 +107,23 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
           method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
           params: [blockchain, 0],
         });
-        const signature = await background.request({
-          method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-          params: [
-            blockchain,
-            walletDescriptor.publicKey,
-            base58.encode(
-              Buffer.from(getAddMessage(walletDescriptor.publicKey), "utf-8")
-            ),
-            [true, [walletDescriptor.derivationPath]],
-          ],
-        });
+        const signature = await signMessageForWallet(
+          blockchain,
+          walletDescriptor.publicKey,
+          getAddMessage(walletDescriptor.publicKey),
+          {
+            mnemonic: true,
+            signedWalletDescriptors: [
+              {
+                ...walletDescriptor,
+                signature: "",
+              },
+            ],
+          }
+        );
         await background.request({
           method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
           params: [
-            blockchain,
             {
               mnemonic: true,
               signedWalletDescriptors: [{ ...walletDescriptor, signature }],

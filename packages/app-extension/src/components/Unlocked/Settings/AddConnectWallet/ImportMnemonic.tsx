@@ -12,10 +12,7 @@ import {
   UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
 } from "@coral-xyz/common";
 import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
-import {
-  useBackgroundClient,
-  useSignMessageForWallet,
-} from "@coral-xyz/recoil";
+import { useBackgroundClient, useRpcRequests } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
 
@@ -47,6 +44,7 @@ export function ImportMnemonic({
   const background = useBackgroundClient();
   const { step, nextStep } = useSteps();
   const { close: closeParentDrawer } = useDrawerContext();
+  const { signMessageForWallet } = useRpcRequests();
 
   const [openDrawer, setOpenDrawer] = useState(false);
   const [mnemonic, setMnemonic] = useState<string | true>(true);
@@ -54,7 +52,6 @@ export function ImportMnemonic({
     publicKey ?? null
   );
   const [name, setName] = useState<string | null>(null);
-  const signMessageForWallet = useSignMessageForWallet(mnemonic);
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -81,7 +78,6 @@ export function ImportMnemonic({
         publicKey = await background.request({
           method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
           params: [
-            blockchain,
             {
               mnemonic: true,
               signedWalletDescriptors: [signedWalletDescriptor],
@@ -140,7 +136,20 @@ export function ImportMnemonic({
         // Should only be one wallet descriptor
         const walletDescriptor = walletDescriptors[0];
         const message = getAddMessage(walletDescriptor.publicKey);
-        const signature = await signMessageForWallet(walletDescriptor, message);
+        const signature = await signMessageForWallet(
+          walletDescriptor.blockchain,
+          walletDescriptor.publicKey,
+          message,
+          {
+            mnemonic,
+            signedWalletDescriptors: [
+              {
+                ...walletDescriptor,
+                signature: "",
+              },
+            ],
+          }
+        );
         await onComplete({
           ...walletDescriptor,
           signature,

@@ -1,13 +1,9 @@
 import { useEffect, useState } from "react";
 import type { Blockchain, WalletDescriptor } from "@coral-xyz/common";
-import {
-  toTitleCase,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-} from "@coral-xyz/common";
+import { toTitleCase } from "@coral-xyz/common";
 import { HardwareWalletIcon, PrimaryButton } from "@coral-xyz/react-common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useRpcRequests } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
-import { encode } from "bs58";
 
 import { Header, HeaderIcon, SubtextParagraph } from "../../common";
 
@@ -24,23 +20,27 @@ export function HardwareSign({
   text: string;
   onNext: (signature: string) => void;
 }) {
-  const background = useBackgroundClient();
   const [signature, setSignature] = useState<string | null>(null);
   const [requiresBlindSign, setRequiresBlindSign] = useState(false);
+  const { signMessageForWallet } = useRpcRequests();
 
   useEffect(() => {
     (async () => {
       if (!requiresBlindSign) {
         try {
-          const signature = await background.request({
-            method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-            params: [
-              blockchain,
-              walletDescriptor.publicKey,
-              encode(Buffer.from(message, "utf-8")),
-              [[walletDescriptor]],
-            ],
-          });
+          const signature = await signMessageForWallet(
+            blockchain,
+            walletDescriptor.publicKey,
+            message,
+            {
+              signedWalletDescriptors: [
+                {
+                  ...walletDescriptor,
+                  signature: "",
+                },
+              ],
+            }
+          );
           setSignature(signature);
         } catch (error: unknown) {
           if (String(error).includes("enabling blind signature")) {

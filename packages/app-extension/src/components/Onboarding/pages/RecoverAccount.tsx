@@ -6,7 +6,7 @@ import type {
   WalletDescriptor,
 } from "@coral-xyz/common";
 import { Blockchain, getAuthMessage } from "@coral-xyz/common";
-import { useOnboarding, useSignMessageForWallet } from "@coral-xyz/recoil";
+import { useOnboarding, useRpcRequests } from "@coral-xyz/recoil";
 
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
@@ -33,6 +33,7 @@ export const RecoverAccount = ({
   isOnboarded?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
+  const { signMessageForWallet } = useRpcRequests();
   const { onboardingData, setOnboardingData, handlePrivateKeyInput } =
     useOnboarding();
   const {
@@ -42,9 +43,7 @@ export const RecoverAccount = ({
     signedWalletDescriptors,
     serverPublicKeys,
   } = onboardingData;
-
   const authMessage = userId ? getAuthMessage(userId) : "";
-  const signMessageForWallet = useSignMessageForWallet(mnemonic);
   const hardwareOnboardSteps = useHardwareOnboardSteps({
     blockchain:
       serverPublicKeys.length > 0
@@ -107,7 +106,15 @@ export const RecoverAccount = ({
               const signedWalletDescriptors = await Promise.all(
                 walletDescriptors.map(async (w) => ({
                   ...w,
-                  signature: await signMessageForWallet(w, authMessage),
+                  signature: await signMessageForWallet(
+                    w.blockchain,
+                    w.publicKey,
+                    authMessage,
+                    {
+                      mnemonic,
+                      signedWalletDescriptors: [{ ...w, signature: "" }],
+                    }
+                  ),
                 }))
               );
               setOnboardingData({ signedWalletDescriptors });

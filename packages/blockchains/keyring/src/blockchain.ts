@@ -69,6 +69,7 @@ export class BlockchainKeyring {
   ): Promise<Array<[string, string]>> {
     console.log(keyringInit);
     if ("mnemonic" in keyringInit) {
+      // Don't accept `true` for mnemonic initialisation
       if (typeof keyringInit.mnemonic !== "string") {
         throw new Error("invalid mnemonic");
       }
@@ -80,6 +81,7 @@ export class BlockchainKeyring {
         keyringInit.signedWalletDescriptors.map((s) => s.derivationPath)
       );
     } else if ("privateKey" in keyringInit) {
+      // Init using private key
       this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
       this.importedKeyring = this.keyringFactory.init([keyringInit.privateKey]);
       this.activeWallet = this.importedKeyring.publicKeys()[0];
@@ -88,6 +90,7 @@ export class BlockchainKeyring {
       await store.setKeyname(this.activeWallet, name);
       return [[name, this.activeWallet]];
     } else {
+      // Init using ledger
       this.ledgerKeyring = this.ledgerKeyringFactory.init(
         keyringInit.signedWalletDescriptors
       );
