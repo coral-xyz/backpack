@@ -12,7 +12,6 @@ import type {
   PrivateKeyKeyringInit,
   PrivateKeyWalletDescriptor,
   ServerPublicKey,
-  SignedPrivateKeyWalletDescriptor,
   SignedWalletDescriptor,
 } from "@coral-xyz/common";
 import {
@@ -94,7 +93,7 @@ export type OnboardingData = {
   // Wallet descriptors are for onboarding with mnemonic or ledger
   signedWalletDescriptors: SignedWalletDescriptor[];
   // Private key wallet descriptor is for onboarding with private key
-  signedPrivateKeyWalletDescriptor: SignedPrivateKeyWalletDescriptor | null;
+  privateKeyKeyringInit: PrivateKeyKeyringInit | null;
   isAddingAccount?: boolean;
   selectedBlockchains: Blockchain[];
   serverPublicKeys: ServerPublicKey[];
@@ -114,7 +113,7 @@ const defaultState = {
   blockchainOptions: BLOCKCHAIN_OPTIONS,
   waitlistId: undefined,
   signedWalletDescriptors: [],
-  signedPrivateKeyWalletDescriptor: null,
+  privateKeyKeyringInit: null,
   selectedBlockchains: [],
   serverPublicKeys: [],
 };
@@ -244,12 +243,12 @@ export function OnboardingProvider({
           blockchain,
           publicKey,
           base58.encode(Buffer.from(getCreateMessage(publicKey), "utf-8")),
-          [privateKey],
+          { blockchain, publicKey, privateKey },
         ],
       });
 
       setOnboardingData({
-        signedPrivateKeyWalletDescriptor: {
+        privateKeyKeyringInit: {
           blockchain,
           publicKey,
           privateKey,
@@ -261,27 +260,21 @@ export function OnboardingProvider({
   );
 
   const getKeyringInit = useCallback(
-    async (data: Partial<OnboardingData>) => {
-      let keyringInit:
-        | MnemonicKeyringInit
-        | LedgerKeyringInit
-        | PrivateKeyKeyringInit;
+    (
+      data: Partial<OnboardingData>
+    ): MnemonicKeyringInit | LedgerKeyringInit | PrivateKeyKeyringInit => {
       if (data.keyringType === "private-key") {
-        keyringInit = {
-          blockchain: data.blockchain!,
-          privateKey: data.signedPrivateKeyWalletDescriptor!.privateKey,
-        };
+        return data.privateKeyKeyringInit!;
       } else if (data.keyringType === "ledger") {
-        keyringInit = {
+        return {
           signedWalletDescriptors: data.signedWalletDescriptors!,
         };
       } else {
-        keyringInit = {
+        return {
           signedWalletDescriptors: data.signedWalletDescriptors!,
           mnemonic: data.mnemonic,
         };
       }
-      return keyringInit;
     },
     [data]
   );
@@ -300,7 +293,7 @@ export function OnboardingProvider({
         // we use if there are multiple.
         const { blockchain, publicKey, signature } =
           keyringType === "private-key"
-            ? data.signedPrivateKeyWalletDescriptor!
+            ? data.privateKeyKeyringInit!
             : data.signedWalletDescriptors![0];
 
         const authData = {
@@ -316,7 +309,7 @@ export function OnboardingProvider({
       // Signed blockchain public keys for POST to the server
       const blockchainPublicKeys =
         keyringType === "private-key"
-          ? [data.signedPrivateKeyWalletDescriptor]
+          ? [data.privateKeyKeyringInit]
           : data.signedWalletDescriptors;
 
       //
@@ -357,9 +350,7 @@ export function OnboardingProvider({
     async (uuid: string, jwt: string, data: Partial<OnboardingData>) => {
       const { isAddingAccount, username, password } = data;
 
-      console.log(data);
       const keyringInit = getKeyringInit(data);
-      console.log(keyringInit);
 
       try {
         if (isAddingAccount) {

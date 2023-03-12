@@ -495,7 +495,8 @@ export class Backend {
    * keyring initialisation parameters must be provided that will initialise a
    * keyring to contain the given public key.
    *
-   * This is used during onboarding to sign messages prior to the store being initialised.
+   * This is used during onboarding to sign messages prior to the store being
+   * initialised.
    */
   async signMessageForPublicKey(
     blockchain: Blockchain,
@@ -520,23 +521,16 @@ export class Backend {
     if (keyringInit) {
       // Create an empty keyring to init
       blockchainKeyring = keyringForBlockchain(blockchain);
-
       if ("mnemonic" in keyringInit) {
         // If mnemonic wasn't actually passed retrieve it from the store. This
         // is to avoid having to pass the mnemonic to the client to make this
         // call
-        if (keyringInit.mnemonic === "") {
+        if (keyringInit.mnemonic === true) {
           keyringInit.mnemonic =
             this.keyringStore.activeUserKeyring.exportMnemonic();
         }
-        await blockchainKeyring.initFromMnemonic(keyringInit);
-      } else if ("privateKey" in keyringInit) {
-        // Array of derivation paths, init using ledger
-        await blockchainKeyring.initFromPrivateKey(keyringInit);
-      } else {
-        // Init using private key
-        await blockchainKeyring.initFromLedger(keyringInit);
       }
+      await blockchainKeyring.init(keyringInit);
     } else {
       // We are unlocked, just use the keyring
       blockchainKeyring =
@@ -1726,12 +1720,12 @@ export class Backend {
   async blockchainKeyringsAdd(
     keyringInit: MnemonicKeyringInit | LedgerKeyringInit | PrivateKeyKeyringInit
   ): Promise<string> {
-    await this.keyringStore.blockchainKeyringAdd(keyringInit);
-
     const { blockchain, signature, publicKey } =
       "signedWalletDescriptors" in keyringInit
         ? keyringInit.signedWalletDescriptors[0]
         : keyringInit;
+
+    await this.keyringStore.blockchainKeyringAdd(blockchain, keyringInit);
 
     // Add the new public key to the API
     try {

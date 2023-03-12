@@ -424,13 +424,14 @@ export class KeyringStore {
    * Initialise a blockchain keyring.
    */
   public async blockchainKeyringAdd(
+    blockchain: Blockchain,
     keyringInit:
       | MnemonicKeyringInit
       | LedgerKeyringInit
       | PrivateKeyKeyringInit,
     persist = true
   ): Promise<void> {
-    await this.activeUserKeyring.blockchainKeyringAdd(keyringInit);
+    await this.activeUserKeyring.blockchainKeyringAdd(blockchain, keyringInit);
     if (persist) {
       await this.persist();
     }
@@ -687,6 +688,9 @@ class UserKeyring {
     keyring.username = username;
 
     if ("mnemonic" in keyringInit) {
+      if (keyringInit.mnemonic === true) {
+        throw new Error("invalid mnemonic");
+      }
       keyring.mnemonic = keyringInit.mnemonic;
     }
 
@@ -702,7 +706,7 @@ class UserKeyring {
           );
         } else {
           // No blockchain keyring, create it
-          await keyring.blockchainKeyringAdd(keyringInit);
+          await keyring.blockchainKeyringAdd(blockchain, keyringInit);
         }
       }
     }
@@ -714,7 +718,7 @@ class UserKeyring {
         await blockchainKeyring.importSecretKey(keyringInit.privateKey, "New");
       } else {
         // No blockchain keyring, create it
-        await keyring.blockchainKeyringAdd(keyringInit);
+        await keyring.blockchainKeyringAdd(keyringInit.blockchain, keyringInit);
       }
     }
 
@@ -799,25 +803,16 @@ class UserKeyring {
   ///////////////////////////////////////////////////////////////////////////////
 
   public async blockchainKeyringAdd(
+    blockchain: Blockchain,
     keyringInit: MnemonicKeyringInit | LedgerKeyringInit | PrivateKeyKeyringInit
   ): Promise<void> {
-    const blockchain =
-      "signedWalletDescriptors" in keyringInit
-        ? keyringInit.signedWalletDescriptors[0].blockchain
-        : keyringInit.blockchain;
     const keyring = keyringForBlockchain(blockchain as Blockchain);
-    if ("privateKey" in keyringInit) {
-      await keyring.initFromPrivateKey(keyringInit);
-    } else if ("mnemonic" in keyringInit) {
+    if ("mnemonic" in keyringInit) {
       if (keyringInit.mnemonic === true) {
         keyringInit.mnemonic = this.mnemonic!;
       }
-      // Initialising using a mnemonic
-      await keyring.initFromMnemonic(keyringInit);
-    } else {
-      // Initialising using a hardware wallet
-      await keyring.initFromLedger(keyringInit);
     }
+    await keyring.init(keyringInit);
     this.blockchains.set(blockchain, keyring);
   }
 

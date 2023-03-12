@@ -119,6 +119,7 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
         await background.request({
           method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
           params: [
+            blockchain,
             {
               mnemonic: true,
               signedWalletDescriptors: [{ ...walletDescriptor, signature }],

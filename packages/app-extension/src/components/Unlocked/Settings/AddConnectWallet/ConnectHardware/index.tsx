@@ -43,7 +43,7 @@ export function ConnectHardware({
     } else {
       await background.request({
         method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-        params: [[signedWalletDescriptor]],
+        params: [blockchain, [signedWalletDescriptor]],
       });
     }
   };

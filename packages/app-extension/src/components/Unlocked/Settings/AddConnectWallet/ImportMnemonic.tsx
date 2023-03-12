@@ -67,20 +67,21 @@ export function ImportMnemonic({
   // TODO replace the left nav button to go to the previous step if step > 0
 
   const onComplete = async (signedWalletDescriptor: SignedWalletDescriptor) => {
-    let pk: string;
+    let publicKey: string;
     if (!inputMnemonic) {
       if (keyringExists) {
         // Using the keyring mnemonic and the blockchain keyring exists, just
         // import the path
-        pk = await background.request({
+        publicKey = await background.request({
           method: UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
           params: [signedWalletDescriptor],
         });
       } else {
         // Blockchain keyring doesn't exist, init
-        pk = await background.request({
+        publicKey = await background.request({
           method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
           params: [
+            blockchain,
             {
               mnemonic: true,
               signedWalletDescriptors: [signedWalletDescriptor],
@@ -97,12 +98,12 @@ export function ImportMnemonic({
         signedWalletDescriptor.derivationPath
       );
 
-      pk = await background.request({
+      publicKey = await background.request({
         method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
         params: [blockchain, privateKey, name],
       });
     }
-    setSelectedPublicKey(pk);
+    setSelectedPublicKey(publicKey);
     setOpenDrawer(true);
   };
 

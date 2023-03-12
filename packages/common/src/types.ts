@@ -108,7 +108,9 @@ export type LedgerKeyringInit = {
   signedWalletDescriptors: Array<SignedWalletDescriptor>;
 };
 
-export type PrivateKeyKeyringInit = SignedPrivateKeyWalletDescriptor;
+export type PrivateKeyKeyringInit = {
+  signature: string;
+} & PrivateKeyWalletDescriptor;
 
 // Location of a public key including the public key
 export type WalletDescriptor = {
@@ -127,10 +129,6 @@ export type PrivateKeyWalletDescriptor = {
   publicKey: string;
   privateKey: string;
 };
-
-export type SignedPrivateKeyWalletDescriptor = {
-  signature: string;
-} & PrivateKeyWalletDescriptor;
 
 // The way public keys are stored on the API
 export type ServerPublicKey = {

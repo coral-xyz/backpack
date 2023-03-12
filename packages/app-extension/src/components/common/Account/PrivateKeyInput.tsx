@@ -72,7 +72,7 @@ export const PrivateKeyInput = ({
       // check for conflicts.
       const response = await background.request({
         method: UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
-        params: [[{ blockchain, publicKey: _publicKey }]],
+        params: [[{ blockchain: _blockchain, publicKey: _publicKey }]],
       });
       if (response.length > 0) {
         setError("Wallet address is used by another Backpack account");
