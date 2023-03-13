@@ -151,7 +151,7 @@ export function AddWalletMenu({ blockchain }: { blockchain: Blockchain }) {
       icon: (props: any) => <PlusCircleIcon {...props} />,
       detailIcon: <PushDetail />,
     },
-    "Import an existing wallet": {
+    "Advanced wallet import": {
       onClick: () => navigation.push("import-wallet", { blockchain }),
       icon: (props: any) => <ImportedIcon {...props} />,
       detailIcon: <PushDetail />,
