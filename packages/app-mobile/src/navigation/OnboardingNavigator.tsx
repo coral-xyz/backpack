@@ -401,7 +401,9 @@ function CreateOrRecoverUsernameScreen({
               }}
             />
           </Box>
-          {error !== "" ? <Text>{error}</Text> : null}
+          {maybeRender(error !== "", () => (
+            <ErrorMessage for={{ message: error }} />
+          ))}
           <PrimaryButton
             loading={loading}
             disabled={!username?.length}
