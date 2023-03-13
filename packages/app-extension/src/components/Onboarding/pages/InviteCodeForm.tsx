@@ -6,8 +6,15 @@ import { Box } from "@mui/material";
 import { createPopup } from "@typeform/embed";
 
 import { SubtextParagraph } from "../../common";
-import { getWaitlistId, setWaitlistId } from "../../common/WaitingRoom";
 import { BackpackHeader } from "../../Locked";
+
+const WAITLIST_RES_ID_KEY = "waitlist-form-res-id";
+
+export const setWaitlistId = (responseId: string) =>
+  window.localStorage.setItem(WAITLIST_RES_ID_KEY, responseId);
+
+export const getWaitlistId = () =>
+  window.localStorage.getItem(WAITLIST_RES_ID_KEY) ?? undefined;
 
 const useStyles = styles(() => ({
   inviteCodeBox: {
@@ -19,11 +26,9 @@ const useStyles = styles(() => ({
 
 export const InviteCodeForm = ({
   onClickRecover,
-  onClickWaiting,
   onSubmit,
 }: {
   onClickRecover: () => void;
-  onClickWaiting: () => void;
   onSubmit: (inviteCode: string) => void;
 }) => {
   const [error, setError] = useState("");
@@ -128,22 +133,15 @@ export const InviteCodeForm = ({
           <Box style={{ marginTop: 24 }}>
             {waitlistResponseId ? (
               <SubtextParagraph
-                onClick={onClickWaiting}
                 style={{
+                  cursor: "default",
                   textDecoration: "none",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <img
-                  src="/blue_ball.png"
-                  height="20px"
-                  width="20px"
-                  style={{ marginRight: "4px" }}
-                />
-                Waiting Room
-                <ArrowForward sx={{ marginLeft: "4px", fontSize: "18px" }} />
+                You're already on the waitlist
               </SubtextParagraph>
             ) : (
               <SubtextParagraph onClick={typeform.open}>
