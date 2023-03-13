@@ -60,7 +60,8 @@ import {
 } from "@solana/web3.js";
 import BN from "bn.js";
 
-import type { BackgroundClient, ReadApiConnection } from "../";
+import type { BackgroundClient } from "../";
+import { ReadApiConnection } from "../";
 
 import * as assertOwner from "./programs/assert-owner";
 import {
@@ -319,10 +320,10 @@ export class Solana {
           delegate: string;
           owner: string;
         };
-        seq: number;
         tree: string;
         data_hash: string;
         creator_hash: string;
+        leaf_id: number;
       };
     }
   ): Promise<string> {
@@ -340,13 +341,15 @@ export class Solana {
       solanaCtx.connection,
       new PublicKey(compression.tree)
     );
-    const canopyHeight = treeAccount.getCanopyDepth();
+    const canopyHeight = treeAccount.getCanopyDepth() ?? 0;
 
+    const readApiConnection = new ReadApiConnection(
+      solanaCtx.connection.rpcEndpoint,
+      commitment
+    );
     let result;
     try {
-      result = await (solanaCtx.connection as ReadApiConnection).getAssetProof(
-        mint
-      );
+      result = await readApiConnection.getAssetProof(mint);
     } catch (e) {
       if (e) {
         // TODO(jon): Handle this a little better
@@ -355,8 +358,16 @@ export class Solana {
       }
     }
 
-    const { root, proof, node_index, tree_id } = result.assetProof;
-    const { ownership, seq } = compression;
+    const { root, proof, tree_id } = result;
+    const { ownership, leaf_id } = compression;
+
+    const proofPath = proof
+      .slice(0, proof.length - canopyHeight)
+      .map((node) => ({
+        pubkey: new PublicKey(node),
+        isSigner: false,
+        isWritable: false,
+      }));
 
     const transferInstruction = createTransferLeafInstruction(
       {
@@ -369,16 +380,14 @@ export class Solana {
         merkleTree: new PublicKey(tree_id),
         logWrapper: SPL_NOOP_PROGRAM_ID,
         compressionProgram: SPL_ACCOUNT_COMPRESSION_PROGRAM_ID,
-        anchorRemainingAccounts: canopyHeight
-          ? proof.slice(0, proof.length - canopyHeight)
-          : proof,
+        anchorRemainingAccounts: proofPath,
       },
       {
         root: [...bs58.decode(root)],
         dataHash: [...bs58.decode(compression.data_hash.trim())],
         creatorHash: [...bs58.decode(compression.creator_hash.trim())],
-        nonce: seq,
-        index: node_index,
+        nonce: leaf_id,
+        index: leaf_id,
       }
     );
 

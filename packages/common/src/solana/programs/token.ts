@@ -233,10 +233,7 @@ export async function fetchReadApiNfts(
       state: 1,
       isNative: null,
       delegatedAmount: nft.ownership.delegated ? "1" : "0",
-      key: await getAssociatedTokenAddress(
-        new PublicKey(nft.id),
-        new PublicKey(nft.ownership.owner)
-      ),
+      key: nft.id,
       compression: {
         ...nft.compression,
         ownership: {

@@ -3,7 +3,8 @@ import { findMintManagerId } from "@cardinal/creator-standard";
 import { programs, tryGetAccount } from "@cardinal/token-manager";
 import type {
   RawMintString,
-  SolanaTokenAccountWithKeyString,
+  ReplaceTypes,
+  SolanaTokenAccountWithKey,
 } from "@coral-xyz/common";
 import {
   Blockchain,
@@ -86,16 +87,13 @@ export function SendSolanaConfirmationCard({
     publicKey: solanaCtx.walletPublicKey.toString(),
     tokenAddress: token.address,
   });
+
   const accountInfo:
-    | (SolanaTokenAccountWithKeyString & {
+    | (ReplaceTypes<SolanaTokenAccountWithKey, PublicKey, string> & {
         compression?: {
           compressed: boolean;
-          ownership: {
-            delegated: boolean;
-            delegate: string;
-            owner: string;
-          };
-          seq: number;
+          ownership: { delegated: boolean; delegate: string; owner: string };
+          leaf_id: number;
           tree: string;
           data_hash: string;
           creator_hash: string;
@@ -113,15 +111,6 @@ export function SendSolanaConfirmationCard({
     //
     let txSig;
 
-    // Compressed NFTs don't have on-chain mint information, but will have some associated compression information provided by the API.
-    if (!mintInfo && accountInfo && accountInfo.compression?.compressed) {
-      txSig = await Solana.transferCompressedNft(solanaCtx, {
-        mint: new PublicKey(token.address),
-        destination: new PublicKey(destinationAddress),
-        compression: accountInfo.compression,
-      });
-    }
-
     try {
       const mintId = new PublicKey(token.mint?.toString() as string);
       if (token.mint === SOL_NATIVE_MINT.toString()) {
@@ -129,6 +118,17 @@ export function SendSolanaConfirmationCard({
           source: solanaCtx.walletPublicKey,
           destination: new PublicKey(destinationAddress),
           amount: amount.toNumber(),
+        });
+      } else if (
+        // Compressed NFTs don't have on-chain mint information, but will have some associated compression information provided by the API.
+        !mintInfo &&
+        accountInfo &&
+        accountInfo.compression?.compressed
+      ) {
+        txSig = await Solana.transferCompressedNft(solanaCtx, {
+          mint: new PublicKey(token.address),
+          destination: new PublicKey(destinationAddress),
+          compression: accountInfo.compression,
         });
       } else if (
         await isProgrammableNftToken(
