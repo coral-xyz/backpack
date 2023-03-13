@@ -479,7 +479,6 @@ export function NotificationsProvider(props: any) {
       const { blockchain, publicKey, name } = notif.data;
       setWalletData((current: any) => {
         const publicKeys = { ...current.publicKeys };
-
         // Deriving a new wallet can result in the initialisation of this
         // keyring so no guarantee the keyrings exist
         publicKeys[blockchain] = {

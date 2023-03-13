@@ -42,12 +42,14 @@ export const HardwareSearchWallet = ({
         [Blockchain.SOLANA]: new Solana(transport),
         [Blockchain.ETHEREUM]: new Ethereum(transport),
       }[blockchain];
-      for (const derivationPath of getRecoveryPaths(blockchain)) {
+      for (const derivationPath of getRecoveryPaths(blockchain, true)) {
         let ledgerAddress;
         try {
           ledgerAddress = (
             await ledger.getAddress(derivationPath.replace("m/", ""))
           ).address;
+          console.log(derivationPath);
+          console.log(bs58.encode(ledgerAddress));
         } catch (error) {
           if (onError) {
             console.debug("hardware search transport error", error);

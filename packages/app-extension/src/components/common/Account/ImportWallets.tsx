@@ -91,16 +91,16 @@ export function ImportWallets({
     [Blockchain.SOLANA]: [
       {
         path: (i: number) => legacyBip44Indexed(Blockchain.SOLANA, i),
-        label: "m/44/501'/ ",
+        label: "m/44/501'/x'",
       },
       {
         path: (i: number) => legacyBip44ChangeIndexed(Blockchain.SOLANA, i),
-        label: "m/44/501'/0'",
+        label: "m/44/501'/x'/0'",
       },
       {
         path: (i: number) =>
           legacyBip44ChangeIndexed(Blockchain.SOLANA, i) + "/0'",
-        label: "m/44/501'/0'/0'",
+        label: "m/44/501'/x'/0'/0'",
       },
       /**
       {
@@ -133,7 +133,7 @@ export function ImportWallets({
       **/
       {
         path: (i: number) => legacyLedgerLiveIndexed(i),
-        label: "m/44/60' - Ledger Live",
+        label: "m/44/60/x - Ledger Live",
       },
       /**
       // Used in older versions of Backpack
@@ -144,16 +144,16 @@ export function ImportWallets({
       **/
       {
         path: (i: number) => legacyLedgerIndexed(i),
-        label: "m/44/60'/0' - Ledger",
+        label: "m/44/60'/0'/x' - Ledger",
       },
       {
         path: (i: number) => ethereumIndexed(i),
-        label: "m/44/60'/0'/0 - Ethereum Standard",
+        label: "m/44/60'/0'/0/x - Ethereum Standard",
       },
       {
         path: (i: number) =>
           legacyBip44ChangeIndexed(Blockchain.ETHEREUM, i) + "/0'",
-        label: "m/44/60'/0'/0'",
+        label: "m/44/60'/x'/0'/0'",
       },
     ],
   }[blockchain];

@@ -181,7 +181,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
         }
       }
     })();
-  }, [clientPublicKeys, serverPublicKeys]);
+  }, [background, clientPublicKeys, serverPublicKeys]);
 
   //
   // Attempt to find any dehydrated wallets on the mnemonic if a mnemonic is in use.
@@ -189,22 +189,30 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   useEffect(() => {
     (async () => {
       try {
-        if (hasMnemonic && dehydratedWallets.length > 0 && !syncAttempted) {
-          // We need to only do this once, the dehydrated wallets array will change
-          // if we find wallets and successfully load them and we don't want to
-          // trigger this function for smaller and smaller dehydratedWallets arrays
+        if (hasMnemonic) {
+          if (dehydratedWallets.length > 0 && !syncAttempted) {
+            // We need to only do this once, the dehydrated wallets array will change
+            // if we find wallets and successfully load them and we don't want to
+            // trigger this function for smaller and smaller dehydratedWallets arrays
+            setSyncAttempted(true);
+            // Do the sync
+            await background.request({
+              method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
+              params: [dehydratedWallets],
+            });
+          }
+        } else {
+          // If no mnemonic, don't try and sync again. When adding a mnemonic to a
+          // keyring there is a small period where the notifications
+          // haven't been processed which can trigger this again resulting in two
+          // of the same wallet appearing in the wallet list.
           setSyncAttempted(true);
-          // Do the sync
-          await background.request({
-            method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
-            params: [dehydratedWallets],
-          });
         }
       } catch (error) {
         console.log("sync error", error);
       }
     })();
-  }, [hasMnemonic, dehydratedWallets, syncAttempted]);
+  }, [background, hasMnemonic, dehydratedWallets, syncAttempted]);
 
   return (
     <>

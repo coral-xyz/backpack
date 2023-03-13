@@ -66,7 +66,6 @@ export function CreateMnemonic({
       publicKey = await background.request({
         method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
         params: [
-          blockchain,
           { mnemonic, signedWalletDescriptors: [signedWalletDescriptor] },
         ],
       });

@@ -67,6 +67,9 @@ export class BlockchainKeyring {
   public async init(
     keyringInit: MnemonicKeyringInit | LedgerKeyringInit | PrivateKeyKeyringInit
   ): Promise<Array<[string, string]>> {
+    if (Object.values(this.publicKeys()).flat().length > 0) {
+      throw new Error("keyring already initialised");
+    }
     let newAccounts: Array<[string, string]> = [];
     if ("mnemonic" in keyringInit) {
       // Don't accept `true` for mnemonic initialisation

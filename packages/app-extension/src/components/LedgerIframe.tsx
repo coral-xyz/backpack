@@ -13,40 +13,47 @@ const logger = getLogger("app-extension/ledger-iframe");
  */
 const LedgerIframe = () => {
   const iframe = useRef<HTMLIFrameElement>(null);
+
   useEffect(() => {
     let handleMessage: (event: MessageEvent) => void;
 
-    navigator.serviceWorker.ready.then(() => {
-      //
-      // Response: relays message from the injected ledger iframe to the
-      //           background script.
-      //
-      handleMessage = (event) => {
-        if (!isValidEventOrigin(event)) {
-          return;
-        }
-        const data = event.data;
-        if (data.type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
-          return;
-        }
-        logger.debug("handleMessage", data);
-        navigator.serviceWorker.controller?.postMessage(data);
-      };
-      window.addEventListener("message", handleMessage);
+    navigator.serviceWorker.ready
+      .then(() => {
+        logger.debug("ledger iframe ready");
+        //
+        // Response: relays message from the injected ledger iframe to the
+        //           background script.
+        //
+        handleMessage = (event) => {
+          if (!isValidEventOrigin(event)) {
+            logger.error("invalid event origin");
+            return;
+          }
+          const data = event.data;
+          if (data.type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
+            return;
+          }
+          logger.debug("handleMessage", data);
+          navigator.serviceWorker.controller?.postMessage(data);
+        };
 
-      //
-      // Request: relays the message from the background script to the
-      //          iframe so that it has permissions to communicate with
-      //          the ledger.
-      navigator.serviceWorker.onmessage = (msg) => {
-        if (!isValidEventOrigin(msg)) {
-          return;
-        }
-        const data = msg.data;
-        logger.debug("onmessage", data);
-        iframe.current?.contentWindow?.postMessage(data, "*");
-      };
-    });
+        window.addEventListener("message", handleMessage);
+
+        //
+        // Request: relays the message from the background script to the
+        //          iframe so that it has permissions to communicate with
+        //          the ledger.
+        navigator.serviceWorker.onmessage = (msg) => {
+          if (!isValidEventOrigin(msg)) {
+            return;
+          }
+          const data = msg.data;
+          logger.debug("onmessage", data);
+          console.log(iframe);
+          iframe.current?.contentWindow?.postMessage(data, "*");
+        };
+      })
+      .catch((err) => logger.error("service worker not ready", err));
 
     return () => {
       // TODO: check if this cleanup is adequate

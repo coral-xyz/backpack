@@ -7,8 +7,8 @@ import {
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+  UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
 import {
   HardwareIcon,
@@ -22,7 +22,6 @@ import {
   useUser,
 } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
-import { ethers } from "ethers";
 
 import { Header, SubtextParagraph } from "../../../common";
 import {
@@ -33,8 +32,6 @@ import { useNavigation } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 
 import { ConfirmCreateWallet } from "./";
-
-const { base58 } = ethers.utils;
 
 export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
   const nav = useNavigation();
@@ -121,15 +118,25 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
             ],
           }
         );
-        await background.request({
-          method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-          params: [
-            {
-              mnemonic: true,
-              signedWalletDescriptors: [{ ...walletDescriptor, signature }],
-            },
-          ],
-        });
+        const signedWalletDescriptor = { ...walletDescriptor, signature };
+        if (!keyringExists) {
+          // Keyring doesn't exist, create it
+          await background.request({
+            method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+            params: [
+              {
+                mnemonic: true, // Use the existing mnemonic
+                signedWalletDescriptors: [signedWalletDescriptor],
+              },
+            ],
+          });
+        } else {
+          // Keyring exists but the hd keyring is not initialised, import
+          await background.request({
+            method: UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
+            params: [signedWalletDescriptor],
+          });
+        }
         newPublicKey = walletDescriptor.publicKey;
         // Keyring now exists, toggle to other options
         setKeyringExists(true);

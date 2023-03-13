@@ -876,6 +876,7 @@ export class Backend {
     signedWalletDescriptor: SignedWalletDescriptor
   ): Promise<string> {
     const { blockchain } = signedWalletDescriptor;
+
     const { publicKey, name } = await this.keyringStore.addDerivationPath(
       blockchain,
       signedWalletDescriptor.derivationPath
@@ -1748,7 +1749,6 @@ export class Backend {
     }
 
     const publicKeyData = await this.keyringStoreReadAllPubkeyData();
-
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
       data: {
