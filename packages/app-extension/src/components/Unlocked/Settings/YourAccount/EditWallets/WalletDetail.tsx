@@ -70,15 +70,6 @@ export const WalletDetail: React.FC<{
     navigator.clipboard.writeText(publicKey);
   };
 
-  // Account recovery is not possible for private key imports, so prevent
-  // removal of wallets if they are the last one in the wallet that can be used
-  // for recovery
-  const isLastRecoverable =
-    Object.values(publicKeyData)
-      .map((keyring) => [...keyring.hdPublicKeys, ...keyring.ledgerPublicKeys])
-      .flat()
-      .filter((n) => n.publicKey !== publicKey).length === 0;
-
   const isPrimary = primaryWallets.find((x) => x.publicKey === publicKey)
     ? true
     : false;
@@ -205,51 +196,49 @@ export const WalletDetail: React.FC<{
       {type !== "hardware" && type !== "dehydrated" ? (
         <SettingsList menuItems={secrets} />
       ) : null}
-      {!isLastRecoverable ? <SettingsList menuItems={removeWallet} /> : null}
-      {type !== "imported" ? (
-        <div
-          style={{
-            padding: "16px",
-          }}
-        >
-          <PrimaryButton
-            fullWidth
-            label={isPrimary ? "This is your primary wallet" : "Set as primary"}
-            disabled={isPrimary || type === "dehydrated"}
-            onClick={async () => {
-              await fetch(`${BACKEND_API_URL}/users/activePubkey`, {
-                method: "POST",
-                body: JSON.stringify({
-                  publicKey: publicKey,
-                }),
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              });
-              setServerPublicKeys((current) =>
-                current.map((c) => {
-                  if (c.blockchain !== blockchain) {
-                    return c;
-                  }
-                  if (c.primary && c.publicKey !== publicKey) {
-                    return {
-                      ...c,
-                      primary: false,
-                    };
-                  }
-                  if (c.publicKey === publicKey) {
-                    return {
-                      ...c,
-                      primary: true,
-                    };
-                  }
+      <SettingsList menuItems={removeWallet} />
+      <div
+        style={{
+          padding: "16px",
+        }}
+      >
+        <PrimaryButton
+          fullWidth
+          label={isPrimary ? "This is your primary wallet" : "Set as primary"}
+          disabled={isPrimary || type === "dehydrated"}
+          onClick={async () => {
+            await fetch(`${BACKEND_API_URL}/users/activePubkey`, {
+              method: "POST",
+              body: JSON.stringify({
+                publicKey: publicKey,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            setServerPublicKeys((current) =>
+              current.map((c) => {
+                if (c.blockchain !== blockchain) {
                   return c;
-                })
-              );
-            }}
-          />
-        </div>
-      ) : null}
+                }
+                if (c.primary && c.publicKey !== publicKey) {
+                  return {
+                    ...c,
+                    primary: false,
+                  };
+                }
+                if (c.publicKey === publicKey) {
+                  return {
+                    ...c,
+                    primary: true,
+                  };
+                }
+                return c;
+              })
+            );
+          }}
+        />
+      </div>
     </div>
   );
 };
