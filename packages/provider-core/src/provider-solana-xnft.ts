@@ -175,7 +175,7 @@ export class ProviderSolanaXnftInjection
     if (!isValidEventOrigin(event)) return;
     if (event.data.type !== CHANNEL_PLUGIN_NOTIFICATION) return;
 
-    logger.debug("handle notification", event);
+    logger.debug("solana provider: handle notification", event);
 
     const { name } = event.data.detail;
     switch (name) {
