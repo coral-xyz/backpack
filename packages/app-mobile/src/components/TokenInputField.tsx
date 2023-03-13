@@ -1,8 +1,15 @@
 import type { BigNumber } from "ethers";
 
 import { useState } from "react";
-import type { TextInputProps } from "react-native";
+import type {
+  TextInputProps,
+  StyleProp,
+  ViewStyle,
+  TextStyle,
+} from "react-native";
+import { TextInput } from "react-native";
 
+import { toDisplayBalance } from "@coral-xyz/common";
 import { ethers } from "ethers";
 
 import { StyledTextInput } from "~components/index";
@@ -18,9 +25,8 @@ export function StyledTokenTextInput({
   onChangeText: (value: BigNumber | null) => void;
   props: TextInputProps;
 }) {
-  const [focused] = useState(false);
+  const [focused, setFocused] = useState(false);
   const [inputValue, setInputValue] = useState<string | null>(null);
-  console.log("StyledTokenTextInput:inputValue", inputValue);
 
   // // Clear input value (fall back to value prop) if focus changes
   // useEffect(() => {
@@ -65,8 +71,47 @@ export function StyledTokenTextInput({
       returnKeyType="done"
       defaultValue={value}
       onChangeText={handleChangeText}
-      // onFocus={() => setFocused(true)}
-      // onBlur={() => setFocused(false)}
+      {...props}
+    />
+  );
+}
+
+export function UnstyledTokenTextInput({
+  decimals,
+  amount,
+  onChangeAmount,
+  style,
+  ...props
+}: {
+  decimals: number;
+  amount: BigNumber | null;
+  onChangeAmount: (value: BigNumber | null) => void;
+  style: StyleProp<ViewStyle & TextStyle>;
+}) {
+  const handleChangeText = (value: string) => {
+    try {
+      const parsedVal = value.length === 1 && value[0] === "." ? "0." : value;
+
+      const num =
+        parsedVal === "" || parsedVal === "0." ? 0.0 : parseFloat(parsedVal);
+
+      if (num >= 0) {
+        onChangeAmount(ethers.utils.parseUnits(num.toString(), decimals));
+      }
+    } catch (error) {
+      console.error("UnstyledTokenTextInput:error", error);
+      // Do nothing.
+    }
+  };
+
+  return (
+    <TextInput
+      placeholder="0.0"
+      keyboardType="decimal-pad"
+      returnKeyType="done"
+      defaultValue={amount ? toDisplayBalance(amount, decimals) : ""}
+      onChangeText={handleChangeText}
+      style={style}
       {...props}
     />
   );

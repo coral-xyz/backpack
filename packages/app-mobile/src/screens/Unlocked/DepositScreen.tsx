@@ -39,8 +39,12 @@ function BlockchainDisclaimerText({
         { color: theme.custom.colors.secondary },
       ]}
     >
-      {blockchain === Blockchain.SOLANA ? <>This address can only receive SOL and SPL tokens on Solana.</> : null}
-      {blockchain === Blockchain.ETHEREUM ? <>This address can only receive ETH and ERC20 tokens on Ethereum.</> : null}
+      {blockchain === Blockchain.SOLANA ? (
+        <>This address can only receive SOL and SPL tokens on Solana.</>
+      ) : null}
+      {blockchain === Blockchain.ETHEREUM ? (
+        <>This address can only receive ETH and ERC20 tokens on Ethereum.</>
+      ) : null}
     </Text>
   );
 }

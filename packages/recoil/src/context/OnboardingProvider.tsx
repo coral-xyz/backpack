@@ -128,16 +128,18 @@ type IOnboardingContext = {
   onboardingData: OnboardingData;
   setOnboardingData: (data: Partial<OnboardingData>) => void;
   handleSelectBlockchain: (data: SelectBlockchainType) => Promise<void>;
+  maybeCreateUser: (
+    data: Partial<OnboardingData>
+  ) => Promise<{ ok: boolean; jwt: string }>;
   handlePrivateKeyInput: (data: PrivateKeyWalletDescriptor) => Promise<void>;
-  maybeCreateUser: (data: Partial<OnboardingData>) => Promise<{ ok: boolean }>;
 };
 
 const OnboardingContext = createContext<IOnboardingContext>({
   onboardingData: defaultState,
   setOnboardingData: () => {},
   handleSelectBlockchain: async () => {},
+  maybeCreateUser: async () => ({ ok: true, jwt: "" }),
   handlePrivateKeyInput: async () => {},
-  maybeCreateUser: async () => ({ ok: true }),
 });
 
 export function OnboardingProvider({
@@ -321,6 +323,7 @@ export function OnboardingProvider({
       try {
         const res = await fetch(`${BACKEND_API_URL}/users`, {
           method: "POST",
+          credentials: "omit",
           body,
           headers: {
             "Content-Type": "application/json",
@@ -376,10 +379,10 @@ export function OnboardingProvider({
       try {
         const { id, jwt } = await createUser(data);
         await createStore(id, jwt, data);
-        return { ok: true };
+        return { ok: true, jwt };
       } catch (err) {
         console.error("OnboardingProvider:maybeCreateUser::error", err);
-        return { ok: false };
+        return { ok: false, jwt: "" };
       }
     },
     [data]

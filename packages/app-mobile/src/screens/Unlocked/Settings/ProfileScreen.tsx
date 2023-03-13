@@ -5,8 +5,6 @@ import { SectionList, View } from "react-native";
 
 import { toTitleCase } from "@coral-xyz/common";
 import { useActiveWallets, useWalletPublicKeys } from "@coral-xyz/recoil";
-import { WalletListItem } from "~screens/Unlocked/EditWalletsScreen";
-import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsList";
 
 import { ExpandCollapseIcon } from "~components/Icon";
 import {
@@ -16,6 +14,8 @@ import {
   RoundedContainerGroup,
   Screen,
 } from "~components/index";
+import { WalletListItem } from "~screens/Unlocked/EditWalletsScreen";
+import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsList";
 
 type Wallet = {
   name: string;
