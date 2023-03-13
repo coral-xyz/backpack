@@ -1,5 +1,6 @@
-import { LocalImage, useUsersMetadata } from "@coral-xyz/react-common";
+import { LocalImage } from "@coral-xyz/react-common";
 import { useUser } from "@coral-xyz/recoil";
+import { useUsersMetadata } from "@coral-xyz/tamagui";
 import CloseIcon from "@mui/icons-material/Close";
 import { createStyles, makeStyles } from "@mui/styles";
 

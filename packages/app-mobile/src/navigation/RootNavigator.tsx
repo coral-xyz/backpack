@@ -14,6 +14,8 @@ import {
 } from "./OnboardingNavigator";
 import { UnlockedNavigator } from "./UnlockedNavigator";
 import { NotFoundScreen } from "../screens/NotFoundScreen";
+// import {AuthenticatedSync} from "@coral-xyz/tamagui";
+// import {Inbox} from "~components/messaging/Inbox";
 
 export function RootNavigation({
   colorScheme,
@@ -33,6 +35,12 @@ function RootNavigator(): JSX.Element {
   const [status, setStatus] = useState(null);
   const keyringStoreState = useKeyringStoreState();
 
+  /* Uncomment to see user inbox.
+  return <>
+    <AuthenticatedSync />
+    <Inbox />
+  </>
+   */
   switch (keyringStoreState) {
     case KeyringStoreStateEnum.NeedsOnboarding:
       return <OnboardingNavigator onStart={setStatus} />;

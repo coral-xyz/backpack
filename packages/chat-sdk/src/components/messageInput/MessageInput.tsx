@@ -1,11 +1,12 @@
 import { useContext, useEffect, useMemo } from "react";
 import { RichMentionsContext, RichMentionsInput } from "react-rich-mentions";
-import { BackpackStaffIcon, useUsersMetadata } from "@coral-xyz/react-common";
+import { BACKPACK_TEAM } from "@coral-xyz/common";
+import { BackpackStaffIcon } from "@coral-xyz/react-common";
+import { useUsersMetadata } from "@coral-xyz/tamagui";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CircularProgress } from "@mui/material";
 
 import { useChatContext } from "../ChatContext";
-import { BACKPACK_TEAM } from "@coral-xyz/common";
 
 const useStyles = styles(() => ({
   input: {

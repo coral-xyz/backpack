@@ -15,6 +15,7 @@
     "@coral-xyz/db": "*",
     "@coral-xyz/recoil": "*",
     "@coral-xyz/react-common": "*",
+    "@coral-xyz/tamagui": "*",
     "@coral-xyz/themes": "*",
     "@giphy/js-fetch-api": "^4.4.0",
     "@giphy/react-components": "^6.2.0",

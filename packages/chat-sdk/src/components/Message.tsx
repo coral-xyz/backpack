@@ -10,8 +10,6 @@ import {
 import {
   BackpackStaffIcon,
   LocalImage,
-  refreshIndividualChatsFor,
-  SignalingManager,
   SuccessButton,
 } from "@coral-xyz/react-common";
 import {
@@ -24,6 +22,10 @@ import {
   useNavigation,
   useUser,
 } from "@coral-xyz/recoil";
+import {
+  refreshIndividualChatsFor,
+  SignalingManager,
+} from "@coral-xyz/tamagui";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Gif as GifComponent } from "@giphy/react-components";
@@ -1044,9 +1046,7 @@ function MessageLeft(props) {
                 parent_username: `@${props.username}`,
                 parent_message_author_uuid: props.userId,
               });
-              document
-                .getElementById(chatMessageInputId)
-                ?.focus();
+              document.getElementById(chatMessageInputId)?.focus();
             }}
           >
             <ReplyIcon fill={theme.custom.colors.icon} />
@@ -1097,9 +1097,7 @@ function MessageRight(props) {
                   parent_message_author_uuid: props.userId,
                   parent_username: "Yourself",
                 });
-                document
-                  .getElementById(chatMessageInputId)
-                  ?.focus();
+                document.getElementById(chatMessageInputId)?.focus();
               }}
             >
               <ReplyIcon fill={theme.custom.colors.icon} />

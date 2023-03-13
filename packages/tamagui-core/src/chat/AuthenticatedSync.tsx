@@ -200,8 +200,7 @@ export const DbRecoilSync = ({ uuid }: { uuid: string }) => {
 
   return (
     <Suspense fallback={null}>
-      {" "}
-      <NotificationsWrapper uuid={uuid} />{" "}
+      <NotificationsWrapper uuid={uuid} />
     </Suspense>
   );
 };
