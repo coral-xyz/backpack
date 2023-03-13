@@ -6,6 +6,7 @@ import {
   BACKEND_API_URL,
   sendFriendRequest,
   XNFT_GG_LINK,
+  NAV_COMPONENT_MESSAGE_PROFILE
 } from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
@@ -25,6 +26,7 @@ import {
   useRecentNotifications,
   useUpdateFriendships,
   useUser,
+  useNavigation as useProfileNav
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -631,6 +633,19 @@ function FriendRequestListItem({
   });
   const classes = useStyles();
   const theme = useCustomTheme();
+  
+  const fromUserId:string = parseJson(notification.body).from
+  const { push } = useProfileNav();
+  
+  const openProfilePage = (fromUserId: string, username: string): void => {
+    push({
+      title: `@${username}`,
+      componentId: NAV_COMPONENT_MESSAGE_PROFILE,
+      componentProps: {
+        userId: fromUserId,
+      },
+    })
+  }
 
   return (
     <ListItem
@@ -667,6 +682,7 @@ function FriendRequestListItem({
               flexDirection: "column",
               justifyContent: "center",
             }}
+            onClick={() => openProfilePage(fromUserId, user.username)}
           >
             <NotificationListItemIcon image={user?.image} />
           </div>
