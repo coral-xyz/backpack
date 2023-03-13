@@ -21,16 +21,12 @@ import {
   getCreateMessage,
   UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
 } from "@coral-xyz/common";
-import { ethers } from "ethers";
 
 import { useBackgroundClient } from "../hooks/client";
 import { useAuthentication } from "../hooks/useAuthentication";
 import { useRpcRequests } from "../hooks/useRpcRequests";
-
-const { base58 } = ethers.utils;
 
 export const getWaitlistId = () => {
   if (window?.localStorage) {
@@ -152,7 +148,6 @@ export function OnboardingProvider({
   const { authenticate } = useAuthentication();
   const { signMessageForWallet } = useRpcRequests();
   const [data, setData] = useState<OnboardingData>(defaultState);
-  console.log("OnboardingProvider:data", data);
 
   const setOnboardingData = useCallback((data: Partial<OnboardingData>) => {
     return setData((oldData) => ({
@@ -284,7 +279,6 @@ export function OnboardingProvider({
   const createUser = useCallback(
     async (data: Partial<OnboardingData>) => {
       const { inviteCode, userId, username, keyringType } = data;
-      console.log("useCallback:CreateUser:data", data);
 
       // If userId is provided, then we are onboarding via the recover flow.
       if (userId) {
@@ -380,9 +374,7 @@ export function OnboardingProvider({
   const maybeCreateUser = useCallback(
     async (data: Partial<OnboardingData>) => {
       try {
-        console.log("pre:createUser:data", data);
         const { id, jwt } = await createUser(data);
-        console.log("pre:createStore:data", data);
         await createStore(id, jwt, data);
         return { ok: true, jwt };
       } catch (err) {

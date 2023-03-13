@@ -449,7 +449,6 @@ function CreateOrRecoverUsernameScreen({
                   );
 
                   const json = await res.json();
-                  console.log("create:json", json);
                   if (!res.ok) {
                     throw new Error(json.message || "There was an error");
                   }
@@ -764,15 +763,9 @@ function OnboardingBlockchainSelectScreen({
               enabled={item.enabled}
               label={item.label}
               onSelect={async (blockchain) => {
-                console.log("blockchain", blockchain);
-                const r = await handleSelectBlockchain({
+                await handleSelectBlockchain({
                   blockchain,
-                  // onSelectImport: () => {
-                  //   console.log("import");
-                  // },
                 });
-
-                console.log("r", r);
               }}
             />
           );
