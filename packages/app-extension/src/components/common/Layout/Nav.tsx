@@ -279,7 +279,7 @@ function CenterDisplay({
             border: "none",
             padding: 0,
             margin: 0,
-            cursor: "pointer",
+            cursor: notchViewComponent ? "pointer" : "default",
           }}
           onClick={handleOpenDrawer}
         >
