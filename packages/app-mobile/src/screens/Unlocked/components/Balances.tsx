@@ -67,7 +67,6 @@ export function TokenTables({
 }) {
   const wl = useRecoilValueLoadable(allWalletsDisplayed);
   const wallets = wl.state === "hasValue" ? wl.contents : [];
-  console.log("rrr:wallets", wallets);
   return (
     <>
       {wallets.map(
@@ -211,7 +210,7 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
 
   return (
     <>
-      {percentChange !== undefined && positive && (
+      {percentChange !== undefined && positive ? (
         <Text
           style={[
             styles.tokenBalanceChangePositive,
@@ -220,8 +219,8 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
         >
           +{formatUSD(percentChange.toLocaleString())}
         </Text>
-      )}
-      {percentChange !== undefined && negative && (
+      ) : null}
+      {percentChange !== undefined && negative ? (
         <Text
           style={[
             styles.tokenBalanceChangeNegative,
@@ -230,8 +229,8 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
         >
           {formatUSD(percentChange.toLocaleString())}
         </Text>
-      )}
-      {percentChange !== undefined && neutral && (
+      ) : null}
+      {percentChange !== undefined && neutral ? (
         <Text
           style={[
             styles.tokenBalanceChangeNeutral,
@@ -240,7 +239,7 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
         >
           {formatUSD(percentChange.toLocaleString())}
         </Text>
-      )}
+      ) : null}
     </>
   );
 }
