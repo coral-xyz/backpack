@@ -29,6 +29,7 @@ export function SendEthereumConfirmationCard({
   destinationUser,
   amount,
   onComplete,
+  onViewBalances,
 }: {
   token: {
     address: string;
@@ -44,6 +45,7 @@ export function SendEthereumConfirmationCard({
   destinationAddress: string;
   amount: BigNumber;
   onComplete?: () => void;
+  onViewBalances?: () => void;
 }) {
   const ethereumCtx = useEthereumCtx();
   const [txSignature, setTxSignature] = useState<string | null>(null);
@@ -153,6 +155,7 @@ export function SendEthereumConfirmationCard({
           amount={amount}
           token={token}
           signature={txSignature!}
+          onViewBalances={onViewBalances}
         />
       ) : (
         <Error

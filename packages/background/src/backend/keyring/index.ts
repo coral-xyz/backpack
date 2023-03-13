@@ -697,6 +697,7 @@ class UserKeyring {
     // Ledger and mnemonic keyring init have signedWalletDescriptors
     if ("signedWalletDescriptors" in keyringInit) {
       const blockchain = keyringInit.signedWalletDescriptors[0].blockchain;
+      keyring.activeBlockchain = blockchain;
       for (const signedWalletDescriptor of keyringInit.signedWalletDescriptors) {
         const blockchainKeyring = keyring.blockchains.get(blockchain);
         if (blockchainKeyring) {
@@ -712,6 +713,7 @@ class UserKeyring {
     }
 
     if ("privateKey" in keyringInit) {
+      keyring.activeBlockchain = keyringInit.blockchain;
       const blockchainKeyring = keyring.blockchains.get(keyringInit.blockchain);
       if (blockchainKeyring) {
         // Blockchain keyring already exists, just add the private key

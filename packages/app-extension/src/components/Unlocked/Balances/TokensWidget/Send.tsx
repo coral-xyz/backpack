@@ -39,7 +39,6 @@ import {
   useEthereumCtx,
   useFriendship,
   useLoader,
-  useNavigation,
   useUser,
 } from "@coral-xyz/recoil";
 import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
@@ -52,7 +51,7 @@ import { BigNumber, ethers } from "ethers";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
 import { CopyablePublicKey } from "../../../common/CopyablePublicKey";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
-import { useNavigation as useNavigationEphemeral } from "../../../common/Layout/NavStack";
+import { useNavigation } from "../../../common/Layout/NavStack";
 import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 import { TokenInputField } from "../../../common/TokenInput";
 
@@ -178,7 +177,8 @@ export function Send({
 }) {
   const classes = useStyles();
   const { uuid } = useUser();
-  const nav = useNavigationEphemeral();
+  const drawer = useDrawerContext();
+  const nav = useNavigation();
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -260,6 +260,10 @@ export function Send({
       />
     );
   }
+
+  const onViewBalances = () => {
+    drawer.close();
+  };
 
   const SendConfirmComponent = {
     [Blockchain.SOLANA]: SendSolanaConfirmationCard,
@@ -369,6 +373,7 @@ export function Send({
             >["destinationUser"]
           }
           amount={amount!}
+          onViewBalances={onViewBalances}
         />
       </ApproveTransactionDrawer>
     </form>
@@ -619,6 +624,7 @@ export function Sending({
   signature,
   isComplete,
   titleOverride,
+  onViewBalances,
 }: {
   blockchain: Blockchain;
   amount: BigNumber;
@@ -626,9 +632,9 @@ export function Sending({
   signature: string;
   isComplete: boolean;
   titleOverride?: string;
+  onViewBalances?: () => void;
 }) {
   const theme = useCustomTheme();
-  const nav = useNavigation();
   const drawer = useDrawerContext();
   const explorer = useBlockchainExplorer(blockchain);
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
@@ -692,10 +698,10 @@ export function Sending({
       >
         {explorer && connectionUrl ? (
           <SecondaryButton
-            onClick={() => {
+            onClick={async () => {
               if (isComplete) {
-                nav.toRoot();
                 drawer.close();
+                if (onViewBalances) onViewBalances();
               } else {
                 window.open(explorerUrl(explorer, signature, connectionUrl));
               }
