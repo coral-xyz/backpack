@@ -167,7 +167,7 @@ export const nextIndicesFromPaths = (
   return { accountIndex, walletIndex };
 };
 
-export const getRecoveryPaths = (blockchain: Blockchain) => {
+export const getRecoveryPaths = (blockchain: Blockchain, ledger = false) => {
   /**
    * There is a fixed set of derivation paths we should check for wallets when
    * doing recovery.
@@ -194,13 +194,16 @@ export const getRecoveryPaths = (blockchain: Blockchain) => {
   let paths: Array<string> = [];
   // Legacy created/imported accounts (m/44/501'/ and m/44/501'/{0...n})
   paths = paths.concat(legacyBip44RecoveryPaths(blockchain));
-
-  // Legacy imported accounts (m/44/501'/0' and m/44/501'/0'/{0...n})
+  // Legacy imported accounts (m/44/501'/0' and m/44/501'/{0..n}'/0')
   paths = paths.concat(legacyBip44ChangeRecoveryPaths(blockchain));
-
-  if (blockchain === Blockchain.SOLANA) {
+  // Legacy imported accounts (m/44/501'/{0...n})/0'/0'
+  paths = paths.concat(
+    legacyBip44ChangeRecoveryPaths(blockchain).map((x) => x + "/0'")
+  );
+  if (blockchain === Blockchain.SOLANA && !ledger) {
     // Handle legacy Solana wallets that were created in 0.5.0 that had
-    // Ethereum derivation paths
+    // Ethereum derivation paths. Ledger does not allow these paths and
+    // so is not impacted by this.
     paths = paths.concat(
       getAccountRecoveryPaths(Blockchain.SOLANA, 0).map((d) =>
         d.replace("501", "60")

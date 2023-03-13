@@ -40,7 +40,7 @@ export function CreatePassword({
       }
       onNext(password);
     },
-    [password, passwordConfirm]
+    [onNext, password, passwordConfirm]
   );
 
   const isNextDisabled = !checked;
@@ -110,15 +110,17 @@ export function CreatePassword({
             setValue={(e) => setPasswordConfirm(e.target.value)}
             error={error === PasswordError.NO_MATCH}
           />
-          {error !== null ? <Typography sx={{ color: theme.custom.colors.negative }}>
-            {
+          {error !== null ? (
+            <Typography sx={{ color: theme.custom.colors.negative }}>
+              {
                 {
                   [PasswordError.TOO_SHORT]:
                     "Your password must be at least 8 characters.",
                   [PasswordError.NO_MATCH]: "Your passwords do not match.",
                 }[error]
               }
-          </Typography> : null}
+            </Typography>
+          ) : null}
         </Box>
       </Box>
       <Box

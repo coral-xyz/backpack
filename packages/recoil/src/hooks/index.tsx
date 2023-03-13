@@ -16,7 +16,7 @@ export * from "./useLoader";
 export * from "./usePriceData";
 export * from "./usePrimaryWallets";
 export * from "./useRecentNotifications";
-export * from "./useSignMessageForWallet";
+export * from "./useRpcRequests";
 export * from "./useTokenMetadata";
 export * from "./useTotalBalance";
 export * from "./useTransactionData";

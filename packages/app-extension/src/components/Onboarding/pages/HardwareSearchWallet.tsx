@@ -42,7 +42,7 @@ export const HardwareSearchWallet = ({
         [Blockchain.SOLANA]: new Solana(transport),
         [Blockchain.ETHEREUM]: new Ethereum(transport),
       }[blockchain];
-      for (const derivationPath of getRecoveryPaths(blockchain)) {
+      for (const derivationPath of getRecoveryPaths(blockchain, true)) {
         let ledgerAddress;
         try {
           ledgerAddress = (
