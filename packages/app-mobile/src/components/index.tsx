@@ -166,16 +166,25 @@ const screenStyles = StyleSheet.create({
   },
 });
 
-export function Header({ text }: { text: string }) {
+export function Header({
+  text,
+  style,
+}: {
+  text: string;
+  style?: StyleProp<TextStyle>;
+}): JSX.Element {
   const theme = useTheme();
   return (
     <Text
-      style={{
-        color: theme.custom.colors.fontColor,
-        fontSize: 24,
-        fontWeight: "500",
-        lineHeight: 32,
-      }}
+      style={[
+        {
+          color: theme.custom.colors.fontColor,
+          fontSize: 24,
+          fontWeight: "500",
+          lineHeight: 32,
+        },
+        style,
+      ]}
     >
       {text}
     </Text>
@@ -457,7 +466,7 @@ export function WelcomeLogoHeader() {
               color: theme.custom.colors.secondary,
             }}
           >
-            A home for your xNFTs
+            gm
           </Text>
         </Margin>
       </View>

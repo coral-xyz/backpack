@@ -133,10 +133,9 @@ function Network({
 }
 
 type OnboardingStackParamList = {
+  CreateOrRecoverAccount: undefined;
+  OnboardingUsername: undefined;
   CreateOrImportWallet: undefined;
-  OnboardingUsername: {
-    action: "create" | "recover";
-  };
   KeyringTypeSelector: undefined;
   MnemonicInput: undefined;
   SelectBlockchain: undefined;
@@ -183,6 +182,61 @@ function OnboardingScreen({
   );
 }
 
+function OnboardingCreateOrRecoverAccountScreen({
+  navigation,
+}: StackScreenProps<OnboardingStackParamList, "CreateOrRecoverAccount">) {
+  const insets = useSafeAreaInsets();
+  const { setOnboardingData } = useOnboarding();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const handlePresentModalPress = () => {
+    setIsModalVisible((last) => !last);
+  };
+
+  return (
+    <>
+      <Screen
+        style={[
+          styles.container,
+          {
+            marginTop: insets.top,
+            marginBottom: insets.bottom,
+            paddingLeft: insets.left,
+            paddingRight: insets.right,
+          },
+        ]}
+      >
+        <HelpModalMenuButton onPress={handlePresentModalPress} />
+        <Box marginTop={48} marginBottom={24}>
+          <WelcomeLogoHeader />
+        </Box>
+        <Box padding={16} alignItems="center">
+          <PrimaryButton
+            label="Create a new account"
+            onPress={() => {
+              setOnboardingData({ action: "create" });
+              navigation.push("OnboardingUsername");
+            }}
+          />
+          <LinkButton
+            label="I already have an account"
+            onPress={() => {
+              setOnboardingData({ action: "recover" });
+              navigation.push("OnboardingUsername");
+            }}
+          />
+        </Box>
+      </Screen>
+      <BottomSheetHelpModal
+        isVisible={isModalVisible}
+        resetVisibility={() => {
+          setIsModalVisible(() => false);
+        }}
+      />
+    </>
+  );
+}
+
 function OnboardingCreateOrImportWalletScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "CreateOrImportWallet">) {
@@ -213,17 +267,17 @@ function OnboardingCreateOrImportWalletScreen({
         </Box>
         <Box padding={16} alignItems="center">
           <PrimaryButton
-            label="Create a new account"
+            label="Create a new wallet"
             onPress={() => {
-              setOnboardingData({ action: "create", keyringType: "mnemonic" });
-              navigation.push("OnboardingUsername", { action: "create" });
+              setOnboardingData({ action: "create" });
+              navigation.push("OnboardingUsername");
             }}
           />
           <LinkButton
-            label="I already have an account"
+            label="I already have an wallet"
             onPress={() => {
               setOnboardingData({ action: "recover" });
-              navigation.push("OnboardingUsername", { action: "recover" });
+              navigation.push("OnboardingUsername");
             }}
           />
         </Box>
@@ -247,31 +301,34 @@ function OnboardingKeyringTypeSelectorScreen({
   return (
     <OnboardingScreen>
       {maybeRender(action === "create", () => (
-        <>
-          <Header text="Create a new wallet" />
-          <SubtextParagraph>
+        <View style={{ alignSelf: "center" }}>
+          <Header text="Create a new wallet" style={{ textAlign: "center" }} />
+          <SubtextParagraph style={{ textAlign: "center" }}>
             Choose a wallet type. If you're not sure, using a recovery phrase is
             the most common option.
           </SubtextParagraph>
-        </>
+        </View>
       ))}
       {maybeRender(action === "import", () => (
-        <>
-          <Header text="Import an existing wallet" />
-          <SubtextParagraph>
+        <View style={{ alignSelf: "center" }}>
+          <Header
+            text="Import an existing wallet"
+            style={{ textAlign: "center" }}
+          />
+          <SubtextParagraph style={{ textAlign: "center" }}>
             Choose a method to import your wallet.
           </SubtextParagraph>
-        </>
+        </View>
       ))}
       {maybeRender(action === "recover", () => (
-        <>
-          <Header text="Recover a username" />
-          <SubtextParagraph>
+        <View style={{ alignSelf: "center" }}>
+          <Header text="Recover a username" style={{ textAlign: "center" }} />
+          <SubtextParagraph style={{ textAlign: "center" }}>
             Choose a method to recover your username.
           </SubtextParagraph>
-        </>
+        </View>
       ))}
-      <Box alignItems="center" p={16}>
+      <Box padding={16} alignItems="center">
         <PrimaryButton
           label={`${toTitleCase(action as string)} with recovery phrase`}
           onPress={() => {
@@ -279,18 +336,18 @@ function OnboardingKeyringTypeSelectorScreen({
             navigation.push("MnemonicInput");
           }}
         />
-        <Box style={{ paddingVertical: 8 }}>
-          <SubtextParagraph
-            onPress={() => {
-              setOnboardingData({ keyringType: "ledger" });
-              navigation.push("SelectBlockchain");
-            }}
-          >
-            {action === "recover"
+        <LinkButton
+          disabled
+          label={
+            action === "recover"
               ? "Recover using a hardware wallet"
-              : "I have a hardware wallet"}
-          </SubtextParagraph>
-        </Box>
+              : "I have a hardware wallet"
+          }
+          onPress={() => {
+            setOnboardingData({ keyringType: "ledger" });
+            navigation.push("SelectBlockchain");
+          }}
+        />
       </Box>
     </OnboardingScreen>
   );
@@ -304,13 +361,13 @@ function OnboardingUsernameScreen({
   "OnboardingUsername"
 >): JSX.Element {
   const { onboardingData, setOnboardingData } = useOnboarding();
+  const { action } = onboardingData;
+
   const screenTitle =
-    route.params.action === "create"
-      ? "Claim your username"
-      : "Username recovery";
+    action === "create" ? "Claim your username" : "Username recovery";
 
   const text =
-    route.params.action === "create" ? (
+    action === "create" ? (
       <View style={{ flex: 1 }}>
         <Box marginBottom={12}>
           <SubtextParagraph>
@@ -357,7 +414,7 @@ function OnboardingUsernameScreen({
             disabled={!onboardingData.username?.length}
             label="Continue"
             onPress={() => {
-              navigation.push("MnemonicInput");
+              navigation.push("KeyringTypeSelector");
             }}
           />
         </View>
@@ -431,8 +488,12 @@ function OnboardingMnemonicInputScreen({
       })
       .then((isValid: boolean) => {
         setOnboardingData({ mnemonic });
+        const route =
+          action === "recover" ? "CreatePassword" : "SelectBlockchain";
+        console.log("route", route);
+        console.log("action", action);
         return isValid
-          ? navigation.push("SelectBlockchain")
+          ? navigation.push(route)
           : setError("Invalid secret recovery phrase");
       });
   };
@@ -558,14 +619,17 @@ function OnboardingBlockchainSelectScreen({
               selected={selectedBlockchains.includes(item.id as Blockchain)}
               enabled={item.enabled}
               label={item.label}
-              onSelect={async (blockchain) =>
-                await handleSelectBlockchain({
+              onSelect={async (blockchain) => {
+                console.log("blockchain", blockchain);
+                const r = await handleSelectBlockchain({
                   blockchain,
                   // onSelectImport: () => {
                   //   console.log("import");
                   // },
-                })
-              }
+                });
+
+                console.log("r", r);
+              }}
             />
           );
         }}
@@ -809,12 +873,16 @@ export function OnboardingNavigator({
   }, [onStart]);
 
   const theme = useTheme();
+  const { onboardingData } = useOnboarding();
   return (
     <OnboardingProvider>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator
+        initialRouteName="CreateOrRecoverAccount"
+        screenOptions={{ headerShown: false }}
+      >
         <Stack.Screen
-          name="CreateOrImportWallet"
-          component={OnboardingCreateOrImportWalletScreen}
+          name="CreateOrRecoverAccount"
+          component={OnboardingCreateOrRecoverAccountScreen}
         />
         <Stack.Group
           screenOptions={{
@@ -828,13 +896,34 @@ export function OnboardingNavigator({
             headerBackTitleVisible: false,
           }}
         >
+          {onboardingData.action === "recover" ? (
+            <>
+              <Stack.Screen
+                name="OnboardingUsername"
+                component={OnboardingUsernameScreen}
+                initialParams={{ action: "recover" }}
+              />
+              <Stack.Screen
+                name="CreateOrImportWallet"
+                component={OnboardingCreateOrImportWalletScreen}
+              />
+            </>
+          ) : (
+            <>
+              <Stack.Screen
+                name="OnboardingUsername"
+                component={OnboardingUsernameScreen}
+                initialParams={{ action: "create" }}
+              />
+              <Stack.Screen
+                name="CreateOrImportWallet"
+                component={OnboardingCreateOrImportWalletScreen}
+              />
+            </>
+          )}
           <Stack.Screen
             name="KeyringTypeSelector"
             component={OnboardingKeyringTypeSelectorScreen}
-          />
-          <Stack.Screen
-            name="OnboardingUsername"
-            component={OnboardingUsernameScreen}
           />
           <Stack.Screen
             name="MnemonicInput"

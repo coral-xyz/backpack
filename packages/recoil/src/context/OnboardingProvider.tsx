@@ -153,6 +153,8 @@ export function OnboardingProvider({
   const { signMessageForWallet } = useRpcRequests();
   const [data, setData] = useState<OnboardingData>(defaultState);
 
+  console.log("OnboardingProvider:data", data);
+
   const setOnboardingData = useCallback((data: Partial<OnboardingData>) => {
     return setData((oldData) => ({
       ...oldData,
@@ -171,6 +173,7 @@ export function OnboardingProvider({
 
   const handleSelectBlockchain = useCallback(
     async ({ blockchain }: SelectBlockchainType) => {
+      console.log("handleSelect:blockchain", blockchain);
       const {
         selectedBlockchains,
         signedWalletDescriptors,
@@ -178,6 +181,8 @@ export function OnboardingProvider({
         keyringType,
         action,
       } = data;
+
+      console.log("handleSelect:data", data);
 
       if (selectedBlockchains.includes(blockchain)) {
         // Blockchain is being deselected
