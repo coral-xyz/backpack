@@ -27,8 +27,6 @@ export interface LocalImageData {
   fullImage: boolean;
 }
 
-console.error("native11111111111111111111111111111111");
-
 export class BackpackDb extends Dexie {
   // 'friends' is added by dexie when declaring the stores()
   // We just tell the typing system this is the case
@@ -42,9 +40,7 @@ export class BackpackDb extends Dexie {
   constructor(uuid) {
     super(`DB_${uuid}`, {
       //@ts-ignore
-      indexedDB: window.win.indexedDB,
-      //@ts-ignore
-      IDBKeyRange: window.win.IDBKeyRange,
+      indexedDB: global.window.indexedDB,
     });
     this.version(15).stores({
       inbox: "remoteUserId, id, blocked, interacted, areFriends",
