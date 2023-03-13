@@ -221,7 +221,11 @@ function CreateOrRecoverAccountScreen({
           <PrimaryButton
             label="Create a new account"
             onPress={() => {
-              setOnboardingData({ action: "create" });
+              setOnboardingData({
+                action: "create",
+                // dev inviteCode
+                inviteCode: "8b9f708f-df0a-497a-8bc1-f1df42959a84",
+              });
               navigation.push("CreateOrRecoverUsername");
             }}
           />
@@ -251,22 +255,22 @@ function OnboardingCreateOrImportWalletScreen({
 
   return (
     <OnboardingScreen>
-      <Box marginTop={48} marginBottom={24}>
+      <Box mb={24}>
         <WelcomeLogoHeader />
       </Box>
-      <Box padding={16} alignItems="center">
+      <Box>
         <PrimaryButton
           label="Create a new wallet"
           onPress={() => {
             setOnboardingData({ action: "create" });
-            navigation.push("CreateOrRecoverUsername");
+            navigation.push("KeyringTypeSelector");
           }}
         />
         <LinkButton
           label="I already have an wallet"
           onPress={() => {
             setOnboardingData({ action: "recover" });
-            navigation.push("CreateOrRecoverUsername");
+            navigation.push("KeyringTypeSelector");
           }}
         />
       </Box>
