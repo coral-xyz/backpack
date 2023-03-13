@@ -163,7 +163,7 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
       element.contentWindow?.postMessage(event, "*");
     });
 
-    logger.debug("handle notification", event);
+    logger.debug("root provider: handle notification", event);
 
     const { name } = event.data.detail;
     this.#cachedNotifications[name] = event.data;
@@ -205,8 +205,8 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
   }
 
   #handleConnect(event: Event) {
-    this.#publicKeys = event.data.detail.publicKeys;
-    this.#connectionUrls = event.data.detail.connectionUrls;
+    this.#publicKeys = event.data.detail.data.publicKeys;
+    this.#connectionUrls = event.data.detail.data.connectionUrls;
 
     this.emit("connect", event.data.detail);
   }
