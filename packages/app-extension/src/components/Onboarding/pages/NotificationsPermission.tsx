@@ -17,24 +17,9 @@ export const NotificationsPermission = ({ onNext }: { onNext: () => void }) => {
     return permission === "granted";
   };
 
-  const registerSubscription = async () => {
-    try {
-      const sub = await registerNotificationServiceWorker();
-      if (!sub) {
-        // Set appropriate app states
-        return;
-      }
-      await saveSubscription(sub);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const handleAllow = async () => {
-    const success = await requestNotificationPermission();
-    if (success) {
-      await registerSubscription();
-    }
+    await requestNotificationPermission();
+
     onNext();
   };
 
