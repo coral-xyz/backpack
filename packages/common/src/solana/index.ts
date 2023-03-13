@@ -60,7 +60,7 @@ import {
 } from "@solana/web3.js";
 import BN from "bn.js";
 
-import type { BackgroundClient } from "../";
+import type { BackgroundClient, ReadApiConnection } from "../";
 
 import * as assertOwner from "./programs/assert-owner";
 import {
@@ -342,32 +342,20 @@ export class Solana {
     );
     const canopyHeight = treeAccount.getCanopyDepth();
 
-    const options = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        method: "get_asset_proof",
-        // TODO(jon): This should uniquely identify this operation
-        id: "rpd-op-123",
-        params: [mint.toBase58()],
-      }),
-    };
-
-    // The Metaplex Read API is surfaced on the same connection URL as the typical Solana RPC
-    // Hardcoding for now until testing is complete.
-    const response = await fetch(
-      "https://rpc-devnet.aws.metaplex.com/",
-      options
-    );
-    const { result: assetProof, error } = await response.json();
-    if (error) {
-      // TODO(jon): Handle this a little better
-      console.error(error);
-      throw new Error("something went wrong");
+    let result;
+    try {
+      result = await (solanaCtx.connection as ReadApiConnection).getAssetProof(
+        mint
+      );
+    } catch (e) {
+      if (e) {
+        // TODO(jon): Handle this a little better
+        console.error(e);
+        throw new Error("something went wrong");
+      }
     }
 
-    const { root, proof, node_index, leaf, tree_id } = assetProof;
+    const { root, proof, node_index, tree_id } = result.assetProof;
     const { ownership, seq } = compression;
 
     const transferInstruction = createTransferLeafInstruction(
@@ -393,6 +381,8 @@ export class Solana {
         index: node_index,
       }
     );
+
+    transaction.add(transferInstruction);
 
     transaction.feePayer = walletPublicKey;
     transaction.recentBlockhash = (
