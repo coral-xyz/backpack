@@ -48,8 +48,6 @@ export const HardwareSearchWallet = ({
           ledgerAddress = (
             await ledger.getAddress(derivationPath.replace("m/", ""))
           ).address;
-          console.log(derivationPath);
-          console.log(bs58.encode(ledgerAddress));
         } catch (error) {
           if (onError) {
             console.debug("hardware search transport error", error);

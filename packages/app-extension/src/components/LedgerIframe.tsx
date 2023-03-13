@@ -49,7 +49,6 @@ const LedgerIframe = () => {
           }
           const data = msg.data;
           logger.debug("onmessage", data);
-          console.log(iframe);
           iframe.current?.contentWindow?.postMessage(data, "*");
         };
       })
