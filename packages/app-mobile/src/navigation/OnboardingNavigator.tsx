@@ -215,7 +215,7 @@ function OnboardingCreateOrImportWalletScreen({
           <PrimaryButton
             label="Create a new account"
             onPress={() => {
-              setOnboardingData({ action: "create" });
+              setOnboardingData({ action: "create", keyringType: "mnemonic" });
               navigation.push("OnboardingUsername", { action: "create" });
             }}
           />
@@ -719,8 +719,11 @@ function OnboardingCreateAccountLoadingScreen(
           params: [],
         });
       }
-      const res = await maybeCreateUser({ ...onboardingData });
-      console.log("res", res);
+      const res = await maybeCreateUser({
+        ...onboardingData,
+        inviteCode: "ad3d24a0-5aa7-4519-af6f-4a903f1f2bc0", // fake code for local
+        keyringType: "mnemonic",
+      });
       await AsyncStorage.setItem("@bk-jwt", res.jwt);
       if (!res.ok) {
         setError(true);
