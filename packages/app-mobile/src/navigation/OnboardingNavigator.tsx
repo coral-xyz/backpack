@@ -1,4 +1,4 @@
-import type { Blockchain } from "@coral-xyz/common";
+import type { Blockchain, WalletDescriptor } from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useEffect, useState } from "react";
@@ -19,6 +19,11 @@ import {
 import * as Linking from "expo-linking";
 
 import {
+  getAuthMessage,
+  walletAddressDisplay,
+  getRecoveryPaths,
+  UI_RPC_METHOD_PREVIEW_PUBKEYS,
+  BACKEND_API_URL,
   DISCORD_INVITE_LINK,
   toTitleCase,
   TWITTER_LINK,
@@ -31,6 +36,7 @@ import {
   useBackgroundClient,
   OnboardingProvider,
   useOnboarding,
+  useRpcRequests,
 } from "@coral-xyz/recoil";
 import { Stack as Box } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -134,14 +140,15 @@ function Network({
 
 type OnboardingStackParamList = {
   CreateOrRecoverAccount: undefined;
-  OnboardingUsername: undefined;
+  CreateOrRecoverUsername: undefined;
   CreateOrImportWallet: undefined;
   KeyringTypeSelector: undefined;
   MnemonicInput: undefined;
+  MnemonicSearch: undefined;
   SelectBlockchain: undefined;
   ImportAccounts: undefined;
   CreatePassword: undefined;
-  OnboardingCreateAccountLoading: undefined;
+  CreateAccountLoading: undefined;
 };
 
 const Stack = createStackNavigator<OnboardingStackParamList>();
@@ -182,7 +189,7 @@ function OnboardingScreen({
   );
 }
 
-function OnboardingCreateOrRecoverAccountScreen({
+function CreateOrRecoverAccountScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "CreateOrRecoverAccount">) {
   const insets = useSafeAreaInsets();
@@ -215,14 +222,14 @@ function OnboardingCreateOrRecoverAccountScreen({
             label="Create a new account"
             onPress={() => {
               setOnboardingData({ action: "create" });
-              navigation.push("OnboardingUsername");
+              navigation.push("CreateOrRecoverUsername");
             }}
           />
           <LinkButton
             label="I already have an account"
             onPress={() => {
               setOnboardingData({ action: "recover" });
-              navigation.push("OnboardingUsername");
+              navigation.push("CreateOrRecoverUsername");
             }}
           />
         </Box>
@@ -240,55 +247,30 @@ function OnboardingCreateOrRecoverAccountScreen({
 function OnboardingCreateOrImportWalletScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "CreateOrImportWallet">) {
-  const insets = useSafeAreaInsets();
   const { setOnboardingData } = useOnboarding();
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const handlePresentModalPress = () => {
-    setIsModalVisible((last) => !last);
-  };
 
   return (
-    <>
-      <Screen
-        style={[
-          styles.container,
-          {
-            marginTop: insets.top,
-            marginBottom: insets.bottom,
-            paddingLeft: insets.left,
-            paddingRight: insets.right,
-          },
-        ]}
-      >
-        <HelpModalMenuButton onPress={handlePresentModalPress} />
-        <Box marginTop={48} marginBottom={24}>
-          <WelcomeLogoHeader />
-        </Box>
-        <Box padding={16} alignItems="center">
-          <PrimaryButton
-            label="Create a new wallet"
-            onPress={() => {
-              setOnboardingData({ action: "create" });
-              navigation.push("OnboardingUsername");
-            }}
-          />
-          <LinkButton
-            label="I already have an wallet"
-            onPress={() => {
-              setOnboardingData({ action: "recover" });
-              navigation.push("OnboardingUsername");
-            }}
-          />
-        </Box>
-      </Screen>
-      <BottomSheetHelpModal
-        isVisible={isModalVisible}
-        resetVisibility={() => {
-          setIsModalVisible(() => false);
-        }}
-      />
-    </>
+    <OnboardingScreen>
+      <Box marginTop={48} marginBottom={24}>
+        <WelcomeLogoHeader />
+      </Box>
+      <Box padding={16} alignItems="center">
+        <PrimaryButton
+          label="Create a new wallet"
+          onPress={() => {
+            setOnboardingData({ action: "create" });
+            navigation.push("CreateOrRecoverUsername");
+          }}
+        />
+        <LinkButton
+          label="I already have an wallet"
+          onPress={() => {
+            setOnboardingData({ action: "recover" });
+            navigation.push("CreateOrRecoverUsername");
+          }}
+        />
+      </Box>
+    </OnboardingScreen>
   );
 }
 
@@ -353,15 +335,17 @@ function OnboardingKeyringTypeSelectorScreen({
   );
 }
 
-function OnboardingUsernameScreen({
+function CreateOrRecoverUsernameScreen({
   navigation,
-  route,
 }: StackScreenProps<
   OnboardingStackParamList,
-  "OnboardingUsername"
+  "CreateOrRecoverUsername"
 >): JSX.Element {
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState("");
   const { onboardingData, setOnboardingData } = useOnboarding();
-  const { action } = onboardingData;
+  const { action } = onboardingData; // create | recover
 
   const screenTitle =
     action === "create" ? "Claim your username" : "Username recovery";
@@ -406,15 +390,77 @@ function OnboardingUsernameScreen({
               autoFocus
               placeholder="@Username"
               returnKeyType="next"
-              value={onboardingData.username ?? ""}
-              onChangeText={(username) => setOnboardingData({ username })}
+              value={username}
+              onChangeText={(text) => {
+                const username = text.toLowerCase().replace(/[^a-z0-9_]/g, "");
+                setUsername(username);
+              }}
             />
           </Box>
+          {error !== "" ? <Text>{error}</Text> : null}
           <PrimaryButton
-            disabled={!onboardingData.username?.length}
+            loading={loading}
+            disabled={!username?.length}
             label="Continue"
-            onPress={() => {
-              navigation.push("KeyringTypeSelector");
+            onPress={async () => {
+              setLoading(true);
+              if (action === "recover") {
+                try {
+                  const response = await fetch(
+                    `${BACKEND_API_URL}/users/${username}`
+                  );
+
+                  const json: {
+                    id: string;
+                    publicKeys: any[];
+                    msg?: string;
+                  } = await response.json();
+                  if (!response.ok) {
+                    throw new Error(json.msg);
+                  }
+
+                  setOnboardingData({
+                    username,
+                    userId: json.id,
+                    serverPublicKeys: json.publicKeys,
+                  });
+
+                  navigation.push("KeyringTypeSelector");
+                } catch (err: any) {
+                  setError(err.message || "Something went wrong");
+                } finally {
+                  setLoading(false);
+                }
+              }
+
+              if (action === "create") {
+                try {
+                  const res = await fetch(
+                    `https://auth.xnfts.dev/users/${username}`,
+                    {
+                      headers: {
+                        "x-backpack-invite-code": onboardingData.inviteCode,
+                      },
+                    }
+                  );
+
+                  const json = await res.json();
+                  console.log("create:json", json);
+                  if (!res.ok) {
+                    throw new Error(json.message || "There was an error");
+                  }
+
+                  setOnboardingData({
+                    username,
+                  });
+
+                  navigation.push("CreateOrImportWallet");
+                } catch (err: any) {
+                  setError(err.message);
+                } finally {
+                  setLoading(false);
+                }
+              }
             }}
           />
         </View>
@@ -489,9 +535,7 @@ function OnboardingMnemonicInputScreen({
       .then((isValid: boolean) => {
         setOnboardingData({ mnemonic });
         const route =
-          action === "recover" ? "CreatePassword" : "SelectBlockchain";
-        console.log("route", route);
-        console.log("action", action);
+          action === "recover" ? "MnemonicSearch" : "SelectBlockchain";
         return isValid
           ? navigation.push(route)
           : setError("Invalid secret recovery phrase");
@@ -590,6 +634,102 @@ function OnboardingMnemonicInputScreen({
   );
 }
 
+function MnemonicSearchScreen({
+  navigation,
+}: StackScreenProps<OnboardingStackParamList, "MnemonicSearch">): JSX.Element {
+  const background = useBackgroundClient();
+  const { onboardingData, setOnboardingData } = useOnboarding();
+  const { signMessageForWallet } = useRpcRequests();
+
+  const { userId } = onboardingData;
+  const authMessage = userId ? getAuthMessage(userId) : "";
+  const { serverPublicKeys, mnemonic } = onboardingData;
+
+  const [error, setError] = useState(false);
+
+  // TODO(peter) make this apart of the MnemomicInput step and render this as a component if it doesn't work
+  useEffect(() => {
+    (async () => {
+      const walletDescriptors: WalletDescriptor[] = [];
+
+      const blockchains = [
+        ...new Set(serverPublicKeys.map((x) => x.blockchain)),
+      ];
+
+      for (const blockchain of blockchains) {
+        const recoveryPaths = getRecoveryPaths(blockchain);
+        const publicKeys = await background.request({
+          method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
+          params: [blockchain, mnemonic, recoveryPaths],
+        });
+
+        const searchPublicKeys = serverPublicKeys
+          .filter((b) => b.blockchain === blockchain)
+          .map((p) => p.publicKey);
+
+        for (const publicKey of searchPublicKeys) {
+          const index = publicKeys.findIndex((p: string) => p === publicKey);
+          if (index !== -1) {
+            walletDescriptors.push({
+              blockchain,
+              derivationPath: recoveryPaths[index],
+              publicKey,
+            });
+          }
+        }
+      }
+
+      if (walletDescriptors.length > 0) {
+        const signedWalletDescriptors = await Promise.all(
+          walletDescriptors.map(async (w) => ({
+            ...w,
+            signature: await signMessageForWallet(
+              w.blockchain,
+              w.publicKey,
+              authMessage,
+              {
+                mnemonic,
+                signedWalletDescriptors: [{ ...w, signature: "" }],
+              }
+            ),
+          }))
+        );
+
+        setOnboardingData({ signedWalletDescriptors });
+        navigation.push("CreatePassword");
+      } else {
+        setError(true);
+      }
+    })();
+  }, []); // eslint-disable-line
+
+  if (!error) {
+    return <FullScreenLoading />;
+  }
+
+  return (
+    <Screen>
+      <Box>
+        <Header text="Unable to recover wallet" />
+        {serverPublicKeys.length === 1 ? (
+          <SubtextParagraph>
+            We couldn't find the public key
+            {walletAddressDisplay(serverPublicKeys[0].publicKey)} using your
+            recovery phrase.
+          </SubtextParagraph>
+        ) : (
+          <SubtextParagraph>
+            We couldn't find any wallets using your recovery phrase.
+          </SubtextParagraph>
+        )}
+      </Box>
+      <Box>
+        <PrimaryButton label="Retry" onPress={() => navigation.goBack()} />
+      </Box>
+    </Screen>
+  );
+}
+
 function OnboardingBlockchainSelectScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "SelectBlockchain">) {
@@ -662,7 +802,7 @@ function OnboardingCreatePasswordScreen({
 
   const onSubmit = ({ password }: CreatePasswordFormData) => {
     setOnboardingData({ password, complete: true });
-    navigation.push("OnboardingCreateAccountLoading");
+    navigation.push("CreateAccountLoading");
   };
 
   return (
@@ -756,11 +896,8 @@ function OnboardingImportAccountsScreen({
   );
 }
 
-function OnboardingCreateAccountLoadingScreen(
-  _p: StackScreenProps<
-    OnboardingStackParamList,
-    "OnboardingCreateAccountLoading"
-  >
+function CreateAccountLoadingScreen(
+  _p: StackScreenProps<OnboardingStackParamList, "CreateAccountLoading">
 ): JSX.Element {
   const background = useBackgroundClient();
   const { onboardingData, maybeCreateUser } = useOnboarding();
@@ -785,7 +922,6 @@ function OnboardingCreateAccountLoadingScreen(
       }
       const res = await maybeCreateUser({
         ...onboardingData,
-        inviteCode: "ad3d24a0-5aa7-4519-af6f-4a903f1f2bc0", // fake code for local
         keyringType: "mnemonic",
       });
       await AsyncStorage.setItem("@bk-jwt", res.jwt);
@@ -873,7 +1009,6 @@ export function OnboardingNavigator({
   }, [onStart]);
 
   const theme = useTheme();
-  const { onboardingData } = useOnboarding();
   return (
     <OnboardingProvider>
       <Stack.Navigator
@@ -882,7 +1017,7 @@ export function OnboardingNavigator({
       >
         <Stack.Screen
           name="CreateOrRecoverAccount"
-          component={OnboardingCreateOrRecoverAccountScreen}
+          component={CreateOrRecoverAccountScreen}
         />
         <Stack.Group
           screenOptions={{
@@ -896,31 +1031,14 @@ export function OnboardingNavigator({
             headerBackTitleVisible: false,
           }}
         >
-          {onboardingData.action === "recover" ? (
-            <>
-              <Stack.Screen
-                name="OnboardingUsername"
-                component={OnboardingUsernameScreen}
-                initialParams={{ action: "recover" }}
-              />
-              <Stack.Screen
-                name="CreateOrImportWallet"
-                component={OnboardingCreateOrImportWalletScreen}
-              />
-            </>
-          ) : (
-            <>
-              <Stack.Screen
-                name="OnboardingUsername"
-                component={OnboardingUsernameScreen}
-                initialParams={{ action: "create" }}
-              />
-              <Stack.Screen
-                name="CreateOrImportWallet"
-                component={OnboardingCreateOrImportWalletScreen}
-              />
-            </>
-          )}
+          <Stack.Screen
+            name="CreateOrRecoverUsername"
+            component={CreateOrRecoverUsernameScreen}
+          />
+          <Stack.Screen
+            name="CreateOrImportWallet"
+            component={OnboardingCreateOrImportWalletScreen}
+          />
           <Stack.Screen
             name="KeyringTypeSelector"
             component={OnboardingKeyringTypeSelectorScreen}
@@ -928,6 +1046,10 @@ export function OnboardingNavigator({
           <Stack.Screen
             name="MnemonicInput"
             component={OnboardingMnemonicInputScreen}
+          />
+          <Stack.Screen
+            name="MnemonicSearch"
+            component={MnemonicSearchScreen}
           />
           <Stack.Screen
             name="SelectBlockchain"
@@ -942,8 +1064,8 @@ export function OnboardingNavigator({
             component={OnboardingCreatePasswordScreen}
           />
           <Stack.Screen
-            name="OnboardingCreateAccountLoading"
-            component={OnboardingCreateAccountLoadingScreen}
+            name="CreateAccountLoading"
+            component={CreateAccountLoadingScreen}
             options={{
               headerShown: false,
             }}

@@ -28,10 +28,11 @@ import {
   DangerButton,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
-import { SvgUri } from "react-native-svg";
 
 import { ContentCopyIcon, RedBackpack } from "~components/Icon";
 import { useTheme } from "~hooks/useTheme";
+
+import { ImageSvg } from "./ImageSvg";
 
 export { ActionCard } from "./ActionCard";
 export { MnemonicInputFields } from "./MnemonicInputFields";
@@ -375,7 +376,7 @@ export function Avatar({ size = 64 }: { size?: number }): JSX.Element {
         height: outerSize,
       }}
     >
-      <SvgUri width={size} height={size} uri={avatarUrl} />
+      <ImageSvg width={size} height={size} uri={avatarUrl} />
     </View>
   );
 }

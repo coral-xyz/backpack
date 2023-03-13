@@ -152,7 +152,6 @@ export function OnboardingProvider({
   const { authenticate } = useAuthentication();
   const { signMessageForWallet } = useRpcRequests();
   const [data, setData] = useState<OnboardingData>(defaultState);
-
   console.log("OnboardingProvider:data", data);
 
   const setOnboardingData = useCallback((data: Partial<OnboardingData>) => {
@@ -173,7 +172,6 @@ export function OnboardingProvider({
 
   const handleSelectBlockchain = useCallback(
     async ({ blockchain }: SelectBlockchainType) => {
-      console.log("handleSelect:blockchain", blockchain);
       const {
         selectedBlockchains,
         signedWalletDescriptors,
@@ -181,8 +179,6 @@ export function OnboardingProvider({
         keyringType,
         action,
       } = data;
-
-      console.log("handleSelect:data", data);
 
       if (selectedBlockchains.includes(blockchain)) {
         // Blockchain is being deselected
@@ -288,6 +284,7 @@ export function OnboardingProvider({
   const createUser = useCallback(
     async (data: Partial<OnboardingData>) => {
       const { inviteCode, userId, username, keyringType } = data;
+      console.log("useCallback:CreateUser:data", data);
 
       // If userId is provided, then we are onboarding via the recover flow.
       if (userId) {
@@ -305,6 +302,7 @@ export function OnboardingProvider({
           signature,
           message: getAuthMessage(userId),
         };
+
         const { jwt } = await authenticate(authData!);
         return { id: userId, jwt };
       }
@@ -382,7 +380,9 @@ export function OnboardingProvider({
   const maybeCreateUser = useCallback(
     async (data: Partial<OnboardingData>) => {
       try {
+        console.log("pre:createUser:data", data);
         const { id, jwt } = await createUser(data);
+        console.log("pre:createStore:data", data);
         await createStore(id, jwt, data);
         return { ok: true, jwt };
       } catch (err) {

@@ -102,6 +102,7 @@ export const RecoverAccount = ({
           key="MnemonicSearch"
           serverPublicKeys={serverPublicKeys!}
           mnemonic={mnemonic!}
+          onRetry={prevStep}
           onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
               const signedWalletDescriptors = await Promise.all(
                 walletDescriptors.map(async (w) => ({
@@ -120,7 +121,6 @@ export const RecoverAccount = ({
               setOnboardingData({ signedWalletDescriptors });
               nextStep();
             }}
-          onRetry={prevStep}
           />,
         ]
       : []),
