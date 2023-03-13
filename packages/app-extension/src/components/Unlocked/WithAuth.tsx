@@ -9,7 +9,6 @@ import {
   getAuthMessage,
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE,
   UI_RPC_METHOD_USER_JWT_UPDATE,
 } from "@coral-xyz/common";
@@ -18,9 +17,9 @@ import {
   useBackgroundClient,
   useDehydratedWallets,
   useKeyringHasMnemonic,
+  useRpcRequests,
   useUser,
 } from "@coral-xyz/recoil";
-import { ethers } from "ethers";
 
 import { WithDrawer } from "../common/Layout/Drawer";
 import { HardwareOnboard } from "../Onboarding/pages/HardwareOnboard";
@@ -31,6 +30,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   const background = useBackgroundClient();
   const user = useUser();
   const dehydratedWallets = useDehydratedWallets();
+  const { signMessageForWallet } = useRpcRequests();
 
   const [authData, setAuthData] = useState<{
     publicKey: string;
@@ -98,16 +98,11 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
       if (authData) {
         if (!authData.hardware) {
           // Auth signer is not a hardware wallet, sign transparent
-          const signature = await background.request({
-            method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-            params: [
-              authData.blockchain,
-              authData.publicKey,
-              ethers.utils.base58.encode(
-                Buffer.from(authData.message, "utf-8")
-              ),
-            ],
-          });
+          const signature = await signMessageForWallet(
+            authData.blockchain,
+            authData.publicKey,
+            authData.message
+          );
           setAuthSignature(signature);
         } else {
           // Auth signer is a hardware wallet, pop up a drawer to guide through
@@ -186,7 +181,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
         }
       }
     })();
-  }, [clientPublicKeys, serverPublicKeys]);
+  }, [background, clientPublicKeys, serverPublicKeys]);
 
   //
   // Attempt to find any dehydrated wallets on the mnemonic if a mnemonic is in use.
@@ -194,46 +189,56 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   useEffect(() => {
     (async () => {
       try {
-        if (hasMnemonic && dehydratedWallets.length > 0 && !syncAttempted) {
-          // We need to only do this once, the dehydrated wallets array will change
-          // if we find wallets and successfully load them and we don't want to
-          // trigger this function for smaller and smaller dehydratedWallets arrays
+        if (hasMnemonic) {
+          if (dehydratedWallets.length > 0 && !syncAttempted) {
+            // We need to only do this once, the dehydrated wallets array will change
+            // if we find wallets and successfully load them and we don't want to
+            // trigger this function for smaller and smaller dehydratedWallets arrays
+            setSyncAttempted(true);
+            // Do the sync
+            await background.request({
+              method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
+              params: [dehydratedWallets],
+            });
+          }
+        } else {
+          // If no mnemonic, don't try and sync again. When adding a mnemonic to a
+          // keyring there is a small period where the notifications
+          // haven't been processed which can trigger this again resulting in two
+          // of the same wallet appearing in the wallet list.
           setSyncAttempted(true);
-          // Do the sync
-          await background.request({
-            method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
-            params: [dehydratedWallets],
-          });
         }
       } catch (error) {
         console.log("sync error", error);
       }
     })();
-  }, [hasMnemonic, dehydratedWallets, syncAttempted]);
+  }, [background, hasMnemonic, dehydratedWallets, syncAttempted]);
 
   return (
     <>
       {children}
-      {authData ? <WithDrawer
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-        paperStyles={{
+      {authData ? (
+        <WithDrawer
+          openDrawer={openDrawer}
+          setOpenDrawer={setOpenDrawer}
+          paperStyles={{
             height: "calc(100% - 56px)",
             borderTopLeftRadius: "12px",
             borderTopRightRadius: "12px",
           }}
         >
-        <HardwareOnboard
-          blockchain={authData!.blockchain}
-          action="search"
-          searchPublicKey={authData!.publicKey}
-          signMessage={authData!.message}
-          signText="Sign the message to authenticate with Backpack."
-          onComplete={(signedWalletDescriptor: SignedWalletDescriptor) => {
+          <HardwareOnboard
+            blockchain={authData!.blockchain}
+            action="search"
+            searchPublicKey={authData!.publicKey}
+            signMessage={authData!.message}
+            signText="Sign the message to authenticate with Backpack."
+            onComplete={(signedWalletDescriptor: SignedWalletDescriptor) => {
               setAuthSignature(signedWalletDescriptor.signature);
             }}
           />
-      </WithDrawer> : null}
+        </WithDrawer>
+      ) : null}
     </>
   );
 }
