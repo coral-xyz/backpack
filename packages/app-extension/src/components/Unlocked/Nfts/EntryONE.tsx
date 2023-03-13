@@ -1,14 +1,13 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { isOneLive, useOpenPlugin } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
-import { CollectionsTwoTone } from "@mui/icons-material";
+import { styles as makeStyles } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
 import Card from "@mui/material/Card";
 import { useRecoilValue } from "recoil";
 
 import type { AllWalletCollections } from "./NftTable";
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   blockchainCard: {
     position: "relative",
     marginBottom: "12px",
@@ -85,16 +84,17 @@ export default function EntryONE({
     if (!ref.current) {
       return;
     }
-    if (ref.current.complete) {
+    const current = ref.current;
+    if (current.complete) {
       setImageLoaded(true);
       return;
     }
-    ref.current.onload = () => {
+    current.onload = () => {
       setImageLoaded(true);
     };
     return () => {
-      if (ref.current) {
-        ref.current.onload = () => null;
+      if (current) {
+        current.onload = () => null;
       }
     };
   }, []);

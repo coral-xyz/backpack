@@ -124,6 +124,8 @@ export const UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH =
   "ui-rpc-method-keyring-read-next-derivation-path";
 export const UI_RPC_METHOD_KEYRING_IMPORT_WALLET =
   "ui-rpc-method-keyring-import-wallet";
+export const UI_RPC_METHOD_KEYRING_SET_MNEMONIC =
+  "ui-rpc-method-keyring-set-mnemonic";
 export const UI_RPC_METHOD_KEYRING_DERIVE_WALLET =
   "ui-rpc-method-keyring-derive";
 export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC =
@@ -300,6 +302,8 @@ export const NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY =
   "notification-keyring-imported-secret-key";
 export const NOTIFICATION_KEYRING_KEY_DELETE =
   "notification-keyring-key-delete";
+export const NOTIFICATION_KEYRING_SET_MNEMONIC =
+  "notification-keyring-set-mnemonic";
 export const NOTIFICATION_KEYRING_RESET_MNEMONIC =
   "notification-keyring-reset-mnemonic";
 export const NOTIFICATION_KEYRING_STORE_CREATED =
@@ -567,8 +571,8 @@ export const QUERY_ADD_USER_ACCOUNT = "add-user-account=true";
 
 export const SIMULATOR_PORT = 9933;
 
-export const NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 890880;
-export const TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 2039280;
+export const NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 890880 as const;
+export const TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 2039280 as const;
 
 export const DISCORD_INVITE_LINK = "https://discord.gg/RhKxgS8SaD";
 export const TWITTER_LINK = "https://twitter.com/xNFT_Backpack";
@@ -663,8 +667,6 @@ export const LOAD_PUBLIC_KEY_AMOUNT = 20;
 export const DEFAULT_PUBKEY_STR = "11111111111111111111111111111111";
 
 export const MOBILE_CHANNEL_LOGS = "mobile-logs";
-
-export const IMAGE_PROXY_URL = "https://d1a7965zcx2lcc.cloudfront.net";
 
 export const BACKPACK_TEAM = [
   "ee7ce804-44b2-4360-bfbb-28e14cd0499b",

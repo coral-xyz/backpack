@@ -83,21 +83,16 @@ const app = new Hono();
 
 app.use("*", cors());
 
-app.use("*", async (c, next) => {
-  try {
-    await next();
-  } catch (err) {
-    console.error(err);
-    if (err instanceof ZodError) {
-      return c.json(
-        {
-          message: zodErrorToString(err),
-        },
-        400
-      );
-    } else {
-      return c.json(err, 500);
-    }
+app.onError((err, c) => {
+  if (err instanceof ZodError) {
+    return c.json(
+      {
+        message: zodErrorToString(err),
+      },
+      400
+    );
+  } else {
+    return c.json(err, 500);
   }
 });
 

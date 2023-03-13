@@ -1,13 +1,13 @@
 import { Suspense } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   Pressable,
+  StyleProp,
   StyleSheet,
   Text,
   View,
-  ActivityIndicator,
-  StyleProp,
   ViewStyle,
 } from "react-native";
 
@@ -31,7 +31,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { EmptyState, Screen } from "~components/index";
-import { useBlockchainLogo, useTheme } from "~hooks/index";
+import { getBlockchainLogo, useTheme } from "~hooks/index";
 
 export function RecentActivityScreen() {
   const insets = useSafeAreaInsets();
@@ -185,7 +185,7 @@ function RecentActivityListItem({
   transaction: RecentTransaction;
 }): JSX.Element {
   const theme = useTheme();
-  const blockchainLogo = useBlockchainLogo(transaction.blockchain);
+  const blockchainLogo = getBlockchainLogo(transaction.blockchain);
   const connectionUrl = useBlockchainConnectionUrl(transaction.blockchain);
   const explorer = useBlockchainExplorer(transaction.blockchain);
 

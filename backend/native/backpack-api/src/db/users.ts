@@ -57,11 +57,9 @@ export const getUsers = async (
         username: true,
       },
     ],
-  });
-  const publicKeysResponse = await chain("query")({
     auth_public_keys: [
       {
-        where: { user: { id: { _in: userIds } } },
+        where: { user_id: { _in: userIds } },
       },
       {
         public_key: true,
@@ -70,8 +68,6 @@ export const getUsers = async (
         user_id: true,
       },
     ],
-  });
-  const userToPublicKeyResponse = await chain("query")({
     auth_user_active_publickey_mapping: [
       {
         where: {
@@ -86,6 +82,7 @@ export const getUsers = async (
       },
     ],
   });
+
   const publicKeyMapping: { [public_key_id: string]: true } = {};
   const userToPublicKeyMapping: {
     [user_id: string]: {
@@ -95,11 +92,11 @@ export const getUsers = async (
     }[];
   } = {};
 
-  userToPublicKeyResponse.auth_user_active_publickey_mapping.map((x) => {
+  response.auth_user_active_publickey_mapping.map((x) => {
     publicKeyMapping[x.public_key_id] = true;
   });
 
-  publicKeysResponse.auth_public_keys.map((x) => {
+  response.auth_public_keys.map((x) => {
     //@ts-ignore
     const userId: string = x.user_id;
     if (!userToPublicKeyMapping[userId]) {
@@ -137,33 +134,19 @@ export const getUsers = async (
  * Look up user IDs for multiple blockchain/public key pairs.
  */
 export const getUsersByPublicKeys = async (
-  blockchainPublicKeys: Array<{ blockchain: Blockchain; publicKey: string }>,
-  primaryOnly = true
+  blockchainPublicKeys: Array<{ blockchain: Blockchain; publicKey: string }>
 ): Promise<
   Array<{ user_id?: unknown; blockchain: string; public_key: unknown }>
 > => {
-  let where;
-  if (primaryOnly) {
-    where = {
-      user_active_publickey_mappings: {
-        public_key: {
-          public_key: { _in: blockchainPublicKeys.map((b) => b.publicKey) },
-        },
-      },
-    };
-  } else {
-    where = {
-      // Only matching public keys here, but it should be checking
-      // blockchain AND public key as the same public key will be used
-      // for different blockchains (particularly EVM)
-      public_key: { _in: blockchainPublicKeys.map((b) => b.publicKey) },
-    };
-  }
-
   const response = await chain("query")({
     auth_public_keys: [
       {
-        where,
+        where: {
+          // Only matching public keys here, but it should be checking
+          // blockchain AND public key as the same public key will be used
+          // for different blockchains (particularly EVM)
+          public_key: { _in: blockchainPublicKeys.map((b) => b.publicKey) },
+        },
         limit: 100,
       },
       {
@@ -396,8 +379,6 @@ export async function getUsersByPrefix({
           username: { _like: `${usernamePrefix}%` },
           id: { _neq: uuid },
         },
-        //@ts-ignore
-        order_by: [{ username: "asc" }],
         limit: limit || 25,
       },
       {

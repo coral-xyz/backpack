@@ -1,4 +1,7 @@
+import * as SQLite from "expo-sqlite";
+
 import { registerRootComponent } from "expo";
+import setGlobalVars from "indexeddbshim/dist/indexeddbshim-noninvasive";
 import "./src/crypto-shim";
 
 if (typeof Buffer === "undefined") {
@@ -8,6 +11,8 @@ if (typeof Buffer === "undefined") {
 if (typeof BigInt === "undefined") {
   global.BigInt = require("big-integer");
 }
+
+setGlobalVars(window, { checkOrigin: false, win: SQLite });
 
 // eslint-disable-next-line
 import "react-native-url-polyfill/auto";

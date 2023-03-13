@@ -32,7 +32,9 @@ import {
   OnboardingProvider,
   useOnboarding,
 } from "@coral-xyz/recoil";
+import { Stack as Box } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -61,7 +63,7 @@ import {
 import { StyledTextInput } from "~components/StyledTextInput";
 import {
   ActionCard,
-  Box,
+  // Box,
   FullScreenLoading,
   Header,
   Margin,
@@ -132,7 +134,9 @@ function Network({
 
 type OnboardingStackParamList = {
   CreateOrImportWallet: undefined;
-  OnboardingUsername: undefined;
+  OnboardingUsername: {
+    action: "create" | "recover";
+  };
   KeyringTypeSelector: undefined;
   MnemonicInput: undefined;
   SelectBlockchain: undefined;
@@ -150,7 +154,7 @@ function OnboardingScreen({
   style,
   scrollable,
 }: {
-  title: string;
+  title?: string;
   subtitle?: string;
   children?: any;
   style?: StyleProp<ViewStyle>;
@@ -168,10 +172,12 @@ function OnboardingScreen({
         style,
       ]}
     >
-      <Margin bottom={24}>
-        <Header text={title} />
-        {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
-      </Margin>
+      {title || subtitle ? (
+        <Box mb={24}>
+          {title ? <Header text={title} /> : null}
+          {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
+        </Box>
+      ) : null}
       {children}
     </Screen>
   );
@@ -202,30 +208,25 @@ function OnboardingCreateOrImportWalletScreen({
         ]}
       >
         <HelpModalMenuButton onPress={handlePresentModalPress} />
-        <Margin top={48} bottom={24}>
+        <Box marginTop={48} marginBottom={24}>
           <WelcomeLogoHeader />
-        </Margin>
-        <View
-          style={{
-            padding: 16,
-            alignItems: "center",
-          }}
-        >
+        </Box>
+        <Box padding={16} alignItems="center">
           <PrimaryButton
-            label="Create a new wallet"
+            label="Create a new account"
             onPress={() => {
               setOnboardingData({ action: "create" });
-              navigation.push("OnboardingUsername");
+              navigation.push("OnboardingUsername", { action: "create" });
             }}
           />
           <LinkButton
-            label="I already have a wallet"
+            label="I already have an account"
             onPress={() => {
-              setOnboardingData({ action: "import" });
-              navigation.push("MnemonicInput");
+              setOnboardingData({ action: "recover" });
+              navigation.push("OnboardingUsername", { action: "recover" });
             }}
           />
-        </View>
+        </Box>
       </Screen>
       <BottomSheetHelpModal
         isVisible={isModalVisible}
@@ -244,7 +245,7 @@ function OnboardingKeyringTypeSelectorScreen({
   const { action } = onboardingData;
 
   return (
-    <OnboardingScreen title="Keyring Selector">
+    <OnboardingScreen>
       {maybeRender(action === "create", () => (
         <>
           <Header text="Create a new wallet" />
@@ -270,12 +271,7 @@ function OnboardingKeyringTypeSelectorScreen({
           </SubtextParagraph>
         </>
       ))}
-      <Box
-        style={{
-          padding: 16,
-          alignItems: "center",
-        }}
-      >
+      <Box alignItems="center" p={16}>
         <PrimaryButton
           label={`${toTitleCase(action as string)} with recovery phrase`}
           onPress={() => {
@@ -302,34 +298,53 @@ function OnboardingKeyringTypeSelectorScreen({
 
 function OnboardingUsernameScreen({
   navigation,
+  route,
 }: StackScreenProps<
   OnboardingStackParamList,
   "OnboardingUsername"
 >): JSX.Element {
   const { onboardingData, setOnboardingData } = useOnboarding();
+  const screenTitle =
+    route.params.action === "create"
+      ? "Claim your username"
+      : "Username recovery";
+
+  const text =
+    route.params.action === "create" ? (
+      <View style={{ flex: 1 }}>
+        <Box marginBottom={12}>
+          <SubtextParagraph>
+            Others can see and find you by this username, and it will be
+            associated with your primary wallet address.
+          </SubtextParagraph>
+        </Box>
+        <Box marginBottom={12}>
+          <SubtextParagraph>
+            Choose wisely if you'd like to remain anonymous.
+          </SubtextParagraph>
+        </Box>
+        <SubtextParagraph>Have fun!</SubtextParagraph>
+      </View>
+    ) : (
+      <View style={{ flex: 1 }}>
+        <SubtextParagraph>
+          Enter your username below, you will then be asked for your secret
+          recovery phrase to verify that you own the public key that was
+          initially associated with it.
+        </SubtextParagraph>
+      </View>
+    );
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={78}
     >
-      <OnboardingScreen title="Claim your username">
-        <View style={{ flex: 1 }}>
-          <Margin bottom={12}>
-            <SubtextParagraph>
-              Others can see and find you by this username, and it will be
-              associated with your primary wallet address.
-            </SubtextParagraph>
-          </Margin>
-          <Margin bottom={12}>
-            <SubtextParagraph>
-              Choose wisely if you'd like to remain anonymous.
-            </SubtextParagraph>
-          </Margin>
-          <SubtextParagraph>Have fun!</SubtextParagraph>
-        </View>
+      <OnboardingScreen title={screenTitle}>
+        {text}
         <View>
-          <Margin bottom={18}>
+          <Box marginBottom={18}>
             <StyledTextInput
               autoFocus
               placeholder="@Username"
@@ -337,7 +352,7 @@ function OnboardingUsernameScreen({
               value={onboardingData.username ?? ""}
               onChangeText={(username) => setOnboardingData({ username })}
             />
-          </Margin>
+          </Box>
           <PrimaryButton
             disabled={!onboardingData.username?.length}
             label="Continue"
@@ -705,6 +720,8 @@ function OnboardingCreateAccountLoadingScreen(
         });
       }
       const res = await maybeCreateUser({ ...onboardingData });
+      console.log("res", res);
+      await AsyncStorage.setItem("@bk-jwt", res.jwt);
       if (!res.ok) {
         setError(true);
       }

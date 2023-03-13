@@ -19,7 +19,7 @@ export const Barter = ({ buttonStyle }: any) => {
       }}
     >
       <IconButton
-        size={"small"}
+        size="small"
         sx={{
           color: theme.custom.colors.icon,
           "&:hover": {
@@ -28,7 +28,11 @@ export const Barter = ({ buttonStyle }: any) => {
         }}
         style={buttonStyle}
         onClick={(e) => {
-          setOpenPlugin((p) => (p === "barter" ? "" : "barter"));
+          setOpenPlugin((p) =>
+            p.type === "barter"
+              ? { type: "", metadata: {} }
+              : { type: "barter", metadata: {} }
+          );
         }}
       >
         {" "}

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Blockchain,
   SOL_NATIVE_MINT,
@@ -14,7 +15,11 @@ import {
   SecondaryButton,
   TextFieldLabel,
 } from "@coral-xyz/react-common";
-import type { TokenData, TokenDataWithPrice } from "@coral-xyz/recoil";
+import type {
+  SwapContext,
+  TokenData,
+  TokenDataWithPrice,
+} from "@coral-xyz/recoil";
 import {
   useActiveWallet,
   useDarkMode,
@@ -31,8 +36,8 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import type { BigNumberish } from "ethers";
 import { ethers, FixedNumber } from "ethers";
-import { useEffect, useState } from "react";
 
 import { Button as XnftButton } from "../../plugin/Component";
 import { TextField } from "../common";
@@ -204,6 +209,17 @@ const useStyles = styles((theme) => ({
     lineHeight: "20px",
     fontSize: "14px",
     fontWeight: 500,
+  },
+  feesTooltipTable: {
+    tableCollapse: "collapse",
+  },
+  feesTooltipTableHeading: {
+    fontWeight: 500,
+    textAlign: "left",
+    paddingRight: 10,
+  },
+  feesTooltipTableValue: {
+    textAlign: "right",
   },
 }));
 
@@ -631,7 +647,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     priceImpactPct,
     isLoadingRoutes,
     isLoadingTransactions,
-    transactionFee,
+    transactionFees,
     swapFee,
   } = useSwapContext();
 
@@ -694,7 +710,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
         youPay: `${toDisplayBalance(fromAmount, fromToken.decimals)} ${
           fromToken.ticker
         }`,
-        rate: `1 ${fromToken.ticker} = ${rate.substring(0, 10)} ${
+        rate: `1 ${fromToken.ticker} ≈ ${rate.substring(0, 10)} ${
           toToken.ticker
         }`,
         priceImpact: `${
@@ -704,14 +720,21 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
             ? priceImpactPct.toFixed(2)
             : "< 0.1"
         }%`,
-        networkFee: transactionFee
-          ? `${ethers.utils.formatUnits(transactionFee, 9)} SOL`
+        networkFee: transactionFees
+          ? `~ ${approximateAmount(transactionFees.total)} SOL`
           : "-",
         swapFee,
+        transactionFees,
       }}
     />
   );
 }
+
+type SwapInfoRowProps = {
+  label: string;
+  value: string | React.ReactElement;
+  tooltip?: string;
+};
 
 function SwapInfoRows({
   youPay,
@@ -720,22 +743,20 @@ function SwapInfoRows({
   priceImpact,
   compact,
   swapFee,
+  transactionFees,
 }: {
   youPay: any;
   rate: any;
   priceImpact: any;
   networkFee: any;
-  swapFee?: any;
   compact?: boolean;
+  swapFee?: SwapContext["swapFee"];
+  transactionFees?: SwapContext["transactionFees"];
 }) {
   const classes = useStyles();
   const wallet = useActiveWallet();
 
-  const rows: Array<{
-    label: string;
-    value: string | React.ReactElement;
-    tooltip?: string;
-  }> = [
+  const rows: Array<SwapInfoRowProps> = [
     {
       label: "Wallet",
       value: <WalletDrawerButton wallet={wallet} style={{ height: "20px" }} />,
@@ -748,34 +769,70 @@ function SwapInfoRows({
 
   rows.push({ label: "Rate", value: rate });
   rows.push({
-    label: "Network Fee",
+    label: "Estimated Fees",
     value: networkFee,
-    tooltip: swapFee?.pct
-      ? `Quote includes a ${swapFee?.pct}% Backpack fee`
-      : undefined,
+    // @ts-ignore - tooltip's supposed to be a string, can be a component for now
+    tooltip:
+      transactionFees && swapFee ? (
+        <table className={classes.feesTooltipTable}>
+          <tbody>
+            {Object.entries(transactionFees?.fees ?? {}).map(
+              ([description, value]) => (
+                <tr key={description}>
+                  <th className={classes.feesTooltipTableHeading}>
+                    {description}
+                  </th>
+                  <td className={classes.feesTooltipTableValue}>
+                    {approximateAmount(value)} SOL
+                  </td>
+                </tr>
+              )
+            )}
+            {swapFee.pct > 0 ? (
+              <tr>
+                <td colSpan={2} style={{ opacity: 0.5 }}>
+                  Quote includes a {swapFee.pct}% Backpack fee
+                </td>
+              </tr>
+            ) : null}
+          </tbody>
+        </table>
+      ) : null,
   });
   rows.push({ label: "Price Impact", value: priceImpact });
 
   return (
     <>
-      {rows.map(({ label, value, tooltip }) => (
-        <div className={classes.swapInfoRow} key={label}>
-          <Typography className={classes.swapInfoTitleLeft}>
-            {label}
-            {tooltip ? (
-              <Tooltip title={tooltip}>
-                <Info className={classes.tooltipIcon} />
-              </Tooltip>
-            ) : null}
-          </Typography>
-          <Typography className={classes.swapInfoTitleRight}>
-            {value}
-          </Typography>
-        </div>
+      {rows.map((row) => (
+        <SwapInfoRow key={row.label} {...row} />
       ))}
     </>
   );
 }
+
+const SwapInfoRow = ({ label, value, tooltip }: SwapInfoRowProps) => {
+  const classes = useStyles();
+  // show tooltip when user hovers on the label text, not just the icon
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  return (
+    <div className={classes.swapInfoRow}>
+      <div
+        onMouseOver={() => setTooltipVisible(true)}
+        onMouseOut={() => setTooltipVisible(false)}
+      >
+        <Typography className={classes.swapInfoTitleLeft}>
+          {label}
+          {tooltip ? (
+            <Tooltip title={tooltip} arrow open={tooltipVisible}>
+              <Info className={classes.tooltipIcon} />
+            </Tooltip>
+          ) : null}
+        </Typography>
+      </div>
+      <Typography className={classes.swapInfoTitleRight}>{value}</Typography>
+    </div>
+  );
+};
 
 function SwapTokensButton({
   onClick,
@@ -893,3 +950,11 @@ export function SwapSelectToken({
     />
   );
 }
+
+/**
+ * Hides miniscule amounts of SOL
+ * @example approximateAmount(0.00203928) = "0.002"
+ * @param value BigNumberish amount of Solana Lamports
+ */
+const approximateAmount = (value: BigNumberish) =>
+  ethers.utils.formatUnits(value, 9).replace(/(0.0{2,}[1-9])(\d+)/, "$1");

@@ -59,30 +59,31 @@ export function SettingsList() {
       icon: <IconLeft name="person" />,
       detailIcon: <IconPushDetail />,
     },
-    {
-      label: "Preferences",
-      onPress: () => navigation.push("Preferences"),
-      icon: <IconLeft name="settings" />,
-      detailIcon: <IconPushDetail />,
-    },
+    // {
+    //   label: "Preferences",
+    //   onPress: () => navigation.push("Preferences"),
+    //   icon: <IconLeft name="settings" />,
+    //   detailIcon: <IconPushDetail />,
+    // },
   ];
 
-  settingsMenu.push({
-    label: "Friends",
-    onPress: () => navigation.push("contacts-list"),
-    icon: <IconLeft name="people" />,
-    detailIcon: <IconPushDetail />,
-  });
+  // settingsMenu.push({
+  //   label: "Friends",
+  //   disabled: true,
+  //   onPress: () => navigation.push("contacts-list"),
+  //   icon: <IconLeft name="people" />,
+  //   detailIcon: <IconPushDetail />,
+  // });
 
-  if (BACKPACK_FEATURE_XNFT) {
-    settingsMenu.push({
-      label: "xNFTs",
-      disabled: true,
-      onPress: () => navigation.push("xNFTSettings"),
-      icon: <IconLeft name="apps" />,
-      detailIcon: <IconPushDetail />,
-    });
-  }
+  // if (BACKPACK_FEATURE_XNFT) {
+  //   settingsMenu.push({
+  //     label: "xNFTs",
+  //     disabled: true,
+  //     onPress: () => navigation.push("xNFTSettings"),
+  //     icon: <IconLeft name="apps" />,
+  //     detailIcon: <IconPushDetail />,
+  //   });
+  // }
 
   settingsMenu.push({
     label: "Lock Wallet",

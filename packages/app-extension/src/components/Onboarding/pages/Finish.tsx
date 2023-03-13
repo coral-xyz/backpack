@@ -7,12 +7,29 @@ import {
 import { Loading } from "@coral-xyz/react-common";
 import { useBackgroundClient, useOnboarding } from "@coral-xyz/recoil";
 
+import {
+  registerNotificationServiceWorker,
+  saveSubscription,
+} from "../../../permissions/utils";
 import { SetupComplete } from "../../common/Account/SetupComplete";
 
 export const Finish = ({ isAddingAccount }: { isAddingAccount?: boolean }) => {
   const [loading, setLoading] = useState(true);
   const { onboardingData, maybeCreateUser } = useOnboarding();
   const background = useBackgroundClient();
+
+  const registerSubscription = async () => {
+    try {
+      const sub = await registerNotificationServiceWorker();
+      if (!sub) {
+        // Set appropriate app states
+        return;
+      }
+      await saveSubscription(sub);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -41,9 +58,10 @@ export const Finish = ({ isAddingAccount }: { isAddingAccount?: boolean }) => {
           window.location.reload();
         }
       }
+      registerSubscription();
       setLoading(false);
     })();
-  }, [onboardingData, isAddingAccount]);
+  }, [background, isAddingAccount, onboardingData, maybeCreateUser]);
 
   return !loading ? (
     <SetupComplete

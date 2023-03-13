@@ -61,6 +61,7 @@ import {
 import BN from "bn.js";
 
 import type { BackgroundClient } from "../";
+import { TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS } from "../constants";
 import { ReadApiConnection } from "../";
 
 import * as assertOwner from "./programs/assert-owner";
@@ -790,13 +791,12 @@ export const generateUnwrapSolTx = async (
     );
   } else {
     const newAccount = Keypair.generate();
-    const rentExemptionLamports = 2039280;
     // Create a new account to transfer wSOL into and then close
     tx.instructions.push(
       SystemProgram.createAccount({
         fromPubkey: walletPublicKey,
         newAccountPubkey: newAccount.publicKey,
-        lamports: rentExemptionLamports,
+        lamports: TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
         space: 165,
         programId: TOKEN_PROGRAM_ID,
       })

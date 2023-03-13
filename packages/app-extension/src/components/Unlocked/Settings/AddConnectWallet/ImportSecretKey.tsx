@@ -1,19 +1,15 @@
 import { useEffect, useState } from "react";
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
+  getAddMessage,
+  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-  walletAddressDisplay,
 } from "@coral-xyz/common";
-import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
-import type { WalletPublicKeys } from "@coral-xyz/recoil";
-import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
+import { useBackgroundClient, useRpcRequests } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Box } from "@mui/material";
-import { Keypair } from "@solana/web3.js";
-import * as bs58 from "bs58";
-import { ethers } from "ethers";
 
-import { Header, SubtextParagraph } from "../../../common";
+import { PrivateKeyInput } from "../../../common/Account/PrivateKeyInput";
 import {
   useDrawerContext,
   WithMiniDrawer,
@@ -30,16 +26,23 @@ export function ImportSecretKey({
   publicKey?: string;
 }) {
   const background = useBackgroundClient();
-  const existingPublicKeys = useWalletPublicKeys();
   const nav = useNavigation();
   const theme = useCustomTheme();
-  const [name, setName] = useState("");
-  const [secretKey, setSecretKey] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [keyringExists, setKeyringExists] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [newPublicKey, setNewPublicKey] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { signMessageForWallet } = useRpcRequests();
   const { close: closeParentDrawer } = useDrawerContext();
+
+  useEffect(() => {
+    (async () => {
+      const blockchainKeyrings = await background.request({
+        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
+        params: [],
+      });
+      setKeyringExists(blockchainKeyrings.includes(blockchain));
+    })();
+  }, [background, blockchain]);
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -47,123 +50,55 @@ export function ImportSecretKey({
     return () => {
       nav.setOptions({ headerTitle: prevTitle });
     };
-  }, [theme]);
+  }, [nav, theme]);
 
-  useEffect(() => {
-    // Clear error on form input changes
-    setError(null);
-  }, [name, secretKey]);
-
-  const save = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    setLoading(true);
-
-    let privateKey, _publicKey;
-    try {
-      ({ privateKey, publicKey: _publicKey } = validateSecretKey(
+  const onNext = async ({
+    blockchain,
+    privateKey,
+    publicKey,
+    name,
+  }: {
+    blockchain: Blockchain;
+    privateKey: string;
+    publicKey: string;
+    name: string;
+  }) => {
+    if (keyringExists) {
+      publicKey = await background.request({
+        method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+        params: [blockchain, privateKey, name],
+      });
+    } else {
+      // Blockchain keyring doesn't exist, init
+      const signature = await signMessageForWallet(
         blockchain,
-        secretKey,
-        existingPublicKeys
-      ));
-    } catch (e) {
-      setLoading(false);
-      setError((e as Error).message);
-      return;
+        publicKey,
+        getAddMessage(publicKey),
+        {
+          blockchain,
+          publicKey,
+          privateKey,
+          signature: "",
+        }
+      );
+      publicKey = await background.request({
+        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+        params: [{ blockchain, publicKey, privateKey, signature }],
+      });
     }
-
-    if (publicKey && publicKey !== _publicKey) {
-      setLoading(false);
-      setError(`Incorrect private key for ${walletAddressDisplay(publicKey)}`);
-      return;
-    }
-
-    if (privateKey) {
-      try {
-        const newPublicKey = await background.request({
-          method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-          params: [blockchain, privateKey, name],
-        });
-        setNewPublicKey(newPublicKey);
-        setOpenDrawer(true);
-      } catch (error) {
-        setError("Wallet address is used by another Backpack account.");
-      }
-      setLoading(false);
-    }
+    setNewPublicKey(publicKey);
+    setOpenDrawer(true);
   };
+
+  let serverPublicKeys = publicKey ? [{ blockchain, publicKey }] : undefined;
 
   return (
     <>
-      <form
-        noValidate
-        onSubmit={save}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-          justifyContent: "space-between",
-        }}
-      >
-        <Box sx={{ margin: "24px 0" }}>
-          <Box sx={{ margin: "0 24px" }}>
-            <Header text="Import private key" />
-            <SubtextParagraph style={{ marginBottom: "32px" }}>
-              {publicKey ? (
-                <>
-                  Enter the private key for {walletAddressDisplay(publicKey)} to
-                  recover the wallet.
-                </>
-              ) : (
-                <>
-                  Enter your private key. It will be encrypted and stored on
-                  your device.
-                </>
-              )}
-            </SubtextParagraph>
-          </Box>
-          <Box sx={{ margin: "0 16px" }}>
-            <Box sx={{ marginBottom: "4px" }}>
-              <TextInput
-                autoFocus
-                placeholder="Name"
-                value={name}
-                setValue={(e) => setName(e.target.value)}
-              />
-            </Box>
-            <TextInput
-              placeholder="Enter private key"
-              value={secretKey}
-              setValue={(e) => {
-                setSecretKey(e.target.value);
-              }}
-              onKeyDown={async (e) => {
-                if (e.key === "Enter") {
-                  await save(e);
-                }
-              }}
-              rows={4}
-              error={error ? true : false}
-              errorMessage={error || ""}
-            />
-          </Box>
-        </Box>
-        <Box
-          sx={{
-            marginLeft: "16px",
-            marginRight: "16px",
-            marginBottom: "16px",
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <PrimaryButton
-            type="submit"
-            label="Import"
-            disabled={secretKey.length === 0 || loading}
-          />
-        </Box>
-      </form>
+      <PrivateKeyInput
+        blockchain={blockchain}
+        onNext={onNext}
+        serverPublicKeys={serverPublicKeys}
+      />
       <WithMiniDrawer
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}
@@ -185,53 +120,4 @@ export function ImportSecretKey({
       </WithMiniDrawer>
     </>
   );
-}
-
-// Validate a secret key and return a normalised hex representation
-function validateSecretKey(
-  blockchain: Blockchain,
-  secretKey: string,
-  keyring: WalletPublicKeys
-): { privateKey: string; publicKey: string } {
-  // Extract public keys from keychain object into array of strings
-  const existingPublicKeys = Object.values(keyring[blockchain])
-    .map((k) => k.map((i) => i.publicKey))
-    .flat();
-
-  if (blockchain === Blockchain.SOLANA) {
-    let keypair: Keypair | null = null;
-    try {
-      // Attempt to create a keypair from JSON secret key
-      keypair = Keypair.fromSecretKey(new Uint8Array(JSON.parse(secretKey)));
-    } catch (_) {
-      try {
-        // Attempt to create a keypair from bs58 decode of secret key
-        keypair = Keypair.fromSecretKey(new Uint8Array(bs58.decode(secretKey)));
-      } catch (_) {
-        // Failure
-        throw new Error("Invalid private key");
-      }
-    }
-
-    if (existingPublicKeys.includes(keypair.publicKey.toString())) {
-      throw new Error("Key already exists");
-    }
-
-    return {
-      privateKey: Buffer.from(keypair.secretKey).toString("hex"),
-      publicKey: keypair.publicKey.toString(),
-    };
-  } else if (blockchain === Blockchain.ETHEREUM) {
-    let wallet;
-    try {
-      wallet = new ethers.Wallet(secretKey);
-    } catch (_) {
-      throw new Error("Invalid private key");
-    }
-    if (existingPublicKeys.includes(wallet.address)) {
-      throw new Error("Key already exists");
-    }
-    return { privateKey: wallet.privateKey, publicKey: wallet.address };
-  }
-  throw new Error("secret key validation not implemented for blockchain");
 }

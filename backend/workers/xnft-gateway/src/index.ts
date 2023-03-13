@@ -32,16 +32,26 @@ const executeRequest: (c: ExecutionContext, env: Env) => ExecuteRequest =
     );
 
     const xnftMetadata: any = await xnftMetadataResponse.json();
-    const entrypoint =
-      xnftMetadata?.metadata?.xnft?.manifest?.entrypoints?.default?.web;
-    const newUrl = externalResourceUri(
-      entrypoint + (url.pathname === "/" ? "" : url.pathname)
+    const entrypoint = externalResourceUri(
+      xnftMetadata?.metadata?.xnft?.manifest?.entrypoints?.default?.web
     );
+    const isImmutable =
+      entrypoint.startsWith("ar://") || entrypoint.startsWith("ipfs://");
+
+    // if url points to a file (last path segment includes ".") remove it -> hacky.
+    const urlSegments = entrypoint.split("/");
+    const lastSegment = urlSegments[urlSegments.length - 1];
+    if (lastSegment.includes(".") || lastSegment === "") {
+      urlSegments.pop();
+    }
+
+    const newUrl =
+      urlSegments.join("/") + (url.pathname === "/" ? "" : url.pathname);
 
     const fetched = await fetch(new Request(newUrl, req));
     const response = new Response(fetched.body, fetched);
 
-    if (entrypoint.startsWith("ar://") || entrypoint.startsWith("ipfs://")) {
+    if (isImmutable) {
       response.headers.set(
         "Cache-Control",
         `max-age=31536000, s-maxage=31536000, immutable`

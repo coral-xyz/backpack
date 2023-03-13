@@ -2,7 +2,10 @@ import * as store from "@coral-xyz/background/src/backend/store";
 import { DefaultKeyname } from "@coral-xyz/background/src/backend/store";
 import type {
   BlockchainKeyringJson,
-  WalletDescriptor,
+  LedgerKeyringInit,
+  MnemonicKeyringInit,
+  PrivateKeyKeyringInit,
+  SignedWalletDescriptor,
 } from "@coral-xyz/common";
 import { getLogger } from "@coral-xyz/common";
 import * as bs58 from "bs58";
@@ -58,19 +61,68 @@ export class BlockchainKeyring {
     };
   }
 
-  public async initFromMnemonic(
+  /**
+   * Set up a new blockchain keyring.
+   */
+  public async init(
+    keyringInit: MnemonicKeyringInit | LedgerKeyringInit | PrivateKeyKeyringInit
+  ): Promise<Array<[string, string]>> {
+    if (Object.values(this.publicKeys()).flat().length > 0) {
+      throw new Error("keyring already initialised");
+    }
+    let newAccounts: Array<[string, string]> = [];
+    if ("mnemonic" in keyringInit) {
+      // Don't accept `true` for mnemonic initialisation
+      if (typeof keyringInit.mnemonic !== "string") {
+        throw new Error("invalid mnemonic");
+      }
+      newAccounts = await this.initHdKeyring(
+        keyringInit.mnemonic,
+        keyringInit.signedWalletDescriptors.map((s) => s.derivationPath)
+      );
+      this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
+      this.importedKeyring = this.keyringFactory.init([]);
+    } else if ("privateKey" in keyringInit) {
+      // Init using private key
+      this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
+      this.importedKeyring = this.keyringFactory.init([keyringInit.privateKey]);
+      const name = DefaultKeyname.defaultImported(1);
+      await store.setKeyname(keyringInit.publicKey, name);
+      newAccounts = [[name, keyringInit.publicKey]];
+    } else {
+      // Init using ledger
+      this.ledgerKeyring = this.ledgerKeyringFactory.init(
+        keyringInit.signedWalletDescriptors
+      );
+      this.importedKeyring = this.keyringFactory.init([]);
+      for (const [
+        index,
+        walletDescriptor,
+      ] of keyringInit.signedWalletDescriptors.entries()) {
+        const name = DefaultKeyname.defaultLedger(index + 1);
+        await store.setKeyname(walletDescriptor.publicKey, name);
+        await store.setIsCold(walletDescriptor.publicKey, true);
+        newAccounts.push([walletDescriptor.publicKey, name]);
+      }
+    }
+    this.activeWallet = Object.values(this.publicKeys()).flat()[0];
+    this.deletedWallets = [];
+    return newAccounts;
+  }
+
+  /**
+   * Utility method to init a hd keyring on a blockchain keyring.
+   * This is used when initialising by mnemonic, but it is also used when the
+   * user initialised with a private key or ledger and they later want to add
+   * a mnemonic.
+   */
+  public async initHdKeyring(
     mnemonic: string,
     derivationPaths: Array<string>
   ): Promise<Array<[string, string]>> {
     // Initialize keyrings.
     this.hdKeyring = this.hdKeyringFactory.init(mnemonic, derivationPaths);
-    // Empty ledger keyring to hold one off ledger imports
-    this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
-    // Empty imported keyring to hold imported secret keys
-    this.importedKeyring = this.keyringFactory.init([]);
-    this.activeWallet = this.hdKeyring.publicKeys()[0];
-    this.deletedWallets = [];
-
+    this.activeWallet = this.hdKeyring!.publicKeys()[0];
     // Persist a given name for this wallet.
     const newAccounts: Array<[string, string]> = [];
     for (const [index, publicKey] of this.hdKeyring.publicKeys().entries()) {
@@ -81,27 +133,11 @@ export class BlockchainKeyring {
     return newAccounts;
   }
 
-  public async initFromLedger(
-    walletDescriptors: Array<WalletDescriptor>
-  ): Promise<Array<[string, string]>> {
-    // Empty ledger keyring to hold one off ledger imports
-    this.ledgerKeyring = this.ledgerKeyringFactory.init(walletDescriptors);
-    // Empty imported keyring to hold imported secret keys
-    this.importedKeyring = this.keyringFactory.init([]);
-    this.activeWallet = this.ledgerKeyring.publicKeys()[0];
-    this.deletedWallets = [];
-
-    // Persist a given name for this wallet.
-    const newAccounts: Array<[string, string]> = [];
-    for (const [index, walletDescriptor] of walletDescriptors.entries()) {
-      const name = DefaultKeyname.defaultLedger(index + 1);
-      await store.setKeyname(walletDescriptor.publicKey, name);
-      await store.setIsCold(walletDescriptor.publicKey, true);
-      newAccounts.push([walletDescriptor.publicKey, name]);
-    }
-    return newAccounts;
-  }
-
+  /**
+   * Export a private key for the given public key. If the public key is found
+   * on the hd keyring it exports the secret key from there, otherwise it looks
+   * on the imported keyring.
+   */
   public exportSecretKey(pubkey: string): string {
     let sk = this.hdKeyring?.exportSecretKey(pubkey);
     if (sk) {
@@ -143,11 +179,15 @@ export class BlockchainKeyring {
   public async addDerivationPath(
     derivationPath: string
   ): Promise<{ publicKey: string; name: string }> {
-    const publicKey = this.hdKeyring!.addDerivationPath(derivationPath);
+    if (!this.hdKeyring) {
+      throw new Error("hd keyring not initialised");
+    }
+
+    const publicKey = this.hdKeyring.addDerivationPath(derivationPath);
 
     // Save a default name.
     const name = DefaultKeyname.defaultDerived(
-      this.hdKeyring!.publicKeys().length
+      this.hdKeyring.publicKeys().length
     );
     await store.setKeyname(publicKey, name);
 
@@ -263,5 +303,9 @@ export class BlockchainKeyring {
     } catch {
       return false;
     }
+  }
+
+  public hasHdKeyring(): boolean {
+    return !!this.hdKeyring;
   }
 }

@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo } from "react";
+import { Suspense, useEffect } from "react";
 import {
   BACKPACK_FEATURE_XNFT,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
@@ -12,9 +12,14 @@ import {
 } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { AccountCircleOutlined, Lock, Settings } from "@mui/icons-material";
+import {
+  AccountCircleOutlined,
+  Lock,
+  Search,
+  Settings,
+} from "@mui/icons-material";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import { Typography } from "@mui/material";
+import { IconButton,Typography } from "@mui/material";
 
 import { useNavigation } from "../../common/Layout/NavStack";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
@@ -26,11 +31,42 @@ import { AvatarPopoverButton } from "./AvatarPopover";
 export function SettingsButton() {
   return (
     <div style={{ display: "flex" }}>
+      <SearchButton />
       <RecentActivityButton />
       <NotificationButton />
       <div style={{ width: "16px" }} />
       <AvatarPopoverButton />
     </div>
+  );
+}
+
+function SearchButton() {
+  const theme = useCustomTheme();
+  return (
+    <IconButton
+      disableRipple
+      sx={{
+        padding: 0,
+        width: "24px",
+        "&:hover": {
+          background: "transparent",
+        },
+      }}
+      size="large"
+      onClick={() => {
+        document.dispatchEvent(
+          new KeyboardEvent("keydown", { key: "k", metaKey: true })
+        );
+      }}
+    >
+      <Search
+        style={{
+          color: theme.custom.colors.icon,
+          backgroundColor: "transparent",
+          borderRadius: "12px",
+        }}
+      />
+    </IconButton>
   );
 }
 

@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { Text, View, TextInput } from "react-native";
 
 import { useEthereumFeeData } from "@coral-xyz/recoil";
-import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 import { ethers } from "ethers";
 
 import { IconCloseModal } from "~components/Icon";
 import { PrimaryButton, SecondaryButton } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
+import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 
 type TransactionMode = "normal" | "fast" | "degen" | "custom";
 
@@ -158,13 +158,6 @@ export function EthereumSettingsDrawer({
   useEffect(() => {
     setEditingGas(mode === "custom");
   }, [mode]);
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleEsc);
-    return () => {
-      document.removeEventListener("keydown", handleEsc);
-    };
-  }, [editingGas, editingNonce]);
 
   // Escape handler that closes edit modes if they are active, otherwise closes
   // the entire drawer.

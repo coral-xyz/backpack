@@ -7,13 +7,13 @@ import {
   NavigationContainer,
 } from "@react-navigation/native";
 
-import { NotFoundScreen } from "../screens/NotFoundScreen";
 import { LockedScreen } from "./LockedNavigator";
 import {
   OnboardingCompleteWelcome,
   OnboardingNavigator,
 } from "./OnboardingNavigator";
 import { UnlockedNavigator } from "./UnlockedNavigator";
+import { NotFoundScreen } from "../screens/NotFoundScreen";
 
 export function RootNavigation({
   colorScheme,

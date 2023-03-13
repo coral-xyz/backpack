@@ -205,7 +205,11 @@ export function WalletTokenTable({
   return (
     <BalancesTable style={tableStyle}>
       <BalancesTableHead wallet={wallet} />
-      <BalancesTableContent style={useVirtualization ? { height: "100%" } : {}}>
+      <BalancesTableContent
+        style={
+          useVirtualization ? { height: `calc(100% - ${headerHeight}px)` } : {}
+        }
+      >
         {isLoading ? (
           <SkeletonRows />
         ) : useVirtualization ? (

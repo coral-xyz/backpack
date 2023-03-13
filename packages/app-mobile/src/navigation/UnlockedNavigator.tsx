@@ -3,24 +3,9 @@ import type { Blockchain } from "@coral-xyz/common";
 
 import { useCallback } from "react";
 
-import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
-import AppListScreen from "~screens/Unlocked/AppListScreen";
-import { BalancesNavigator } from "~screens/Unlocked/BalancesScreen";
-import {
-  DepositListScreen,
-  DepositSingleScreen,
-} from "~screens/Unlocked/DepositScreen";
-import { NftCollectiblesNavigator } from "~screens/Unlocked/NftCollectiblesScreen";
-import { RecentActivityScreen } from "~screens/Unlocked/RecentActivityScreen";
-import {
-  SendTokenDetailScreen,
-  SendTokenListScreen,
-} from "~screens/Unlocked/SendTokenScreen";
-import { SwapTokenScreen } from "~screens/Unlocked/SwapTokenScreen";
-import { WalletListScreen } from "~screens/Unlocked/WalletListScreen";
 
 import {
   IconCloseModal,
@@ -31,6 +16,22 @@ import {
 } from "~components/Icon";
 import { NavHeader } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
+import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
+// import AppListScreen from "~screens/Unlocked/AppListScreen"; // TURNED off bc of app store restrictions (temporarily)
+import { BalancesNavigator } from "~screens/Unlocked/BalancesScreen";
+import {
+  DepositListScreen,
+  DepositSingleScreen,
+} from "~screens/Unlocked/DepositScreen";
+import { NftCollectiblesNavigator } from "~screens/Unlocked/NftCollectiblesScreen";
+import { RecentActivityScreen } from "~screens/Unlocked/RecentActivityScreen";
+import {
+  SendTokenSelectRecipientScreen,
+  SendTokenListScreen,
+  SendTokenConfirmScreen,
+} from "~screens/Unlocked/SendTokenScreen";
+import { SwapTokenScreen } from "~screens/Unlocked/SwapTokenScreen";
+import { WalletListScreen } from "~screens/Unlocked/WalletListScreen";
 
 export type UnlockedNavigatorStackParamList = {
   Tabs: undefined;
@@ -46,6 +47,17 @@ export type UnlockedNavigatorStackParamList = {
     token: Token;
   };
   SwapModal: undefined;
+  SendTokenConfirm: {
+    blockchain: Blockchain;
+    token: Token;
+    to: {
+      walletName?: string | undefined; // TBD
+      address: string;
+      username: string;
+      image: string;
+      uuid: string;
+    };
+  };
 };
 
 const Stack = createStackNavigator<UnlockedNavigatorStackParamList>();
@@ -67,9 +79,6 @@ export function UnlockedNavigator(): JSX.Element {
           headerBackTitleVisible: false,
           headerTintColor: theme.custom.colors.fontColor,
           headerBackImage: IconCloseModal,
-          // headerStyle: {
-          //   backgroundColor: theme.custom.colors.background,
-          // },
         }}
       >
         <Stack.Screen name="RecentActivity" component={RecentActivityScreen} />
@@ -90,11 +99,21 @@ export function UnlockedNavigator(): JSX.Element {
         />
         <Stack.Screen
           name="SendTokenModal"
-          component={SendTokenDetailScreen}
+          component={SendTokenSelectRecipientScreen}
           options={({ route }) => {
-            const { title } = route.params;
+            const { token } = route.params;
             return {
-              title,
+              title: `Send ${token.ticker}`,
+            };
+          }}
+        />
+        <Stack.Screen
+          name="SendTokenConfirm"
+          component={SendTokenConfirmScreen}
+          options={({ route }) => {
+            const { token } = route.params;
+            return {
+              title: `Send ${token.ticker}`,
             };
           }}
         />
@@ -154,7 +173,6 @@ function UnlockedBottomTabNavigator(): JSX.Element {
       })}
     >
       <Tab.Screen name="Balances" component={BalancesNavigator} />
-      <Tab.Screen name="Applications" component={AppListScreen} />
       <Tab.Screen name="Collectibles" component={NftCollectiblesNavigator} />
     </Tab.Navigator>
   );

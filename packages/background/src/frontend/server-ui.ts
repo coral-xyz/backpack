@@ -10,7 +10,6 @@ import type {
   Preferences,
   RpcRequest,
   RpcResponse,
-  SignedWalletDescriptor,
   XnftPreference,
 } from "@coral-xyz/common";
 import {
@@ -55,6 +54,7 @@ import {
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
   UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH,
   UI_RPC_METHOD_KEYRING_RESET,
+  UI_RPC_METHOD_KEYRING_SET_MNEMONIC,
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
@@ -204,6 +204,8 @@ async function handle<T = any>(
       return handleKeyringExportSecretKey(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_HAS_MNEMONIC:
       return await handleKeyringHasMnemonic(ctx);
+    case UI_RPC_METHOD_KEYRING_SET_MNEMONIC:
+      return await handleKeyringSetMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC:
       return await handleValidateMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC:
@@ -721,6 +723,14 @@ function handleKeyringHasMnemonic(ctx: Context<Backend>): RpcResponse<string> {
   return [resp];
 }
 
+function handleKeyringSetMnemonic(
+  ctx: Context<Backend>,
+  mnemonic: string
+): RpcResponse<string> {
+  const resp = ctx.backend.keyringSetMnemonic(mnemonic);
+  return [resp];
+}
+
 function handleValidateMnemonic(
   ctx: Context<Backend>,
   mnemonic: string
@@ -1134,13 +1144,9 @@ async function handleSetXnftPreferences(
 
 async function handleBlockchainKeyringsAdd(
   ctx: Context<Backend>,
-  blockchain: Blockchain,
-  signedWalletDescriptor: SignedWalletDescriptor
+  ...args: Parameters<Backend["blockchainKeyringsAdd"]>
 ): Promise<RpcResponse<Array<string>>> {
-  const resp = await ctx.backend.blockchainKeyringsAdd(
-    blockchain,
-    signedWalletDescriptor
-  );
+  const resp = await ctx.backend.blockchainKeyringsAdd(...args);
   return [resp];
 }
 

@@ -16,6 +16,8 @@
     { "path": "packages/react-common" },
     { "path": "packages/recoil" },
     { "path": "packages/themes" },
-    { "path": "packages/wallet-standard" }
+    { "path": "packages/wallet-standard" },
+    { "path": "packages/react-native-core" },
+    { "path": "packages/tamagui-core" }
   ]
 }

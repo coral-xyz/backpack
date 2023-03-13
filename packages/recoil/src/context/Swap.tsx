@@ -1,3 +1,4 @@
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   Blockchain,
   confirmTransaction,
@@ -5,15 +6,16 @@ import {
   generateWrapSolTx,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
   SOL_NATIVE_MINT,
+  TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
   USDC_MINT,
   WSOL_MINT,
 } from "@coral-xyz/common";
+import { getAssociatedTokenAddress } from "@solana/spl-token";
 import type { TokenInfo } from "@solana/spl-token-registry";
-import { Transaction } from "@solana/web3.js";
+import { PublicKey, Transaction } from "@solana/web3.js";
 import * as bs58 from "bs58";
 import { BigNumber, ethers, FixedNumber } from "ethers";
-import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { blockchainTokenData } from "../atoms/balance";
 import { jupiterInputTokens } from "../atoms/solana/jupiter";
@@ -62,7 +64,7 @@ type JupiterRoute = {
   swapMode: string;
 };
 
-type SwapContext = {
+export type SwapContext = {
   // Mint settings
   fromMint: string;
   setFromMint: (mint: string) => void;
@@ -86,7 +88,9 @@ type SwapContext = {
   // Execute the function
   executeSwap: () => Promise<boolean>;
   // Fees
-  transactionFee: BigNumber | undefined;
+  transactionFees:
+    | { fees: Record<string, BigNumber>; total: BigNumber }
+    | undefined;
   swapFee: JupiterRoute["marketInfos"][number]["platformFee"];
   availableForSwap: BigNumber;
   exceedsBalance: boolean | undefined;
@@ -157,9 +161,8 @@ export function SwapProvider({
   // Jupiter data
   const [routes, setRoutes] = useState<JupiterRoute[]>([]);
   const [transaction, setTransaction] = useState<string | undefined>(undefined);
-  const [transactionFee, setTransactionFee] = useState<BigNumber | undefined>(
-    undefined
-  );
+  const [transactionFees, setTransactionFees] =
+    useState<SwapContext["transactionFees"]>(undefined);
   const [isLoadingRoutes, setIsLoadingRoutes] = useState(false);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
 
@@ -243,9 +246,9 @@ export function SwapProvider({
 
   // If from mint is native SOL, remove the transaction fee and rent exemption
   // from from the max swap amount
-  if (fromMint === SOL_NATIVE_MINT && transactionFee) {
+  if (fromMint === SOL_NATIVE_MINT && transactionFees) {
     availableForSwap = availableForSwap
-      .sub(transactionFee)
+      .sub(transactionFees.total)
       .sub(BigNumber.from(NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS));
     if (availableForSwap.lt(Zero)) {
       availableForSwap = Zero;
@@ -258,8 +261,8 @@ export function SwapProvider({
 
   const solanaToken = fromTokens.find((t) => t.mint === SOL_NATIVE_MINT);
   const feeExceedsBalance =
-    transactionFee && solanaToken
-      ? transactionFee.gt(solanaToken.nativeBalance)
+    transactionFees && solanaToken
+      ? transactionFees.total.gt(solanaToken.nativeBalance)
       : undefined;
 
   const stopRoutePolling = () => {
@@ -319,7 +322,7 @@ export function SwapProvider({
     (async () => {
       const transaction = await fetchTransaction();
       setTransaction(transaction);
-      setTransactionFee(await estimateFee(transaction));
+      setTransactionFees(await estimateFees(transaction));
       setIsLoadingTransactions(false);
     })();
   }, [routes]);
@@ -327,27 +330,65 @@ export function SwapProvider({
   //
   // Estimate the network fees the transactions will incur.
   //
-  const estimateFee = async (transaction: string) => {
-    let fee = 0;
-    if (!isJupiterSwap) {
-      // Simple wrap or unwrap, assume 5000
-      fee += 5000;
-    } else if (!routes || routes.length === 0 || transaction === undefined) {
-      // Haven't got routes yet, assume 5000 for swap
-      fee += 5000;
-    } else {
-      // Estimate fees for the existing transactions by querying
-      try {
-        const tx = Transaction.from(Buffer.from(transaction, "base64"));
-        // Under the hood this just calls connection.getFeeForMessage with
-        // the message, it's a convenience method
-        fee += await tx.getEstimatedFee(connection);
-      } catch (e) {
-        // Couldn't load fees, assume 5000, not worth failing over
-        fee = 5000;
-      }
-    }
-    return BigNumber.from(fee);
+  const estimateFees = async (transaction: string) => {
+    const [solanaNetworkFee, tokenAccountCreationFee] = await Promise.all([
+      (async () => {
+        if (!isJupiterSwap) {
+          // Simple wrap or unwrap, assume 5000
+          return 5000;
+        } else if (
+          !routes ||
+          routes.length === 0 ||
+          transaction === undefined
+        ) {
+          // Haven't got routes yet, assume 5000 for swap
+          return 5000;
+        } else {
+          // Estimate fees for the existing transactions by querying
+          try {
+            const tx = Transaction.from(Buffer.from(transaction, "base64"));
+            // Under the hood this just calls connection.getFeeForMessage with
+            // the message, it's a convenience method
+            return await tx.getEstimatedFee(connection);
+          } catch (e) {
+            // Couldn't load fees, assume 5000, not worth failing over
+            return 5000;
+          }
+        }
+      })(),
+      (async () => {
+        try {
+          if (!toMint || [SOL_NATIVE_MINT, WSOL_MINT].includes(toMint)) {
+            return 0;
+          }
+          // if the output mint token account contains no lamports then we must create it
+          else if (
+            !(await connection.getBalance(
+              await getAssociatedTokenAddress(
+                new PublicKey(toMint),
+                walletPublicKey
+              )
+            ))
+          ) {
+            return TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS;
+          }
+        } catch (err) {
+          // don't throw on this until it's undergone further testing
+          console.error(err);
+        }
+        return 0;
+      })(),
+    ]);
+
+    return {
+      fees: {
+        "Solana network": BigNumber.from(solanaNetworkFee),
+        ...(tokenAccountCreationFee > 0 && {
+          "One-time token account": BigNumber.from(tokenAccountCreationFee),
+        }),
+      },
+      total: BigNumber.from(solanaNetworkFee + tokenAccountCreationFee),
+    };
   };
 
   //
@@ -521,7 +562,7 @@ export function SwapProvider({
         priceImpactPct,
         isLoadingRoutes,
         isLoadingTransactions,
-        transactionFee,
+        transactionFees,
         swapFee,
         isJupiterError,
         availableForSwap,

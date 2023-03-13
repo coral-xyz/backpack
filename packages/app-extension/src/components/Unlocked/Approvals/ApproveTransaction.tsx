@@ -1,13 +1,16 @@
+import { useEffect, useState } from "react";
 import type { Blockchain, FeeConfig } from "@coral-xyz/common";
 import { EmptyState, Loading } from "@coral-xyz/react-common";
 import {
   isKeyCold,
+  type TransactionData as TransactionDataType,
+  useMultipleTransactionsData,
   useTransactionData,
   useWalletBlockchain,
 } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
+import { styles as makeStyles } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
-import { Typography } from "@mui/material";
+import { type ClassNameMap, Typography } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 import { useRecoilValue } from "recoil";
 
@@ -16,7 +19,7 @@ import { WithApproval } from "../../Unlocked/Approvals";
 
 const { Zero } = ethers.constants;
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   title: {
     fontWeight: 500,
     fontSize: "18px",
@@ -26,22 +29,25 @@ const useStyles = styles((theme) => ({
     marginTop: "16px",
     textAlign: "center",
   },
+  advancedDetailsLabel: {
+    textAlign: "center",
+    color: theme.custom.colors.secondary,
+    fontSize: "12px",
+    marginTop: "6px",
+    marginBottom: "8px",
+    cursor: "pointer",
+  },
   listDescription: {
     color: theme.custom.colors.secondary,
     fontSize: "14px",
     marginBottom: "8px",
   },
-  warning: {
-    color: theme.custom.colors.negative,
-    fontSize: "14px",
-    textAlign: "center",
-    marginTop: "8px",
-  },
-  link: {
-    cursor: "pointer",
-    color: theme.custom.colors.secondary,
-    textDecoration: "underline",
-  },
+  // warning: {
+  //   color: theme.custom.colors.negative,
+  //   fontSize: "14px",
+  //   textAlign: "center",
+  //   marginTop: "8px",
+  // },
   negative: {
     color: theme.custom.colors.negative,
   },
@@ -84,36 +90,6 @@ export function ApproveTransaction({
     return <Cold origin={origin!} />;
   }
 
-  const menuItems = balanceChanges
-    ? Object.fromEntries(
-        Object.entries(balanceChanges).map(
-          ([symbol, { nativeChange, decimals }]) => {
-            const className = nativeChange.gte(Zero)
-              ? classes.positive
-              : classes.negative;
-            return [
-              symbol,
-              {
-                onClick: () => {},
-                detail: (
-                  <Typography className={className}>
-                    {ethers.utils.commify(
-                      ethers.utils.formatUnits(
-                        nativeChange,
-                        BigNumber.from(decimals)
-                      )
-                    )}{" "}
-                    {symbol}
-                  </Typography>
-                ),
-                button: false,
-              },
-            ];
-          }
-        )
-      )
-    : {};
-
   const onConfirm = async () => {
     await onCompletion(transaction, solanaFeeConfig);
   };
@@ -147,7 +123,7 @@ export function ApproveTransaction({
           </Typography>
           <TransactionData
             transactionData={transactionData}
-            menuItems={menuItems}
+            menuItems={createTransactionDataMenuItems(transactionData, classes)}
             menuItemClasses={{ root: classes.txMenuItemRoot }}
           />
         </div>
@@ -196,7 +172,6 @@ export function ApproveAllTransactions({
   origin,
   title,
   wallet,
-  // eslint-disable-next-line
   txs,
   onCompletion,
 }: {
@@ -207,7 +182,50 @@ export function ApproveAllTransactions({
   onCompletion: (confirmed: boolean) => void;
 }) {
   const classes = useStyles();
+  const blockchain = useWalletBlockchain(wallet);
+  const transactionsData = useMultipleTransactionsData(
+    blockchain as Blockchain,
+    txs
+  );
   const _isKeyCold = useRecoilValue(isKeyCold(wallet));
+  const [loading, setLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
+  const [consolidated, setConsolidated] = useState<TransactionDataType | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (transactionsData.some((t) => t.loading)) {
+      return;
+    }
+
+    const allBalanceChanges: TransactionDataType["balanceChanges"] = {};
+    let allNetworkFees = "0";
+
+    for (const tx of transactionsData) {
+      if (tx.balanceChanges) {
+        Object.entries(tx.balanceChanges).forEach(([key, val]) => {
+          allBalanceChanges[key] = {
+            nativeChange: (
+              allBalanceChanges[key]?.nativeChange ?? BigNumber.from("0")
+            ).add(val.nativeChange),
+            decimals: val.decimals,
+          };
+        });
+      }
+
+      allNetworkFees = (
+        parseFloat(allNetworkFees) + parseFloat(tx.networkFee)
+      ).toPrecision(2);
+    }
+
+    setConsolidated({
+      ...transactionsData[0],
+      balanceChanges: allBalanceChanges,
+      networkFee: allNetworkFees,
+    });
+    setLoading(false);
+  }, [transactionsData]);
 
   const onConfirm = async () => {
     onCompletion(true);
@@ -215,6 +233,10 @@ export function ApproveAllTransactions({
 
   const onDeny = async () => {
     onCompletion(false);
+  };
+
+  const onToggleAdvanced = () => {
+    setShowAll((val) => !val);
   };
 
   if (_isKeyCold) {
@@ -231,7 +253,93 @@ export function ApproveAllTransactions({
       onConfirmLabel="Approve"
       onDeny={onDeny}
     >
-      <div className={classes.warning}>Confirming multiple transactions</div>
+      {loading || !consolidated ? (
+        <Loading />
+      ) : (
+        <div
+          style={{
+            marginTop: "24px",
+            ...(showAll ? { height: "250px", overflowY: "scroll" } : {}),
+          }}
+        >
+          <div
+            key={0}
+            style={{
+              marginLeft: "8px",
+              marginRight: "8px",
+            }}
+          >
+            <Typography className={classes.listDescription}>
+              Transaction Aggregate Details ({transactionsData.length})
+            </Typography>
+            <TransactionData
+              transactionData={consolidated}
+              menuItems={createTransactionDataMenuItems(consolidated, classes)}
+              menuItemClasses={{ root: classes.txMenuItemRoot }}
+            />
+          </div>
+          {showAll ? transactionsData.map((tx, i) => (
+            <div
+              key={i + 1}
+              style={{
+                  marginTop: "10px",
+                  marginLeft: "8px",
+                  marginRight: "8px",
+                }}
+              >
+              <Typography className={classes.listDescription}>
+                [{i + 1}] Transaction details
+              </Typography>
+              <TransactionData
+                transactionData={tx}
+                menuItems={createTransactionDataMenuItems(tx, classes)}
+                menuItemClasses={{ root: classes.txMenuItemRoot }}
+                />
+            </div>
+            )) : null}
+        </div>
+      )}
+      <Typography
+        className={classes.advancedDetailsLabel}
+        onClick={onToggleAdvanced}
+      >
+        {showAll ? "Hide Advanced Details" : "View Advanced Details"}
+      </Typography>
     </WithApproval>
   );
+}
+
+function createTransactionDataMenuItems(
+  tx: TransactionDataType,
+  classes: ClassNameMap<string>
+): any {
+  return tx.balanceChanges
+    ? Object.fromEntries(
+        Object.entries(tx.balanceChanges).map(
+          ([symbol, { nativeChange, decimals }]) => {
+            const className = nativeChange.gte(Zero)
+              ? classes.positive
+              : classes.negative;
+            return [
+              symbol,
+              {
+                onClick: () => {},
+                detail: (
+                  <Typography className={className}>
+                    {ethers.utils.commify(
+                      ethers.utils.formatUnits(
+                        nativeChange,
+                        BigNumber.from(decimals)
+                      )
+                    )}{" "}
+                    {symbol}
+                  </Typography>
+                ),
+                button: false,
+              },
+            ];
+          }
+        )
+      )
+    : {};
 }

@@ -14,7 +14,6 @@ import { deleteItemAsync } from "expo-secure-store";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
-import { IconPushDetail } from "~screens/Unlocked/Settings/components/SettingsRow";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -31,6 +30,7 @@ import {
   WelcomeLogoHeader,
 } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
+import { IconPushDetail } from "~screens/Unlocked/Settings/components/SettingsRow";
 
 const maybeResetApp = () => {
   Alert.alert(
