@@ -18,7 +18,7 @@
     "@tamagui/animations-react-native": "^1.7.1",
     "@tamagui/babel-plugin": "^1.7.1",
     "@tamagui/config": "^1.7.1",
-    "@tamagui/core": "*",
+    "@tamagui/core": "^1.7.1",
     "@tamagui/font-inter": "^1.7.1",
     "@tamagui/shorthands": "^1.7.1",
     "@tamagui/theme-base": "^1.7.1",
@@ -30,7 +30,7 @@
     "start": "tamagui-build --watch"
   },
   "devDependencies": {
-    "@tamagui/build": "*",
+    "@tamagui/build": "^1.7.1",
     "@types/react-native": "^0.71.3"
   }
 }

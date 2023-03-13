@@ -17,7 +17,8 @@
     "lint:fix": "yarn run lint --fix"
   },
   "dependencies": {
-    "@coral-xyz/common": "*"
+    "@coral-xyz/common": "*",
+    "bs58": "^5.0.0"
   },
   "devDependencies": {
     "eslint-config-custom": "*",

@@ -29,6 +29,7 @@
   "devDependencies": {
     "@types/serviceworker": "^0.0.47",
     "eslint-config-custom": "*",
+    "parcel": "^2.8.3",
     "typescript": "~4.9.3"
   },
   "targets": {
