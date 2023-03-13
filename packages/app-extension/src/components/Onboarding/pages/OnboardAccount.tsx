@@ -27,14 +27,12 @@ import { NotificationsPermission } from "./NotificationsPermission";
 import { UsernameForm } from "./UsernameForm";
 
 export const OnboardAccount = ({
-  onWaiting,
   onRecover,
   containerRef,
   navProps,
   isAddingAccount,
   isOnboarded,
 }: {
-  onWaiting: () => void;
   onRecover: () => void;
   containerRef: any;
   navProps: any;
@@ -70,7 +68,6 @@ export const OnboardAccount = ({
   const steps = [
     <InviteCodeForm
       key="InviteCodeForm"
-      onClickWaiting={onWaiting}
       onClickRecover={onRecover}
       onSubmit={(inviteCode) => {
         setOnboardingData({ inviteCode });
