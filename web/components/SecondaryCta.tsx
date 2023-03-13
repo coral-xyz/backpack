@@ -1,5 +1,6 @@
-import { memo } from 'react';
+/* eslint-disable max-len */
 import Link from 'next/link';
+import { memo } from 'react';
 
 function SecondaryCta({ publishDisable }: SecondaryCtaProps) {
   return (
