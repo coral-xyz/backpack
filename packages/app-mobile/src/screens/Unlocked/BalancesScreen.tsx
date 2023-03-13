@@ -61,11 +61,11 @@ function TokenHeader({
           token={token}
           blockchain={blockchain}
           address={address}
+          onPressOption={onPressOption}
           rampEnabled={
             (blockchain === Blockchain.SOLANA && token.ticker === "SOL") ||
             (blockchain === Blockchain.ETHEREUM && token.ticker === "ETH")
           }
-          onPressOption={onPressOption}
         />
       </View>
     </View>

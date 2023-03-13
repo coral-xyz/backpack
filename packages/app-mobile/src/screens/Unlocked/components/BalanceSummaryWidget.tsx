@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import { Margin } from "~components/index";
 import { formatUSD } from "@coral-xyz/common";
-import { useTheme } from "~hooks/useTheme";
 
+import { Margin } from "~components/index";
 import { useTotalBalance } from "~hooks/recoil";
+import { useTheme } from "~hooks/useTheme";
 
 function TextTotalChange({
   totalChange,
@@ -52,12 +52,14 @@ function TextPercentChange({
     : theme.custom.colors.balanceChangePositive;
 
   return (
-    <Text style={[styles.percentChangeText, { backgroundColor, color }]}>
-      {totalChange > 0 ? "+" : ""}
-      {Number.isFinite(percentChange)
-        ? `${percentChange.toFixed(2)}%`
-        : "0.00%"}
-    </Text>
+    <View style={{ borderRadius: 12, backgroundColor }}>
+      <Text style={[styles.percentChangeText, { color }]}>
+        {totalChange > 0 ? "+" : ""}
+        {Number.isFinite(percentChange)
+          ? `${percentChange.toFixed(2)}%`
+          : "0.00%"}
+      </Text>
+    </View>
   );
 }
 
