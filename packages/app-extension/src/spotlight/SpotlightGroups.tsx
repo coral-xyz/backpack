@@ -3,8 +3,8 @@ import { UserIcon } from "@coral-xyz/react-common";
 import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 
-import { SELECTED_BLUE } from "./colors";
 import { GroupIdentifier } from "./GroupIdentifier";
+import { SpotlightCell } from "./SpotlightCell";
 
 export const SpotlightGroups = ({
   groups,
@@ -43,19 +43,11 @@ function SpotlightGroup({
   selected: boolean;
   setOpen: any;
 }) {
-  const theme = useCustomTheme();
   const { push, toRoot } = useNavigation();
 
   return (
-    <div
-      style={{
-        display: "flex",
-        padding: 12,
-        background: selected ? SELECTED_BLUE : "",
-        borderRadius: 8,
-        color: theme.custom.colors.fontColor,
-        cursor: "pointer",
-      }}
+    <SpotlightCell
+      selected={selected}
       onClick={() => {
         push({
           title: group?.name,
@@ -79,6 +71,6 @@ function SpotlightGroup({
       >
         {group.name}
       </div>
-    </div>
+    </SpotlightCell>
   );
 }

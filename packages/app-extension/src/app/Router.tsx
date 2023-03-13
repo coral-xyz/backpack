@@ -41,7 +41,6 @@ import {
 import { AuthenticatedSync } from "../components/Unlocked/AuthenticatedSync";
 import { WithAuth } from "../components/Unlocked/WithAuth";
 import { refreshFeatureGates } from "../gates/FEATURES";
-import { Spotlight } from "../spotlight/Spotlight";
 import { sanitizeTransactionWithFeeConfig } from "../utils/solana";
 
 import "./App.css";
@@ -59,7 +58,6 @@ export default function Router() {
           theme={isDarkMode ? "dark" : "light"}
         />
         <_Router />
-        <Spotlight />
       </>
     </WithSuspense>
   );

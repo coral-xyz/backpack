@@ -1,54 +1,56 @@
-import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import {
   Blockchain,
+  NAV_COMPONENT_MESSAGE_CHAT,
   NAV_COMPONENT_MESSAGE_GROUP_CHAT,
   NAV_COMPONENT_NFT_DETAIL,
   NAV_COMPONENT_TOKEN,
   toTitleCase,
 } from "@coral-xyz/common";
 import {
+  showSpotlight,
   useActiveWallet,
   useBlockchainConnectionUrl,
   useBreakpoints,
+  useKeyringStoreState,
   useNavigation,
+  useOpenPlugin,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { Divider } from "@mui/material";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
+import { useRecoilState } from "recoil";
 
-import { FriendCard } from "./FriendCard";
+import { Scrollbar } from "../components/common/Layout/Scrollbar";
+
 import { SpotlightSearchBar } from "./SearchBar";
 import { SearchBody } from "./SearchBody";
 import { useSearchedContacts } from "./useSearchedContacts";
 import { useSearchedGroupsCollections } from "./useSearchedGroups";
 import { useSearchedNfts } from "./useSearchedNfts";
 import { useSearchedTokens } from "./useSearchedTokens";
+import { useSearchedXnfts } from "./useSearchedXnfts";
 import { getCurrentCounter } from "./utils";
 
 const style = {
-  position: "fixed",
-  top: 50,
-  left: "50%",
-  transform: "translate(-50%, 0)",
-  boxShadow: 24,
+  //  boxShadow: 24,
+  marginLeft: "auto",
+  marginRight: "auto",
 };
 
 export const Spotlight = () => {
-  const [open, setOpen] = useState(false);
-  const theme = useCustomTheme();
-  const { isXs } = useBreakpoints();
+  const [open, setOpen] = useRecoilState(showSpotlight);
+  const keyringState = useKeyringStoreState();
   const [arrowIndex, setArrowIndex] = useState(0);
-  const [selectedContact, setSelectedContact] = useState<{
-    username: string;
-    image: string;
-    uuid: string;
-  } | null>(null);
 
   useEffect(() => {
     function keyDownTextField(e: any) {
+      if (keyringState !== "unlocked") {
+        return;
+      }
       if (e.key === "k" && e.metaKey) {
-        setOpen(true);
+        setOpen((o) => !o);
         e.preventDefault();
       }
       if (e.which === 27 || e.keyCode === 27) {
@@ -65,67 +67,104 @@ export const Spotlight = () => {
     return () => {
       document.removeEventListener("keydown", keyDownTextField);
     };
-  }, []);
+  }, [keyringState]);
 
   return (
     <Modal
-      open={open}
-      onClose={() => {
-        if (selectedContact) {
-          setSelectedContact(null);
-        } else {
-          setOpen(false);
-        }
+      slotProps={{
+        backdrop: {
+          style: {
+            backdropFilter: "blur(6px)",
+          },
+        },
       }}
+      open={open}
     >
-      <Box
-        sx={{ ...style }}
+      <div
         style={{
-          background: theme.custom.colors.background,
-          width: isXs ? 350 : 400,
-          padding: 20,
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
         }}
       >
-        <SpotlightInner
-          setOpen={setOpen}
-          arrowIndex={arrowIndex}
-          selectedContact={selectedContact}
-          setSelectedContact={setSelectedContact}
+        <div
+          style={{
+            zIndex: 1,
+            paddingLeft: "16px",
+            paddingRight: "16px",
+            paddingTop: "10px",
+            paddingBottom: "10px",
+            height: "56px",
+            display: "flex",
+          }}
+          onClick={() => setOpen(false)}
         />
-      </Box>
+        <div style={{ flex: 1 }}>
+          <Box
+            sx={{ ...style }}
+            style={{
+              height: "100%",
+            }}
+            onClick={() => setOpen(false)}
+          >
+            <SpotlightInner setOpen={setOpen} arrowIndex={arrowIndex} />
+          </Box>
+        </div>
+        <div
+          style={{
+            zIndex: 1,
+            paddingLeft: "16px",
+            paddingRight: "16px",
+            paddingTop: "10px",
+            paddingBottom: "10px",
+            height: "56px",
+            display: "flex",
+          }}
+          onClick={() => setOpen(false)}
+        />
+      </div>
     </Modal>
   );
 };
 
 function SpotlightInner({
   arrowIndex,
-  selectedContact,
-  setSelectedContact,
   setOpen,
 }: {
   arrowIndex: number;
-  selectedContact: { username: string; image: string; uuid: string } | null;
-  setSelectedContact: any;
   setOpen: any;
 }) {
   const [searchFilter, setSearchFilter] = useState("");
   const contacts = useSearchedContacts(searchFilter);
   const groups = useSearchedGroupsCollections(searchFilter);
   const nfts = useSearchedNfts(searchFilter);
+  const xnfts = useSearchedXnfts(searchFilter);
   const tokens = useSearchedTokens(searchFilter);
   const allResultsLength =
-    contacts.length + groups.length + nfts.length + tokens.length;
+    contacts.length +
+    groups.length +
+    nfts.length +
+    xnfts.length +
+    tokens.length;
   const { push, toRoot } = useNavigation();
   const activeWallet = useActiveWallet();
   const connectionUrl = useBlockchainConnectionUrl(activeWallet.blockchain);
+  const theme = useCustomTheme();
+  const { isXs } = useBreakpoints();
+  const openPlugin = useOpenPlugin();
 
-  if (selectedContact) {
-    return (
-      <div>
-        <FriendCard setOpen={setOpen} friend={selectedContact} />
-      </div>
-    );
-  }
+  const setSelectedContact = (contact: any) => {
+    push({
+      title: `@${contact?.username}`,
+      componentId: NAV_COMPONENT_MESSAGE_CHAT,
+      componentProps: {
+        userId: contact?.uuid,
+        id: contact?.uuid,
+        username: contact?.username,
+      },
+    });
+    setOpen(false);
+  };
 
   return (
     <div
@@ -147,15 +186,40 @@ function SpotlightInner({
             currentCounter - contacts.length - groups.length < nfts.length
               ? currentCounter - contacts.length - groups.length
               : null;
-          const selectedTokenIndex =
+          const selectedXnftChatIndex =
             currentCounter >= contacts.length + groups.length + nfts.length &&
             currentCounter - contacts.length - groups.length - nfts.length <
-              tokens.length
+              xnfts.length
               ? currentCounter - contacts.length - groups.length - nfts.length
+              : null;
+          const selectedTokenIndex =
+            currentCounter >=
+              contacts.length + groups.length + nfts.length + xnfts.length &&
+            currentCounter -
+              contacts.length -
+              groups.length -
+              nfts.length -
+              xnfts.length <
+              tokens.length
+              ? currentCounter -
+                contacts.length -
+                groups.length -
+                nfts.length -
+                xnfts.length
               : null;
 
           if (selectedContactIndex || selectedContactIndex === 0) {
-            setSelectedContact(contacts[selectedContactIndex]);
+            const contact = contacts[selectedContactIndex];
+            push({
+              title: `@${contact?.username}`,
+              componentId: NAV_COMPONENT_MESSAGE_CHAT,
+              componentProps: {
+                userId: contact?.uuid,
+                id: contact?.uuid,
+                username: contact?.username,
+              },
+            });
+            setOpen(false);
             return;
           }
           if (selectedGroupChatIndex || selectedGroupChatIndex === 0) {
@@ -186,6 +250,11 @@ function SpotlightInner({
             setOpen(false);
             return;
           }
+          if (selectedXnftChatIndex || selectedXnftChatIndex === 0) {
+            const xnft = xnfts[selectedXnftChatIndex];
+            setOpen(false);
+            openPlugin(xnft.publicKey);
+          }
           if (selectedTokenIndex || selectedTokenIndex === 0) {
             const token = tokens[selectedTokenIndex];
             push({
@@ -202,17 +271,46 @@ function SpotlightInner({
           }
         }
       }}
+      style={{
+        // @ts-ignore
+        boxShadow: 24,
+        height: searchFilter.trim() !== "" ? "100%" : undefined,
+        background: theme.custom.colors.backgroundBackdrop,
+        borderRadius: "12px",
+        display: "flex",
+        flexDirection: "column",
+        width: isXs ? 343 : 500,
+        marginLeft: "auto",
+        marginRight: "auto",
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
     >
       <SpotlightSearchBar
         searchFilter={searchFilter}
         setSearchFilter={setSearchFilter}
       />
-      <SearchBody
-        arrowIndex={arrowIndex}
-        searchFilter={searchFilter}
-        setOpen={setOpen}
-        setSelectedContact={setSelectedContact}
-      />
+      {searchFilter.trim() !== "" ? (
+        <>
+          <Divider
+            style={{
+              backgroundColor: theme.custom.colors.nav,
+            }}
+          />
+          <div style={{ flex: 1 }}>
+            <Scrollbar>
+              <SearchBody
+                arrowIndex={arrowIndex}
+                searchFilter={searchFilter}
+                setOpen={setOpen}
+                setSelectedContact={setSelectedContact}
+              />
+            </Scrollbar>
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }

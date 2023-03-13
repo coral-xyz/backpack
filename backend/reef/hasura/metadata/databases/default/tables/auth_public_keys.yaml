@@ -51,6 +51,16 @@ select_permissions:
         - user_id
       filter: {}
       allow_aggregations: true
+  - role: one_xnft
+    permission:
+      columns:
+        - id
+        - blockchain
+        - public_key
+        - created_at
+        - user_id
+      filter: {}
+      allow_aggregations: true
 delete_permissions:
   - role: auth_worker
     permission:

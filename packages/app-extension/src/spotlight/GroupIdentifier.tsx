@@ -15,8 +15,14 @@ export const GroupIdentifier = ({ name }: { name: string }) => {
       }}
     >
       <div style={{ color: theme.custom.colors.icon }}>{name}</div>
-      <div>
-        <PushDetail />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <PushDetail style={{ width: "22px" }} />
       </div>
     </div>
   );

@@ -5,10 +5,9 @@ import {
   useBlockchainConnectionUrl,
   useNavigation,
 } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
 
-import { SELECTED_BLUE } from "./colors";
 import { GroupIdentifier } from "./GroupIdentifier";
+import { SpotlightCell } from "./SpotlightCell";
 
 export const SpotlightNfts = ({
   nfts,
@@ -22,7 +21,7 @@ export const SpotlightNfts = ({
   if (!nfts.length) return null;
   return (
     <div>
-      <GroupIdentifier name="NFTs" />
+      <GroupIdentifier name="Collectibles" />
       {nfts.map((nft, index) => (
         <SpotlightNft
           selected={selectedIndex === index}
@@ -47,17 +46,9 @@ function SpotlightNft({
   const connectionUrl = useBlockchainConnectionUrl(activeWallet.blockchain);
   const { push } = useNavigation();
 
-  const theme = useCustomTheme();
   return (
-    <div
-      style={{
-        display: "flex",
-        padding: 12,
-        background: selected ? SELECTED_BLUE : "",
-        borderRadius: 8,
-        color: theme.custom.colors.fontColor,
-        cursor: "pointer",
-      }}
+    <SpotlightCell
+      selected={selected}
       onClick={() => {
         push({
           title: nft?.name,
@@ -81,6 +72,6 @@ function SpotlightNft({
       >
         {nft.name}
       </div>
-    </div>
+    </SpotlightCell>
   );
 }

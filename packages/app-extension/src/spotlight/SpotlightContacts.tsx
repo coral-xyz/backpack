@@ -1,8 +1,8 @@
 import { UserIcon } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 
-import { SELECTED_BLUE } from "./colors";
 import { GroupIdentifier } from "./GroupIdentifier";
+import { SpotlightCell } from "./SpotlightCell";
 
 export const SpotlightContacts = ({
   contacts,
@@ -45,17 +45,9 @@ export function SpotlightContact({
   selected: boolean;
   setSelectedContact: any;
 }) {
-  const theme = useCustomTheme();
   return (
-    <div
-      style={{
-        display: "flex",
-        padding: 12,
-        background: selected ? SELECTED_BLUE : "",
-        borderRadius: 8,
-        color: theme.custom.colors.fontColor,
-        cursor: "pointer",
-      }}
+    <SpotlightCell
+      selected={selected}
       onClick={() => {
         setSelectedContact(contact);
       }}
@@ -70,6 +62,6 @@ export function SpotlightContact({
       >
         {contact.username}
       </div>
-    </div>
+    </SpotlightCell>
   );
 }

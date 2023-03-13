@@ -1,5 +1,6 @@
 import { useBootstrapFast } from "@coral-xyz/recoil";
 
+import { Spotlight } from "../../spotlight/Spotlight";
 import { Router } from "../common/Layout/Router";
 import { WithTabs } from "../common/Layout/Tab";
 import { WalletDrawerProvider } from "../common/WalletList";
@@ -17,6 +18,7 @@ export function Unlocked() {
   return (
     <WithVersion>
       <WalletDrawerProvider>
+        <Spotlight />
         <WithTabs>
           <div
             style={{

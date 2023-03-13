@@ -5,10 +5,9 @@ import {
 } from "@coral-xyz/common";
 import { UserIcon } from "@coral-xyz/react-common";
 import { useActiveWallet, useNavigation } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
 
-import { SELECTED_BLUE } from "./colors";
 import { GroupIdentifier } from "./GroupIdentifier";
+import { SpotlightCell } from "./SpotlightCell";
 
 export const SpotlightTokens = ({
   selectedIndex,
@@ -43,20 +42,12 @@ function SpotlightToken({
   token: { image: string; id: string; name: string; address: string };
   setOpen: any;
 }) {
-  const theme = useCustomTheme();
   const { push } = useNavigation();
   const activeWallet = useActiveWallet();
 
   return (
-    <div
-      style={{
-        display: "flex",
-        padding: 12,
-        background: selected ? SELECTED_BLUE : "",
-        borderRadius: 8,
-        color: theme.custom.colors.fontColor,
-        cursor: "pointer",
-      }}
+    <SpotlightCell
+      selected={selected}
       onClick={() => {
         push({
           title: `${toTitleCase(Blockchain.SOLANA)} / ${token.name}`,
@@ -80,6 +71,6 @@ function SpotlightToken({
       >
         {token.name}
       </div>
-    </div>
+    </SpotlightCell>
   );
 }
