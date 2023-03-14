@@ -17,6 +17,7 @@ import {
 } from "@coral-xyz/common";
 import { LocalImageManager, refreshGroups } from "@coral-xyz/db";
 import {
+  LocalImage,
   NegativeButton,
   PrimaryButton,
   ProxyImage,
@@ -73,6 +74,7 @@ import {
   Error as ErrorConfirmation,
   Sending,
   useIsValidAddress,
+  useStyles,
 } from "../Balances/TokensWidget/Send";
 import { SendSolanaConfirmationCard } from "../Balances/TokensWidget/Solana";
 
@@ -213,7 +215,7 @@ export function NftsDetail({
   );
 }
 
-function Image({ nft }: { nft: any }) {
+function Image({ nft, style }: { nft: any; style?: any }) {
   const src = isMadLads(nft) ? nft.lockScreenImageUrl : nft.imageUrl;
   return (
     <div
@@ -223,6 +225,7 @@ function Image({ nft }: { nft: any }) {
         display: "flex",
         position: "relative",
         alignItems: "center",
+        ...(style || {}),
       }}
     >
       <ProxyImage
@@ -425,13 +428,6 @@ function NftAddressSelector({ nft }: { nft: any }) {
   );
 }
 
-const useStyles = styles((theme) => ({
-  horizontalCenter: {
-    display: "flex",
-    justifyContent: "center",
-  },
-}));
-
 function SendScreen({ nft, to }: { nft: any; to: SendData }) {
   const background = useBackgroundClient();
   const { close } = useDrawerContext();
@@ -447,6 +443,7 @@ function SendScreen({ nft, to }: { nft: any; to: SendData }) {
     solanaProvider.connection,
     ethereumCtx.provider
   );
+  const theme = useCustomTheme();
 
   useEffect(() => {
     (async () => {
@@ -473,19 +470,54 @@ function SendScreen({ nft, to }: { nft: any; to: SendData }) {
       >
         <div
           style={{
-            height: "100%",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
+            height: "100%",
           }}
         >
           <div>
-            <Image nft={nft} />
-            <div className={classes.horizontalCenter} style={{ marginTop: 4 }}>
-              Sending to
+            <div>
+              <div
+                className={classes.horizontalCenter}
+                style={{ marginBottom: 6, paddingTop: 20 }}
+              >
+                <div className={classes.topImageOuter}>
+                  <LocalImage
+                    className={classes.topImage}
+                    src={
+                      to?.image ||
+                      `https://avatars.backpack.workers.dev/${to?.address}`
+                    }
+                    style={{ width: 80, height: 80 }}
+                  />
+                </div>
+              </div>
+              <div className={classes.horizontalCenter}>
+                {to.walletName || to.username ? (
+                  <div
+                    style={{
+                      color: theme.custom.colors.fontColor,
+                      fontSize: 16,
+                      fontWeight: 500,
+                    }}
+                  >
+                    {to.walletName ? to.walletName : `@${to.username}`}
+                  </div>
+                ) : null}
+              </div>
+              <div
+                className={classes.horizontalCenter}
+                style={{ marginTop: 4 }}
+              >
+                <CopyablePublicKey publicKey={to?.address} />
+              </div>
             </div>
-            <div className={classes.horizontalCenter} style={{ marginTop: 4 }}>
-              <CopyablePublicKey publicKey={to?.address} />
+            <div className={classes.horizontalCenter} style={{ marginTop: 35 }}>
+              <Image
+                nft={nft}
+                style={{ maxHeight: "30vh", maxWidth: 200, minHeight: "" }}
+              />
             </div>
           </div>
           <div
