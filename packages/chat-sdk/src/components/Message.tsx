@@ -261,7 +261,7 @@ export const MessageLine = (props) => {
     <div
       className={classes.messageRow}
       style={{
-        marginTop: sameUserMessage ? 0 : 16,
+        marginTop: sameUserMessage ? 0 : 8,
         paddingLeft: sameUserMessage ? 32 : 0,
       }}
     >
@@ -1044,9 +1044,7 @@ function MessageLeft(props) {
                 parent_username: `@${props.username}`,
                 parent_message_author_uuid: props.userId,
               });
-              document
-                .getElementById(chatMessageInputId)
-                ?.focus();
+              document.getElementById(chatMessageInputId)?.focus();
             }}
           >
             <ReplyIcon fill={theme.custom.colors.icon} />
@@ -1097,9 +1095,7 @@ function MessageRight(props) {
                   parent_message_author_uuid: props.userId,
                   parent_username: "Yourself",
                 });
-                document
-                  .getElementById(chatMessageInputId)
-                  ?.focus();
+                document.getElementById(chatMessageInputId)?.focus();
               }}
             >
               <ReplyIcon fill={theme.custom.colors.icon} />
