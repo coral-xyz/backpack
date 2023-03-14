@@ -1,4 +1,4 @@
-import { Suspense,useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import type {
   EnrichedMessage,
   EnrichedNotification,
@@ -6,11 +6,6 @@ import type {
 } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { RecoilSync } from "@coral-xyz/db";
-import {
-  BackgroundChatsSync,
-  refreshGroupsAndFriendships,
-  SignalingManager,
-} from "@coral-xyz/react-common";
 import {
   friendships,
   groupCollections,
@@ -22,6 +17,12 @@ import {
   useRecentNotifications,
 } from "@coral-xyz/recoil";
 import { useRecoilCallback, useSetRecoilState } from "recoil";
+
+import {
+  BackgroundChatsSync,
+  refreshGroupsAndFriendships,
+  SignalingManager,
+} from "./";
 
 // Wrapper compoennt to ensure syncing only happens when there is an
 // authenticated user
@@ -199,8 +200,7 @@ export const DbRecoilSync = ({ uuid }: { uuid: string }) => {
 
   return (
     <Suspense fallback={null}>
-      {" "}
-      <NotificationsWrapper uuid={uuid} />{" "}
+      <NotificationsWrapper uuid={uuid} />
     </Suspense>
   );
 };

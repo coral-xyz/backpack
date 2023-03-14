@@ -16,7 +16,6 @@ import {
   ProxyImage,
   useBreakpoints,
   UserAction,
-  useUserMetadata,
 } from "@coral-xyz/react-common";
 import {
   unreadCount,
@@ -26,6 +25,7 @@ import {
   useUpdateFriendships,
   useUser,
 } from "@coral-xyz/recoil";
+import { useUserMetadata } from "@coral-xyz/tamagui";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { IconButton, List, ListItem, Typography } from "@mui/material";

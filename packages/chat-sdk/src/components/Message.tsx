@@ -10,8 +10,6 @@ import {
 import {
   BackpackStaffIcon,
   LocalImage,
-  refreshIndividualChatsFor,
-  SignalingManager,
   SuccessButton,
 } from "@coral-xyz/react-common";
 import {
@@ -24,6 +22,10 @@ import {
   useNavigation,
   useUser,
 } from "@coral-xyz/recoil";
+import {
+  refreshIndividualChatsFor,
+  SignalingManager,
+} from "@coral-xyz/tamagui";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Gif as GifComponent } from "@giphy/react-components";

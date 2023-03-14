@@ -1,3 +1,4 @@
+export * from "./AuthenticatedSync";
 export * from "./BackgroundChatsSync";
 export * from "./fetchMoreChatsFor";
 export * from "./getSanitizedTitle";

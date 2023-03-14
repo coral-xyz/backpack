@@ -16,9 +16,9 @@ import {
   BackpackStaffIcon,
   isFirstLastListItemStyle,
   LocalImage,
-  useUsersMetadata,
 } from "@coral-xyz/react-common";
 import { useDecodedSearchParams } from "@coral-xyz/recoil";
+import { useUsersMetadata } from "@coral-xyz/tamagui";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
 import VerifiedIcon from "@mui/icons-material/Verified";

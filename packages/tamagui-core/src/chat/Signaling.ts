@@ -4,12 +4,11 @@ import {
   DELETE_MESSAGE,
   EXECUTE_BARTER,
   NOTIFICATION_ADD,
+  REALTIME_WS_URL,
   UPDATE_ACTIVE_BARTER,
   WS_READY,
 } from "@coral-xyz/common";
 import EventEmitter from "eventemitter3";
-
-import { SERVER_URL } from "../config";
 
 export const SIGNALING_CONNECTED = "SIGNALING_CONNECTED";
 export const RECONNECTING = "RECONNECTING";
@@ -31,7 +30,7 @@ export class Signaling extends EventEmitter {
 
   async initWs() {
     try {
-      const ws = new WebSocket(`${SERVER_URL}?jwt=${this.jwt}`);
+      const ws = new WebSocket(`${REALTIME_WS_URL}?jwt=${this.jwt}`);
       ws.addEventListener("open", () => {
         this.state = "connected";
         this.bufferedMessages.forEach((x) => this.send(x));
