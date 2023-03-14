@@ -1,3 +1,3 @@
-// @ts-expect-error
 export * from "./chat";
+// @ts-expect-error
 export { useCustomTheme } from "./useTheme";
