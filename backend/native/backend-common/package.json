@@ -21,8 +21,5 @@
   "author": "",
   "scripts": {
     "build": "tsc && tsc-alias"
-  },
-  "devDependencies": {
-    "typescript": "^4.9.5"
   }
 }
