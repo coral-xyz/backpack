@@ -1,26 +1,41 @@
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+import { UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC } from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { EyeIcon, WarningIcon } from "~components/Icon";
 import {
   CopyButton,
   DangerButton,
-  Header,
   HeaderIconSubtitle,
   Margin,
   MnemonicInputFields,
   Screen,
   SecondaryButton,
   StyledTextInput,
-  SubtextParagraph,
 } from "~components/index";
-import { UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "~hooks/useTheme";
 
-import { EyeIcon, WarningIcon } from "~components/Icon";
+const warnings = [
+  {
+    icon: "chat",
+    text: "Backpack support will never ask for your secret phrase.",
+  },
+  {
+    icon: "web",
+    text: "Never share your secret phrase or enter it into an app or website.",
+  },
+  {
+    icon: "lock",
+    text: "Anyone with your secret phrase will have complete control of your account.",
+  },
+];
 
 export function ShowRecoveryPhraseWarningScreen({ navigation }): JSX.Element {
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
   const background = useBackgroundClient();
   const [password, setPassword] = useState("");
@@ -42,23 +57,10 @@ export function ShowRecoveryPhraseWarningScreen({ navigation }): JSX.Element {
     navigation.push("show-secret-phrase", { mnemonic });
   };
 
-  const warnings = [
-    {
-      icon: "chat",
-      text: "Backpack support will never ask for your secret phrase.",
-    },
-    {
-      icon: "web",
-      text: "Never share your secret phrase or enter it into an app or website.",
-    },
-    {
-      icon: "lock",
-      text: "Anyone with your secret phrase will have complete control of your account.",
-    },
-  ];
-
   return (
-    <Screen style={{ justifyContent: "space-between" }}>
+    <Screen
+      style={{ justifyContent: "space-between", marginBottom: insets.bottom }}
+    >
       <View>
         <HeaderIconSubtitle
           icon={<WarningIcon fill="#E95050" />}
@@ -97,7 +99,6 @@ export function ShowRecoveryPhraseWarningScreen({ navigation }): JSX.Element {
             autoFocus
             value={password}
             onChangeText={(text: string) => setPassword(text)}
-            // error={error}
             placeholder="Password"
             secureTextEntry
           />

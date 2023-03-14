@@ -1,18 +1,23 @@
+import { forwardRef } from "react";
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
-import { StyleSheet, Text, View } from "react-native";
 
-import { useTheme } from "~hooks/useTheme";
+import {
+  styled,
+  themeable,
+  TamaguiElement,
+  ListItemFrame,
+  ListItemText,
+  useListItem,
+  ListItemProps,
+  YGroup,
+} from "@coral-xyz/tamagui";
 
-import { RoundedContainerGroup } from "~components/index";
+import { IconPushDetail } from "./SettingsRow";
 
-import { IconPushDetail, SettingsRow } from "./SettingsRow";
-
-// TODO(peter) fix for next PR
 export function SettingsList({
   style,
   menuItems,
   textStyle,
-  borderColor,
 }: {
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
@@ -28,33 +33,45 @@ export function SettingsList({
     };
   };
 }) {
-  // const theme = useTheme();
-
   return (
-    <RoundedContainerGroup>
-      {Object.entries(menuItems).map(([key, val]: any, i, { length }) => (
-        <SettingsRow
-          key={key}
-          label={key}
-          // id={key}
-          // isFirst={i === 0}
-          // isLast={i === length - 1}
-          onPress={() => val.onPress()}
-          // style={{
-          //   height: "44px",
-          //   padding: 10,
-          //   ...val.style,
-          // }}
-          // button={val.button === undefined ? true : val.button}
-          detailIcon={val.detail ?? <IconPushDetail />}
-          // borderColor={borderColor}
-        >
-          {val.icon && val.icon()}
-          <Text style={[{ fontWeight: "500" }, textStyle]}>
-            {val.label ?? key}
-          </Text>
-        </SettingsRow>
-      ))}
-    </RoundedContainerGroup>
+    <YGroup als="center" bordered>
+      {Object.entries(menuItems).map(
+        ([key, { onPress, detail, icon, label }]) => (
+          <YGroup.Item key={key}>
+            <ListItem
+              hoverTheme
+              pressTheme
+              icon={icon}
+              iconAfter={detail ?? IconPushDetail}
+              onPress={() => onPress && onPress()}
+              style={style}
+            >
+              <CustomListItemText style={textStyle}>
+                {label ?? key}
+              </CustomListItemText>
+            </ListItem>
+          </YGroup.Item>
+        )
+      )}
+    </YGroup>
   );
 }
+
+const CustomListItemFrame = styled(ListItemFrame, {
+  paddingHorizontal: 12,
+  height: "$container",
+});
+
+const CustomListItemText = styled(ListItemText, {
+  fontFamily: "Inter_500Medium",
+  fontSize: 16,
+  lineHeight: 24,
+});
+
+export const ListItem = themeable(
+  forwardRef<TamaguiElement, ListItemProps>((propsIn, ref) => {
+    const { props } = useListItem(propsIn);
+
+    return <CustomListItemFrame {...props} ref={ref} />;
+  })
+);

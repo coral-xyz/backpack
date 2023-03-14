@@ -1,25 +1,28 @@
 import { Alert, Text, View } from "react-native";
 
 import {
-  Margin,
-  PrimaryButton,
-  Screen,
-  SubtextParagraph,
-} from "~components/index";
-import {
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_PASSWORD_UPDATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { useTheme } from "~hooks/useTheme";
 import { useForm } from "react-hook-form";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { InputGroup, InputListItem } from "~components/Form";
+import { Margin, PrimaryButton, Screen } from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
-function InstructionText() {
+function InstructionText({
+  text,
+  onPress,
+}: {
+  text: string;
+  onPress: () => void;
+}) {
   const theme = useTheme();
   return (
     <Text
+      onPress={onPress}
       style={{
         fontWeight: "500",
         fontSize: 14,
@@ -27,8 +30,7 @@ function InstructionText() {
         color: theme.custom.colors.subtext,
       }}
     >
-      Your password must be at least 8 characters long and contain letters and
-      numbers.
+      {text}
     </Text>
   );
 }
@@ -40,6 +42,7 @@ type PasswordInput = {
 };
 
 export function ChangePasswordScreen({ navigation }) {
+  const insets = useSafeAreaInsets();
   const background = useBackgroundClient();
   const { control, handleSubmit, formState, watch } = useForm({
     defaultValues: {
@@ -85,7 +88,9 @@ export function ChangePasswordScreen({ navigation }) {
   };
 
   return (
-    <Screen style={{ justifyContent: "space-between" }}>
+    <Screen
+      style={{ justifyContent: "space-between", marginBottom: insets.bottom }}
+    >
       <View>
         <InputGroup hasError={hasError("currentPassword")}>
           <InputListItem
@@ -101,9 +106,10 @@ export function ChangePasswordScreen({ navigation }) {
           />
         </InputGroup>
         <Margin top={12} bottom={36}>
-          <SubtextParagraph onPress={handlePressForgotPassword}>
-            Forgot password?
-          </SubtextParagraph>
+          <InstructionText
+            text="Forgot password?"
+            onPress={handlePressForgotPassword}
+          />
         </Margin>
         <InputGroup
           hasError={hasError("newPassword") || hasError("verifyPassword")}
@@ -142,7 +148,7 @@ export function ChangePasswordScreen({ navigation }) {
           />
         </InputGroup>
         <Margin top={12}>
-          <InstructionText />
+          <InstructionText text="Your password must be at least 8 characters long and contain letters and numbers." />
         </Margin>
       </View>
       <PrimaryButton
