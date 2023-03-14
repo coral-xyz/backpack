@@ -130,6 +130,8 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
               },
             ],
           });
+          // Keyring now exists
+          setKeyringExists(true);
         } else {
           // Keyring exists but the hd keyring is not initialised, import
           await background.request({
@@ -138,8 +140,6 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
           });
         }
         newPublicKey = walletDescriptor.publicKey;
-        // Keyring now exists, toggle to other options
-        setKeyringExists(true);
       } else {
         newPublicKey = await background.request({
           method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,

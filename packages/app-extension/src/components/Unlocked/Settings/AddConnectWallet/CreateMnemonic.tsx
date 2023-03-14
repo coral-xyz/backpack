@@ -3,6 +3,7 @@ import type { Blockchain, SignedWalletDescriptor } from "@coral-xyz/common";
 import {
   getAddMessage,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
   UI_RPC_METHOD_KEYRING_SET_MNEMONIC,
@@ -19,19 +20,13 @@ import { useNavigation } from "../../../common/Layout/NavStack";
 
 import { ConfirmCreateWallet } from "./";
 
-export function CreateMnemonic({
-  blockchain,
-  keyringExists,
-}: {
-  blockchain: Blockchain;
-  keyringExists: boolean;
-}) {
+export function CreateMnemonic({ blockchain }: { blockchain: Blockchain }) {
   const nav = useNavigation();
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const { close: closeParentDrawer } = useDrawerContext();
   const { signMessageForWallet } = useRpcRequests();
-
+  const [keyringExists, setKeyringExists] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [publicKey, setPublicKey] = useState<string | null>(null);
 
@@ -42,6 +37,16 @@ export function CreateMnemonic({
       nav.setOptions({ headerTitle: prevTitle });
     };
   }, [nav, theme]);
+
+  useEffect(() => {
+    (async () => {
+      const blockchainKeyrings = await background.request({
+        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
+        params: [],
+      });
+      setKeyringExists(blockchainKeyrings.includes(blockchain));
+    })();
+  }, [background, blockchain]);
 
   // TODO replace the left nav button to go to the previous step if step > 0
 
