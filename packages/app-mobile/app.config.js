@@ -40,11 +40,12 @@ export default {
     },
   },
   android: {
+    package: packageName,
+    googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
       backgroundColor: "#000",
     },
-    package: packageName,
   },
   web: {
     favicon: "./assets/favicon.png",
@@ -52,7 +53,7 @@ export default {
   extra: {
     localWebViewUrl: "http://localhost:9333",
     remoteWebViewUrl:
-      "https://coral-xyz.github.io/backpack/background-scripts/807d4b7/service-worker-loader.html",
+      "https://coral-xyz.github.io/backpack/background-scripts/31b677d/service-worker-loader.html",
     eas: {
       projectId: projectID,
     },
