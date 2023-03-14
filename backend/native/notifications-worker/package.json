@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@coral-xyz/backend-common": "*",
+    "@coral-xyz/chat-zeus": "*",
     "@coral-xyz/common": "*",
     "@coral-xyz/zeus": "*",
     "@project-serum/anchor": "^0.25.0",
