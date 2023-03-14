@@ -4,7 +4,6 @@ import {
   getAddMessage,
   openConnectHardware,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
@@ -17,6 +16,7 @@ import {
 } from "@coral-xyz/react-common";
 import {
   useBackgroundClient,
+  useEnabledBlockchains,
   useKeyringHasMnemonic,
   useRpcRequests,
   useUser,
@@ -38,12 +38,14 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
   const background = useBackgroundClient();
   const hasMnemonic = useKeyringHasMnemonic();
   const user = useUser();
-  const [keyringExists, setKeyringExists] = useState(false);
+  const enabledBlockchains = useEnabledBlockchains();
+  const keyringExists = enabledBlockchains.includes(blockchain);
+  const { close: closeParentDrawer } = useDrawerContext();
+  const { signMessageForWallet } = useRpcRequests();
+
   const [newPublicKey, setNewPublicKey] = useState("");
   const [openDrawer, setOpenDrawer] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { close: closeParentDrawer } = useDrawerContext();
-  const { signMessageForWallet } = useRpcRequests();
 
   // If the keyring or if we don't have any public keys of the type we are
   // adding then additional logic is required to select the account index of
@@ -74,16 +76,6 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
       nav.setOptions({ headerTitle: prevTitle });
     };
   }, [nav]);
-
-  useEffect(() => {
-    (async () => {
-      const blockchainKeyrings = await background.request({
-        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
-        params: [],
-      });
-      setKeyringExists(blockchainKeyrings.includes(blockchain));
-    })();
-  }, [background, blockchain]);
 
   const createNewWithPhrase = async () => {
     // Mnemonic based keyring. This is the simple case because we don't
@@ -138,8 +130,6 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
           });
         }
         newPublicKey = walletDescriptor.publicKey;
-        // Keyring now exists, toggle to other options
-        setKeyringExists(true);
       } else {
         newPublicKey = await background.request({
           method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,

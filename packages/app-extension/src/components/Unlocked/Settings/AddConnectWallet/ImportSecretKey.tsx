@@ -3,10 +3,13 @@ import type { Blockchain } from "@coral-xyz/common";
 import {
   getAddMessage,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
 } from "@coral-xyz/common";
-import { useBackgroundClient, useRpcRequests } from "@coral-xyz/recoil";
+import {
+  useBackgroundClient,
+  useEnabledBlockchains,
+  useRpcRequests,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 
 import { PrivateKeyInput } from "../../../common/Account/PrivateKeyInput";
@@ -28,21 +31,13 @@ export function ImportSecretKey({
   const background = useBackgroundClient();
   const nav = useNavigation();
   const theme = useCustomTheme();
-  const [keyringExists, setKeyringExists] = useState(false);
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const [newPublicKey, setNewPublicKey] = useState("");
+  const enabledBlockchains = useEnabledBlockchains();
+  const keyringExists = enabledBlockchains.includes(blockchain);
   const { signMessageForWallet } = useRpcRequests();
   const { close: closeParentDrawer } = useDrawerContext();
 
-  useEffect(() => {
-    (async () => {
-      const blockchainKeyrings = await background.request({
-        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
-        params: [],
-      });
-      setKeyringExists(blockchainKeyrings.includes(blockchain));
-    })();
-  }, [background, blockchain]);
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [newPublicKey, setNewPublicKey] = useState("");
 
   useEffect(() => {
     const prevTitle = nav.title;

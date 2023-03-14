@@ -2,10 +2,9 @@ import type { Blockchain, SignedWalletDescriptor } from "@coral-xyz/common";
 import {
   getAddMessage,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_LEDGER_IMPORT,
 } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useBackgroundClient, useEnabledBlockchains } from "@coral-xyz/recoil";
 
 import { HardwareOnboard } from "../../../../Onboarding/pages/HardwareOnboard";
 
@@ -24,16 +23,12 @@ export function ConnectHardware({
   onComplete: () => void;
 }) {
   const background = useBackgroundClient();
+  const enabledBlockchains = useEnabledBlockchains();
+  const keyringExists = enabledBlockchains.includes(blockchain);
 
   const handleHardwareOnboardComplete = async (
     signedWalletDescriptor: SignedWalletDescriptor
   ) => {
-    const blockchainKeyrings = await background.request({
-      method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
-      params: [],
-    });
-    const keyringExists = blockchainKeyrings.includes(blockchain);
-
     if (keyringExists) {
       // Just import the wallet because the keyring already exists
       await background.request({
