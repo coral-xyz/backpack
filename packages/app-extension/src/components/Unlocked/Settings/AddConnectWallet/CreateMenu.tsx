@@ -83,7 +83,7 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
       });
       setKeyringExists(blockchainKeyrings.includes(blockchain));
     })();
-  }, [background, blockchain]);
+  }, [background, blockchain, hasMnemonic]);
 
   const createNewWithPhrase = async () => {
     // Mnemonic based keyring. This is the simple case because we don't
@@ -151,7 +151,6 @@ export function CreateMenu({ blockchain }: { blockchain: Blockchain }) {
     } else {
       nav.push("create-mnemonic", {
         blockchain,
-        keyringExists,
       });
     }
   };
