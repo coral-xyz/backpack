@@ -1,5 +1,3 @@
 // @ts-expect-error
-export * from "./useChatsWithMetadata";
+export * from "./chat";
 export { useCustomTheme } from "./useTheme";
-export * from "./useUserMetadata";
-export * from "./useUsersMetadata";
