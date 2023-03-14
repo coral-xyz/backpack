@@ -25,7 +25,6 @@ import {
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ,
@@ -311,8 +310,6 @@ async function handle<T = any>(
         // @ts-ignore
         ...params
       );
-    case UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ:
-      return await handleBlockchainKeyringsRead(ctx);
     case UI_RPC_METHOD_KEY_IS_COLD_UPDATE:
       return await handleKeyIsColdUpdate(ctx, params[0], params[1]);
     //

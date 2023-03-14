@@ -1,9 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-import {
-  openConnectHardware,
-  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
-} from "@coral-xyz/common";
+import { openConnectHardware } from "@coral-xyz/common";
 import {
   BackpackMnemonicIcon,
   HardwareIcon,
@@ -12,7 +9,7 @@ import {
   SecretKeyIcon,
 } from "@coral-xyz/react-common";
 import {
-  useBackgroundClient,
+  useEnabledBlockchains,
   useKeyringHasMnemonic,
   useUser,
 } from "@coral-xyz/recoil";
@@ -24,10 +21,10 @@ import { SettingsList } from "../../../common/Settings/List";
 
 export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
   const navigation = useNavigation();
-  const background = useBackgroundClient();
   const hasMnemonic = useKeyringHasMnemonic();
   const user = useUser();
-  const [keyringExists, setKeyringExists] = useState(false);
+  const enabledBlockchains = useEnabledBlockchains();
+  const keyringExists = enabledBlockchains.includes(blockchain);
 
   useEffect(() => {
     const prevTitle = navigation.title;
@@ -36,16 +33,6 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
       navigation.setOptions({ headerTitle: prevTitle });
     };
   }, [navigation]);
-
-  useEffect(() => {
-    (async () => {
-      const blockchainKeyrings = await background.request({
-        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
-        params: [],
-      });
-      setKeyringExists(blockchainKeyrings.includes(blockchain));
-    })();
-  }, [background, blockchain]);
 
   const importMenu = {
     ...(hasMnemonic

@@ -104,8 +104,6 @@ export const UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE =
   "ui-rpc-method-blockchains-enabled-delete";
 export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD =
   "ui-rpc-method-blockchain-keyrings-add";
-export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ =
-  "ui-rpc-method-blockchain-keyrings-read";
 export const UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS =
   "ui-rpc-method-find-server-public-key-conflicts";
 export const UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR =
