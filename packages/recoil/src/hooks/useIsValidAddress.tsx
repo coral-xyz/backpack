@@ -1,17 +1,15 @@
-import type { Connection } from "@solana/web3.js";
-
 import { useEffect, useState } from "react";
-
 import {
   getHashedName,
   getNameAccountKey,
   NameRegistryState,
 } from "@bonfida/spl-name-service";
 import { Blockchain } from "@coral-xyz/common";
+import { TldParser } from "@onsol/tldparser";
+import type { Connection } from "@solana/web3.js";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { ethers } from "ethers";
 
-// TODO(peter) share between extension/mobile
 export function useIsValidAddress(
   blockchain: Blockchain,
   address: string,
@@ -42,7 +40,7 @@ export function useIsValidAddress(
         }
 
         // SNS Domain
-        if (address.includes(".sol")) {
+        if (address.endsWith(".sol")) {
           try {
             const hashedName = await getHashedName(address.replace(".sol", ""));
             const nameAccountKey = await getNameAccountKey(
@@ -58,7 +56,24 @@ export function useIsValidAddress(
 
             pubkey = owner.registry.owner;
           } catch (e) {
-            console.log("useIsValid error", e);
+            setAddressError(true);
+            return;
+          }
+        }
+
+        // ANS by ONSOL
+        if (!pubkey && address.split(".").length === 2) {
+          try {
+            // address would be e.g. miester.poor
+            const parser = new TldParser(solanaConnection);
+            const owner = await parser.getOwnerFromDomainTld(address);
+            if (!owner) {
+              setAddressError(true);
+              // Not a valid domain don't bother continuing since it has a dot in it.
+              return;
+            }
+            pubkey = owner;
+          } catch (e) {
             setAddressError(true);
             return;
           }
@@ -69,7 +84,6 @@ export function useIsValidAddress(
           try {
             pubkey = new PublicKey(address);
           } catch (err) {
-            console.log("useIsValid error", err);
             setAddressError(true);
             // Not valid address so don't bother validating it.
             return;
@@ -77,7 +91,6 @@ export function useIsValidAddress(
         }
 
         const account = await solanaConnection?.getAccountInfo(pubkey);
-        console.log("useIsValid:account", account);
 
         // Null data means the account has no lamports. This is valid.
         if (!account) {
@@ -87,21 +100,11 @@ export function useIsValidAddress(
           return;
         }
 
-        console.log(
-          "useIsValid account.owner",
-          account.owner,
-          SystemProgram.programId
-        );
-
         // Only allow system program accounts to be given. ATAs only!
-        // TODO display an error to the user letting them know this type of address won't accept SOL, etc
         if (!account.owner.equals(SystemProgram.programId)) {
-          console.log("useIsValid: account owner error");
           setAddressError(true);
           return;
         }
-
-        console.log("useIsValid valid");
 
         // The account data has been successfully validated.
         setAddressError(false);
@@ -144,6 +147,6 @@ export function useIsValidAddress(
     isValidAddress: accountValidated,
     isFreshAddress: isFreshAccount,
     isErrorAddress: addressError,
-    normalizedAddress,
+    normalizedAddress: normalizedAddress,
   };
 }

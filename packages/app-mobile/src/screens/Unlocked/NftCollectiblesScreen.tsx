@@ -329,9 +329,7 @@ const Stack = createStackNavigator<NftStackParamList>();
 export function NftCollectiblesNavigator(): JSX.Element {
   return (
     <Stack.Navigator initialRouteName="NftCollectionList">
-      <Stack.Group
-        screenOptions={{ headerShown: true, headerBackTitleVisible: false }}
-      >
+      <Stack.Group screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name="NftCollectionList"
           component={NftCollectionListScreen}

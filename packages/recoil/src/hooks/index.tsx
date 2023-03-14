@@ -12,6 +12,7 @@ export * from "./useBlockchain";
 export * from "./useBreakpoints";
 export * from "./useFeatureGates";
 export * from "./useFriendship";
+export * from "./useIsValidAddress";
 export * from "./useLoader";
 export * from "./usePriceData";
 export * from "./usePrimaryWallets";

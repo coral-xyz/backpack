@@ -11,7 +11,6 @@ import {
   TextInput,
   UserIcon,
 } from "@coral-xyz/react-common";
-import type { TokenDataWithPrice } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useActiveEthereumWallet,
@@ -21,6 +20,7 @@ import {
   useAnchorContext,
   useAvatarUrl,
   useEthereumCtx,
+  useIsValidAddress,
   useLoader,
   useUser,
 } from "@coral-xyz/recoil";
@@ -35,8 +35,6 @@ import {
   useNavigation,
   useNavigation as useNavigationEphemeral,
 } from "../../../common/Layout/NavStack";
-
-import { useIsValidAddress } from "./Send";
 
 let debouncedTimer = 0;
 

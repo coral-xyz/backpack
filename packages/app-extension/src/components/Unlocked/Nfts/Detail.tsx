@@ -22,7 +22,6 @@ import {
   PrimaryButton,
   ProxyImage,
   SecondaryButton,
-  TextInput,
 } from "@coral-xyz/react-common";
 import {
   appStoreMetaTags,
@@ -36,13 +35,14 @@ import {
   useDecodedSearchParams,
   useEthereumCtx,
   useEthereumExplorer,
+  useIsValidAddress,
   useNavigation,
   useOpenPlugin,
   useSolanaCtx,
   useSolanaExplorer,
   useUser,
 } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { Whatshot } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Button, IconButton, Typography } from "@mui/material";
@@ -73,7 +73,6 @@ import { SendEthereumConfirmationCard } from "../Balances/TokensWidget/Ethereum"
 import {
   Error as ErrorConfirmation,
   Sending,
-  useIsValidAddress,
   useStyles,
 } from "../Balances/TokensWidget/Send";
 import { SendSolanaConfirmationCard } from "../Balances/TokensWidget/Solana";

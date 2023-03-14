@@ -20,7 +20,11 @@ import {
   toDisplayBalance,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
 } from "@coral-xyz/common";
-import { useAnchorContext, useEthereumCtx } from "@coral-xyz/recoil";
+import {
+  useAnchorContext,
+  useEthereumCtx,
+  useIsValidAddress,
+} from "@coral-xyz/recoil";
 import {
   PrimaryButton,
   DangerButton,
@@ -36,7 +40,6 @@ import { BottomSheetModal } from "~components/BottomSheetModal";
 import { ImageSvg } from "~components/ImageSvg";
 import { UnstyledTokenTextInput } from "~components/TokenInputField";
 import { Screen } from "~components/index";
-import { useIsValidAddress } from "~hooks/useIsValidAddress";
 import { useTheme as useCustomTheme } from "~hooks/useTheme";
 import type { UnlockedNavigatorStackParamList } from "~navigation/UnlockedNavigator";
 
