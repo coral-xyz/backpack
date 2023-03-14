@@ -373,16 +373,20 @@ export function CollectionCard({ collection }: { collection: NftCollection }) {
                   <div
                     style={{
                       position: "relative",
+                      height: "100%",
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
                     {nft ? (
                       <ProxyImage
                         style={{
                           width: "100%",
-                          height: "120%",
                         }}
                         loadingStyles={{
-                          height: "120%",
+                          height: "100%",
                         }}
                         removeOnError
                         src={nft.imageUrl}
