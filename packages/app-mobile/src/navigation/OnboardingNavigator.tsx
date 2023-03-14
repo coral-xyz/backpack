@@ -1,7 +1,7 @@
 import type { Blockchain, WalletDescriptor } from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -500,33 +500,19 @@ function OnboardingMnemonicInputScreen({
     : "Enter your 12 or 24-word secret recovery mnemonic to add an existing wallet.";
 
   //
-  // Handle pastes of 12 or 24 word mnemonics.
+  // Generate a random mnemonic and populate state.
   //
-  useEffect(() => {
-    // const onPaste = (e: any) => {
-    //   const words = e.clipboardData.getData("text").split(" ");
-    //   if (words.length !== 12 && words.length !== 24) {
-    //     // Not a valid mnemonic length
-    //     return;
-    //   }
-    //   // Prevent the paste from populating an individual input field with
-    //   // all words
-    //   e.preventDefault();
-    //   setMnemonicWords(words);
-    // };
-    if (!readOnly) {
-      // Enable pasting if not readonly
-      // window.addEventListener("paste", onPaste);
-    } else {
-      // If read only we can generate a random mnemnic
-      generateRandom();
-    }
-    return () => {
-      if (!readOnly) {
-        // window.removeEventListener("paste", onPaste);
-      }
-    };
-  }, []);
+  const generateRandom = useCallback(() => {
+    background
+      .request({
+        method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
+        params: [mnemonicWords.length === 12 ? 128 : 256],
+      })
+      .then((m: string) => {
+        const words = m.split(" ");
+        setMnemonicWords(words);
+      });
+  }, [background, mnemonicWords]);
 
   //
   // Validate the mnemonic and call the onNext handler.
@@ -547,20 +533,11 @@ function OnboardingMnemonicInputScreen({
       });
   };
 
-  //
-  // Generate a random mnemonic and populate state.
-  //
-  const generateRandom = () => {
-    background
-      .request({
-        method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
-        params: [mnemonicWords.length === 12 ? 128 : 256],
-      })
-      .then((m: string) => {
-        const words = m.split(" ");
-        setMnemonicWords(words);
-      });
-  };
+  useEffect(() => {
+    if (readOnly) {
+      generateRandom();
+    }
+  }, [readOnly, generateRandom]);
 
   return (
     <OnboardingScreen

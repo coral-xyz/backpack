@@ -1,21 +1,17 @@
-import { View } from "react-native";
+import { Box } from "@coral-xyz/tamagui";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { QuestionIcon } from "~components/Icon";
 import {
   DangerButton,
   Header,
-  Margin,
   Screen,
   SecondaryButton,
   SubtextParagraph,
 } from "~components/index";
-import { KeyringStoreStateEnum, useKeyringStoreState } from "@coral-xyz/recoil";
 
-import { QuestionIcon } from "~components/Icon";
-
-export function ForgotPasswordScreen({ navigation }) {
-  const keyringStoreState = useKeyringStoreState();
-  const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
-  console.log("isLocked", isLocked);
+export function ForgotPasswordScreen({ navigation }): JSX.Element {
+  const insets = useSafeAreaInsets();
 
   const onPressTryMore = () => {
     navigation.goBack();
@@ -26,29 +22,33 @@ export function ForgotPasswordScreen({ navigation }) {
   };
 
   return (
-    <Screen style={{ justifyContent: "space-between" }}>
-      <View>
-        <Margin vertical={12}>
-          <View style={{ alignSelf: "center" }}>
+    <Screen
+      style={{ justifyContent: "space-between", marginBottom: insets.bottom }}
+    >
+      <Box>
+        <Box my={24}>
+          <Box als="center">
             <QuestionIcon />
-          </View>
-        </Margin>
-        <Header text="Forgot your password?" />
+          </Box>
+        </Box>
+        <Box mb={12}>
+          <Header text="Forgot your password?" />
+        </Box>
         <SubtextParagraph>
           We can’t recover your password as it is only stored on your computer.
           You can try more passwords or reset your wallet with the secret
           recovery phrase.
         </SubtextParagraph>
-      </View>
-      <View>
-        <Margin bottom={16}>
+      </Box>
+      <Box>
+        <Box mb={16}>
           <SecondaryButton
             label="Try More Passwords"
             onPress={onPressTryMore}
           />
-        </Margin>
+        </Box>
         <DangerButton label="Reset Backpack" onPress={onPressReset} />
-      </View>
+      </Box>
     </Screen>
   );
 }

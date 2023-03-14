@@ -248,7 +248,7 @@ export function DangerButton({
 }: {
   label: string;
   onPress: () => void;
-  disabled: boolean;
+  disabled?: boolean;
   loading?: boolean;
 }) {
   const theme = useCustomTheme();

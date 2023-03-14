@@ -12,7 +12,7 @@ const tokens = createTokens({
   ...tTokens,
   size: {
     ...tTokens.size,
-    input: 48,
+    container: 48,
   },
   radius: {
     ...tTokens.radius,

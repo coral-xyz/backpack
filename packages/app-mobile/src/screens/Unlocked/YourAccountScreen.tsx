@@ -1,9 +1,11 @@
+import { Alert } from "react-native";
+
 import { useKeyringHasMnemonic } from "@coral-xyz/recoil";
 
 import { Screen } from "~components/index";
 import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 
-export function YourAccountScreen({ navigation }) {
+export function YourAccountScreen({ navigation }): JSX.Element {
   const hasMnemonic = useKeyringHasMnemonic();
 
   const menuItems = {
@@ -17,6 +19,13 @@ export function YourAccountScreen({ navigation }) {
           },
         }
       : {}),
+    "Delete account": {
+      onPress: () =>
+        Alert.alert(
+          "Delete Account",
+          "Please email us at support@backpack.app with your username and public keys and we'll delete your account."
+        ),
+    },
     "Log out": {
       onPress: () => navigation.push("reset-warning"),
     },
