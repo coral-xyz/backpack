@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@coral-xyz/common": "*",
+    "@ethersproject/transactions": "^5.7.0",
     "@ledgerhq/hw-app-eth": "6.27.1",
     "@ledgerhq/hw-app-solana": "6.27.1",
     "@ledgerhq/hw-transport": "6.27.1",

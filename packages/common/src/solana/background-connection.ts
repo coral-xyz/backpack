@@ -1,3 +1,5 @@
+// needed to avoid TS error TS2742, see: https://bit.ly/3ymWOFj
+import type {} from "@metaplex-foundation/beet";
 import type {
   AccountBalancePair,
   AccountChangeCallback,

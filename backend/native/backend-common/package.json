@@ -8,8 +8,8 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@coral-xyz/common": "*",
     "@coral-xyz/chat-zeus": "*",
+    "@coral-xyz/common": "*",
     "@coral-xyz/zeus": "*",
     "dotenv": "^16.0.3"
   },
@@ -21,5 +21,8 @@
   "author": "",
   "scripts": {
     "build": "tsc && tsc-alias"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.5"
   }
 }

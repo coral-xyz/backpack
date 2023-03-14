@@ -11,10 +11,13 @@
   },
   "dependencies": {
     "@coral-xyz/common": "*",
-    "eslint-config-custom": "*",
+    "@ethersproject/abstract-provider": "^5.7.0",
+    "@ethersproject/transactions": "^5.7.0",
     "@project-serum/anchor": "^0.23.0",
     "@solana/web3.js": "^1.63.1",
     "bs58": "^5.0.0",
+    "eth-rpc-errors": "^4.0.3",
+    "ethers": "^5.5.1",
     "eventemitter3": "^4.0.7"
   },
   "devDependencies": {

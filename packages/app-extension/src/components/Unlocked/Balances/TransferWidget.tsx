@@ -17,8 +17,9 @@ import { SearchableTokenTables } from "../../common/TokenTable";
 import { Swap, SwapSelectToken } from "../../Unlocked/Swap";
 
 import {
-  AddressSelector,
   AddressSelectorLoader,
+  NftAddressSelector,
+  TokenAddressSelector,
 } from "./TokensWidget/AddressSelector";
 import { Deposit } from "./TokensWidget/Deposit";
 import { Ramp } from "./TokensWidget/Ramp";
@@ -136,6 +137,7 @@ function SendButton({
   publicKey?: string;
 }) {
   const theme = useCustomTheme();
+
   return (
     <TransferButton
       label="Send"
@@ -176,7 +178,7 @@ function SendButton({
               },
               {
                 name: "select-user",
-                component: (props: any) => <AddressSelector {...props} />,
+                component: (props: any) => <TokenAddressSelector {...props} />,
                 title: "",
               },
               {

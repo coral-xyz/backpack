@@ -40,6 +40,14 @@ import { useIsValidAddress } from "./Send";
 
 let debouncedTimer = 0;
 
+export interface SendData {
+  address: string;
+  username?: string;
+  image?: string;
+  uuid?: string;
+  walletName?: string;
+}
+
 const useStyles = makeStyles((theme: any) =>
   createStyles({
     hoverParent: {
@@ -84,21 +92,25 @@ const useStyles = makeStyles((theme: any) =>
 
 type AddressSelectorContext = {
   blockchain: Blockchain;
-  token: TokenDataWithPrice;
+  name: string;
+  onSelect: (sendData: SendData) => void;
 };
 
 const AddressSelectorContext =
   React.createContext<AddressSelectorContext | null>(null);
+
 export function AddressSelectorProvider(props: {
   blockchain: Blockchain;
-  token: TokenDataWithPrice;
+  name: string;
+  onSelect: (sendData: SendData) => void;
   children: any;
 }) {
   return (
     <AddressSelectorContext.Provider
       value={{
         blockchain: props.blockchain,
-        token: props.token,
+        name: props.name,
+        onSelect: props.onSelect,
       }}
     >
       {props.children}
@@ -127,6 +139,7 @@ export const AddressSelectorLoader = ({
   // (rather than aggregate mode).
   const activePublicKey = useActiveWallet().publicKey;
   const publicKeyStr = publicKey ?? activePublicKey;
+  const { push } = useNavigation();
   const [token] = useLoader(
     blockchainTokenData({
       publicKey: publicKeyStr,
@@ -136,15 +149,63 @@ export const AddressSelectorLoader = ({
     null
   );
   if (!token) return null;
-  return <AddressSelector blockchain={blockchain} token={token} />;
+  return (
+    <AddressSelector
+      blockchain={blockchain}
+      name={token.ticker}
+      onSelect={(sendData) => {
+        push("send", {
+          blockchain,
+          token,
+          to: sendData,
+        });
+      }}
+    />
+  );
+};
+
+export const TokenAddressSelector = (props: any) => {
+  const { push } = useNavigation();
+
+  return (
+    <AddressSelector
+      {...props}
+      onSelect={(sendData) => {
+        push("send", {
+          blockchain: props.blockchain,
+          token: props.token,
+          to: sendData,
+        });
+      }}
+    />
+  );
+};
+
+export const NftAddressSelector = (props: any) => {
+  const { push } = useNavigation();
+
+  return (
+    <AddressSelector
+      {...props}
+      onSelect={(sendData) => {
+        push("send", {
+          blockchain: props.blockchain,
+          token: props.token,
+          to: sendData,
+        });
+      }}
+    />
+  );
 };
 
 export const AddressSelector = ({
   blockchain,
-  token,
+  name,
+  onSelect,
 }: {
   blockchain: Blockchain;
-  token: TokenDataWithPrice;
+  name: string;
+  onSelect: (sendData: SendData) => void;
 }) => {
   const classes = useStyles();
   const nav = useNavigationEphemeral();
@@ -152,7 +213,6 @@ export const AddressSelector = ({
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
-  const { push } = useNavigation();
   const { isValidAddress, normalizedAddress } = useIsValidAddress(
     blockchain,
     inputContent,
@@ -162,14 +222,18 @@ export const AddressSelector = ({
 
   useEffect(() => {
     const prev = nav.title;
-    nav.setOptions({ headerTitle: `Send ${token.ticker}` });
+    nav.setOptions({ headerTitle: `Send ${name}` });
     return () => {
       nav.setOptions({ headerTitle: prev });
     };
   }, []);
 
   return (
-    <AddressSelectorProvider blockchain={blockchain} token={token}>
+    <AddressSelectorProvider
+      blockchain={blockchain}
+      name={name}
+      onSelect={onSelect}
+    >
       <div className={classes.container}>
         <div className={classes.topHalf}>
           <SearchInput
@@ -205,15 +269,11 @@ export const AddressSelector = ({
                     (result) => result.publicKey === inputContent
                   )
                 );
-                push("send", {
-                  blockchain,
-                  token,
-                  to: {
-                    address: normalizedAddress || inputContent,
-                    username: user?.username,
-                    image: user?.image,
-                    uuid: user?.id,
-                  },
+                onSelect({
+                  address: normalizedAddress || inputContent,
+                  username: user?.username,
+                  image: user?.image,
+                  uuid: user?.id,
                 });
               }}
               disabled={!isValidAddress}
@@ -504,8 +564,7 @@ const AddressListItem = ({
 }) => {
   const theme = useCustomTheme();
   const classes = useStyles();
-  const { push } = useNavigation();
-  const { blockchain, token } = useAddressSelectorContext();
+  const { onSelect } = useAddressSelectorContext();
 
   return (
     <ListItemButton
@@ -514,16 +573,12 @@ const AddressListItem = ({
         if (!address) {
           return;
         }
-        push("send", {
-          blockchain,
-          token,
-          to: {
-            address: address,
-            username: user.username,
-            walletName: user.walletName,
-            image: user.image,
-            uuid: user.uuid,
-          },
+        onSelect({
+          address: address,
+          username: user.username,
+          walletName: user.walletName,
+          image: user.image,
+          uuid: user.uuid,
         });
       }}
       style={{

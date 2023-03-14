@@ -22,7 +22,7 @@ export default {
   },
   assetBundlePatterns: ["**/*"],
   ios: {
-    supportsTablet: true,
+    supportsTablet: false,
     bundleIdentifier: packageName,
     infoPlist: {
       NSAllowsArbitraryLoads: true,
