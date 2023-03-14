@@ -53,6 +53,7 @@ export function SendSolanaConfirmationCard({
   destinationUser,
   amount,
   onComplete,
+  onViewBalances,
 }: {
   token: {
     address: string;
@@ -69,6 +70,7 @@ export function SendSolanaConfirmationCard({
   };
   amount: BigNumber;
   onComplete?: (txSig?: any) => void;
+  onViewBalances?: () => void;
 }) {
   const [txSignature, setTxSignature] = useState<string | null>(null);
   const solanaCtx = useSolanaCtx();
@@ -208,6 +210,7 @@ export function SendSolanaConfirmationCard({
           amount={amount}
           token={token}
           signature={txSignature!}
+          onViewBalances={onViewBalances}
         />
       ) : (
         <Error

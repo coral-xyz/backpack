@@ -28,10 +28,11 @@ import {
   DangerButton,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
-import { SvgUri } from "react-native-svg";
 
 import { ContentCopyIcon, RedBackpack } from "~components/Icon";
 import { useTheme } from "~hooks/useTheme";
+
+import { ImageSvg } from "./ImageSvg";
 
 export { ActionCard } from "./ActionCard";
 export { MnemonicInputFields } from "./MnemonicInputFields";
@@ -166,16 +167,25 @@ const screenStyles = StyleSheet.create({
   },
 });
 
-export function Header({ text }: { text: string }) {
+export function Header({
+  text,
+  style,
+}: {
+  text: string;
+  style?: StyleProp<TextStyle>;
+}): JSX.Element {
   const theme = useTheme();
   return (
     <Text
-      style={{
-        color: theme.custom.colors.fontColor,
-        fontSize: 24,
-        fontWeight: "500",
-        lineHeight: 32,
-      }}
+      style={[
+        {
+          color: theme.custom.colors.fontColor,
+          fontSize: 24,
+          fontWeight: "500",
+          lineHeight: 32,
+        },
+        style,
+      ]}
     >
       {text}
     </Text>
@@ -366,7 +376,7 @@ export function Avatar({ size = 64 }: { size?: number }): JSX.Element {
         height: outerSize,
       }}
     >
-      <SvgUri width={size} height={size} uri={avatarUrl} />
+      <ImageSvg width={size} height={size} uri={avatarUrl} />
     </View>
   );
 }
@@ -457,7 +467,7 @@ export function WelcomeLogoHeader() {
               color: theme.custom.colors.secondary,
             }}
           >
-            A home for your xNFTs
+            gm
           </Text>
         </Margin>
       </View>

@@ -1487,14 +1487,14 @@ export class Backend {
           blockchainKeyrings,
         },
       });
+    } else {
+      //
+      // Notify the UI about the removal.
+      //
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_KEYRING_STORE_REMOVED_USER,
+      });
     }
-
-    //
-    // Notify the UI about the removal.
-    //
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_KEYRING_STORE_REMOVED_USER,
-    });
 
     //
     // Done.

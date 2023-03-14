@@ -1,15 +1,25 @@
 import type { FunctionComponent } from "react";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import Button, { type ButtonProps } from "@mui/material/Button";
 import Popover, { type PopoverProps } from "@mui/material/Popover";
+
+const useStyles = makeStyles((theme) => ({
+  popOverRoot: {
+    "& .css-1y04bq4": {
+      backgroundColor: theme.custom.colors.background,
+    },
+  },
+}));
 
 export const PopoverMenu: FunctionComponent<PopoverProps> = ({
   children,
   ...rest
 }) => {
   const theme = useCustomTheme();
+  const classes = useStyles(theme);
+
   return (
-    <Popover {...rest}>
+    <Popover className={classes.popOverRoot} {...rest}>
       <div
         style={{
           width: "100%",

@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { memo } from 'react';
 
 import App from './AppNoLink';

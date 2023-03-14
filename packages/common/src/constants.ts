@@ -674,4 +674,5 @@ export const BACKPACK_TEAM = [
   "b580347f-2ec8-4600-8af1-0f5982dc93e1",
   "b6615f78-b096-4d50-b247-05db6fe74ea4",
   "7c01a3a2-dc39-4369-afb8-0dd2189412fc",
+  "50752e18-8796-4702-b140-a3d78960ee94",
 ];

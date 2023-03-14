@@ -23,6 +23,7 @@
     "@ethersproject/providers": "^5.7.2",
     "@ethersproject/transactions": "^5.7.0",
     "@magiceden-oss/open_creator_protocol": "^0.3.2",
+    "@metaplex-foundation/beet": "^0.7.1",
     "@metaplex-foundation/mpl-core": "^0.6.1",
     "@metaplex-foundation/mpl-token-metadata": "^2.7.0",
     "@project-serum/anchor": "^0.25.0",
@@ -48,11 +49,12 @@
     "zustand": "^4.3.5"
   },
   "devDependencies": {
+    "@metaplex-foundation/beet": "^0.7.1",
+    "@types/bn.js": "^5.1.1",
     "@types/chrome": "^0.0.203",
     "@types/firefox-webext-browser": "^94.0.1",
     "@types/uuid": "^8.3.4",
     "eslint-config-custom": "*",
-    "eslint-plugin-simple-import-sort": "*",
     "tsc-alias": "^1.7.0",
     "typescript": "~4.9.3"
   }

@@ -17,9 +17,9 @@ import { useBreakpoints } from "./useBreakpoints";
 type NavigationContext = {
   isRoot: boolean;
   title: string;
-  push: any;
-  pop: () => void;
-  toRoot: () => void;
+  push: ReturnType<typeof useNavigationSegue>["push"];
+  pop: ReturnType<typeof useNavigationSegue>["pop"];
+  toRoot: ReturnType<typeof useNavigationSegue>["toRoot"];
 };
 
 export function useNavigation(): NavigationContext {

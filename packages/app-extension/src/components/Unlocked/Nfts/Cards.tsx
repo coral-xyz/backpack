@@ -90,7 +90,7 @@ export function NFTCard({
 
   const openDetails = () => {
     push({
-      title: subtitle?.name ?? nft.name,
+      title: nft.name,
       componentId: NAV_COMPONENT_NFT_DETAIL,
       componentProps: {
         nftId: nft.id,
@@ -114,6 +114,8 @@ export function NFTCard({
           overflow: "hidden",
           minWidth: "153.5px",
           minHeight: "153.5px",
+          height: "100%",
+          width: "100%",
           aspectRatio: "1",
           display: "flex",
           flexDirection: "column",
@@ -327,6 +329,8 @@ export function CollectionCard({ collection }: { collection: NftCollection }) {
           overflow: "hidden",
           minWidth: "153.5px",
           minHeight: "153.5px",
+          height: "100%",
+          width: "100%",
           aspectRatio: "1",
           display: "flex",
           flexDirection: "column",
@@ -350,28 +354,49 @@ export function CollectionCard({ collection }: { collection: NftCollection }) {
               <div
                 key={nft?.id ?? i}
                 style={{
+                  position: "relative",
                   width: "50%",
                   height: "50%",
-                  overflow: "hidden",
                 }}
               >
-                {nft ? (
-                  <ProxyImage
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "3px",
+                    right: "3px",
+                    bottom: "3px",
+                    left: "3px",
+                    overflow: "hidden",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <div
                     style={{
-                      width: "100%",
-                      padding: "3px",
-                      borderRadius: "8px",
-                    }}
-                    loadingStyles={{
+                      position: "relative",
                       height: "100%",
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
-                    removeOnError
-                    src={nft.imageUrl}
-                    onError={(e) => {
-                      e.currentTarget.src = UNKNOWN_NFT_ICON_SRC;
-                    }}
-                  />
-                ) : null}
+                  >
+                    {nft ? (
+                      <ProxyImage
+                        style={{
+                          width: "100%",
+                        }}
+                        loadingStyles={{
+                          height: "100%",
+                        }}
+                        removeOnError
+                        src={nft.imageUrl}
+                        onError={(e) => {
+                          e.currentTarget.src = UNKNOWN_NFT_ICON_SRC;
+                        }}
+                      />
+                    ) : null}
+                  </div>
+                </div>
               </div>
             );
           })}

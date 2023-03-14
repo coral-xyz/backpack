@@ -1,4 +1,4 @@
-import { type CSSProperties, useEffect, useState } from "react";
+import React, { type CSSProperties, useEffect, useState } from "react";
 import type { Nft } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
@@ -17,6 +17,7 @@ import {
 } from "@coral-xyz/common";
 import { LocalImageManager, refreshGroups } from "@coral-xyz/db";
 import {
+  LocalImage,
   NegativeButton,
   PrimaryButton,
   ProxyImage,
@@ -41,7 +42,7 @@ import {
   useSolanaExplorer,
   useUser,
 } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Whatshot } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Button, IconButton, Typography } from "@mui/material";
@@ -54,6 +55,7 @@ import {
 } from "recoil";
 
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
+import { CopyablePublicKey } from "../../common/CopyablePublicKey";
 import {
   CloseButton,
   useDrawerContext,
@@ -62,13 +64,17 @@ import {
 import {
   NavStackEphemeral,
   NavStackScreen,
+  useNavigation as useNavigationEphemeral,
 } from "../../common/Layout/NavStack";
 import PopoverMenu from "../../common/PopoverMenu";
+import type { SendData } from "../Balances/TokensWidget/AddressSelector";
+import { AddressSelector } from "../Balances/TokensWidget/AddressSelector";
 import { SendEthereumConfirmationCard } from "../Balances/TokensWidget/Ethereum";
 import {
   Error as ErrorConfirmation,
   Sending,
   useIsValidAddress,
+  useStyles,
 } from "../Balances/TokensWidget/Send";
 import { SendSolanaConfirmationCard } from "../Balances/TokensWidget/Solana";
 
@@ -209,7 +215,7 @@ export function NftsDetail({
   );
 }
 
-function Image({ nft }: { nft: any }) {
+function Image({ nft, style }: { nft: any; style?: any }) {
   const src = isMadLads(nft) ? nft.lockScreenImageUrl : nft.imageUrl;
   return (
     <div
@@ -219,6 +225,7 @@ function Image({ nft }: { nft: any }) {
         display: "flex",
         position: "relative",
         alignItems: "center",
+        ...(style || {}),
       }}
     >
       <ProxyImage
@@ -381,7 +388,7 @@ function SendButton({
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
-            initialRoute={{ name: "send" }}
+            initialRoute={{ name: "select-address" }}
             options={() => ({
               title: nft.name ? `${nft.name} / Send` : "Send",
             })}
@@ -389,7 +396,12 @@ function SendButton({
           >
             <NavStackScreen
               name="send"
-              component={() => <SendScreen nft={nft} />}
+              component={(props) => <SendScreen {...props} nft={nft} />}
+            />
+
+            <NavStackScreen
+              name="select-address"
+              component={() => <NftAddressSelector nft={nft} />}
             />
           </NavStackEphemeral>
         </div>
@@ -398,12 +410,31 @@ function SendButton({
   );
 }
 
-function SendScreen({ nft }: { nft: any }) {
+function NftAddressSelector({ nft }: { nft: any }) {
+  const { push } = useNavigationEphemeral();
+
+  return (
+    <div>
+      <AddressSelector
+        onSelect={(sendData: SendData) => {
+          push("send", {
+            to: sendData,
+          });
+        }}
+        blockchain={nft.blockchain}
+        name={nft.name}
+      />
+    </div>
+  );
+}
+
+function SendScreen({ nft, to }: { nft: any; to: SendData }) {
   const background = useBackgroundClient();
   const { close } = useDrawerContext();
   const { provider: solanaProvider } = useAnchorContext();
+  const classes = useStyles();
   const ethereumCtx = useEthereumCtx();
-  const [destinationAddress, setDestinationAddress] = useState("");
+  const destinationAddress = to.address;
   const [openConfirm, setOpenConfirm] = useState(false);
   const [wasSent, setWasSent] = useState(false);
   const { isValidAddress, isErrorAddress } = useIsValidAddress(
@@ -412,6 +443,7 @@ function SendScreen({ nft }: { nft: any }) {
     solanaProvider.connection,
     ethereumCtx.provider
   );
+  const theme = useCustomTheme();
 
   useEffect(() => {
     (async () => {
@@ -438,24 +470,55 @@ function SendScreen({ nft }: { nft: any }) {
       >
         <div
           style={{
-            height: "100%",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
+            height: "100%",
           }}
         >
           <div>
-            <Image nft={nft} />
-            <TextInput
-              autoFocus
-              placeholder={`Recipient's ${toTitleCase(nft.blockchain)} Address`}
-              value={destinationAddress}
-              setValue={(e) => setDestinationAddress(e.target.value)}
-              error={isErrorAddress}
-              inputProps={{
-                name: "to",
-              }}
-            />
+            <div>
+              <div
+                className={classes.horizontalCenter}
+                style={{ marginBottom: 6, paddingTop: 20 }}
+              >
+                <div className={classes.topImageOuter}>
+                  <LocalImage
+                    className={classes.topImage}
+                    src={
+                      to?.image ||
+                      `https://avatars.backpack.workers.dev/${to?.address}`
+                    }
+                    style={{ width: 80, height: 80 }}
+                  />
+                </div>
+              </div>
+              <div className={classes.horizontalCenter}>
+                {to.walletName || to.username ? (
+                  <div
+                    style={{
+                      color: theme.custom.colors.fontColor,
+                      fontSize: 16,
+                      fontWeight: 500,
+                    }}
+                  >
+                    {to.walletName ? to.walletName : `@${to.username}`}
+                  </div>
+                ) : null}
+              </div>
+              <div
+                className={classes.horizontalCenter}
+                style={{ marginTop: 4 }}
+              >
+                <CopyablePublicKey publicKey={to?.address} />
+              </div>
+            </div>
+            <div className={classes.horizontalCenter} style={{ marginTop: 35 }}>
+              <Image
+                nft={nft}
+                style={{ maxHeight: "30vh", maxWidth: 200, minHeight: "" }}
+              />
+            </div>
           </div>
           <div
             style={{
@@ -492,6 +555,13 @@ function SendScreen({ nft }: { nft: any }) {
               decimals: 0, // Are there any NFTs that don't use decimals 0?
               mint: nft.mint,
             }}
+            destinationUser={
+              (to && to.uuid && to.username && to.image
+                ? to
+                : undefined) as React.ComponentProps<
+                typeof SendSolanaConfirmationCard
+              >["destinationUser"]
+            }
             destinationAddress={destinationAddress}
             amount={BigNumber.from(1)}
             onComplete={() => setWasSent(true)}
@@ -505,6 +575,13 @@ function SendScreen({ nft }: { nft: any }) {
               address: nft.contractAddress,
               tokenId: nft.tokenId,
             }}
+            destinationUser={
+              (to && to.uuid && to.username && to.image
+                ? to
+                : undefined) as React.ComponentProps<
+                typeof SendEthereumConfirmationCard
+              >["destinationUser"]
+            }
             destinationAddress={destinationAddress}
             amount={BigNumber.from(1)}
             onComplete={() => setWasSent(true)}
