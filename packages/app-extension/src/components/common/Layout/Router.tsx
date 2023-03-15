@@ -388,7 +388,8 @@ function useNavBar() {
   const { props }: any = useDecodedSearchParams(); // TODO: fix type
   const { isXs } = useBreakpoints();
   const profileUser = useUsersMetadata({ remoteUserIds: [props?.userId] });
-  const image: string | undefined = profileUser[props?.userId]?.image;
+  const image: string | undefined =
+    props.image ?? profileUser[props?.userId]?.image;
 
   let navButtonLeft = null as any;
   let navButtonRight = null as any;
@@ -455,7 +456,7 @@ function useNavBar() {
 
   const notchViewComponent =
     pathname === "/nfts/chat" || pathname === "/messages/groupchat" ? (
-      <ChatDrawer setOpenDrawer={() => {}} />
+      <ChatDrawer image={image} setOpenDrawer={() => {}} />
     ) : null;
 
   return {
@@ -468,6 +469,8 @@ function useNavBar() {
         ? image
         : pathname === "/messages/groupchat" && props.id === "backpack-chat"
         ? "https://user-images.githubusercontent.com/321395/206757416-a80e662a-0ccc-41cc-a20f-ff397755d47f.png"
+        : pathname === "/messages/groupchat"
+        ? image
         : undefined,
     isVerified:
       (pathname === "/messages/groupchat" && props.id === "backpack-chat") ||
