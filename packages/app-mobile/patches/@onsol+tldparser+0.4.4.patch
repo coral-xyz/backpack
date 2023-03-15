@@ -1,0 +1,445 @@
+diff --git a/node_modules/@onsol/tldparser/dist/cjs/utils.js b/node_modules/@onsol/tldparser/dist/cjs/utils.js
+index 8f88e0d..15bb7ad 100644
+--- a/node_modules/@onsol/tldparser/dist/cjs/utils.js
++++ b/node_modules/@onsol/tldparser/dist/cjs/utils.js
+@@ -1,15 +1,54 @@
+ "use strict";
+-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
++var __awaiter =
++  (this && this.__awaiter) ||
++  function (thisArg, _arguments, P, generator) {
++    function adopt(value) {
++      return value instanceof P
++        ? value
++        : new P(function (resolve) {
++            resolve(value);
++          });
++    }
+     return new (P || (P = Promise))(function (resolve, reject) {
+-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+-        step((generator = generator.apply(thisArg, _arguments || [])).next());
++      function fulfilled(value) {
++        try {
++          step(generator.next(value));
++        } catch (e) {
++          reject(e);
++        }
++      }
++      function rejected(value) {
++        try {
++          step(generator["throw"](value));
++        } catch (e) {
++          reject(e);
++        }
++      }
++      function step(result) {
++        result.done
++          ? resolve(result.value)
++          : adopt(result.value).then(fulfilled, rejected);
++      }
++      step((generator = generator.apply(thisArg, _arguments || [])).next());
+     });
+-};
++  };
+ Object.defineProperty(exports, "__esModule", { value: true });
+-exports.findNameHouse = exports.findTldHouse = exports.findNftRecord = exports.getMintOwner = exports.findAllDomainsForTld = exports.getParentAccountFromTldHouseAccountInfo = exports.getTldFromTldHouseAccountInfo = exports.getAllTld = exports.findMainDomain = exports.findOwnedNameAccountsForUser = exports.getOriginNameAccountKey = exports.getHashedName = exports.getNameOwner = exports.getNameAccountKeyWithBump = void 0;
++exports.findNameHouse =
++  exports.findTldHouse =
++  exports.findNftRecord =
++  exports.getMintOwner =
++  exports.findAllDomainsForTld =
++  exports.getParentAccountFromTldHouseAccountInfo =
++  exports.getTldFromTldHouseAccountInfo =
++  exports.getAllTld =
++  exports.findMainDomain =
++  exports.findOwnedNameAccountsForUser =
++  exports.getOriginNameAccountKey =
++  exports.getHashedName =
++  exports.getNameOwner =
++  exports.getNameAccountKeyWithBump =
++    void 0;
++const Crypto = require("expo-crypto");
+ const web3_js_1 = require("@solana/web3.js");
+ const bn_js_1 = require("bn.js");
+ const crypto_1 = require("crypto");
+@@ -25,12 +64,15 @@ const nft_record_1 = require("./state/nft-record");
+  * @param parentName defaults to pubkey::default()
+  */
+ function getNameAccountKeyWithBump(hashedName, nameClass, parentName) {
+-    const seeds = [
+-        hashedName,
+-        nameClass ? nameClass.toBuffer() : Buffer.alloc(32),
+-        parentName ? parentName.toBuffer() : Buffer.alloc(32),
+-    ];
+-    return web3_js_1.PublicKey.findProgramAddressSync(seeds, constants_1.ANS_PROGRAM_ID);
++  const seeds = [
++    hashedName,
++    nameClass ? nameClass.toBuffer() : Buffer.alloc(32),
++    parentName ? parentName.toBuffer() : Buffer.alloc(32),
++  ];
++  return web3_js_1.PublicKey.findProgramAddressSync(
++    seeds,
++    constants_1.ANS_PROGRAM_ID
++  );
+ }
+ exports.getNameAccountKeyWithBump = getNameAccountKeyWithBump;
+ /**
+@@ -40,17 +82,25 @@ exports.getNameAccountKeyWithBump = getNameAccountKeyWithBump;
+  * @param nameAccountKey nameAccount to get owner of.
+  */
+ function getNameOwner(connection, nameAccountKey, tldHouse) {
+-    var _a;
+-    return __awaiter(this, void 0, void 0, function* () {
+-        const owner = (_a = (yield name_record_header_1.NameRecordHeader.fromAccountAddress(connection, nameAccountKey))) === null || _a === void 0 ? void 0 : _a.owner;
+-        if (!tldHouse)
+-            return owner;
+-        const [nameHouse] = findNameHouse(tldHouse);
+-        const [nftRecord] = findNftRecord(nameAccountKey, nameHouse);
+-        if ((owner === null || owner === void 0 ? void 0 : owner.toBase58()) !== nftRecord.toBase58())
+-            return owner;
+-        return yield getMintOwner(connection, nftRecord);
+-    });
++  var _a;
++  return __awaiter(this, void 0, void 0, function* () {
++    const owner =
++      (_a = yield name_record_header_1.NameRecordHeader.fromAccountAddress(
++        connection,
++        nameAccountKey
++      )) === null || _a === void 0
++        ? void 0
++        : _a.owner;
++    if (!tldHouse) return owner;
++    const [nameHouse] = findNameHouse(tldHouse);
++    const [nftRecord] = findNftRecord(nameAccountKey, nameHouse);
++    if (
++      (owner === null || owner === void 0 ? void 0 : owner.toBase58()) !==
++      nftRecord.toBase58()
++    )
++      return owner;
++    return yield getMintOwner(connection, nftRecord);
++  });
+ }
+ exports.getNameOwner = getNameOwner;
+ /**
+@@ -58,10 +108,16 @@ exports.getNameOwner = getNameOwner;
+  *
+  * @param name any string or domain name.
+  */
+-function getHashedName(name) {
+-    const input = name_record_header_1.NameRecordHeader.HASH_PREFIX + name;
+-    const buffer = (0, crypto_1.createHash)('sha256').update(input, 'utf8').digest();
+-    return buffer;
++async function getHashedName(name) {
++  const input = name_record_header_1.NameRecordHeader.HASH_PREFIX + name;
++   const buffer = (await Crypto.digestStringAsync(
++      Crypto.CryptoDigestAlgorithm.SHA256,
++      Buffer.from(input, "hex").toString()
++    ));
++  // const buffer = (0, crypto_1.createHash)("sha256")
++  //   .update(input, "utf8")
++  //   .digest();
++  return buffer;
+ }
+ exports.getHashedName = getHashedName;
+ /**
+@@ -72,11 +128,15 @@ exports.getHashedName = getHashedName;
+  * @param originTld
+  */
+ function getOriginNameAccountKey(originTld = constants_1.ORIGIN_TLD) {
+-    return __awaiter(this, void 0, void 0, function* () {
+-        const hashed_name = getHashedName(originTld);
+-        const [nameAccountKey] = yield getNameAccountKeyWithBump(hashed_name, undefined, undefined);
+-        return nameAccountKey;
+-    });
++  return __awaiter(this, void 0, void 0, function* () {
++    const hashed_name = getHashedName(originTld);
++    const [nameAccountKey] = yield getNameAccountKeyWithBump(
++      hashed_name,
++      undefined,
++      undefined
++    );
++    return nameAccountKey;
++  });
+ }
+ exports.getOriginNameAccountKey = getOriginNameAccountKey;
+ /**
+@@ -87,32 +147,38 @@ exports.getOriginNameAccountKey = getOriginNameAccountKey;
+  * @param parentAccount nameAccount's parentName
+  */
+ function findOwnedNameAccountsForUser(connection, userAccount, parentAccount) {
+-    return __awaiter(this, void 0, void 0, function* () {
+-        const filters = [
+-            {
+-                memcmp: {
+-                    offset: 40,
+-                    bytes: userAccount.toBase58(),
+-                },
+-            },
+-        ];
+-        if (parentAccount) {
+-            filters.push({
+-                memcmp: {
+-                    offset: 8,
+-                    bytes: parentAccount.toBase58(),
+-                },
+-            });
+-        }
+-        const accounts = yield connection.getProgramAccounts(constants_1.ANS_PROGRAM_ID, {
+-            filters: filters,
+-        });
+-        return accounts.map((a) => a.pubkey);
+-    });
++  return __awaiter(this, void 0, void 0, function* () {
++    const filters = [
++      {
++        memcmp: {
++          offset: 40,
++          bytes: userAccount.toBase58(),
++        },
++      },
++    ];
++    if (parentAccount) {
++      filters.push({
++        memcmp: {
++          offset: 8,
++          bytes: parentAccount.toBase58(),
++        },
++      });
++    }
++    const accounts = yield connection.getProgramAccounts(
++      constants_1.ANS_PROGRAM_ID,
++      {
++        filters: filters,
++      }
++    );
++    return accounts.map((a) => a.pubkey);
++  });
+ }
+ exports.findOwnedNameAccountsForUser = findOwnedNameAccountsForUser;
+ function findMainDomain(user) {
+-    return web3_js_1.PublicKey.findProgramAddressSync([Buffer.from(constants_1.MAIN_DOMAIN_PREFIX), user.toBuffer()], constants_1.TLD_HOUSE_PROGRAM_ID);
++  return web3_js_1.PublicKey.findProgramAddressSync(
++    [Buffer.from(constants_1.MAIN_DOMAIN_PREFIX), user.toBuffer()],
++    constants_1.TLD_HOUSE_PROGRAM_ID
++  );
+ }
+ exports.findMainDomain = findMainDomain;
+ /**
+@@ -121,47 +187,68 @@ exports.findMainDomain = findMainDomain;
+  * @param connection sol connection
+  */
+ function getAllTld(connection) {
+-    return __awaiter(this, void 0, void 0, function* () {
+-        const tldHouseDiscriminator = [247, 144, 135, 1, 238, 173, 19, 249];
+-        const filters = [
+-            {
+-                memcmp: {
+-                    offset: 0,
+-                    bytes: tldHouseDiscriminator,
+-                },
+-            },
+-        ];
+-        const accounts = yield connection.getProgramAccounts(constants_1.TLD_HOUSE_PROGRAM_ID, {
+-            filters: filters,
+-        });
+-        const tldsAndParentAccounts = [];
+-        accounts.map(({ account }) => {
+-            const parentAccount = getParentAccountFromTldHouseAccountInfo(account);
+-            const tld = getTldFromTldHouseAccountInfo(account);
+-            tldsAndParentAccounts.push({ tld, parentAccount });
+-        });
+-        return tldsAndParentAccounts;
++  return __awaiter(this, void 0, void 0, function* () {
++    const tldHouseDiscriminator = [247, 144, 135, 1, 238, 173, 19, 249];
++    const filters = [
++      {
++        memcmp: {
++          offset: 0,
++          bytes: tldHouseDiscriminator,
++        },
++      },
++    ];
++    const accounts = yield connection.getProgramAccounts(
++      constants_1.TLD_HOUSE_PROGRAM_ID,
++      {
++        filters: filters,
++      }
++    );
++    const tldsAndParentAccounts = [];
++    accounts.map(({ account }) => {
++      const parentAccount = getParentAccountFromTldHouseAccountInfo(account);
++      const tld = getTldFromTldHouseAccountInfo(account);
++      tldsAndParentAccounts.push({ tld, parentAccount });
+     });
++    return tldsAndParentAccounts;
++  });
+ }
+ exports.getAllTld = getAllTld;
+ function getTldFromTldHouseAccountInfo(tldHouseData) {
+-    var _a;
+-    const tldStart = 8 + 32 + 32 + 32;
+-    const tldBuffer = (_a = tldHouseData === null || tldHouseData === void 0 ? void 0 : tldHouseData.data) === null || _a === void 0 ? void 0 : _a.subarray(tldStart);
+-    const nameLength = new bn_js_1.BN(tldBuffer === null || tldBuffer === void 0 ? void 0 : tldBuffer.subarray(0, 4), 'le').toNumber();
+-    return tldBuffer
+-        .subarray(4, 4 + nameLength)
+-        .toString()
+-        .replace(/\0.*$/g, '');
++  var _a;
++  const tldStart = 8 + 32 + 32 + 32;
++  const tldBuffer =
++    (_a =
++      tldHouseData === null || tldHouseData === void 0
++        ? void 0
++        : tldHouseData.data) === null || _a === void 0
++      ? void 0
++      : _a.subarray(tldStart);
++  const nameLength = new bn_js_1.BN(
++    tldBuffer === null || tldBuffer === void 0
++      ? void 0
++      : tldBuffer.subarray(0, 4),
++    "le"
++  ).toNumber();
++  return tldBuffer
++    .subarray(4, 4 + nameLength)
++    .toString()
++    .replace(/\0.*$/g, "");
+ }
+ exports.getTldFromTldHouseAccountInfo = getTldFromTldHouseAccountInfo;
+ function getParentAccountFromTldHouseAccountInfo(tldHouseData) {
+-    var _a;
+-    const parentAccountStart = 8 + 32 + 32;
+-    const parentAccountBuffer = (_a = tldHouseData === null || tldHouseData === void 0 ? void 0 : tldHouseData.data) === null || _a === void 0 ? void 0 : _a.subarray(parentAccountStart, parentAccountStart + 32);
+-    return new web3_js_1.PublicKey(parentAccountBuffer);
++  var _a;
++  const parentAccountStart = 8 + 32 + 32;
++  const parentAccountBuffer =
++    (_a =
++      tldHouseData === null || tldHouseData === void 0
++        ? void 0
++        : tldHouseData.data) === null || _a === void 0
++      ? void 0
++      : _a.subarray(parentAccountStart, parentAccountStart + 32);
++  return new web3_js_1.PublicKey(parentAccountBuffer);
+ }
+-exports.getParentAccountFromTldHouseAccountInfo = getParentAccountFromTldHouseAccountInfo;
++exports.getParentAccountFromTldHouseAccountInfo =
++  getParentAccountFromTldHouseAccountInfo;
+ /**
+  * finds list of all domains in parent account from tld.
+  *
+@@ -169,56 +256,74 @@ exports.getParentAccountFromTldHouseAccountInfo = getParentAccountFromTldHouseAc
+  * @param parentAccount nameAccount's parentName
+  */
+ function findAllDomainsForTld(connection, parentAccount) {
+-    return __awaiter(this, void 0, void 0, function* () {
+-        const filters = [
+-            {
+-                memcmp: {
+-                    offset: 8,
+-                    bytes: parentAccount.toBase58(),
+-                },
+-            },
+-        ];
+-        const accounts = yield connection.getProgramAccounts(constants_1.ANS_PROGRAM_ID, {
+-            filters: filters,
+-        });
+-        return accounts.map((a) => a.pubkey);
+-    });
++  return __awaiter(this, void 0, void 0, function* () {
++    const filters = [
++      {
++        memcmp: {
++          offset: 8,
++          bytes: parentAccount.toBase58(),
++        },
++      },
++    ];
++    const accounts = yield connection.getProgramAccounts(
++      constants_1.ANS_PROGRAM_ID,
++      {
++        filters: filters,
++      }
++    );
++    return accounts.map((a) => a.pubkey);
++  });
+ }
+ exports.findAllDomainsForTld = findAllDomainsForTld;
+ function getMintOwner(connection, nftRecord) {
+-    return __awaiter(this, void 0, void 0, function* () {
+-        try {
+-            const nftRecordData = yield nft_record_1.NftRecord.fromAccountAddress(connection, nftRecord);
+-            if (nftRecordData.tag !== tag_1.Tag.ActiveRecord)
+-                return;
+-            const largestAccounts = yield connection.getTokenLargestAccounts(nftRecordData.nftMintAccount);
+-            const largestAccountInfo = yield connection.getParsedAccountInfo(largestAccounts.value[0].address);
+-            if (!largestAccountInfo.value.data)
+-                return;
+-            // @ts-ignore
+-            return new web3_js_1.PublicKey(largestAccountInfo.value.data.parsed.info.owner);
+-        }
+-        catch (_a) {
+-            return undefined;
+-        }
+-    });
++  return __awaiter(this, void 0, void 0, function* () {
++    try {
++      const nftRecordData = yield nft_record_1.NftRecord.fromAccountAddress(
++        connection,
++        nftRecord
++      );
++      if (nftRecordData.tag !== tag_1.Tag.ActiveRecord) return;
++      const largestAccounts = yield connection.getTokenLargestAccounts(
++        nftRecordData.nftMintAccount
++      );
++      const largestAccountInfo = yield connection.getParsedAccountInfo(
++        largestAccounts.value[0].address
++      );
++      if (!largestAccountInfo.value.data) return;
++      // @ts-ignore
++      return new web3_js_1.PublicKey(
++        largestAccountInfo.value.data.parsed.info.owner
++      );
++    } catch (_a) {
++      return undefined;
++    }
++  });
+ }
+ exports.getMintOwner = getMintOwner;
+ function findNftRecord(nameAccount, nameHouseAccount) {
+-    return web3_js_1.PublicKey.findProgramAddressSync([
+-        Buffer.from(constants_1.NFT_RECORD_PREFIX),
+-        nameHouseAccount.toBuffer(),
+-        nameAccount.toBuffer(),
+-    ], constants_1.NAME_HOUSE_PROGRAM_ID);
++  return web3_js_1.PublicKey.findProgramAddressSync(
++    [
++      Buffer.from(constants_1.NFT_RECORD_PREFIX),
++      nameHouseAccount.toBuffer(),
++      nameAccount.toBuffer(),
++    ],
++    constants_1.NAME_HOUSE_PROGRAM_ID
++  );
+ }
+ exports.findNftRecord = findNftRecord;
+ function findTldHouse(tldString) {
+-    tldString = tldString.toLowerCase();
+-    return web3_js_1.PublicKey.findProgramAddressSync([Buffer.from(constants_1.TLD_HOUSE_PREFIX), Buffer.from(tldString)], constants_1.TLD_HOUSE_PROGRAM_ID);
++  tldString = tldString.toLowerCase();
++  return web3_js_1.PublicKey.findProgramAddressSync(
++    [Buffer.from(constants_1.TLD_HOUSE_PREFIX), Buffer.from(tldString)],
++    constants_1.TLD_HOUSE_PROGRAM_ID
++  );
+ }
+ exports.findTldHouse = findTldHouse;
+ function findNameHouse(tldHouse) {
+-    return web3_js_1.PublicKey.findProgramAddressSync([Buffer.from(constants_1.NAME_HOUSE_PREFIX), tldHouse.toBuffer()], constants_1.NAME_HOUSE_PROGRAM_ID);
++  return web3_js_1.PublicKey.findProgramAddressSync(
++    [Buffer.from(constants_1.NAME_HOUSE_PREFIX), tldHouse.toBuffer()],
++    constants_1.NAME_HOUSE_PROGRAM_ID
++  );
+ }
+ exports.findNameHouse = findNameHouse;
+ //# sourceMappingURL=utils.js.map
