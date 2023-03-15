@@ -20,6 +20,7 @@ import { Finish } from "./Finish";
 import { KeyringTypeSelector } from "./KeyringTypeSelector";
 import { MnemonicSearch } from "./MnemonicSearch";
 import { RecoverAccountUsernameForm } from "./RecoverAccountUsernameForm";
+import { RecoveryOverview } from "./RecoveryOverview";
 
 export const RecoverAccount = ({
   onClose,
@@ -42,6 +43,7 @@ export const RecoverAccount = ({
     mnemonic,
     signedWalletDescriptors,
     serverPublicKeys,
+    username,
   } = onboardingData;
   const authMessage = userId ? getAuthMessage(userId) : "";
   const hardwareOnboardSteps = useHardwareOnboardSteps({
@@ -78,6 +80,12 @@ export const RecoverAccount = ({
         setOnboardingData({ userId, username, serverPublicKeys });
         nextStep();
       }}
+    />,
+    <RecoveryOverview
+      key="RecoveryOverview"
+      onNext={nextStep}
+      publicKeys={serverPublicKeys}
+      username={username}
     />,
     <KeyringTypeSelector
       key="KeyringTypeSelector"
