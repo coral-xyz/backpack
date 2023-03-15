@@ -50,7 +50,10 @@ export class LocalImageManager {
   }
 
   static getInstance() {
-    return new LocalImageManager();
+    if (!this.instance) {
+      this.instance = new LocalImageManager();
+    }
+    return this.instance;
   }
 
   storeImageInLocalStorage(
