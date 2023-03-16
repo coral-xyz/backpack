@@ -177,6 +177,7 @@ export function ChatListItem({
             username: type === "individual" ? name : undefined,
             id: id,
             fromInbox: true,
+            image,
           },
           pushAboveRoot: toRoot,
         });

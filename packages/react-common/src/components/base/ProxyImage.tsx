@@ -50,6 +50,7 @@ export const ProxyImage = React.memo(function ProxyImage({
         className={imgProps.className}
       />
       <img
+        loading="lazy"
         ref={imageRef}
         {...imgProps}
         style={{

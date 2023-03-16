@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { UserList } from "@coral-xyz/message-sdk";
-import { LocalImage , SearchBox } from "@coral-xyz/react-common";
+import { LocalImage, ProxyImage, SearchBox } from "@coral-xyz/react-common";
 import {
   useDarkMode,
   useDecodedSearchParams,
@@ -31,6 +31,9 @@ const useStyles = makeStyles((theme: any) =>
       marginTop: 20,
       marginBottom: 20,
       color: theme.custom.colors.fontColor4,
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
     },
     drawerContainer: {
       padding: 10,
@@ -39,7 +42,13 @@ const useStyles = makeStyles((theme: any) =>
   })
 );
 
-export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
+export const ChatDrawer = ({
+  image,
+  setOpenDrawer,
+}: {
+  image?: string;
+  setOpenDrawer: any;
+}) => {
   const isDark = useDarkMode();
   const classes = useStyles({ isDark });
   const { props, title }: any = useDecodedSearchParams();
@@ -109,6 +118,10 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
       <div className={classes.drawerContainer}>
         <div className={classes.horizontalCenter}>
           <Typography variant="h5" className={classes.title}>
+            <ProxyImage
+              src={image}
+              style={{ borderRadius: "50%", height: 40, width: 40 }}
+            />{" "}
             {props.title || title}
           </Typography>
         </div>
@@ -218,7 +231,13 @@ function MembersList({
   members: { image: string }[];
 }) {
   const theme = useCustomTheme();
-  const countText = count >= 1000 ? `${(count / 1000).toFixed(1)}k` : count;
+  const countText =
+    count >= 1_000_000
+      ? `${(count / 1_000_000).toFixed(2)}m`
+      : count >= 1_000
+      ? `${(count / 1_000).toFixed(2)}k`
+      : count;
+
   return (
     <div
       style={{
