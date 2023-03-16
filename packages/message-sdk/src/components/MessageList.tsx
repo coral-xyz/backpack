@@ -404,6 +404,7 @@ function UserIcon({ image }: any) {
   const classes = useStyles();
   return (
     <LocalImage
+      size={40}
       style={{ width: 40, height: 40 }}
       src={image}
       className={classes.iconCircularBig}

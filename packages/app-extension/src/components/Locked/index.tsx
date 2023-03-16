@@ -217,6 +217,7 @@ function LockScreenAvatar({
         </>
       ) : (
         <LocalImage
+          size={120}
           src={lockScreenKeyImage(user.username)}
           style={{
             height: "120px",

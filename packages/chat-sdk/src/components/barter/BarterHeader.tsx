@@ -59,6 +59,7 @@ export const BarterHeader = () => {
         <div style={{ flex: 1 }}>
           <div className={classes.avatar}>
             <LocalImage
+              size={32}
               style={{ width: 32, height: 32, borderRadius: "50%" }}
               src={localUserImage}
             />
@@ -70,6 +71,7 @@ export const BarterHeader = () => {
         <div style={{ flex: 1 }}>
           <div className={classes.avatar}>
             <LocalImage
+              size={32}
               style={{ width: 32, height: 32, borderRadius: "50%" }}
               src={remoteUserImage}
             />

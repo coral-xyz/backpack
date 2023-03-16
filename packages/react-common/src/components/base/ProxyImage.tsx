@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { proxyImageUrl } from "@coral-xyz/common";
 import { Skeleton } from "@mui/material";
 
@@ -9,10 +9,12 @@ type ImgProps = React.DetailedHTMLProps<
 export const ProxyImage = React.memo(function ProxyImage({
   removeOnError,
   loadingStyles,
+  size,
   ...imgProps
 }: {
   removeOnError?: boolean;
   loadingStyles?: React.CSSProperties;
+  size?: number;
 } & ImgProps) {
   const placeholderRef = useRef<HTMLSpanElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -34,6 +36,21 @@ export const ProxyImage = React.memo(function ProxyImage({
     position: "absolute",
     top: "0px",
   };
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (placeholderRef.current) {
+        placeholderRef.current.style.display = "none";
+        if (imageRef.current) {
+          imageRef.current.style.position =
+            imgProps?.style?.position ?? "inherit";
+          /// @ts-ignore
+          imageRef.current.style.top = imgProps?.style?.top ?? "inherit";
+          imageRef.current.style.visibility = "visible";
+        }
+      }
+    }, 1500);
+  }, []);
 
   return (
     <>
@@ -57,6 +74,7 @@ export const ProxyImage = React.memo(function ProxyImage({
           ...(imgProps.style ?? {}),
           ...visuallyHidden,
         }}
+        alt=""
         onLoad={(...e) => {
           const image = e[0].target as HTMLImageElement;
           if (placeholderRef.current) {
@@ -79,7 +97,7 @@ export const ProxyImage = React.memo(function ProxyImage({
             return count + 1;
           });
         }}
-        src={proxyImageUrl(imgProps.src ?? "")}
+        src={proxyImageUrl(imgProps.src ?? "", size)}
       />
     </>
   );

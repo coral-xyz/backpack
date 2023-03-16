@@ -400,6 +400,7 @@ export const MessageLine = (props) => {
           >
             {photoURL ? (
               <LocalImage
+                size={32}
                 onClick={() => openProfilePage({ uuid: props.uuid })}
                 alt={displayName}
                 className={classes.avatar}
