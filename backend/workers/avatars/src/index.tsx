@@ -31,12 +31,6 @@ app.get("/v1/:username_", (c) => {
   );
 });
 
-const avatarQuery = (username: string) => `query Avatar {
-  auth_users(where: {username: {_eq: "${username}"}}) {
-    avatar_nft
-  }
-}`;
-
 app.get("/:username/:cache_bust?", async (c) => {
   const username = c.req.param("username");
   const jwt = c.env.PUBLIC_AVATAR_JWT;
@@ -51,8 +45,14 @@ app.get("/:username/:cache_bust?", async (c) => {
       Authorization: `Bearer ${jwt}`,
     },
     body: JSON.stringify({
-      query: avatarQuery(username),
-      variables: {},
+      query: `query Avatar($username:citext!) {
+        auth_users(limit: 1, where: {username: {_eq: $username}}) {
+          avatar_nft
+        }
+      }`,
+      variables: {
+        username,
+      },
     }),
   });
 
