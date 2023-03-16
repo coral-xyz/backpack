@@ -51,7 +51,7 @@ const handleFetchResponse = (response: Response): Promise<GraphQLResponse> => {
         .catch(reject);
     });
   }
-  return response.json();
+  return response.json() as Promise<GraphQLResponse>;
 };
 
 export const apiFetch =
@@ -362,12 +362,17 @@ export const traverseResponse = ({
     ) {
       return o;
     }
-    return Object.fromEntries(
-      Object.entries(o).map(([k, v]) => [
-        k,
-        ibb(k, v, [...p, purifyGraphQLKey(k)]),
-      ])
+    const entries = Object.entries(o).map(
+      ([k, v]) => [k, ibb(k, v, [...p, purifyGraphQLKey(k)])] as const
     );
+    const objectFromEntries = entries.reduce<Record<string, unknown>>(
+      (a, [k, v]) => {
+        a[k] = v;
+        return a;
+      },
+      {}
+    );
+    return objectFromEntries;
   };
   return ibb;
 };
@@ -759,8 +764,8 @@ export const resolverFor = <
     source: any
   ) => Z extends keyof ModelTypes[T]
     ? ModelTypes[T][Z] | Promise<ModelTypes[T][Z]> | X
-    : any
-) => fn as (args?: any, source?: any) => any;
+    : never
+) => fn as (args?: any, source?: any) => ReturnType<typeof fn>;
 
 export type UnwrapPromise<T> = T extends Promise<infer R> ? R : T;
 export type ZeusState<T extends (...args: any[]) => Promise<any>> = NonNullable<
@@ -816,9 +821,13 @@ type IsInterfaced<
                 : DST[P],
               SCLR
             >
-          : Record<string, unknown>
+          : IsArray<
+              R,
+              "__typename" extends keyof DST ? { __typename: true } : never,
+              SCLR
+            >
         : never;
-    }[keyof DST] & {
+    }[keyof SRC] & {
       [P in keyof Omit<
         Pick<
           SRC,
@@ -992,7 +1001,6 @@ export type ScalarCoders = {
   citext?: ScalarResolver;
   jsonb?: ScalarResolver;
   timestamptz?: ScalarResolver;
-  users_scalar?: ScalarResolver;
   uuid?: ScalarResolver;
 };
 type ZEUS_UNIONS = never;
@@ -3999,40 +4007,6 @@ export type ValueTypes = {
   /** columns and relationships of "auth.users" */
   ["auth_users"]: AliasType<{
     created_at?: boolean | `@${string}`;
-    dropzone_public_key?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_public_keys_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_public_keys_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_public_keys_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_public_keys"]
-    ];
     id?: boolean | `@${string}`;
     /** An object relationship */
     invitation?: ValueTypes["auth_invitations"];
@@ -4267,11 +4241,6 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
-    dropzone_public_key?:
-      | ValueTypes["auth_public_keys_bool_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
     id?:
       | ValueTypes["uuid_comparison_exp"]
       | undefined
@@ -4422,11 +4391,6 @@ export type ValueTypes = {
   ["auth_users_order_by"]: {
     created_at?:
       | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    dropzone_public_key_aggregate?:
-      | ValueTypes["auth_public_keys_aggregate_order_by"]
       | undefined
       | null
       | Variable<any, string>;
@@ -5022,13 +4986,6 @@ export type ValueTypes = {
   };
   /** placeholder for update columns of table "dropzone.distributors" (current role has no relevant permissions) */
   ["dropzone_distributors_update_column"]: dropzone_distributors_update_column;
-  ["dropzone_user_dropzone_public_key_args"]: {
-    user_row?:
-      | ValueTypes["users_scalar"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
   /** columns and relationships of "invitations" */
   ["invitations"]: AliasType<{
     claimed_at?: boolean | `@${string}`;
@@ -7142,80 +7099,6 @@ export type ValueTypes = {
       { id: string | Variable<any, string> },
       ValueTypes["dropzone_distributors"]
     ];
-    dropzone_user_dropzone_public_key?: [
-      {
-        /** input parameters for function "dropzone_user_dropzone_public_key" */
-        args:
-          | ValueTypes["dropzone_user_dropzone_public_key_args"]
-          | Variable<any, string> /** distinct select on columns */;
-        distinct_on?:
-          | Array<ValueTypes["auth_public_keys_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_public_keys_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_public_keys_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_public_keys"]
-    ];
-    dropzone_user_dropzone_public_key_aggregate?: [
-      {
-        /** input parameters for function "dropzone_user_dropzone_public_key_aggregate" */
-        args:
-          | ValueTypes["dropzone_user_dropzone_public_key_args"]
-          | Variable<any, string> /** distinct select on columns */;
-        distinct_on?:
-          | Array<ValueTypes["auth_public_keys_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_public_keys_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_public_keys_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_public_keys_aggregate"]
-    ];
     invitations?: [
       {
         /** distinct select on columns */
@@ -8498,80 +8381,6 @@ export type ValueTypes = {
       },
       ValueTypes["dropzone_distributors"]
     ];
-    dropzone_user_dropzone_public_key?: [
-      {
-        /** input parameters for function "dropzone_user_dropzone_public_key" */
-        args:
-          | ValueTypes["dropzone_user_dropzone_public_key_args"]
-          | Variable<any, string> /** distinct select on columns */;
-        distinct_on?:
-          | Array<ValueTypes["auth_public_keys_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_public_keys_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_public_keys_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_public_keys"]
-    ];
-    dropzone_user_dropzone_public_key_aggregate?: [
-      {
-        /** input parameters for function "dropzone_user_dropzone_public_key_aggregate" */
-        args:
-          | ValueTypes["dropzone_user_dropzone_public_key_args"]
-          | Variable<any, string> /** distinct select on columns */;
-        distinct_on?:
-          | Array<ValueTypes["auth_public_keys_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_public_keys_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_public_keys_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_public_keys_aggregate"]
-    ];
     invitations?: [
       {
         /** distinct select on columns */
@@ -8685,7 +8494,6 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
   };
-  ["users_scalar"]: unknown;
   ["uuid"]: unknown;
   /** Boolean expression to compare columns of type "uuid". All fields are combined with logical 'AND'. */
   ["uuid_comparison_exp"]: {
@@ -10872,32 +10680,6 @@ export type ResolverInputTypes = {
   /** columns and relationships of "auth.users" */
   ["auth_users"]: AliasType<{
     created_at?: boolean | `@${string}`;
-    dropzone_public_key?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_public_keys_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_public_keys_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_public_keys_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_public_keys"]
-    ];
     id?: boolean | `@${string}`;
     /** An object relationship */
     invitation?: ResolverInputTypes["auth_invitations"];
@@ -11065,10 +10847,6 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["timestamptz_comparison_exp"]
       | undefined
       | null;
-    dropzone_public_key?:
-      | ResolverInputTypes["auth_public_keys_bool_exp"]
-      | undefined
-      | null;
     id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
     invitation?:
       | ResolverInputTypes["auth_invitations_bool_exp"]
@@ -11170,10 +10948,6 @@ export type ResolverInputTypes = {
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
     created_at?: ResolverInputTypes["order_by"] | undefined | null;
-    dropzone_public_key_aggregate?:
-      | ResolverInputTypes["auth_public_keys_aggregate_order_by"]
-      | undefined
-      | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     invitation?:
       | ResolverInputTypes["auth_invitations_order_by"]
@@ -11601,9 +11375,6 @@ export type ResolverInputTypes = {
   };
   /** placeholder for update columns of table "dropzone.distributors" (current role has no relevant permissions) */
   ["dropzone_distributors_update_column"]: dropzone_distributors_update_column;
-  ["dropzone_user_dropzone_public_key_args"]: {
-    user_row?: ResolverInputTypes["users_scalar"] | undefined | null;
-  };
   /** columns and relationships of "invitations" */
   ["invitations"]: AliasType<{
     claimed_at?: boolean | `@${string}`;
@@ -13210,60 +12981,6 @@ export type ResolverInputTypes = {
       { id: string },
       ResolverInputTypes["dropzone_distributors"]
     ];
-    dropzone_user_dropzone_public_key?: [
-      {
-        /** input parameters for function "dropzone_user_dropzone_public_key" */
-        args: ResolverInputTypes["dropzone_user_dropzone_public_key_args"] /** distinct select on columns */;
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_public_keys_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_public_keys_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_public_keys_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_public_keys"]
-    ];
-    dropzone_user_dropzone_public_key_aggregate?: [
-      {
-        /** input parameters for function "dropzone_user_dropzone_public_key_aggregate" */
-        args: ResolverInputTypes["dropzone_user_dropzone_public_key_args"] /** distinct select on columns */;
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_public_keys_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_public_keys_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_public_keys_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_public_keys_aggregate"]
-    ];
     invitations?: [
       {
         /** distinct select on columns */
@@ -14204,60 +13921,6 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["dropzone_distributors"]
     ];
-    dropzone_user_dropzone_public_key?: [
-      {
-        /** input parameters for function "dropzone_user_dropzone_public_key" */
-        args: ResolverInputTypes["dropzone_user_dropzone_public_key_args"] /** distinct select on columns */;
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_public_keys_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_public_keys_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_public_keys_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_public_keys"]
-    ];
-    dropzone_user_dropzone_public_key_aggregate?: [
-      {
-        /** input parameters for function "dropzone_user_dropzone_public_key_aggregate" */
-        args: ResolverInputTypes["dropzone_user_dropzone_public_key_args"] /** distinct select on columns */;
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_public_keys_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_public_keys_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_public_keys_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_public_keys_aggregate"]
-    ];
     invitations?: [
       {
         /** distinct select on columns */
@@ -14332,7 +13995,6 @@ export type ResolverInputTypes = {
     _neq?: ResolverInputTypes["timestamptz"] | undefined | null;
     _nin?: Array<ResolverInputTypes["timestamptz"]> | undefined | null;
   };
-  ["users_scalar"]: unknown;
   ["uuid"]: unknown;
   /** Boolean expression to compare columns of type "uuid". All fields are combined with logical 'AND'. */
   ["uuid_comparison_exp"]: {
@@ -15976,8 +15638,6 @@ export type ModelTypes = {
   /** columns and relationships of "auth.users" */
   ["auth_users"]: {
     created_at: ModelTypes["timestamptz"];
-    /** the user's first solana public key inside an array due to hasura limitation */
-    dropzone_public_key?: Array<ModelTypes["auth_public_keys"]> | undefined;
     id: ModelTypes["uuid"];
     /** An object relationship */
     invitation: ModelTypes["auth_invitations"];
@@ -16031,7 +15691,6 @@ export type ModelTypes = {
     _not?: ModelTypes["auth_users_bool_exp"] | undefined;
     _or?: Array<ModelTypes["auth_users_bool_exp"]> | undefined;
     created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
-    dropzone_public_key?: ModelTypes["auth_public_keys_bool_exp"] | undefined;
     id?: ModelTypes["uuid_comparison_exp"] | undefined;
     invitation?: ModelTypes["auth_invitations_bool_exp"] | undefined;
     public_keys?: ModelTypes["auth_public_keys_bool_exp"] | undefined;
@@ -16107,9 +15766,6 @@ export type ModelTypes = {
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
     created_at?: ModelTypes["order_by"] | undefined;
-    dropzone_public_key_aggregate?:
-      | ModelTypes["auth_public_keys_aggregate_order_by"]
-      | undefined;
     id?: ModelTypes["order_by"] | undefined;
     invitation?: ModelTypes["auth_invitations_order_by"] | undefined;
     public_keys_aggregate?:
@@ -16450,9 +16106,6 @@ export type ModelTypes = {
     mint?: string | undefined;
   };
   ["dropzone_distributors_update_column"]: dropzone_distributors_update_column;
-  ["dropzone_user_dropzone_public_key_args"]: {
-    user_row?: ModelTypes["users_scalar"] | undefined;
-  };
   /** columns and relationships of "invitations" */
   ["invitations"]: {
     claimed_at?: ModelTypes["timestamptz"] | undefined;
@@ -16931,12 +16584,6 @@ export type ModelTypes = {
     dropzone_distributors_by_pk?:
       | ModelTypes["dropzone_distributors"]
       | undefined;
-    /** execute function "dropzone.user_dropzone_public_key" which returns "auth.public_keys" */
-    dropzone_user_dropzone_public_key?:
-      | ModelTypes["auth_public_keys"]
-      | undefined;
-    /** execute function "dropzone.user_dropzone_public_key" and query aggregates on result of table type "auth.public_keys" */
-    dropzone_user_dropzone_public_key_aggregate: ModelTypes["auth_public_keys_aggregate"];
     /** fetch data from the table: "invitations" */
     invitations: Array<ModelTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -17075,12 +16722,6 @@ export type ModelTypes = {
       | undefined;
     /** fetch data from the table in a streaming manner: "dropzone.distributors" */
     dropzone_distributors_stream: Array<ModelTypes["dropzone_distributors"]>;
-    /** execute function "dropzone.user_dropzone_public_key" which returns "auth.public_keys" */
-    dropzone_user_dropzone_public_key?:
-      | ModelTypes["auth_public_keys"]
-      | undefined;
-    /** execute function "dropzone.user_dropzone_public_key" and query aggregates on result of table type "auth.public_keys" */
-    dropzone_user_dropzone_public_key_aggregate: ModelTypes["auth_public_keys_aggregate"];
     /** fetch data from the table: "invitations" */
     invitations: Array<ModelTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -17101,7 +16742,6 @@ export type ModelTypes = {
     _neq?: ModelTypes["timestamptz"] | undefined;
     _nin?: Array<ModelTypes["timestamptz"]> | undefined;
   };
-  ["users_scalar"]: any;
   ["uuid"]: any;
   /** Boolean expression to compare columns of type "uuid". All fields are combined with logical 'AND'. */
   ["uuid_comparison_exp"]: {
@@ -18874,8 +18514,6 @@ export type GraphQLTypes = {
   ["auth_users"]: {
     __typename: "auth_users";
     created_at: GraphQLTypes["timestamptz"];
-    /** the user's first solana public key inside an array due to hasura limitation */
-    dropzone_public_key?: Array<GraphQLTypes["auth_public_keys"]> | undefined;
     id: GraphQLTypes["uuid"];
     /** An object relationship */
     invitation: GraphQLTypes["auth_invitations"];
@@ -18931,7 +18569,6 @@ export type GraphQLTypes = {
     _not?: GraphQLTypes["auth_users_bool_exp"] | undefined;
     _or?: Array<GraphQLTypes["auth_users_bool_exp"]> | undefined;
     created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
-    dropzone_public_key?: GraphQLTypes["auth_public_keys_bool_exp"] | undefined;
     id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
     invitation?: GraphQLTypes["auth_invitations_bool_exp"] | undefined;
     public_keys?: GraphQLTypes["auth_public_keys_bool_exp"] | undefined;
@@ -19013,9 +18650,6 @@ export type GraphQLTypes = {
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
     created_at?: GraphQLTypes["order_by"] | undefined;
-    dropzone_public_key_aggregate?:
-      | GraphQLTypes["auth_public_keys_aggregate_order_by"]
-      | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     invitation?: GraphQLTypes["auth_invitations_order_by"] | undefined;
     public_keys_aggregate?:
@@ -19378,9 +19012,6 @@ export type GraphQLTypes = {
   };
   /** placeholder for update columns of table "dropzone.distributors" (current role has no relevant permissions) */
   ["dropzone_distributors_update_column"]: dropzone_distributors_update_column;
-  ["dropzone_user_dropzone_public_key_args"]: {
-    user_row?: GraphQLTypes["users_scalar"] | undefined;
-  };
   /** columns and relationships of "invitations" */
   ["invitations"]: {
     __typename: "invitations";
@@ -19888,12 +19519,6 @@ export type GraphQLTypes = {
     dropzone_distributors_by_pk?:
       | GraphQLTypes["dropzone_distributors"]
       | undefined;
-    /** execute function "dropzone.user_dropzone_public_key" which returns "auth.public_keys" */
-    dropzone_user_dropzone_public_key?:
-      | GraphQLTypes["auth_public_keys"]
-      | undefined;
-    /** execute function "dropzone.user_dropzone_public_key" and query aggregates on result of table type "auth.public_keys" */
-    dropzone_user_dropzone_public_key_aggregate: GraphQLTypes["auth_public_keys_aggregate"];
     /** fetch data from the table: "invitations" */
     invitations: Array<GraphQLTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -20035,12 +19660,6 @@ export type GraphQLTypes = {
       | undefined;
     /** fetch data from the table in a streaming manner: "dropzone.distributors" */
     dropzone_distributors_stream: Array<GraphQLTypes["dropzone_distributors"]>;
-    /** execute function "dropzone.user_dropzone_public_key" which returns "auth.public_keys" */
-    dropzone_user_dropzone_public_key?:
-      | GraphQLTypes["auth_public_keys"]
-      | undefined;
-    /** execute function "dropzone.user_dropzone_public_key" and query aggregates on result of table type "auth.public_keys" */
-    dropzone_user_dropzone_public_key_aggregate: GraphQLTypes["auth_public_keys_aggregate"];
     /** fetch data from the table: "invitations" */
     invitations: Array<GraphQLTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -20061,7 +19680,6 @@ export type GraphQLTypes = {
     _neq?: GraphQLTypes["timestamptz"] | undefined;
     _nin?: Array<GraphQLTypes["timestamptz"]> | undefined;
   };
-  ["users_scalar"]: "scalar" & { name: "users_scalar" };
   ["uuid"]: "scalar" & { name: "uuid" };
   /** Boolean expression to compare columns of type "uuid". All fields are combined with logical 'AND'. */
   ["uuid_comparison_exp"]: {
@@ -20647,7 +20265,6 @@ type ZEUS_VARIABLES = {
   ["dropzone_distributors_stream_cursor_input"]: ValueTypes["dropzone_distributors_stream_cursor_input"];
   ["dropzone_distributors_stream_cursor_value_input"]: ValueTypes["dropzone_distributors_stream_cursor_value_input"];
   ["dropzone_distributors_update_column"]: ValueTypes["dropzone_distributors_update_column"];
-  ["dropzone_user_dropzone_public_key_args"]: ValueTypes["dropzone_user_dropzone_public_key_args"];
   ["invitations_bool_exp"]: ValueTypes["invitations_bool_exp"];
   ["invitations_order_by"]: ValueTypes["invitations_order_by"];
   ["invitations_select_column"]: ValueTypes["invitations_select_column"];
@@ -20659,7 +20276,6 @@ type ZEUS_VARIABLES = {
   ["order_by"]: ValueTypes["order_by"];
   ["timestamptz"]: ValueTypes["timestamptz"];
   ["timestamptz_comparison_exp"]: ValueTypes["timestamptz_comparison_exp"];
-  ["users_scalar"]: ValueTypes["users_scalar"];
   ["uuid"]: ValueTypes["uuid"];
   ["uuid_comparison_exp"]: ValueTypes["uuid_comparison_exp"];
 };
