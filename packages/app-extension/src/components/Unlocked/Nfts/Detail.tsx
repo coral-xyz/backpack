@@ -483,6 +483,7 @@ function SendScreen({ nft, to }: { nft: any; to: SendData }) {
               >
                 <div className={classes.topImageOuter}>
                   <LocalImage
+                    size={80}
                     className={classes.topImage}
                     src={
                       to?.image ||

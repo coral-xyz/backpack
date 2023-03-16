@@ -480,6 +480,7 @@ function SendV2({ token, maxAmount, setAmount, sendButton, to }: any) {
           <div className={classes.horizontalCenter} style={{ marginBottom: 6 }}>
             <div className={classes.topImageOuter}>
               <LocalImage
+                size={80}
                 className={classes.topImage}
                 src={
                   to?.image ||

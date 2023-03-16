@@ -249,6 +249,7 @@ function MembersList({
     >
       {members.map((member, idx) => (
         <LocalImage
+          size={30}
           key={idx}
           src={member.image}
           loadingStyles={{

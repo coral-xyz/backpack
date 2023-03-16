@@ -33,6 +33,7 @@ export const LocalImage = (props) => {
       className={props.className}
       style={props.style}
       loadingStyles={props.loadingStyles}
+      size={props.size}
     />
   );
 };
