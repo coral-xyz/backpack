@@ -10,6 +10,5 @@
     "noImplicitAny": true,
     "esModuleInterop": true,
     "resolveJsonModule": true
-  },
-  "files": ["src/index.ts"]
+  }
 }
