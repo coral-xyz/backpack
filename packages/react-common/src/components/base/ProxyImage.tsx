@@ -38,6 +38,8 @@ export const ProxyImage = React.memo(function ProxyImage({
   };
 
   useEffect(() => {
+    // This is a hack since `onLoad` does not fire sometimes.
+    // This timeout makes the skeleton goes away.
     setTimeout(() => {
       if (placeholderRef.current) {
         placeholderRef.current.style.display = "none";
