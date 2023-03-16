@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { useCustomTheme } from "../hooks/index";
 import { HOVER_OPACITY } from "../theme";
+export * from "./Images";
 export { SearchBox } from "./SearchBox";
 
 export function Margin({

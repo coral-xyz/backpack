@@ -14,6 +14,7 @@ import {
   StyleProp,
   ViewStyle,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 
 import * as Linking from "expo-linking";
@@ -94,12 +95,14 @@ function Network({
   label,
   enabled,
   selected,
+  loading,
   onSelect,
 }: {
   id: Blockchain;
   label: string;
   enabled: boolean;
   selected: boolean;
+  loading: boolean;
   onSelect: (b: Blockchain) => void;
 }) {
   function getIcon(id: string): JSX.Element | null {
@@ -121,13 +124,25 @@ function Network({
     }
   }
 
+  const getAdornment = (loading: boolean, selected: boolean) => {
+    if (loading) {
+      return <ActivityIndicator size="small" />;
+    }
+
+    if (selected) {
+      return <CheckBadge />;
+    }
+
+    return null;
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <ActionCard
         text={label}
         disabled={!enabled}
         icon={getIcon(id)}
-        textAdornment={selected ? <CheckBadge /> : ""}
+        textAdornment={getAdornment(loading, selected)}
         onPress={() => {
           if (enabled) {
             onSelect(id);
@@ -512,7 +527,7 @@ function OnboardingMnemonicInputScreen({
         const words = m.split(" ");
         setMnemonicWords(words);
       });
-  }, [background, mnemonicWords]);
+  }, []); // eslint-disable-line
 
   //
   // Validate the mnemonic and call the onNext handler.
@@ -715,6 +730,7 @@ function MnemonicSearchScreen({
 function OnboardingBlockchainSelectScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "SelectBlockchain">) {
+  const [loading, setLoading] = useState(new Set());
   const { onboardingData, handleSelectBlockchain } = useOnboarding();
   const { blockchainOptions, selectedBlockchains } = onboardingData;
   const numColumns = 2;
@@ -739,12 +755,17 @@ function OnboardingBlockchainSelectScreen({
             <Network
               id={item.id as Blockchain}
               selected={selectedBlockchains.includes(item.id as Blockchain)}
+              loading={loading.has(item.id)}
               enabled={item.enabled}
               label={item.label}
               onSelect={async (blockchain) => {
+                setLoading((prev) => new Set(prev.add(blockchain)));
                 await handleSelectBlockchain({
                   blockchain,
                 });
+                setLoading(
+                  (prev) => new Set([...prev].filter((x) => x !== blockchain))
+                );
               }}
             />
           );
