@@ -9,16 +9,19 @@ const chain = Chain(AUTH_HASURA_URL, {
 });
 
 export const getLatestReadMessage = async (uuid: string, room: string) => {
-  const response = await chain("query")({
-    auth_collection_messages_by_pk: [
-      {
-        collection_id: room,
-        uuid: uuid,
-      },
-      {
-        last_read_message_id: true,
-      },
-    ],
-  });
+  const response = await chain("query")(
+    {
+      auth_collection_messages_by_pk: [
+        {
+          collection_id: room,
+          uuid: uuid,
+        },
+        {
+          last_read_message_id: true,
+        },
+      ],
+    },
+    { operationName: "getLatestReadMessage" }
+  );
   return response.auth_collection_messages_by_pk.last_read_message_id;
 };
