@@ -4,6 +4,7 @@ import { openConnectHardware } from "@coral-xyz/common";
 import {
   BackpackMnemonicIcon,
   HardwareIcon,
+  LaunchDetail,
   MnemonicIcon,
   PushDetail,
   SecretKeyIcon,
@@ -45,7 +46,7 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
                 inputMnemonic: false,
               }),
             icon: (props: any) => <BackpackMnemonicIcon {...props} />,
-            detailIcon: <PushDetail />,
+            detail: <PushDetail />,
           },
         }
       : {}),
@@ -57,21 +58,20 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
           inputMnemonic: true,
         }),
       icon: (props: any) => <MnemonicIcon {...props} />,
-      detailIcon: <PushDetail />,
+      detail: <PushDetail />,
+    },
+    "Private key": {
+      onClick: () => navigation.push("import-from-secret-key", { blockchain }),
+      icon: (props: any) => <SecretKeyIcon {...props} />,
+      detail: <PushDetail />,
     },
     "Hardware wallet": {
       onClick: () => {
         openConnectHardware(blockchain, "import");
         window.close();
       },
-
       icon: (props: any) => <HardwareIcon {...props} />,
-      detailIcon: <PushDetail />,
-    },
-    "Private key": {
-      onClick: () => navigation.push("import-from-secret-key", { blockchain }),
-      icon: (props: any) => <SecretKeyIcon {...props} />,
-      detailIcon: <PushDetail />,
+      detail: <LaunchDetail />,
     },
   };
 
