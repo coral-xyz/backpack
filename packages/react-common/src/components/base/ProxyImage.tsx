@@ -51,7 +51,7 @@ export const ProxyImage = React.memo(function ProxyImage({
           imageRef.current.style.visibility = "visible";
         }
       }
-    }, 1500);
+    }, 2500);
   }, []);
 
   return (
