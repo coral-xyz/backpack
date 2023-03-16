@@ -32,7 +32,6 @@ export const ProxyImage = React.memo(function ProxyImage({
   }, []);
 
   const visuallyHidden: React.CSSProperties = {
-    visibility: "hidden",
     position: "absolute",
     top: "0px",
   };
@@ -51,7 +50,7 @@ export const ProxyImage = React.memo(function ProxyImage({
           imageRef.current.style.visibility = "visible";
         }
       }
-    }, 2500);
+    }, 2000);
   }, []);
 
   return (
@@ -68,39 +67,39 @@ export const ProxyImage = React.memo(function ProxyImage({
         ref={placeholderRef}
         className={imgProps.className}
       />
-      <img
+      {imgProps.src ? <img
         loading="lazy"
         ref={imageRef}
         {...imgProps}
         style={{
-          ...(imgProps.style ?? {}),
-          ...visuallyHidden,
-        }}
+            ...(imgProps.style ?? {}),
+            ...visuallyHidden,
+          }}
         alt=""
         onLoad={(...e) => {
-          const image = e[0].target as HTMLImageElement;
-          if (placeholderRef.current) {
-            placeholderRef.current.style.display = "none";
-          }
-          image.style.position = imgProps?.style?.position ?? "inherit";
-          /// @ts-ignore
-          image.style.top = imgProps?.style?.top ?? "inherit";
-          image.style.visibility = "visible";
-        }}
-        onError={(...e) => {
-          setErrCount((count) => {
-            if (count >= 1) {
-              if (removeOnError && placeholderRef.current) {
-                placeholderRef.current.style.display = "none";
-              }
-            } else {
-              if (imageRef.current) imageRef.current.src = imgProps.src ?? "";
+            const image = e[0].target as HTMLImageElement;
+            if (placeholderRef.current) {
+              placeholderRef.current.style.display = "none";
             }
-            return count + 1;
-          });
-        }}
+            image.style.position = imgProps?.style?.position ?? "inherit";
+            /// @ts-ignore
+            image.style.top = imgProps?.style?.top ?? "inherit";
+            image.style.visibility = "visible";
+          }}
+        onError={(...e) => {
+            setErrCount((count) => {
+              if (count >= 1) {
+                if (removeOnError && placeholderRef.current) {
+                  placeholderRef.current.style.display = "none";
+                }
+              } else {
+                if (imageRef.current) imageRef.current.src = imgProps.src ?? "";
+              }
+              return count + 1;
+            });
+          }}
         src={proxyImageUrl(imgProps.src ?? "", size)}
-      />
+        /> : null}
     </>
   );
 });
