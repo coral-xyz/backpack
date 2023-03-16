@@ -64,6 +64,7 @@ export const getUserIdFromPubkey = async ({ blockchain, publicKey }) => {
   const response = await chain("query")({
     auth_users: [
       {
+        limit: 1,
         where: {
           public_keys: {
             public_key: { _eq: publicKey },
@@ -100,6 +101,7 @@ export const getUserFromUsername = async ({
   const response = await chain("query")({
     auth_users: [
       {
+        limit: 1,
         where: {
           username: { _eq: username },
         },
