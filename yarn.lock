@@ -5507,18 +5507,6 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
-"@onsol/tldparser@^0.3.3":
-  version "0.3.7"
-  resolved "https://registry.yarnpkg.com/@onsol/tldparser/-/tldparser-0.3.7.tgz#7085d96b5483a322d0d05607e626e04ecbd14fd2"
-  integrity sha512-P2joYjQduLTrzwd+iaQYEq71MTiJS8Tza+K5VME2ERZrYQs6ylD8T7AaxyX9vmg9iLSD1q5PSrhhSKUcQbIARQ==
-  dependencies:
-    "@solana/buffer-layout" "^4.0.0"
-    "@solana/web3.js" "^1.66.0"
-    bigint-buffer "^1.1.5"
-    bn.js "^5.2.0"
-    borsh "^0.7.0"
-    buffer "6.0.1"
-
 "@parcel/bundler-default@2.8.3":
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/@parcel/bundler-default/-/bundler-default-2.8.3.tgz#d64739dbc2dbd59d6629861bf77a8083aced5229"
@@ -6929,7 +6917,7 @@
     "@wallet-standard/app" "^1.0.1"
     "@wallet-standard/base" "^1.0.1"
 
-"@solana/web3.js@1.63.1", "@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0", "@solana/web3.js@^1.31.0", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.35.1", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.37.1", "@solana/web3.js@^1.47.3", "@solana/web3.js@^1.56.2", "@solana/web3.js@^1.63.1", "@solana/web3.js@^1.65.0", "@solana/web3.js@^1.66.0", "@solana/web3.js@^1.66.2", "@solana/web3.js@^1.68.0", "@solana/web3.js@^1.69.0", "@solana/web3.js@^1.70.1", "@solana/web3.js@^1.73.0", "@solana/web3.js@^1.73.2":
+"@solana/web3.js@1.63.1", "@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0", "@solana/web3.js@^1.31.0", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.35.1", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.37.1", "@solana/web3.js@^1.47.3", "@solana/web3.js@^1.56.2", "@solana/web3.js@^1.63.1", "@solana/web3.js@^1.65.0", "@solana/web3.js@^1.66.2", "@solana/web3.js@^1.68.0", "@solana/web3.js@^1.69.0", "@solana/web3.js@^1.70.1", "@solana/web3.js@^1.73.0", "@solana/web3.js@^1.73.2":
   version "1.63.1"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.63.1.tgz#88a19a17f5f4aada73ad70a94044c1067cab2b4d"
   integrity sha512-wgEdGVK5FTS2zENxbcGSvKpGZ0jDS6BUdGu8Gn6ns0CzgJkK83u4ip3THSnBPEQ5i/jrqukg998BwV1H67+qiQ==
