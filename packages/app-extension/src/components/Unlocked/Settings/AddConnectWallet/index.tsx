@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import { openAddUserAccount, openConnectHardware } from "@coral-xyz/common";
 import {
@@ -22,6 +22,8 @@ import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavigation } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 import { WalletListItem } from "../YourAccount/EditWallets";
+
+import { CreateMenuAction } from "./CreateMenu";
 
 export function AddConnectPreview() {
   const nav = useNavigation();
@@ -144,10 +146,11 @@ export function AddConnectWalletMenu({
 export function AddWalletMenu({ blockchain }: { blockchain: Blockchain }) {
   const navigation = useNavigation();
   const user = useUser();
+  const [showCreateMenuAction, setShowCreateMenuAction] = useState(false);
 
   const createOrImportMenu = {
     "Create a new wallet": {
-      onClick: () => navigation.push("create-wallet", { blockchain }),
+      onClick: () => setShowCreateMenuAction(true),
       icon: (props: any) => <PlusCircleIcon {...props} />,
       detailIcon: <PushDetail />,
     },
@@ -159,21 +162,24 @@ export function AddWalletMenu({ blockchain }: { blockchain: Blockchain }) {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-      }}
-    >
-      <Box sx={{ margin: "24px" }}>
-        <Header text="Create or import a wallet" />
-        <SubtextParagraph>
-          Add a new wallet for @{user.username} on Backpack.
-        </SubtextParagraph>
-      </Box>
-      <SettingsList menuItems={createOrImportMenu} />
-    </div>
+    <>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+        }}
+      >
+        <Box sx={{ margin: "24px" }}>
+          <Header text="Create or import a wallet" />
+          <SubtextParagraph>
+            Add a new wallet for @{user.username} on Backpack.
+          </SubtextParagraph>
+        </Box>
+        <SettingsList menuItems={createOrImportMenu} />
+      </div>
+      {showCreateMenuAction ? <CreateMenuAction blockchain={blockchain} /> : null}
+    </>
   );
 }
 

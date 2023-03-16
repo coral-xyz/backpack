@@ -43,7 +43,6 @@ import {
   AddConnectPreview,
   AddConnectWalletMenu,
 } from "../Unlocked/Settings/AddConnectWallet";
-import { CreateMenu } from "../Unlocked/Settings/AddConnectWallet/CreateMenu";
 import { CreateMnemonic } from "../Unlocked/Settings/AddConnectWallet/CreateMnemonic";
 import { ImportMenu } from "../Unlocked/Settings/AddConnectWallet/ImportMenu";
 import { ImportMnemonic } from "../Unlocked/Settings/AddConnectWallet/ImportMnemonic";
@@ -247,10 +246,6 @@ function WalletNavStack({
       <NavStackScreen
         name="edit-wallets-blockchain-selector"
         component={(props: any) => <WalletListBlockchainSelector {...props} />}
-      />
-      <NavStackScreen
-        name="create-wallet"
-        component={(props: any) => <CreateMenu {...props} />}
       />
       <NavStackScreen
         name="import-wallet"
