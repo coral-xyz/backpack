@@ -16942,7 +16942,7 @@ graphql-zeus-jsonschema@*:
     graphql-js-tree "^0.2.5"
     json-schema "^0.3.0"
 
-graphql-zeus@^5.2.3, graphql-zeus@^5.2.9:
+graphql-zeus@^5.2.9, graphql-zeus@^5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/graphql-zeus/-/graphql-zeus-5.3.0.tgz#b1a4a8c4240e12abf40489e00d215c668fcc3a5e"
   integrity sha512-w7DzrdCnaXylWK6NJ4fc3Ps4+qzQ68pYoZrCgRwT/Pgf32Jh9e2vUSoUMkge4yXUW2u5th8yVkSakjOOCNsLEw==

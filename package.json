@@ -44,6 +44,7 @@
     "buffer": "^5.5.0",
     "env-cmd": "^10.1.0",
     "eslint": "^8.31.0",
+    "graphql": "^16.6.0",
     "husky": "^8.0.1",
     "lint-staged": "^12.4.1",
     "prettier": "^2.8.1",

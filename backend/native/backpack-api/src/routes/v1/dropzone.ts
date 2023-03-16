@@ -1,3 +1,4 @@
+// TODO: reinstate dropzone_public_key
 import { emptyWallet } from "@cardinal/common";
 import { metadataAddress } from "@coral-xyz/common";
 import type { order_by } from "@coral-xyz/zeus";
@@ -53,12 +54,12 @@ router.post("/drops", async (req, res, next) => {
         {
           id: true,
           username: true,
-          dropzone_public_key: [
-            {},
-            {
-              public_key: true,
-            },
-          ],
+          // dropzone_public_key: [
+          //   {},
+          //   {
+          //     public_key: true,
+          //   },
+          // ],
         },
       ],
     });
@@ -67,13 +68,13 @@ router.post("/drops", async (req, res, next) => {
       throw new Error("Some usernames were not found");
     }
 
-    const data = auth_users.reduce((acc, curr, index) => {
-      const username = curr.username as string;
-      acc[curr.dropzone_public_key![0].public_key] = [
-        req.body.balances[username],
-        index,
-        username,
-      ];
+    const data = auth_users.reduce((acc, _curr, _index) => {
+      // const username = curr.username as string;
+      // acc[curr.dropzone_public_key![0].public_key] = [
+      //   req.body.balances[username],
+      //   index,
+      //   username,
+      // ];
       return acc;
     }, {} as DropzoneData);
 
@@ -229,12 +230,12 @@ router.get(
           {
             user: {
               username: true,
-              dropzone_public_key: [
-                {},
-                {
-                  public_key: true,
-                },
-              ],
+              // dropzone_public_key: [
+              //   {},
+              //   {
+              //     public_key: true,
+              //   },
+              // ],
               referred_users: [
                 {
                   order_by: [{ created_at: "desc" as order_by.desc }],
