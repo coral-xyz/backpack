@@ -177,6 +177,7 @@ export const getUserByUsername = async (username: string) => {
   const response = await chain("query")({
     auth_users: [
       {
+        limit: 1,
         where: { username: { _eq: username } },
       },
       {
