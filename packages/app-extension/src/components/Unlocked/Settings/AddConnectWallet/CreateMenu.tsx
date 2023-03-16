@@ -118,9 +118,11 @@ export function CreateMenuAction({ blockchain }: { blockchain: Blockchain }) {
       setNewPublicKey(newPublicKey);
       setLoading(false);
     } else {
-      nav.push("create-mnemonic", {
+      nav.push("import-from-mnemonic", {
         blockchain,
-        keyringExists,
+        keyringExists: false,
+        inputMnemonic: true,
+        forceKeyringAdd: true,
       });
     }
   };
@@ -130,21 +132,21 @@ export function CreateMenuAction({ blockchain }: { blockchain: Blockchain }) {
       openDrawer={openDrawer}
       setOpenDrawer={setOpenDrawer}
       backdropProps={{
-          style: {
-            opacity: 0.8,
-            background: "#18181b",
-          },
-        }}
-      >
+        style: {
+          opacity: 0.8,
+          background: "#18181b",
+        },
+      }}
+    >
       <ConfirmCreateWallet
         blockchain={blockchain}
         publicKey={newPublicKey}
         onClose={() => {
-            setOpenDrawer(false);
-            closeParentDrawer();
-          }}
+          setOpenDrawer(false);
+          closeParentDrawer();
+        }}
         isLoading={loading}
-        />
+      />
     </WithMiniDrawer>
   );
 }

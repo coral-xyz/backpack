@@ -32,11 +32,13 @@ export function ImportMnemonic({
   blockchain,
   keyringExists,
   inputMnemonic,
+  forceKeyringAdd,
   publicKey,
 }: {
   blockchain: Blockchain;
   keyringExists: boolean;
   inputMnemonic: boolean;
+  forceKeyringAdd: boolean;
   publicKey?: string;
 }) {
   const nav = useNavigation();
@@ -86,18 +88,30 @@ export function ImportMnemonic({
         });
       }
     } else {
-      // Not using the keyring mnemonic, and the keyring only supports storing
-      // a singular mnemonic, so import as a private key
-      const privateKey = mnemonicPathToPrivateKey(
-        blockchain,
-        mnemonic as string,
-        signedWalletDescriptor.derivationPath
-      );
+      if (forceKeyringAdd) {
+        publicKey = await background.request({
+          method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+          params: [
+            {
+              mnemonic,
+              signedWalletDescriptors: [signedWalletDescriptor],
+            },
+          ],
+        });
+      } else {
+        // Not using the keyring mnemonic, and the keyring only supports storing
+        // a singular mnemonic, so import as a private key
+        const privateKey = mnemonicPathToPrivateKey(
+          blockchain,
+          mnemonic as string,
+          signedWalletDescriptor.derivationPath
+        );
 
-      publicKey = await background.request({
-        method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-        params: [blockchain, privateKey, name],
-      });
+        publicKey = await background.request({
+          method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+          params: [blockchain, privateKey, name],
+        });
+      }
     }
     setSelectedPublicKey(publicKey);
     setOpenDrawer(true);
