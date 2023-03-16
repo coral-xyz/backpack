@@ -730,6 +730,7 @@ function MnemonicSearchScreen({
 function OnboardingBlockchainSelectScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "SelectBlockchain">) {
+  const [status, setStatus] = useState([]); // eslint-disable-line
   const [loading, setLoading] = useState(new Set());
   const { onboardingData, handleSelectBlockchain } = useOnboarding();
   const { blockchainOptions, selectedBlockchains } = onboardingData;
@@ -759,10 +760,19 @@ function OnboardingBlockchainSelectScreen({
               enabled={item.enabled}
               label={item.label}
               onSelect={async (blockchain) => {
+                setStatus([]);
                 setLoading((prev) => new Set(prev.add(blockchain)));
                 await handleSelectBlockchain({
                   blockchain,
+                  onStatus: (status) => {
+                    // @ts-ignore
+                    setStatus((prev) => [
+                      ...prev,
+                      { b: blockchain, s: status },
+                    ]);
+                  },
                 });
+
                 setLoading(
                   (prev) => new Set([...prev].filter((x) => x !== blockchain))
                 );

@@ -8,6 +8,7 @@ export default {
   version: "0.1.0",
   orientation: "portrait",
   icon: "./assets/icon.png",
+  userInterfaceStyle: "auto",
   splash: {
     image: "./assets/splash.png",
     resizeMode: "cover",
@@ -53,7 +54,7 @@ export default {
   extra: {
     localWebViewUrl: "http://localhost:9333",
     remoteWebViewUrl:
-      "https://coral-xyz.github.io/backpack/background-scripts/31b677d/service-worker-loader.html",
+      "https://coral-xyz.github.io/backpack/background-scripts/3708687/service-worker-loader.html",
     eas: {
       projectId: projectID,
     },

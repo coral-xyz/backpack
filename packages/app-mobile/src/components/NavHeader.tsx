@@ -1,18 +1,21 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { MaterialIcons } from "@expo/vector-icons";
+import { HeaderBackButton, getHeaderTitle } from "@react-navigation/elements";
+import { StackHeaderProps } from "@react-navigation/stack";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Avatar, Margin } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 
 export function NavHeader({
-  title,
   navigation,
-}: {
-  title: string;
-  navigation: any;
-}) {
+  route,
+  options,
+  back,
+}: StackHeaderProps): JSX.Element {
+  const title = getHeaderTitle(options, route.name);
+
   const insets = useSafeAreaInsets();
   const theme = useTheme();
 
@@ -28,6 +31,13 @@ export function NavHeader({
         styles.container,
       ]}
     >
+      {back ? (
+        <HeaderBackButton
+          tintColor={theme.custom.colors.fontColor}
+          onPress={navigation.goBack}
+        />
+      ) : null}
+
       <View style={styles.centeredRow}>
         <Text style={[{ color: theme.custom.colors.fontColor }, styles.title]}>
           {title}

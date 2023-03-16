@@ -11,6 +11,7 @@ import {
 } from "@coral-xyz/common";
 import { createStackNavigator } from "@react-navigation/stack";
 
+import { NavHeader } from "~components/NavHeader";
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import { Margin, Screen, TokenAmountHeader } from "~components/index";
 import {
@@ -174,11 +175,15 @@ export function BalancesNavigator(): JSX.Element {
   return (
     <Stack.Navigator
       initialRouteName="BalanceList"
-      screenOptions={{ presentation: "modal" }}
+      screenOptions={{
+        header: NavHeader,
+      }}
     >
-      <Stack.Group screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="BalanceList" component={BalanceListScreen} />
-      </Stack.Group>
+      <Stack.Screen
+        name="BalanceList"
+        component={BalanceListScreen}
+        options={{ title: "Balances" }}
+      />
       <Stack.Screen
         name="BalanceDetail"
         component={BalanceDetailScreen}

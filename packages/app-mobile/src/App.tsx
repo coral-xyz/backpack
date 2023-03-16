@@ -114,7 +114,7 @@ function Main(): JSX.Element | null {
           },
         ]}
       >
-        <StatusBar style={theme.colorScheme === "dark" ? "light" : "dark"} />
+        <StatusBar />
         <RootNavigation colorScheme={theme.colorScheme as "dark" | "light"} />
       </View>
     </Providers>
