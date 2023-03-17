@@ -419,6 +419,7 @@ export const AllTypesProps: Record<string, any> = {
     blockchain: "String_comparison_exp",
     created_at: "timestamptz_comparison_exp",
     id: "Int_comparison_exp",
+    is_primary: "Boolean_comparison_exp",
     public_key: "String_comparison_exp",
     user: "auth_users_bool_exp",
     user_active_publickey_mappings:
@@ -462,6 +463,7 @@ export const AllTypesProps: Record<string, any> = {
     blockchain: "order_by",
     created_at: "order_by",
     id: "order_by",
+    is_primary: "order_by",
     public_key: "order_by",
     user: "auth_users_order_by",
     user_active_publickey_mappings_aggregate:
@@ -1924,6 +1926,7 @@ export const ReturnTypes: Record<string, any> = {
     blockchain: "String",
     created_at: "timestamptz",
     id: "Int",
+    is_primary: "Boolean",
     public_key: "String",
     user: "auth_users",
     user_active_publickey_mappings: "auth_user_active_publickey_mapping",
