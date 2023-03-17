@@ -3,12 +3,9 @@ import type {
   EnrichedMessage,
   Friendship,
   SubscriptionType,
+  UserMetadata,
 } from "@coral-xyz/common";
-import {
-  BACKEND_API_URL,
-  fetchFriendship,
-  getRandomColor,
-} from "@coral-xyz/common";
+import { Blockchain, fetchFriendship } from "@coral-xyz/common";
 import type { EnrichedInboxDb } from "@coral-xyz/common/dist/esm/messages/db";
 import { getFriendshipByUserId } from "@coral-xyz/db";
 import { atomFamily, selectorFamily } from "recoil";
@@ -163,4 +160,42 @@ export const remoteUsersMetadata = atomFamily<
         };
       },
   }),
+});
+
+export const remoteUsersMetadataMap = atomFamily<
+  {
+    [key: string]: UserMetadata;
+  },
+  { uuid: string }
+>({
+  key: "remoteUsersMetadataMap",
+  default: selectorFamily({
+    key: "remoteUsersMetadataMapDefault",
+    get:
+      ({ uuid }: { uuid: string; remoteUserId: string }) =>
+      async ({ get }: any) => {
+        return {};
+      },
+  }),
+});
+
+export const remoteUsersMetadataSelector = selectorFamily<
+  {
+    [key: string]: UserMetadata;
+  },
+  { remoteUserIds: string[]; uuid: string }
+>({
+  key: "remoteUsersMetadataSelector",
+  get:
+    ({ uuid, remoteUserIds }) =>
+    ({ get }) => {
+      const remoteUsersMetadata = get(remoteUsersMetadataMap({ uuid }));
+      const returnMap: {
+        [key: string]: UserMetadata;
+      } = {};
+      Object.keys(remoteUsersMetadata)
+        .filter((x) => remoteUserIds.includes(x))
+        .forEach((x) => (returnMap[x] = remoteUsersMetadata[x]));
+      return returnMap;
+    },
 });

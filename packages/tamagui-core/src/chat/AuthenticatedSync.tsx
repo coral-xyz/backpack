@@ -3,6 +3,7 @@ import type {
   EnrichedMessage,
   EnrichedNotification,
   SubscriptionType,
+  UserMetadata,
 } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { RecoilSync } from "@coral-xyz/db";
@@ -15,6 +16,7 @@ import {
   unreadCount,
   useAuthenticatedUser,
   useRecentNotifications,
+  useUpdateUsers,
 } from "@coral-xyz/recoil";
 import { useRecoilCallback, useSetRecoilState } from "recoil";
 
@@ -59,6 +61,7 @@ export const ChatSync = ({ uuid, jwt }: { uuid: string; jwt: string }) => {
 export const DbRecoilSync = ({ uuid }: { uuid: string }) => {
   const updateChats = useUpdateChats();
   const updateNotifications = useUpdateNotifications();
+  const updateUsers = useUpdateUsers();
 
   const setFriendshipsValue = useSetRecoilState(friendships({ uuid }));
   const setRequestCountValue = useSetRecoilState(requestCount({ uuid }));
@@ -119,6 +122,7 @@ export const DbRecoilSync = ({ uuid }: { uuid: string }) => {
     setRequestCountValue(requestCount);
     const allMessages = await RecoilSync.getInstance().getAllChats(uuid);
     const groups = getGroupedRooms(allMessages);
+
     groups.forEach((group) => {
       updateChats({
         uuid,
@@ -127,6 +131,12 @@ export const DbRecoilSync = ({ uuid }: { uuid: string }) => {
         chats: group.messages,
       });
     });
+
+    const users = await RecoilSync.getInstance().getAllUsers(uuid);
+    const usersMap = {};
+    users.forEach((user) => (usersMap[user.uuid] = user));
+    updateUsers({ users: usersMap, uuid });
+
     RecoilSync.getInstance().refreshUsersMetadata(uuid);
     updateUnread();
   };
