@@ -608,7 +608,13 @@ export class Plugin {
     return ["success"];
   }
 
-  private async _handleWindowOpen(url: string): Promise<RpcResponse> {
+  private async _handleWindowOpen(_url: string): Promise<RpcResponse> {
+    const url = new URL(_url);
+
+    if (!url.protocol.startsWith("http")) {
+      throw "Invalid url.";
+    }
+
     window.open(url, "_blank");
     return ["success"];
   }
