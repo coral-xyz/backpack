@@ -14,7 +14,9 @@ import {
   useEthereumCtx,
   useTransactionData,
   useAvatarUrl,
+  useActiveWallet,
 } from "@coral-xyz/recoil";
+import { useNavigation } from "@react-navigation/native";
 import { ethers } from "ethers";
 
 import {
@@ -23,7 +25,10 @@ import {
   Header,
   Container,
 } from "~components/BottomDrawerCards";
-import { TransactionData } from "~components/TransactionData";
+import {
+  TransactionData,
+  EthereumSettingsDrawer,
+} from "~components/TransactionData";
 import { PrimaryButton, TokenAmountHeader, Margin } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 
@@ -56,7 +61,7 @@ export function SendEthereumConfirmationCard({
     null
   );
   const [cardType, setCardType] = useState<
-    "confirm" | "sending" | "complete" | "error"
+    "confirm" | "sending" | "complete" | "error" | "advanced"
   >("confirm");
 
   // The transaction to be executed when the Send action is confirmed. We pass
@@ -140,6 +145,7 @@ export function SendEthereumConfirmationCard({
           transaction={transaction}
           amount={amount}
           onConfirm={onConfirm}
+          onToggleAdvanced={() => setCardType("advanced")}
         />
       ) : cardType === "sending" ? (
         <Sending
@@ -157,6 +163,15 @@ export function SendEthereumConfirmationCard({
           token={token}
           signature={txSignature!}
         />
+      ) : cardType === "advanced" ? (
+        <EthereumAdvancedSettings
+          token={token}
+          blockchain={Blockchain.ETHEREUM}
+          destinationAddress={destinationAddress}
+          transaction={transaction}
+          amount={amount}
+          onClose={() => setCardType("confirm")}
+        />
       ) : (
         <Error
           blockchain={Blockchain.ETHEREUM}
@@ -169,6 +184,43 @@ export function SendEthereumConfirmationCard({
   );
 }
 
+type TransactionMode = "normal" | "fast" | "degen" | "custom";
+export function EthereumAdvancedSettings({
+  blockchain,
+  token,
+  destinationAddress,
+  transaction,
+  amount,
+  onClose,
+}: any): JSX.Element {
+  const [mode, setMode] = useState<TransactionMode>("normal");
+  const transactionData = useTransactionData(
+    Blockchain.ETHEREUM,
+    bs58.encode(ethers.utils.serializeTransaction(transaction))
+  );
+
+  const {
+    loading,
+    network,
+    networkFee,
+    networkFeeUsd,
+    transactionOverrides,
+    setTransactionOverrides,
+    simulationError,
+  } = transactionData;
+
+  return (
+    <EthereumSettingsDrawer
+      mode={mode}
+      setMode={setMode}
+      transactionOverrides={transactionOverrides}
+      setTransactionOverrides={setTransactionOverrides}
+      networkFeeUsd={networkFeeUsd}
+      onClose={onClose}
+    />
+  );
+}
+
 export function ConfirmSendEthereum({
   token,
   destinationAddress,
@@ -176,6 +228,7 @@ export function ConfirmSendEthereum({
   transaction,
   onConfirm,
   destinationUser,
+  onToggleAdvanced,
 }: {
   token: {
     address?: string;
@@ -188,10 +241,12 @@ export function ConfirmSendEthereum({
   amount: BigNumber;
   transaction: UnsignedTransaction;
   onConfirm: (transactionToSend: UnsignedTransaction) => void;
+  onToggleAdvanced: () => object;
 }) {
   const theme = useTheme();
   const avatarUrl = useAvatarUrl();
   const wallet = useActiveWallet();
+
   const transactionData = useTransactionData(
     Blockchain.ETHEREUM,
     bs58.encode(ethers.utils.serializeTransaction(transaction))
@@ -220,6 +275,7 @@ export function ConfirmSendEthereum({
         <TransactionData
           transactionData={transactionData}
           menuItems={menuItems}
+          onToggleAdvanced={onToggleAdvanced}
         />
       </Margin>
       <PrimaryButton
