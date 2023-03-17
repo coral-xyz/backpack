@@ -127,11 +127,6 @@ export function UnlockedNavigator(): JSX.Element {
           name="wallet-picker"
           component={WalletListScreen}
         />
-        <Stack.Screen
-          options={{ title: "Wallets" }}
-          name="wallet-picker"
-          component={WalletListScreen}
-        />
       </Stack.Group>
     </Stack.Navigator>
   );
