@@ -185,12 +185,17 @@ router.post("/drops", async (req, res, next) => {
  */
 router.get("/drops/:distributor", async (req, res, next) => {
   try {
-    const { dropzone_distributors_by_pk: query } = await chain("query")({
-      dropzone_distributors_by_pk: [
-        { id: req.params.distributor },
-        { id: true },
-      ],
-    });
+    const { dropzone_distributors_by_pk: query } = await chain("query")(
+      {
+        dropzone_distributors_by_pk: [
+          { id: req.params.distributor },
+          { id: true },
+        ],
+      },
+      {
+        operationName: "dropzone_distributors_by_pk",
+      }
+    );
 
     const { data } = await getDistributor(query!.id);
 

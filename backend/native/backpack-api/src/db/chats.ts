@@ -30,94 +30,97 @@ export const getChats = async ({
         client_generated_uuid: { _eq: clientGeneratedUuid },
       }
     : {};
-  const response = await chain("query")({
-    chats: [
-      {
-        limit,
-        //@ts-ignore
-        order_by: [{ created_at: "desc" }],
-        where: {
-          ...clientUuidConstraint,
-          room: { _eq: room },
+  const response = await chain("query")(
+    {
+      chats: [
+        {
+          limit,
           //@ts-ignore
-          type: { _eq: type },
-          created_at: {
-            _lte: timestampBefore,
-            _gte: timestampAfter,
-          },
-        },
-      },
-      {
-        id: true,
-        uuid: true,
-        type: true,
-        deleted: true,
-        room: true,
-        message: true,
-        client_generated_uuid: true,
-        message_kind: true,
-        created_at: true,
-        parent_client_generated_uuid: true,
-        secure_transfer_transactions: [
-          {
-            limit: 1,
-          },
-          {
-            escrow: true,
-            counter: true,
-            signature: true,
-            final_txn_signature: true,
-            current_state: true,
-          },
-        ],
-        chat_media_messages: [
-          {
-            limit: 1,
-          },
-          {
-            media_kind: true,
-            media_link: true,
-          },
-        ],
-        chat_barter_metadata: [
-          {
-            limit: 1,
-          },
-          {
-            barter: {
-              id: true,
-              state: true,
-              on_chain_state: true,
+          order_by: [{ created_at: "desc" }],
+          where: {
+            ...clientUuidConstraint,
+            room: { _eq: room },
+            //@ts-ignore
+            type: { _eq: type },
+            created_at: {
+              _lte: timestampBefore,
+              _gte: timestampAfter,
             },
           },
-        ],
-        simple_transactions: [
-          {
-            limit: 1,
-          },
-          {
-            txn_signature: true,
-          },
-        ],
-        barter_poke_metadata: [
-          {
-            limit: 1,
-          },
-          {
-            barter_id: true,
-          },
-        ],
-        nft_sticker_metadata: [
-          {
-            limit: 1,
-          },
-          {
-            mint: true,
-          },
-        ],
-      },
-    ],
-  });
+        },
+        {
+          id: true,
+          uuid: true,
+          type: true,
+          deleted: true,
+          room: true,
+          message: true,
+          client_generated_uuid: true,
+          message_kind: true,
+          created_at: true,
+          parent_client_generated_uuid: true,
+          secure_transfer_transactions: [
+            {
+              limit: 1,
+            },
+            {
+              escrow: true,
+              counter: true,
+              signature: true,
+              final_txn_signature: true,
+              current_state: true,
+            },
+          ],
+          chat_media_messages: [
+            {
+              limit: 1,
+            },
+            {
+              media_kind: true,
+              media_link: true,
+            },
+          ],
+          chat_barter_metadata: [
+            {
+              limit: 1,
+            },
+            {
+              barter: {
+                id: true,
+                state: true,
+                on_chain_state: true,
+              },
+            },
+          ],
+          simple_transactions: [
+            {
+              limit: 1,
+            },
+            {
+              txn_signature: true,
+            },
+          ],
+          barter_poke_metadata: [
+            {
+              limit: 1,
+            },
+            {
+              barter_id: true,
+            },
+          ],
+          nft_sticker_metadata: [
+            {
+              limit: 1,
+            },
+            {
+              mint: true,
+            },
+          ],
+        },
+      ],
+    },
+    { operationName: "getChats" }
+  );
 
   const chats: Message[] = [];
 
@@ -186,25 +189,28 @@ export const updateSecureTransfer = async (
   state: "redeemed" | "cancelled",
   txn: string
 ) => {
-  await chain("mutation")({
-    update_secure_transfer_transactions: [
-      {
-        where: {
-          message_client_generated_uuid: { _eq: messageId },
-          chat: {
-            room: {
-              _eq: room,
+  await chain("mutation")(
+    {
+      update_secure_transfer_transactions: [
+        {
+          where: {
+            message_client_generated_uuid: { _eq: messageId },
+            chat: {
+              room: {
+                _eq: room,
+              },
             },
           },
+          _set: {
+            current_state: state,
+            final_txn_signature: txn,
+          },
         },
-        _set: {
-          current_state: state,
-          final_txn_signature: txn,
+        {
+          affected_rows: true,
         },
-      },
-      {
-        affected_rows: true,
-      },
-    ],
-  });
+      ],
+    },
+    { operationName: "updateSecureTransfer" }
+  );
 };

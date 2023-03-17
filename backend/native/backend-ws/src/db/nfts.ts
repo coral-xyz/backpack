@@ -12,20 +12,23 @@ const chain = Chain(AUTH_HASURA_URL, {
 
 export const getNftCollections = async (uuid: string): Promise<string[]> => {
   const publicKeys = await getPublicKeys(uuid);
-  const response = await chain("query")({
-    auth_user_nfts: [
-      {
-        where: {
-          public_key: { _in: publicKeys },
+  const response = await chain("query")(
+    {
+      auth_user_nfts: [
+        {
+          where: {
+            public_key: { _in: publicKeys },
+          },
+          limit: 100,
         },
-        limit: 100,
-      },
-      {
-        collection_id: true,
-        centralized_group: true,
-      },
-    ],
-  });
+        {
+          collection_id: true,
+          centralized_group: true,
+        },
+      ],
+    },
+    { operationName: "getNftCollections" }
+  );
 
   return response.auth_user_nfts.map(
     (x) => x.centralized_group || x.collection_id || ""
@@ -39,32 +42,35 @@ export const getNftCollectionByGroupName = async ({
   uuid: string;
   centralizedGroup?: string;
 }) => {
-  const response = await chain("query")({
-    auth_user_nfts: [
-      {
-        where: {
-          publicKeyByBlockchainPublicKey: {
-            user: {
-              id: {
-                _eq: uuid,
+  const response = await chain("query")(
+    {
+      auth_user_nfts: [
+        {
+          where: {
+            publicKeyByBlockchainPublicKey: {
+              user: {
+                id: {
+                  _eq: uuid,
+                },
               },
             },
+            _or: [
+              {
+                centralized_group: { _eq: centralizedGroup },
+              },
+              {
+                collection_id: { _eq: centralizedGroup },
+              },
+            ],
           },
-          _or: [
-            {
-              centralized_group: { _eq: centralizedGroup },
-            },
-            {
-              collection_id: { _eq: centralizedGroup },
-            },
-          ],
         },
-      },
-      {
-        collection_id: true,
-      },
-    ],
-  });
+        {
+          collection_id: true,
+        },
+      ],
+    },
+    { operationName: "getNftCollectionByGroupName" }
+  );
   return response.auth_user_nfts[0]?.collection_id || "";
 };
 
@@ -87,17 +93,20 @@ export const getNftCollection = async ({
   mint: string;
   publicKey: string;
 }) => {
-  const response = await chain("query")({
-    auth_user_nfts_by_pk: [
-      {
-        nft_id: mint,
-        public_key: publicKey,
-      },
-      {
-        collection_id: true,
-      },
-    ],
-  });
+  const response = await chain("query")(
+    {
+      auth_user_nfts_by_pk: [
+        {
+          nft_id: mint,
+          public_key: publicKey,
+        },
+        {
+          collection_id: true,
+        },
+      ],
+    },
+    { operationName: "getNftCollection" }
+  );
   return response.auth_user_nfts_by_pk?.collection_id || "";
 };
 

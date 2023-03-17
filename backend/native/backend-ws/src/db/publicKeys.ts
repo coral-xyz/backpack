@@ -9,18 +9,21 @@ const chain = Chain(AUTH_HASURA_URL, {
 });
 
 export const getPublicKeys = async (uuid: string) => {
-  const response = await chain("query")({
-    auth_public_keys: [
-      {
-        where: {
-          user_id: { _eq: uuid },
+  const response = await chain("query")(
+    {
+      auth_public_keys: [
+        {
+          where: {
+            user_id: { _eq: uuid },
+          },
+          limit: 100,
         },
-        limit: 100,
-      },
-      {
-        public_key: true,
-      },
-    ],
-  });
+        {
+          public_key: true,
+        },
+      ],
+    },
+    { operationName: "getPublicKeys" }
+  );
   return response.auth_public_keys.map((x) => x.public_key);
 };
