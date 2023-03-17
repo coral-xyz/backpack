@@ -366,6 +366,7 @@ export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED =
 // Ethereum web injected provider API.
 //
 export const ETHEREUM_RPC_METHOD_CONNECT = "ethereum-connect";
+export const ETHEREUM_RPC_METHOD_SWITCH_CHAIN = "ethereum-switch-chain";
 export const ETHEREUM_RPC_METHOD_DISCONNECT = "ethereum-disconnect";
 export const ETHEREUM_RPC_METHOD_SIGN_TX = "ethereum-sign-tx";
 export const ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX = "ethereum-sign-and-send-tx";

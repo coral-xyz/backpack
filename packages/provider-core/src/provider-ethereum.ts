@@ -7,6 +7,7 @@ import {
   CHANNEL_ETHEREUM_RPC_REQUEST,
   CHANNEL_ETHEREUM_RPC_RESPONSE,
   ETHEREUM_RPC_METHOD_CONNECT,
+  ETHEREUM_RPC_METHOD_SWITCH_CHAIN,
   getLogger,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
@@ -277,10 +278,10 @@ export class ProviderEthereumInjection extends EventEmitter {
       eth_requestAccounts: this.handleEthRequestAccounts,
       eth_chainId: () => this.chainId,
       net_version: () => `${parseInt(this.chainId)}`,
-      eth_getBalance: async (...params) => {
-        const result = await this.provider!.send("eth_getBalance", params);
-        return result;
-      },
+      eth_getBalance: async (...params) =>
+        rpc_fallback("eth_getBalance")(params),
+      eth_getGasPrice: async (...params) =>
+        rpc_fallback("eth_getGasPrice")(params),
       eth_getCode: (address: string) => this.provider!.getCode(address),
       eth_getStorageAt: (address: string, position: string) =>
         this.provider!.getStorageAt(address, position),
@@ -305,13 +306,18 @@ export class ProviderEthereumInjection extends EventEmitter {
       },
       personal_sign: (messageHex: string, _address: string) =>
         this.handleEthSignMessage(messageHex),
+      eth_signTypedData_v4: (_address: string, messageHex: string) => {
+        throw new Error("Backpack does not support eth_signTypedData_v4");
+      },
       eth_signTransaction: (transaction: any) =>
         this.handleEthSignTransaction(transaction),
       eth_sendTransaction: (transaction: any) =>
         this.handleEthSendTransaction(transaction),
+      wallet_switchEthereumChain: ({ chainId }) =>
+        this.handleEthSwitchChain(chainId),
     };
 
-    const func = functionMap[method] ?? rpc_fallback(method);
+    const func = functionMap[method];
 
     if (func === undefined) {
       throw ethErrors.rpc.invalidRequest({
@@ -466,7 +472,20 @@ export class ProviderEthereumInjection extends EventEmitter {
   };
 
   /**
-   * Handle eth_requestAccounts requests
+   * Handle wallet_switchEthereumChain requests
+   */
+  handleEthSwitchChain = async (chainId) => {
+    // Send request to the RPC API.
+    const response = await this.requestManager.request({
+      method: ETHEREUM_RPC_METHOD_SWITCH_CHAIN,
+      params: [chainId],
+    });
+
+    return response;
+  };
+
+  /**
+   * Handle wallet_switch requests
    */
   handleEthRequestAccounts = async () => {
     // Send request to the RPC API.

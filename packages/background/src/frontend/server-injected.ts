@@ -23,6 +23,9 @@ import {
   ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX,
   ETHEREUM_RPC_METHOD_SIGN_MESSAGE,
   ETHEREUM_RPC_METHOD_SIGN_TX,
+  ETHEREUM_RPC_METHOD_SWITCH_CHAIN,
+  EthereumChainIds,
+  EthereumConnectionUrl,
   getLogger,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
@@ -173,6 +176,8 @@ async function handle<T = any>(
       return await handleConnect(ctx, Blockchain.ETHEREUM);
     case ETHEREUM_RPC_METHOD_DISCONNECT:
       return await handleDisconnect(ctx, Blockchain.ETHEREUM);
+    case ETHEREUM_RPC_METHOD_SWITCH_CHAIN:
+      return await handleEthereumSwitchChain(ctx, params[0]);
     case ETHEREUM_RPC_METHOD_SIGN_MESSAGE:
       return await handleEthereumSignMessage(ctx, params[0], params[1]);
     case ETHEREUM_RPC_METHOD_SIGN_TX:
@@ -587,6 +592,63 @@ async function handleSolanaOpenXnft(
   return ["success"];
 }
 
+async function handleEthereumSwitchChain(
+  ctx: Context<Backend>,
+  chainId: string
+): Promise<RpcResponse<string>> {
+  if (ctx.sender.origin === undefined) {
+    throw new Error("origin is undefined");
+  }
+
+  const chainName: string | undefined = EthereumChainIds[chainId];
+
+  const url = chainName ? EthereumConnectionUrl[chainName] : undefined;
+
+  if (!url) {
+    throw new Error("Unsupported Chain: " + chainId);
+  }
+
+  const uiResp = await UiActionRequestManager.requestUiAction(
+    (requestId: string) => {
+      return openApproveMessagePopupWindow(
+        ctx.sender.origin!,
+        getTabTitle(ctx),
+        requestId,
+        `Switch to ${chainName} (${chainId})?`,
+        "walletAddress",
+        Blockchain.ETHEREUM
+      );
+    }
+  );
+  console.log("UIRESONSE", uiResp);
+
+  if (uiResp.error) {
+    logger.debug("require ui action error", uiResp);
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+    return;
+  }
+
+  let resp: RpcResponse<string>;
+  const didApprove = uiResp.result;
+
+  try {
+    // Only sign if the user clicked approve.
+    if (didApprove) {
+      await ctx.backend.ethereumConnectionUrlUpdate(url);
+      resp = await ctx.backend.ethereumChainIdUpdate(chainId);
+    }
+  } catch (err) {
+    logger.debug("error updating blockchain", err.toString());
+  }
+
+  if (!uiResp.windowClosed) {
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  }
+  if (resp) {
+    return resp;
+  }
+}
+
 async function handleEthereumSignAndSendTx(
   ctx: Context<Backend>,
   tx: string,
@@ -704,6 +766,7 @@ async function handleEthereumSignMessage(
   }
   const uiResp = await UiActionRequestManager.requestUiAction(
     (requestId: string) => {
+      console.log(requestId);
       return openApproveMessagePopupWindow(
         ctx.sender.origin!,
         getTabTitle(ctx),
@@ -749,6 +812,7 @@ async function handlePopupUiResponse(
 ): Promise<string> {
   const { id, result, error } = msg;
   logger.debug("handle popup ui response", msg);
+  console.log(id);
   UiActionRequestManager.resolveResponse(id, result, error);
   return SUCCESS_RESPONSE;
 }
