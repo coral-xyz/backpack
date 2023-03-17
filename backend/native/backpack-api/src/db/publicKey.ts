@@ -43,7 +43,7 @@ export const updatePublicKey = async ({
   publicKeyId: number;
   onlyInsert?: boolean;
 }) => {
-  await chain("mutation")({
+  const response = await chain("mutation")({
     insert_auth_user_active_publickey_mapping_one: [
       {
         object: {
@@ -58,7 +58,8 @@ export const updatePublicKey = async ({
           constraint: "user_active_publickey_mapping_pkey",
         },
       },
-      { user_id: true },
+      { user_id: true, public_key_id: true },
     ],
   });
+  return response.insert_auth_user_active_publickey_mapping_one?.public_key_id;
 };
