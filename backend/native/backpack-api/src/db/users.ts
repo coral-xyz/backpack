@@ -439,7 +439,7 @@ export async function createUserPublicKey({
   userId: string;
   blockchain: Blockchain;
   publicKey: string;
-}) {
+}): Promise<{ isPrimary: boolean }> {
   const response = await chain("mutation")({
     insert_auth_public_keys_one: [
       {
@@ -457,15 +457,19 @@ export async function createUserPublicKey({
 
   const publicKeyId = response.insert_auth_public_keys_one?.id;
   if (publicKeyId) {
-    await updatePublicKey({
+    const updatedPublicKey = await updatePublicKey({
       userId: userId,
       blockchain: blockchain,
       publicKeyId,
       onlyInsert: true,
     });
-  }
 
-  return response.insert_auth_public_keys_one;
+    if (updatedPublicKey === publicKeyId) {
+      return { isPrimary: true };
+    }
+    return { isPrimary: false };
+  }
+  return { isPrimary: false };
 }
 
 /**

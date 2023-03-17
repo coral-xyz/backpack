@@ -352,13 +352,15 @@ router.post(
       }
     }
 
-    await createUserPublicKey({
+    const userPubkeyRes = await createUserPublicKey({
       userId: req.id!,
       blockchain: blockchain as Blockchain,
       publicKey,
     });
 
-    return res.status(201).end();
+    return res.status(201).json({
+      isPrimary: userPubkeyRes.isPrimary || false,
+    });
   }
 );
 
