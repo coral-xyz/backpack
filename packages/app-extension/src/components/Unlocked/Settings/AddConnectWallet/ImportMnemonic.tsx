@@ -10,6 +10,7 @@ import {
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
+  UI_RPC_METHOD_KEYRING_SET_MNEMONIC,
 } from "@coral-xyz/common";
 import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
 import { useBackgroundClient, useRpcRequests } from "@coral-xyz/recoil";
@@ -89,14 +90,13 @@ export function ImportMnemonic({
       }
     } else {
       if (forceKeyringAdd) {
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_SET_MNEMONIC,
+          params: [mnemonic],
+        });
         publicKey = await background.request({
-          method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-          params: [
-            {
-              mnemonic,
-              signedWalletDescriptors: [signedWalletDescriptor],
-            },
-          ],
+          method: UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
+          params: [signedWalletDescriptor],
         });
       } else {
         // Not using the keyring mnemonic, and the keyring only supports storing
