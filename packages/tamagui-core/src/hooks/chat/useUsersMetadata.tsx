@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { UserMetadata } from "@coral-xyz/common";
-import { getBulkUsers, refreshUsers } from "@coral-xyz/db";
-import { useUpdateUsers, useUser , useUserMetadataMap } from "@coral-xyz/recoil";
+import { refreshUsers } from "@coral-xyz/db";
+import { useUpdateUsers, useUser, useUserMetadataMap } from "@coral-xyz/recoil";
 
 export function useUsersMetadata({
   remoteUserIds,
@@ -22,7 +22,8 @@ export function useUsersMetadata({
       if (newUsersMetadata) {
         const newUsersMetadataMap = {};
         newUsersMetadata?.forEach((x) => (newUsersMetadataMap[x.uuid] = x));
-        updateUsers(newUsersMetadata);
+
+        await updateUsers({ uuid, users: newUsersMetadataMap });
       }
     }
   };
