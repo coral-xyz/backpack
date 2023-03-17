@@ -12,7 +12,10 @@ import { ResetWelcome } from "../../Locked/Reset/ResetWelcome";
 import { ContactRequests, Contacts } from "../Messages/Contacts";
 import { Requests } from "../Messages/Requests";
 
-import { CreateMnemonic } from "./AddConnectWallet/CreateMnemonic";
+import {
+  CreateMnemonic,
+  CreateOrImportMnemonic,
+} from "./AddConnectWallet/CreateMnemonic";
 import { ImportMenu } from "./AddConnectWallet/ImportMenu";
 import { ImportMnemonic } from "./AddConnectWallet/ImportMnemonic";
 import { ImportSecretKey } from "./AddConnectWallet/ImportSecretKey";
@@ -68,6 +71,10 @@ export function SettingsNavStackDrawer({
           <NavStackScreen
             name="add-connect-wallet"
             component={(props: any) => <AddConnectWalletMenu {...props} />}
+          />
+          <NavStackScreen
+            name="create-or-import-mnemonic"
+            component={(props: any) => <CreateOrImportMnemonic {...props} />}
           />
           <NavStackScreen
             name="create-mnemonic"

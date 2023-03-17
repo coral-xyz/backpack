@@ -118,11 +118,9 @@ export function CreateMenuAction({ blockchain }: { blockchain: Blockchain }) {
       setNewPublicKey(newPublicKey);
       setLoading(false);
     } else {
-      nav.push("import-from-mnemonic", {
+      nav.push("create-or-import-mnemonic", {
         blockchain,
         keyringExists,
-        inputMnemonic: true,
-        forceSetMnemonic: true,
       });
     }
   };
