@@ -24,6 +24,7 @@ import { ConfirmCreateWallet } from "./";
 
 export function CreateMenuAction({ blockchain }: { blockchain: Blockchain }) {
   const nav = useNavigation();
+  const drawer = useDrawerContext();
   const background = useBackgroundClient();
   const hasMnemonic = useKeyringHasMnemonic();
   const { close: closeParentDrawer } = useDrawerContext();
@@ -118,7 +119,12 @@ export function CreateMenuAction({ blockchain }: { blockchain: Blockchain }) {
   return (
     <WithMiniDrawer
       openDrawer={openDrawer}
-      setOpenDrawer={setOpenDrawer}
+      setOpenDrawer={(open: boolean) => {
+        setOpenDrawer(open);
+        if (!open) {
+          drawer.close();
+        }
+      }}
       backdropProps={{
         style: {
           opacity: 0.8,
