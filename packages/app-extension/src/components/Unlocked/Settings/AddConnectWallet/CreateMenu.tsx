@@ -6,13 +6,12 @@ import {
   UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
-  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
-  useEnabledBlockchains,
   useKeyringHasMnemonic,
   useRpcRequests,
+  useWalletPublicKeys,
 } from "@coral-xyz/recoil";
 
 import {
@@ -27,34 +26,25 @@ export function CreateMenuAction({ blockchain }: { blockchain: Blockchain }) {
   const nav = useNavigation();
   const background = useBackgroundClient();
   const hasMnemonic = useKeyringHasMnemonic();
-  const enabledBlockchains = useEnabledBlockchains();
-  const keyringExists = enabledBlockchains.includes(blockchain);
   const { close: closeParentDrawer } = useDrawerContext();
   const { signMessageForWallet } = useRpcRequests();
+  const publicKeys = useWalletPublicKeys();
+  const keyringExists = publicKeys[blockchain];
+  // If the keyring or if we don't have any public keys of the type we are
+  // adding then additional logic is required to select the account index of
+  // the first derivation path added
+  const hasHdPublicKeys =
+    publicKeys?.[blockchain]?.["hdPublicKeys"]?.length > 0;
 
   const [newPublicKey, setNewPublicKey] = useState("");
   const [openDrawer, setOpenDrawer] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // If the keyring or if we don't have any public keys of the type we are
-  // adding then additional logic is required to select the account index of
-  // the first derivation path added
-  const [hasHdPublicKeys, setHasHdPublicKeys] = useState(false);
-
   useEffect(() => {
     (async () => {
-      const publicKeys = await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-        params: [],
-      });
-      const blockchainPublicKeys = publicKeys[blockchain];
-      if (blockchainPublicKeys) {
-        setHasHdPublicKeys(blockchainPublicKeys.hdPublicKeys.length > 0);
-      }
-
       createNewWithPhrase();
     })();
-  }, [background, blockchain]);
+  }, []);
 
   const createNewWithPhrase = async () => {
     // Mnemonic based keyring. This is the simple case because we don't
