@@ -7,17 +7,89 @@ import {
   UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
   UI_RPC_METHOD_KEYRING_SET_MNEMONIC,
 } from "@coral-xyz/common";
+import {
+  ImportedIcon,
+  MnemonicIcon,
+  PushDetail,
+} from "@coral-xyz/react-common";
 import { useBackgroundClient, useRpcRequests } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { Box } from "@mui/material";
 
+import { Header, SubtextParagraph } from "../../../common";
 import { MnemonicInput } from "../../../common/Account/MnemonicInput";
 import {
   useDrawerContext,
   WithMiniDrawer,
 } from "../../../common/Layout/Drawer";
 import { useNavigation } from "../../../common/Layout/NavStack";
+import { SettingsList } from "../../../common/Settings/List";
 
 import { ConfirmCreateWallet } from "./";
+
+export function CreateOrImportMnemonic({
+  blockchain,
+  keyringExists,
+}: {
+  blockchain: Blockchain;
+  keyringExists: boolean;
+}) {
+  const nav = useNavigation();
+  const menuItems = {
+    "Generate new phrase": {
+      onClick: () =>
+        nav.push("create-mnemonic", {
+          blockchain,
+          keyringExists,
+        }),
+      icon: (props: any) => <MnemonicIcon {...props} />,
+      detailIcon: <PushDetail />,
+    },
+    "Import recovery phrase": {
+      onClick: () =>
+        nav.push("import-from-mnemonic", {
+          blockchain,
+          keyringExists,
+          forceSetMnemonic: true,
+          inputMnemonic: true,
+        }),
+      icon: (props: any) => <ImportedIcon {...props} />,
+      detailIcon: <PushDetail />,
+    },
+  };
+
+  return (
+    <Box
+      sx={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
+      <Box
+        style={{
+          padding: "0 16px 0 16px",
+        }}
+      >
+        <Box style={{ margin: 8 }}>
+          <Header
+            text="Set your Backpack secret recovery phrase"
+            style={{
+              fontWeight: 500,
+            }}
+          />
+          <SubtextParagraph>
+            Create or import a secret recovery phrase. This will be used to
+            create new wallets, so make sure you don't lose it. Only you will
+            have access to this secret.
+          </SubtextParagraph>
+        </Box>
+      </Box>
+      <SettingsList menuItems={menuItems} />
+    </Box>
+  );
+}
 
 export function CreateMnemonic({
   blockchain,
