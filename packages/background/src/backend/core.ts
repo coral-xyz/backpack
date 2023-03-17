@@ -1356,15 +1356,13 @@ export class Backend {
       throw new Error((await response.json()).msg);
     }
 
-    // TODO cleaner to return this in the server response
+    const primary = (await response.json()).isPrimary;
+
     const blockchainKeyring =
       this.keyringStore.activeUserKeyring.keyringForBlockchain(blockchain);
     const blockchainPublicKeys = Object.values(
       blockchainKeyring.publicKeys()
     ).flat();
-    // If this is the only public key for the blockchain it would have been set to
-    // be primary by the server
-    const primary = blockchainPublicKeys.length === 1;
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
