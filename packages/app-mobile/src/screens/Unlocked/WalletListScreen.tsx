@@ -111,7 +111,13 @@ function WalletListItem({
           </Margin>
           <View>
             <Text
-              style={{ fontSize: 16, fontWeight: isSelected ? "600" : "500" }}
+              style={{
+                fontSize: 16,
+                fontFamily: isSelected
+                  ? "Inter_600SemiBold"
+                  : "Inter_400Regular",
+                color: theme.custom.colors.fontColor,
+              }}
             >
               {name}
             </Text>
@@ -120,7 +126,9 @@ function WalletListItem({
                 type={type}
                 fill={isSelected ? theme.custom.colors.secondary : undefined}
               />
-              <Text style={{ fontSize: 14 }}>
+              <Text
+                style={{ fontSize: 14, color: theme.custom.colors.fontColor }}
+              >
                 {walletAddressDisplay(publicKey)}
               </Text>
             </Row>

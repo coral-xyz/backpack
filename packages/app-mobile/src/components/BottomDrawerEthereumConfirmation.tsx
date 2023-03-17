@@ -10,7 +10,11 @@ import {
   getLogger,
   walletAddressDisplay,
 } from "@coral-xyz/common";
-import { useEthereumCtx, useTransactionData } from "@coral-xyz/recoil";
+import {
+  useEthereumCtx,
+  useTransactionData,
+  useAvatarUrl,
+} from "@coral-xyz/recoil";
 import { ethers } from "ethers";
 
 import {
@@ -21,9 +25,13 @@ import {
 } from "~components/BottomDrawerCards";
 import { TransactionData } from "~components/TransactionData";
 import { PrimaryButton, TokenAmountHeader, Margin } from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
 const logger = getLogger("send-ethereum-confirmation-card");
 const { base58: bs58 } = ethers.utils;
+
+const error =
+  "Error 422. Transaction time out. Runtime error. Reticulating splines.";
 
 export function SendEthereumConfirmationCard({
   token,
@@ -44,9 +52,6 @@ export function SendEthereumConfirmationCard({
 }) {
   const ethereumCtx = useEthereumCtx();
   const [txSignature, setTxSignature] = useState<string | null>(null);
-  const [error, _] = useState(
-    "Error 422. Transaction time out. Runtime error. Reticulating splines."
-  );
   const [transaction, setTransaction] = useState<UnsignedTransaction | null>(
     null
   );
@@ -170,6 +175,7 @@ export function ConfirmSendEthereum({
   amount,
   transaction,
   onConfirm,
+  destinationUser,
 }: {
   token: {
     address?: string;
@@ -178,10 +184,14 @@ export function ConfirmSendEthereum({
     decimals: number;
   };
   destinationAddress: string;
+  destinationUser?: { image: string; username: string };
   amount: BigNumber;
   transaction: UnsignedTransaction;
   onConfirm: (transactionToSend: UnsignedTransaction) => void;
 }) {
+  const theme = useTheme();
+  const avatarUrl = useAvatarUrl();
+  const wallet = useActiveWallet();
   const transactionData = useTransactionData(
     Blockchain.ETHEREUM,
     bs58.encode(ethers.utils.serializeTransaction(transaction))

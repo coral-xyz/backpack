@@ -429,7 +429,14 @@ export function FullScreenLoading({ label }: { label?: string }): JSX.Element {
     >
       <ActivityIndicator size="large" color={theme.custom.colors.fontColor} />
       {label ? (
-        <Text style={{ textAlign: "center", fontSize: 16, marginTop: 16 }}>
+        <Text
+          style={{
+            textAlign: "center",
+            fontSize: 18,
+            marginTop: 16,
+            color: theme.custom.colors.fontColor,
+          }}
+        >
           {label}
         </Text>
       ) : null}
