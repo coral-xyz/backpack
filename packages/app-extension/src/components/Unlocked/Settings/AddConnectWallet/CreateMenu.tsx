@@ -120,9 +120,9 @@ export function CreateMenuAction({ blockchain }: { blockchain: Blockchain }) {
     } else {
       nav.push("import-from-mnemonic", {
         blockchain,
-        keyringExists: false,
+        keyringExists,
         inputMnemonic: true,
-        forceKeyringAdd: true,
+        forceSetMnemonic: true,
       });
     }
   };
