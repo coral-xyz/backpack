@@ -11,7 +11,7 @@ export const useSearchedTokens = (searchFilter: string) => {
 
   const [tokenAccounts, , isLoading] = useLoader(
     blockchainBalancesSorted({
-      publicKey: activeSolWallet.publicKey,
+      publicKey: activeSolWallet?.publicKey,
       blockchain: Blockchain.SOLANA,
     }),
     [],
