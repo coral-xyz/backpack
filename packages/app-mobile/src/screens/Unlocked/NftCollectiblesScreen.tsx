@@ -30,13 +30,14 @@ import {
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
-import { WalletPickerButton } from "~screens/Unlocked/components/Balances";
-import { TableHeader } from "~screens/Unlocked/components/index";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
 import { NFTCard, BaseCard } from "~components/NFTCard";
+import { NavHeader } from "~components/NavHeader";
 import { Screen, EmptyState, Margin, CopyButtonIcon } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
+import { WalletPickerButton } from "~screens/Unlocked/components/Balances";
+import { TableHeader } from "~screens/Unlocked/components/index";
 
 import { NftDetailScreen, NftDetailSendScreen } from "./NftDetailScreen";
 
@@ -327,28 +328,31 @@ type NftStackParamList = {
 
 const Stack = createStackNavigator<NftStackParamList>();
 export function NftCollectiblesNavigator(): JSX.Element {
+  const theme = useTheme();
   return (
-    <Stack.Navigator initialRouteName="NftCollectionList">
-      <Stack.Group screenOptions={{ headerShown: false }}>
-        <Stack.Screen
-          name="NftCollectionList"
-          component={NftCollectionListScreen}
-          options={{ title: "Collectibles" }}
-        />
-        <Stack.Screen
-          name="NftCollectionDetail"
-          component={NftCollectionDetailScreen}
-          options={({ route }) => ({
-            title: route.params.title,
-          })}
-        />
-        <Stack.Screen
-          name="NftDetail"
-          component={NftDetailScreen}
-          options={({ route }) => ({ title: route.params.title })}
-        />
-        <Stack.Screen name="SendNFT" component={NftDetailSendScreen} />
-      </Stack.Group>
+    <Stack.Navigator
+      initialRouteName="NftCollectionList"
+      screenOptions={{ header: NavHeader }}
+    >
+      <Stack.Screen
+        name="NftCollectionList"
+        component={NftCollectionListScreen}
+        options={{ title: "Collectibles" }}
+      />
+      <Stack.Screen
+        name="NftCollectionDetail"
+        component={NftCollectionDetailScreen}
+        options={({ route }) => ({
+          title: route.params.title,
+          headerTintColor: theme.custom.colors.fontColor,
+        })}
+      />
+      <Stack.Screen
+        name="NftDetail"
+        component={NftDetailScreen}
+        options={({ route }) => ({ title: route.params.title })}
+      />
+      <Stack.Screen name="SendNFT" component={NftDetailSendScreen} />
     </Stack.Navigator>
   );
 }

@@ -189,12 +189,23 @@ export function WalletPickerButton({
   name: string;
   onPress: () => void;
 }): JSX.Element {
+  const theme = useTheme();
   return (
     <Pressable onPress={onPress}>
-      <Margin left={4}>
+      <Margin left={6}>
         <Row>
-          <Text>{name}</Text>
-          <ExpandCollapseIcon size={15} isExpanded={false} />
+          <Text
+            style={{
+              color: theme.custom.colors.icon,
+            }}
+          >
+            {name}
+          </Text>
+          <ExpandCollapseIcon
+            size={15}
+            isExpanded={false}
+            color={theme.custom.colors.icon}
+          />
         </Row>
       </Margin>
     </Pressable>
