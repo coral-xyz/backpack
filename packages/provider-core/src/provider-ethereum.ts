@@ -267,12 +267,20 @@ export class ProviderEthereumInjection extends EventEmitter {
       });
     }
 
+    const rpc_fallback = (method: string) => async (params: any[]) => {
+      const result = await this.provider!.send(method, params);
+      return result;
+    };
+
     const functionMap = {
       eth_accounts: this.handleEthAccounts,
       eth_requestAccounts: this.handleEthRequestAccounts,
       eth_chainId: () => this.chainId,
       net_version: () => `${parseInt(this.chainId)}`,
-      eth_getBalance: (address: string) => this.provider!.getBalance(address),
+      eth_getBalance: async (...params) => {
+        const result = await this.provider!.send("eth_getBalance", params);
+        return result;
+      },
       eth_getCode: (address: string) => this.provider!.getCode(address),
       eth_getStorageAt: (address: string, position: string) =>
         this.provider!.getStorageAt(address, position),
@@ -303,7 +311,8 @@ export class ProviderEthereumInjection extends EventEmitter {
         this.handleEthSendTransaction(transaction),
     };
 
-    const func = functionMap[method];
+    const func = functionMap[method] ?? rpc_fallback(method);
+
     if (func === undefined) {
       throw ethErrors.rpc.invalidRequest({
         message: messages.errors.invalidRequestMethod(),

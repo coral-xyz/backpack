@@ -618,12 +618,12 @@ async function handleEthereumSignAndSendTx(
   let resp: RpcResponse<string>;
   // The transaction may be modified and returned as result to accomodate user
   // tweaked gas settings/nonce.
-  const { didApprove } = uiResp.result;
+  const { didApprove, transaction } = uiResp.result;
   try {
     // Only sign if the user clicked approve.
     if (didApprove) {
       const sig = await ctx.backend.ethereumSignAndSendTransaction(
-        tx,
+        transaction,
         walletAddress
       );
       resp = [sig];
