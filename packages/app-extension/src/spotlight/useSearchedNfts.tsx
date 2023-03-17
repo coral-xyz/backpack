@@ -8,7 +8,7 @@ export const useSearchedNfts = (searchFilter: string) => {
   const activeSolWallet = useActiveSolanaWallet();
   const { contents, state }: any = useRecoilValueLoadable(
     nftsByOwner({
-      publicKey: activeSolWallet.publicKey,
+      publicKey: activeSolWallet?.publicKey,
       blockchain: Blockchain.SOLANA,
     })
   );
