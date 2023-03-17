@@ -13,7 +13,12 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import { NavHeader } from "~components/NavHeader";
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
-import { Margin, Screen, TokenAmountHeader } from "~components/index";
+import {
+  Margin,
+  Screen,
+  TokenAmountHeader,
+  FullScreenLoading,
+} from "~components/index";
 import {
   useBlockchainTokenData,
   useBlockchainActiveWallet,
@@ -41,7 +46,7 @@ function TokenHeader({
   });
 
   if (!token || loading) {
-    return null;
+    return <FullScreenLoading />;
   }
 
   return (
