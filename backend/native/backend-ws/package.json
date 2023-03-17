@@ -21,9 +21,12 @@
     "build": "esbuild ./src/index.js --bundle --platform=node --outfile=dist/index.js",
     "start": "npm run build && node dist/index.js",
     "zeus-ws": "npx graphql-zeus http://localhost:8113/v1/graphql ./src --header=x-hasura-admin-secret:myadminsecretkey --header=x-hasura-role:chat  --subscriptions graphql-ws",
-    "zeus": "npx graphql-zeus http://localhost:8113/v1/graphql ./src --header=x-hasura-admin-secret:myadminsecretkey --header=x-hasura-role:chat  --subscriptions"
+    "zeus": "npx graphql-zeus http://localhost:8113/v1/graphql ./src --header=x-hasura-admin-secret:myadminsecretkey --header=x-hasura-role:chat  --subscriptions",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix"
   },
   "devDependencies": {
+    "eslint-config-custom": "*",
     "esbuild": "^0.17.11"
   }
 }

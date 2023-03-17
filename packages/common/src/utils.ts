@@ -89,9 +89,12 @@ export function externalResourceUri(
   return `${uri}`;
 }
 
-export function proxyImageUrl(url: string): string {
+export function proxyImageUrl(url: string, size = 400): string {
   if (url && (url.startsWith("http://") || url.startsWith("https://"))) {
-    return `https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=400,height=400,quality=85/${url}`;
+    if (url.includes("swr.xnfts.dev/avatars/")) {
+      url += `?size=${size}`;
+    }
+    return `https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=${size},height=${size},quality=85/${url}`;
   }
   return url;
 }

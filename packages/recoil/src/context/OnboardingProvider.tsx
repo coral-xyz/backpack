@@ -118,6 +118,7 @@ const defaultState = {
 
 type SelectBlockchainType = {
   blockchain: Blockchain;
+  onStatus?: (status: string) => void;
 };
 
 type IOnboardingContext = {
@@ -166,7 +167,14 @@ export function OnboardingProvider({
   }, []);
 
   const handleSelectBlockchain = useCallback(
-    async ({ blockchain }: SelectBlockchainType) => {
+    async ({ blockchain, onStatus }: SelectBlockchainType) => {
+      const handleStatus = (status: string) => {
+        if (onStatus) {
+          console.log("mobile:status", status);
+          onStatus(status);
+        }
+      };
+
       const {
         selectedBlockchains,
         signedWalletDescriptors,
@@ -176,6 +184,7 @@ export function OnboardingProvider({
       } = data;
 
       if (selectedBlockchains.includes(blockchain)) {
+        handleStatus("deselected");
         // Blockchain is being deselected
         setOnboardingData({
           blockchain: null,
@@ -184,38 +193,52 @@ export function OnboardingProvider({
           ),
         });
       } else {
+        handleStatus("selected");
         // Blockchain is being selected
         if (
           keyringType === "ledger" ||
           action === "import" ||
           keyringType === "private-key"
         ) {
+          handleStatus(`keyringType:${keyringType}, action:${action}`);
           setOnboardingData({ blockchain });
         } else if (action === "create") {
-          const walletDescriptor = await background.request({
-            method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
-            params: [blockchain, 0, mnemonic],
-          });
+          handleStatus("action create");
+          try {
+            const walletDescriptor = await background.request({
+              method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
+              params: [blockchain, 0, mnemonic],
+            });
 
-          const signature = await signMessageForWallet(
-            blockchain,
-            walletDescriptor.publicKey,
-            getCreateMessage(walletDescriptor.publicKey),
-            {
-              mnemonic,
-              signedWalletDescriptors: [{ ...walletDescriptor, signature: "" }],
-            }
-          );
+            handleStatus("wallet descriptor found");
 
-          setOnboardingData({
-            signedWalletDescriptors: [
-              ...signedWalletDescriptors,
+            const signature = await signMessageForWallet(
+              blockchain,
+              walletDescriptor.publicKey,
+              getCreateMessage(walletDescriptor.publicKey),
               {
-                ...walletDescriptor,
-                signature,
-              },
-            ],
-          });
+                mnemonic,
+                signedWalletDescriptors: [
+                  { ...walletDescriptor, signature: "" },
+                ],
+              }
+            );
+
+            handleStatus("signature gotten");
+
+            setOnboardingData({
+              signedWalletDescriptors: [
+                ...signedWalletDescriptors,
+                {
+                  ...walletDescriptor,
+                  signature,
+                },
+              ],
+            });
+          } catch (err) {
+            console.error(err);
+            handleStatus(err);
+          }
         }
       }
     },

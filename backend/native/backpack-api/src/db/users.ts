@@ -21,17 +21,22 @@ export const getUsersMetadata = async (
     id: unknown;
   }[]
 > => {
-  const response = await chain("query")({
-    auth_users: [
-      {
-        where: { id: { _in: userIds } },
-      },
-      {
-        id: true,
-        username: true,
-      },
-    ],
-  });
+  const response = await chain("query")(
+    {
+      auth_users: [
+        {
+          where: { id: { _in: userIds } },
+        },
+        {
+          id: true,
+          username: true,
+        },
+      ],
+    },
+    {
+      operationName: "getUsersMetadata",
+    }
+  );
   return response.auth_users.map((x) => ({
     username: x.username,
     id: x.id,

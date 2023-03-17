@@ -1,11 +1,17 @@
 import type { SvgProps } from "react-native-svg";
 
-import { Image } from "react-native";
-
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import Svg, { Defs, LinearGradient, Path, Rect, Stop } from "react-native-svg";
+import Svg, { Path, Rect, Stop } from "react-native-svg";
 
 import { useTheme } from "~hooks/useTheme";
+export {
+  EthereumIcon,
+  SolanaIcon,
+  AvalancheIcon,
+  PolygonIcon,
+  BscIcon,
+  CosmosIcon,
+} from "@coral-xyz/tamagui";
 
 export const CheckBadge = (props: SvgProps) => (
   <Svg
@@ -41,72 +47,6 @@ export function RedBackpack(props: SvgProps) {
     </Svg>
   );
 }
-
-export const EthereumIcon = ({ width, height }) => (
-  <Image
-    style={{
-      aspectRatio: 1,
-      width,
-      height,
-    }}
-    source={require("../images/logo-ethereum.png")}
-  />
-);
-
-export const SolanaIcon = ({ width, height }) => (
-  <Image
-    style={{
-      aspectRatio: 1,
-      width,
-      height,
-    }}
-    source={require("../images/logo-solana.png")}
-  />
-);
-
-export const AvalancheIcon = ({ width, height }) => (
-  <Image
-    style={{
-      aspectRatio: 1,
-      width,
-      height,
-    }}
-    source={require("../images/logo-avalanche.png")}
-  />
-);
-
-export const PolygonIcon = ({ width, height }) => (
-  <Image
-    style={{
-      aspectRatio: 1,
-      width,
-      height,
-    }}
-    source={require("../images/logo-polygon.png")}
-  />
-);
-
-export const BscIcon = ({ width, height }) => (
-  <Image
-    style={{
-      aspectRatio: 1,
-      width,
-      height,
-    }}
-    source={require("../images/logo-bsc.png")}
-  />
-);
-
-export const CosmosIcon = ({ width, height }) => (
-  <Image
-    style={{
-      aspectRatio: 1,
-      width,
-      height,
-    }}
-    source={require("../images/logo-cosmos.png")}
-  />
-);
 
 type IconProps = {
   color?: string;

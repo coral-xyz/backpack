@@ -4,7 +4,7 @@ import type { Blockchain } from "@coral-xyz/common";
 import { useCallback } from "react";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { getHeaderTitle } from "@react-navigation/elements";
+// import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import {
@@ -14,7 +14,7 @@ import {
   TabIconNfts,
   TabIconMessages,
 } from "~components/Icon";
-import { NavHeader } from "~components/index";
+// import { NavHeader } from "~components/NavHeader";
 import { useTheme } from "~hooks/useTheme";
 import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 // import AppListScreen from "~screens/Unlocked/AppListScreen"; // TURNED off bc of app store restrictions (temporarily)
@@ -160,10 +160,7 @@ function UnlockedBottomTabNavigator(): JSX.Element {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarShowLabel: false,
-        header: ({ navigation, route, options }) => {
-          const title = getHeaderTitle(options, route.name);
-          return <NavHeader title={title} navigation={navigation} />;
-        },
+        headerShown: false,
         tabBarIcon: ({ color, size }) => {
           const Component = getIcon(route.name);
           return <Component fill={color} width={size} height={size} />;
