@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { UserMetadata } from "@coral-xyz/common";
-import { getBulkUsers, refreshUsers } from "@coral-xyz/db";
-import { useUser } from "@coral-xyz/recoil";
+import { refreshUsers } from "@coral-xyz/db";
+import { useUpdateUsers, useUser, useUserMetadataMap } from "@coral-xyz/recoil";
 
 export function useUsersMetadata({
   remoteUserIds,
@@ -9,28 +9,21 @@ export function useUsersMetadata({
   remoteUserIds: string[];
 }): { [key: string]: UserMetadata } {
   const { uuid } = useUser();
-  const [users, setUsers] = useState<{ [key: string]: UserMetadata }>({});
   const [existingUsers, setExistingUsers] = useState<string[]>([]);
+  const usersMetadata = useUserMetadataMap({ remoteUserIds, uuid });
+  const updateUsers = useUpdateUsers();
 
   const sync = async () => {
-    const usersMetadata = await getBulkUsers(uuid, remoteUserIds);
-    const usersMetadataMap = {};
-    usersMetadata.forEach((x) => {
-      if (x) {
-        usersMetadataMap[x.uuid] = x;
-      }
-    });
-    setUsers(usersMetadataMap || {});
-
     const newIds = remoteUserIds.filter(
-      (x) => !usersMetadata.map((x) => x?.uuid).includes(x)
+      (x) => !Object.keys(usersMetadata).includes(x)
     );
     if (newIds.length) {
       const newUsersMetadata = await refreshUsers(uuid, newIds);
       if (newUsersMetadata) {
         const newUsersMetadataMap = {};
         newUsersMetadata?.forEach((x) => (newUsersMetadataMap[x.uuid] = x));
-        setUsers({ ...usersMetadataMap, ...newUsersMetadataMap });
+
+        await updateUsers({ uuid, users: newUsersMetadataMap });
       }
     }
   };
@@ -43,5 +36,5 @@ export function useUsersMetadata({
     sync();
   }, [remoteUserIds, existingUsers]);
 
-  return users;
+  return usersMetadata;
 }

@@ -4,7 +4,7 @@ import { getImage, LocalImageManager } from "@coral-xyz/db";
 import { ProxyImage } from "./ProxyImage";
 
 export const LocalImage = (props) => {
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState(props.src);
 
   const fetchData = async (src) => {
     if (src) {
