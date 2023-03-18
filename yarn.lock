@@ -14984,6 +14984,9 @@ eslint-plugin-workspaces@^0.7.0:
   dependencies:
     "@joshuajaco/get-monorepo-packages" "^1.2.1"
 
+"eslint-plugin-zeus-custom@file:./packages/eslint-config-custom/eslint-plugin-zeus-custom":
+  version "0.0.1"
+
 eslint-scope@5.1.1, eslint-scope@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/eslint-scope/-/eslint-scope-5.1.1.tgz#e786e59a66cb92b3f6c1fb0d508aab174848f48c"

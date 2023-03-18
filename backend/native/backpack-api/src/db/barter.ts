@@ -10,23 +10,26 @@ const chain = Chain(CHAT_HASURA_URL, {
 });
 
 export const getActiveBarter = async ({ roomId }: { roomId: string }) => {
-  const response = await chain("query")({
-    room_active_chat_mapping: [
-      {
-        where: {
-          room_id: { _eq: roomId },
+  const response = await chain("query")(
+    {
+      room_active_chat_mapping: [
+        {
+          where: {
+            room_id: { _eq: roomId },
+          },
         },
-      },
-      {
-        barter: {
-          user1_offers: true,
-          user2_offers: true,
-          state: true,
-          id: true,
+        {
+          barter: {
+            user1_offers: true,
+            user2_offers: true,
+            state: true,
+            id: true,
+          },
         },
-      },
-    ],
-  });
+      ],
+    },
+    { operationName: "getActiveBarter" }
+  );
   return {
     id: response.room_active_chat_mapping[0]?.barter.id,
   };
@@ -43,20 +46,23 @@ export const getBarter = async ({
   id: number;
   room_id: string;
 } | null> => {
-  const response = await chain("query")({
-    barters_by_pk: [
-      {
-        id: parseInt(barterId),
-      },
-      {
-        user1_offers: true,
-        user2_offers: true,
-        state: true,
-        id: true,
-        room_id: true,
-      },
-    ],
-  });
+  const response = await chain("query")(
+    {
+      barters_by_pk: [
+        {
+          id: parseInt(barterId),
+        },
+        {
+          user1_offers: true,
+          user2_offers: true,
+          state: true,
+          id: true,
+          room_id: true,
+        },
+      ],
+    },
+    { operationName: "getBarter" }
+  );
 
   const barterResponse = response.barters_by_pk;
 
@@ -85,24 +91,27 @@ export const getOrCreateBarter = async ({
     id: number;
   };
 }> => {
-  const response = await chain("query")({
-    room_active_chat_mapping: [
-      {
-        where: {
-          room_id: { _eq: roomId },
+  const response = await chain("query")(
+    {
+      room_active_chat_mapping: [
+        {
+          where: {
+            room_id: { _eq: roomId },
+          },
         },
-      },
-      {
-        barter: {
-          user1_offers: true,
-          user2_offers: true,
-          state: true,
-          id: true,
-          room_id: true,
+        {
+          barter: {
+            user1_offers: true,
+            user2_offers: true,
+            state: true,
+            id: true,
+            room_id: true,
+          },
         },
-      },
-    ],
-  });
+      ],
+    },
+    { operationName: "getOrCreateBarter" }
+  );
   if (!response.room_active_chat_mapping[0]) {
     console.error("roomid is " + roomId);
     const { id } = await createBarter({ roomId });
@@ -123,23 +132,26 @@ export const createBarter = async ({
 }: {
   roomId: string;
 }): Promise<{ id: number }> => {
-  const response = await chain("mutation")({
-    insert_room_active_chat_mapping_one: [
-      {
-        object: {
-          barter: {
-            data: {
-              user1_offers: "[]",
-              user2_offers: "[]",
-              room_id: roomId,
+  const response = await chain("mutation")(
+    {
+      insert_room_active_chat_mapping_one: [
+        {
+          object: {
+            barter: {
+              data: {
+                user1_offers: "[]",
+                user2_offers: "[]",
+                room_id: roomId,
+              },
             },
+            room_id: roomId,
           },
-          room_id: roomId,
         },
-      },
-      { barter: { id: true } },
-    ],
-  });
+        { barter: { id: true } },
+      ],
+    },
+    { operationName: "createBarter" }
+  );
   return {
     id: response.insert_room_active_chat_mapping_one.barter.id,
   };
@@ -156,26 +168,29 @@ export const updateActiveBarter = async ({
   offers: string;
   userIndex: "2" | "1";
 }): Promise<{ id: number }> => {
-  const response = await chain("mutation")({
-    update_barters: [
-      {
-        where: {
-          room_active_chat_mappings: {
-            room_id: { _eq: roomId.toString() },
+  const response = await chain("mutation")(
+    {
+      update_barters: [
+        {
+          where: {
+            room_active_chat_mappings: {
+              room_id: { _eq: roomId.toString() },
+            },
+          },
+          _set: {
+            [`user${userIndex}_offers`]: offers,
           },
         },
-        _set: {
-          [`user${userIndex}_offers`]: offers,
+        {
+          affected_rows: true,
+          returning: {
+            id: true,
+          },
         },
-      },
-      {
-        affected_rows: true,
-        returning: {
-          id: true,
-        },
-      },
-    ],
-  });
+      ],
+    },
+    { operationName: "updateActiveBarter" }
+  );
 
   return {
     id: response.update_barters?.returning[0]?.id || 0,
@@ -183,31 +198,34 @@ export const updateActiveBarter = async ({
 };
 
 export const executeActiveBarter = async ({ roomId }: { roomId: string }) => {
-  await chain("mutation")({
-    update_barters: [
-      {
-        where: {
-          room_active_chat_mappings: {
-            room_id: { _eq: roomId.toString() },
+  await chain("mutation")(
+    {
+      update_barters: [
+        {
+          where: {
+            room_active_chat_mappings: {
+              room_id: { _eq: roomId.toString() },
+            },
+          },
+          _set: {
+            state: "on_chain",
           },
         },
-        _set: {
-          state: "on_chain",
+        {
+          affected_rows: true,
         },
-      },
-      {
-        affected_rows: true,
-      },
-    ],
-    delete_room_active_chat_mapping: [
-      {
-        where: {
-          room_id: { _eq: roomId },
+      ],
+      delete_room_active_chat_mapping: [
+        {
+          where: {
+            room_id: { _eq: roomId },
+          },
         },
-      },
-      {
-        affected_rows: true,
-      },
-    ],
-  });
+        {
+          affected_rows: true,
+        },
+      ],
+    },
+    { operationName: "executeActiveBarter" }
+  );
 };

@@ -1,0 +1,11 @@
+{
+  "name": "eslint-plugin-zeus-custom",
+  "version": "0.0.1",
+  "main": "index.js",
+  "peerDependencies": {
+    "eslint": ">=7.0.0"
+  },
+  "scripts": {
+    "test": "node rules/require-operation-name.test.js"
+  }
+}
