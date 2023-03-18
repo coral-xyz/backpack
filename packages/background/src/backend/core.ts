@@ -1322,6 +1322,10 @@ export class Backend {
     );
   }
 
+  ///////////////////////////////////////////////////////////////////////////////
+  // User account.
+  ///////////////////////////////////////////////////////////////////////////////
+
   /**
    * Add a public key to a Backpack account via the Backpack API.
    */
@@ -1542,30 +1546,11 @@ export class Backend {
   }
 
   /**
-   * Query the Backpack API to check if a user has already used any of the
-   * blockchain/public key pairs from a list.
-   */
-  async findServerPublicKeyConflicts(
-    serverPublicKeys: ServerPublicKey[]
-  ): Promise<string[]> {
-    const url = `${BACKEND_API_URL}/publicKeys`;
-    const response = await fetch(url, {
-      method: "POST",
-      body: JSON.stringify(serverPublicKeys),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((r) => r.json());
-
-    return response;
-  }
-
-  /**
    * Find a `WalletDescriptor` that can be used to create a new account.
    * This requires that the sub wallets on the account index are not used by a
    * existing user account. This is checked by querying the Backpack API.
    *
-   * This only works for mnemonics or a keyring store unlocked with a mnemoni
+   * This only works for mnemonics or a keyring store unlocked with a mnemonic
    * because the background service worker can't use a Ledger.
    */
   async findWalletDescriptor(
@@ -1603,6 +1588,25 @@ export class Backend {
       // Iterate on account index
       return this.findWalletDescriptor(blockchain, accountIndex + 1, mnemonic!);
     }
+  }
+
+  /**
+   * Query the Backpack API to check if a user has already used any of the
+   * blockchain/public key pairs from a list.
+   */
+  async findServerPublicKeyConflicts(
+    serverPublicKeys: ServerPublicKey[]
+  ): Promise<string[]> {
+    const url = `${BACKEND_API_URL}/publicKeys`;
+    const response = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify(serverPublicKeys),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((r) => r.json());
+
+    return response;
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -2021,19 +2025,6 @@ export class Backend {
       });
     }
 
-    return SUCCESS_RESPONSE;
-  }
-
-  async pluginLocalStorageGet(xnftAddress: string, key: string): Promise<any> {
-    return await store.LocalStorageDb.get(`${xnftAddress}:${key}`);
-  }
-
-  async pluginLocalStoragePut(
-    xnftAddress: string,
-    key: string,
-    value: any
-  ): Promise<any> {
-    await store.LocalStorageDb.set(`${xnftAddress}:${key}`, value);
     return SUCCESS_RESPONSE;
   }
 }
