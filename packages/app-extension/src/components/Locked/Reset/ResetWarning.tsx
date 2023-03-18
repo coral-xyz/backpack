@@ -16,16 +16,32 @@ import { Header, HeaderIcon, SubtextParagraph } from "../../common";
 import { useDrawerContext } from "../../common/Layout/Drawer";
 import { useNavigation } from "../../common/Layout/NavStack";
 
-export function Logout() {
-  const background = useBackgroundClient();
-  const nav = useNavigation();
+export function _Logout() {
   const user = useUser();
+  const background = useBackgroundClient();
+  const close = () => {
+    // tood
+  };
+  return (
+    <Warning
+      buttonTitle="Log out"
+      title="Log out"
+      subtext="This will remove all the wallets you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
+      onNext={async () => {
+        await background.request({
+          method: UI_RPC_METHOD_USER_ACCOUNT_LOGOUT,
+          params: [user.uuid],
+        });
+        setTimeout(close, 250);
+      }}
+    />
+  );
+}
+
+export function Logout() {
   const { close } = useDrawerContext();
-
-  useEffect(() => {
-    nav.setOptions({ headerTitle: `Log out ${user.username}` });
-  }, []);
-
+  const user = useUser();
+  const background = useBackgroundClient();
   return (
     <Warning
       buttonTitle="Log out"

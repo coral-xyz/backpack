@@ -16,6 +16,13 @@ import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, Check } from "@mui/icons-material";
 import { Button, IconButton, Popover, Typography } from "@mui/material";
 
+import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
+import {
+  NavStackEphemeral,
+  NavStackScreen,
+} from "../../common/Layout/NavStack";
+import { Logout } from "../../Locked/Reset/ResetWarning";
+
 import { SettingsNavStackDrawer } from "./SettingsNavStackDrawer";
 
 const useStyles = styles((theme) => ({
@@ -132,6 +139,12 @@ function AvatarMenu() {
         }}
       />
       <AuxMenuList />
+      <div
+        style={{
+          borderTop: theme.custom.colors.borderFull,
+        }}
+      />
+      <LogOutMenuList />
     </div>
   );
 }
@@ -237,6 +250,7 @@ function UsersMenuList() {
     </MenuList>
   );
 }
+
 function AuxMenuList() {
   const theme = useCustomTheme();
   const { openSettings } = usePopoverContext();
@@ -297,6 +311,48 @@ function AuxMenuList() {
         </div>
       </MenuListItem>
     </MenuList>
+  );
+}
+
+function LogOutMenuList() {
+  const theme = useCustomTheme();
+  const [openLogout, setOpenLogout] = useState(false);
+  return (
+    <>
+      <MenuList>
+        <MenuListItem
+          onClick={() => {
+            setOpenLogout(true);
+          }}
+        >
+          <Typography
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              color: theme.custom.colors.fontColor,
+              fontSize: "14px",
+            }}
+          >
+            Log out
+          </Typography>
+        </MenuListItem>
+      </MenuList>
+      <WithDrawer openDrawer={openLogout} setOpenDrawer={setOpenLogout}>
+        <div style={{ height: "100%" }}>
+          <NavStackEphemeral
+            initialRoute={{ name: "root", title: "Profile" }}
+            options={() => ({ title: "" })}
+            navButtonLeft={<CloseButton onClick={() => setOpenLogout(false)} />}
+          >
+            <NavStackScreen
+              name="root"
+              component={(props: any) => <Logout {...props} />}
+            />
+          </NavStackEphemeral>
+        </div>
+      </WithDrawer>
+    </>
   );
 }
 
