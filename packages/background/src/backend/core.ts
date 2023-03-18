@@ -1362,12 +1362,6 @@ export class Backend {
 
     const primary = (await response.json()).isPrimary;
 
-    const blockchainKeyring =
-      this.keyringStore.activeUserKeyring.keyringForBlockchain(blockchain);
-    const blockchainPublicKeys = Object.values(
-      blockchainKeyring.publicKeys()
-    ).flat();
-
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
       data: {
