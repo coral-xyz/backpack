@@ -116,8 +116,11 @@ export class Plugin {
       { padding: false }
     );
 
+    const isDevnetHACKY =
+      this._connectionUrls[Blockchain.SOLANA]?.includes("devnet");
+
     const iframeRootUrl =
-      url.startsWith("ar://") || url.startsWith("ipfs://")
+      !isDevnetHACKY && (url.startsWith("ar://") || url.startsWith("ipfs://"))
         ? //  || this.xnftAddress.toBase58() ===
           //   "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8"
           `https://${xnftAddressB32}.gateway.xnfts.dev`
