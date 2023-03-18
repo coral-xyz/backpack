@@ -174,10 +174,6 @@ export const UI_RPC_METHOD_NAVIGATION_TO_ROOT =
 export const UI_RPC_METHOD_NAVIGATION_TO_DEFAULT =
   "ui-rpc-method-navigation-to-default";
 export const UI_RPC_METHOD_PASSWORD_UPDATE = "ui-rpc-method-password-update";
-export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET =
-  "ui-rpc-method-plugin-storage-get";
-export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT =
-  "ui-rpc-method-plugin-storage-put";
 export const UI_RPC_METHOD_SET_FEATURE_GATES =
   "ui-rpc-method-set-feature-gates";
 export const UI_RPC_METHOD_GET_FEATURE_GATES =
