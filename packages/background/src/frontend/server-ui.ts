@@ -1109,13 +1109,6 @@ async function handleBlockchainKeyringsAdd(
   return [resp];
 }
 
-async function handleBlockchainKeyringsRead(
-  ctx: Context<Backend>
-): Promise<RpcResponse<Array<string>>> {
-  const resp = await ctx.backend.blockchainKeyringsRead();
-  return [resp];
-}
-
 async function handleKeyringLedgerImport(
   ctx: Context<Backend>,
   ...args: Parameters<Backend["ledgerImport"]>
