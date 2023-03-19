@@ -696,20 +696,20 @@ class UserKeyring {
 
     // Ledger and mnemonic keyring init have signedWalletDescriptors
     if ("signedWalletDescriptors" in keyringInit) {
-      const blockchain = keyringInit.signedWalletDescriptors[0].blockchain;
-      keyring.activeBlockchain = blockchain;
       for (const signedWalletDescriptor of keyringInit.signedWalletDescriptors) {
-        const blockchainKeyring = keyring.blockchains.get(blockchain);
-        if (blockchainKeyring) {
-          // Blockchain keyring already exists, just add the derivation path
-          await blockchainKeyring.addDerivationPath(
-            signedWalletDescriptor.derivationPath
-          );
-        } else {
-          // No blockchain keyring, create it
-          await keyring.blockchainKeyringAdd(blockchain, keyringInit);
-        }
+        const blockchain = signedWalletDescriptor.blockchain;
+        // No blockchain keyring, create it, filtering the signed wallet descriptors
+        // to only the ones for this blockchain
+        await keyring.blockchainKeyringAdd(blockchain, {
+          ...keyringInit,
+          signedWalletDescriptors: keyringInit.signedWalletDescriptors.filter(
+            (s) => s.blockchain === blockchain
+          ),
+        });
       }
+      // Set the active blockchain to the first signed wallet descriptor
+      keyring.activeBlockchain =
+        keyringInit.signedWalletDescriptors[0].blockchain;
     }
 
     if ("privateKey" in keyringInit) {
