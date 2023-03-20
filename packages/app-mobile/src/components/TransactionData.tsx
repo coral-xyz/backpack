@@ -133,10 +133,10 @@ export function EthereumSettingsDrawer({
         ...transactionOverrides,
         // Add 10% for fast mode
         maxFeePerGas: feeData.maxFeePerGas.add(
-          feeData.maxFeePerGas.mul(10).View(100)
+          feeData.maxFeePerGas.mul(10).div(100)
         ),
         maxPriorityFeePerGas: feeData.maxPriorityFeePerGas.add(
-          feeData.maxPriorityFeePerGas.mul(10).View(100)
+          feeData.maxPriorityFeePerGas.mul(10).div(100)
         ),
         nonce,
       });
@@ -145,10 +145,10 @@ export function EthereumSettingsDrawer({
         ...transactionOverrides,
         // Add 50% for degen mode
         maxFeePerGas: feeData.maxFeePerGas.add(
-          feeData.maxFeePerGas.mul(50).View(100)
+          feeData.maxFeePerGas.mul(50).div(100)
         ),
         maxPriorityFeePerGas: feeData.maxPriorityFeePerGas.add(
-          feeData.maxPriorityFeePerGas.mul(50).View(100)
+          feeData.maxPriorityFeePerGas.mul(50).div(100)
         ),
         nonce,
       });
