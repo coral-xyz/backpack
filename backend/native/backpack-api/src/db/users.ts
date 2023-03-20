@@ -21,6 +21,9 @@ export const getUsersMetadata = async (
     id: unknown;
   }[]
 > => {
+  // hotfix: empty array returns all records
+  if (userIds.length === 0) return [];
+
   const response = await chain("query")(
     {
       auth_users: [
@@ -50,6 +53,9 @@ export const getUsers = async (
     publicKeys: unknown[];
   }[]
 > => {
+  // hotfix: empty array returns all records
+  if (userIds.length === 0) return [];
+
   const response = await chain("query")(
     {
       auth_users: [
