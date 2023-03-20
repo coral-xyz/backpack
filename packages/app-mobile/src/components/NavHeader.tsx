@@ -43,20 +43,25 @@ export function NavHeader({
           {title}
         </Text>
       </View>
-      <View style={styles.centeredRow}>
-        <Margin right={12}>
-          <Pressable onPress={() => navigation.navigate("RecentActivity")}>
-            <MaterialIcons
-              name="list"
-              size={28}
-              color={theme.custom.colors.icon}
-            />
+
+      {back ? (
+        <View style={{ width: 50, height: 40 }} />
+      ) : (
+        <View style={styles.centeredRow}>
+          <Margin right={12}>
+            <Pressable onPress={() => navigation.navigate("RecentActivity")}>
+              <MaterialIcons
+                name="list"
+                size={28}
+                color={theme.custom.colors.icon}
+              />
+            </Pressable>
+          </Margin>
+          <Pressable onPress={() => navigation.navigate("AccountSettings")}>
+            <Avatar size={28} />
           </Pressable>
-        </Margin>
-        <Pressable onPress={() => navigation.navigate("AccountSettings")}>
-          <Avatar size={28} />
-        </Pressable>
-      </View>
+        </View>
+      )}
     </View>
   );
 }
