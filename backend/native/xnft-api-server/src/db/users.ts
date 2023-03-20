@@ -13,27 +13,30 @@ const chain = Chain(HASURA_URL, {
  * Get a user by their id.
  */
 export const getUser = async (id: string) => {
-  const response = await chain("query")({
-    auth_users_by_pk: [
-      {
-        id,
-      },
-      {
-        id: true,
-        username: true,
-        public_keys: [
-          {
-            where: {
-              user_active_publickey_mappings: {
-                user_id: { _eq: id },
+  const response = await chain("query")(
+    {
+      auth_users_by_pk: [
+        {
+          id,
+        },
+        {
+          id: true,
+          username: true,
+          public_keys: [
+            {
+              where: {
+                user_active_publickey_mappings: {
+                  user_id: { _eq: id },
+                },
               },
             },
-          },
-          { blockchain: true, public_key: true },
-        ],
-      },
-    ],
-  });
+            { blockchain: true, public_key: true },
+          ],
+        },
+      ],
+    },
+    { operationName: "getUser" }
+  );
   if (!response.auth_users_by_pk) {
     throw new Error("user not found");
   }
@@ -61,34 +64,37 @@ const transformUser = (user: {
 };
 
 export const getUserIdFromPubkey = async ({ blockchain, publicKey }) => {
-  const response = await chain("query")({
-    auth_users: [
-      {
-        limit: 1,
-        where: {
-          public_keys: {
-            public_key: { _eq: publicKey },
-            blockchain: { _eq: blockchain },
-            user_active_publickey_mappings: {
-              public_key: {
+  const response = await chain("query")(
+    {
+      auth_users: [
+        {
+          limit: 1,
+          where: {
+            public_keys: {
+              public_key: { _eq: publicKey },
+              blockchain: { _eq: blockchain },
+              user_active_publickey_mappings: {
                 public_key: {
-                  _eq: publicKey,
-                },
-                blockchain: {
-                  _eq: blockchain,
+                  public_key: {
+                    _eq: publicKey,
+                  },
+                  blockchain: {
+                    _eq: blockchain,
+                  },
                 },
               },
             },
           },
         },
-      },
-      {
-        id: true,
-        username: true,
-        public_keys: [{}, { blockchain: true, public_key: true }],
-      },
-    ],
-  });
+        {
+          id: true,
+          username: true,
+          public_keys: [{}, { blockchain: true, public_key: true }],
+        },
+      ],
+    },
+    { operationName: "getUserIdFromPubkey" }
+  );
 
   return response.auth_users[0] ?? null;
 };
@@ -98,41 +104,47 @@ export const getUserFromUsername = async ({
 }: {
   username: string;
 }) => {
-  const response = await chain("query")({
-    auth_users: [
-      {
-        limit: 1,
-        where: {
-          username: { _eq: username },
+  const response = await chain("query")(
+    {
+      auth_users: [
+        {
+          limit: 1,
+          where: {
+            username: { _eq: username },
+          },
         },
-      },
-      {
-        id: true,
-        username: true,
-        public_keys: [{}, { blockchain: true, public_key: true }],
-      },
-    ],
-  });
+        {
+          id: true,
+          username: true,
+          public_keys: [{}, { blockchain: true, public_key: true }],
+        },
+      ],
+    },
+    { operationName: "getUserFromUsername" }
+  );
 
   const user = response.auth_users[0];
   if (!user) {
     return null;
   }
 
-  const activePubkeys = await chain("query")({
-    auth_user_active_publickey_mapping: [
-      {
-        where: {
-          user_id: { _eq: user?.id },
+  const activePubkeys = await chain("query")(
+    {
+      auth_user_active_publickey_mapping: [
+        {
+          where: {
+            user_id: { _eq: user?.id },
+          },
         },
-      },
-      {
-        public_key: {
-          public_key: true,
+        {
+          public_key: {
+            public_key: true,
+          },
         },
-      },
-    ],
-  });
+      ],
+    },
+    { operationName: "getUserFromUsername" }
+  );
 
   const activePubKeyArray: string[] =
     activePubkeys.auth_user_active_publickey_mapping.map(
