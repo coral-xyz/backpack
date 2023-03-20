@@ -50,7 +50,7 @@ export const ProxyImage = React.memo(function ProxyImage({
           imageRef.current.style.visibility = "visible";
         }
       }
-    }, 2000);
+    }, 1000);
   }, []);
 
   return (
@@ -67,16 +67,17 @@ export const ProxyImage = React.memo(function ProxyImage({
         ref={placeholderRef}
         className={imgProps.className}
       />
-      {imgProps.src ? <img
-        loading="lazy"
-        ref={imageRef}
-        {...imgProps}
-        style={{
+      {imgProps.src ? (
+        <img
+          loading="lazy"
+          ref={imageRef}
+          {...imgProps}
+          style={{
             ...(imgProps.style ?? {}),
             ...visuallyHidden,
           }}
-        alt=""
-        onLoad={(...e) => {
+          alt=""
+          onLoad={(...e) => {
             const image = e[0].target as HTMLImageElement;
             if (placeholderRef.current) {
               placeholderRef.current.style.display = "none";
@@ -86,7 +87,7 @@ export const ProxyImage = React.memo(function ProxyImage({
             image.style.top = imgProps?.style?.top ?? "inherit";
             image.style.visibility = "visible";
           }}
-        onError={(...e) => {
+          onError={(...e) => {
             setErrCount((count) => {
               if (count >= 1) {
                 if (removeOnError && placeholderRef.current) {
@@ -98,8 +99,22 @@ export const ProxyImage = React.memo(function ProxyImage({
               return count + 1;
             });
           }}
-        src={proxyImageUrl(imgProps.src ?? "", size)}
-        /> : null}
+          src={proxyImageUrl(imgProps.src ?? "", size)}
+        />
+      ) : (
+        <Skeleton
+          style={{
+            height: "100%",
+            width: "100%",
+            transform: "none",
+            transformOrigin: "none",
+            ...(imgProps.style ?? {}),
+            ...(loadingStyles ?? {}),
+          }}
+          ref={placeholderRef}
+          className={imgProps.className}
+        />
+      )}
     </>
   );
 });

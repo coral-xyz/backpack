@@ -2704,6 +2704,8 @@ export type ValueTypes = {
     blockchain?: boolean | `@${string}`;
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
+    /** computed field which is TRUE if there's a matching user_active_publickey_mapping */
+    is_primary?: boolean | `@${string}`;
     public_key?: boolean | `@${string}`;
     /** An object relationship */
     user?: ValueTypes["auth_users"];
@@ -2973,6 +2975,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    is_primary?:
+      | ValueTypes["Boolean_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     public_key?:
       | ValueTypes["String_comparison_exp"]
       | undefined
@@ -3130,6 +3137,11 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    is_primary?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     public_key?:
       | ValueTypes["order_by"]
       | undefined
@@ -9755,6 +9767,8 @@ export type ResolverInputTypes = {
     blockchain?: boolean | `@${string}`;
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
+    /** computed field which is TRUE if there's a matching user_active_publickey_mapping */
+    is_primary?: boolean | `@${string}`;
     public_key?: boolean | `@${string}`;
     /** An object relationship */
     user?: ResolverInputTypes["auth_users"];
@@ -9967,6 +9981,10 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    is_primary?:
+      | ResolverInputTypes["Boolean_comparison_exp"]
+      | undefined
+      | null;
     public_key?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     user?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
     user_active_publickey_mappings?:
@@ -10065,6 +10083,7 @@ export type ResolverInputTypes = {
     blockchain?: ResolverInputTypes["order_by"] | undefined | null;
     created_at?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
+    is_primary?: ResolverInputTypes["order_by"] | undefined | null;
     public_key?: ResolverInputTypes["order_by"] | undefined | null;
     user?: ResolverInputTypes["auth_users_order_by"] | undefined | null;
     user_active_publickey_mappings_aggregate?:
@@ -14977,6 +14996,8 @@ export type ModelTypes = {
     blockchain: string;
     created_at: ModelTypes["timestamptz"];
     id: number;
+    /** computed field which is TRUE if there's a matching user_active_publickey_mapping */
+    is_primary?: boolean | undefined;
     public_key: string;
     /** An object relationship */
     user?: ModelTypes["auth_users"] | undefined;
@@ -15056,6 +15077,7 @@ export type ModelTypes = {
     blockchain?: ModelTypes["String_comparison_exp"] | undefined;
     created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
     id?: ModelTypes["Int_comparison_exp"] | undefined;
+    is_primary?: ModelTypes["Boolean_comparison_exp"] | undefined;
     public_key?: ModelTypes["String_comparison_exp"] | undefined;
     user?: ModelTypes["auth_users_bool_exp"] | undefined;
     user_active_publickey_mappings?:
@@ -15135,6 +15157,7 @@ export type ModelTypes = {
     blockchain?: ModelTypes["order_by"] | undefined;
     created_at?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
+    is_primary?: ModelTypes["order_by"] | undefined;
     public_key?: ModelTypes["order_by"] | undefined;
     user?: ModelTypes["auth_users_order_by"] | undefined;
     user_active_publickey_mappings_aggregate?:
@@ -17805,6 +17828,8 @@ export type GraphQLTypes = {
     blockchain: string;
     created_at: GraphQLTypes["timestamptz"];
     id: number;
+    /** computed field which is TRUE if there's a matching user_active_publickey_mapping */
+    is_primary?: boolean | undefined;
     public_key: string;
     /** An object relationship */
     user?: GraphQLTypes["auth_users"] | undefined;
@@ -17895,6 +17920,7 @@ export type GraphQLTypes = {
     blockchain?: GraphQLTypes["String_comparison_exp"] | undefined;
     created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
     id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    is_primary?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
     public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
     user?: GraphQLTypes["auth_users_bool_exp"] | undefined;
     user_active_publickey_mappings?:
@@ -17978,6 +18004,7 @@ export type GraphQLTypes = {
     blockchain?: GraphQLTypes["order_by"] | undefined;
     created_at?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
+    is_primary?: GraphQLTypes["order_by"] | undefined;
     public_key?: GraphQLTypes["order_by"] | undefined;
     user?: GraphQLTypes["auth_users_order_by"] | undefined;
     user_active_publickey_mappings_aggregate?:

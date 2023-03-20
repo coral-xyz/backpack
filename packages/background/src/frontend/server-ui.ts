@@ -75,8 +75,6 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_DEFAULT,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   UI_RPC_METHOD_PASSWORD_UPDATE,
-  UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
-  UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
   UI_RPC_METHOD_PREFERENCES_READ,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_SET_FEATURE_GATES,
@@ -368,18 +366,6 @@ async function handle<T = any>(
       return await handlePasswordUpdate(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD:
       return await handleKeyringStoreCheckPassword(ctx, params[0]);
-    //
-    // xNFT storage.
-    //
-    case UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET:
-      return await handlePluginLocalStorageGet(ctx, params[0], params[1]);
-    case UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT:
-      return await handlePluginLocalStoragePut(
-        ctx,
-        params[0],
-        params[1],
-        params[2]
-      );
     //
     // Solana.
     //
@@ -1123,13 +1109,6 @@ async function handleBlockchainKeyringsAdd(
   return [resp];
 }
 
-async function handleBlockchainKeyringsRead(
-  ctx: Context<Backend>
-): Promise<RpcResponse<Array<string>>> {
-  const resp = await ctx.backend.blockchainKeyringsRead();
-  return [resp];
-}
-
 async function handleKeyringLedgerImport(
   ctx: Context<Backend>,
   ...args: Parameters<Backend["ledgerImport"]>
@@ -1143,30 +1122,5 @@ async function handlePreviewPubkeys(
   ...args: Parameters<Backend["previewPubkeys"]>
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.previewPubkeys(...args);
-  return [resp];
-}
-
-// This API is only safe because it assumes the frontend UI code is doing
-// the proper gatekeeping. It shouldn't allow other xNFTs to call this
-// api with a fake plugin string.
-async function handlePluginLocalStorageGet(
-  ctx: Context<Backend>,
-  xnftAddress: string,
-  key: string
-): Promise<RpcResponse<any>> {
-  const resp = await ctx.backend.pluginLocalStorageGet(xnftAddress, key);
-  return [resp];
-}
-
-// This API is only safe because it assumes the frontend UI code is doing
-// the proper gatekeeping. It shouldn't allow other xNFTs to call this
-// api with a fake plugin string.
-async function handlePluginLocalStoragePut(
-  ctx: Context<Backend>,
-  xnftAddress: string,
-  key: string,
-  value: any
-): Promise<RpcResponse<any>> {
-  const resp = await ctx.backend.pluginLocalStoragePut(xnftAddress, key, value);
   return [resp];
 }

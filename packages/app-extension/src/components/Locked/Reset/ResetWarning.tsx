@@ -17,10 +17,10 @@ import { useDrawerContext } from "../../common/Layout/Drawer";
 import { useNavigation } from "../../common/Layout/NavStack";
 
 export function Logout() {
-  const background = useBackgroundClient();
+  const { close } = useDrawerContext();
   const nav = useNavigation();
   const user = useUser();
-  const { close } = useDrawerContext();
+  const background = useBackgroundClient();
 
   useEffect(() => {
     nav.setOptions({ headerTitle: `Log out ${user.username}` });

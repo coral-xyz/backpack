@@ -38,8 +38,6 @@ import {
   SOLANA_RPC_METHOD_SIGN_MESSAGE as PLUGIN_SOLANA_RPC_METHOD_SIGN_MESSAGE,
   SOLANA_RPC_METHOD_SIGN_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_TX,
   SOLANA_RPC_METHOD_SIMULATE as PLUGIN_SOLANA_RPC_METHOD_SIMULATE_TX,
-  UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
-  UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
 } from "./constants";
 import { getLogger } from "./logging";
 import type { Event, RpcResponse, XnftMetadata, XnftPreference } from "./types";
@@ -418,10 +416,6 @@ export class Plugin {
 
     const { method, params } = req;
     switch (method) {
-      case PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET:
-        return await this._handleGet(params[0]);
-      case PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT:
-        return await this._handlePut(params[0], params[1]);
       case PLUGIN_RPC_METHOD_WINDOW_OPEN:
         return await this._handleWindowOpen(params[0]);
       case PLUGIN_RPC_METHOD_PLUGIN_OPEN:
@@ -583,22 +577,6 @@ export class Plugin {
   ): Promise<RpcResponse> {
     // todo
     return ["success"];
-  }
-
-  private async _handleGet(key: string): Promise<RpcResponse> {
-    const resp = await this._backgroundClient?.request({
-      method: UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
-      params: [this.xnftAddress.toString(), key],
-    });
-    return [resp];
-  }
-
-  private async _handlePut(key: string, value: any): Promise<RpcResponse> {
-    const resp = await this._backgroundClient?.request({
-      method: UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
-      params: [this.xnftAddress.toString(), key, value],
-    });
-    return [resp];
   }
 
   private async _handlePopout(fullscreen: boolean): Promise<RpcResponse> {

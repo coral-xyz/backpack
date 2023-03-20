@@ -3,7 +3,6 @@ import {
   BACKEND_API_URL,
   getRandomColor,
   getRandomColorIndex,
-  UserMetadata,
 } from "@coral-xyz/common";
 import { bulkAddUsers, getBulkUsers, refreshUsers } from "@coral-xyz/db";
 import { remoteUsersMetadata, useUser } from "@coral-xyz/recoil";

@@ -33,9 +33,7 @@ export const getUsersMetadata = async (
         },
       ],
     },
-    {
-      operationName: "getUsersMetadata",
-    }
+    { operationName: "getUsersMetadata" }
   );
   return response.auth_users.map((x) => ({
     username: x.username,
@@ -52,41 +50,44 @@ export const getUsers = async (
     publicKeys: unknown[];
   }[]
 > => {
-  const response = await chain("query")({
-    auth_users: [
-      {
-        where: { id: { _in: userIds } },
-      },
-      {
-        id: true,
-        username: true,
-      },
-    ],
-    auth_public_keys: [
-      {
-        where: { user_id: { _in: userIds } },
-      },
-      {
-        public_key: true,
-        id: true,
-        blockchain: true,
-        user_id: true,
-      },
-    ],
-    auth_user_active_publickey_mapping: [
-      {
-        where: {
-          user_id: {
-            _in: userIds,
+  const response = await chain("query")(
+    {
+      auth_users: [
+        {
+          where: { id: { _in: userIds } },
+        },
+        {
+          id: true,
+          username: true,
+        },
+      ],
+      auth_public_keys: [
+        {
+          where: { user_id: { _in: userIds } },
+        },
+        {
+          public_key: true,
+          id: true,
+          blockchain: true,
+          user_id: true,
+        },
+      ],
+      auth_user_active_publickey_mapping: [
+        {
+          where: {
+            user_id: {
+              _in: userIds,
+            },
           },
         },
-      },
-      {
-        user_id: true,
-        public_key_id: true,
-      },
-    ],
-  });
+        {
+          user_id: true,
+          public_key_id: true,
+        },
+      ],
+    },
+    { operationName: "getUsers" }
+  );
 
   const publicKeyMapping: { [public_key_id: string]: true } = {};
   const userToPublicKeyMapping: {
@@ -143,24 +144,27 @@ export const getUsersByPublicKeys = async (
 ): Promise<
   Array<{ user_id?: unknown; blockchain: string; public_key: unknown }>
 > => {
-  const response = await chain("query")({
-    auth_public_keys: [
-      {
-        where: {
-          // Only matching public keys here, but it should be checking
-          // blockchain AND public key as the same public key will be used
-          // for different blockchains (particularly EVM)
-          public_key: { _in: blockchainPublicKeys.map((b) => b.publicKey) },
+  const response = await chain("query")(
+    {
+      auth_public_keys: [
+        {
+          where: {
+            // Only matching public keys here, but it should be checking
+            // blockchain AND public key as the same public key will be used
+            // for different blockchains (particularly EVM)
+            public_key: { _in: blockchainPublicKeys.map((b) => b.publicKey) },
+          },
+          limit: 100,
         },
-        limit: 100,
-      },
-      {
-        user_id: true,
-        public_key: true,
-        blockchain: true,
-      },
-    ],
-  });
+        {
+          user_id: true,
+          public_key: true,
+          blockchain: true,
+        },
+      ],
+    },
+    { operationName: "getUsersByPublicKeys" }
+  );
 
   // Filter again to make sure the blockchain/public key pair match. It might
   // be possible to do this in graphql query?
@@ -179,27 +183,30 @@ export const getUsersByPublicKeys = async (
  * Get a user by their username.
  */
 export const getUserByUsername = async (username: string) => {
-  const response = await chain("query")({
-    auth_users: [
-      {
-        limit: 1,
-        where: { username: { _eq: username } },
-      },
-      {
-        id: true,
-        username: true,
-        public_keys: [
-          {},
-          {
-            blockchain: true,
-            id: true,
-            public_key: true,
-            user_active_publickey_mappings: [{}, { user_id: true }],
-          },
-        ],
-      },
-    ],
-  });
+  const response = await chain("query")(
+    {
+      auth_users: [
+        {
+          limit: 1,
+          where: { username: { _eq: username } },
+        },
+        {
+          id: true,
+          username: true,
+          public_keys: [
+            {},
+            {
+              blockchain: true,
+              id: true,
+              public_key: true,
+              user_active_publickey_mappings: [{}, { user_id: true }],
+            },
+          ],
+        },
+      ],
+    },
+    { operationName: "getUserByUsername" }
+  );
   if (!response.auth_users[0]) {
     throw new Error("user not found");
   }
@@ -210,26 +217,29 @@ export const getUserByUsername = async (username: string) => {
  * Get a user by their id.
  */
 export const getUser = async (id: string, onlyActiveKeys?: boolean) => {
-  const response = await chain("query")({
-    auth_users_by_pk: [
-      {
-        id,
-      },
-      {
-        id: true,
-        username: true,
-        public_keys: [
-          {},
-          {
-            blockchain: true,
-            id: true,
-            public_key: true,
-            user_active_publickey_mappings: [{}, { user_id: true }],
-          },
-        ],
-      },
-    ],
-  });
+  const response = await chain("query")(
+    {
+      auth_users_by_pk: [
+        {
+          id,
+        },
+        {
+          id: true,
+          username: true,
+          public_keys: [
+            {},
+            {
+              blockchain: true,
+              id: true,
+              public_key: true,
+              user_active_publickey_mappings: [{}, { user_id: true }],
+            },
+          ],
+        },
+      ],
+    },
+    { operationName: "getUser" }
+  );
   if (!response.auth_users_by_pk) {
     throw new Error("user not found");
   }
@@ -237,19 +247,22 @@ export const getUser = async (id: string, onlyActiveKeys?: boolean) => {
 };
 
 export const getReferrer = async (userId: string) => {
-  const { auth_users_by_pk } = await chain("query")({
-    auth_users_by_pk: [
-      {
-        id: userId,
-      },
-      {
-        referrer: {
-          id: true,
-          username: true,
+  const { auth_users_by_pk } = await chain("query")(
+    {
+      auth_users_by_pk: [
+        {
+          id: userId,
         },
-      },
-    ],
-  });
+        {
+          referrer: {
+            id: true,
+            username: true,
+          },
+        },
+      ],
+    },
+    { operationName: "getReferrer" }
+  );
   return auth_users_by_pk?.referrer;
 };
 
@@ -317,50 +330,56 @@ export const createUser = async (
   public_keys: { blockchain: "solana" | "ethereum"; id: number }[];
 }> => {
   const inviteCode = uuidv4();
-  await chain("mutation")({
-    insert_auth_invitations_one: [
-      {
-        object: {
-          id: inviteCode,
+  await chain("mutation")(
+    {
+      insert_auth_invitations_one: [
+        {
+          object: {
+            id: inviteCode,
+          },
         },
-      },
-      {
-        id: true,
-      },
-    ],
-  });
+        {
+          id: true,
+        },
+      ],
+    },
+    { operationName: "createUser" }
+  );
 
-  const response = await chain("mutation")({
-    insert_auth_users_one: [
-      {
-        object: {
-          username: username,
-          public_keys: {
-            data: blockchainPublicKeys.map((b) => ({
-              blockchain: b.blockchain,
-              public_key: b.publicKey,
-            })),
+  const response = await chain("mutation")(
+    {
+      insert_auth_users_one: [
+        {
+          object: {
+            username: username,
+            public_keys: {
+              data: blockchainPublicKeys.map((b) => ({
+                blockchain: b.blockchain,
+                public_key: b.publicKey,
+              })),
+            },
+            invitation_id: inviteCode,
+            waitlist_id: waitlistId,
+            referrer_id: referrerId,
           },
-          invitation_id: inviteCode,
-          waitlist_id: waitlistId,
-          referrer_id: referrerId,
         },
-      },
-      {
-        id: true,
-        username: true,
-        public_keys: [
-          {},
-          {
-            blockchain: true,
-            id: true,
-            public_key: true,
-            user_active_publickey_mappings: [{}, { user_id: true }],
-          },
-        ],
-      },
-    ],
-  });
+        {
+          id: true,
+          username: true,
+          public_keys: [
+            {},
+            {
+              blockchain: true,
+              id: true,
+              public_key: true,
+              user_active_publickey_mappings: [{}, { user_id: true }],
+            },
+          ],
+        },
+      ],
+    },
+    { operationName: "createUser" }
+  );
 
   // @ts-ignore
   return response.insert_auth_users_one;
@@ -378,21 +397,24 @@ export async function getUsersByPrefix({
   uuid: string;
   limit?: number;
 }): Promise<{ username: string; id: string }[]> {
-  const response = await chain("query")({
-    auth_users: [
-      {
-        where: {
-          username: { _like: `${usernamePrefix}%` },
-          id: { _neq: uuid },
+  const response = await chain("query")(
+    {
+      auth_users: [
+        {
+          where: {
+            username: { _like: `${usernamePrefix}%` },
+            id: { _neq: uuid },
+          },
+          limit: limit || 25,
         },
-        limit: limit || 25,
-      },
-      {
-        id: true,
-        username: true,
-      },
-    ],
-  });
+        {
+          id: true,
+          username: true,
+        },
+      ],
+    },
+    { operationName: "getUsersByPrefix" }
+  );
 
   return response.auth_users || [];
 }
@@ -410,20 +432,23 @@ export async function deleteUserPublicKey({
   blockchain: Blockchain;
   publicKey: string;
 }) {
-  const response = await chain("mutation")({
-    delete_auth_public_keys: [
-      {
-        where: {
-          user_id: { _eq: userId },
-          blockchain: { _eq: blockchain },
-          public_key: { _eq: publicKey },
+  const response = await chain("mutation")(
+    {
+      delete_auth_public_keys: [
+        {
+          where: {
+            user_id: { _eq: userId },
+            blockchain: { _eq: blockchain },
+            public_key: { _eq: publicKey },
+          },
         },
-      },
-      {
-        affected_rows: true,
-      },
-    ],
-  });
+        {
+          affected_rows: true,
+        },
+      ],
+    },
+    { operationName: "deleteUserPublicKey" }
+  );
 
   return response.delete_auth_public_keys;
 }
@@ -439,33 +464,40 @@ export async function createUserPublicKey({
   userId: string;
   blockchain: Blockchain;
   publicKey: string;
-}) {
-  const response = await chain("mutation")({
-    insert_auth_public_keys_one: [
-      {
-        object: {
-          user_id: userId,
-          blockchain: blockchain as string,
-          public_key: publicKey,
+}): Promise<{ isPrimary: boolean }> {
+  const response = await chain("mutation")(
+    {
+      insert_auth_public_keys_one: [
+        {
+          object: {
+            user_id: userId,
+            blockchain: blockchain as string,
+            public_key: publicKey,
+          },
         },
-      },
-      {
-        id: true,
-      },
-    ],
-  });
+        {
+          id: true,
+        },
+      ],
+    },
+    { operationName: "createUserPublicKey" }
+  );
 
   const publicKeyId = response.insert_auth_public_keys_one?.id;
   if (publicKeyId) {
-    await updatePublicKey({
+    const updatedPublicKey = await updatePublicKey({
       userId: userId,
       blockchain: blockchain,
       publicKeyId,
       onlyInsert: true,
     });
-  }
 
-  return response.insert_auth_public_keys_one;
+    if (updatedPublicKey === publicKeyId) {
+      return { isPrimary: true };
+    }
+    return { isPrimary: false };
+  }
+  return { isPrimary: false };
 }
 
 /**
@@ -478,21 +510,24 @@ export async function updateUserAvatar({
   userId: string;
   avatar: string | null;
 }) {
-  const response = await chain("mutation")({
-    update_auth_users: [
-      {
-        where: {
-          id: { _eq: userId },
+  const response = await chain("mutation")(
+    {
+      update_auth_users: [
+        {
+          where: {
+            id: { _eq: userId },
+          },
+          _set: {
+            avatar_nft: avatar,
+          },
         },
-        _set: {
-          avatar_nft: avatar,
+        {
+          affected_rows: true,
         },
-      },
-      {
-        affected_rows: true,
-      },
-    ],
-  });
+      ],
+    },
+    { operationName: "updateUserAvatar" }
+  );
 
   return response.update_auth_users;
 }
@@ -506,28 +541,31 @@ export const getUserByPublicKeyAndChain = async (
     username: string;
   }[]
 > => {
-  const response = await chain("query")({
-    auth_users: [
-      {
-        where: {
-          public_keys: {
-            blockchain: { _eq: blockchain },
-            public_key: { _eq: publicKey },
-            user_active_publickey_mappings: {
+  const response = await chain("query")(
+    {
+      auth_users: [
+        {
+          where: {
+            public_keys: {
               blockchain: { _eq: blockchain },
-              public_key: {
-                public_key: { _eq: publicKey },
+              public_key: { _eq: publicKey },
+              user_active_publickey_mappings: {
+                blockchain: { _eq: blockchain },
+                public_key: {
+                  public_key: { _eq: publicKey },
+                },
               },
             },
           },
         },
-      },
-      {
-        id: true,
-        username: true,
-      },
-    ],
-  });
+        {
+          id: true,
+          username: true,
+        },
+      ],
+    },
+    { operationName: "getUserByPublicKeyAndChain" }
+  );
 
   return response.auth_users || [];
 };

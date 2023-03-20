@@ -33,6 +33,7 @@ import {
   YStack,
 } from "@coral-xyz/tamagui";
 import { BigNumber } from "ethers";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SendEthereumConfirmationCard } from "~components/BottomDrawerEthereumConfirmation";
 import { SendSolanaConfirmationCard } from "~components/BottomDrawerSolanaConfirmation";
@@ -152,17 +153,11 @@ function AvatarHeader({
   const theme = useCustomTheme();
   return (
     <YStack ai="center">
-      <ImageSvg
-        uri={image}
-        width={80}
-        height={80}
-        style={{
-          marginBottom: 12,
-        }}
-      />
+      <ImageSvg uri={image} width={80} height={80} />
       {walletName || username ? (
         <Text
           style={{
+            marginTop: 8,
             color: theme.custom.colors.fontColor,
             fontSize: 16,
             fontWeight: "500",
@@ -256,6 +251,7 @@ export function SendTokenConfirmScreen({
   "SendTokenConfirm"
 >): JSX.Element {
   const theme = useCustomTheme();
+  const insets = useSafeAreaInsets();
   const { blockchain, token, to } = route.params;
   const { address, walletName, image, username } = to;
   const ethereumCtx = useEthereumCtx();
@@ -331,8 +327,10 @@ export function SendTokenConfirmScreen({
 
   return (
     <>
-      <Screen style={{ justifyContent: "space-between" }}>
-        <YStack f={1} jc="center">
+      <Screen
+        style={{ justifyContent: "space-between", marginBottom: insets.bottom }}
+      >
+        <YStack mt={24} f={1}>
           <Box mb={18}>
             <AvatarHeader
               walletName={walletName}
@@ -366,7 +364,7 @@ export function SendTokenConfirmScreen({
         {getButton(isSendDisabled, isAmountError)}
       </Screen>
       <BottomSheetModal
-        snapPoints={[400, 320]}
+        snapPoints={[800, 420]}
         isVisible={isModalVisible}
         index={modalIndex}
         resetVisibility={() => {

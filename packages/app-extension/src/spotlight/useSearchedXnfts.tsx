@@ -10,7 +10,7 @@ export const useSearchedXnfts = (searchFilter: string) => {
   const connectionUrl = useSolanaConnectionUrl();
   const { contents, state }: any = useRecoilValueLoadable(
     xnfts({
-      publicKey: activeSolWallet.publicKey,
+      publicKey: activeSolWallet?.publicKey,
       connectionUrl,
     })
   );

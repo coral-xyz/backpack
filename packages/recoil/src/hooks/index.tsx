@@ -23,5 +23,7 @@ export * from "./useTotalBalance";
 export * from "./useTransactionData";
 export * from "./useUnreadCount";
 export * from "./useUpdateFriendship";
+export * from "./useUpdateUsers";
+export * from "./useUserMetadataMap";
 export * from "./useXnftPreferences";
 export * from "./wallet";
