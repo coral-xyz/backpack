@@ -18,20 +18,16 @@ export const getUser = async (id: string) => {
       auth_users_by_pk: [
         {
           id,
+          where: {
+            public_keys: {
+              is_primary: true,
+            },
+          },
         },
         {
           id: true,
           username: true,
-          public_keys: [
-            {
-              where: {
-                user_active_publickey_mappings: {
-                  user_id: { _eq: id },
-                },
-              },
-            },
-            { blockchain: true, public_key: true },
-          ],
+          public_keys: [{}, { blockchain: true, public_key: true }],
         },
       ],
     },
