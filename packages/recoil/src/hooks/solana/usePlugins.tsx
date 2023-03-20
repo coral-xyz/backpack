@@ -72,7 +72,7 @@ export function useOpenPlugin(): (xnftAddress: string) => void {
   const background = useRecoilValue(atoms.backgroundClient);
 
   return (xnftAddress) => {
-    const normalizedXnftAddress = xnftAddress.replace("../", ""); // simple normalize to prevent: "goodxnft/../badxnft"
+    const normalizedXnftAddress = xnftAddress.replace(/\.+\//g, ""); // simple normalize to prevent: "goodxnft/../badxnft"
     const url = `xnft/${normalizedXnftAddress}`;
     background
       .request({
