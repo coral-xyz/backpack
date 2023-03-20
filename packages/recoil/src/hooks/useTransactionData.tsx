@@ -113,7 +113,7 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
     (async () => {
       const parsed = ethers.utils.parseTransaction(bs58.decode(serializedTx));
 
-      if (parsed.chainId === 0) {
+      if (!parsed.chainId || parsed.chainId === 0) {
         // chainId not passed in serialized transaction, use provider
         parsed.chainId = parseInt(ethereumCtx.chainId);
       }
@@ -128,8 +128,8 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
       // Set any transaction override values that were passed in the serialized
       // transaction
       const overridesToUpdate: Partial<TransactionOverrides> = {};
-      if (parsed.nonce !== 0) {
-        overridesToUpdate.nonce = 0;
+      if (parsed.nonce != 0) {
+        overridesToUpdate.nonce = parsed.nonce;
       } else {
         overridesToUpdate.nonce = await voidSigner.getTransactionCount();
       }
