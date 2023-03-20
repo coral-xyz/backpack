@@ -620,7 +620,6 @@ async function handleEthereumSwitchChain(
       );
     }
   );
-  console.log("UIRESONSE", uiResp);
 
   if (uiResp.error) {
     logger.debug("require ui action error", uiResp);
@@ -766,7 +765,6 @@ async function handleEthereumSignMessage(
   }
   const uiResp = await UiActionRequestManager.requestUiAction(
     (requestId: string) => {
-      console.log(requestId);
       return openApproveMessagePopupWindow(
         ctx.sender.origin!,
         getTabTitle(ctx),
@@ -812,7 +810,6 @@ async function handlePopupUiResponse(
 ): Promise<string> {
   const { id, result, error } = msg;
   logger.debug("handle popup ui response", msg);
-  console.log(id);
   UiActionRequestManager.resolveResponse(id, result, error);
   return SUCCESS_RESPONSE;
 }
