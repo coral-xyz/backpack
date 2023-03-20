@@ -10,6 +10,7 @@ import {
   AppsColorIcon,
   MessageBubbleIcon,
   ProxyImage,
+  useNavigateToChat,
 } from "@coral-xyz/react-common";
 import {
   chatByCollectionId,
@@ -63,7 +64,10 @@ export function NFTCard({
   const whitelistedCollectionChat = useRecoilValue(
     chatByCollectionId(nft.metadataCollectionId)
   );
-  const openChat = useOpenChat();
+  const openChat = useNavigateToChat({
+    nftId: nft.mint!,
+    metadataCollectionId: nft.metadataCollectionId || "",
+  });
   const [joiningChat, setJoiningChat] = useState(false);
 
   const { contents, state } = useRecoilValueLoadable(
@@ -227,7 +231,7 @@ export function NFTCard({
             }}
             onClick={async (e: any) => {
               setJoiningChat(true);
-              await openChat(chat, nft.mint!);
+              await openChat();
               setJoiningChat(false);
               e.stopPropagation();
             }}
@@ -269,7 +273,7 @@ export function CollectionCard({ collection }: { collection: NftCollection }) {
     chatByCollectionId(collection.metadataCollectionId)
   );
   const theme = useCustomTheme();
-  const openChat = useOpenChat();
+
   const [joiningChat, setJoiningChat] = useState(false);
   const collectionDisplayNftIds: {
     publicKey: string;
@@ -297,11 +301,16 @@ export function CollectionCard({ collection }: { collection: NftCollection }) {
   ];
   paddedCollectionDisplayNfts.length = 4;
 
+  const nft = collectionDisplayNfts[0];
+
+  const openChat = useNavigateToChat({
+    nftId: nft.mint!,
+    metadataCollectionId: collection.metadataCollectionId,
+  });
+
   if (!collectionDisplayNfts) {
     return null;
   }
-
-  const nft = collectionDisplayNfts[0];
 
   const openCollection = () => {
     push({
@@ -490,7 +499,7 @@ export function CollectionCard({ collection }: { collection: NftCollection }) {
             }}
             onClick={async (e: any) => {
               setJoiningChat(true);
-              await openChat(whitelistedChatCollection, nft.mint!);
+              await openChat();
               setJoiningChat(false);
               e.stopPropagation();
             }}

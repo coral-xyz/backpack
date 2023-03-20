@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MessageBubbleIcon } from "@coral-xyz/react-common";
+import { MessageBubbleIcon, useNavigateToChat } from "@coral-xyz/react-common";
 import {
   chatByCollectionId,
   nftById,
@@ -11,7 +11,6 @@ import type { UnwrapRecoilValue } from "recoil";
 import { useRecoilValueLoadable } from "recoil";
 
 import { NFTCard } from "./Cards";
-import { useOpenChat } from "./Detail";
 
 export function NftsCollection({
   publicKey,
@@ -44,7 +43,6 @@ function _Grid({
   id: string;
 }) {
   const theme = useCustomTheme();
-  const openChat = useOpenChat();
   const [joiningChat, setJoiningChat] = useState(false);
   const { contents, state } = useRecoilValueLoadable<
     UnwrapRecoilValue<typeof nftCollectionsWithIds>
@@ -57,6 +55,10 @@ function _Grid({
         .flat()
         .find((c: any) => c.id === id);
 
+  const openChat = useNavigateToChat({
+    nftId: id,
+    metadataCollectionId: collection?.metadataCollectionId || "",
+  });
   const whitelistedCollectionChat = useRecoilValueLoadable(
     chatByCollectionId(collection?.metadataCollectionId)
   );
@@ -90,7 +92,7 @@ function _Grid({
           }}
           onClick={async (e: any) => {
             setJoiningChat(true);
-            await openChat(chat, collection.itemIds[0]);
+            await openChat();
             setJoiningChat(false);
             e.stopPropagation();
           }}

@@ -22,6 +22,7 @@ import {
   PrimaryButton,
   ProxyImage,
   SecondaryButton,
+  useNavigateToChat,
 } from "@coral-xyz/react-common";
 import {
   appStoreMetaTags,
@@ -131,7 +132,10 @@ export function NftsDetail({
   const whitelistedChatCollection = useRecoilValue(
     chatByNftId({ publicKey, connectionUrl, nftId })
   );
-  const openChat = useOpenChat();
+  const openChat = useNavigateToChat({
+    nftId,
+    metadataCollectionId: whitelistedChatCollection?.collectionId || "",
+  });
 
   const { contents, state } = useRecoilValueLoadable(
     nftById({ publicKey, connectionUrl, nftId })
@@ -187,7 +191,7 @@ export function NftsDetail({
             }
             onClick={async () => {
               setJoiningChat(true);
-              await openChat(whitelistedChatCollection, nft.mint!);
+              await openChat();
               setChatJoined(true);
             }}
           />
