@@ -698,6 +698,7 @@ function NotificationListItemIcon({ image }: any) {
   const classes = useStyles();
   return (
     <ProxyImage
+      size={44}
       loadingStyles={{ marginRight: "12px", height: "44px", width: "44px" }}
       src={image}
       className={classes.recentActivityListItemIcon}
