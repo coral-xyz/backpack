@@ -41,10 +41,10 @@ export const useNavigateToChat = ({
     if (
       !groupCollections.find(
         (x) => x.collectionId === whitelistedChatCollection.collectionId
-      ) &&
+      )?.name &&
       !groupCollections.find(
         (x) => x.collectionId === whitelistedChatCollection.id
-      )
+      )?.name
     ) {
       await fetch(`${BACKEND_API_URL}/nft/bulk`, {
         method: "POST",
