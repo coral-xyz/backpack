@@ -34,6 +34,7 @@ export const ProxyImage = React.memo(function ProxyImage({
   const visuallyHidden: React.CSSProperties = {
     position: "absolute",
     top: "0px",
+    visibility: "hidden"
   };
 
   useEffect(() => {
@@ -50,12 +51,12 @@ export const ProxyImage = React.memo(function ProxyImage({
           imageRef.current.style.visibility = "visible";
         }
       }
-    }, 1000);
+    }, 2000);
   }, []);
 
   return (
     <>
-      <Skeleton
+      {imgProps.src ? <Skeleton
         style={{
           height: "100%",
           width: "100%",
@@ -66,7 +67,7 @@ export const ProxyImage = React.memo(function ProxyImage({
         }}
         ref={placeholderRef}
         className={imgProps.className}
-      />
+      /> : null}
       {imgProps.src ? (
         <img
           loading="lazy"
@@ -111,7 +112,6 @@ export const ProxyImage = React.memo(function ProxyImage({
             ...(imgProps.style ?? {}),
             ...(loadingStyles ?? {}),
           }}
-          ref={placeholderRef}
           className={imgProps.className}
         />
       )}
