@@ -133,10 +133,10 @@ export function EthereumSettingsDrawer({
         ...transactionOverrides,
         // Add 10% for fast mode
         maxFeePerGas: feeData.maxFeePerGas.add(
-          feeData.maxFeePerGas.mul(10).View(100)
+          feeData.maxFeePerGas.mul(10).div(100)
         ),
         maxPriorityFeePerGas: feeData.maxPriorityFeePerGas.add(
-          feeData.maxPriorityFeePerGas.mul(10).View(100)
+          feeData.maxPriorityFeePerGas.mul(10).div(100)
         ),
         nonce,
       });
@@ -145,10 +145,10 @@ export function EthereumSettingsDrawer({
         ...transactionOverrides,
         // Add 50% for degen mode
         maxFeePerGas: feeData.maxFeePerGas.add(
-          feeData.maxFeePerGas.mul(50).View(100)
+          feeData.maxFeePerGas.mul(50).div(100)
         ),
         maxPriorityFeePerGas: feeData.maxPriorityFeePerGas.add(
-          feeData.maxPriorityFeePerGas.mul(50).View(100)
+          feeData.maxPriorityFeePerGas.mul(50).div(100)
         ),
         nonce,
       });
@@ -158,21 +158,6 @@ export function EthereumSettingsDrawer({
   useEffect(() => {
     setEditingGas(mode === "custom");
   }, [mode]);
-
-  // Escape handler that closes edit modes if they are active, otherwise closes
-  // the entire drawer.
-  const handleEsc = (event: KeyboardEvent) => {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      if (editingGas) {
-        setEditingGas(false);
-      } else if (editingNonce) {
-        setEditingNonce(false);
-      } else {
-        onClose();
-      }
-    }
-  };
 
   const handleSave = () => {
     setTransactionOverrides({
