@@ -38,7 +38,7 @@
     "build:ext": "env-cmd --silent turbo run build --filter=@coral-xyz/app-extension... --filter=@coral-xyz/background...",
     "start:mobile": "env-cmd --silent turbo run start --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
     "build:mobile": "env-cmd --silent turbo run build --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
-    "postinstall": "yarn-deduplicate --scopes @babel @mui @typescript-eslint @types @react-native-community @react-navigation @emotion"
+    "postinstall": "yarn-deduplicate --scopes @babel @mui @typescript-eslint @types @react-native-community @react-navigation @emotion @aws-crypto @aws-sdk @solana"
   },
   "devDependencies": {
     "buffer": "^5.5.0",
