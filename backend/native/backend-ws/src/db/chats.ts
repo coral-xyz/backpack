@@ -1,9 +1,5 @@
 import { Chain } from "@coral-xyz/chat-zeus";
-import type {
-  MessageKind,
-  MessageMetadata,
-  SubscriptionType,
-} from "@coral-xyz/common";
+import type { SubscriptionType } from "@coral-xyz/common";
 
 import { CHAT_HASURA_URL, CHAT_JWT } from "../config";
 
