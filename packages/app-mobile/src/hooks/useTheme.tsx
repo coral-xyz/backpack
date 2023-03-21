@@ -1,6 +1,7 @@
 // import { useDarkMode } from "@coral-xyz/recoil";
 import { useColorScheme } from "react-native";
 
+// @ts-expect-error
 import { MOBILE_DARK_THEME, MOBILE_LIGHT_THEME } from "@coral-xyz/themes";
 
 export function useTheme() {
@@ -10,6 +11,6 @@ export function useTheme() {
 
   return {
     custom: theme.custom,
-    colorScheme: colorScheme === "dark" ? "dark" : "light",
+    colorScheme,
   };
 }
