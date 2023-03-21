@@ -173,15 +173,15 @@ export async function openPopupWindow(
   const lastWindow = await BrowserRuntimeExtension.getLastFocusedWindow();
   const fullscreen = options?.fullscreen;
 
-  let width = options?.width ?? EXTENSION_WIDTH;
-  let height = options?.height ?? EXTENSION_HEIGHT;
+  let width = isNaN(options?.width ?? NaN) ? EXTENSION_WIDTH : options!.width!;
+  let height = isNaN(options?.height ?? NaN)
+    ? EXTENSION_HEIGHT
+    : options!.height!;
 
   if (fullscreen) {
     height = screen.availHeight;
     width = screen.availWidth;
   }
-
-  console.log(height, width);
 
   const [EXTRA_HEIGHT, EXTRA_WIDTH] =
     (navigator as any).userAgentData.platform === "Windows"
