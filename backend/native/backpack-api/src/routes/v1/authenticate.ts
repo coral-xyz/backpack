@@ -1,30 +1,13 @@
 import { ethers } from "ethers";
 import express from "express";
-import passport from "passport";
-import { Strategy as TwitterStrategy } from "passport-twitter";
 
 import { clearCookie, setJWTCookie } from "../../auth/util";
-import { TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET } from "../../config";
 import { getUser } from "../../db/users";
 import { validateSignature } from "../../validation/signature";
 
 const { base58 } = ethers.utils;
 
-passport.use(
-  new TwitterStrategy(
-    {
-      consumerKey: TWITTER_CONSUMER_KEY,
-      consumerSecret: TWITTER_CONSUMER_SECRET,
-      callbackURL: "/authenticate/twitter/callback",
-    },
-    async (_token, _tokenSecret, profile, cb) => {
-      return cb(null, profile);
-    }
-  )
-);
-
 const router = express.Router();
-router.use(passport.initialize());
 
 router.delete("/", async (req, res) => {
   clearCookie(res, "jwt");
@@ -67,16 +50,5 @@ router.post("/", async (req, res) => {
 
   return res.json({ ...user, jwt });
 });
-
-// FIXME:
-router.get("/twitter", passport.authenticate("twitter"));
-router.get(
-  "/twitter/callback",
-  passport.authenticate("twitter", { failureRedirect: "/login" }),
-  async (req, res) => {
-    // Successful authentication, redirect home.
-    res.redirect("/");
-  }
-);
 
 export default router;

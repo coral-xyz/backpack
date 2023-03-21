@@ -69,7 +69,7 @@ export const RecoverAccount = ({
   });
 
   const steps = [
-    <TwitterConnect key="TwitterConnect" />,
+    // <TwitterConnect key="TwitterConnect" />,
     <RecoverAccountUsernameForm
       key="RecoverAccountUsernameForm"
       onNext={(
