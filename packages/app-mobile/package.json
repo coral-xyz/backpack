@@ -20,6 +20,7 @@
     "@coral-xyz/db": "*",
     "@coral-xyz/recoil": "*",
     "@coral-xyz/tamagui": "*",
+    "@coral-xyz/themes": "*",
     "@ethersproject/shims": "^5.7.0",
     "@expo-google-fonts/inter": "^0.2.3",
     "@expo/react-native-action-sheet": "^4.0.1",
