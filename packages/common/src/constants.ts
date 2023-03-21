@@ -162,6 +162,8 @@ export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
 export const UI_RPC_METHOD_LEDGER_IMPORT = "ui-rpc-method-ledger-import";
 export const UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE =
   "ui-rpc-method-navigation-active-tab-update";
+export const UI_RPC_METHOD_NAVIGATION_OPEN_CHAT =
+  "ui-rpc-method-navigation-open-chat";
 export const UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE =
   "ui-rpc-method-navigation-current-url-update";
 export const UI_RPC_METHOD_NAVIGATION_POP = "ui-rpc-method-navigation-pop";
@@ -499,6 +501,10 @@ export const LEDGER_METHOD_ETHEREUM_SIGN_EIP712_HASHED_MESSAGE =
 export const PLUGIN_RPC_METHOD_WINDOW_OPEN = "rpc-method-window-open";
 
 export const PLUGIN_RPC_METHOD_PLUGIN_OPEN = "rpc-method-plugin-open";
+
+export const PLUGIN_RPC_METHOD_CHAT_OPEN = "rpc-method-plugin-close-to";
+
+export const PLUGIN_RPC_METHOD_CLOSE_TO = "rpc-method-chat-open";
 
 export const PLUGIN_RPC_METHOD_POP_OUT = "rpc-method-pop-out";
 
