@@ -121,24 +121,6 @@ export const DARK_COLORS: CustomColors = {
   chatFadeGradientStart: "rgba(255, 255, 255, 0.04)",
 };
 
-const DARK_EVERYTHING_ELSE: NonColorsBeCareful = {
-  // NON-COLORS BREAK NON-WEB ENVIRONMENTS AKA MOBILE
-  // TODO { borderColor: "color", borderWidth: 2, borderStyle: "solid"}
-  textInputBorderFull: `solid 2pt ${BACKGROUND_COLOR_1}`,
-  textInputBorderFocussed: `solid 2pt ${BACKGROUND_COLOR_1}`,
-  textInputBorderHovered: `solid 2pt ${BACKGROUND_COLOR_1}`,
-  borderFull: `solid 2px ${BACKGROUND_COLOR_1}`,
-  borderButton: `solid 2px ${BACKGROUND_COLOR_1}`,
-
-  drawerGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
-  boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
-  tabBarBoxShadow: "0px -4px 4px rgba(3, 10, 25, 0.02)",
-  coralGradient:
-    "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
-  chatFadeGradient:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.04) 20%, rgba(0, 0, 0, 0) 100%), #18181B",
-};
-
 export const LIGHT_COLORS: CustomColors = {
   blue: "blue",
   smallTextColor: LIGHT_TEXT_SMALL_COLOR,
@@ -209,7 +191,7 @@ export const LIGHT_COLORS: CustomColors = {
   linkColor: "#0057EB",
 };
 
-const LIGHT_EVERYTHING_ELSE: NonColorsBeCareful = {
+const LIGHT_WEB_ONLY_NON_COLORS: WebOnlyNonColors = {
   // NON-COLORS BREAK NON-WEB ENVIRONMENTS AKA MOBILE
   // TODO { borderColor: "color", borderWidth: 2, borderStyle: "solid"}
   borderFull: `solid 2px ${LIGHT_BORDER_COLOR_1}`,
@@ -227,17 +209,49 @@ const LIGHT_EVERYTHING_ELSE: NonColorsBeCareful = {
     "linear-gradient(360deg, rgb(255, 255, 255) 20%, rgba(240, 240, 242, 0.5) 100%), #FFFFFF",
 };
 
+const DARK_WEB_ONLY_NON_COLORS: WebOnlyNonColors = {
+  // NON-COLORS BREAK NON-WEB ENVIRONMENTS AKA MOBILE
+  // TODO { borderColor: "color", borderWidth: 2, borderStyle: "solid"}
+  textInputBorderFull: `solid 2pt ${BACKGROUND_COLOR_1}`,
+  textInputBorderFocussed: `solid 2pt ${BACKGROUND_COLOR_1}`,
+  textInputBorderHovered: `solid 2pt ${BACKGROUND_COLOR_1}`,
+  borderFull: `solid 2px ${BACKGROUND_COLOR_1}`,
+  borderButton: `solid 2px ${BACKGROUND_COLOR_1}`,
+
+  drawerGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
+  boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
+  tabBarBoxShadow: "0px -4px 4px rgba(3, 10, 25, 0.02)",
+  coralGradient:
+    "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
+  chatFadeGradient:
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.04) 20%, rgba(0, 0, 0, 0) 100%), #18181B",
+};
+
+export const MOBILE_DARK_OVERRIDES: NativeOverrides = {
+  borderFull: BACKGROUND_COLOR_1,
+  textInputBorderFull: `rgba(255, 255, 255, 0.1)`,
+  textInputBorderFocussed: `rgba(255, 255, 255, 0.1)`,
+  textInputBorderHovered: `rgba(255, 255, 255, 0.2)`,
+};
+
+export const MOBILE_LIGHT_OVERRIDES: NativeOverrides = {
+  borderFull: LIGHT_BORDER_COLOR_1,
+  textInputBorderFull: LIGHT_BACKGROUND_COLOR_0,
+  textInputBorderFocussed: LIGHT_BACKGROUND_COLOR_0,
+  textInputBorderHovered: LIGHT_BORDER_COLOR,
+};
+
 export const MUI_DARK_THEME: MuiCustomTheme = {
   ...DARK_COLORS,
-  ...DARK_EVERYTHING_ELSE,
+  ...DARK_WEB_ONLY_NON_COLORS,
 };
 
 export const MUI_LIGHT_THEME: MuiCustomTheme = {
   ...LIGHT_COLORS,
-  ...LIGHT_EVERYTHING_ELSE,
+  ...LIGHT_WEB_ONLY_NON_COLORS,
 };
 
-type NonColorsBeCareful = {
+type WebOnlyNonColors = {
   borderButton: string;
   borderFull: string;
   boxShadow: string;
@@ -247,6 +261,13 @@ type NonColorsBeCareful = {
   tabBarBoxShadow: string;
   textInputBorderFocussed: string;
   textInputBorderFull: string;
+  textInputBorderHovered: string;
+};
+
+type NativeOverrides = {
+  borderFull: string;
+  textInputBorderFull: string;
+  textInputBorderFocussed: string;
   textInputBorderHovered: string;
 };
 
@@ -320,4 +341,5 @@ export type CustomColors = {
   walletCopyButtonHover: string;
 };
 
-export type MuiCustomTheme = CustomColors & NonColorsBeCareful;
+export type MuiCustomTheme = CustomColors & WebOnlyNonColors;
+export type NativeCustomTheme = CustomColors & NativeOverrides;
