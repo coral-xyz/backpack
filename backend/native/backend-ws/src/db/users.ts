@@ -12,7 +12,7 @@ export const getUsers = async (
   userIds: string[]
 ): Promise<{ id: string; username: string }[]> => {
   // hotfix: empty array returns all records
-  if (userIds.length === 0) return [];
+  if (userIds.filter(Boolean).length === 0) return [];
 
   const response = await chain("query")(
     {
