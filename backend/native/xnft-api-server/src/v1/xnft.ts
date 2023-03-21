@@ -2,11 +2,10 @@ import type { Xnft } from "@coral-xyz/common";
 import { IDL } from "@coral-xyz/common";
 import type { Provider } from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
-import { Connection,PublicKey } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import express from "express";
 
-import { authMiddleware, authSignatureMiddleware } from "../auth/middleware";
-import { getUserIdFromPubkey } from "../db/users";
+import { authSignatureMiddleware } from "../auth/middleware";
 import { createXnftSecret, fetchXnftSecret } from "../db/xnftSecrets";
 import { isXnftOwner } from "../solana";
 
