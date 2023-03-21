@@ -46,4 +46,5 @@ export const DROPZONE_PERMITTED_AUTHORITIES =
     : [];
 
 export const TWITTER_CONSUMER_KEY = process.env.TWITTER_CONSUMER_KEY || "";
-export const TWITTER_CONSUMER_SECRET = process.env.TWITTER_CONSUME_SECRET || "";
+export const TWITTER_CONSUMER_SECRET =
+  process.env.TWITTER_CONSUMER_SECRET || "";
