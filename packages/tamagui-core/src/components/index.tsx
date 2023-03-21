@@ -1,8 +1,8 @@
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { HOVER_OPACITY } from "@coral-xyz/themes";
 
 import { useCustomTheme } from "../hooks/index";
-import { HOVER_OPACITY } from "../theme";
 export * from "./Images";
 export { SearchBox } from "./SearchBox";
 

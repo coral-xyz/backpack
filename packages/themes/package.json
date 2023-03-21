@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "module": "dist/esm/index.js",
   "source": "src/index.tsx",
-  "react-native": "dist/esm/index.js",
+  "react-native": "src/index.tsx",
   "types": "dist/esm/index.d.ts",
   "files": [
     "dist"
