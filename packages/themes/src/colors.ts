@@ -51,7 +51,7 @@ export const LIGHT_RED_BORDER_MED = "#FFDCD9";
 export const DARK_RED_BORDER_LIGHT = "rgba(241,50,54,0.4)";
 export const DARK_RED_BORDER_MED = "rgba(241,50,54,0.4)";
 
-const DARK_COLORS: CustomColors = {
+export const DARK_COLORS: CustomColors = {
   blue: "#3498db",
   smallTextColor: DARK_TEXT_SMALL_COLOR,
   brandColor: BRAND_COLOR,
@@ -139,7 +139,7 @@ const DARK_EVERYTHING_ELSE: NonColorsBeCareful = {
     "linear-gradient(180deg, rgba(255, 255, 255, 0.04) 20%, rgba(0, 0, 0, 0) 100%), #18181B",
 };
 
-const LIGHT_COLORS: CustomColors = {
+export const LIGHT_COLORS: CustomColors = {
   blue: "blue",
   smallTextColor: LIGHT_TEXT_SMALL_COLOR,
   brandColor: LIGHT_BRAND_COLOR,
