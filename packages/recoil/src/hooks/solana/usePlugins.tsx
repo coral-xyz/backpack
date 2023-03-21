@@ -72,7 +72,8 @@ export function useOpenPlugin(): (xnftAddress: string) => void {
   const background = useRecoilValue(atoms.backgroundClient);
 
   return (xnftAddress) => {
-    const url = `xnft/${xnftAddress}`;
+    const normalizedXnftAddress = xnftAddress.replace(/\.+\//g, ""); // simple normalize to prevent: "goodxnft/../badxnft"
+    const url = `xnft/${normalizedXnftAddress}`;
     background
       .request({
         method: UI_RPC_METHOD_NAVIGATION_PUSH,

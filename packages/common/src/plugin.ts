@@ -114,8 +114,11 @@ export class Plugin {
       { padding: false }
     );
 
+    const isDevnetHACKY =
+      this._connectionUrls[Blockchain.SOLANA]?.includes("devnet");
+
     const iframeRootUrl =
-      url.startsWith("ar://") || url.startsWith("ipfs://")
+      !isDevnetHACKY && (url.startsWith("ar://") || url.startsWith("ipfs://"))
         ? //  || this.xnftAddress.toBase58() ===
           //   "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8"
           `https://${xnftAddressB32}.gateway.xnfts.dev`
@@ -586,7 +589,13 @@ export class Plugin {
     return ["success"];
   }
 
-  private async _handleWindowOpen(url: string): Promise<RpcResponse> {
+  private async _handleWindowOpen(_url: string): Promise<RpcResponse> {
+    const url = new URL(_url);
+
+    if (!url.protocol.startsWith("http")) {
+      throw "Invalid url.";
+    }
+
     window.open(url, "_blank");
     return ["success"];
   }

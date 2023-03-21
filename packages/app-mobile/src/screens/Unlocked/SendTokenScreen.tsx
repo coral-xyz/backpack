@@ -364,7 +364,7 @@ export function SendTokenConfirmScreen({
         {getButton(isSendDisabled, isAmountError)}
       </Screen>
       <BottomSheetModal
-        snapPoints={[800, 420]}
+        snapPoints={[500, 420]}
         isVisible={isModalVisible}
         index={modalIndex}
         resetVisibility={() => {

@@ -8,3 +8,8 @@ export const EthereumConnectionUrl = {
     process.env.DEFAULT_ETHEREUM_CONNECTION_URL ||
     "https://swr.xnfts.dev/ethereum-rpc-proxy",
 };
+
+export const EthereumChainIds = {
+  "0x1": "MAINNET",
+  "0x5": "GOERLI",
+};
