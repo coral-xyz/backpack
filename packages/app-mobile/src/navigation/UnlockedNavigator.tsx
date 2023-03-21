@@ -18,6 +18,7 @@ import {
 import { useTheme } from "~hooks/useTheme";
 import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 // import AppListScreen from "~screens/Unlocked/AppListScreen"; // TURNED off bc of app store restrictions (temporarily)
+import { ChatNavigator } from "~navigation/ChatNavigator";
 import { BalancesNavigator } from "~screens/Unlocked/BalancesScreen";
 import {
   DepositListScreen,
@@ -136,6 +137,7 @@ type UnlockedTabNavigatorParamList = {
   Balances: undefined;
   Applications: undefined;
   Collectibles: undefined;
+  Chat: undefined;
 };
 
 const Tab = createBottomTabNavigator<UnlockedTabNavigatorParamList>();
@@ -149,7 +151,7 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         return TabIconApps;
       case "Collectibles":
         return TabIconNfts;
-      case "Messages":
+      case "Chat":
         return TabIconMessages;
       default:
         return TabIconBalances;
@@ -171,6 +173,7 @@ function UnlockedBottomTabNavigator(): JSX.Element {
     >
       <Tab.Screen name="Balances" component={BalancesNavigator} />
       <Tab.Screen name="Collectibles" component={NftCollectiblesNavigator} />
+      <Tab.Screen name="Chat" component={ChatNavigator} />
     </Tab.Navigator>
   );
 }

@@ -5,6 +5,7 @@ import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 import { v1 } from "uuid";
 
+import { BACKPACK_TEAM } from "./constants";
 import { Blockchain } from "./types";
 
 const usd = new Intl.NumberFormat("en-US", {
@@ -223,3 +224,81 @@ export function validateSolanaPrivateKey(privateKey: string): {
     blockchain: Blockchain.SOLANA,
   };
 }
+
+// Used in Chat / Messaging
+export function formatAMPM(date: Date) {
+  let hours = date.getHours();
+  let minutes: string | number = date.getMinutes();
+  let ampm = hours >= 12 ? "pm" : "am";
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? "0" + minutes : minutes;
+  return hours + ":" + minutes + " " + ampm;
+}
+
+// Used in Chat / Messaging
+export const parseMessage = (
+  message: string
+): { type: "text" | "tag"; value: string }[] => {
+  const parts: { type: "text" | "tag"; value: string }[] = [];
+  let curStr = "";
+  for (let i = 0; i < message.length; i++) {
+    if (message[i] === "<" && message[i + 1] === "@") {
+      if (curStr) {
+        parts.push({
+          type: "text",
+          value: curStr,
+        });
+        curStr = "";
+      }
+
+      while (i < message.length && message[i] !== "|") {
+        i++;
+      }
+      i++;
+      i++;
+      let userId = "";
+      while (i < message.length && message[i] !== ">") {
+        userId += message[i];
+        i++;
+      }
+      if (i === message.length) {
+        parts.push({
+          type: "text",
+          value: userId,
+        });
+      } else {
+        parts.push({
+          type: "tag",
+          value: userId,
+        });
+      }
+    } else {
+      curStr += message[i];
+    }
+  }
+  if (curStr) {
+    parts.push({
+      type: "text",
+      value: curStr,
+    });
+  }
+  return parts;
+};
+
+const backpackSet = new Set(BACKPACK_TEAM);
+export const isBackpackTeam = (id: string): boolean => backpackSet.has(id);
+export const formatMessage = (message: string, users: any) => {
+  const parts = parseMessage(message || "");
+  const printText = parts
+    .map((x) => (x.type === "tag" ? users[x.value]?.username : x.value))
+    .join("");
+
+  if (printText) {
+    return printText.length > 25
+      ? printText.substring(0, 22) + "..."
+      : printText;
+  }
+
+  return "";
+};
