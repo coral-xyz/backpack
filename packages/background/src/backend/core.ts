@@ -25,6 +25,7 @@ import {
   getAccountRecoveryPaths,
   getAddMessage,
   getRecoveryPaths,
+  makeUrl,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
@@ -67,11 +68,7 @@ import {
   TAB_XNFT,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
-import {
-  KeyringStoreStateEnum,
-  makeDefaultNav,
-  makeUrl,
-} from "@coral-xyz/recoil";
+import { KeyringStoreStateEnum, makeDefaultNav } from "@coral-xyz/recoil";
 import type {
   Commitment,
   SendOptions,
