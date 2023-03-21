@@ -26,4 +26,5 @@ export const MOBILE_DARK_THEME = {
   },
 };
 
-export type CustomTheme = typeof MOBILE_LIGHT_THEME & typeof MOBILE_DARK_THEME;
+export type MobileCustomTheme = typeof MOBILE_LIGHT_THEME &
+  typeof MOBILE_DARK_THEME;
