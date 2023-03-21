@@ -11,9 +11,14 @@ import {
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
   UI_RPC_METHOD_KEYRING_SET_MNEMONIC,
+  UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
 } from "@coral-xyz/common";
 import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
-import { useBackgroundClient, useRpcRequests } from "@coral-xyz/recoil";
+import {
+  useBackgroundClient,
+  useDehydratedWallets,
+  useRpcRequests,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
 
@@ -48,6 +53,7 @@ export function ImportMnemonic({
   const { step, nextStep } = useSteps();
   const { close: closeParentDrawer } = useDrawerContext();
   const { signMessageForWallet } = useRpcRequests();
+  const dehydratedWallets = useDehydratedWallets();
 
   const [openDrawer, setOpenDrawer] = useState(false);
   const [mnemonic, setMnemonic] = useState<string | true>(true);
@@ -78,6 +84,15 @@ export function ImportMnemonic({
         method: UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
         params: [signedWalletDescriptor],
       });
+      const walletsToSync = dehydratedWallets.filter(
+        (w) => w.publicKey !== publicKey
+      );
+      if (walletsToSync.length > 0) {
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
+          params: [walletsToSync],
+        });
+      }
     } else {
       if (!inputMnemonic) {
         if (keyringExists) {
@@ -149,27 +164,31 @@ export function ImportMnemonic({
       recovery={publicKey}
       allowMultiple={false}
       onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
-        // Should only be one wallet descriptor
-        const walletDescriptor = walletDescriptors[0];
-        const message = getAddMessage(walletDescriptor.publicKey);
-        const signature = await signMessageForWallet(
-          walletDescriptor.blockchain,
-          walletDescriptor.publicKey,
-          message,
-          {
-            mnemonic,
-            signedWalletDescriptors: [
-              {
-                ...walletDescriptor,
-                signature: "",
-              },
-            ],
-          }
-        );
-        await onComplete({
-          ...walletDescriptor,
-          signature,
-        });
+        try {
+          // Should only be one wallet descriptor
+          const walletDescriptor = walletDescriptors[0];
+          const message = getAddMessage(walletDescriptor.publicKey);
+          const signature = await signMessageForWallet(
+            walletDescriptor.blockchain,
+            walletDescriptor.publicKey,
+            message,
+            {
+              mnemonic,
+              signedWalletDescriptors: [
+                {
+                  ...walletDescriptor,
+                  signature: "",
+                },
+              ],
+            }
+          );
+          await onComplete({
+            ...walletDescriptor,
+            signature,
+          });
+        } catch (err) {
+          console.log("ARMANI HERE ERR", err);
+        }
       }}
     />,
   ];
