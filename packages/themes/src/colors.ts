@@ -51,6 +51,7 @@ export const LIGHT_RED_BORDER_MED = "#FFDCD9";
 export const DARK_RED_BORDER_LIGHT = "rgba(241,50,54,0.4)";
 export const DARK_RED_BORDER_MED = "rgba(241,50,54,0.4)";
 
+// NOTE: Do not include anything but colors in here. No box shadows, borders, etc.
 export const DARK_COLORS: CustomColors = {
   blue: "#3498db",
   smallTextColor: DARK_TEXT_SMALL_COLOR,
@@ -121,6 +122,7 @@ export const DARK_COLORS: CustomColors = {
   chatFadeGradientStart: "rgba(255, 255, 255, 0.04)",
 };
 
+// NOTE: Do not include anything but colors in here. No box shadows, borders, etc.
 export const LIGHT_COLORS: CustomColors = {
   blue: "blue",
   smallTextColor: LIGHT_TEXT_SMALL_COLOR,
@@ -251,6 +253,8 @@ export const MUI_LIGHT_THEME: MuiCustomTheme = {
   ...LIGHT_WEB_ONLY_NON_COLORS,
 };
 
+// Include box shadows, borders, etc in here.
+// Eventually "2px solid black" should be split into borderColor, borderStyle, borderWidth
 type WebOnlyNonColors = {
   borderButton: string;
   borderFull: string;
@@ -271,6 +275,7 @@ type NativeOverrides = {
   textInputBorderHovered: string;
 };
 
+// NOTE: Do not include anything but colors in here. No box shadows, borders, etc.
 export type CustomColors = {
   alpha: string;
   approveTransactionCloseBackground: string;
