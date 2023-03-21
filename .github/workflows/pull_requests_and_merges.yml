@@ -34,7 +34,7 @@ jobs:
       ##########################################################################
 
       - name: yarn install
-        run: yarn install --frozen-lockfile --immutable
+        run: yarn install --frozen-lockfile --prefer-offline
 
       ##########################################################################
       # Build extension.
