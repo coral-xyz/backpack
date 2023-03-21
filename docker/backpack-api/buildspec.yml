@@ -14,6 +14,8 @@ env:
     HELIUS_API_KEY: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:HELIUS_API_KEY"
     VAPID_PRIVATE_KEY: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:VAPID_PRIVATE_KEY"
     VAPID_PUBLIC_KEY: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:VAPID_PUBLIC_KEY"
+    TWITTER_CONSUMER_KEY: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:TWITTER_CONSUMER_KEY"
+    TWITTER_CONSUMER_SECRET: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:TWITTER_CONSUMER_SECRET"
 
 phases:
   install:
@@ -36,6 +38,8 @@ phases:
       - printf "HELIUS_API_KEY=%s\n" "$HELIUS_API_KEY" >> .env
       - printf "VAPID_PRIVATE_KEY=%s\n" "$VAPID_PRIVATE_KEY" >> .env
       - printf "VAPID_PUBLIC_KEY=%s\n" "$VAPID_PUBLIC_KEY" >> .env
+      - printf "TWITTER_CONSUMER_KEY=%s\n" "$TWITTER_CONSUMER_KEY" >> .env
+      - printf "TWITTER_CONSUMER_SECRET=%s\n" "$TWITTER_CONSUMER_SECRET" >> .env
       - cd ../../..
 artifacts:
   files:

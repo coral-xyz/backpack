@@ -17,6 +17,7 @@ import proxyRouter from "./routes/v1/proxy";
 import publicKeysRouter from "./routes/v1/public-keys";
 import referralsRouter from "./routes/v1/referrals";
 import s3Router from "./routes/v1/s3";
+import twitterRouter from "./routes/v1/twitter";
 import txParsingRouter from "./routes/v1/tx-parsing";
 import usersRouter from "./routes/v1/users";
 import { zodErrorToString } from "./util";
@@ -44,6 +45,7 @@ app.use("/proxy", proxyRouter);
 app.use("/publicKeys", publicKeysRouter);
 app.use("/referrals", referralsRouter);
 app.use("/s3", s3Router);
+app.use("/twitter", twitterRouter);
 app.use("/tx-parsing", txParsingRouter);
 app.use("/users", usersRouter);
 app.use(

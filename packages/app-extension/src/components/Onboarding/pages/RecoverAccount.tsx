@@ -20,6 +20,7 @@ import { Finish } from "./Finish";
 import { KeyringTypeSelector } from "./KeyringTypeSelector";
 import { MnemonicSearch } from "./MnemonicSearch";
 import { RecoverAccountUsernameForm } from "./RecoverAccountUsernameForm";
+import { TwitterConnect } from "./TwitterConnect";
 
 export const RecoverAccount = ({
   onClose,
@@ -68,6 +69,7 @@ export const RecoverAccount = ({
   });
 
   const steps = [
+    // <TwitterConnect key="TwitterConnect" />,
     <RecoverAccountUsernameForm
       key="RecoverAccountUsernameForm"
       onNext={(

@@ -31,6 +31,8 @@ jobs:
           printf 'VAPID_PRIVATE_KEY=%s\n' '${{secrets.VAPID_PRIVATE_KEY}}' >> .env
           printf 'VAPID_PUBLIC_KEY=%s\n' '${{secrets.VAPID_PUBLIC_KEY}}' >> .env
           printf 'SENTRY_DSN=%s\n' '${{secrets.SENTRY_DSN}}' >> .env
+          printf 'TWITTER_CONSUMER_KEY=%s\n' '${{secrets.TWITTER_CONSUMER_KEY}}' >> .env
+          printf 'TWITTER_CONSUMER_SECRET=%s\n' '${{secrets.TWITTER_CONSUMER_SECRET}}' >> .env
           cd ../../..
 
       - name: docker login
