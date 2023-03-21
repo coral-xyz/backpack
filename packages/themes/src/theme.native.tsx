@@ -1,4 +1,3 @@
-// Native only for now. Will rename to theme.native.tsx but webpack/app-extension didn't like that
 import { baseTheme } from "./base";
 import {
   DARK_COLORS,
