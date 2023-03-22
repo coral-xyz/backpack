@@ -10,7 +10,6 @@
     "dev:remote": "wrangler dev --port 9999 --local-protocol https",
     "start": "miniflare --live-reload --debug --modules dist/index.mjs --https --port 9999"
   },
-  "dependencies": {},
   "devDependencies": {
     "esbuild": "^0.14.47",
     "eslint-config-custom": "*",
