@@ -9833,11 +9833,11 @@ __metadata:
   linkType: hard
 
 "@supabase/gotrue-js@npm:^2.12.0":
-  version: 2.15.0
-  resolution: "@supabase/gotrue-js@npm:2.15.0"
+  version: 2.16.0
+  resolution: "@supabase/gotrue-js@npm:2.16.0"
   dependencies:
     cross-fetch: ^3.1.5
-  checksum: af9b8616c9ddbfd48631170797b1cca39687add34dddfe83dc79c2353389624a1812694b75ff414106c79bb7303ac4ec12a268e8ba60362b10c4a71573b73182
+  checksum: c0c322dc8becaa77fa5a7093288a3227a5f092ec396347de360210970e8970f94dd50a9cb16e3b49aa66053c2b8a5ca5f5afb9b4be44426eac23342f48096bbb
   languageName: node
   linkType: hard
 
@@ -9891,90 +9891,90 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-arm64@npm:1.3.41":
-  version: 1.3.41
-  resolution: "@swc/core-darwin-arm64@npm:1.3.41"
+"@swc/core-darwin-arm64@npm:1.3.42":
+  version: 1.3.42
+  resolution: "@swc/core-darwin-arm64@npm:1.3.42"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-x64@npm:1.3.41":
-  version: 1.3.41
-  resolution: "@swc/core-darwin-x64@npm:1.3.41"
+"@swc/core-darwin-x64@npm:1.3.42":
+  version: 1.3.42
+  resolution: "@swc/core-darwin-x64@npm:1.3.42"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm-gnueabihf@npm:1.3.41":
-  version: 1.3.41
-  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.3.41"
+"@swc/core-linux-arm-gnueabihf@npm:1.3.42":
+  version: 1.3.42
+  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.3.42"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-gnu@npm:1.3.41":
-  version: 1.3.41
-  resolution: "@swc/core-linux-arm64-gnu@npm:1.3.41"
+"@swc/core-linux-arm64-gnu@npm:1.3.42":
+  version: 1.3.42
+  resolution: "@swc/core-linux-arm64-gnu@npm:1.3.42"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-musl@npm:1.3.41":
-  version: 1.3.41
-  resolution: "@swc/core-linux-arm64-musl@npm:1.3.41"
+"@swc/core-linux-arm64-musl@npm:1.3.42":
+  version: 1.3.42
+  resolution: "@swc/core-linux-arm64-musl@npm:1.3.42"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-gnu@npm:1.3.41":
-  version: 1.3.41
-  resolution: "@swc/core-linux-x64-gnu@npm:1.3.41"
+"@swc/core-linux-x64-gnu@npm:1.3.42":
+  version: 1.3.42
+  resolution: "@swc/core-linux-x64-gnu@npm:1.3.42"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-musl@npm:1.3.41":
-  version: 1.3.41
-  resolution: "@swc/core-linux-x64-musl@npm:1.3.41"
+"@swc/core-linux-x64-musl@npm:1.3.42":
+  version: 1.3.42
+  resolution: "@swc/core-linux-x64-musl@npm:1.3.42"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-win32-arm64-msvc@npm:1.3.41":
-  version: 1.3.41
-  resolution: "@swc/core-win32-arm64-msvc@npm:1.3.41"
+"@swc/core-win32-arm64-msvc@npm:1.3.42":
+  version: 1.3.42
+  resolution: "@swc/core-win32-arm64-msvc@npm:1.3.42"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-win32-ia32-msvc@npm:1.3.41":
-  version: 1.3.41
-  resolution: "@swc/core-win32-ia32-msvc@npm:1.3.41"
+"@swc/core-win32-ia32-msvc@npm:1.3.42":
+  version: 1.3.42
+  resolution: "@swc/core-win32-ia32-msvc@npm:1.3.42"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@swc/core-win32-x64-msvc@npm:1.3.41":
-  version: 1.3.41
-  resolution: "@swc/core-win32-x64-msvc@npm:1.3.41"
+"@swc/core-win32-x64-msvc@npm:1.3.42":
+  version: 1.3.42
+  resolution: "@swc/core-win32-x64-msvc@npm:1.3.42"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
 "@swc/core@npm:^1.3.22":
-  version: 1.3.41
-  resolution: "@swc/core@npm:1.3.41"
+  version: 1.3.42
+  resolution: "@swc/core@npm:1.3.42"
   dependencies:
-    "@swc/core-darwin-arm64": 1.3.41
-    "@swc/core-darwin-x64": 1.3.41
-    "@swc/core-linux-arm-gnueabihf": 1.3.41
-    "@swc/core-linux-arm64-gnu": 1.3.41
-    "@swc/core-linux-arm64-musl": 1.3.41
-    "@swc/core-linux-x64-gnu": 1.3.41
-    "@swc/core-linux-x64-musl": 1.3.41
-    "@swc/core-win32-arm64-msvc": 1.3.41
-    "@swc/core-win32-ia32-msvc": 1.3.41
-    "@swc/core-win32-x64-msvc": 1.3.41
+    "@swc/core-darwin-arm64": 1.3.42
+    "@swc/core-darwin-x64": 1.3.42
+    "@swc/core-linux-arm-gnueabihf": 1.3.42
+    "@swc/core-linux-arm64-gnu": 1.3.42
+    "@swc/core-linux-arm64-musl": 1.3.42
+    "@swc/core-linux-x64-gnu": 1.3.42
+    "@swc/core-linux-x64-musl": 1.3.42
+    "@swc/core-win32-arm64-msvc": 1.3.42
+    "@swc/core-win32-ia32-msvc": 1.3.42
+    "@swc/core-win32-x64-msvc": 1.3.42
   dependenciesMeta:
     "@swc/core-darwin-arm64":
       optional: true
@@ -9996,7 +9996,7 @@ __metadata:
       optional: true
     "@swc/core-win32-x64-msvc":
       optional: true
-  checksum: e2d2bd2d1821608bfafab66f7b94d31b4ae3f486ad6d18aa30abca961299431a26ab2dfc04a7e614f8b8f6680d9790f0596f43e18d0b794e2802136c1d5e3376
+  checksum: 5c28c03ee6a4e1f630c4a519b56d7e23a0102f70fad977a3ab144a3da96231cf4849e473cdc9ee7be6b9266ba0838d0bc0b6b3575a75540f302befe96cc9606e
   languageName: node
   linkType: hard
 
@@ -18603,13 +18603,13 @@ __metadata:
   linkType: hard
 
 "emoji-picker-react@npm:^4.4.5":
-  version: 4.4.7
-  resolution: "emoji-picker-react@npm:4.4.7"
+  version: 4.4.8
+  resolution: "emoji-picker-react@npm:4.4.8"
   dependencies:
     clsx: ^1.2.1
   peerDependencies:
     react: ">=16"
-  checksum: 76d3c56a1d4f3ae23e0544350b7eaee3a53cee660d78acbdff07330a8a659b99778ad04a9020ba586afe7b2d7294065540d9c3d4199d9ea93eeb8ff9091cc5d8
+  checksum: e7e3b4af4592c6c2006d4595c4141affd9f83ae1a80cc1f3c641c77204e3f2f86a0b6baa2ec51c12c4339a13a184cb38667429d4b976d9c305dd8b4ebb9f3d4d
   languageName: node
   linkType: hard
 
@@ -25900,9 +25900,9 @@ __metadata:
   linkType: hard
 
 "js-sdsl@npm:^4.1.4":
-  version: 4.3.0
-  resolution: "js-sdsl@npm:4.3.0"
-  checksum: ce908257cf6909e213af580af3a691a736f5ee8b16315454768f917a682a4ea0c11bde1b241bbfaecedc0eb67b72101b2c2df2ffaed32aed5d539fca816f054e
+  version: 4.4.0
+  resolution: "js-sdsl@npm:4.4.0"
+  checksum: 7bb08a2d746ab7ff742720339aa006c631afe05e77d11eda988c1c35fae8e03e492e4e347e883e786e3ce6170685d4780c125619111f0730c11fdb41b04059c7
   languageName: node
   linkType: hard
 
