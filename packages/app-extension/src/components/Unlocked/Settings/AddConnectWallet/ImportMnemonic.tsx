@@ -34,6 +34,42 @@ import { useNavigation } from "../../../common/Layout/NavStack";
 
 import { ConfirmCreateWallet } from "./";
 
+// WARNING: this will force set the mnemonic. Only use this if no mnemonic
+//          exists.
+export function ImportMnemonicAutomatic({
+  blockchain,
+  keyringExists,
+}: {
+  blockchain: Blockchain;
+  keyringExists: boolean;
+}) {
+  const background = useBackgroundClient();
+  const dehydratedWallets = useDehydratedWallets();
+
+  const onSync = async (mnemonic: string) => {
+    await background.request({
+      method: UI_RPC_METHOD_KEYRING_SET_MNEMONIC,
+      params: [mnemonic],
+    });
+    if (dehydratedWallets.length > 0) {
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
+        params: [dehydratedWallets],
+      });
+    }
+  };
+
+  return (
+    <MnemonicInput
+      key="MnemonicInput"
+      buttonLabel="Next"
+      onNext={async (mnemonic) => {
+        onSync(mnemonic);
+      }}
+    />
+  );
+}
+
 export function ImportMnemonic({
   blockchain,
   keyringExists,

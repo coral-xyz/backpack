@@ -17,7 +17,10 @@ import {
   CreateOrImportMnemonic,
 } from "./AddConnectWallet/CreateMnemonic";
 import { ImportMenu } from "./AddConnectWallet/ImportMenu";
-import { ImportMnemonic } from "./AddConnectWallet/ImportMnemonic";
+import {
+  ImportMnemonic,
+  ImportMnemonicAutomatic,
+} from "./AddConnectWallet/ImportMnemonic";
 import { ImportSecretKey } from "./AddConnectWallet/ImportSecretKey";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
 import { PreferencesEthereum } from "./Preferences/Ethereum";
@@ -87,6 +90,10 @@ export function SettingsNavStackDrawer({
           <NavStackScreen
             name="import-from-mnemonic"
             component={(props: any) => <ImportMnemonic {...props} />}
+          />
+          <NavStackScreen
+            name="set-and-sync-mnemonic"
+            component={(props: any) => <ImportMnemonicAutomatic {...props} />}
           />
           <NavStackScreen
             name="import-from-secret-key"
