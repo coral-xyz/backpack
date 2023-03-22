@@ -6,7 +6,6 @@
     "start": "xnft legacy start",
     "dev": "xnft legacy dev"
   },
-  "devDependencies": {},
   "dependencies": {
     "@coral-xyz/xnft-cli": "0.2.0-latest.3331",
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
