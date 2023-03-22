@@ -66,8 +66,6 @@ You can also optionally rename `.env.example` to `.env` and set your own variabl
 yarn install
 ```
 
-Note: yarn `^1.22.17` is required but this is sometimes ignored by more recent versions of yarn while installing, so if you have any issues make sure to manually check you are using v1 with `yarn -v`
-
 ### Build all packages for production
 
 ```bash
