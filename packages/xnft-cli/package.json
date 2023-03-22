@@ -4,7 +4,6 @@
   "bin": {
     "xnft": "./index.js"
   },
-  "scripts": {},
   "browserslist": [
     "last 1 chrome version",
     "last 1 firefox version",
