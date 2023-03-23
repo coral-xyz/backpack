@@ -5,14 +5,15 @@ import {
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
   getLogger,
+  makeUrl,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED,
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED,
   PLUGIN_NOTIFICATION_UNMOUNT,
   PLUGIN_NOTIFICATION_UPDATE_METADATA,
-  PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
-  PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
+  PLUGIN_RPC_METHOD_CHAT_OPEN,
+  PLUGIN_RPC_METHOD_CLOSE_TO,
   PLUGIN_RPC_METHOD_PLUGIN_OPEN,
   PLUGIN_RPC_METHOD_POP_OUT,
   PLUGIN_RPC_METHOD_WINDOW_OPEN,
@@ -70,20 +71,6 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
     this.#setupChannels();
   }
 
-  public async getStorage<T = any>(key: string): Promise<T> {
-    return await this.#requestManager.request({
-      method: PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
-      params: [key],
-    });
-  }
-
-  public async setStorage<T = any>(key: string, val: T): Promise<void> {
-    await this.#requestManager.request({
-      method: PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
-      params: [key, val],
-    });
-  }
-
   public async openWindow(url: string) {
     await this.#requestManager.request({
       method: PLUGIN_RPC_METHOD_WINDOW_OPEN,
@@ -98,10 +85,45 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
     });
   }
 
-  public async popout(fullscreen: boolean) {
+  public async openChat(chatId: string, mintAddress: string) {
+    await this.#requestManager.request({
+      method: PLUGIN_RPC_METHOD_CHAT_OPEN,
+      params: [chatId, mintAddress],
+    });
+  }
+
+  public async closePluginTo(
+    {
+      title,
+      componentId,
+      componentProps,
+      pushAboveRoot,
+    }: {
+      title: string;
+      componentId: string;
+      componentProps: any;
+      pushAboveRoot?: boolean;
+    },
+    tab?: string
+  ) {
+    const url = makeUrl(componentId, {
+      props: componentProps,
+      title,
+    });
+    await this.#requestManager.request({
+      method: PLUGIN_RPC_METHOD_CLOSE_TO,
+      params: [url, tab],
+    });
+  }
+
+  public async popout(options?: {
+    fullscreen?: boolean;
+    width: number;
+    height: number;
+  }) {
     await this.#requestManager.request({
       method: PLUGIN_RPC_METHOD_POP_OUT,
-      params: [fullscreen],
+      params: [options],
     });
   }
 

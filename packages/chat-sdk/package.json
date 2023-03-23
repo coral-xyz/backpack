@@ -13,8 +13,8 @@
   "dependencies": {
     "@coral-xyz/common": "*",
     "@coral-xyz/db": "*",
-    "@coral-xyz/recoil": "*",
     "@coral-xyz/react-common": "*",
+    "@coral-xyz/recoil": "*",
     "@coral-xyz/tamagui": "*",
     "@coral-xyz/themes": "*",
     "@giphy/js-fetch-api": "^4.4.0",
@@ -30,6 +30,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "tsc-alias": "^1.7.0",
     "typescript": "~4.9.3"
   },
   "targets": {

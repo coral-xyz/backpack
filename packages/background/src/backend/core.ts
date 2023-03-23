@@ -25,6 +25,7 @@ import {
   getAccountRecoveryPaths,
   getAddMessage,
   getRecoveryPaths,
+  makeUrl,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
@@ -67,11 +68,7 @@ import {
   TAB_XNFT,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
-import {
-  KeyringStoreStateEnum,
-  makeDefaultNav,
-  makeUrl,
-} from "@coral-xyz/recoil";
+import { KeyringStoreStateEnum, makeDefaultNav } from "@coral-xyz/recoil";
 import type {
   Commitment,
   SendOptions,
@@ -1840,6 +1837,8 @@ export class Backend {
           throw new Error("opening an xnft that is not whitelisted");
         }
       }
+    } else {
+      delete nav.data[TAB_XNFT];
     }
 
     nav.data[targetTab] = nav.data[targetTab] ?? { id: targetTab, urls: [] };
@@ -1954,10 +1953,15 @@ export class Backend {
     if (!currNav) {
       throw new Error("invariant violation");
     }
+
     const nav = {
       ...currNav,
       activeTab,
     };
+
+    if (activeTab !== TAB_XNFT) {
+      delete nav.data[TAB_XNFT];
+    }
 
     // Newly introduced messages tab needs to be added to the
     // store for backward compatability
@@ -1983,6 +1987,12 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async navigationOpenChat(chatName: string): Promise<string> {
+    console.log("openchat");
+
+    return SUCCESS_RESPONSE;
+  }
+
   async navigationCurrentUrlUpdate(
     url: string,
     activeTab?: string
@@ -1991,6 +2001,10 @@ export class Backend {
     const currNav = await store.getNav();
     if (!currNav) {
       throw new Error("invariant violation");
+    }
+
+    if (activeTab !== TAB_XNFT) {
+      delete currNav.data[TAB_XNFT];
     }
 
     // Update the active tab's nav stack.
