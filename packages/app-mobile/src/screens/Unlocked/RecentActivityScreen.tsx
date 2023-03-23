@@ -33,6 +33,23 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { EmptyState, Screen } from "~components/index";
 import { getBlockchainLogo, useTheme } from "~hooks/index";
 
+// Used since Solana transactions have a timestamp and Ethereum transactions have a date.
+const extractTime = (tx: any) => {
+  if (tx?.timestamp) {
+    return tx.timestamp;
+  } else if (tx?.date) {
+    return tx.date.getTime();
+  }
+
+  return 0;
+};
+
+const formatTransactions = (transactions: RecentTransaction[]) => {
+  return [...transactions].sort((a, b) =>
+    extractTime(a) > extractTime(b) ? -1 : 1
+  );
+};
+
 export function RecentActivityScreen() {
   const insets = useSafeAreaInsets();
   return (
@@ -47,11 +64,8 @@ function RecentSolanaActivity({ address }: { address: string }): JSX.Element {
     address,
   });
 
-  const mergedTransactions = [...recentTransactions].sort(
-    (a, b) => b.date.getTime() - a.date.getTime()
-  );
-
-  return <_RecentActivityList transactions={mergedTransactions} />;
+  const transactions = formatTransactions(recentTransactions);
+  return <_RecentActivityList transactions={transactions} />;
 }
 
 function RecentEthereumActivity({ address }: { address: string }): JSX.Element {
@@ -59,11 +73,8 @@ function RecentEthereumActivity({ address }: { address: string }): JSX.Element {
     address,
   });
 
-  const mergedTransactions = [...recentTransactions].sort(
-    (a, b) => b.date.getTime() - a.date.getTime()
-  );
-
-  return <_RecentActivityList transactions={mergedTransactions} />;
+  const transactions = formatTransactions(recentTransactions);
+  return <_RecentActivityList transactions={transactions} />;
 }
 
 function RecentActivity() {
@@ -238,7 +249,17 @@ function RecentActivityListItem({
               lineHeight: 24,
             }}
           >
-            {transaction.date.toLocaleDateString()}
+            {
+              // TODO: Standardize the parsed ethereum and solana transactions
+              //       so that `transaction.date` can be used for both of them
+              (
+                (transaction.date
+                  ? // ethereum transactions provide a date
+                    transaction.date
+                  : // solana transactions provide a timestamp in seconds
+                    new Date(transaction.timestamp * 1000)) as Date
+              ).toLocaleString()
+            }
           </Text>
         </View>
       </View>
