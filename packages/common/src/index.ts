@@ -25,6 +25,7 @@ export * from "./explorer";
 export * from "./feature-gates";
 export * from "./logging";
 export * from "./messages";
+export * from "./navigation";
 export * from "./notifications";
 export * from "./plugin";
 export * from "./preferences";

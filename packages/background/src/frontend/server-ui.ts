@@ -68,6 +68,7 @@ import {
   UI_RPC_METHOD_LEDGER_IMPORT,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+  UI_RPC_METHOD_NAVIGATION_OPEN_CHAT,
   UI_RPC_METHOD_NAVIGATION_POP,
   UI_RPC_METHOD_NAVIGATION_PUSH,
   UI_RPC_METHOD_NAVIGATION_READ,
@@ -248,6 +249,9 @@ async function handle<T = any>(
         toggleAutoLockEnabled(params[0]);
       }
       return await handleNavigationCurrentUrlUpdate(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_NAVIGATION_OPEN_CHAT:
+      return await handleNavigationOpenChat(ctx, params[0]);
+
     case UI_RPC_METHOD_NAVIGATION_READ:
       const navigationData = await handleNavRead(ctx);
       if (navigationData) {
@@ -788,6 +792,13 @@ async function handleNavigationCurrentUrlUpdate(
   activeTab?: string
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.navigationCurrentUrlUpdate(url, activeTab);
+  return [resp];
+}
+async function handleNavigationOpenChat(
+  ctx: Context<Backend>,
+  chatName: string
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.navigationOpenChat(chatName);
   return [resp];
 }
 

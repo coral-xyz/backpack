@@ -88,8 +88,8 @@ export function NFTCard({
     }
   };
 
-  const openDetails = () => {
-    push({
+  const openDetails = async () => {
+    await push({
       title: nft.name,
       componentId: NAV_COMPONENT_NFT_DETAIL,
       componentProps: {

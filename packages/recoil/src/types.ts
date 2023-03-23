@@ -1,4 +1,5 @@
 import {
+  makeUrl,
   TAB_APPS,
   TAB_BALANCES,
   TAB_MESSAGES,
@@ -9,8 +10,6 @@ import {
 } from "@coral-xyz/common";
 import type { BigNumber } from "ethers";
 import type { RecoilValueReadOnly } from "recoil";
-
-import { makeUrl } from "./hooks";
 
 //
 // Client side public keys
