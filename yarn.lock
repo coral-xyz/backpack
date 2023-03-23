@@ -3191,14 +3191,10 @@ __metadata:
     "@types/jest": ^28.1.6
     "@types/react": ^18.0.28
     "@types/react-native": ~0.71.3
-    "@typescript-eslint/eslint-plugin": ^5.31.0
-    "@typescript-eslint/parser": ^5.31.0
     babel-plugin-transform-inline-environment-variables: ^0.4.4
     big-integer: ^1.6.51
     buffer: ^6.0.3
-    eslint: ^8.20.0
-    eslint-plugin-import: ^2.26.0
-    eslint-plugin-simple-import-sort: ^7.0.0
+    eslint-config-custom: "*"
     ethers: ^5.7.2
     expo: ^48.0.4
     expo-blur: ~12.2.1
@@ -12558,7 +12554,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^5.31.0, @typescript-eslint/eslint-plugin@npm:^5.32.0, @typescript-eslint/eslint-plugin@npm:^5.45.1":
+"@typescript-eslint/eslint-plugin@npm:^5.32.0, @typescript-eslint/eslint-plugin@npm:^5.45.1":
   version: 5.56.0
   resolution: "@typescript-eslint/eslint-plugin@npm:5.56.0"
   dependencies:
@@ -12582,7 +12578,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^5.21.0, @typescript-eslint/parser@npm:^5.31.0, @typescript-eslint/parser@npm:^5.32.0, @typescript-eslint/parser@npm:^5.42.0, @typescript-eslint/parser@npm:^5.45.1":
+"@typescript-eslint/parser@npm:^5.21.0, @typescript-eslint/parser@npm:^5.32.0, @typescript-eslint/parser@npm:^5.42.0, @typescript-eslint/parser@npm:^5.45.1":
   version: 5.56.0
   resolution: "@typescript-eslint/parser@npm:5.56.0"
   dependencies:
@@ -19655,6 +19651,7 @@ __metadata:
     eslint-plugin-node: ^11.1.0
     eslint-plugin-react: ^7.30.1
     eslint-plugin-react-hooks: ^4.6.0
+    eslint-plugin-simple-import-sort: ^10.0.0
     eslint-plugin-workspaces: ^0.7.0
     eslint-plugin-zeus-custom: "file:./eslint-plugin-zeus-custom"
     jest: ^27.5.1
@@ -19939,12 +19936,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-simple-import-sort@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "eslint-plugin-simple-import-sort@npm:7.0.0"
+"eslint-plugin-simple-import-sort@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "eslint-plugin-simple-import-sort@npm:10.0.0"
   peerDependencies:
     eslint: ">=5.0.0"
-  checksum: 6aacb7179c213cd2081950630368d1f3b1dcb4f5674d8b989fe7839e7b317ee521d74761676e8b1a7cab49f20405dbcc9aac05358ae804e6bcba6cbf1daccb3d
+  checksum: 23221ff63f80f9c52da807d388ee8a51bc36a3b73345f60ec886e7973c28d75eb1d1e47f7f2916a7c1f94a1b5037b1450356a64a8fbd58096fd6bee57c6e3e48
   languageName: node
   linkType: hard
 
@@ -20130,7 +20127,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.20.0, eslint@npm:^8.31.0":
+"eslint@npm:^8.31.0":
   version: 8.36.0
   resolution: "eslint@npm:8.36.0"
   dependencies:
