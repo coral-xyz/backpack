@@ -1,13 +1,13 @@
 import React, { useCallback, useMemo } from "react";
 import { View, FlatList, Alert, Pressable } from "react-native";
 
+import { formatMessage, formatAMPM, isBackpackTeam } from "@coral-xyz/common";
 import { XStack, YStack, ListItem, Avatar, Text } from "@coral-xyz/tamagui";
 import { Verified } from "@tamagui/lucide-icons";
 
 import { useTheme } from "~hooks/useTheme";
 
 import { filteredFriends, messagesTabChats } from "./data";
-import { formatMessage, formatAMPM, isBackpackTeam } from "./utils";
 
 const UserAvatar = ({ imageUrl, size }) => (
   <Avatar circular size={size}>

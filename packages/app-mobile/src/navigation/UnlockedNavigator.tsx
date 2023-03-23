@@ -173,7 +173,7 @@ function UnlockedBottomTabNavigator(): JSX.Element {
     >
       <Tab.Screen name="Balances" component={BalancesNavigator} />
       <Tab.Screen name="Collectibles" component={NftCollectiblesNavigator} />
-      <Tab.Screen name="Chat" component={ChatNavigator} />
+      {/* <Tab.Screen name="Chat" component={ChatNavigator} /> */}
     </Tab.Navigator>
   );
 }
