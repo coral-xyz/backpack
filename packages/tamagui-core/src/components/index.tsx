@@ -128,6 +128,7 @@ export function LinkButton({
   onPress,
   disabled,
   loading,
+  icon,
   ...props
 }: {
   label: string;
@@ -157,6 +158,7 @@ export function PrimaryButton({
   onClick,
   disabled,
   loading,
+  icon,
   ...props
 }: {
   label: string;
@@ -164,6 +166,7 @@ export function PrimaryButton({
   onClick?: () => void;
   disabled?: boolean;
   loading?: boolean;
+  icon?: JSX.Element;
 }) {
   const theme = useCustomTheme();
   return (
@@ -173,6 +176,7 @@ export function PrimaryButton({
       disabled={disabled}
       loading={loading}
       buttonStyle={{ backgroundColor: theme.custom.colors.primaryButton }}
+      icon={icon}
       labelStyle={{
         color: theme.custom.colors.primaryButtonTextColor,
       }}

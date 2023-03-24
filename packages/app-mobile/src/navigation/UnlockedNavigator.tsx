@@ -82,7 +82,11 @@ export function UnlockedNavigator(): JSX.Element {
           headerBackImage: IconCloseModal,
         }}
       >
-        <Stack.Screen name="RecentActivity" component={RecentActivityScreen} />
+        <Stack.Screen
+          name="RecentActivity"
+          component={RecentActivityScreen}
+          options={{ title: "Recent Activity" }}
+        />
         <Stack.Screen
           options={{ title: "Deposit" }}
           name="DepositList"

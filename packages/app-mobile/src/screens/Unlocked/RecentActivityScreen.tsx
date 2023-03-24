@@ -176,6 +176,7 @@ export function _RecentActivityList({
           borderRadius: 12,
           borderWidth: 2,
           borderColor: theme.custom.colors.borderFull,
+          backgroundColor: theme.custom.colors.nav,
         },
         style,
       ]}
