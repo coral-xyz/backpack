@@ -34,11 +34,14 @@ main () {
 
 //
 // Config for @coral-xyz/common.
+// !!! README: Make sure to update turbo.json appropriately !!!
 //
+
 export const BACKPACK_CONFIG_VERSION: "development" | "production" | string = "${BACKPACK_CONFIG_VERSION:=development}";
 export const BACKPACK_CONFIG_GITHUB_RUN_NUMBER: string = "${BACKPACK_CONFIG_GITHUB_RUN_NUMBER:=1}";
 export const BACKPACK_CONFIG_XNFT_PROXY: "development" | "production" = "${BACKPACK_CONFIG_XNFT_PROXY:=production}";
 export const BACKPACK_CONFIG_LOG_LEVEL: "trace" | "debug" | "error" | "warning" | "info" = "${BACKPACK_CONFIG_LOG_LEVEL:=debug}";
+
 //
 // This can be found in the chrome store.
 // Note to self: we might need to change this for firefox, when we publish there.

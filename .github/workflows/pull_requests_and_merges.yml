@@ -41,7 +41,8 @@ jobs:
       ##########################################################################
 
       - name: 🏗 Build extension & mobile
-        uses: ./.github/actions/monorepo-build
+        run: "yarn build:both"
+        shell: bash
 
       - name: "rename beta build"
         working-directory: packages/app-extension
