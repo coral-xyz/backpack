@@ -5,7 +5,7 @@ import type {
   RemoteUserData,
 } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { BubbleTopLabel, EmptyState,SearchBox  } from "@coral-xyz/react-common";
+import { BubbleTopLabel, EmptyState, SearchBox } from "@coral-xyz/react-common";
 import {
   useFriendships,
   useGroupCollections,
@@ -29,12 +29,21 @@ export function Inbox() {
 
 export function InboxInner() {
   const classes = useStyles();
-  const { uuid } = useUser();
+  const user = useUser();
+  const { uuid } = user;
   const activeChats = useFriendships({ uuid });
   const requestCount = useRequestsCount({ uuid });
   const groupCollections = useGroupCollections({ uuid });
   const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
   const [searchFilter, setSearchFilter] = useState("");
+
+  console.log({
+    username: user.username,
+    activeChats,
+    requestCount,
+    groupCollections,
+    searchResults,
+  });
 
   const getDefaultChats = () => {
     return groupCollections.filter((x) => x.name && x.image) || [];

@@ -1,18 +1,59 @@
-import * as React from "react";
+import type {
+  CollectionChatData,
+  EnrichedInboxDb,
+  RemoteUserData,
+} from "@coral-xyz/common";
 
+import * as React from "react";
+import { Text } from "react-native";
+
+import {
+  useFriendships,
+  useGroupCollections,
+  useRequestsCount,
+  useUser,
+} from "@coral-xyz/recoil";
+import { AuthenticatedSync } from "@coral-xyz/tamagui";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import { MessageList } from "~components/Messages";
-import { messagesTabChats } from "~components/data";
+import { messagesTabChats, DATA } from "~components/data";
+import { Screen } from "~components/index";
+import { Inbox } from "~components/messaging/Inbox";
 
 export function ChatListScreen({ navigation }): JSX.Element {
+  const { uuid } = useUser();
+  // const activeChats = useFriendships({ uuid });
+  // const requestCount = useRequestsCount({ uuid });
+  // const groupCollections = useGroupCollections({ uuid });
+  const { activeChats, requestCount, groupCollections } = DATA;
+
+  const getDefaultChats = () => {
+    return groupCollections.filter((x) => x.name && x.image) || [];
+  };
+
   const handlePressMessage = (id: string) => {
     console.log("id", id);
     navigation.navigate("ChatDetail", { id });
   };
 
+  const allChats: (
+    | { chatType: "individual"; chatProps: EnrichedInboxDb }
+    | { chatType: "collection"; chatProps: CollectionChatData }
+  )[] = [
+    ...getDefaultChats().map((x) => ({ chatProps: x, chatType: "collection" })),
+    ...(activeChats || []).map((x) => ({
+      chatProps: x,
+      chatType: "individual",
+    })),
+  ].sort((a, b) =>
+    a.last_message_timestamp < b.last_message_timestamp ? -1 : 1
+  );
+
   return (
-    <MessageList allChats={messagesTabChats} onPressRow={handlePressMessage} />
+    <Screen>
+      <MessageList allChats={allChats} onPressRow={handlePressMessage} />
+    </Screen>
   );
 }
 

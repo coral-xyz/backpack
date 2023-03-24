@@ -13,7 +13,8 @@ import { SignalingManager, useChatsWithMetadata } from "@coral-xyz/tamagui";
 import { v4 as uuidv4 } from "uuid";
 
 export const Inbox = () => {
-  const { uuid } = useUser();
+  const user = useUser();
+  const { uuid } = user;
   const activeChats = useFriendships({ uuid });
   const requestCount = useRequestsCount({ uuid });
   const groupCollections = useGroupCollections({ uuid });
@@ -77,6 +78,15 @@ export const Inbox = () => {
 
   return (
     <ScrollView style={{ padding: 20, paddingTop: 100 }}>
+      <Text>
+        {JSON.stringify({
+          username: user.username,
+          uuid: user.uuid,
+          activeChats,
+          requestCount,
+          groupCollections,
+        })}
+      </Text>
       <Text>Messaging inbox</Text>
       {groupCollections
         .filter((x) => x.image && x.name)

@@ -185,8 +185,17 @@ export function ChatListItem({
   return (
     <ListItem
       id={id}
-      bg={theme.custom.colors.nav}
-      jc="flex-start"
+      // backgroundColor:
+      //   (pathname === "/messages/chat" && props.userId === id) ||
+      //   (pathname === "/messages/groupchat" && props.id === id)
+      //     ? theme.custom.colors.bg4
+      //     : isUnread
+      backgroundColor={
+        isUnread
+          ? theme.custom.colors.unreadBackground
+          : theme.custom.colors.nav
+      }
+      justifyContent="flex-start"
       hoverTheme
       pressTheme
       onPress={() => onPress(id)}
@@ -195,7 +204,7 @@ export function ChatListItem({
       <XStack jc="space-between" f={1}>
         <YStack>
           <Text
-            mb={2}
+            marginBottom={2}
             fontSize={14}
             fontWeight={isUnread ? "700" : "600"}
             color={
@@ -286,7 +295,7 @@ export function MessageList({ allChats, onPressRow }): JSX.Element {
         users={[]}
       />
     ),
-    []
+    [onPressRow]
   );
 
   return <List data={chats} renderItem={renderItem} />;
@@ -317,9 +326,13 @@ export function HomeScreen() {
   );
 }
 
-export function List({ data, renderItem, ...props }): JSX.Element {
+export function List({
+  data,
+  renderItem,
+  keyExtractor,
+  ...props
+}: any): JSX.Element {
   const theme = useTheme();
-  const keyExtractor = props.keyExtractor ?? (({ id }) => id);
   return (
     <FlatList
       data={data}
