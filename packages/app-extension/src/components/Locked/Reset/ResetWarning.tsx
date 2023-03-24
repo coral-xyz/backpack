@@ -23,13 +23,13 @@ export function Logout() {
   const background = useBackgroundClient();
 
   useEffect(() => {
-    nav.setOptions({ headerTitle: `Log out ${user.username}` });
+    nav.setOptions({ headerTitle: `Remove ${user.username}` });
   }, []);
 
   return (
     <Warning
-      buttonTitle="Log out"
-      title="Log out"
+      buttonTitle="Remove"
+      title="Remove User"
       subtext="This will remove all the wallets you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
       onNext={async () => {
         await background.request({
