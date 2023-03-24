@@ -96,9 +96,26 @@ export function AccountDropdownHeader({}): JSX.Element {
   );
 }
 
+// function AddMoreButton({ onPress }: { onPress: () => void }): JSX.Element {
+//   const theme = useTheme();
+//   return (
+//     <PrimaryButton
+//       label="Add another account"
+//       onPress={onPress}
+//       icon={
+//         <MaterialIcons
+//           color={theme.custom.colors.primaryButtonTextColor}
+//           name="add"
+//           size={24}
+//         />
+//       }
+//     />
+//   );
+// }
+
 export function UserAccountMenu({ navigation }): JSX.Element {
-  const theme = useTheme();
   const insets = useSafeAreaInsets();
+
   return (
     <Screen
       style={{ justifyContent: "space-between", marginBottom: insets.bottom }}
@@ -108,19 +125,6 @@ export function UserAccountMenu({ navigation }): JSX.Element {
           navigation.goBack();
         }}
       />
-      <Margin vertical={12}>
-        <PrimaryButton
-          label="Add another account"
-          onPress={console.log}
-          icon={
-            <MaterialIcons
-              color={theme.custom.colors.primaryButtonTextColor}
-              name="add"
-              size={24}
-            />
-          }
-        />
-      </Margin>
     </Screen>
   );
 }

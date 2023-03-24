@@ -65,6 +65,8 @@ export function BaseButton({
   disabled,
   loading,
   icon,
+  iconBefore,
+  iconAfter,
   ...props
 }: {
   label: string;
@@ -74,6 +76,8 @@ export function BaseButton({
   disabled?: boolean;
   loading?: boolean;
   icon?: JSX.Element;
+  iconBefore?: JSX.Element;
+  iconAfter?: JSX.Element;
 }) {
   return (
     <Pressable
@@ -90,6 +94,7 @@ export function BaseButton({
       }}
       {...props}
     >
+      {iconBefore ? <Margin right={2}>{iconBefore}</Margin> : null}
       <Text
         style={[
           baseButtonStyles.label,
@@ -101,7 +106,7 @@ export function BaseButton({
       >
         {loading ? "loading..." : label}
       </Text>
-      {icon ? <Margin left={8}>{icon}</Margin> : null}
+      {icon || iconAfter ? <Margin left={2}>{icon || iconAfter}</Margin> : null}
     </Pressable>
   );
 }
