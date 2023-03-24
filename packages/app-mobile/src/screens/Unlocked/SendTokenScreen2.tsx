@@ -106,10 +106,12 @@ export function SendTokenSelectUserScreen({
               navigation.navigate("SendTokenConfirm", {
                 blockchain,
                 token,
-                address: normalizedAddress || inputContent,
-                username: user?.username,
-                image: user?.image,
-                uuid: user?.uuid,
+                to: {
+                  address: normalizedAddress,
+                  username: user?.username,
+                  image: user?.image,
+                  uuid: user?.uuid,
+                },
               });
             }}
           />
@@ -306,8 +308,6 @@ const AddressListItem = ({
           if (!address) {
             return;
           }
-          console.log("blockchain", blockchain);
-          console.log("token", token);
           navigation.navigate("SendTokenConfirm", {
             blockchain,
             token,

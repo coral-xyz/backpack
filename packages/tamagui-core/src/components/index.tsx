@@ -256,7 +256,7 @@ export function DangerButton({
   ...props
 }: {
   label: string;
-  onPress: () => void;
+  onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
 }) {
