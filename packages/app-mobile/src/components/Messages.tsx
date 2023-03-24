@@ -2,7 +2,15 @@ import React, { useCallback, useMemo } from "react";
 import { View, FlatList, Alert, Pressable } from "react-native";
 
 import { formatMessage, formatAMPM, isBackpackTeam } from "@coral-xyz/common";
-import { XStack, YStack, ListItem, Avatar, Text } from "@coral-xyz/tamagui";
+import {
+  XStack,
+  YStack,
+  ListItem,
+  Avatar,
+  Text,
+  Circle,
+} from "@coral-xyz/tamagui";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Verified } from "@tamagui/lucide-icons";
 
 import { useTheme } from "~hooks/useTheme";
@@ -231,7 +239,10 @@ export function ChatListItem({
           </Text>
         </YStack>
         <YStack>
-          <Text color={theme.custom.colors.textPlaceholder}>
+          <Text
+            fontWeight={isUnread ? "700" : "400"}
+            color={theme.custom.colors.textPlaceholder}
+          >
             {formatAMPM(new Date(timestamp))}
           </Text>
         </YStack>
@@ -240,65 +251,118 @@ export function ChatListItem({
   );
 }
 
-export function MessageList({ allChats, onPressRow }): JSX.Element {
-  const chats = useMemo(
-    () =>
-      allChats.map((activeChat) => {
-        return {
-          type: activeChat.type,
-          id:
-            activeChat.chatType === "individual"
-              ? activeChat.chatProps.remoteUserId
-              : activeChat.chatProps.collectionId,
-          image:
-            activeChat.chatType === "individual"
-              ? activeChat.chatProps.remoteUserImage!
-              : activeChat.chatProps.image!,
-          userId:
-            activeChat.chatType === "individual"
-              ? activeChat.chatProps.remoteUserId!
-              : "",
-          name:
-            activeChat.chatType === "individual"
-              ? activeChat.chatProps.remoteUsername!
-              : activeChat.chatProps.name!,
-          message:
-            activeChat.chatType === "individual"
-              ? activeChat.chatProps.last_message!
-              : activeChat.chatProps.lastMessage!,
-          timestamp:
-            activeChat.chatType === "individual"
-              ? activeChat.chatProps.last_message_timestamp || ""
-              : activeChat.chatProps.lastMessageTimestamp || "",
-          isUnread:
-            activeChat.chatType === "individual"
-              ? !!activeChat.chatProps.unread
-              : activeChat.chatProps.lastMessageUuid !==
-                activeChat.chatProps.lastReadMessage,
-        };
-      }),
-    [allChats]
-  );
+export function MessageList({
+  requestCount,
+  allChats,
+  onPressRow,
+}: {
+  requestCount: number;
+  allChats: any[];
+  onPressRow: (id: string) => void;
+}): JSX.Element {
+  const chats = useMemo(() => {
+    const s = allChats.map((activeChat) => {
+      return {
+        type: activeChat.type,
+        id:
+          activeChat.chatType === "individual"
+            ? activeChat.chatProps.remoteUserId
+            : activeChat.chatProps.collectionId,
+        image:
+          activeChat.chatType === "individual"
+            ? activeChat.chatProps.remoteUserImage!
+            : activeChat.chatProps.image!,
+        userId:
+          activeChat.chatType === "individual"
+            ? activeChat.chatProps.remoteUserId!
+            : "",
+        name:
+          activeChat.chatType === "individual"
+            ? activeChat.chatProps.remoteUsername!
+            : activeChat.chatProps.name!,
+        message:
+          activeChat.chatType === "individual"
+            ? activeChat.chatProps.last_message!
+            : activeChat.chatProps.lastMessage!,
+        timestamp:
+          activeChat.chatType === "individual"
+            ? activeChat.chatProps.last_message_timestamp || ""
+            : activeChat.chatProps.lastMessageTimestamp || "",
+        isUnread:
+          activeChat.chatType === "individual"
+            ? !!activeChat.chatProps.unread
+            : activeChat.chatProps.lastMessageUuid !==
+              activeChat.chatProps.lastReadMessage,
+      };
+    });
+
+    if (requestCount > 0) {
+      // @ts-ignore
+      s.unshift({
+        id: -1,
+      });
+    }
+
+    return s;
+  }, [allChats, requestCount]);
 
   const renderItem = useCallback(
-    ({ item }) => (
-      <ChatListItem
-        id={item.id}
-        image={item.image}
-        type={item.type}
-        userId={item.userId}
-        name={item.name}
-        message={item.message}
-        timestamp={item.timestamp}
-        isUnread={item.isUnread}
-        onPress={onPressRow}
-        users={[]}
-      />
-    ),
-    [onPressRow]
+    ({ item, index }) => {
+      if (requestCount > 0 && item.id === -1) {
+        return <ChatListItemMessageRequest requestCount={requestCount} />;
+      }
+
+      return (
+        <ChatListItem
+          id={item.id}
+          image={item.image}
+          type={item.type}
+          userId={item.userId}
+          name={item.name}
+          message={item.message}
+          timestamp={item.timestamp}
+          isUnread={item.isUnread}
+          onPress={onPressRow}
+          users={[]}
+        />
+      );
+    },
+    [onPressRow, requestCount]
   );
 
-  return <List data={chats} renderItem={renderItem} />;
+  return (
+    <List data={chats} renderItem={renderItem} keyExtractor={({ id }) => id} />
+  );
+}
+
+function ChatListItemMessageRequest({
+  requestCount,
+}: {
+  requestCount: number;
+}): JSX.Element {
+  const theme = useTheme();
+  const subTitle =
+    requestCount === 1
+      ? "1 person" + " you may know" // eslint-disable-line
+      : `${requestCount} people` + " you may know"; // eslint-disable-line
+
+  return (
+    <ListItem
+      title="Message requests"
+      fontWeight="700"
+      subTitle={subTitle}
+      icon={
+        <Circle
+          size={48}
+          bg={theme.custom.colors.background}
+          jc="center"
+          ai="center"
+        >
+          <MaterialIcons name="mark-chat-unread" size={24} color="black" />
+        </Circle>
+      }
+    />
+  );
 }
 
 export function HomeScreen() {

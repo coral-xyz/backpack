@@ -13,15 +13,18 @@ import {
   useRequestsCount,
   useUser,
 } from "@coral-xyz/recoil";
-import { AuthenticatedSync } from "@coral-xyz/tamagui";
+import { ListItem, AuthenticatedSync, Circle } from "@coral-xyz/tamagui";
+import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import { MessageList } from "~components/Messages";
 import { messagesTabChats, DATA } from "~components/data";
 import { Screen } from "~components/index";
 import { Inbox } from "~components/messaging/Inbox";
+import { useTheme } from "~hooks/useTheme";
 
 export function ChatListScreen({ navigation }): JSX.Element {
+  const theme = useTheme();
   const { uuid } = useUser();
   // const activeChats = useFriendships({ uuid });
   // const requestCount = useRequestsCount({ uuid });
@@ -52,7 +55,11 @@ export function ChatListScreen({ navigation }): JSX.Element {
 
   return (
     <Screen>
-      <MessageList allChats={allChats} onPressRow={handlePressMessage} />
+      <MessageList
+        requestCount={requestCount}
+        allChats={allChats}
+        onPressRow={handlePressMessage}
+      />
     </Screen>
   );
 }
