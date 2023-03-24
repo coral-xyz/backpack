@@ -254,18 +254,16 @@ function AddressList({
         const key = [wallet.username, wallet.walletName].join(":");
         return (
           <AddressListItem
+            key={key}
             token={token}
             blockchain={blockchain}
-            key={key}
-            isFirst={index === 0}
-            isLast={index === walletsWithPrimary.length - 1}
+            address={wallet.addresses?.[0]}
             user={{
               walletName: wallet.walletName,
               username: wallet.username,
               image: wallet.image,
               uuid: wallet.uuid,
             }}
-            address={wallet.addresses?.[0]}
           />
         );
       })}
@@ -276,15 +274,11 @@ function AddressList({
 const AddressListItem = ({
   address,
   blockchain,
-  isFirst,
-  isLast,
   token,
   user,
 }: {
   address?: string;
   blockchain: Blockchain;
-  isFirst: boolean;
-  isLast: boolean;
   token: Token;
   user: {
     username: string;

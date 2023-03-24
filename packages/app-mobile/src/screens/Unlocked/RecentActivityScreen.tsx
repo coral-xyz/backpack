@@ -182,7 +182,7 @@ export function _RecentActivityList({
       ]}
       contentContainerStyle={styles}
       data={transactions}
-      ListEmptyComponent={<NoRecentActivityEmptyState minimize={!!minimize} />}
+      ListEmptyComponent={<NoRecentActivityEmptyState />}
       scrollEnabled={transactions.length > 0}
       renderItem={({ item }) => {
         return <RecentActivityListItem transaction={item} />;
@@ -299,27 +299,24 @@ function RecentActivityListItemIcon({
 }
 
 function NoRecentActivityEmptyState({
-  minimize,
+  title,
+  subtitle,
+  buttonText,
 }: {
-  minimize: boolean;
+  title?: string;
+  subtitle?: string;
+  buttonText?: string;
 }): JSX.Element {
   return (
-    <View
-      style={{
-        display: minimize ? "none" : undefined,
+    <EmptyState
+      icon={(props: any) => <MaterialIcons name="bolt" {...props} />}
+      title={title || "No Recent Activity"}
+      subtitle={subtitle || "Get started by adding your first xNFT"}
+      buttonText={buttonText || "Browse the xNFT Library"}
+      onPress={() => {
+        Linking.openURL(XNFT_GG_LINK);
       }}
-    >
-      <EmptyState
-        minimize={minimize}
-        icon={(props: any) => <MaterialIcons name="bolt" {...props} />}
-        title="No Recent Activity"
-        subtitle="Get started by adding your first xNFT"
-        buttonText="Browse the xNFT Library"
-        onPress={() => {
-          Linking.openURL(XNFT_GG_LINK);
-        }}
-      />
-    </View>
+    />
   );
 }
 
