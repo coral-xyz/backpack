@@ -128,7 +128,6 @@ export function LinkButton({
   onPress,
   disabled,
   loading,
-  icon,
   ...props
 }: {
   label: string;
