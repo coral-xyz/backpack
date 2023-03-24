@@ -33,6 +33,23 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { EmptyState, Screen } from "~components/index";
 import { getBlockchainLogo, useTheme } from "~hooks/index";
 
+// Used since Solana transactions have a timestamp and Ethereum transactions have a date.
+const extractTime = (tx: any) => {
+  if (tx?.timestamp) {
+    return tx.timestamp;
+  } else if (tx?.date) {
+    return tx.date.getTime();
+  }
+
+  return 0;
+};
+
+const formatTransactions = (transactions: RecentTransaction[]) => {
+  return [...transactions].sort((a, b) =>
+    extractTime(a) > extractTime(b) ? -1 : 1
+  );
+};
+
 export function RecentActivityScreen() {
   const insets = useSafeAreaInsets();
   return (
@@ -47,11 +64,8 @@ function RecentSolanaActivity({ address }: { address: string }): JSX.Element {
     address,
   });
 
-  const mergedTransactions = [...recentTransactions].sort(
-    (a, b) => b.date.getTime() - a.date.getTime()
-  );
-
-  return <_RecentActivityList transactions={mergedTransactions} />;
+  const transactions = formatTransactions(recentTransactions);
+  return <_RecentActivityList transactions={transactions} />;
 }
 
 function RecentEthereumActivity({ address }: { address: string }): JSX.Element {
@@ -59,11 +73,8 @@ function RecentEthereumActivity({ address }: { address: string }): JSX.Element {
     address,
   });
 
-  const mergedTransactions = [...recentTransactions].sort(
-    (a, b) => b.date.getTime() - a.date.getTime()
-  );
-
-  return <_RecentActivityList transactions={mergedTransactions} />;
+  const transactions = formatTransactions(recentTransactions);
+  return <_RecentActivityList transactions={transactions} />;
 }
 
 function RecentActivity() {
@@ -165,12 +176,13 @@ export function _RecentActivityList({
           borderRadius: 12,
           borderWidth: 2,
           borderColor: theme.custom.colors.borderFull,
+          backgroundColor: theme.custom.colors.nav,
         },
         style,
       ]}
       contentContainerStyle={styles}
       data={transactions}
-      ListEmptyComponent={<NoRecentActivityEmptyState minimize={!!minimize} />}
+      ListEmptyComponent={<NoRecentActivityEmptyState />}
       scrollEnabled={transactions.length > 0}
       renderItem={({ item }) => {
         return <RecentActivityListItem transaction={item} />;
@@ -238,7 +250,17 @@ function RecentActivityListItem({
               lineHeight: 24,
             }}
           >
-            {transaction.date.toLocaleDateString()}
+            {
+              // TODO: Standardize the parsed ethereum and solana transactions
+              //       so that `transaction.date` can be used for both of them
+              (
+                (transaction.date
+                  ? // ethereum transactions provide a date
+                    transaction.date
+                  : // solana transactions provide a timestamp in seconds
+                    new Date(transaction.timestamp * 1000)) as Date
+              ).toLocaleString()
+            }
           </Text>
         </View>
       </View>
@@ -277,27 +299,24 @@ function RecentActivityListItemIcon({
 }
 
 function NoRecentActivityEmptyState({
-  minimize,
+  title,
+  subtitle,
+  buttonText,
 }: {
-  minimize: boolean;
+  title?: string;
+  subtitle?: string;
+  buttonText?: string;
 }): JSX.Element {
   return (
-    <View
-      style={{
-        display: minimize ? "none" : undefined,
+    <EmptyState
+      icon={(props: any) => <MaterialIcons name="bolt" {...props} />}
+      title={title || "No Recent Activity"}
+      subtitle={subtitle || "Get started by adding your first xNFT"}
+      buttonText={buttonText || "Browse the xNFT Library"}
+      onPress={() => {
+        Linking.openURL(XNFT_GG_LINK);
       }}
-    >
-      <EmptyState
-        minimize={minimize}
-        icon={(props: any) => <MaterialIcons name="bolt" {...props} />}
-        title="No Recent Activity"
-        subtitle="Get started by adding your first xNFT"
-        buttonText="Browse the xNFT Library"
-        onPress={() => {
-          Linking.openURL(XNFT_GG_LINK);
-        }}
-      />
-    </View>
+    />
   );
 }
 

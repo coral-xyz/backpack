@@ -65,6 +65,8 @@ export function BaseButton({
   disabled,
   loading,
   icon,
+  iconBefore,
+  iconAfter,
   ...props
 }: {
   label: string;
@@ -74,6 +76,8 @@ export function BaseButton({
   disabled?: boolean;
   loading?: boolean;
   icon?: JSX.Element;
+  iconBefore?: JSX.Element;
+  iconAfter?: JSX.Element;
 }) {
   return (
     <Pressable
@@ -90,6 +94,7 @@ export function BaseButton({
       }}
       {...props}
     >
+      {iconBefore ? <Margin right={2}>{iconBefore}</Margin> : null}
       <Text
         style={[
           baseButtonStyles.label,
@@ -101,7 +106,7 @@ export function BaseButton({
       >
         {loading ? "loading..." : label}
       </Text>
-      {icon ? <Margin left={8}>{icon}</Margin> : null}
+      {icon || iconAfter ? <Margin left={2}>{icon || iconAfter}</Margin> : null}
     </Pressable>
   );
 }
@@ -157,6 +162,7 @@ export function PrimaryButton({
   onClick,
   disabled,
   loading,
+  icon,
   ...props
 }: {
   label: string;
@@ -164,6 +170,7 @@ export function PrimaryButton({
   onClick?: () => void;
   disabled?: boolean;
   loading?: boolean;
+  icon?: JSX.Element;
 }) {
   const theme = useCustomTheme();
   return (
@@ -173,6 +180,7 @@ export function PrimaryButton({
       disabled={disabled}
       loading={loading}
       buttonStyle={{ backgroundColor: theme.custom.colors.primaryButton }}
+      icon={icon}
       labelStyle={{
         color: theme.custom.colors.primaryButtonTextColor,
       }}
@@ -248,7 +256,7 @@ export function DangerButton({
   ...props
 }: {
   label: string;
-  onPress: () => void;
+  onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
 }) {
