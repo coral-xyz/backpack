@@ -21,4 +21,5 @@ runs:
         APP_ENV: ${{ inputs.app-env }}
         # CI!=true so that build warnings aren't treated like errors (for now)
         CI: ""
-      run: yarn build:both
+      run: "yarn build:both"
+      shell: bash
