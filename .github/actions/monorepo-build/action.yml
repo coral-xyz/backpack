@@ -1,0 +1,24 @@
+name: monorepo-build
+
+inputs:
+  app-env:
+    description: APP_ENV for mobile
+    default: production
+
+# Shared between mobile and extension
+runs:
+  using: composite
+  steps:
+    - name: 🏗 Build extension & mobile
+      env:
+        BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-beta-${{ github.run_number }}"
+        BACKPACK_CONFIG_GITHUB_RUN_NUMBER: "${{ github.run_number }}"
+        BACKPACK_CONFIG_LOG_LEVEL: "info"
+        BACKPACK_FEATURE_LIGHT_MODE: "true"
+        BACKPACK_FEATURE_POP_MODE: "true"
+        BACKPACK_FEATURE_XNFT: "true"
+        BACKPACK_FEATURE_FORCE_LATEST_VERSION: "true"
+        APP_ENV: ${{ inputs.app-env }}
+        # CI!=true so that build warnings aren't treated like errors (for now)
+        CI: ""
+      run: yarn build:both

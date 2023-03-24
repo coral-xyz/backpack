@@ -51,16 +51,8 @@ jobs:
         with:
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 👷 Build modules
-        env:
-          BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-beta-${{ github.run_number }}"
-          BACKPACK_CONFIG_LOG_LEVEL: "info"
-          BACKPACK_FEATURE_LIGHT_MODE: "true"
-          BACKPACK_FEATURE_POP_MODE: "true"
-          BACKPACK_FEATURE_XNFT: "true"
-          # CI!=true so that build warnings aren't treated like errors (for now)
-          CI: ""
-        run: yarn build:mobile
+      - name: 🏗 Build extension & mobile
+        uses: ./.github/actions/monorepo-build
 
       - name: 🚀 Build mobile
         working-directory: packages/app-mobile

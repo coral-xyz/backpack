@@ -28,6 +28,7 @@
     "build:ext": "env-cmd --silent turbo run build --filter=@coral-xyz/app-extension... --filter=@coral-xyz/background...",
     "start:mobile": "env-cmd --silent turbo run start --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
     "build:mobile": "env-cmd --silent turbo run build --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
+    "build:both": "env-cmd --silent turbo run build --filter=@coral-xyz/app-extension... --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
     "postinstall": "husky install"
   },
   "devDependencies": {
