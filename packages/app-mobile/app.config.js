@@ -54,7 +54,7 @@ export default {
   extra: {
     localWebViewUrl: "http://localhost:9333",
     remoteWebViewUrl:
-      "https://coral-xyz.github.io/backpack/background-scripts/3708687/service-worker-loader.html",
+      "https://coral-xyz.github.io/backpack/background-scripts/7b1f07d/service-worker-loader.html",
     eas: {
       projectId: projectID,
     },

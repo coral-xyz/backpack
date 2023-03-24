@@ -11,14 +11,11 @@
       ],
       "env": [
         "BACKPACK_CONFIG_VERSION",
-        "BACKPACK_CONFIG_XNFT_PROXY",
         "BACKPACK_CONFIG_LOG_LEVEL",
         "BACKPACK_FEATURE_LIGHT_MODE",
         "BACKPACK_FEATURE_POP_MODE",
-        "BACKPACK_FEATURE_XNFT",
-        "BACKPACK_FEATURE_AGGREGATE_WALLETS",
-        "BACKPACK_FEATURE_FORCE_LATEST_VERSION",
-        "APP_ENV"
+        "APP_ENV",
+        "NODE_ENV"
       ]
     },
     "test": {

@@ -37,10 +37,10 @@ jobs:
         run: yarn install --immutable
 
       ##########################################################################
-      # Build extension, mobile
+      # Build packages for extension & mobile
       ##########################################################################
 
-      - name: 🏗 Build extension & mobile
+      - name: 🏗 Build packages for extension & mobile
         run: "yarn build:both"
         shell: bash
 
