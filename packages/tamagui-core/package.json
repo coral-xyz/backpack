@@ -14,8 +14,8 @@
     "*.css"
   ],
   "dependencies": {
-    "@coral-xyz/recoil": "*",
     "@coral-xyz/common": "*",
+    "@coral-xyz/recoil": "*",
     "@coral-xyz/themes": "*",
     "@tamagui/animations-react-native": "^1.8.1",
     "@tamagui/babel-plugin": "^1.8.1",
