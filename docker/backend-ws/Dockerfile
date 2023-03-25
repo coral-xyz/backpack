@@ -1,4 +1,4 @@
-FROM node:18.1.0@sha256:82f9e078898dce32c7bf3232049715f1b8fbf0d62d5f3091bca20fcaede50bf0
+FROM node:18.15.0@sha256:eee4c74962a855bc1694676cd5069460e545a8580e0e574b2c59eae4f40bd5bd
 WORKDIR /base
 COPY ["package.json", "./package.json"]
 COPY ["turbo.json", "./turbo.json"]
@@ -26,6 +26,11 @@ COPY ["backend/native/zeus", "./backend/native/zeus"]
 COPY ["backend/native/chat-zeus", "./backend/native/chat-zeus"]
 COPY ["backend/native/backend-common", "./backend/native/backend-common"]
 COPY ["backend/native/tsconfig.json", "./backend/native/tsconfig.json"]
+
+# set up yarn v3
+COPY .yarnrc.yml .yarnrc.yml
+COPY .yarn/ .yarn/
+# RUN corepack enable && corepack prepare yarn@3.5.0 --activate
 
 RUN cd /base
 RUN yarn install
