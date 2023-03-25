@@ -27,7 +27,9 @@ COPY ["packages/provider-core", "./packages/provider-core"]
 COPY ["packages/provider-injection", "./packages/provider-injection"]
 
 # set up yarn v3
-RUN corepack enable && corepack prepare yarn@3.5.0 --activate
+COPY .yarnrc.yml .yarnrc.yml
+COPY .yarn/ .yarn/
+# RUN corepack enable && corepack prepare yarn@3.5.0 --activate
 
 RUN cd /base
 RUN yarn install
