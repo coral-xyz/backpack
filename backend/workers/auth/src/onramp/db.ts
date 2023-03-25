@@ -12,21 +12,24 @@ export const createSession = async (
     },
   });
 
-  await chain("mutation")({
-    insert_auth_stripe_onramp_one: [
-      {
-        object: {
-          public_key: publicKey,
-          client_secret: clientSecret,
-          status: "in_progress",
-          webhook_dump: "",
+  await chain("mutation")(
+    {
+      insert_auth_stripe_onramp_one: [
+        {
+          object: {
+            public_key: publicKey,
+            client_secret: clientSecret,
+            status: "in_progress",
+            webhook_dump: "",
+          },
         },
-      },
-      {
-        id: true,
-      },
-    ],
-  });
+        {
+          id: true,
+        },
+      ],
+    },
+    { operationName: "createSession" }
+  );
 };
 
 export const updateSession = async (
@@ -42,15 +45,18 @@ export const updateSession = async (
     },
   });
 
-  await chain("mutation")({
-    update_auth_stripe_onramp: [
-      {
-        _set: { client_secret: clientSecret, status },
-        where: { client_secret: { _eq: clientSecret } },
-      },
-      { affected_rows: true },
-    ],
-  });
+  await chain("mutation")(
+    {
+      update_auth_stripe_onramp: [
+        {
+          _set: { client_secret: clientSecret, status },
+          where: { client_secret: { _eq: clientSecret } },
+        },
+        { affected_rows: true },
+      ],
+    },
+    { operationName: "updateSession" }
+  );
 };
 
 export const getSession = async (
@@ -64,15 +70,18 @@ export const getSession = async (
     },
   });
 
-  return chain("query")({
-    auth_stripe_onramp: [
-      {
-        where: { client_secret: { _eq: clientSecret } },
-        limit: 1,
-      },
-      {
-        status: true,
-      },
-    ],
-  });
+  return chain("query")(
+    {
+      auth_stripe_onramp: [
+        {
+          where: { client_secret: { _eq: clientSecret } },
+          limit: 1,
+        },
+        {
+          status: true,
+        },
+      ],
+    },
+    { operationName: "getSession" }
+  );
 };
