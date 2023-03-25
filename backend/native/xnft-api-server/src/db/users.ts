@@ -96,7 +96,41 @@ export const getUserIdFromPubkey = async ({ blockchain, publicKey }) => {
     { operationName: "getUserIdFromPubkey" }
   );
 
-  return response.auth_users[0] ?? null;
+  const user = response.auth_users[0];
+  if (!user) {
+    return null;
+  }
+
+  const activePubkeys = await chain("query")(
+    {
+      auth_user_active_publickey_mapping: [
+        {
+          where: {
+            user_id: { _eq: user?.id },
+          },
+        },
+        {
+          public_key: {
+            public_key: true,
+          },
+        },
+      ],
+    },
+    { operationName: "getUserIdFromPubkey" }
+  );
+
+  const activePubKeyArray: string[] =
+    activePubkeys.auth_user_active_publickey_mapping.map(
+      (x) => x.public_key.public_key
+    );
+
+  const gaurdedUser = {
+    ...user,
+    public_keys: user.public_keys.filter((x) =>
+      activePubKeyArray.includes(x.public_key)
+    ),
+  };
+  return gaurdedUser;
 };
 
 export const getUserFromUsername = async ({
