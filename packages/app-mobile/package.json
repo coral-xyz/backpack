@@ -2,6 +2,9 @@
   "name": "@coral-xyz/app-mobile",
   "version": "1.0.0",
   "main": "index.js",
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
   "scripts": {
     "eas-build-post-install": "cd ../../ && yarn build:mobile",
     "android": "expo start --android",
