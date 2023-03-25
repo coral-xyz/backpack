@@ -1,6 +1,5 @@
 {
   "name": "backpack",
-  "packageManager": "yarn@3.5.0",
   "private": true,
   "workspaces": {
     "packages": [
@@ -12,15 +11,26 @@
       "packages/*",
       "packages/blockchains/*",
       "web"
+    ],
+    "nohoist": [
+      "**/react-native",
+      "**/react-native/**",
+      "**/react-native-scripts",
+      "**/react-native-scripts/**",
+      "**/expo",
+      "**/expo/**",
+      "**/jest-expo",
+      "**/jest-expo/**"
     ]
   },
   "scripts": {
     "lint": "turbo run lint --filter=!@coral-xyz/app-mobile",
     "lint:fix": "turbo run lint:fix --filter=!@coral-xyz/app-mobile",
+    "prepare": "husky install",
     "start": "env-cmd --silent turbo run start --concurrency=100% --filter=./packages/*",
     "start:fresh": "yarn install && yarn clean && yarn install && yarn start",
     "test": "env-cmd --silent turbo run test -- --passWithNoTests --watchAll=false",
-    "build": "env-cmd --silent turbo run build --filter='!./examples/**' ",
+    "build": "env-cmd --silent turbo run build --filter=!./examples/**",
     "build:fresh": "git clean -xfd && yarn install && yarn build --force",
     "e2e": "env-cmd --silent turbo run e2e",
     "clean": "git clean -xfd",
@@ -28,14 +38,14 @@
     "build:ext": "env-cmd --silent turbo run build --filter=@coral-xyz/app-extension... --filter=@coral-xyz/background...",
     "start:mobile": "env-cmd --silent turbo run start --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
     "build:mobile": "env-cmd --silent turbo run build --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
-    "postinstall": "husky install"
+    "postinstall": "yarn-deduplicate --scopes @babel @mui @typescript-eslint @types @react-native-community @react-navigation @emotion"
   },
   "devDependencies": {
     "buffer": "^5.5.0",
     "env-cmd": "^10.1.0",
     "eslint": "^8.31.0",
     "graphql": "^16.6.0",
-    "husky": "^8.0.3",
+    "husky": "^8.0.1",
     "lint-staged": "^12.4.1",
     "prettier": "^2.8.1",
     "turbo": "^1.8.3",
@@ -65,7 +75,7 @@
   },
   "engines": {
     "node": "18.x",
-    "yarn": "^3.0.0"
+    "yarn": "^1.22.17"
   },
   "dependencies": {
     "patch-package": "^6.5.0"

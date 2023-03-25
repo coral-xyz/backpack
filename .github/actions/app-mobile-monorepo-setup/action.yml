@@ -26,5 +26,5 @@ runs:
         token: ${{ inputs.expo-token }}
 
     - name: 📦 Install dependencies
-      run: yarn install --immutable
+      run: yarn install --frozen-lockfile --prefer-offline
       shell: bash

@@ -10,8 +10,8 @@
     "@coral-xyz/db": "*",
     "@coral-xyz/react-common": "*",
     "@coral-xyz/recoil": "*",
-    "@coral-xyz/tamagui": "*",
     "@coral-xyz/themes": "*",
+    "@coral-xyz/tamagui": "*",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -30,8 +30,7 @@
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.10",
-    "eslint-config-react": "^1.1.7",
-    "tsc-alias": "^1.7.0"
+    "eslint-config-react": "^1.1.7"
   },
   "browserslist": {
     "production": [
