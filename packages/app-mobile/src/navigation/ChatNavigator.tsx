@@ -4,7 +4,7 @@ import type {
   RemoteUserData,
 } from "@coral-xyz/common";
 
-import * as React from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Text } from "react-native";
 
 import {
@@ -16,6 +16,7 @@ import {
 import { ListItem, AuthenticatedSync, Circle } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
+import { GiftedChat } from "react-native-gifted-chat";
 
 import { MessageList } from "~components/Messages";
 import { messagesTabChats, DATA } from "~components/data";
@@ -64,8 +65,43 @@ export function ChatListScreen({ navigation }): JSX.Element {
   );
 }
 
-export function ChatDetailScreen() {
-  return null;
+export function ChatDetailScreen({ navigation, route }): JSX.Element {
+  console.log("route.params", route.params);
+  return <Example />;
+}
+export function Example() {
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    setMessages([
+      {
+        _id: 1,
+        text: "Hello developer",
+        createdAt: new Date(),
+        user: {
+          _id: 2,
+          name: "React Native",
+          avatar: "https://placeimg.com/140/140/any",
+        },
+      },
+    ]);
+  }, []);
+
+  const onSend = useCallback((messages = []) => {
+    setMessages((previousMessages) =>
+      GiftedChat.append(previousMessages, messages)
+    );
+  }, []);
+
+  return (
+    <GiftedChat
+      messages={messages}
+      onSend={(messages) => onSend(messages)}
+      user={{
+        _id: 1,
+      }}
+    />
+  );
 }
 
 const Stack = createStackNavigator();
