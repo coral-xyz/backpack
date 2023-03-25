@@ -28,7 +28,9 @@ COPY ["backend/native/backend-common", "./backend/native/backend-common"]
 COPY ["backend/native/tsconfig.json", "./backend/native/tsconfig.json"]
 
 # set up yarn v3
-RUN corepack enable && corepack prepare yarn@3.5.0 --activate
+COPY .yarnrc.yml .yarnrc.yml
+COPY .yarn/ .yarn/
+# RUN corepack enable && corepack prepare yarn@3.5.0 --activate
 
 RUN cd /base
 RUN yarn install
