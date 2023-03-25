@@ -26,7 +26,7 @@
     "lint:fix": "yarn run lint --fix"
   },
   "devDependencies": {
-    "esbuild": "^0.17.11",
-    "eslint-config-custom": "*"
+    "eslint-config-custom": "*",
+    "esbuild": "^0.17.11"
   }
 }
