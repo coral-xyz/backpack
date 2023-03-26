@@ -3071,15 +3071,15 @@ __metadata:
   dependencies:
     "@bonfida/spl-name-service": ^0.1.51
     "@cardinal/token-manager": ^1.7.9
-    "@coral-xyz/background": "*"
-    "@coral-xyz/chat-sdk": "*"
-    "@coral-xyz/common": "*"
-    "@coral-xyz/db": "*"
-    "@coral-xyz/message-sdk": "*"
-    "@coral-xyz/react-common": "*"
-    "@coral-xyz/recoil": "*"
-    "@coral-xyz/tamagui": "*"
-    "@coral-xyz/themes": "*"
+    "@coral-xyz/background": "workspace:*"
+    "@coral-xyz/chat-sdk": "workspace:*"
+    "@coral-xyz/common": "workspace:*"
+    "@coral-xyz/db": "workspace:*"
+    "@coral-xyz/message-sdk": "workspace:*"
+    "@coral-xyz/react-common": "workspace:*"
+    "@coral-xyz/recoil": "workspace:*"
+    "@coral-xyz/tamagui": "workspace:*"
+    "@coral-xyz/themes": "workspace:*"
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@fontsource/inter": ^4.5.11
@@ -3168,11 +3168,11 @@ __metadata:
     "@babel/core": ^7.19.3
     "@cardinal/payment-manager": ^1.7.9
     "@cardinal/token-manager": ^1.7.9
-    "@coral-xyz/common": "*"
-    "@coral-xyz/db": "*"
-    "@coral-xyz/recoil": "*"
-    "@coral-xyz/tamagui": "*"
-    "@coral-xyz/themes": "*"
+    "@coral-xyz/common": "workspace:*"
+    "@coral-xyz/db": "workspace:*"
+    "@coral-xyz/recoil": "workspace:*"
+    "@coral-xyz/tamagui": "workspace:*"
+    "@coral-xyz/themes": "workspace:*"
     "@ethersproject/shims": ^5.7.0
     "@expo-google-fonts/inter": ^0.2.3
     "@expo/react-native-action-sheet": ^4.0.1
@@ -3194,7 +3194,7 @@ __metadata:
     babel-plugin-transform-inline-environment-variables: ^0.4.4
     big-integer: ^1.6.51
     buffer: ^6.0.3
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
     ethers: ^5.7.2
     expo: ^48.0.4
     expo-blur: ~12.2.1
@@ -3238,13 +3238,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/backend-common@*, @coral-xyz/backend-common@workspace:backend/native/backend-common":
+"@coral-xyz/backend-common@workspace:*, @coral-xyz/backend-common@workspace:backend/native/backend-common":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/backend-common@workspace:backend/native/backend-common"
   dependencies:
-    "@coral-xyz/chat-zeus": "*"
-    "@coral-xyz/common": "*"
-    "@coral-xyz/zeus": "*"
+    "@coral-xyz/chat-zeus": "workspace:*"
+    "@coral-xyz/common": "workspace:*"
+    "@coral-xyz/zeus": "workspace:*"
     dotenv: ^16.0.3
     tsc-alias: ^1.8.3
     typescript: ^4.9.5
@@ -3256,27 +3256,27 @@ __metadata:
   resolution: "@coral-xyz/backend-worker-xnft-wrapper@workspace:backend/workers/xnft-wrapper"
   dependencies:
     esbuild: ^0.14.47
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
     miniflare: ^2.9.0
     wrangler: ^2.0.15
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/background@*, @coral-xyz/background@workspace:packages/background":
+"@coral-xyz/background@workspace:*, @coral-xyz/background@workspace:packages/background":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/background@workspace:packages/background"
   dependencies:
-    "@coral-xyz/blockchain-common": "*"
-    "@coral-xyz/blockchain-keyring": "*"
-    "@coral-xyz/common": "*"
-    "@coral-xyz/recoil": "*"
+    "@coral-xyz/blockchain-common": "workspace:*"
+    "@coral-xyz/blockchain-keyring": "workspace:*"
+    "@coral-xyz/common": "workspace:*"
+    "@coral-xyz/recoil": "workspace:*"
     "@solana/web3.js": ^1.63.1
     "@types/serviceworker": ^0.0.47
     bip32: ^2.0.6
     bip39: ^3.0.4
     bs58: ^5.0.0
     ed25519-hd-key: ^1.2.0
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
     eventemitter3: ^4.0.7
     parcel: ^2.8.3
     tweetnacl: ^1.0.3
@@ -3314,50 +3314,50 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/blockchain-common@*, @coral-xyz/blockchain-common@workspace:packages/blockchains/common":
+"@coral-xyz/blockchain-common@workspace:*, @coral-xyz/blockchain-common@workspace:packages/blockchains/common":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/blockchain-common@workspace:packages/blockchains/common"
   dependencies:
-    "@coral-xyz/blockchain-evm": "*"
-    "@coral-xyz/blockchain-keyring": "*"
-    "@coral-xyz/blockchain-solana": "*"
-    "@coral-xyz/common": "*"
-    eslint-config-custom: "*"
+    "@coral-xyz/blockchain-evm": "workspace:*"
+    "@coral-xyz/blockchain-keyring": "workspace:*"
+    "@coral-xyz/blockchain-solana": "workspace:*"
+    "@coral-xyz/common": "workspace:*"
+    eslint-config-custom: "workspace:*"
     typescript: ~4.9.3
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/blockchain-evm@*, @coral-xyz/blockchain-evm@workspace:packages/blockchains/evm":
+"@coral-xyz/blockchain-evm@workspace:*, @coral-xyz/blockchain-evm@workspace:packages/blockchains/evm":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/blockchain-evm@workspace:packages/blockchains/evm"
   dependencies:
-    "@coral-xyz/blockchain-keyring": "*"
-    "@coral-xyz/common": "*"
-    eslint-config-custom: "*"
+    "@coral-xyz/blockchain-keyring": "workspace:*"
+    "@coral-xyz/common": "workspace:*"
+    eslint-config-custom: "workspace:*"
     ethers: ^5.7.2
     typescript: ~4.9.3
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/blockchain-keyring@*, @coral-xyz/blockchain-keyring@workspace:packages/blockchains/keyring":
+"@coral-xyz/blockchain-keyring@workspace:*, @coral-xyz/blockchain-keyring@workspace:packages/blockchains/keyring":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/blockchain-keyring@workspace:packages/blockchains/keyring"
   dependencies:
-    "@coral-xyz/common": "*"
+    "@coral-xyz/common": "workspace:*"
     "@types/node": ^18.14.6
     bs58: ^5.0.0
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
     typescript: ~4.9.3
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/blockchain-solana@*, @coral-xyz/blockchain-solana@workspace:packages/blockchains/solana":
+"@coral-xyz/blockchain-solana@workspace:*, @coral-xyz/blockchain-solana@workspace:packages/blockchains/solana":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/blockchain-solana@workspace:packages/blockchains/solana"
   dependencies:
-    "@coral-xyz/blockchain-keyring": "*"
-    "@coral-xyz/common": "*"
-    eslint-config-custom: "*"
+    "@coral-xyz/blockchain-keyring": "workspace:*"
+    "@coral-xyz/common": "workspace:*"
+    eslint-config-custom: "workspace:*"
     typescript: ~4.9.3
   languageName: unknown
   linkType: soft
@@ -3386,16 +3386,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@coral-xyz/chat-sdk@*, @coral-xyz/chat-sdk@workspace:packages/chat-sdk":
+"@coral-xyz/chat-sdk@workspace:*, @coral-xyz/chat-sdk@workspace:packages/chat-sdk":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/chat-sdk@workspace:packages/chat-sdk"
   dependencies:
-    "@coral-xyz/common": "*"
-    "@coral-xyz/db": "*"
-    "@coral-xyz/react-common": "*"
-    "@coral-xyz/recoil": "*"
-    "@coral-xyz/tamagui": "*"
-    "@coral-xyz/themes": "*"
+    "@coral-xyz/common": "workspace:*"
+    "@coral-xyz/db": "workspace:*"
+    "@coral-xyz/react-common": "workspace:*"
+    "@coral-xyz/recoil": "workspace:*"
+    "@coral-xyz/tamagui": "workspace:*"
+    "@coral-xyz/themes": "workspace:*"
     "@giphy/js-fetch-api": ^4.4.0
     "@giphy/react-components": ^6.2.0
     "@mui/icons-material": ^5.10.14
@@ -3412,7 +3412,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/chat-zeus@*, @coral-xyz/chat-zeus@workspace:backend/native/chat-zeus":
+"@coral-xyz/chat-zeus@workspace:*, @coral-xyz/chat-zeus@workspace:backend/native/chat-zeus":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/chat-zeus@workspace:backend/native/chat-zeus"
   dependencies:
@@ -3443,7 +3443,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@coral-xyz/common@*, @coral-xyz/common@workspace:packages/common":
+"@coral-xyz/common@workspace:*, @coral-xyz/common@workspace:packages/common":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/common@workspace:packages/common"
   dependencies:
@@ -3474,7 +3474,7 @@ __metadata:
     bip32-path: ^0.4.2
     bn.js: ^5.2.1
     bs58: ^5.0.0
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
     ethereum-multicall: ^2.14.1
     ethers: ^5.7.0
     eventemitter3: ^4.0.7
@@ -3489,11 +3489,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/db@*, @coral-xyz/db@workspace:packages/db":
+"@coral-xyz/db@workspace:*, @coral-xyz/db@workspace:packages/db":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/db@workspace:packages/db"
   dependencies:
-    "@coral-xyz/common": "*"
+    "@coral-xyz/common": "workspace:*"
     dexie: ^3.2.2
     dexie-react-hooks: ^1.1.1
     react: 18.2.0
@@ -3509,7 +3509,7 @@ __metadata:
   dependencies:
     esbuild: ^0.14.43
     esbuild-node-builtins: ^0.1.0
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
   bin:
     deptool: ./index.js
   languageName: unknown
@@ -3567,13 +3567,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/ledger-injection@workspace:packages/ledger-injection"
   dependencies:
-    "@coral-xyz/common": "*"
+    "@coral-xyz/common": "workspace:*"
     "@ethersproject/transactions": ^5.7.0
     "@ledgerhq/hw-app-eth": 6.27.1
     "@ledgerhq/hw-app-solana": 6.27.1
     "@ledgerhq/hw-transport": 6.27.1
     "@ledgerhq/hw-transport-webhid": 6.27.1
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
     ethers: ^5.7.0
     gh-pages: ^4.0.0
     parcel: ^2.8.3
@@ -3583,17 +3583,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/message-sdk@*, @coral-xyz/message-sdk@workspace:packages/message-sdk":
+"@coral-xyz/message-sdk@workspace:*, @coral-xyz/message-sdk@workspace:packages/message-sdk":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/message-sdk@workspace:packages/message-sdk"
   dependencies:
-    "@coral-xyz/chat-sdk": "*"
-    "@coral-xyz/common": "*"
-    "@coral-xyz/db": "*"
-    "@coral-xyz/react-common": "*"
-    "@coral-xyz/recoil": "*"
-    "@coral-xyz/tamagui": "*"
-    "@coral-xyz/themes": "*"
+    "@coral-xyz/chat-sdk": "workspace:*"
+    "@coral-xyz/common": "workspace:*"
+    "@coral-xyz/db": "workspace:*"
+    "@coral-xyz/react-common": "workspace:*"
+    "@coral-xyz/recoil": "workspace:*"
+    "@coral-xyz/tamagui": "workspace:*"
+    "@coral-xyz/themes": "workspace:*"
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.10
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.4.0
@@ -3612,17 +3612,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/provider-core@*, @coral-xyz/provider-core@workspace:packages/provider-core":
+"@coral-xyz/provider-core@*, @coral-xyz/provider-core@workspace:*, @coral-xyz/provider-core@workspace:packages/provider-core":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/provider-core@workspace:packages/provider-core"
   dependencies:
-    "@coral-xyz/common": "*"
+    "@coral-xyz/common": "workspace:*"
     "@ethersproject/abstract-provider": ^5.7.0
     "@ethersproject/transactions": ^5.7.0
     "@project-serum/anchor": ^0.23.0
     "@solana/web3.js": ^1.63.1
     bs58: ^5.0.0
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
     eth-rpc-errors: ^4.0.3
     ethers: ^5.5.1
     eventemitter3: ^4.0.7
@@ -3634,29 +3634,29 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/provider-injection@workspace:packages/provider-injection"
   dependencies:
-    "@coral-xyz/common": "*"
-    "@coral-xyz/provider-core": "*"
-    "@coral-xyz/wallet-standard": "*"
+    "@coral-xyz/common": "workspace:*"
+    "@coral-xyz/provider-core": "workspace:*"
+    "@coral-xyz/wallet-standard": "workspace:*"
     "@project-serum/anchor": ^0.23.0
     "@solana/web3.js": ^1.63.1
     bs58: ^5.0.0
     esbuild: ^0.14.42
     esbuild-node-builtins: ^0.1.0
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
     eth-rpc-errors: ^4.0.3
     eventemitter3: ^4.0.7
     typescript: ~4.9.3
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/react-common@*, @coral-xyz/react-common@workspace:packages/react-common":
+"@coral-xyz/react-common@workspace:*, @coral-xyz/react-common@workspace:packages/react-common":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/react-common@workspace:packages/react-common"
   dependencies:
-    "@coral-xyz/common": "*"
-    "@coral-xyz/db": "*"
-    "@coral-xyz/recoil": "*"
-    "@coral-xyz/themes": "*"
+    "@coral-xyz/common": "workspace:*"
+    "@coral-xyz/db": "workspace:*"
+    "@coral-xyz/recoil": "workspace:*"
+    "@coral-xyz/themes": "workspace:*"
     "@mui/icons-material": ^5.10.14
     "@mui/material": ^5.10.14
     emoji-picker-react: ^4.4.5
@@ -3670,12 +3670,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/recoil@*, @coral-xyz/recoil@workspace:packages/recoil":
+"@coral-xyz/recoil@workspace:*, @coral-xyz/recoil@workspace:packages/recoil":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/recoil@workspace:packages/recoil"
   dependencies:
-    "@coral-xyz/common": "*"
-    "@coral-xyz/db": "*"
+    "@coral-xyz/common": "workspace:*"
+    "@coral-xyz/db": "workspace:*"
     "@metaplex-foundation/mpl-token-metadata": ^2.5.2
     "@project-serum/anchor": ^0.25.0
     "@solana/spl-token": ^0.3.6
@@ -3683,7 +3683,7 @@ __metadata:
     bn.js: ^5.2.1
     bs58: ^5.0.0
     cheerio: ^1.0.0-rc.12
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
     ethereum-multicall: ^2.14.1
     ethers: ^5.7.0
     react: 18.2.0
@@ -3695,13 +3695,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/tamagui@*, @coral-xyz/tamagui@workspace:packages/tamagui-core":
+"@coral-xyz/tamagui@workspace:*, @coral-xyz/tamagui@workspace:packages/tamagui-core":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/tamagui@workspace:packages/tamagui-core"
   dependencies:
-    "@coral-xyz/common": "*"
-    "@coral-xyz/recoil": "*"
-    "@coral-xyz/themes": "*"
+    "@coral-xyz/common": "workspace:*"
+    "@coral-xyz/recoil": "workspace:*"
+    "@coral-xyz/themes": "workspace:*"
     "@tamagui/animations-react-native": ^1.8.1
     "@tamagui/babel-plugin": ^1.8.1
     "@tamagui/build": ^1.8.1
@@ -3717,20 +3717,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/themes@*, @coral-xyz/themes@workspace:packages/themes":
+"@coral-xyz/themes@*, @coral-xyz/themes@workspace:*, @coral-xyz/themes@workspace:packages/themes":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/themes@workspace:packages/themes"
   dependencies:
     "@mui/material": ^5.8.4
     "@mui/styles": ^5.8.4
     "@mui/system": ^5.8.4
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
     react: 18.2.0
     typescript: ~4.9.3
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/wallet-standard@*, @coral-xyz/wallet-standard@workspace:packages/wallet-standard":
+"@coral-xyz/wallet-standard@workspace:*, @coral-xyz/wallet-standard@workspace:packages/wallet-standard":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/wallet-standard@workspace:packages/wallet-standard"
   dependencies:
@@ -3789,7 +3789,7 @@ __metadata:
     download-git-repo: latest
     esbuild: ^0.17.10
     esbuild-plugin-resolve: ^1.0.3
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
     express: ^4.18.2
     fast-glob: ^3.2.12
     jszip: ^3.10.1
@@ -3833,7 +3833,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@coral-xyz/zeus@*, @coral-xyz/zeus@workspace:backend/native/zeus":
+"@coral-xyz/zeus@workspace:*, @coral-xyz/zeus@workspace:backend/native/zeus":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/zeus@workspace:backend/native/zeus"
   dependencies:
@@ -14300,10 +14300,10 @@ __metadata:
   resolution: "auth@workspace:backend/workers/auth"
   dependencies:
     "@cloudflare/workers-types": ^3.16.0
-    "@coral-xyz/zeus": "*"
+    "@coral-xyz/zeus": "workspace:*"
     "@solana/web3.js": ^1.63.1
     bs58: ^5.0.0
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
     ethers: ^5.7.1
     hono: ^2.2.1
     jose: ^4.11.0
@@ -14859,15 +14859,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "backend-ws@workspace:backend/native/backend-ws"
   dependencies:
-    "@coral-xyz/backend-common": "*"
-    "@coral-xyz/common": "*"
-    "@coral-xyz/zeus": "*"
+    "@coral-xyz/backend-common": "workspace:*"
+    "@coral-xyz/common": "workspace:*"
+    "@coral-xyz/zeus": "workspace:*"
     "@types/express": ^4.17.14
     "@types/redis": ^4.0.11
     "@types/ws": ^8.5.3
     dotenv: ^16.0.3
     esbuild: ^0.17.11
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
     express: ^4.18.2
     graphql: ^16.6.0
     jose: ^4.11.1
@@ -14883,10 +14883,10 @@ __metadata:
     "@aws-sdk/client-s3": ^3.245.0
     "@aws-sdk/s3-request-presigner": ^3.245.0
     "@cardinal/common": ^6.0.1
-    "@coral-xyz/backend-common": "*"
-    "@coral-xyz/chat-zeus": "*"
-    "@coral-xyz/common": "*"
-    "@coral-xyz/zeus": "*"
+    "@coral-xyz/backend-common": "workspace:*"
+    "@coral-xyz/chat-zeus": "workspace:*"
+    "@coral-xyz/common": "workspace:*"
+    "@coral-xyz/zeus": "workspace:*"
     "@metaplex-foundation/js": 0.16.1
     "@metaplex-foundation/mpl-token-metadata": ^2.8.1
     "@saberhq/anchor-contrib": ^1.14.11
@@ -14908,7 +14908,7 @@ __metadata:
     cors: ^2.8.5
     dotenv: ^16.0.3
     esbuild: ^0.15.16
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
     ethers: ^5.7.2
     express: ^4.18.2
     express-rate-limit: ^6.7.0
@@ -19633,7 +19633,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-custom@*, eslint-config-custom@workspace:packages/eslint-config-custom":
+"eslint-config-custom@*, eslint-config-custom@workspace:*, eslint-config-custom@workspace:packages/eslint-config-custom":
   version: 0.0.0-use.local
   resolution: "eslint-config-custom@workspace:packages/eslint-config-custom"
   dependencies:
@@ -21287,7 +21287,7 @@ __metadata:
   resolution: "feature-gates@workspace:backend/workers/feature-gates"
   dependencies:
     "@cloudflare/workers-types": ^3.16.0
-    "@coral-xyz/common": "*"
+    "@coral-xyz/common": "workspace:*"
     hono: ^2.2.1
     typescript: ^4.9.5
     wrangler: ^2.1.6
@@ -23470,7 +23470,7 @@ __metadata:
   resolution: "invites@workspace:backend/workers/invites"
   dependencies:
     "@cloudflare/workers-types": ^3.16.0
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
     hono: ^2.2.1
     typescript: ~4.9.3
     wrangler: ^2.1.6
@@ -26371,7 +26371,7 @@ __metadata:
     "@jup-ag/api": ^4.0.1-alpha.0
     "@solana/web3.js": ^1.73.0
     "@supabase/supabase-js": ^2.4.1
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
     hono: ^2.7.2
     jose: ^4.11.2
     wrangler: ^2.7.1
@@ -29487,10 +29487,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "notifications-worker@workspace:backend/native/notifications-worker"
   dependencies:
-    "@coral-xyz/backend-common": "*"
-    "@coral-xyz/chat-zeus": "*"
-    "@coral-xyz/common": "*"
-    "@coral-xyz/zeus": "*"
+    "@coral-xyz/backend-common": "workspace:*"
+    "@coral-xyz/chat-zeus": "workspace:*"
+    "@coral-xyz/common": "workspace:*"
+    "@coral-xyz/zeus": "workspace:*"
     "@project-serum/anchor": ^0.25.0
     "@solana/wallet-adapter-react": ^0.15.25
     "@types/express": ^4.17.15
@@ -32699,7 +32699,7 @@ __metadata:
   resolution: "rpc-proxy@workspace:backend/workers/rpc-proxy"
   dependencies:
     "@cloudflare/workers-types": ^4.20221111.1
-    eslint-config-custom: "*"
+    eslint-config-custom: "workspace:*"
     wrangler: ^2.7.1
   languageName: unknown
   linkType: soft
@@ -37172,9 +37172,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "xnft-api-server@workspace:backend/native/xnft-api-server"
   dependencies:
-    "@coral-xyz/backend-common": "*"
-    "@coral-xyz/common": "*"
-    "@coral-xyz/zeus": "*"
+    "@coral-xyz/backend-common": "workspace:*"
+    "@coral-xyz/common": "workspace:*"
+    "@coral-xyz/zeus": "workspace:*"
     "@project-serum/anchor": ^0.25.0
     "@solana/wallet-adapter-react": ^0.15.25
     "@types/cors": ^2.8.13

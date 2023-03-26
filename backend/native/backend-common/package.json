@@ -8,9 +8,9 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@coral-xyz/chat-zeus": "*",
-    "@coral-xyz/common": "*",
-    "@coral-xyz/zeus": "*",
+    "@coral-xyz/chat-zeus": "workspace:*",
+    "@coral-xyz/common": "workspace:*",
+    "@coral-xyz/zeus": "workspace:*",
     "dotenv": "^16.0.3"
   },
   "devDependencies": {

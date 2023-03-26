@@ -17,11 +17,11 @@
     "lint:fix": "yarn run lint --fix"
   },
   "dependencies": {
-    "@coral-xyz/blockchain-keyring": "*",
-    "@coral-xyz/common": "*"
+    "@coral-xyz/blockchain-keyring": "workspace:*",
+    "@coral-xyz/common": "workspace:*"
   },
   "devDependencies": {
-    "eslint-config-custom": "*",
+    "eslint-config-custom": "workspace:*",
     "typescript": "~4.9.3"
   }
 }

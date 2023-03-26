@@ -15,8 +15,8 @@
     "lint:fix": "yarn run lint --fix"
   },
   "dependencies": {
-    "@coral-xyz/common": "*",
-    "@coral-xyz/db": "*",
+    "@coral-xyz/common": "workspace:*",
+    "@coral-xyz/db": "workspace:*",
     "@metaplex-foundation/mpl-token-metadata": "^2.5.2",
     "@project-serum/anchor": "^0.25.0",
     "@solana/spl-token": "^0.3.6",
@@ -31,7 +31,7 @@
     "recoil": "^0.7.5"
   },
   "devDependencies": {
-    "eslint-config-custom": "*",
+    "eslint-config-custom": "workspace:*",
     "typescript": "~4.9.3"
   },
   "peerDependencies": {

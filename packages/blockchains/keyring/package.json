@@ -17,12 +17,12 @@
     "lint:fix": "yarn run lint --fix"
   },
   "dependencies": {
-    "@coral-xyz/common": "*",
+    "@coral-xyz/common": "workspace:*",
     "bs58": "^5.0.0"
   },
   "devDependencies": {
     "@types/node": "^18.14.6",
-    "eslint-config-custom": "*",
+    "eslint-config-custom": "workspace:*",
     "typescript": "~4.9.3"
   }
 }

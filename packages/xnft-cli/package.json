@@ -18,14 +18,14 @@
     "download-git-repo": "latest",
     "esbuild": "^0.17.10",
     "esbuild-plugin-resolve": "^1.0.3",
-    "eslint-config-custom": "*",
+    "eslint-config-custom": "workspace:*",
     "express": "^4.18.2",
     "fast-glob": "^3.2.12",
     "jszip": "^3.10.1",
     "node-stdlib-browser": "^1.2.0"
   },
   "devDependencies": {
-    "eslint-config-custom": "*",
+    "eslint-config-custom": "workspace:*",
     "shx": "^0.3.4"
   }
 }

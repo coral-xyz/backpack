@@ -7,10 +7,10 @@
     "@aws-sdk/client-s3": "^3.245.0",
     "@aws-sdk/s3-request-presigner": "^3.245.0",
     "@cardinal/common": "^6.0.1",
-    "@coral-xyz/backend-common": "*",
-    "@coral-xyz/chat-zeus": "*",
-    "@coral-xyz/common": "*",
-    "@coral-xyz/zeus": "*",
+    "@coral-xyz/backend-common": "workspace:*",
+    "@coral-xyz/chat-zeus": "workspace:*",
+    "@coral-xyz/common": "workspace:*",
+    "@coral-xyz/zeus": "workspace:*",
     "@metaplex-foundation/js": "0.16.1",
     "@metaplex-foundation/mpl-token-metadata": "^2.8.1",
     "@saberhq/anchor-contrib": "^1.14.11",
@@ -53,7 +53,7 @@
   "devDependencies": {
     "@types/passport": "^1.0.12",
     "@types/passport-twitter": "^1.0.37",
-    "eslint-config-custom": "*"
+    "eslint-config-custom": "workspace:*"
   },
   "scripts": {
     "build": "esbuild ./src/index.js --bundle --platform=node --outfile=dist/index.js",
