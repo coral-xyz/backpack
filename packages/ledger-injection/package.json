@@ -14,7 +14,7 @@
     "start": "rimraf dist && parcel build src/index.html && parcel src/index.html --https --port 4443"
   },
   "dependencies": {
-    "@coral-xyz/common": "*",
+    "@coral-xyz/common": "workspace:*",
     "@ethersproject/transactions": "^5.7.0",
     "@ledgerhq/hw-app-eth": "6.27.1",
     "@ledgerhq/hw-app-solana": "6.27.1",
@@ -24,7 +24,7 @@
     "process": "^0.11.10"
   },
   "devDependencies": {
-    "eslint-config-custom": "*",
+    "eslint-config-custom": "workspace:*",
     "gh-pages": "^4.0.0",
     "parcel": "^2.8.3",
     "rimraf": "^3.0.2",

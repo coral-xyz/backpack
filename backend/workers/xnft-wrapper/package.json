@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "esbuild": "^0.14.47",
-    "eslint-config-custom": "*",
+    "eslint-config-custom": "workspace:*",
     "miniflare": "^2.9.0",
     "wrangler": "^2.0.15"
   }

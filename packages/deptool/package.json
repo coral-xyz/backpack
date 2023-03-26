@@ -8,6 +8,6 @@
     "esbuild-node-builtins": "^0.1.0"
   },
   "devDependencies": {
-    "eslint-config-custom": "*"
+    "eslint-config-custom": "workspace:*"
   }
 }

@@ -17,13 +17,13 @@
     "lint:fix": "yarn run lint --fix"
   },
   "dependencies": {
-    "@coral-xyz/blockchain-evm": "*",
-    "@coral-xyz/blockchain-solana": "*",
-    "@coral-xyz/common": "*"
+    "@coral-xyz/blockchain-evm": "workspace:*",
+    "@coral-xyz/blockchain-solana": "workspace:*",
+    "@coral-xyz/common": "workspace:*"
   },
   "devDependencies": {
-    "@coral-xyz/blockchain-keyring": "*",
-    "eslint-config-custom": "*",
+    "@coral-xyz/blockchain-keyring": "workspace:*",
+    "eslint-config-custom": "workspace:*",
     "typescript": "~4.9.3"
   }
 }

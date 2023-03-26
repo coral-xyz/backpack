@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20221111.1",
-    "eslint-config-custom": "*",
+    "eslint-config-custom": "workspace:*",
     "wrangler": "^2.7.1"
   },
   "private": true,
