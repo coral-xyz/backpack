@@ -1,4 +1,4 @@
-FROM node:18.1.0@sha256:82f9e078898dce32c7bf3232049715f1b8fbf0d62d5f3091bca20fcaede50bf0
+FROM node:18.15.0@sha256:eee4c74962a855bc1694676cd5069460e545a8580e0e574b2c59eae4f40bd5bd
 WORKDIR /base
 COPY ["package.json", "./package.json"]
 COPY ["turbo.json", "./turbo.json"]
@@ -25,6 +25,16 @@ COPY ["packages/themes", "./packages/themes"]
 COPY ["packages/react-common", "./packages/react-common"]
 COPY ["packages/provider-core", "./packages/provider-core"]
 COPY ["packages/provider-injection", "./packages/provider-injection"]
+
+# set up yarn v3
+COPY .yarnrc.yml .yarnrc.yml
+COPY .yarn/ .yarn/
+# RUN corepack enable && corepack prepare yarn@3.5.0 --activate
+
+# Append the required lines to the .yarnrc.yml file
+# YN0013 is cache-miss that will always hit on a fresh build
+RUN echo '  - code: YN0013' >> .yarnrc.yml && \
+    echo '    level: discard' >> .yarnrc.yml
 
 RUN cd /base
 RUN yarn install

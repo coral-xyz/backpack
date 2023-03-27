@@ -27,34 +27,37 @@ export const getMessages = async ({
     room: string;
   };
 }> => {
-  const response = await chain("query")({
-    chats: [
-      {
-        limit: 10,
-        //@ts-ignore
-        order_by: [{ created_at: "desc" }],
-        where: {
-          client_generated_uuid: {
-            _in: [
-              client_generated_uuid,
-              user1_last_read_message_id || "",
-              user2_last_read_message_id || "",
-              lastReadMessage || "",
-            ],
+  const response = await chain("query")(
+    {
+      chats: [
+        {
+          limit: 10,
+          //@ts-ignore
+          order_by: [{ created_at: "desc" }],
+          where: {
+            client_generated_uuid: {
+              _in: [
+                client_generated_uuid,
+                user1_last_read_message_id || "",
+                user2_last_read_message_id || "",
+                lastReadMessage || "",
+              ],
+            },
           },
         },
-      },
-      {
-        id: true,
-        uuid: true,
-        message: true,
-        client_generated_uuid: true,
-        message_kind: true,
-        created_at: true,
-        room: true,
-      },
-    ],
-  });
+        {
+          id: true,
+          uuid: true,
+          message: true,
+          client_generated_uuid: true,
+          message_kind: true,
+          created_at: true,
+          room: true,
+        },
+      ],
+    },
+    { operationName: "getMessages" }
+  );
 
   const result: {
     [client_generated_uuid: string]: {

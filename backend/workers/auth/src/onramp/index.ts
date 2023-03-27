@@ -1,8 +1,10 @@
-import { Hono } from "hono";
-import { updateSession, createSession, getSession } from "./db";
-import { BlockChain, CreateSessionRequest } from "./zodTypes";
-import { validatePublicKey } from "./validate";
+import type { Hono } from "hono";
 import stripe from "stripe";
+
+import { createSession, getSession, updateSession } from "./db";
+import { validatePublicKey } from "./validate";
+import type { BlockChain } from "./zodTypes";
+import { CreateSessionRequest } from "./zodTypes";
 
 const STRIPE_PROD_URL = "https://api.stripe.com/v1";
 
