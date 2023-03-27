@@ -17,6 +17,11 @@ COPY .yarnrc.yml .yarnrc.yml
 COPY .yarn/ .yarn/
 # RUN corepack enable && corepack prepare yarn@3.5.0 --activate
 
+# Append the required lines to the .yarnrc.yml file
+# YN0013 is cache-miss that will always hit on a fresh build
+RUN echo '  - code: YN0013' >> .yarnrc.yml && \
+    echo '    level: discard' >> .yarnrc.yml
+
 RUN cd /base && yarn install && yarn run build && cd /base/backend/native/backpack-api && yarn run build
 
 EXPOSE 8080
