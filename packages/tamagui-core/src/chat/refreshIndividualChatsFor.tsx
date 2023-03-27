@@ -1,11 +1,8 @@
-import type {
-  MessageWithMetadata,
-  SubscriptionType} from "@coral-xyz/common";
-import {
-  BACKEND_API_URL
-} from "@coral-xyz/common";
+import type { MessageWithMetadata, SubscriptionType } from "@coral-xyz/common";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import { bulkAddChats, latestReceivedMessage } from "@coral-xyz/db";
 
+import { getAuthHeader } from "./getAuthHeader";
 import { SignalingManager } from "./SignalingManager";
 
 export const refreshIndividualChatsFor = async (
@@ -14,7 +11,8 @@ export const refreshIndividualChatsFor = async (
   type: SubscriptionType,
   clientGeneratedUuid: string,
   nftMint?: string,
-  publicKey?: string // To avoid DB calls on the backend
+  publicKey?: string, // To avoid DB calls on the backend
+  jwt?: string
 ) => {
   const lastMessage = await latestReceivedMessage(uuid, room, type);
   const response = await fetch(
@@ -26,6 +24,9 @@ export const refreshIndividualChatsFor = async (
     }&mint=${nftMint}&publicKey=${publicKey}&clientGeneratedUuid=${clientGeneratedUuid}`,
     {
       method: "GET",
+      headers: {
+        ...getAuthHeader(jwt),
+      },
     }
   );
 
