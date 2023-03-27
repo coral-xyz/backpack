@@ -173,7 +173,7 @@ export function ChatListItem({
   onPress,
   users = [],
 }: {
-  type: any; // SubscriptionType
+  type: "individual" | "collection";
   image: string;
   name: string;
   message: string;
@@ -181,7 +181,7 @@ export function ChatListItem({
   id: string;
   isUnread: boolean;
   userId: string;
-  onPress: (id: string) => void;
+  onPress: (id: string, type: "individual" | "collection") => void;
   users: any[];
 }) {
   const theme = useTheme();
@@ -206,7 +206,7 @@ export function ChatListItem({
       justifyContent="flex-start"
       hoverTheme
       pressTheme
-      onPress={() => onPress(id)}
+      onPress={() => onPress(id, type)}
       icon={<UserAvatar size={48} imageUrl={image} />}
     >
       <XStack jc="space-between" f={1}>
@@ -258,7 +258,7 @@ export function MessageList({
 }: {
   requestCount: number;
   allChats: any[];
-  onPressRow: (id: string) => void;
+  onPressRow: (id: string, type: "individual" | "collection") => void;
 }): JSX.Element {
   const chats = useMemo(() => {
     const s = allChats.map((activeChat) => {

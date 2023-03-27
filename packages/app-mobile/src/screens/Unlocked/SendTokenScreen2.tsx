@@ -1,5 +1,5 @@
 import type { Token } from "@@types/types";
-import type { RemoteUserData } from "@coral-xyz/common";
+import type { RemoteUserData, SubscriptionType } from "@coral-xyz/common";
 
 import { useEffect, useState } from "react";
 import { View } from "react-native";

@@ -61,7 +61,8 @@ export type UnlockedNavigatorStackParamList = {
   };
 };
 
-const MOBILE_ENABLED_CHAT = process.env.NODE_ENV === "development";
+// const MOBILE_ENABLED_CHAT = process.env.NODE_ENV === "development";
+const MOBILE_ENABLED_CHAT = true;
 
 const Stack = createStackNavigator<UnlockedNavigatorStackParamList>();
 export function UnlockedNavigator(): JSX.Element {

@@ -5,6 +5,19 @@ import { bulkAddChats, oldestReceivedMessage } from "@coral-xyz/db";
 import { getAuthHeader } from "./getAuthHeader";
 import { SignalingManager } from "./SignalingManager";
 
+async function makeBackendApiRequest(
+  endpoint: string,
+  options: { jwt?: string; method?: string }
+) {
+  return fetch(`${BACKEND_API_URL}/${endpoint}`, {
+    ...options,
+    method: options.method || "GET",
+    headers: {
+      ...getAuthHeader(options.jwt),
+    },
+  }).then((res) => res.json());
+}
+
 export const fetchMoreChatsFor = async (
   uuid: string,
   room: string,
@@ -14,21 +27,28 @@ export const fetchMoreChatsFor = async (
   jwt?: string
 ) => {
   const oldestMessage = await oldestReceivedMessage(uuid, room, type);
-  const response = await fetch(
-    `${BACKEND_API_URL}/chat?room=${room}&type=${type}&limit=40&timestampBefore=${
-      oldestMessage?.created_at && !isNaN(parseInt(oldestMessage?.created_at))
-        ? oldestMessage?.created_at
-        : new Date().getTime()
-    }&mint=${nftMint}&publicKey=${publicKey}`,
-    {
-      method: "GET",
-      headers: {
-        ...getAuthHeader(jwt),
-      },
-    }
-  );
 
-  const json = await response.json();
+  // If an old message exists, fetch everything before the date of that message
+  // otherwise fetch messages since the current date
+  const timestampBefore =
+    oldestMessage?.created_at && !isNaN(parseInt(oldestMessage?.created_at))
+      ? oldestMessage?.created_at
+      : new Date().getTime();
+
+  const params = [
+    `room=${room}`,
+    `type=${type}`,
+    `limit=40`,
+    `timestampBefore=${timestampBefore}`,
+    `mint=${nftMint}`,
+    `publicKey=${publicKey}`,
+  ];
+
+  const qs = params.join("&");
+  const json = await makeBackendApiRequest(`chats?${qs}`, {
+    method: "GET",
+    jwt,
+  });
   const chats: MessageWithMetadata[] = json.chats;
 
   SignalingManager.getInstance().onUpdateRecoil({
