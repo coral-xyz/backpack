@@ -6,6 +6,7 @@ import {
   processMessageUpdates,
 } from "@coral-xyz/db";
 
+import { getAuthHeader } from "./getAuthHeader";
 import { SignalingManager } from "./SignalingManager";
 
 export const refreshUpdatesFor = async (
@@ -27,7 +28,7 @@ export const refreshUpdatesFor = async (
     {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${jwt}`,
+        ...getAuthHeader(jwt),
       },
     }
   );

@@ -7,6 +7,7 @@ import {
   resetUpdateTimestamp,
 } from "@coral-xyz/db";
 
+import { getAuthHeader } from "./getAuthHeader";
 import { SignalingManager } from "./SignalingManager";
 
 export const refreshChatsFor = async (
@@ -28,7 +29,7 @@ export const refreshChatsFor = async (
     {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${jwt}`,
+        ...getAuthHeader(jwt),
       },
     }
   );

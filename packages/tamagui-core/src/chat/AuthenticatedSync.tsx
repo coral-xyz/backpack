@@ -20,6 +20,7 @@ import {
 } from "@coral-xyz/recoil";
 import { useRecoilCallback, useSetRecoilState } from "recoil";
 
+import { getAuthHeader } from "./getAuthHeader";
 import {
   BackgroundChatsSync,
   refreshGroupsAndFriendships,
@@ -78,7 +79,7 @@ export const DbRecoilSync = ({ uuid }: { uuid: string }) => {
       {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${authenticatedUser?.jwt}`,
+          ...getAuthHeader(authenticatedUser?.jwt),
         },
       }
     );

@@ -2,6 +2,7 @@ import type { MessageWithMetadata, SubscriptionType } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { bulkAddChats, oldestReceivedMessage } from "@coral-xyz/db";
 
+import { getAuthHeader } from "./getAuthHeader";
 import { SignalingManager } from "./SignalingManager";
 
 export const fetchMoreChatsFor = async (
@@ -22,7 +23,7 @@ export const fetchMoreChatsFor = async (
     {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${jwt}`,
+        ...getAuthHeader(jwt),
       },
     }
   );
