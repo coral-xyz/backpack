@@ -47,7 +47,7 @@ export const ChatSync = ({ uuid, jwt }: { uuid: string; jwt: string }) => {
   useEffect(() => {
     (async () => {
       await Promise.all([
-        refreshGroupsAndFriendships(uuid).then(
+        refreshGroupsAndFriendships(uuid, jwt).then(
           async () => await BackgroundChatsSync.getInstance().updateUuid(uuid)
         ),
         SignalingManager.getInstance().updateUuid(uuid, jwt),
@@ -62,6 +62,7 @@ export const DbRecoilSync = ({ uuid }: { uuid: string }) => {
   const updateChats = useUpdateChats();
   const updateNotifications = useUpdateNotifications();
   const updateUsers = useUpdateUsers();
+  const authenticatedUser = useAuthenticatedUser();
 
   const setFriendshipsValue = useSetRecoilState(friendships({ uuid }));
   const setRequestCountValue = useSetRecoilState(requestCount({ uuid }));
@@ -76,6 +77,9 @@ export const DbRecoilSync = ({ uuid }: { uuid: string }) => {
       `${BACKEND_API_URL}/notifications/unreadCount`,
       {
         method: "GET",
+        headers: {
+          Authorization: `Bearer ${authenticatedUser?.jwt}`,
+        },
       }
     );
     try {

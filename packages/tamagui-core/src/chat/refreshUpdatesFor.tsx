@@ -13,7 +13,8 @@ export const refreshUpdatesFor = async (
   room: string,
   type: SubscriptionType,
   nftMint?: string,
-  publicKey?: string // To avoid DB calls on the backend
+  publicKey?: string, // To avoid DB calls on the backend
+  jwt?: string
 ) => {
   const lastUpdate = await latestReceivedUpdate(uuid, room.toString(), type);
 
@@ -25,6 +26,9 @@ export const refreshUpdatesFor = async (
     }`,
     {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
     }
   );
 

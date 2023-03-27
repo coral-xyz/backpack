@@ -14,7 +14,8 @@ export const refreshChatsFor = async (
   room: string,
   type: SubscriptionType,
   nftMint?: string,
-  publicKey?: string // To avoid DB calls on the backend
+  publicKey?: string, // To avoid DB calls on the backend
+  jwt?: string
 ) => {
   const lastMessage = await latestReceivedMessage(uuid, room, type);
   const response = await fetch(
@@ -26,6 +27,9 @@ export const refreshChatsFor = async (
     }&mint=${nftMint}&publicKey=${publicKey}`,
     {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
     }
   );
 
