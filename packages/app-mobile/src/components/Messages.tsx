@@ -181,7 +181,11 @@ export function ChatListItem({
   id: string;
   isUnread: boolean;
   userId: string;
-  onPress: (id: string, type: "individual" | "collection") => void;
+  onPress: (
+    id: string,
+    type: "individual" | "collection",
+    name: string
+  ) => void;
   users: any[];
 }) {
   const theme = useTheme();
@@ -189,6 +193,8 @@ export function ChatListItem({
     () => formatMessage(message, users),
     [message, users]
   );
+
+  console.log("type", type);
 
   return (
     <ListItem
@@ -206,7 +212,7 @@ export function ChatListItem({
       justifyContent="flex-start"
       hoverTheme
       pressTheme
-      onPress={() => onPress(id, type)}
+      onPress={() => onPress(id, type, name)}
       icon={<UserAvatar size={48} imageUrl={image} />}
     >
       <XStack jc="space-between" f={1}>
@@ -263,10 +269,11 @@ export function MessageList({
   const chats = useMemo(() => {
     const s = allChats.map((activeChat) => {
       return {
-        type: activeChat.type,
+        type: activeChat.chatType,
         id:
+          // ? activeChat.chatProps.remoteUserId
           activeChat.chatType === "individual"
-            ? activeChat.chatProps.remoteUserId
+            ? activeChat.chatProps.friendshipId
             : activeChat.chatProps.collectionId,
         image:
           activeChat.chatType === "individual"
@@ -298,6 +305,7 @@ export function MessageList({
 
     if (requestCount > 0) {
       // @ts-ignore
+      // Renders "Message Requests" at the top
       s.unshift({
         id: -1,
       });
@@ -305,6 +313,8 @@ export function MessageList({
 
     return s;
   }, [allChats, requestCount]);
+
+  console.log("chats", chats);
 
   const renderItem = useCallback(
     ({ item, index }) => {

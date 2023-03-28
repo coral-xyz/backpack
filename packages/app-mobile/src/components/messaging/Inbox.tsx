@@ -31,9 +31,11 @@ export const Inbox = () => {
     id: string;
   } | null>(null);
 
+  console.log("BB selected", { selectedGroup, selectedChat });
+
   if (selectedGroup) {
     return (
-      <View style={{ paddingTop: 100 }}>
+      <View>
         <Text
           onPress={() => {
             setSelectedGroup(null);
@@ -55,7 +57,7 @@ export const Inbox = () => {
 
   if (selectedChat) {
     return (
-      <View style={{ paddingTop: 100 }}>
+      <View>
         <Text
           onPress={() => {
             setSelectedChat(null);
@@ -77,16 +79,7 @@ export const Inbox = () => {
   }
 
   return (
-    <ScrollView style={{ padding: 20, paddingTop: 100 }}>
-      <Text>
-        {JSON.stringify({
-          username: user.username,
-          uuid: user.uuid,
-          activeChats,
-          requestCount,
-          groupCollections,
-        })}
-      </Text>
+    <ScrollView style={{ padding: 20, height: 300 }}>
       <Text>Messaging inbox</Text>
       {groupCollections
         .filter((x) => x.image && x.name)
@@ -161,6 +154,7 @@ function ChatMessages({
     room: roomId.toString(),
     type,
   });
+  console.log("BB ChatMessages", chats, roomId, type);
   const [messageText, setMessageText] = useState("");
   const { uuid } = useUser();
 
@@ -199,6 +193,7 @@ function ChatMessages({
                 remoteUsername,
                 id: roomId,
               });
+
               SignalingManager.getInstance().onUpdateRecoil({
                 type: "friendship",
               });

@@ -14,8 +14,7 @@ import {
   useRequestsCount,
   useUser,
 } from "@coral-xyz/recoil";
-import { AuthenticatedSync, ListItem, Circle } from "@coral-xyz/tamagui";
-import { MaterialIcons } from "@expo/vector-icons";
+import { SignalingManager, useChatsWithMetadata } from "@coral-xyz/tamagui";
 import { createStackNavigator } from "@react-navigation/stack";
 import { GiftedChat } from "react-native-gifted-chat";
 
@@ -28,7 +27,6 @@ import {
 } from "~components/data";
 import { Screen } from "~components/index";
 import { Inbox } from "~components/messaging/Inbox";
-import { useTheme } from "~hooks/useTheme";
 
 type ChatType =
   | { chatType: "individual"; chatProps: EnrichedInboxDb }
@@ -42,18 +40,21 @@ const formatDate = (created_at: string) => {
 
 export function ChatListScreen({ navigation }): JSX.Element {
   // const theme = useTheme();
-  // const { uuid } = useUser();
-  // const activeChats = useFriendships({ uuid });
-  // const requestCount = useRequestsCount({ uuid });
-  // const groupCollections = useGroupCollections({ uuid });
-  const { activeChats, requestCount, groupCollections } = DATA;
+  const { uuid } = useUser();
+  const activeChats = useFriendships({ uuid });
+  const requestCount = useRequestsCount({ uuid });
+  const groupCollections = useGroupCollections({ uuid });
 
   const getDefaultChats = () => {
     return groupCollections.filter((x) => x.name && x.image) || [];
   };
 
-  const handlePressMessage = (roomId: string, roomType: SubscriptionType) => {
-    navigation.navigate("ChatDetail", { roomId, roomType });
+  const handlePressMessage = (
+    roomId: string,
+    roomType: SubscriptionType,
+    roomName: string
+  ) => {
+    navigation.navigate("ChatDetail", { roomId, roomType, roomName });
   };
 
   const allChats: ChatType[] = [
@@ -68,8 +69,6 @@ export function ChatListScreen({ navigation }): JSX.Element {
 
   return (
     <Screen>
-      <AuthenticatedSync />
-      <Inbox />
       <MessageList
         requestCount={requestCount}
         allChats={allChats}
@@ -80,34 +79,40 @@ export function ChatListScreen({ navigation }): JSX.Element {
 }
 
 export function ChatDetailScreen({ navigation, route }): JSX.Element {
-  const { username, uuid } = useUser();
   const { roomType, roomId } = route.params;
-  const [messages, setMessages] = useState([]);
+  const { username, uuid } = useUser();
+  const { chats } = useChatsWithMetadata({
+    room: roomId.toString(),
+    type: roomType,
+  });
 
-  useEffect(() => {
-    const chats = CHAT_COLLECTION.chats.map((x) => {
-      return {
-        _id: x.client_generated_uuid,
-        text: x.message,
-        createdAt: formatDate(x.created_at),
-        received: x.received,
-        sent: true,
-        pending: false,
-        user: {
-          _id: x.uuid,
-          name: x.username,
-          avatar: x.image,
-        },
-      };
-    });
+  // const [messages, setMessages] = useState([]);
 
-    setMessages(chats);
-  }, []);
+  const messages = chats.map((x) => {
+    return {
+      _id: x.client_generated_uuid,
+      text: x.message,
+      createdAt: formatDate(x.created_at),
+      received: x.received,
+      sent: true,
+      pending: false,
+      user: {
+        _id: x.uuid,
+        name: x.username,
+        avatar: x.image,
+      },
+    };
+  });
+
+  // useEffect(() => {
+  //
+  //   setMessages(messages);
+  // }, [chats]);
 
   const onSend = useCallback((messages = []) => {
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, messages)
-    );
+    // setMessages((previousMessages) =>
+    //   GiftedChat.append(previousMessages, messages)
+    // );
   }, []);
 
   return (
@@ -137,7 +142,7 @@ export function ChatNavigator() {
       <Stack.Screen
         name="ChatDetail"
         component={ChatDetailScreen}
-        options={{ title: "Backpack" }}
+        options={({ route }) => ({ title: route.params.roomName })}
       />
     </Stack.Navigator>
   );
