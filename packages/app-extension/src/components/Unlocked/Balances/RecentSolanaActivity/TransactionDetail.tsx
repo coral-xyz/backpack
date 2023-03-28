@@ -130,7 +130,10 @@ const useStyles = styles((theme) => ({
   failedStatus: {
     color: "#E95050",
   },
-  label: { color: theme.custom.colors.secondary },
+  label: { 
+    color: theme.custom.colors.secondary,
+    textTransform: "capitalize", 
+  },
   transferAmount: {
     fontSize: "30px",
     color: theme.custom.colors.fontColor,
