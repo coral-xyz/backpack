@@ -6,27 +6,23 @@ import type {
 } from "@coral-xyz/common";
 
 import { useState, useEffect, useCallback } from "react";
-import { Text } from "react-native";
 
+import { CHAT_MESSAGES } from "@coral-xyz/common";
+import { createEmptyFriendship } from "@coral-xyz/db";
 import {
   useFriendships,
   useGroupCollections,
   useRequestsCount,
   useUser,
+  useAvatarUrl,
 } from "@coral-xyz/recoil";
 import { SignalingManager, useChatsWithMetadata } from "@coral-xyz/tamagui";
 import { createStackNavigator } from "@react-navigation/stack";
 import { GiftedChat } from "react-native-gifted-chat";
+import { v4 as uuidv4 } from "uuid";
 
 import { MessageList } from "~components/Messages";
-import {
-  messagesTabChats,
-  DATA,
-  CHAT_COLLECTION,
-  CHAT_INDIVIDUAL,
-} from "~components/data";
 import { Screen } from "~components/index";
-import { Inbox } from "~components/messaging/Inbox";
 
 type ChatType =
   | { chatType: "individual"; chatProps: EnrichedInboxDb }
@@ -52,9 +48,17 @@ export function ChatListScreen({ navigation }): JSX.Element {
   const handlePressMessage = (
     roomId: string,
     roomType: SubscriptionType,
-    roomName: string
+    roomName: string,
+    remoteUserId?: string,
+    remoteUsername?: string
   ) => {
-    navigation.navigate("ChatDetail", { roomId, roomType, roomName });
+    navigation.navigate("ChatDetail", {
+      roomId,
+      roomType,
+      roomName,
+      remoteUserId,
+      remoteUsername,
+    });
   };
 
   const allChats: ChatType[] = [
@@ -64,6 +68,8 @@ export function ChatListScreen({ navigation }): JSX.Element {
       chatType: "individual",
     })),
   ].sort((a, b) =>
+    // TODO some of these are last_message_timestamp
+    // others are lastMessageTimestamp
     a.last_message_timestamp < b.last_message_timestamp ? -1 : 1
   );
 
@@ -79,52 +85,97 @@ export function ChatListScreen({ navigation }): JSX.Element {
 }
 
 export function ChatDetailScreen({ navigation, route }): JSX.Element {
-  const { roomType, roomId } = route.params;
-  const { username, uuid } = useUser();
+  const { roomType, roomId, remoteUserId, remoteUsername } = route.params;
+  const user = useUser();
+  const avatarUrl = useAvatarUrl();
   const { chats } = useChatsWithMetadata({
     room: roomId.toString(),
     type: roomType,
   });
 
-  // const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([]);
 
-  const messages = chats.map((x) => {
-    return {
-      _id: x.client_generated_uuid,
-      text: x.message,
-      createdAt: formatDate(x.created_at),
-      received: x.received,
-      sent: true,
-      pending: false,
-      user: {
-        _id: x.uuid,
-        name: x.username,
-        avatar: x.image,
-      },
-    };
-  });
+  useEffect(() => {
+    const _messages = chats.map((x) => {
+      return {
+        _id: x.client_generated_uuid,
+        text: x.message,
+        createdAt: formatDate(x.created_at),
+        received: x.received,
+        sent: true,
+        pending: false,
+        user: {
+          _id: x.uuid,
+          name: x.username,
+          avatar: x.image,
+        },
+      };
+    });
 
-  // useEffect(() => {
-  //
-  //   setMessages(messages);
-  // }, [chats]);
-
-  const onSend = useCallback((messages = []) => {
-    // setMessages((previousMessages) =>
-    //   GiftedChat.append(previousMessages, messages)
-    // );
+    setMessages(_messages);
   }, []);
+
+  const onSend = useCallback(
+    async (messages = []) => {
+      const [message] = messages;
+      if (!message) {
+        return;
+      }
+
+      // @ts-ignore
+      const messageText = message?.text;
+      const client_generated_uuid = uuidv4();
+
+      if (chats.length === 0 && roomType === "individual") {
+        // If it's the first time the user is interacting,
+        // create an in memory friendship
+        await createEmptyFriendship(user.uuid, remoteUserId || "", {
+          last_message_sender: user.uuid,
+          last_message_timestamp: new Date().toISOString(),
+          last_message: messageText,
+          last_message_client_uuid: client_generated_uuid,
+          remoteUsername,
+          id: roomId,
+        });
+
+        SignalingManager.getInstance().onUpdateRecoil({
+          type: "friendship",
+        });
+      }
+
+      SignalingManager.getInstance()?.send({
+        type: CHAT_MESSAGES,
+        payload: {
+          messages: [
+            {
+              client_generated_uuid,
+              message: messageText,
+              message_kind: "text",
+            },
+          ],
+          type: roomType,
+          room: roomId.toString(),
+        },
+      });
+
+      setMessages((previousMessages) =>
+        GiftedChat.append(previousMessages, messages)
+      );
+    },
+    [chats.length, roomId, roomType, user.uuid, remoteUserId, remoteUsername]
+  );
 
   return (
     <GiftedChat
-      scrollToBottom
-      renderAvatarOnTop
-      renderUsernameOnMessage
+      messageIdGenerator={() => uuidv4()}
+      // renderAvatarOnTop
+      // renderUsernameOnMessage
       messages={messages}
-      onSend={(messages) => onSend(messages)}
+      onSend={onSend}
       user={{
-        _id: uuid,
-        name: username,
+        _id: user.uuid,
+        name: user.username,
+        avatar: avatarUrl,
       }}
     />
   );

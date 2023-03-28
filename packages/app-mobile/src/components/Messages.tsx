@@ -1,7 +1,12 @@
 import React, { useCallback, useMemo } from "react";
-import { View, FlatList, Alert, Pressable } from "react-native";
+import { FlatList, Pressable, FlatListProps } from "react-native";
 
-import { formatMessage, formatAMPM, isBackpackTeam } from "@coral-xyz/common";
+import {
+  formatMessage,
+  formatAMPM,
+  isBackpackTeam,
+  SubscriptionType,
+} from "@coral-xyz/common";
 import {
   XStack,
   YStack,
@@ -15,16 +20,18 @@ import { Verified } from "@tamagui/lucide-icons";
 
 import { useTheme } from "~hooks/useTheme";
 
-import { filteredFriends, messagesTabChats } from "./data";
-
-const UserAvatar = ({ imageUrl, size }) => (
+const UserAvatar = ({
+  imageUrl,
+  size,
+}: {
+  imageUrl: string;
+  size: number;
+}): JSX.Element => (
   <Avatar circular size={size}>
     <Avatar.Image src={imageUrl} />
-    <Avatar.Fallback bc="gray" />
+    <Avatar.Fallback bg="gray" />
   </Avatar>
 );
-
-const bgColor = "#f7f7f8";
 
 function Action({
   text,
@@ -155,7 +162,7 @@ export function UserList({ friends, onPressRow, onPressAction }): JSX.Element {
         onPressAction={onPressAction}
       />
     ),
-    []
+    [onPressAction, onPressRow]
   );
 
   return <List data={friends} renderItem={renderItem} />;
@@ -173,7 +180,7 @@ export function ChatListItem({
   onPress,
   users = [],
 }: {
-  type: "individual" | "collection";
+  type: SubscriptionType;
   image: string;
   name: string;
   message: string;
@@ -183,36 +190,37 @@ export function ChatListItem({
   userId: string;
   onPress: (
     id: string,
-    type: "individual" | "collection",
-    name: string
+    type: SubscriptionType,
+    name: string,
+    remoteUserId?: string,
+    remoteUsername?: string
   ) => void;
   users: any[];
-}) {
+}): JSX.Element {
   const theme = useTheme();
   const messagePreview = useMemo(
     () => formatMessage(message, users),
     [message, users]
   );
 
-  console.log("type", type);
-
   return (
     <ListItem
       id={id}
-      // backgroundColor:
-      //   (pathname === "/messages/chat" && props.userId === id) ||
-      //   (pathname === "/messages/groupchat" && props.id === id)
-      //     ? theme.custom.colors.bg4
-      //     : isUnread
       backgroundColor={
         isUnread
           ? theme.custom.colors.unreadBackground
           : theme.custom.colors.nav
       }
-      justifyContent="flex-start"
       hoverTheme
       pressTheme
-      onPress={() => onPress(id, type, name)}
+      justifyContent="flex-start"
+      onPress={() => {
+        if (type === "individual") {
+          onPress(id, type, name, userId, name);
+        } else {
+          onPress(id, type, name);
+        }
+      }}
       icon={<UserAvatar size={48} imageUrl={image} />}
     >
       <XStack jc="space-between" f={1}>
@@ -264,7 +272,7 @@ export function MessageList({
 }: {
   requestCount: number;
   allChats: any[];
-  onPressRow: (id: string, type: "individual" | "collection") => void;
+  onPressRow: (id: string, type: SubscriptionType, roomName: string) => void;
 }): JSX.Element {
   const chats = useMemo(() => {
     const s = allChats.map((activeChat) => {
@@ -314,8 +322,6 @@ export function MessageList({
     return s;
   }, [allChats, requestCount]);
 
-  console.log("chats", chats);
-
   const renderItem = useCallback(
     ({ item, index }) => {
       if (requestCount > 0 && item.id === -1) {
@@ -341,7 +347,11 @@ export function MessageList({
   );
 
   return (
-    <List data={chats} renderItem={renderItem} keyExtractor={({ id }) => id} />
+    <List
+      data={chats}
+      renderItem={renderItem}
+      keyExtractor={({ id }: { id: string }) => id}
+    />
   );
 }
 
@@ -375,37 +385,12 @@ function ChatListItemMessageRequest({
   );
 }
 
-export function HomeScreen() {
-  const handlePressUser = (id: string) => {
-    console.log("id", id);
-    // navigation.push('ChatDetail', { id })
-  };
-
-  const handlePressMessage = (id: string) => {
-    console.log("id", id);
-  };
-
-  return (
-    <YStack f={1} mb="$8" bg={bgColor}>
-      <UserList
-        friends={filteredFriends}
-        onPressRow={handlePressUser}
-        onPressAction={console.log}
-      />
-      <MessageList
-        allChats={messagesTabChats}
-        onPressRow={handlePressMessage}
-      />
-    </YStack>
-  );
-}
-
 export function List({
   data,
   renderItem,
   keyExtractor,
   ...props
-}: any): JSX.Element {
+}: FlatListProps<any>): JSX.Element {
   const theme = useTheme();
   return (
     <FlatList

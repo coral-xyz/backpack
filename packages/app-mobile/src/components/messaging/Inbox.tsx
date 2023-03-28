@@ -31,8 +31,6 @@ export const Inbox = () => {
     id: string;
   } | null>(null);
 
-  console.log("BB selected", { selectedGroup, selectedChat });
-
   if (selectedGroup) {
     return (
       <View>
