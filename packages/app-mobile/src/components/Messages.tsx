@@ -314,9 +314,9 @@ export function MessageList({
     if (requestCount > 0) {
       // @ts-ignore
       // Renders "Message Requests" at the top
-      s.unshift({
-        id: -1,
-      });
+      // s.unshift({
+      //   id: -1,
+      // });
     }
 
     return s;
@@ -324,9 +324,10 @@ export function MessageList({
 
   const renderItem = useCallback(
     ({ item, index }) => {
-      if (requestCount > 0 && item.id === -1) {
-        return <ChatListItemMessageRequest requestCount={requestCount} />;
-      }
+      // turn off message requests for now so we can ship a new build
+      // if (requestCount > 0 && item.id === -1) {
+      //   return <ChatListItemMessageRequest requestCount={requestCount} />;
+      // }
 
       return (
         <ChatListItem
@@ -343,7 +344,7 @@ export function MessageList({
         />
       );
     },
-    [onPressRow, requestCount]
+    [onPressRow]
   );
 
   return (
