@@ -32,6 +32,8 @@ export const useChatsWithMetadata = ({
     .filter((x) => x);
   const users = useUsersMetadata({ remoteUserIds: uniqueUserIds });
 
+  console.log("debug2", { chats, userIds, uniqueUserIds });
+
   return {
     chats: chats.map((chat) => ({
       ...chat,

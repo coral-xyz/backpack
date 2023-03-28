@@ -13,7 +13,8 @@ import { SignalingManager, useChatsWithMetadata } from "@coral-xyz/tamagui";
 import { v4 as uuidv4 } from "uuid";
 
 export const Inbox = () => {
-  const { uuid } = useUser();
+  const user = useUser();
+  const { uuid } = user;
   const activeChats = useFriendships({ uuid });
   const requestCount = useRequestsCount({ uuid });
   const groupCollections = useGroupCollections({ uuid });
@@ -32,7 +33,7 @@ export const Inbox = () => {
 
   if (selectedGroup) {
     return (
-      <View style={{ paddingTop: 100 }}>
+      <View>
         <Text
           onPress={() => {
             setSelectedGroup(null);
@@ -54,7 +55,7 @@ export const Inbox = () => {
 
   if (selectedChat) {
     return (
-      <View style={{ paddingTop: 100 }}>
+      <View>
         <Text
           onPress={() => {
             setSelectedChat(null);
@@ -76,7 +77,7 @@ export const Inbox = () => {
   }
 
   return (
-    <ScrollView style={{ padding: 20, paddingTop: 100 }}>
+    <ScrollView style={{ padding: 20, height: 300 }}>
       <Text>Messaging inbox</Text>
       {groupCollections
         .filter((x) => x.image && x.name)
@@ -151,6 +152,7 @@ function ChatMessages({
     room: roomId.toString(),
     type,
   });
+  console.log("BB ChatMessages", chats, roomId, type);
   const [messageText, setMessageText] = useState("");
   const { uuid } = useUser();
 
@@ -189,6 +191,7 @@ function ChatMessages({
                 remoteUsername,
                 id: roomId,
               });
+
               SignalingManager.getInstance().onUpdateRecoil({
                 type: "friendship",
               });

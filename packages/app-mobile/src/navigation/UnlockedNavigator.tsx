@@ -61,6 +61,9 @@ export type UnlockedNavigatorStackParamList = {
   };
 };
 
+// const MOBILE_ENABLED_CHAT = process.env.NODE_ENV === "development";
+const MOBILE_ENABLED_CHAT = true;
+
 const Stack = createStackNavigator<UnlockedNavigatorStackParamList>();
 export function UnlockedNavigator(): JSX.Element {
   const theme = useTheme();
@@ -177,7 +180,9 @@ function UnlockedBottomTabNavigator(): JSX.Element {
     >
       <Tab.Screen name="Balances" component={BalancesNavigator} />
       <Tab.Screen name="Collectibles" component={NftCollectiblesNavigator} />
-      {/* <Tab.Screen name="Chat" component={ChatNavigator} /> */}
+      {MOBILE_ENABLED_CHAT ? (
+        <Tab.Screen name="Chat" component={ChatNavigator} />
+      ) : null}
     </Tab.Navigator>
   );
 }

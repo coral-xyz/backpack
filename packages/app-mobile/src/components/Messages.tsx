@@ -1,22 +1,37 @@
 import React, { useCallback, useMemo } from "react";
-import { View, FlatList, Alert, Pressable } from "react-native";
+import { FlatList, Pressable, FlatListProps } from "react-native";
 
-import { formatMessage, formatAMPM, isBackpackTeam } from "@coral-xyz/common";
-import { XStack, YStack, ListItem, Avatar, Text } from "@coral-xyz/tamagui";
+import {
+  formatMessage,
+  formatAMPM,
+  isBackpackTeam,
+  SubscriptionType,
+} from "@coral-xyz/common";
+import {
+  XStack,
+  YStack,
+  ListItem,
+  Avatar,
+  Text,
+  Circle,
+} from "@coral-xyz/tamagui";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Verified } from "@tamagui/lucide-icons";
 
 import { useTheme } from "~hooks/useTheme";
 
-import { filteredFriends, messagesTabChats } from "./data";
-
-const UserAvatar = ({ imageUrl, size }) => (
+const UserAvatar = ({
+  imageUrl,
+  size,
+}: {
+  imageUrl: string;
+  size: number;
+}): JSX.Element => (
   <Avatar circular size={size}>
     <Avatar.Image src={imageUrl} />
-    <Avatar.Fallback bc="gray" />
+    <Avatar.Fallback bg="gray" />
   </Avatar>
 );
-
-const bgColor = "#f7f7f8";
 
 function Action({
   text,
@@ -147,7 +162,7 @@ export function UserList({ friends, onPressRow, onPressAction }): JSX.Element {
         onPressAction={onPressAction}
       />
     ),
-    []
+    [onPressAction, onPressRow]
   );
 
   return <List data={friends} renderItem={renderItem} />;
@@ -165,7 +180,7 @@ export function ChatListItem({
   onPress,
   users = [],
 }: {
-  type: any; // SubscriptionType
+  type: SubscriptionType;
   image: string;
   name: string;
   message: string;
@@ -173,9 +188,15 @@ export function ChatListItem({
   id: string;
   isUnread: boolean;
   userId: string;
-  onPress: (id: string) => void;
+  onPress: (
+    id: string,
+    type: SubscriptionType,
+    name: string,
+    remoteUserId?: string,
+    remoteUsername?: string
+  ) => void;
   users: any[];
-}) {
+}): JSX.Element {
   const theme = useTheme();
   const messagePreview = useMemo(
     () => formatMessage(message, users),
@@ -185,17 +206,27 @@ export function ChatListItem({
   return (
     <ListItem
       id={id}
-      bg={theme.custom.colors.nav}
-      jc="flex-start"
+      backgroundColor={
+        isUnread
+          ? theme.custom.colors.unreadBackground
+          : theme.custom.colors.nav
+      }
       hoverTheme
       pressTheme
-      onPress={() => onPress(id)}
+      justifyContent="flex-start"
+      onPress={() => {
+        if (type === "individual") {
+          onPress(id, type, name, userId, name);
+        } else {
+          onPress(id, type, name);
+        }
+      }}
       icon={<UserAvatar size={48} imageUrl={image} />}
     >
       <XStack jc="space-between" f={1}>
         <YStack>
           <Text
-            mb={2}
+            marginBottom={2}
             fontSize={14}
             fontWeight={isUnread ? "700" : "600"}
             color={
@@ -222,7 +253,10 @@ export function ChatListItem({
           </Text>
         </YStack>
         <YStack>
-          <Text color={theme.custom.colors.textPlaceholder}>
+          <Text
+            fontWeight={isUnread ? "700" : "400"}
+            color={theme.custom.colors.textPlaceholder}
+          >
             {formatAMPM(new Date(timestamp))}
           </Text>
         </YStack>
@@ -231,95 +265,133 @@ export function ChatListItem({
   );
 }
 
-export function MessageList({ allChats, onPressRow }): JSX.Element {
-  const chats = useMemo(
-    () =>
-      allChats.map((activeChat) => {
-        return {
-          type: activeChat.type,
-          id:
-            activeChat.chatType === "individual"
-              ? activeChat.chatProps.remoteUserId
-              : activeChat.chatProps.collectionId,
-          image:
-            activeChat.chatType === "individual"
-              ? activeChat.chatProps.remoteUserImage!
-              : activeChat.chatProps.image!,
-          userId:
-            activeChat.chatType === "individual"
-              ? activeChat.chatProps.remoteUserId!
-              : "",
-          name:
-            activeChat.chatType === "individual"
-              ? activeChat.chatProps.remoteUsername!
-              : activeChat.chatProps.name!,
-          message:
-            activeChat.chatType === "individual"
-              ? activeChat.chatProps.last_message!
-              : activeChat.chatProps.lastMessage!,
-          timestamp:
-            activeChat.chatType === "individual"
-              ? activeChat.chatProps.last_message_timestamp || ""
-              : activeChat.chatProps.lastMessageTimestamp || "",
-          isUnread:
-            activeChat.chatType === "individual"
-              ? !!activeChat.chatProps.unread
-              : activeChat.chatProps.lastMessageUuid !==
-                activeChat.chatProps.lastReadMessage,
-        };
-      }),
-    [allChats]
-  );
+export function MessageList({
+  requestCount,
+  allChats,
+  onPressRow,
+}: {
+  requestCount: number;
+  allChats: any[];
+  onPressRow: (id: string, type: SubscriptionType, roomName: string) => void;
+}): JSX.Element {
+  const chats = useMemo(() => {
+    const s = allChats.map((activeChat) => {
+      return {
+        type: activeChat.chatType,
+        id:
+          // ? activeChat.chatProps.remoteUserId
+          activeChat.chatType === "individual"
+            ? activeChat.chatProps.friendshipId
+            : activeChat.chatProps.collectionId,
+        image:
+          activeChat.chatType === "individual"
+            ? activeChat.chatProps.remoteUserImage!
+            : activeChat.chatProps.image!,
+        userId:
+          activeChat.chatType === "individual"
+            ? activeChat.chatProps.remoteUserId!
+            : "",
+        name:
+          activeChat.chatType === "individual"
+            ? activeChat.chatProps.remoteUsername!
+            : activeChat.chatProps.name!,
+        message:
+          activeChat.chatType === "individual"
+            ? activeChat.chatProps.last_message!
+            : activeChat.chatProps.lastMessage!,
+        timestamp:
+          activeChat.chatType === "individual"
+            ? activeChat.chatProps.last_message_timestamp || ""
+            : activeChat.chatProps.lastMessageTimestamp || "",
+        isUnread:
+          activeChat.chatType === "individual"
+            ? !!activeChat.chatProps.unread
+            : activeChat.chatProps.lastMessageUuid !==
+              activeChat.chatProps.lastReadMessage,
+      };
+    });
+
+    if (requestCount > 0) {
+      // @ts-ignore
+      // Renders "Message Requests" at the top
+      s.unshift({
+        id: -1,
+      });
+    }
+
+    return s;
+  }, [allChats, requestCount]);
 
   const renderItem = useCallback(
-    ({ item }) => (
-      <ChatListItem
-        id={item.id}
-        image={item.image}
-        type={item.type}
-        userId={item.userId}
-        name={item.name}
-        message={item.message}
-        timestamp={item.timestamp}
-        isUnread={item.isUnread}
-        onPress={onPressRow}
-        users={[]}
-      />
-    ),
-    []
+    ({ item, index }) => {
+      if (requestCount > 0 && item.id === -1) {
+        return <ChatListItemMessageRequest requestCount={requestCount} />;
+      }
+
+      return (
+        <ChatListItem
+          id={item.id}
+          image={item.image}
+          type={item.type}
+          userId={item.userId}
+          name={item.name}
+          message={item.message}
+          timestamp={item.timestamp}
+          isUnread={item.isUnread}
+          onPress={onPressRow}
+          users={[]}
+        />
+      );
+    },
+    [onPressRow, requestCount]
   );
-
-  return <List data={chats} renderItem={renderItem} />;
-}
-
-export function HomeScreen() {
-  const handlePressUser = (id: string) => {
-    console.log("id", id);
-    // navigation.push('ChatDetail', { id })
-  };
-
-  const handlePressMessage = (id: string) => {
-    console.log("id", id);
-  };
 
   return (
-    <YStack f={1} mb="$8" bg={bgColor}>
-      <UserList
-        friends={filteredFriends}
-        onPressRow={handlePressUser}
-        onPressAction={console.log}
-      />
-      <MessageList
-        allChats={messagesTabChats}
-        onPressRow={handlePressMessage}
-      />
-    </YStack>
+    <List
+      data={chats}
+      renderItem={renderItem}
+      keyExtractor={({ id }: { id: string }) => id}
+    />
   );
 }
 
-export function List({ data, renderItem, ...props }): JSX.Element {
+function ChatListItemMessageRequest({
+  requestCount,
+}: {
+  requestCount: number;
+}): JSX.Element {
   const theme = useTheme();
-  const keyExtractor = props.keyExtractor ?? (({ id }) => id);
+  const subTitle =
+    requestCount === 1
+      ? "1 person" + " you may know" // eslint-disable-line
+      : `${requestCount} people` + " you may know"; // eslint-disable-line
+
+  return (
+    <ListItem
+      title="Message requests"
+      fontWeight="700"
+      subTitle={subTitle}
+      icon={
+        <Circle
+          size={48}
+          bg={theme.custom.colors.background}
+          jc="center"
+          ai="center"
+        >
+          <MaterialIcons name="mark-chat-unread" size={24} color="black" />
+        </Circle>
+      }
+    />
+  );
+}
+
+export function List({
+  data,
+  renderItem,
+  keyExtractor,
+  ...props
+}: FlatListProps<any>): JSX.Element {
+  const theme = useTheme();
   return (
     <FlatList
       data={data}
