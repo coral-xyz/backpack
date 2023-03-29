@@ -19987,10 +19987,10 @@ __metadata:
 
 "eslint-plugin-zeus-custom@file:./eslint-plugin-zeus-custom::locator=eslint-config-custom%40workspace%3Apackages%2Feslint-config-custom":
   version: 0.0.1
-  resolution: "eslint-plugin-zeus-custom@file:./eslint-plugin-zeus-custom#./eslint-plugin-zeus-custom::hash=a463b5&locator=eslint-config-custom%40workspace%3Apackages%2Feslint-config-custom"
+  resolution: "eslint-plugin-zeus-custom@file:./eslint-plugin-zeus-custom#./eslint-plugin-zeus-custom::hash=718ce0&locator=eslint-config-custom%40workspace%3Apackages%2Feslint-config-custom"
   peerDependencies:
     eslint: ">=7.0.0"
-  checksum: ca4fd39d90debf3c06a3848687ddc99752f971754e2f249145b13677b08b7504d76a1aa54cb1a8bf5415835a2af8174eac5dc02733fb3b36a9e960d76b637179
+  checksum: 4e0331830d706a4ca5ab1743380087993e015437310bf5565a0fd885d8476bd2e5af942d3401bdc8c506b1536281f4358c1c9a17512ebb365bf359cfdb6180a6
   languageName: node
   linkType: hard
 
