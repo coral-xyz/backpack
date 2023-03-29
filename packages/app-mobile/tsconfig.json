@@ -1,6 +1,6 @@
 {
   "extends": "expo/tsconfig.base",
-  "include": ["src"],
+  "include": ["src", "app.config.ts", "metro.config.js"],
   "exclude": ["**/node_modules", "**/.*/"],
   "compilerOptions": {
     "strict": true,

@@ -10,6 +10,7 @@
         "node_modules/.cache/metro/**"
       ],
       "env": [
+        "GOOGLE_SERVICES_JSON",
         "BACKPACK_CONFIG_VERSION",
         "BACKPACK_CONFIG_LOG_LEVEL",
         "BACKPACK_FEATURE_LIGHT_MODE",
