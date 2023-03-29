@@ -350,7 +350,9 @@ export function NftCollectiblesNavigator(): JSX.Element {
       <Stack.Screen
         name="NftDetail"
         component={NftDetailScreen}
-        options={({ route }) => ({ title: route.params.title })}
+        options={({ route }) => ({
+          title: route.params.title,
+        })}
       />
       <Stack.Screen name="SendNFT" component={NftDetailSendScreen} />
     </Stack.Navigator>
