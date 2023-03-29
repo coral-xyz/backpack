@@ -42,6 +42,20 @@ export const MessageList = ({
 }) => {
   const theme = useCustomTheme();
 
+  const sortedChats = activeChats.sort(
+    (a, b) =>
+      new Date(
+        (b.chatType === "collection"
+          ? b.chatProps.lastMessageTimestamp
+          : b.chatProps.last_message_timestamp) ?? 0
+      ).getTime() -
+      new Date(
+        (a.chatType === "collection"
+          ? a.chatProps.lastMessageTimestamp
+          : a.chatProps.last_message_timestamp) ?? 0
+      ).getTime()
+  );
+
   return (
     <List
       style={{
@@ -58,7 +72,7 @@ export const MessageList = ({
           isLast={activeChats?.length === 0}
         />
       ) : null}
-      {activeChats?.map((activeChat, index) => (
+      {sortedChats?.map((activeChat, index) => (
         <ChatListItem
           toRoot={toRoot}
           type={activeChat.chatType}

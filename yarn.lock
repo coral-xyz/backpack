@@ -3783,7 +3783,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/xnft-cli@workspace:packages/xnft-cli"
   dependencies:
-    "@coral-xyz/xnft": ^0.2.42
+    "@coral-xyz/xnft": ^0.2.43
     "@esbuild-plugins/node-globals-polyfill": ^0.2.3
     chokidar: ^3.5.3
     commander: ^10.0.0
@@ -3834,9 +3834,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@coral-xyz/xnft@npm:^0.2.42":
-  version: 0.2.42
-  resolution: "@coral-xyz/xnft@npm:0.2.42"
+"@coral-xyz/xnft@npm:^0.2.43":
+  version: 0.2.43
+  resolution: "@coral-xyz/xnft@npm:0.2.43"
   dependencies:
     "@coral-xyz/anchor": ^0.27.0
     "@metaplex-foundation/js": ^0.17.12
@@ -3844,7 +3844,7 @@ __metadata:
     "@solana/web3.js": ^1.74.0
     semver: ^7.3.8
     zod: ^3.21.4
-  checksum: 480956d7cde7899dd9b4c9861d12194ccaed18c73a7dfea1359689742b7fed0915d5f9e8a0902f23fcff19d533ebd5c5e50d7adeff2952cd350313e5ef740f22
+  checksum: 9bb3d22d40856f312f300bb7e45e153e4143b9338c51a563b8ed4d9af1e4315636971aaae3f3651e3032bb9d068ee75c9cd37aebc649257d5b93592418c1c894
   languageName: node
   linkType: hard
 
