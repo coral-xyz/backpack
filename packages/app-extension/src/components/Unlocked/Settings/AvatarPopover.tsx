@@ -36,7 +36,7 @@ const useStyles = styles((theme) => ({
     },
   },
   popoverRoot: {
-    zIndex: 1,
+    zIndex: 2,
   },
 }));
 
