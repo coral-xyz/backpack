@@ -5,13 +5,9 @@ name: Pull Requests and Merges
 on:
   pull_request:
     types: [opened, synchronize]
-    paths:
-      - '!**/*.md' # any markdown file
     branches:
       - master
   push:
-    paths:
-      - '!**/*.md' # any markdown file
     branches:
       - master
 
