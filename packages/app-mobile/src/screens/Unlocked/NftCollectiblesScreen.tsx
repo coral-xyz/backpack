@@ -32,6 +32,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
+import { NftErrorBoundary } from "~components/ErrorBoundary";
 import { NFTCard, BaseCard } from "~components/NFTCard";
 import { NavHeader } from "~components/NavHeader";
 import { Screen, EmptyState, Margin, CopyButtonIcon } from "~components/index";
@@ -59,8 +60,6 @@ function NftCollectionCard({
   const wallet = wallets.find((wallet) => wallet.publicKey === publicKey);
   const blockchain = wallet?.blockchain!;
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
-
-  console.log("1collection", collection);
 
   // Display the first NFT in the collection as the thumbnail in the grid
   const collectionDisplayNftId = collection.itemIds?.find((nftId) => !!nftId)!;
@@ -249,11 +248,13 @@ export function NftCollectionListScreen({ navigation }): JSX.Element {
           keyExtractor={(collection) => collection.id}
           renderItem={({ item: collection }) => {
             return (
-              <NftCollectionCard
-                publicKey={activeWallet.publicKey}
-                collection={collection}
-                onPress={onSelectItem}
-              />
+              <NftErrorBoundary data={{ collection }}>
+                <NftCollectionCard
+                  publicKey={activeWallet.publicKey}
+                  collection={collection}
+                  onPress={onSelectItem}
+                />
+              </NftErrorBoundary>
             );
           }}
         />
@@ -350,7 +351,9 @@ export function NftCollectiblesNavigator(): JSX.Element {
       <Stack.Screen
         name="NftDetail"
         component={NftDetailScreen}
-        options={({ route }) => ({ title: route.params.title })}
+        options={({ route }) => ({
+          title: route.params.title,
+        })}
       />
       <Stack.Screen name="SendNFT" component={NftDetailSendScreen} />
     </Stack.Navigator>
