@@ -69,8 +69,11 @@ import type {
 } from "@solana/web3.js";
 import { Connection, PublicKey } from "@solana/web3.js";
 import BN from "bn.js";
-import { encode } from "bs58";
+import { decode as bs58Decode, encode as bs58Encode } from "bs58";
 import { Buffer } from "buffer";
+
+import { getLogger } from "../logging";
+const logger = getLogger("AZAR");
 
 import type { BackgroundClient } from "../channel";
 import {
@@ -287,7 +290,7 @@ export class BackgroundSolanaConnection extends Connection {
     return BackgroundSolanaConnection.accountInfoFromJson(resp);
   }
 
-  static accountInfoToJson(res) {
+  static accountInfoToJson(res: AccountInfo<Buffer>) {
     if (!IS_MOBILE) {
       return res;
     }
@@ -295,7 +298,7 @@ export class BackgroundSolanaConnection extends Connection {
     return {
       ...res,
       owner: res.owner.toString(),
-      data: res.data?.toString(),
+      data: res.data ? bs58Encode(res.data) : res.data,
     };
   }
 
@@ -309,7 +312,7 @@ export class BackgroundSolanaConnection extends Connection {
     return {
       ...res,
       owner: new PublicKey(res.owner),
-      data: Buffer.from(res.data),
+      data: bs58Decode(res.data),
     };
   }
 
@@ -381,7 +384,7 @@ export class BackgroundSolanaConnection extends Connection {
     rawTransaction: Buffer | Uint8Array | Array<number>,
     options?: SendOptions
   ): Promise<TransactionSignature> {
-    const txStr = encode(rawTransaction);
+    const txStr = bs58Encode(rawTransaction);
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION,
       params: [txStr, options],
@@ -471,7 +474,7 @@ export class BackgroundSolanaConnection extends Connection {
     message: VersionedMessage,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<number>> {
-    let serializedMessage = encode(message.serialize());
+    let serializedMessage = bs58Encode(message.serialize());
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE,
       params: [serializedMessage, commitment],
