@@ -29,7 +29,7 @@ const useStyles = styles((theme) => ({
     },
   },
   popoverRoot: {
-    zIndex: 1,
+    zIndex: 2,
   },
 }));
 
@@ -349,22 +349,24 @@ function UserMenuItem({ user, onClick }: { user: any; onClick: () => void }) {
             @{user.username}
           </Typography>
         </div>
-        {isCurrentUser ? <div
-          style={{
+        {isCurrentUser ? (
+          <div
+            style={{
               display: "flex",
               justifyContent: "center",
               flexDirection: "column",
             }}
           >
-          <Check
-            style={{
+            <Check
+              style={{
                 width: "20px",
                 height: "20px",
                 opacity: 0.8,
                 color: theme.custom.colors.fontColor,
               }}
             />
-        </div> : null}
+          </div>
+        ) : null}
       </div>
     </MenuListItem>
   );
