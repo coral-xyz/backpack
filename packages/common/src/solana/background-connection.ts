@@ -72,9 +72,6 @@ import BN from "bn.js";
 import { decode as bs58Decode, encode as bs58Encode } from "bs58";
 import { Buffer } from "buffer";
 
-import { getLogger } from "../logging";
-const logger = getLogger("AZAR");
-
 import type { BackgroundClient } from "../channel";
 import {
   SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
@@ -290,8 +287,12 @@ export class BackgroundSolanaConnection extends Connection {
     return BackgroundSolanaConnection.accountInfoFromJson(resp);
   }
 
-  static accountInfoToJson(res: AccountInfo<Buffer>) {
+  static accountInfoToJson(res: AccountInfo<Buffer> | null) {
     if (!IS_MOBILE) {
+      return res;
+    }
+
+    if (res == null) {
       return res;
     }
 
@@ -302,7 +303,7 @@ export class BackgroundSolanaConnection extends Connection {
     };
   }
 
-  static accountInfoFromJson(res) {
+  static accountInfoFromJson(res: AccountInfo<any>) {
     if (!IS_MOBILE) {
       res.data = Buffer.from(res.data);
       res.owner = new PublicKey(res.owner);
