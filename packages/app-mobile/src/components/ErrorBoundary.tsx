@@ -45,6 +45,7 @@ export class ErrorBoundary extends Component<Props> {
   }
 }
 
+// Wraps individual nft in an error boundary so if it shits, it won't explode the whole app
 export class NftErrorBoundary extends Component<Props> {
   constructor(props: Props) {
     super(props);
@@ -59,8 +60,8 @@ export class NftErrorBoundary extends Component<Props> {
   }
 
   render() {
-    console.log("NftErrorBoundary:error", this.props.data);
     if (this.state.errorInfo) {
+      console.error("NftErrorBoundary:error", this.props.data);
       return (
         <View style={{ padding: 4, flex: 1, backgroundColor: "#EEE" }}>
           <Text>{JSON.stringify({ id: this.props.data.collection.id })}</Text>
