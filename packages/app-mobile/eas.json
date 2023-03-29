@@ -1,11 +1,11 @@
 {
   "cli": {
     "appVersionSource": "remote",
-    "version": ">= 3.0.0"
+    "version": ">= 3.8.0"
   },
   "build": {
     "monorepo": {
-      "node": "18.12.0",
+      "node": "18.15",
       "ios": {
         "resourceClass": "m-medium"
       }
