@@ -268,14 +268,13 @@ function NftCollectionDetailScreen({
 type NftStackParamList = {
   NftCollectionList: undefined;
   NftCollectionDetail: {
-    // singleNftTitle: string;
-    collectionNftTitle: string;
+    title: string;
     collectionId: string;
     publicKey: string;
     connectionUrl: string;
   };
   NftDetail: {
-    // singleNftTitle: string;
+    title: string;
     nftId: string;
     publicKey: string;
     connectionUrl: string;
@@ -294,13 +293,15 @@ export function NftCollectiblesNavigator(): JSX.Element {
       <Stack.Screen
         name="NftCollectionList"
         component={NftCollectionListScreen}
-        options={{ title: "Collectibles" }}
+        options={{
+          title: "Collectibles",
+          headerTintColor: theme.custom.colors.fontColor,
+        }}
       />
       <Stack.Screen
         name="NftCollectionDetail"
         component={NftCollectionDetailScreen}
         options={({ route }) => ({
-          // this is good
           title: route.params.title,
           headerTintColor: theme.custom.colors.fontColor,
         })}
@@ -310,6 +311,7 @@ export function NftCollectiblesNavigator(): JSX.Element {
         component={NftDetailScreen}
         options={({ route }) => ({
           title: route.params.title,
+          headerTintColor: theme.custom.colors.fontColor,
         })}
       />
       <Stack.Screen name="SendNFT" component={NftDetailSendScreen} />
