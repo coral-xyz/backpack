@@ -121,7 +121,8 @@ export function Screen({
   style,
 }: {
   scrollable?: boolean;
-  children: JSX.Element | JSX.Element[] | null;
+  children: any;
+  // children: JSX.Element | JSX.Element[] | null;
   style?: StyleProp<ViewStyle>;
 }) {
   const theme = useTheme();

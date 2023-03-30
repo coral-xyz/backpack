@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Alert, Text, View, ScrollView } from "react-native";
 
+import Constants from "expo-constants";
 import * as Linking from "expo-linking";
 
 import {
@@ -104,14 +105,16 @@ export function NftDetailScreen({ navigation, route }): JSX.Element | null {
       <Screen>
         <NftImage imageUrl={nft.imageUrl} />
         <Description description={nft.description} />
-        <Box my={12}>
-          <PrimaryButton
-            label="Send"
-            onPress={() => {
-              navigation.push("SendNFT", { nft });
-            }}
-          />
-        </Box>
+        {Constants?.expoConfig?.extra?.ENABLED_NFT_SEND ? (
+          <Box my={12}>
+            <PrimaryButton
+              label="Send"
+              onPress={() => {
+                navigation.push("SendNFT", { nft });
+              }}
+            />
+          </Box>
+        ) : null}
         {nft.attributes ? <NftAttributes attributes={nft.attributes} /> : null}
         <ActionMenu
           nft={nft}

@@ -47,6 +47,24 @@ yarn android -c
 Android emulators don't support running localhost:9333 in your local environment.
 It tries to connect to the local phone's server which doesn't exist.
 
+### Feature Flag stuff
+
+If there's a feature you can't get through into the app store and you need to release something else, add a feature flag in `app.config.ts`.
+
+Then use it like this:
+
+```js
+import Constants from "expo-constants";
+
+const isEnabled = Constants?.expoConfig?.extra?.MY_FEATURE_ENABLED;
+
+// ... somewhere in a component:
+
+{
+  isEnabled ? <View /> : null;
+}
+```
+
 ### TroubleShooting
 
 #### I'm stuck on a black screen with a white backpack logo
