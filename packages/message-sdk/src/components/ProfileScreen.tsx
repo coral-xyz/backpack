@@ -214,7 +214,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
       <div>
         {!friendship && !requestSent ? (
           <PrimaryButton
-            label="Request to add friend"
+            label="Accept friend request"
             onClick={() => send(true)}
           />
         ) : null}
