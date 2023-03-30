@@ -46,6 +46,7 @@ import {
   getTransactionTitle,
   isNFTTransaction,
   isUserTxnSender,
+  parseSwapTransaction,
 } from "./detail-parser";
 import type { HeliusParsedTransaction } from "./types";
 
@@ -150,6 +151,29 @@ const useStyles = styles((theme) => ({
     "&:hover": {
       cursor: "pointer",
     },
+  },
+  detailCardHeaderSwapContainer: {
+    display: "flex",
+    alignItems: "center",
+    marginTop: "40px",
+    marginBottom: "40px",
+  },
+  detailCardHeaderSwapArrow: {
+    color: theme.custom.colors.alpha,
+    width: "80px",
+    fontSize: "35px",
+  },
+  detailCardHeaderSwapColumn: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+  },
+  detailCardHeaderSwapText: {
+    fontSize: "16px",
+    lineHeight: "24px",
+    color: theme.custom.colors.fontColor,
+    marginTop: "5px",
+    textAlign: "center",
   },
 }));
 
@@ -264,75 +288,20 @@ function DetailCardHeader({
     );
 
   if (transaction.type === TransactionType.SWAP) {
+    const [input, output] = parseSwapTransaction(transaction, tokenData);
     return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginTop: "40px",
-          marginBottom: "40px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            flexDirection: "column",
-          }}
-        >
-          <img
-            className={classes.tokenLogo}
-            src={(tokenData[0] && tokenData[0]?.logoURI) || UNKNOWN_ICON_SRC}
-          />
-
-          <div
-            style={{
-              fontSize: "16px",
-              lineHeight: "24px",
-              color: theme.custom.colors.fontColor,
-              marginTop: "5px",
-              textAlign: "center",
-            }}
-          >
-            {transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
-              " " +
-              (tokenData[0]?.symbol ||
-                walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint))}
+      <div className={classes.detailCardHeaderSwapContainer}>
+        <div className={classes.detailCardHeaderSwapColumn}>
+          <img className={classes.tokenLogo} src={input.tokenIcon} />
+          <div className={classes.detailCardHeaderSwapText}>
+            {input.amountWithSymbol}
           </div>
         </div>
-
-        <ArrowRightAltRounded
-          style={{
-            color: theme.custom.colors.alpha,
-            width: "80px",
-            fontSize: "35px",
-          }}
-        />
-
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            flexDirection: "column",
-          }}
-        >
-          <img
-            className={classes.tokenLogo}
-            src={(tokenData[1] && tokenData[1]?.logoURI) || UNKNOWN_ICON_SRC}
-          />
-          <div
-            style={{
-              fontSize: "16px",
-              lineHeight: "24px",
-              color: theme.custom.colors.fontColor,
-              marginTop: "5px",
-              textAlign: "center",
-            }}
-          >
-            {transaction?.tokenTransfers[1]?.tokenAmount.toFixed(5) +
-              " " +
-              (tokenData[1]?.symbol ||
-                walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint))}
+        <ArrowRightAltRounded className={classes.detailCardHeaderSwapArrow} />
+        <div className={classes.detailCardHeaderSwapColumn}>
+          <img className={classes.tokenLogo} src={output.tokenIcon} />
+          <div className={classes.detailCardHeaderSwapText}>
+            {output.amountWithSymbol}
           </div>
         </div>
       </div>
@@ -557,38 +526,8 @@ function DetailTable({
           </div>
         </div>
       ) : null}
-
       {transaction?.type === TransactionType.SWAP ? (
-        <>
-          <div className={classes.middleRow}>
-            <div className={classes.cell}>
-              <div className={classes.label}>You paid</div>
-
-              <div className={classes.cellValue}>
-                {transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
-                  " " +
-                  (tokenData[0]?.symbol ||
-                    walletAddressDisplay(
-                      transaction?.tokenTransfers?.[0]?.mint
-                    ))}
-              </div>
-            </div>
-          </div>
-          <div className={classes.middleRow}>
-            <div className={classes.cell}>
-              <div className={classes.label}>You Received</div>
-
-              <div className={classes.confirmedStatus}>
-                {transaction?.tokenTransfers[1]?.tokenAmount.toFixed(5) +
-                  " " +
-                  (tokenData[1]?.symbol ||
-                    walletAddressDisplay(
-                      transaction?.tokenTransfers?.[0]?.mint
-                    ))}
-              </div>
-            </div>
-          </div>
-        </>
+        <SwapTransaction transaction={transaction} tokenData={tokenData} />
       ) : null}
       {/* ALL txn types have  first row (Date) rest of data
       rows below (Network Fee, Status, Signature)*/}
@@ -641,3 +580,32 @@ function DetailTable({
     </List>
   );
 }
+
+const SwapTransaction = ({
+  transaction,
+  tokenData,
+}: {
+  transaction: HeliusParsedTransaction;
+  tokenData: ReturnType<typeof getTokenData>;
+}) => {
+  const classes = useStyles();
+  const [input, output] = parseSwapTransaction(transaction, tokenData);
+  return (
+    <>
+      <div className={classes.middleRow}>
+        <div className={classes.cell}>
+          <div className={classes.label}>You paid</div>
+          <div className={classes.cellValue}>{input.amountWithSymbol}</div>
+        </div>
+      </div>
+      <div className={classes.middleRow}>
+        <div className={classes.cell}>
+          <div className={classes.label}>You Received</div>
+          <div className={classes.confirmedStatus}>
+            {output.amountWithSymbol}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
