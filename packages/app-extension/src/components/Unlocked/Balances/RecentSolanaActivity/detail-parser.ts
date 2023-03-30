@@ -1,5 +1,10 @@
-import { walletAddressDisplay, WSOL_MINT } from "@coral-xyz/common";
+import {
+  SOL_NATIVE_MINT,
+  walletAddressDisplay,
+  WSOL_MINT,
+} from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { NftEventTypes, Source, TransactionType } from "helius-sdk/dist/types";
 
 import { UNKNOWN_ICON_SRC } from "../../../common/Icon";
@@ -311,4 +316,40 @@ export const getTokenData = (
   }
 
   return tokenData;
+};
+
+export const parseSwapTransaction = (
+  transaction: HeliusParsedTransaction,
+  tokenData: ReturnType<typeof getTokenData>
+) => {
+  const {
+    tokenInputs: [tokenInput],
+    tokenOutputs: [tokenOutput],
+    nativeInput,
+    nativeOutput,
+  } = transaction.events.swap;
+
+  return [
+    [nativeInput, tokenInput],
+    [nativeOutput, tokenOutput],
+  ].map(([n, t], i) => {
+    const ob = n
+      ? {
+          mint: SOL_NATIVE_MINT,
+          amount: (Number(n.amount) / LAMPORTS_PER_SOL).toFixed(5),
+        }
+      : {
+          mint: t.mint,
+          amount: (
+            Number(t.rawTokenAmount.tokenAmount) /
+            10 ** t.rawTokenAmount.decimals
+          ).toFixed(5),
+        };
+    const symbol = tokenData?.[i]?.symbol || walletAddressDisplay(ob.mint);
+    return {
+      ...ob,
+      symbol,
+      amountWithSymbol: `${ob.amount} ${symbol}`,
+    };
+  });
 };

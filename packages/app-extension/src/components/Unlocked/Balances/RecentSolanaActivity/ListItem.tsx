@@ -1,6 +1,5 @@
 import {
   reverseScientificNotation,
-  SOL_NATIVE_MINT,
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import { isFirstLastListItemStyle } from "@coral-xyz/react-common";
@@ -12,7 +11,6 @@ import {
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ListItem, Skeleton, Typography } from "@mui/material";
 import type { TokenInfo } from "@solana/spl-token-registry";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { Source, TransactionType } from "helius-sdk/dist/types";
 import { useRecoilValueLoadable } from "recoil";
 
@@ -24,6 +22,7 @@ import {
   getTransactionTitle,
   isNFTTransaction,
   isUserTxnSender,
+  parseSwapTransaction,
 } from "./detail-parser";
 import { ListItemIcons } from "./Icons";
 import type { HeliusParsedTransaction } from "./types";
@@ -258,45 +257,11 @@ function RecentActivityListItemData({
 
   if (transaction.type === TransactionType.SWAP) {
     try {
-      const [input, output] = (() => {
-        const {
-          tokenInputs: [tokenInput],
-          tokenOutputs: [tokenOutput],
-          nativeInput,
-          nativeOutput,
-        } = transaction.events.swap;
-
-        return [
-          [nativeInput, tokenInput],
-          [nativeOutput, tokenOutput],
-        ].map(([n, t]) =>
-          n
-            ? {
-                mint: SOL_NATIVE_MINT,
-                amount: (Number(n.amount) / LAMPORTS_PER_SOL).toFixed(5),
-              }
-            : {
-                mint: t.mint,
-                amount: (
-                  Number(t.rawTokenAmount.tokenAmount) /
-                  10 ** t.rawTokenAmount.decimals
-                ).toFixed(5),
-              }
-        );
-      })();
-
+      const [input, output] = parseSwapTransaction(transaction, tokenData);
       return (
         <>
-          <div className={classes.textReceived}>
-            {`+${output.amount} ${
-              tokenData[1]?.symbol || walletAddressDisplay(output.mint)
-            }`}
-          </div>
-          <div className={classes.textSecondary}>
-            {`-${input.amount} ${
-              tokenData[0]?.symbol || walletAddressDisplay(input.mint)
-            }`}
-          </div>
+          <div className={classes.textReceived}>+{output.amountWithSymbol}</div>
+          <div className={classes.textSecondary}>-{input.amountWithSymbol}</div>
         </>
       );
     } catch (err) {
