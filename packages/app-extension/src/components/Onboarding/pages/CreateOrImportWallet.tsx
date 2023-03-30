@@ -1,4 +1,4 @@
-import { PrimaryButton } from "@coral-xyz/tamagui";
+import { PrimaryButton } from "@coral-xyz/react-common";
 import { Box } from "@mui/material";
 
 import { SubtextParagraph } from "../../common";
@@ -31,7 +31,7 @@ export const CreateOrImportWallet = ({
         <Box sx={{ mb: "16px" }}>
           <PrimaryButton
             label="Create a new wallet"
-            onPress={() => onNext("create")}
+            onClick={() => onNext("create")}
           />
         </Box>
         <SubtextParagraph onClick={() => onNext("import")}>
