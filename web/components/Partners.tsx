@@ -25,7 +25,7 @@ const data = [
   },
   {
     image: '/brands/anagram.svg',
-    url: ''
+    url: 'https://www.anagram.care/'
   }
 ];
 
