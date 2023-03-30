@@ -1,4 +1,5 @@
 import type { Nft, NftCollection } from "@coral-xyz/common";
+import type { StackScreenProps } from "@react-navigation/stack";
 import type { UnwrapRecoilValue } from "recoil";
 
 import React, { useState } from "react";
@@ -16,7 +17,6 @@ import {
 
 import * as Linking from "expo-linking";
 
-import { UNKNOWN_NFT_ICON_SRC, Blockchain } from "@coral-xyz/common";
 import {
   // isAggregateWallets,
   nftCollectionsWithIds,
@@ -35,7 +35,7 @@ import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 import { NftErrorBoundary } from "~components/ErrorBoundary";
 import { NFTCard, BaseCard } from "~components/NFTCard";
 import { NavHeader } from "~components/NavHeader";
-import { Screen, EmptyState, Margin, CopyButtonIcon } from "~components/index";
+import { Screen, EmptyState, CopyButtonIcon } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { WalletPickerButton } from "~screens/Unlocked/components/Balances";
 import { TableHeader } from "~screens/Unlocked/components/index";
@@ -47,6 +47,20 @@ type NftCollectionsWithId = {
   collections: NftCollection[];
 };
 
+type SingleNftData = {
+  title: string;
+  nftId: string;
+  publicKey: string;
+  connectionUrl: string;
+};
+
+type CollectionNftData = {
+  title: string;
+  collectionId: string;
+  publicKey: string;
+  connectionUrl: string;
+};
+
 function NftCollectionCard({
   publicKey,
   collection,
@@ -54,7 +68,7 @@ function NftCollectionCard({
 }: {
   publicKey: string;
   collection: NftCollection;
-  onPress: (data: any) => void;
+  onPress: (route: string, data: SingleNftData | CollectionNftData) => void;
 }): JSX.Element | null {
   const wallets = useAllWallets();
   const wallet = wallets.find((wallet) => wallet.publicKey === publicKey);
@@ -71,45 +85,41 @@ function NftCollectionCard({
     })
   );
 
-  const onPressItem = () => {
+  const onPressCollectionCard = () => {
     if (collection.itemIds.length === 1) {
-      if (!collectionDisplayNft.name || !collectionDisplayNft.id) {
+      if (!collectionDisplayNft.collectionName || !collectionDisplayNft.id) {
         throw new Error("invalid NFT data");
       }
 
       // If there is only one item in the collection, link straight to its detail page
-      onPress({
-        type: "NFT_SINGLE",
-        data: {
-          title: collectionDisplayNft.name || "",
-          nftName: collectionDisplayNft.name || "",
-          nftId: collectionDisplayNft.id,
-          publicKey,
-          connectionUrl,
-        },
+      onPress("NftDetail", {
+        title: collectionDisplayNft.name || collectionDisplayNft.collectionName,
+        nftId: collectionDisplayNft.id,
+        publicKey,
+        connectionUrl,
       });
     } else {
-      onPress({
-        type: "NFT_COLLECTION",
-        data: {
-          title: collection.symbol || "",
-          collectionId: collection.id,
-          publicKey,
-          connectionUrl,
-        },
+      // Link to the collection page and load another list
+      onPress("NftCollectionDetail", {
+        title: collectionDisplayNft.collectionName,
+        collectionId: collection.id,
+        publicKey,
+        connectionUrl,
       });
     }
   };
 
   return (
-    <BaseCard
-      onPress={onPressItem}
-      imageUrl={collectionDisplayNft.imageUrl}
-      subtitle={{
-        name: collectionDisplayNft.name,
-        length: collection.itemIds.length,
-      }}
-    />
+    <NftErrorBoundary data={{ collection }}>
+      <BaseCard
+        onPress={onPressCollectionCard}
+        imageUrl={collectionDisplayNft.imageUrl}
+        subtitle={{
+          name: collectionDisplayNft.collectionName,
+          length: collection.itemIds.length,
+        }}
+      />
+    </NftErrorBoundary>
   );
 }
 
@@ -129,25 +139,9 @@ function NoNFTsEmptyState() {
   );
 }
 
-function SectionHeader({ title }: { title: string }): JSX.Element {
-  const theme = useTheme();
-  return (
-    <Text
-      style={[
-        // styles.sectionHeaderTitle,
-        {
-          fontSize: 14,
-          color: theme.custom.colors.fontColor,
-          backgroundColor: "#FFF",
-        },
-      ]}
-    >
-      {title}
-    </Text>
-  );
-}
-
-export function NftCollectionListScreen({ navigation }): JSX.Element {
+export function NftCollectionListScreen({
+  navigation,
+}: StackScreenProps<NftStackParamList, "NftCollectionList">): JSX.Element {
   const theme = useTheme();
   const activeWallet = useActiveWallet();
   const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
@@ -155,21 +149,11 @@ export function NftCollectionListScreen({ navigation }): JSX.Element {
     (state === "hasValue" && contents) || [];
   const isLoading = state === "loading";
 
-  // const nftCount = allWalletCollections
-  //   ? allWalletCollections
-  //       .map((c: any) => c.collections)
-  //       .flat()
-  //       .reduce((acc, c) => (c === null ? acc : c.itemIds.length + acc), 0)
-  //   : 0;
-  //
-  // const isEmpty = nftCount === 0 && !isLoading;
-
   if (isLoading) {
     return (
       <View
         style={{
           flex: 1,
-          backgroundColor: "#eee",
           justifyContent: "center",
           alignItems: "center",
         }}
@@ -182,40 +166,6 @@ export function NftCollectionListScreen({ navigation }): JSX.Element {
   const data =
     allWalletCollections.find((c) => c.publicKey === activeWallet.publicKey)
       ?.collections || [];
-
-  const onSelectItem = ({ type, data }) => {
-    switch (type) {
-      case "NFT_ONE_COLLECTION": {
-        const { title, collectionId, nftMint } = data;
-        Alert.alert(JSON.stringify(title, collectionId, nftMint));
-        break;
-      }
-
-      case "NFT_SINGLE": {
-        const { title, nftName, nftId, publicKey, connectionUrl } = data;
-        navigation.push("NftDetail", {
-          title,
-          nftName,
-          nftId,
-          publicKey,
-          connectionUrl,
-        });
-        break;
-      }
-
-      case "NFT_COLLECTION": {
-        const { title, collectionId, publicKey, connectionUrl } = data;
-        navigation.push("NftCollectionDetail", {
-          title,
-          collectionId,
-          publicKey,
-          connectionUrl,
-        });
-        break;
-      }
-      default:
-    }
-  };
 
   return (
     <Screen>
@@ -248,13 +198,11 @@ export function NftCollectionListScreen({ navigation }): JSX.Element {
           keyExtractor={(collection) => collection.id}
           renderItem={({ item: collection }) => {
             return (
-              <NftErrorBoundary data={{ collection }}>
-                <NftCollectionCard
-                  publicKey={activeWallet.publicKey}
-                  collection={collection}
-                  onPress={onSelectItem}
-                />
-              </NftErrorBoundary>
+              <NftCollectionCard
+                publicKey={activeWallet.publicKey}
+                collection={collection}
+                onPress={navigation.push}
+              />
             );
           }}
         />
@@ -263,7 +211,13 @@ export function NftCollectionListScreen({ navigation }): JSX.Element {
   );
 }
 
-function NftCollectionDetailScreen({ navigation, route }): JSX.Element | null {
+function NftCollectionDetailScreen({
+  navigation,
+  route,
+}: StackScreenProps<
+  NftStackParamList,
+  "NftCollectionDetail"
+>): JSX.Element | null {
   const { title, collectionId, publicKey, connectionUrl } = route.params;
   const { contents, state } = useRecoilValueLoadable<
     UnwrapRecoilValue<typeof nftCollectionsWithIds>
@@ -295,9 +249,10 @@ function NftCollectionDetailScreen({ navigation, route }): JSX.Element | null {
             nftId={item}
             connectionUrl={connectionUrl}
             publicKey={publicKey}
-            onPress={() => {
+            onPress={(name) => {
+              console.log("debug:name", name);
               navigation.push("NftDetail", {
-                title,
+                title: name,
                 nftId: item,
                 publicKey,
                 connectionUrl,
@@ -313,13 +268,14 @@ function NftCollectionDetailScreen({ navigation, route }): JSX.Element | null {
 type NftStackParamList = {
   NftCollectionList: undefined;
   NftCollectionDetail: {
-    title: string;
+    // singleNftTitle: string;
+    collectionNftTitle: string;
     collectionId: string;
     publicKey: string;
     connectionUrl: string;
   };
   NftDetail: {
-    title: string;
+    // singleNftTitle: string;
     nftId: string;
     publicKey: string;
     connectionUrl: string;
@@ -344,6 +300,7 @@ export function NftCollectiblesNavigator(): JSX.Element {
         name="NftCollectionDetail"
         component={NftCollectionDetailScreen}
         options={({ route }) => ({
+          // this is good
           title: route.params.title,
           headerTintColor: theme.custom.colors.fontColor,
         })}
