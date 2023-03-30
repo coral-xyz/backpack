@@ -3112,6 +3112,7 @@ __metadata:
     babel-loader: ^9.1.2
     babel-plugin-react-native-web: ^0.18.12
     bip39: ^3.0.4
+    browserify-zlib: ^0.2.0
     bs58: ^5.0.0
     bundlewatch: ^0.3.3
     clean-webpack-plugin: ^4.0.0
@@ -3135,6 +3136,7 @@ __metadata:
     linkify-react: ^4.1.0
     linkifyjs: ^4.1.0
     mini-css-extract-plugin: ^2.7.2
+    path-browserify: ^1.0.1
     react: 18.2.0
     react-custom-scrollbars: ^4.2.1
     react-dom: 18.2.0
@@ -3677,6 +3679,7 @@ __metadata:
   dependencies:
     "@coral-xyz/common": "*"
     "@coral-xyz/db": "*"
+    "@coral-xyz/xnft": ^0.2.47
     "@metaplex-foundation/mpl-token-metadata": ^2.5.2
     "@project-serum/anchor": ^0.25.0
     "@solana/spl-token": ^0.3.6
@@ -3783,7 +3786,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/xnft-cli@workspace:packages/xnft-cli"
   dependencies:
-    "@coral-xyz/xnft": ^0.2.43
+    "@coral-xyz/xnft": ^0.2.47
     "@esbuild-plugins/node-globals-polyfill": ^0.2.3
     chokidar: ^3.5.3
     commander: ^10.0.0
@@ -3834,9 +3837,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@coral-xyz/xnft@npm:^0.2.43":
-  version: 0.2.43
-  resolution: "@coral-xyz/xnft@npm:0.2.43"
+"@coral-xyz/xnft@npm:^0.2.47":
+  version: 0.2.47
+  resolution: "@coral-xyz/xnft@npm:0.2.47"
   dependencies:
     "@coral-xyz/anchor": ^0.27.0
     "@metaplex-foundation/js": ^0.17.12
@@ -3844,7 +3847,7 @@ __metadata:
     "@solana/web3.js": ^1.74.0
     semver: ^7.3.8
     zod: ^3.21.4
-  checksum: 9bb3d22d40856f312f300bb7e45e153e4143b9338c51a563b8ed4d9af1e4315636971aaae3f3651e3032bb9d068ee75c9cd37aebc649257d5b93592418c1c894
+  checksum: dd521ea13fbef993fb4b385633d1e9538856473ec8bb02605086ccd8c2817a3364a3fb35685f0253fbe2167794fdf2dc4c1482e5b907a62e3b7251318f33b678
   languageName: node
   linkType: hard
 
