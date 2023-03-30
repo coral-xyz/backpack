@@ -18,6 +18,7 @@ import {
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   ArrowDownwardRounded,
+  ArrowOutward,
   ArrowRightAltRounded,
   CallMade,
   CancelTwoTone,
@@ -130,9 +131,9 @@ const useStyles = styles((theme) => ({
   failedStatus: {
     color: "#E95050",
   },
-  label: { 
+  label: {
     color: theme.custom.colors.secondary,
-    textTransform: "capitalize", 
+    textTransform: "capitalize",
   },
   transferAmount: {
     fontSize: "30px",
@@ -223,14 +224,15 @@ export function TransactionDetail({
                 {/* TODO - add other functionality for this CTA button. Will need to
                 create mappings for 'verified' sites to determine correct URL*/}
                 {transaction?.type === TransactionType.NFT_SALE &&
-                  transaction?.events?.nft?.buyer ===
-                    activeWallet.publicKey ? <PrimaryButton
-                      className={classes.ctaButton}
-                      label="View in your gallery"
-                      onClick={() => {
-                        navigate("/nfts");
-                      }}
-                    /> : null}
+                transaction?.events?.nft?.buyer === activeWallet.publicKey ? (
+                  <PrimaryButton
+                    className={classes.ctaButton}
+                    label="View in your gallery"
+                    onClick={() => {
+                      navigate("/nfts");
+                    }}
+                  />
+                ) : null}
 
                 <DetailTable transaction={transaction} tokenData={tokenData} />
               </Card>
@@ -357,25 +359,27 @@ function DetailCardHeader({
         >
           {getTransactionTitle(activeWallet, transaction)}
         </div>
-        {nftPrice ? <div style={{ display: "flex", alignItems: "center" }}>
-          <img
-            style={{
+        {nftPrice ? (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <img
+              style={{
                 borderRadius: "50%",
                 width: "16px",
                 height: "16px",
                 marginRight: "5px",
               }}
-            src={SOL_LOGO_URI}
+              src={SOL_LOGO_URI}
             />
-          <div
-            style={{
+            <div
+              style={{
                 fontSize: "16px",
                 color: theme.custom.colors.fontColor,
               }}
             >
-            {nftPrice + " SOL"}
+              {nftPrice + " SOL"}
+            </div>
           </div>
-        </div> : null}
+        ) : null}
       </>
     );
   }
@@ -504,82 +508,88 @@ function DetailTable({
 
       {(transaction?.type === TransactionType.UNKNOWN ||
         transaction.type === TransactionType.TRANSFER) &&
-        isUserTxnSender(transaction, activeWallet) ? <div className={classes.addressExplorerRow}>
+      isUserTxnSender(transaction, activeWallet) ? (
+        <div className={classes.addressExplorerRow}>
           <div
             className={classes.middleRow}
             onClick={() => {
-                window.open(
-                  exploreAddressUrl(
-                    explorer!,
-                    transaction?.tokenTransfers?.[0]?.toUserAccount ||
-                      transaction?.nativeTransfers?.[0]?.toUserAccount,
-                    connectionUrl!
-                  )
-                );
-              }}
-            >
+              window.open(
+                exploreAddressUrl(
+                  explorer!,
+                  transaction?.tokenTransfers?.[0]?.toUserAccount ||
+                    transaction?.nativeTransfers?.[0]?.toUserAccount,
+                  connectionUrl!
+                )
+              );
+            }}
+          >
             <div className={classes.cell}>
               <div className={classes.label}>To</div>
               <div className={classes.cellValue}>
                 {walletAddressDisplay(
-                    transaction?.tokenTransfers?.[0]?.toUserAccount ||
-                      transaction?.nativeTransfers?.[0]?.toUserAccount
-                  )}
+                  transaction?.tokenTransfers?.[0]?.toUserAccount ||
+                    transaction?.nativeTransfers?.[0]?.toUserAccount
+                )}
                 <CallMade
                   style={{
-                      color: theme.custom.colors.icon,
-                      paddingLeft: "2px",
-                    }}
-                  />
+                    color: theme.custom.colors.icon,
+                    paddingLeft: "2px",
+                  }}
+                />
               </div>
             </div>
           </div>
-        </div> : null}
+        </div>
+      ) : null}
       {(transaction?.type === TransactionType.UNKNOWN ||
         transaction.type === TransactionType.TRANSFER) &&
-        isUserTxnSender(transaction, activeWallet) === false ? <div className={classes.middleRow}>
+      isUserTxnSender(transaction, activeWallet) === false ? (
+        <div className={classes.middleRow}>
           <div className={classes.cell}>
             <div className={classes.label}>From</div>
 
             <div className={classes.cellValue}>
               {walletAddressDisplay(
-                  transaction?.tokenTransfers?.[0]?.fromUserAccount ||
-                    transaction?.nativeTransfers?.[0]?.fromUserAccount
-                )}
+                transaction?.tokenTransfers?.[0]?.fromUserAccount ||
+                  transaction?.nativeTransfers?.[0]?.fromUserAccount
+              )}
             </div>
           </div>
-        </div> : null}
+        </div>
+      ) : null}
 
-      {transaction?.type === TransactionType.SWAP ? <>
-        <div className={classes.middleRow}>
-          <div className={classes.cell}>
-            <div className={classes.label}>You paid</div>
+      {transaction?.type === TransactionType.SWAP ? (
+        <>
+          <div className={classes.middleRow}>
+            <div className={classes.cell}>
+              <div className={classes.label}>You paid</div>
 
-            <div className={classes.cellValue}>
-              {transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
+              <div className={classes.cellValue}>
+                {transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
                   " " +
                   (tokenData[0]?.symbol ||
                     walletAddressDisplay(
                       transaction?.tokenTransfers?.[0]?.mint
                     ))}
+              </div>
             </div>
           </div>
-        </div>
-        <div className={classes.middleRow}>
-          <div className={classes.cell}>
-            <div className={classes.label}>You Received</div>
+          <div className={classes.middleRow}>
+            <div className={classes.cell}>
+              <div className={classes.label}>You Received</div>
 
-            <div className={classes.confirmedStatus}>
-              {transaction?.tokenTransfers[1]?.tokenAmount.toFixed(5) +
+              <div className={classes.confirmedStatus}>
+                {transaction?.tokenTransfers[1]?.tokenAmount.toFixed(5) +
                   " " +
                   (tokenData[1]?.symbol ||
                     walletAddressDisplay(
                       transaction?.tokenTransfers?.[0]?.mint
                     ))}
+              </div>
             </div>
           </div>
-        </div>
-      </> : null}
+        </>
+      ) : null}
       {/* ALL txn types have  first row (Date) rest of data
       rows below (Network Fee, Status, Signature)*/}
       <div className={classes.middleRow}>
@@ -613,12 +623,16 @@ function DetailTable({
         <div className={classes.cell}>
           <div className={classes.label}>Signature</div>
 
-          <div className={classes.cellValue}>
+          <div
+            className={classes.cellValue}
+            style={{ color: theme.custom.colors.linkColor }}
+          >
             {walletAddressDisplay(transaction?.signature)}
-            <CallMade
+            <ArrowOutward
               style={{
-                color: theme.custom.colors.icon,
+                fontSize: 20,
                 paddingLeft: "2px",
+                paddingBottom: "4px",
               }}
             />
           </div>
