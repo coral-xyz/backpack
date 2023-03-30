@@ -82,7 +82,7 @@ export const KeyringTypeSelector = ({
               <SecondaryButton
                 label={
                   action === "recover"
-                    ? "Recover using a hardware wallet"
+                    ? "Recover with hardware wallet"
                     : "I have a hardware wallet"
                 }
                 onClick={() => onNext("ledger")}
