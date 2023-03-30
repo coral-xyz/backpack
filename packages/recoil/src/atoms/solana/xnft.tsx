@@ -7,8 +7,15 @@ import {
   XNFT_GG_LINK,
   XNFT_PROGRAM_ID,
 } from "@coral-xyz/common";
-import { type IdlXnftAccount, xNFT } from "@coral-xyz/xnft";
-import { PublicKey } from "@solana/web3.js";
+import { buildAnonymousProgram } from "@coral-xyz/xnft/lib/util";
+import { IDL, type Xnft } from "@coral-xyz/xnft/lib/xnft";
+import {
+  AnchorProvider,
+  type IdlAccounts,
+  Program,
+  Wallet,
+} from "@project-serum/anchor";
+import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import * as cheerio from "cheerio";
 import { atomFamily, selectorFamily } from "recoil";
 
@@ -21,6 +28,13 @@ import { activePublicKeys } from "../wallet";
 import { anchorContext } from "./wallet";
 
 export const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
+
+// const xnftProgram = (conn: Connection): Program<Xnft> =>
+//   new Program(
+//     IDL,
+//     XNFT_PROGRAM_ID,
+//     new AnchorProvider(conn, new Wallet(Keypair.generate()), {})
+//   );
 
 export const appStoreMetaTags = selectorFamily<
   { name?: string; description?: string; image?: string },
@@ -57,7 +71,7 @@ export const collectibleXnft = selectorFamily<
       }
 
       const { connection } = get(anchorContext);
-      const client = xNFT.anonymous(connection);
+      const program = buildAnonymousProgram(connection);
 
       if (params.collection) {
         const [maybeCollectionXnft] = await PublicKey.findProgramAddress(
@@ -67,7 +81,7 @@ export const collectibleXnft = selectorFamily<
 
         const acc = await connection.getAccountInfo(maybeCollectionXnft);
         if (acc) {
-          const data = client.program.coder.accounts.decode<IdlXnftAccount>(
+          const data = program.coder.accounts.decode<IdlAccounts<Xnft>["xnft"]>(
             "xnft",
             acc.data
           );
@@ -86,7 +100,7 @@ export const collectibleXnft = selectorFamily<
         const acc = await connection.getAccountInfo(maybeItemXnft);
 
         if (acc) {
-          const data = client.program.coder.accounts.decode<IdlXnftAccount>(
+          const data = program.coder.accounts.decode<IdlAccounts<Xnft>["xnft"]>(
             "xnft",
             acc.data
           );
