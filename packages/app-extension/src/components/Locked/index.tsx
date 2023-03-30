@@ -87,7 +87,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
       >
         <Box>
           <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-          <div style={{ marginTop: "24px" }}>
+          <div>
             <BackpackHeader forceWhite={isFullScreen} style={{ zIndex: 2 }} />
             <div
               style={{
@@ -267,7 +267,6 @@ export function BackpackHeader({
   return (
     <Box
       sx={{
-        marginTop: "16px",
         marginLeft: "auto",
         marginRight: "auto",
         display: "block",
