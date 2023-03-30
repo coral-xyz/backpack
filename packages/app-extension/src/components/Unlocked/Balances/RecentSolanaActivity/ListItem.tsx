@@ -11,8 +11,6 @@ import type { TokenInfo } from "@solana/spl-token-registry";
 import { Source, TransactionType } from "helius-sdk/dist/types";
 import { useRecoilValueLoadable } from "recoil";
 
-import { UNKNOWN_ICON_SRC } from "../../../common/Icon";
-
 import {
   getTokenData,
   getTransactionCaption,
@@ -185,10 +183,11 @@ function RecentActivityListItemIcon({
   if (transaction?.transactionError) return <ListItemIcons.Error />;
 
   if (transaction.type === TransactionType.SWAP) {
+    const [input, output] = parseSwapTransaction(transaction, tokenData);
     return (
       <ListItemIcons.Swap
-        tokenLogoOne={tokenData[0]?.logoURI || UNKNOWN_ICON_SRC}
-        tokenLogoTwo={tokenData[1]?.logoURI || UNKNOWN_ICON_SRC}
+        tokenLogoOne={input.tokenIcon}
+        tokenLogoTwo={output.tokenIcon}
       />
     );
   }

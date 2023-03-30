@@ -151,6 +151,29 @@ const useStyles = styles((theme) => ({
       cursor: "pointer",
     },
   },
+  detailCardHeaderSwapContainer: {
+    display: "flex",
+    alignItems: "center",
+    marginTop: "40px",
+    marginBottom: "40px",
+  },
+  detailCardHeaderSwapArrow: {
+    color: theme.custom.colors.alpha,
+    width: "80px",
+    fontSize: "35px",
+  },
+  detailCardHeaderSwapColumn: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+  },
+  detailCardHeaderSwapText: {
+    fontSize: "16px",
+    lineHeight: "24px",
+    color: theme.custom.colors.fontColor,
+    marginTop: "5px",
+    textAlign: "center",
+  },
 }));
 
 export function TransactionDetail({
@@ -265,69 +288,18 @@ function DetailCardHeader({
 
   if (transaction.type === TransactionType.SWAP) {
     const [input, output] = parseSwapTransaction(transaction, tokenData);
-
     return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginTop: "40px",
-          marginBottom: "40px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            flexDirection: "column",
-          }}
-        >
-          <img
-            className={classes.tokenLogo}
-            src={(tokenData[0] && tokenData[0]?.logoURI) || UNKNOWN_ICON_SRC}
-          />
-
-          <div
-            style={{
-              fontSize: "16px",
-              lineHeight: "24px",
-              color: theme.custom.colors.fontColor,
-              marginTop: "5px",
-              textAlign: "center",
-            }}
-          >
+      <div className={classes.detailCardHeaderSwapContainer}>
+        <div className={classes.detailCardHeaderSwapColumn}>
+          <img className={classes.tokenLogo} src={input.tokenIcon} />
+          <div className={classes.detailCardHeaderSwapText}>
             {input.amountWithSymbol}
           </div>
         </div>
-
-        <ArrowRightAltRounded
-          style={{
-            color: theme.custom.colors.alpha,
-            width: "80px",
-            fontSize: "35px",
-          }}
-        />
-
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            flexDirection: "column",
-          }}
-        >
-          <img
-            className={classes.tokenLogo}
-            src={(tokenData[1] && tokenData[1]?.logoURI) || UNKNOWN_ICON_SRC}
-          />
-          <div
-            style={{
-              fontSize: "16px",
-              lineHeight: "24px",
-              color: theme.custom.colors.fontColor,
-              marginTop: "5px",
-              textAlign: "center",
-            }}
-          >
+        <ArrowRightAltRounded className={classes.detailCardHeaderSwapArrow} />
+        <div className={classes.detailCardHeaderSwapColumn}>
+          <img className={classes.tokenLogo} src={output.tokenIcon} />
+          <div className={classes.detailCardHeaderSwapText}>
             {output.amountWithSymbol}
           </div>
         </div>

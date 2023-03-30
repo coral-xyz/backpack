@@ -324,10 +324,10 @@ export const parseSwapTransaction = (
 ) => {
   try {
     const {
-      tokenInputs: [tokenInput],
-      tokenOutputs: [tokenOutput],
       nativeInput,
       nativeOutput,
+      tokenInputs: [tokenInput],
+      tokenOutputs: [tokenOutput],
     } = transaction.events.swap;
 
     return [
@@ -348,6 +348,7 @@ export const parseSwapTransaction = (
           };
 
       return {
+        tokenIcon: tokenData[i]?.logoURI || UNKNOWN_ICON_SRC,
         amountWithSymbol: `${amount} ${
           tokenData?.[i]?.symbol || walletAddressDisplay(mint)
         }`,
@@ -357,6 +358,7 @@ export const parseSwapTransaction = (
     console.error(err);
     // TODO: remove this previous behavior after some testing
     return Array(2).map((_, i) => ({
+      tokenIcon: tokenData[i]?.logoURI || UNKNOWN_ICON_SRC,
       amountWithSymbol: [
         transaction?.tokenTransfers?.[i]?.tokenAmount.toFixed(5),
         tokenData[i]?.symbol ||
