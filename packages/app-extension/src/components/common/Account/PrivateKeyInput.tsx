@@ -166,7 +166,7 @@ export const PrivateKeyInput = ({
             placeholder="Enter private key"
             value={privateKey}
             setValue={(e) => {
-              setPrivateKey(e.target.value);
+              setPrivateKey(e.target.value.trim());
             }}
             onKeyDown={async (e) => {
               if (e.key === "Enter") {
