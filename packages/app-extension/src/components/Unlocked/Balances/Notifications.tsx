@@ -543,12 +543,76 @@ function NotificationListItem({
   );
 }
 
+interface LoadingStates {
+  onDecline: boolean;
+  onAccept: boolean;
+}
 function AcceptRejectRequest({ userId }: { userId: string }) {
   const friendshipValue = useFriendship({ userId });
   const { uuid } = useUser();
   const setFriendshipValue = useUpdateFriendships();
   const theme = useCustomTheme();
   const [inProgress, setInProgress] = useState(false);
+  const [loadingStates, setLoadingStates] = useState<LoadingStates>({
+    onDecline: false,
+    onAccept: false,
+  });
+
+  const onListActions = (
+    callback: (ev: any, ...args: any[]) => Promise<void>,
+    actionName: string
+  ) => {
+    return async (ev: any, ...args: any[]) => {
+      setLoadingStates((prevStates) => ({ ...prevStates, [actionName]: true }));
+      try {
+        await callback(ev, ...args);
+      } finally {
+        setLoadingStates((prevStates) => ({
+          ...prevStates,
+          [actionName]: false,
+        }));
+      }
+    };
+  };
+
+  const onAccept = async (e: any) => {
+    e.stopPropagation();
+    setInProgress(true);
+    await sendFriendRequest({ to: userId, sendRequest: true });
+    await updateFriendshipIfExists(uuid, userId, {
+      requested: 0,
+      areFriends: 1,
+    });
+    await setFriendshipValue({
+      userId: userId,
+      friendshipValue: {
+        requested: false,
+        areFriends: true,
+        remoteRequested: false,
+      },
+    });
+    setInProgress(false);
+  };
+
+  const onDecline = async (e: any) => {
+    e.stopPropagation();
+    setInProgress(true);
+    await sendFriendRequest({ to: userId, sendRequest: false });
+    await updateFriendshipIfExists(uuid, userId, {
+      requested: 0,
+      areFriends: 0,
+      remoteRequested: 0,
+    });
+    await setFriendshipValue({
+      userId: userId,
+      friendshipValue: {
+        requested: false,
+        areFriends: false,
+        remoteRequested: false,
+      },
+    });
+    setInProgress(false);
+  };
 
   if (friendshipValue?.remoteRequested && !friendshipValue?.areFriends) {
     return (
@@ -556,46 +620,13 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
         <UserAction
           style={{ color: theme.custom.colors.blue, marginRight: 10 }}
           text="Accept"
-          onClick={async (e: any) => {
-            e.stopPropagation();
-            setInProgress(true);
-            await sendFriendRequest({ to: userId, sendRequest: true });
-            await updateFriendshipIfExists(uuid, userId, {
-              requested: 0,
-              areFriends: 1,
-            });
-            await setFriendshipValue({
-              userId: userId,
-              friendshipValue: {
-                requested: false,
-                areFriends: true,
-                remoteRequested: false,
-              },
-            });
-            setInProgress(false);
-          }}
+          onClick={onListActions(onAccept, "onAccept")}
+          isLoading={loadingStates.onAccept}
         />
         <UserAction
           text="Decline"
-          onClick={async (e: any) => {
-            e.stopPropagation();
-            setInProgress(true);
-            await sendFriendRequest({ to: userId, sendRequest: false });
-            await updateFriendshipIfExists(uuid, userId, {
-              requested: 0,
-              areFriends: 0,
-              remoteRequested: 0,
-            });
-            await setFriendshipValue({
-              userId: userId,
-              friendshipValue: {
-                requested: false,
-                areFriends: false,
-                remoteRequested: false,
-              },
-            });
-            setInProgress(false);
-          }}
+          onClick={onListActions(onDecline, "onDecline")}
+          isLoading={loadingStates.onDecline}
         />
       </div>
     );

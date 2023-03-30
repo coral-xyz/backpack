@@ -1,4 +1,5 @@
-import type { CSSProperties, MouseEvent } from "react";
+import type { CSSProperties, MouseEvent} from "react";
+import { useState } from "react";
 import type { RemoteUserData } from "@coral-xyz/common";
 import {
   BACKPACK_TEAM,
@@ -26,6 +27,14 @@ import VerifiedIcon from "@mui/icons-material/Verified";
 import { List, ListItem } from "@mui/material";
 
 import { useStyles } from "./styles";
+
+interface LoadingStates {
+  onUnfriend: boolean;
+  onCancelRequest: boolean;
+  onDecline: boolean;
+  onAccept: boolean;
+  onSendRequest: boolean;
+}
 
 export const UserList = ({
   users,
@@ -82,6 +91,30 @@ function UserListItem({
   const classes = useStyles();
   const { uuid } = useUser();
   const setFriendshipValue = useUpdateFriendships();
+  const [loadingStates, setLoadingStates] = useState<LoadingStates>({
+    onUnfriend: false,
+    onCancelRequest: false,
+    onDecline: false,
+    onAccept: false,
+    onSendRequest: false,
+  });
+
+  const onListActions = (
+    callback: (ev: MouseEvent<HTMLDivElement>, ...args: any[]) => Promise<void>,
+    actionName: string
+  ) => {
+    return async (ev: MouseEvent<HTMLDivElement>, ...args: any[]) => {
+      setLoadingStates((prevStates) => ({ ...prevStates, [actionName]: true }));
+      try {
+        await callback(ev, ...args);
+      } finally {
+        setLoadingStates((prevStates) => ({
+          ...prevStates,
+          [actionName]: false,
+        }));
+      }
+    };
+  };
 
   const onUnfriend = async (ev: MouseEvent<HTMLDivElement>) => {
     ev.stopPropagation();
@@ -319,20 +352,39 @@ function UserListItem({
           </div>
           <div>
             {user.areFriends ? (
-              <UserAction text="Unfriend" onClick={onUnfriend} />
+              <UserAction
+                text="Unfriend"
+                onClick={() => onListActions(onUnfriend, "onUnfriend")}
+                isLoading={loadingStates.onUnfriend}
+              />
             ) : user.requested ? (
-              <UserAction text="Cancel Request" onClick={onCancelRequest} />
+              <UserAction
+                text="Cancel Request"
+                onClick={() =>
+                  onListActions(onCancelRequest, "onCancelRequest")
+                }
+                isLoading={loadingStates.onCancelRequest}
+              />
             ) : user.remoteRequested ? (
               <div style={{ display: "flex", gap: 12 }}>
-                <UserAction text="Decline" onClick={onDecline} />
+                <UserAction
+                  text="Decline"
+                  onClick={onListActions(onDecline, "onDecline")}
+                  isLoading={loadingStates.onDecline}
+                />
                 <UserAction
                   style={{ color: theme.custom.colors.blue }}
                   text="Accept"
-                  onClick={onAccept}
+                  onClick={onListActions(onAccept, "onAccept")}
+                  isLoading={loadingStates.onAccept}
                 />
               </div>
             ) : (
-              <UserAction text="Send Request" onClick={onSendRequest} />
+              <UserAction
+                text="Send Request"
+                onClick={onListActions(onSendRequest, "onSendRequest")}
+                isLoading={loadingStates.onSendRequest}
+              />
             )}
           </div>
         </div>
