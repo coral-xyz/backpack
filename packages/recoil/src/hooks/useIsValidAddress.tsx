@@ -5,6 +5,7 @@ import {
   NameRegistryState,
 } from "@bonfida/spl-name-service";
 import { Blockchain } from "@coral-xyz/common";
+import { TldParser } from "@onsol/tldparser";
 import type { Connection } from "@solana/web3.js";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { ethers } from "ethers";
@@ -60,14 +61,22 @@ export function useIsValidAddress(
           }
         }
 
-        // If it's not .SOL throw an error
-        if (
-          !pubkey &&
-          address.split(".").length === 2 &&
-          !address.endsWith(".sol")
-        ) {
-          setAddressError(true);
-          return;
+        // ANS Domains
+        if (!pubkey && address.split(".").length === 2) {
+          try {
+            // tlds that would be parsed are: .abc, .bonk. poor, and .eth (bridged ENS)
+            const parser = new TldParser(solanaConnection);
+            const owner = await parser.getOwnerFromDomainTld(address);
+            if (!owner) {
+              setAddressError(true);
+              // Not a valid domain don't bother continuing since it has a dot in it.
+              return;
+            }
+            pubkey = owner;
+          } catch (e) {
+            setAddressError(true);
+            return;
+          }
         }
 
         if (!pubkey) {
