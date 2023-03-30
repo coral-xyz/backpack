@@ -654,6 +654,13 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     image: "https://www.madlads.com/mad_lads_logo.svg",
     collectionId: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
   },
+  {
+    id: "Et9ckpQCXFN5PsiYN781AczSVuQYyGEdDEPDJ7jrxz4c",
+    name: "Sporting F1",
+    image:
+      "https://arweave.net/Dh3FfZurEtmQD52mmq-axte9M6IMKmNSGzzdTpN9sJc?ext=png",
+    collectionId: "Et9ckpQCXFN5PsiYN781AczSVuQYyGEdDEPDJ7jrxz4c",
+  },
 ];
 
 // Load a fixed amount of public keys for various actions, e.g. import list,
