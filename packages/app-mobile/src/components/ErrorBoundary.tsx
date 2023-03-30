@@ -25,18 +25,6 @@ export class ErrorBoundary extends Component<Props> {
       return (
         <ScrollView style={{ flex: 1, backgroundColor: "orange" }}>
           <Text>Something went wrong.</Text>
-          <Text>{this.props.data.collection.id}</Text>
-          <Button
-            title="View More"
-            onPress={() => {
-              this.setState({ showMore: true });
-            }}
-          />
-          {this.state.showMore ? (
-            <View>
-              <Text>{JSON.stringify(this.state, null, 2)}</Text>
-            </View>
-          ) : null}
         </ScrollView>
       );
     }
@@ -64,7 +52,7 @@ export class NftErrorBoundary extends Component<Props> {
       console.error("NftErrorBoundary:error", this.props.data);
       return (
         <View style={{ padding: 4, flex: 1, backgroundColor: "#EEE" }}>
-          <Text>{JSON.stringify({ id: this.props.data.collection.id })}</Text>
+          <Text>{JSON.stringify({ id: this.props.data?.collection?.id })}</Text>
         </View>
       );
     }

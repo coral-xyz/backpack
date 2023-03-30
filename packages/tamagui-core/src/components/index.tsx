@@ -1,6 +1,7 @@
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { HOVER_OPACITY } from "@coral-xyz/themes";
+import { Text } from "tamagui";
 
 import { useCustomTheme } from "../hooks/index";
 export * from "./Images";
@@ -71,7 +72,7 @@ export function BaseButton({
 }: {
   label: string;
   buttonStyle?: StyleProp<ViewStyle>;
-  labelStyle?: StyleProp<TextStyle>;
+  labelStyle: { color: string };
   onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
@@ -96,12 +97,14 @@ export function BaseButton({
     >
       {iconBefore ? <Margin right={2}>{iconBefore}</Margin> : null}
       <Text
+        fontSize={16}
+        fontWeight="600"
+        fontFamily="Inter"
+        color={labelStyle.color}
         style={[
-          baseButtonStyles.label,
           {
             opacity: disabled ? 0.5 : 1,
           },
-          labelStyle,
         ]}
       >
         {loading ? "loading..." : label}
@@ -121,10 +124,6 @@ const baseButtonStyles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     width: "100%",
-  },
-  label: {
-    fontWeight: "500",
-    fontSize: 16,
   },
 });
 
