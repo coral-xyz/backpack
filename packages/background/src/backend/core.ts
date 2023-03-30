@@ -1241,9 +1241,27 @@ export class Backend {
         mnemonic,
         recoveryPaths
       );
+
+      //
+      // The set of all keys currently in the keyring store. Don't try to sync
+      // a key if it's already client side.
+      //
+      const allLocalKeys = Object.values(
+        await this.keyringStoreReadAllPubkeys()
+      )
+        .map((p) =>
+          p.hdPublicKeys
+            .concat(p.importedPublicKeys)
+            .concat(p.ledgerPublicKeys)
+            .map((p) => p.publicKey)
+        )
+        .reduce((a, b) => a.concat(b), []);
+
       const searchPublicKeys = serverPublicKeys
         .filter((b) => b.blockchain === blockchain)
-        .map((p) => p.publicKey);
+        .map((p) => p.publicKey)
+        .filter((p) => !allLocalKeys.includes(p));
+
       for (const searchPublicKey of searchPublicKeys) {
         const index = publicKeys.findIndex(
           (p: string) => p === searchPublicKey
