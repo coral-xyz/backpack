@@ -1,7 +1,4 @@
-import {
-  reverseScientificNotation,
-  walletAddressDisplay,
-} from "@coral-xyz/common";
+import { reverseScientificNotation } from "@coral-xyz/common";
 import { isFirstLastListItemStyle } from "@coral-xyz/react-common";
 import {
   metadataForRecentSolanaTransaction,
@@ -256,33 +253,13 @@ function RecentActivityListItemData({
   }
 
   if (transaction.type === TransactionType.SWAP) {
-    try {
-      const [input, output] = parseSwapTransaction(transaction, tokenData);
-      return (
-        <>
-          <div className={classes.textReceived}>+{output.amountWithSymbol}</div>
-          <div className={classes.textSecondary}>-{input.amountWithSymbol}</div>
-        </>
-      );
-    } catch (err) {
-      // TODO: remove this block once swaps have been tested more thoroughly
-      return (
-        <>
-          <div className={classes.textReceived}>
-            {`+${transaction?.tokenTransfers?.[1]?.tokenAmount.toFixed(5)} ${
-              tokenData[1]?.symbol ||
-              walletAddressDisplay(transaction?.tokenTransfers?.[1]?.mint)
-            }`}
-          </div>
-          <div className={classes.textSecondary}>
-            {`-${transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5)} ${
-              tokenData[0]?.symbol ||
-              walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint)
-            }`}
-          </div>
-        </>
-      );
-    }
+    const [input, output] = parseSwapTransaction(transaction, tokenData);
+    return (
+      <>
+        <div className={classes.textReceived}>+{output.amountWithSymbol}</div>
+        <div className={classes.textSecondary}>-{input.amountWithSymbol}</div>
+      </>
+    );
   }
 
   // BURN

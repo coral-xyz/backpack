@@ -322,34 +322,46 @@ export const parseSwapTransaction = (
   transaction: HeliusParsedTransaction,
   tokenData: ReturnType<typeof getTokenData>
 ) => {
-  const {
-    tokenInputs: [tokenInput],
-    tokenOutputs: [tokenOutput],
-    nativeInput,
-    nativeOutput,
-  } = transaction.events.swap;
+  try {
+    const {
+      tokenInputs: [tokenInput],
+      tokenOutputs: [tokenOutput],
+      nativeInput,
+      nativeOutput,
+    } = transaction.events.swap;
 
-  return [
-    [nativeInput, tokenInput],
-    [nativeOutput, tokenOutput],
-  ].map(([n, t], i) => {
-    const ob = n
-      ? {
-          mint: SOL_NATIVE_MINT,
-          amount: (Number(n.amount) / LAMPORTS_PER_SOL).toFixed(5),
-        }
-      : {
-          mint: t.mint,
-          amount: (
-            Number(t.rawTokenAmount.tokenAmount) /
-            10 ** t.rawTokenAmount.decimals
-          ).toFixed(5),
-        };
-    const symbol = tokenData?.[i]?.symbol || walletAddressDisplay(ob.mint);
-    return {
-      ...ob,
-      symbol,
-      amountWithSymbol: `${ob.amount} ${symbol}`,
-    };
-  });
+    return [
+      [nativeInput, tokenInput],
+      [nativeOutput, tokenOutput],
+    ].map(([n, t], i) => {
+      const { mint, amount } = n
+        ? {
+            mint: SOL_NATIVE_MINT,
+            amount: (Number(n.amount) / LAMPORTS_PER_SOL).toFixed(5),
+          }
+        : {
+            mint: t.mint,
+            amount: (
+              Number(t.rawTokenAmount.tokenAmount) /
+              10 ** t.rawTokenAmount.decimals
+            ).toFixed(5),
+          };
+
+      return {
+        amountWithSymbol: `${amount} ${
+          tokenData?.[i]?.symbol || walletAddressDisplay(mint)
+        }`,
+      };
+    });
+  } catch (err) {
+    console.error(err);
+    // TODO: remove this previous behavior after some testing
+    return Array(2).map((_, i) => ({
+      amountWithSymbol: [
+        transaction?.tokenTransfers?.[i]?.tokenAmount.toFixed(5),
+        tokenData[i]?.symbol ||
+          walletAddressDisplay(transaction?.tokenTransfers?.[i]?.mint),
+      ].join(" "),
+    }));
+  }
 };
