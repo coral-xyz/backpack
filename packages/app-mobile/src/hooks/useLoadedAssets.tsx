@@ -20,10 +20,12 @@ export function useLoadedAssets(): status {
   const webviewLoaded = useStore((state) => state.injectJavaScript);
 
   const [fontsLoaded] = useFonts({
-    Inter: Inter_400Regular,
+    // Inter: Inter_400Regular,
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
+    Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
+    InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
   });
 
   // Load any resources or data that we need prior to rendering the app
