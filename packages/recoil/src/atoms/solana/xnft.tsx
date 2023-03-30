@@ -7,6 +7,7 @@ import {
   XNFT_GG_LINK,
   XNFT_PROGRAM_ID,
 } from "@coral-xyz/common";
+import { type IdlXnftAccount, xNFT } from "@coral-xyz/xnft";
 import { PublicKey } from "@solana/web3.js";
 import * as cheerio from "cheerio";
 import { atomFamily, selectorFamily } from "recoil";
@@ -56,6 +57,8 @@ export const collectibleXnft = selectorFamily<
       }
 
       const { connection } = get(anchorContext);
+      const client = xNFT.anonymous(connection);
+
       if (params.collection) {
         const [maybeCollectionXnft] = await PublicKey.findProgramAddress(
           [Buffer.from("xnft"), new PublicKey(params.collection).toBytes()],
@@ -64,7 +67,14 @@ export const collectibleXnft = selectorFamily<
 
         const acc = await connection.getAccountInfo(maybeCollectionXnft);
         if (acc) {
-          return maybeCollectionXnft.toBase58();
+          const data = client.program.coder.accounts.decode<IdlXnftAccount>(
+            "xnft",
+            acc.data
+          );
+
+          if (!data.suspended) {
+            return maybeCollectionXnft.toBase58();
+          }
         }
       }
 
@@ -74,7 +84,14 @@ export const collectibleXnft = selectorFamily<
           XNFT_PROGRAM_ID
         );
         const acc = await connection.getAccountInfo(maybeItemXnft);
-        return acc ? maybeItemXnft.toBase58() : undefined;
+
+        if (acc) {
+          const data = client.program.coder.accounts.decode<IdlXnftAccount>(
+            "xnft",
+            acc.data
+          );
+          return !data.suspended ? maybeItemXnft.toBase58() : undefined;
+        }
       }
       return undefined;
     },
