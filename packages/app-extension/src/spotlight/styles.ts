@@ -119,4 +119,31 @@ export const useStyles = styles((theme) => ({
     minWidth: 184,
     color: theme.custom.colors.fontColor,
   },
+  searchBarWrapper: {
+    padding: "16px 8px",
+  },
+  divider: {
+    backgroundColor: theme.custom.colors.fontColor3,
+    marginTop: "16px",
+  },
+  emptyStateTitleWrapper: {
+    color: theme.custom.colors.fontColor3,
+    fontSize: "18px",
+  },
+  searchWebText: {
+    fontSize: 18,
+    marginLeft: "12px",
+    color: theme.custom.colors.fontColor2,
+  },
+  searchWebWrapper: {
+    display: "flex",
+    alignItems: "center",
+    padding: "16px 12px",
+    cursor: "pointer",
+
+    "&:hover": {
+      backgroundColor: theme.custom.colors.hoverIconBackground,
+      borderRadius: "8px",
+    },
+  },
 }));

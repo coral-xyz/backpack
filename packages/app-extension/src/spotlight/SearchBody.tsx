@@ -1,6 +1,7 @@
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Divider } from "@mui/material";
 
+import EmptyStateForSearch from "./EmptyStateForSearch";
 import { SpotlightContacts } from "./SpotlightContacts";
 import { SpotlightGroups } from "./SpotlightGroups";
 import { SpotlightNfts } from "./SpotlightNfts";
@@ -170,6 +171,10 @@ export const SearchBody = ({
           {row.component}
         </>
       ))}
+
+      {allResultsLength === 0 ? (
+        <EmptyStateForSearch searchString={searchFilter} />
+      ) : null}
     </div>
   );
 };
