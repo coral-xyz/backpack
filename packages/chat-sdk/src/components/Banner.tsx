@@ -82,7 +82,7 @@ export const Banner = () => {
                 toast.success(
                   remoteRequested ? `` : "",
                   remoteRequested
-                    ? `You and ${remoteUsername} are now connected`
+                    ? `You and @${remoteUsername} are now connected`
                     : `We'll let ${remoteUsername} know you want to connect`
                 );
               }}

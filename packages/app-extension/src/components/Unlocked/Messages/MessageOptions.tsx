@@ -90,7 +90,7 @@ export const MessageOptions = () => {
                   toast.success(
                     friendshipValue?.remoteRequested ? "" : "",
                     friendshipValue?.remoteRequested
-                      ? `You and ${remoteUsername} are now connected`
+                      ? `You and @${remoteUsername} are now connected`
                       : `We'll let ${remoteUsername} know you want to connect.`
                   );
                 }
