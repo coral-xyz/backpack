@@ -239,13 +239,13 @@ export const chatByNftId = selectorFamily<
       const whitelistedChatCollections = get(collectionChatWL);
 
       const whitelistedChatCollection = whitelistedChatCollections.find((x) => {
-        if (
-          x.collectionId !== nft?.metadataCollectionId ||
-          !x.attributeMapping
-        ) {
+        if (x.collectionId !== nft?.metadataCollectionId) {
           return false;
         }
 
+        if (!x.attributeMapping) {
+          return true;
+        }
         const doesNOThaveAttributes = Object.keys(
           x.attributeMapping || {}
         ).find((attrName) => {
