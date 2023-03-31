@@ -341,7 +341,7 @@ function SendToken() {
   const { push } = useNavigation();
 
   const onClickRow = (blockchain: Blockchain, token: Token) => {
-    push("select-user", { blockchain, token });
+    push("select-user", { blockchain, token, name: token.ticker });
   };
 
   return (

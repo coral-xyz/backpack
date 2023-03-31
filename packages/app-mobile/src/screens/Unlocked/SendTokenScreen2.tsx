@@ -1,5 +1,5 @@
 import type { Token } from "@@types/types";
-import type { RemoteUserData } from "@coral-xyz/common";
+import type { RemoteUserData, SubscriptionType } from "@coral-xyz/common";
 
 import { useEffect, useState } from "react";
 import { View } from "react-native";
@@ -31,7 +31,7 @@ import { StyledTextInput } from "~components/StyledTextInput";
 
 export const BubbleTopLabel = ({ text }: { text: string }) => {
   return (
-    <Text mb={12} fontSize={16} fontWeight="500">
+    <Text mb={8} fontSize={16} fontWeight="500" fontFamily="Inter">
       {text}
     </Text>
   );
@@ -106,10 +106,12 @@ export function SendTokenSelectUserScreen({
               navigation.navigate("SendTokenConfirm", {
                 blockchain,
                 token,
-                address: normalizedAddress || inputContent,
-                username: user?.username,
-                image: user?.image,
-                uuid: user?.uuid,
+                to: {
+                  address: normalizedAddress,
+                  username: user?.username,
+                  image: user?.image,
+                  uuid: user?.uuid,
+                },
               });
             }}
           />
@@ -252,18 +254,16 @@ function AddressList({
         const key = [wallet.username, wallet.walletName].join(":");
         return (
           <AddressListItem
+            key={key}
             token={token}
             blockchain={blockchain}
-            key={key}
-            isFirst={index === 0}
-            isLast={index === walletsWithPrimary.length - 1}
+            address={wallet.addresses?.[0]}
             user={{
               walletName: wallet.walletName,
               username: wallet.username,
               image: wallet.image,
               uuid: wallet.uuid,
             }}
-            address={wallet.addresses?.[0]}
           />
         );
       })}
@@ -274,15 +274,11 @@ function AddressList({
 const AddressListItem = ({
   address,
   blockchain,
-  isFirst,
-  isLast,
   token,
   user,
 }: {
   address?: string;
   blockchain: Blockchain;
-  isFirst: boolean;
-  isLast: boolean;
   token: Token;
   user: {
     username: string;
@@ -298,16 +294,12 @@ const AddressListItem = ({
       <ListItem
         hoverTheme
         pressTheme
-        px={8}
-        py={8}
         jc="flex-start"
         icon={<ImageSvg width={32} height={32} uri={user.image} />}
         onPress={() => {
           if (!address) {
             return;
           }
-          console.log("blockchain", blockchain);
-          console.log("token", token);
           navigation.navigate("SendTokenConfirm", {
             blockchain,
             token,
@@ -321,14 +313,16 @@ const AddressListItem = ({
           });
         }}
       >
-        <Text>{title}</Text>
+        <Text fontSize={16} fontWeight="600" fontFamily="Inter">
+          {title}
+        </Text>
         {!address ? (
           <View
             style={{
               width: 32,
               height: 32,
               backgroundColor: "#E33E3F",
-              marginLeft: 10,
+              marginLeft: 8,
             }}
           />
         ) : null}

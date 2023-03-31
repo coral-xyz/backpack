@@ -18,7 +18,6 @@ import {
   Metadata,
   TokenStandard,
 } from "@metaplex-foundation/mpl-token-metadata";
-import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 import { PublicKey } from "@solana/web3.js";
 
 import {
@@ -29,15 +28,18 @@ import {
 } from "~components/BottomDrawerCards";
 import { Margin, PrimaryButton, TokenAmountHeader } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
+import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 
 type Step = "confirm" | "sending" | "complete" | "error";
 
 export function SendSolanaConfirmationCard({
+  navigation,
   token,
   destinationAddress,
   amount,
   onCompleteStep,
 }: {
+  navigation: any;
   token: {
     address: string;
     logo: string;
@@ -146,6 +148,7 @@ export function SendSolanaConfirmationCard({
         />
       ) : cardType === "sending" ? (
         <Sending
+          navigation={navigation}
           blockchain={Blockchain.SOLANA}
           isComplete={false}
           amount={amount}
@@ -154,6 +157,7 @@ export function SendSolanaConfirmationCard({
         />
       ) : cardType === "complete" ? (
         <Sending
+          navigation={navigation}
           blockchain={Blockchain.SOLANA}
           isComplete
           amount={amount}

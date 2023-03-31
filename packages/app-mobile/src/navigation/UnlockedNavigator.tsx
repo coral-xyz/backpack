@@ -18,6 +18,7 @@ import {
 import { useTheme } from "~hooks/useTheme";
 import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 // import AppListScreen from "~screens/Unlocked/AppListScreen"; // TURNED off bc of app store restrictions (temporarily)
+import { ChatNavigator } from "~navigation/ChatNavigator";
 import { BalancesNavigator } from "~screens/Unlocked/BalancesScreen";
 import {
   DepositListScreen,
@@ -60,6 +61,9 @@ export type UnlockedNavigatorStackParamList = {
   };
 };
 
+// const MOBILE_ENABLED_CHAT = process.env.NODE_ENV === "development";
+const MOBILE_ENABLED_CHAT = true;
+
 const Stack = createStackNavigator<UnlockedNavigatorStackParamList>();
 export function UnlockedNavigator(): JSX.Element {
   const theme = useTheme();
@@ -81,7 +85,11 @@ export function UnlockedNavigator(): JSX.Element {
           headerBackImage: IconCloseModal,
         }}
       >
-        <Stack.Screen name="RecentActivity" component={RecentActivityScreen} />
+        <Stack.Screen
+          name="RecentActivity"
+          component={RecentActivityScreen}
+          options={{ title: "Recent Activity" }}
+        />
         <Stack.Screen
           options={{ title: "Deposit" }}
           name="DepositList"
@@ -136,6 +144,7 @@ type UnlockedTabNavigatorParamList = {
   Balances: undefined;
   Applications: undefined;
   Collectibles: undefined;
+  Chat: undefined;
 };
 
 const Tab = createBottomTabNavigator<UnlockedTabNavigatorParamList>();
@@ -149,7 +158,7 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         return TabIconApps;
       case "Collectibles":
         return TabIconNfts;
-      case "Messages":
+      case "Chat":
         return TabIconMessages;
       default:
         return TabIconBalances;
@@ -171,6 +180,9 @@ function UnlockedBottomTabNavigator(): JSX.Element {
     >
       <Tab.Screen name="Balances" component={BalancesNavigator} />
       <Tab.Screen name="Collectibles" component={NftCollectiblesNavigator} />
+      {MOBILE_ENABLED_CHAT ? (
+        <Tab.Screen name="Chat" component={ChatNavigator} />
+      ) : null}
     </Tab.Navigator>
   );
 }

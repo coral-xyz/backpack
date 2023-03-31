@@ -15,20 +15,23 @@ export const deleteMessage = async (
   type: SubscriptionType,
   room: string
 ) => {
-  await chain("mutation")({
-    insert_chat_update_history_one: [
-      {
-        object: {
-          type: DELETE_MESSAGE,
-          client_generated_uuid,
-          room,
+  await chain("mutation")(
+    {
+      insert_chat_update_history_one: [
+        {
+          object: {
+            type: DELETE_MESSAGE,
+            client_generated_uuid,
+            room,
+          },
         },
-      },
-      {
-        id: true,
-      },
-    ],
-  })
+        {
+          id: true,
+        },
+      ],
+    },
+    { operationName: "deleteMessage" }
+  )
     .then((x) => console.log(x))
     .catch((e) => {
       console.log(`Error while adding chat msg to DB`);
@@ -41,27 +44,30 @@ export const getHistoryUpdates = async (
   lastSeenUpdate: number,
   updatesSinceTimestamp: number
 ): Promise<MessageUpdates[]> => {
-  const response = await chain("query")({
-    chat_update_history: [
-      {
-        where: {
-          room: { _eq: room },
-          id: { _gt: lastSeenUpdate },
-          created_at: {
-            _gte: updatesSinceTimestamp
-              ? new Date(updatesSinceTimestamp).toUTCString()
-              : new Date(1122292384789).toUTCString(),
+  const response = await chain("query")(
+    {
+      chat_update_history: [
+        {
+          where: {
+            room: { _eq: room },
+            id: { _gt: lastSeenUpdate },
+            created_at: {
+              _gte: updatesSinceTimestamp
+                ? new Date(updatesSinceTimestamp).toUTCString()
+                : new Date(1122292384789).toUTCString(),
+            },
           },
         },
-      },
-      {
-        id: true,
-        type: true,
-        room: true,
-        client_generated_uuid: true,
-      },
-    ],
-  });
+        {
+          id: true,
+          type: true,
+          room: true,
+          client_generated_uuid: true,
+        },
+      ],
+    },
+    { operationName: "getHistoryUpdates" }
+  );
   return response.chat_update_history.map((x) => ({
     type: x.type,
     id: x.id,

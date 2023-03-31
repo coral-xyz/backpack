@@ -1,6 +1,7 @@
-import { ethers } from "ethers";
 import { PublicKey } from "@solana/web3.js";
-import { BlockChain } from "../zodTypes";
+import { ethers } from "ethers";
+
+import type { BlockChain } from "../zodTypes";
 
 export const validatePublicKey = (address: string, chain: BlockChain) => {
   if (chain === "solana") {

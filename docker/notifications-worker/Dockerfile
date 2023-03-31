@@ -26,6 +26,16 @@ COPY ["packages/themes", "./packages/themes"]
 COPY ["packages/provider-core", "./packages/provider-core"]
 COPY ["packages/provider-injection", "./packages/provider-injection"]
 
+# set up yarn v3
+COPY .yarnrc.yml .yarnrc.yml
+COPY .yarn/ .yarn/
+# RUN corepack enable && corepack prepare yarn@3.5.0 --activate
+
+# Append the required lines to the .yarnrc.yml file
+# YN0013 is cache-miss that will always hit on a fresh build
+RUN echo '  - code: YN0013' >> .yarnrc.yml && \
+    echo '    level: discard' >> .yarnrc.yml
+
 RUN cd /base && yarn install && yarn run build
 RUN cd /base/backend/native/notifications-worker && yarn run build
 

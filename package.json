@@ -15,19 +15,19 @@
     ]
   },
   "scripts": {
-    "lint": "turbo run lint --filter=!@coral-xyz/app-mobile",
-    "lint:fix": "turbo run lint:fix --filter=!@coral-xyz/app-mobile",
-    "start": "env-cmd --silent turbo run start --concurrency=100% --filter=./packages/*",
+    "lint": "turbo run lint --filter='!@coral-xyz/app-mobile'",
+    "lint:fix": "turbo run lint:fix --filter='!@coral-xyz/app-mobile'",
+    "start": "env-cmd --silent turbo run start --concurrency=100% --filter='./packages/*'",
     "start:fresh": "yarn install && yarn clean && yarn install && yarn start",
     "test": "env-cmd --silent turbo run test -- --passWithNoTests --watchAll=false",
     "build": "env-cmd --silent turbo run build --filter='!./examples/**' ",
     "build:fresh": "git clean -xfd && yarn install && yarn build --force",
     "e2e": "env-cmd --silent turbo run e2e",
     "clean": "git clean -xfd",
-    "start:ext": "env-cmd --silent turbo run start --filter=@coral-xyz/app-extension... --filter=@coral-xyz/background...",
-    "build:ext": "env-cmd --silent turbo run build --filter=@coral-xyz/app-extension... --filter=@coral-xyz/background...",
-    "start:mobile": "env-cmd --silent turbo run start --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
-    "build:mobile": "env-cmd --silent turbo run build --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
+    "start:ext": "env-cmd --silent turbo run start --filter='@coral-xyz/app-extension...' --filter='@coral-xyz/provider-injection...'",
+    "build:ext": "env-cmd --silent turbo run build --filter='@coral-xyz/app-extension...' --filter='@coral-xyz/provider-injection...'",
+    "start:mobile": "env-cmd --silent turbo run start --filter='@coral-xyz/app-mobile...' --filter='@coral-xyz/background...'",
+    "build:mobile": "env-cmd --silent turbo run build --filter='@coral-xyz/app-mobile...' --filter='@coral-xyz/background...'",
     "postinstall": "husky install"
   },
   "devDependencies": {
