@@ -1,4 +1,4 @@
-import type { SubscriptionType , UserMetadata } from "@coral-xyz/common";
+import type { SubscriptionType, UserMetadata } from "@coral-xyz/common";
 
 import { getDb } from "../db";
 import { bulkGetImages } from "../db/images";

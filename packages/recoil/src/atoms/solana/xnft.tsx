@@ -7,15 +7,10 @@ import {
   XNFT_GG_LINK,
   XNFT_PROGRAM_ID,
 } from "@coral-xyz/common";
-import { buildAnonymousProgram } from "@coral-xyz/xnft/lib/util";
-import { IDL, type Xnft } from "@coral-xyz/xnft/lib/xnft";
-import {
-  AnchorProvider,
-  type IdlAccounts,
-  Program,
-  Wallet,
-} from "@project-serum/anchor";
-import { Connection, Keypair, PublicKey } from "@solana/web3.js";
+import { buildAnonymousProgram } from "@coral-xyz/xnft/lib/cjs/util";
+import type { Xnft } from "@coral-xyz/xnft/lib/cjs/xnft";
+import type { IdlAccounts } from "@project-serum/anchor";
+import { PublicKey } from "@solana/web3.js";
 import * as cheerio from "cheerio";
 import { atomFamily, selectorFamily } from "recoil";
 
