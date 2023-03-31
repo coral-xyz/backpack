@@ -5,7 +5,7 @@
   },
   "build": {
     "monorepo": {
-      "node": "18.15",
+      "node": "18.15.0",
       "ios": {
         "resourceClass": "m-medium"
       }
