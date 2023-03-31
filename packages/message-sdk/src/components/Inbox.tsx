@@ -58,9 +58,7 @@ export function InboxInner() {
       chatProps: x,
       chatType: "individual",
     })),
-  ].sort((a, b) =>
-    a.last_message_timestamp < b.last_message_timestamp ? -1 : 1
-  );
+  ];
 
   const searchedUsersDistinct = searchResults.filter(
     (result) =>
