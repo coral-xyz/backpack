@@ -201,7 +201,25 @@ export function ImportMnemonic({
 }
 
 export function InputName({ onNext }: { onNext: (name: string) => void }) {
-  const [name, setName] = useState("");
+  const [walletName, setWalletName] = useState("");
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isNextDisabled, setIsNextDisabled] = useState(false);
+
+  useEffect(() => {
+    //regex check to not allow wallet names to start with '@'
+    let regExp = new RegExp("^(?!@.*$).*");
+    if (!regExp.test(walletName)) {
+      setError(true);
+      setErrorMessage("Wallet name should not begin with '@'");
+      setIsNextDisabled(true);
+    } else {
+      setError(false);
+      setErrorMessage("");
+      setIsNextDisabled(walletName.trim() === "" ? true : false);
+    }
+  }, [walletName]);
+
   return (
     <Box
       sx={{
@@ -221,15 +239,18 @@ export function InputName({ onNext }: { onNext: (name: string) => void }) {
         <TextInput
           autoFocus
           placeholder="Name"
-          value={name}
-          setValue={(e: any) => setName(e.target.value)}
+          value={walletName}
+          error={error}
+          errorMessage={errorMessage}
+          setValue={(e: any) => setWalletName(e.target.value)}
         />
       </Box>
       <Box>
         <PrimaryButton
           label="Next"
-          onClick={() => onNext(name)}
+          onClick={() => onNext(walletName)}
           style={{ marginBottom: 16 }}
+          disabled={isNextDisabled}
         />
       </Box>
     </Box>

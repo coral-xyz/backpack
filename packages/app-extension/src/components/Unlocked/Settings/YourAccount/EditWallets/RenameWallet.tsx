@@ -16,6 +16,9 @@ export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
   name,
 }) => {
   const [walletName, setWalletName] = useState(name);
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isPrimaryDisabled, setIsPrimaryDisabled] = useState(false);
   const nav = useNavigation();
   const theme = useCustomTheme();
   const background = useBackgroundClient();
@@ -23,6 +26,20 @@ export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
   useEffect(() => {
     nav.setOptions({ headerTitle: "Rename Wallet" });
   }, [nav]);
+
+  useEffect(() => {
+    //regex check to not allow wallet names to start with '@'
+    let regExp = new RegExp("^(?!@.*$).*");
+    if (!regExp.test(walletName)) {
+      setError(true);
+      setErrorMessage("Wallet name should not begin with '@'");
+      setIsPrimaryDisabled(true);
+    } else {
+      setError(false);
+      setErrorMessage("");
+      setIsPrimaryDisabled(walletName.trim() === "" ? true : false);
+    }
+  }, [walletName]);
 
   const cancel = () => {
     nav.pop();
@@ -39,7 +56,6 @@ export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
 
   const pubkeyDisplay =
     publicKey.slice(0, 4) + "..." + publicKey.slice(publicKey.length - 4);
-  const isPrimaryDisabled = walletName.trim() === "";
 
   return (
     <form
@@ -62,6 +78,8 @@ export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
         <TextInput
           autoFocus
           value={walletName}
+          error={error}
+          errorMessage={errorMessage}
           setValue={(e) => setWalletName(e.target.value)}
         />
         <Typography
