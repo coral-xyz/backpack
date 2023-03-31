@@ -41,53 +41,40 @@ router.post("/drops", async (req, res, next) => {
 
     const usernames = Object.keys(req.body.balances);
 
-    const { auth_users } = await chain("query")(
+    const { auth_public_keys } = await chain("query")(
       {
-        auth_users: [
+        auth_public_keys: [
           {
             where: {
-              username: {
-                _in: Object.keys(req.body.balances),
-              },
-              public_keys: {
-                blockchain: { _eq: "solana" },
-                is_primary: { _eq: true },
+              blockchain: { _eq: "solana" },
+              is_primary: { _eq: true },
+              user: {
+                username: {
+                  _in: usernames,
+                },
               },
             },
           },
           {
-            id: true,
-            username: true,
-            public_keys: [
-              {
-                where: {
-                  blockchain: { _eq: "solana" },
-                  is_primary: { _eq: true },
-                },
-              },
-              {
-                public_key: true,
-              },
-            ],
+            public_key: true,
+            user: {
+              username: true,
+            },
           },
         ],
       },
       {
-        operationName: "getUsersToCreateDropzoneDistributor",
+        operationName: "getUserPublicKeysToCreateDropzoneDistributor",
       }
     );
 
-    if (auth_users.length < usernames.length) {
+    if (auth_public_keys.length < usernames.length) {
       throw new Error("Some usernames were not found");
     }
 
-    const data = auth_users.reduce((acc, curr, index) => {
-      const username = curr.username as string;
-      acc[curr.public_keys[0]!.public_key] = [
-        req.body.balances[username],
-        index,
-        username,
-      ];
+    const data = auth_public_keys.reduce((acc, curr, index) => {
+      const username = curr.user!.username as string;
+      acc[curr.public_key] = [req.body.balances[username], index, username];
       return acc;
     }, {} as DropzoneData);
 
