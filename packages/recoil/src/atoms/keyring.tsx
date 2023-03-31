@@ -21,16 +21,22 @@ export const KeyringStoreStateEnum: { [key: string]: KeyringStoreState } = {
  */
 export const keyringStoreState = atom<KeyringStoreState | null>({
   key: "keyringStoreState",
-  default: selector({
-    key: "keyringStoreStateDefault",
-    get: ({ get }) => {
-      const background = get(backgroundClient);
-      return background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_STATE,
-        params: [],
-      });
+  default: null,
+  effects: [
+    ({ setSelf, getPromise }) => {
+      const checkState = async () => {
+        const background = await getPromise(backgroundClient);
+        const newState = await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_STATE,
+          params: [],
+        });
+        setSelf(newState);
+        await new Promise((resolve) => setTimeout(() => resolve(null), 5000));
+        requestAnimationFrame(checkState);
+      };
+      checkState().catch(null);
     },
-  }),
+  ],
 });
 
 /**

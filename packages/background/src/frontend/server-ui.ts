@@ -56,7 +56,6 @@ import {
   UI_RPC_METHOD_KEYRING_SET_MNEMONIC,
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
-  UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
@@ -179,8 +178,6 @@ async function handle<T = any>(
       return await handleKeyringKeyDelete(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_STORE_STATE:
       return await handleKeyringStoreState(ctx);
-    case UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE:
-      return handleKeyringStoreKeepAlive(ctx);
     case UI_RPC_METHOD_KEYRING_DERIVE_WALLET:
       return await handleKeyringDeriveWallet(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH:
