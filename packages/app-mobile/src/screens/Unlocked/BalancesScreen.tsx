@@ -1,6 +1,6 @@
 import type { StackScreenProps } from "@react-navigation/stack";
 
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 import { Token, NavTokenAction, NavTokenOptions } from "@@types/types";
 import {
@@ -50,7 +50,7 @@ function TokenHeader({
   }
 
   return (
-    <View>
+    <ScrollView>
       <View>
         <TokenAmountHeader
           token={token}
@@ -74,7 +74,7 @@ function TokenHeader({
           }
         />
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -124,38 +124,40 @@ function BalanceListScreen({
   navigation,
 }: StackScreenProps<BalancesStackParamList, "BalanceList">): JSX.Element {
   return (
-    <Screen>
-      <Margin bottom={18}>
-        <BalanceSummaryWidget />
-      </Margin>
-      <Margin bottom={18}>
-        <TransferWidget
-          swapEnabled={false}
-          rampEnabled={false}
-          onPressOption={(route: string, options: NavTokenOptions) => {
-            navigation.push(route, options);
+    <ScrollView>
+      <Screen>
+        <Margin bottom={18}>
+          <BalanceSummaryWidget />
+        </Margin>
+        <Margin bottom={18}>
+          <TransferWidget
+            swapEnabled={false}
+            rampEnabled={false}
+            onPressOption={(route: string, options: NavTokenOptions) => {
+              navigation.push(route, options);
+            }}
+          />
+        </Margin>
+        <TokenTables
+          onPressRow={(blockchain: Blockchain, token: Token) => {
+            navigation.push("BalanceDetail", {
+              blockchain,
+              tokenAddress: token.address,
+              tokenTicker: token.ticker,
+            });
+          }}
+          customFilter={(token: Token) => {
+            if (token.mint && token.mint === SOL_NATIVE_MINT) {
+              return true;
+            }
+            if (token.address && token.address === ETH_NATIVE_MINT) {
+              return true;
+            }
+            return !token.nativeBalance.isZero();
           }}
         />
-      </Margin>
-      <TokenTables
-        onPressRow={(blockchain: Blockchain, token: Token) => {
-          navigation.push("BalanceDetail", {
-            blockchain,
-            tokenAddress: token.address,
-            tokenTicker: token.ticker,
-          });
-        }}
-        customFilter={(token: Token) => {
-          if (token.mint && token.mint === SOL_NATIVE_MINT) {
-            return true;
-          }
-          if (token.address && token.address === ETH_NATIVE_MINT) {
-            return true;
-          }
-          return !token.nativeBalance.isZero();
-        }}
-      />
-    </Screen>
+      </Screen>
+    </ScrollView>
   );
 }
 
