@@ -10,6 +10,7 @@ import {
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
 } from "@coral-xyz/recoil";
+import { Box } from "@coral-xyz/tamagui";
 
 import { CheckIcon, CrossIcon } from "~components/Icon";
 import {
@@ -187,7 +188,9 @@ export function Error({
           }}
         />
       ) : null}
-      <PrimaryButton label="Retry" onPress={() => onRetry()} />
+      <Box mt={4}>
+        <PrimaryButton label="Retry" onPress={() => onRetry()} />
+      </Box>
     </Container>
   );
 }

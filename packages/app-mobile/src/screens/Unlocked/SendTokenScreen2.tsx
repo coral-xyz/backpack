@@ -31,7 +31,7 @@ import { StyledTextInput } from "~components/StyledTextInput";
 
 export const BubbleTopLabel = ({ text }: { text: string }) => {
   return (
-    <Text mb={12} fontSize={16} fontWeight="500">
+    <Text mb={8} fontSize={16} fontWeight="500" fontFamily="Inter">
       {text}
     </Text>
   );
@@ -294,8 +294,6 @@ const AddressListItem = ({
       <ListItem
         hoverTheme
         pressTheme
-        px={8}
-        py={8}
         jc="flex-start"
         icon={<ImageSvg width={32} height={32} uri={user.image} />}
         onPress={() => {
@@ -315,14 +313,16 @@ const AddressListItem = ({
           });
         }}
       >
-        <Text>{title}</Text>
+        <Text fontSize={16} fontWeight="600" fontFamily="Inter">
+          {title}
+        </Text>
         {!address ? (
           <View
             style={{
               width: 32,
               height: 32,
               backgroundColor: "#E33E3F",
-              marginLeft: 10,
+              marginLeft: 8,
             }}
           />
         ) : null}
