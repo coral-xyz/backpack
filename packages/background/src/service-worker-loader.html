@@ -18,30 +18,30 @@
         const bodyElement = document.getElementsByTagName("body")[0];
         bodyElement.appendChild(urlDiv);
 
-        // Get the existing service worker registration
-        const registration = await navigator.serviceWorker.getRegistration();
-
-        // If there is an existing registration, unregister it
-        if (registration) {
-          console.log("SERVICE WORKER: exists, unregistering...");
+        // Unregister all service workers for the domain
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        console.log("# SERVICE WORKERS", registrations.length);
+        for (let registration of registrations) {
+          console.log("SERVICE WORKER: exists, unregistering...", registration);
           await registration.unregister();
           console.log("SERVICE WORKER: exists, unregistered");
         }
 
         //
-        // Kickoff the service worker.
+        // Kickoff the service worker registration
         //
-        navigator.serviceWorker
-          .register(new URL("./service-worker.ts", import.meta.url), {
-            type: "module",
-          })
-          .then((registration) => {
-            document.querySelector("body").style.background = "yellow";
-            console.log("SERVICE WORKER: registered.", registration);
-          })
-          .catch((error) => {
-            console.log("SERVICE WORKER: registration failed:", error);
-          });
+        try {
+          const registration = await navigator.serviceWorker.register(
+            new URL("./service-worker.ts", import.meta.url),
+            {
+              type: "module",
+            }
+          );
+          document.querySelector("body").style.background = "yellow";
+          console.log("SERVICE WORKER: registered", registration);
+        } catch (error) {
+          console.log("SERVICE WORKER: registration failed", error);
+        }
 
         navigator.serviceWorker.addEventListener("install", (event) => {
           console.log("SERVICE WORKER: installing", event);
