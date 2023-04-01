@@ -10,13 +10,23 @@
   </head>
   <body>
     <script type="module">
-      (function setup() {
-        // Get the current URL of the page
+      (async function setup() {
+        // Append the URL to the page
         const currentUrl = window.location.href;
         const urlDiv = document.createElement("div");
         urlDiv.innerHTML = currentUrl;
         const bodyElement = document.getElementsByTagName("body")[0];
         bodyElement.appendChild(urlDiv);
+
+        // Get the existing service worker registration
+        const registration = await navigator.serviceWorker.getRegistration();
+
+        // If there is an existing registration, unregister it
+        if (registration) {
+          console.log("SERVICE WORKER: exists, unregistering...");
+          await registration.unregister();
+          console.log("SERVICE WORKER: exists, unregistered");
+        }
 
         //
         // Kickoff the service worker.
