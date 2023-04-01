@@ -35,6 +35,8 @@ async function getActiveWalletsForUser(
 export const ProfileScreen = ({ userId }: { userId: string }) => {
   const [friendship, setFriendship] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
+  const [requestReceived, setRequestReceived] = useState(false);
+
   const [user, setUser] = useState<{
     username?: string;
     image?: string;
@@ -58,6 +60,8 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
       setFriendship(json.are_friends);
       setUser(json.user);
       setRequestSent(json.request_sent);
+
+      setRequestReceived(json.remoteRequest);
     }
   }
 
@@ -67,6 +71,14 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
       sendRequest,
     });
     setRequestSent(sendRequest);
+  };
+
+  const acceptRequest = async () => {
+    await sendFriendRequest({
+      to: userId,
+      sendRequest: true,
+    });
+    setFriendship(true);
   };
 
   useEffect(() => {
@@ -212,13 +224,13 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
         ) : null}
       </div>
       <div>
-        {!friendship && !requestSent ? (
+        {!friendship && !requestSent && !requestReceived ? (
           <PrimaryButton
             label="Request to add friend"
             onClick={() => send(true)}
           />
         ) : null}
-        {!friendship && requestSent ? (
+        {!friendship && !requestReceived && requestSent ? (
           <div
             style={{
               display: "flex",
@@ -229,6 +241,20 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
               label="Cancel Pending Request"
               style={{ margin: 3 }}
               onClick={() => send(false)}
+            />
+          </div>
+        ) : null}
+        {!friendship && !requestSent && requestReceived ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <PrimaryButton
+              label="Accept Friend Request"
+              style={{ margin: 3 }}
+              onClick={acceptRequest}
             />
           </div>
         ) : null}
