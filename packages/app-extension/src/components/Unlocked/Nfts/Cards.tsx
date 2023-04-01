@@ -28,9 +28,45 @@ import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 import { useOpenChat } from "./Detail";
 
 const useStyles = styles((theme) => ({
+  openXnft: {
+    position: "absolute",
+    top: "50%",
+    display: "none",
+    background: theme.custom.colors.nav,
+    color: theme.custom.colors.fontColor,
+    borderRadius: "24px",
+    padding: "4px 12px",
+    marginTop: "-12px",
+    fontSize: "14px",
+  },
+  xnftIcon: {
+    background: theme.custom.colors.nav,
+    color: theme.custom.colors.fontColor,
+    borderRadius: "24px",
+    fontSize: "14px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    overflow: "hidden",
+    width: "32px",
+    flexWrap: "nowrap",
+    transition: "width 100ms 200ms ease-out",
+    "& .appIcon": {
+      transition: "transform 300ms ease-out",
+    },
+  },
   button: {
     "&:hover": {
       opacity: HOVER_OPACITY,
+    },
+    "&:hover .openXnft": {
+      display: "flex",
+    },
+    "&:hover .xnftIcon": {
+      width: "100%",
+    },
+    "&:hover .appIcon": {
+      transform: "rotate(360deg)",
     },
   },
 }));
@@ -150,25 +186,32 @@ export function NFTCard({
           }}
         >
           {xnft ? (
-            <div
-              className="xnftIcon"
-              style={{
-                background: theme.custom.colors.nav,
-                display: "flex",
-                alignItems: "center",
-                borderRadius: "50%",
-                padding: "5px",
-              }}
-            >
+            <div className={`${classes.xnftIcon} xnftIcon`}>
               <AppsColorIcon
+                className="appIcon"
                 style={{
                   width: "16px",
                   height: "16px",
+                  margin: "8px",
+                  flexShrink: 0,
                 }}
               />
+              <Typography
+                sx={{
+                  flexShrink: 0,
+                  width: "100px",
+                }}
+              >
+                Open xNFT
+              </Typography>
             </div>
           ) : null}
         </div>
+        {/* {xnft ? (
+          <div className={`${classes.openXnft} openXnft`}>
+            <Typography>Open xNFT</Typography>
+          </div>
+        ) : null} */}
       </Button>
       <div
         style={{
