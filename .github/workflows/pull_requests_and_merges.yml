@@ -43,7 +43,7 @@ jobs:
       #
       # Build the extension, beta release.
       #
-      - name: "build beta (app-extension)"
+      - name: "build beta"
         env:
           BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-beta-${{ github.run_number }}"
           BACKPACK_CONFIG_GITHUB_RUN_NUMBER: "${{ github.run_number }}"
@@ -54,7 +54,7 @@ jobs:
           BACKPACK_FEATURE_FORCE_LATEST_VERSION: "true"
           # CI!=true so that build warnings aren't treated like errors (for now)
           CI: ""
-        run: "yarn build:ext"
+        run: yarn build
       - name: "rename beta build"
         working-directory: packages/app-extension
         run: mv build build-beta
