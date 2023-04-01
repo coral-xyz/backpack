@@ -1279,11 +1279,23 @@ export class Backend {
             // Doesn't exist, we can create it
           }
           if (blockchainKeyring) {
-            // Exists, just add the missing derivation path
-            const { publicKey, name } =
-              await this.keyringStore.activeUserKeyring
-                .keyringForBlockchain(blockchain)
-                .addDerivationPath(recoveryPaths[index]);
+            let [publicKey, name] = await (async () => {
+              const derivationPath = recoveryPaths[index];
+              if (!blockchainKeyring.hasHdKeyring()) {
+                const [[publicKey, name]] =
+                  await blockchainKeyring.initHdKeyring(mnemonic, [
+                    derivationPath,
+                  ]);
+                return [publicKey, name];
+              } else {
+                // Exists, just add the missing derivation path
+                const { publicKey, name } =
+                  await this.keyringStore.activeUserKeyring
+                    .keyringForBlockchain(blockchain)
+                    .addDerivationPath(derivationPath);
+                return [publicKey, name];
+              }
+            })();
             this.events.emit(BACKEND_EVENT, {
               name: NOTIFICATION_KEYRING_DERIVED_WALLET,
               data: {
