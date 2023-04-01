@@ -318,27 +318,10 @@ export function RecoverWalletMenu({
   publicKey: string;
 }) {
   const nav = useNavigation();
-  const hasMnemonic = useKeyringHasMnemonic();
   const enabledBlockchains = useEnabledBlockchains();
   const keyringExists = enabledBlockchains.includes(blockchain);
 
   const recoverMenu = {} as any;
-
-  if (!hasMnemonic) {
-    recoverMenu["Backpack recovery phrase"] = {
-      onClick: () => {
-        nav.push("import-from-mnemonic", {
-          blockchain,
-          keyringExists,
-          inputMnemonic: true,
-          forceSetMnemonic: true,
-          publicKey,
-        });
-      },
-      icon: (props: any) => <BackpackMnemonicIcon {...props} />,
-      detailIcon: <PushDetail />,
-    };
-  }
 
   Object.assign(recoverMenu, {
     "Other recovery phrase": {

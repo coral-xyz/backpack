@@ -20,7 +20,7 @@ import {
   useRpcRequests,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Box,Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 import { useSteps } from "../../../../hooks/useSteps";
 import { Header } from "../../../common";
@@ -36,13 +36,7 @@ import { ConfirmCreateWallet } from "./";
 
 // WARNING: this will force set the mnemonic. Only use this if no mnemonic
 //          exists.
-export function ImportMnemonicAutomatic({
-  blockchain,
-  keyringExists,
-}: {
-  blockchain: Blockchain;
-  keyringExists: boolean;
-}) {
+export function ImportMnemonicAutomatic() {
   const background = useBackgroundClient();
   const dehydratedWallets = useDehydratedWallets();
   const [openDrawer, setOpenDrawer] = useState(false);
