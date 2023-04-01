@@ -151,6 +151,8 @@ function BackgroundHiddenWebView(): JSX.Element {
         source={{
           uri: webviewUrl,
         }}
+        onError={(error) => console.log("WebView error:", error)}
+        onHttpError={(error) => console.log("WebView HTTP error:", error)}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
           maybeParseLog(msg);

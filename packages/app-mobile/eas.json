@@ -5,14 +5,16 @@
   },
   "build": {
     "monorepo": {
-      "node": "18.15",
+      "node": "18.15.0",
       "ios": {
         "resourceClass": "m-medium"
-      }
+      },
+      "channel": "monorepo"
     },
     "production": {
       "extends": "monorepo",
-      "autoIncrement": true
+      "autoIncrement": true,
+      "channel": "production"
     },
     "simulator": {
       "extends": "monorepo",

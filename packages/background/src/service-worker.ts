@@ -4,14 +4,19 @@ import { BACKGROUND_SERVICE_WORKER_READY } from "@coral-xyz/common";
 import { postMessageToIframe } from "./shared";
 import { start } from ".";
 
-self.addEventListener("install", () => {
+self.addEventListener("install", async () => {
+  console.log("installing");
   start({
     isMobile: true,
   });
-  self.skipWaiting();
+
+  console.log("is mobile true, installed");
+  await self.skipWaiting();
 });
 
-self.addEventListener("activate", () => {
-  self.clients.claim();
+self.addEventListener("activate", async () => {
+  console.log("activating");
+  await self.clients.claim();
+  console.log("activating, claimed");
   postMessageToIframe({ type: BACKGROUND_SERVICE_WORKER_READY });
 });

@@ -140,8 +140,6 @@ export const UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD =
   "ui-rpc-method-keyring-store-check-password";
 export const UI_RPC_METHOD_KEYRING_STORE_CREATE =
   "ui-rpc-method-keyring-store-create";
-export const UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE =
-  "ui-rpc-method-keyring-store-keep-alive";
 export const UI_RPC_METHOD_KEYRING_STORE_LOCK =
   "ui-rpc-method-keyring-store-lock";
 export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =

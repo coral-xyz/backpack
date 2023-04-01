@@ -10,34 +10,56 @@
   </head>
   <body>
     <script type="module">
-      (function setup() {
+      (async function setup() {
+        // Append the URL to the page
+        const currentUrl = window.location.href;
+        const urlDiv = document.createElement("div");
+        urlDiv.innerHTML = currentUrl;
+        const bodyElement = document.getElementsByTagName("body")[0];
+        bodyElement.appendChild(urlDiv);
+
+        // Unregister all service workers for the domain
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        console.log("# SERVICE WORKERS", registrations.length);
+        for (let registration of registrations) {
+          console.log("SERVICE WORKER: exists, unregistering...", registration);
+          await registration.unregister();
+          console.log("SERVICE WORKER: exists, unregistered");
+        }
+
         //
-        // Kickoff the service worker.
+        // Kickoff the service worker registration
         //
-        navigator.serviceWorker
-          .register(new URL("./service-worker.ts", import.meta.url), {
-            type: "module",
-          })
-          .then((registration) => {
-            console.log("SERVICE WORKER: registered.", registration);
-          })
-          .catch((error) => {
-            console.log("SERVICE WORKER: registration failed:", error);
-          });
+        try {
+          const registration = await navigator.serviceWorker.register(
+            new URL("./service-worker.ts", import.meta.url),
+            {
+              type: "module",
+            }
+          );
+          document.querySelector("body").style.background = "yellow";
+          console.log("SERVICE WORKER: registered", registration);
+        } catch (error) {
+          console.log("SERVICE WORKER: registration failed", error);
+        }
 
         navigator.serviceWorker.addEventListener("install", (event) => {
-          console.log("SERVICE WORKER: installing");
+          console.log("SERVICE WORKER: installing", event);
+          document.querySelector("body").style.background = "orange";
         });
 
         navigator.serviceWorker.addEventListener("activate", (event) => {
-          console.log("SERVICE WORKER: activating");
+          console.log("SERVICE WORKER: activating", event);
+          document.querySelector("body").style.background = "blue";
         });
 
         //
         // Receive messages from the service worker..
         //
         navigator.serviceWorker.onmessage = (event) => {
-          console.log("SERVICE WORKER: message received");
+          console.log("SERVICE WORKER: message received", event);
+          document.querySelector("body").style.background = "green";
+
           window.ReactNativeWebView?.postMessage(JSON.stringify(event.data));
         };
 
@@ -45,11 +67,9 @@
         // Send a message to the background service worker.
         //
         window.postMessageToBackgroundViaWebview = (rawData) => {
-          console.log("SERVICE WORKER: message sent");
+          console.log("SERVICE WORKER: message sent", rawData);
           navigator.serviceWorker.controller.postMessage(rawData);
         };
-
-        document.querySelector("body").style.background = "green";
       })();
     </script>
   </body>

@@ -1,7 +1,6 @@
 import cors from "cors";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
-import { createProxyMiddleware } from "http-proxy-middleware";
 import { ZodError } from "zod";
 
 import authenticateRouter from "./routes/v1/authenticate";
@@ -10,6 +9,7 @@ import chatRouter from "./routes/v1/chats";
 import dropzoneRouter from "./routes/v1/dropzone";
 import friendsRouter from "./routes/v1/friends";
 import inboxRouter from "./routes/v1/inbox";
+import mobileRouter from "./routes/v1/mobile";
 import nftsRouter from "./routes/v1/nft";
 import notificationRoutes from "./routes/v1/notifications";
 import preferenceRoutes from "./routes/v1/preferences";
@@ -48,14 +48,7 @@ app.use("/s3", s3Router);
 app.use("/twitter", twitterRouter);
 app.use("/tx-parsing", txParsingRouter);
 app.use("/users", usersRouter);
-app.use(
-  "/mobile-service-worker",
-  createProxyMiddleware({
-    target:
-      "https://coral-xyz.github.io/backpack/background-scripts/85fa0c25/service-worker-loader.html",
-    changeOrigin: false,
-  })
-);
+app.use("/mobile", mobileRouter);
 app.get("/_health", (_req, res) => {
   return res.status(200).json({
     uptime: process.uptime(),
@@ -72,16 +65,23 @@ app.get("/", (_req, res) => {
   });
 });
 
-// @ts-ignore
-app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
-  if (err instanceof ZodError) {
-    return res.status(400).json({
-      message: zodErrorToString(err),
-    });
-  } else {
-    return res.status(500).json(err);
+app.use(
+  (
+    err: any,
+    _req: Request,
+    res: Response,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _DO_NOT_REMOVE_THIS_PARAMETER_: NextFunction
+  ) => {
+    if (err instanceof ZodError) {
+      return res.status(400).json({
+        message: zodErrorToString(err),
+      });
+    } else {
+      return res.status(500).json(err);
+    }
   }
-});
+);
 
 const port = process.env.PORT || 8080;
 app.listen(port);

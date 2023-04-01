@@ -34,9 +34,7 @@ program
   .option("-m, --mint <string>", "mint public key")
   .option("-b, --balances <string>", "balances json string")
   .action(async (options) => {
-    const {
-      data: { msg, distributor, ata, base },
-    } = await axios.post(
+    const { data } = await axios.post(
       `${
         options.local
           ? "http://localhost:8080"
@@ -48,6 +46,8 @@ program
         balances: JSON.parse(options.balances),
       }
     );
+
+    const { msg, distributor, ata } = data;
 
     const tx = Transaction.from(decode(msg));
     await anchorProvider.wallet.signTransaction(tx);
