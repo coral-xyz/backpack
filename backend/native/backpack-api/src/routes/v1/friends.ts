@@ -229,10 +229,11 @@ router.get("/", extractUserId, async (req, res) => {
   }
 
   try {
-    const { are_friends, request_sent, blocked, spam } = await getFriendship({
-      from: uuid,
-      to: userId,
-    });
+    const { are_friends, request_sent, blocked, spam, remoteRequest } =
+      await getFriendship({
+        from: uuid,
+        to: userId,
+      });
     const user = await getUser(userId);
     res.json({
       user,
@@ -240,6 +241,7 @@ router.get("/", extractUserId, async (req, res) => {
       request_sent,
       blocked,
       spam,
+      remoteRequest,
     });
   } catch (e) {
     console.log(e);

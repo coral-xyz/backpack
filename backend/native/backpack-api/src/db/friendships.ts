@@ -814,6 +814,7 @@ export const getFriendship = async ({
   request_sent: boolean;
   blocked: boolean;
   spam: boolean;
+  remoteRequest: boolean;
 }> => {
   const { user1, user2 } = getSortedUsers(from, to);
   const spamLabel = getLabel("spam", from, to);
@@ -834,9 +835,14 @@ export const getFriendship = async ({
       ],
       auth_friend_requests: [
         {
-          where: { from: { _eq: from }, to: { _eq: to } },
+          where: {
+            _or: [
+              { from: { _eq: from }, to: { _eq: to } },
+              { from: { _eq: to }, to: { _eq: from } },
+            ],
+          },
         },
-        { id: true },
+        { id: true, from: true, to: true },
       ],
     },
     { operationName: "getFriendship" }
@@ -846,7 +852,10 @@ export const getFriendship = async ({
     are_friends: existingFriendship.auth_friendships[0]?.are_friends ?? false,
     spam: existingFriendship.auth_friendships[0]?.[spamLabel] ?? false,
     blocked: existingFriendship.auth_friendships[0]?.[blockedLabel] ?? false,
-    request_sent: existingFriendship.auth_friend_requests[0] ? true : false,
+    request_sent:
+      existingFriendship.auth_friend_requests[0]?.from == from ?? false,
+    remoteRequest:
+      existingFriendship.auth_friend_requests[0]?.from == to ?? false,
   };
 };
 
