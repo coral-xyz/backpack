@@ -1,5 +1,5 @@
 import React, { Suspense, useState } from "react";
-import { Loading, LocalImage, ProxyImage } from "@coral-xyz/react-common";
+import { Loading, LocalImage } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowBack } from "@mui/icons-material";
 import KeyboardArrowDownSharpIcon from "@mui/icons-material/KeyboardArrowDownSharp";
