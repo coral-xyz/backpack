@@ -9,6 +9,7 @@ import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 
+import { isValidWalletName } from "../../../../../../../common/src/utils";
 import { useNavigation } from "../../../../common/Layout/NavStack";
 
 export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
@@ -28,9 +29,7 @@ export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
   }, [nav]);
 
   useEffect(() => {
-    //regex check to not allow wallet names to start with '@'
-    let regExp = new RegExp("^(?!@.*$).*");
-    if (!regExp.test(walletName)) {
+    if (!isValidWalletName(walletName)) {
       setError(true);
       setErrorMessage("Wallet name should not begin with '@'");
       setIsPrimaryDisabled(true);

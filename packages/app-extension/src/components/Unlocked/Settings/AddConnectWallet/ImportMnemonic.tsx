@@ -17,6 +17,7 @@ import { useBackgroundClient, useRpcRequests } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
 
+import { isValidWalletName } from "../../../../../../common/src/utils";
 import { useSteps } from "../../../../hooks/useSteps";
 import { Header } from "../../../common";
 import { ImportWallets } from "../../../common/Account/ImportWallets";
@@ -207,9 +208,7 @@ export function InputName({ onNext }: { onNext: (name: string) => void }) {
   const [isNextDisabled, setIsNextDisabled] = useState(false);
 
   useEffect(() => {
-    //regex check to not allow wallet names to start with '@'
-    let regExp = new RegExp("^(?!@.*$).*");
-    if (!regExp.test(walletName)) {
+    if (!isValidWalletName(walletName)) {
       setError(true);
       setErrorMessage("Wallet name should not begin with '@'");
       setIsNextDisabled(true);

@@ -64,6 +64,17 @@ export function isServiceWorker(): boolean {
 }
 
 /**
+ * Validate a WalletName
+ * @param walletName
+ *
+ */
+export function isValidWalletName(walletName: string): boolean {
+  //regex check to not allow wallet names to start with '@'
+  let regExp = new RegExp("^(?!@.*$).*");
+  return regExp.test(walletName);
+}
+
+/**
  * Make any necessary changes to URIs before the client queries them.
  *
  * TODO: replace host with host of caching layer for thumbnail generation, caching,
