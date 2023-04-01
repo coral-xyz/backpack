@@ -13,14 +13,14 @@ import {
   UI_RPC_METHOD_KEYRING_SET_MNEMONIC,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
 } from "@coral-xyz/common";
-import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
+import { CheckIcon, PrimaryButton, TextInput } from "@coral-xyz/react-common";
 import {
   useBackgroundClient,
   useDehydratedWallets,
   useRpcRequests,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Box } from "@mui/material";
+import { Box,Typography } from "@mui/material";
 
 import { useSteps } from "../../../../hooks/useSteps";
 import { Header } from "../../../common";
@@ -45,6 +45,8 @@ export function ImportMnemonicAutomatic({
 }) {
   const background = useBackgroundClient();
   const dehydratedWallets = useDehydratedWallets();
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const { close } = useDrawerContext();
 
   const onSync = async (mnemonic: string) => {
     await background.request({
@@ -60,15 +62,80 @@ export function ImportMnemonicAutomatic({
   };
 
   return (
-    <MnemonicInput
-      key="MnemonicInput"
-      buttonLabel="Next"
-      onNext={async (mnemonic) => {
-        onSync(mnemonic);
-      }}
-    />
+    <>
+      <MnemonicInput
+        key="MnemonicInput"
+        buttonLabel="Import"
+        onNext={async (mnemonic) => {
+          onSync(mnemonic);
+          setOpenDrawer(true);
+        }}
+      />
+      <WithMiniDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={(isOpen: boolean) => {
+          setOpenDrawer(isOpen);
+          if (!isOpen) {
+            close();
+          }
+        }}
+        backdropProps={{
+          style: {
+            opacity: 0.8,
+            background: "#18181b",
+          },
+        }}
+      >
+        <ConfirmWalletSync
+          onClose={() => {
+            setOpenDrawer(false);
+            close();
+          }}
+        />
+      </WithMiniDrawer>
+    </>
   );
 }
+
+export const ConfirmWalletSync = ({ onClose }: { onClose: () => void }) => {
+  const theme = useCustomTheme();
+  return (
+    <div
+      style={{
+        height: "232px",
+        backgroundColor: theme.custom.colors.bg2,
+        padding: "16px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+    >
+      <div>
+        <Typography
+          style={{
+            marginTop: "16px",
+            textAlign: "center",
+            fontWeight: 500,
+            fontSize: "18px",
+            lineHeight: "24px",
+            color: theme.custom.colors.fontColor,
+          }}
+        >
+          Recovery Phrase Set
+        </Typography>
+        <div
+          style={{
+            textAlign: "center",
+            marginTop: "24px",
+          }}
+        >
+          <CheckIcon />
+        </div>
+      </div>
+      <PrimaryButton label="Done" onClick={() => onClose()} />
+    </div>
+  );
+};
 
 export function ImportMnemonic({
   blockchain,
