@@ -12,14 +12,13 @@ router.get("/loader", (_req, res) => {
   const url = `${baseUrl}/service-worker-loader.html`;
 
   https.get(url, (remoteRes) => {
-    const options = {
-      headers: {
-        "Service-Worker-Allowed": "/",
-      },
+    const headers = {
+      ...remoteRes.headers,
+      "Service-Worker-Allowed": "/",
     };
 
-    // @ts-ignore
-    res.writeHead(remoteRes.statusCode, options);
+    res.set(headers);
+    res.writeHead(remoteRes.statusCode || 200, "OK");
     remoteRes.pipe(res);
   });
 });
@@ -30,14 +29,13 @@ router.get("/service-worker.js", (req, res) => {
   const url = `${baseUrl}/service-worker.js`;
 
   https.get(url, (remoteRes) => {
-    const options = {
-      headers: {
-        "Service-Worker-Allowed": "/",
-      },
+    const headers = {
+      ...remoteRes.headers,
+      "Service-Worker-Allowed": "/",
     };
 
-    // @ts-ignore
-    res.writeHead(remoteRes.statusCode, options);
+    res.set(headers);
+    res.writeHead(remoteRes.statusCode || 200, "OK");
     remoteRes.pipe(res);
   });
 });
