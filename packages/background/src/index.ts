@@ -16,6 +16,7 @@ export * from "./backend/keyring";
 // Entry: Starts the background service.
 //
 export function start(cfg: Config): Background {
+  console.log("start background service:cfg", cfg);
   // Shared event message bus.
   const events = new EventEmitter();
 
@@ -26,7 +27,9 @@ export function start(cfg: Config): Background {
 
   // Frontend.
   const _serverInjected = serverInjected.start(cfg, events, coreB);
+  console.log("_serverInjected", _serverInjected);
   const _serverUi = serverUi.start(cfg, events, coreB);
+  console.log("_serverUi", _serverUi);
   const _solanaConnection = solanaConnection.start(cfg, events, solanaB);
   const _ethereumConnection = ethereumConnection.start(cfg, events, ethereumB);
 
