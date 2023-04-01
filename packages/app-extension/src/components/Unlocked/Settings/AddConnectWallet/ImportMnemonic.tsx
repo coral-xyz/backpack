@@ -261,31 +261,27 @@ export function ImportMnemonic({
       recovery={publicKey}
       allowMultiple={false}
       onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
-        try {
-          // Should only be one wallet descriptor
-          const walletDescriptor = walletDescriptors[0];
-          const message = getAddMessage(walletDescriptor.publicKey);
-          const signature = await signMessageForWallet(
-            walletDescriptor.blockchain,
-            walletDescriptor.publicKey,
-            message,
-            {
-              mnemonic,
-              signedWalletDescriptors: [
-                {
-                  ...walletDescriptor,
-                  signature: "",
-                },
-              ],
-            }
-          );
-          await onComplete({
-            ...walletDescriptor,
-            signature,
-          });
-        } catch (err) {
-          console.log("ARMANI HERE ERR", err);
-        }
+        // Should only be one wallet descriptor
+        const walletDescriptor = walletDescriptors[0];
+        const message = getAddMessage(walletDescriptor.publicKey);
+        const signature = await signMessageForWallet(
+          walletDescriptor.blockchain,
+          walletDescriptor.publicKey,
+          message,
+          {
+            mnemonic,
+            signedWalletDescriptors: [
+              {
+                ...walletDescriptor,
+                signature: "",
+              },
+            ],
+          }
+        );
+        await onComplete({
+          ...walletDescriptor,
+          signature,
+        });
       }}
     />,
   ];

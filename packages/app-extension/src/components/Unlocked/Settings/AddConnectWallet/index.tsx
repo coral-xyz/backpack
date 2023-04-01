@@ -321,9 +321,7 @@ export function RecoverWalletMenu({
   const enabledBlockchains = useEnabledBlockchains();
   const keyringExists = enabledBlockchains.includes(blockchain);
 
-  const recoverMenu = {} as any;
-
-  Object.assign(recoverMenu, {
+  const recoverMenu = {
     "Other recovery phrase": {
       onClick: () =>
         nav.push("import-from-mnemonic", {
@@ -352,7 +350,7 @@ export function RecoverWalletMenu({
       icon: (props: any) => <HardwareIcon {...props} />,
       detailIcon: <PushDetail />,
     },
-  });
+  };
 
   return (
     <div
