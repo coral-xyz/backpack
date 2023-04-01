@@ -19,10 +19,10 @@ echo "checking for old scripts before:$before after:$after"
 # The commits on this branch are different than master, which is why we're doing this!
 commits=$(
    git log --pretty=format:"%s" --after="$after" --before="$before" \
-   --grep="deploy:" | sed 's/deploy: //g' | cut -c1-8
+   --grep="deploy:" | sed 's/deploy: //g' | cut -c1-7
  )
 
-echo $commits
+echo "$commits"
 
 # Split the commits into an array, iterate through and delete older folders
 IFS=$'\n' read -rd '' -a commits <<< "$commits"
