@@ -38,11 +38,14 @@ export const useChatsWithMetadata = ({
   // Make Sure that both the users in a DM chat do not have the same color
   if (uniqueUserIds.length === 2) {
     const [userId1, userId2] = uniqueUserIds;
-    if (users[userId1] && users[userId2]) {
-      if (users[userId1].colorIndex === users[userId2].colorIndex) {
-        users[userId2].colorIndex =
-          (users[userId1].colorIndex + 1) % NEW_COLORS.length;
-      }
+
+    function haveSameColor(user1, user2) {
+        return (user1 && user2) && user1.colorIndex === user2.colorIndex;
+    }
+
+    if (haveSameColor(users[userId1], users[userId2])) {
+        const newColorIndex = (users[userId1].colorIndex + 1) % NEW_COLORS.length;
+        users[userId2].colorIndex = newColorIndex;
     }
   }
   
