@@ -14,9 +14,15 @@ self.addEventListener("install", async () => {
   await self.skipWaiting();
 });
 
-self.addEventListener("activate", async () => {
-  console.log("activating");
-  await self.clients.claim();
+self.addEventListener("activate", async (event) => {
+  console.log("activated");
+  event.waitUntil(clients.claim());
+
+  // await self.clients.claim();
   console.log("activating, claimed");
-  postMessageToIframe({ type: BACKGROUND_SERVICE_WORKER_READY });
+  await postMessageToIframe({ type: BACKGROUND_SERVICE_WORKER_READY });
+});
+
+self.addEventListener("fetch", () => {
+  console.log("fetching");
 });
