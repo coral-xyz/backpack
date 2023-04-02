@@ -3,6 +3,7 @@ import type {
   SubscriptionType,
   UserMetadata,
 } from "@coral-xyz/common";
+import { NEW_COLORS } from "@coral-xyz/common";
 import { useChats, useUser } from "@coral-xyz/recoil";
 
 import { useUsersMetadata } from "./useUsersMetadata";
@@ -30,10 +31,22 @@ export const useChatsWithMetadata = ({
   const uniqueUserIds = userIds
     .filter((x, index) => userIds.indexOf(x) === index)
     .filter((x) => x);
-  const users = useUsersMetadata({ remoteUserIds: uniqueUserIds });
+  let users = useUsersMetadata({ remoteUserIds: uniqueUserIds });
 
   console.log("debug2", { chats, userIds, uniqueUserIds });
-
+  
+  // Make Sure that both the users in a DM chat do not have the same color
+  if (uniqueUserIds.length === 2) {
+    const userId1 = uniqueUserIds[0];
+    const userId2 = uniqueUserIds[1];
+    if (users[userId1] && users[userId2]) {
+      if (users[userId1].colorIndex === users[userId2].colorIndex) {
+        users[userId2].colorIndex =
+          (users[userId1].colorIndex + 1) % NEW_COLORS.length;
+      }
+    }
+  }
+  
   return {
     chats: chats.map((chat) => ({
       ...chat,
