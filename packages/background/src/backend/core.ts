@@ -1387,6 +1387,11 @@ export class Backend {
       throw new Error((await response.json()).msg);
     }
 
+    // 204 => the key was already created on the server previously.
+    if (response.status === 204) {
+      return;
+    }
+
     const primary = (await response.json()).isPrimary;
 
     this.events.emit(BACKEND_EVENT, {
