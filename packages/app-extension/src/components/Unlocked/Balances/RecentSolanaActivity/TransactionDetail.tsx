@@ -45,6 +45,7 @@ import {
   getTransactionTitle,
   isNFTTransaction,
   isUserTxnSender,
+  parseSwapTransaction,
 } from "./detail-parser";
 import type { HeliusParsedTransaction } from "./types";
 
@@ -130,7 +131,10 @@ const useStyles = styles((theme) => ({
   failedStatus: {
     color: "#E95050",
   },
-  label: { color: theme.custom.colors.secondary },
+  label: {
+    color: theme.custom.colors.secondary,
+    textTransform: "capitalize",
+  },
   transferAmount: {
     fontSize: "30px",
     color: theme.custom.colors.fontColor,
@@ -146,6 +150,29 @@ const useStyles = styles((theme) => ({
     "&:hover": {
       cursor: "pointer",
     },
+  },
+  detailCardHeaderSwapContainer: {
+    display: "flex",
+    alignItems: "center",
+    marginTop: "40px",
+    marginBottom: "40px",
+  },
+  detailCardHeaderSwapArrow: {
+    color: theme.custom.colors.alpha,
+    width: "80px",
+    fontSize: "35px",
+  },
+  detailCardHeaderSwapColumn: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+  },
+  detailCardHeaderSwapText: {
+    fontSize: "16px",
+    lineHeight: "24px",
+    color: theme.custom.colors.fontColor,
+    marginTop: "5px",
+    textAlign: "center",
   },
 }));
 
@@ -220,14 +247,15 @@ export function TransactionDetail({
                 {/* TODO - add other functionality for this CTA button. Will need to
                 create mappings for 'verified' sites to determine correct URL*/}
                 {transaction?.type === TransactionType.NFT_SALE &&
-                  transaction?.events?.nft?.buyer ===
-                    activeWallet.publicKey ? <PrimaryButton
-                      className={classes.ctaButton}
-                      label="View in your gallery"
-                      onClick={() => {
-                        navigate("/nfts");
-                      }}
-                    /> : null}
+                transaction?.events?.nft?.buyer === activeWallet.publicKey ? (
+                  <PrimaryButton
+                    className={classes.ctaButton}
+                    label="View in your gallery"
+                    onClick={() => {
+                      navigate("/nfts");
+                    }}
+                  />
+                ) : null}
 
                 <DetailTable transaction={transaction} tokenData={tokenData} />
               </Card>
@@ -259,75 +287,20 @@ function DetailCardHeader({
     );
 
   if (transaction.type === TransactionType.SWAP) {
+    const [input, output] = parseSwapTransaction(transaction, tokenData);
     return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginTop: "40px",
-          marginBottom: "40px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            flexDirection: "column",
-          }}
-        >
-          <img
-            className={classes.tokenLogo}
-            src={(tokenData[0] && tokenData[0]?.logoURI) || UNKNOWN_ICON_SRC}
-          />
-
-          <div
-            style={{
-              fontSize: "16px",
-              lineHeight: "24px",
-              color: theme.custom.colors.fontColor,
-              marginTop: "5px",
-              textAlign: "center",
-            }}
-          >
-            {transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
-              " " +
-              (tokenData[0]?.symbol ||
-                walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint))}
+      <div className={classes.detailCardHeaderSwapContainer}>
+        <div className={classes.detailCardHeaderSwapColumn}>
+          <img className={classes.tokenLogo} src={input.tokenIcon} />
+          <div className={classes.detailCardHeaderSwapText}>
+            {input.amountWithSymbol}
           </div>
         </div>
-
-        <ArrowRightAltRounded
-          style={{
-            color: theme.custom.colors.alpha,
-            width: "80px",
-            fontSize: "35px",
-          }}
-        />
-
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            flexDirection: "column",
-          }}
-        >
-          <img
-            className={classes.tokenLogo}
-            src={(tokenData[1] && tokenData[1]?.logoURI) || UNKNOWN_ICON_SRC}
-          />
-          <div
-            style={{
-              fontSize: "16px",
-              lineHeight: "24px",
-              color: theme.custom.colors.fontColor,
-              marginTop: "5px",
-              textAlign: "center",
-            }}
-          >
-            {transaction?.tokenTransfers[1]?.tokenAmount.toFixed(5) +
-              " " +
-              (tokenData[1]?.symbol ||
-                walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint))}
+        <ArrowRightAltRounded className={classes.detailCardHeaderSwapArrow} />
+        <div className={classes.detailCardHeaderSwapColumn}>
+          <img className={classes.tokenLogo} src={output.tokenIcon} />
+          <div className={classes.detailCardHeaderSwapText}>
+            {output.amountWithSymbol}
           </div>
         </div>
       </div>
@@ -354,25 +327,27 @@ function DetailCardHeader({
         >
           {getTransactionTitle(activeWallet, transaction)}
         </div>
-        {nftPrice ? <div style={{ display: "flex", alignItems: "center" }}>
-          <img
-            style={{
+        {nftPrice ? (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <img
+              style={{
                 borderRadius: "50%",
                 width: "16px",
                 height: "16px",
                 marginRight: "5px",
               }}
-            src={SOL_LOGO_URI}
+              src={SOL_LOGO_URI}
             />
-          <div
-            style={{
+            <div
+              style={{
                 fontSize: "16px",
                 color: theme.custom.colors.fontColor,
               }}
             >
-            {nftPrice + " SOL"}
+              {nftPrice + " SOL"}
+            </div>
           </div>
-        </div> : null}
+        ) : null}
       </>
     );
   }
@@ -501,82 +476,60 @@ function DetailTable({
 
       {(transaction?.type === TransactionType.UNKNOWN ||
         transaction.type === TransactionType.TRANSFER) &&
-        isUserTxnSender(transaction, activeWallet) ? <div className={classes.addressExplorerRow}>
+      isUserTxnSender(transaction, activeWallet) ? (
+        <div className={classes.addressExplorerRow}>
           <div
             className={classes.middleRow}
             onClick={() => {
-                window.open(
-                  exploreAddressUrl(
-                    explorer!,
-                    transaction?.tokenTransfers?.[0]?.toUserAccount ||
-                      transaction?.nativeTransfers?.[0]?.toUserAccount,
-                    connectionUrl!
-                  )
-                );
-              }}
-            >
+              window.open(
+                exploreAddressUrl(
+                  explorer!,
+                  transaction?.tokenTransfers?.[0]?.toUserAccount ||
+                    transaction?.nativeTransfers?.[0]?.toUserAccount,
+                  connectionUrl!
+                )
+              );
+            }}
+          >
             <div className={classes.cell}>
               <div className={classes.label}>To</div>
               <div className={classes.cellValue}>
                 {walletAddressDisplay(
-                    transaction?.tokenTransfers?.[0]?.toUserAccount ||
-                      transaction?.nativeTransfers?.[0]?.toUserAccount
-                  )}
+                  transaction?.tokenTransfers?.[0]?.toUserAccount ||
+                    transaction?.nativeTransfers?.[0]?.toUserAccount
+                )}
                 <CallMade
                   style={{
-                      color: theme.custom.colors.icon,
-                      paddingLeft: "2px",
-                    }}
-                  />
+                    color: theme.custom.colors.icon,
+                    paddingLeft: "2px",
+                  }}
+                />
               </div>
             </div>
           </div>
-        </div> : null}
+        </div>
+      ) : null}
       {(transaction?.type === TransactionType.UNKNOWN ||
         transaction.type === TransactionType.TRANSFER) &&
-        isUserTxnSender(transaction, activeWallet) === false ? <div className={classes.middleRow}>
+      isUserTxnSender(transaction, activeWallet) === false ? (
+        <div className={classes.middleRow}>
           <div className={classes.cell}>
             <div className={classes.label}>From</div>
 
             <div className={classes.cellValue}>
               {walletAddressDisplay(
-                  transaction?.tokenTransfers?.[0]?.fromUserAccount ||
-                    transaction?.nativeTransfers?.[0]?.fromUserAccount
-                )}
-            </div>
-          </div>
-        </div> : null}
-
-      {transaction?.type === TransactionType.SWAP ? <>
-        <div className={classes.middleRow}>
-          <div className={classes.cell}>
-            <div className={classes.label}>You paid</div>
-
-            <div className={classes.cellValue}>
-              {transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
-                  " " +
-                  (tokenData[0]?.symbol ||
-                    walletAddressDisplay(
-                      transaction?.tokenTransfers?.[0]?.mint
-                    ))}
+                transaction?.tokenTransfers?.[0]?.fromUserAccount ||
+                  transaction?.nativeTransfers?.[0]?.fromUserAccount
+              )}
             </div>
           </div>
         </div>
-        <div className={classes.middleRow}>
-          <div className={classes.cell}>
-            <div className={classes.label}>You Received</div>
+      ) : null}
 
-            <div className={classes.confirmedStatus}>
-              {transaction?.tokenTransfers[1]?.tokenAmount.toFixed(5) +
-                  " " +
-                  (tokenData[1]?.symbol ||
-                    walletAddressDisplay(
-                      transaction?.tokenTransfers?.[0]?.mint
-                    ))}
-            </div>
-          </div>
-        </div>
-      </> : null}
+      {transaction?.type === TransactionType.SWAP ? (
+        <SwapTransaction transaction={transaction} tokenData={tokenData} />
+      ) : null}
+
       {/* ALL txn types have  first row (Date) rest of data
       rows below (Network Fee, Status, Signature)*/}
       <div className={classes.middleRow}>
@@ -624,3 +577,32 @@ function DetailTable({
     </List>
   );
 }
+
+const SwapTransaction = ({
+  transaction,
+  tokenData,
+}: {
+  transaction: HeliusParsedTransaction;
+  tokenData: ReturnType<typeof getTokenData>;
+}) => {
+  const classes = useStyles();
+  const [input, output] = parseSwapTransaction(transaction, tokenData);
+  return (
+    <>
+      <div className={classes.middleRow}>
+        <div className={classes.cell}>
+          <div className={classes.label}>You paid</div>
+          <div className={classes.cellValue}>{input.amountWithSymbol}</div>
+        </div>
+      </div>
+      <div className={classes.middleRow}>
+        <div className={classes.cell}>
+          <div className={classes.label}>You Received</div>
+          <div className={classes.confirmedStatus}>
+            {output.amountWithSymbol}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};

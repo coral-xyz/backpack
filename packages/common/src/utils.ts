@@ -84,7 +84,7 @@ export function externalResourceUri(
     return uri.replace("ar://", "https://arweave.net/");
   }
   if (options.cached) {
-    return `https://swr.xnfts.dev/1hr/${uri}`;
+    return `https://swr.xnfts.dev/1min/${uri}`;
   }
   return `${uri}`;
 }

@@ -1,11 +1,12 @@
 import debounce from "debounce";
-import { LocalStorage } from "react-xnft";
-import { Actions, StateType } from "../../state";
-import { Reducer } from "./redux";
+
+import type { Actions, StateType } from "../../state";
+
+import type { Reducer } from "./redux";
 
 const debouncedLocalstorageUpdate = debounce(
   async (state) => {
-    await LocalStorage.set("PricesState", state);
+    window.localStorage.setItem("PricesState", state);
   },
   500,
   true

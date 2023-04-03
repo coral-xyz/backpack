@@ -56,7 +56,6 @@ import {
   UI_RPC_METHOD_KEYRING_SET_MNEMONIC,
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
-  UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
@@ -68,6 +67,7 @@ import {
   UI_RPC_METHOD_LEDGER_IMPORT,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+  UI_RPC_METHOD_NAVIGATION_OPEN_CHAT,
   UI_RPC_METHOD_NAVIGATION_POP,
   UI_RPC_METHOD_NAVIGATION_PUSH,
   UI_RPC_METHOD_NAVIGATION_READ,
@@ -178,8 +178,6 @@ async function handle<T = any>(
       return await handleKeyringKeyDelete(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_STORE_STATE:
       return await handleKeyringStoreState(ctx);
-    case UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE:
-      return handleKeyringStoreKeepAlive(ctx);
     case UI_RPC_METHOD_KEYRING_DERIVE_WALLET:
       return await handleKeyringDeriveWallet(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH:
@@ -248,6 +246,9 @@ async function handle<T = any>(
         toggleAutoLockEnabled(params[0]);
       }
       return await handleNavigationCurrentUrlUpdate(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_NAVIGATION_OPEN_CHAT:
+      return await handleNavigationOpenChat(ctx, params[0]);
+
     case UI_RPC_METHOD_NAVIGATION_READ:
       const navigationData = await handleNavRead(ctx);
       if (navigationData) {
@@ -788,6 +789,13 @@ async function handleNavigationCurrentUrlUpdate(
   activeTab?: string
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.navigationCurrentUrlUpdate(url, activeTab);
+  return [resp];
+}
+async function handleNavigationOpenChat(
+  ctx: Context<Backend>,
+  chatName: string
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.navigationOpenChat(chatName);
   return [resp];
 }
 

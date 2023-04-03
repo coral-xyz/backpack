@@ -1,6 +1,6 @@
 import { useState } from "react";
+import type { SearchParamsFor } from "@coral-xyz/common";
 import { Blockchain } from "@coral-xyz/common";
-import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useActiveEthereumWallet,

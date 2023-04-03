@@ -21,14 +21,23 @@ export const chatMessageInputId = "backpack-message-input";
 export function MessageInput({
   setPluginMenuOpen,
   autoFocus = true,
+  onMediaSelect
 }: {
   setPluginMenuOpen: any;
   autoFocus?: boolean;
+  onMediaSelect: any;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const { type, remoteUsername, activeReply } = useChatContext();
   const { activeSearch } = useContext(RichMentionsContext);
+
+  const uploadFromClipboard = (e:React.ClipboardEvent<HTMLDivElement>):void => {
+    if(e.clipboardData.files.length > 0) {
+      let file = e.clipboardData.files[0];
+      onMediaSelect(file)
+    }
+  }
 
   useEffect(() => {
     if (autoFocus) {
@@ -51,6 +60,7 @@ export function MessageInput({
         }}
         className={classes.input}
         onClick={() => setPluginMenuOpen(false)}
+        onPaste={(e) => uploadFromClipboard(e)}
         placeholder={
           type === "individual"
             ? `Message @${remoteUsername}`

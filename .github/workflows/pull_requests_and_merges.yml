@@ -27,25 +27,14 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-
-      - uses: actions/cache@v3
-        name: yarn-cache
-        id: yarn-cache
-        with:
-          path: |
-            **/node_modules
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            !**/node_modules/.cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn
+          cache: "yarn"
 
       ##########################################################################
       # Yarn install.
       ##########################################################################
 
       - name: yarn install
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       ##########################################################################
       # Build extension.
@@ -98,6 +87,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
         with:
+          cname: mobile-service-worker.xnfts.dev
           publish_dir: packages/background/build
           github_token: ${{ secrets.GITHUB_TOKEN }}
           destination_dir: "background-scripts/${{ env.short_sha }}"

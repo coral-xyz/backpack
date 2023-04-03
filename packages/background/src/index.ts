@@ -16,6 +16,7 @@ export * from "./backend/keyring";
 // Entry: Starts the background service.
 //
 export function start(cfg: Config): Background {
+  console.log("start background service:cfg", cfg);
   // Shared event message bus.
   const events = new EventEmitter();
 

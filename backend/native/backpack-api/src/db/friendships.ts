@@ -456,6 +456,9 @@ export const getFriendshipStatus = async (
     remoteRequested: boolean;
   }[]
 > => {
+  // hotfix: empty array returns all records
+  if (userIds.filter(Boolean).length === 0) return [];
+
   const response = await chain("query")(
     {
       auth_friendships: [

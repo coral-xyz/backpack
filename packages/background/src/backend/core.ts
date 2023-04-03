@@ -25,6 +25,7 @@ import {
   getAccountRecoveryPaths,
   getAddMessage,
   getRecoveryPaths,
+  makeUrl,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
@@ -67,11 +68,7 @@ import {
   TAB_XNFT,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
-import {
-  KeyringStoreStateEnum,
-  makeDefaultNav,
-  makeUrl,
-} from "@coral-xyz/recoil";
+import { KeyringStoreStateEnum, makeDefaultNav } from "@coral-xyz/recoil";
 import type {
   Commitment,
   SendOptions,
@@ -1244,9 +1241,27 @@ export class Backend {
         mnemonic,
         recoveryPaths
       );
+
+      //
+      // The set of all keys currently in the keyring store. Don't try to sync
+      // a key if it's already client side.
+      //
+      const allLocalKeys = Object.values(
+        await this.keyringStoreReadAllPubkeys()
+      )
+        .map((p) =>
+          p.hdPublicKeys
+            .concat(p.importedPublicKeys)
+            .concat(p.ledgerPublicKeys)
+            .map((p) => p.publicKey)
+        )
+        .reduce((a, b) => a.concat(b), []);
+
       const searchPublicKeys = serverPublicKeys
         .filter((b) => b.blockchain === blockchain)
-        .map((p) => p.publicKey);
+        .map((p) => p.publicKey)
+        .filter((p) => !allLocalKeys.includes(p));
+
       for (const searchPublicKey of searchPublicKeys) {
         const index = publicKeys.findIndex(
           (p: string) => p === searchPublicKey
@@ -1264,11 +1279,23 @@ export class Backend {
             // Doesn't exist, we can create it
           }
           if (blockchainKeyring) {
-            // Exists, just add the missing derivation path
-            const { publicKey, name } =
-              await this.keyringStore.activeUserKeyring
-                .keyringForBlockchain(blockchain)
-                .addDerivationPath(recoveryPaths[index]);
+            let [publicKey, name] = await (async () => {
+              const derivationPath = recoveryPaths[index];
+              if (!blockchainKeyring.hasHdKeyring()) {
+                const [[publicKey, name]] =
+                  await blockchainKeyring.initHdKeyring(mnemonic, [
+                    derivationPath,
+                  ]);
+                return [publicKey, name];
+              } else {
+                // Exists, just add the missing derivation path
+                const { publicKey, name } =
+                  await this.keyringStore.activeUserKeyring
+                    .keyringForBlockchain(blockchain)
+                    .addDerivationPath(derivationPath);
+                return [publicKey, name];
+              }
+            })();
             this.events.emit(BACKEND_EVENT, {
               name: NOTIFICATION_KEYRING_DERIVED_WALLET,
               data: {
@@ -1358,6 +1385,11 @@ export class Backend {
 
     if (!response.ok) {
       throw new Error((await response.json()).msg);
+    }
+
+    // 204 => the key was already created on the server previously.
+    if (response.status === 204) {
+      return;
     }
 
     const primary = (await response.json()).isPrimary;
@@ -1840,6 +1872,8 @@ export class Backend {
           throw new Error("opening an xnft that is not whitelisted");
         }
       }
+    } else {
+      delete nav.data[TAB_XNFT];
     }
 
     nav.data[targetTab] = nav.data[targetTab] ?? { id: targetTab, urls: [] };
@@ -1954,10 +1988,15 @@ export class Backend {
     if (!currNav) {
       throw new Error("invariant violation");
     }
+
     const nav = {
       ...currNav,
       activeTab,
     };
+
+    if (activeTab !== TAB_XNFT) {
+      delete nav.data[TAB_XNFT];
+    }
 
     // Newly introduced messages tab needs to be added to the
     // store for backward compatability
@@ -1983,6 +2022,12 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async navigationOpenChat(chatName: string): Promise<string> {
+    console.log("openchat");
+
+    return SUCCESS_RESPONSE;
+  }
+
   async navigationCurrentUrlUpdate(
     url: string,
     activeTab?: string
@@ -1991,6 +2036,10 @@ export class Backend {
     const currNav = await store.getNav();
     if (!currNav) {
       throw new Error("invariant violation");
+    }
+
+    if (activeTab !== TAB_XNFT) {
+      delete currNav.data[TAB_XNFT];
     }
 
     // Update the active tab's nav stack.

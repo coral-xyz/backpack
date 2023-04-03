@@ -1,10 +1,7 @@
 import { lazy, Suspense, useLayoutEffect } from "react";
 import { HashRouter } from "react-router-dom";
 import { EXTENSION_HEIGHT, EXTENSION_WIDTH } from "@coral-xyz/common";
-import {
-  NotificationsProvider,
-  useBackgroundKeepAlive,
-} from "@coral-xyz/recoil";
+import { NotificationsProvider, useKeyringStoreState } from "@coral-xyz/recoil";
 import {
   BACKGROUND_BACKDROP_COLOR,
   LIGHT_BACKGROUND_BACKDROP_COLOR,
@@ -96,7 +93,7 @@ export default function App() {
 }
 
 function _App() {
-  useBackgroundKeepAlive();
+  useKeyringStoreState();
   return (
     <NotificationsProvider>
       <ErrorBoundary>

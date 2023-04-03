@@ -306,7 +306,7 @@ export const SendMessage = ({
               )}
             </IconButton>
           </div>
-          <MessageInput setPluginMenuOpen={setPluginMenuOpen} />
+          <MessageInput onMediaSelect={onMediaSelect} setPluginMenuOpen={setPluginMenuOpen} />
         </div>
         {pluginMenuOpen ? (
           <div style={{ display: "flex", marginLeft: 8, paddingBottom: 5 }}>

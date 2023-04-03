@@ -1,4 +1,3 @@
-// TODO: reinstate dropzone_public_key
 import { emptyWallet } from "@cardinal/common";
 import { metadataAddress } from "@coral-xyz/common";
 import type { order_by } from "@coral-xyz/zeus";
@@ -42,39 +41,40 @@ router.post("/drops", async (req, res, next) => {
 
     const usernames = Object.keys(req.body.balances);
 
-    const { auth_users } = await chain("query")({
-      auth_users: [
-        {
-          where: {
-            username: {
-              _in: Object.keys(req.body.balances),
+    const { auth_public_keys } = await chain("query")(
+      {
+        auth_public_keys: [
+          {
+            where: {
+              blockchain: { _eq: "solana" },
+              is_primary: { _eq: true },
+              user: {
+                username: {
+                  _in: usernames,
+                },
+              },
             },
           },
-        },
-        {
-          id: true,
-          username: true,
-          // dropzone_public_key: [
-          //   {},
-          //   {
-          //     public_key: true,
-          //   },
-          // ],
-        },
-      ],
-    });
+          {
+            public_key: true,
+            user: {
+              username: true,
+            },
+          },
+        ],
+      },
+      {
+        operationName: "getUserPublicKeysToCreateDropzoneDistributor",
+      }
+    );
 
-    if (auth_users.length < usernames.length) {
+    if (auth_public_keys.length < usernames.length) {
       throw new Error("Some usernames were not found");
     }
 
-    const data = auth_users.reduce((acc, _curr, _index) => {
-      // const username = curr.username as string;
-      // acc[curr.dropzone_public_key![0].public_key] = [
-      //   req.body.balances[username],
-      //   index,
-      //   username,
-      // ];
+    const data = auth_public_keys.reduce((acc, curr, index) => {
+      const username = curr.user!.username as string;
+      acc[curr.public_key] = [req.body.balances[username], index, username];
       return acc;
     }, {} as DropzoneData);
 
@@ -124,7 +124,7 @@ router.post("/drops", async (req, res, next) => {
       },
       body: JSON.stringify({
         query: `
-          mutation ($object:dropzone_distributors_insert_input!) {
+          mutation createDropzoneDistributor($object:dropzone_distributors_insert_input!) {
             insert_dropzone_distributors_one(object: $object) { id }
           }`,
         variables: {
@@ -143,7 +143,7 @@ router.post("/drops", async (req, res, next) => {
       if (DROPZONE_XNFT_SECRET) {
         for (const userIds of sliceIntoChunks(
           auth_users.map((u) => u.id),
-          500
+          100
         )) {
           try {
             await fetch("https://xnft-api-server.xnfts.dev/v1/notifications", {
@@ -193,7 +193,7 @@ router.get("/drops/:distributor", async (req, res, next) => {
         ],
       },
       {
-        operationName: "dropzone_distributors_by_pk",
+        operationName: "getDropzoneDistributorsByPublicKey",
       }
     );
 
@@ -222,51 +222,52 @@ router.get(
       const {
         auth_public_keys: [{ user }],
         dropzone_distributors: query,
-      } = await chain("query")({
-        // TODO: fetch user by JWT id instead
-        auth_public_keys: [
-          {
-            limit: 1,
-            where: {
-              blockchain: { _eq: "solana" },
-              public_key: { _eq: req.params.claimant },
-            },
-          },
-          {
-            user: {
-              username: true,
-              // dropzone_public_key: [
-              //   {},
-              //   {
-              //     public_key: true,
-              //   },
-              // ],
-              referred_users: [
-                {
-                  order_by: [{ created_at: "desc" as order_by.desc }],
-                },
-                { username: true, created_at: true },
-              ],
-            },
-          },
-        ],
-        dropzone_distributors: [
-          {
-            order_by: [{ created_at: "desc" as order_by.desc }],
-            where: {
-              data: {
-                _has_key: req.params.claimant,
+      } = await chain("query")(
+        {
+          // TODO: fetch user by JWT id instead
+          auth_public_keys: [
+            {
+              limit: 1,
+              where: {
+                blockchain: { _eq: "solana" },
+                public_key: { _eq: req.params.claimant },
+                is_primary: { _eq: true },
               },
             },
-          },
-          {
-            id: true,
-            data: [{ path: `$["${req.params.claimant}"]` }, true],
-            created_at: true,
-            mint: true,
-          },
-        ],
-      });
+            {
+              public_key: true,
+              user: {
+                username: true,
+                referred_users: [
+                  {
+                    order_by: [{ created_at: "desc" as order_by.desc }],
+                  },
+                  { username: true, created_at: true },
+                ],
+              },
+            },
+          ],
+          dropzone_distributors: [
+            {
+              order_by: [{ created_at: "desc" as order_by.desc }],
+              where: {
+                data: {
+                  _has_key: req.params.claimant,
+                },
+              },
+            },
+            {
+              id: true,
+              data: [{ path: `$["${req.params.claimant}"]` }, true],
+              created_at: true,
+              mint: true,
+            },
+          ],
+        },
+        {
+          operationName: "getDropzoneClaimsByClaimant",
+        }
+      );
 
       const claims = query.map(({ data, ...distributor }) => ({
         ...distributor,
@@ -323,12 +324,17 @@ router.get(
         throw new Error("Invalid claimant address");
       }
 
-      const { dropzone_distributors_by_pk } = await chain("query")({
-        dropzone_distributors_by_pk: [
-          { id: req.params.distributor },
-          { id: true, data: [{ path: `$["${req.params.claimant}"]` }, true] },
-        ],
-      });
+      const { dropzone_distributors_by_pk } = await chain("query")(
+        {
+          dropzone_distributors_by_pk: [
+            { id: req.params.distributor },
+            { id: true, data: [{ path: `$["${req.params.claimant}"]` }, true] },
+          ],
+        },
+        {
+          operationName: "getDropzoneDistributorByPublicKey",
+        }
+      );
       if (!dropzone_distributors_by_pk) {
         throw new Error("Distributor not found");
       }
@@ -366,12 +372,17 @@ router.get(
   isValidClaimant,
   async (req, res, next) => {
     try {
-      const { dropzone_distributors_by_pk } = await chain("query")({
-        dropzone_distributors_by_pk: [
-          { id: req.params.distributor },
-          { id: true, data: [{ path: "$" }, true], mint: true },
-        ],
-      });
+      const { dropzone_distributors_by_pk } = await chain("query")(
+        {
+          dropzone_distributors_by_pk: [
+            { id: req.params.distributor },
+            { id: true, data: [{ path: "$" }, true], mint: true },
+          ],
+        },
+        {
+          operationName: "getDropzoneDistributorByPublicKey",
+        }
+      );
       if (!dropzone_distributors_by_pk) {
         throw new Error("Distributor not found");
       }

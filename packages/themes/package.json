@@ -2,8 +2,8 @@
   "name": "@coral-xyz/themes",
   "version": "0.0.1",
   "module": "dist/esm/index.js",
-  "source": "src/index.tsx",
-  "react-native": "dist/esm/index.js",
+  "source": "src/index.ts",
+  "react-native": "src/index.ts",
   "types": "dist/esm/index.d.ts",
   "files": [
     "dist"

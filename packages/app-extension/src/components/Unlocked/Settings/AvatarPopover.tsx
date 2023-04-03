@@ -36,7 +36,7 @@ const useStyles = styles((theme) => ({
     },
   },
   popoverRoot: {
-    zIndex: 1,
+    zIndex: 2,
   },
 }));
 
@@ -144,7 +144,7 @@ function AvatarMenu() {
           borderTop: theme.custom.colors.borderFull,
         }}
       />
-      <LogOutMenuList />
+      <LockMenuList />
     </div>
   );
 }
@@ -314,45 +314,34 @@ function AuxMenuList() {
   );
 }
 
-function LogOutMenuList() {
+function LockMenuList() {
   const theme = useCustomTheme();
-  const [openLogout, setOpenLogout] = useState(false);
+  const background = useBackgroundClient();
   return (
-    <>
-      <MenuList>
-        <MenuListItem
-          onClick={() => {
-            setOpenLogout(true);
+    <MenuList>
+      <MenuListItem
+        onClick={() => {
+          background
+            .request({
+              method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+              params: [],
+            })
+            .catch(console.error);
+        }}
+      >
+        <Typography
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            color: theme.custom.colors.fontColor,
+            fontSize: "14px",
           }}
         >
-          <Typography
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              color: theme.custom.colors.fontColor,
-              fontSize: "14px",
-            }}
-          >
-            Log out
-          </Typography>
-        </MenuListItem>
-      </MenuList>
-      <WithDrawer openDrawer={openLogout} setOpenDrawer={setOpenLogout}>
-        <div style={{ height: "100%" }}>
-          <NavStackEphemeral
-            initialRoute={{ name: "root", title: "Profile" }}
-            options={() => ({ title: "" })}
-            navButtonLeft={<CloseButton onClick={() => setOpenLogout(false)} />}
-          >
-            <NavStackScreen
-              name="root"
-              component={(props: any) => <Logout {...props} />}
-            />
-          </NavStackEphemeral>
-        </div>
-      </WithDrawer>
-    </>
+          Lock
+        </Typography>
+      </MenuListItem>
+    </MenuList>
   );
 }
 

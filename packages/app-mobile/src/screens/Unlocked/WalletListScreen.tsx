@@ -16,6 +16,7 @@ import {
   useAllWallets,
   useBackgroundClient,
   useBlockchainActiveWallet,
+  useDehydratedWallets,
 } from "@coral-xyz/recoil";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -37,11 +38,25 @@ type Wallet = {
   type: string;
 };
 
+// NOTE(peter): copied from app-extension/src/components/common/WalletList.tsx
 export function WalletListScreen({ navigation, route }): JSX.Element {
   const insets = useSafeAreaInsets();
   const activeWallet = useBlockchainActiveWallet(Blockchain.SOLANA);
   const background = useBackgroundClient();
   const wallets = useAllWallets();
+  const _dehydratedWallets = useDehydratedWallets();
+
+  const activeWallets = wallets.filter((w) => !w.isCold);
+  // const coldWallets = wallets.filter((w) => w.isCold);
+
+  // Dehydrated public keys are keys that exist on the server but cannot be
+  // used on the client as we don't have signing data, e.g. mnemonic, private
+  // key or ledger derivation path
+  const dehydratedWallets = _dehydratedWallets.map((w: any) => ({
+    ...w,
+    name: "", // TODO server side does not sync wallet names
+    type: "dehydrated",
+  }));
 
   const onSelectWallet = async (w: Wallet) => {
     await background.request({
@@ -55,7 +70,7 @@ export function WalletListScreen({ navigation, route }): JSX.Element {
   return (
     <Screen style={{ marginBottom: insets.bottom }}>
       <FlatList
-        data={wallets}
+        data={activeWallets.concat(dehydratedWallets)}
         ItemSeparatorComponent={() => <ListRowSeparator />}
         keyExtractor={(item) => item.publicKey.toString()}
         renderItem={({ item: wallet }) => {

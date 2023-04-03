@@ -102,13 +102,17 @@ export const FullScreenChat = ({
   };
 
   const onMediaSelect = (file: File) => {
-    let reader = new FileReader();
-    reader.onload = (e) => {
-      setSelectedMediaKind(file.name.endsWith("mp4") ? "video" : "image");
-      setSelectedFile(e.target?.result);
-      uploadToS3(e.target?.result as string, file.name);
-    };
-    reader.readAsDataURL(file);
+    const fileType = file.type.split('/')[0];
+    
+    if(fileType === 'image' || fileType === 'video') {
+      let reader = new FileReader();
+      reader.onload = (e) => {
+        setSelectedMediaKind(file.name.endsWith("mp4") ? "video" : "image");
+        setSelectedFile(e.target?.result);
+        uploadToS3(e.target?.result as string, file.name);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (

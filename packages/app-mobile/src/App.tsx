@@ -1,5 +1,5 @@
 import { Suspense, useCallback, useRef } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Platform } from "react-native";
 
 import Constants from "expo-constants";
 import * as Device from "expo-device";
@@ -121,15 +121,23 @@ function Main(): JSX.Element | null {
   );
 }
 
+const getWebviewUrl = () => {
+  const { localWebViewUrl, remoteWebViewUrl } =
+    Constants?.expoConfig?.extra || {};
+
+  if (process.env.NODE_ENV === "development" && Platform.OS === "android") {
+    return remoteWebViewUrl;
+  }
+
+  return Device.isDevice ? remoteWebViewUrl : localWebViewUrl;
+};
+
 function BackgroundHiddenWebView(): JSX.Element {
   const setInjectJavaScript = useStore(
     (state: any) => state.setInjectJavaScript
   );
   const ref = useRef(null);
-  const { localWebViewUrl, remoteWebViewUrl } =
-    Constants?.expoConfig?.extra || {};
-
-  const webViewUrl = Device.isDevice ? remoteWebViewUrl : localWebViewUrl;
+  const webviewUrl = getWebviewUrl();
 
   return (
     <View style={styles.webview}>
@@ -141,8 +149,10 @@ function BackgroundHiddenWebView(): JSX.Element {
         cacheEnabled
         limitsNavigationsToAppBoundDomains
         source={{
-          uri: webViewUrl,
+          uri: webviewUrl,
         }}
+        onError={(error) => console.log("WebView error:", error)}
+        onHttpError={(error) => console.log("WebView HTTP error:", error)}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
           maybeParseLog(msg);

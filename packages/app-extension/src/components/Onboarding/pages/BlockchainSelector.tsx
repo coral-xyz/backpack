@@ -87,44 +87,6 @@ export const BlockchainSelector = ({
                 onClick={() => onClick(Blockchain.SOLANA)}
               />
             </Grid>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={<PolygonIcon />}
-                text="Polygon"
-                textAdornment={<SoonBadge />}
-                onClick={() => {}}
-                disabled
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={<BscIcon />}
-                text="BSC"
-                textAdornment={<SoonBadge />}
-                onClick={() => {}}
-                disabled
-              />
-            </Grid>
-            {/*
-            <Grid item xs={6}>
-              <ActionCard
-                icon={<AvalancheIcon />}
-                text="Avalanche"
-                textAdornment={<SoonBadge />}
-                onClick={() => {}}
-                disabled={true}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={<CosmosIcon />}
-                text="Cosmos"
-                textAdornment={<SoonBadge />}
-                onClick={() => {}}
-                disabled={true}
-              />
-            </Grid>
-            */}
           </Grid>
         </Box>
       </Box>

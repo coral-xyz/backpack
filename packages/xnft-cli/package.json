@@ -4,7 +4,6 @@
   "bin": {
     "xnft": "./index.js"
   },
-  "scripts": {},
   "browserslist": [
     "last 1 chrome version",
     "last 1 firefox version",
@@ -12,7 +11,7 @@
     "last 1 edge version"
   ],
   "dependencies": {
-    "@coral-xyz/xnft": "^0.2.37",
+    "@coral-xyz/xnft": "^0.2.50",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "chokidar": "^3.5.3",
     "commander": "^10.0.0",

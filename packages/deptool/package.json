@@ -2,9 +2,7 @@
   "name": "@coral-xyz/deptool",
   "version": "0.1.0",
   "private": true,
-  "bin": {
-    "deptool": "./index.js"
-  },
+  "bin": "./index.js",
   "dependencies": {
     "esbuild": "^0.14.43",
     "esbuild-node-builtins": "^0.1.0"

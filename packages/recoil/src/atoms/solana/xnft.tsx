@@ -7,6 +7,9 @@ import {
   XNFT_GG_LINK,
   XNFT_PROGRAM_ID,
 } from "@coral-xyz/common";
+import { buildAnonymousProgram } from "@coral-xyz/xnft/lib/cjs/util";
+import type { Xnft } from "@coral-xyz/xnft/lib/cjs/xnft";
+import type { IdlAccounts } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import * as cheerio from "cheerio";
 import { atomFamily, selectorFamily } from "recoil";
@@ -20,6 +23,13 @@ import { activePublicKeys } from "../wallet";
 import { anchorContext } from "./wallet";
 
 export const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
+
+// const xnftProgram = (conn: Connection): Program<Xnft> =>
+//   new Program(
+//     IDL,
+//     XNFT_PROGRAM_ID,
+//     new AnchorProvider(conn, new Wallet(Keypair.generate()), {})
+//   );
 
 export const appStoreMetaTags = selectorFamily<
   { name?: string; description?: string; image?: string },
@@ -56,6 +66,8 @@ export const collectibleXnft = selectorFamily<
       }
 
       const { connection } = get(anchorContext);
+      const program = buildAnonymousProgram(connection);
+
       if (params.collection) {
         const [maybeCollectionXnft] = await PublicKey.findProgramAddress(
           [Buffer.from("xnft"), new PublicKey(params.collection).toBytes()],
@@ -64,7 +76,14 @@ export const collectibleXnft = selectorFamily<
 
         const acc = await connection.getAccountInfo(maybeCollectionXnft);
         if (acc) {
-          return maybeCollectionXnft.toBase58();
+          const data = program.coder.accounts.decode<IdlAccounts<Xnft>["xnft"]>(
+            "xnft",
+            acc.data
+          );
+
+          if (!data.suspended) {
+            return maybeCollectionXnft.toBase58();
+          }
         }
       }
 
@@ -74,7 +93,14 @@ export const collectibleXnft = selectorFamily<
           XNFT_PROGRAM_ID
         );
         const acc = await connection.getAccountInfo(maybeItemXnft);
-        return acc ? maybeItemXnft.toBase58() : undefined;
+
+        if (acc) {
+          const data = program.coder.accounts.decode<IdlAccounts<Xnft>["xnft"]>(
+            "xnft",
+            acc.data
+          );
+          return !data.suspended ? maybeItemXnft.toBase58() : undefined;
+        }
       }
       return undefined;
     },

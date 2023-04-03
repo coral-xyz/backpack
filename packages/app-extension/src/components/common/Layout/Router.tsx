@@ -6,7 +6,7 @@ import {
   useLocation,
   useSearchParams,
 } from "react-router-dom";
-import type { SubscriptionType } from "@coral-xyz/common";
+import type { SearchParamsFor, SubscriptionType } from "@coral-xyz/common";
 import {
   BACKPACK_TEAM,
   NAV_COMPONENT_MESSAGE_PROFILE,
@@ -19,7 +19,6 @@ import {
   RequestsScreen,
 } from "@coral-xyz/message-sdk";
 import { useBreakpoints } from "@coral-xyz/react-common";
-import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   useDarkMode,
   useDecodedSearchParams,

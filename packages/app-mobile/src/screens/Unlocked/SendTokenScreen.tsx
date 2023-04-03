@@ -245,6 +245,7 @@ function MaxAmountLabel({
 }
 
 export function SendTokenConfirmScreen({
+  navigation,
   route,
 }: StackScreenProps<
   UnlockedNavigatorStackParamList,
@@ -372,6 +373,7 @@ export function SendTokenConfirmScreen({
         }}
       >
         <SendConfirmComponent
+          navigation={navigation}
           token={token}
           destinationAddress={address}
           amount={amount!}

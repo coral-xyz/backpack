@@ -1,8 +1,9 @@
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { HOVER_OPACITY } from "@coral-xyz/themes";
+import { Text } from "tamagui";
 
 import { useCustomTheme } from "../hooks/index";
-import { HOVER_OPACITY } from "../theme";
 export * from "./Images";
 export { SearchBox } from "./SearchBox";
 
@@ -65,15 +66,19 @@ export function BaseButton({
   disabled,
   loading,
   icon,
+  iconBefore,
+  iconAfter,
   ...props
 }: {
   label: string;
   buttonStyle?: StyleProp<ViewStyle>;
-  labelStyle?: StyleProp<TextStyle>;
+  labelStyle: { color: string };
   onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
   icon?: JSX.Element;
+  iconBefore?: JSX.Element;
+  iconAfter?: JSX.Element;
 }) {
   return (
     <Pressable
@@ -90,18 +95,21 @@ export function BaseButton({
       }}
       {...props}
     >
+      {iconBefore ? <Margin right={2}>{iconBefore}</Margin> : null}
       <Text
+        fontSize={16}
+        fontWeight="600"
+        fontFamily="Inter"
+        color={labelStyle.color}
         style={[
-          baseButtonStyles.label,
           {
             opacity: disabled ? 0.5 : 1,
           },
-          labelStyle,
         ]}
       >
         {loading ? "loading..." : label}
       </Text>
-      {icon ? <Margin left={8}>{icon}</Margin> : null}
+      {icon || iconAfter ? <Margin left={2}>{icon || iconAfter}</Margin> : null}
     </Pressable>
   );
 }
@@ -116,10 +124,6 @@ const baseButtonStyles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     width: "100%",
-  },
-  label: {
-    fontWeight: "500",
-    fontSize: 16,
   },
 });
 
@@ -157,6 +161,7 @@ export function PrimaryButton({
   onClick,
   disabled,
   loading,
+  icon,
   ...props
 }: {
   label: string;
@@ -164,6 +169,7 @@ export function PrimaryButton({
   onClick?: () => void;
   disabled?: boolean;
   loading?: boolean;
+  icon?: JSX.Element;
 }) {
   const theme = useCustomTheme();
   return (
@@ -173,6 +179,7 @@ export function PrimaryButton({
       disabled={disabled}
       loading={loading}
       buttonStyle={{ backgroundColor: theme.custom.colors.primaryButton }}
+      icon={icon}
       labelStyle={{
         color: theme.custom.colors.primaryButtonTextColor,
       }}
@@ -248,7 +255,7 @@ export function DangerButton({
   ...props
 }: {
   label: string;
-  onPress: () => void;
+  onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
 }) {

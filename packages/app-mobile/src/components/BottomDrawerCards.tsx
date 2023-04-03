@@ -10,6 +10,7 @@ import {
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
 } from "@coral-xyz/recoil";
+import { Box } from "@coral-xyz/tamagui";
 
 import { CheckIcon, CrossIcon } from "~components/Icon";
 import {
@@ -92,6 +93,7 @@ function SubHeader({
 }
 
 export function Sending({
+  navigation,
   blockchain,
   amount,
   token,
@@ -99,6 +101,7 @@ export function Sending({
   isComplete,
   titleOverride,
 }: {
+  navigation: any;
   blockchain: Blockchain;
   amount: BigNumber;
   token: any;
@@ -125,13 +128,30 @@ export function Sending({
       </View>
       <View>
         {explorer && connectionUrl ? (
-          <SecondaryButton
-            disabled={!isComplete}
-            label={isComplete ? "View Balances" : "View Explorer"}
-            onPress={() => {
-              Linking.openURL(explorerUrl(explorer, signature, connectionUrl));
-            }}
-          />
+          <>
+            <SecondaryButton
+              disabled={!isComplete}
+              label={isComplete ? "View Balances" : "View Explorer"}
+              onPress={() => {
+                Linking.openURL(
+                  explorerUrl(explorer, signature, connectionUrl)
+                );
+              }}
+            />
+            {isComplete ? (
+              <Margin top={8}>
+                <PrimaryButton
+                  label="Close"
+                  onPress={() => {
+                    navigation.reset({
+                      index: 0,
+                      routes: [{ name: "Tabs" }],
+                    });
+                  }}
+                />
+              </Margin>
+            ) : null}
+          </>
         ) : null}
       </View>
     </Container>
@@ -168,7 +188,9 @@ export function Error({
           }}
         />
       ) : null}
-      <PrimaryButton label="Retry" onPress={() => onRetry()} />
+      <Box mt={4}>
+        <PrimaryButton label="Retry" onPress={() => onRetry()} />
+      </Box>
     </Container>
   );
 }

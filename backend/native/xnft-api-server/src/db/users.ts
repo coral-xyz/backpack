@@ -64,39 +64,33 @@ const transformUser = (user: {
 };
 
 export const getUserIdFromPubkey = async ({ blockchain, publicKey }) => {
-  const response = await chain("query")(
+  const { auth_users } = await chain("query")(
     {
       auth_users: [
         {
           limit: 1,
           where: {
             public_keys: {
+              is_primary: { _eq: true },
               public_key: { _eq: publicKey },
               blockchain: { _eq: blockchain },
-              user_active_publickey_mappings: {
-                public_key: {
-                  public_key: {
-                    _eq: publicKey,
-                  },
-                  blockchain: {
-                    _eq: blockchain,
-                  },
-                },
-              },
             },
           },
         },
         {
           id: true,
           username: true,
-          public_keys: [{}, { blockchain: true, public_key: true }],
+          public_keys: [
+            { where: { is_primary: { _eq: true } } },
+            { blockchain: true, public_key: true },
+          ],
         },
       ],
     },
     { operationName: "getUserIdFromPubkey" }
   );
 
-  return response.auth_users[0] ?? null;
+  return auth_users[0];
 };
 
 export const getUserFromUsername = async ({

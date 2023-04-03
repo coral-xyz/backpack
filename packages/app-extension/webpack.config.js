@@ -215,6 +215,8 @@ const options = {
       buffer: require.resolve("buffer/"), // trailing slash is intentional
       crypto: require.resolve("crypto-browserify"),
       stream: require.resolve("stream-browserify"),
+      path: require.resolve("path-browserify"),
+      zlib: require.resolve("browserify-zlib"),
     },
   },
   plugins: [

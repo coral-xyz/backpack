@@ -44,3 +44,8 @@ export const DROPZONE_PERMITTED_AUTHORITIES =
   process.env.NODE_ENV === "production"
     ? ["DoCHcPut2WAuVEpqukF6CKh5NSnF4muJaif8zh4qfubu"]
     : [];
+
+export const TWITTER_CONSUMER_KEY =
+  process.env.TWITTER_CONSUMER_KEY || "EXAMPLE_KEY_TO_BE_REPLACED_BY_ENV";
+export const TWITTER_CONSUMER_SECRET =
+  process.env.TWITTER_CONSUMER_SECRET || "EXAMPLE_SECRET_TO_BE_REPLACED_BY_ENV";

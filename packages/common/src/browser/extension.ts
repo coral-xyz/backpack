@@ -167,9 +167,21 @@ export async function openApproveMessagePopupWindow(
 }
 
 export async function openPopupWindow(
-  url: string
+  url: string,
+  options?: { fullscreen?: boolean; height: number; width: number }
 ): Promise<chrome.windows.Window> {
   const lastWindow = await BrowserRuntimeExtension.getLastFocusedWindow();
+  const fullscreen = options?.fullscreen;
+
+  let width = isNaN(options?.width ?? NaN) ? EXTENSION_WIDTH : options!.width!;
+  let height = isNaN(options?.height ?? NaN)
+    ? EXTENSION_HEIGHT
+    : options!.height!;
+
+  if (fullscreen) {
+    height = screen.availHeight;
+    width = screen.availWidth;
+  }
 
   const [EXTRA_HEIGHT, EXTRA_WIDTH] =
     (navigator as any).userAgentData.platform === "Windows"
@@ -179,12 +191,13 @@ export async function openPopupWindow(
   const popupWindow = await BrowserRuntimeExtension._openWindow({
     url: `${url}`,
     type: "popup",
-    width: EXTENSION_WIDTH + EXTRA_WIDTH,
-    height: EXTENSION_HEIGHT + EXTRA_HEIGHT,
-    top: lastWindow.top,
-    left:
-      (lastWindow.left ?? 0) +
-      ((lastWindow.width ?? 0) - EXTENSION_WIDTH - EXTRA_WIDTH),
+    width: width + EXTRA_WIDTH,
+    height: height + EXTRA_HEIGHT,
+    top: fullscreen ? 0 : lastWindow.top,
+    left: fullscreen
+      ? 0
+      : (lastWindow.left ?? 0) +
+        ((lastWindow.width ?? 0) - width - EXTRA_WIDTH),
     focused: true,
   });
   return popupWindow;

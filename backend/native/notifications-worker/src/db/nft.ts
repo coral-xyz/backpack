@@ -11,39 +11,45 @@ const chain = Chain(AUTH_HASURA_URL, {
 export const getAllUsersFromPubkey = async (
   pubKeys: string[]
 ): Promise<string[]> => {
-  const response = await chain("query")({
-    auth_users: [
-      {
-        where: {
-          public_keys: {
-            public_key: { _in: pubKeys },
+  const response = await chain("query")(
+    {
+      auth_users: [
+        {
+          where: {
+            public_keys: {
+              public_key: { _in: pubKeys },
+            },
           },
         },
-      },
-      {
-        id: true,
-      },
-    ],
-  });
+        {
+          id: true,
+        },
+      ],
+    },
+    { operationName: "getAllUsersFromPubkey" }
+  );
   return response.auth_users.map((x) => x.id);
 };
 
 export const getAllUsersInCollection = async (collectionId: string) => {
-  const response = await chain("query")({
-    auth_user_nfts: [
-      {
-        where: {
-          _or: [
-            { collection_id: { _eq: collectionId } },
-            { centralized_group: { _eq: collectionId } },
-          ],
+  const response = await chain("query")(
+    {
+      auth_user_nfts: [
+        {
+          where: {
+            _or: [
+              { collection_id: { _eq: collectionId } },
+              { centralized_group: { _eq: collectionId } },
+            ],
+          },
         },
-      },
-      {
-        public_key: true,
-      },
-    ],
-  });
+        {
+          public_key: true,
+        },
+      ],
+    },
+    { operationName: "getAllUsersInCollection" }
+  );
 
   const uuids = await getAllUsersFromPubkey(
     response.auth_user_nfts.map((x) => x.public_key)
