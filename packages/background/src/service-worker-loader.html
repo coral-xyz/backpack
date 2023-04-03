@@ -21,20 +21,20 @@
         const bodyElement = document.getElementsByTagName("body")[0];
         bodyElement.appendChild(urlDiv);
 
-        console.log("currentUrlHash", currentUrlHash)
+        console.log("currentUrlHash", currentUrlHash);
 
         // check to see if an old service worker needs to be unregistered
         const registrations = await navigator.serviceWorker.getRegistrations();
         console.log("# SERVICE WORKERS", registrations.length);
 
         for (let registration of registrations) {
-          console.log("SERVICE WORKER: exists", registration);
+          console.log("SERVICE WORKER: exists", registration.scope);
           try {
             const hash = registration.scope
               .split("background-scripts/")[1]
               .split("/")[0];
 
-            console.log("hash", hash)
+            console.log("hash", hash);
 
             if (currentUrlHash !== hash) {
               console.log("SERVICE WORKER: unregistering", registration);
