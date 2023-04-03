@@ -69,10 +69,7 @@ export const PrivateKeyInput = ({
       return;
     }
 
-    if (dehydrated.find((d) => d.publicKey === _publicKey)) {
-      setError("You can recover this private key from your wallets page.");
-      return;
-    } else if (wallets.find((w) => w.publicKey === _publicKey)) {
+    if (wallets.find((w) => w.publicKey === _publicKey)) {
       setError("This wallet is already active and available in your account.");
       return;
     }
