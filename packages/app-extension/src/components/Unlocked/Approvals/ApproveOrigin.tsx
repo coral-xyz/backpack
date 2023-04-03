@@ -44,10 +44,8 @@ const useStyles = styles((theme) => ({
   listItemRoot: {
     alignItems: "start",
     borderRadius: "4px",
-    background: theme.custom.colors.nav,
     padding: "8px",
     marginBottom: "1px",
-    border: `${theme.custom.colors.borderFull}`,
   },
   listItemIconRoot: {
     minWidth: "inherit",
