@@ -10,6 +10,7 @@ export const isOneLive = selector<{
   wlCollection?: string;
   madCollection?: string;
   byeBanner?: string;
+  madladsCollection?: string;
 }>({
   key: "isOneLive",
   get: async ({ get }) => {
