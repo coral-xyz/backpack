@@ -35,12 +35,15 @@ self.addEventListener("activate", async (event) => {
   }
 
   console.log("activate:postMessageToIframe...");
+  // This is most important line on mobile
   await postMessageToIframe({ type: BACKGROUND_SERVICE_WORKER_READY });
   console.log("activate:posted");
 });
 
-self.addEventListener("fetch", () => {
+self.addEventListener("fetch", async () => {
   console.log("fetch:isStarted", isStarted);
+  await self.clients.claim();
+
   // Start the service worker if it hasn't been started yet
   if (!isStarted) {
     start({ isMobile: true });

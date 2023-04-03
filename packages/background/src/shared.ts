@@ -13,9 +13,7 @@ export const postMessageToIframe = async (
       visibilityState: "visible",
     })
     .then((clients) => {
-      console.log("postMessageToIframe clients", clients);
       clients.forEach((client) => {
-        console.log("postMessageToIframe client", client);
         client.postMessage(message);
       });
     });
