@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
     border: theme.custom.colors.border,
     height: "117px",
     overflow: "hidden",
+    pointerEvents: "all",
     backgroundColor: "transparent !important",
     "&:hover": {
       cursor: "pointer",
@@ -31,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#000",
+    pointerEvents: "all",
   },
   image: {
     zIndex: 1,
@@ -40,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundSize: "547px 234px",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "0px 0px",
+    pointerEvents: "all",
     "&:hover": {
       backgroundPosition: "0px -117px",
     },
@@ -52,6 +55,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
     width: "100%",
     transform: "none",
+    pointerEvents: "none",
     backgroundColor: theme.custom.colors.balanceSkeleton,
   },
   hidden: {
@@ -59,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
   },
   none: {
     display: "none",
+    pointerEvents: "none",
   },
   visuallyHidden: {
     zIndex: -1,
@@ -101,17 +106,30 @@ export default function EntryONE({
 
   const isLoading = false || !imageLoaded;
 
-  const hasNft = !!allWalletCollections?.find((wallet) => {
+  const hasMadNft = !!allWalletCollections?.find((wallet) => {
     return !!wallet.collections?.find((collection) => {
       return (
-        collection.metadataCollectionId === oneLive.madCollection &&
+        collection.metadataCollectionId === oneLive.madladsCollection &&
+        collection.itemIds.length > 0
+      );
+    });
+  });
+
+  const hasWLNft = !!allWalletCollections?.find((wallet) => {
+    return !!wallet.collections?.find((collection) => {
+      return (
+        collection.metadataCollectionId === oneLive.wlCollection &&
         collection.itemIds.length > 0
       );
     });
   });
 
   const banner =
-    hasNft && oneLive.byeBanner ? oneLive.byeBanner : oneLive.banner;
+    hasMadNft && oneLive.hasMadladBanner
+      ? oneLive.hasMadladBanner
+      : hasWLNft && oneLive.hasWLBanner
+      ? oneLive.hasWLBanner
+      : oneLive.banner;
 
   const openXNFT = () => {
     if (oneLive.isLive) {
@@ -124,6 +142,7 @@ export default function EntryONE({
       <Skeleton
         className={`${classes.skeleton}  ${!isLoading ? classes.none : ""}`}
       />
+      <img ref={ref} className={classes.visuallyHidden} src={banner} />
       <div
         className={`${classes.imageBackground} ${
           isLoading ? classes.hidden : ""
@@ -136,7 +155,6 @@ export default function EntryONE({
           }}
         />
       </div>
-      <img ref={ref} className={classes.visuallyHidden} src={banner} />
     </Card>
   );
 }
