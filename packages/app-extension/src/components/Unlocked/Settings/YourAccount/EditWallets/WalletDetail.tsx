@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
-  UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
+ getAccountRecoveryPaths,  UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
   UI_RPC_METHOD_KEYNAME_READ,
-  walletAddressDisplay,
-} from "@coral-xyz/common";
+  walletAddressDisplay } from "@coral-xyz/common";
 import {
   PrimaryButton,
   SecondaryButton,
@@ -16,9 +15,8 @@ import {
   isKeyCold,
   serverPublicKeys,
   useBackgroundClient,
-  usePrimaryWallets,
-  useWalletPublicKeys,
-} from "@coral-xyz/recoil";
+ useDeveloperMode,  usePrimaryWallets,
+  useWalletPublicKeys } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ContentCopy } from "@mui/icons-material";
 import { Typography } from "@mui/material";
@@ -46,6 +44,10 @@ export const WalletDetail: React.FC<{
   const isCold = useRecoilValue(isKeyCold(publicKey));
   const primaryWallets = usePrimaryWallets();
   const setServerPublicKeys = useSetRecoilState(serverPublicKeys);
+  const [derivationPath, setDerivationPath] = useState(
+    JSON.stringify(getAccountRecoveryPaths(blockchain, 0).splice(1))
+  );
+  const isDeveloper = useDeveloperMode();
 
   useEffect(() => {
     (async () => {
@@ -70,9 +72,71 @@ export const WalletDetail: React.FC<{
     navigator.clipboard.writeText(publicKey);
   };
 
+  const copyDerivationPath = (input: string) => {
+    setTooltipOpen(true);
+    setTimeout(() => setTooltipOpen(false), 1000);
+    navigator.clipboard.writeText(`${input.substring(2, 15)}`);
+  };
+
   const isPrimary = primaryWallets.find((x) => x.publicKey === publicKey)
     ? true
     : false;
+
+  const truncate = (input: string) =>
+    input?.length > 12 ? `${input.substring(2, 15)}...` : input;
+
+  const menuItemsDev = {
+    "Wallet Address": {
+      onClick: () => copyAddress(),
+      detail: (
+        <WithCopyTooltip tooltipOpen={tooltipOpen}>
+          <div style={{ display: "flex" }}>
+            <Typography
+              style={{
+                color: theme.custom.colors.secondary,
+                marginRight: "8px",
+              }}
+            >
+              {publicKey.slice(0, 4) +
+                "..." +
+                publicKey.slice(publicKey.length - 4)}
+            </Typography>
+            <ContentCopy
+              style={{ width: "20px", color: theme.custom.colors.icon }}
+            />
+          </div>
+        </WithCopyTooltip>
+      ),
+    },
+    "Rename Wallet": {
+      onClick: () =>
+        nav.push("edit-wallets-rename", {
+          publicKey,
+          name: walletName,
+        }),
+    },
+
+    "Derivation Path": {
+      onClick: () => copyDerivationPath(derivationPath),
+      detail: (
+        <WithCopyTooltip tooltipOpen={tooltipOpen}>
+          <div style={{ display: "flex" }}>
+            <Typography
+              style={{
+                color: theme.custom.colors.secondary,
+                marginRight: "8px",
+              }}
+            >
+              <div>{truncate(derivationPath)}</div>
+            </Typography>
+            <ContentCopy
+              style={{ width: "20px", color: theme.custom.colors.icon }}
+            />
+          </div>
+        </WithCopyTooltip>
+      ),
+    },
+  };
 
   const menuItems = {
     "Wallet Address": {
@@ -190,7 +254,11 @@ export const WalletDetail: React.FC<{
         </div>
       ) : null}
       <div>
-        <SettingsList menuItems={menuItems} />
+        {isDeveloper ? (
+          <SettingsList menuItems={menuItemsDev} />
+        ) : (
+          <SettingsList menuItems={menuItems} />
+        )}
       </div>
       {type !== "dehydrated" ? <SettingsList menuItems={_isCold} /> : null}
       {type !== "hardware" && type !== "dehydrated" ? (

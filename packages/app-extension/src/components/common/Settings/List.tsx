@@ -14,7 +14,7 @@ export function SettingsList({
   borderColor?: string;
   menuItems: {
     [key: string]: {
-      onClick: () => void;
+      onClick?: () => void;
       detail?: React.ReactNode;
       style?: React.CSSProperties;
       classes?: any;
