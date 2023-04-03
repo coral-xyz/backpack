@@ -6,11 +6,11 @@ import { activeWallet } from "../wallet";
 
 export const isOneLive = selector<{
   isLive: boolean;
-  banner?: string;
   wlCollection?: string;
-  madCollection?: string;
-  byeBanner?: string;
   madladsCollection?: string;
+  banner?: string;
+  hasMadladBanner?: string;
+  hasWLBanner?: string;
 }>({
   key: "isOneLive",
   get: async ({ get }) => {
