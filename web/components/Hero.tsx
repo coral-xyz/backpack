@@ -20,6 +20,11 @@ function Hero() {
     }
   }
 
+  function handleEmailChange(e) {
+    setEmail(e.target.value);
+    setSubscribed(false);
+  }
+
   return (
     <div className="pb-20 sm:pb-48 lg:pb-20">
       <div className="mx-auto max-w-7xl lg:px-8">
@@ -56,7 +61,7 @@ function Hero() {
                             text-base text-gray-900 placeholder-gray-500"
                         autoComplete="email"
                         value={email}
-                        onChange={e => setEmail(e.target.value)}
+                        onChange={handleEmailChange}
                         required
                       />
                     </div>

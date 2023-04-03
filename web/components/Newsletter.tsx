@@ -20,6 +20,11 @@ function Newsletter() {
     }
   }
 
+  function handleEmailChange(e) {
+    setEmail(e.target.value);
+    setSubscribed(false);
+  }
+
   return (
     <div>
       <div className="mx-auto py-12">
@@ -46,7 +51,7 @@ function Newsletter() {
                 type="email"
                 autoComplete="email"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={handleEmailChange}
                 required
                 className="block w-full rounded-md border-0 px-4 py-3
                             text-base text-gray-900 placeholder-gray-500"
