@@ -38,7 +38,14 @@ export function Balances() {
   };
 
   return (
-    <div>
+    <div
+      style={{
+        boxSizing: "border-box",
+        maxWidth: "800px",
+        marginLeft: "auto",
+        marginRight: "auto",
+      }}
+    >
       <BalanceSummaryWidget />
       <div
         style={{
