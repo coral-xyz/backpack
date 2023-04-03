@@ -37,14 +37,6 @@ export function InboxInner() {
   const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
   const [searchFilter, setSearchFilter] = useState("");
 
-  console.log({
-    username: user.username,
-    activeChats,
-    requestCount,
-    groupCollections,
-    searchResults,
-  });
-
   const getDefaultChats = () => {
     return groupCollections.filter((x) => x.name && x.image) || [];
   };
