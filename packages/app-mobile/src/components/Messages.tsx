@@ -1,7 +1,12 @@
-import React, { useCallback, useMemo } from "react";
-import { FlatList, Pressable, FlatListProps } from "react-native";
+import React, { useCallback, useMemo, useState } from "react";
+import { Button, FlatList, Pressable, FlatListProps } from "react-native";
 
-import { formatAMPM, isBackpackTeam } from "@coral-xyz/common";
+import {
+  formatAMPM,
+  isBackpackTeam,
+  markSpam,
+  sendFriendRequest,
+} from "@coral-xyz/common";
 import {
   XStack,
   YStack,
@@ -379,6 +384,45 @@ export function List({
         backgroundColor: theme.custom.colors.nav,
       }}
       {...props}
+    />
+  );
+}
+
+export function SpamButton({
+  remoteUserId,
+}: {
+  remoteUserId: string;
+}): JSX.Element {
+  const [loading, setLoading] = useState(false);
+  return (
+    <Button
+      title={loading ? "Loading..." : "Mark as Spam"}
+      onPress={async () => {
+        setLoading(true);
+        await markSpam({ remoteUserId, spam: true });
+        setLoading(false);
+      }}
+    />
+  );
+}
+
+export function FriendRequestButton({
+  remoteUserId,
+}: {
+  remoteUserId: string;
+}): JSX.Element {
+  const [loading, setLoading] = useState(false);
+  return (
+    <Button
+      title={loading ? "Loading..." : "Add to Friends"}
+      onPress={async () => {
+        setLoading(true);
+        await sendFriendRequest({
+          to: remoteUserId,
+          sendRequest: true,
+        });
+        setLoading(false);
+      }}
     />
   );
 }

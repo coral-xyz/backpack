@@ -35,3 +35,19 @@ export const fetchFriendship = async ({ userId }: { userId: string }) => {
   const json = await res.json();
   return json;
 };
+
+export const markSpam = async ({
+  remoteUserId,
+  spam,
+}: {
+  remoteUserId: string;
+  spam: boolean;
+}) => {
+  await fetch(`${BACKEND_API_URL}/friends/spam`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ to: remoteUserId, spam }),
+  });
+};
