@@ -31,10 +31,12 @@ export const CreateOrImportWallet = ({
         <Box sx={{ mt: "24px" }}>
           <PrimaryButton
             label="Create a new wallet"
-            onClick={() => onNext({ keyringType: "mnemonic" })}
+            onClick={() =>
+              onNext({ action: "create", keyringType: "mnemonic" })
+            }
           />
         </Box>
-        <Box sx={{ mb: "36px", mt: "24px" }}>
+        <Box sx={{ mt: "16px" }}>
           <SubtextParagraph onClick={() => onNext({ action: "import" })}>
             I already have a wallet
           </SubtextParagraph>
