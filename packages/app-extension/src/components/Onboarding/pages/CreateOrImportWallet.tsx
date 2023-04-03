@@ -7,7 +7,7 @@ import { BackpackHeader } from "../../Locked";
 export const CreateOrImportWallet = ({
   onNext,
 }: {
-  onNext: (action: "create" | "import") => void;
+  onNext: (data: any) => void;
 }) => {
   return (
     <div
@@ -31,13 +31,24 @@ export const CreateOrImportWallet = ({
         <Box sx={{ mb: "16px" }}>
           <PrimaryButton
             label="Create a new wallet"
-            onClick={() => onNext("create")}
+            onClick={() => onNext({ keyringType: "mnemonic" })}
           />
         </Box>
-        <SubtextParagraph onClick={() => onNext("import")}>
+        <SubtextParagraph onClick={() => onNext({ action: "import" })}>
           I already have a wallet
         </SubtextParagraph>
       </Box>
     </div>
   );
 };
+
+/*
+    <KeyringTypeSelector
+      key="KeyringTypeSelector"
+      action={action}
+      onNext={(keyringType: KeyringType) => {
+        setOnboardingData({ keyringType });
+        nextStep();
+      }}
+    />,
+*/
