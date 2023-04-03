@@ -136,6 +136,7 @@ export const RecoverAccount = ({
               await handlePrivateKeyInput(result);
               nextStep();
             }}
+          onboarding
           />,
         ]
       : []),

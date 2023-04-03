@@ -125,6 +125,7 @@ export const OnboardAccount = ({
               handlePrivateKeyInput(result);
               nextStep();
             }}
+            onboarding
           />,
         ]
       : [
