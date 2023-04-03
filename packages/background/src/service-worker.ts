@@ -11,13 +11,13 @@ self.addEventListener("install", async () => {
 
   if (!isStarted) {
     start({ isMobile: true });
-    isStarted = true;
   }
 
   console.log("is mobile true, installed");
 
   // actives the current service worker immediately
   await self.skipWaiting();
+  isStarted = true; // called after skipWaiting to ensure its only called once
 });
 
 self.addEventListener("activate", async (event) => {
@@ -25,8 +25,13 @@ self.addEventListener("activate", async (event) => {
 
   // Override default behavior of service worker and claim the page without having to reload the page
   await event.waitUntil(clients.claim());
-
   console.log("activating, claimed");
+
+  if (!isStarted) {
+    start({ isMobile: true });
+    isStarted = true;
+  }
+
   await postMessageToIframe({ type: BACKGROUND_SERVICE_WORKER_READY });
 });
 
