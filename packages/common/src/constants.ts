@@ -642,7 +642,7 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
   },
   {
     id: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
-    name: "The Madlist",
+    name: "Mad Lads",
     image: "https://www.madlads.com/mad_lads_logo.svg",
     collectionId: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
   },
