@@ -10,15 +10,12 @@ console.log("window:isStarted", isStarted);
 self.addEventListener("install", async () => {
   console.log("install:isStarted", isStarted);
 
-  if (!isStarted) {
-    start({ isMobile: true });
-  }
+  start({ isMobile: true });
 
   // actives the current service worker immediately
   console.log("install:skipWaiting...");
   await self.skipWaiting();
   console.log("install:skipped...");
-  isStarted = true; // called after skipWaiting to ensure its only called once
 });
 
 self.addEventListener("activate", async (event) => {
@@ -29,15 +26,11 @@ self.addEventListener("activate", async (event) => {
   await event.waitUntil(clients.claim());
   console.log("activate:claimed");
 
-  if (!isStarted) {
-    start({ isMobile: true });
-    isStarted = true;
-  }
-
   console.log("activate:postMessageToIframe...");
   // This is most important line on mobile
   await postMessageToIframe({ type: BACKGROUND_SERVICE_WORKER_READY });
   console.log("activate:posted");
+  isStarted = true;
 });
 
 self.addEventListener("fetch", async () => {
@@ -46,7 +39,7 @@ self.addEventListener("fetch", async () => {
 
   // Start the service worker if it hasn't been started yet
   if (!isStarted) {
-    start({ isMobile: true });
+    await postMessageToIframe({ type: BACKGROUND_SERVICE_WORKER_READY });
     isStarted = true;
   }
 });
