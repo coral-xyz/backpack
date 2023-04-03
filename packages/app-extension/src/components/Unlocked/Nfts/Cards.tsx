@@ -229,7 +229,7 @@ export function NFTCard({
                   zIndex: 2,
                   display: "flex",
                   justifyContent: "flex-start",
-                  padding: "0 5px",
+                  padding: "0 8px",
                   gap: "6px",
                 }}
               >
