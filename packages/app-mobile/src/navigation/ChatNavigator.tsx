@@ -6,6 +6,7 @@ import type {
 } from "@coral-xyz/common";
 
 import { useState, useEffect, useCallback } from "react";
+import { View } from "react-native";
 
 import { CHAT_MESSAGES } from "@coral-xyz/common";
 import { createEmptyFriendship } from "@coral-xyz/db";
@@ -16,14 +17,20 @@ import {
   useUser,
   useAvatarUrl,
 } from "@coral-xyz/recoil";
-import { SignalingManager, useChatsWithMetadata } from "@coral-xyz/tamagui";
+import {
+  SignalingManager,
+  useChatsWithMetadata,
+  Text,
+} from "@coral-xyz/tamagui";
 import { createStackNavigator } from "@react-navigation/stack";
 import { GiftedChat } from "react-native-gifted-chat";
 import { v4 as uuidv4 } from "uuid";
 
 import { MessageList } from "~components/Messages";
-import { Screen } from "~components/index";
+// import { Screen } from "~components/index";
 
+/// CLEANING UP CHAT STUFF JUST IGNORE THIS FOR NOW
+// COPIED OVER FROM the extension !!! there will be dragons
 type ChatType =
   | { chatType: "individual"; chatProps: EnrichedInboxDb }
   | { chatType: "collection"; chatProps: CollectionChatData };
@@ -34,16 +41,81 @@ const formatDate = (created_at: string) => {
     : 0;
 };
 
-export function ChatListScreen({ navigation }): JSX.Element {
-  // const theme = useTheme();
-  const { uuid } = useUser();
-  const activeChats = useFriendships({ uuid });
-  const requestCount = useRequestsCount({ uuid });
-  const groupCollections = useGroupCollections({ uuid });
-
+const getAllChatStuff = ({ activeChats, groupCollections }) => {
   const getDefaultChats = () => {
     return groupCollections.filter((x) => x.name && x.image) || [];
   };
+
+  console.log("debug2 getDefaultChats", getDefaultChats());
+  console.log("debug2 activeChats", activeChats);
+
+  const allChats: ChatType[] = [
+    ...getDefaultChats().map((x) => ({ chatProps: x, chatType: "collection" })),
+    ...(activeChats || []).map((x) => ({
+      chatProps: x,
+      chatType: "individual",
+    })),
+  ].sort((a, b) =>
+    // TODO some of these are last_message_timestamp
+    // others are lastMessageTimestamp
+    a.last_message_timestamp < b.last_message_timestamp ? -1 : 1
+  );
+
+  return allChats;
+};
+
+function parseChats(allChats) {
+  return allChats.map((activeChat) => {
+    return {
+      type: activeChat.chatType,
+      id:
+        activeChat.chatType === "individual"
+          ? activeChat.chatProps.friendshipId
+          : activeChat.chatProps.collectionId,
+      image:
+        activeChat.chatType === "individual"
+          ? activeChat.chatProps.remoteUserImage!
+          : activeChat.chatProps.image!,
+      userId:
+        activeChat.chatType === "individual"
+          ? activeChat.chatProps.remoteUserId!
+          : "",
+      name:
+        activeChat.chatType === "individual"
+          ? activeChat.chatProps.remoteUsername!
+          : activeChat.chatProps.name!,
+      message:
+        activeChat.chatType === "individual"
+          ? activeChat.chatProps.last_message!
+          : activeChat.chatProps.lastMessage!,
+      timestamp:
+        activeChat.chatType === "individual"
+          ? activeChat.chatProps.last_message_timestamp || ""
+          : activeChat.chatProps.lastMessageTimestamp || "",
+      isUnread:
+        activeChat.chatType === "individual"
+          ? !!activeChat.chatProps.unread
+          : activeChat.chatProps.lastMessageUuid !==
+            activeChat.chatProps.lastReadMessage,
+    };
+  });
+}
+
+function useChatHelper() {
+  const user = useUser();
+  const activeChats = useFriendships({ uuid: user.uuid });
+  const requestCount = useRequestsCount({ uuid: user.uuid });
+  const groupCollections = useGroupCollections({ uuid: user.uuid });
+  const allChats = getAllChatStuff({ activeChats, groupCollections });
+
+  return { allChats: parseChats(allChats), requestCount };
+}
+
+/// CLEANING UP CHAT STUFF JUST IGNORE THIS FOR NOW
+
+export function ChatListScreen({ navigation }): JSX.Element {
+  const { allChats, requestCount } = useChatHelper();
+  console.log("debug2 allChats", allChats);
 
   const handlePressMessage = (
     roomId: string,
@@ -61,26 +133,12 @@ export function ChatListScreen({ navigation }): JSX.Element {
     });
   };
 
-  const allChats: ChatType[] = [
-    ...getDefaultChats().map((x) => ({ chatProps: x, chatType: "collection" })),
-    ...(activeChats || []).map((x) => ({
-      chatProps: x,
-      chatType: "individual",
-    })),
-  ].sort((a, b) =>
-    // TODO some of these are last_message_timestamp
-    // others are lastMessageTimestamp
-    a.last_message_timestamp < b.last_message_timestamp ? -1 : 1
-  );
-
   return (
-    <Screen>
-      <MessageList
-        requestCount={requestCount}
-        allChats={allChats}
-        onPressRow={handlePressMessage}
-      />
-    </Screen>
+    <MessageList
+      requestCount={requestCount}
+      allChats={allChats}
+      onPressRow={handlePressMessage}
+    />
   );
 }
 
@@ -92,6 +150,8 @@ export function ChatDetailScreen({ navigation, route }): JSX.Element {
     room: roomId.toString(),
     type: roomType,
   });
+
+  console.log("debug2 chats", chats);
 
   const [messages, setMessages] = useState([]);
 
@@ -121,6 +181,8 @@ export function ChatDetailScreen({ navigation, route }): JSX.Element {
       if (!message) {
         return;
       }
+
+      console.log("message", message);
 
       // @ts-ignore
       const messageText = message?.text;
@@ -158,9 +220,10 @@ export function ChatDetailScreen({ navigation, route }): JSX.Element {
         },
       });
 
-      setMessages((previousMessages) =>
-        GiftedChat.append(previousMessages, messages)
-      );
+      setMessages((previousMessages) => {
+        console.log("previousMessages", previousMessages);
+        GiftedChat.append(previousMessages, messages);
+      });
     },
     [chats.length, roomId, roomType, user.uuid, remoteUserId, remoteUsername]
   );
@@ -168,8 +231,18 @@ export function ChatDetailScreen({ navigation, route }): JSX.Element {
   return (
     <GiftedChat
       messageIdGenerator={() => uuidv4()}
-      // renderAvatarOnTop
-      // renderUsernameOnMessage
+      showAvatarForEveryMessage
+      // always shows the send button, even if nothing is in chat (vs. only showing it when you type something in)
+      alwaysShowSend
+      // enable loading earlier messages via onLoadEarlier function
+      loadEarlier
+      // works with loadEarlier
+      infiniteScroll
+      // load earlier messages
+      onLoadEarlier={console.log}
+      // renders tickets for seeing message, etc
+      // renderTicks={renderTicks}
+      inverted
       messages={messages}
       onSend={onSend}
       user={{

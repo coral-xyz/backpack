@@ -274,54 +274,6 @@ export function MessageList({
   allChats: any[];
   onPressRow: (id: string, type: SubscriptionType, roomName: string) => void;
 }): JSX.Element {
-  const chats = useMemo(() => {
-    const s = allChats.map((activeChat) => {
-      return {
-        type: activeChat.chatType,
-        id:
-          // ? activeChat.chatProps.remoteUserId
-          activeChat.chatType === "individual"
-            ? activeChat.chatProps.friendshipId
-            : activeChat.chatProps.collectionId,
-        image:
-          activeChat.chatType === "individual"
-            ? activeChat.chatProps.remoteUserImage!
-            : activeChat.chatProps.image!,
-        userId:
-          activeChat.chatType === "individual"
-            ? activeChat.chatProps.remoteUserId!
-            : "",
-        name:
-          activeChat.chatType === "individual"
-            ? activeChat.chatProps.remoteUsername!
-            : activeChat.chatProps.name!,
-        message:
-          activeChat.chatType === "individual"
-            ? activeChat.chatProps.last_message!
-            : activeChat.chatProps.lastMessage!,
-        timestamp:
-          activeChat.chatType === "individual"
-            ? activeChat.chatProps.last_message_timestamp || ""
-            : activeChat.chatProps.lastMessageTimestamp || "",
-        isUnread:
-          activeChat.chatType === "individual"
-            ? !!activeChat.chatProps.unread
-            : activeChat.chatProps.lastMessageUuid !==
-              activeChat.chatProps.lastReadMessage,
-      };
-    });
-
-    if (requestCount > 0) {
-      // @ts-ignore
-      // Renders "Message Requests" at the top
-      // s.unshift({
-      //   id: -1,
-      // });
-    }
-
-    return s;
-  }, [allChats, requestCount]);
-
   const renderItem = useCallback(
     ({ item, index }) => {
       // turn off message requests for now so we can ship a new build
@@ -349,7 +301,7 @@ export function MessageList({
 
   return (
     <List
-      data={chats}
+      data={allChats}
       renderItem={renderItem}
       keyExtractor={({ id }: { id: string }) => id}
     />
@@ -400,10 +352,10 @@ export function List({
       keyExtractor={keyExtractor}
       style={{
         flex: 1,
-        borderRadius: 14,
-        overflow: "hidden",
-        borderWidth: 2,
-        borderColor: theme.custom.colors.borderFull,
+        // borderRadius: 14,
+        // overflow: "hidden",
+        // borderWidth: 2,
+        // borderColor: theme.custom.colors.borderFull,
         backgroundColor: theme.custom.colors.nav,
       }}
       {...props}
