@@ -243,6 +243,7 @@ function Image({ nft, style }: { nft: any; style?: any }) {
           minHeight: "343px",
         }}
         src={src}
+        original
         removeOnError
       />
     </div>
