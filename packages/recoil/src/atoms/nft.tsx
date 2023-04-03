@@ -165,15 +165,16 @@ export const collectionChatWL = selector<
   key: "collectionChatWL",
   get: async ({ get }: any) => {
     const onLive = get(isOneLive);
-    return onLive.wlCollection &&
-      onLive.wlCollection !== "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj"
+    return onLive.madladsCollection &&
+      onLive.madladsCollection !==
+        "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj"
       ? [
           ...WHITELISTED_CHAT_COLLECTIONS,
           {
-            id: onLive.wlCollection,
+            id: onLive.madladsCollection,
             name: "Mad Lads",
             image: "https://www.madlads.com/mad_lads_logo.svg",
-            collectionId: onLive.wlCollection,
+            collectionId: onLive.madladsCollection,
           },
         ]
       : WHITELISTED_CHAT_COLLECTIONS;
