@@ -1,12 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { FlatList, Pressable, FlatListProps } from "react-native";
 
-import {
-  formatMessage,
-  formatAMPM,
-  isBackpackTeam,
-  SubscriptionType,
-} from "@coral-xyz/common";
+import { formatAMPM, isBackpackTeam } from "@coral-xyz/common";
 import {
   XStack,
   YStack,
@@ -19,6 +14,14 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Verified } from "@tamagui/lucide-icons";
 
 import { useTheme } from "~hooks/useTheme";
+import type {
+  ChatRowData,
+  ChatListItemProps,
+} from "~screens/Unlocked/Chat/ChatHelpers";
+import { useMessagePreview } from "~screens/Unlocked/Chat/ChatHelpers";
+
+const ROW_HEIGHT = 68;
+const AVATAR_SIZE = 44;
 
 const UserAvatar = ({
   imageUrl,
@@ -29,7 +32,7 @@ const UserAvatar = ({
 }): JSX.Element => (
   <Avatar circular size={size}>
     <Avatar.Image src={imageUrl} />
-    <Avatar.Fallback bg="gray" />
+    <Avatar.Fallback backgroundColor="gray" />
   </Avatar>
 );
 
@@ -119,6 +122,7 @@ function UserListItem({
       jc="flex-start"
       hoverTheme
       pressTheme
+      fontFamily="Inter"
       icon={<UserAvatar size={28} imageUrl={imageUrl} />}
       onPress={() => onPressRow(id)}
     >
@@ -178,30 +182,9 @@ export function ChatListItem({
   isUnread,
   userId,
   onPress,
-  users = [],
-}: {
-  type: SubscriptionType;
-  image: string;
-  name: string;
-  message: string;
-  timestamp: string;
-  id: string;
-  isUnread: boolean;
-  userId: string;
-  onPress: (
-    id: string,
-    type: SubscriptionType,
-    name: string,
-    remoteUserId?: string,
-    remoteUsername?: string
-  ) => void;
-  users: any[];
-}): JSX.Element {
+}: ChatListItemProps): JSX.Element {
   const theme = useTheme();
-  const messagePreview = useMemo(
-    () => formatMessage(message, users),
-    [message, users]
-  );
+  const messagePreview = useMessagePreview(message);
 
   return (
     <ListItem
@@ -213,17 +196,28 @@ export function ChatListItem({
       }
       hoverTheme
       pressTheme
+      height={ROW_HEIGHT}
       justifyContent="flex-start"
+      icon={<UserAvatar size={AVATAR_SIZE} imageUrl={image} />}
       onPress={() => {
         if (type === "individual") {
-          onPress(id, type, name, userId, name);
+          onPress({
+            roomId: id,
+            roomType: type,
+            roomName: name,
+            remoteUserId: userId,
+            remoteUsername: name,
+          });
         } else {
-          onPress(id, type, name);
+          onPress({
+            roomId: id,
+            roomType: type,
+            roomName: name,
+          });
         }
       }}
-      icon={<UserAvatar size={48} imageUrl={image} />}
     >
-      <XStack jc="space-between" f={1}>
+      <XStack justifyContent="space-between" f={1}>
         <YStack>
           <Text
             marginBottom={2}
@@ -269,17 +263,20 @@ export function MessageList({
   requestCount,
   allChats,
   onPressRow,
+  onRefreshChats,
+  isRefreshing,
 }: {
   requestCount: number;
   allChats: any[];
-  onPressRow: (id: string, type: SubscriptionType, roomName: string) => void;
+  onPressRow: (data: ChatRowData) => void;
+  onRefreshChats: () => void;
+  isRefreshing: boolean;
 }): JSX.Element {
   const renderItem = useCallback(
-    ({ item, index }) => {
-      // turn off message requests for now so we can ship a new build
-      // if (requestCount > 0 && item.id === -1) {
-      //   return <ChatListItemMessageRequest requestCount={requestCount} />;
-      // }
+    ({ item }: { item: ChatListItemProps }) => {
+      if (requestCount > 0 && item.id === "__requestCountId") {
+        return <ChatListItemMessageRequest requestCount={requestCount} />;
+      }
 
       return (
         <ChatListItem
@@ -292,18 +289,29 @@ export function MessageList({
           timestamp={item.timestamp}
           isUnread={item.isUnread}
           onPress={onPressRow}
-          users={[]}
         />
       );
     },
-    [onPressRow]
+    [onPressRow, requestCount]
   );
+
+  if (requestCount > 0) {
+    allChats.unshift({ id: "__requestCountId" });
+  }
 
   return (
     <List
       data={allChats}
       renderItem={renderItem}
+      onRefresh={onRefreshChats}
+      refreshing={isRefreshing}
       keyExtractor={({ id }: { id: string }) => id}
+      // If using ItemSeparatorComponent make sure to include the height of that here
+      getItemLayout={(_data, index) => ({
+        length: ROW_HEIGHT,
+        offset: ROW_HEIGHT * index,
+        index,
+      })}
     />
   );
 }
@@ -323,13 +331,15 @@ function ChatListItemMessageRequest({
     <ListItem
       title="Message requests"
       fontWeight="700"
+      fontFamily="Inter"
+      height={ROW_HEIGHT}
       subTitle={subTitle}
       icon={
         <Circle
-          size={48}
-          bg={theme.custom.colors.background}
-          jc="center"
-          ai="center"
+          size={AVATAR_SIZE}
+          backgroundColor={theme.custom.colors.background}
+          justifyContent="center"
+          alignItems="center"
         >
           <MaterialIcons name="mark-chat-unread" size={24} color="black" />
         </Circle>
