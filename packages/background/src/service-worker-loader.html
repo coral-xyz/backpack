@@ -21,6 +21,8 @@
         const bodyElement = document.getElementsByTagName("body")[0];
         bodyElement.appendChild(urlDiv);
 
+        console.log("currentUrlHash", currentUrlHash)
+
         // check to see if an old service worker needs to be unregistered
         const registrations = await navigator.serviceWorker.getRegistrations();
         console.log("# SERVICE WORKERS", registrations.length);
@@ -31,6 +33,8 @@
             const hash = registration.scope
               .split("background-scripts/")[1]
               .split("/")[0];
+
+            console.log("hash", hash)
 
             if (currentUrlHash !== hash) {
               console.log("SERVICE WORKER: unregistering", registration);
