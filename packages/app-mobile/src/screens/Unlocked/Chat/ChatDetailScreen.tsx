@@ -1,6 +1,7 @@
 import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useState, useEffect, useCallback } from "react";
+import { Platform } from "react-native";
 
 import { CHAT_MESSAGES } from "@coral-xyz/common";
 import { createEmptyFriendship } from "@coral-xyz/db";
@@ -18,16 +19,29 @@ const formatDate = (created_at: string) => {
 };
 
 export function ChatDetailScreen({
-  navigation,
+  // navigation,
   route,
 }: StackScreenProps<ChatStackNavigatorParamList, "ChatDetail">): JSX.Element {
   const { roomType, roomId, remoteUserId, remoteUsername } = route.params;
   const user = useUser();
   const avatarUrl = useAvatarUrl();
+
+  // TODO(kirat)
+  const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
   const { chats } = useChatsWithMetadata({
     room: roomId.toString(),
     type: roomType,
   });
+
+  // TODO(kirat) load earlier chats
+  const onLoadEarlier = () => {
+    setIsLoadingEarlier(true);
+    GiftedChat.prepend([], [], Platform.OS !== "web");
+
+    setTimeout(() => {
+      setIsLoadingEarlier(false);
+    }, 250);
+  };
 
   const [messages, setMessages] = useState([]);
 
@@ -51,15 +65,13 @@ export function ChatDetailScreen({
     setMessages(_messages);
   }, []);
 
-  // not sure if any of this is working
+  // TODO(kirat) not sure this is doing anything
   const onSend = useCallback(
     async (messages = []) => {
       const [message] = messages;
       if (!message) {
         return;
       }
-
-      console.log("message", message);
 
       // @ts-ignore
       const messageText = message?.text;
@@ -98,7 +110,6 @@ export function ChatDetailScreen({
       });
 
       setMessages((previousMessages) => {
-        console.log("previousMessages", previousMessages);
         GiftedChat.append(previousMessages, messages);
       });
     },
@@ -109,16 +120,11 @@ export function ChatDetailScreen({
     <GiftedChat
       messageIdGenerator={() => uuidv4()}
       showAvatarForEveryMessage
-      // always shows the send button, even if nothing is in chat (vs. only showing it when you type something in)
       alwaysShowSend
-      // enable loading earlier messages via onLoadEarlier function
       loadEarlier
-      // works with loadEarlier
       infiniteScroll
-      // load earlier messages
-      onLoadEarlier={console.log}
-      // renders tickets for seeing message, etc
-      // renderTicks={renderTicks}
+      onLoadEarlier={onLoadEarlier}
+      isLoadingEarlier={isLoadingEarlier}
       inverted
       messages={messages}
       onSend={onSend}
