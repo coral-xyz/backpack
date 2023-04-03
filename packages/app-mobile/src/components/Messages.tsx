@@ -263,19 +263,26 @@ export function MessageList({
   requestCount,
   allChats,
   onPressRow,
+  onPressRequest,
   onRefreshChats,
   isRefreshing,
 }: {
   requestCount: number;
   allChats: any[];
   onPressRow: (data: ChatRowData) => void;
+  onPressRequest: () => void;
   onRefreshChats: () => void;
   isRefreshing: boolean;
 }): JSX.Element {
   const renderItem = useCallback(
     ({ item }: { item: ChatListItemProps }) => {
       if (requestCount > 0 && item.id === "__requestCountId") {
-        return <ChatListItemMessageRequest requestCount={requestCount} />;
+        return (
+          <ChatListItemMessageRequest
+            requestCount={requestCount}
+            onPress={onPressRequest}
+          />
+        );
       }
 
       return (
@@ -292,7 +299,7 @@ export function MessageList({
         />
       );
     },
-    [onPressRow, requestCount]
+    [onPressRow, onPressRequest, requestCount]
   );
 
   if (requestCount > 0) {
@@ -318,8 +325,10 @@ export function MessageList({
 
 function ChatListItemMessageRequest({
   requestCount,
+  onPress,
 }: {
   requestCount: number;
+  onPress: () => void;
 }): JSX.Element {
   const theme = useTheme();
   const subTitle =
@@ -334,6 +343,7 @@ function ChatListItemMessageRequest({
       fontFamily="Inter"
       height={ROW_HEIGHT}
       subTitle={subTitle}
+      onPress={onPress}
       icon={
         <Circle
           size={AVATAR_SIZE}

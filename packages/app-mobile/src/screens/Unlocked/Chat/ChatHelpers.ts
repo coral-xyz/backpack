@@ -37,6 +37,10 @@ export type ChatStackNavigatorParamList = {
     remoteUserId?: string;
     remoteUsername?: string;
   };
+  ChatRequest: undefined;
+  ChatRequestDetail: {
+    roomName: string;
+  };
 };
 
 export type ChatRowData = {

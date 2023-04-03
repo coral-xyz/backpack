@@ -12,7 +12,11 @@ export function ChatListScreen({
     useChatHelper();
 
   const handlePressMessage = (metadata: ChatRowData) => {
-    navigation.navigate("ChatDetail", metadata);
+    navigation.push("ChatDetail", metadata);
+  };
+
+  const handlePressRequest = () => {
+    navigation.push("ChatRequest");
   };
 
   return (
@@ -20,6 +24,7 @@ export function ChatListScreen({
       requestCount={requestCount}
       allChats={allChats}
       onPressRow={handlePressMessage}
+      onPressRequest={handlePressRequest}
       onRefreshChats={onRefreshChats}
       isRefreshing={isRefreshingChats}
     />
