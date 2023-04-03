@@ -1,7 +1,6 @@
+import { Buffer } from "buffer";
 if (!global.Buffer) {
-  import("buffer")
-    .then((mod) => (global.Buffer = mod.Buffer))
-    .catch(console.error);
+  global.Buffer = Buffer;
 }
 
 import { useCallback, useState } from "react";
@@ -100,14 +99,16 @@ export default function App() {
         />
       </View>
 
-      {results.length > 0 ? <ScrollView>
-        <FlatList
-          data={results}
-          renderItem={({ item }) => (
-            <Text style={{ fontSize: 14, marginBottom: 8 }}>{item}</Text>
+      {results.length > 0 ? (
+        <ScrollView>
+          <FlatList
+            data={results}
+            renderItem={({ item }) => (
+              <Text style={{ fontSize: 14, marginBottom: 8 }}>{item}</Text>
             )}
           />
-      </ScrollView> : null}
+        </ScrollView>
+      ) : null}
     </View>
   );
 }
