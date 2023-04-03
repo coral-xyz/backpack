@@ -18,7 +18,7 @@ export const CreateOrImportWallet = ({
         height: "100%",
       }}
     >
-      <Box style={{ flex: 1, textAlign: "center", padding: "0 16px" }}>
+      <Box style={{ flex: 1, textAlign: "center", padding: "32px 16px 0px" }}>
         <BackpackHeader disableUsername />
       </Box>
       <Box
@@ -28,27 +28,18 @@ export const CreateOrImportWallet = ({
           cursor: "pointer",
         }}
       >
-        <Box sx={{ mb: "16px" }}>
+        <Box sx={{ mt: "24px" }}>
           <PrimaryButton
             label="Create a new wallet"
             onClick={() => onNext({ keyringType: "mnemonic" })}
           />
         </Box>
-        <SubtextParagraph onClick={() => onNext({ action: "import" })}>
-          I already have a wallet
-        </SubtextParagraph>
+        <Box sx={{ mb: "36px", mt: "24px" }}>
+          <SubtextParagraph onClick={() => onNext({ action: "import" })}>
+            I already have a wallet
+          </SubtextParagraph>
+        </Box>
       </Box>
     </div>
   );
 };
-
-/*
-    <KeyringTypeSelector
-      key="KeyringTypeSelector"
-      action={action}
-      onNext={(keyringType: KeyringType) => {
-        setOnboardingData({ keyringType });
-        nextStep();
-      }}
-    />,
-*/
