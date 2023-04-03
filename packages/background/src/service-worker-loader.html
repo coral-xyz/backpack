@@ -56,6 +56,8 @@
             }
           );
 
+          registration.update()
+
           document.querySelector("body").style.background = "yellow";
           console.log("SERVICE WORKER: registered", registration);
         } catch (error) {
