@@ -554,7 +554,10 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
     return (
       <div style={{ display: "flex", marginTop: 5 }}>
         <UserAction
-          style={{ color: theme.custom.colors.blue, marginRight: 10 }}
+          style={{
+            color: theme.custom.colors.acceptFriendRequest,
+            marginRight: 10,
+          }}
           text="Accept"
           onClick={async (e: any) => {
             e.stopPropagation();

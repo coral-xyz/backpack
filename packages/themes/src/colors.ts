@@ -18,6 +18,9 @@ export const SCROLLBAR_THUMB_COLOR = "rgb(153 164 180)";
 export const LIGHT_TEXT_SMALL_COLOR = "#4E5768";
 export const DARK_TEXT_SMALL_COLOR = "#8F929E";
 
+export const LIGHT_ACCEPT_FRIEND_REQUEST_COLOR = "#0057EB";
+export const DART_ACCEPT_FRIEND_REQUEST_COLOR = "#4C94FF";
+
 export const NEGATIVE_LIGHT = "#FFF4F3";
 export const NEGATIVE_DARK = "#FFF4F3";
 
@@ -54,6 +57,7 @@ export const DARK_RED_BORDER_MED = "rgba(241,50,54,0.4)";
 // NOTE: Do not include anything but colors in here. No box shadows, borders, etc.
 export const DARK_COLORS: CustomColors = {
   blue: "#3498db",
+  acceptFriendRequest: DART_ACCEPT_FRIEND_REQUEST_COLOR,
   smallTextColor: DARK_TEXT_SMALL_COLOR,
   brandColor: BRAND_COLOR,
   background: BACKGROUND_COLOR_0,
@@ -125,6 +129,7 @@ export const DARK_COLORS: CustomColors = {
 // NOTE: Do not include anything but colors in here. No box shadows, borders, etc.
 export const LIGHT_COLORS: CustomColors = {
   blue: "blue",
+  acceptFriendRequest: LIGHT_ACCEPT_FRIEND_REQUEST_COLOR,
   smallTextColor: LIGHT_TEXT_SMALL_COLOR,
   brandColor: LIGHT_BRAND_COLOR,
   backgroundBackdrop: LIGHT_BACKGROUND_BACKDROP_COLOR,
@@ -278,6 +283,7 @@ type NativeOverrides = {
 // NOTE: Do not include anything but colors in here. No box shadows, borders, etc.
 export type CustomColors = {
   alpha: string;
+  acceptFriendRequest: string;
   approveTransactionCloseBackground: string;
   approveTransactionTableBackground: string;
   avatarIconBackground: string;
