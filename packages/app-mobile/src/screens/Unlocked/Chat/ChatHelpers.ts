@@ -4,7 +4,7 @@ import type {
   EnrichedInboxDb,
 } from "@coral-xyz/common";
 
-import { parseMessage } from "@coral-xyz/common";
+import { parseMessage, searchUsersByBlockchain } from "@coral-xyz/common";
 import {
   useFriendships,
   useGroupCollections,
@@ -141,6 +141,7 @@ export function useChatHelper() {
     requestCount,
     onRefreshChats: () => {}, // TODO(kirat)
     isRefreshingChats: false, // TODO(kirat)
+    searchUsersByBlockchain,
   };
 }
 

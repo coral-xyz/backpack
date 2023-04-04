@@ -281,15 +281,6 @@ export function MessageList({
 }): JSX.Element {
   const renderItem = useCallback(
     ({ item }: { item: ChatListItemProps }) => {
-      if (requestCount > 0 && item.id === "__requestCountId") {
-        return (
-          <ChatListItemMessageRequest
-            requestCount={requestCount}
-            onPress={onPressRequest}
-          />
-        );
-      }
-
       return (
         <ChatListItem
           id={item.id}
@@ -304,12 +295,8 @@ export function MessageList({
         />
       );
     },
-    [onPressRow, onPressRequest, requestCount]
+    [onPressRow]
   );
-
-  if (requestCount > 0) {
-    allChats.unshift({ id: "__requestCountId" });
-  }
 
   return (
     <List
@@ -317,6 +304,14 @@ export function MessageList({
       renderItem={renderItem}
       onRefresh={onRefreshChats}
       refreshing={isRefreshing}
+      ListHeaderComponent={
+        requestCount > 0 ? (
+          <ChatListItemMessageRequest
+            requestCount={requestCount}
+            onPress={onPressRequest}
+          />
+        ) : null
+      }
       keyExtractor={({ id }: { id: string }) => id}
       // If using ItemSeparatorComponent make sure to include the height of that here
       getItemLayout={(_data, index) => ({
