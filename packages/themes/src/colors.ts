@@ -167,7 +167,7 @@ export const LIGHT_COLORS: CustomColors = {
   swapTokensButton: "#FFFFFF",
   icon: "#8F929E",
   approveTransactionTableBackground: LIGHT_BACKGROUND_COLOR_1,
-  approveTransactionCloseBackground: "#C2C4CC",
+  approveTransactionCloseBackground: "#F0F0F2",
   hoverIconBackground: "#DFE0E5",
   avatarIconBackground: "#DFE0E5",
   text: LIGHT_TEXT_COLOR,

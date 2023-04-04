@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: "1301 !important" as any,
     flex: 1,
     "& .MuiBackdrop-root": {
-      opacity: 0.8,
+      opacity: 0.2,
       background: `${theme.custom.colors.miniDrawerBackdrop} !important`,
     },
   },
