@@ -7,17 +7,11 @@ import {
   markSpam,
   sendFriendRequest,
 } from "@coral-xyz/common";
-import {
-  XStack,
-  YStack,
-  ListItem,
-  Avatar,
-  Text,
-  Circle,
-} from "@coral-xyz/tamagui";
+import { XStack, YStack, ListItem, Text, Circle } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Verified } from "@tamagui/lucide-icons";
 
+import { UserAvatar } from "~components/UserAvatar";
 import { useTheme } from "~hooks/useTheme";
 import type {
   ChatRowData,
@@ -27,19 +21,6 @@ import { useMessagePreview } from "~screens/Unlocked/Chat/ChatHelpers";
 
 const ROW_HEIGHT = 68;
 const AVATAR_SIZE = 44;
-
-const UserAvatar = ({
-  imageUrl,
-  size,
-}: {
-  imageUrl: string;
-  size: number;
-}): JSX.Element => (
-  <Avatar circular size={size}>
-    <Avatar.Image src={imageUrl} />
-    <Avatar.Fallback backgroundColor="gray" />
-  </Avatar>
-);
 
 function Action({
   text,
@@ -128,7 +109,7 @@ function UserListItem({
       hoverTheme
       pressTheme
       fontFamily="Inter"
-      icon={<UserAvatar size={28} imageUrl={imageUrl} />}
+      icon={<UserAvatar size={28} uri={imageUrl} />}
       onPress={() => onPressRow(id)}
     >
       <XStack jc="space-between" ai="center" flex={1}>
@@ -281,15 +262,6 @@ export function MessageList({
 }): JSX.Element {
   const renderItem = useCallback(
     ({ item }: { item: ChatListItemProps }) => {
-      if (requestCount > 0 && item.id === "__requestCountId") {
-        return (
-          <ChatListItemMessageRequest
-            requestCount={requestCount}
-            onPress={onPressRequest}
-          />
-        );
-      }
-
       return (
         <ChatListItem
           id={item.id}
@@ -304,12 +276,8 @@ export function MessageList({
         />
       );
     },
-    [onPressRow, onPressRequest, requestCount]
+    [onPressRow]
   );
-
-  if (requestCount > 0) {
-    allChats.unshift({ id: "__requestCountId" });
-  }
 
   return (
     <List
@@ -317,6 +285,14 @@ export function MessageList({
       renderItem={renderItem}
       onRefresh={onRefreshChats}
       refreshing={isRefreshing}
+      ListHeaderComponent={
+        requestCount > 0 ? (
+          <ChatListItemMessageRequest
+            requestCount={requestCount}
+            onPress={onPressRequest}
+          />
+        ) : null
+      }
       keyExtractor={({ id }: { id: string }) => id}
       // If using ItemSeparatorComponent make sure to include the height of that here
       getItemLayout={(_data, index) => ({

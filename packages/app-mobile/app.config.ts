@@ -1,6 +1,14 @@
 import { ExpoConfig, ConfigContext } from "expo/config";
 
-export default ({ config }: ConfigContext): ExpoConfig => {
+type ExpoExtras = {
+  extra: {
+    FEATURE_MOBILE_CHAT: boolean;
+    localWebViewUrl: string;
+    remoteWebViewUrl: string;
+  };
+};
+
+export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
   const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
   const packageName = "app.backpack.mobile";
 
@@ -62,6 +70,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       favicon: "./assets/favicon.png",
     },
     extra: {
+      FEATURE_MOBILE_CHAT: true,
       // localWebViewUrl: "http://localhost:8080/mobile/loader",
       localWebViewUrl: "http://localhost:9333",
       // localWebViewUrl: remoteWebViewUrl,

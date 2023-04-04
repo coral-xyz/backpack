@@ -17,7 +17,6 @@ import * as Clipboard from "expo-clipboard";
 import Constants from "expo-constants";
 
 import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
-import { useAvatarUrl } from "@coral-xyz/recoil";
 import {
   Margin,
   BaseButton,
@@ -32,8 +31,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { ContentCopyIcon, RedBackpack } from "~components/Icon";
 import { useTheme } from "~hooks/useTheme";
 
-import { ImageSvg } from "./ImageSvg";
-
 export { ActionCard } from "./ActionCard";
 export { MnemonicInputFields } from "./MnemonicInputFields";
 export { NavHeader } from "./NavHeader";
@@ -42,6 +39,7 @@ export { PasswordInput } from "./PasswordInput";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { StyledTokenTextInput } from "./TokenInputField";
+export { Avatar } from "./UserAvatar";
 export {
   Margin,
   BaseButton,
@@ -356,27 +354,6 @@ export function WalletAddressLabel({
       <Text style={{ color: theme.custom.colors.secondary }}>
         ({walletAddressDisplay(publicKey)})
       </Text>
-    </View>
-  );
-}
-
-export function Avatar({ size = 64 }: { size?: number }): JSX.Element {
-  const avatarUrl = useAvatarUrl(size);
-  const theme = useTheme();
-
-  const outerSize = size + 6;
-
-  return (
-    <View
-      style={{
-        backgroundColor: theme.custom.colors.avatarIconBackground,
-        borderRadius: outerSize / 2,
-        padding: 3,
-        width: outerSize,
-        height: outerSize,
-      }}
-    >
-      <ImageSvg width={size} height={size} uri={avatarUrl} />
     </View>
   );
 }
