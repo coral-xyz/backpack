@@ -35,9 +35,15 @@ export const solanaWalletCollections = selectorFamily<
       const metadataMap = get(solanaMetadataMap({ publicKey }));
       const { publicKey: pk, collections } =
         intoSolanaCollectionsMap(metadataMap);
-      let sortedCollections = Object.values(collections).sort((a, b) =>
-        a.id.localeCompare(b.id)
-      );
+      let sortedCollections = Object.values(collections).sort((a, b) => {
+        if (a.isMadlads) {
+          return -1;
+        } else if (b.isMadlads) {
+          return 1;
+        }
+
+        return a.id.localeCompare(b.id);
+      });
       return {
         publicKey: pk,
         collections: sortedCollections,
@@ -111,10 +117,10 @@ export const solanaNftById = equalSelectorFamily<
         }
       })()?.replace(/\0/g, "");
 
-      const nft = {
+      const nft: Nft = {
         id: nftTokenMetadata?.publicKey ?? "",
         blockchain: Blockchain.SOLANA,
-        publicKey: nftToken.key,
+        publicKey: nftToken.key!,
         mint: nftTokenMetadata?.account.mint,
         metadataCollectionId: uriData?.metadata?.collection?.key.toString(),
         name: (
@@ -143,13 +149,12 @@ export const solanaNftById = equalSelectorFamily<
                 })
               )
             : [],
+        properties: uriData?.tokenMetaUriData?.properties ?? {},
+        creators: uriData.metadata.data.creators ?? [],
         collectionName,
       };
-      if (isMadLads(nft)) {
-        // TODO. We hack it below so that we can have something for testing.
-        // @ts-ignore
-        nft.lockScreenImageUrl =
-          "https://user-images.githubusercontent.com/6990215/219967480-36e7d05d-3a63-41eb-a480-6475c562da24.jpeg";
+      if (isMadLads(nft.creators)) {
+        nft.lockScreenImageUrl = nft.properties?.files?.[0]?.uri;
       }
       return nft;
     },
@@ -214,6 +219,11 @@ function intoSolanaCollectionsMap(metadataMap: MetadataMap): {
       collections[collectionId]!.itemIds.push(
         value.nftTokenMetadata?.publicKey
       );
+      if (
+        isMadLads(value.nftTokenMetadata?.account?.data?.creators ?? undefined)
+      ) {
+        collections[collectionId]!.isMadlads = true;
+      }
     }
   });
   return {

@@ -260,7 +260,7 @@ function SendScreen({ nft, to }: { nft: any; to: SendData }) {
 }
 
 function Image({ nft, style }: { nft: any; style?: any }) {
-  const src = isMadLads(nft) ? nft.lockScreenImageUrl : nft.imageUrl;
+  const src = isMadLads(nft.creators) ? nft.lockScreenImageUrl : nft.imageUrl;
   return (
     <div
       style={{

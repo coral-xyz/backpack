@@ -195,8 +195,8 @@ function LockScreenAvatar({
               inset: 0,
             }}
           >
-            <LocalImage
-              src={lockScreenKeyImage(user.username)}
+            <ProxyImage
+              src={avatarUrl}
               style={{
                 height: "100vh",
                 position: "absolute",
@@ -216,9 +216,9 @@ function LockScreenAvatar({
           </div>
         </>
       ) : (
-        <LocalImage
+        <ProxyImage
           size={120}
-          src={lockScreenKeyImage(user.username)}
+          src={avatarUrl}
           style={{
             height: "120px",
             width: "120px",
