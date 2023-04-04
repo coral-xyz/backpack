@@ -12,7 +12,7 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
   const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
   const packageName = "app.backpack.mobile";
 
-  const getUrl = (hash: string = "9772e8e") =>
+  const getUrl = (hash: string = "8b0f1ba") =>
     `https://mobile-service-worker.xnfts.dev/background-scripts/${hash}/service-worker-loader.html`;
 
   const remoteWebViewUrl = getUrl();
@@ -71,9 +71,7 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
     },
     extra: {
       FEATURE_MOBILE_CHAT: true,
-      // localWebViewUrl: "http://localhost:8080/mobile/loader",
       localWebViewUrl: "http://localhost:9333",
-      // localWebViewUrl: remoteWebViewUrl,
       remoteWebViewUrl,
       eas: {
         projectId: projectID,
