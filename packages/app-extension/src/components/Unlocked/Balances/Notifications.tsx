@@ -549,12 +549,20 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
   const setFriendshipValue = useUpdateFriendships();
   const theme = useCustomTheme();
   const [inProgress, setInProgress] = useState(false);
+  const lightModeAcceptColor = "#0057EB";
+  const darkModeAcceptColor = "#4C94FF";
 
   if (friendshipValue?.remoteRequested && !friendshipValue?.areFriends) {
     return (
       <div style={{ display: "flex", marginTop: 5 }}>
         <UserAction
-          style={{ color: theme.custom.colors.blue, marginRight: 10 }}
+          style={{
+            color:
+              theme.custom.colors.blue === "blue"
+                ? lightModeAcceptColor
+                : darkModeAcceptColor,
+            marginRight: 10,
+          }}
           text="Accept"
           onClick={async (e: any) => {
             e.stopPropagation();
