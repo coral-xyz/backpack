@@ -53,10 +53,14 @@ export const markSpam = async ({
   });
 };
 
-export const searchUsersByBlockchain = async (
-  address: string,
-  blockchain: Blockchain
-): Promise<any[]> => {
+export const searchUsersByBlockchain = async ({
+  blockchain,
+  address,
+}: {
+  blockchain: Blockchain;
+  address: string;
+}): Promise<any[]> => {
+  // TODO(types)
   try {
     const params = [
       `usernamePrefix=${address}`,

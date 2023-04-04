@@ -1,14 +1,9 @@
 import type { TextInputProps } from "react-native";
 import { View, StyleSheet, TextInput as RNTextInput } from "react-native";
 
-import { Input } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import { useTheme } from "~hooks/useTheme";
-
-type SearchInputProps = TextInputProps & {
-  iconBefore?: JSX.Element;
-};
 
 export function StyledTextInput({
   style,
@@ -51,11 +46,7 @@ export function StyledTextInput({
   );
 }
 
-export function SearchInput({
-  iconBefore,
-  style,
-  ...props
-}: SearchInputProps): JSX.Element {
+export function SearchInput({ style, ...props }: TextInputProps): JSX.Element {
   const theme = useTheme();
 
   return (

@@ -1,7 +1,9 @@
 import type { StackScreenProps } from "@react-navigation/stack";
 
+import { useState } from "react";
+
+import { Blockchain } from "@coral-xyz/common";
 import { Box } from "@coral-xyz/tamagui";
-import { MaterialIcons } from "@expo/vector-icons";
 
 import { MessageList } from "~components/Messages";
 import { SearchInput } from "~components/StyledTextInput";
@@ -13,8 +15,24 @@ import { useChatHelper, type ChatRowData } from "./ChatHelpers";
 export function ChatListScreen({
   navigation,
 }: StackScreenProps<ChatStackNavigatorParamList, "ChatList">): JSX.Element {
-  const { allChats, requestCount, onRefreshChats, isRefreshingChats } =
-    useChatHelper();
+  const [searchResults, setSearchResults] = useState([]); // TODO(types) user search type
+  const {
+    allChats,
+    requestCount,
+    onRefreshChats,
+    isRefreshingChats,
+    searchUsersByBlockchain,
+  } = useChatHelper();
+
+  const handleSearch = async (address: string) => {
+    const results = await searchUsersByBlockchain({
+      address,
+      // TODO pass in blockchain
+      blockchain: Blockchain.SOLANA,
+    });
+
+    setSearchResults(results);
+  };
 
   const handlePressMessage = (metadata: ChatRowData) => {
     navigation.push("ChatDetail", metadata);
@@ -24,12 +42,14 @@ export function ChatListScreen({
     navigation.push("ChatRequest");
   };
 
+  console.log("debug:searchResults", searchResults);
+
   return (
     <Screen style={{ paddingTop: 8 }}>
       <Box marginBottom={8}>
         <SearchInput
           placeholder="Enter a username or address"
-          iconBefore={<MaterialIcons size={24} color="blue" name="search" />}
+          onChangeText={handleSearch}
         />
       </Box>
       <MessageList
