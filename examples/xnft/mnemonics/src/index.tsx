@@ -13,11 +13,10 @@ import {
   View,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { Keypair } from "@solana/web3.js";
-import { mnemonicToSeedSync } from "bip39";
-import { ethers } from "ethers";
 import { registerRootComponent } from "expo";
-import { HDKey } from "micro-ed25519-hdkey";
+
+import type {KeypairPath } from "./util";
+import { getBackgroundColor, getMnemonicPaths } from "./util";
 
 type BlockchainSelectProps = {
   onChange: (value: string) => void;
@@ -42,12 +41,12 @@ function BlockchainSelect({ onChange, value }: BlockchainSelectProps) {
 }
 
 export default function App() {
-  const [blockchain, setBlockchain] = useState("solana");
+  const [blockchain, setBlockchain] = useState<"solana" | "ethereum">("solana");
   const [phrase, setPhrase] = useState("");
-  const [results, setResults] = useState<string[]>([]);
+  const [results, setResults] = useState<KeypairPath[]>([]);
 
   const handleSearchMnemonic = useCallback(() => {
-    const paths = getPaths(blockchain, phrase);
+    const paths = getMnemonicPaths(blockchain, phrase);
     setResults(paths);
   }, [blockchain, phrase]);
 
@@ -74,7 +73,10 @@ export default function App() {
         <Text style={{ fontSize: 26, marginBottom: 24 }}>
           Mnemonic Inspector
         </Text>
-        <BlockchainSelect value={blockchain} onChange={setBlockchain} />
+        <BlockchainSelect
+          value={blockchain}
+          onChange={(val) => setBlockchain(val as "solana" | "ethereum")}
+        />
         <TextInput
           secureTextEntry
           style={{
@@ -104,52 +106,33 @@ export default function App() {
           <FlatList
             data={results}
             renderItem={({ item }) => (
-              <Text style={{ fontSize: 14, marginBottom: 8 }}>{item}</Text>
+              <View style={{ marginBottom: 4 }}>
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: 12,
+                    marginBottom: 8,
+                    paddingTop: 4,
+                    paddingBottom: 4,
+                    paddingLeft: 8,
+                    paddingRight: 8,
+                    backgroundColor: getBackgroundColor(item.path),
+                    borderRadius: 12,
+                    width: "fit-content",
+                  }}
+                >
+                  {item.path}
+                </Text>
+                <Text style={{ fontSize: 14, marginBottom: 8 }}>
+                  {item.publicKey}
+                </Text>
+              </View>
             )}
           />
         </ScrollView>
       ) : null}
     </View>
   );
-}
-
-function getPaths(blockchain: string, phrase: string): string[] {
-  const paths: string[] = [];
-
-  if (blockchain === "solana") {
-    const seed = mnemonicToSeedSync(phrase, "");
-    const hd = HDKey.fromMasterSeed(seed.toString("hex"));
-
-    const root = `m/44'/501'`;
-    const kp = Keypair.fromSeed(hd.derive(root).privateKey);
-    paths.push(`${root} => ${kp.publicKey.toBase58()}`);
-
-    for (let i = 0; i < 10; i++) {
-      const p = `m/44'/501'/${i}'`;
-      const kp = Keypair.fromSeed(hd.derive(p).privateKey);
-      paths.push(`${p} => ${kp.publicKey.toBase58()}`);
-
-      for (let j = 0; j < 10; j++) {
-        const p = `m/44'/501'/${i}'/${j}'`;
-        const kp = Keypair.fromSeed(hd.derive(p).privateKey);
-        paths.push(`${p} => ${kp.publicKey.toBase58()}`);
-      }
-    }
-  } else {
-    for (let i = 0; i < 10; i++) {
-      const p = `m/44'/60'/${i}'`;
-      const wallet = ethers.Wallet.fromMnemonic(phrase, p);
-      paths.push(`${p} => ${wallet.address}`);
-
-      for (let j = 0; j < 10; j++) {
-        const p = `m/44'/60'/${i}'/${j}'`;
-        const wallet = ethers.Wallet.fromMnemonic(phrase, p);
-        paths.push(`${p} => ${wallet.address}`);
-      }
-    }
-  }
-
-  return paths;
 }
 
 registerRootComponent(App);
