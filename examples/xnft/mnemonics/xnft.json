@@ -1,8 +1,8 @@
 {
   "kind": "app",
   "storage": "aws",
-  "name": "Mnemonic Debugger",
-  "version": "0.1.0",
+  "name": "Mnemonics",
+  "version": "0.1.1",
   "description": "Inspect the generated paths for a web3 wallet based on the recovery phrase.",
   "website": "https://backpack.app",
   "contact": "https://github.com/coral-xyz/backpack",
@@ -12,6 +12,6 @@
     }
   },
   "icon": {
-    "lg": "./assets/icon.jpeg"
+    "lg": "./assets/icon.png"
   }
 }
