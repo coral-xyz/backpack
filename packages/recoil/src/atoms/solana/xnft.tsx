@@ -213,15 +213,16 @@ export const filteredPlugins = selectorFamily<
 
       return _plugins.filter(
         (xnft) =>
-          // @ts-ignore
           // hide autoinstalled ONE xNft -> entrypoint in collectibles.
           xnft.install.account.xnft.toString() !==
             "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8" &&
-          // hide autoinstalled Explorer xNft if not in devmode
+          // hide autoinstalled Explorer xNFT and the Mnemonic Inspect xNFT if not in devmode
           (developerMode ||
-            // @ts-ignore
             xnft.install.account.xnft.toString() !==
-              "oRN37pXigdDzpSPTe9ma5UWz9pZ4srKgS8To3juBNRi")
+              "oRN37pXigdDzpSPTe9ma5UWz9pZ4srKgS8To3juBNRi") &&
+          (developerMode ||
+            xnft.install.account.xnft.toString() !==
+              "GUt1LFqrs5Wbp6b6jLK1rXUvQKEavmAvM2UjAYWwJsNh")
       );
     },
 });

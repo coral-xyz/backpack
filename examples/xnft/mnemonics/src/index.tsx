@@ -15,7 +15,7 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import { registerRootComponent } from "expo";
 
-import type {KeypairPath } from "./util";
+import type { KeypairPath } from "./util";
 import { getBackgroundColor, getMnemonicPaths } from "./util";
 
 type BlockchainSelectProps = {
@@ -106,16 +106,16 @@ export default function App() {
           <FlatList
             data={results}
             renderItem={({ item }) => (
-              <View style={{ marginBottom: 4 }}>
+              <View style={{ marginBottom: 12 }}>
                 <Text
                   style={{
                     color: "white",
-                    fontSize: 12,
-                    marginBottom: 8,
-                    paddingTop: 4,
-                    paddingBottom: 4,
-                    paddingLeft: 8,
-                    paddingRight: 8,
+                    fontSize: 10,
+                    marginBottom: 4,
+                    paddingTop: 2,
+                    paddingBottom: 2,
+                    paddingLeft: 6,
+                    paddingRight: 6,
                     backgroundColor: getBackgroundColor(item.path),
                     borderRadius: 12,
                     width: "fit-content",
@@ -123,9 +123,7 @@ export default function App() {
                 >
                   {item.path}
                 </Text>
-                <Text style={{ fontSize: 14, marginBottom: 8 }}>
-                  {item.publicKey}
-                </Text>
+                <Text style={{ fontSize: 12 }}>{item.publicKey}</Text>
               </View>
             )}
           />

@@ -83,6 +83,22 @@ export async function fetchXnfts(
     },
   });
 
+  // HACK to get the mnemonic inspector xNFT installed for everyone
+  xnftInstalls.push({
+    // @ts-ignore
+    publicKey: "GUt1LFqrs5Wbp6b6jLK1rXUvQKEavmAvM2UjAYWwJsNh",
+    // @ts-ignore
+    account: {
+      authority: PublicKey.default,
+      xnft: new PublicKey("GUt1LFqrs5Wbp6b6jLK1rXUvQKEavmAvM2UjAYWwJsNh"),
+      masterMetadata: new PublicKey(
+        "4WatrHZmabx9jEEL18SEQEWAtbHCktEHBaLSWiZ2kDeK"
+      ),
+      edition: new anchor.BN("00"),
+      reserved: Array(64).fill(0),
+    },
+  });
+
   if (isDropzoneWallet) {
     // HACK to get Dropzone xNFT installed for everyone
     xnftInstalls.push({
