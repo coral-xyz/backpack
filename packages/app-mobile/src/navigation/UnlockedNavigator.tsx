@@ -3,6 +3,8 @@ import type { Blockchain } from "@coral-xyz/common";
 
 import { useCallback } from "react";
 
+import Constants from "expo-constants";
+
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 // import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -180,7 +182,7 @@ function UnlockedBottomTabNavigator(): JSX.Element {
     >
       <Tab.Screen name="Balances" component={BalancesNavigator} />
       <Tab.Screen name="Collectibles" component={NftCollectiblesNavigator} />
-      {MOBILE_ENABLED_CHAT ? (
+      {Constants.expoConfig.extra.FEATURE_MOBILE_CHAT ? (
         <Tab.Screen name="Chat" component={ChatNavigator} />
       ) : null}
     </Tab.Navigator>
