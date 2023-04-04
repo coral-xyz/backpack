@@ -53,7 +53,7 @@ export const DARK_RED_BORDER_MED = "rgba(241,50,54,0.4)";
 
 // NOTE: Do not include anything but colors in here. No box shadows, borders, etc.
 export const DARK_COLORS: CustomColors = {
-  blue: "#3498db",
+  blue: "#4C94FF",
   smallTextColor: DARK_TEXT_SMALL_COLOR,
   brandColor: BRAND_COLOR,
   background: BACKGROUND_COLOR_0,
@@ -124,7 +124,7 @@ export const DARK_COLORS: CustomColors = {
 
 // NOTE: Do not include anything but colors in here. No box shadows, borders, etc.
 export const LIGHT_COLORS: CustomColors = {
-  blue: "blue",
+  blue: "#0057EB",
   smallTextColor: LIGHT_TEXT_SMALL_COLOR,
   brandColor: LIGHT_BRAND_COLOR,
   backgroundBackdrop: LIGHT_BACKGROUND_BACKDROP_COLOR,
