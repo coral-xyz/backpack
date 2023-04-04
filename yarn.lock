@@ -3199,6 +3199,7 @@ __metadata:
     eslint-config-custom: "*"
     ethers: ^5.7.2
     expo: ^48.0.4
+    expo-av: ~13.2.1
     expo-blur: ~12.2.1
     expo-checkbox: ~2.3.1
     expo-clipboard: ~4.1.2
@@ -20686,6 +20687,15 @@ __metadata:
     path-browserify: ^1.0.0
     url-parse: ^1.5.9
   checksum: 1c3ea7959cd59d7d02716ca97732a1dc28729ba75c70b831dd129f06fd04b7c129e470c5c8cfb46b4df6ff629ca609234885bfddd375a9a17b1e29497edf4dde
+  languageName: node
+  linkType: hard
+
+"expo-av@npm:~13.2.1":
+  version: 13.2.1
+  resolution: "expo-av@npm:13.2.1"
+  peerDependencies:
+    expo: "*"
+  checksum: 9bbcbc3ce8336580b12f895346c06d4079a250703cd09a21949aa40e7e9ee41fc25014994a13d9388787466cb797c7fe88d4c74298911f2c195666b5aa83ee4d
   languageName: node
   linkType: hard
 

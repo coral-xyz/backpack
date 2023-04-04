@@ -1,16 +1,48 @@
 import type { StackScreenProps } from "@react-navigation/stack";
 
-import { useState, useEffect, useCallback } from "react";
-import { Platform } from "react-native";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { Platform, Button, View, Text } from "react-native";
+
+import { Video, ResizeMode, AVPlaybackStatus } from "expo-av";
 
 import { CHAT_MESSAGES } from "@coral-xyz/common";
 import { createEmptyFriendship } from "@coral-xyz/db";
 import { useUser, useAvatarUrl } from "@coral-xyz/recoil";
 import { SignalingManager, useChatsWithMetadata } from "@coral-xyz/tamagui";
-import { GiftedChat } from "react-native-gifted-chat";
+import { GiftedChat, MessageVideoProps } from "react-native-gifted-chat";
 import { v4 as uuidv4 } from "uuid";
 
 import { ChatStackNavigatorParamList } from "~screens/Unlocked/Chat/ChatHelpers";
+
+function VideoMessage() {
+  const video = useRef(null);
+  const [status, setStatus] = useState<AVPlaybackStatus | object>({});
+  return (
+    <View>
+      <Video
+        ref={video}
+        style={{ width: 150, height: 100 }}
+        source={{
+          uri: "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
+        }}
+        useNativeControls
+        resizeMode={ResizeMode.CONTAIN}
+        isLooping
+        onPlaybackStatusUpdate={(status) => setStatus(() => status)}
+      />
+      <View>
+        <Button
+          title={status.isPlaying ? "Pause" : "Play"}
+          onPress={() =>
+            status.isPlaying
+              ? video.current.pauseAsync()
+              : video.current.playAsync()
+          }
+        />
+      </View>
+    </View>
+  );
+}
 
 const formatDate = (created_at: string) => {
   return !isNaN(new Date(parseInt(created_at, 10)).getTime())
@@ -56,6 +88,11 @@ export function ChatDetailScreen({
         received: x.received,
         sent: true,
         pending: false,
+        // Videos / images follow this format
+        // video:
+        //   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+        // image:
+        //   "https://d33wubrfki0l68.cloudfront.net/7e97b18b02060f1d4b65a5850b49e2488da391bb/d60ff/img/homepage/dissection/3.png",
         user: {
           _id: x.uuid,
           name: x.username,
@@ -118,6 +155,11 @@ export function ChatDetailScreen({
     [chats.length, roomId, roomType, user.uuid, remoteUserId, remoteUsername]
   );
 
+  const renderMessageVideo = useCallback((props: MessageVideoProps<any>) => {
+    const { video } = props.currentMessage;
+    return <VideoMessage />;
+  }, []);
+
   return (
     <GiftedChat
       messageIdGenerator={() => uuidv4()}
@@ -130,6 +172,7 @@ export function ChatDetailScreen({
       inverted
       messages={messages}
       onSend={onSend}
+      renderMessageVideo={renderMessageVideo}
       user={{
         _id: user.uuid,
         name: user.username,
