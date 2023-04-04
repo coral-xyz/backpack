@@ -64,6 +64,9 @@ export function Nfts() {
         flexDirection: "column",
         height: "100%",
         zIndex: 0,
+        maxWidth: "800px",
+        marginLeft: "auto",
+        marginRight: "auto",
       }}
     >
       {isEmpty ? (

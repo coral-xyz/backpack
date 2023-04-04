@@ -40,7 +40,6 @@ export function Balances() {
   return (
     <div
       style={{
-        boxSizing: "border-box",
         maxWidth: "800px",
         marginLeft: "auto",
         marginRight: "auto",

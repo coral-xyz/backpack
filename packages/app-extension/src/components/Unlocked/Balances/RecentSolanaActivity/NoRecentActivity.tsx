@@ -11,6 +11,9 @@ export function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
       style={{
         height: "100%",
         display: minimize ? "none" : undefined,
+        maxWidth: "800px",
+        marginLeft: "auto",
+        marginRight: "auto",
       }}
     >
       <EmptyState
