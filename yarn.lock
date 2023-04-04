@@ -3888,8 +3888,8 @@ __metadata:
   linkType: hard
 
 "@coral-xyz/xnft-cli@npm:^0.5.2-latest.4476":
-  version: 0.5.2-latest.4512
-  resolution: "@coral-xyz/xnft-cli@npm:0.5.2-latest.4512"
+  version: 0.5.2-latest.4479
+  resolution: "@coral-xyz/xnft-cli@npm:0.5.2-latest.4479"
   dependencies:
     "@coral-xyz/xnft": ^0.2.50
     "@esbuild-plugins/node-globals-polyfill": ^0.2.3
@@ -3905,7 +3905,7 @@ __metadata:
     node-stdlib-browser: ^1.2.0
   bin:
     xnft: index.js
-  checksum: bc4e7eb8faef053034621c1a2b9634773e91425427fc101491c3250f5c94b99e708454413b245576cc580b28ca2d76bb6ed00a19f3ce33e2d546a06fd157ba62
+  checksum: 79acc61619a74e41a627bba4ff7e8422e65402103254b83270a9a497fd805574ebca74d8e561abecb79fa62007607ac168cb0aae73d3ff53b551d9e88e19be71
   languageName: node
   linkType: hard
 
@@ -12628,13 +12628,13 @@ __metadata:
   linkType: hard
 
 "@types/react@npm:^18.0.32":
-  version: 18.0.33
-  resolution: "@types/react@npm:18.0.33"
+  version: 18.0.32
+  resolution: "@types/react@npm:18.0.32"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: 4fbd2b2b6a26378bdfde121081a6406ec2d39e4ba87ea5f6897ab7bb2198713165e6fd703ad4ed7ba1d4f23ef54a4c9f108f3105c7ed8e136411ee6bdebc5669
+  checksum: c8dbce83c455e520e75f3649988f46100e3a3c0bf7241281ea5bd9067a0368290f0d7c6102e12e6ec9d649134b29a3ef4c421f376ec5aa06ed78cbdd8c144b4c
   languageName: node
   linkType: hard
 
@@ -16347,9 +16347,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.0":
-  version: 1.0.30001474
-  resolution: "caniuse-lite@npm:1.0.30001474"
-  checksum: c05faab958fae1bbf3c595203c96d3a2f6b4c7a0d122069addc6c386f208b4db66eed3f5e3d606b80e3b384603d353b27a306f6dcb6145642b5b97a330dba86a
+  version: 1.0.30001473
+  resolution: "caniuse-lite@npm:1.0.30001473"
+  checksum: 007ad17463612d38080fc59b5fa115ccb1016a1aff8daab92199a7cf8eb91cf987e85e7015cb0bca830ee2ef45f252a016c29a98a6497b334cceb038526b73f1
   languageName: node
   linkType: hard
 
