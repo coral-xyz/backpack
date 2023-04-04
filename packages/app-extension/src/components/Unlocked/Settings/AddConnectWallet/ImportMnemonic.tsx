@@ -220,10 +220,25 @@ export function ImportMnemonic({
           signedWalletDescriptor.derivationPath
         );
 
-        publicKey = await background.request({
-          method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-          params: [blockchain, privateKey, name],
-        });
+        if (keyringExists) {
+          publicKey = await background.request({
+            method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+            params: [blockchain, privateKey, name],
+          });
+        } else {
+          // Blockchain keyring doesn't exist, init
+          publicKey = await background.request({
+            method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+            params: [
+              {
+                signature: signedWalletDescriptor.signature,
+                blockchain,
+                publicKey: signedWalletDescriptor.publicKey,
+                privateKey,
+              },
+            ],
+          });
+        }
       }
     }
 
