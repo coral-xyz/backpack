@@ -236,7 +236,7 @@ export const FullScreenChat = ({
           <div
             style={{
               fontSize: 12,
-              fontWeight: 500,
+              fontWeight: 600,
               display: "inline-flex",
               cursor: "pointer",
               padding: "8px 12px 8px 16px",
