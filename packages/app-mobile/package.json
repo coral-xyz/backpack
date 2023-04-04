@@ -42,6 +42,7 @@
     "buffer": "^6.0.3",
     "ethers": "^5.7.2",
     "expo": "^48.0.4",
+    "expo-av": "~13.2.1",
     "expo-blur": "~12.2.1",
     "expo-checkbox": "~2.3.1",
     "expo-clipboard": "~4.1.2",
