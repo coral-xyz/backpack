@@ -46,6 +46,8 @@ export function ChatDetailScreen({
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
+    // TODO(kirat) messages are coming in in reverse order, despite `inverted={true}`
+    // assuming this might have something to do with the time stamps being incorrect?
     const _messages = chats.map((x) => {
       return {
         _id: x.client_generated_uuid,
