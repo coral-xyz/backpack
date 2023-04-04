@@ -38,8 +38,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SendEthereumConfirmationCard } from "~components/BottomDrawerEthereumConfirmation";
 import { SendSolanaConfirmationCard } from "~components/BottomDrawerSolanaConfirmation";
 import { BottomSheetModal } from "~components/BottomSheetModal";
-import { ImageSvg } from "~components/ImageSvg";
 import { UnstyledTokenTextInput } from "~components/TokenInputField";
+import { UserAvatar } from "~components/UserAvatar";
 import { Screen } from "~components/index";
 import { useTheme as useCustomTheme } from "~hooks/useTheme";
 import type { UnlockedNavigatorStackParamList } from "~navigation/UnlockedNavigator";
@@ -153,7 +153,7 @@ function AvatarHeader({
   const theme = useCustomTheme();
   return (
     <YStack ai="center">
-      <ImageSvg uri={image} width={80} height={80} />
+      <UserAvatar size={80} uri={image} />
       {walletName || username ? (
         <Text
           style={{

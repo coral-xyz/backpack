@@ -24,10 +24,11 @@ export function StyledTextInput({
           backgroundColor: theme.custom.colors.textBackground,
           borderColor: theme.custom.colors.textInputBorderFull,
           color: theme.custom.colors.secondary,
-          minHeight: multiline && numberOfLines ? numberOfLines * 24 : 44,
+          minHeight: multiline && numberOfLines ? numberOfLines * 24 : 48,
           borderWidth: 2,
         },
         styles.container,
+        styles.textInput,
         style,
       ]}
       autoCapitalize="none"
@@ -70,7 +71,7 @@ export function SearchInput({ style, ...props }: TextInputProps): JSX.Element {
         name="search"
         style={{ marginRight: 8 }}
       />
-      <RNTextInput {...props} />
+      <RNTextInput {...props} style={styles.textInput} />
     </View>
   );
 }
@@ -79,13 +80,16 @@ const styles = StyleSheet.create({
   container: {
     borderWidth: 2.5,
     borderRadius: 12,
-    paddingHorizontal: 14,
-    fontSize: 16,
-    fontWeight: "500",
+    paddingHorizontal: 16,
     alignItems: "center",
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  textInput: {
+    fontSize: 16,
+    fontFamily: "Inter_500Medium",
+    fontWeight: "500",
   },
 });

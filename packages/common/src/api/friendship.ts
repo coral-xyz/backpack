@@ -72,10 +72,8 @@ export const searchUsersByBlockchain = async ({
       r.json()
     );
 
-    return (
-      users.sort((a: any, b: any) =>
-        a.username.length < b.username.length ? -1 : 1
-      ) || []
+    return (users ?? []).sort((a: any, b: any) =>
+      a.username.length < b.username.length ? -1 : 1
     );
   } catch (e) {
     console.error(e);
