@@ -111,6 +111,7 @@ export function SendSolanaConfirmationCard({
           mint: new PublicKey(token.mint!),
           amount: amount.toNumber(),
           decimals: token.decimals,
+          source: new PublicKey(token.address),
         });
       }
       // Use an else here to avoid an extra request if we are transferring sol native mints.
