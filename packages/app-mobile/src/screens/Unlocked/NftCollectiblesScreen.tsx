@@ -279,7 +279,16 @@ type NftStackParamList = {
     publicKey: string;
     connectionUrl: string;
   };
-  SendNFT: undefined;
+  SendNFT: {
+    nft: {
+      publicKey: string;
+      blockchain: string;
+      mint: any;
+      imageUrl: string;
+      tokenId: string;
+      contactAddress: string;
+    };
+  };
 };
 
 const Stack = createStackNavigator<NftStackParamList>();

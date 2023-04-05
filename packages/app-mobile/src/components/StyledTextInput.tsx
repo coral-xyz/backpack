@@ -91,5 +91,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Inter_500Medium",
     fontWeight: "500",
+    width: "100%",
   },
 });

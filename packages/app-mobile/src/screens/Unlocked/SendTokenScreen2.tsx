@@ -186,7 +186,6 @@ export const SearchInput = ({
   return (
     <BaseSearchInput
       placeholder="Enter a username or address"
-      value={inputContent}
       onChangeText={(text: string) => setInputContent(text)}
     />
   );
