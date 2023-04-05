@@ -1,8 +1,11 @@
+import { useState } from "react";
+import { useActiveWallet } from "@coral-xyz/recoil";
 import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import { Close } from "@mui/icons-material";
-import { IconButton } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
 
 import { WithMiniDrawer } from "./Layout/Drawer";
+import { CheckIcon,LedgerIcon } from "./Icon";
 
 const useStyles = makeStyles((theme) => ({
   paperAnchorBottom: {
@@ -38,6 +41,8 @@ export const ApproveTransactionDrawer: React.FC<{
 }> = ({ openDrawer, setOpenDrawer, children }) => {
   const classes = useStyles();
   const theme = useCustomTheme();
+  const { type: walletType } = useActiveWallet();
+
   return (
     <WithMiniDrawer
       openDrawer={openDrawer}
@@ -83,12 +88,82 @@ export const ApproveTransactionDrawer: React.FC<{
             background: theme.custom.colors.drawerGradient,
           }}
         >
-          {children}
+          {walletType === "hardware" ? <HardwareApproval /> : children}
         </div>
       </div>
     </WithMiniDrawer>
   );
 };
+
+function HardwareApproval() {
+  const theme = useCustomTheme();
+  const [state, setState] = useState<
+    "approve" | "sending" | "confirmed" | "error" | "connectionFailure"
+  >("approve");
+
+  const icon =
+    state === "approve" || state === "sending" ? (
+      <div
+        style={{
+          width: 56,
+          height: 56,
+          background: "black",
+          borderRadius: "50%",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <LedgerIcon style={{ width: 32 }} />
+      </div>
+    ) : state === "confirmed" ? (
+      <CheckIcon style={{ height: 48 }} />
+    ) : null;
+
+  const title =
+    state === "approve"
+      ? "Continue with your Ledger"
+      : state === "sending"
+      ? "Sending"
+      : state === "confirmed"
+      ? "Confirmed!"
+      : state === "connectionFailure"
+      ? "Unable to Connect"
+      : "Error :(";
+
+  const subtext =
+    state === "approve" || state === "sending"
+      ? "You need to approve the transaction on your Ledger. Unlock it, open the blockchain's app, and make sure blind transaction signing is enabled."
+      : state === "connectionFailure"
+      ? "Check that your Ledger is connected and unlocked, and your browser permissions are approved."
+      : null;
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        paddingTop: 24,
+        height: 350,
+        gap: 24,
+      }}
+    >
+      {icon}
+      <div style={{ textAlign: "center", padding: "0 38px" }}>
+        <Typography
+          mb="8px"
+          color={theme.custom.colors.fontColor}
+          fontSize="18px"
+        >
+          {title}
+        </Typography>
+        <Typography color={theme.custom.colors.fontColor3} fontSize="16px">
+          {subtext}
+        </Typography>
+      </div>
+    </div>
+  );
+}
 
 export function CloseButton({
   onClick,

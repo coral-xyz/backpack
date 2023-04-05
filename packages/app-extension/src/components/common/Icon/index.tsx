@@ -192,9 +192,10 @@ export function CashIcon() {
   );
 }
 
-export function SuccessIcon() {
+export function SuccessIcon({ style }: { style?: any }) {
   return (
     <svg
+      style={{ height: "inherit", width: "inherit", ...style }}
       width="56"
       height="56"
       viewBox="0 0 56 56"
@@ -696,6 +697,37 @@ export function HardwareIcon({ fill = "#8F929E" }: { fill?: string }) {
           strokeWidth="0.25"
         />
       </g>
+    </svg>
+  );
+}
+
+export function LedgerIcon({
+  fill = "white",
+  style,
+}: {
+  fill?: string;
+  style?: any;
+}) {
+  return (
+    <svg
+      style={{ height: "inherit", width: "inherit", ...style }}
+      width="56"
+      height="50"
+      viewBox="0 0 56 50"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g clipPath="url(#clip0_20845_174207)">
+        <path
+          d="M0 35.3814V49.4118H21.064V46.3002H3.06907V35.3814H0ZM52.9309 35.3814V46.3002H34.936V49.411H56V35.3814H52.9309ZM21.0946 14.0303V35.3807H34.936V32.5748H24.1637V14.0303H21.0946ZM0 0V14.0303H3.06907V3.1108H21.064V0H0ZM34.936 0V3.1108H52.9309V14.0303H56V0H34.936Z"
+          fill={fill}
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_20845_174207">
+          <rect width="56" height="49.4118" fill={fill} />
+        </clipPath>
+      </defs>
     </svg>
   );
 }

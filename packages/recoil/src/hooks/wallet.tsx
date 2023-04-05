@@ -22,6 +22,8 @@ export function useActiveWallet(): {
   publicKey: string;
   name: string;
   blockchain: Blockchain;
+  type: string;
+  isCold?: boolean;
 } {
   return useRecoilValue(atoms.activeWallet);
 }
