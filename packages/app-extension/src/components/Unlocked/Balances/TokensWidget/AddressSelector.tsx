@@ -48,6 +48,14 @@ export interface SendData {
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
+    hoverParent: {
+      "&:hover $hoverChild, & .Mui-focused $hoverChild": {
+        visibility: "visible",
+      },
+    },
+    hoverChild: {
+      visibility: "hidden",
+    },
     container: {
       display: "flex",
       flexDirection: "column",
@@ -56,9 +64,17 @@ const useStyles = makeStyles((theme: any) =>
     topHalf: {
       flex: 1,
     },
+    title: {
+      color: theme.custom.colors.fontColor,
+    },
     userText: {
       fontSize: 16,
       marginTop: 4,
+      color: theme.custom.colors.fontColor2,
+    },
+    address: {
+      fontWeight: 500,
+      fontSize: 14,
       color: theme.custom.colors.fontColor2,
     },
     buttonContainer: {
@@ -417,29 +433,25 @@ const Contacts = ({
     })
     .filter((x) => (x.public_keys?.[0] ? true : false));
 
-  return (
+    return (
     <div>
       {filteredContacts.length !== 0 ? (
         <div style={{ margin: "12px 12px" }}>
           <BubbleTopLabel text="Friends" />
           <AddressList
-            wallets={filteredContacts
-              .map((c) => ({
-                username: c.remoteUsername,
-                addresses: c.public_keys
-                  .filter(
-                    (x) =>
-                      x.blockchain === blockchain &&
-                      (x.publicKey.includes(searchFilter) ||
-                        c.remoteUsername.includes(searchFilter))
-                  )
-                  .map((x) => x.publicKey),
-                image: c.remoteUserImage,
-                uuid: c.remoteUserId,
-              }))
-              .sort((a: any, b: any) =>
-                a.username[0] < b.username[0] ? -1 : 1
-              )}
+            wallets={filteredContacts.map((c) => ({
+              username: c.remoteUsername,
+              addresses: c.public_keys
+                .filter(
+                  (x) =>
+                    x.blockchain === blockchain &&
+                    (x.publicKey.includes(searchFilter) ||
+                      c.remoteUsername.includes(searchFilter))
+                )
+                .map((x) => x.publicKey),
+              image: c.remoteUserImage,
+              uuid: c.remoteUserId,
+            })).sort((a: any, b: any) => a.username[0] < b.username[0] ? -1 : 1)}
           />
         </div>
       ) : null}
