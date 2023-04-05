@@ -61,6 +61,7 @@ export function ChatDetailScreen({
   const { roomType, roomId, remoteUserId, remoteUsername } = route.params;
   const user = useUser();
   const avatarUrl = useAvatarUrl();
+  const existingChatRef = useRef<any>();
 
   const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
   const { chats } = useChatsWithMetadata({
@@ -81,6 +82,17 @@ export function ChatDetailScreen({
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
+    if (
+      existingChatRef.current &&
+      JSON.stringify(chats) === JSON.stringify(existingChatRef.current)
+    ) {
+      return;
+    }
+    if (chats && chats.length) {
+      SignalingManager.getInstance().debouncedUpdateLastRead(
+        chats[chats.length - 1]
+      );
+    }
     const _messages = chats
       .map((x) => {
         return {
@@ -104,10 +116,10 @@ export function ChatDetailScreen({
       })
       .reverse();
 
+    existingChatRef.current = chats;
     setMessages(_messages);
-  }, []);
+  }, [chats]);
 
-  // TODO(kirat) not sure this is doing anything
   const onSend = useCallback(
     async (messages = []) => {
       const [message] = messages;
@@ -149,10 +161,6 @@ export function ChatDetailScreen({
           type: roomType,
           room: roomId.toString(),
         },
-      });
-
-      setMessages((previousMessages) => {
-        GiftedChat.append(previousMessages, messages);
       });
     },
     [chats.length, roomId, roomType, user.uuid, remoteUserId, remoteUsername]
