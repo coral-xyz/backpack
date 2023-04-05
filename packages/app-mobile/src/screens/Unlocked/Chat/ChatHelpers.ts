@@ -121,7 +121,6 @@ const getAllChatStuff = ({
       chatType: "individual" as SubscriptionType,
     })),
   ].sort((a, b) =>
-    // TODO(kirat) lastMessageTimestamp vs. last_message_timestamp
     // @ts-ignore
     (a.chatType === "individual"
       ? new Date(a.chatProps.last_message_timestamp).getTime()

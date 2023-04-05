@@ -81,8 +81,6 @@ export function ChatDetailScreen({
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    // TODO(kirat) messages are coming in in reverse order, despite `inverted={true}`
-    // assuming this might have something to do with the time stamps being incorrect?
     const _messages = chats
       .map((x) => {
         return {
@@ -130,7 +128,7 @@ export function ChatDetailScreen({
           last_message: messageText,
           last_message_client_uuid: client_generated_uuid,
           remoteUsername,
-          id: roomId,
+          id: roomId.toString(),
         });
 
         SignalingManager.getInstance().onUpdateRecoil({
