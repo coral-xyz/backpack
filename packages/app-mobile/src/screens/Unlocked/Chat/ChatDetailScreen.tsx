@@ -8,7 +8,11 @@ import { Video, ResizeMode, AVPlaybackStatus } from "expo-av";
 import { CHAT_MESSAGES } from "@coral-xyz/common";
 import { createEmptyFriendship } from "@coral-xyz/db";
 import { useUser, useAvatarUrl } from "@coral-xyz/recoil";
-import { SignalingManager, useChatsWithMetadata } from "@coral-xyz/tamagui";
+import {
+  fetchMoreChatsFor,
+  SignalingManager,
+  useChatsWithMetadata,
+} from "@coral-xyz/tamagui";
 import { GiftedChat, MessageVideoProps } from "react-native-gifted-chat";
 import { v4 as uuidv4 } from "uuid";
 
@@ -58,48 +62,47 @@ export function ChatDetailScreen({
   const user = useUser();
   const avatarUrl = useAvatarUrl();
 
-  // TODO(kirat)
   const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
   const { chats } = useChatsWithMetadata({
     room: roomId.toString(),
     type: roomType,
   });
 
-  // TODO(kirat) load earlier chats
-  const onLoadEarlier = () => {
+  const onLoadEarlier = async () => {
     setIsLoadingEarlier(true);
-    GiftedChat.prepend([], [], Platform.OS !== "web");
-
-    setTimeout(() => {
-      setIsLoadingEarlier(false);
-    }, 250);
+    try {
+      await fetchMoreChatsFor(user.uuid, roomId.toString(), roomType);
+    } catch (e) {
+      console.error(e);
+    }
+    setIsLoadingEarlier(false);
   };
 
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    // TODO(kirat) messages are coming in in reverse order, despite `inverted={true}`
-    // assuming this might have something to do with the time stamps being incorrect?
-    const _messages = chats.map((x) => {
-      return {
-        _id: x.client_generated_uuid,
-        text: x.message,
-        createdAt: formatDate(x.created_at),
-        received: x.received,
-        sent: true,
-        pending: false,
-        // Videos / images follow this format
-        // video:
-        //   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-        // image:
-        //   "https://d33wubrfki0l68.cloudfront.net/7e97b18b02060f1d4b65a5850b49e2488da391bb/d60ff/img/homepage/dissection/3.png",
-        user: {
-          _id: x.uuid,
-          name: x.username,
-          avatar: x.image,
-        },
-      };
-    });
+    const _messages = chats
+      .map((x) => {
+        return {
+          _id: x.client_generated_uuid,
+          text: x.message,
+          createdAt: formatDate(x.created_at),
+          received: x.received,
+          sent: true,
+          pending: false,
+          // Videos / images follow this format
+          // video:
+          //   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+          // image:
+          //   "https://d33wubrfki0l68.cloudfront.net/7e97b18b02060f1d4b65a5850b49e2488da391bb/d60ff/img/homepage/dissection/3.png",
+          user: {
+            _id: x.uuid,
+            name: x.username,
+            avatar: x.image,
+          },
+        };
+      })
+      .reverse();
 
     setMessages(_messages);
   }, []);
@@ -125,7 +128,7 @@ export function ChatDetailScreen({
           last_message: messageText,
           last_message_client_uuid: client_generated_uuid,
           remoteUsername,
-          id: roomId,
+          id: roomId.toString(),
         });
 
         SignalingManager.getInstance().onUpdateRecoil({

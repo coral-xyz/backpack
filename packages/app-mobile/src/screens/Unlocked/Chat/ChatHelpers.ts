@@ -121,9 +121,15 @@ const getAllChatStuff = ({
       chatType: "individual" as SubscriptionType,
     })),
   ].sort((a, b) =>
-    // TODO(kirat) lastMessageTimestamp vs. last_message_timestamp
     // @ts-ignore
-    a.last_message_timestamp < b.last_message_timestamp ? -1 : 1
+    (a.chatType === "individual"
+      ? new Date(a.chatProps.last_message_timestamp).getTime()
+      : new Date(a.chatProps.lastMessageTimestamp)) <
+    (b.chatType === "individual"
+      ? new Date(b.chatProps.last_message_timestamp).getTime()
+      : new Date(b.chatProps.lastMessageTimestamp).getTime())
+      ? 1
+      : -1
   );
 
   return parseChats(allChats);
