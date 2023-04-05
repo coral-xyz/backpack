@@ -451,7 +451,7 @@ const Contacts = ({
                 .map((x) => x.publicKey),
               image: c.remoteUserImage,
               uuid: c.remoteUserId,
-            }))}
+            })).sort((a: any, b: any) => a.username[0] < b.username[0] ? -1 : 1)}
           />
         </div>
       ) : null}
