@@ -222,7 +222,9 @@ export function NftsDetail({
 }
 
 function Image({ nft, style }: { nft: any; style?: any }) {
-  const src = isMadLads(nft) ? nft.lockScreenImageUrl : nft.imageUrl;
+  const src = isMadLads(nft.creators)
+    ? nft.lockScreenImageUrl ?? nft.imageUrl
+    : nft.imageUrl;
   return (
     <div
       style={{
@@ -523,7 +525,8 @@ export function NftOptionsButton() {
       //
       // Store locally.
       //
-      await updateLocalNftPfp(uuid, username, nft);
+      // Need SWR mechanic for Local pfps before enabling again so we can update PFPs from xnfts.
+      // await updateLocalNftPfp(uuid, username, tempAvatar.nft!);
       setNewAvatar({ id, url: nft.imageUrl });
     }
   };
@@ -735,7 +738,7 @@ export async function updateLocalNftPfp(
   // Only show mad lads on the lock screen in full screen view.
   //
   let lockScreenImageUrl;
-  if (isMadLads(nft)) {
+  if (isMadLads(nft.creators)) {
     window.localStorage.setItem(
       lockScreenKey(uuid),
       JSON.stringify({
