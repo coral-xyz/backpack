@@ -81,6 +81,10 @@ const useStyles = styles((theme) => ({
   },
 }));
 
+const truncateWalletName = (name: string) => {
+  return name.length > 10 ? `${name.slice(0, 10)}...${name.slice(-2)}` : name;
+};
+
 export function WalletDrawerButton({
   wallet,
   style,
@@ -131,7 +135,7 @@ function WalletButton({
       }}
     >
       <Button disableRipple className={classes.addressButton} onClick={onClick}>
-        {wallet.name}
+        {truncateWalletName(wallet.name)}
         <ExpandMore
           style={{
             width: "18px",
@@ -639,6 +643,7 @@ export function WalletListItem({
   const theme = useCustomTheme();
   const nav = useNavigation();
   const { publicKey, name, blockchain, type } = wallet;
+
   return (
     <ListItem
       inverted={inverted}
@@ -706,7 +711,7 @@ export function WalletListItem({
             }}
           >
             <StackedWalletAddress
-              name={name}
+              name={truncateWalletName(name)}
               publicKey={publicKey}
               type={type}
               isSelected={isSelected}
