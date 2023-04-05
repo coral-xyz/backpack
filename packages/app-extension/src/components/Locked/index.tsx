@@ -43,7 +43,8 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
     }
   })();
 
-  const isFullScreen = uuid === user.uuid && nft !== undefined;
+  // TODO: uncomment this when ready to release the full screen feature.
+  const isFullScreen = false; //uuid === user.uuid && nft !== undefined;
 
   const _onUnlock = async (e: any) => {
     e.preventDefault();
