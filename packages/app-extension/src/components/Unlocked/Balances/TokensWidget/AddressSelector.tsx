@@ -433,7 +433,7 @@ const Contacts = ({
     })
     .filter((x) => (x.public_keys?.[0] ? true : false));
 
-    return (
+  return (
     <div>
       {filteredContacts.length !== 0 ? (
         <div style={{ margin: "12px 12px" }}>
