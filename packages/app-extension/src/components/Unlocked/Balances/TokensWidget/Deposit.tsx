@@ -381,6 +381,9 @@ export function _Deposit({
         height: "100%",
         display: "flex",
         flexDirection: "column",
+        maxWidth: "800px",
+        marginLeft: "auto",
+        marginRight: "auto",
       }}
     >
       <div

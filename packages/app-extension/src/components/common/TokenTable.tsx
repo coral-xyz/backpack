@@ -53,7 +53,7 @@ export function SearchableTokenTables({
   const classes = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
   return (
-    <>
+    <div style={{ maxWidth: "800px", marginLeft: "auto", marginRight: "auto" }}>
       <TextInput
         className={classes.searchField}
         placeholder="Search"
@@ -70,7 +70,7 @@ export function SearchableTokenTables({
         onClickRow={onClickRow}
         customFilter={customFilter}
       />
-    </>
+    </div>
   );
 }
 

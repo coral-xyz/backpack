@@ -233,6 +233,9 @@ export function _RecentActivityList({
     <div
       style={{
         paddingBottom: "16px",
+        maxWidth: "800px",
+        marginLeft: "auto",
+        marginRight: "auto",
       }}
     >
       <List

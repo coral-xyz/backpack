@@ -380,6 +380,9 @@ export function NotificationList({
     <div
       style={{
         paddingBottom: "16px",
+        maxWidth: "800px",
+        marginLeft: "auto",
+        marginRight: "auto",
       }}
     >
       {groupedNotifications.map(({ date, notifications }) => (
