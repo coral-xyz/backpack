@@ -132,6 +132,12 @@ function AvatarMenu() {
         borderRadius: "6px",
       }}
     >
+      <ProfileLink />
+      <div
+        style={{
+          borderTop: theme.custom.colors.borderFull,
+        }}
+      />
       <UsersMenuList />
       <div
         style={{
@@ -192,6 +198,78 @@ function MenuListItem({
         {children}
       </div>
     </Button>
+  );
+}
+
+function ProfileLink() {
+  const user = useUser();
+  const background = useBackgroundClient();
+  const { openSettings } = usePopoverContext();
+
+  return (
+    <ProfileList
+      key={user.uuid}
+      user={user}
+      onClick={async () => {
+        openSettings();
+        await background.request({
+          method: UI_RPC_METHOD_ACTIVE_USER_UPDATE,
+          params: [user.uuid],
+        });
+      }}
+    />
+  );
+}
+
+function ProfileList({ user, onClick }: { user: any; onClick: () => void }) {
+  const theme = useCustomTheme();
+  const avatarUrl = useAvatarUrl(undefined, user.username);
+
+  return (
+    <MenuListItem onClick={onClick}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <ProxyImage
+              src={avatarUrl}
+              style={{
+                width: "30px",
+                height: "30px",
+                borderRadius: "50%",
+              }}
+            />
+          </div>
+          <Typography
+            style={{
+              marginLeft: "8px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              color: theme.custom.colors.fontColor,
+              fontSize: "18px",
+            }}
+          >
+            @{user.username}
+          </Typography>
+        </div>
+      </div>
+    </MenuListItem>
   );
 }
 
