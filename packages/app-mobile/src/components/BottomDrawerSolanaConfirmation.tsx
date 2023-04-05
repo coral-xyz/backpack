@@ -101,6 +101,7 @@ export function SendSolanaConfirmationCard({
           mint: new PublicKey(token.mint!),
           amount: amount.toNumber(),
           decimals: token.decimals,
+          source: new PublicKey(token.address),
         });
       } else {
         txSig = await Solana.transferToken(solanaCtx, {
