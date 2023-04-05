@@ -19,7 +19,6 @@ import {
 } from "@coral-xyz/react-common";
 import {
   useBackgroundClient,
-  useNavigation,
   useSolanaConnectionUrl,
   useSolanaCtx,
   useSolanaExplorer,
@@ -32,7 +31,6 @@ import { useRecoilValue } from "recoil";
 
 import { updateRemotePreference } from "../../../../api/preferences";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
-import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavigation as useNavigationEphemeral } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 import { Error } from "../../Balances/TokensWidget/Send";
@@ -253,6 +251,7 @@ const UninstallConfirmationCard = ({ xnft }: { xnft: any }) => {
     "confirm" | "sending" | "complete" | "error"
   >("confirm");
   const [txSignature, setTxSignature] = useState<string | null>(null);
+
   const onConfirm = async () => {
     //
     // Change view to display loading indicator.
@@ -285,6 +284,8 @@ const UninstallConfirmationCard = ({ xnft }: { xnft: any }) => {
           ? "confirmed"
           : ctx.commitment
       );
+
+      setCardType("complete");
     } catch (err: any) {
       logger.error("unable to confirm", err);
       setError(err.toString());
@@ -362,8 +363,6 @@ function Sending({
   const theme = useCustomTheme();
   const solanaExplorer = useSolanaExplorer();
   const connectionUrl = useSolanaConnectionUrl();
-  const nav = useNavigation();
-  const drawer = useDrawerContext();
   return (
     <div
       style={{
@@ -417,16 +416,9 @@ function Sending({
       >
         <SecondaryButton
           onClick={() => {
-            if (isComplete) {
-              nav.toRoot();
-              drawer.close();
-            } else {
-              window.open(
-                explorerUrl(solanaExplorer, signature, connectionUrl)
-              );
-            }
+            window.open(explorerUrl(solanaExplorer, signature, connectionUrl));
           }}
-          label={isComplete ? "View Balances" : "View Explorer"}
+          label="View Explorer"
         />
       </div>
     </div>
