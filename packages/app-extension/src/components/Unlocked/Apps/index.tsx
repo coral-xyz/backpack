@@ -213,7 +213,7 @@ function _WalletXnftGrid({
   return (
     <>
       <BalancesTableHead wallet={wallet} />
-      {showContent ? (
+      {showContent ?
         <div
           style={{
             paddingTop: "8px",
@@ -225,23 +225,23 @@ function _WalletXnftGrid({
             borderBottomRightRadius: "10px",
           }}
         >
-          <Grid container>
-            {isLoading ? (
-              Array.from(Array(iconsPerRow).keys()).map((_, idx) => {
-                return (
-                  <Grid
-                    item
-                    key={idx}
-                    xs={isXs ? 3 : 2}
-                    style={{
-                      marginTop: idx >= iconsPerRow ? "24px" : 0,
-                    }}
-                  >
-                    <SkeletonAppIcon />
-                  </Grid>
-                );
-              })
-            ) : (
+        <Grid container>
+          {isLoading
+              ? Array.from(Array(iconsPerRow).keys()).map((_, idx) => {
+                  return (
+                    <Grid
+                      item
+                      key={idx}
+                      xs={isXs ? 3 : 2}
+                      style={{
+                        marginTop: idx >= iconsPerRow ? "24px" : 0,
+                      }}
+                      >
+                        <SkeletonAppIcon />
+                      </Grid>
+                    );
+                  })
+                : (
               <>
                 `
                 <Tooltip title="Browse xNFTs" placement="top">
@@ -279,8 +279,7 @@ function _WalletXnftGrid({
               </>
             )}
           </Grid>
-        </div>
-      ) : null}
+        </div> : null}
     </>
   );
 }
