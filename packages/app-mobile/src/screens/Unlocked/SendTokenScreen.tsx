@@ -1,13 +1,14 @@
+import type { Nft } from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useCallback, useEffect, useState } from "react";
 import {
   Platform,
   Pressable,
-  Image,
   View,
   Keyboard,
   KeyboardAvoidingView,
+  Image,
   Text,
 } from "react-native";
 
@@ -19,6 +20,7 @@ import {
   walletAddressDisplay,
   toDisplayBalance,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
+  isMadLads,
 } from "@coral-xyz/common";
 import {
   useAnchorContext,
@@ -26,6 +28,7 @@ import {
   useIsValidAddress,
 } from "@coral-xyz/recoil";
 import {
+  SecondaryButton,
   PrimaryButton,
   DangerButton,
   Box,
@@ -40,7 +43,7 @@ import { SendSolanaConfirmationCard } from "~components/BottomDrawerSolanaConfir
 import { BottomSheetModal } from "~components/BottomSheetModal";
 import { UnstyledTokenTextInput } from "~components/TokenInputField";
 import { UserAvatar } from "~components/UserAvatar";
-import { Screen } from "~components/index";
+import { Screen, TwoButtonFooter } from "~components/index";
 import { useTheme as useCustomTheme } from "~hooks/useTheme";
 import type { UnlockedNavigatorStackParamList } from "~navigation/UnlockedNavigator";
 
@@ -49,6 +52,7 @@ import { SearchableTokenTables } from "./components/Balances";
 
 export function SendTokenSelectRecipientScreen({
   route,
+  navigation,
 }: StackScreenProps<
   UnlockedNavigatorStackParamList,
   "SendTokenModal"
@@ -83,7 +87,35 @@ export function SendTokenSelectRecipientScreen({
           inputContent={address}
           setInputContent={setAddress}
           hasInputError={hasInputError}
-          normalizedAddress={destinationAddress}
+          onSelectUserResult={({ user, address }) => {
+            if (!address) {
+              return;
+            }
+
+            navigation.navigate("SendTokenConfirm", {
+              blockchain,
+              token,
+              to: {
+                address,
+                username: user.username,
+                walletName: user.walletName,
+                image: user.image,
+                uuid: user.uuid,
+              },
+            });
+          }}
+          onPressNext={({ user }) => {
+            navigation.navigate("SendTokenConfirm", {
+              blockchain,
+              token,
+              to: {
+                address: destinationAddress,
+                username: user?.username,
+                image: user?.image,
+                uuid: user?.uuid,
+              },
+            });
+          }}
         />
       </Screen>
     </KeyboardAvoidingView>
@@ -385,5 +417,65 @@ export function SendTokenConfirmScreen({
         />
       </BottomSheetModal>
     </>
+  );
+}
+
+export function SendNFTConfirmScreen({ route, navigation }): JSX.Element {
+  const { nft, to } = route.params;
+  const insets = useSafeAreaInsets();
+
+  return (
+    <>
+      <Screen
+        style={{ justifyContent: "space-between", marginBottom: insets.bottom }}
+      >
+        <View style={{ marginTop: 24, alignItems: "center" }}>
+          <Box mb={24}>
+            <AvatarHeader
+              walletName={to.walletName}
+              address={to.address}
+              username={to.username}
+              image={to.image}
+            />
+          </Box>
+          <NFTPreviewImage nft={nft} />
+        </View>
+        <TwoButtonFooter
+          leftButton={
+            <SecondaryButton
+              label="Cancel"
+              onPress={() => {
+                navigation.goBack();
+              }}
+            />
+          }
+          rightButton={
+            <PrimaryButton
+              label="Next"
+              onPress={async () => {
+                // show bottom sheet
+                console.log("pressed");
+              }}
+            />
+          }
+        />
+      </Screen>
+      <View />
+    </>
+  );
+}
+
+function NFTPreviewImage({ nft }: { nft: Nft }): JSX.Element {
+  const uri = isMadLads(nft.creators) ? nft.lockScreenImageUrl : nft.imageUrl;
+  return (
+    <Image
+      source={{ uri }}
+      style={{
+        backgroundColor: "yellow",
+        borderRadius: 8,
+        width: 192,
+        height: 192,
+      }}
+    />
   );
 }

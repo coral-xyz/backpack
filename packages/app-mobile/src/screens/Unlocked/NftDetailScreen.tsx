@@ -1,17 +1,22 @@
-import { useEffect, useState } from "react";
-import { Alert, Text, View, ScrollView } from "react-native";
+import { useState } from "react";
+import {
+  Alert,
+  Text,
+  View,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 
 import * as Linking from "expo-linking";
 
 import {
   UNKNOWN_NFT_ICON_SRC,
   toTitleCase,
-  UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   explorerNftUrl,
 } from "@coral-xyz/common";
 import {
   useAnchorContext,
-  useBackgroundClient,
   useEthereumCtx,
   nftById,
   useIsValidAddress,
@@ -27,10 +32,10 @@ import {
   ProxyImage,
   Screen,
   SecondaryButton,
-  StyledTextInput,
-  Margin,
 } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
+
+import { SendTokenSelectUserScreen } from "./SendTokenScreen2";
 
 function ActionMenu({ explorer, connectionUrl, nft }) {
   const { showActionSheetWithOptions } = useActionSheet();
@@ -80,20 +85,11 @@ export function NftDetailScreen({ navigation, route }): JSX.Element | null {
     nftById({ publicKey, connectionUrl, nftId })
   );
 
-  const nft = (state === "hasValue" && contents) || null;
-
-  if (!nftId) {
-    return null;
-  }
-
-  // TODO: this is hit when the NFT has been transferred out and
-  //       the user re-opens the app to the old url which is no longer
-  //       valid.
-  //
-  //       Should probably just pop the stack here or redirect.
-  if (!nft) {
-    return null;
-  }
+  const nft = (state === "hasValue" && contents) || {
+    imageUrl: "",
+    description: "",
+    attributes: [],
+  };
 
   // @ts-ignore
   const isEthereum: boolean = nft && nft.contractAddress;
@@ -112,7 +108,9 @@ export function NftDetailScreen({ navigation, route }): JSX.Element | null {
             }}
           />
         </Box>
-        {nft.attributes ? <NftAttributes attributes={nft.attributes} /> : null}
+        {(nft.attributes ?? []).length > 0 ? (
+          <NftAttributes attributes={nft.attributes} />
+        ) : null}
         <ActionMenu
           nft={nft}
           explorer={explorer}
@@ -171,86 +169,65 @@ function Description({ description }: { description: string }): JSX.Element {
 
 export function NftDetailSendScreen({ navigation, route }): JSX.Element {
   const { nft } = route.params;
-  const background = useBackgroundClient();
+  const [address, setAddress] = useState<string>("");
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
-  const [destinationAddress, setDestinationAddress] = useState("");
-  const [openConfirm, setOpenConfirm] = useState(false);
-  const [wasSent, setWasSent] = useState(false);
 
   const {
     isValidAddress,
-    isErrorAddress,
-    isFreshAddress: _,
+    _isErrorAddress,
+    normalizedAddress: destinationAddress,
   } = useIsValidAddress(
     nft.blockchain,
-    destinationAddress,
+    address,
     solanaProvider.connection,
     ethereumCtx.provider
   );
 
-  useEffect(() => {
-    (async () => {
-      // If the modal is being closed and the NFT has been sent elsewhere then
-      // navigate back to the nav root because the send screen is no longer
-      // valid as the wallet no longer possesses the NFT.
-      if (!openConfirm && wasSent) {
-        await background.request({
-          method: UI_RPC_METHOD_NAVIGATION_TO_ROOT,
-          params: [],
-        });
-      }
-    })();
-  }, [openConfirm, wasSent, background]);
+  const hasInputError = !isValidAddress && address.length > 15;
 
   return (
-    <View
-      style={{
-        paddingLeft: 16,
-        paddingRight: 16,
-      }}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View
-        style={{
-          justifyContent: "space-between",
-        }}
-      >
-        <View>
-          <NftImage imageUrl={nft.imageUrl} />
-          <StyledTextInput
-            autoFocus
-            placeholder={`Recipient's ${toTitleCase(nft.blockchain)} Address`}
-            value={destinationAddress}
-            //   setValue={(e) => setDestinationAddress(e.target.value)}
-            //   error={isErrorAddress}
-            //   inputProps={{
-            //     name: "to",
-            //   }}
-          />
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            paddingTop: 18,
-            paddingBottom: 16,
+      <Screen style={{ paddingHorizontal: 12, paddingVertical: 16 }}>
+        <SendTokenSelectUserScreen
+          blockchain={nft.blockchain}
+          token={nft.token}
+          inputContent={address}
+          setInputContent={setAddress}
+          hasInputError={hasInputError}
+          onSelectUserResult={({ user, address }) => {
+            if (!address) {
+              return;
+            }
+
+            navigation.navigate("SendNFTConfirm", {
+              nft,
+              to: {
+                address,
+                username: user.username,
+                walletName: user.walletName,
+                image: user.image,
+                uuid: user.uuid,
+              },
+            });
           }}
-        >
-          <SecondaryButton
-            style={{
-              marginRight: 8,
-            }}
-            onPress={close}
-            label="Cancel"
-          />
-          <PrimaryButton
-            disabled={!isValidAddress}
-            onPress={() => setOpenConfirm(true)}
-            label="Next"
-          />
-        </View>
-      </View>
-    </View>
+          onPressNext={({ user }) => {
+            navigation.navigate("SendNFTConfirm", {
+              nft,
+              to: {
+                address: destinationAddress,
+                username: user?.username,
+                image: user?.image,
+                uuid: user?.uuid,
+              },
+            });
+          }}
+        />
+      </Screen>
+    </KeyboardAvoidingView>
   );
 }
 
