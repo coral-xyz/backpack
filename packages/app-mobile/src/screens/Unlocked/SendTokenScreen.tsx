@@ -471,7 +471,6 @@ function NFTPreviewImage({ nft }: { nft: Nft }): JSX.Element {
     <Image
       source={{ uri }}
       style={{
-        backgroundColor: "yellow",
         borderRadius: 8,
         width: 192,
         height: 192,
