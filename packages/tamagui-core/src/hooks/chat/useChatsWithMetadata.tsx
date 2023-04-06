@@ -42,7 +42,7 @@ export const useChatsWithMetadata = ({
 
     if (haveSameColor(users[userId1], users[userId2])) {
       const newColorIndex = (users[userId1].colorIndex + 1) % NEW_COLORS.length;
-      colorIndexMap[userId2] = newColorIndex;
+      colorIndexMap.set(userId2, newColorIndex);
     }
   }
 
@@ -52,7 +52,7 @@ export const useChatsWithMetadata = ({
       image: users[chat.uuid]?.image || "",
       username: users[chat.uuid]?.username || "",
       color: users[chat.uuid]?.color,
-      colorIndex: colorIndexMap[chat.uuid] || users[chat.uuid]?.colorIndex,
+      colorIndex: colorIndexMap.get(chat.uuid) || users[chat.uuid]?.colorIndex,
       parent_message_author_username:
         users[chat.parent_message_author_uuid]?.username,
     })),
