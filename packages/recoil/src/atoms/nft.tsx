@@ -2,25 +2,15 @@ import type { Nft, NftCollection } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   Blockchain,
-  EnrichedNotification,
-  fetchXnftsFromPubkey,
   WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
-import {
-  selector,
-  selectorFamily,
-  useRecoilValue,
-  useRecoilValueLoadable,
-  waitForAll,
-} from "recoil";
+import { selector, selectorFamily, waitForAll } from "recoil";
 
 import { equalSelectorFamily } from "../equals";
 
 import { ethereumNftById, ethereumWalletCollections } from "./ethereum/nft";
 import { ethereumConnectionUrl } from "./ethereum";
-import { xnftJwt } from "./preferences";
 import {
-  anchorContext,
   isOneLive,
   solanaConnectionUrl,
   solanaNftById,
@@ -140,13 +130,15 @@ export const nftsByIds = selectorFamily<
 
       const allNfts = get(
         waitForAll(
-          nftIds.map(({ nftId, publicKey }) => {
-            if (blockchain === Blockchain.SOLANA) {
-              return solanaNftById({ publicKey, connectionUrl, nftId });
-            } else {
-              return ethereumNftById({ publicKey, connectionUrl, nftId });
-            }
-          })
+          nftIds
+            .map(({ nftId, publicKey }) => {
+              if (blockchain === Blockchain.SOLANA) {
+                return solanaNftById({ publicKey, connectionUrl, nftId });
+              } else {
+                return ethereumNftById({ publicKey, connectionUrl, nftId });
+              }
+            })
+            .filter(Boolean)
         )
       );
       return allNfts;

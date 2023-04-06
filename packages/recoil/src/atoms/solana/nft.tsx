@@ -83,80 +83,85 @@ const solanaMetadataMap = selectorFamily<MetadataMap, { publicKey: string }>({
 });
 
 export const solanaNftById = equalSelectorFamily<
-  Nft,
+  Nft | undefined,
   { publicKey: string; connectionUrl: string; nftId: string }
 >({
   key: "nftById",
   get:
-    ({ publicKey, connectionUrl, nftId }) =>
+    ({ publicKey, nftId }) =>
     async ({ get }) => {
-      const { connection } = get(anchorContext);
-      const metadataMap = get(solanaMetadataMap({ publicKey }));
-      const { nftToken, nftTokenMetadata } = metadataMap.metadata[nftId];
+      try {
+        const { connection } = get(anchorContext);
+        const metadataMap = get(solanaMetadataMap({ publicKey }));
+        const { nftToken, nftTokenMetadata } = metadataMap.metadata[nftId];
 
-      const resp = await connection.customSplMetadataUri(
-        [nftToken],
-        [nftTokenMetadata]
-      );
-      const [_, uriData] = resp[0] ?? [];
-      const collectionName = (() => {
-        if (!uriData) {
-          return "";
-        } else if (uriData.metadata.collection) {
-          // TODO: there is a verified boolean on the object. We should probably check it.
-          const metadata = get(
-            solanaNftCollection({
-              collectionPublicKey: uriData.metadata.collection.key.toString(),
-            })
-          );
-          return metadata?.data.name;
-        } else if (uriData.tokenMetaUriData.collection) {
-          return uriData.tokenMetaUriData?.collection?.name;
-        } else {
-          return uriData.metadata.data.name;
-        }
-      })()?.replace(/\0/g, "");
+        const resp = await connection.customSplMetadataUri(
+          [nftToken],
+          [nftTokenMetadata]
+        );
+        const [_, uriData] = resp[0] ?? [];
+        const collectionName = (() => {
+          if (!uriData) {
+            return "";
+          } else if (uriData.metadata.collection) {
+            // TODO: there is a verified boolean on the object. We should probably check it.
+            const metadata = get(
+              solanaNftCollection({
+                collectionPublicKey: uriData.metadata.collection.key.toString(),
+              })
+            );
+            return metadata?.data.name;
+          } else if (uriData.tokenMetaUriData.collection) {
+            return uriData.tokenMetaUriData?.collection?.name;
+          } else {
+            return uriData.metadata.data.name;
+          }
+        })()?.replace(/\0/g, "");
 
-      const nft: Nft = {
-        id: nftTokenMetadata?.publicKey ?? "",
-        blockchain: Blockchain.SOLANA,
-        publicKey: nftToken.key!,
-        mint: nftTokenMetadata?.account.mint,
-        metadataCollectionId: uriData?.metadata?.collection?.key.toString(),
-        name: (
-          nftTokenMetadata?.account.data.name ??
-          (uriData ? uriData.tokenMetaUriData.name : "Unknown")
-        )?.replace(/\0/g, ""),
-        description: uriData ? uriData.tokenMetaUriData.description : "",
-        externalUrl: uriData
-          ? externalResourceUri(
-              uriData.tokenMetaUriData.external_url?.replace(/\0/g, "")
-            )
-          : "",
-        imageUrl:
-          uriData && uriData.tokenMetaUriData.image
+        const nft: Nft = {
+          id: nftTokenMetadata?.publicKey ?? "",
+          blockchain: Blockchain.SOLANA,
+          publicKey: nftToken.key!,
+          mint: nftTokenMetadata?.account.mint,
+          metadataCollectionId: uriData?.metadata?.collection?.key.toString(),
+          name: (
+            nftTokenMetadata?.account.data.name ??
+            (uriData ? uriData.tokenMetaUriData.name : "Unknown")
+          )?.replace(/\0/g, ""),
+          description: uriData ? uriData.tokenMetaUriData.description : "",
+          externalUrl: uriData
             ? externalResourceUri(
-                uriData.tokenMetaUriData.image?.replace(/\0/g, "")
+                uriData.tokenMetaUriData.external_url?.replace(/\0/g, "")
               )
-            : UNKNOWN_NFT_ICON_SRC,
-        // ensuring attributes is an array
-        attributes:
-          uriData && uriData?.tokenMetaUriData?.attributes?.map
-            ? uriData?.tokenMetaUriData?.attributes?.map(
-                (a: { trait_type: string; value: string }) => ({
-                  traitType: a.trait_type,
-                  value: a.value,
-                })
-              )
-            : [],
-        properties: uriData?.tokenMetaUriData?.properties ?? {},
-        creators: uriData.metadata.data.creators ?? [],
-        collectionName,
-      };
-      if (isMadLads(nft.creators)) {
-        nft.lockScreenImageUrl = nft.properties?.files?.[0]?.uri;
+            : "",
+          imageUrl:
+            uriData && uriData.tokenMetaUriData.image
+              ? externalResourceUri(
+                  uriData.tokenMetaUriData.image?.replace(/\0/g, "")
+                )
+              : UNKNOWN_NFT_ICON_SRC,
+          // ensuring attributes is an array
+          attributes:
+            uriData && uriData?.tokenMetaUriData?.attributes?.map
+              ? uriData?.tokenMetaUriData?.attributes?.map(
+                  (a: { trait_type: string; value: string }) => ({
+                    traitType: a.trait_type,
+                    value: a.value,
+                  })
+                )
+              : [],
+          properties: uriData?.tokenMetaUriData?.properties ?? {},
+          creators: uriData?.metadata?.data?.creators ?? [],
+          collectionName,
+        };
+        if (isMadLads(nft.creators)) {
+          nft.lockScreenImageUrl = nft.properties?.files?.[0]?.uri;
+        }
+        return nft;
+      } catch (err) {
+        console.error(err);
+        return undefined;
       }
-      return nft;
     },
   equals: (m1, m2) => JSON.stringify(m1) === JSON.stringify(m2),
 });

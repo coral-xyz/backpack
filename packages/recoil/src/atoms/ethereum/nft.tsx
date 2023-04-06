@@ -1,4 +1,4 @@
-import type { EthereumNft, Nft, NftCollection } from "@coral-xyz/common";
+import type { Nft, NftCollection } from "@coral-xyz/common";
 import {
   Blockchain,
   EthereumConnectionUrl,
@@ -105,17 +105,22 @@ export const ethereumWalletCollections = selectorFamily<
 });
 
 export const ethereumNftById = equalSelectorFamily<
-  Nft,
+  Nft | undefined,
   { publicKey: string; connectionUrl: string; nftId: string }
 >({
   key: "nftById",
   get:
     ({ publicKey, connectionUrl, nftId }) =>
     ({ get }) => {
-      const { nfts } = get(
-        ethereumNftCollections({ publicKey, connectionUrl })
-      );
-      return nfts.get(nftId)!;
+      try {
+        const { nfts } = get(
+          ethereumNftCollections({ publicKey, connectionUrl })
+        );
+        return nfts.get(nftId)!;
+      } catch (err) {
+        console.error(err);
+        return undefined;
+      }
     },
   equals: (m1, m2) => JSON.stringify(m1) === JSON.stringify(m2),
 });
