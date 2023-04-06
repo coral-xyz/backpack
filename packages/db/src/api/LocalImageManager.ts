@@ -16,12 +16,7 @@ export class LocalImageManager {
     if (nextEl) {
       await this.storeImageInLocalStorage(nextEl.image, nextEl.fullImage);
     }
-    await this.sleep(15);
-    this.process();
-  }
-
-  async sleep(timer) {
-    await new Promise((resolve) => setTimeout(resolve, timer * 1000));
+    setTimeout(() => this.process(), 15000);
   }
 
   bulkAddToQueue(elements: { image: string }[]) {
