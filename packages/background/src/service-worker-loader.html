@@ -43,8 +43,7 @@
           document.querySelector("body").style.background = "yellow";
           console.log("SERVICE WORKER: registered", registration);
 
-          const worker = (await registration.waiting) || registration.active;
-          await worker?.postMessage?.({ type: "READY" });
+          await registration.active.postMessage({ type: "READY" });
         } catch (error) {
           console.log("SERVICE WORKER: registration failed", error);
         }
