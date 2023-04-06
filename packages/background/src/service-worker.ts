@@ -10,6 +10,11 @@ self.addEventListener("install", async () => {
 
 self.addEventListener("activate", async (event) => {
   await event.waitUntil(clients.claim());
-  start({ isMobile: true });
-  await postMessageToIframe({ type: BACKGROUND_SERVICE_WORKER_READY });
+});
+
+self.addEventListener("message", async (event) => {
+  if (event.data?.type === "READY") {
+    start({ isMobile: true });
+    await postMessageToIframe({ type: BACKGROUND_SERVICE_WORKER_READY });
+  }
 });
