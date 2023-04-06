@@ -15,7 +15,17 @@ import {
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
-import { Button, Grid, Skeleton, Typography } from "@mui/material";
+import type {
+  TooltipProps} from "@mui/material";
+import {
+  Button,
+  Grid,
+  Skeleton,
+  Tooltip,
+  tooltipClasses,
+  Typography,
+} from "@mui/material";
+import { styled } from "@mui/system";
 import { getSvgPath } from "figma-squircle";
 import { useRecoilValue, waitForAll } from "recoil";
 
@@ -170,7 +180,7 @@ function WalletXnftGrid({
   );
 
   return !isLoading && plugins.length === 0 ? (
-    <></>
+    <span />
   ) : (
     <div
       style={{
@@ -209,12 +219,21 @@ function _WalletXnftGrid({
   const onClickPlugin = (p: any) => {
     openPlugin(p.install.account.xnft.toString());
   };
+  const xNFTPlugin: { title: string; icon: string; url: string } = {
+    title: "xNFT.gg \u2197",
+    icon: "https://www.xnft.gg/logo.svg",
+    url: "https://xnft.gg",
+  };
+  const onClickXnftPlugin = (url: string) => {
+    window.open(url, "_blank");
+  };
   const iconsPerRow = isXs ? 4 : 6;
   return (
     <>
       <BalancesTableHead wallet={wallet} />
-      {showContent ? <div
-        style={{
+      {showContent ? (
+        <div
+          style={{
             paddingTop: "8px",
             paddingBottom: "18px",
             paddingLeft: "10px",
@@ -224,23 +243,40 @@ function _WalletXnftGrid({
             borderBottomRightRadius: "10px",
           }}
         >
-        <Grid container>
-          {isLoading
-              ? Array.from(Array(iconsPerRow).keys()).map((_, idx) => {
-                  return (
-                    <Grid
-                      item
-                      key={idx}
-                      xs={isXs ? 3 : 2}
-                      style={{
-                        marginTop: idx >= iconsPerRow ? "24px" : 0,
-                      }}
-                    >
-                      <SkeletonAppIcon />
-                    </Grid>
-                  );
-                })
-              : plugins.map((p: any, idx: number) => {
+          <Grid container>
+            {isLoading ? (
+              Array.from(Array(iconsPerRow).keys()).map((_, idx) => {
+                return (
+                  <Grid
+                    item
+                    key={idx}
+                    xs={isXs ? 3 : 2}
+                    style={{
+                      marginTop: idx >= iconsPerRow ? "24px" : 0,
+                    }}
+                  >
+                    <SkeletonAppIcon />
+                  </Grid>
+                );
+              })
+            ) : (
+              <>
+                <BootstrapTooltipStyled title="Browse xNFTs" placement="top">
+                  <Grid
+                    item
+                    key="xnft.gg"
+                    xs={isXs ? 3 : 2}
+                    style={{
+                      marginTop: plugins.length >= iconsPerRow ? "24px" : 0,
+                    }}
+                  >
+                    <PluginIconCustom
+                      plugin={xNFTPlugin}
+                      onClick={() => onClickXnftPlugin(xNFTPlugin.url)}
+                    />
+                  </Grid>
+                </BootstrapTooltipStyled>
+                {plugins.map((p: any, idx: number) => {
                   return (
                     <Grid
                       item
@@ -254,15 +290,38 @@ function _WalletXnftGrid({
                     </Grid>
                   );
                 })}
-        </Grid>
-      </div> : null}
+              </>
+            )}
+          </Grid>
+        </div>
+      ) : null}
     </>
   );
 }
 
+function BootstrapTooltip(props: TooltipProps) {
+  const { className, ...other } = props;
+  return <Tooltip {...other} arrow classes={{ popper: className }} />;
+}
+
+const BootstrapTooltipStyled = styled(BootstrapTooltip)(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: theme.palette.common.black,
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: theme.palette.common.black,
+  },
+}));
+
 function PluginIcon({ plugin, onClick }: any) {
   return (
     <AppIcon title={plugin.title} iconUrl={plugin.iconUrl} onClick={onClick} />
+  );
+}
+
+function PluginIconCustom({ plugin, onClick }: any) {
+  return (
+    <AppIcon title={plugin.title} iconUrl={plugin.icon} onClick={onClick} />
   );
 }
 
