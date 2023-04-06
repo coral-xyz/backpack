@@ -206,7 +206,7 @@ export function ConfirmSendSolana({
   );
 }
 
-const ConfirmSendSolanaTable: React.FC<{
+export const ConfirmSendSolanaTable: React.FC<{
   destinationAddress: string;
 }> = ({ destinationAddress }) => {
   const theme = useTheme();

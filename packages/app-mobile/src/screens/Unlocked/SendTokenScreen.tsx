@@ -39,11 +39,18 @@ import { BigNumber } from "ethers";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SendEthereumConfirmationCard } from "~components/BottomDrawerEthereumConfirmation";
-import { SendSolanaConfirmationCard } from "~components/BottomDrawerSolanaConfirmation";
-import { BottomSheetModal } from "~components/BottomSheetModal";
+import {
+  SendSolanaConfirmationCard,
+  ConfirmSendSolanaTable,
+} from "~components/BottomDrawerSolanaConfirmation";
+import {
+  Header,
+  BetterBottomSheet,
+  BottomSheetModal,
+} from "~components/BottomSheetModal";
 import { UnstyledTokenTextInput } from "~components/TokenInputField";
 import { UserAvatar } from "~components/UserAvatar";
-import { Screen, TwoButtonFooter } from "~components/index";
+import { StyledText, Screen, TwoButtonFooter } from "~components/index";
 import { useTheme as useCustomTheme } from "~hooks/useTheme";
 import type { UnlockedNavigatorStackParamList } from "~navigation/UnlockedNavigator";
 
@@ -421,15 +428,21 @@ export function SendTokenConfirmScreen({
 }
 
 export function SendNFTConfirmScreen({ route, navigation }): JSX.Element {
-  const { nft, to } = route.params;
   const insets = useSafeAreaInsets();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const { nft, to } = route.params;
+
+  // const SendConfirmComponent = {
+  //   [Blockchain.SOLANA]: SendSolanaConfirmationCard,
+  //   [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
+  // }[nft.blockchain];
 
   return (
     <>
       <Screen
         style={{ justifyContent: "space-between", marginBottom: insets.bottom }}
       >
-        <View style={{ marginTop: 24, alignItems: "center" }}>
+        <YStack ai="center" mt={24}>
           <Box mb={24}>
             <AvatarHeader
               walletName={to.walletName}
@@ -438,8 +451,8 @@ export function SendNFTConfirmScreen({ route, navigation }): JSX.Element {
               image={to.image}
             />
           </Box>
-          <NFTPreviewImage nft={nft} />
-        </View>
+          <NFTPreviewImage nft={nft} width={192} height={192} />
+        </YStack>
         <TwoButtonFooter
           leftButton={
             <SecondaryButton
@@ -453,27 +466,49 @@ export function SendNFTConfirmScreen({ route, navigation }): JSX.Element {
             <PrimaryButton
               label="Next"
               onPress={async () => {
-                // show bottom sheet
-                console.log("pressed");
+                setIsModalVisible(() => true);
               }}
             />
           }
         />
       </Screen>
-      <View />
+      <BetterBottomSheet
+        isVisible={isModalVisible}
+        resetVisibility={() => setIsModalVisible(false)}
+      >
+        <YStack ai="center" mb={18}>
+          <Header text="Review Send" />
+          <XStack space ai="center" my={18}>
+            <NFTPreviewImage nft={nft} width={48} height={48} />
+            <StyledText fontWeight="700" fontSize={24}>
+              1
+            </StyledText>
+          </XStack>
+          <ConfirmSendSolanaTable destinationAddress={to.address} />
+        </YStack>
+        <PrimaryButton label="Send" onPress={() => {}} />
+      </BetterBottomSheet>
     </>
   );
 }
 
-function NFTPreviewImage({ nft }: { nft: Nft }): JSX.Element {
+function NFTPreviewImage({
+  nft,
+  width,
+  height,
+}: {
+  nft: Nft;
+  width: number;
+  height: number;
+}): JSX.Element {
   const uri = isMadLads(nft.creators) ? nft.lockScreenImageUrl : nft.imageUrl;
   return (
     <Image
       source={{ uri }}
       style={{
         borderRadius: 8,
-        width: 192,
-        height: 192,
+        width,
+        height,
       }}
     />
   );
