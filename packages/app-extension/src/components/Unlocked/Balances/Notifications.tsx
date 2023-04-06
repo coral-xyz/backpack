@@ -555,7 +555,7 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
       <div style={{ display: "flex", marginTop: 5 }}>
         <UserAction
           style={{
-            color: theme.custom.colors.acceptFriendRequest,
+            color: theme.custom.colors.blue,
             marginRight: 10,
           }}
           text="Accept"
