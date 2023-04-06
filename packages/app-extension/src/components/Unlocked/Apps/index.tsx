@@ -15,7 +15,7 @@ import {
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
-import { Button, Grid, Skeleton, Typography } from "@mui/material";
+import { Button, Grid, Skeleton, Tooltip, Typography } from "@mui/material";
 import { getSvgPath } from "figma-squircle";
 import { useRecoilValue, waitForAll } from "recoil";
 
@@ -170,7 +170,7 @@ function WalletXnftGrid({
   );
 
   return !isLoading && plugins.length === 0 ? (
-    <></>
+    <div />
   ) : (
     <div
       style={{
@@ -213,8 +213,9 @@ function _WalletXnftGrid({
   return (
     <>
       <BalancesTableHead wallet={wallet} />
-      {showContent ? <div
-        style={{
+      {showContent ? (
+        <div
+          style={{
             paddingTop: "8px",
             paddingBottom: "18px",
             paddingLeft: "10px",
@@ -224,38 +225,62 @@ function _WalletXnftGrid({
             borderBottomRightRadius: "10px",
           }}
         >
-        <Grid container>
-          {isLoading
-              ? Array.from(Array(iconsPerRow).keys()).map((_, idx) => {
-                  return (
-                    <Grid
-                      item
-                      key={idx}
-                      xs={isXs ? 3 : 2}
-                      style={{
-                        marginTop: idx >= iconsPerRow ? "24px" : 0,
+          <Grid container>
+            {isLoading ? (
+              Array.from(Array(iconsPerRow).keys()).map((_, idx) => {
+                return (
+                  <Grid
+                    item
+                    key={idx}
+                    xs={isXs ? 3 : 2}
+                    style={{
+                      marginTop: idx >= iconsPerRow ? "24px" : 0,
+                    }}
+                  >
+                    <SkeletonAppIcon />
+                  </Grid>
+                );
+              })
+            ) : (
+              <>
+                `
+                <Tooltip title="Browse xNFTs" placement="top">
+                  <Grid
+                    item
+                    xs={isXs ? 3 : 2}
+                    style={{
+                      marginTop: 0,
+                    }}
+                  >
+                    <AppIcon
+                      title={`xNFT.gg \u2197`}
+                      iconUrl="https://www.xnft.gg/logo.svg"
+                      onClick={() => {
+                        window.open("https://www.xnft.gg");
                       }}
-                    >
-                      <SkeletonAppIcon />
-                    </Grid>
-                  );
-                })
-              : plugins.map((p: any, idx: number) => {
+                    />
+                  </Grid>
+                </Tooltip>
+                {plugins.map((p: any, idx: number) => {
                   return (
                     <Grid
                       item
                       key={p.url}
                       xs={isXs ? 3 : 2}
                       style={{
-                        marginTop: idx >= iconsPerRow ? "24px" : 0,
+                        marginTop: idx + 1 >= iconsPerRow ? "24px" : 0,
                       }}
                     >
                       <PluginIcon plugin={p} onClick={() => onClickPlugin(p)} />
                     </Grid>
                   );
                 })}
-        </Grid>
-      </div> : null}
+                `
+              </>
+            )}
+          </Grid>
+        </div>
+      ) : null}
     </>
   );
 }
