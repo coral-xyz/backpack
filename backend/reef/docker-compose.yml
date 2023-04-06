@@ -46,8 +46,8 @@ services:
     restart: unless-stopped
     healthcheck:
       test: curl -f http://localhost:8080/healthz || exit 1
-      interval: 5s
-      timeout: 2s
+      interval: 10s
+      timeout: 10s
       retries: 15
     environment:
       HASURA_GRAPHQL_CORS_DOMAIN: "*"
