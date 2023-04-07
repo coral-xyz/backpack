@@ -6,56 +6,49 @@ import { getUser, getUserFromUsername, getUserIdFromPubkey } from "../db/users";
 const router = express.Router();
 
 router.get("/fromPubkey", authMiddleware, async (req, res) => {
-  // @ts-ignore
-  const publicKey: string = req.query.publicKey;
-  // @ts-ignore
-  const blockchain: string = req.query.blockchain;
+  const publicKey = req.query.publicKey as string;
+  const blockchain = req.query.blockchain as string;
 
-  await getUserIdFromPubkey({ blockchain, publicKey })
-    .then((user) => {
-      if (user) {
-        res.status(200).json({ user });
-      } else {
-        res.status(411).json({ msg: "User not found" });
-      }
-    })
-    .catch((e) => {
-      res.status(500).json({ msg: "Failed to fetch user details" });
-    });
+  try {
+    const user = await getUserIdFromPubkey({ blockchain, publicKey });
+    if (user) {
+      res.status(200).json({ user });
+    } else {
+      res.status(411).json({ msg: "User not found" });
+    }
+  } catch (_err) {
+    res.status(500).json({ msg: "Failed to fetch user details" });
+  }
 });
 
 router.get("/fromUsername", authMiddleware, async (req, res) => {
-  // @ts-ignore
-  const username: string = req.query.username;
+  const username = req.query.username as string;
 
-  await getUserFromUsername({ username })
-    .then((user) => {
-      if (user) {
-        res.status(200).json({ user });
-      } else {
-        res.status(411).json({ msg: "User not found" });
-      }
-    })
-    .catch((e) => {
-      res.status(500).json({ msg: "Failed to fetch user details" });
-    });
+  try {
+    const user = await getUserFromUsername({ username });
+    if (user) {
+      res.status(200).json({ user });
+    } else {
+      res.status(411).json({ msg: "User not found" });
+    }
+  } catch (_err) {
+    res.status(500).json({ msg: "Failed to fetch user details" });
+  }
 });
 
 router.get("/", authMiddleware, async (req, res) => {
-  // @ts-ignore
-  const id: string = req.query.user_id;
+  const id = req.query.user_id as string;
 
-  await getUser(id)
-    .then((user) => {
-      if (user) {
-        res.status(200).json({ user });
-      } else {
-        res.status(411).json({ msg: "User not found" });
-      }
-    })
-    .catch((e) => {
-      res.status(500).json({ msg: "Failed to fetch user details" });
-    });
+  try {
+    const user = await getUser(id);
+    if (user) {
+      res.status(200).json({ user });
+    } else {
+      res.status(411).json({ msg: "User not found" });
+    }
+  } catch (_err) {
+    res.status(500).json({ msg: "Failed to fetch user details" });
+  }
 });
 
 export default router;

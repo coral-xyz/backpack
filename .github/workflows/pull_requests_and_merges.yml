@@ -65,6 +65,17 @@ jobs:
 
       - run: yarn test
 
+      - name: "Check if any backend code has changed, to know if we should run backend tests"
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+
+      - if: steps.changes.outputs.backend == 'true'
+        uses: ./.github/actions/backend-tests
+
       ##########################################################################
       # GitHub Pages (mobile app and hardware wallet support)
       ##########################################################################
