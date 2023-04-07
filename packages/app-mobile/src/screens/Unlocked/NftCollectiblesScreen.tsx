@@ -69,7 +69,7 @@ function NftCollectionCard({
       connectionUrl,
       nftId: collectionDisplayNftId,
     })
-  );
+  ) || { name: "", collectionName: "", id: "", imageUrl: "", itemIds: [] };
 
   const onPressCollectionCard = () => {
     if (collection.itemIds.length === 1) {
