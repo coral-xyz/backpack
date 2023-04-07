@@ -71,6 +71,7 @@ export * from "./explorer";
 export * from "./programs";
 export * from "./provider";
 export * from "./rpc-helpers";
+export * from "./send-helpers";
 export * from "./transaction-helpers";
 export * from "./types";
 export * from "./wallet-adapter";
