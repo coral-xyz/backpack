@@ -432,10 +432,10 @@ export function SendNFTConfirmScreen({ route, navigation }): JSX.Element {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { nft, to } = route.params;
 
-  // const SendConfirmComponent = {
-  //   [Blockchain.SOLANA]: SendSolanaConfirmationCard,
-  //   [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
-  // }[nft.blockchain];
+  const SendConfirmComponent = {
+    [Blockchain.SOLANA]: SendSolanaConfirmationCard,
+    [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
+  }[nft.blockchain];
 
   return (
     <>
@@ -476,18 +476,43 @@ export function SendNFTConfirmScreen({ route, navigation }): JSX.Element {
         isVisible={isModalVisible}
         resetVisibility={() => setIsModalVisible(false)}
       >
-        <YStack ai="center" mb={18}>
-          <Header text="Review Send" />
-          <XStack space ai="center" my={18}>
-            <NFTPreviewImage nft={nft} width={48} height={48} />
-            <StyledText fontWeight="700" fontSize={24}>
-              1
-            </StyledText>
-          </XStack>
-          <ConfirmSendSolanaTable destinationAddress={to.address} />
-        </YStack>
-        <PrimaryButton label="Send" onPress={() => {}} />
+        <SendConfirmComponent
+          navigation={navigation}
+          token={{
+            address: nft.publicKey,
+            logo: nft.imageUrl,
+            decimals: 0,
+            mint: nft.mint,
+          }}
+          // TODO destinationUser
+          destinationAddress={to.address}
+          amount={BigNumber.from(1)}
+          onCompleteStep={(step: string) => {
+            if (step !== "confirm") {
+              console.log("hi");
+              // setModalIndex(() => 1);
+            }
+          }}
+        />
       </BetterBottomSheet>
+    </>
+  );
+}
+
+function ReviewSendNFT({ nft, address, onConfirm }): JSX.Element {
+  return (
+    <>
+      <YStack ai="center" mb={18}>
+        <Header text="Review Send" />
+        <XStack space ai="center" my={18}>
+          <NFTPreviewImage nft={nft} width={48} height={48} />
+          <StyledText fontWeight="700" fontSize={24}>
+            1
+          </StyledText>
+        </XStack>
+        <ConfirmSendSolanaTable destinationAddress={address} />
+      </YStack>
+      <PrimaryButton label="Send" onPress={onConfirm} />
     </>
   );
 }

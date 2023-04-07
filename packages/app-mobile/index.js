@@ -1,6 +1,7 @@
 import * as SQLite from "expo-sqlite";
 
 import { registerRootComponent } from "expo";
+import { TextEncoder, TextDecoder } from "fast-text-encoding";
 import setGlobalVars from "indexeddbshim/dist/indexeddbshim-noninvasive";
 import "./src/crypto-shim";
 
@@ -11,6 +12,17 @@ if (typeof Buffer === "undefined") {
 if (typeof BigInt === "undefined") {
   global.BigInt = require("big-integer");
 }
+
+if (typeof TextEncoder === "undefined") {
+  global.TextEncoder = TextEncoder;
+}
+
+if (typeof TextDecoder === "undefined") {
+  global.TextDecoder = TextDecoder;
+}
+
+console.log("TextDecoder", TextDecoder);
+console.log("TextEncoder", TextEncoder);
 
 setGlobalVars(window, { checkOrigin: false, win: SQLite });
 

@@ -179,7 +179,9 @@ export function Error({
       <IconContainer>
         <CrossIcon />
       </IconContainer>
-      <Text style={{ color: theme.custom.colors.fontColor }}>{error}</Text>
+      <Box mb={16}>
+        <Text style={{ color: theme.custom.colors.fontColor }}>{error}</Text>
+      </Box>
       {explorer && connectionUrl && signature ? (
         <SecondaryButton
           label="View Explorer"

@@ -3319,6 +3319,7 @@ __metadata:
     expo-status-bar: ~1.4.4
     expo-system-ui: ~2.2.1
     expo-updates: ~0.16.4
+    fast-text-encoding: ^1.0.6
     indexeddbshim: ^11.0.0-beta.0
     jest: ^29.2.1
     jest-expo: ^47.0.0
@@ -21746,6 +21747,13 @@ __metadata:
   version: 1.0.0
   resolution: "fast-stable-stringify@npm:1.0.0"
   checksum: ef1203d246a7e8ac15e2bfbda0a89fa375947bccf9f7910be0ea759856dbe8ea5024a0d8cc2cceabe18a9cb67e95927b78bb6173a3ae37ec55a518cf36e5244b
+  languageName: node
+  linkType: hard
+
+"fast-text-encoding@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "fast-text-encoding@npm:1.0.6"
+  checksum: 9d58f694314b3283e785bf61954902536da228607ad246905e30256f9ab8331f780ac987e7222c9f5eafd04168d07e12b8054c85cedb76a2c05af0e82387a903
   languageName: node
   linkType: hard
 

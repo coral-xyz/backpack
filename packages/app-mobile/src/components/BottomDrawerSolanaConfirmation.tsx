@@ -1,23 +1,20 @@
-import type { Connection } from "@solana/web3.js";
 import type { BigNumber } from "ethers";
 
 import { useState } from "react";
-import { View, Text } from "react-native";
+import { Text } from "react-native";
 
-import { programs, tryGetAccount } from "@cardinal/token-manager";
 import {
   Blockchain,
   confirmTransaction,
   SOL_NATIVE_MINT,
   Solana,
   walletAddressDisplay,
-  metadataAddress,
+  isCardinalWrappedToken,
+  isCreatorStandardToken,
+  isOpenCreatorProtocol,
+  isProgrammableNftToken,
 } from "@coral-xyz/common";
-import { useSolanaCtx } from "@coral-xyz/recoil";
-import {
-  Metadata,
-  TokenStandard,
-} from "@metaplex-foundation/mpl-token-metadata";
+import { useSolanaCtx, useSolanaTokenMint } from "@coral-xyz/recoil";
 import { PublicKey } from "@solana/web3.js";
 
 import {
@@ -65,6 +62,11 @@ export function SendSolanaConfirmationCard({
     }
   };
 
+  const mintInfo = useSolanaTokenMint({
+    publicKey: solanaCtx.walletPublicKey.toString(),
+    tokenAddress: token.address,
+  });
+
   const onConfirm = async () => {
     handleChangeStep("sending");
     //
@@ -72,23 +74,12 @@ export function SendSolanaConfirmationCard({
     //
     let txSig;
     try {
+      const mintId = new PublicKey(token.mint?.toString() as string);
       if (token.mint === SOL_NATIVE_MINT.toString()) {
         txSig = await Solana.transferSol(solanaCtx, {
           source: solanaCtx.walletPublicKey,
           destination: new PublicKey(destinationAddress),
           amount: amount.toNumber(),
-        });
-      } else if (
-        await isCardinalWrappedToken(
-          solanaCtx.connection,
-          token.mint?.toString() as string
-        )
-      ) {
-        txSig = await Solana.transferCardinalToken(solanaCtx, {
-          destination: new PublicKey(destinationAddress),
-          mint: new PublicKey(token.mint!),
-          amount: amount.toNumber(),
-          decimals: token.decimals,
         });
       } else if (
         await isProgrammableNftToken(
@@ -103,13 +94,48 @@ export function SendSolanaConfirmationCard({
           decimals: token.decimals,
           source: new PublicKey(token.address),
         });
-      } else {
-        txSig = await Solana.transferToken(solanaCtx, {
-          destination: new PublicKey(destinationAddress),
-          mint: new PublicKey(token.mint!),
-          amount: amount.toNumber(),
-          decimals: token.decimals,
-        });
+      }
+      // Use an else here to avoid an extra request if we are transferring sol native mints.
+      else {
+        const ocpMintState = await isOpenCreatorProtocol(
+          solanaCtx.connection,
+          mintId,
+          mintInfo
+        );
+        if (ocpMintState !== null) {
+          txSig = await Solana.transferOpenCreatorProtocol(
+            solanaCtx,
+            {
+              destination: new PublicKey(destinationAddress),
+              amount: amount.toNumber(),
+              mint: new PublicKey(token.mint!),
+            },
+            ocpMintState
+          );
+        } else if (isCreatorStandardToken(mintId, mintInfo)) {
+          txSig = await Solana.transferCreatorStandardToken(solanaCtx, {
+            destination: new PublicKey(destinationAddress),
+            mint: new PublicKey(token.mint!),
+            amount: amount.toNumber(),
+            decimals: token.decimals,
+          });
+        } else if (
+          await isCardinalWrappedToken(solanaCtx.connection, mintId, mintInfo)
+        ) {
+          txSig = await Solana.transferCardinalManagedToken(solanaCtx, {
+            destination: new PublicKey(destinationAddress),
+            mint: new PublicKey(token.mint!),
+            amount: amount.toNumber(),
+            decimals: token.decimals,
+          });
+        } else {
+          txSig = await Solana.transferToken(solanaCtx, {
+            destination: new PublicKey(destinationAddress),
+            mint: new PublicKey(token.mint!),
+            amount: amount.toNumber(),
+            decimals: token.decimals,
+          });
+        }
       }
     } catch (err: any) {
       setError(err.toString());
@@ -241,49 +267,4 @@ export const ConfirmSendSolanaTable: React.FC<{
       menuItems={menuItems}
     />
   );
-};
-
-// TODO(peter) share between mobile/extension
-const isCardinalWrappedToken = async (
-  connection: Connection,
-  tokenAddress: string
-) => {
-  const [tokenManagerId] =
-    await programs.tokenManager.pda.findTokenManagerAddress(
-      new PublicKey(tokenAddress)
-    );
-  const tokenManagerData = await tryGetAccount(() =>
-    programs.tokenManager.accounts.getTokenManager(connection, tokenManagerId)
-  );
-  if (tokenManagerData?.parsed && tokenManagerData?.parsed.transferAuthority) {
-    try {
-      programs.transferAuthority.accounts.getTransferAuthority(
-        connection,
-        tokenManagerData?.parsed.transferAuthority
-      );
-      return true;
-    } catch (error) {
-      console.error(error);
-      console.log("Invalid transfer authority");
-    }
-  }
-  return false;
-};
-
-const isProgrammableNftToken = async (
-  connection: Connection,
-  mintAddress: string
-) => {
-  try {
-    const metadata = await Metadata.fromAccountAddress(
-      connection,
-      await metadataAddress(new PublicKey(mintAddress))
-    );
-
-    return metadata.tokenStandard == TokenStandard.ProgrammableNonFungible;
-  } catch (error) {
-    // most likely this happens if the metadata account does not exist
-    console.log(error);
-    return false;
-  }
 };
