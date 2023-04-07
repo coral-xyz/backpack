@@ -25,7 +25,6 @@ import {
   getUser,
   getUserByPublicKeyAndChain,
   getUserByUsername,
-  getUsers,
   getUsersByPrefix,
   getUsersByPublicKeys,
   getUsersMetadata,
@@ -76,13 +75,10 @@ router.get("/", extractUserId, async (req, res) => {
     uuid
   );
 
-  const metadatas = await getUsers(users.map((x) => x.id));
   const usersWithFriendshipMetadata: RemoteUserData[] = users
     .filter((x) => x.id !== uuid)
-    .map(({ id, username }) => {
+    .map(({ id, username, public_keys }) => {
       const friendship = friendships.find((x) => x.id === id);
-      const public_keys = (metadatas.find((x) => x.id === id)?.publicKeys ||
-        []) as { blockchain: string; publicKey: string }[];
 
       return {
         id,

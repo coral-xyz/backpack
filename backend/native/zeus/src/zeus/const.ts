@@ -770,6 +770,7 @@ export const AllTypesProps: Record<string, any> = {
   },
   auth_users_constraint: "enum" as const,
   auth_users_insert_input: {
+    id: "uuid",
     invitation: "auth_invitations_obj_rel_insert_input",
     invitation_id: "uuid",
     public_keys: "auth_public_keys_arr_rel_insert_input",

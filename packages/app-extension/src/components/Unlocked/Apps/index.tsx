@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { Blockchain, XNFT_GG_LINK } from "@coral-xyz/common";
 import {
   EmptyState,
@@ -15,8 +16,7 @@ import {
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
-import type {
-  TooltipProps} from "@mui/material";
+import type { TooltipProps } from "@mui/material";
 import {
   Button,
   Grid,
@@ -179,9 +179,7 @@ function WalletXnftGrid({
     [wallet]
   );
 
-  return !isLoading && plugins.length === 0 ? (
-    <span />
-  ) : (
+  return !isLoading && plugins.length === 0 ? null : (
     <div
       style={{
         marginLeft: "12px",
@@ -261,21 +259,7 @@ function _WalletXnftGrid({
               })
             ) : (
               <>
-                <BootstrapTooltipStyled title="Browse xNFTs" placement="top">
-                  <Grid
-                    item
-                    key="xnft.gg"
-                    xs={isXs ? 3 : 2}
-                    style={{
-                      marginTop: plugins.length >= iconsPerRow ? "24px" : 0,
-                    }}
-                  >
-                    <PluginIconCustom
-                      plugin={xNFTPlugin}
-                      onClick={() => onClickXnftPlugin(xNFTPlugin.url)}
-                    />
-                  </Grid>
-                </BootstrapTooltipStyled>
+                <LibraryLink isXs={isXs} />
                 {plugins.map((p: any, idx: number) => {
                   return (
                     <Grid
@@ -283,7 +267,7 @@ function _WalletXnftGrid({
                       key={p.url}
                       xs={isXs ? 3 : 2}
                       style={{
-                        marginTop: idx >= iconsPerRow ? "24px" : 0,
+                        marginTop: idx + 1 >= iconsPerRow ? "24px" : 0,
                       }}
                     >
                       <PluginIcon plugin={p} onClick={() => onClickPlugin(p)} />
@@ -299,19 +283,23 @@ function _WalletXnftGrid({
   );
 }
 
-function BootstrapTooltip(props: TooltipProps) {
-  const { className, ...other } = props;
-  return <Tooltip {...other} arrow classes={{ popper: className }} />;
-}
+function LibraryLink({ isXs }: { isXs: boolean }) {
+  const theme = useCustomTheme();
 
-const BootstrapTooltipStyled = styled(BootstrapTooltip)(({ theme }) => ({
-  [`& .${tooltipClasses.arrow}`]: {
-    color: theme.palette.common.black,
-  },
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: theme.palette.common.black,
-  },
-}));
+  return (
+    <Grid item key="xnft-library" xs={isXs ? 3 : 2}>
+      <AppIcon
+        title={"xNFT.gg \u2197"}
+        iconStyle={{
+          padding: 14,
+          background: theme.custom.colorsInverted.nav,
+        }}
+        iconUrl="https://xnft.gg/logo.svg"
+        onClick={() => window.open("https://xnft.gg", "_blank")}
+      />
+    </Grid>
+  );
+}
 
 function PluginIcon({ plugin, onClick }: any) {
   return (
@@ -327,10 +315,12 @@ function PluginIconCustom({ plugin, onClick }: any) {
 
 function AppIcon({
   title,
+  iconStyle,
   iconUrl,
   onClick,
 }: {
   title: string;
+  iconStyle?: CSSProperties;
   iconUrl: string;
   onClick: () => void;
 }) {
@@ -361,6 +351,7 @@ function AppIcon({
           style={{
             width: ICON_WIDTH,
             height: ICON_WIDTH,
+            ...(iconStyle ?? {}),
           }}
         />
       </Button>

@@ -1,0 +1,44 @@
+name: Backend tests
+description: Runs backend tests using pm2 and docker-compose
+
+runs:
+  using: composite
+  steps:
+    - name: "Install pm2 to run node backend services for tests"
+      shell: bash
+      run: npm install pm2 --global
+
+    - name: "Start backend/reef/docker-compose.yml containers for backend services"
+      shell: bash
+      run: cd backend/reef && docker compose up -d --build --wait
+
+    - name: "Run xnft-api-server"
+      shell: bash
+      run: pm2 start backend/native/xnft-api-server/dist/index.js -- --port 8080
+
+    - name: "Test xnft-api-server"
+      shell: bash
+      run: cd backend/native/xnft-api-server && npx vitest
+
+    - if: always()
+      name: "Stop xnft-api-server"
+      shell: bash
+      run: pm2 kill
+
+    - name: "Run backpack-api"
+      shell: bash
+      run: pm2 start backend/native/backpack-api/dist/index.js -- --port 8080
+
+    - name: "Test backpack-api"
+      shell: bash
+      run: cd backend/native/backpack-api && npx vitest
+
+    - if: always()
+      name: "Stop backpack-api"
+      shell: bash
+      run: pm2 kill
+
+    - if: always()
+      name: "Stop docker containers"
+      shell: bash
+      run: cd backend/reef && docker compose down --remove-orphans --volumes

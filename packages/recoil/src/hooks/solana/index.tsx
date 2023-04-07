@@ -10,6 +10,7 @@ export * from "./useRecentTransactions";
 export * from "./useSolanaCommitment";
 export * from "./useSolanaConnection";
 export * from "./useSolanaExplorer";
+export * from "./useSolanaTransaction";
 export * from "./useSplTokenRegistry";
 
 export function useSolanaTokenMint({

@@ -3,6 +3,7 @@ import type {
   SubscriptionType,
   UserMetadata,
 } from "@coral-xyz/common";
+import { NEW_COLORS } from "@coral-xyz/common";
 import { useChats, useUser } from "@coral-xyz/recoil";
 
 import { useUsersMetadata } from "./useUsersMetadata";
@@ -34,19 +35,34 @@ export const useChatsWithMetadata = ({
 
   console.log("debug2", { chats, userIds, uniqueUserIds });
 
+  // Make Sure that both the users in a DM chat do not have the same color
+  const colorIndexMap = new Map();
+  if (uniqueUserIds.length === 2) {
+    const [userId1, userId2] = uniqueUserIds;
+
+    if (haveSameColor(users[userId1], users[userId2])) {
+      const newColorIndex = (users[userId1].colorIndex + 1) % NEW_COLORS.length;
+      colorIndexMap.set(userId2, newColorIndex);
+    }
+  }
+
   return {
     chats: chats.map((chat) => ({
       ...chat,
       image: users[chat.uuid]?.image || "",
       username: users[chat.uuid]?.username || "",
       color: users[chat.uuid]?.color,
-      colorIndex: users[chat.uuid]?.colorIndex,
+      colorIndex: colorIndexMap.get(chat.uuid) || users[chat.uuid]?.colorIndex,
       parent_message_author_username:
         users[chat.parent_message_author_uuid]?.username,
     })),
     usersMetadata: users,
   };
 };
+
+function haveSameColor(user1, user2) {
+  return user1 && user2 && user1.colorIndex === user2.colorIndex;
+}
 
 function getAllUserIdsInMessage(message) {
   const userIds: string[] = [];
