@@ -331,22 +331,24 @@ export const createUser = async (
 export async function getUsersByPrefix({
   usernamePrefix,
   uuid,
-  limit,
+  limit = 25,
 }: {
   usernamePrefix: string;
   uuid: string;
   limit?: number;
 }) {
-  const { auth_users } = await chain("query")(
+  const { auth_users_whose_username_matches: users } = await chain("query")(
     {
-      auth_users: [
+      auth_users_whose_username_matches: [
         {
+          args: {
+            prefix: usernamePrefix,
+          },
           where: {
-            username: { _like: `${usernamePrefix}%` },
             id: { _neq: uuid },
             public_keys: { is_primary: { _eq: true } },
           },
-          limit: limit || 25,
+          limit,
         },
         {
           id: true,
@@ -364,7 +366,7 @@ export async function getUsersByPrefix({
     { operationName: "getUsersByPrefix" }
   );
 
-  return auth_users;
+  return users;
 }
 
 /**
