@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and run tests
     env:
-      RELEASE_PREFIX: "0.6.0"
+      RELEASE_PREFIX: "0.6.1"
     steps:
       ##########################################################################
       # Setup environment.
