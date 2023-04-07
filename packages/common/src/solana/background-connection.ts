@@ -400,13 +400,13 @@ export class BackgroundSolanaConnection extends Connection {
       method: SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
       params: [publicKeys.map((pk) => pk.toString()), commitment],
     });
-    return resp.map((a: any) => {
+
+    return resp.map((a: AccountInfo<Buffer | null>) => {
       if (a === null) {
         return a;
       }
-      a.data = Buffer.from(a.data);
-      a.owner = new PublicKey(a.owner.toString());
-      return a;
+
+      return BackgroundSolanaConnection.accountInfoFromJson(a);
     });
   }
 

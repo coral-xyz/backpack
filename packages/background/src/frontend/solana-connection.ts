@@ -294,7 +294,10 @@ async function handleGetMultipleAccountsInfo(
     pubkeys.map((p) => new PublicKey(p)),
     commitment
   );
-  return [resp];
+  const parsedRes = resp.map((r) =>
+    BackgroundSolanaConnection.accountInfoToJson(r)
+  );
+  return [parsedRes];
 }
 
 async function handleGetConfirmedSignaturesForAddress2(
