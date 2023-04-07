@@ -5,6 +5,17 @@ version: "3.8"
 # with local development environments by supporting every achitecture.
 
 services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+
   postgres:
     image: postgres:15.0-alpine
     restart: unless-stopped
@@ -15,16 +26,16 @@ services:
     command: "postgres -c listen_addresses='*'"
     healthcheck:
       test: pg_isready --username=user --dbname=reef_dev --quiet
-      interval: 15s
-      timeout: 5s
-      retries: 5
+      interval: 5s
+      timeout: 2s
+      retries: 10
     environment:
       POSTGRES_DB: reef_dev
       POSTGRES_PASSWORD: pass
       POSTGRES_USER: user
 
   hasura:
-    image: hasura/graphql-engine:v2.18.0.cli-migrations-v3
+    image: hasura/graphql-engine:v2.22.0.cli-migrations-v3
     ports:
       - 8112:8080
     depends_on:
@@ -32,7 +43,12 @@ services:
     volumes:
       - "./hasura/metadata:/hasura-metadata"
       - "./hasura/migrations:/hasura-migrations"
-    restart: always
+    restart: unless-stopped
+    healthcheck:
+      test: curl -f http://localhost:8080/healthz || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 15
     environment:
       HASURA_GRAPHQL_CORS_DOMAIN: "*"
       HASURA_GRAPHQL_DATABASE_URL: postgres://user:pass@postgres/reef_dev
