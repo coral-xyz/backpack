@@ -34,7 +34,7 @@ export function Container({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 0,
   },
 });
 

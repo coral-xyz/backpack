@@ -296,7 +296,6 @@ export function SendTokenConfirmScreen({
   const { address, walletName, image, username } = to;
   const ethereumCtx = useEthereumCtx();
 
-  const [modalIndex, setModalIndex] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [feeOffset, setFeeOffset] = useState<BigNumber>(BigNumber.from(0));
   const [amount, setAmount] = useState<BigNumber | null>(null);
@@ -403,10 +402,8 @@ export function SendTokenConfirmScreen({
         </YStack>
         {getButton(isSendDisabled, isAmountError)}
       </Screen>
-      <BottomSheetModal
-        snapPoints={[500, 420]}
+      <BetterBottomSheet
         isVisible={isModalVisible}
-        index={modalIndex}
         resetVisibility={() => {
           setIsModalVisible(() => false);
         }}
@@ -416,13 +413,13 @@ export function SendTokenConfirmScreen({
           token={token}
           destinationAddress={address}
           amount={amount!}
-          onCompleteStep={(step: string) => {
-            if (step !== "confirm") {
-              setModalIndex(() => 1);
-            }
+          onCompleteStep={(_step: string) => {
+            // if (step !== "confirm") {
+            //   setModalIndex(() => 1);
+            // }
           }}
         />
-      </BottomSheetModal>
+      </BetterBottomSheet>
     </>
   );
 }
