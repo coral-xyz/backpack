@@ -13,13 +13,9 @@ if (typeof BigInt === "undefined") {
   global.BigInt = require("big-integer");
 }
 
-if (typeof TextEncoder === "undefined") {
-  global.TextEncoder = TextEncoder;
-}
-
-if (typeof TextDecoder === "undefined") {
-  global.TextDecoder = TextDecoder;
-}
+// https://github.com/expo/browser-polyfill
+global.TextDecoder = global.TextDecoder || TextDecoder;
+global.TextEncoder = global.TextEncoder || TextEncoder;
 
 console.log("TextDecoder", TextDecoder);
 console.log("TextEncoder", TextEncoder);
