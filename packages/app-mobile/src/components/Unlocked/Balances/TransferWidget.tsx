@@ -5,7 +5,7 @@ import { Blockchain } from "@coral-xyz/common";
 // import // SwapProvider, // TODO(peter): turn back on when app store approved
 // enabledBlockchains as enabledBlockchainsAtom,
 // "@coral-xyz/recoil";
-import { XStack } from "@coral-xyz/tamagui";
+import { Box } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 // import { useRecoilValueLoadable } from "recoil";
 
@@ -54,11 +54,20 @@ export function TransferWidget({
   };
 
   return (
-    <XStack space jc="center">
+    <View
+      style={{
+        alignSelf: "center",
+        alignItems: "center",
+        flexDirection: "row",
+        justifyContent: "center",
+      }}
+    >
       {rampEnabled ? (
         <RampButton blockchain={blockchain} address={address} />
       ) : null}
-      <ReceiveButton onPress={onPress} blockchain={blockchain} />
+      <Box mx={8}>
+        <ReceiveButton onPress={onPress} blockchain={blockchain} />
+      </Box>
       <SendButton onPress={onPress} blockchain={blockchain} token={token} />
       {swapEnabled ? (
         <SwapButton
@@ -67,7 +76,7 @@ export function TransferWidget({
         // address={address}
         />
       ) : null}
-    </XStack>
+    </View>
   );
 }
 

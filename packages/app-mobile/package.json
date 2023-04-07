@@ -58,6 +58,7 @@
     "expo-status-bar": "~1.4.4",
     "expo-system-ui": "~2.2.1",
     "expo-updates": "~0.16.4",
+    "fast-text-encoding": "^1.0.6",
     "indexeddbshim": "^11.0.0-beta.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",

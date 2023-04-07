@@ -42,8 +42,6 @@ export function ChatListScreen({
     navigation.push("ChatRequest");
   };
 
-  console.log("debug:searchResults", searchResults);
-
   return (
     <Screen style={{ paddingTop: 8 }}>
       <Box marginBottom={8}>

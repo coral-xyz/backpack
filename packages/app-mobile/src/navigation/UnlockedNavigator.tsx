@@ -1,10 +1,11 @@
 import type { Token } from "@@types/types";
-import type { Blockchain } from "@coral-xyz/common";
+import type { Blockchain, Nft } from "@coral-xyz/common";
 
 import { useCallback } from "react";
 
 import Constants from "expo-constants";
 
+import { parseNftName } from "@coral-xyz/common";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 // import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -32,6 +33,7 @@ import {
   SendTokenSelectRecipientScreen,
   SendTokenListScreen,
   SendTokenConfirmScreen,
+  SendNFTConfirmScreen,
 } from "~screens/Unlocked/SendTokenScreen";
 import { SwapTokenScreen } from "~screens/Unlocked/SwapTokenScreen";
 import { WalletListScreen } from "~screens/Unlocked/WalletListScreen";
@@ -61,10 +63,17 @@ export type UnlockedNavigatorStackParamList = {
       uuid: string;
     };
   };
+  SendNFTConfirm: {
+    nft: Nft;
+    to: {
+      walletName?: string | undefined; // TBD
+      address: string;
+      username: string;
+      image: string;
+      uuid: string;
+    };
+  };
 };
-
-// const MOBILE_ENABLED_CHAT = process.env.NODE_ENV === "development";
-const MOBILE_ENABLED_CHAT = true;
 
 const Stack = createStackNavigator<UnlockedNavigatorStackParamList>();
 export function UnlockedNavigator(): JSX.Element {
@@ -124,6 +133,16 @@ export function UnlockedNavigator(): JSX.Element {
             const { token } = route.params;
             return {
               title: `Send ${token.ticker}`,
+            };
+          }}
+        />
+        <Stack.Screen
+          name="SendNFTConfirm"
+          component={SendNFTConfirmScreen}
+          options={({ route }) => {
+            const { nft } = route.params;
+            return {
+              title: parseNftName(nft),
             };
           }}
         />

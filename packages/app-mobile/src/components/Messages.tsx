@@ -184,7 +184,7 @@ export function ChatListItem({
       pressTheme
       height={ROW_HEIGHT}
       justifyContent="flex-start"
-      icon={<UserAvatar size={AVATAR_SIZE} imageUrl={image} />}
+      icon={<UserAvatar size={AVATAR_SIZE} uri={image} />}
       onPress={() => {
         if (type === "individual") {
           onPress({
