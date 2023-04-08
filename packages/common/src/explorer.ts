@@ -70,7 +70,7 @@ export function exploreAddressUrl(
     case SolanaExplorer.XRAY:
       return join(
         SolanaExplorer.XRAY,
-        `address/${address}${clusterSuffix(base, connectionUrl)}`
+        `account/${address}${clusterSuffix(base, connectionUrl)}`
       );
     default:
       throw new Error("unknown explorer base");
