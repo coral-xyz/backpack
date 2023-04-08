@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
+import type {
+  EnrichedInboxDb} from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   NAV_COMPONENT_MESSAGE_CHAT,
   sendFriendRequest,
   walletAddressDisplay,
 } from "@coral-xyz/common";
+import { useContacts } from "@coral-xyz/db";
 import {
   Loading,
   LocalImage,
@@ -40,6 +43,12 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
     image?: string;
     id?: string;
   }>({});
+
+  const allChats = useContacts(userId);
+  console.log(allChats);
+  console.log(user);
+  console.log(userId);
+
   const [userWallets, setUserWallets] = useState<
     { blockchain: string; publicKey: string }[]
   >([]);
@@ -105,7 +114,6 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
       {userWallets.length > 0 ? (
         <div
           style={{
-            flex: 0.5,
             marginTop: -16,
             display: "flex",
             justifyContent: "center",
@@ -122,7 +130,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
           ))}
         </div>
       ) : null}
-      <div>
+      <div style={{ marginTop: "28px" }}>
         <div className={classes.horizontalCenter}>
           <div className={classes.topImageOuter}>
             <LocalImage
@@ -189,29 +197,43 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
           </div>
         </div>
         <br />
-        {friendship ? (
-          <ContactSection
-            icon={<VerifiedIcon style={{ color: theme.custom.colors.icon }} />}
-            title="Connected"
-            subtitle={`You and @${user.username} are mutual friends`}
-          />
-        ) : null}
-        {!friendship && requestSent ? (
-          <ContactSection
-            icon={<LockIcon style={{ color: theme.custom.colors.icon }} />}
-            title="Friend pending request"
-            subtitle="You can still send messages and interact"
-          />
-        ) : null}
-        {!friendship && !requestSent ? (
-          <ContactSection
-            icon={<LockIcon style={{ color: theme.custom.colors.icon }} />}
-            title="This is not a friend"
-            subtitle="Only add friends you know and trust"
-          />
-        ) : null}
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "9px",
+            background: "white",
+            borderRadius: "6px",
+            alignItems: "center",
+          }}
+        >
+          <span style={{ color: "#7B8391" }}>{allChats.length} Friends</span>
+          <span>
+            {allChats.slice(0, 3).map((contact: EnrichedInboxDb) => (
+              <img
+                width="26px"
+                style={{ marginLeft: "-10px" }}
+                key={contact.remoteUserId}
+                src={contact.remoteUserImage}
+              />
+            ))}
+          </span>
+        </div>
       </div>
-      <div>
+      <div
+        style={{
+          color: "#7B8391",
+          display: "flex",
+          justifyContent: "center",
+          marginTop: "auto",
+        }}
+      >
+        {friendship ? <span>You and @{user?.username} are friends</span> : null}
+        {!friendship ? <span>Only add friends you know and trust</span> : null}
+      </div>
+
+      <div style={{ marginTop: "18px" }}>
         {!friendship && !requestSent ? (
           <PrimaryButton
             label="Request to add friend"

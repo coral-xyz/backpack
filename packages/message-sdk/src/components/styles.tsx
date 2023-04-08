@@ -29,6 +29,7 @@ export const useStyles = styles((theme) => ({
     borderRadius: "50%",
     display: "inline-block",
     overflow: "hidden",
+    marginTop: "-10px",
   },
   topImage: {
     width: 150,
