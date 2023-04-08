@@ -93,6 +93,7 @@ export type OnboardingData = {
   // Private key wallet descriptor is for onboarding with private key
   privateKeyKeyringInit: PrivateKeyKeyringInit | null;
   isAddingAccount?: boolean;
+  addBlockchain?: boolean;
   selectedBlockchains: Blockchain[];
   serverPublicKeys: ServerPublicKey[];
 };
@@ -151,19 +152,27 @@ export function OnboardingProvider({
   const [data, setData] = useState<OnboardingData>(defaultState);
 
   const setOnboardingData = useCallback((data: Partial<OnboardingData>) => {
-    return setData((oldData) => ({
-      ...oldData,
-      ...data,
-      selectedBlockchains: data.signedWalletDescriptors
-        ? [
-            ...new Set(
-              data.signedWalletDescriptors.map(
-                (s: SignedWalletDescriptor) => s.blockchain
-              )
-            ),
-          ]
-        : oldData.selectedBlockchains,
-    }));
+    return setData((oldData) => {
+      const signedWalletDesc = data.signedWalletDescriptors
+        ? data.addBlockchain
+          ? oldData.signedWalletDescriptors.concat(data.signedWalletDescriptors)
+          : data.signedWalletDescriptors
+        : oldData.signedWalletDescriptors;
+      return {
+        ...oldData,
+        ...data,
+        signedWalletDescriptors: signedWalletDesc,
+        selectedBlockchains: data.signedWalletDescriptors
+          ? [
+              ...new Set(
+                signedWalletDesc.map(
+                  (s: SignedWalletDescriptor) => s.blockchain
+                )
+              ),
+            ]
+          : oldData.selectedBlockchains,
+      };
+    });
   }, []);
 
   const handleSelectBlockchain = useCallback(
@@ -227,8 +236,8 @@ export function OnboardingProvider({
             handleStatus("signature gotten");
 
             setOnboardingData({
+              addBlockchain: true,
               signedWalletDescriptors: [
-                ...signedWalletDescriptors,
                 {
                   ...walletDescriptor,
                   signature,
