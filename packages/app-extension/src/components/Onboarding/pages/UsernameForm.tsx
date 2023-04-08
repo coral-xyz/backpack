@@ -1,5 +1,6 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
-import { PrimaryButton,TextInput } from "@coral-xyz/react-common";
+import { getAuthWorkerUrl } from "@coral-xyz/common";
+import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { AlternateEmail } from "@mui/icons-material";
 import { Box, InputAdornment } from "@mui/material";
@@ -16,6 +17,7 @@ export const UsernameForm = ({
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const theme = useCustomTheme();
+  const authWorkerUrl = getAuthWorkerUrl();
 
   useEffect(() => {
     setError("");
@@ -26,7 +28,7 @@ export const UsernameForm = ({
       e.preventDefault();
 
       try {
-        const res = await fetch(`https://auth.xnfts.dev/users/${username}`, {
+        const res = await fetch(`${authWorkerUrl}/users/${username}`, {
           headers: {
             "x-backpack-invite-code": String(inviteCode),
           },

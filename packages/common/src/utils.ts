@@ -223,3 +223,13 @@ export function validateSolanaPrivateKey(privateKey: string): {
     blockchain: Blockchain.SOLANA,
   };
 }
+
+export function getAuthWorkerUrl(): string | undefined {
+  if (
+    process.env.NODE_ENV === "development" ||
+    process.env.NODE_ENV === "dev"
+  ) {
+    return process.env.AUTH_WORKER_URL;
+  }
+  return "";
+}
