@@ -44,5 +44,12 @@ test("an unregistered user cannot get information about themselves", async () =>
 test("getting users via prefix", async () => {
   const res = await bob.get(`users?usernamePrefix=ali`);
   expect(res.users.map((u) => u.username)).toStrictEqual(["ali", "alice"]);
-  expect(res.users[1].public_keys).toOnlyIncludePrimaryPublicKeysFor(alice);
+
+  const { public_keys } = res.users[1];
+  expect(public_keys).toOnlyIncludePrimaryPublicKeysFor(alice);
+
+  // Temporary, see https://github.com/coral-xyz/backpack/issues/3645
+  expect(public_keys.map((x) => x.public_key)).toStrictEqual(
+    public_keys.map((x) => x.publicKey)
+  );
 });
