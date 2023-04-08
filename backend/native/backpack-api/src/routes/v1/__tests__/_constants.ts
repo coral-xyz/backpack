@@ -34,10 +34,11 @@ export const users = {
       },
     },
   },
-  eth_only: {
+  ali: {
     id: "fb14ab0c-f20f-4b5d-a8d9-f9409eb69380",
     jwt: "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmYjE0YWIwYy1mMjBmLTRiNWQtYThkOS1mOTQwOWViNjkzODAiLCJpc3MiOiJhdXRoLnhuZnRzLmRldiIsImF1ZCI6ImJhY2twYWNrIiwiaWF0IjoxNjgwNzAyMTAxfQ.ClllrJvRXQZzFKwmJJi_2Ek1JSad2VMugodEq9GEg0D40HNNak7iMLEOfYlaE7uZ6yq5nKIaHm6QUJ7mRbPrWBQq0Zr5GFnzt-16aL3reYAtt_o5ho-fijZ-TAZGL6dGCfJ05zzLMJGH7rjaEXAQkoOceWP6P8_FCdJds2XFraMTNUQzNvrNbsB6f3v2mAnIr1mWYykztWTW-EDzz3Bkpg0sOrccFOjI-rpO1GZ9OclOEuzYRb08WVQVbVsQc6VK0Z8FjE9xWNNPKj4swuNsXEnd3CZdVB4fniyHKVpXQg7QSb5LzBz60ywi9A64c1D7kfZX95zMQlRMoq1qYbD2eA",
     public_keys: {
+      // ali is an eth-only user
       ethereum: {
         primary: 0,
         keys: ["0x6Ecc980c2acB5aaCA12e3DBC2bdE2bC7dDc4d2D9"],

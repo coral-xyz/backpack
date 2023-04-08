@@ -1,17 +1,21 @@
-import { expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 
 import { alice, bob, unregistered_user } from "./_constants";
 
 test.todo("creating a user");
 
-test("getting the primary solana public key", async () => {
-  expect((await bob.get("users/primarySolPubkey/alice")).publicKey).toEqual(
-    alice.public_keys.solana.keys[alice.public_keys.solana.primary]
-  );
+describe("getting the primary solana public key", async () => {
+  test("for a user with a primary solana public key", async () => {
+    expect((await bob.get("users/primarySolPubkey/alice")).publicKey).toEqual(
+      alice.public_keys.solana.keys[alice.public_keys.solana.primary]
+    );
+  });
 
-  expect((await bob.get("users/primarySolPubkey/eth_only")).msg).toEqual(
-    "No active pubkey on SOL for this user"
-  );
+  test("for a user that doesn't have a primary solana public key", async () => {
+    expect((await bob.get("users/primarySolPubkey/ali")).msg).toEqual(
+      "No active pubkey on SOL for this user"
+    );
+  });
 });
 
 test("getting a user", async () => {
@@ -35,4 +39,17 @@ test("a registered user can get information about themselves", async () => {
 test("an unregistered user cannot get information about themselves", async () => {
   const res = await unregistered_user.get(`users/me`);
   expect(res.id).toBeFalsy();
+});
+
+test("getting users via prefix", async () => {
+  const res = await bob.get(`users?usernamePrefix=ali`);
+  expect(res.users.map((u) => u.username)).toStrictEqual(["ali", "alice"]);
+
+  const { public_keys } = res.users[1];
+  expect(public_keys).toOnlyIncludePrimaryPublicKeysFor(alice);
+
+  // Temporary, see https://github.com/coral-xyz/backpack/issues/3645
+  expect(public_keys.map((x) => x.public_key)).toStrictEqual(
+    public_keys.map((x) => x.publicKey)
+  );
 });
