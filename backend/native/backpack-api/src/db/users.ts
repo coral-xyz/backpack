@@ -483,12 +483,7 @@ export async function updateUserAvatar({
 export const getUserByPublicKeyAndChain = async (
   publicKey: string,
   blockchain: Blockchain
-): Promise<
-  {
-    id: string;
-    username: string;
-  }[]
-> => {
+) => {
   const response = await chain("query")(
     {
       auth_users: [
