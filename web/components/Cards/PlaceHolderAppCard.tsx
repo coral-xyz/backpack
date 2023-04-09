@@ -1,7 +1,12 @@
-import { memo } from 'react';
-import Image from 'next/legacy/image';
+import Image from 'next/image';
+import React from 'react';
 
-function AppNoLink({ iconUrl, name }: AppNoLinkPros) {
+type placeHolderAppType = {
+  iconUrl: string;
+  name: string;
+};
+
+const PlaceHolderAppCard = ({ iconUrl, name }: placeHolderAppType) => {
   return (
     <div className="flex w-full rounded-md px-5 py-2">
       <div className="flex flex-row items-center gap-3">
@@ -12,9 +17,9 @@ function AppNoLink({ iconUrl, name }: AppNoLinkPros) {
             blurDataURL="/brands/aurory.jpg" //TODO: fix me
             placeholder="blur"
             quality={50}
-            width="100px"
-            height="100px"
-            style={{ borderRadius: '4px' }}
+            width={100}
+            height={100}
+            className="rounded-md"
           />
         </div>
 
@@ -22,11 +27,6 @@ function AppNoLink({ iconUrl, name }: AppNoLinkPros) {
       </div>
     </div>
   );
-}
+};
 
-interface AppNoLinkPros {
-  iconUrl: string;
-  name: string;
-}
-
-export default memo(AppNoLink);
+export default PlaceHolderAppCard;

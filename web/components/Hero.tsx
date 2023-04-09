@@ -1,7 +1,13 @@
-import { memo, useState } from 'react';
+/* eslint-disable max-len */
+import { Children, memo, useState } from 'react';
 import { CheckIcon } from '@heroicons/react/outline';
 
 import { subscribe } from '../lib/mailchimp';
+import Image from 'next/image';
+import { heroFeatures, partners } from '../constant';
+import PartnerCard from './Cards/PartnerCard';
+import Link from 'next/link';
+import HeroFeatureCard from './Cards/HeroFeatureCard';
 
 function Hero() {
   const [email, setEmail] = useState<string>('');
@@ -21,84 +27,77 @@ function Hero() {
   }
 
   return (
-    <div className="pb-20 sm:pb-48 lg:pb-20">
-      <div className="mx-auto max-w-7xl lg:px-8">
-        <div className="lg:grid lg:grid-cols-3 lg:gap-8">
-          <div
-            className="col-span-3 mx-auto max-w-md px-4 sm:max-w-2xl sm:px-6 sm:text-center
-              lg:col-span-2 lg:flex lg:items-center lg:px-0 lg:text-left"
-          >
-            <div className="lg:py-24">
-              <h1
-                className="mt-4 text-4xl font-extrabold tracking-tight
-                  text-zinc-50 sm:mt-5 sm:text-6xl lg:mt-6 xl:text-6xl"
-              >
-                <span className="block font-extrabold text-zinc-50">A home for your xNFTs.</span>
-              </h1>
-              <p
-                className="mt-3 text-base text-gray-300 sm:mt-5 sm:text-xl
-                  lg:text-lg xl:text-xl"
-              >
-                Coming soon to your mobile and browser.
-              </p>
-              <div className="mt-10 sm:mt-12">
-                <form onSubmit={subscribeEmail} className="sm:mx-auto sm:max-w-xl lg:mx-0">
-                  <div className="sm:flex">
-                    <div className="min-w-0 flex-1">
-                      <label htmlFor="email" className="sr-only">
-                        Email address
-                      </label>
-                      <input
-                        id="email"
-                        type="email"
-                        placeholder="Enter your email"
-                        className="block w-full rounded-md border-0 px-4 py-3
-                            text-base text-gray-900 placeholder-gray-500"
-                        autoComplete="email"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div className="mt-3 sm:mt-0 sm:ml-3">
-                      <button
-                        type="submit"
-                        className="block flex h-12 w-28 flex-row items-center justify-center
-                        rounded-md bg-indigo-500 font-medium text-indigo-50 shadow
-                        hover:bg-indigo-600"
-                      >
-                        {subscribed ? <CheckIcon className="h-8 w-8" /> : 'Notify me'}
-                      </button>
-                    </div>
-                  </div>
-                  <p className="mt-3 text-sm text-gray-300 sm:mt-2">
-                    {subscribed
-                      ? 'You’ll be the first to know when Backpack is ready.'
-                      : 'We hate spam as much as you do.'}
-                  </p>
-                </form>
+    <section className="relative">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 grid grid-cols-2 -space-x-52 opacity-40 dark:opacity-20"
+      >
+        <div className="h-56 bg-gradient-to-br from-primary to-primary blur-[106px] dark:from-primary"></div>
+        <div className="from-primary-400 h-32 bg-gradient-to-r to-primary blur-[106px] dark:to-primary"></div>
+      </div>
+      <div className="backpack-container">
+        <div className="relative ml-auto pt-36">
+          <div className="mx-auto text-center lg:w-2/3">
+            <h1 className="text-5xl font-bold text-gray-900 dark:text-white md:text-6xl xl:text-7xl">
+              xNFT Nest: Your Digital{' '}
+              <span className="text-primary dark:text-primary">Treasures Home!</span>
+            </h1>
+            <p className="text-gray-700 dark:text-gray-300">
+              Welcome to NFT Nest - your xNFTs&#39; perfect home! Store, manage, and showcase your
+              digital art and collectibles with ease. Join us now and unlock the full potential of
+              your digital treasures!
+            </p>
+            <div className="mt-16 flex flex-wrap justify-center gap-y-4 gap-x-6">
+              <Link href="#" className="b-btn-primary">
+                <span className="relative text-base font-semibold text-white">Get started</span>
+              </Link>
+              <Link href="#" className="b-btn-secondary">
+                <span className="relative text-base font-semibold text-primary dark:text-white">
+                  Learn more
+                </span>
+              </Link>
+            </div>
+
+            <div
+              className="relative my-8 hidden justify-center md:flex"
+              data-aos="zoom-y-out"
+              data-aos-delay="450"
+            >
+              <div className="relative flex flex-col justify-center">
+                {/* You can Replace the Frame with your own */}
+                <Image
+                  className="z-20 mx-auto h-[630px] sm:h-[670px]"
+                  src="/mockup.png"
+                  width="615"
+                  height="590"
+                  alt="Hero"
+                />
+                <video
+                  width="368"
+                  height="432"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  poster="/screenshot.png"
+                  className="rouneded-xl absolute inset-0 top-[40px] mx-auto"
+                >
+                  <source src="/videos/backpack-safari.mp4" type="video/mp4" />
+                </video>
               </div>
             </div>
-          </div>
-          <div className="mt-12 -mb-16 flex items-center justify-center sm:-mb-48 lg:m-0">
-            <div className="flex h-fit w-fit justify-center">
-              <video
-                width="100%"
-                height="100%"
-                autoPlay
-                loop
-                muted
-                playsInline
-                poster="/screenshot.png"
-                className="rounded-xl  shadow-xl shadow-teal-600/30"
-              >
-                <source src="/videos/backpack-safari.mp4" type="video/mp4" />
-              </video>
+
+            <div className="mt-16 hidden justify-between border-y border-zinc-100 py-8 dark:border-zinc-800 sm:flex">
+              {Children.toArray(heroFeatures.map(feature => <HeroFeatureCard {...feature} />))}
             </div>
           </div>
         </div>
+
+        <div className="mt-12 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6">
+          {Children.toArray(partners.map(partner => <PartnerCard {...partner} />))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 

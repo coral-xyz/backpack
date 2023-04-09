@@ -1,3 +1,66 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  .backpack-container {
+    @apply mx-auto max-w-7xl px-6 md:px-12 xl:px-6;
+  }
+
+  .b-btn-primary {
+    @apply relative flex h-11 w-full items-center justify-center px-6 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 sm:w-max;
+  }
+
+  .b-btn-secondary {
+    @apply relative flex h-11 w-full items-center justify-center px-6 before:absolute before:inset-0 before:rounded-full before:border before:border-transparent before:bg-primary/10 before:bg-gradient-to-b before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:border-zinc-700 dark:before:bg-zinc-800 sm:w-max;
+  }
+
+  .b-link {
+    @apply text-primary hover:underline hover:underline-offset-4;
+  }
+}
+
+body {
+  @apply bg-white dark:bg-zinc-900;
+}
+
+/*
+    Styling for Terms and Condition + Privacy Policy
+    if you want to edit, don't change with below classes
+    unless you know what you are doing...
+
+    If you want to style, just add a class
+*/
+.terms-and-privacy-styling {
+  @apply mt-32 text-left text-zinc-500/80;
+}
+.terms-and-privacy-styling :is(h1, h2) {
+  @apply mt-8 mb-4 text-4xl font-bold text-zinc-300;
+}
+
+.terms-and-privacy-styling :is(h3, h4) {
+  @apply mt-6 mb-3 text-3xl font-bold text-zinc-400;
+}
+
+.terms-and-privacy-styling :is(h5, h6) {
+  @apply mt-4 mb-2 text-2xl font-bold text-zinc-500;
+}
+
+.terms-and-privacy-styling p {
+  @apply mb-2 text-left last:mb-0;
+}
+
+.terms-and-privacy-styling a {
+  @apply text-primary hover:underline hover:underline-offset-4;
+}
+
+/* ScrollBar */
+::-webkit-scrollbar {
+  @apply w-[6px];
+}
+::-webkit-scrollbar-thumb {
+  @apply rounded-lg bg-primary/70 hover:bg-primary;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
