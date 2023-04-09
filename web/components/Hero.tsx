@@ -63,7 +63,7 @@ function Hero() {
                     <div className="mt-3 sm:mt-0 sm:ml-3">
                       <button
                         type="submit"
-                        className="block flex h-12 w-28 flex-row items-center justify-center
+                        className="flex h-12 w-28 flex-row items-center justify-center
                         rounded-md bg-indigo-500 font-medium text-indigo-50 shadow
                         hover:bg-indigo-600"
                       >

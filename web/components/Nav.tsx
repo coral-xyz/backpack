@@ -39,7 +39,7 @@ function Nav() {
                   {/* Logo */}
                   <Link href="/">
                     <div className="flex">
-                      <Image alt="Backpack" src="/backpack.svg" width="150px" height="50px" />
+                      <Image alt="Backpack" src="/backpack.svg" width={150} height={50} />
                     </div>
                   </Link>
                 </div>
