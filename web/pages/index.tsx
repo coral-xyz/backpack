@@ -2,7 +2,7 @@
 import { Children, FormEvent, useState } from 'react';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
-import { HeroFeatureCard, HeroSection } from '../components';
+import { HeroFeatureCard, HeroSection, Partners } from '../components';
 import { heroFeatures } from '../constant';
 import { subscribe } from '../lib/mailchimp';
 
@@ -113,6 +113,7 @@ export default function Home() {
           {Children.toArray(heroFeatures.map(feature => <HeroFeatureCard {...feature} />))}
         </div>
       </HeroSection>
+      <Partners />
       <GetStarted />
       <Blog />
       <PlaceholderApps />
