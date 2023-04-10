@@ -70,8 +70,8 @@ export function isServiceWorker(): boolean {
  */
 export function isValidWalletName(walletName: string): boolean {
   //regex check to not allow wallet names to start with '@'
-  let regExp = new RegExp("^(?!@.*$).*");
-  return regExp.test(walletName);
+  let walletNameRegExp = new RegExp("^(?!@.*$).*");
+  return walletNameRegExp.test(walletName);
 }
 
 /**

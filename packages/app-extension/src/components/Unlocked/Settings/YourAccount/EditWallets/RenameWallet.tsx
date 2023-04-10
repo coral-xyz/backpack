@@ -36,7 +36,7 @@ export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
     } else {
       setError(false);
       setErrorMessage("");
-      setIsPrimaryDisabled(walletName.trim() === "" ? true : false);
+      setIsPrimaryDisabled(walletName.trim() === "");
     }
   }, [walletName]);
 
