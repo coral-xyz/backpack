@@ -68,7 +68,6 @@ function NotificationsScreen({ navigation }) {
 function TokenScreen({ navigation }) {
   return (
     <View style={{ flex: 1, paddingTop: 24 }}>
-      <BalanceSummaryWidget />
       <WalletTokenList
         onPressToken={(id: string) => {
           navigation.push("TokenDetail", { id });
@@ -113,15 +112,35 @@ function Tabs() {
   );
 }
 
+function AllAccountsScreen({ navigation }) {
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Button
+        title="Ok"
+        onPress={() => {
+          navigation.push("Main");
+        }}
+      />
+      <BalanceSummaryWidget />
+    </View>
+  );
+}
+
 export function WalletsNavigator(): JSX.Element {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="AllAccountsHome">
+      <Stack.Screen
+        name="AllAccountsHome"
+        component={AllAccountsScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="Main"
         component={Tabs}
         options={({ navigation }) => {
           return {
             headerShadowVisible: false,
+            headerBackTitleVisible: false,
             headerTitle: (props) => {
               return (
                 <MainButton

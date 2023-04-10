@@ -1,3 +1,6 @@
+import type { Wallet } from "@@types/types";
+
+import { useCallback } from "react";
 import {
   FlatList,
   Image,
@@ -7,17 +10,7 @@ import {
   View,
 } from "react-native";
 
-import {
-  Blockchain,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  walletAddressDisplay,
-} from "@coral-xyz/common";
-import {
-  useAllWallets,
-  useBackgroundClient,
-  useBlockchainActiveWallet,
-  useDehydratedWallets,
-} from "@coral-xyz/recoil";
+import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HardwareIcon, ImportedIcon, MnemonicIcon } from "~components/Icon";
@@ -30,47 +23,26 @@ import {
   Screen,
 } from "~components/index";
 import { getBlockchainLogo, useTheme } from "~hooks/index";
-
-type Wallet = {
-  publicKey: string;
-  blockchain: string;
-  name: string;
-  type: string;
-};
+import { useWallets } from "~hooks/wallets";
 
 // NOTE(peter): copied from app-extension/src/components/common/WalletList.tsx
 export function WalletListScreen({ navigation, route }): JSX.Element {
   const insets = useSafeAreaInsets();
-  const activeWallet = useBlockchainActiveWallet(Blockchain.SOLANA);
-  const background = useBackgroundClient();
-  const wallets = useAllWallets();
-  const _dehydratedWallets = useDehydratedWallets();
+  const { activeWallet, onSelectWallet, allWallets } = useWallets();
 
-  const activeWallets = wallets.filter((w) => !w.isCold);
-  // const coldWallets = wallets.filter((w) => w.isCold);
-
-  // Dehydrated public keys are keys that exist on the server but cannot be
-  // used on the client as we don't have signing data, e.g. mnemonic, private
-  // key or ledger derivation path
-  const dehydratedWallets = _dehydratedWallets.map((w: any) => ({
-    ...w,
-    name: "", // TODO server side does not sync wallet names
-    type: "dehydrated",
-  }));
-
-  const onSelectWallet = async (w: Wallet) => {
-    await background.request({
-      method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-      params: [w.publicKey.toString(), w.blockchain],
-    });
-
-    navigation.goBack();
-  };
+  const handlePressWallet = useCallback(
+    (wallet: Wallet) => {
+      onSelectWallet(wallet, () => {
+        navigation.goBack();
+      });
+    },
+    [onSelectWallet, navigation]
+  );
 
   return (
     <Screen style={{ marginBottom: insets.bottom }}>
       <FlatList
-        data={activeWallets.concat(dehydratedWallets)}
+        data={allWallets}
         ItemSeparatorComponent={() => <ListRowSeparator />}
         keyExtractor={(item) => item.publicKey.toString()}
         renderItem={({ item: wallet }) => {
@@ -78,9 +50,9 @@ export function WalletListScreen({ navigation, route }): JSX.Element {
             <WalletListItem
               name={wallet.name}
               publicKey={wallet.publicKey}
-              type={wallet.type}
+              type={wallet.type as string}
               blockchain={wallet.blockchain}
-              onPress={onSelectWallet}
+              onPress={handlePressWallet}
               icon={<CopyButtonIcon text={wallet.publicKey} />}
               isSelected={wallet.publicKey === activeWallet?.publicKey}
             />
