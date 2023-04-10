@@ -22,6 +22,7 @@ import { useTheme } from "~hooks/useTheme";
 import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 // import AppListScreen from "~screens/Unlocked/AppListScreen"; // TURNED off bc of app store restrictions (temporarily)
 import { ChatNavigator } from "~navigation/ChatNavigator";
+import { WalletsNavigator } from "~navigation/WalletsNavigator";
 import { BalancesNavigator } from "~screens/Unlocked/BalancesScreen";
 import {
   DepositListScreen,
@@ -162,6 +163,7 @@ export function UnlockedNavigator(): JSX.Element {
 }
 
 type UnlockedTabNavigatorParamList = {
+  WalletTBD: undefined;
   Balances: undefined;
   Applications: undefined;
   Collectibles: undefined;
@@ -199,9 +201,10 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         tabBarInactiveTintColor: theme.custom.colors.icon,
       })}
     >
+      <Tab.Screen name="WalletTBD" component={WalletsNavigator} />
       <Tab.Screen name="Balances" component={BalancesNavigator} />
       <Tab.Screen name="Collectibles" component={NftCollectiblesNavigator} />
-      {Constants.expoConfig.extra.FEATURE_MOBILE_CHAT ? (
+      {Constants?.expoConfig?.extra?.FEATURE_MOBILE_CHAT ? (
         <Tab.Screen name="Chat" component={ChatNavigator} />
       ) : null}
     </Tab.Navigator>

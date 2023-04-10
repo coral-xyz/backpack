@@ -297,7 +297,7 @@ export function UsdBalanceAndPercentChange({
 }
 
 // Renders the individual token row
-function TokenRow({
+export function TokenRow({
   onPressRow,
   token,
   blockchain,
