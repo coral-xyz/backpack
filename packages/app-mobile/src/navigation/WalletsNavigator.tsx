@@ -8,6 +8,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { WalletTokenList } from "~components/Wallets";
 import { useTheme } from "~hooks/useTheme";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
+import { NftCollectionListScreen } from "~screens/WalletsV2NftListScreen";
 
 function MainButton({
   onPressMain,
@@ -106,7 +107,7 @@ function Tabs() {
       }}
     >
       <TopTabs.Screen name="Tokens" component={TokenScreen} />
-      <TopTabs.Screen name="Collection" component={CollectionScreen} />
+      <TopTabs.Screen name="Collection" component={NftCollectionListScreen} />
       <TopTabs.Screen name="Activity" component={ActivityScreen} />
     </TopTabs.Navigator>
   );
@@ -124,7 +125,7 @@ export function WalletsNavigator(): JSX.Element {
             headerTitle: (props) => {
               return (
                 <MainButton
-                  onPress={() => navigation.navigate("WalletPicker")}
+                  onPressMain={() => navigation.navigate("wallet-picker")}
                 />
               );
             },
