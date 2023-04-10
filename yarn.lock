@@ -3303,7 +3303,7 @@ __metadata:
     buffer: ^6.0.3
     eslint-config-custom: "*"
     ethers: ^5.7.2
-    expo: ^48.0.4
+    expo: ^48.0.9
     expo-av: ~13.2.1
     expo-blur: ~12.2.1
     expo-checkbox: ~2.3.1
@@ -15165,21 +15165,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-preset-expo@npm:~9.3.1":
-  version: 9.3.1
-  resolution: "babel-preset-expo@npm:9.3.1"
-  dependencies:
-    "@babel/plugin-proposal-decorators": ^7.12.9
-    "@babel/plugin-proposal-object-rest-spread": ^7.12.13
-    "@babel/plugin-transform-react-jsx": ^7.12.17
-    "@babel/preset-env": ^7.20.0
-    babel-plugin-module-resolver: ^4.1.0
-    babel-plugin-react-native-web: ~0.18.10
-    metro-react-native-babel-preset: 0.73.8
-  checksum: a2923d2b5524224804b8be31d5e5a62607ac6415fc4608d5a9ca14e613c73549428d680897c3727bbd1a73120b162f688d53b68d337a90d38b73fd942471a163
-  languageName: node
-  linkType: hard
-
 "babel-preset-expo@npm:~9.3.2":
   version: 9.3.2
   resolution: "babel-preset-expo@npm:9.3.2"
@@ -21562,39 +21547,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo@npm:^48.0.4":
-  version: 48.0.9
-  resolution: "expo@npm:48.0.9"
-  dependencies:
-    "@babel/runtime": ^7.20.0
-    "@expo/cli": 0.6.2
-    "@expo/config": 8.0.2
-    "@expo/config-plugins": 6.0.1
-    "@expo/vector-icons": ^13.0.0
-    babel-preset-expo: ~9.3.1
-    cross-spawn: ^6.0.5
-    expo-application: ~5.1.1
-    expo-asset: ~8.9.1
-    expo-constants: ~14.2.1
-    expo-file-system: ~15.2.2
-    expo-font: ~11.1.1
-    expo-keep-awake: ~12.0.1
-    expo-modules-autolinking: 1.1.2
-    expo-modules-core: 1.2.6
-    fbemitter: ^3.0.0
-    getenv: ^1.0.0
-    invariant: ^2.2.4
-    md5-file: ^3.2.3
-    node-fetch: ^2.6.7
-    pretty-format: ^26.5.2
-    uuid: ^3.4.0
-  bin:
-    expo: bin/cli.js
-  checksum: 7e901402c47408162a20ac3cd547e37e7d3c49f0e9782c104899a54e8e4262135b00cb7ae5ea8ef2e15755cbc10fac4ab1d5b144903f620fdba10db45b2ebaa4
-  languageName: node
-  linkType: hard
-
-"expo@npm:^48.0.7":
+"expo@npm:^48.0.7, expo@npm:^48.0.9":
   version: 48.0.10
   resolution: "expo@npm:48.0.10"
   dependencies:
@@ -28763,54 +28716,6 @@ __metadata:
   dependencies:
     uglify-es: ^3.1.9
   checksum: d579e03d2bd45b156acb79469d31827a480b7905a50390010f6f95b588fe7f0a65ae518c5a70fee10b4230a4c15fe5ad70a9bce27985b60b8a0ba3e00ae1d3aa
-  languageName: node
-  linkType: hard
-
-"metro-react-native-babel-preset@npm:0.73.8":
-  version: 0.73.8
-  resolution: "metro-react-native-babel-preset@npm:0.73.8"
-  dependencies:
-    "@babel/core": ^7.20.0
-    "@babel/plugin-proposal-async-generator-functions": ^7.0.0
-    "@babel/plugin-proposal-class-properties": ^7.0.0
-    "@babel/plugin-proposal-export-default-from": ^7.0.0
-    "@babel/plugin-proposal-nullish-coalescing-operator": ^7.0.0
-    "@babel/plugin-proposal-object-rest-spread": ^7.0.0
-    "@babel/plugin-proposal-optional-catch-binding": ^7.0.0
-    "@babel/plugin-proposal-optional-chaining": ^7.0.0
-    "@babel/plugin-syntax-dynamic-import": ^7.0.0
-    "@babel/plugin-syntax-export-default-from": ^7.0.0
-    "@babel/plugin-syntax-flow": ^7.18.0
-    "@babel/plugin-syntax-nullish-coalescing-operator": ^7.0.0
-    "@babel/plugin-syntax-optional-chaining": ^7.0.0
-    "@babel/plugin-transform-arrow-functions": ^7.0.0
-    "@babel/plugin-transform-async-to-generator": ^7.0.0
-    "@babel/plugin-transform-block-scoping": ^7.0.0
-    "@babel/plugin-transform-classes": ^7.0.0
-    "@babel/plugin-transform-computed-properties": ^7.0.0
-    "@babel/plugin-transform-destructuring": ^7.0.0
-    "@babel/plugin-transform-flow-strip-types": ^7.0.0
-    "@babel/plugin-transform-function-name": ^7.0.0
-    "@babel/plugin-transform-literals": ^7.0.0
-    "@babel/plugin-transform-modules-commonjs": ^7.0.0
-    "@babel/plugin-transform-named-capturing-groups-regex": ^7.0.0
-    "@babel/plugin-transform-parameters": ^7.0.0
-    "@babel/plugin-transform-react-display-name": ^7.0.0
-    "@babel/plugin-transform-react-jsx": ^7.0.0
-    "@babel/plugin-transform-react-jsx-self": ^7.0.0
-    "@babel/plugin-transform-react-jsx-source": ^7.0.0
-    "@babel/plugin-transform-runtime": ^7.0.0
-    "@babel/plugin-transform-shorthand-properties": ^7.0.0
-    "@babel/plugin-transform-spread": ^7.0.0
-    "@babel/plugin-transform-sticky-regex": ^7.0.0
-    "@babel/plugin-transform-template-literals": ^7.0.0
-    "@babel/plugin-transform-typescript": ^7.5.0
-    "@babel/plugin-transform-unicode-regex": ^7.0.0
-    "@babel/template": ^7.0.0
-    react-refresh: ^0.4.0
-  peerDependencies:
-    "@babel/core": "*"
-  checksum: 3d9b6308163b60ffc4d066b997e5d0205a39f72f0de4e376713262e552f22fc1369321f225636cf94f4833b3d2dd737b4ec2f92776137641c085d2a13db00979
   languageName: node
   linkType: hard
 
