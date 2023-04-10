@@ -215,7 +215,7 @@ export function InputName({ onNext }: { onNext: (name: string) => void }) {
     } else {
       setError(false);
       setErrorMessage("");
-      setIsNextDisabled(walletName.trim() === "" ? true : false);
+      setIsNextDisabled(walletName.trim() === "");
     }
   }, [walletName]);
 
