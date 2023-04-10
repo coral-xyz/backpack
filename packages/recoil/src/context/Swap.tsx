@@ -15,7 +15,7 @@ import { getAssociatedTokenAddress } from "@solana/spl-token";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import * as bs58 from "bs58";
-import { BigNumber, ethers, FixedNumber } from "ethers";
+import { BigNumber, ethers,FixedNumber } from "ethers";
 
 import { blockchainTokenData } from "../atoms/balance";
 import { jupiterInputTokens } from "../atoms/solana/jupiter";
@@ -99,6 +99,7 @@ export type SwapContext = {
   isLoadingRoutes: boolean;
   isLoadingTransactions: boolean;
   isJupiterError: boolean;
+  canSwap: boolean;
 };
 
 const _SwapContext = React.createContext<SwapContext | null>(null);
@@ -568,6 +569,7 @@ export function SwapProvider({
         availableForSwap,
         exceedsBalance,
         feeExceedsBalance,
+        canSwap: !availableForSwap.isZero(),
       }}
     >
       {children}
