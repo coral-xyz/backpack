@@ -89,7 +89,11 @@ router.get("/", extractUserId, async (req, res) => {
         areFriends: friendship?.areFriends || false,
         searchedSolPubKey: isSolPublicKey ? usernamePrefix : undefined,
         searchedEthPubKey: isEthPublicKey ? usernamePrefix : undefined,
-        public_keys,
+        // TODO: fix the disambiguation with snake_case and camelCase in API responses
+        public_keys: public_keys.map((pk) => ({
+          ...pk,
+          publicKey: pk.public_key,
+        })),
       };
     });
 

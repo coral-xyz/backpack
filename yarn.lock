@@ -21985,7 +21985,7 @@ __metadata:
   dependencies:
     "@cloudflare/workers-types": ^3.16.0
     "@coral-xyz/common": "*"
-    hono: ^2.2.1
+    hono: ^3.1.5
     typescript: ^4.9.5
     wrangler: ^2.1.6
   languageName: unknown
@@ -23552,10 +23552,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hono@npm:^2.2.1, hono@npm:^2.2.3, hono@npm:^2.5.8, hono@npm:^2.7.2":
+"hono@npm:^2.2.1, hono@npm:^2.2.3, hono@npm:^2.5.8":
   version: 2.7.8
   resolution: "hono@npm:2.7.8"
   checksum: 3ac38c8fbdcdd48cd9dbf70a1869fde4251a43c40b1419cda66028b6605f3856d5c92b9891e84cd010e18dbb76cc6e5cab03c4e51f9d0cc2b5bd3f924c4e88d3
+  languageName: node
+  linkType: hard
+
+"hono@npm:^3.1.5":
+  version: 3.1.5
+  resolution: "hono@npm:3.1.5"
+  checksum: f37c7953edc31bcdfbec450ef23bf401b16204860f5e7f044ef2123ea344f2a8d27a6eab8aa53122697bd8dccfae168539267df48a13f3a0cb950052c318a1f9
   languageName: node
   linkType: hard
 
@@ -27143,7 +27150,7 @@ __metadata:
     "@solana/web3.js": ^1.73.0
     "@supabase/supabase-js": ^2.4.1
     eslint-config-custom: "*"
-    hono: ^2.7.2
+    hono: ^3.1.5
     jose: ^4.11.2
     wrangler: ^2.7.1
   languageName: unknown
@@ -37644,7 +37651,7 @@ __metadata:
   resolution: "version@workspace:backend/workers/version"
   dependencies:
     "@cloudflare/workers-types": ^3.16.0
-    hono: ^2.2.1
+    hono: ^3.1.5
     typescript: ~4.9.3
     wrangler: ^2.1.6
   languageName: unknown

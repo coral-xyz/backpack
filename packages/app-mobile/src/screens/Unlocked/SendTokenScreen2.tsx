@@ -1,8 +1,8 @@
 import type { Token } from "@@types/types";
-import type { RemoteUserData, SubscriptionType } from "@coral-xyz/common";
+import type { RemoteUserData } from "@coral-xyz/common";
 
 import { useEffect, useState } from "react";
-import { View, ScrollView, Alert } from "react-native";
+import { ScrollView, View } from "react-native";
 
 import { BACKEND_API_URL, Blockchain } from "@coral-xyz/common";
 import { useContacts } from "@coral-xyz/db";
@@ -14,12 +14,12 @@ import {
   useUser,
 } from "@coral-xyz/recoil";
 import {
-  PrimaryButton,
-  DangerButton,
   Box,
+  DangerButton,
+  ListItem,
+  PrimaryButton,
   Text,
   YGroup,
-  ListItem,
   YStack,
 } from "@coral-xyz/tamagui";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -143,7 +143,7 @@ export const SearchInput = ({
   const fetchUserDetails = async (address: string, blockchain: Blockchain) => {
     try {
       const jwt = await AsyncStorage.getItem("@bk-jwt");
-      const url = `${BACKEND_API_URL}/users?usernamePrefix=${address}&blockchain=${blockchain}limit=6`;
+      const url = `${BACKEND_API_URL}/users?usernamePrefix=${address}&blockchain=${blockchain}&limit=6`;
       const response = await fetch(url, {
         headers: {
           authorization: `Bearer ${jwt}`,
