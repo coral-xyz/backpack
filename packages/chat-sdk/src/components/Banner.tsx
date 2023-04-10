@@ -1,5 +1,6 @@
 import { BACKEND_API_URL, sendFriendRequest } from "@coral-xyz/common";
 import { toast } from "@coral-xyz/react-common";
+import { useUpdateFriendships } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import InfoIcon from "@mui/icons-material/Info";
 
@@ -20,15 +21,9 @@ export const Banner = () => {
     reconnecting,
   } = useChatContext();
   const classes = useStyles();
-
+  const setFriendshipValue = useUpdateFriendships();
   if (reconnecting) {
-    return (
-      <TextBanner
-        fixed
-        type="danger"
-        title="Network connection error"
-      />
-    );
+    return <TextBanner fixed type="danger" title="Network connection error" />;
   }
 
   if (spam) {
@@ -52,9 +47,7 @@ export const Banner = () => {
   }
 
   if (blocked) {
-    return (
-      <TextBanner type="normal" title="You have blocked this account" />
-    );
+    return <TextBanner type="normal" title="You have blocked this account" />;
   }
 
   if (areFriends) {
@@ -67,18 +60,29 @@ export const Banner = () => {
 
   return (
     <div>
-      {!areFriends ? <div
-        className={`${classes.noContactBanner} ${classes.horizontalCenter} ${classes.text}`}
+      {!areFriends ? (
+        <div
+          className={`${classes.noContactBanner} ${classes.horizontalCenter} ${classes.text}`}
         >
-        {!requested ? <div
-          className={classes.strongText}
-          style={{ cursor: "pointer", marginRight: 25 }}
-          onClick={async () => {
-                await sendFriendRequest({
-                  to: remoteUserId,
-                  sendRequest: true,
-                });
-                setRequested(true);
+          {!requested ? (
+            <div
+              className={classes.strongText}
+              style={{ cursor: "pointer", marginRight: 25 }}
+              onClick={async () => {
+                if (remoteRequested) {
+                  await setFriendshipValue({
+                    userId: remoteUserId,
+                    friendshipValue: {
+                      areFriends: true,
+                    },
+                  });
+                } else {
+                  await sendFriendRequest({
+                    to: remoteUserId,
+                    sendRequest: true,
+                  });
+                  setRequested(true);
+                }
                 toast.success(
                   remoteRequested ? `` : "",
                   remoteRequested
@@ -87,12 +91,13 @@ export const Banner = () => {
                 );
               }}
             >
-          {remoteRequested ? "Accept Friend Request" : "Add to Friends"}
-        </div> : null}
-        <div
-          className={classes.strongText}
-          style={{ cursor: "pointer" }}
-          onClick={async () => {
+              {remoteRequested ? "Accept Friend Request" : "Add to Friends"}
+            </div>
+          ) : null}
+          <div
+            className={classes.strongText}
+            style={{ cursor: "pointer" }}
+            onClick={async () => {
               await fetch(`${BACKEND_API_URL}/friends/spam`, {
                 method: "POST",
                 headers: {
@@ -104,10 +109,11 @@ export const Banner = () => {
               toast.success("Spam", "Marked user as spam");
             }}
           >
-          Mark as Spam
+            Mark as Spam
+          </div>
+          <br />
         </div>
-        <br />
-      </div> : null}
+      ) : null}
     </div>
   );
 };
@@ -143,23 +149,27 @@ function TextBanner({
         }}
       >
         {" "}
-        {type !== "disabled" ? <InfoIcon
-          style={{
+        {type !== "disabled" ? (
+          <InfoIcon
+            style={{
               color:
                 type === "danger"
                   ? theme.custom.colors.negative
                   : theme.custom.colors.fontColor,
               marginRight: 5,
             }}
-          /> : null}{" "}
+          />
+        ) : null}{" "}
         <div style={{ marginTop: type !== "disabled" ? 1 : 0 }}>
           {title}
-          {buttonText ? <div
-            style={{ marginLeft: 10, cursor: "pointer" }}
-            onClick={onClick}
+          {buttonText ? (
+            <div
+              style={{ marginLeft: 10, cursor: "pointer" }}
+              onClick={onClick}
             >
-            {buttonText}
-          </div> : null}
+              {buttonText}
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

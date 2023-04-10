@@ -47,6 +47,17 @@ export const MessageOptions = () => {
     handleClose();
   };
 
+  const acceptFriendRequest = async () => {
+    await sendFriendRequest({ to: userId, sendRequest: true });
+    setFriendshipValue({
+      userId: userId,
+      friendshipValue: {
+        areFriends: true,
+      },
+    });
+    handleClose();
+  };
+
   return (
     <div
       style={{
@@ -86,7 +97,11 @@ export const MessageOptions = () => {
                 if (friendshipValue?.requested) {
                   send(false);
                 } else {
-                  send(true);
+                  if (friendshipValue?.remoteRequested) {
+                    acceptFriendRequest();
+                  } else {
+                    send(true);
+                  }
                   toast.success(
                     friendshipValue?.remoteRequested ? "" : "",
                     friendshipValue?.remoteRequested
