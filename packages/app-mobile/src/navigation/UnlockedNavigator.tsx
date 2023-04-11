@@ -3,8 +3,6 @@ import type { Blockchain, Nft } from "@coral-xyz/common";
 
 import { useCallback } from "react";
 
-import Constants from "expo-constants";
-
 import { parseNftName } from "@coral-xyz/common";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 // import { getHeaderTitle } from "@react-navigation/elements";
@@ -24,12 +22,13 @@ import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 // import AppListScreen from "~screens/Unlocked/AppListScreen"; // TURNED off bc of app store restrictions (temporarily)
 import { ChatNavigator } from "~navigation/ChatNavigator";
 import { WalletsNavigator } from "~navigation/WalletsNavigator";
-import { BalancesNavigator } from "~screens/Unlocked/BalancesScreen";
+import { NotificationsScreen } from "~screens/NotificationsScreen";
+// import { BalancesNavigator } from "~screens/Unlocked/BalancesScreen";
 import {
   DepositListScreen,
   DepositSingleScreen,
 } from "~screens/Unlocked/DepositScreen";
-import { NftCollectiblesNavigator } from "~screens/Unlocked/NftCollectiblesScreen";
+// import { NftCollectiblesNavigator } from "~screens/Unlocked/NftCollectiblesScreen";
 import { RecentActivityScreen } from "~screens/Unlocked/RecentActivityScreen";
 import {
   SendTokenSelectRecipientScreen,
@@ -164,11 +163,10 @@ export function UnlockedNavigator(): JSX.Element {
 }
 
 type UnlockedTabNavigatorParamList = {
-  WalletTBD: undefined;
-  Balances: undefined;
-  Applications: undefined;
-  Collectibles: undefined;
+  Wallets: undefined;
   Chat: undefined;
+  AccountSettings: undefined;
+  Notifications: undefined;
 };
 
 const Tab = createBottomTabNavigator<UnlockedTabNavigatorParamList>();
@@ -206,12 +204,13 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         tabBarInactiveTintColor: theme.custom.colors.icon,
       })}
     >
-      <Tab.Screen name="WalletTBD" component={WalletsNavigator} />
-      <Tab.Screen name="Balances" component={BalancesNavigator} />
-      <Tab.Screen name="Collectibles" component={NftCollectiblesNavigator} />
-      {Constants?.expoConfig?.extra?.FEATURE_MOBILE_CHAT ? (
-        <Tab.Screen name="Chat" component={ChatNavigator} />
-      ) : null}
+      <Tab.Screen name="Wallets" component={WalletsNavigator} />
+      <Tab.Screen name="Chat" component={ChatNavigator} />
+      <Tab.Screen
+        name="Notifications"
+        component={NotificationsScreen}
+        options={{ headerShown: true }}
+      />
       <Tab.Screen name="AccountSettings" component={AccountSettingsNavigator} />
     </Tab.Navigator>
   );

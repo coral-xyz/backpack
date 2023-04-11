@@ -1,17 +1,17 @@
 import { useCallback } from "react";
 import { Text, View, Button, Pressable, ScrollView } from "react-native";
 
+import { NotificationsData } from "@coral-xyz/recoil";
+import { Box } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { WalletTokenList } from "~components/Wallets";
 import { Screen } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
-import {
-  BalanceListScreen,
-  BalanceDetailScreen,
-} from "~screens/Unlocked/BalancesScreen";
+import { BalanceDetailScreen } from "~screens/Unlocked/BalancesScreen";
 import { MainWalletList } from "~screens/Unlocked/WalletListScreen";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 import { NftCollectionListScreen } from "~screens/WalletsV2NftListScreen";
@@ -65,9 +65,14 @@ function WalletPicker({ navigation }) {
 
 function NotificationsScreen({ navigation }) {
   return (
-    <View style={{ flex: 1, alignItems: "center", paddingTop: 40 }}>
-      <Text>Notifications</Text>
-    </View>
+    <NotificationsData>
+      {({ groupedNotifications }) => (
+        <View style={{ flex: 1, alignItems: "center", paddingTop: 40 }}>
+          <Text>Notifications</Text>
+          <Text>{JSON.stringify(groupedNotifications)}</Text>
+        </View>
+      )}
+    </NotificationsData>
   );
 }
 
@@ -118,14 +123,17 @@ function Tabs() {
 }
 
 function AllAccountsScreen({ navigation }) {
+  const insets = useSafeAreaInsets();
   const handlePressWallet = useCallback((wallet) => {
     navigation.push("Main", { wallet });
   }, []);
 
   return (
-    <Screen>
+    <Screen style={{ marginTop: insets.top }}>
       <BalanceSummaryWidget />
-      <MainWalletList onPressWallet={handlePressWallet} />
+      <Box marginTop={12}>
+        <MainWalletList onPressWallet={handlePressWallet} />
+      </Box>
     </Screen>
   );
 }
@@ -137,7 +145,7 @@ export function WalletsNavigator(): JSX.Element {
       <Stack.Screen
         name="AllAccountsHome"
         component={AllAccountsScreen}
-        options={{ title: "Your Wallets" }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="Main"

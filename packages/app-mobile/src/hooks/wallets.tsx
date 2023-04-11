@@ -10,7 +10,9 @@ import {
   useBackgroundClient,
   useBlockchainActiveWallet,
   useDehydratedWallets,
+  allWalletsDisplayed,
 } from "@coral-xyz/recoil";
+import { useRecoilValueLoadable } from "recoil";
 
 const FAKE_DATA = [
   {
@@ -50,21 +52,24 @@ export function useWallets(): {
   allWallets: Wallet[];
   onSelectWallet: (wallet: Wallet, cb: () => void) => void;
 } {
+  const wl = useRecoilValueLoadable(allWalletsDisplayed);
+  const wallets = wl.state === "hasValue" ? wl.contents : [];
+
   // const activeWallet = useBlockchainActiveWallet(Blockchain.SOLANA);
   const background = useBackgroundClient();
   // const wallets = useAllWallets();
-  // const _dehydratedWallets = useDehydratedWallets();
-  // const activeWallets = wallets.filter((w) => !w.isCold);
-  // // const coldWallets = wallets.filter((w) => w.isCold);
-  //
-  // // Dehydrated public keys are keys that exist on the server but cannot be
-  // // used on the client as we don't have signing data, e.g. mnemonic, private
-  // // key or ledger derivation path
-  // const dehydratedWallets = _dehydratedWallets.map((w: any) => ({
-  //   ...w,
-  //   name: "", // TODO server side does not sync wallet names
-  //   type: "dehydrated",
-  // }));
+  const _dehydratedWallets = useDehydratedWallets();
+  const activeWallets = wallets.filter((w) => !w.isCold);
+  // const coldWallets = wallets.filter((w) => w.isCold);
+
+  // Dehydrated public keys are keys that exist on the server but cannot be
+  // used on the client as we don't have signing data, e.g. mnemonic, private
+  // key or ledger derivation path
+  const dehydratedWallets = _dehydratedWallets.map((w: any) => ({
+    ...w,
+    name: "", // TODO server side does not sync wallet names
+    type: "dehydrated",
+  }));
 
   const onSelectWallet = useCallback(
     async (w: Wallet, cb: any) => {
@@ -81,7 +86,7 @@ export function useWallets(): {
   return {
     activeWallet: { publicKey: "" },
     onSelectWallet,
-    allWallets: FAKE_DATA,
-    // allWallets: [...activeWallets, ...dehydratedWallets],
+    // allWallets: FAKE_DATA,
+    allWallets: [...activeWallets, ...dehydratedWallets],
   };
 }
