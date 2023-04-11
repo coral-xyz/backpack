@@ -1,4 +1,3 @@
-import React from "react";
 import type { Nft } from "@coral-xyz/common";
 import { Blockchain } from "@coral-xyz/common";
 import { nftsByOwner, useActiveSolanaWallet } from "@coral-xyz/recoil";
@@ -20,8 +19,9 @@ export const useSearchedNfts = (searchFilter: string) => {
   return contents
     .filter(
       (x: Nft) =>
-        x.name?.toLowerCase()?.includes(searchFilter.toLowerCase()) ||
-        x.collectionName?.toLowerCase()?.includes(searchFilter.toLowerCase())
+        x &&
+        (x.name?.toLowerCase()?.includes(searchFilter.toLowerCase()) ||
+          x.collectionName?.toLowerCase()?.includes(searchFilter.toLowerCase()))
     )
     .map((x: Nft) => ({
       name: x.name || "",
