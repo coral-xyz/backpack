@@ -78,7 +78,7 @@ function TokenHeader({
   );
 }
 
-function BalanceDetailScreen({
+export function BalanceDetailScreen({
   route,
   navigation,
 }: StackScreenProps<
@@ -122,7 +122,7 @@ function BalanceDetailScreen({
   );
 }
 
-function BalanceListScreen({
+export function BalanceListScreen({
   navigation,
 }: StackScreenProps<BalancesStackParamList, "BalanceList">): JSX.Element {
   return (

@@ -17,6 +17,7 @@ import {
   TabIconNfts,
   TabIconMessages,
 } from "~components/Icon";
+import { Avatar } from "~components/index";
 // import { NavHeader } from "~components/NavHeader";
 import { useTheme } from "~hooks/useTheme";
 import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
@@ -183,6 +184,8 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         return TabIconNfts;
       case "Chat":
         return TabIconMessages;
+      case "AccountSettings":
+        return Avatar;
       default:
         return TabIconBalances;
     }
@@ -195,7 +198,9 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         headerShown: false,
         tabBarIcon: ({ color, size }) => {
           const Component = getIcon(route.name);
-          return <Component fill={color} width={size} height={size} />;
+          return (
+            <Component fill={color} width={size} height={size} size={size} />
+          );
         },
         tabBarActiveTintColor: theme.custom.colors.brandColor,
         tabBarInactiveTintColor: theme.custom.colors.icon,
@@ -207,6 +212,7 @@ function UnlockedBottomTabNavigator(): JSX.Element {
       {Constants?.expoConfig?.extra?.FEATURE_MOBILE_CHAT ? (
         <Tab.Screen name="Chat" component={ChatNavigator} />
       ) : null}
+      <Tab.Screen name="AccountSettings" component={AccountSettingsNavigator} />
     </Tab.Navigator>
   );
 }

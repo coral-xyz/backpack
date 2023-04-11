@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { formatUSD } from "@coral-xyz/common";
 
-import { Margin } from "~components/index";
+import { StyledText } from "~components/index";
 import { useTotalBalance } from "~hooks/recoil";
 import { useTheme } from "~hooks/useTheme";
 
@@ -54,34 +54,32 @@ function TextPercentChange({
   return (
     <View style={{ borderRadius: 12, backgroundColor }}>
       <Text style={[styles.percentChangeText, { color }]}>
-        {totalChange > 0 ? "+" : ""}
+        ({totalChange > 0 ? "+" : ""}
         {Number.isFinite(percentChange)
           ? `${percentChange.toFixed(2)}%`
           : "0.00%"}
+        )
       </Text>
     </View>
   );
 }
 
 export function BalanceSummaryWidget() {
-  const theme = useTheme();
   const { totalBalance, totalChange, percentChange, isLoading } =
     useTotalBalance();
 
   return (
     <View style={styles.container}>
-      <Text
-        style={[
-          styles.totalBalanceText,
-          { color: theme.custom.colors.fontColor },
-        ]}
+      <StyledText
+        marginBottom={12}
+        fontWeight="700"
+        fontSize={36}
+        color="$fontColor"
       >
         {formatUSD(totalBalance)}
-      </Text>
+      </StyledText>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Margin right={12}>
-          <TextTotalChange totalChange={totalChange} />
-        </Margin>
+        <TextTotalChange totalChange={totalChange} />
         <TextPercentChange
           isLoading={isLoading}
           totalChange={totalChange}
@@ -94,23 +92,13 @@ export function BalanceSummaryWidget() {
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: "center",
     alignItems: "center",
   },
-  totalBalanceText: {
-    fontWeight: "600",
-    fontSize: 40,
-  },
   totalChangeText: {
-    fontSize: 12,
-    lineHeight: 24,
-    paddingVertical: 12,
+    fontSize: 16,
   },
   percentChangeText: {
-    fontSize: 12,
-    lineHeight: 24,
-    borderRadius: 28,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    fontSize: 16,
+    marginLeft: 4,
   },
 });

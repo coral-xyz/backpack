@@ -102,26 +102,28 @@ export function StyledText({
   fontSize = 16,
   textAlign,
   children,
+  color,
   style,
   ...props
 }: {
   fontSize?: number;
   fontWeight?: string;
-  children: string;
+  children: string | string[];
   textAlign?: string;
+  color?: string;
   style?: StyleProp<TextStyle>;
 }) {
   const theme = useTheme();
-  const color = theme.custom.colors.fontColor;
+  const _color = color || theme.custom.colors.fontColor;
   return (
     <_Text
-      color={theme.custom.colors.fontColor}
+      color={_color}
       fontSize={fontSize}
       fontFamily="Inter"
       fontWeight={fontWeight}
       // @ts-expect-error
       textAlign={textAlign}
-      style={[{ color }, style]}
+      style={style}
       {...props}
     >
       {children}
@@ -739,6 +741,7 @@ export function RoundedContainerGroup({
         roundedContainerStyles.container,
         {
           borderColor: theme.custom.colors.borderFull,
+          borderWidth: 2,
         },
         disableTopRadius ? roundedContainerStyles.disableTopRadius : null,
         disableBottomRadius ? roundedContainerStyles.disableBottomRadius : null,

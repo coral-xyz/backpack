@@ -11,6 +11,7 @@ import {
 } from "react-native";
 
 import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
+import { ListItem, XStack } from "@coral-xyz/tamagui";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HardwareIcon, ImportedIcon, MnemonicIcon } from "~components/Icon";
@@ -21,9 +22,63 @@ import {
   RoundedContainerGroup,
   Row,
   Screen,
+  StyledText,
 } from "~components/index";
 import { getBlockchainLogo, useTheme } from "~hooks/index";
 import { useWallets } from "~hooks/wallets";
+
+function MainWalletListItem({
+  publicKey,
+  type,
+  name,
+  blockchain,
+  onPress,
+  balance,
+}) {
+  return (
+    <ListItem
+      hoverTheme
+      pressTheme
+      alignItems="center"
+      paddingHorizontal={12}
+      icon={<NetworkIcon size={18} blockchain={blockchain} />}
+      onPress={() => onPress({ blockchain, name, publicKey, type })}
+    >
+      <XStack flex={1} justifyContent="space-between">
+        <StyledText fontSize={16} fontWeight="600">
+          {name}
+        </StyledText>
+        <StyledText fontSize={16} fontWeight="600">
+          {balance}
+        </StyledText>
+      </XStack>
+    </ListItem>
+  );
+}
+
+export function MainWalletList({ onPressWallet }) {
+  const { allWallets } = useWallets();
+  return (
+    <RoundedContainerGroup>
+      <FlatList
+        data={allWallets}
+        keyExtractor={(item) => item.publicKey.toString()}
+        renderItem={({ item: wallet }) => {
+          return (
+            <MainWalletListItem
+              name={wallet.name}
+              type={wallet.type}
+              publicKey={wallet.publicKey}
+              blockchain={wallet.blockchain}
+              onPress={onPressWallet}
+              balance="$4,197.67"
+            />
+          );
+        }}
+      />
+    </RoundedContainerGroup>
+  );
+}
 
 // NOTE(peter): copied from app-extension/src/components/common/WalletList.tsx
 export function WalletListScreen({ navigation, route }): JSX.Element {
@@ -127,9 +182,20 @@ function WalletListItem({
   );
 }
 
-function NetworkIcon({ blockchain }: { blockchain: Blockchain }) {
+function NetworkIcon({
+  size,
+  blockchain,
+}: {
+  size?: number;
+  blockchain: Blockchain;
+}) {
   const logo = getBlockchainLogo(blockchain);
-  return <Image style={styles.logoContainer} source={logo} />;
+  return (
+    <Image
+      style={[styles.logoContainer, { width: size, height: size }]}
+      source={logo}
+    />
+  );
 }
 
 function WalletTypeIcon({ type, fill }: { type: string; fill?: string }) {

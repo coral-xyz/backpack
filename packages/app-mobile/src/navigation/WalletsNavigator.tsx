@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useCallback } from "react";
 import { Text, View, Button, Pressable, ScrollView } from "react-native";
 
 import { MaterialIcons } from "@expo/vector-icons";
@@ -6,7 +6,13 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import { createStackNavigator } from "@react-navigation/stack";
 
 import { WalletTokenList } from "~components/Wallets";
+import { Screen } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
+import {
+  BalanceListScreen,
+  BalanceDetailScreen,
+} from "~screens/Unlocked/BalancesScreen";
+import { MainWalletList } from "~screens/Unlocked/WalletListScreen";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 import { NftCollectionListScreen } from "~screens/WalletsV2NftListScreen";
 
@@ -94,7 +100,6 @@ function ActivityScreen({ route }) {
 }
 
 const TopTabs = createMaterialTopTabNavigator();
-const Stack = createStackNavigator();
 
 function Tabs() {
   return (
@@ -113,26 +118,26 @@ function Tabs() {
 }
 
 function AllAccountsScreen({ navigation }) {
+  const handlePressWallet = useCallback((wallet) => {
+    navigation.push("Main", { wallet });
+  }, []);
+
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Button
-        title="Ok"
-        onPress={() => {
-          navigation.push("Main");
-        }}
-      />
+    <Screen>
       <BalanceSummaryWidget />
-    </View>
+      <MainWalletList onPressWallet={handlePressWallet} />
+    </Screen>
   );
 }
 
+const Stack = createStackNavigator();
 export function WalletsNavigator(): JSX.Element {
   return (
     <Stack.Navigator initialRouteName="AllAccountsHome">
       <Stack.Screen
         name="AllAccountsHome"
         component={AllAccountsScreen}
-        options={{ headerShown: false }}
+        options={{ title: "Your Wallets" }}
       />
       <Stack.Screen
         name="Main"
@@ -167,9 +172,9 @@ export function WalletsNavigator(): JSX.Element {
         }}
       />
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
+      <Stack.Screen name="TokenDetail" component={BalanceDetailScreen} />
       <Stack.Group screenOptions={{ presentation: "modal" }}>
         <Stack.Screen name="WalletPicker" component={WalletPicker} />
-        <Stack.Screen name="TokenDetail" component={TokenDetail} />
       </Stack.Group>
     </Stack.Navigator>
   );
