@@ -245,14 +245,28 @@ const options = {
         {
           from: "src/manifest.json",
           force: true,
-          transform: function (content, path) {
+          transform: function (content) {
+            const manifestJsonData = (() => {
+              const data = JSON.parse(content.toString());
+              if (process.env.FIREFOX) {
+                // if we're building for firefox then inject firefox overrides
+                const firefoxJson = fs.readFileSync(
+                  "src/manifest.firefox.json"
+                );
+                const firefoxOverrides = JSON.parse(firefoxJson.toString());
+                return { ...data, ...firefoxOverrides };
+              } else {
+                return data;
+              }
+            })();
+
             return Buffer.from(
               JSON.stringify(
                 {
                   description: process.env.npm_package_description,
                   version: process.env.npm_package_version,
                   name: EXTENSION_NAME,
-                  ...JSON.parse(content.toString()),
+                  ...manifestJsonData,
                 },
                 null,
                 2
