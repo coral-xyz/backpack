@@ -23,7 +23,9 @@ export const useSearchedTokens = (searchFilter: string) => {
   }
 
   return tokenAccounts
-    .filter((x) => x.name?.toLowerCase().includes(searchFilter.toLowerCase()))
+    .filter(
+      (x) => x && x.name?.toLowerCase().includes(searchFilter.toLowerCase())
+    )
     .map((x) => ({
       name: x.name || "",
       id: x.mint || "",
