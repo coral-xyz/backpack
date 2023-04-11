@@ -99,14 +99,14 @@ const ctaStyles = StyleSheet.create({
 
 export function StyledText({
   fontWeight = "500",
-  fontSize = 16,
+  fontSize = "$base",
   textAlign,
   children,
   color,
   style,
   ...props
 }: {
-  fontSize?: number;
+  fontSize?: number | string;
   fontWeight?: string;
   children: string | string[];
   textAlign?: string;
@@ -119,7 +119,7 @@ export function StyledText({
     <_Text
       color={_color}
       fontSize={fontSize}
-      fontFamily="Inter"
+      fontFamily="$body"
       fontWeight={fontWeight}
       // @ts-expect-error
       textAlign={textAlign}
@@ -740,6 +740,7 @@ export function RoundedContainerGroup({
       style={[
         roundedContainerStyles.container,
         {
+          backgroundColor: theme.custom.colors.nav,
           borderColor: theme.custom.colors.borderFull,
           borderWidth: 2,
         },

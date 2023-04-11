@@ -11,7 +11,7 @@ import {
 } from "react-native";
 
 import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
-import { ListItem, XStack } from "@coral-xyz/tamagui";
+import { ListItem, XStack, ListItem2 } from "@coral-xyz/tamagui";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HardwareIcon, ImportedIcon, MnemonicIcon } from "~components/Icon";
@@ -36,47 +36,52 @@ function MainWalletListItem({
   balance,
 }) {
   return (
-    <ListItem
+    <ListItem2
+      list
+      singleLine
       hoverTheme
       pressTheme
-      alignItems="center"
-      paddingHorizontal={12}
       icon={<NetworkIcon size={18} blockchain={blockchain} />}
       onPress={() => onPress({ blockchain, name, publicKey, type })}
     >
       <XStack flex={1} justifyContent="space-between">
-        <StyledText fontSize={16} fontWeight="600">
+        <StyledText fontSize="$base" fontWeight="600">
           {name}
         </StyledText>
-        <StyledText fontSize={16} fontWeight="600">
+        <StyledText fontSize="$base" fontWeight="600">
           {balance}
         </StyledText>
       </XStack>
-    </ListItem>
+    </ListItem2>
   );
 }
 
 export function MainWalletList({ onPressWallet }) {
   const { allWallets } = useWallets();
   return (
-    <RoundedContainerGroup>
-      <FlatList
-        data={allWallets}
-        keyExtractor={(item) => item.publicKey.toString()}
-        renderItem={({ item: wallet }) => {
-          return (
-            <MainWalletListItem
-              name={wallet.name}
-              type={wallet.type}
-              publicKey={wallet.publicKey}
-              blockchain={wallet.blockchain}
-              onPress={onPressWallet}
-              balance="$4,197.67"
-            />
-          );
-        }}
-      />
-    </RoundedContainerGroup>
+    <>
+      <StyledText fontSize="$base" mb={8}>
+        {allWallets.length} Wallets
+      </StyledText>
+      <RoundedContainerGroup>
+        <FlatList
+          data={allWallets}
+          keyExtractor={(item) => item.publicKey.toString()}
+          renderItem={({ item: wallet }) => {
+            return (
+              <MainWalletListItem
+                name={wallet.name}
+                type={wallet.type}
+                publicKey={wallet.publicKey}
+                blockchain={wallet.blockchain}
+                onPress={onPressWallet}
+                balance="$4,197.67"
+              />
+            );
+          }}
+        />
+      </RoundedContainerGroup>
+    </>
   );
 }
 

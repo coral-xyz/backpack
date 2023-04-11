@@ -1,15 +1,16 @@
 import { useCallback } from "react";
 import { Text, View, Button, Pressable, ScrollView } from "react-native";
 
-import { NotificationsData } from "@coral-xyz/recoil";
-import { Box } from "@coral-xyz/tamagui";
+import { NotificationsData, useActiveWallet } from "@coral-xyz/recoil";
+import { Box, XStack } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import { WalletTokenList } from "~components/Wallets";
-import { Screen } from "~components/index";
+import { StyledText, Screen } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { BalanceDetailScreen } from "~screens/Unlocked/BalancesScreen";
 import { MainWalletList } from "~screens/Unlocked/WalletListScreen";
@@ -24,8 +25,10 @@ function MainButton({
   onPressCopy: () => void;
 }): JSX.Element {
   const theme = useTheme();
+  const activeWallet = useActiveWallet();
   return (
-    <View
+    <XStack
+      alignItems="center"
       style={{
         paddingVertical: 8,
         paddingHorizontal: 22,
@@ -38,12 +41,18 @@ function MainButton({
       }}
     >
       <Pressable onPress={onPressMain}>
-        <Text style={{ fontWeight: "bold", fontSize: 16 }}>Main</Text>
+        <StyledText fontSize="$base" color="$fontColor">
+          {activeWallet.name}
+        </StyledText>
       </Pressable>
       <Pressable onPress={onPressCopy} style={{ marginLeft: 8 }}>
-        <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
+        <MaterialIcons
+          name="keyboard-arrow-down"
+          size={24}
+          color={theme.custom.colors.fontColor}
+        />
       </Pressable>
-    </View>
+    </XStack>
   );
 }
 
@@ -78,13 +87,23 @@ function NotificationsScreen({ navigation }) {
 
 function TokenScreen({ navigation }) {
   return (
-    <View style={{ flex: 1, paddingTop: 24 }}>
+    <Screen>
+      <BalanceSummaryWidget />
+      <Box marginVertical={12}>
+        <TransferWidget
+          swapEnabled={false}
+          rampEnabled={false}
+          onPressOption={(route: string, options: NavTokenOptions) => {
+            navigation.push(route, options);
+          }}
+        />
+      </Box>
       <WalletTokenList
         onPressToken={(id: string) => {
           navigation.push("TokenDetail", { id });
         }}
       />
-    </View>
+    </Screen>
   );
 }
 
@@ -107,16 +126,24 @@ function ActivityScreen({ route }) {
 const TopTabs = createMaterialTopTabNavigator();
 
 function Tabs() {
+  const theme = useTheme();
   return (
     <TopTabs.Navigator
       screenOptions={{
-        tabBarActiveTintColor: "#000",
-        tabBarLabelStyle: { fontSize: 14 },
-        // tabBarStyle: { marginHorizontal: 32 },
+        tabBarIndicatorStyle: {
+          backgroundColor: theme.custom.colors.fontColor,
+        },
+        tabBarActiveTintColor: theme.custom.colors.fontColor,
+        tabBarLabelStyle: {
+          textTransform: "capitalize",
+          fontSize: 15,
+          fontFamily: "Inter_500Medium",
+          color: theme.custom.colors.fontColor,
+        },
       }}
     >
       <TopTabs.Screen name="Tokens" component={TokenScreen} />
-      <TopTabs.Screen name="Collection" component={NftCollectionListScreen} />
+      <TopTabs.Screen name="Collectibles" component={NftCollectionListScreen} />
       <TopTabs.Screen name="Activity" component={ActivityScreen} />
     </TopTabs.Navigator>
   );
@@ -140,6 +167,7 @@ function AllAccountsScreen({ navigation }) {
 
 const Stack = createStackNavigator();
 export function WalletsNavigator(): JSX.Element {
+  const theme = useTheme();
   return (
     <Stack.Navigator initialRouteName="AllAccountsHome">
       <Stack.Screen
@@ -163,17 +191,14 @@ export function WalletsNavigator(): JSX.Element {
             },
             headerRight: (props) => {
               return (
-                <MaterialIcons.Button
-                  name="notifications"
-                  color="gray"
-                  size={32}
-                  onPress={() => navigation.push("Notifications")}
-                  style={{
-                    padding: 0,
-                    margin: 0,
-                    backgroundColor: "white",
-                  }}
-                />
+                <Box m={8} mr={16}>
+                  <MaterialIcons
+                    name="search"
+                    color={theme.custom.colors.fontColor}
+                    size={28}
+                    onPress={() => navigation.push("Notifications")}
+                  />
+                </Box>
               );
             },
           };

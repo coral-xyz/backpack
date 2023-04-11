@@ -5,10 +5,12 @@ import {
   useActiveWallet,
   activeWallet,
 } from "@coral-xyz/recoil";
+import { ListItem2 } from "@coral-xyz/tamagui";
 import { useRecoilValueLoadable } from "recoil";
 
-import { ListRowSeparator } from "~components/index";
 import { TokenRow } from "~screens/Unlocked/components/Balances";
+
+import { RoundedContainerGroup } from ".";
 
 export function WalletTokenList({ onPressToken }) {
   const _wallet = useRecoilValueLoadable(activeWallet);
@@ -27,20 +29,21 @@ export function WalletTokenList({ onPressToken }) {
   const tokens = _tokens.state === "hasValue" ? _tokens.contents : [];
 
   return (
-    <FlatList
-      data={tokens}
-      keyExtractor={(item) => item.address}
-      ItemSeparatorComponent={ListRowSeparator}
-      renderItem={({ item: token }) => {
-        return (
-          <TokenRow
-            onPressRow={onPressToken}
-            blockchain={wallet.blockchain}
-            token={token}
-            walletPublicKey={wallet.publicKey.toString()}
-          />
-        );
-      }}
-    />
+    <RoundedContainerGroup>
+      <FlatList
+        data={tokens}
+        keyExtractor={(item) => item.address}
+        renderItem={({ item: token }) => {
+          return (
+            <TokenRow
+              onPressRow={onPressToken}
+              blockchain={wallet.blockchain}
+              token={token}
+              walletPublicKey={wallet.publicKey.toString()}
+            />
+          );
+        }}
+      />
+    </RoundedContainerGroup>
   );
 }

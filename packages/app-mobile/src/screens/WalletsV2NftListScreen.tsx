@@ -18,7 +18,7 @@ import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
 import { NftErrorBoundary } from "~components/ErrorBoundary";
 import { NFTCard, BaseCard } from "~components/NFTCard";
-import { Screen, EmptyState } from "~components/index";
+import { Screen, EmptyState, RoundedContainerGroup } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 
 type NftCollectionsWithId = {
@@ -148,21 +148,23 @@ export function NftCollectionListScreen({
 
   return (
     <Screen>
-      <FlatList
-        data={data}
-        numColumns={2}
-        ListEmptyComponent={NoNFTsEmptyState}
-        keyExtractor={(collection) => collection.id}
-        renderItem={({ item: collection }) => {
-          return (
-            <NftCollectionCard
-              publicKey={activeWallet.publicKey}
-              collection={collection}
-              onPress={navigation.push}
-            />
-          );
-        }}
-      />
+      <RoundedContainerGroup style={{ padding: 12 }}>
+        <FlatList
+          data={data}
+          numColumns={2}
+          ListEmptyComponent={NoNFTsEmptyState}
+          keyExtractor={(collection) => collection.id}
+          renderItem={({ item: collection }) => {
+            return (
+              <NftCollectionCard
+                publicKey={activeWallet.publicKey}
+                collection={collection}
+                onPress={navigation.push}
+              />
+            );
+          }}
+        />
+      </RoundedContainerGroup>
     </Screen>
   );
 }

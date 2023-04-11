@@ -4,6 +4,7 @@ import type { Blockchain, Nft } from "@coral-xyz/common";
 import { useCallback } from "react";
 
 import { parseNftName } from "@coral-xyz/common";
+import { MaterialIcons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 // import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -169,6 +170,10 @@ type UnlockedTabNavigatorParamList = {
   Notifications: undefined;
 };
 
+const TabIconNotifications = ({ size, fill }) => (
+  <MaterialIcons name="notifications" size={size} color={fill} />
+);
+
 const Tab = createBottomTabNavigator<UnlockedTabNavigatorParamList>();
 function UnlockedBottomTabNavigator(): JSX.Element {
   const theme = useTheme();
@@ -182,6 +187,8 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         return TabIconNfts;
       case "Chat":
         return TabIconMessages;
+      case "Notifications":
+        return TabIconNotifications;
       case "AccountSettings":
         return Avatar;
       default:
