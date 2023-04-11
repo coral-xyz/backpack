@@ -19,11 +19,10 @@ export const MediaContent = ({
 
   return (
     <>
-      {modalOpen && (
-        <Modal
-          open={modalOpen}
-          onClose={() => setModalOpen(false)}
-          componentsProps={{
+      {modalOpen ? <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        componentsProps={{
             root: {
               style: {
                 display: "flex",
@@ -43,26 +42,26 @@ export const MediaContent = ({
             },
           }}
         >
-          <>
-            <CloseIcon
-              style={{
+        <>
+          <CloseIcon
+            style={{
                 color: theme.custom.colors.icon,
                 cursor: "pointer",
                 position: "absolute",
                 top: 10,
                 right: 10,
               }}
-              onClick={() => setModalOpen(false)}
+            onClick={() => setModalOpen(false)}
             />
-            {mediaKind === "video" ? (
-              <video
-                style={{
+          {mediaKind === "video" ? (
+            <video
+              style={{
                   borderRadius: 5,
                   objectFit: "contain",
                   maxHeight: "85vh",
                 }}
-                controls={true}
-                src={mediaLink}
+              controls
+              src={mediaLink}
               />
             ) : (
               <img
@@ -75,24 +74,23 @@ export const MediaContent = ({
                 src={mediaLink}
               />
             )}
-            <a
-              style={{
+          <a
+            style={{
                 position: "absolute",
                 right: 10,
                 bottom: 10,
               }}
-              href={mediaLink}
-              download="AwesomeImage.png"
+            href={mediaLink}
+            download="AwesomeImage.png"
             >
-              <DownloadIcon
-                style={{ color: theme.custom.colors.icon, cursor: "pointer" }}
-                onClick={() => setModalOpen(false)}
+            <DownloadIcon
+              style={{ color: theme.custom.colors.icon, cursor: "pointer" }}
+              onClick={() => setModalOpen(false)}
               />
-            </a>
-          </>
-        </Modal>
-      )}
-      <div style={{ marginTop: 3, width: 1 }}>
+          </a>
+        </>
+      </Modal> : null}
+      <div style={{ marginTop: 3 }}>
         {mediaKind === "video" ? (
           <div style={{ display: "flex" }}>
             <div style={{ position: "relative" }}>
@@ -102,7 +100,7 @@ export const MediaContent = ({
                   maxWidth: !isXs ? 375 : 250,
                   borderRadius: 5,
                 }}
-                controls={true}
+                controls
                 src={mediaLink}
               />
               <div
