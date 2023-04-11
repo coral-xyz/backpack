@@ -28,61 +28,68 @@ export const WalletListItem: React.FC<{
 }) => {
   const theme = useCustomTheme();
   const nav = useNavigation();
-  return (
-    <ListItem
-      button
-      key={publicKey.toString()}
-      isFirst={isFirst}
-      isLast={isLast}
-      detail={
-        showDetailMenu ? (
-          <MoreHoriz
-            style={{
-              cursor: "pointer",
-              color: theme.custom.colors.secondary,
-            }}
-          />
-        ) : null
-      }
-      onClick={
-        onClick
-          ? onClick
-          : () =>
-              nav.push("edit-wallets-wallet-detail", {
-                blockchain,
-                publicKey,
-                name,
-                type,
-              })
-      }
-      style={{ height: "48px", display: "flex", width: "100%" }}
-    >
-      <WalletAddress
-        name={name}
-        publicKey={publicKey}
-        style={{
-          fontWeight: 500,
-          lineHeight: "24px",
-          fontSize: "16px",
-        }}
-        nameStyle={{
-          color: theme.custom.colors.fontColor,
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          maxWidth: "75px",
-        }}
-      />
-      {type ? <div
-        style={{
-            display: "flex",
-            justifyContent: "center",
-            flexDirection: "column",
-            marginLeft: "4px",
+  try {
+    return (
+      <ListItem
+        button
+        key={publicKey.toString()}
+        isFirst={isFirst}
+        isLast={isLast}
+        detail={
+          showDetailMenu ? (
+            <MoreHoriz
+              style={{
+                cursor: "pointer",
+                color: theme.custom.colors.secondary,
+              }}
+            />
+          ) : null
+        }
+        onClick={
+          onClick
+            ? onClick
+            : () =>
+                nav.push("edit-wallets-wallet-detail", {
+                  blockchain,
+                  publicKey,
+                  name,
+                  type,
+                })
+        }
+        style={{ height: "48px", display: "flex", width: "100%" }}
+      >
+        <WalletAddress
+          name={name}
+          publicKey={publicKey}
+          style={{
+            fontWeight: 500,
+            lineHeight: "24px",
+            fontSize: "16px",
           }}
-        >
-        <ImportTypeBadge type={type} />
-      </div> : null}
-    </ListItem>
-  );
+          nameStyle={{
+            color: theme.custom.colors.fontColor,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: "75px",
+          }}
+        />
+        {type ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "column",
+              marginLeft: "4px",
+            }}
+          >
+            <ImportTypeBadge type={type} />
+          </div>
+        ) : null}
+      </ListItem>
+    );
+  } catch (error: any) {
+    console.log(`Error (at EditWallets/index.tsx): ${error.message}`);
+    throw error;
+  }
 };

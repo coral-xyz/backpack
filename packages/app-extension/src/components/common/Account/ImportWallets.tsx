@@ -366,9 +366,15 @@ export function ImportWallets({
       );
     }
     setLedgerLocked(false);
-    return publicKeys.map((p) =>
-      blockchain === Blockchain.SOLANA ? bs58.encode(p) : p.toString()
-    );
+
+    try {
+      return publicKeys.map((p) =>
+        blockchain === Blockchain.SOLANA ? bs58.encode(p) : p.toString()
+      );
+    } catch (error: any) {
+      console.log(`Error (at ImportWallets.tsx): ${error.message}`);
+      throw error;
+    }
   };
 
   const isDisabledPublicKey = (pk: string): boolean => {
@@ -420,151 +426,157 @@ export function ImportWallets({
     [Blockchain.ETHEREUM]: 18,
   }[blockchain];
 
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        justifyContent: "space-between",
-      }}
-    >
-      <Box>
-        <Box
-          sx={{
-            marginLeft: "24px",
-            marginRight: "24px",
-            marginTop: "24px",
-          }}
-        >
-          <Header text={`Import wallet${allowMultiple ? "s" : ""}`} />
-          <SubtextParagraph>
-            Select which wallet{allowMultiple ? "s" : ""} you'd like to import.
-          </SubtextParagraph>
-        </Box>
-        <div style={{ margin: "16px" }}>
-          <TextInput
-            placeholder="Derivation Path"
-            value={derivationPathLabel}
-            setValue={(e) => setDerivationPathLabel(e.target.value)}
-            select
-            disabled={ledgerLocked}
-          >
-            {derivationPathOptions.map((o) => (
-              <MenuItem value={o.label} key={o.label}>
-                {o.label}
-              </MenuItem>
-            ))}
-          </TextInput>
-        </div>
-        {Object.keys(balances).length > 0 ? (
-          <List
-            sx={{
-              color: theme.custom.colors.fontColor,
-              background: theme.custom.colors.background,
-              borderRadius: "12px",
-              marginLeft: "16px",
-              marginRight: "16px",
-              paddingTop: "8px",
-              paddingBottom: "8px",
-              height: "225px",
-            }}
-          >
-            <Scrollbar>
-              {[...walletDescriptors]
-                .sort((a, b) => {
-                  // Sort so that any public keys with balances are displayed first
-                  if (balances[a.publicKey] < balances[b.publicKey]) {
-                    return 1;
-                  } else if (balances[a.publicKey] > balances[b.publicKey]) {
-                    return -1;
-                  } else {
-                    return 0;
-                  }
-                })
-                .map(({ publicKey, derivationPath }) => (
-                  <ListItemButton
-                    disableRipple
-                    key={publicKey.toString()}
-                    onClick={handleSelect(publicKey, derivationPath)}
-                    sx={{
-                      display: "flex",
-                      paddinLeft: "16px",
-                      paddingRight: "16px",
-                      paddingTop: "5px",
-                      paddingBottom: "5px",
-                    }}
-                    disabled={isDisabledPublicKey(publicKey.toString())}
-                  >
-                    <Box style={{ display: "flex", width: "100%" }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          flexDirection: "column",
-                        }}
-                      >
-                        <Checkbox
-                          edge="start"
-                          checked={
-                            checkedWalletDescriptors.some(
-                              (a) => a.derivationPath === derivationPath
-                            ) ||
-                            importedPublicKeys.includes(publicKey.toString())
-                          }
-                          tabIndex={-1}
-                          disabled={isDisabledPublicKey(publicKey.toString())}
-                          disableRipple
-                          style={{ marginLeft: 0 }}
-                        />
-                      </div>
-                      <ListItemText
-                        id={publicKey.toString()}
-                        primary={walletAddressDisplay(publicKey)}
-                        sx={{
-                          marginLeft: "8px",
-                          fontSize: "14px",
-                          lineHeight: "32px",
-                          fontWeight: 500,
-                        }}
-                      />
-                      <ListItemText
-                        sx={{
-                          color: theme.custom.colors.secondary,
-                          textAlign: "right",
-                        }}
-                        primary={`${
-                          balances[publicKey]
-                            ? (+ethers.utils.formatUnits(
-                                balances[publicKey],
-                                decimals
-                              )).toFixed(4)
-                            : "-"
-                        } ${symbol}`}
-                      />
-                    </Box>
-                  </ListItemButton>
-                ))}
-            </Scrollbar>
-          </List>
-        ) : (
-          <Loading />
-        )}
-      </Box>
+  try {
+    return (
       <Box
         sx={{
-          mt: "12px",
-          ml: "16px",
-          mr: "16px",
-          mb: "16px",
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          justifyContent: "space-between",
         }}
       >
-        <PrimaryButton
-          label={`Import Wallet${allowMultiple ? "s" : ""}`}
-          onClick={() => onNext(checkedWalletDescriptors)}
-          disabled={checkedWalletDescriptors.length === 0}
-        />
+        <Box>
+          <Box
+            sx={{
+              marginLeft: "24px",
+              marginRight: "24px",
+              marginTop: "24px",
+            }}
+          >
+            <Header text={`Import wallet${allowMultiple ? "s" : ""}`} />
+            <SubtextParagraph>
+              Select which wallet{allowMultiple ? "s" : ""} you'd like to
+              import.
+            </SubtextParagraph>
+          </Box>
+          <div style={{ margin: "16px" }}>
+            <TextInput
+              placeholder="Derivation Path"
+              value={derivationPathLabel}
+              setValue={(e) => setDerivationPathLabel(e.target.value)}
+              select
+              disabled={ledgerLocked}
+            >
+              {derivationPathOptions.map((o) => (
+                <MenuItem value={o.label} key={o.label}>
+                  {o.label}
+                </MenuItem>
+              ))}
+            </TextInput>
+          </div>
+          {Object.keys(balances).length > 0 ? (
+            <List
+              sx={{
+                color: theme.custom.colors.fontColor,
+                background: theme.custom.colors.background,
+                borderRadius: "12px",
+                marginLeft: "16px",
+                marginRight: "16px",
+                paddingTop: "8px",
+                paddingBottom: "8px",
+                height: "225px",
+              }}
+            >
+              <Scrollbar>
+                {[...walletDescriptors]
+                  .sort((a, b) => {
+                    // Sort so that any public keys with balances are displayed first
+                    if (balances[a.publicKey] < balances[b.publicKey]) {
+                      return 1;
+                    } else if (balances[a.publicKey] > balances[b.publicKey]) {
+                      return -1;
+                    } else {
+                      return 0;
+                    }
+                  })
+                  .map(({ publicKey, derivationPath }) => (
+                    <ListItemButton
+                      disableRipple
+                      key={publicKey.toString()}
+                      onClick={handleSelect(publicKey, derivationPath)}
+                      sx={{
+                        display: "flex",
+                        paddinLeft: "16px",
+                        paddingRight: "16px",
+                        paddingTop: "5px",
+                        paddingBottom: "5px",
+                      }}
+                      disabled={isDisabledPublicKey(publicKey.toString())}
+                    >
+                      <Box style={{ display: "flex", width: "100%" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            flexDirection: "column",
+                          }}
+                        >
+                          <Checkbox
+                            edge="start"
+                            checked={
+                              checkedWalletDescriptors.some(
+                                (a) => a.derivationPath === derivationPath
+                              ) ||
+                              importedPublicKeys.includes(publicKey.toString())
+                            }
+                            tabIndex={-1}
+                            disabled={isDisabledPublicKey(publicKey.toString())}
+                            disableRipple
+                            style={{ marginLeft: 0 }}
+                          />
+                        </div>
+                        <ListItemText
+                          id={publicKey.toString()}
+                          primary={walletAddressDisplay(publicKey)}
+                          sx={{
+                            marginLeft: "8px",
+                            fontSize: "14px",
+                            lineHeight: "32px",
+                            fontWeight: 500,
+                          }}
+                        />
+                        <ListItemText
+                          sx={{
+                            color: theme.custom.colors.secondary,
+                            textAlign: "right",
+                          }}
+                          primary={`${
+                            balances[publicKey]
+                              ? (+ethers.utils.formatUnits(
+                                  balances[publicKey],
+                                  decimals
+                                )).toFixed(4)
+                              : "-"
+                          } ${symbol}`}
+                        />
+                      </Box>
+                    </ListItemButton>
+                  ))}
+              </Scrollbar>
+            </List>
+          ) : (
+            <Loading />
+          )}
+        </Box>
+        <Box
+          sx={{
+            mt: "12px",
+            ml: "16px",
+            mr: "16px",
+            mb: "16px",
+          }}
+        >
+          <PrimaryButton
+            label={`Import Wallet${allowMultiple ? "s" : ""}`}
+            onClick={() => onNext(checkedWalletDescriptors)}
+            disabled={checkedWalletDescriptors.length === 0}
+          />
+        </Box>
       </Box>
-    </Box>
-  );
+    );
+  } catch (error: any) {
+    console.log(`Error (at ImportWallets.tsx): ${error.message}`);
+    throw error;
+  }
 }

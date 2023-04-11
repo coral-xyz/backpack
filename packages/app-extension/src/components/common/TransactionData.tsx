@@ -119,169 +119,176 @@ export function TransactionData({
   const developerMode = useDeveloperMode();
 
   // The default transaction data that appears on all transactions
-  const defaultMenuItems = {
-    Network: {
-      onClick: () => {},
-      detail: <Typography>{network}</Typography>,
-      button: false,
-      classes: menuItemClasses,
-    },
-    "Network Fee": {
-      onClick: () => {},
-      detail: loading ? (
-        <Skeleton width={150} />
-      ) : (
-        <Typography>
-          {networkFee} {network === "Ethereum" ? "ETH" : "SOL"}
-        </Typography>
-      ),
-      button: false,
-      classes: menuItemClasses,
-    },
-    ...(network === "Ethereum"
-      ? {
-          Speed: {
-            onClick: () => setEthSettingsDrawerOpen(true),
-            detail: (
-              <Button
-                disableRipple
-                disableElevation
-                className={`${classes.chip} ${classes.backgroundChip}`}
-                disabled={loading}
-              >
-                {mode} <ArrowDropDown />
-              </Button>
-            ),
-            button: false,
-            classes: menuItemClasses,
-          },
-        }
-      : {}),
-    ...(network === "Solana" && developerMode
-      ? {
-          "Max Compute units": {
-            onClick: () => {},
-            detail: (
-              <SmallInput
-                disabled={transactionData.solanaFeeConfig?.disabled}
-                placeholder="Compute units"
-                value={
-                  transactionData.solanaFeeConfig?.config?.computeUnits.toString() ||
-                  0
-                }
-                onChange={(e: any) => {
-                  const computeUnits = parseInt(e.target.value || "0");
-                  if (
-                    computeUnits < 0 ||
-                    computeUnits > 1200000 ||
-                    isNaN(parseInt(e.target.value))
-                  ) {
-                    return;
+  try {
+    const defaultMenuItems = {
+      Network: {
+        onClick: () => {},
+        detail: <Typography>{network}</Typography>,
+        button: false,
+        classes: menuItemClasses,
+      },
+      "Network Fee": {
+        onClick: () => {},
+        detail: loading ? (
+          <Skeleton width={150} />
+        ) : (
+          <Typography>
+            {networkFee} {network === "Ethereum" ? "ETH" : "SOL"}
+          </Typography>
+        ),
+        button: false,
+        classes: menuItemClasses,
+      },
+      ...(network === "Ethereum"
+        ? {
+            Speed: {
+              onClick: () => setEthSettingsDrawerOpen(true),
+              detail: (
+                <Button
+                  disableRipple
+                  disableElevation
+                  className={`${classes.chip} ${classes.backgroundChip}`}
+                  disabled={loading}
+                >
+                  {mode} <ArrowDropDown />
+                </Button>
+              ),
+              button: false,
+              classes: menuItemClasses,
+            },
+          }
+        : {}),
+      ...(network === "Solana" && developerMode
+        ? {
+            "Max Compute units": {
+              onClick: () => {},
+              detail: (
+                <SmallInput
+                  disabled={transactionData.solanaFeeConfig?.disabled}
+                  placeholder="Compute units"
+                  value={
+                    transactionData.solanaFeeConfig?.config?.computeUnits.toString() ||
+                    0
                   }
-                  const updatedValue = {
-                    ...(transactionData.solanaFeeConfig?.config || {}),
-                    computeUnits: computeUnits,
-                  };
-                  transactionData.setSolanaFeeConfig((x: any) => ({
-                    config: updatedValue,
-                    disabled: x.disabled,
-                  }));
-                }}
-              />
-            ),
-            button: false,
-            classes: menuItemClasses,
-          },
-          "Priority fee (micro lamports)": {
-            onClick: () => {},
-            detail: (
-              <SmallInput
-                disabled={transactionData.solanaFeeConfig?.disabled}
-                placeholder="Priority fee"
-                value={
-                  transactionData.solanaFeeConfig.config?.priorityFee?.toString() ||
-                  0
-                }
-                onChange={(e: any) => {
-                  const priorityFee = parseInt(e.target.value || "0");
-                  if (priorityFee < 0 || isNaN(parseInt(e.target.value))) {
-                    return;
+                  onChange={(e: any) => {
+                    const computeUnits = parseInt(e.target.value || "0");
+                    if (
+                      computeUnits < 0 ||
+                      computeUnits > 1200000 ||
+                      isNaN(parseInt(e.target.value))
+                    ) {
+                      return;
+                    }
+                    const updatedValue = {
+                      ...(transactionData.solanaFeeConfig?.config || {}),
+                      computeUnits: computeUnits,
+                    };
+                    transactionData.setSolanaFeeConfig((x: any) => ({
+                      config: updatedValue,
+                      disabled: x.disabled,
+                    }));
+                  }}
+                />
+              ),
+              button: false,
+              classes: menuItemClasses,
+            },
+            "Priority fee (micro lamports)": {
+              onClick: () => {},
+              detail: (
+                <SmallInput
+                  disabled={transactionData.solanaFeeConfig?.disabled}
+                  placeholder="Priority fee"
+                  value={
+                    transactionData.solanaFeeConfig.config?.priorityFee?.toString() ||
+                    0
                   }
-                  const updatedValue = {
-                    ...(transactionData.solanaFeeConfig?.config || {}),
-                    priorityFee: BigInt(priorityFee),
-                  };
-                  transactionData.setSolanaFeeConfig((x: any) => ({
-                    disabled: x.disabled,
-                    config: updatedValue,
-                  }));
-                }}
-              />
-            ),
-            button: false,
-            classes: menuItemClasses,
-          },
-          "Max Priority fee": {
-            onClick: () => {},
-            detail: (
-              <Typography>
-                {transactionData.solanaFeeConfig?.config?.computeUnits
-                  ? transactionData.solanaFeeConfig?.config?.computeUnits *
-                    (Number(
-                      transactionData.solanaFeeConfig?.config?.priorityFee
-                    ) /
-                      LAMPORTS_PER_SOL /
-                      1000000 || 0)
-                  : 0}{" "}
-                SOL
-              </Typography>
-            ),
-            button: false,
-            classes: menuItemClasses,
-          },
-        }
-      : {}),
-  };
+                  onChange={(e: any) => {
+                    const priorityFee = parseInt(e.target.value || "0");
+                    if (priorityFee < 0 || isNaN(parseInt(e.target.value))) {
+                      return;
+                    }
+                    const updatedValue = {
+                      ...(transactionData.solanaFeeConfig?.config || {}),
+                      priorityFee: BigInt(priorityFee),
+                    };
+                    transactionData.setSolanaFeeConfig((x: any) => ({
+                      disabled: x.disabled,
+                      config: updatedValue,
+                    }));
+                  }}
+                />
+              ),
+              button: false,
+              classes: menuItemClasses,
+            },
+            "Max Priority fee": {
+              onClick: () => {},
+              detail: (
+                <Typography>
+                  {transactionData.solanaFeeConfig?.config?.computeUnits
+                    ? transactionData.solanaFeeConfig?.config?.computeUnits *
+                      (Number(
+                        transactionData.solanaFeeConfig?.config?.priorityFee
+                      ) /
+                        LAMPORTS_PER_SOL /
+                        1000000 || 0)
+                    : 0}{" "}
+                  SOL
+                </Typography>
+              ),
+              button: false,
+              classes: menuItemClasses,
+            },
+          }
+        : {}),
+    };
 
-  return (
-    <>
-      <SettingsList
-        className={classes.listRoot}
-        menuItems={{ ...menuItems, ...defaultMenuItems }}
-        style={{
-          margin: 0,
-          overflowY: "auto",
-          maxHeight: "40vh",
-        }}
-        textStyle={{
-          color: theme.custom.colors.secondary,
-        }}
-      />
-      {simulationError ? (
-        <Typography
+    return (
+      <>
+        <SettingsList
+          className={classes.listRoot}
+          menuItems={{ ...menuItems, ...defaultMenuItems }}
           style={{
-            color: theme.custom.colors.negative,
-            marginTop: "8px",
-            textAlign: "center",
-            fontSize: "14px",
+            margin: 0,
+            overflowY: "auto",
+            maxHeight: "40vh",
           }}
-        >
-          This transaction is unlikely to succeed.
-        </Typography>
-      ) : null}
-      {network === "Ethereum" && !loading ? (
-        <EthereumSettingsDrawer
-          mode={mode}
-          setMode={setMode}
-          transactionOverrides={transactionOverrides}
-          setTransactionOverrides={setTransactionOverrides}
-          networkFeeUsd={networkFeeUsd}
-          openDrawer={ethSettingsDrawerOpen}
-          setOpenDrawer={setEthSettingsDrawerOpen}
+          textStyle={{
+            color: theme.custom.colors.secondary,
+          }}
         />
-      ) : null}
-    </>
-  );
+        {simulationError ? (
+          <Typography
+            style={{
+              color: theme.custom.colors.negative,
+              marginTop: "8px",
+              textAlign: "center",
+              fontSize: "14px",
+            }}
+          >
+            This transaction is unlikely to succeed.
+          </Typography>
+        ) : null}
+        {network === "Ethereum" && !loading ? (
+          <EthereumSettingsDrawer
+            mode={mode}
+            setMode={setMode}
+            transactionOverrides={transactionOverrides}
+            setTransactionOverrides={setTransactionOverrides}
+            networkFeeUsd={networkFeeUsd}
+            openDrawer={ethSettingsDrawerOpen}
+            setOpenDrawer={setEthSettingsDrawerOpen}
+          />
+        ) : null}
+      </>
+    );
+  } catch (error: any) {
+    console.log(
+      `Error (at TransactionData.tsx/TransactionData): ${error.message}`
+    );
+    throw error;
+  }
 }
 
 export function EthereumSettingsDrawer({
@@ -395,251 +402,261 @@ export function EthereumSettingsDrawer({
   const nonceEditOnClick = !editingGas;
   const gasEditOnClick = mode === "custom" && !editingNonce && !editingGas;
 
-  const menuItems = {
-    "Max base fee": {
-      detail: editingGas ? (
-        <TextField
-          className={classes.inputRoot}
-          variant="outlined"
-          margin="dense"
-          size="small"
-          InputLabelProps={{
-            shrink: false,
-            style: {
-              backgroundColor: theme.custom.colors.nav,
-            },
-          }}
-          value={maxFeePerGas}
-          onChange={(e) => setMaxFeePerGas(e.target.value)}
-        />
-      ) : (
-        <ValueWithUnit
-          value={ethers.utils.formatUnits(transactionOverrides.maxFeePerGas, 9)}
-          unit="Gwei"
-          containerProps={{
-            style: { cursor: gasEditOnClick ? "pointer" : "inherit" },
-            onClick: () => {
+  try {
+    const menuItems = {
+      "Max base fee": {
+        detail: editingGas ? (
+          <TextField
+            className={classes.inputRoot}
+            variant="outlined"
+            margin="dense"
+            size="small"
+            InputLabelProps={{
+              shrink: false,
+              style: {
+                backgroundColor: theme.custom.colors.nav,
+              },
+            }}
+            value={maxFeePerGas}
+            onChange={(e) => setMaxFeePerGas(e.target.value)}
+          />
+        ) : (
+          <ValueWithUnit
+            value={ethers.utils.formatUnits(
+              transactionOverrides.maxFeePerGas,
+              9
+            )}
+            unit="Gwei"
+            containerProps={{
+              style: { cursor: gasEditOnClick ? "pointer" : "inherit" },
+              onClick: () => {
+                if (gasEditOnClick) setEditingGas(true);
+              },
+            }}
+          />
+        ),
+        ...menuItemBase,
+      },
+      "Priority fee": {
+        detail: editingGas ? (
+          <TextField
+            className={classes.inputRoot}
+            variant="outlined"
+            margin="dense"
+            size="small"
+            InputLabelProps={{
+              shrink: false,
+              style: {
+                backgroundColor: theme.custom.colors.nav,
+              },
+            }}
+            value={maxPriorityFeePerGas}
+            onChange={(e) => setMaxPriorityFeePerGas(e.target.value)}
+          />
+        ) : (
+          <ValueWithUnit
+            value={ethers.utils.formatUnits(
+              transactionOverrides.maxPriorityFeePerGas,
+              9
+            )}
+            unit="Gwei"
+            containerProps={{
+              style: { cursor: gasEditOnClick ? "pointer" : "inherit" },
+              onClick: () => {
+                if (gasEditOnClick) setEditingGas(true);
+              },
+            }}
+          />
+        ),
+        ...menuItemBase,
+      },
+      "Gas limit": {
+        detail: editingGas ? (
+          <TextField
+            className={classes.inputRoot}
+            variant="outlined"
+            margin="dense"
+            size="small"
+            InputLabelProps={{
+              shrink: false,
+              style: {
+                backgroundColor: theme.custom.colors.nav,
+              },
+            }}
+            value={gasLimit}
+            onChange={(e) => setGasLimit(e.target.value)}
+          />
+        ) : (
+          <Typography
+            style={{ cursor: gasEditOnClick ? "pointer" : "inherit" }}
+            onClick={() => {
               if (gasEditOnClick) setEditingGas(true);
-            },
-          }}
-        />
-      ),
-      ...menuItemBase,
-    },
-    "Priority fee": {
-      detail: editingGas ? (
-        <TextField
-          className={classes.inputRoot}
-          variant="outlined"
-          margin="dense"
-          size="small"
-          InputLabelProps={{
-            shrink: false,
-            style: {
-              backgroundColor: theme.custom.colors.nav,
-            },
-          }}
-          value={maxPriorityFeePerGas}
-          onChange={(e) => setMaxPriorityFeePerGas(e.target.value)}
-        />
-      ) : (
-        <ValueWithUnit
-          value={ethers.utils.formatUnits(
-            transactionOverrides.maxPriorityFeePerGas,
-            9
-          )}
-          unit="Gwei"
-          containerProps={{
-            style: { cursor: gasEditOnClick ? "pointer" : "inherit" },
-            onClick: () => {
-              if (gasEditOnClick) setEditingGas(true);
-            },
-          }}
-        />
-      ),
-      ...menuItemBase,
-    },
-    "Gas limit": {
-      detail: editingGas ? (
-        <TextField
-          className={classes.inputRoot}
-          variant="outlined"
-          margin="dense"
-          size="small"
-          InputLabelProps={{
-            shrink: false,
-            style: {
-              backgroundColor: theme.custom.colors.nav,
-            },
-          }}
-          value={gasLimit}
-          onChange={(e) => setGasLimit(e.target.value)}
-        />
-      ) : (
-        <Typography
-          style={{ cursor: gasEditOnClick ? "pointer" : "inherit" }}
-          onClick={() => {
-            if (gasEditOnClick) setEditingGas(true);
-          }}
-        >
-          {transactionOverrides.gasLimit.toString()}
-        </Typography>
-      ),
-      ...menuItemBase,
-    },
-    Nonce: {
-      detail: editingNonce ? (
-        <TextField
-          className={classes.inputRoot}
-          variant="outlined"
-          margin="dense"
-          size="small"
-          InputLabelProps={{
-            shrink: false,
-            style: {
-              backgroundColor: theme.custom.colors.nav,
-            },
-          }}
-          value={nonce}
-          type="number"
-          onChange={(e) => setNonce(e.target.value)}
-        />
-      ) : (
-        <Typography
-          style={{ cursor: nonceEditOnClick ? "pointer" : "inherit" }}
-          onClick={() => {
-            if (nonceEditOnClick) setEditingNonce(true);
-          }}
-        >
-          {transactionOverrides.nonce}
-        </Typography>
-      ),
-      ...menuItemBase,
-    },
-    "Max transaction fee": {
-      detail: <Typography>${networkFeeUsd}</Typography>,
-      ...menuItemBase,
-    },
-  };
-  return (
-    <WithMiniDrawer
-      openDrawer={openDrawer}
-      setOpenDrawer={setOpenDrawer}
-      paperProps={{
-        style: {
-          height: "100%",
-        },
-      }}
-      modalProps={{
-        style: {
-          background: "#18181b80",
-        },
-        disableEscapeKeyDown: true,
-      }}
-    >
-      <div
-        onClick={() => setOpenDrawer(false)}
-        style={{
-          height: "50px",
-          zIndex: 1,
-          backgroundColor: "transparent",
+            }}
+          >
+            {transactionOverrides.gasLimit.toString()}
+          </Typography>
+        ),
+        ...menuItemBase,
+      },
+      Nonce: {
+        detail: editingNonce ? (
+          <TextField
+            className={classes.inputRoot}
+            variant="outlined"
+            margin="dense"
+            size="small"
+            InputLabelProps={{
+              shrink: false,
+              style: {
+                backgroundColor: theme.custom.colors.nav,
+              },
+            }}
+            value={nonce}
+            type="number"
+            onChange={(e) => setNonce(e.target.value)}
+          />
+        ) : (
+          <Typography
+            style={{ cursor: nonceEditOnClick ? "pointer" : "inherit" }}
+            onClick={() => {
+              if (nonceEditOnClick) setEditingNonce(true);
+            }}
+          >
+            {transactionOverrides.nonce}
+          </Typography>
+        ),
+        ...menuItemBase,
+      },
+      "Max transaction fee": {
+        detail: <Typography>${networkFeeUsd}</Typography>,
+        ...menuItemBase,
+      },
+    };
+    return (
+      <WithMiniDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
+        paperProps={{
+          style: {
+            height: "100%",
+          },
         }}
-      >
-        <CloseButton
-          onClick={() => setOpenDrawer(false)}
-          style={{
-            marginTop: "28px",
-            marginLeft: "24px",
-            zIndex: 1,
-          }}
-        />
-      </div>
-      <div
-        style={{
-          borderTopLeftRadius: "12px",
-          borderTopRightRadius: "12px",
-          borderTop: "1pt solid " + theme.custom.colors.borderColor,
-          height: "100%",
-          background: theme.custom.colors.background,
+        modalProps={{
+          style: {
+            background: "#18181b80",
+          },
+          disableEscapeKeyDown: true,
         }}
       >
         <div
+          onClick={() => setOpenDrawer(false)}
           style={{
-            height: "100%",
+            height: "50px",
+            zIndex: 1,
+            backgroundColor: "transparent",
+          }}
+        >
+          <CloseButton
+            onClick={() => setOpenDrawer(false)}
+            style={{
+              marginTop: "28px",
+              marginLeft: "24px",
+              zIndex: 1,
+            }}
+          />
+        </div>
+        <div
+          style={{
             borderTopLeftRadius: "12px",
             borderTopRightRadius: "12px",
+            borderTop: "1pt solid " + theme.custom.colors.borderColor,
+            height: "100%",
+            background: theme.custom.colors.background,
           }}
         >
           <div
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              flexDirection: "column",
-              paddingBottom: "24px",
               height: "100%",
+              borderTopLeftRadius: "12px",
+              borderTopRightRadius: "12px",
             }}
           >
-            <div>
-              <Typography
-                style={{
-                  color: theme.custom.colors.fontColor,
-                  fontWeight: 500,
-                  fontSize: "18px",
-                  lineHeight: "24px",
-                  textAlign: "center",
-                  paddingTop: "24px",
-                }}
-              >
-                Advanced Settings
-              </Typography>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-around",
-                  margin: "24px 16px 0 16px",
-                }}
-              >
-                {["normal", "fast", "degen", "custom"].map((m) => (
-                  <ModeChip
-                    key={m}
-                    mode={m as TransactionMode}
-                    currentMode={mode}
-                    setMode={setMode}
-                    disabled={editingNonce}
-                  />
-                ))}
-              </div>
-              <div style={{ margin: "24px 16px" }}>
-                <SettingsList
-                  className={classes.listRoot}
-                  menuItems={menuItems}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                flexDirection: "column",
+                paddingBottom: "24px",
+                height: "100%",
+              }}
+            >
+              <div>
+                <Typography
                   style={{
-                    margin: 0,
+                    color: theme.custom.colors.fontColor,
+                    fontWeight: 500,
+                    fontSize: "18px",
+                    lineHeight: "24px",
+                    textAlign: "center",
+                    paddingTop: "24px",
                   }}
-                  textStyle={{
-                    color: theme.custom.colors.secondary,
+                >
+                  Advanced Settings
+                </Typography>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-around",
+                    margin: "24px 16px 0 16px",
                   }}
+                >
+                  {["normal", "fast", "degen", "custom"].map((m) => (
+                    <ModeChip
+                      key={m}
+                      mode={m as TransactionMode}
+                      currentMode={mode}
+                      setMode={setMode}
+                      disabled={editingNonce}
+                    />
+                  ))}
+                </div>
+                <div style={{ margin: "24px 16px" }}>
+                  <SettingsList
+                    className={classes.listRoot}
+                    menuItems={menuItems}
+                    style={{
+                      margin: 0,
+                    }}
+                    textStyle={{
+                      color: theme.custom.colors.secondary,
+                    }}
+                  />
+                </div>
+              </div>
+              <div style={{ margin: "0 16px" }}>
+                {(mode === "custom" && editingGas) || editingNonce ? (
+                  <PrimaryButton
+                    style={{ marginBottom: "12px" }}
+                    label="Save"
+                    onClick={handleSave}
+                  />
+                ) : null}
+                <SecondaryButton
+                  label="Close"
+                  onClick={() => setOpenDrawer(false)}
                 />
               </div>
-            </div>
-            <div style={{ margin: "0 16px" }}>
-              {(mode === "custom" && editingGas) || editingNonce ? (
-                <PrimaryButton
-                  style={{ marginBottom: "12px" }}
-                  label="Save"
-                  onClick={handleSave}
-                />
-              ) : null}
-              <SecondaryButton
-                label="Close"
-                onClick={() => setOpenDrawer(false)}
-              />
             </div>
           </div>
         </div>
-      </div>
-    </WithMiniDrawer>
-  );
+      </WithMiniDrawer>
+    );
+  } catch (error: any) {
+    console.log(
+      `Error (at TransactionData.tsx/EthereumSettingsDrawer): ${error.message}`
+    );
+    throw error;
+  }
 }
 
 // Note we don't use the MUI Button component because it currently doesn't

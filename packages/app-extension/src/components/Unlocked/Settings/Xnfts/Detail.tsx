@@ -40,208 +40,218 @@ const logger = getLogger("xnft-detail");
 export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   const theme = useCustomTheme();
   const [openConfirm, setOpenConfirm] = useState(false);
-  const xnftPreference = useRecoilValue(
-    xnftPreferenceAtom(xnft.install.account.xnft.toString())
-  );
 
-  const nav = useNavigationEphemeral();
-  const background = useBackgroundClient();
-  const { username } = useUser();
+  try {
+    const xnftPreference = useRecoilValue(
+      xnftPreferenceAtom(xnft.install.account.xnft.toString())
+    );
 
-  // Using the raw string here instead of PublicKey.default.toString() because
-  // typescript sucks and is throwing inexplicable errors.
-  const isDisabled = xnft.install.publicKey === DEFAULT_PUBKEY_STR;
+    const nav = useNavigationEphemeral();
+    const background = useBackgroundClient();
+    const { username } = useUser();
 
-  useEffect(() => {
-    nav.setOptions({
-      headerTitle: xnft.title,
-    });
-  }, []);
+    // Using the raw string here instead of PublicKey.default.toString() because
+    // typescript sucks and is throwing inexplicable errors.
+    const isDisabled = xnft.install.publicKey === DEFAULT_PUBKEY_STR;
 
-  const menuItems = {
-    Display: {
-      detail: (
-        <SwitchToggle enabled={!xnftPreference?.disabled} onChange={() => {}} />
-      ),
-      onClick: () => {},
-      style: {
-        opacity: 0.5,
+    useEffect(() => {
+      nav.setOptions({
+        headerTitle: xnft.title,
+      });
+    }, []);
+
+    const menuItems = {
+      Display: {
+        detail: (
+          <SwitchToggle
+            enabled={!xnftPreference?.disabled}
+            onChange={() => {}}
+          />
+        ),
+        onClick: () => {},
+        style: {
+          opacity: 0.5,
+        },
+        allowOnclickPropagation: true,
       },
-      allowOnclickPropagation: true,
-    },
-    MediaAccess: {
-      label: "Cam/Mic/Display access",
-      detail: (
-        <SwitchToggle
-          enabled={!!xnftPreference?.mediaPermissions}
-          onChange={async () => {
-            const updatedMediaPermissions = !xnftPreference?.mediaPermissions;
-            await background.request({
-              method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
-              params: [
-                xnft.install.account.xnft.toString(),
-                {
-                  mediaPermissions: updatedMediaPermissions,
-                },
-              ],
-            });
-            if (updatedMediaPermissions) {
-              const result = await window.navigator.permissions.query({
-                //@ts-ignore: camera not part of the typedoc yet
-                name: "camera",
+      MediaAccess: {
+        label: "Cam/Mic/Display access",
+        detail: (
+          <SwitchToggle
+            enabled={!!xnftPreference?.mediaPermissions}
+            onChange={async () => {
+              const updatedMediaPermissions = !xnftPreference?.mediaPermissions;
+              await background.request({
+                method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
+                params: [
+                  xnft.install.account.xnft.toString(),
+                  {
+                    mediaPermissions: updatedMediaPermissions,
+                  },
+                ],
               });
-              if (result.state !== "granted") {
-                window.open("/permissions.html", "_blank");
-                return;
+              if (updatedMediaPermissions) {
+                const result = await window.navigator.permissions.query({
+                  //@ts-ignore: camera not part of the typedoc yet
+                  name: "camera",
+                });
+                if (result.state !== "granted") {
+                  window.open("/permissions.html", "_blank");
+                  return;
+                }
               }
-            }
-          }}
-        />
-      ),
-      onClick: () => {},
-      style: {
-        opacity: 0.5,
-      },
-      allowOnclickPropagation: true,
-    },
-    PushNotificationAccess: {
-      label: "Push notifications",
-      detail: (
-        <SwitchToggle
-          enabled={!!xnftPreference?.pushNotifications}
-          onChange={async () => {
-            const updatedPushNotifications = !xnftPreference?.pushNotifications;
-            await background.request({
-              method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
-              params: [
-                xnft.install.account.xnft.toString(),
-                {
-                  pushNotifications: updatedPushNotifications,
-                },
-              ],
-            });
-            await updateRemotePreference(
-              xnft.install.account.xnft.toString(),
-              username || "",
-              {
-                notifications: updatedPushNotifications,
-              }
-            ).catch((e) =>
-              console.error(
-                `Error while updating remote notification state ${e}`
-              )
-            );
-
-            if (updatedPushNotifications) {
-              const result = await window.navigator.permissions.query({
-                //@ts-ignore: camera not part of the typedoc yet
-                name: "notifications",
-              });
-
-              if (result.state !== "granted") {
-                window.open("/permissions.html?notifications=true", "_blank");
-                return;
-              }
-            }
-          }}
-        />
-      ),
-      onClick: () => {},
-      style: {
-        opacity: 0.5,
-      },
-      allowOnclickPropagation: true,
-    },
-  };
-
-  return (
-    <div
-      style={{
-        padding: "16px",
-        height: "100%",
-        display: "flex",
-        justifyContent: "space-between",
-        flexDirection: "column",
-      }}
-    >
-      <div>
-        <ProxyImage
-          src={xnft.iconUrl}
-          style={{
-            width: "120px",
-            height: "120px",
-            borderRadius: "8px",
-            display: "block",
-            marginLeft: "auto",
-            marginRight: "auto",
-            marginBottom: "30px",
-          }}
-        />
-        <Button
-          disabled={isDisabled}
-          disableRipple
-          variant="contained"
-          style={{
-            textTransform: "none",
-            background: theme.custom.colors.bg2,
-            color: theme.custom.colors.fontColor,
-            borderRadius: "12px",
-            marginLeft: "auto",
-            marginRight: "auto",
-            height: "48px",
-            display: "flex",
-            position: "relative",
-            opacity: isDisabled ? 0.5 : undefined,
-            boxShadow: "none",
-          }}
-          onClick={() =>
-            window.open(
-              `${XNFT_GG_LINK}/app/${xnft.install.account.xnft.toString()}`
-            )
-          }
-        >
-          View in Library{" "}
-          <LaunchDetail
-            style={{
-              marginLeft: "4px",
-              marginRight: "-4px",
             }}
           />
-        </Button>
-      </div>
-      <div>
-        <SettingsList
-          menuItems={menuItems}
-          style={{
-            marginLeft: 0,
-            marginRight: 0,
-          }}
-        />
-        <Typography
-          style={{
-            fontSize: "14px",
-            marginTop: "36px",
-            marginBottom: "36px",
-            textAlign: "center",
-            color: theme.custom.colors.secondary,
-          }}
-        >
-          Uninstalling will remove this xNFT from your account.
-        </Typography>
-        <NegativeButton
-          disabled={isDisabled}
-          label="Uninstall xNFT"
-          onClick={() => setOpenConfirm(true)}
-        />
-      </div>
-      <ApproveTransactionDrawer
-        openDrawer={openConfirm}
-        setOpenDrawer={setOpenConfirm}
+        ),
+        onClick: () => {},
+        style: {
+          opacity: 0.5,
+        },
+        allowOnclickPropagation: true,
+      },
+      PushNotificationAccess: {
+        label: "Push notifications",
+        detail: (
+          <SwitchToggle
+            enabled={!!xnftPreference?.pushNotifications}
+            onChange={async () => {
+              const updatedPushNotifications =
+                !xnftPreference?.pushNotifications;
+              await background.request({
+                method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
+                params: [
+                  xnft.install.account.xnft.toString(),
+                  {
+                    pushNotifications: updatedPushNotifications,
+                  },
+                ],
+              });
+              await updateRemotePreference(
+                xnft.install.account.xnft.toString(),
+                username || "",
+                {
+                  notifications: updatedPushNotifications,
+                }
+              ).catch((e) =>
+                console.error(
+                  `Error while updating remote notification state ${e}`
+                )
+              );
+
+              if (updatedPushNotifications) {
+                const result = await window.navigator.permissions.query({
+                  //@ts-ignore: camera not part of the typedoc yet
+                  name: "notifications",
+                });
+
+                if (result.state !== "granted") {
+                  window.open("/permissions.html?notifications=true", "_blank");
+                  return;
+                }
+              }
+            }}
+          />
+        ),
+        onClick: () => {},
+        style: {
+          opacity: 0.5,
+        },
+        allowOnclickPropagation: true,
+      },
+    };
+
+    return (
+      <div
+        style={{
+          padding: "16px",
+          height: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+          flexDirection: "column",
+        }}
       >
-        <UninstallConfirmationCard xnft={xnft} />
-      </ApproveTransactionDrawer>
-    </div>
-  );
+        <div>
+          <ProxyImage
+            src={xnft.iconUrl}
+            style={{
+              width: "120px",
+              height: "120px",
+              borderRadius: "8px",
+              display: "block",
+              marginLeft: "auto",
+              marginRight: "auto",
+              marginBottom: "30px",
+            }}
+          />
+          <Button
+            disabled={isDisabled}
+            disableRipple
+            variant="contained"
+            style={{
+              textTransform: "none",
+              background: theme.custom.colors.bg2,
+              color: theme.custom.colors.fontColor,
+              borderRadius: "12px",
+              marginLeft: "auto",
+              marginRight: "auto",
+              height: "48px",
+              display: "flex",
+              position: "relative",
+              opacity: isDisabled ? 0.5 : undefined,
+              boxShadow: "none",
+            }}
+            onClick={() =>
+              window.open(
+                `${XNFT_GG_LINK}/app/${xnft.install.account.xnft.toString()}`
+              )
+            }
+          >
+            View in Library{" "}
+            <LaunchDetail
+              style={{
+                marginLeft: "4px",
+                marginRight: "-4px",
+              }}
+            />
+          </Button>
+        </div>
+        <div>
+          <SettingsList
+            menuItems={menuItems}
+            style={{
+              marginLeft: 0,
+              marginRight: 0,
+            }}
+          />
+          <Typography
+            style={{
+              fontSize: "14px",
+              marginTop: "36px",
+              marginBottom: "36px",
+              textAlign: "center",
+              color: theme.custom.colors.secondary,
+            }}
+          >
+            Uninstalling will remove this xNFT from your account.
+          </Typography>
+          <NegativeButton
+            disabled={isDisabled}
+            label="Uninstall xNFT"
+            onClick={() => setOpenConfirm(true)}
+          />
+        </div>
+        <ApproveTransactionDrawer
+          openDrawer={openConfirm}
+          setOpenDrawer={setOpenConfirm}
+        >
+          <UninstallConfirmationCard xnft={xnft} />
+        </ApproveTransactionDrawer>
+      </div>
+    );
+  } catch (error: any) {
+    console.log(`Error (at Detail.tsx/XnftDetail): ${error.message}`);
+    throw error;
+  }
 };
 
 const UninstallConfirmationCard = ({ xnft }: { xnft: any }) => {

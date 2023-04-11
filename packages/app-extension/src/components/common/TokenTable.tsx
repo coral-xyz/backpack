@@ -121,27 +121,33 @@ export function TokenTables({
   customFilter?: (token: Token) => boolean;
 }) {
   const wallets = useAllWalletsDisplayed();
-  return (
-    <>
-      {wallets.map(
-        (wallet: {
-          blockchain: Blockchain;
-          publicKey: string;
-          type: string;
-          name: string;
-        }) => (
-          <WalletTokenTable
-            key={wallet.publicKey.toString()}
-            onClickRow={onClickRow}
-            searchFilter={searchFilter}
-            customFilter={customFilter}
-            wallet={wallet}
-            tokenAccounts={tokenAccounts}
-          />
-        )
-      )}
-    </>
-  );
+
+  try {
+    return (
+      <>
+        {wallets.map(
+          (wallet: {
+            blockchain: Blockchain;
+            publicKey: string;
+            type: string;
+            name: string;
+          }) => (
+            <WalletTokenTable
+              key={wallet.publicKey.toString()}
+              onClickRow={onClickRow}
+              searchFilter={searchFilter}
+              customFilter={customFilter}
+              wallet={wallet}
+              tokenAccounts={tokenAccounts}
+            />
+          )
+        )}
+      </>
+    );
+  } catch (error: any) {
+    console.log(`Error (at TokenTable.tsx/TokenTables): ${error.message}`);
+    throw error;
+  }
 }
 
 export function WalletTokenTable({
@@ -159,101 +165,109 @@ export function WalletTokenTable({
 }) {
   const blockchain = wallet.blockchain;
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
-  const loader = useLoader(
-    blockchainBalancesSorted({
-      publicKey: wallet.publicKey.toString(),
-      blockchain,
-    }),
-    [],
-    [wallet.publicKey, connectionUrl]
-  );
 
-  const [_tokenAccounts, , isLoading] = tokenAccounts
-    ? [tokenAccounts, "hasValue"]
-    : loader;
+  try {
+    const loader = useLoader(
+      blockchainBalancesSorted({
+        publicKey: wallet.publicKey.toString(),
+        blockchain,
+      }),
+      [],
+      [wallet.publicKey, connectionUrl]
+    );
 
-  const [search, setSearch] = useState(searchFilter);
+    const [_tokenAccounts, , isLoading] = tokenAccounts
+      ? [tokenAccounts, "hasValue"]
+      : loader;
 
-  const searchLower = search.toLowerCase();
-  const tokenAccountsFiltered = _tokenAccounts
-    .filter(
-      (t: any) =>
-        t.name &&
-        (t.name.toLowerCase().startsWith(searchLower) ||
-          t.ticker.toLowerCase().startsWith(searchLower))
-    )
-    .filter(customFilter);
+    const [search, setSearch] = useState(searchFilter);
 
-  useEffect(() => {
-    setSearch(searchFilter);
-  }, [searchFilter]);
+    const searchLower = search.toLowerCase();
+    const tokenAccountsFiltered = _tokenAccounts
+      .filter(
+        (t: any) =>
+          t.name &&
+          (t.name.toLowerCase().startsWith(searchLower) ||
+            t.ticker.toLowerCase().startsWith(searchLower))
+      )
+      .filter(customFilter);
 
-  const useVirtualization = tokenAccountsFiltered.length > 100;
-  // Note: if this fixed height changes in react-xnft-renderer it'll need to be changed here
-  const rowHeight = 68;
-  const headerHeight = 36;
-  // If using virtualization, restrict the table height to 6 rows with an internal scrollbar
-  const tableStyle = useVirtualization
-    ? {
-        height:
-          headerHeight +
-          Math.min(tokenAccountsFiltered.length, 6) * rowHeight +
-          "px",
-      }
-    : {};
+    useEffect(() => {
+      setSearch(searchFilter);
+    }, [searchFilter]);
 
-  return (
-    <BalancesTable style={tableStyle}>
-      <BalancesTableHead wallet={wallet} />
-      <BalancesTableContent
-        style={
-          useVirtualization ? { height: `calc(100% - ${headerHeight}px)` } : {}
+    const useVirtualization = tokenAccountsFiltered.length > 100;
+    // Note: if this fixed height changes in react-xnft-renderer it'll need to be changed here
+    const rowHeight = 68;
+    const headerHeight = 36;
+    // If using virtualization, restrict the table height to 6 rows with an internal scrollbar
+    const tableStyle = useVirtualization
+      ? {
+          height:
+            headerHeight +
+            Math.min(tokenAccountsFiltered.length, 6) * rowHeight +
+            "px",
         }
-      >
-        {isLoading ? (
-          <SkeletonRows />
-        ) : useVirtualization ? (
-          <AutoSizer>
-            {({ height, width }: { height: number; width: number }) => {
-              return (
-                <WindowedList
-                  height={height}
-                  width={width}
-                  itemCount={tokenAccountsFiltered.length}
-                  itemSize={rowHeight}
-                  itemData={{
-                    tokenList: tokenAccountsFiltered,
-                    blockchain,
-                    onClickRow: (token: Token) =>
-                      onClickRow(
-                        blockchain,
-                        token,
-                        wallet.publicKey.toString()
-                      ),
-                  }}
-                  overscanCount={12}
-                >
-                  {WindowedTokenRowRenderer}
-                </WindowedList>
-              );
-            }}
-          </AutoSizer>
-        ) : (
-          <>
-            {tokenAccountsFiltered.map((token: any) => (
-              <TokenRow
-                key={token.address}
-                token={token}
-                onClick={(token) =>
-                  onClickRow(blockchain, token, wallet.publicKey.toString())
-                }
-              />
-            ))}
-          </>
-        )}
-      </BalancesTableContent>
-    </BalancesTable>
-  );
+      : {};
+
+    return (
+      <BalancesTable style={tableStyle}>
+        <BalancesTableHead wallet={wallet} />
+        <BalancesTableContent
+          style={
+            useVirtualization
+              ? { height: `calc(100% - ${headerHeight}px)` }
+              : {}
+          }
+        >
+          {isLoading ? (
+            <SkeletonRows />
+          ) : useVirtualization ? (
+            <AutoSizer>
+              {({ height, width }: { height: number; width: number }) => {
+                return (
+                  <WindowedList
+                    height={height}
+                    width={width}
+                    itemCount={tokenAccountsFiltered.length}
+                    itemSize={rowHeight}
+                    itemData={{
+                      tokenList: tokenAccountsFiltered,
+                      blockchain,
+                      onClickRow: (token: Token) =>
+                        onClickRow(
+                          blockchain,
+                          token,
+                          wallet.publicKey.toString()
+                        ),
+                    }}
+                    overscanCount={12}
+                  >
+                    {WindowedTokenRowRenderer}
+                  </WindowedList>
+                );
+              }}
+            </AutoSizer>
+          ) : (
+            <>
+              {tokenAccountsFiltered.map((token: any) => (
+                <TokenRow
+                  key={token.address}
+                  token={token}
+                  onClick={(token) =>
+                    onClickRow(blockchain, token, wallet.publicKey.toString())
+                  }
+                />
+              ))}
+            </>
+          )}
+        </BalancesTableContent>
+      </BalancesTable>
+    );
+  } catch (error: any) {
+    console.log(`Error (at TokenTable.tsx/WalletTokenTable): ${error.message}`);
+    throw error;
+  }
 }
 
 const SkeletonRows = () => {

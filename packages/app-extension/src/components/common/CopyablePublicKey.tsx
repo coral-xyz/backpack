@@ -18,22 +18,28 @@ export const CopyablePublicKey = ({
 } & Partial<React.ComponentPropsWithoutRef<typeof TokenBadge>>) => {
   const theme = useCustomTheme();
   const [tooltipOpen, setTooltipOpen] = useState(false);
-  const publicKeyString = publicKey.toString();
-  return (
-    <WithCopyTooltip tooltipOpen={tooltipOpen}>
-      <div title={publicKeyString} aria-label={publicKeyString}>
-        <TokenBadge
-          fontSize={13}
-          overwriteBackground={theme.custom.colors.bg2}
-          onClick={async () => {
-            setTooltipOpen(true);
-            setTimeout(() => setTooltipOpen(false), 1000);
-            await navigator.clipboard.writeText(publicKeyString);
-          }}
-          label={walletAddressDisplay(publicKey)}
-          {...optionalProps}
-        />
-      </div>
-    </WithCopyTooltip>
-  );
+
+  try {
+    const publicKeyString = publicKey.toString();
+    return (
+      <WithCopyTooltip tooltipOpen={tooltipOpen}>
+        <div title={publicKeyString} aria-label={publicKeyString}>
+          <TokenBadge
+            fontSize={13}
+            overwriteBackground={theme.custom.colors.bg2}
+            onClick={async () => {
+              setTooltipOpen(true);
+              setTimeout(() => setTooltipOpen(false), 1000);
+              await navigator.clipboard.writeText(publicKeyString);
+            }}
+            label={walletAddressDisplay(publicKey)}
+            {...optionalProps}
+          />
+        </div>
+      </WithCopyTooltip>
+    );
+  } catch (error: any) {
+    console.log(`Error (at CopyablePublicKey.tsx): ${error.message}`);
+    throw error;
+  }
 };
