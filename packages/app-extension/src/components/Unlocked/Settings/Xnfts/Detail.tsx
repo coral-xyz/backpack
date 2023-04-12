@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
+  BAKED_IN_XNFTS,
   Blockchain,
   confirmTransaction,
   DEFAULT_PUBKEY_STR,
@@ -47,6 +48,15 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   const nav = useNavigationEphemeral();
   const background = useBackgroundClient();
   const { username } = useUser();
+
+  const isBaked = useMemo(
+    () =>
+      xnft.title === "Simulator" ||
+      Object.values(BAKED_IN_XNFTS).find(
+        (x) => x.publicKey === xnft.install.account.xnft.toBase58()
+      ) !== undefined,
+    [xnft]
+  );
 
   // Using the raw string here instead of PublicKey.default.toString() because
   // typescript sucks and is throwing inexplicable errors.
@@ -226,13 +236,15 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
             color: theme.custom.colors.secondary,
           }}
         >
-          Uninstalling will remove this xNFT from your account.
+          {isBaked
+            ? "This xNFT was developed by the Backpack team and cannot be uninstalled."
+            : "Uninstalling will remove this xNFT from your account."}
         </Typography>
-        <NegativeButton
+        {!isBaked ? <NegativeButton
           disabled={isDisabled}
           label="Uninstall xNFT"
           onClick={() => setOpenConfirm(true)}
-        />
+          /> : null}
       </div>
       <ApproveTransactionDrawer
         openDrawer={openConfirm}
