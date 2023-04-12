@@ -221,13 +221,17 @@ export const getNftMembers = async (
           username: true,
         },
       ],
-      auth_user_nfts_aggregate: [
+      auth_users_aggregate: [
         {
           where: {
-            _or: [
-              { collection_id: { _eq: collectionId } },
-              { centralized_group: { _eq: collectionId } },
-            ],
+            public_keys: {
+              user_nfts: {
+                _or: [
+                  { collection_id: { _eq: collectionId } },
+                  { centralized_group: { _eq: collectionId } },
+                ],
+              },
+            },
           },
         },
         {
@@ -245,7 +249,7 @@ export const getNftMembers = async (
         id: x?.id || "",
         username: x?.username || "",
       })) || [],
-    count: response.auth_user_nfts_aggregate?.aggregate?.count || 0,
+    count: response.auth_users_aggregate?.aggregate?.count || 0,
   };
 };
 

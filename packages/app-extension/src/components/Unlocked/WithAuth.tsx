@@ -78,13 +78,11 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
         const signer = await getAuthSigner(
           serverPublicKeys.map((p: ServerPublicKey) => p.publicKey)
         );
-        if (authData) {
-          setAuthData({
-            ...signer,
-            message: getAuthMessage(user.uuid),
-            userId: user.uuid,
-          });
-        }
+        setAuthData({
+          ...signer,
+          message: getAuthMessage(user.uuid),
+          userId: user.uuid,
+        });
       }
     })();
     // Rerun authentication on user changes
