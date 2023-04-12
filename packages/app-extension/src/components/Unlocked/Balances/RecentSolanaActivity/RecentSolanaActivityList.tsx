@@ -30,14 +30,12 @@ export function _RecentSolanaActivityList({
   const [transactionDetail, setTransactionDetail] = useState(null);
   const [metadata, setMetadata] = useState(null);
 
-  // Load transactions if not passed in as a prop
-  const transactions = _transactions
-    ? _transactions
-    : useRecentTransactions({
-        blockchain: blockchain!,
-        address: address!,
-        contractAddresses: contractAddresses!,
-      });
+  const transactions = useRecentTransactions({
+    blockchain: blockchain!,
+    address: address!,
+    contractAddresses: contractAddresses!,
+    transactions: _transactions,
+  });
 
   if (transactionDetail) {
     return (

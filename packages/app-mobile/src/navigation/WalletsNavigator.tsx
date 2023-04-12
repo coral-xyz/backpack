@@ -13,6 +13,7 @@ import { WalletTokenList } from "~components/Wallets";
 import { StyledText, Screen } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { BalanceDetailScreen } from "~screens/Unlocked/BalancesScreen";
+import { RecentActivityScreen } from "~screens/Unlocked/RecentActivityScreen";
 import { MainWalletList } from "~screens/Unlocked/WalletListScreen";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 import { NftCollectionListScreen } from "~screens/WalletsV2NftListScreen";
@@ -144,7 +145,7 @@ function Tabs() {
     >
       <TopTabs.Screen name="Tokens" component={TokenScreen} />
       <TopTabs.Screen name="Collectibles" component={NftCollectionListScreen} />
-      <TopTabs.Screen name="Activity" component={ActivityScreen} />
+      <TopTabs.Screen name="Activity" component={RecentActivityScreen} />
     </TopTabs.Navigator>
   );
 }

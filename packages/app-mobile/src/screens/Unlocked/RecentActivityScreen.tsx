@@ -9,11 +9,13 @@ import {
   Text,
   View,
   ViewStyle,
+  SectionList,
 } from "react-native";
 
 import * as Linking from "expo-linking";
 
 import {
+  reverseScientificNotation,
   Blockchain,
   explorerUrl,
   RecentTransaction,
@@ -25,12 +27,18 @@ import {
   useBlockchainExplorer,
   useRecentEthereumTransactions,
   useRecentSolanaTransactions,
-  useRecentTransactions,
+  useRecentTransactionData,
+  useRecentTransactionsGroupedByDate,
+  isNFTTransaction,
+  isUserTxnSender,
+  parseSwapTransaction,
 } from "@coral-xyz/recoil";
+import { ListItem2 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Source, TransactionType } from "helius-sdk/dist/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { EmptyState, Screen } from "~components/index";
+import { EmptyState, Screen, StyledText } from "~components/index";
 import { getBlockchainLogo, useTheme } from "~hooks/index";
 
 // Used since Solana transactions have a timestamp and Ethereum transactions have a date.
@@ -134,13 +142,132 @@ function RecentActivityLoading() {
   );
 }
 
+function FailedTransaction() {
+  return <Text style={styles.caption}>Failed</Text>;
+}
+
+function SwapTransaction({ transaction, tokenData }) {
+  const [input, output] = parseSwapTransaction(transaction, tokenData);
+
+  return (
+    <>
+      <Text style={styles.textReceived}>+{output.amountWithSymbol}</Text>
+      <Text style={styles.textSecondary}>-{input.amountWithSymbol}</Text>
+    </>
+  );
+}
+
+function BurnTransaction({ transaction }) {
+  return (
+    <Text style={styles.textSecondary}>
+      {transaction?.tokenTransfers[0]?.tokenAmount}
+    </Text>
+  );
+}
+
+function NFTTransaction() {
+  return null;
+}
+
+function TransferTransaction({ transaction, tokenData, metadata }) {
+  const activeWallet = useActiveWallet();
+
+  const isSender = isUserTxnSender(transaction, activeWallet);
+
+  if (transaction.source === Source.SYSTEM_PROGRAM) {
+    const amount = transaction?.nativeTransfers[0]?.amount / 10 ** 9;
+    const value = reverseScientificNotation(amount);
+
+    if (isSender) {
+      return <Text style={styles.textSent}>-{value} SOL</Text>;
+    } else {
+      return <Text style={styles.textReceived}>+{value} SOL</Text>;
+    }
+  } else {
+    // const amount = new Number(
+    //   transaction?.tokenTransfers?.[0]?.tokenAmount.toFixed(5)
+    // );
+
+    const amount = "0";
+    console.log("debug3:else:amount", amount);
+    // const symbol =
+    //   tokenData[0]?.symbol ||
+    //   metadata?.onChainMetadata?.metadata?.data?.symbol ||
+    //   "";
+
+    const symbol = "TODO";
+    console.log("debug3:else:symbol", amount);
+
+    if (isSender) {
+      return (
+        <Text style={styles.textSent}>
+          -{amount} {symbol}
+        </Text>
+      );
+    } else {
+      return (
+        <Text style={styles.textReceived}>
+          +{amount} {symbol}
+        </Text>
+      );
+    }
+  }
+}
+
+function RecentActivityListItemData({ transaction, tokenData, metadata }) {
+  if (transaction?.transactionError) {
+    return <FailedTransaction />;
+  }
+
+  if (transaction.type === TransactionType.SWAP) {
+    return <SwapTransaction transaction={transaction} tokenData={tokenData} />;
+  }
+
+  if (
+    transaction?.type === TransactionType.BURN ||
+    transaction?.type === TransactionType.BURN_NFT
+  ) {
+    return <BurnTransaction transaction={transaction} />;
+  }
+
+  if (isNFTTransaction(transaction)) {
+    return <NFTTransaction />;
+  }
+
+  if (transaction.type === TransactionType.TRANSFER) {
+    return (
+      <TransferTransaction
+        transaction={transaction}
+        tokenData={tokenData}
+        metadata={metadata}
+      />
+    );
+  }
+
+  return null;
+}
+
+function ActivityItem({ transaction }) {
+  const t = useRecentTransactionData(transaction);
+
+  return (
+    <ListItem2 multiLine title={t.description} subTitle={t.type}>
+      <StyledText>{t.title}</StyledText>
+      <StyledText>{t.caption}</StyledText>
+      <RecentActivityListItemData
+        transaction={transaction}
+        tokenData={t.tokenData}
+        metadata={t.metadata}
+      />
+    </ListItem2>
+  );
+}
+
 export function _RecentActivityList({
   blockchain,
   address,
   contractAddresses,
   transactions: _transactions,
-  minimize,
-  style,
 }: {
   blockchain?: Blockchain;
   address?: string;
@@ -149,44 +276,25 @@ export function _RecentActivityList({
   minimize?: boolean;
   style?: StyleProp<ViewStyle>;
 }): JSX.Element {
-  const transactions = useRecentTransactions({
+  const sections = useRecentTransactionsGroupedByDate({
     blockchain: blockchain!,
     address: address!,
     contractAddresses: contractAddresses!,
     transactions: _transactions,
   });
 
-  const theme = useTheme();
-  const styles = {
-    flexGrow: 1,
-  };
-
-  if (transactions.length === 0) {
-    // @ts-expect-error
-    styles.justifyContent = "center";
-    // @ts-expect-error
-    styles.alignItems = "center";
-  }
+  const renderItem = ({ item }: { item: HeliusParsedTransaction }) => (
+    <ActivityItem transaction={item} />
+  );
 
   return (
-    <FlatList
-      style={[
-        {
-          flex: 1,
-          borderRadius: 12,
-          borderWidth: 2,
-          borderColor: theme.custom.colors.borderFull,
-          backgroundColor: theme.custom.colors.nav,
-        },
-        style,
-      ]}
-      contentContainerStyle={styles}
-      data={transactions}
+    <SectionList
+      stickySectionHeadersEnabled={false}
+      sections={sections}
+      keyExtractor={(item) => item.signature}
+      renderItem={renderItem}
+      renderSectionHeader={({ section }) => <Text>{section.title}</Text>}
       ListEmptyComponent={<NoRecentActivityEmptyState />}
-      scrollEnabled={transactions.length > 0}
-      renderItem={({ item }) => {
-        return <RecentActivityListItem transaction={item} />;
-      }}
     />
   );
 }
@@ -326,6 +434,43 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 22,
     marginRight: 12,
+    justifyContent: "center",
+  },
+  title: {
+    color: "black",
+    fontSize: 16,
+    fontWeight: "500",
+    lineHeight: 24,
+  },
+  caption: {
+    color: "gray",
+    fontSize: 12,
+    fontWeight: "500",
+    lineHeight: 24,
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+  },
+  textReceived: {
+    fontSize: 16,
+    color: "green",
+    lineHeight: 24,
+    textAlign: "right",
+  },
+  textSent: {
+    fontSize: 16,
+    color: "red",
+    lineHeight: 24,
+    textAlign: "right",
+  },
+  textSecondary: {
+    fontSize: 16,
+    color: "red",
+    lineHeight: 24,
+    textAlign: "right",
+  },
+  lineDataWrapper: {
+    display: "flex",
+    flexDirection: "column",
     justifyContent: "center",
   },
 });
