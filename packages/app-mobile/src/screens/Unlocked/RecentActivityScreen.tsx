@@ -33,7 +33,7 @@ import {
   isUserTxnSender,
   parseSwapTransaction,
 } from "@coral-xyz/recoil";
-import { ListItem2 } from "@coral-xyz/tamagui";
+import { ListItem2, YGroup } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Source, TransactionType } from "helius-sdk/dist/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -283,9 +283,18 @@ export function _RecentActivityList({
     transactions: _transactions,
   });
 
-  const renderItem = ({ item }: { item: HeliusParsedTransaction }) => (
-    <ActivityItem transaction={item} />
-  );
+  const renderItem = ({ item, section }: { item: HeliusParsedTransaction }) => {
+    if (section.data.length > 1) {
+      return (
+        <YGroup>
+          <YGroup.Item>
+            <ActivityItem transaction={item} numItems={section.data.length} />
+          </YGroup.Item>
+        </YGroup>
+      );
+    }
+    return <ActivityItem transaction={item} numItems={section.data.length} />;
+  };
 
   return (
     <SectionList
