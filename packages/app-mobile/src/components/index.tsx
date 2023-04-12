@@ -1,7 +1,13 @@
 import type { Blockchain } from "@coral-xyz/common";
 
 import { useState } from "react";
-import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from "react-native";
+import type {
+  ImageStyle,
+  StyleProp,
+  TextStyle,
+  ViewStyle,
+  TextProps,
+} from "react-native";
 import {
   ActivityIndicator,
   Alert,
@@ -112,7 +118,7 @@ export function StyledText({
   textAlign?: string;
   color?: string;
   style?: StyleProp<TextStyle>;
-}) {
+} & TextProps) {
   const theme = useTheme();
   const _color = color || theme.custom.colors.fontColor;
   return (

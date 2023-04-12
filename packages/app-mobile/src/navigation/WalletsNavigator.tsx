@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Text, View, Button, Pressable, ScrollView } from "react-native";
+import { Text, View, Pressable } from "react-native";
 
 import { NotificationsData, useActiveWallet } from "@coral-xyz/recoil";
 import { Box, XStack } from "@coral-xyz/tamagui";
@@ -57,14 +57,6 @@ function MainButton({
   );
 }
 
-function TokenDetail({ navigation, route }) {
-  return (
-    <View style={{ flex: 1, alignItems: "center", paddingTop: 40 }}>
-      <Text>Token Detail </Text>
-    </View>
-  );
-}
-
 function WalletPicker({ navigation }) {
   return (
     <View style={{ flex: 1, alignItems: "center", paddingTop: 40 }}>
@@ -108,22 +100,6 @@ function TokenScreen({ navigation }) {
   );
 }
 
-function CollectionScreen({ route }) {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Collection</Text>
-    </View>
-  );
-}
-
-function ActivityScreen({ route }) {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Activity</Text>
-    </View>
-  );
-}
-
 const TopTabs = createMaterialTopTabNavigator();
 
 function Tabs() {
@@ -152,9 +128,12 @@ function Tabs() {
 
 function AllAccountsScreen({ navigation }) {
   const insets = useSafeAreaInsets();
-  const handlePressWallet = useCallback((wallet) => {
-    navigation.push("Main", { wallet });
-  }, []);
+  const handlePressWallet = useCallback(
+    (wallet) => {
+      navigation.push("Main", { wallet });
+    },
+    [navigation]
+  );
 
   return (
     <Screen style={{ marginTop: insets.top }}>

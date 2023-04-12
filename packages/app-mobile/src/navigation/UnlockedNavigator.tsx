@@ -6,6 +6,7 @@ import { useCallback } from "react";
 import { parseNftName } from "@coral-xyz/common";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
 // import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
 
@@ -29,6 +30,7 @@ import {
   DepositListScreen,
   DepositSingleScreen,
 } from "~screens/Unlocked/DepositScreen";
+import { DummyScreen } from "~screens/Unlocked/DummyScreen";
 // import { NftCollectiblesNavigator } from "~screens/Unlocked/NftCollectiblesScreen";
 import { RecentActivityScreen } from "~screens/Unlocked/RecentActivityScreen";
 import {
@@ -211,6 +213,7 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         tabBarInactiveTintColor: theme.custom.colors.icon,
       })}
     >
+      <Tab.Screen name="Dummy" component={DummyScreen} />
       <Tab.Screen name="Wallets" component={WalletsNavigator} />
       <Tab.Screen name="Chat" component={ChatNavigator} />
       <Tab.Screen
