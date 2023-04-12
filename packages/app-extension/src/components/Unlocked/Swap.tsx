@@ -27,7 +27,7 @@ import {
   useSwapContext,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { ExpandMore, SwapVert } from "@mui/icons-material";
+import { ExpandMore, SwapVert as SwitchIcon } from "@mui/icons-material";
 import Info from "@mui/icons-material/Info";
 import {
   IconButton,
@@ -37,7 +37,7 @@ import {
   Typography,
 } from "@mui/material";
 import type { BigNumberish } from "ethers";
-import { ethers, FixedNumber } from "ethers";
+import { ethers,FixedNumber } from "ethers";
 
 import { Button as XnftButton } from "../../plugin/Component";
 import { TextField } from "../common";
@@ -120,8 +120,8 @@ const useStyles = styles((theme) => ({
       WebkitTextFillColor: `${theme.custom.colors.secondary} !important`,
     },
   },
-  swapTokensContainer: {
-    backgroundColor: theme.custom.colors.swapTokensButton,
+  switchTokensContainer: {
+    backgroundColor: theme.custom.colors.switchTokensButton,
     width: "44px",
     height: "44px",
     zIndex: 2,
@@ -130,15 +130,23 @@ const useStyles = styles((theme) => ({
     flexDirection: "column",
     borderRadius: "22px",
   },
-  swapTokensButton: {
+  switchTokensInnerButton: {
     border: `${theme.custom.colors.borderFull}`,
     width: "44px",
     height: "44px",
     marginLeft: "auto",
     marginRight: "auto",
   },
-  swapIcon: {
+  switchIcon: {
     color: theme.custom.colors.icon,
+  },
+  switchTokensButton: {
+    position: "fixed",
+    top: 175,
+    left: 24,
+  },
+  cannotSwitch: {
+    border: "2px solid red",
   },
   loadingContainer: {
     backgroundColor: theme.custom.colors.nav,
@@ -252,15 +260,11 @@ export function Swap({ blockchain }: { blockchain: Blockchain }) {
 function _Swap() {
   const isDark = useDarkMode();
   const classes = useStyles();
-  const { swapToFromMints, fromToken } = useSwapContext();
+  const { swapToFromMints, fromToken, canSwitch, toToken } = useSwapContext();
   const [openDrawer, setOpenDrawer] = useState(false);
   const { close } = useDrawerContext();
 
   const isLoading = !fromToken;
-
-  const onSwapButtonClick = () => {
-    swapToFromMints();
-  };
 
   const onSubmit = (e: any) => {
     e.preventDefault();
@@ -281,13 +285,11 @@ function _Swap() {
         noValidate
       >
         <div className={classes.topHalf}>
-          <SwapTokensButton
-            onClick={onSwapButtonClick}
-            style={{
-              position: "fixed",
-              top: "175px",
-              left: "24px",
-            }}
+          <SwitchTokensButton
+            disabled={!canSwitch}
+            onClick={swapToFromMints}
+            className={classes.switchTokensButton}
+            toToken={toToken}
           />
           {isLoading ? (
             <Skeleton height={80} style={{ borderRadius: "12px" }} />
@@ -834,24 +836,59 @@ const SwapInfoRow = ({ label, value, tooltip }: SwapInfoRowProps) => {
   );
 };
 
-function SwapTokensButton({
+function SwitchTokensButton({
   onClick,
-  style,
+  className,
+  disabled = false,
+  toToken,
 }: {
   onClick: () => void;
-  style: any;
+  className: string;
+  disabled?: Boolean;
+  toToken: ReturnType<typeof useSwapContext>["toToken"];
 }) {
   const classes = useStyles();
+  const theme = useCustomTheme();
+  const toTokenShortName = toToken?.ticker || toToken?.name;
+
   return (
-    <div className={classes.swapTokensContainer} style={style}>
-      <IconButton
-        disableRipple
-        className={classes.swapTokensButton}
-        onClick={onClick}
-      >
-        <SwapVert className={classes.swapIcon} />
-      </IconButton>
-    </div>
+    <Tooltip
+      title={
+        disabled
+          ? toTokenShortName
+            ? `You have no ${toTokenShortName} to swap`
+            : "You cannot switch these tokens"
+          : "Switch the Sending & Receiving token"
+      }
+      arrow
+      placement="left"
+      componentsProps={{
+        tooltip: {
+          sx: {
+            fontSize: "14px",
+            bgcolor: theme.custom.colors.copyTooltipColor,
+            color: theme.custom.colors.copyTooltipTextColor,
+            "& .MuiTooltip-arrow": {
+              color: theme.custom.colors.copyTooltipColor,
+            },
+          },
+        },
+      }}
+    >
+      <div className={[classes.switchTokensContainer, className].join(" ")}>
+        <IconButton
+          disableRipple
+          className={[
+            classes.switchTokensInnerButton,
+            disabled ? classes.cannotSwitch : "",
+          ].join(" ")}
+          onClick={onClick}
+          disabled={Boolean(disabled)}
+        >
+          <SwitchIcon className={classes.switchIcon} />
+        </IconButton>
+      </div>
+    </Tooltip>
   );
 }
 
