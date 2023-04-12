@@ -37,7 +37,7 @@
     "@react-navigation/native": "^6.0.11",
     "@react-navigation/native-stack": "^6.7.0",
     "@react-navigation/stack": "^6.3.2",
-    "@tamagui/font-inter": "^1.7.7",
+    "@tamagui/font-inter": "^1.14.3",
     "big-integer": "^1.6.51",
     "buffer": "^6.0.3",
     "ethers": "^5.7.2",
@@ -76,7 +76,7 @@
     "react-qr-code": "^2.0.8",
     "react-test-renderer": "^18.2.0",
     "recoil": "^0.7.6",
-    "tamagui": "^1.7.1",
+    "tamagui": "^1.14.3",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
