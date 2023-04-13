@@ -7,6 +7,7 @@ import { Box } from "@coral-xyz/tamagui";
 
 import { ListItemWalletOverview } from "~components/ListItem";
 import { RoundedContainerGroup, Screen, StyledText } from "~components/index";
+import { useWalletBalance } from "~hooks/recoil";
 import { useWallets } from "~hooks/wallets";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 
@@ -16,6 +17,26 @@ const ListHeaderTitle = ({ title }: { title: string }): JSX.Element => (
     {title}
   </StyledText>
 );
+
+function RenderItem({
+  item: wallet,
+  onPress,
+}: {
+  item: Wallet;
+  onPress: any;
+}): JSX.Element {
+  const balance = useWalletBalance(wallet);
+  return (
+    <ListItemWalletOverview
+      grouped
+      name={wallet.name}
+      blockchain={wallet.blockchain}
+      publicKey={wallet.publicKey}
+      balance={`$${balance.totalBalance}`}
+      onPress={onPress}
+    />
+  );
+}
 
 export function HomeWalletListScreen({ navigation }): JSX.Element {
   const { allWallets, onSelectWallet } = useWallets();
@@ -32,16 +53,7 @@ export function HomeWalletListScreen({ navigation }): JSX.Element {
   const keyExtractor = (wallet: Wallet) => wallet.publicKey.toString();
   const renderItem = useCallback(
     ({ item: wallet }: { item: Wallet }) => {
-      return (
-        <ListItemWalletOverview
-          grouped
-          name={wallet.name}
-          blockchain={wallet.blockchain}
-          publicKey={wallet.publicKey}
-          balance="$4,197.69 TODO"
-          onPress={handlePressWallet}
-        />
-      );
+      return <RenderItem item={wallet} onPress={handlePressWallet} />;
     },
     [handlePressWallet]
   );

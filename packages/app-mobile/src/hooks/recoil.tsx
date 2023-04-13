@@ -115,7 +115,11 @@ export function useWalletBalance(wallet: Wallet) {
     })
   );
 
-  return wrapResponse(data);
+  return handleResponse(data, {
+    percentChange: 0,
+    totalBalance: 0,
+    totalChange: 0,
+  });
 }
 
 export function useActiveWallet(): Wallet | object {
