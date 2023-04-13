@@ -68,13 +68,13 @@ const swcLoaderConfiguration = {
   },
 };
 
-const tamaguiLoaderConfiguration = {
-  loader: "tamagui-loader",
-  options: {
-    config: "./tamagui.config.ts",
-    components: ["@coral-xyz/tamagui", "tamagui"],
-  },
-};
+// const tamaguiLoaderConfiguration = {
+//   loader: "tamagui-loader",
+//   options: {
+//     config: "./tamagui.config.ts",
+//     components: ["@coral-xyz/tamagui", "tamagui"],
+//   },
+// };
 
 const fileExtensions = [
   "eot",
@@ -144,6 +144,7 @@ const options = {
     options: "./src/options/index.tsx",
     permissions: "./src/permissions/index.tsx",
     popup: "./src/index.tsx",
+    warning: "./src/warning.ts",
     contentScript: "./src/contentScript/index.ts",
     // injected: "../provider-injection/dist/browser/index.js",
   },
@@ -245,7 +246,7 @@ const options = {
         {
           from: "src/manifest.json",
           force: true,
-          transform: function (content, path) {
+          transform: function (content) {
             return Buffer.from(
               JSON.stringify(
                 {
