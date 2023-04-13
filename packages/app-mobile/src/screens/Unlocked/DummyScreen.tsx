@@ -2,12 +2,14 @@ import type { Token } from "@@types/types";
 
 import { useCallback } from "react";
 import {
+  SectionList,
   Image,
   StyleSheet,
   View,
   Button,
   Pressable,
   ScrollView,
+  FlatList,
   Text,
 } from "react-native";
 
@@ -16,27 +18,26 @@ import {
   Box,
   XStack,
   ListItem,
+  ListItem2,
   YStack,
   YGroup,
   Separator,
+  Switch,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BlockchainLogo } from "~components/BlockchainLogo";
 import { UserAvatar } from "~components/UserAvatar";
-import { StyledText, Screen, ProxyImage } from "~components/index";
+import {
+  StyledText,
+  Screen,
+  ProxyImage,
+  RoundedContainerGroup,
+} from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 
 import { TextPercentChanged } from "./components/Balances";
-
-const IconWallet = () => (
-  <MaterialIcons name="account-balance-wallet" size={32} color="gray" />
-);
-
-const KeyboardArrowRight = () => (
-  <MaterialIcons name="keyboard-arrow-right" size={32} color="gray" />
-);
 
 function Sep() {
   return (
@@ -74,10 +75,11 @@ function ListItemSentReceived({
 }) {
   return (
     <ListItem
+      overflow="hidden"
       onPress={onPress}
-      borderRadius={!grouped ? "$container" : undefined}
-      borderColor={!grouped ? "$borderFull" : undefined}
-      borderWidth={!grouped ? 2 : undefined}
+      borderRadius={grouped ? 0 : "$container"}
+      borderColor={grouped ? undefined : "$borderFull"}
+      borderWidth={grouped ? 0 : 2}
       paddingHorizontal={16}
       paddingVertical={12}
       icon={<Image style={styles.rowLogo} src={iconUrl} />}
@@ -381,6 +383,110 @@ function ListItemFriendRequest({
   );
 }
 
+const KeyboardArrowRight = () => (
+  <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
+);
+
+const getIcon = (name: string) => (
+  <MaterialIcons name={name} size={28} color="gray" />
+);
+
+function _ListItem({
+  icon,
+  title,
+  rightText,
+  iconAfter,
+  onPress,
+}: {
+  icon: JSX.Element;
+  title: string;
+  rightText?: string;
+  iconAfter: JSX.Element;
+  onPress?: () => void;
+}): JSX.Element {
+  const theme = useTheme();
+  return (
+    <Pressable
+      disabled={!onPress}
+      onPress={onPress}
+      style={{ backgroundColor: theme.custom.colors.nav }}
+    >
+      <XStack py={8} px={16} f={1} bg="$nav" jc="space-between" ai="center">
+        <XStack ai="center">
+          <View style={{ width: 32, height: 32 }}>{icon}</View>
+          <StyledText ml={16} fontSize="$base" color="$fontColor">
+            {title}
+          </StyledText>
+        </XStack>
+        <XStack ai="center">
+          {rightText ? <StyledText mr={8}>{rightText}</StyledText> : null}
+          {iconAfter}
+        </XStack>
+      </XStack>
+    </Pressable>
+  );
+}
+
+function ListItemSettings({
+  title,
+  iconName,
+  onPress,
+}: {
+  title: string;
+  iconName: string;
+  onPress?: () => void;
+}): JSX.Element {
+  const Icon = getIcon(iconName);
+  return (
+    <_ListItem
+      onPress={onPress}
+      title={title}
+      icon={Icon}
+      iconAfter={<KeyboardArrowRight />}
+    />
+  );
+}
+
+function UserList() {
+  const data = Array.from({ length: 10 }).map(() => {
+    return {
+      title: "armani",
+      iconUrl:
+        "https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681404388701?size=120",
+    };
+  });
+
+  return (
+    <RoundedContainerGroup>
+      <FlatList
+        data={data}
+        ItemSeparatorComponent={Separator}
+        renderItem={({ item }) => {
+          return (
+            <_ListItem
+              title={item.title}
+              icon={
+                <Image
+                  source={{
+                    uri: "https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681404388701?size=120",
+                  }}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 64,
+                    aspectRatio: 1,
+                  }}
+                />
+              }
+              iconAfter={<KeyboardArrowRight />}
+            />
+          );
+        }}
+      />
+    </RoundedContainerGroup>
+  );
+}
+
 function SettingsList() {
   return (
     <YGroup
@@ -391,18 +497,92 @@ function SettingsList() {
       separator={<Sep />}
     >
       <YGroup.Item>
-        <ListItem title="Wallets" hoverTheme icon={IconWallet} iconAfter={KeyboardArrowRight} />
+        <ListItemSettings title="Wallets" iconName="account-balance-wallet" />
       </YGroup.Item>
       <YGroup.Item>
-        <ListItem hoverTheme icon={IconWallet} title="Wallets" />
+        <ListItemSettings title="Account" iconName="account-circle" />
       </YGroup.Item>
       <YGroup.Item>
-        <ListItem hoverTheme icon={IconWallet} title="Wallets" />
+        <ListItemSettings title="Preferences" iconName="settings" />
       </YGroup.Item>
       <YGroup.Item>
-        <ListItem hoverTheme icon={IconWallet} title="Wallets" />
+        <ListItemSettings title="xNFTs" iconName="apps" />
+      </YGroup.Item>
+      <YGroup.Item>
+        <ListItemSettings title="Authenticated Apps" iconName="vpn-key" />
+      </YGroup.Item>
+      <YGroup.Item>
+        <ListItemSettings title="Lock" iconName="lock" />
       </YGroup.Item>
     </YGroup>
+  );
+}
+
+function SectionedList() {
+  const sections = [
+    {
+      title: "A",
+      data: [
+        {
+          address: "5iM4...F5To",
+          action: "Sent",
+          amount: "4 USDC",
+          iconUrl:
+            "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
+        },
+        // add more sent transactions here
+      ],
+    },
+    {
+      title: "B",
+      data: [
+        {
+          address: "5iM4...F5To",
+          action: "Received",
+          amount: "4 USDC",
+          iconUrl:
+            "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
+        },
+        {
+          address: "5iM4...F5To",
+          action: "Received",
+          amount: "4 USDC",
+          iconUrl:
+            "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
+        },
+      ],
+    },
+  ];
+
+  return (
+    <SectionList
+      sections={sections}
+      ListHeaderComponent={<StyledText>Header</StyledText>}
+      // separator cuts into the border but we can figure this out
+      ItemSeparatorComponent={Separator}
+      renderSectionHeader={({ section: { title } }) => (
+        <StyledText my={12}>{title}</StyledText>
+      )}
+      renderItem={({ item, section, index }) => {
+        const isFirst = index === 0;
+        const isLast = index === section.data.length - 1;
+
+        return (
+          <RoundedContainerGroup
+            disableTopRadius={!isFirst}
+            disableBottomRadius={!isLast}
+          >
+            <ListItemSentReceived
+              grouped
+              address={item.address}
+              action={item.action}
+              amount={item.amount}
+              iconUrl={item.iconUrl}
+            />
+          </RoundedContainerGroup>
+        );
+      }}
+    />
   );
 }
 
@@ -411,6 +591,12 @@ export function DummyScreen({ navigation }): JSX.Element {
   return (
     <ScrollView>
       <Screen style={{ marginTop: insets.top }}>
+        <Box marginBottom={12}>
+          <SectionedList />
+        </Box>
+        <Box marginBottom={12}>
+          <UserList />
+        </Box>
         <Box marginBottom={12}>
           <SettingsList />
         </Box>
@@ -561,7 +747,7 @@ export function DummyScreen({ navigation }): JSX.Element {
             borderWidth={2}
             borderColor="$borderFull"
             borderRadius="$container"
-            separator={<Sep />}
+            separator={<Separator />}
           >
             <YGroup.Item>
               <ListItemToken

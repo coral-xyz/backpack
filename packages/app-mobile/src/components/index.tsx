@@ -748,14 +748,15 @@ export function RoundedContainerGroup({
         {
           backgroundColor: theme.custom.colors.nav,
           borderColor: theme.custom.colors.borderFull,
-          borderWidth: 2,
         },
-        disableTopRadius ? roundedContainerStyles.disableTopRadius : null,
-        disableBottomRadius ? roundedContainerStyles.disableBottomRadius : null,
+        disableTopRadius ? roundedContainerStyles.disableTopRadius : undefined,
+        disableBottomRadius
+          ? roundedContainerStyles.disableBottomRadius
+          : undefined,
         style,
       ]}
     >
-      {children}
+      <View style={{ overflow: "hidden", borderRadius: 16 }}>{children}</View>
     </View>
   );
 }
@@ -763,15 +764,21 @@ export function RoundedContainerGroup({
 const roundedContainerStyles = StyleSheet.create({
   container: {
     overflow: "hidden",
-    borderRadius: 12,
+    borderRadius: 16,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
   },
   disableTopRadius: {
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
+    borderTopWidth: 0,
   },
   disableBottomRadius: {
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
+    borderBottomWidth: 0,
   },
 });
 
