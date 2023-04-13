@@ -1,66 +1,26 @@
 import { useCallback } from "react";
 
 import { Wallet } from "@@types/types";
-import {
-  Blockchain,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-} from "@coral-xyz/common";
-import {
-  useAllWallets,
-  useBackgroundClient,
-  useBlockchainActiveWallet,
-  useDehydratedWallets,
-  allWalletsDisplayed,
-} from "@coral-xyz/recoil";
-import { useRecoilValueLoadable } from "recoil";
+import { UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE } from "@coral-xyz/common";
+import { useBackgroundClient, useDehydratedWallets } from "@coral-xyz/recoil";
 
-const FAKE_DATA = [
-  {
-    publicKey: "0x57383A846Ffd2EB07822aD3D853be80495F7a986",
-    name: "Wallet 1",
-    isCold: false,
-    blockchain: "ethereum",
-    type: "derived",
-  },
-  {
-    publicKey: "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz",
-    name: "Wallet 1",
-    isCold: false,
-    blockchain: "solana",
-    type: "derived",
-  },
-  {
-    publicKey: "FwQyYwx8HyqkhaqUnrWfb5HgsHUCVsb7UHnWyXbhWYho",
-    name: "Wallet 8",
-    isCold: false,
-    blockchain: "solana",
-    type: "derived",
-  },
-  {
-    blockchain: "ethereum",
-    publicKey: "0x142a45983Be4c57d0EbE17976Cc13461Fd9fd15a",
-    primary: false,
-    name: "",
-    type: "dehydrated",
-  },
-];
+import { useActiveWallet, useAllWallets } from "./recoil";
 
-// consolidates a bunch of the shit we need from other places
-// reader, move this to recoil
+// TODO something about useAllWallets breaks when its inside react-navigation
+// This issue only takes place on the first screen of a navigator
+// This issue does NOT take place when used outside of react-navigation
+// The current fix is to wrap the hooks in useRecoilValueLoadable and process without Suspense
 export function useWallets(): {
   activeWallet: Wallet;
   allWallets: Wallet[];
   onSelectWallet: (wallet: Wallet, cb: () => void) => void;
 } {
-  const wl = useRecoilValueLoadable(allWalletsDisplayed);
-  const wallets = wl.state === "hasValue" ? wl.contents : [];
-
-  // const activeWallet = useBlockchainActiveWallet(Blockchain.SOLANA);
   const background = useBackgroundClient();
-  // const wallets = useAllWallets();
+  const activeWallet = useActiveWallet();
+  const wallets = useAllWallets();
   const _dehydratedWallets = useDehydratedWallets();
   const activeWallets = wallets.filter((w) => !w.isCold);
-  // const coldWallets = wallets.filter((w) => w.isCold);
+  // const coldWallets = wallets.filter((w) => w.isCold); // TODO cold wallets?
 
   // Dehydrated public keys are keys that exist on the server but cannot be
   // used on the client as we don't have signing data, e.g. mnemonic, private
@@ -73,20 +33,21 @@ export function useWallets(): {
 
   const onSelectWallet = useCallback(
     async (w: Wallet, cb: any) => {
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-        params: [w.publicKey.toString(), w.blockchain],
-      });
+      if (activeWallet.publicKey !== w.publicKey) {
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+          params: [w.publicKey.toString(), w.blockchain],
+        });
+      }
 
       cb();
     },
-    [background]
+    [background, activeWallet.publicKey]
   );
 
   return {
-    activeWallet: { publicKey: "" },
+    activeWallet,
     onSelectWallet,
-    // allWallets: FAKE_DATA,
     allWallets: [...activeWallets, ...dehydratedWallets],
   };
 }

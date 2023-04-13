@@ -1,9 +1,14 @@
+// This file is for cases where Suspense is acting up in React Native and we use useRecoilValueLoadable directly instead
+import { Wallet } from "@@types/types";
 import { Blockchain } from "@coral-xyz/common";
 import {
   activeSolanaWallet,
   activeEthereumWallet,
   blockchainTokenData,
   totalBalance as totalBalanceSelector,
+  blockchainTotalBalance,
+  activeWallet,
+  allWallets,
 } from "@coral-xyz/recoil";
 import { useRecoilValueLoadable } from "recoil";
 
@@ -13,11 +18,32 @@ type Response = {
   data: any;
 };
 
-function wrapResponse(data: any): Response {
+type RecoilData = {
+  state: "hasValue" | "loading" | "hasError";
+  contents: Promise<any> | any;
+};
+
+// the successor to wrapResponse
+function handleResponse(data: RecoilData, fallback: any) {
+  if (data.state === "loading") {
+    return fallback;
+  }
+
+  if (data.state === "hasValue") {
+    return data.contents;
+  }
+
+  if (data.state === "hasError") {
+    return fallback;
+  }
+}
+
+// First peter made this and it was fine
+function wrapResponse(data: any, result = null): Response {
   return {
     loading: data.state === "loading",
     error: data.state === "hasError",
-    data: data.state === "hasValue" ? data.contents : null,
+    data: data.state === "hasValue" ? data.contents : result,
   };
 }
 
@@ -79,4 +105,25 @@ export function useTotalBalance() {
 
   const isLoading = tb.state === "loading";
   return { totalBalance, totalChange, percentChange, isLoading };
+}
+
+export function useWalletBalance(wallet: Wallet) {
+  const data = useRecoilValueLoadable(
+    blockchainTotalBalance({
+      publicKey: wallet.publicKey,
+      blockchain: wallet.blockchain,
+    })
+  );
+
+  return wrapResponse(data);
+}
+
+export function useActiveWallet(): Wallet | object {
+  const data = useRecoilValueLoadable(activeWallet);
+  return handleResponse(data, {});
+}
+
+export function useAllWallets(): Wallet[] {
+  const data = useRecoilValueLoadable(allWallets);
+  return handleResponse(data, []);
 }

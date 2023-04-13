@@ -1,7 +1,8 @@
-import type { Wallet } from "@@types/types";
+import type { Wallet, PublicKey } from "@@types/types";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import {
+  Alert,
   FlatList,
   Image,
   Pressable,
@@ -15,6 +16,7 @@ import { ListItem, XStack, ListItem2 } from "@coral-xyz/tamagui";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HardwareIcon, ImportedIcon, MnemonicIcon } from "~components/Icon";
+import { ListItemWalletOverview } from "~components/ListItem";
 import {
   CopyButtonIcon,
   ListRowSeparator,
@@ -27,37 +29,70 @@ import {
 import { getBlockchainLogo, useTheme } from "~hooks/index";
 import { useWallets } from "~hooks/wallets";
 
-function MainWalletListItem({
-  publicKey,
-  type,
-  name,
-  blockchain,
-  onPress,
-  balance,
-}) {
-  return (
-    <ListItem2
-      list
-      singleLine
-      hoverTheme
-      pressTheme
-      icon={<NetworkIcon size={18} blockchain={blockchain} />}
-      onPress={() => onPress({ blockchain, name, publicKey, type })}
-    >
-      <XStack flex={1} justifyContent="space-between">
-        <StyledText fontSize="$base" fontWeight="600">
-          {name}
-        </StyledText>
-        <StyledText fontSize="$base" fontWeight="600">
-          {balance}
-        </StyledText>
-      </XStack>
-    </ListItem2>
-  );
-}
+// function MainWalletListItem({
+//   publicKey,
+//   type,
+//   name,
+//   blockchain,
+//   onPress,
+//   balance,
+// }) {
+//   return (
+//     <ListItem2
+//       list
+//       singleLine
+//       hoverTheme
+//       pressTheme
+//       icon={<NetworkIcon size={18} blockchain={blockchain} />}
+//       onPress={() => onPress({ blockchain, name, publicKey, type })}
+//     >
+//       <XStack flex={1} justifyContent="space-between">
+//         <StyledText fontSize="$base" fontWeight="600">
+//           {name}
+//         </StyledText>
+//         <StyledText fontSize="$base" fontWeight="600">
+//           {balance}
+//         </StyledText>
+//       </XStack>
+//     </ListItem2>
+//   );
+// }
 
-export function MainWalletList({ onPressWallet }) {
+export function MainWalletList({
+  onPressWallet,
+}: {
+  onPressWallet: (b: Blockchain, p: PublicKey) => void;
+}): JSX.Element {
   const { allWallets } = useWallets();
+
+  const keyExtractor = (wallet: Wallet) => wallet.publicKey.toString();
+  const renderItem = useCallback(
+    ({ item: wallet }: { item: Wallet }) => {
+      return (
+        <ListItemWalletOverview
+          grouped
+          name={wallet.name}
+          blockchain={wallet.blockchain}
+          publicKey={wallet.publicKey}
+          balance="$4,197.69 TODO"
+          onPress={onPressWallet}
+        />
+      );
+
+      // return (
+      //   <MainWalletListItem
+      //     name={wallet.name}
+      //     type={wallet.type}
+      //     publicKey={wallet.publicKey}
+      //     blockchain={wallet.blockchain}
+      //     onPress={onPressWallet}
+      //     balance="$4,197.67"
+      //   />
+      // );
+    },
+    [onPressWallet]
+  );
+
   return (
     <>
       <StyledText fontSize="$base" mb={8}>
@@ -66,19 +101,8 @@ export function MainWalletList({ onPressWallet }) {
       <RoundedContainerGroup>
         <FlatList
           data={allWallets}
-          keyExtractor={(item) => item.publicKey.toString()}
-          renderItem={({ item: wallet }) => {
-            return (
-              <MainWalletListItem
-                name={wallet.name}
-                type={wallet.type}
-                publicKey={wallet.publicKey}
-                blockchain={wallet.blockchain}
-                onPress={onPressWallet}
-                balance="$4,197.67"
-              />
-            );
-          }}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
         />
       </RoundedContainerGroup>
     </>

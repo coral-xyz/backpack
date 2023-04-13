@@ -9,9 +9,10 @@ export enum NavTokenAction {
 }
 
 export type NavTokenOptions = any;
+export type PublicKey = string;
 
 export type Wallet = {
-  publicKey: string;
+  publicKey: PublicKey;
   blockchain: Blockchain;
   name: string;
   type?: string;

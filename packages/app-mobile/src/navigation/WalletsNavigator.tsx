@@ -12,6 +12,7 @@ import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import { WalletTokenList } from "~components/Wallets";
 import { StyledText, Screen } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
+import { HomeWalletListScreen } from "~screens/HomeWalletListScreen";
 import { BalanceDetailScreen } from "~screens/Unlocked/BalancesScreen";
 import { RecentActivityScreen } from "~screens/Unlocked/RecentActivityScreen";
 import { MainWalletList } from "~screens/Unlocked/WalletListScreen";
@@ -126,33 +127,14 @@ function Tabs() {
   );
 }
 
-function AllAccountsScreen({ navigation }) {
-  const insets = useSafeAreaInsets();
-  const handlePressWallet = useCallback(
-    (wallet) => {
-      navigation.push("Main", { wallet });
-    },
-    [navigation]
-  );
-
-  return (
-    <Screen style={{ marginTop: insets.top }}>
-      <BalanceSummaryWidget />
-      <Box marginTop={12}>
-        <MainWalletList onPressWallet={handlePressWallet} />
-      </Box>
-    </Screen>
-  );
-}
-
 const Stack = createStackNavigator();
 export function WalletsNavigator(): JSX.Element {
   const theme = useTheme();
   return (
-    <Stack.Navigator initialRouteName="AllAccountsHome">
+    <Stack.Navigator>
       <Stack.Screen
         name="AllAccountsHome"
-        component={AllAccountsScreen}
+        component={HomeWalletListScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

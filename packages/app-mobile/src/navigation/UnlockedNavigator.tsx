@@ -213,7 +213,6 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         tabBarInactiveTintColor: theme.custom.colors.icon,
       })}
     >
-      <Tab.Screen name="Dummy" component={DummyScreen} />
       <Tab.Screen name="Wallets" component={WalletsNavigator} />
       <Tab.Screen name="Chat" component={ChatNavigator} />
       <Tab.Screen

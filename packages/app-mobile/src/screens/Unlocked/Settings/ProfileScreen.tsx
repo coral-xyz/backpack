@@ -1,3 +1,4 @@
+import type { Wallet } from "@@types/types";
 import type { Blockchain } from "@coral-xyz/common";
 
 import { useState } from "react";
@@ -16,12 +17,6 @@ import {
 } from "~components/index";
 import { WalletListItem } from "~screens/Unlocked/EditWalletsScreen";
 import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsList";
-
-type Wallet = {
-  name: string;
-  publicKey: string;
-  type: string;
-};
 
 export function ProfileScreen(): JSX.Element {
   return (

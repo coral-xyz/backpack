@@ -34,6 +34,7 @@ import {
   Text as _Text,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ContentCopyIcon, RedBackpack } from "~components/Icon";
 import { useTheme } from "~hooks/useTheme";
@@ -141,11 +142,14 @@ export function Screen({
   scrollable,
   children,
   style,
+  headerPadding,
 }: {
   scrollable?: boolean;
   children: JSX.Element | JSX.Element[] | null;
   style?: StyleProp<ViewStyle>;
+  headerPadding?: boolean;
 }) {
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
   if (scrollable) {
     return (
@@ -169,6 +173,7 @@ export function Screen({
         screenStyles.container,
         {
           backgroundColor: theme.custom.colors.background,
+          marginTop: headerPadding ? insets.top : undefined,
         },
         style,
       ]}

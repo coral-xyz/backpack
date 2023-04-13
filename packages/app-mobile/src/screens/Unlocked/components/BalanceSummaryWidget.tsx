@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 
 import { formatUSD } from "@coral-xyz/common";
+import { XStack } from "@coral-xyz/tamagui";
 
 import { StyledText } from "~components/index";
 import { useTotalBalance } from "~hooks/recoil";
@@ -70,22 +71,17 @@ export function BalanceSummaryWidget() {
 
   return (
     <View style={styles.container}>
-      <StyledText
-        marginBottom={12}
-        fontWeight="700"
-        fontSize={36}
-        color="$fontColor"
-      >
+      <StyledText mb={8} fontWeight="700" fontSize="$4xl" color="$fontColor">
         {formatUSD(totalBalance)}
       </StyledText>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <XStack alignItems="center">
         <TextTotalChange totalChange={totalChange} />
         <TextPercentChange
           isLoading={isLoading}
           totalChange={totalChange}
-          percentChange={percentChange}
+          percentChange={percentChange as number}
         />
-      </View>
+      </XStack>
     </View>
   );
 }
