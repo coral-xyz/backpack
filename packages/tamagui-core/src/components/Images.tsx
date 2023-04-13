@@ -15,7 +15,8 @@ export function S3Image({
   const baseUrl = "https://dphpu5y2e06qu.cloudfront.net";
   const url = `${baseUrl}/${resource}`;
   return (
-    <Image source={{ uri: url }} width={style.width} height={style.height} {...props} />
+    // @ts-ignore src is coming back
+    <Image src={url} width={style.width} height={style.height} {...props} />
   );
 }
 
