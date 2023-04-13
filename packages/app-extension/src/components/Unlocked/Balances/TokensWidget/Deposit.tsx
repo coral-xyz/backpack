@@ -367,9 +367,6 @@ export function _Deposit({
   const name = useWalletName(publicKey);
 
   const walletDisplay = publicKey.toString();
-  // publicKey.toString().slice(0, 12) +
-  // "..." +
-  // publicKey.toString().slice(publicKey.toString().length - 12);
 
   const onCopy = async () => {
     setTooltipOpen(true);
