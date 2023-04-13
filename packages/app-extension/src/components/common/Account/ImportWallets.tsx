@@ -8,7 +8,7 @@ import {
   legacyBip44ChangeIndexed,
   legacyBip44Indexed,
   legacyLedgerIndexed,
-  legacyLedgerLiveIndexed,
+  legacyLedgerLiveAccount,
   legacySolletIndexed,
   LOAD_PUBLIC_KEY_AMOUNT,
   UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
@@ -132,8 +132,8 @@ export function ImportWallets({
       },
       **/
       {
-        path: (i: number) => legacyLedgerLiveIndexed(i),
-        label: "m/44/60/x - Ledger Live",
+        path: (i: number) => legacyLedgerLiveAccount(i),
+        label: "m/44'/60'/x'/0/0 - Ledger Live",
       },
       /**
       // Used in older versions of Backpack
@@ -144,16 +144,16 @@ export function ImportWallets({
       **/
       {
         path: (i: number) => legacyLedgerIndexed(i),
-        label: "m/44/60'/0'/x' - Ledger",
+        label: "m/44'/60'/0'/x' - Ledger",
       },
       {
         path: (i: number) => ethereumIndexed(i),
-        label: "m/44/60'/0'/0/x - Ethereum Standard",
+        label: "m/44'/60'/0'/0/x - Ethereum Standard",
       },
       {
         path: (i: number) =>
           legacyBip44ChangeIndexed(Blockchain.ETHEREUM, i) + "/0'",
-        label: "m/44/60'/x'/0'/0'",
+        label: "m/44'/60'/x'/0'/0'",
       },
     ],
   }[blockchain];
