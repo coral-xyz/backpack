@@ -2,25 +2,15 @@ import type { Nft, NftCollection } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   Blockchain,
-  EnrichedNotification,
-  fetchXnftsFromPubkey,
   WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
-import {
-  selector,
-  selectorFamily,
-  useRecoilValue,
-  useRecoilValueLoadable,
-  waitForAll,
-} from "recoil";
+import { selector, selectorFamily, waitForAll } from "recoil";
 
 import { equalSelectorFamily } from "../equals";
 
 import { ethereumNftById, ethereumWalletCollections } from "./ethereum/nft";
 import { ethereumConnectionUrl } from "./ethereum";
-import { xnftJwt } from "./preferences";
 import {
-  anchorContext,
   isOneLive,
   solanaConnectionUrl,
   solanaNftById,
@@ -213,13 +203,17 @@ export const chatByCollectionId = selectorFamily<
         return null;
       }
 
-      const response = await fetch(
-        `${BACKEND_API_URL}/nft/members?room=${
-          chatInfo.id
-        }&type=collection&limit=${0}`
-      );
-      const json = await response.json();
-      return { ...chatInfo, memberCount: json.count };
+      try {
+        const response = await fetch(
+          `${BACKEND_API_URL}/nft/members?room=${
+            chatInfo.id
+          }&type=collection&limit=${0}`
+        );
+        const json = await response.json();
+        return { ...chatInfo, memberCount: json.count };
+      } catch (err) {
+        return undefined;
+      }
     },
 });
 
@@ -276,13 +270,18 @@ export const chatByNftId = selectorFamily<
         return null;
       }
 
-      const response = await fetch(
-        `${BACKEND_API_URL}/nft/members?room=${
-          whitelistedChatCollection.id
-        }&limit=${0}`
-      );
-      const json = await response.json();
+      try {
+        const response = await fetch(
+          `${BACKEND_API_URL}/nft/members?room=${
+            whitelistedChatCollection.id
+          }&limit=${0}`
+        );
+        const json = await response.json();
 
-      return { ...whitelistedChatCollection, memberCount: json.count };
+        return { ...whitelistedChatCollection, memberCount: json.count };
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
     },
 });

@@ -61,10 +61,6 @@ export const useAuthentication = () => {
         return null;
       } else {
         console.error("useAuthentication:checkAuthentication::error", error);
-        await background.request({
-          method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-          params: [],
-        });
         return null;
       }
     }
