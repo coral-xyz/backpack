@@ -334,6 +334,8 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiOutlinedInput-input": {
       cursor: "pointer",
       color: theme.custom.colors.secondary,
+      overflow: "hidden",
+      textOverflow: "ellipsis",
     },
     "&:hover .MuiOutlinedInput-root": {
       paddingLeft: 0,
@@ -364,10 +366,10 @@ export function _Deposit({
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const name = useWalletName(publicKey);
 
-  const walletDisplay =
-    publicKey.toString().slice(0, 12) +
-    "..." +
-    publicKey.toString().slice(publicKey.toString().length - 12);
+  const walletDisplay = publicKey.toString();
+  // publicKey.toString().slice(0, 12) +
+  // "..." +
+  // publicKey.toString().slice(publicKey.toString().length - 12);
 
   const onCopy = async () => {
     setTooltipOpen(true);
@@ -430,8 +432,7 @@ export function _Deposit({
                     style={{
                       pointerEvents: "none",
                       color: theme.custom.colors.secondary,
-                      position: "absolute",
-                      right: "17px",
+                      margin: "0px 10px",
                     }}
                   />
                 }
