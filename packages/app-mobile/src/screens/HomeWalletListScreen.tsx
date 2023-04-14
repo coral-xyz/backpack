@@ -43,9 +43,8 @@ export function HomeWalletListScreen({ navigation }): JSX.Element {
 
   const handlePressWallet = useCallback(
     (w: Wallet) => {
-      onSelectWallet(w, () => {
-        navigation.push("Main");
-      });
+      navigation.push("Main");
+      onSelectWallet(w, console.log);
     },
     [navigation, onSelectWallet]
   );
