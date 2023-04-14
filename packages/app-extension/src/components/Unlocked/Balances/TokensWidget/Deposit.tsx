@@ -11,7 +11,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import { IconButton, Modal, Typography } from "@mui/material";
 
-import { TextField, walletAddressDisplay } from "../../../common";
+import { walletAddressDisplay } from "../../../common";
 import { CloseButton, useDrawerContext } from "../../../common/Layout/Drawer";
 import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 
@@ -318,30 +318,6 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     lineHeight: "20px",
   },
-  depositTextFieldRoot: {
-    margin: 0,
-    "& .MuiOutlinedInput-root": {
-      paddingRight: 0,
-      "& fieldset": {
-        border: `${theme.custom.colors.borderFull} !important`,
-        paddingLeft: 0,
-        paddingRight: 0,
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: `${theme.custom.colors.primaryButton} !important`,
-      },
-    },
-    "& .MuiOutlinedInput-input": {
-      cursor: "pointer",
-      color: theme.custom.colors.secondary,
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-    },
-    "&:hover .MuiOutlinedInput-root": {
-      paddingLeft: 0,
-      paddingRight: 0,
-    },
-  },
   copyIcon: {
     "&:hover": {
       cursor: "pointer",
@@ -417,24 +393,23 @@ export function _Deposit({
           <WithCopyTooltip tooltipOpen={tooltipOpen}>
             <div
               onClick={() => onCopy()}
-              style={{ width: "100%" }}
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "space-between",
+                background: "white",
+                padding: "15px",
+                borderRadius: "10px",
+              }}
               className={classes.copyContainer}
             >
-              <TextField
-                value={walletDisplay}
-                rootClass={classes.depositTextFieldRoot}
-                endAdornment={
-                  <ContentCopyIcon
-                    className={classes.copyIcon}
-                    style={{
-                      pointerEvents: "none",
-                      color: theme.custom.colors.secondary,
-                      margin: "0px 10px",
-                    }}
-                  />
-                }
-                inputProps={{
-                  readOnly: true,
+              <StringTruncate text={walletDisplay} />
+              <ContentCopyIcon
+                className={classes.copyIcon}
+                style={{
+                  pointerEvents: "none",
+                  marginLeft: "10px",
+                  color: theme.custom.colors.secondary,
                 }}
               />
             </div>
@@ -451,6 +426,49 @@ export function _Deposit({
           ) : null}
         </Typography>
       </div>
+    </div>
+  );
+}
+
+function StringTruncate({ text }: { text: string }) {
+  const theme = useCustomTheme();
+  const midpoint = Math.floor(text.length / 2); // Get the index of the midpoint
+  const firstPart = text.slice(0, midpoint); // Get the first part of the string
+  const lastPart = text.slice(midpoint); // Get the last part of the string
+
+  return (
+    <div
+      style={{
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        width: "100%",
+        color: theme.custom.colors.textPlaceholder,
+      }}
+    >
+      <span
+        style={{
+          display: "inline-block",
+          verticalAlign: "bottom",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          maxWidth: "50%",
+        }}
+      >
+        {firstPart}
+      </span>
+      <span
+        style={{
+          display: "inline-block",
+          verticalAlign: "bottom",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          maxWidth: "50%",
+          direction: "rtl",
+        }}
+      >
+        {lastPart}
+      </span>
     </div>
   );
 }
