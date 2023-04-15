@@ -36,6 +36,15 @@ export const legacyBip44ChangeIndexed = (
 };
 
 /**
+ * m/44'/60'/x
+ */
+export const ethereumLegacy = (index: number) => {
+  const coinType = getCoinType(Blockchain.ETHEREUM);
+  const path = [44 + HARDENING, coinType, index];
+  return new BIPPath.fromPathArray(path).toString();
+};
+
+/**
  * m/44'/60'/0'/0
  */
 export const ethereumIndexed = (index: number) => {
@@ -210,6 +219,9 @@ export const getRecoveryPaths = (blockchain: Blockchain, ledger = false) => {
       )
     );
   } else if (blockchain === Blockchain.ETHEREUM) {
+    paths = paths.concat(
+      [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(ethereumLegacy)
+    );
     paths = paths.concat(
       [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(ethereumIndexed)
     );
