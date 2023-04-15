@@ -17,7 +17,6 @@ import * as Clipboard from "expo-clipboard";
 import Constants from "expo-constants";
 
 import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
-import { useAvatarUrl } from "@coral-xyz/recoil";
 import {
   Margin,
   BaseButton,
@@ -26,13 +25,12 @@ import {
   SecondaryButton,
   NegativeButton,
   DangerButton,
+  Text as _Text,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import { ContentCopyIcon, RedBackpack } from "~components/Icon";
 import { useTheme } from "~hooks/useTheme";
-
-import { ImageSvg } from "./ImageSvg";
 
 export { ActionCard } from "./ActionCard";
 export { MnemonicInputFields } from "./MnemonicInputFields";
@@ -42,6 +40,7 @@ export { PasswordInput } from "./PasswordInput";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { StyledTokenTextInput } from "./TokenInputField";
+export { Avatar } from "./UserAvatar";
 export {
   Margin,
   BaseButton,
@@ -99,19 +98,34 @@ const ctaStyles = StyleSheet.create({
 });
 
 export function StyledText({
+  fontWeight = "500",
+  fontSize = 16,
+  textAlign,
   children,
   style,
   ...props
 }: {
+  fontSize?: number;
+  fontWeight?: string;
   children: string;
+  textAlign?: string;
   style?: StyleProp<TextStyle>;
 }) {
   const theme = useTheme();
   const color = theme.custom.colors.fontColor;
   return (
-    <Text style={[{ color }, style]} {...props}>
+    <_Text
+      color={theme.custom.colors.fontColor}
+      fontSize={fontSize}
+      fontFamily="Inter"
+      fontWeight={fontWeight}
+      // @ts-expect-error
+      textAlign={textAlign}
+      style={[{ color }, style]}
+      {...props}
+    >
       {children}
-    </Text>
+    </_Text>
   );
 }
 
@@ -356,27 +370,6 @@ export function WalletAddressLabel({
       <Text style={{ color: theme.custom.colors.secondary }}>
         ({walletAddressDisplay(publicKey)})
       </Text>
-    </View>
-  );
-}
-
-export function Avatar({ size = 64 }: { size?: number }): JSX.Element {
-  const avatarUrl = useAvatarUrl(size);
-  const theme = useTheme();
-
-  const outerSize = size + 6;
-
-  return (
-    <View
-      style={{
-        backgroundColor: theme.custom.colors.avatarIconBackground,
-        borderRadius: outerSize / 2,
-        padding: 3,
-        width: outerSize,
-        height: outerSize,
-      }}
-    >
-      <ImageSvg width={size} height={size} uri={avatarUrl} />
     </View>
   );
 }

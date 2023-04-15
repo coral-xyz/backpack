@@ -92,7 +92,7 @@ export const DARK_COLORS: CustomColors = {
   textBackground: BACKGROUND_COLOR_1,
   textPlaceholder: FONT_COLOR_1,
   textBorder: BACKGROUND_COLOR_1,
-  swapTokensButton: BACKGROUND_COLOR_0,
+  switchTokensButton: BACKGROUND_COLOR_0,
   icon: "#787C89",
   approveTransactionTableBackground: BACKGROUND_COLOR_2,
   approveTransactionCloseBackground: BACKGROUND_COLOR_0,
@@ -164,7 +164,7 @@ export const LIGHT_COLORS: CustomColors = {
   textBorder: LIGHT_BORDER_COLOR,
   textPlaceholder: "#4E5768",
   textFieldTextColor: LIGHT_FONT_COLOR_2,
-  swapTokensButton: "#FFFFFF",
+  switchTokensButton: "#FFFFFF",
   icon: "#8F929E",
   approveTransactionTableBackground: LIGHT_BACKGROUND_COLOR_1,
   approveTransactionCloseBackground: "#C2C4CC",
@@ -333,7 +333,7 @@ export type CustomColors = {
   smallTextColor: string;
   subtext: string;
   successButton: string;
-  swapTokensButton: string;
+  switchTokensButton: string;
   tableBorder: string;
   text: string;
   textBackground: string;

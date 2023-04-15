@@ -140,8 +140,6 @@ export const UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD =
   "ui-rpc-method-keyring-store-check-password";
 export const UI_RPC_METHOD_KEYRING_STORE_CREATE =
   "ui-rpc-method-keyring-store-create";
-export const UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE =
-  "ui-rpc-method-keyring-store-keep-alive";
 export const UI_RPC_METHOD_KEYRING_STORE_LOCK =
   "ui-rpc-method-keyring-store-lock";
 export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
@@ -644,7 +642,7 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
   },
   {
     id: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
-    name: "The Madlist",
+    name: "Mad Lads",
     image: "https://www.madlads.com/mad_lads_logo.svg",
     collectionId: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
   },
@@ -653,6 +651,13 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     name: "The Madlist",
     image: "https://www.madlads.com/mad_lads_logo.svg",
     collectionId: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
+  },
+  {
+    id: "Et9ckpQCXFN5PsiYN781AczSVuQYyGEdDEPDJ7jrxz4c",
+    name: "Sporting F1",
+    image:
+      "https://arweave.net/Dh3FfZurEtmQD52mmq-axte9M6IMKmNSGzzdTpN9sJc?ext=png",
+    collectionId: "Et9ckpQCXFN5PsiYN781AczSVuQYyGEdDEPDJ7jrxz4c",
   },
 ];
 

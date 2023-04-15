@@ -25,7 +25,7 @@ const data = [
   },
   {
     image: '/brands/anagram.svg',
-    url: ''
+    url: 'https://anagram.xyz/'
   }
 ];
 
@@ -39,7 +39,7 @@ function Partners() {
             if (item.url === '') {
               return (
                 <li key={index} className="col-span-1 flex justify-center  bg-zinc-800 py-8">
-                  <Image src={item.image} alt="" height="49px" width="160px" />
+                  <Image src={item.image} alt="" height={49} width={160} />
                 </li>
               );
             } else {
@@ -49,7 +49,7 @@ function Partners() {
                     className="col-span-1 flex justify-center  bg-zinc-800
                    py-8 hover:bg-zinc-600"
                   >
-                    <Image src={item.image} alt="" height="49px" width="160px" />
+                    <Image src={item.image} alt="" height={49} width={160} />
                   </li>
                 </a>
               );

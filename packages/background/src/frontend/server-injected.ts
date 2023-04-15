@@ -677,7 +677,7 @@ async function handleEthereumSignAndSendTx(
   }
 
   let resp: RpcResponse<string>;
-  // The transaction may be modified and returned as result to accomodate user
+  // The transaction may be modified and returned as result to accommodate user
   // tweaked gas settings/nonce.
   const { didApprove, transaction } = uiResp.result;
   try {
@@ -731,7 +731,7 @@ async function handleEthereumSignTx(
   }
 
   let resp: RpcResponse<string>;
-  // The transaction may be modified and returned as result to accomodate user
+  // The transaction may be modified and returned as result to accommodate user
   // tweaked gas settings/nonce.
   const { didApprove } = uiResp.result;
 

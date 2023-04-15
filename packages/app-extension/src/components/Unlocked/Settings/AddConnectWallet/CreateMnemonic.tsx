@@ -47,11 +47,9 @@ export function CreateOrImportMnemonic({
     },
     "Import recovery phrase": {
       onClick: () =>
-        nav.push("import-from-mnemonic", {
+        nav.push("set-and-sync-mnemonic", {
           blockchain,
           keyringExists,
-          forceSetMnemonic: true,
-          inputMnemonic: true,
         }),
       icon: (props: any) => <ImportedIcon {...props} />,
       detailIcon: <PushDetail />,

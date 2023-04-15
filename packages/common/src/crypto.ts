@@ -54,11 +54,11 @@ export const legacyLedgerIndexed = (index: number) => {
 };
 
 /**
- * m/44'/60'
+ * m/44'/60'/x'/0/0
  */
-export const legacyLedgerLiveIndexed = (index: number) => {
+export const legacyLedgerLiveAccount = (accountIndex: number) => {
   const coinType = getCoinType(Blockchain.ETHEREUM);
-  const path = [44 + HARDENING, coinType, index];
+  const path = [44 + HARDENING, coinType, accountIndex + HARDENING, 0, 0];
   return new BIPPath.fromPathArray(path).toString();
 };
 
@@ -217,7 +217,7 @@ export const getRecoveryPaths = (blockchain: Blockchain, ledger = false) => {
       [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(legacyLedgerIndexed)
     );
     paths = paths.concat(
-      [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(legacyLedgerLiveIndexed)
+      [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(legacyLedgerLiveAccount)
     );
   }
 

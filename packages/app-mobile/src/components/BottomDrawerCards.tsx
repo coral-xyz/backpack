@@ -10,6 +10,7 @@ import {
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
 } from "@coral-xyz/recoil";
+import { Box } from "@coral-xyz/tamagui";
 
 import { CheckIcon, CrossIcon } from "~components/Icon";
 import {
@@ -33,7 +34,7 @@ export function Container({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 0,
   },
 });
 
@@ -178,7 +179,9 @@ export function Error({
       <IconContainer>
         <CrossIcon />
       </IconContainer>
-      <Text style={{ color: theme.custom.colors.fontColor }}>{error}</Text>
+      <Box mb={16}>
+        <Text style={{ color: theme.custom.colors.fontColor }}>{error}</Text>
+      </Box>
       {explorer && connectionUrl && signature ? (
         <SecondaryButton
           label="View Explorer"
@@ -187,7 +190,9 @@ export function Error({
           }}
         />
       ) : null}
-      <PrimaryButton label="Retry" onPress={() => onRetry()} />
+      <Box mt={4}>
+        <PrimaryButton label="Retry" onPress={() => onRetry()} />
+      </Box>
     </Container>
   );
 }

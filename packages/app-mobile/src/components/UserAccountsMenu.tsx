@@ -1,23 +1,16 @@
 import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
 
 import { useCallback, useMemo, useRef } from "react";
-import { Pressable, Text, View } from "react-native";
+import { ScrollView, Pressable, Text, View } from "react-native";
 
 import { UI_RPC_METHOD_ACTIVE_USER_UPDATE } from "@coral-xyz/common";
 import { useAllUsers, useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
 import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ExpandCollapseIcon, IconCheckmark } from "~components/Icon";
-import {
-  Screen,
-  Avatar,
-  Margin,
-  RoundedContainerGroup,
-  PrimaryButton,
-} from "~components/index";
+import { Screen, Avatar, RoundedContainerGroup } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { SettingsRow } from "~screens/Unlocked/Settings/components/SettingsRow";
 
@@ -143,18 +136,40 @@ function UsersList({ onDismiss }: { onDismiss: () => void }): JSX.Element {
     onDismiss();
   };
 
+  const s = users.find((u) => u.uuid === _user.uuid);
+
+  // NOTE: Do not do this! Wrapping ScrollView in a map is bad for performance.
+  // Look for FlatList example until Peter fixes this
   return (
-    <RoundedContainerGroup>
-      {users.map(({ username, uuid }: any, idx: number) => (
-        <UserAccountListItem
-          key={username}
-          uuid={uuid}
-          username={username}
-          isActive={_user.username === username}
-          onPress={handlePressItem}
-        />
-      ))}
-    </RoundedContainerGroup>
+    <ScrollView>
+      <RoundedContainerGroup>
+        <>
+          {s ? (
+            <UserAccountListItem
+              key={s.username}
+              uuid={s.uuid}
+              username={s.username}
+              isActive={_user.username === s.username}
+              onPress={handlePressItem}
+            />
+          ) : null}
+          {users.map(({ username, uuid }: any) => {
+            if (username === s.username) {
+              return null;
+            }
+            return (
+              <UserAccountListItem
+                key={username}
+                uuid={uuid}
+                username={username}
+                isActive={_user.username === username}
+                onPress={handlePressItem}
+              />
+            );
+          })}
+        </>
+      </RoundedContainerGroup>
+    </ScrollView>
   );
 }
 
