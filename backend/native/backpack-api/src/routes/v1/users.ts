@@ -32,6 +32,7 @@ import {
 } from "../../db/users";
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
 import { logger } from "../../logger";
+import { chain } from "../../utils/hasura";
 import { validatePublicKey } from "../../validation/publicKey";
 import { validateSignature } from "../../validation/signature";
 import {
@@ -239,9 +240,42 @@ router.get("/userById", extractUserId, async (req: Request, res: Response) => {
 router.get("/me", extractUserId, async (req: Request, res: Response) => {
   if (req.id) {
     try {
-      return res.json({ ...(await getUser(req.id)), jwt: req.jwt });
-    } catch {
-      // User not found
+      const user = await getUser(req.id);
+
+      try {
+        // if the user doesn't have a referrer set, but they were
+        // referred by someone, try to set their referrer_id
+        const { referrer } = req.cookies;
+        if (
+          // these conditions are enforced in the db, but we're checking here
+          // to avoid sending the request if we know it's going to fail anyway
+          referrer &&
+          referrer !== user.id
+        ) {
+          await chain("mutation")(
+            {
+              update_auth_users: [
+                {
+                  where: {
+                    id: { _eq: user.id },
+                    referrer_id: { _is_null: true },
+                  },
+                  _set: { referrer_id: referrer },
+                },
+                { affected_rows: true },
+              ],
+            },
+            { operationName: "updateUserReferrer" }
+          );
+        }
+        // TODO: delete the referrer cookie once this has been running for a while
+      } catch (err) {
+        console.error("unable to update the referrer", err);
+      }
+
+      return res.json({ ...user, jwt: req.jwt });
+    } catch (err) {
+      console.error("unable to get /me", err);
     }
   }
   return res.status(404).json({ msg: "User not found" });
