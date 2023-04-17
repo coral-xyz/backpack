@@ -58,30 +58,31 @@ export const users = {
       },
     },
   },
-  unregistered_user: {
-    id: "",
-    jwt: "",
-    public_keys: {},
-  },
 } as const;
+
+type RequestMethod = "get" | "post";
+type RequestData<T extends RequestMethod> = T extends "get" ? never : any;
 
 const asUser =
   (username?: keyof typeof users) =>
-  (method: "get" | "post") =>
-  async (path: string, data?: any) => {
+  <T extends RequestMethod>(method: T) =>
+  async (path: string, data?: RequestData<T>, headers?: any) => {
     const res = await fetch(`${API_URL}/${path}`, {
       method,
       headers: {
         "Content-Type": "application/json",
         Cookie: username ? `jwt=${users[username].jwt}` : "",
+        ...headers,
       },
       body: data ? JSON.stringify(data) : undefined,
     });
     return await res.json();
   };
 
-export const { alice, bob, sol_only, eth_only, unregistered_user } =
-  Object.entries(users).reduce((acc, [username, user]) => {
+export const get = asUser()("get");
+
+export const { alice, bob, sol_only, ali } = Object.entries(users).reduce(
+  (acc, [username, user]) => {
     const u = username as keyof typeof users;
     acc[u] = {
       ...user,
@@ -89,6 +90,13 @@ export const { alice, bob, sol_only, eth_only, unregistered_user } =
       post: asUser(u)("post"),
     };
     return acc;
-  }, {} as { [key in keyof typeof users]: (typeof users)[key] & { get: (path: string) => Promise<any>; post: (path: string, data?: any) => Promise<any> } });
+  },
+  {} as {
+    [key in keyof typeof users]: (typeof users)[key] & {
+      get: (path: string, data?: never, headers?: any) => Promise<any>;
+      post: (path: string, data?: any) => Promise<any>;
+    };
+  }
+);
 
 export const API_URL = "http://localhost:8080" as const;
