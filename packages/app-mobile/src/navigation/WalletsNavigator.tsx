@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { Text, View, Pressable } from "react-native";
 
 import { NotificationsData, useActiveWallet } from "@coral-xyz/recoil";
@@ -6,17 +5,13 @@ import { Box, XStack } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
-import { WalletTokenList } from "~components/Wallets";
-import { StyledText, Screen } from "~components/index";
+import { StyledText } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { HomeWalletListScreen } from "~screens/HomeWalletListScreen";
 import { BalanceDetailScreen } from "~screens/Unlocked/BalancesScreen";
 import { RecentActivityScreen } from "~screens/Unlocked/RecentActivityScreen";
-import { MainWalletList } from "~screens/Unlocked/WalletListScreen";
-import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
+import { WalletOverviewScreen } from "~screens/WalletOverviewScreen";
 import { NftCollectionListScreen } from "~screens/WalletsV2NftListScreen";
 
 function MainButton({
@@ -79,28 +74,6 @@ function NotificationsScreen({ navigation }) {
   );
 }
 
-function TokenScreen({ navigation }) {
-  return (
-    <Screen>
-      <BalanceSummaryWidget />
-      <Box marginVertical={12}>
-        <TransferWidget
-          swapEnabled={false}
-          rampEnabled={false}
-          onPressOption={(route: string, options: NavTokenOptions) => {
-            navigation.push(route, options);
-          }}
-        />
-      </Box>
-      <WalletTokenList
-        onPressToken={(id: string) => {
-          navigation.push("TokenDetail", { id });
-        }}
-      />
-    </Screen>
-  );
-}
-
 const TopTabs = createMaterialTopTabNavigator();
 
 function Tabs() {
@@ -120,7 +93,11 @@ function Tabs() {
         },
       }}
     >
-      <TopTabs.Screen name="Tokens" component={TokenScreen} />
+      <TopTabs.Screen
+        name="WalletOverview"
+        component={WalletOverviewScreen}
+        options={{ title: "Tokens" }}
+      />
       <TopTabs.Screen name="Collectibles" component={NftCollectionListScreen} />
       <TopTabs.Screen name="Activity" component={RecentActivityScreen} />
     </TopTabs.Navigator>

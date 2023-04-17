@@ -2,6 +2,7 @@
 import { Wallet } from "@@types/types";
 import { Blockchain } from "@coral-xyz/common";
 import {
+  blockchainBalancesSorted,
   activeSolanaWallet,
   activeEthereumWallet,
   blockchainTokenData,
@@ -9,13 +10,20 @@ import {
   blockchainTotalBalance,
   activeWallet,
   allWallets,
+  nftCollectionsWithIds,
 } from "@coral-xyz/recoil";
-import { useRecoilValueLoadable } from "recoil";
+import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
-type Response = {
+import {
+  result__useTotalBalance,
+  result__useBlockchainBalancesSorted,
+  result__useWalletBalance,
+} from "./recoil__FAKE_DATA";
+
+type Response<T> = {
   loading: boolean;
   error: boolean;
-  data: any;
+  data: T;
 };
 
 type RecoilData = {
@@ -25,21 +33,15 @@ type RecoilData = {
 
 // the successor to wrapResponse
 function handleResponse(data: RecoilData, fallback: any) {
-  if (data.state === "loading") {
-    return fallback;
-  }
-
-  if (data.state === "hasValue") {
-    return data.contents;
-  }
-
-  if (data.state === "hasError") {
-    return fallback;
-  }
+  return {
+    data: data.state === "hasValue" ? data.contents : fallback,
+    error: data.state === "hasError",
+    loading: data.state === "loading",
+  };
 }
 
 // First peter made this and it was fine
-function wrapResponse(data: any, result = null): Response {
+function wrapResponse(data: any, result = null) {
   return {
     loading: data.state === "loading",
     error: data.state === "hasError",
@@ -92,34 +94,35 @@ export function useActiveEthereumWallet() {
 }
 
 export function useTotalBalance() {
-  const tb = useRecoilValueLoadable(totalBalanceSelector);
+  return result__useTotalBalance;
+  // const data = useRecoilValueLoadable(totalBalanceSelector);
 
-  const { totalBalance, totalChange, percentChange } =
-    tb.state === "hasValue"
-      ? tb.contents
-      : {
-          totalBalance: 0,
-          totalChange: 0,
-          percentChange: 0,
-        };
-
-  const isLoading = tb.state === "loading";
-  return { totalBalance, totalChange, percentChange, isLoading };
+  // return handleResponse(data, {
+  //   totalBalance: 0,
+  //   totalChange: 0,
+  //   percentChange: 0,
+  //   isLoading: true,
+  // });
 }
 
 export function useWalletBalance(wallet: Wallet) {
-  const data = useRecoilValueLoadable(
-    blockchainTotalBalance({
-      publicKey: wallet.publicKey,
-      blockchain: wallet.blockchain,
-    })
-  );
-
-  return handleResponse(data, {
-    percentChange: 0,
-    totalBalance: 0,
-    totalChange: 0,
-  });
+  return {
+    data: result__useWalletBalance,
+    loading: false,
+    error: false,
+  };
+  // const data = useRecoilValueLoadable(
+  //   blockchainTotalBalance({
+  //     publicKey: wallet.publicKey,
+  //     blockchain: wallet.blockchain,
+  //   })
+  // );
+  //
+  // return handleResponse(data, {
+  //   percentChange: 0,
+  //   totalBalance: 0,
+  //   totalChange: 0,
+  // });
 }
 
 export function useActiveWallet(): Wallet | object {
@@ -127,7 +130,38 @@ export function useActiveWallet(): Wallet | object {
   return handleResponse(data, {});
 }
 
-export function useAllWallets(): Wallet[] {
+export function useAllWallets(): Response<Wallet[]> {
   const data = useRecoilValueLoadable(allWallets);
   return handleResponse(data, []);
+}
+
+// TODO blockchain balances sorted only needs:
+export function useBlockchainBalancesSorted({ publicKey, blockchain }) {
+  return {
+    data: result__useBlockchainBalancesSorted,
+    loading: false,
+    error: false,
+  };
+  // const data = useRecoilValueLoadable(
+  //   blockchainBalancesSorted({
+  //     publicKey: publicKey.toString(),
+  //     blockchain,
+  //   })
+  // );
+  //
+  // return handleResponse(data, []);
+}
+
+export function useActiveWalletCollections() {
+  const allWalletCollections = useRecoilValue(nftCollectionsWithIds);
+  const { data: activeWallet } = useActiveWallet();
+
+  const pk = activeWallet.publicKey;
+  const list = allWalletCollections.find((c) => c.publicKey === pk);
+
+  if (list) {
+    return list.collections;
+  }
+
+  return [];
 }

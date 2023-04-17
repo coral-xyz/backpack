@@ -3343,6 +3343,7 @@ __metadata:
     react-qr-code: ^2.0.8
     react-test-renderer: ^18.2.0
     recoil: ^0.7.6
+    recoil-persist: ^4.2.0
     tamagui: ^1.14.3
     typescript: ~4.9.3
     uuid: ^9.0.0
@@ -33230,6 +33231,15 @@ __metadata:
   dependencies:
     resolve: ^1.20.0
   checksum: ad3caed8afdefbc33fbc30e6d22b86c35b3d51c2005546f4e79bcc03c074df804b3640ad18945e6bef9ed12caedc035655ec1082f64a5e94c849ff939dc0a788
+  languageName: node
+  linkType: hard
+
+"recoil-persist@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "recoil-persist@npm:4.2.0"
+  peerDependencies:
+    recoil: ^0.7.2
+  checksum: 1c8a6be4bb914b383429603e910aba80734311d8657ddf9f94a39513da0eb41fd6a2b74439f93658daf465d2e66a2d890e9f6b2f8a047e4fb99dc5b31f301515
   languageName: node
   linkType: hard
 

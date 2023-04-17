@@ -1,3 +1,9 @@
+import type {
+  NftCollectionsWithId,
+  SingleNftData,
+  CollectionNftData,
+  PublicKey,
+} from "@@types/types";
 import type { NftCollection } from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 import type { UnwrapRecoilValue } from "recoil";
@@ -19,33 +25,15 @@ import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 import { NftErrorBoundary } from "~components/ErrorBoundary";
 import { NFTCard, BaseCard } from "~components/NFTCard";
 import { Screen, EmptyState, RoundedContainerGroup } from "~components/index";
+import { useActiveWalletCollections } from "~hooks/recoil";
 import { useTheme } from "~hooks/useTheme";
-
-type NftCollectionsWithId = {
-  publicKey: string;
-  collections: NftCollection[];
-};
-
-type SingleNftData = {
-  title: string;
-  nftId: string;
-  publicKey: string;
-  connectionUrl: string;
-};
-
-type CollectionNftData = {
-  title: string;
-  collectionId: string;
-  publicKey: string;
-  connectionUrl: string;
-};
 
 function NftCollectionCard({
   publicKey,
   collection,
   onPress,
 }: {
-  publicKey: string;
+  publicKey: PublicKey;
   collection: NftCollection;
   onPress: (route: string, data: SingleNftData | CollectionNftData) => void;
 }): JSX.Element | null {
@@ -121,36 +109,28 @@ function NoNFTsEmptyState() {
 export function NftCollectionListScreen({
   navigation,
 }: StackScreenProps<NftStackParamList, "NftCollectionList">): JSX.Element {
-  const theme = useTheme();
   const activeWallet = useActiveWallet();
-  const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
-  const allWalletCollections: NftCollectionsWithId[] =
-    (state === "hasValue" && contents) || [];
-  const isLoading = state === "loading";
+  const collections = useActiveWalletCollections();
 
-  if (isLoading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
-  const data =
-    allWalletCollections.find((c) => c.publicKey === activeWallet.publicKey)
-      ?.collections || [];
+  // if (isLoading) {
+  //   return (
+  //     <View
+  //       style={{
+  //         flex: 1,
+  //         justifyContent: "center",
+  //         alignItems: "center",
+  //       }}
+  //     >
+  //       <ActivityIndicator size="large" />
+  //     </View>
+  //   );
+  // }
 
   return (
     <Screen>
       <RoundedContainerGroup style={{ padding: 12 }}>
         <FlatList
-          data={data}
+          data={collections}
           numColumns={2}
           ListEmptyComponent={NoNFTsEmptyState}
           keyExtractor={(collection) => collection.id}

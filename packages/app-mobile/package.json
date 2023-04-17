@@ -79,6 +79,7 @@
     "react-qr-code": "^2.0.8",
     "react-test-renderer": "^18.2.0",
     "recoil": "^0.7.6",
+    "recoil-persist": "^4.2.0",
     "tamagui": "^1.14.3",
     "uuid": "^9.0.0"
   },

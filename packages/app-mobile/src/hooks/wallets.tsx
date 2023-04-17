@@ -17,7 +17,7 @@ export function useWallets(): {
 } {
   const background = useBackgroundClient();
   const activeWallet = useActiveWallet();
-  const wallets = useAllWallets();
+  const { data: wallets } = useAllWallets();
   const _dehydratedWallets = useDehydratedWallets();
   const activeWallets = wallets.filter((w) => !w.isCold);
   // const coldWallets = wallets.filter((w) => w.isCold); // TODO cold wallets?

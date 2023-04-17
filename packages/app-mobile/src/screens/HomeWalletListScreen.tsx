@@ -1,6 +1,6 @@
 import type { Wallet } from "@@types/types";
 
-import { Suspense, useCallback } from "react";
+import { useCallback } from "react";
 import { FlatList } from "react-native";
 
 import { Box } from "@coral-xyz/tamagui";
@@ -25,7 +25,7 @@ function RenderItem({
   item: Wallet;
   onPress: any;
 }): JSX.Element {
-  const balance = useWalletBalance(wallet);
+  const { data: balance } = useWalletBalance(wallet);
   return (
     <ListItemWalletOverview
       grouped
