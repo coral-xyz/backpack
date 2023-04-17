@@ -20,6 +20,8 @@ import { useStyles } from "./styles";
 
 export const MessageOptions = () => {
   const { props }: any = useDecodedSearchParams();
+  console.log("props");
+  console.log(props);
   const userId = props.userId;
   const remoteUsername = props.username;
   const friendshipValue = useFriendship({ userId });
@@ -66,47 +68,49 @@ export const MessageOptions = () => {
         onClose={handleClose}
         TransitionComponent={Fade}
       >
-        <PopoverMenu.Group>
-          <PopoverMenu.Item
-            disabled={friendshipValue?.blocked}
-            onClick={async () => {
-              if (friendshipValue?.areFriends) {
-                await unFriend({ to: userId });
-                setFriendshipValue({
-                  userId: userId,
-                  friendshipValue: {
-                    areFriends: false,
-                  },
-                });
-                toast.success(
-                  "Friend removed",
-                  `We've removed @${remoteUsername} from your friends.`
-                );
-              } else {
-                if (friendshipValue?.requested) {
-                  send(false);
-                } else {
-                  send(true);
+        {friendshipValue?.areFriends ? (
+          <PopoverMenu.Group>
+            <PopoverMenu.Item
+              disabled={friendshipValue?.blocked}
+              onClick={async () => {
+                if (friendshipValue?.areFriends) {
+                  await unFriend({ to: userId });
+                  setFriendshipValue({
+                    userId: userId,
+                    friendshipValue: {
+                      areFriends: false,
+                    },
+                  });
                   toast.success(
-                    friendshipValue?.remoteRequested ? "" : "",
-                    friendshipValue?.remoteRequested
-                      ? `You and ${remoteUsername} are now connected`
-                      : `We'll let ${remoteUsername} know you want to connect.`
+                    "Friend removed",
+                    `We've removed @${remoteUsername} from your friends.`
                   );
+                } else {
+                  if (friendshipValue?.requested) {
+                    send(false);
+                  } else {
+                    send(true);
+                    toast.success(
+                      friendshipValue?.remoteRequested ? "" : "",
+                      friendshipValue?.remoteRequested
+                        ? `You and ${remoteUsername} are now connected`
+                        : `We'll let ${remoteUsername} know you want to connect.`
+                    );
+                  }
                 }
-              }
-              handleClose();
-            }}
-          >
-            {friendshipValue?.areFriends
-              ? "Remove from Friends"
-              : friendshipValue?.requested
-              ? "Cancel Pending Request"
-              : friendshipValue?.remoteRequested
-              ? "Accept Friend Request"
-              : "Add to Friends"}
-          </PopoverMenu.Item>
-        </PopoverMenu.Group>
+                handleClose();
+              }}
+            >
+              {friendshipValue?.areFriends
+                ? "Remove from Friends"
+                : friendshipValue?.requested
+                ? "Cancel Pending Request"
+                : friendshipValue?.remoteRequested
+                ? "Accept Friend Request"
+                : "Add to Friends"}
+            </PopoverMenu.Item>
+          </PopoverMenu.Group>
+        ) : null}
         <PopoverMenu.Group>
           <PopoverMenu.Item
             disabled={friendshipValue?.spam}

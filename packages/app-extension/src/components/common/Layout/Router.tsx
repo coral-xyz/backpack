@@ -202,7 +202,16 @@ function MessageNativeInner() {
 
   if (hash.startsWith("/messages/profile")) {
     return (
-      <NavScreen noMotion component={<ProfileScreen userId={props.userId} />} />
+      <NavScreen
+        noMotion
+        component={
+          <ProfileScreen
+            userId={props.userId}
+            uuid={uuid}
+            username={props.username}
+          />
+        }
+      />
     );
   }
 
@@ -436,7 +445,10 @@ function useNavBar() {
     navButtonRight = null;
   } else if (pathname === "/nfts/detail") {
     navButtonRight = <NftOptionsButton />;
-  } else if (pathname === "/messages/chat") {
+  } else if (
+    pathname === "/messages/chat" ||
+    pathname === "/messages/profile"
+  ) {
     navButtonRight = <MessageOptions />;
   }
 
