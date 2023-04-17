@@ -574,9 +574,6 @@ export const BACKPACK_LINK = "https://backpack.app";
 export const BACKPACK_TERMS_OF_SERVICE = "https://backpack.app/terms";
 export const BACKPACK_GITHUB_LINK = "https://github.com/coral-xyz/backpack";
 
-export const ALCHEMY_ETHEREUM_MAINNET_API_KEY =
-  "DlJr6QuBC2EaE-L60-iqQQGq9hi9-XSZ";
-
 export const AVATAR_BASE_URL = "https://swr.xnfts.dev/avatars";
 export const BACKEND_API_URL = "https://backpack-api.xnfts.dev";
 export const REALTIME_API_URL = "https://backend-ws.xnfts.dev";
