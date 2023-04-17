@@ -4160,6 +4160,7 @@ export type ValueTypes = {
     ];
     /** An object relationship */
     referrer?: ValueTypes["auth_users"];
+    referrer_id?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
@@ -4288,6 +4289,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    referrer_id?:
+      | ValueTypes["uuid_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     username?:
       | ValueTypes["citext_comparison_exp"]
       | undefined
@@ -4332,6 +4338,7 @@ export type ValueTypes = {
   ["auth_users_max_fields"]: AliasType<{
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
+    referrer_id?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
@@ -4343,6 +4350,11 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    referrer_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     username?:
       | ValueTypes["order_by"]
       | undefined
@@ -4353,6 +4365,7 @@ export type ValueTypes = {
   ["auth_users_min_fields"]: AliasType<{
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
+    referrer_id?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
@@ -4364,6 +4377,11 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    referrer_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     username?:
       | ValueTypes["order_by"]
       | undefined
@@ -4428,6 +4446,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    referrer_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     username?:
       | ValueTypes["order_by"]
       | undefined
@@ -4447,6 +4470,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    referrer_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
     updated_at?:
       | ValueTypes["timestamptz"]
       | undefined
@@ -4474,6 +4498,7 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+    referrer_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
     username?: ValueTypes["citext"] | undefined | null | Variable<any, string>;
   };
   /** update columns of table "auth.users" */
@@ -10954,6 +10979,7 @@ export type ResolverInputTypes = {
     ];
     /** An object relationship */
     referrer?: ResolverInputTypes["auth_users"];
+    referrer_id?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
@@ -11040,6 +11066,7 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     referrer?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
+    referrer_id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
     username?: ResolverInputTypes["citext_comparison_exp"] | undefined | null;
   };
   /** unique or primary key constraints on table "auth.users" */
@@ -11072,6 +11099,7 @@ export type ResolverInputTypes = {
   ["auth_users_max_fields"]: AliasType<{
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
+    referrer_id?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
@@ -11079,12 +11107,14 @@ export type ResolverInputTypes = {
   ["auth_users_max_order_by"]: {
     created_at?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
+    referrer_id?: ResolverInputTypes["order_by"] | undefined | null;
     username?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** aggregate min on columns */
   ["auth_users_min_fields"]: AliasType<{
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
+    referrer_id?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
@@ -11092,6 +11122,7 @@ export type ResolverInputTypes = {
   ["auth_users_min_order_by"]: {
     created_at?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
+    referrer_id?: ResolverInputTypes["order_by"] | undefined | null;
     username?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** response of any mutation on the table "auth.users" */
@@ -11134,6 +11165,7 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     referrer?: ResolverInputTypes["auth_users_order_by"] | undefined | null;
+    referrer_id?: ResolverInputTypes["order_by"] | undefined | null;
     username?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** primary key columns input for table: auth.users */
@@ -11145,6 +11177,7 @@ export type ResolverInputTypes = {
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
     avatar_nft?: ResolverInputTypes["citext"] | undefined | null;
+    referrer_id?: ResolverInputTypes["uuid"] | undefined | null;
     updated_at?: ResolverInputTypes["timestamptz"] | undefined | null;
   };
   /** Streaming cursor of the table "auth_users" */
@@ -11158,6 +11191,7 @@ export type ResolverInputTypes = {
   ["auth_users_stream_cursor_value_input"]: {
     created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     id?: ResolverInputTypes["uuid"] | undefined | null;
+    referrer_id?: ResolverInputTypes["uuid"] | undefined | null;
     username?: ResolverInputTypes["citext"] | undefined | null;
   };
   /** update columns of table "auth.users" */
@@ -15926,6 +15960,7 @@ export type ModelTypes = {
     referred_users_aggregate: ModelTypes["auth_users_aggregate"];
     /** An object relationship */
     referrer?: ModelTypes["auth_users"] | undefined;
+    referrer_id?: ModelTypes["uuid"] | undefined;
     username: ModelTypes["citext"];
   };
   /** aggregated selection of "auth.users" */
@@ -15977,6 +16012,7 @@ export type ModelTypes = {
       | ModelTypes["auth_users_aggregate_bool_exp"]
       | undefined;
     referrer?: ModelTypes["auth_users_bool_exp"] | undefined;
+    referrer_id?: ModelTypes["uuid_comparison_exp"] | undefined;
     username?: ModelTypes["citext_comparison_exp"] | undefined;
   };
   ["auth_users_constraint"]: auth_users_constraint;
@@ -16000,24 +16036,28 @@ export type ModelTypes = {
   ["auth_users_max_fields"]: {
     created_at?: ModelTypes["timestamptz"] | undefined;
     id?: ModelTypes["uuid"] | undefined;
+    referrer_id?: ModelTypes["uuid"] | undefined;
     username?: ModelTypes["citext"] | undefined;
   };
   /** order by max() on columns of table "auth.users" */
   ["auth_users_max_order_by"]: {
     created_at?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
+    referrer_id?: ModelTypes["order_by"] | undefined;
     username?: ModelTypes["order_by"] | undefined;
   };
   /** aggregate min on columns */
   ["auth_users_min_fields"]: {
     created_at?: ModelTypes["timestamptz"] | undefined;
     id?: ModelTypes["uuid"] | undefined;
+    referrer_id?: ModelTypes["uuid"] | undefined;
     username?: ModelTypes["citext"] | undefined;
   };
   /** order by min() on columns of table "auth.users" */
   ["auth_users_min_order_by"]: {
     created_at?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
+    referrer_id?: ModelTypes["order_by"] | undefined;
     username?: ModelTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "auth.users" */
@@ -16051,6 +16091,7 @@ export type ModelTypes = {
       | ModelTypes["auth_users_aggregate_order_by"]
       | undefined;
     referrer?: ModelTypes["auth_users_order_by"] | undefined;
+    referrer_id?: ModelTypes["order_by"] | undefined;
     username?: ModelTypes["order_by"] | undefined;
   };
   /** primary key columns input for table: auth.users */
@@ -16061,6 +16102,7 @@ export type ModelTypes = {
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
     avatar_nft?: ModelTypes["citext"] | undefined;
+    referrer_id?: ModelTypes["uuid"] | undefined;
     updated_at?: ModelTypes["timestamptz"] | undefined;
   };
   /** Streaming cursor of the table "auth_users" */
@@ -16074,6 +16116,7 @@ export type ModelTypes = {
   ["auth_users_stream_cursor_value_input"]: {
     created_at?: ModelTypes["timestamptz"] | undefined;
     id?: ModelTypes["uuid"] | undefined;
+    referrer_id?: ModelTypes["uuid"] | undefined;
     username?: ModelTypes["citext"] | undefined;
   };
   ["auth_users_update_column"]: auth_users_update_column;
@@ -18818,6 +18861,7 @@ export type GraphQLTypes = {
     referred_users_aggregate: GraphQLTypes["auth_users_aggregate"];
     /** An object relationship */
     referrer?: GraphQLTypes["auth_users"] | undefined;
+    referrer_id?: GraphQLTypes["uuid"] | undefined;
     username: GraphQLTypes["citext"];
   };
   /** aggregated selection of "auth.users" */
@@ -18871,6 +18915,7 @@ export type GraphQLTypes = {
       | GraphQLTypes["auth_users_aggregate_bool_exp"]
       | undefined;
     referrer?: GraphQLTypes["auth_users_bool_exp"] | undefined;
+    referrer_id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
     username?: GraphQLTypes["citext_comparison_exp"] | undefined;
   };
   /** unique or primary key constraints on table "auth.users" */
@@ -18898,12 +18943,14 @@ export type GraphQLTypes = {
     __typename: "auth_users_max_fields";
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
+    referrer_id?: GraphQLTypes["uuid"] | undefined;
     username?: GraphQLTypes["citext"] | undefined;
   };
   /** order by max() on columns of table "auth.users" */
   ["auth_users_max_order_by"]: {
     created_at?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
+    referrer_id?: GraphQLTypes["order_by"] | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
   };
   /** aggregate min on columns */
@@ -18911,12 +18958,14 @@ export type GraphQLTypes = {
     __typename: "auth_users_min_fields";
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
+    referrer_id?: GraphQLTypes["uuid"] | undefined;
     username?: GraphQLTypes["citext"] | undefined;
   };
   /** order by min() on columns of table "auth.users" */
   ["auth_users_min_order_by"]: {
     created_at?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
+    referrer_id?: GraphQLTypes["order_by"] | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "auth.users" */
@@ -18951,6 +19000,7 @@ export type GraphQLTypes = {
       | GraphQLTypes["auth_users_aggregate_order_by"]
       | undefined;
     referrer?: GraphQLTypes["auth_users_order_by"] | undefined;
+    referrer_id?: GraphQLTypes["order_by"] | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
   };
   /** primary key columns input for table: auth.users */
@@ -18962,6 +19012,7 @@ export type GraphQLTypes = {
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
     avatar_nft?: GraphQLTypes["citext"] | undefined;
+    referrer_id?: GraphQLTypes["uuid"] | undefined;
     updated_at?: GraphQLTypes["timestamptz"] | undefined;
   };
   /** Streaming cursor of the table "auth_users" */
@@ -18975,6 +19026,7 @@ export type GraphQLTypes = {
   ["auth_users_stream_cursor_value_input"]: {
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
+    referrer_id?: GraphQLTypes["uuid"] | undefined;
     username?: GraphQLTypes["citext"] | undefined;
   };
   /** update columns of table "auth.users" */
@@ -20252,11 +20304,13 @@ export const enum auth_users_constraint {
 export const enum auth_users_select_column {
   created_at = "created_at",
   id = "id",
+  referrer_id = "referrer_id",
   username = "username",
 }
 /** update columns of table "auth.users" */
 export const enum auth_users_update_column {
   avatar_nft = "avatar_nft",
+  referrer_id = "referrer_id",
   updated_at = "updated_at",
 }
 /** unique or primary key constraints on table "auth.xnft_preferences" */

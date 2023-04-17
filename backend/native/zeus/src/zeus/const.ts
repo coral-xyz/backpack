@@ -766,6 +766,7 @@ export const AllTypesProps: Record<string, any> = {
     referred_users: "auth_users_bool_exp",
     referred_users_aggregate: "auth_users_aggregate_bool_exp",
     referrer: "auth_users_bool_exp",
+    referrer_id: "uuid_comparison_exp",
     username: "citext_comparison_exp",
   },
   auth_users_constraint: "enum" as const,
@@ -782,11 +783,13 @@ export const AllTypesProps: Record<string, any> = {
   auth_users_max_order_by: {
     created_at: "order_by",
     id: "order_by",
+    referrer_id: "order_by",
     username: "order_by",
   },
   auth_users_min_order_by: {
     created_at: "order_by",
     id: "order_by",
+    referrer_id: "order_by",
     username: "order_by",
   },
   auth_users_obj_rel_insert_input: {
@@ -805,6 +808,7 @@ export const AllTypesProps: Record<string, any> = {
     public_keys_aggregate: "auth_public_keys_aggregate_order_by",
     referred_users_aggregate: "auth_users_aggregate_order_by",
     referrer: "auth_users_order_by",
+    referrer_id: "order_by",
     username: "order_by",
   },
   auth_users_pk_columns_input: {
@@ -813,6 +817,7 @@ export const AllTypesProps: Record<string, any> = {
   auth_users_select_column: "enum" as const,
   auth_users_set_input: {
     avatar_nft: "citext",
+    referrer_id: "uuid",
     updated_at: "timestamptz",
   },
   auth_users_stream_cursor_input: {
@@ -822,6 +827,7 @@ export const AllTypesProps: Record<string, any> = {
   auth_users_stream_cursor_value_input: {
     created_at: "timestamptz",
     id: "uuid",
+    referrer_id: "uuid",
     username: "citext",
   },
   auth_users_update_column: "enum" as const,
@@ -2084,6 +2090,7 @@ export const ReturnTypes: Record<string, any> = {
     referred_users: "auth_users",
     referred_users_aggregate: "auth_users_aggregate",
     referrer: "auth_users",
+    referrer_id: "uuid",
     username: "citext",
   },
   auth_users_aggregate: {
@@ -2098,11 +2105,13 @@ export const ReturnTypes: Record<string, any> = {
   auth_users_max_fields: {
     created_at: "timestamptz",
     id: "uuid",
+    referrer_id: "uuid",
     username: "citext",
   },
   auth_users_min_fields: {
     created_at: "timestamptz",
     id: "uuid",
+    referrer_id: "uuid",
     username: "citext",
   },
   auth_users_mutation_response: {
