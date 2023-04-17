@@ -69,6 +69,10 @@ export const Banner = () => {
               className={classes.strongText}
               style={{ cursor: "pointer", marginRight: 25 }}
               onClick={async () => {
+                await sendFriendRequest({
+                  to: remoteUserId,
+                  sendRequest: true,
+                });
                 if (remoteRequested) {
                   await setFriendshipValue({
                     userId: remoteUserId,
@@ -77,10 +81,6 @@ export const Banner = () => {
                     },
                   });
                 } else {
-                  await sendFriendRequest({
-                    to: remoteUserId,
-                    sendRequest: true,
-                  });
                   setRequested(true);
                 }
                 toast.success(
