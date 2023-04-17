@@ -5,11 +5,6 @@ import { HASURA_URL, JWT } from "../../../config";
 
 import { users } from "./_constants";
 
-if (process.env.NODE_ENV !== "test" || !HASURA_URL.includes("localhost:")) {
-  console.error("This is not a test environment");
-  process.exit(1);
-}
-
 expect.extend({
   toOnlyIncludePrimaryPublicKeysFor(
     keys,
@@ -66,12 +61,11 @@ expect.extend({
 });
 
 beforeAll(async () => {
-  const LOCAL_ADMIN_PASSWORD = "myadminsecretkey";
   await fetch(HASURA_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-hasura-admin-secret": LOCAL_ADMIN_PASSWORD,
+      "x-hasura-admin-secret": "myadminsecretkey",
     },
     body: JSON.stringify({
       // TODO: add DELETE cascades to remove all associated data with users

@@ -1,8 +1,18 @@
 import * as dotenv from "dotenv";
 
 dotenv.config();
-export const HASURA_URL =
-  process.env.HASURA_URL || "http://localhost:8112/v1/graphql";
+
+const DEFAULT_LOCAL_HASURA_URL = "http://localhost:8112/v1/graphql";
+
+export const HASURA_URL = process.env.HASURA_URL || DEFAULT_LOCAL_HASURA_URL;
+
+if (
+  process.env.NODE_ENV === "test" &&
+  HASURA_URL !== DEFAULT_LOCAL_HASURA_URL
+) {
+  console.error("You should only be running tests in a test environment");
+  process.exit(1);
+}
 
 export const JWT =
   process.env.AUTH_JWT ||
