@@ -33,8 +33,6 @@ export const useChatsWithMetadata = ({
     .filter((x) => x);
   const users = useUsersMetadata({ remoteUserIds: uniqueUserIds });
 
-  console.log("debug2", { chats, userIds, uniqueUserIds });
-
   // Make Sure that both the users in a DM chat do not have the same color
   const colorIndexMap = new Map();
   if (uniqueUserIds.length === 2) {
