@@ -75,8 +75,8 @@ export function Nfts() {
             icon={(props: any) => <ImageIcon {...props} />}
             title="No NFTs"
             subtitle="Get started with your first NFT"
-            buttonText="Browse Magic Eden"
-            onClick={() => window.open("https://magiceden.io")}
+            buttonText="Browse Tensor"
+            onClick={() => window.open("https://www.tensor.trade/")}
             verticallyCentered={!oneLive}
             header={
               !_isAggregateWallets ? (
