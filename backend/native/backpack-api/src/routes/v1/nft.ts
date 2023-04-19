@@ -161,7 +161,7 @@ router.get("/validateOwner", extractUserId, async (req, res) => {
 
 router.get("/members", extractUserId, ensureHasRoomAccess, async (req, res) => {
   // @ts-ignore
-  const limit = req.query.limit ? parseInt(req.query.limit) : 20;
+  const limit = Math.min(req.query.limit ? parseInt(req.query.limit) : 20, 100);
   // @ts-ignore
   const offset = req.query.offset ? parseInt(req.query.offset) : 0;
   // @ts-ignore

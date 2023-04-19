@@ -33,7 +33,7 @@ router.post("/", extractUserId, async (req, res) => {
 
 router.get("/", extractUserId, async (req, res) => {
   const uuid = req.id!;
-  const limit = Number(req.query.limit || 50);
+  const limit = Math.min(Number(req.query.limit || 50), 100);
   const offset = Number(req.query.limit || 0);
   const areConnected: boolean =
     req.query.areConnected === "true" ? true : false;
@@ -49,7 +49,7 @@ router.get("/", extractUserId, async (req, res) => {
 
 router.get("/all", extractUserId, async (req, res) => {
   const uuid = req.id!;
-  const limit = Number(req.query.limit || 50);
+  const limit = Number(req.query.limit || 50); // not currently used
   const offset = Number(req.query.limit || 0);
   const userSpecifiedId = req.query.uuid as string;
 
