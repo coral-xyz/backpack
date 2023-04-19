@@ -1,9 +1,5 @@
-import { enrichMessages , getHistoryUpdates } from "@coral-xyz/backend-common";
-import type {
-  Message,
-  MessageWithMetadata,
-  SubscriptionType,
-} from "@coral-xyz/common";
+import { enrichMessages, getHistoryUpdates } from "@coral-xyz/backend-common";
+import type { SubscriptionType } from "@coral-xyz/common";
 import express from "express";
 
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
@@ -72,7 +68,7 @@ router.get("/", extractUserId, ensureHasRoomAccess, async (req, res) => {
     ? // @ts-ignore
       new Date(parseInt(req.query.timestampAfter))
     : new Date(0);
-  const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+  const limit = Math.min(req.query.limit ? parseInt(req.query.limit) : 10, 100);
   // @ts-ignore
   const clientGeneratedUuid: string | undefined = req.query.clientGeneratedUuid;
 
@@ -93,7 +89,6 @@ router.get("/updates", extractUserId, ensureHasRoomAccess, async (req, res) => {
   // @ts-ignore
   const room: string = req.query.room;
   // @ts-ignore
-  const type: SubscriptionType = req.query.type;
   // @ts-ignore
   const lastSeen: number = parseInt(req.query.lastSeenUpdate || 0);
   // @ts-ignore
