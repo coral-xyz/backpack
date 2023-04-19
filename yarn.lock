@@ -3616,18 +3616,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/deptool@workspace:packages/deptool":
-  version: 0.0.0-use.local
-  resolution: "@coral-xyz/deptool@workspace:packages/deptool"
-  dependencies:
-    esbuild: ^0.14.43
-    esbuild-node-builtins: ^0.1.0
-    eslint-config-custom: "*"
-  bin:
-    deptool: ./index.js
-  languageName: unknown
-  linkType: soft
-
 "@coral-xyz/example-client@workspace:examples/clients/simple":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/example-client@workspace:examples/clients/simple"
@@ -19974,7 +19962,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.14.42, esbuild@npm:^0.14.43, esbuild@npm:^0.14.47":
+"esbuild@npm:^0.14.42, esbuild@npm:^0.14.47":
   version: 0.14.54
   resolution: "esbuild@npm:0.14.54"
   dependencies:
@@ -33895,7 +33883,7 @@ __metadata:
   dependencies:
     "@cloudflare/workers-types": ^4.20221111.1
     eslint-config-custom: "*"
-    wrangler: ^2.7.1
+    wrangler: ^2.16.0
   languageName: unknown
   linkType: soft
 
