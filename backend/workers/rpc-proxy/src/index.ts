@@ -70,7 +70,10 @@ async function fetchRpc(
       })()
     );
 
-    if (!rpcResponse.ok) {
+    if (
+      !rpcResponse.ok &&
+      rpcResponse.status !== 101 // for websockets
+    ) {
       throw new Error(`unable to fetch ${rpcResponse.status}`);
     }
 
