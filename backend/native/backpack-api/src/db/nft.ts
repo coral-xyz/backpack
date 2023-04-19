@@ -178,7 +178,7 @@ export const getAllUsers = async (
         },
       ],
     },
-    { operationName: "getAllUsers" }
+    { operationName: "getAllUsersNew" }
   );
   return {
     users:
@@ -239,7 +239,7 @@ export const getNftMembers = async (
         },
       ],
     },
-    { operationName: "getNftMembers" }
+    { operationName: "getNftMembersNew" }
   );
   return {
     users:
