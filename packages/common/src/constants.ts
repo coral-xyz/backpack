@@ -638,10 +638,10 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     collectionId: "ajM4QBHtZBBRcMqqq9gawdHK28GXcb2yeRs6WBnqhay",
   },
   {
-    id: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
+    id: "J1S9H3QjnRtBbbuD4HjPV6RpRhwuk4zKbxsnCHuTgh9w",
     name: "Mad Lads",
     image: "https://www.madlads.com/mad_lads_logo.svg",
-    collectionId: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
+    collectionId: "J1S9H3QjnRtBbbuD4HjPV6RpRhwuk4zKbxsnCHuTgh9w",
   },
   {
     id: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
