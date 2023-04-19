@@ -153,16 +153,15 @@ export const getNftCollection = async ({
 
 export const getAllUsers = async (
   prefix: string,
-  limit: number,
-  offset: number
+  _limit: number,
+  _offset: number
 ) => {
   const response = await chain("query")(
     {
-      auth_users_whose_username_matches: [
+      auth_users: [
         {
-          args: { prefix },
-          limit,
-          offset: limit * offset,
+          where: { username: { _eq: prefix } },
+          limit: 1,
         },
         {
           id: true,
@@ -178,7 +177,7 @@ export const getAllUsers = async (
         },
       ],
     },
-    { operationName: "getAllUsersNew" }
+    { operationName: "getAllUsersSimple" }
   );
   return {
     users:
@@ -193,15 +192,15 @@ export const getAllUsers = async (
 export const getNftMembers = async (
   collectionId: string,
   prefix: string,
-  limit: number,
-  offset: number
+  _limit: number,
+  _offset: number
 ): Promise<{ users: { id: string; username: string }[]; count: number }> => {
   const response = await chain("query")(
     {
-      auth_users_whose_username_matches: [
+      auth_users: [
         {
-          args: { prefix },
           where: {
+            username: { _eq: prefix },
             public_keys: {
               user_nfts: {
                 _or: [
@@ -211,8 +210,7 @@ export const getNftMembers = async (
               },
             },
           },
-          limit,
-          offset: limit * offset,
+          limit: 1,
         },
         {
           id: true,
@@ -239,7 +237,7 @@ export const getNftMembers = async (
         },
       ],
     },
-    { operationName: "getNftMembersNew" }
+    { operationName: "getNftMembersSimple" }
   );
   return {
     users:
