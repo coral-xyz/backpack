@@ -263,6 +263,47 @@ export function BackpackHeader({
   forceWhite?: boolean;
   style?: React.CSSProperties;
 }) {
+  // Determine the user's time zone
+  const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  // Define time ranges for each type of greeting
+  const morningRange = [
+    "5 AM",
+    "6 AM",
+    "7 AM",
+    "8 AM",
+    "9 AM",
+    "10 AM",
+    "11 AM",
+  ]; // 5 AM to 11 AM
+  const afternoonRange = ["12 PM", "1 PM", "2 PM", "3 PM", "4 PM"]; // 12 PM to 4 PM
+  const eveningRange = [
+    "5 PM",
+    "6 PM",
+    "7 PM",
+    "8 PM",
+    "9 PM",
+    "10 PM",
+    "11 PM",
+  ]; // 5 PM to 11 PM
+
+  // Get the current hour in the user's time zone
+  const currentHour = new Date().toLocaleString("en-US", {
+    hour: "numeric",
+    timeZone: userTz,
+  });
+  let greeting: string;
+  console.log("greeting", currentHour);
+
+  if (morningRange.includes(currentHour)) {
+    greeting = "Good Morning ";
+  } else if (afternoonRange.includes(currentHour)) {
+    greeting = "Good Afternoon ";
+  } else if (eveningRange.includes(currentHour)) {
+    greeting = "Good Evening ";
+  } else {
+    greeting = "Welcome ";
+  }
   const theme = useCustomTheme();
   const user = useUser();
   return (
@@ -296,7 +337,8 @@ export function BackpackHeader({
           marginTop: "8px",
         }}
       >
-        gm {disableUsername ? "" : `@${user.username}`}
+        {greeting}
+        {disableUsername ? "" : `@${user.username}`}
       </Typography>
     </Box>
   );
