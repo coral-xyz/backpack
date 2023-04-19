@@ -33831,7 +33831,7 @@ __metadata:
   dependencies:
     "@cloudflare/workers-types": ^4.20221111.1
     eslint-config-custom: "*"
-    wrangler: ^2.7.1
+    wrangler: ^2.16.0
   languageName: unknown
   linkType: soft
 
