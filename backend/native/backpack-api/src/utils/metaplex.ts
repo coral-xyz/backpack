@@ -2,7 +2,7 @@ import { Metaplex } from "@metaplex-foundation/js";
 import { Connection, PublicKey } from "@solana/web3.js";
 
 const connection = new Connection(
-  process.env.OVERRIDE_RPC_URL ?? "https://swr.xnfts.dev/rpc-proxy"
+  process.env.OVERRIDE_RPC_URL || "https://swr.xnfts.dev/rpc-proxy"
 );
 const metaplex = new Metaplex(connection);
 
