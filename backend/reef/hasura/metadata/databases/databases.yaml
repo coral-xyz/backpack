@@ -7,8 +7,12 @@
     read_replicas:
       - database_url:
           from_env: READONLY_DATABASE_URL
+        pool_settings:
+          max_connections: 400
       - database_url:
           from_env: READONLY_DATABASE_URL_2
+        pool_settings:
+          max_connections: 400
   customization:
     naming_convention: hasura-default
   tables: "!include default/tables/tables.yaml"
