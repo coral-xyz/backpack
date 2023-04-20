@@ -72,9 +72,6 @@ export class User {
   private async handleMessage(message: ToServer) {
     switch (message.type) {
       case CHAT_MESSAGES:
-        if (message.payload.room === "backpack-chat") {
-          return;
-        }
         const subscription = this.subscriptions.find(
           (x) =>
             x.room === message.payload.room && x.type === message.payload.type
