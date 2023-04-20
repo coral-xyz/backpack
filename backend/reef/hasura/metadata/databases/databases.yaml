@@ -4,11 +4,14 @@
     connection_info:
       database_url:
         from_env: HASURA_GRAPHQL_DATABASE_URL
+        max_connections: 100
     read_replicas:
       - database_url:
           from_env: READONLY_DATABASE_URL
+          max_connections: 100
       - database_url:
           from_env: READONLY_DATABASE_URL_2
+          max_connections: 100
   customization:
     naming_convention: hasura-default
   tables: "!include default/tables/tables.yaml"
