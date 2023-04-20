@@ -636,7 +636,7 @@ function FriendRequestListItem({
     <ListItem
       button
       disableRipple
-      onClick={() => (isXs ? nav!.push("contacts") : onOpenDrawer!())}
+      onClick={() => (isXs ? nav!.push("contact-requests") : onOpenDrawer!())}
       style={{
         paddingLeft: "12px",
         paddingRight: "12px",
