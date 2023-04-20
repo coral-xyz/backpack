@@ -167,7 +167,6 @@ export const getAllUsers = async (
         {
           id: true,
           username: true,
-          __directives: "@cached(ttl: 30)",
         },
       ],
       auth_users_aggregate: [
@@ -176,11 +175,11 @@ export const getAllUsers = async (
           aggregate: {
             count: [{}, true],
           },
-          __directives: "@cached(ttl: 30)",
         },
       ],
     },
-    { operationName: "getAllUsersThirtySCache" }
+    // eslint-disable-next-line zeus-custom/require-operation-name
+    { operationName: "getAllUsersWith30sCache @cached(ttl: 30)" }
   );
   return {
     users:
@@ -219,7 +218,6 @@ export const getNftMembers = async (
         {
           id: true,
           username: true,
-          __directives: "@cached(ttl: 30)",
         },
       ],
       auth_users_aggregate: [
@@ -239,11 +237,11 @@ export const getNftMembers = async (
           aggregate: {
             count: [{}, true],
           },
-          __directives: "@cached(ttl: 30)",
         },
       ],
     },
-    { operationName: "getNftMembersThirtySCache" }
+    // eslint-disable-next-line zeus-custom/require-operation-name
+    { operationName: "getNftMembersWith30sCache @cached(ttl: 30)" }
   );
   return {
     users:
