@@ -39,7 +39,6 @@ import {
 
 import { Scrollbar } from "../../../common/Layout/Scrollbar";
 import { _BalancesTableHead } from "../../Balances/Balances";
-import { updateLocalNftPfp } from "../../Nfts/Detail";
 
 type tempAvatar = {
   nft?: Nft;
@@ -56,7 +55,7 @@ export function UpdateProfilePicture({
   const [loading, setLoading] = useState(false);
   const _isAggregateWallets = useRecoilValue(isAggregateWallets);
   const avatarUrl = useAvatarUrl();
-  const { uuid, username } = useUser();
+  const { username } = useUser();
   const activeWallet = useActiveWallet();
   const setNewAvatar = useSetRecoilState(newAvatarAtom(username));
   const theme = useCustomTheme();
