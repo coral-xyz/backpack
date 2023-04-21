@@ -1,0 +1,36 @@
+schema {
+  query: Query
+}
+
+type Query {
+  balances(chainId: ChainID!, address: String!): WalletBalances
+}
+
+enum ChainID {
+  ETHEREUM
+  SOLANA
+}
+
+type TokenBalance {
+  address: String!
+  amount: Float!
+  decimals: Int!
+  displayAmount: String!
+  marketData: MarketData
+  mint: String!
+}
+
+type MarketData {
+  id: String!
+  change: Float!
+  lastUpdatedAt: Int!
+  logo: String!
+  price: Float!
+  value: Float!
+}
+
+type WalletBalances {
+  aggregateValue: Float!
+  native: TokenBalance!
+  tokens: [TokenBalance]!
+}

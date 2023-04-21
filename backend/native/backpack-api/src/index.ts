@@ -3,6 +3,7 @@ import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import { ZodError } from "zod";
 
+import gqlRouter from "./routes/graphql";
 import authenticateRouter from "./routes/v1/authenticate";
 import barterRouter from "./routes/v1/barter";
 import chatRouter from "./routes/v1/chats";
@@ -22,7 +23,7 @@ import txParsingRouter from "./routes/v1/tx-parsing";
 import usersRouter from "./routes/v1/users";
 import { zodErrorToString } from "./util";
 
-const app = express();
+export const app = express();
 
 // eslint-disable-next-line
 const bodyParser = require("body-parser");
@@ -65,6 +66,8 @@ app.get("/", (_req, res) => {
     timestamp: Date.now(),
   });
 });
+
+app.use("/v2", gqlRouter);
 
 app.use(
   (

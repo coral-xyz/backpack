@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@apollo/server": "^4.7.0",
     "@aws-sdk/client-s3": "^3.245.0",
     "@aws-sdk/s3-request-presigner": "^3.245.0",
     "@cardinal/common": "^6.0.1",
@@ -50,6 +51,9 @@
     "zod": "^3.19.1"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^3.3.0",
+    "@graphql-codegen/typescript": "^3.0.3",
+    "@graphql-codegen/typescript-resolvers": "^3.2.0",
     "@types/passport": "^1.0.12",
     "@types/passport-twitter": "^1.0.37",
     "eslint-config-custom": "*",
@@ -57,6 +61,7 @@
   },
   "scripts": {
     "build": "esbuild ./src/index.js --bundle --platform=node --outfile=dist/index.js",
+    "generate": "graphql-codegen --config codegen.yml",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
     "lint:fix": "yarn run lint --fix",
     "start": "npm run build && node dist/index.js"
