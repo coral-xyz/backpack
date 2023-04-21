@@ -100,7 +100,8 @@ export class User {
                     "Content-Type": "application/json",
                   },
                   body: JSON.stringify({
-                    url: x.message,
+                    // @ts-ignore
+                    url: x.message_metadata?.media_link,
                   }),
                 });
                 const json = await res.json();
