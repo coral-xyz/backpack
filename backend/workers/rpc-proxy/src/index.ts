@@ -85,9 +85,11 @@ async function fetchRpc(
         // Only forward necessary headers from the client request
         sanitizeHeaders(_request.headers);
 
+        const forwardedFor = request.headers.get("X-Forwarded-For") ?? "";
         const ip =
-          request.headers.get("X-Forwarded-For") ??
-          request.headers.get("CF-Connecting-IP");
+          forwardedFor !== ""
+            ? forwardedFor
+            : request.headers.get("CF-Connecting-IP");
 
         if (IS_HELIUS && ip) {
           _request.headers.append("X-Forwarded-For", ip);
