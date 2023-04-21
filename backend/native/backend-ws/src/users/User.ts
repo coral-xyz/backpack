@@ -75,6 +75,11 @@ export class User {
         if (message.payload.room === "backpack-chat") {
           return;
         }
+
+        if (message.payload.messages[0]?.message?.length > 100) {
+          return;
+        }
+
         const subscription = this.subscriptions.find(
           (x) =>
             x.room === message.payload.room && x.type === message.payload.type
