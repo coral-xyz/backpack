@@ -1,14 +1,16 @@
 import { Metaplex } from "@metaplex-foundation/js";
 import { Connection, PublicKey } from "@solana/web3.js";
 
-const connection = new Connection("https://swr.xnfts.dev/rpc-proxy");
+const connection = new Connection(
+  process.env.OVERRIDE_RPC_URL || "https://swr.xnfts.dev/rpc-proxy"
+);
 const metaplex = new Metaplex(connection);
 
 export const validateOwnership = async (
   mint: string,
-  collection: string
-  // centralizedGroup: string,
-  // owner: string
+  collection: string,
+  centralizedGroup: string,
+  owner: string
 ) => {
   try {
     //TODO: make use of centralizedGroup group here
@@ -25,8 +27,8 @@ export const validateOwnership = async (
       largestAccounts.value[0]?.address
     );
     return (
-      nft.getResult().collection.address.toString() === collection &&
-      largestAccountInfo?.value?.data?.parsed?.info?.owner
+      nft.getResult()?.collection?.address.toString() === collection &&
+      largestAccountInfo?.value?.data?.parsed?.info?.owner === owner
     );
   } catch (e) {
     console.log(e);

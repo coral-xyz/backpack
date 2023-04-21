@@ -24,7 +24,7 @@ import {
   useTab,
 } from "@coral-xyz/recoil";
 import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
-import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
 import { Tab, Tabs } from "@mui/material";
 import Badge from "@mui/material/Badge";
 
@@ -275,7 +275,7 @@ function TabBar() {
                   tab === TAB_MESSAGES ? classes.activeTab : ""
                 }`}
                 icon={
-                  <FormatListBulletedIcon
+                  <FormatListBulletedRoundedIcon
                     style={{
                       width: "28px",
                       height: "28px",

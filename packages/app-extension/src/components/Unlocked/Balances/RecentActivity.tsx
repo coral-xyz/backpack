@@ -18,7 +18,7 @@ import {
 } from "@coral-xyz/recoil";
 import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, Check, Clear } from "@mui/icons-material";
-import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
 import { IconButton, List, ListItem, Typography } from "@mui/material";
 
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
@@ -91,7 +91,9 @@ export function RecentActivityButton() {
         onClick={() => setOpenDrawer(true)}
         size="large"
       >
-        <FormatListBulletedIcon className={classes.networkSettingsIcon} />
+        <FormatListBulletedRoundedIcon
+          className={classes.networkSettingsIcon}
+        />
       </IconButton>
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         <div style={{ height: "100%" }}>
@@ -372,7 +374,7 @@ function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
       }}
     >
       <EmptyState
-        icon={(props: any) => <FormatListBulletedIcon {...props} />}
+        icon={(props: any) => <FormatListBulletedRoundedIcon {...props} />}
         title="No Recent Activity"
         subtitle="Your transactions and app activity will show up here when you start using Backpack!"
         onClick={() => window.open(XNFT_GG_LINK)}

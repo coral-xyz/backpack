@@ -58,6 +58,7 @@ insert_permissions:
     permission:
       check: {}
       columns:
+        - id
         - invitation_id
         - referrer_id
         - username

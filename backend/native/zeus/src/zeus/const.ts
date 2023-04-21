@@ -770,6 +770,7 @@ export const AllTypesProps: Record<string, any> = {
   },
   auth_users_constraint: "enum" as const,
   auth_users_insert_input: {
+    id: "uuid",
     invitation: "auth_invitations_obj_rel_insert_input",
     invitation_id: "uuid",
     public_keys: "auth_public_keys_arr_rel_insert_input",
@@ -828,6 +829,7 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_users_set_input",
     where: "auth_users_bool_exp",
   },
+  auth_users_whose_username_matches_args: {},
   auth_xnft_preferences_bool_exp: {
     _and: "auth_xnft_preferences_bool_exp",
     _not: "auth_xnft_preferences_bool_exp",
@@ -1424,6 +1426,18 @@ export const AllTypesProps: Record<string, any> = {
     auth_users_by_pk: {
       id: "uuid",
     },
+    auth_users_whose_username_matches: {
+      args: "auth_users_whose_username_matches_args",
+      distinct_on: "auth_users_select_column",
+      order_by: "auth_users_order_by",
+      where: "auth_users_bool_exp",
+    },
+    auth_users_whose_username_matches_aggregate: {
+      args: "auth_users_whose_username_matches_args",
+      distinct_on: "auth_users_select_column",
+      order_by: "auth_users_order_by",
+      where: "auth_users_bool_exp",
+    },
     auth_xnft_preferences: {
       distinct_on: "auth_xnft_preferences_select_column",
       order_by: "auth_xnft_preferences_order_by",
@@ -1618,6 +1632,18 @@ export const AllTypesProps: Record<string, any> = {
     },
     auth_users_stream: {
       cursor: "auth_users_stream_cursor_input",
+      where: "auth_users_bool_exp",
+    },
+    auth_users_whose_username_matches: {
+      args: "auth_users_whose_username_matches_args",
+      distinct_on: "auth_users_select_column",
+      order_by: "auth_users_order_by",
+      where: "auth_users_bool_exp",
+    },
+    auth_users_whose_username_matches_aggregate: {
+      args: "auth_users_whose_username_matches_args",
+      distinct_on: "auth_users_select_column",
+      order_by: "auth_users_order_by",
       where: "auth_users_bool_exp",
     },
     auth_xnft_preferences: {
@@ -2293,6 +2319,8 @@ export const ReturnTypes: Record<string, any> = {
     auth_users: "auth_users",
     auth_users_aggregate: "auth_users_aggregate",
     auth_users_by_pk: "auth_users",
+    auth_users_whose_username_matches: "auth_users",
+    auth_users_whose_username_matches_aggregate: "auth_users_aggregate",
     auth_xnft_preferences: "auth_xnft_preferences",
     auth_xnft_preferences_by_pk: "auth_xnft_preferences",
     auth_xnft_secrets: "auth_xnft_secrets",
@@ -2350,6 +2378,8 @@ export const ReturnTypes: Record<string, any> = {
     auth_users_aggregate: "auth_users_aggregate",
     auth_users_by_pk: "auth_users",
     auth_users_stream: "auth_users",
+    auth_users_whose_username_matches: "auth_users",
+    auth_users_whose_username_matches_aggregate: "auth_users_aggregate",
     auth_xnft_preferences: "auth_xnft_preferences",
     auth_xnft_preferences_by_pk: "auth_xnft_preferences",
     auth_xnft_preferences_stream: "auth_xnft_preferences",

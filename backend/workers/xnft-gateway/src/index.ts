@@ -54,8 +54,8 @@ const executeRequest: (c: ExecutionContext, env: Env) => ExecuteRequest =
     if (isImmutable) {
       response.headers.set(
         "Cache-Control",
-        `max-age=31536000, s-maxage=31536000, immutable`
-      );
+        `max-age=${60}, s-maxage=${60}, stale-while-revalidate=${60}`
+      ); //1min swr
     }
     // WHITELIST SPECIAL CASE
     else if (
@@ -64,10 +64,8 @@ const executeRequest: (c: ExecutionContext, env: Env) => ExecuteRequest =
     ) {
       response.headers.set(
         "Cache-Control",
-        `max-age=${60 * 60}, s-maxage=${60 * 60}, stale-while-revalidate=${
-          60 * 60
-        }`
-      ); //1hr swr
+        `max-age=${60}, s-maxage=${60}, stale-while-revalidate=${60}`
+      ); //1min swr
     }
 
     return response;

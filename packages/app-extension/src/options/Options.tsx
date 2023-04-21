@@ -5,10 +5,7 @@ import {
   QUERY_CONNECT_HARDWARE,
   QUERY_ONBOARDING,
 } from "@coral-xyz/common";
-import {
-  NotificationsProvider,
-  useBackgroundKeepAlive,
-} from "@coral-xyz/recoil";
+import { NotificationsProvider, useKeyringStoreState } from "@coral-xyz/recoil";
 import { RecoilRoot } from "recoil";
 
 import { WithSuspense } from "../app/Router";
@@ -35,7 +32,7 @@ function Options() {
 }
 
 function _Options() {
-  useBackgroundKeepAlive();
+  useKeyringStoreState(); // starts polling to keep worker alive
   return (
     <WithTheme>
       <NotificationsProvider>

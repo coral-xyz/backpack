@@ -1,0 +1,3 @@
+function:
+  name: users_whose_username_matches
+  schema: auth

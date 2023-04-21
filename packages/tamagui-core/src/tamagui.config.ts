@@ -1,5 +1,4 @@
 // import { createAnimations } from "@tamagui/animations-react-native";
-// import { createInterFont } from "@tamagui/font-inter";
 // import { createMedia } from "@tamagui/react-native-media-driver";
 import {
   baseTheme,
@@ -9,6 +8,7 @@ import {
   MOBILE_LIGHT_OVERRIDES,
 } from "@coral-xyz/themes";
 import { config } from "@tamagui/config";
+// import { createInterFont } from "@tamagui/font-inter";
 import { themes as _themes, tokens as _tokens } from "@tamagui/themes";
 import { createTamagui, createTheme, createTokens } from "tamagui";
 

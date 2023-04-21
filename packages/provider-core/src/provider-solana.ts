@@ -161,6 +161,7 @@ export class ProviderSolanaInjection
       params: [],
     });
     this.#connection = this.defaultConnection();
+    this.#publicKey = undefined;
   }
 
   async openXnft(xnftAddress: string | PublicKey) {

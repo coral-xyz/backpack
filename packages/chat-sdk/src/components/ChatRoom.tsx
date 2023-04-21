@@ -313,8 +313,6 @@ export const ChatRoom = ({
     }
   };
 
-  console.log("debug", { chats, activeReply, type });
-
   return (
     <ChatProvider
       activeReply={activeReply}

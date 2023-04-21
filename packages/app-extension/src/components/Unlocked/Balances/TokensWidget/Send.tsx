@@ -176,6 +176,7 @@ export function Send({
   const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState(to?.address || "");
   const [amount, setAmount] = useState<BigNumber | null>(null);
+  const [strAmount, setStrAmount] = useState("");
   const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
   const [message, setMessage] = useState("");
   const friendship = useFriendship({ userId: to?.uuid || "" });
@@ -292,6 +293,7 @@ export function Send({
           setMessage={setMessage}
           sendButton={sendButton}
           amount={amount}
+          strAmount={strAmount}
           token={token}
           blockchain={blockchain}
           isAmountError={isAmountError}
@@ -299,11 +301,18 @@ export function Send({
           maxAmount={maxAmount}
           setAddress={setAddress}
           setAmount={setAmount}
+          setStrAmount={setStrAmount}
         />
       ) : null}
       <ApproveTransactionDrawer
         openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
+        setOpenDrawer={(val) => {
+          if (!val) {
+            setAmount(BigNumber.from(0));
+            setStrAmount("");
+          }
+          setOpenDrawer(val);
+        }}
       >
         <SendConfirmComponent
           onComplete={async () => {
@@ -461,12 +470,18 @@ const buttonContainerStyles = StyleSheet.create({
   },
 });
 
-function SendV2({ token, maxAmount, setAmount, sendButton, to }: any) {
+function SendV2({
+  token,
+  maxAmount,
+  setAmount,
+  strAmount,
+  setStrAmount,
+  sendButton,
+  to,
+}: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const isDarkMode = useDarkMode();
-  // eslint-disable-next-line react/hook-use-state
-  const [_amount, _setAmount] = useState<string>("");
 
   return (
     <>
@@ -529,7 +544,7 @@ function SendV2({ token, maxAmount, setAmount, sendButton, to }: any) {
                 // @ts-ignore
                 fontFamily: theme.typography.fontFamily,
               }}
-              value={_amount}
+              value={strAmount}
               onChange={({
                 target: { value },
               }: ChangeEvent<HTMLInputElement>) => {
@@ -537,7 +552,7 @@ function SendV2({ token, maxAmount, setAmount, sendButton, to }: any) {
                   const parsedVal =
                     value.length === 1 && value[0] === "." ? "0." : value;
 
-                  _setAmount(parsedVal);
+                  setStrAmount(parsedVal);
 
                   const num =
                     parsedVal === "" || parsedVal === "0."
@@ -596,7 +611,7 @@ function SendV2({ token, maxAmount, setAmount, sendButton, to }: any) {
               }}
               onClick={() => {
                 const a = toDisplayBalance(maxAmount, token.decimals);
-                _setAmount(a);
+                setStrAmount(a);
                 setAmount(maxAmount);
               }}
             >

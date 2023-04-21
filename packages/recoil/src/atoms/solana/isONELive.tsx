@@ -6,16 +6,16 @@ import { activeWallet } from "../wallet";
 
 export const isOneLive = selector<{
   isLive: boolean;
-  banner?: string;
   wlCollection?: string;
-  madCollection?: string;
-  byeBanner?: string;
+  madladsCollection?: string;
+  banner?: string;
+  hasMadladBanner?: string;
+  hasWLBanner?: string;
 }>({
   key: "isOneLive",
   get: async ({ get }) => {
     const wallet = get(activeWallet);
-    const user = get(authenticatedUser);
-    if (wallet?.blockchain !== Blockchain.SOLANA || !user) {
+    if (wallet?.blockchain !== Blockchain.SOLANA) {
       return { isLive: false };
     }
     return (

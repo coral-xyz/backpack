@@ -1,6 +1,11 @@
+import { useState } from "react";
 import type { KeyringType } from "@coral-xyz/common";
 import { toTitleCase } from "@coral-xyz/common";
-import { HardwareWalletIcon, PrimaryButton } from "@coral-xyz/react-common";
+import {
+  HardwareWalletIcon,
+  PrimaryButton,
+  SecondaryButton,
+} from "@coral-xyz/react-common";
 import { Box } from "@mui/material";
 
 import { Header, HeaderIcon, SubtextParagraph } from "../../common";
@@ -12,6 +17,7 @@ export const KeyringTypeSelector = ({
   action: "create" | "import" | "recover" | string;
   onNext: (keyringType: KeyringType) => void;
 }) => {
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   return (
     <div
       style={{
@@ -58,23 +64,39 @@ export const KeyringTypeSelector = ({
       >
         <Box style={{ marginBottom: "16px" }}>
           <PrimaryButton
-            label={`${toTitleCase(action)} with recovery phrase`}
+            label={`${toTitleCase(action)} with secret phrase`}
             onClick={() => onNext("mnemonic")}
           />
         </Box>
-        {action === "import" || action === "recover" ? (
-          <Box style={{ marginBottom: "16px" }}>
-            <PrimaryButton
-              label={`${toTitleCase(action)} with private key`}
-              onClick={() => onNext("private-key")}
-            />
-          </Box>
-        ) : null}
-        <SubtextParagraph onClick={() => onNext("ledger")}>
-          {action === "recover"
-            ? "Recover using a hardware wallet"
-            : "I have a hardware wallet"}
-        </SubtextParagraph>
+        {showAdvancedOptions ? (
+          <>
+            {action === "import" || action === "recover" ? (
+              <Box style={{ marginBottom: "16px" }}>
+                <SecondaryButton
+                  label={`${toTitleCase(action)} with private key`}
+                  onClick={() => onNext("private-key")}
+                />
+              </Box>
+            ) : null}
+            <Box style={{ marginBottom: "16px" }}>
+              <SecondaryButton
+                label={
+                  action === "recover"
+                    ? "Recover with hardware wallet"
+                    : "I have a hardware wallet"
+                }
+                onClick={() => onNext("ledger")}
+              />
+            </Box>
+            <SubtextParagraph onClick={() => setShowAdvancedOptions(false)}>
+              Hide advanced options
+            </SubtextParagraph>
+          </>
+        ) : (
+          <SubtextParagraph onClick={() => setShowAdvancedOptions(true)}>
+            Show advanced options
+          </SubtextParagraph>
+        )}
       </Box>
     </div>
   );

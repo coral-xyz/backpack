@@ -1,4 +1,3 @@
-import React from "react";
 import { Blockchain } from "@coral-xyz/common";
 import {
   blockchainBalancesSorted,
@@ -24,7 +23,9 @@ export const useSearchedTokens = (searchFilter: string) => {
   }
 
   return tokenAccounts
-    .filter((x) => x.name.toLowerCase().includes(searchFilter.toLowerCase()))
+    .filter(
+      (x) => x && x.name?.toLowerCase().includes(searchFilter.toLowerCase())
+    )
     .map((x) => ({
       name: x.name || "",
       id: x.mint || "",

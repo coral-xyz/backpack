@@ -1,8 +1,21 @@
 import { ExpoConfig, ConfigContext } from "expo/config";
 
-export default ({ config }: ConfigContext): ExpoConfig => {
+type ExpoExtras = {
+  extra: {
+    FEATURE_MOBILE_CHAT: boolean;
+    localWebViewUrl: string;
+    remoteWebViewUrl: string;
+  };
+};
+
+export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
   const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
   const packageName = "app.backpack.mobile";
+
+  const getUrl = (hash: string = "8b0f1ba") =>
+    `https://mobile-service-worker.xnfts.dev/background-scripts/${hash}/service-worker-loader.html`;
+
+  const remoteWebViewUrl = getUrl();
 
   return {
     ...config,
@@ -41,6 +54,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           "coral-xyz.github.io",
           "ngrok.io",
           "backpack-api.xnfts.dev",
+          "mobile-service-worker.xnfts.dev",
         ],
       },
     },
@@ -56,9 +70,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       favicon: "./assets/favicon.png",
     },
     extra: {
+      FEATURE_MOBILE_CHAT: true,
       localWebViewUrl: "http://localhost:9333",
-      remoteWebViewUrl:
-        "https://coral-xyz.github.io/backpack/background-scripts/7b1f07d/service-worker-loader.html",
+      remoteWebViewUrl,
       eas: {
         projectId: projectID,
       },

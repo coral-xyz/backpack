@@ -96,7 +96,12 @@ export function ImportSecretKey({
       />
       <WithMiniDrawer
         openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
+        setOpenDrawer={(open: boolean) => {
+          setOpenDrawer(open);
+          if (!open) {
+            closeParentDrawer();
+          }
+        }}
         backdropProps={{
           style: {
             opacity: 0.8,
