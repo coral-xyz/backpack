@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import { FlatList } from "react-native";
 
 import { Box } from "@coral-xyz/tamagui";
+import { useNavigation } from "@react-navigation/native";
 
 import { ListItemWalletOverview } from "~components/ListItem";
 import { RoundedContainerGroup, Screen, StyledText } from "~components/index";
@@ -38,7 +39,19 @@ function RenderItem({
   );
 }
 
-export function HomeWalletListScreen({ navigation }): JSX.Element {
+export function HomeWalletListScreen(): JSX.Element {
+  return (
+    <Screen headerPadding>
+      <Box mb={12}>
+        <BalanceSummaryWidget />
+      </Box>
+      <WalletList />
+    </Screen>
+  );
+}
+
+function WalletList() {
+  const navigation = useNavigation();
   const { allWallets, onSelectWallet } = useWallets();
 
   const handlePressWallet = useCallback(
@@ -58,10 +71,7 @@ export function HomeWalletListScreen({ navigation }): JSX.Element {
   );
 
   return (
-    <Screen headerPadding>
-      <Box mb={12}>
-        <BalanceSummaryWidget />
-      </Box>
+    <>
       <ListHeaderTitle title={`${allWallets.length.toString()} Wallets`} />
       <RoundedContainerGroup>
         <FlatList
@@ -70,6 +80,6 @@ export function HomeWalletListScreen({ navigation }): JSX.Element {
           renderItem={renderItem}
         />
       </RoundedContainerGroup>
-    </Screen>
+    </>
   );
 }

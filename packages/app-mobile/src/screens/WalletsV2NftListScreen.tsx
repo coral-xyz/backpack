@@ -112,20 +112,6 @@ export function NftCollectionListScreen({
   const activeWallet = useActiveWallet();
   const collections = useActiveWalletCollections();
 
-  // if (isLoading) {
-  //   return (
-  //     <View
-  //       style={{
-  //         flex: 1,
-  //         justifyContent: "center",
-  //         alignItems: "center",
-  //       }}
-  //     >
-  //       <ActivityIndicator size="large" />
-  //     </View>
-  //   );
-  // }
-
   return (
     <Screen>
       <RoundedContainerGroup style={{ padding: 12 }}>
