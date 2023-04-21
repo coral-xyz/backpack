@@ -178,7 +178,8 @@ export const getAllUsers = async (
         },
       ],
     },
-    { operationName: "getAllUsersNew" }
+    // eslint-disable-next-line zeus-custom/require-operation-name
+    { operationName: "getAllUsersWith30sCache @cached(ttl: 30)" }
   );
   return {
     users:
@@ -239,7 +240,8 @@ export const getNftMembers = async (
         },
       ],
     },
-    { operationName: "getNftMembersNew" }
+    // eslint-disable-next-line zeus-custom/require-operation-name
+    { operationName: "getNftMembersWith30sCache @cached(ttl: 30)" }
   );
   return {
     users:

@@ -31,17 +31,16 @@ app.get("/v1/:username_", (c) => {
   );
 });
 
-const avatarQuery = (username: string) => `query Avatar {
-  auth_users(where: {username: {_eq: "${username}"}}) {
-    avatar_nft
-  }
-}`;
-
 app.get("/:username/:cache_bust?", async (c) => {
   const username = c.req.param("username");
   const jwt = c.env.PUBLIC_AVATAR_JWT;
   const hasuraUrl = c.env.HASURA_URL;
   const size = c.req.query("size") || 500;
+
+  // https://hasura.io/docs/latest/caching/caching-config
+  const cacheDirective = c.req.query("bust_cache")
+    ? `refresh: true`
+    : `ttl: 30`;
 
   const avatarResponse = await fetch(hasuraUrl, {
     method: "POST",
@@ -51,8 +50,12 @@ app.get("/:username/:cache_bust?", async (c) => {
       Authorization: `Bearer ${jwt}`,
     },
     body: JSON.stringify({
-      query: avatarQuery(username),
-      variables: {},
+      query: `query getAvatar($username:citext!) @cached(${cacheDirective}) {
+        auth_users(limit: 1, where: {username: {_eq: $username}}) {
+          avatar_nft
+        }
+      }`,
+      variables: { username },
     }),
   });
 
