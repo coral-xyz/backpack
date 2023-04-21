@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import type {
-  EnrichedInboxDb} from "@coral-xyz/common";
+import type { EnrichedInboxDb } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   NAV_COMPONENT_MESSAGE_CHAT,
+  NAV_COMPONENT_MESSAGE_PROFILE_FRIENDS,
   sendFriendRequest,
   walletAddressDisplay,
 } from "@coral-xyz/common";
@@ -206,6 +206,16 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
             background: "white",
             borderRadius: "6px",
             alignItems: "center",
+            cursor: "pointer",
+          }}
+          onClick={async () => {
+            push({
+              title: `@${user.username}`,
+              componentId: NAV_COMPONENT_MESSAGE_PROFILE_FRIENDS,
+              componentProps: {
+                userId: `${user.id}`,
+              },
+            });
           }}
         >
           <span style={{ color: "#7B8391" }}>{allChats.length} Friends</span>

@@ -99,12 +99,6 @@ const useStyles = makeStyles((theme: any) =>
       width: "100%",
       color: theme.custom.colors.fontColor2,
     },
-    avatarNothing: {
-      color: "transparent",
-      backgroundColor: "transparent",
-      width: theme.spacing(4),
-      height: theme.spacing(4),
-    },
     displayName: {
       fontWeight: 600,
       marginLeft: "10px",
@@ -116,12 +110,6 @@ const useStyles = makeStyles((theme: any) =>
       padding: "2px 12px",
       borderRadius: 12,
       cursor: "pointer",
-    },
-    roundBtn: {
-      padding: "2px",
-      height: 26,
-      width: 26,
-      borderRadius: "13px",
     },
     messageLeftContainer: {
       display: "flex",
@@ -437,7 +425,7 @@ export const MessageLine = (props) => {
               >
                 {displayName ? (
                   <div style={{ display: "flex" }}>
-                    <div>@{displayName} </div>{" "}
+                    <div>@{displayName}</div>{" "}
                     {BACKPACK_TEAM.includes(props.uuid) ? (
                       <BackpackStaffIcon />
                     ) : null}

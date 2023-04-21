@@ -27,7 +27,8 @@ export const SearchUsers = ({
   const [searchFilter, setSearchFilter] = useState("");
   const friends = allChats.filter((x: any) => x.areFriends === 1);
   const theme = useCustomTheme();
-
+  console.log("Debug");
+  console.log(friends);
   const filteredFriends = friends
     .filter((x: EnrichedInboxDb) => x.remoteUsername.includes(searchFilter))
     .map((x: EnrichedInboxDb) => ({

@@ -13,6 +13,7 @@ import {
 } from "@coral-xyz/common";
 import {
   ChatScreen,
+  FriendsScreen,
   Inbox,
   ParentCommunicationManager,
   ProfileScreen,
@@ -200,18 +201,15 @@ function MessageNativeInner() {
     );
   }
 
+  if (hash.startsWith("/messages/profile/friends")) {
+    return (
+      <NavScreen noMotion component={<FriendsScreen userId={props.userId} />} />
+    );
+  }
+
   if (hash.startsWith("/messages/profile")) {
     return (
-      <NavScreen
-        noMotion
-        component={
-          <ProfileScreen
-            userId={props.userId}
-            uuid={uuid}
-            username={props.username}
-          />
-        }
-      />
+      <NavScreen noMotion component={<ProfileScreen userId={props.userId} />} />
     );
   }
 
@@ -393,7 +391,8 @@ function useNavBar() {
   let { isRoot, push } = useNavigation();
   const pathname = useLocation().pathname;
   const theme = useCustomTheme();
-  const { props }: any = useDecodedSearchParams(); // TODO: fix type
+  const { props }: any = useDecodedSearchParams();
+  console.log(props); // TODO: fix type
   const { isXs } = useBreakpoints();
   const profileUser = useUsersMetadata({ remoteUserIds: [props?.userId] });
   const image: string | undefined =
@@ -460,6 +459,7 @@ function useNavBar() {
         componentId: NAV_COMPONENT_MESSAGE_PROFILE,
         componentProps: {
           userId: props.userId,
+          username: props.username,
         },
       });
     };

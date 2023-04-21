@@ -544,6 +544,7 @@ export const NAV_COMPONENT_CONTACTS = "contacts";
 export const NAV_COMPONENT_MESSAGE_CHAT = "messages/chat";
 export const NAV_COMPONENT_MESSAGE_GROUP_CHAT = "messages/groupchat";
 export const NAV_COMPONENT_MESSAGE_PROFILE = "messages/profile";
+export const NAV_COMPONENT_MESSAGE_PROFILE_FRIENDS = "messages/profile/friends";
 export const NAV_COMPONENT_MESSAGE_REQUESTS = "messages/requests";
 export const NAV_COMPONENT_XNFT = "xnft/*";
 
