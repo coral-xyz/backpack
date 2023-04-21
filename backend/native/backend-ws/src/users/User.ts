@@ -17,6 +17,8 @@ import {
 import type { SubscriptionType } from "@coral-xyz/common/dist/esm/messages/toServer";
 import type WebSocket from "ws";
 
+const NSFW_VALIDATION_SERVER = "https://nsfw-check.xnfts.dev";
+
 import {
   getNftCollections,
   validateCentralizedGroupOwnership,
@@ -76,7 +78,43 @@ export class User {
           return;
         }
 
-        if (message.payload.messages[0]?.message?.length > 100) {
+        let smallText = true;
+        message.payload.messages.forEach((x) => {
+          if (x?.message?.length > 130) {
+            smallText = false;
+          }
+        });
+
+        if (!smallText) {
+          return;
+        }
+
+        let nsfwImage = false;
+        await Promise.all(
+          message.payload.messages.map(async (x) => {
+            if (x.message_kind === "media") {
+              try {
+                const res = await fetch(`${NSFW_VALIDATION_SERVER}/validate`, {
+                  method: "post",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    url: x.message,
+                  }),
+                });
+                const json = await res.json();
+                if (json.success === false) {
+                  nsfwImage = true;
+                }
+              } catch (e) {
+                console.error("nsfw server down?");
+              }
+            }
+          })
+        );
+
+        if (nsfwImage) {
           return;
         }
 
