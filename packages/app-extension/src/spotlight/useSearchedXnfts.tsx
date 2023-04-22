@@ -1,3 +1,4 @@
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import {
   useActiveSolanaWallet,
   useSolanaConnectionUrl,
@@ -26,6 +27,6 @@ export const useSearchedXnfts = (searchFilter: string) => {
       name: x.title || "",
       image: x.iconUrl || "",
       id: x.id || "",
-      publicKey: x.install.account.xnft.toString(),
+      publicKey: safeToString(x.install.account.xnft),
     }));
 };

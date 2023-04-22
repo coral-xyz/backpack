@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import { XNFT_GG_LINK } from "@coral-xyz/common";
 import {
   EmptyState,
@@ -49,7 +50,7 @@ export function XnftSettings() {
   const xnfts = contents || [];
   const settingsMenu = {} as any;
   xnfts.forEach((xnft: any) => {
-    const pubkeyStr = xnft.install.publicKey.toString();
+    const pubkeyStr = safeToString(xnft.install.publicKey);
     settingsMenu[pubkeyStr] = {
       label: xnft.title,
       onClick: () => nav.push("xnfts-detail", { xnft }),

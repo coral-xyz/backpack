@@ -1,4 +1,5 @@
 import { useState } from "react";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import { Blockchain } from "@coral-xyz/common";
 import { SecondaryButton } from "@coral-xyz/react-common";
 import {
@@ -80,12 +81,12 @@ function BlockchainDepositCard({
   const onCopy = async () => {
     setTooltipOpen(true);
     setTimeout(() => setTooltipOpen(false), 1000);
-    await navigator.clipboard.writeText(publicKey.toString());
+    await navigator.clipboard.writeText(safeToString(publicKey));
   };
   const onCopyModal = async () => {
     setTooltipOpenModal(true);
     setTimeout(() => setTooltipOpenModal(false), 1000);
-    await navigator.clipboard.writeText(publicKey.toString());
+    await navigator.clipboard.writeText(safeToString(publicKey));
   };
   const onQrCode = () => {
     setShowQrCode(true);
@@ -261,7 +262,7 @@ function BlockchainDepositCard({
                   marginBottom: "16px",
                 }}
               >
-                <QrCode data={publicKey.toString()} />
+                <QrCode data={safeToString(publicKey)} />
               </div>
               <WithCopyTooltip tooltipOpen={tooltipOpenModal}>
                 <div style={{ display: "relative" }}>
@@ -365,14 +366,14 @@ export function _Deposit({
   const name = useWalletName(publicKey);
 
   const walletDisplay =
-    publicKey.toString().slice(0, 12) +
+    safeToString(publicKey).slice(0, 12) +
     "..." +
-    publicKey.toString().slice(publicKey.toString().length - 12);
+    safeToString(publicKey).slice(safeToString(publicKey).length - 12);
 
   const onCopy = async () => {
     setTooltipOpen(true);
     setTimeout(() => setTooltipOpen(false), 1000);
-    await navigator.clipboard.writeText(publicKey.toString());
+    await navigator.clipboard.writeText(safeToString(publicKey));
   };
 
   return (
@@ -393,7 +394,7 @@ export function _Deposit({
         }}
       >
         <QrCode
-          data={publicKey.toString()}
+          data={safeToString(publicKey)}
           style={{ width: "180px", height: "180px", padding: "7.83px" }}
         />
       </div>

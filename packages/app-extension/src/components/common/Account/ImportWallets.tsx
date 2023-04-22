@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
@@ -347,7 +348,7 @@ export function ImportWallets({
     }
     setLedgerLocked(false);
     return publicKeys.map((p) =>
-      blockchain === Blockchain.SOLANA ? bs58.encode(p) : p.toString()
+      blockchain === Blockchain.SOLANA ? bs58.encode(p) : safeToString(p)
     );
   };
 
@@ -465,7 +466,7 @@ export function ImportWallets({
                 .map(({ publicKey, derivationPath }) => (
                   <ListItemButton
                     disableRipple
-                    key={publicKey.toString()}
+                    key={safeToString(publicKey)}
                     onClick={handleSelect(publicKey, derivationPath)}
                     sx={{
                       display: "flex",
@@ -474,7 +475,7 @@ export function ImportWallets({
                       paddingTop: "5px",
                       paddingBottom: "5px",
                     }}
-                    disabled={isDisabledPublicKey(publicKey.toString())}
+                    disabled={isDisabledPublicKey(safeToString(publicKey))}
                   >
                     <Box style={{ display: "flex", width: "100%" }}>
                       <div
@@ -490,16 +491,18 @@ export function ImportWallets({
                             checkedWalletDescriptors.some(
                               (a) => a.derivationPath === derivationPath
                             ) ||
-                            importedPublicKeys.includes(publicKey.toString())
+                            importedPublicKeys.includes(safeToString(publicKey))
                           }
                           tabIndex={-1}
-                          disabled={isDisabledPublicKey(publicKey.toString())}
+                          disabled={isDisabledPublicKey(
+                            safeToString(publicKey)
+                          )}
                           disableRipple
                           style={{ marginLeft: 0 }}
                         />
                       </div>
                       <ListItemText
-                        id={publicKey.toString()}
+                        id={safeToString(publicKey)}
                         primary={walletAddressDisplay(publicKey)}
                         sx={{
                           marginLeft: "8px",

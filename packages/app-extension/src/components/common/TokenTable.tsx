@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as WindowedList } from "react-window";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import type { Blockchain } from "@coral-xyz/common";
 import { TextInput } from "@coral-xyz/react-common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
@@ -131,7 +132,7 @@ export function TokenTables({
           name: string;
         }) => (
           <WalletTokenTable
-            key={wallet.publicKey.toString()}
+            key={safeToString(wallet.publicKey)}
             onClickRow={onClickRow}
             searchFilter={searchFilter}
             customFilter={customFilter}
@@ -161,7 +162,7 @@ export function WalletTokenTable({
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
   const loader = useLoader(
     blockchainBalancesSorted({
-      publicKey: wallet.publicKey.toString(),
+      publicKey: safeToString(wallet.publicKey),
       blockchain,
     }),
     [],
@@ -228,7 +229,7 @@ export function WalletTokenTable({
                       onClickRow(
                         blockchain,
                         token,
-                        wallet.publicKey.toString()
+                        safeToString(wallet.publicKey)
                       ),
                   }}
                   overscanCount={12}
@@ -245,7 +246,7 @@ export function WalletTokenTable({
                 key={token.address}
                 token={token}
                 onClick={(token) =>
-                  onClickRow(blockchain, token, wallet.publicKey.toString())
+                  onClickRow(blockchain, token, safeToString(wallet.publicKey))
                 }
               />
             ))}

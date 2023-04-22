@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import type { Plugin, XnftPreference } from "@coral-xyz/common";
 import {
   BACKPACK_CONFIG_GITHUB_RUN_NUMBER,
@@ -34,7 +35,7 @@ export function PluginRenderer({
   const xnftPreference = useRecoilValue(
     xnftPreferenceAtom(plugin?.xnftInstallAddress?.toString())
   );
-  const jwt = useXnftJwt(plugin.xnftAddress.toString());
+  const jwt = useXnftJwt(safeToString(plugin.xnftAddress));
   useEffect(() => {
     if (plugin && ref && ref.current) {
       plugin.mount(xnftPreference, deepXnftPath);
@@ -103,7 +104,7 @@ export function PluginRenderer({
         backgroundSize: "cover",
         backgroundPosition: "center center",
       }}
-     />
+    />
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { Suspense, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import type { Blockchain, FeeConfig } from "@coral-xyz/common";
 import {
   EXTENSION_HEIGHT,
@@ -257,7 +258,7 @@ function QueryApproveTransaction() {
                       ...feeConfig,
                       config: {
                         ...feeConfig.config,
-                        priorityFee: feeConfig.config.priorityFee.toString(),
+                        priorityFee: safeToString(feeConfig.config.priorityFee),
                       },
                     },
               },

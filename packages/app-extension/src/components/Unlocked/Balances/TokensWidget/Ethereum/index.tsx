@@ -1,6 +1,7 @@
 // TODO: remove the following line
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import { Blockchain, Ethereum, getLogger } from "@coral-xyz/common";
 import { PrimaryButton, UserIcon } from "@coral-xyz/react-common";
 import {
@@ -72,7 +73,7 @@ export function SendEthereumConfirmationCard({
         // Zero address token is native ETH
         transaction = await Ethereum.transferEthTransaction(ethereumCtx, {
           to: destinationAddress,
-          value: amount.toString(),
+          value: safeToString(amount),
         });
       } else if (token.tokenId) {
         // Token has a tokenId, must be an ERC721 token
@@ -87,7 +88,7 @@ export function SendEthereumConfirmationCard({
         transaction = await Ethereum.transferErc20Transaction(ethereumCtx, {
           to: destinationAddress,
           contractAddress: token.address!,
-          amount: amount.toString(),
+          amount: safeToString(amount),
         });
       }
       setTransaction(transaction);

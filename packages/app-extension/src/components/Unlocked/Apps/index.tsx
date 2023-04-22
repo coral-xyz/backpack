@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import { Blockchain, XNFT_GG_LINK } from "@coral-xyz/common";
 import {
   EmptyState,
@@ -206,7 +207,7 @@ function _WalletXnftGrid({
   const openPlugin = useOpenPlugin();
   const { showContent } = useBalancesContext();
   const onClickPlugin = (p: any) => {
-    openPlugin(p.install.account.xnft.toString());
+    openPlugin(safeToString(p.install.account.xnft));
   };
   const iconsPerRow = isXs ? 4 : 6;
   return (

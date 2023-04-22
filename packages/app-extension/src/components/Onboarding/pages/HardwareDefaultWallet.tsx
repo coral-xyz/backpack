@@ -4,6 +4,7 @@
 // script can't communicate with a hardware device.
 
 import { useEffect, useState } from "react";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
@@ -63,7 +64,7 @@ export const HardwareDefaultWallet = ({
           const publicKey =
             blockchain === Blockchain.SOLANA
               ? base58.encode(ledgerAddress as Buffer)
-              : ledgerAddress.toString();
+              : safeToString(ledgerAddress);
           publicKeys.push(publicKey);
         }
       } catch (error) {

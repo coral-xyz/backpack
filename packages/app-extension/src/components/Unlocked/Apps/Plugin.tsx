@@ -1,4 +1,5 @@
 import { Suspense, useEffect, useState } from "react";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import type { Plugin } from "@coral-xyz/common";
 import { DEFAULT_PUBKEY_STR } from "@coral-xyz/common";
 import { Loading, MoreIcon, PowerIcon } from "@coral-xyz/react-common";
@@ -59,7 +60,9 @@ export function LoadPlugin({
     return <Loading />;
   }
 
-  const plugin = plugins?.find((p) => p.xnftAddress.toString() === xnftAddress);
+  const plugin = plugins?.find(
+    (p) => safeToString(p.xnftAddress) === xnftAddress
+  );
 
   if (!plugin) {
     return (
@@ -109,11 +112,13 @@ export function PluginDisplay({
     <>
       <PluginControl plugin={plugin} />
       <Suspense fallback={<Loading />}>
-        {plugin ? <PluginRenderer
-          key={plugin?.iframeRootUrl}
-          plugin={plugin}
-          deepXnftPath={deepXnftPath}
-          /> : null}
+        {plugin ? (
+          <PluginRenderer
+            key={plugin?.iframeRootUrl}
+            plugin={plugin}
+            deepXnftPath={deepXnftPath}
+          />
+        ) : null}
       </Suspense>
     </>
   );

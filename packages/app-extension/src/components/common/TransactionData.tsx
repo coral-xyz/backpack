@@ -1,6 +1,7 @@
 // TODO: remove the following line
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from "react";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import {
   PrimaryButton,
   SecondaryButton,
@@ -165,10 +166,9 @@ export function TransactionData({
               <SmallInput
                 disabled={transactionData.solanaFeeConfig?.disabled}
                 placeholder="Compute units"
-                value={
-                  transactionData.solanaFeeConfig?.config?.computeUnits.toString() ||
-                  0
-                }
+                value={safeToString(
+                  transactionData.solanaFeeConfig?.config?.computeUnits || 0
+                )}
                 onChange={(e: any) => {
                   const computeUnits = parseInt(e.target.value || "0");
                   if (
@@ -198,10 +198,9 @@ export function TransactionData({
               <SmallInput
                 disabled={transactionData.solanaFeeConfig?.disabled}
                 placeholder="Priority fee"
-                value={
-                  transactionData.solanaFeeConfig.config?.priorityFee?.toString() ||
-                  0
-                }
+                value={safeToString(
+                  transactionData.solanaFeeConfig.config?.priorityFee || 0
+                )}
                 onChange={(e: any) => {
                   const priorityFee = parseInt(e.target.value || "0");
                   if (priorityFee < 0 || isNaN(parseInt(e.target.value))) {
@@ -482,7 +481,7 @@ export function EthereumSettingsDrawer({
             if (gasEditOnClick) setEditingGas(true);
           }}
         >
-          {transactionOverrides.gasLimit.toString()}
+          {safeToString(transactionOverrides.gasLimit)}
         </Typography>
       ),
       ...menuItemBase,

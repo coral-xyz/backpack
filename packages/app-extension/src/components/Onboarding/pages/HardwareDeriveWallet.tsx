@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
@@ -56,7 +57,7 @@ export const HardwareDeriveWallet = ({
         publicKey =
           blockchain === Blockchain.SOLANA
             ? base58.encode(ledgerAddress)
-            : ledgerAddress.toString();
+            : safeToString(ledgerAddress);
       } catch (error) {
         if (onError) {
           console.debug("hardware derive wallet transport error", error);

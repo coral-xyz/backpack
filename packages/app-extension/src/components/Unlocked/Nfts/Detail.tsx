@@ -1,4 +1,5 @@
 import React, { type CSSProperties, useEffect, useState } from "react";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import type { Nft } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
@@ -617,7 +618,7 @@ function BurnConfirmationCard({
 
       const _signature = await Solana.burnAndCloseNft(solanaCtx, {
         solDestination: solanaCtx.walletPublicKey,
-        mint: new PublicKey(nft.mint.toString()),
+        mint: new PublicKey(safeToString(nft.mint)),
         amount,
       });
       setSignature(_signature);

@@ -1,5 +1,6 @@
 import React, { type ChangeEvent, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import {
   Blockchain,
   ETH_NATIVE_MINT,
@@ -561,7 +562,7 @@ function SendV2({
 
                   if (num >= 0) {
                     setAmount(
-                      ethers.utils.parseUnits(num.toString(), token.decimals)
+                      ethers.utils.parseUnits(safeToString(num), token.decimals)
                     );
                   }
                 } catch (err) {

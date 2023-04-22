@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import {
   BAKED_IN_XNFTS,
   Blockchain,
@@ -36,13 +37,14 @@ import { useNavigation as useNavigationEphemeral } from "../../../common/Layout/
 import { SettingsList } from "../../../common/Settings/List";
 import { Error } from "../../Balances/TokensWidget/Send";
 import { SwitchToggle } from "../Preferences";
+
 const logger = getLogger("xnft-detail");
 
 export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   const theme = useCustomTheme();
   const [openConfirm, setOpenConfirm] = useState(false);
   const xnftPreference = useRecoilValue(
-    xnftPreferenceAtom(xnft.install.account.xnft.toString())
+    xnftPreferenceAtom(safeToString(xnft.install.account.xnft))
   );
 
   const nav = useNavigationEphemeral();
@@ -89,7 +91,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
             await background.request({
               method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
               params: [
-                xnft.install.account.xnft.toString(),
+                safeToString(xnft.install.account.xnft),
                 {
                   mediaPermissions: updatedMediaPermissions,
                 },
@@ -124,14 +126,14 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
             await background.request({
               method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
               params: [
-                xnft.install.account.xnft.toString(),
+                safeToString(xnft.install.account.xnft),
                 {
                   pushNotifications: updatedPushNotifications,
                 },
               ],
             });
             await updateRemotePreference(
-              xnft.install.account.xnft.toString(),
+              safeToString(xnft.install.account.xnft),
               username || "",
               {
                 notifications: updatedPushNotifications,
@@ -206,7 +208,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
           }}
           onClick={() =>
             window.open(
-              `${XNFT_GG_LINK}/app/${xnft.install.account.xnft.toString()}`
+              `${XNFT_GG_LINK}/app/${safeToString(xnft.install.account.xnft)}`
             )
           }
         >
@@ -240,11 +242,13 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
             ? "This xNFT was developed by the Backpack team and cannot be uninstalled."
             : "Uninstalling will remove this xNFT from your account."}
         </Typography>
-        {!isBaked ? <NegativeButton
-          disabled={isDisabled}
-          label="Uninstall xNFT"
-          onClick={() => setOpenConfirm(true)}
-          /> : null}
+        {!isBaked ? (
+          <NegativeButton
+            disabled={isDisabled}
+            label="Uninstall xNFT"
+            onClick={() => setOpenConfirm(true)}
+          />
+        ) : null}
       </div>
       <ApproveTransactionDrawer
         openDrawer={openConfirm}

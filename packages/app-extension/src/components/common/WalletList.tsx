@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
@@ -117,7 +118,7 @@ function WalletButton({
   const onCopy = async () => {
     setTooltipOpen(true);
     setTimeout(() => setTooltipOpen(false), 1000);
-    await navigator.clipboard.writeText(wallet.publicKey.toString());
+    await navigator.clipboard.writeText(safeToString(wallet.publicKey));
   };
 
   return (
@@ -405,7 +406,7 @@ function _WalletList({
   }) => {
     await background.request({
       method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-      params: [w.publicKey.toString(), w.blockchain],
+      params: [safeToString(w.publicKey), w.blockchain],
     });
   };
 
@@ -588,7 +589,7 @@ export function WalletList({
           const isSelected =
             false &&
             selectedWalletPublicKey !== undefined &&
-            selectedWalletPublicKey === wallet.publicKey.toString();
+            selectedWalletPublicKey === safeToString(wallet.publicKey);
           return (
             <WalletListItem
               inverted={inverted}
@@ -642,7 +643,7 @@ export function WalletListItem({
   return (
     <ListItem
       inverted={inverted}
-      key={publicKey.toString()}
+      key={safeToString(publicKey)}
       onClick={() => onClick(wallet)}
       isFirst={isFirst}
       isLast={isLast}

@@ -1,3 +1,4 @@
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import type { Blockchain } from "@coral-xyz/common";
 import { ListItem } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -31,7 +32,7 @@ export const WalletListItem: React.FC<{
   return (
     <ListItem
       button
-      key={publicKey.toString()}
+      key={safeToString(publicKey)}
       isFirst={isFirst}
       isLast={isLast}
       detail={
@@ -73,16 +74,18 @@ export const WalletListItem: React.FC<{
           maxWidth: "75px",
         }}
       />
-      {type ? <div
-        style={{
+      {type ? (
+        <div
+          style={{
             display: "flex",
             justifyContent: "center",
             flexDirection: "column",
             marginLeft: "4px",
           }}
         >
-        <ImportTypeBadge type={type} />
-      </div> : null}
+          <ImportTypeBadge type={type} />
+        </div>
+      ) : null}
     </ListItem>
   );
 };

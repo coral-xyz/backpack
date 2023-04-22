@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import {
   Blockchain,
   SOL_NATIVE_MINT,
@@ -37,7 +38,7 @@ import {
   Typography,
 } from "@mui/material";
 import type { BigNumberish } from "ethers";
-import { ethers,FixedNumber } from "ethers";
+import { ethers, FixedNumber } from "ethers";
 
 import { Button as XnftButton } from "../../plugin/Component";
 import { TextField } from "../common";
@@ -691,10 +692,12 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
 
   const rate = fromAmount.gt(Zero)
     ? ethers.utils.commify(
-        scale(
-          FixedNumber.from(toAmount).divUnsafe(FixedNumber.from(fromAmount)),
-          decimalDifference
-        ).toString()
+        safeToString(
+          scale(
+            FixedNumber.from(toAmount).divUnsafe(FixedNumber.from(fromAmount)),
+            decimalDifference
+          )
+        )
       )
     : "0";
 

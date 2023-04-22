@@ -1,4 +1,5 @@
 import { useState } from "react";
+import safeToString from "@coral-xyz/app-extension/src/utils/safeToString";
 import { walletAddressDisplay } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 
@@ -18,7 +19,7 @@ export const CopyablePublicKey = ({
 } & Partial<React.ComponentPropsWithoutRef<typeof TokenBadge>>) => {
   const theme = useCustomTheme();
   const [tooltipOpen, setTooltipOpen] = useState(false);
-  const publicKeyString = publicKey.toString();
+  const publicKeyString = safeToString(publicKey);
   return (
     <WithCopyTooltip tooltipOpen={tooltipOpen}>
       <div title={publicKeyString} aria-label={publicKeyString}>
