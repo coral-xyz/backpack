@@ -644,12 +644,6 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     collectionId: "J1S9H3QjnRtBbbuD4HjPV6RpRhwuk4zKbxsnCHuTgh9w",
   },
   {
-    id: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
-    name: "The Madlist",
-    image: "https://www.madlads.com/mad_lads_logo.svg",
-    collectionId: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
-  },
-  {
     id: "Et9ckpQCXFN5PsiYN781AczSVuQYyGEdDEPDJ7jrxz4c",
     name: "Sporting F1",
     image:
