@@ -617,6 +617,15 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     },
   },
   {
+    id: "skulls",
+    name: "Skull Mad Lads",
+    image: "https://madlads.s3.us-west-2.amazonaws.com/images/9864.png",
+    collectionId: "J1S9H3QjnRtBbbuD4HjPV6RpRhwuk4zKbxsnCHuTgh9w",
+    attributeMapping: {
+      Type: "Skull",
+    },
+  },
+  {
     id: "nokiamon",
     name: "Nokiamon",
     image:
