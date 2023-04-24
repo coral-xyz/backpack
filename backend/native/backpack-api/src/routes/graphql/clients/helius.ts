@@ -2,6 +2,11 @@ import type { AccountInfo } from "@solana/web3.js";
 
 const API_BASE = "https://api.helius.xyz/v0";
 
+/**
+ * Build the API route endpoint based on the argued subpath.
+ * @param {string} route
+ * @returns {string}
+ */
 const _endpoint = (route: string): string =>
   `${API_BASE}/${route.replace(/^\//g, "")}?api-key=${
     process.env.HELIUS_API_KEY ?? ""

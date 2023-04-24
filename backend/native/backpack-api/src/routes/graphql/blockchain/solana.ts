@@ -9,6 +9,13 @@ import { type Blockchain, toBalance } from ".";
 export class Solana implements Blockchain {
   constructor() {}
 
+  /**
+   * Fetch and aggregate the native and token balances and
+   * prices for the argued wallet address.
+   * @param {string} address
+   * @returns {(Promise<WalletBalances | null>)}
+   * @memberof Solana
+   */
   async getBalancesForAddress(address: string): Promise<WalletBalances | null> {
     const balances = await Helius.getBalances(address);
     const nonEmptyOrNftTokens = balances.tokens.filter(
@@ -22,7 +29,7 @@ export class Solana implements Blockchain {
 
     const nativeData: TokenBalance = {
       address,
-      amount: balances.nativeBalance,
+      amount: balances.nativeBalance.toString(),
       decimals: this.nativeDecimals(),
       displayAmount: toBalance(
         balances.nativeBalance,
@@ -46,7 +53,7 @@ export class Solana implements Blockchain {
       const p: CoinGeckoPriceData | null = prices[meta?.id ?? ""] ?? null;
       return {
         address: t.tokenAccount,
-        amount: t.amount,
+        amount: t.amount.toString(),
         decimals: t.decimals,
         displayAmount: toBalance(t.amount, t.decimals).toString(),
         marketData:
@@ -76,10 +83,20 @@ export class Solana implements Blockchain {
     };
   }
 
+  /**
+   * Chain ID enum variant.
+   * @returns {ChainId}
+   * @memberof Solana
+   */
   id(): ChainId {
     return ChainId.Solana;
   }
 
+  /**
+   * Native coin decimals.
+   * @returns {number}
+   * @memberof Solana
+   */
   nativeDecimals(): number {
     return 9;
   }

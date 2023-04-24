@@ -13,7 +13,7 @@ enum ChainID {
 
 type TokenBalance {
   address: String!
-  amount: Float!
+  amount: String!
   decimals: Int!
   displayAmount: String!
   marketData: MarketData

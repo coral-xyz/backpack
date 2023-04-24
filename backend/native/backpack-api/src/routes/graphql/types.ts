@@ -50,7 +50,7 @@ export type QueryBalancesArgs = {
 export type TokenBalance = {
   __typename?: "TokenBalance";
   address: Scalars["String"];
-  amount: Scalars["Float"];
+  amount: Scalars["String"];
   decimals: Scalars["Int"];
   displayAmount: Scalars["String"];
   marketData?: Maybe<MarketData>;
@@ -227,7 +227,7 @@ export type TokenBalanceResolvers<
   ParentType extends ResolversParentTypes["TokenBalance"] = ResolversParentTypes["TokenBalance"]
 > = ResolversObject<{
   address?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  amount?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  amount?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   decimals?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   displayAmount?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   marketData?: Resolver<
