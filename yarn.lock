@@ -3195,7 +3195,7 @@ __metadata:
     "@mui/icons-material": ^5.11.9
     "@mui/material": ^5.11.10
     "@mui/styles": ^5.11.9
-    "@onsol/tldparser": 0.5.1
+    "@onsol/tldparser": 0.5.3
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.10
     "@project-serum/anchor": ^0.24.2
     "@solana/web3.js": ^1.63.1
@@ -8229,9 +8229,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@onsol/tldparser@npm:0.5.1":
-  version: 0.5.1
-  resolution: "@onsol/tldparser@npm:0.5.1"
+"@onsol/tldparser@npm:0.5.3":
+  version: 0.5.3
+  resolution: "@onsol/tldparser@npm:0.5.3"
   dependencies:
     "@ethersproject/sha2": ^5.7.0
     "@metaplex-foundation/beet-solana": ^0.4.0
@@ -8240,7 +8240,7 @@ __metadata:
     bn.js: ^5.2.1
     borsh: ^0.7.0
     buffer: 6.0.1
-  checksum: 04a451df1c4d26264a0a0842c7176b148abaff2f5f730cde26ea6c12531def531d2bb7d941f85d414d3bc55c539ef50b3aa47d6699b13686462def9eeec671c5
+  checksum: bc3877a0b629bd8e265b3040eca280db365256bf6350c9d51f85fc1ec19adc29be8632bcc2b5313bbb96a32d2bc6e46bb867cb424af5b86e98aeffc94ffdfbb1
   languageName: node
   linkType: hard
 
