@@ -23,6 +23,7 @@ import usersRouter from "./routes/v1/users";
 import { zodErrorToString } from "./util";
 
 const app = express();
+
 // eslint-disable-next-line
 const bodyParser = require("body-parser");
 // eslint-disable-next-line
