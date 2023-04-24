@@ -74,25 +74,14 @@ export class User {
   private async handleMessage(message: ToServer) {
     switch (message.type) {
       case CHAT_MESSAGES:
-        if (message.payload.room === "backpack-chat") {
-          return;
-        }
-
-        let smallText = true;
-        message.payload.messages.forEach((x) => {
-          if (x?.message?.length > 130) {
-            smallText = false;
-          }
-        });
-
-        if (!smallText) {
-          return;
-        }
-
         let nsfwImage = false;
         await Promise.all(
           message.payload.messages.map(async (x) => {
-            if (x.message_kind === "media") {
+            // @ts-ignore
+            if (
+              x.message_kind === "media" &&
+              x.message_metadata?.media_kind === "image"
+            ) {
               try {
                 const res = await fetch(`${NSFW_VALIDATION_SERVER}/validate`, {
                   method: "post",
