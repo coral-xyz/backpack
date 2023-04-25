@@ -30,6 +30,7 @@ export enum ChainId {
 export type Collection = {
   __typename?: "Collection";
   mint: Scalars["String"];
+  name?: Maybe<Scalars["String"]>;
   verified: Scalars["Boolean"];
 };
 
@@ -226,6 +227,7 @@ export type CollectionResolvers<
   ParentType extends ResolversParentTypes["Collection"] = ResolversParentTypes["Collection"]
 > = ResolversObject<{
   mint?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   verified?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

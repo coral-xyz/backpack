@@ -107,10 +107,36 @@ export class Solana implements Blockchain {
     }
 
     const metadatas = await Helius.getTokenMetadata(nftMints, true);
+
+    const uniqueCollections = new Set<string>();
+    for (const m of metadatas) {
+      const c = m.onChainMetadata?.metadata.collection ?? undefined;
+      if (c && !uniqueCollections.has(c.key)) {
+        uniqueCollections.add(c.key);
+      }
+    }
+
+    const collectionMetadatas = await Helius.getTokenMetadata(
+      [...uniqueCollections.values()],
+      true
+    );
+
+    const collectionNameMap = new Map<string, string>();
+    for (const c of collectionMetadatas) {
+      const data = c.onChainMetadata?.metadata.data ?? undefined;
+      if (data) {
+        collectionNameMap.set(c.account, data.name);
+      }
+    }
+
     return metadatas.map((m) => ({
       collection: m.onChainMetadata?.metadata.collection
         ? {
             mint: m.onChainMetadata.metadata.collection.key,
+            name:
+              collectionNameMap.get(
+                m.onChainMetadata.metadata.collection.key
+              ) ?? null,
             verified: m.onChainMetadata.metadata.collection.verified,
           }
         : null,
