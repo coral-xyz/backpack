@@ -8,9 +8,9 @@ const metaplex = new Metaplex(connection);
 
 export const validateOwnership = async (
   mint: string,
-  collection: string,
-  centralizedGroup: string,
-  owner: string
+  collection: string
+  // centralizedGroup: string,
+  // owner: string
 ) => {
   try {
     //TODO: make use of centralizedGroup group here
@@ -27,8 +27,8 @@ export const validateOwnership = async (
       largestAccounts.value[0]?.address
     );
     return (
-      nft.getResult()?.collection?.address.toString() === collection &&
-      largestAccountInfo?.value?.data?.parsed?.info?.owner === owner
+      nft.getResult().collection.address.toString() === collection &&
+      largestAccountInfo?.value?.data?.parsed?.info?.owner
     );
   } catch (e) {
     console.log(e);
