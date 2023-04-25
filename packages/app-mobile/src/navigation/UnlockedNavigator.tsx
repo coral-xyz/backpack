@@ -25,7 +25,7 @@ import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 import { ChatNavigator } from "~navigation/ChatNavigator";
 import { WalletsNavigator } from "~navigation/WalletsNavigator";
 import { NotificationsScreen } from "~screens/NotificationsScreen";
-// import { BalancesNavigator } from "~screens/Unlocked/BalancesScreen";
+import { BalancesNavigator } from "~screens/Unlocked/BalancesScreen";
 import {
   DepositListScreen,
   DepositSingleScreen,
@@ -214,13 +214,14 @@ function UnlockedBottomTabNavigator(): JSX.Element {
       })}
     >
       <Tab.Screen name="Wallets" component={WalletsNavigator} />
-      <Tab.Screen name="Chat" component={ChatNavigator} />
       <Tab.Screen
         name="Notifications"
         component={NotificationsScreen}
         options={{ headerShown: true }}
       />
+      <Tab.Screen name="Chat" component={ChatNavigator} />
       <Tab.Screen name="AccountSettings" component={AccountSettingsNavigator} />
+      <Tab.Screen name="Dummy" component={DummyScreen} />
     </Tab.Navigator>
   );
 }

@@ -329,7 +329,8 @@ export function ListItemWalletOverview({
 }): JSX.Element {
   return (
     <ListItem
-      onPress={() => onPress?.({ blockchain, publicKey})}
+      backgroundColor="$nav"
+      onPress={() => onPress?.({ blockchain, publicKey })}
       borderRadius={!grouped ? "$container" : undefined}
       borderColor={!grouped ? "$borderFull" : undefined}
       borderWidth={!grouped ? 2 : undefined}

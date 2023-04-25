@@ -1,13 +1,7 @@
 import type { Blockchain } from "@coral-xyz/common";
 
 import { useState } from "react";
-import type {
-  ImageStyle,
-  StyleProp,
-  TextStyle,
-  ViewStyle,
-  TextProps,
-} from "react-native";
+import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from "react-native";
 import {
   ActivityIndicator,
   Alert,
@@ -17,6 +11,7 @@ import {
   Text,
   View,
   ScrollView,
+  Button,
 } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
@@ -116,8 +111,30 @@ export function Screen({
   style?: StyleProp<ViewStyle>;
   headerPadding?: boolean;
 }) {
+  const [show, setShow] = useState(false);
   const insets = useSafeAreaInsets();
   const theme = useTheme();
+
+  // added for perf/dev reasons
+  if (!show) {
+    return (
+      <View
+        style={[
+          screenStyles.container,
+          {
+            flex: 1,
+            backgroundColor: "white",
+            alignItems: "center",
+            justifyContent: "center",
+          },
+          style,
+        ]}
+      >
+        <Button title="Load Screen" onPress={() => setShow(true)} />
+      </View>
+    );
+  }
+
   if (scrollable) {
     return (
       <ScrollView

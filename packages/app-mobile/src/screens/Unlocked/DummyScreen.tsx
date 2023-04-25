@@ -18,11 +18,9 @@ import {
   Box,
   XStack,
   ListItem,
-  ListItem2,
   YStack,
   YGroup,
   Separator,
-  Switch,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -80,6 +78,7 @@ function ListItemSentReceived({
       borderRadius={grouped ? 0 : "$container"}
       borderColor={grouped ? undefined : "$borderFull"}
       borderWidth={grouped ? 0 : 2}
+      backgroundColor="$nav"
       paddingHorizontal={16}
       paddingVertical={12}
       icon={<Image style={styles.rowLogo} src={iconUrl} />}
@@ -171,7 +170,7 @@ function ListItemNotification({
 }): JSX.Element {
   return (
     <ListItem
-      backgroundColor={unread ? "#E5EEFD" : undefined}
+      backgroundColor={unread ? "#E5EEFD" : "$nav"}
       borderRadius={!grouped ? "$container" : undefined}
       borderColor={!grouped ? "$borderFull" : undefined}
       borderWidth={!grouped ? 2 : undefined}
@@ -620,6 +619,7 @@ export function DummyScreen({ navigation }): JSX.Element {
             borderWidth={2}
             borderColor="$borderFull"
             borderRadius="$container"
+            backgroundColor="$nav"
             separator={<Separator />}
           >
             <YGroup.Item>

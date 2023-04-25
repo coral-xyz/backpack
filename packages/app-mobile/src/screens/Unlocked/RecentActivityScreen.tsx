@@ -36,6 +36,7 @@ import {
 import { ListItem2, YGroup } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Source, TransactionType } from "helius-sdk/dist/types";
+import { ErrorBoundary } from "react-error-boundary";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { EmptyState, Screen, StyledText } from "~components/index";
@@ -115,16 +116,18 @@ export function RecentActivityList({
   style?: StyleProp<ViewStyle>;
 }) {
   return (
-    <Suspense fallback={<RecentActivityLoading />}>
-      <_RecentActivityList
-        blockchain={blockchain}
-        address={address}
-        contractAddresses={contractAddresses}
-        transactions={transactions}
-        minimize={minimize}
-        style={style}
-      />
-    </Suspense>
+    <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
+      <Suspense fallback={<RecentActivityLoading />}>
+        <_RecentActivityList
+          blockchain={blockchain}
+          address={address}
+          contractAddresses={contractAddresses}
+          transactions={transactions}
+          minimize={minimize}
+          style={style}
+        />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 
@@ -444,12 +447,6 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     marginRight: 12,
     justifyContent: "center",
-  },
-  title: {
-    color: "black",
-    fontSize: 16,
-    fontWeight: "500",
-    lineHeight: 24,
   },
   caption: {
     color: "gray",

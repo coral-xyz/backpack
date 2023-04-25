@@ -5,6 +5,7 @@ import { Text } from "tamagui";
 
 import { useCustomTheme } from "../hooks/index";
 export * from "./Images";
+export * from "./ListItem2";
 export { SearchBox } from "./SearchBox";
 export { StyledText } from "./StyledText";
 

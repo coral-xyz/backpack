@@ -1,7 +1,9 @@
+import type { Token, NavTokenOptions } from "@@types/types";
+import type { Blockchain } from "@coral-xyz/common";
+
 import { useCallback } from "react";
 import { FlatList } from "react-native";
 
-import { NavTokenOptions } from "@@types/types";
 import { Box } from "@coral-xyz/tamagui";
 import { useIsFocused } from "@react-navigation/native";
 
@@ -27,8 +29,12 @@ function _WalletOverviewScreen({ navigation }) {
   });
 
   const onPressToken = useCallback(
-    (id: string) => {
-      navigation.push("TokenDetail", { id });
+    (blockchain: Blockchain, token: Token) => {
+      navigation.push("TokenDetail", {
+        blockchain,
+        tokenAddress: token.address,
+        tokenTicker: token.ticker,
+      });
     },
     [navigation]
   );
