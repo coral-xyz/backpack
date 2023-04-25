@@ -23,16 +23,19 @@ import {
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import type { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import {
   Button,
   CircularProgress,
   Divider,
+  IconButton,
   MenuItem,
   Typography,
 } from "@mui/material";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
 import { RightClickMenu } from "../../common/Layout/RightClickMenu";
+import PopoverMenu from "../../common/PopoverMenu";
 
 import { useOpenChat } from "./Detail";
 import { SendDrawer } from "./SendDrawer";
@@ -111,6 +114,7 @@ export function NFTCard({
   );
   const openChat = useOpenChat();
   const [joiningChat, setJoiningChat] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const { contents, state } = useRecoilValueLoadable(
     collectibleXnft(
@@ -153,6 +157,16 @@ export function NFTCard({
     e.stopPropagation();
   };
 
+  // todo: move to common since it's shared with ./Detail.tsx
+  const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  // todo: move to common since it's shared with ./Detail.tsx
+  const onClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <SendDrawer nft={nft}>
       {(openDrawer) => (
@@ -169,18 +183,20 @@ export function NFTCard({
                     await onOpenChat(e);
                   }}
                 >
-                  Open Chat
+                  Chat
                 </MenuItem>
               ) : null}
-              {xnft || chat ? <Divider /> : null}
-              <MenuItem onClick={openDetails}>NFT Details</MenuItem>
+              {/* {xnft || chat ? <Divider /> : null} */}
+              <MenuItem sx={{ width: "100px" }} onClick={openDetails}>
+                View
+              </MenuItem>
               <MenuItem
                 onClick={() => {
                   closeMenu();
                   openDrawer();
                 }}
               >
-                Send NFT
+                Send
               </MenuItem>
             </>
           )}
@@ -306,41 +322,57 @@ export function NFTCard({
                   </span>
                 ) : null}
               </Typography>
-              {chat && nft.mint ? (
-                <div
+              <div>
+                <IconButton
+                  disableRipple
                   style={{
-                    height: "24px",
-                    width: "24px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    cursor: "pointer",
+                    padding: 0,
                   }}
-                  onClick={onOpenChat}
+                  onClick={(e) => onClick(e)}
                 >
-                  {joiningChat ? (
-                    <CircularProgress
-                      sx={{
-                        color: theme.custom.colors.fontColor,
-                        height: "13px",
-                        width: "13px",
+                  <MoreHorizIcon
+                    style={{
+                      color: theme.custom.colors.secondary,
+                    }}
+                  />
+                </IconButton>
+                <PopoverMenu.Root
+                  open={Boolean(anchorEl)}
+                  anchorEl={anchorEl}
+                  onClose={onClose}
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                >
+                  <PopoverMenu.Group>
+                    {xnft ? (
+                      <PopoverMenu.Item onClick={onOpenXnft}>
+                        Open xNFT
+                      </PopoverMenu.Item>
+                    ) : null}
+                    <PopoverMenu.Item
+                      sx={{ width: "100px" }}
+                      onClick={openDetails}
+                    >
+                      View
+                    </PopoverMenu.Item>
+                    {chat ? (
+                      <PopoverMenu.Item
+                        onClick={async (e) => {
+                          await onOpenChat(e);
+                        }}
+                      >
+                        Chat
+                      </PopoverMenu.Item>
+                    ) : null}
+                    <PopoverMenu.Item
+                      onClick={() => {
+                        openDrawer();
                       }}
-                      size="small"
-                      thickness={3}
-                    />
-                  ) : (
-                    <MessageBubbleIcon
-                      sx={{
-                        width: "18px",
-                        color: theme.custom.colors.fontColor,
-                        "&:hover": {
-                          color: `${theme.custom.colors.fontColor3} !important`,
-                        },
-                      }}
-                    />
-                  )}
-                </div>
-              ) : null}
+                    >
+                      Send
+                    </PopoverMenu.Item>
+                  </PopoverMenu.Group>
+                </PopoverMenu.Root>
+              </div>
             </div>
           </>
         </RightClickMenu>
