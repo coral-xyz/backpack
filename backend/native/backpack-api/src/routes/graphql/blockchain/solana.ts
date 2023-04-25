@@ -1,7 +1,7 @@
 import { SystemProgram } from "@solana/web3.js";
 
-import { CoinGecko, type CoinGeckoPriceData } from "../clients/coingecko";
-import { Helius } from "../clients/helius";
+import type { CoinGeckoPriceData } from "../clients/coingecko";
+import type { ApiContext } from "../context";
 import {
   ChainId,
   type Nft,
@@ -12,7 +12,11 @@ import {
 import { type Blockchain, toBalance } from ".";
 
 export class Solana implements Blockchain {
-  constructor() {}
+  readonly #ctx: ApiContext;
+
+  constructor(ctx: ApiContext) {
+    this.#ctx = ctx;
+  }
 
   /**
    * Fetch and aggregate the native and token balances and
@@ -22,15 +26,21 @@ export class Solana implements Blockchain {
    * @memberof Solana
    */
   async getBalancesForAddress(address: string): Promise<WalletBalances | null> {
-    const balances = await Helius.getBalances(address);
+    const balances = await this.#ctx.dataSources.helius.getBalances(address);
     const nonEmptyOrNftTokens = balances.tokens.filter(
       (t) => t.amount > 0 && !(t.amount === 1 && t.decimals === 0)
     );
 
     const nonNftMints = nonEmptyOrNftTokens.map((t) => t.mint);
-    const legacy = await Helius.getLegacyMetadata(nonNftMints);
+    const legacy = await this.#ctx.dataSources.helius.getLegacyMetadata(
+      nonNftMints
+    );
+
     const ids = [...legacy.values()].map((v) => v.id);
-    const prices = await CoinGecko.getPrices(["solana", ...ids]);
+    const prices = await this.#ctx.dataSources.coinGecko.getPrices([
+      "solana",
+      ...ids,
+    ]);
 
     const nativeData: TokenBalance = {
       address,
@@ -95,7 +105,7 @@ export class Solana implements Blockchain {
    * @memberof Solana
    */
   async getNftsForAddress(address: string): Promise<Nft[] | null> {
-    const assets = await Helius.getBalances(address);
+    const assets = await this.#ctx.dataSources.helius.getBalances(address);
     const nftMints = assets.tokens.reduce<string[]>(
       (acc, curr) =>
         curr.amount === 1 && curr.decimals === 0 ? [...acc, curr.mint] : acc,
@@ -106,7 +116,10 @@ export class Solana implements Blockchain {
       return [];
     }
 
-    const metadatas = await Helius.getTokenMetadata(nftMints, true);
+    const metadatas = await this.#ctx.dataSources.helius.getTokenMetadata(
+      nftMints,
+      true
+    );
 
     const uniqueCollections = new Set<string>();
     for (const m of metadatas) {
@@ -116,10 +129,11 @@ export class Solana implements Blockchain {
       }
     }
 
-    const collectionMetadatas = await Helius.getTokenMetadata(
-      [...uniqueCollections.values()],
-      true
-    );
+    const collectionMetadatas =
+      await this.#ctx.dataSources.helius.getTokenMetadata(
+        [...uniqueCollections.values()],
+        true
+      );
 
     const collectionNameMap = new Map<string, string>();
     for (const c of collectionMetadatas) {

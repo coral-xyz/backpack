@@ -1,3 +1,4 @@
+import type { ApiContext } from "../context";
 import { ChainId, type WalletBalances } from "../types";
 
 import { Ethereum } from "./ethereum";
@@ -17,13 +18,13 @@ export interface Blockchain {
  * @param {ChainId} id
  * @returns {Blockchain}
  */
-export function getBlockchainForId(id: ChainId): Blockchain {
+export function getBlockchainForId(id: ChainId, ctx: ApiContext): Blockchain {
   switch (id) {
     case ChainId.Ethereum: {
-      return new Ethereum();
+      return new Ethereum(ctx);
     }
     case ChainId.Solana: {
-      return new Solana();
+      return new Solana(ctx);
     }
   }
 }

@@ -1,15 +1,16 @@
-import { Alchemy, BigNumber } from "alchemy-sdk";
+import { BigNumber } from "alchemy-sdk";
 import { ethers } from "ethers";
 
+import type { ApiContext } from "../context";
 import { ChainId, type TokenBalance, type WalletBalances } from "../types";
 
 import type { Blockchain } from ".";
 
 export class Ethereum implements Blockchain {
-  #alchemy: Alchemy;
+  readonly #ctx: ApiContext;
 
-  constructor() {
-    this.#alchemy = new Alchemy({ apiKey: process.env.ALCHEMY_API_KEY });
+  constructor(ctx: ApiContext) {
+    this.#ctx = ctx;
   }
 
   /**
@@ -20,8 +21,9 @@ export class Ethereum implements Blockchain {
    * @memberof Ethereum
    */
   async getBalancesForAddress(address: string): Promise<WalletBalances | null> {
-    const native = await this.#alchemy.core.getBalance(address);
-    const tokenBalances = await this.#alchemy.core.getTokensForOwner(address);
+    const native = await this.#ctx.dataSources.alchemy.core.getBalance(address);
+    const tokenBalances =
+      await this.#ctx.dataSources.alchemy.core.getTokensForOwner(address);
 
     const nonEmptyTokens = tokenBalances.tokens.filter(
       (t) => (t.rawBalance ?? "0") !== "0"

@@ -1,17 +1,18 @@
 import qs from "qs";
 
-const API_BASE = "https://api.coingecko.com/api/v3/simple";
+export class CoinGecko {
+  static readonly #apiBase: string = "https://api.coingecko.com/api/v3/simple";
 
-export abstract class CoinGecko {
+  constructor() {}
+
   /**
    * Fetches the market price data for the argued asset IDs.
-   * @static
    * @template I
    * @param {I[]} ids
    * @returns {Promise<CoinGeckoGetPricesResponse<I>>}
    * @memberof CoinGecko
    */
-  static async getPrices<I extends string>(
+  async getPrices<I extends string>(
     ids: I[]
   ): Promise<CoinGeckoGetPricesResponse<I>> {
     const query = qs.stringify({
@@ -20,7 +21,7 @@ export abstract class CoinGecko {
       include_24hr_change: true,
       include_last_updated_at: true,
     });
-    const resp = await fetch(`${API_BASE}/price?${query}`);
+    const resp = await fetch(`${CoinGecko.#apiBase}/price?${query}`);
     return resp.json();
   }
 }

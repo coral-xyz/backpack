@@ -9,6 +9,7 @@ import http from "http";
 
 import { app } from "../../index";
 
+import { type ApiContext, createContext } from "./context";
 import { queryResolvers, walletResolvers } from "./query";
 import type { Resolvers } from "./types";
 
@@ -18,7 +19,7 @@ const resolvers: Resolvers = {
 };
 
 const httpServer = http.createServer(app);
-const apollo = new ApolloServer({
+const apollo = new ApolloServer<ApiContext>({
   typeDefs: readFileSync("./src/routes/graphql/schema.graphql", "utf-8"),
   resolvers,
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
@@ -29,7 +30,11 @@ router.use(cors());
 router.use(bodyParser.json());
 
 apollo.start().then(() => {
-  router.use(expressMiddleware(apollo));
+  router.use(
+    expressMiddleware(apollo, {
+      context: createContext,
+    })
+  );
 });
 
 export default router;

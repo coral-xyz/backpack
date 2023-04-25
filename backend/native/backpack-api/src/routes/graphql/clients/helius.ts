@@ -1,44 +1,37 @@
 import type { AccountInfo } from "@solana/web3.js";
 
-const API_BASE = "https://api.helius.xyz";
+export class Helius {
+  static readonly #apiBase: string = "https://api.helius.xyz";
+  readonly #apiKey: string;
 
-/**
- * Build the API route endpoint based on the argued subpath.
- * @param {string} route
- * @returns {string}
- */
-const _endpoint = (route: string): string =>
-  `${API_BASE}/${route.replace(/^\//g, "")}?api-key=${
-    process.env.HELIUS_API_KEY ?? ""
-  }`;
+  constructor(apiKey: string) {
+    this.#apiKey = apiKey;
+  }
 
-export abstract class Helius {
   /**
    * Get the raw native and token balance data for the argued wallet address.
-   * @static
    * @param {string} address
    * @returns {Promise<HeliusGetBalancesResponse>}
    * @memberof Helius
    */
-  static async getBalances(
-    address: string
-  ): Promise<HeliusGetBalancesResponse> {
-    const resp = await fetch(_endpoint(`/v0/addresses/${address}/balances`));
+  async getBalances(address: string): Promise<HeliusGetBalancesResponse> {
+    const resp = await fetch(
+      this._endpoint(`/v0/addresses/${address}/balances`)
+    );
     return resp.json();
   }
 
   /**
    * Fetch and create a mapping between token mint address and discoverable
    * CoinGecko token ID and logo URIs through the legacy token metadata extensions.
-   * @static
    * @param {string[]} mints
    * @returns {Promise<Map<string, { id: string, logo: string }>>}
    * @memberof Helius
    */
-  static async getLegacyMetadata(
+  async getLegacyMetadata(
     mints: string[]
   ): Promise<Map<string, { id: string; logo: string }>> {
-    const resp = await fetch(_endpoint("/v0/token-metadata"), {
+    const resp = await fetch(this._endpoint("/v0/token-metadata"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -66,17 +59,16 @@ export abstract class Helius {
 
   /**
    * Fetch the token metadata for all mints in the argued array.
-   * @static
    * @param {string[]} mints
    * @param {boolean} [includeOffChain]
    * @returns {Promise<HeliusGetTokenMetadataResponse>}
    * @memberof Helius
    */
-  static async getTokenMetadata(
+  async getTokenMetadata(
     mints: string[],
     includeOffChain?: boolean
   ): Promise<HeliusGetTokenMetadataResponse> {
-    const resp = await fetch(_endpoint("/v0/token-metadata"), {
+    const resp = await fetch(this._endpoint("/v0/token-metadata"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -86,6 +78,18 @@ export abstract class Helius {
       }),
     });
     return resp.json();
+  }
+
+  /**
+   * Build the API route endpoint based on the argued subpath.
+   * @param {string} route
+   * @returns {string}
+   * @memberof Helius
+   */
+  private _endpoint(route: string): string {
+    return `${Helius.#apiBase}/${route.replace(/^\//g, "")}?api-key=${
+      this.#apiKey
+    }`;
   }
 }
 
