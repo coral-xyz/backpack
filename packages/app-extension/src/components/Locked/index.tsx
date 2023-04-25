@@ -113,6 +113,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
                 placeholder="Password"
                 type={showPassword ? "text" : "password"}
                 value={password}
+                //onKeyDown={() => setError(false)}
                 setValue={(e) => setPassword(e.target.value)}
                 endAdornment={
                   <InputAdornment position="end">
@@ -221,11 +222,11 @@ function LockScreenAvatar({
           size={120}
           src={avatarUrl}
           style={{
-            height: "120px",
-            width: "120px",
+            height: "100px",
+            width: "100px",
             borderRadius: "60px",
             position: "absolute",
-            bottom: -152,
+            bottom: -130,
             transform: "translate(-50%, 0%)",
             transformOrigin: undefined,
             display: "inline",
