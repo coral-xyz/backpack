@@ -1,4 +1,4 @@
-import type { StyleProp, TextStyle, ViewStyle } from "react-native";
+import type { StyleProp, ViewStyle } from "react-native";
 import { Pressable, StyleSheet, View } from "react-native";
 import { HOVER_OPACITY } from "@coral-xyz/themes";
 import { Text } from "tamagui";
@@ -6,6 +6,7 @@ import { Text } from "tamagui";
 import { useCustomTheme } from "../hooks/index";
 export * from "./Images";
 export { SearchBox } from "./SearchBox";
+export { StyledText } from "./StyledText";
 
 export function Margin({
   bottom,
