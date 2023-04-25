@@ -198,6 +198,7 @@ async function handleGetAccountInfo(
     new PublicKey(pubkey),
     commitment
   );
+
   return [BackgroundSolanaConnection.accountInfoToJson(resp)];
 }
 

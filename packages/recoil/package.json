@@ -17,6 +17,7 @@
   "dependencies": {
     "@coral-xyz/common": "*",
     "@coral-xyz/db": "*",
+    "@coral-xyz/xnft": "^0.2.50",
     "@metaplex-foundation/mpl-token-metadata": "^2.5.2",
     "@project-serum/anchor": "^0.25.0",
     "@solana/spl-token": "^0.3.6",

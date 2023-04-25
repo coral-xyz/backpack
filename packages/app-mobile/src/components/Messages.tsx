@@ -1,37 +1,26 @@
-import React, { useCallback, useMemo } from "react";
-import { FlatList, Pressable, FlatListProps } from "react-native";
+import React, { useCallback, useMemo, useState } from "react";
+import { Button, FlatList, Pressable, FlatListProps } from "react-native";
 
 import {
-  formatMessage,
   formatAMPM,
   isBackpackTeam,
-  SubscriptionType,
+  markSpam,
+  sendFriendRequest,
 } from "@coral-xyz/common";
-import {
-  XStack,
-  YStack,
-  ListItem,
-  Avatar,
-  Text,
-  Circle,
-} from "@coral-xyz/tamagui";
+import { XStack, YStack, ListItem, Text, Circle } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Verified } from "@tamagui/lucide-icons";
 
+import { UserAvatar } from "~components/UserAvatar";
 import { useTheme } from "~hooks/useTheme";
+import type {
+  ChatRowData,
+  ChatListItemProps,
+} from "~screens/Unlocked/Chat/ChatHelpers";
+import { useMessagePreview } from "~screens/Unlocked/Chat/ChatHelpers";
 
-const UserAvatar = ({
-  imageUrl,
-  size,
-}: {
-  imageUrl: string;
-  size: number;
-}): JSX.Element => (
-  <Avatar circular size={size}>
-    <Avatar.Image src={imageUrl} />
-    <Avatar.Fallback bg="gray" />
-  </Avatar>
-);
+const ROW_HEIGHT = 68;
+const AVATAR_SIZE = 44;
 
 function Action({
   text,
@@ -119,7 +108,8 @@ function UserListItem({
       jc="flex-start"
       hoverTheme
       pressTheme
-      icon={<UserAvatar size={28} imageUrl={imageUrl} />}
+      fontFamily="Inter"
+      icon={<UserAvatar size={28} uri={imageUrl} />}
       onPress={() => onPressRow(id)}
     >
       <XStack jc="space-between" ai="center" flex={1}>
@@ -178,30 +168,9 @@ export function ChatListItem({
   isUnread,
   userId,
   onPress,
-  users = [],
-}: {
-  type: SubscriptionType;
-  image: string;
-  name: string;
-  message: string;
-  timestamp: string;
-  id: string;
-  isUnread: boolean;
-  userId: string;
-  onPress: (
-    id: string,
-    type: SubscriptionType,
-    name: string,
-    remoteUserId?: string,
-    remoteUsername?: string
-  ) => void;
-  users: any[];
-}): JSX.Element {
+}: ChatListItemProps): JSX.Element {
   const theme = useTheme();
-  const messagePreview = useMemo(
-    () => formatMessage(message, users),
-    [message, users]
-  );
+  const messagePreview = useMessagePreview(message);
 
   return (
     <ListItem
@@ -213,17 +182,28 @@ export function ChatListItem({
       }
       hoverTheme
       pressTheme
+      height={ROW_HEIGHT}
       justifyContent="flex-start"
+      icon={<UserAvatar size={AVATAR_SIZE} uri={image} />}
       onPress={() => {
         if (type === "individual") {
-          onPress(id, type, name, userId, name);
+          onPress({
+            roomId: id,
+            roomType: type,
+            roomName: name,
+            remoteUserId: userId,
+            remoteUsername: name,
+          });
         } else {
-          onPress(id, type, name);
+          onPress({
+            roomId: id,
+            roomType: type,
+            roomName: name,
+          });
         }
       }}
-      icon={<UserAvatar size={48} imageUrl={image} />}
     >
-      <XStack jc="space-between" f={1}>
+      <XStack justifyContent="space-between" f={1}>
         <YStack>
           <Text
             marginBottom={2}
@@ -269,66 +249,19 @@ export function MessageList({
   requestCount,
   allChats,
   onPressRow,
+  onPressRequest,
+  onRefreshChats,
+  isRefreshing,
 }: {
   requestCount: number;
   allChats: any[];
-  onPressRow: (id: string, type: SubscriptionType, roomName: string) => void;
+  onPressRow: (data: ChatRowData) => void;
+  onPressRequest: () => void;
+  onRefreshChats: () => void;
+  isRefreshing: boolean;
 }): JSX.Element {
-  const chats = useMemo(() => {
-    const s = allChats.map((activeChat) => {
-      return {
-        type: activeChat.chatType,
-        id:
-          // ? activeChat.chatProps.remoteUserId
-          activeChat.chatType === "individual"
-            ? activeChat.chatProps.friendshipId
-            : activeChat.chatProps.collectionId,
-        image:
-          activeChat.chatType === "individual"
-            ? activeChat.chatProps.remoteUserImage!
-            : activeChat.chatProps.image!,
-        userId:
-          activeChat.chatType === "individual"
-            ? activeChat.chatProps.remoteUserId!
-            : "",
-        name:
-          activeChat.chatType === "individual"
-            ? activeChat.chatProps.remoteUsername!
-            : activeChat.chatProps.name!,
-        message:
-          activeChat.chatType === "individual"
-            ? activeChat.chatProps.last_message!
-            : activeChat.chatProps.lastMessage!,
-        timestamp:
-          activeChat.chatType === "individual"
-            ? activeChat.chatProps.last_message_timestamp || ""
-            : activeChat.chatProps.lastMessageTimestamp || "",
-        isUnread:
-          activeChat.chatType === "individual"
-            ? !!activeChat.chatProps.unread
-            : activeChat.chatProps.lastMessageUuid !==
-              activeChat.chatProps.lastReadMessage,
-      };
-    });
-
-    if (requestCount > 0) {
-      // @ts-ignore
-      // Renders "Message Requests" at the top
-      // s.unshift({
-      //   id: -1,
-      // });
-    }
-
-    return s;
-  }, [allChats, requestCount]);
-
   const renderItem = useCallback(
-    ({ item, index }) => {
-      // turn off message requests for now so we can ship a new build
-      // if (requestCount > 0 && item.id === -1) {
-      //   return <ChatListItemMessageRequest requestCount={requestCount} />;
-      // }
-
+    ({ item }: { item: ChatListItemProps }) => {
       return (
         <ChatListItem
           id={item.id}
@@ -340,7 +273,6 @@ export function MessageList({
           timestamp={item.timestamp}
           isUnread={item.isUnread}
           onPress={onPressRow}
-          users={[]}
         />
       );
     },
@@ -349,17 +281,35 @@ export function MessageList({
 
   return (
     <List
-      data={chats}
+      data={allChats}
       renderItem={renderItem}
+      onRefresh={onRefreshChats}
+      refreshing={isRefreshing}
+      ListHeaderComponent={
+        requestCount > 0 ? (
+          <ChatListItemMessageRequest
+            requestCount={requestCount}
+            onPress={onPressRequest}
+          />
+        ) : null
+      }
       keyExtractor={({ id }: { id: string }) => id}
+      // If using ItemSeparatorComponent make sure to include the height of that here
+      getItemLayout={(_data, index) => ({
+        length: ROW_HEIGHT,
+        offset: ROW_HEIGHT * index,
+        index,
+      })}
     />
   );
 }
 
 function ChatListItemMessageRequest({
   requestCount,
+  onPress,
 }: {
   requestCount: number;
+  onPress: () => void;
 }): JSX.Element {
   const theme = useTheme();
   const subTitle =
@@ -371,13 +321,16 @@ function ChatListItemMessageRequest({
     <ListItem
       title="Message requests"
       fontWeight="700"
+      fontFamily="Inter"
+      height={ROW_HEIGHT}
       subTitle={subTitle}
+      onPress={onPress}
       icon={
         <Circle
-          size={48}
-          bg={theme.custom.colors.background}
-          jc="center"
-          ai="center"
+          size={AVATAR_SIZE}
+          backgroundColor={theme.custom.colors.background}
+          justifyContent="center"
+          alignItems="center"
         >
           <MaterialIcons name="mark-chat-unread" size={24} color="black" />
         </Circle>
@@ -400,13 +353,52 @@ export function List({
       keyExtractor={keyExtractor}
       style={{
         flex: 1,
-        borderRadius: 14,
-        overflow: "hidden",
-        borderWidth: 2,
-        borderColor: theme.custom.colors.borderFull,
+        // borderRadius: 14,
+        // overflow: "hidden",
+        // borderWidth: 2,
+        // borderColor: theme.custom.colors.borderFull,
         backgroundColor: theme.custom.colors.nav,
       }}
       {...props}
+    />
+  );
+}
+
+export function SpamButton({
+  remoteUserId,
+}: {
+  remoteUserId: string;
+}): JSX.Element {
+  const [loading, setLoading] = useState(false);
+  return (
+    <Button
+      title={loading ? "Loading..." : "Mark as Spam"}
+      onPress={async () => {
+        setLoading(true);
+        await markSpam({ remoteUserId, spam: true });
+        setLoading(false);
+      }}
+    />
+  );
+}
+
+export function FriendRequestButton({
+  remoteUserId,
+}: {
+  remoteUserId: string;
+}): JSX.Element {
+  const [loading, setLoading] = useState(false);
+  return (
+    <Button
+      title={loading ? "Loading..." : "Add to Friends"}
+      onPress={async () => {
+        setLoading(true);
+        await sendFriendRequest({
+          to: remoteUserId,
+          sendRequest: true,
+        });
+        setLoading(false);
+      }}
     />
   );
 }

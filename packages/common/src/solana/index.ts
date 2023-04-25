@@ -71,6 +71,7 @@ export * from "./explorer";
 export * from "./programs";
 export * from "./provider";
 export * from "./rpc-helpers";
+export * from "./send-helpers";
 export * from "./transaction-helpers";
 export * from "./types";
 export * from "./wallet-adapter";
@@ -407,10 +408,10 @@ export class Solana {
     const { walletPublicKey, tokenClient, commitment } = solanaCtx;
     const { amount, mint, destination: destinationOwner } = req;
 
-    const sourceAta = associatedTokenAddress(mint, walletPublicKey);
+    const source = req.source ?? associatedTokenAddress(mint, walletPublicKey);
     const destinationAta = associatedTokenAddress(mint, destinationOwner);
 
-    const ownerTokenRecord = await tokenRecordAddress(mint, sourceAta);
+    const ownerTokenRecord = await tokenRecordAddress(mint, source);
 
     // we need to check whether the token is lock or listed
 
@@ -441,7 +442,7 @@ export class Solana {
     const transferAcccounts: TransferInstructionAccounts = {
       authority: walletPublicKey,
       tokenOwner: walletPublicKey,
-      token: sourceAta,
+      token: source,
       metadata: await metadataAddress(mint),
       mint,
       edition: await masterEditionAddress(mint),
@@ -726,6 +727,9 @@ export type TransferTokenRequest = {
   mint: PublicKey;
   amount: number;
   decimals?: number;
+  // Source token addess. If not provided, an ATA will
+  // be derived from the wallet.
+  source?: PublicKey;
 };
 
 export type TransferSolRequest = {

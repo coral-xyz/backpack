@@ -4,15 +4,10 @@
     connection_info:
       database_url:
         from_env: HASURA_GRAPHQL_DATABASE_URL
-      isolation_level: read-committed
-      use_prepared_statements: false
     read_replicas:
       - database_url:
           from_env: READONLY_DATABASE_URL
-        isolation_level: read-committed
-        pool_settings:
-          connection_lifetime: 600
-        use_prepared_statements: false
   customization:
     naming_convention: hasura-default
   tables: "!include default/tables/tables.yaml"
+  functions: "!include default/functions/functions.yaml"

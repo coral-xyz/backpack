@@ -23,5 +23,8 @@
   "scripts": {
     "build": "esbuild ./src/index.js --bundle --platform=node --outfile=dist/index.js",
     "start": "npm run build && node dist/index.js"
+  },
+  "devDependencies": {
+    "vitest": "^0.29.8"
   }
 }

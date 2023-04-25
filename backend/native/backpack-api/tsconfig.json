@@ -11,6 +11,10 @@
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": ["src/types/express/index.d.ts"],
+  "include": [
+    "src/types/express/index.d.ts",
+    "src/**/__tests__/**/*.ts",
+    "vite.config.ts"
+  ],
   "files": ["src/index.ts"]
 }

@@ -48,12 +48,15 @@ export const nftCollectionsWithIds = selector<
         })
       )
     );
-    return allWalletCollections;
+    return allWalletCollections.filter(Boolean) as Array<{
+      publicKey: string;
+      collections: Array<NftCollection>;
+    }>;
   },
 });
 
 export const nftById = equalSelectorFamily<
-  Nft,
+  Nft | null,
   { publicKey: string; connectionUrl: string; nftId: string }
 >({
   key: "nftById",
@@ -132,7 +135,7 @@ export const nftsByIds = selectorFamily<
       nftIds: { nftId: string; publicKey: string }[];
       blockchain: Blockchain;
     }) =>
-    async ({ get }: any) => {
+    async ({ get }) => {
       const connectionUrl =
         blockchain === Blockchain.ETHEREUM
           ? get(ethereumConnectionUrl)
@@ -149,7 +152,7 @@ export const nftsByIds = selectorFamily<
           })
         )
       );
-      return allNfts;
+      return allNfts.filter(Boolean) as Array<Nft>;
     },
 });
 
@@ -165,15 +168,16 @@ export const collectionChatWL = selector<
   key: "collectionChatWL",
   get: async ({ get }: any) => {
     const onLive = get(isOneLive);
-    return onLive.wlCollection &&
-      onLive.wlCollection !== "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tGs7vP6qczfj"
+    return onLive.madladsCollection &&
+      onLive.madladsCollection !==
+        "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj"
       ? [
           ...WHITELISTED_CHAT_COLLECTIONS,
           {
-            id: onLive.wlCollection,
-            name: "The Madlist",
+            id: onLive.madladsCollection,
+            name: "Mad Lads",
             image: "https://www.madlads.com/mad_lads_logo.svg",
-            collectionId: onLive.wlCollection,
+            collectionId: onLive.madladsCollection,
           },
         ]
       : WHITELISTED_CHAT_COLLECTIONS;
@@ -239,13 +243,13 @@ export const chatByNftId = selectorFamily<
       const whitelistedChatCollections = get(collectionChatWL);
 
       const whitelistedChatCollection = whitelistedChatCollections.find((x) => {
-        if (
-          x.collectionId !== nft?.metadataCollectionId ||
-          !x.attributeMapping
-        ) {
+        if (x.collectionId !== nft?.metadataCollectionId) {
           return false;
         }
 
+        if (!x.attributeMapping) {
+          return true;
+        }
         const doesNOThaveAttributes = Object.keys(
           x.attributeMapping || {}
         ).find((attrName) => {

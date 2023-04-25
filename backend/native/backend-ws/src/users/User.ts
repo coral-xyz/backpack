@@ -17,6 +17,8 @@ import {
 import type { SubscriptionType } from "@coral-xyz/common/dist/esm/messages/toServer";
 import type WebSocket from "ws";
 
+const NSFW_VALIDATION_SERVER = "https://nsfw-check.xnfts.dev";
+
 import {
   getNftCollections,
   validateCentralizedGroupOwnership,
@@ -72,6 +74,40 @@ export class User {
   private async handleMessage(message: ToServer) {
     switch (message.type) {
       case CHAT_MESSAGES:
+        let nsfwImage = false;
+        await Promise.all(
+          message.payload.messages.map(async (x) => {
+            // @ts-ignore
+            if (
+              x.message_kind === "media" &&
+              x.message_metadata?.media_kind === "image"
+            ) {
+              try {
+                const res = await fetch(`${NSFW_VALIDATION_SERVER}/validate`, {
+                  method: "post",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    // @ts-ignore
+                    url: x.message_metadata?.media_link,
+                  }),
+                });
+                const json = await res.json();
+                if (json.success === false) {
+                  nsfwImage = true;
+                }
+              } catch (e) {
+                console.error("nsfw server down?");
+              }
+            }
+          })
+        );
+
+        if (nsfwImage) {
+          return;
+        }
+
         const subscription = this.subscriptions.find(
           (x) =>
             x.room === message.payload.room && x.type === message.payload.type

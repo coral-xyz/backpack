@@ -1,0 +1,7 @@
+{
+  "expo": {
+    "name": "mnemonics-xnft",
+    "slug": "mnemonics-xnft",
+    "entryPoint": "./src/index"
+  }
+}

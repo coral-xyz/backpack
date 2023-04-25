@@ -11,11 +11,16 @@ import {
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
   UI_RPC_METHOD_KEYRING_SET_MNEMONIC,
+  UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
 } from "@coral-xyz/common";
-import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
-import { useBackgroundClient, useRpcRequests } from "@coral-xyz/recoil";
+import { CheckIcon, PrimaryButton, TextInput } from "@coral-xyz/react-common";
+import {
+  useBackgroundClient,
+  useDehydratedWallets,
+  useRpcRequests,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 import { useSteps } from "../../../../hooks/useSteps";
 import { Header } from "../../../common";
@@ -28,6 +33,103 @@ import {
 import { useNavigation } from "../../../common/Layout/NavStack";
 
 import { ConfirmCreateWallet } from "./";
+
+// WARNING: this will force set the mnemonic. Only use this if no mnemonic
+//          exists.
+export function ImportMnemonicAutomatic() {
+  const background = useBackgroundClient();
+  const dehydratedWallets = useDehydratedWallets();
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const { close } = useDrawerContext();
+
+  const onSync = async (mnemonic: string) => {
+    await background.request({
+      method: UI_RPC_METHOD_KEYRING_SET_MNEMONIC,
+      params: [mnemonic],
+    });
+    if (dehydratedWallets.length > 0) {
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
+        params: [dehydratedWallets],
+      });
+    }
+  };
+
+  return (
+    <>
+      <MnemonicInput
+        key="MnemonicInput"
+        buttonLabel="Import"
+        onNext={async (mnemonic) => {
+          onSync(mnemonic);
+          setOpenDrawer(true);
+        }}
+      />
+      <WithMiniDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={(isOpen: boolean) => {
+          setOpenDrawer(isOpen);
+          if (!isOpen) {
+            close();
+          }
+        }}
+        backdropProps={{
+          style: {
+            opacity: 0.8,
+            background: "#18181b",
+          },
+        }}
+      >
+        <ConfirmWalletSync
+          onClose={() => {
+            setOpenDrawer(false);
+            close();
+          }}
+        />
+      </WithMiniDrawer>
+    </>
+  );
+}
+
+export const ConfirmWalletSync = ({ onClose }: { onClose: () => void }) => {
+  const theme = useCustomTheme();
+  return (
+    <div
+      style={{
+        height: "232px",
+        backgroundColor: theme.custom.colors.bg2,
+        padding: "16px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+    >
+      <div>
+        <Typography
+          style={{
+            marginTop: "16px",
+            textAlign: "center",
+            fontWeight: 500,
+            fontSize: "18px",
+            lineHeight: "24px",
+            color: theme.custom.colors.fontColor,
+          }}
+        >
+          Recovery Phrase Set
+        </Typography>
+        <div
+          style={{
+            textAlign: "center",
+            marginTop: "24px",
+          }}
+        >
+          <CheckIcon />
+        </div>
+      </div>
+      <PrimaryButton label="Done" onClick={() => onClose()} />
+    </div>
+  );
+};
 
 export function ImportMnemonic({
   blockchain,
@@ -48,6 +150,7 @@ export function ImportMnemonic({
   const { step, nextStep } = useSteps();
   const { close: closeParentDrawer } = useDrawerContext();
   const { signMessageForWallet } = useRpcRequests();
+  const dehydratedWallets = useDehydratedWallets();
 
   const [openDrawer, setOpenDrawer] = useState(false);
   const [mnemonic, setMnemonic] = useState<string | true>(true);
@@ -78,6 +181,15 @@ export function ImportMnemonic({
         method: UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
         params: [signedWalletDescriptor],
       });
+      const walletsToSync = dehydratedWallets.filter(
+        (w) => w.publicKey !== publicKey
+      );
+      if (walletsToSync.length > 0) {
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
+          params: [walletsToSync],
+        });
+      }
     } else {
       if (!inputMnemonic) {
         if (keyringExists) {
@@ -108,10 +220,25 @@ export function ImportMnemonic({
           signedWalletDescriptor.derivationPath
         );
 
-        publicKey = await background.request({
-          method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-          params: [blockchain, privateKey, name],
-        });
+        if (keyringExists) {
+          publicKey = await background.request({
+            method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+            params: [blockchain, privateKey, name],
+          });
+        } else {
+          // Blockchain keyring doesn't exist, init
+          publicKey = await background.request({
+            method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+            params: [
+              {
+                signature: signedWalletDescriptor.signature,
+                blockchain,
+                publicKey: signedWalletDescriptor.publicKey,
+                privateKey,
+              },
+            ],
+          });
+        }
       }
     }
 
@@ -179,7 +306,12 @@ export function ImportMnemonic({
       {steps[step]}
       <WithMiniDrawer
         openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
+        setOpenDrawer={(open: boolean) => {
+          setOpenDrawer(open);
+          if (!open) {
+            closeParentDrawer();
+          }
+        }}
         backdropProps={{
           style: {
             opacity: 0.8,

@@ -45,34 +45,39 @@ export const fetchMoreChatsFor = async (
   ];
 
   const qs = params.join("&");
-  const json = await makeBackendApiRequest(`chats?${qs}`, {
-    method: "GET",
-    jwt,
-  });
-  const chats: MessageWithMetadata[] = json.chats;
+  try {
+    const json = await makeBackendApiRequest(`chat?${qs}`, {
+      method: "GET",
+      jwt,
+    });
+    const chats: MessageWithMetadata[] = json.chats;
 
-  SignalingManager.getInstance().onUpdateRecoil({
-    type: "chat",
-    payload: {
+    SignalingManager.getInstance().onUpdateRecoil({
+      type: "chat",
+      payload: {
+        uuid,
+        room,
+        type,
+        chats: chats.map((chat) => ({
+          ...chat,
+          direction: uuid === chat.uuid ? "send" : "recv",
+          received: true,
+          from_http_server: 1,
+        })),
+      },
+    });
+
+    await bulkAddChats(
       uuid,
-      room,
-      type,
-      chats: chats.map((chat) => ({
+      chats.map((chat) => ({
         ...chat,
         direction: uuid === chat.uuid ? "send" : "recv",
         received: true,
         from_http_server: 1,
-      })),
-    },
-  });
-
-  await bulkAddChats(
-    uuid,
-    chats.map((chat) => ({
-      ...chat,
-      direction: uuid === chat.uuid ? "send" : "recv",
-      received: true,
-      from_http_server: 1,
-    }))
-  );
+      }))
+    );
+  } catch (e) {
+    console.log("Error found :(");
+    console.log(JSON.stringify(e));
+  }
 };

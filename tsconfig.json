@@ -8,7 +8,6 @@
     { "path": "packages/chat-sdk" },
     { "path": "packages/common" },
     { "path": "packages/db" },
-    { "path": "packages/deptool" },
     { "path": "packages/ledger-injection" },
     { "path": "packages/message-sdk" },
     { "path": "packages/provider-core" },

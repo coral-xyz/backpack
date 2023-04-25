@@ -158,11 +158,9 @@ export const getAllUsers = async (
 ) => {
   const response = await chain("query")(
     {
-      auth_users: [
+      auth_users_whose_username_matches: [
         {
-          where: {
-            username: { _like: `${prefix}%` },
-          },
+          args: { prefix },
           limit,
           offset: limit * offset,
         },
@@ -175,20 +173,21 @@ export const getAllUsers = async (
         {},
         {
           aggregate: {
-            count: true,
+            count: [{}, true],
           },
         },
       ],
     },
-    { operationName: "getAllUsers" }
+    // eslint-disable-next-line zeus-custom/require-operation-name
+    { operationName: "getAllUsersWith30sCache @cached(ttl: 30)" }
   );
   return {
     users:
-      response.auth_users?.map((x) => ({
-        id: x?.id || "",
-        username: x?.username || "",
+      response.auth_users_whose_username_matches.map((x) => ({
+        id: String(x?.id || ""),
+        username: String(x?.username || ""),
       })) || [],
-    count: response.auth_users_aggregate?.aggregate?.count || 0,
+    count: response.auth_users_aggregate.aggregate?.count || 0,
   };
 };
 
@@ -200,10 +199,10 @@ export const getNftMembers = async (
 ): Promise<{ users: { id: string; username: string }[]; count: number }> => {
   const response = await chain("query")(
     {
-      auth_users: [
+      auth_users_whose_username_matches: [
         {
+          args: { prefix },
           where: {
-            username: { _like: `${prefix}%` },
             public_keys: {
               user_nfts: {
                 _or: [
@@ -221,31 +220,36 @@ export const getNftMembers = async (
           username: true,
         },
       ],
-      auth_user_nfts_aggregate: [
+      auth_users_aggregate: [
         {
           where: {
-            _or: [
-              { collection_id: { _eq: collectionId } },
-              { centralized_group: { _eq: collectionId } },
-            ],
+            public_keys: {
+              user_nfts: {
+                _or: [
+                  { collection_id: { _eq: collectionId } },
+                  { centralized_group: { _eq: collectionId } },
+                ],
+              },
+            },
           },
         },
         {
           aggregate: {
-            count: true,
+            count: [{}, true],
           },
         },
       ],
     },
-    { operationName: "getNftMembers" }
+    // eslint-disable-next-line zeus-custom/require-operation-name
+    { operationName: "getNftMembersWith30sCache @cached(ttl: 30)" }
   );
   return {
     users:
-      response.auth_users?.map((x) => ({
-        id: x?.id || "",
-        username: x?.username || "",
+      response.auth_users_whose_username_matches?.map((x) => ({
+        id: String(x?.id || ""),
+        username: String(x?.username || ""),
       })) || [],
-    count: response.auth_user_nfts_aggregate?.aggregate?.count || 0,
+    count: response.auth_users_aggregate?.aggregate?.count || 0,
   };
 };
 
