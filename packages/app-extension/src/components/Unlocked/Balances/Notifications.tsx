@@ -8,6 +8,7 @@ import {
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
+import { ProfileScreen } from "@coral-xyz/message-sdk";
 import {
   BubbleTopLabel,
   EmptyState,
@@ -136,6 +137,10 @@ export function NotificationButton() {
             <NavStackScreen
               name="root"
               component={(props: any) => <Notifications {...props} />}
+            />
+            <NavStackScreen
+              name="profile"
+              component={(props: any) => <ProfileScreen {...props} />}
             />
             <NavStackScreen
               name="contacts"
@@ -309,6 +314,10 @@ export function Notifications() {
               <NavStackScreen
                 name="root"
                 component={(props: any) => <Contacts {...props} />}
+              />
+              <NavStackScreen
+                name="profile"
+                component={(props: any) => <ProfileScreen {...props} />}
               />
               <NavStackScreen
                 name="contact-requests"
@@ -543,12 +552,20 @@ function NotificationListItem({
   );
 }
 
-function AcceptRejectRequest({ userId }: { userId: string }) {
+function AcceptRejectRequest({
+  userId,
+  username,
+}: {
+  userId: string;
+  username: string;
+}) {
   const friendshipValue = useFriendship({ userId });
   const { uuid } = useUser();
   const setFriendshipValue = useUpdateFriendships();
   const theme = useCustomTheme();
   const [inProgress, setInProgress] = useState(false);
+  const { isXs } = useBreakpoints();
+  const nav = isXs ? useNavigation() : undefined;
 
   if (friendshipValue?.remoteRequested && !friendshipValue?.areFriends) {
     return (
@@ -573,6 +590,8 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
               },
             });
             setInProgress(false);
+            nav!.push("profile", { userId: userId });
+            nav!.setOptions({ headerTitle: `@${username}` });
           }}
         />
         <UserAction
@@ -636,7 +655,12 @@ function FriendRequestListItem({
     <ListItem
       button
       disableRipple
-      onClick={() => (isXs ? nav!.push("contacts") : onOpenDrawer!())}
+      onClick={() => {
+        isXs
+          ? nav!.push("profile", { userId: parseJson(notification.body).from })
+          : onOpenDrawer!();
+        nav!.setOptions({ headerTitle: `@${user.username}` });
+      }}
       style={{
         paddingLeft: "12px",
         paddingRight: "12px",
@@ -686,7 +710,10 @@ function FriendRequestListItem({
               </div>
             </div>
             <Typography className={classes.txBody}>@{user.username}</Typography>
-            <AcceptRejectRequest userId={parseJson(notification.body).from} />
+            <AcceptRejectRequest
+              userId={parseJson(notification.body).from}
+              username={user.username}
+            />
           </div>
         </div>
       </div>
