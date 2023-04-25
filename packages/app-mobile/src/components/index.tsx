@@ -31,7 +31,7 @@ import {
   SecondaryButton,
   NegativeButton,
   DangerButton,
-  Text as _Text,
+  StyledText,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -56,6 +56,7 @@ export {
   SecondaryButton,
   NegativeButton,
   DangerButton,
+  StyledText,
 };
 
 export function CallToAction({
@@ -103,40 +104,6 @@ const ctaStyles = StyleSheet.create({
     fontWeight: "500",
   },
 });
-
-export function StyledText({
-  fontWeight = "500",
-  fontSize = "$base",
-  textAlign,
-  children,
-  color,
-  style,
-  ...props
-}: {
-  fontSize?: number | string;
-  fontWeight?: string;
-  children: string | string[];
-  textAlign?: string;
-  color?: string;
-  style?: StyleProp<TextStyle>;
-} & TextProps) {
-  const theme = useTheme();
-  const _color = color || theme.custom.colors.fontColor;
-  return (
-    <_Text
-      color={_color}
-      fontSize={fontSize}
-      fontFamily="$body"
-      fontWeight={fontWeight}
-      // @ts-expect-error
-      textAlign={textAlign}
-      style={style}
-      {...props}
-    >
-      {children}
-    </_Text>
-  );
-}
 
 export function Screen({
   scrollable,
