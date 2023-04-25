@@ -5,6 +5,7 @@ import { Solana } from "./solana";
 
 export interface Blockchain {
   getBalancesForAddress(address: string): Promise<WalletBalances | null>;
+  getNftsForAddress(address: string): Promise<any>;
   id(): ChainId;
   nativeDecimals(): number;
 }

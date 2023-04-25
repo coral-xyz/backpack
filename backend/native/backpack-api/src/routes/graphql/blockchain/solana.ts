@@ -2,7 +2,12 @@ import { SystemProgram } from "@solana/web3.js";
 
 import { CoinGecko, type CoinGeckoPriceData } from "../clients/coingecko";
 import { Helius } from "../clients/helius";
-import { ChainId, type TokenBalance, type WalletBalances } from "../types";
+import {
+  ChainId,
+  type Nft,
+  type TokenBalance,
+  type WalletBalances,
+} from "../types";
 
 import { type Blockchain, toBalance } from ".";
 
@@ -81,6 +86,38 @@ export class Solana implements Blockchain {
       native: nativeData,
       tokens: splTokenData,
     };
+  }
+
+  /**
+   * Get a list of NFT data for tokens owned by the argued address.
+   * @param {string} address
+   * @returns {(Promise<Nft[] | null>)}
+   * @memberof Solana
+   */
+  async getNftsForAddress(address: string): Promise<Nft[] | null> {
+    const assets = await Helius.getBalances(address);
+    const nftMints = assets.tokens.reduce<string[]>(
+      (acc, curr) =>
+        curr.amount === 1 && curr.decimals === 0 ? [...acc, curr.mint] : acc,
+      []
+    );
+
+    if (nftMints.length === 0) {
+      return [];
+    }
+
+    const metadatas = await Helius.getTokenMetadata(nftMints, true);
+    return metadatas.map((m) => ({
+      collection: m.onChainMetadata?.metadata.collection
+        ? {
+            mint: m.onChainMetadata.metadata.collection.key,
+            verified: m.onChainMetadata.metadata.collection.verified,
+          }
+        : null,
+      imageUrl: m.offChainMetadata?.metadata.image,
+      mint: m.account,
+      name: m.onChainMetadata?.metadata.data.name ?? "",
+    }));
   }
 
   /**

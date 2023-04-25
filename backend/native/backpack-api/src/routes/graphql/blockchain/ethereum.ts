@@ -57,6 +57,10 @@ export class Ethereum implements Blockchain {
     };
   }
 
+  async getNftsForAddress(address: string): Promise<any> {
+    return []; // TODO:
+  }
+
   /**
    * Chain ID enum variant.
    * @returns {ChainId}

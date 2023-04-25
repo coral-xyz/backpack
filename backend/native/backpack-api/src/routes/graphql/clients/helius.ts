@@ -1,6 +1,6 @@
 import type { AccountInfo } from "@solana/web3.js";
 
-const API_BASE = "https://api.helius.xyz/v0";
+const API_BASE = "https://api.helius.xyz";
 
 /**
  * Build the API route endpoint based on the argued subpath.
@@ -23,7 +23,7 @@ export abstract class Helius {
   static async getBalances(
     address: string
   ): Promise<HeliusGetBalancesResponse> {
-    const resp = await fetch(_endpoint(`/addresses/${address}/balances`));
+    const resp = await fetch(_endpoint(`/v0/addresses/${address}/balances`));
     return resp.json();
   }
 
@@ -38,7 +38,7 @@ export abstract class Helius {
   static async getLegacyMetadata(
     mints: string[]
   ): Promise<Map<string, { id: string; logo: string }>> {
-    const resp = await fetch(_endpoint("/token-metadata"), {
+    const resp = await fetch(_endpoint("/v0/token-metadata"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -62,6 +62,30 @@ export abstract class Helius {
     }
 
     return mappings;
+  }
+
+  /**
+   * Fetch the token metadata for all mints in the argued array.
+   * @static
+   * @param {string[]} mints
+   * @param {boolean} [includeOffChain]
+   * @returns {Promise<HeliusGetTokenMetadataResponse>}
+   * @memberof Helius
+   */
+  static async getTokenMetadata(
+    mints: string[],
+    includeOffChain?: boolean
+  ): Promise<HeliusGetTokenMetadataResponse> {
+    const resp = await fetch(_endpoint("/v0/token-metadata"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        mintAccounts: mints,
+        includeOffChain: includeOffChain ?? false,
+        disableCache: false,
+      }),
+    });
+    return resp.json();
   }
 }
 
@@ -94,7 +118,48 @@ export type HeliusGetTokenMetadataResponse = Array<{
     }>;
     error: string;
   };
-  onChainMetadata?: any; // FIXME:
+  onChainMetadata?: {
+    error?: string;
+    metadata: {
+      tokenStandard: string;
+      key: string;
+      updateAuthority: string;
+      mint: string;
+      data: {
+        name: string;
+        symbol?: string;
+        uri: string;
+        sellerFeeBasisPoints?: number;
+        creators: Array<{ address: string; share: number; verified: boolean }>;
+      };
+      primarySaleHappened: boolean;
+      isMutable: boolean;
+      editionNonce?: number;
+      uses?: {
+        useMethod: string;
+        remaining: number;
+        total: number;
+      };
+      collection?: {
+        key: string;
+        verified: boolean;
+      };
+      collectionDetails?: any;
+    };
+  };
+  offChainMetadata?: {
+    uri: string;
+    error?: string;
+    metadata: {
+      name: string;
+      description?: string;
+      symbol?: string;
+      image?: string;
+      sellerFeeBasisPoints?: number;
+      attributes?: Array<{ trait_type: string; value: string }>;
+      properties?: any;
+    };
+  };
   legacyMetadata?: {
     chainId: number;
     address: string;

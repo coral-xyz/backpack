@@ -4,6 +4,7 @@ schema {
 
 type Query {
   balances(chainId: ChainID!, address: String!): WalletBalances
+  nfts(chainId: ChainID!, address: String!): [Nft]
 }
 
 enum ChainID {
@@ -11,13 +12,9 @@ enum ChainID {
   SOLANA
 }
 
-type TokenBalance {
-  address: String!
-  amount: String!
-  decimals: Int!
-  displayAmount: String!
-  marketData: MarketData
+type Collection {
   mint: String!
+  verified: Boolean!
 }
 
 type MarketData {
@@ -27,6 +24,22 @@ type MarketData {
   logo: String!
   price: Float!
   value: Float!
+}
+
+type Nft {
+  collection: Collection
+  imageUrl: String
+  mint: String!
+  name: String!
+}
+
+type TokenBalance {
+  address: String!
+  amount: String!
+  decimals: Int!
+  displayAmount: String!
+  marketData: MarketData
+  mint: String!
 }
 
 type WalletBalances {
