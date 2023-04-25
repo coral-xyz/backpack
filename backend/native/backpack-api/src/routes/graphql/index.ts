@@ -9,11 +9,12 @@ import http from "http";
 
 import { app } from "../../index";
 
-import { queryResolver } from "./query";
+import { queryResolvers, walletResolvers } from "./query";
 import type { Resolvers } from "./types";
 
 const resolvers: Resolvers = {
-  Query: queryResolver,
+  Query: queryResolvers,
+  Wallet: walletResolvers,
 };
 
 const httpServer = http.createServer(app);
