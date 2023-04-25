@@ -26,6 +26,7 @@ export class Ethereum implements Blockchain {
    * @memberof Ethereum
    */
   async getBalancesForAddress(address: string): Promise<WalletBalances | null> {
+    // Fetch the native and all token balances of the address and filter out the empty balances
     const native = await this.#ctx.dataSources.alchemy.core.getBalance(address);
     const tokenBalances =
       await this.#ctx.dataSources.alchemy.core.getTokensForOwner(address);
@@ -34,8 +35,7 @@ export class Ethereum implements Blockchain {
       (t) => (t.rawBalance ?? "0") !== "0"
     );
 
-    console.log(nonEmptyTokens);
-
+    // Map the non-empty token balances to their schema type
     const tokens: TokenBalance[] = nonEmptyTokens.map((t) => {
       const amt = BigNumber.from(t.rawBalance ?? "0");
       return {
@@ -48,8 +48,6 @@ export class Ethereum implements Blockchain {
       };
     });
 
-    console.log(tokens);
-
     return {
       aggregateValue: 0,
       native: {
@@ -60,7 +58,7 @@ export class Ethereum implements Blockchain {
         marketData: null, // FIXME:TODO:
         mint: "",
       },
-      tokens: [],
+      tokens,
     };
   }
 
@@ -71,11 +69,14 @@ export class Ethereum implements Blockchain {
    * @memberof Ethereum
    */
   async getNftsForAddress(address: string): Promise<Nft[] | null> {
+    // Get all NFTs held by the address from Alchemy
     const nfts = await this.#ctx.dataSources.alchemy.nft.getNftsForOwner(
       address
     );
 
-    const x = nfts.ownedNfts.reduce<Nft[]>((acc, curr) => {
+    // Return an array of `Nft` schema types after filtering out all
+    // detected spam NFTs and mapping them with their possible collection data
+    return nfts.ownedNfts.reduce<Nft[]>((acc, curr) => {
       if (curr.spamInfo?.isSpam ?? false) return acc;
       const n: Nft = {
         id: curr.tokenId,
@@ -93,7 +94,6 @@ export class Ethereum implements Blockchain {
       };
       return [...acc, n];
     }, []);
-    return x;
   }
 
   /**

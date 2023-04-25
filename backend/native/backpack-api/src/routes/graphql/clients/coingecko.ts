@@ -26,6 +26,10 @@ export class CoinGecko {
   }
 }
 
+////////////////////////////////////////////
+//                Types                   //
+////////////////////////////////////////////
+
 export type CoinGeckoGetPricesResponse<I extends string> = Record<
   I,
   CoinGeckoPriceData

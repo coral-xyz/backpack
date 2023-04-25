@@ -1,9 +1,11 @@
 import { SystemProgram } from "@solana/web3.js";
 
 import type { CoinGeckoPriceData } from "../clients/coingecko";
+import type { HeliusGetTokenMetadataResponse } from "../clients/helius";
 import type { ApiContext } from "../context";
 import {
   ChainId,
+  type Collection,
   type Nft,
   type TokenBalance,
   type WalletBalances,
@@ -26,16 +28,20 @@ export class Solana implements Blockchain {
    * @memberof Solana
    */
   async getBalancesForAddress(address: string): Promise<WalletBalances | null> {
+    // Get the address balances and filter out the NFTs and empty ATAs
     const balances = await this.#ctx.dataSources.helius.getBalances(address);
     const nonEmptyOrNftTokens = balances.tokens.filter(
       (t) => t.amount > 0 && !(t.amount === 1 && t.decimals === 0)
     );
 
+    // Get the list of SPL mints and fetch their Coingecko IDs from the
+    // Helius legacy token metadata
     const nonNftMints = nonEmptyOrNftTokens.map((t) => t.mint);
     const legacy = await this.#ctx.dataSources.helius.getLegacyMetadata(
       nonNftMints
     );
 
+    // Query market data for SOL and each of the found SPL token IDs
     const ids = [...legacy.values()].map((v) => v.id);
     const prices = await this.#ctx.dataSources.coinGecko.getPrices([
       "solana",
@@ -63,6 +69,7 @@ export class Solana implements Blockchain {
       mint: SystemProgram.programId.toBase58(),
     };
 
+    // Map each SPL token into their `TokenBalance` return type object
     const splTokenData = nonEmptyOrNftTokens.map((t): TokenBalance => {
       const meta = legacy.get(t.mint);
       const p: CoinGeckoPriceData | null = prices[meta?.id ?? ""] ?? null;
@@ -86,6 +93,7 @@ export class Solana implements Blockchain {
       };
     });
 
+    // Calculate SPL token price value sum
     const splTokenValueSum = splTokenData.reduce(
       (acc, curr) => (curr.marketData ? acc + curr.marketData.value : acc),
       0
@@ -105,6 +113,7 @@ export class Solana implements Blockchain {
    * @memberof Solana
    */
   async getNftsForAddress(address: string): Promise<Nft[] | null> {
+    // Get the held SPL tokens for the address and reduce to only NFT mint addresses
     const assets = await this.#ctx.dataSources.helius.getBalances(address);
     const nftMints = assets.tokens.reduce<string[]>(
       (acc, curr) =>
@@ -116,11 +125,14 @@ export class Solana implements Blockchain {
       return [];
     }
 
+    // Fetch the token metadata for each NFT mint address from Helius
     const metadatas = await this.#ctx.dataSources.helius.getTokenMetadata(
       nftMints,
       true
     );
 
+    // Create a set of unique NFT collection addresses and fetch
+    // their metadata from Helius
     const uniqueCollections = new Set<string>();
     for (const m of metadatas) {
       const c = m.onChainMetadata?.metadata.collection ?? undefined;
@@ -135,29 +147,34 @@ export class Solana implements Blockchain {
         true
       );
 
-    const collectionNameMap = new Map<string, string>();
+    // Create a map of collection address to name and image for reference
+    const collectionMap = new Map<string, { name?: string; image?: string }>();
     for (const c of collectionMetadatas) {
-      const data = c.onChainMetadata?.metadata.data ?? undefined;
-      if (data) {
-        collectionNameMap.set(c.account, data.name);
+      const onChain = c.onChainMetadata?.metadata.data ?? undefined;
+      const offChain = c.offChainMetadata?.metadata ?? undefined;
+
+      if (onChain || offChain) {
+        collectionMap.set(c.account, {
+          name: onChain?.name,
+          image: offChain?.image,
+        });
       }
     }
 
-    return metadatas.map((m) => ({
-      id: m.account,
-      collection: m.onChainMetadata?.metadata.collection
-        ? {
-            address: m.onChainMetadata.metadata.collection.key,
-            image: m.offChainMetadata?.metadata.image,
-            name: collectionNameMap.get(
-              m.onChainMetadata.metadata.collection.key
-            ),
-            verified: m.onChainMetadata.metadata.collection.verified,
-          }
-        : null,
-      image: m.offChainMetadata?.metadata.image,
-      name: m.onChainMetadata?.metadata.data.name ?? "",
-    }));
+    // Map all NFT metadatas into their return type with possible collection data
+    return metadatas.map((m) => {
+      const collection = this._parseCollectionMetadata(
+        collectionMap,
+        m.onChainMetadata
+      );
+
+      return {
+        id: m.account,
+        collection,
+        image: m.offChainMetadata?.metadata.image,
+        name: m.onChainMetadata?.metadata.data.name ?? "",
+      };
+    });
   }
 
   /**
@@ -176,5 +193,34 @@ export class Solana implements Blockchain {
    */
   nativeDecimals(): number {
     return 9;
+  }
+
+  /**
+   * Parse a potential collection data object from the on-chain metadata for an NFT.
+   * @private
+   * @param {Map<string, { name?: string; image?: string }>} collectionMap
+   * @param {HeliusGetTokenMetadataResponse[number]["onChainMetadata"]} [onChainMetadata]
+   * @returns {(Collection | undefined)}
+   * @memberof Solana
+   */
+  private _parseCollectionMetadata(
+    collectionMap: Map<string, { name?: string; image?: string }>,
+    onChainMetadata?: HeliusGetTokenMetadataResponse[number]["onChainMetadata"]
+  ): Collection | undefined {
+    const hasCollection =
+      (onChainMetadata?.metadata.collection ?? undefined) !== undefined;
+
+    const mapValue = hasCollection
+      ? collectionMap.get(onChainMetadata!.metadata.collection!.key)
+      : undefined;
+
+    return hasCollection
+      ? {
+          address: onChainMetadata!.metadata.collection!.key,
+          image: mapValue?.image,
+          name: mapValue?.name,
+          verified: onChainMetadata!.metadata.collection!.verified,
+        }
+      : undefined;
   }
 }

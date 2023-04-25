@@ -93,6 +93,10 @@ export class Helius {
   }
 }
 
+////////////////////////////////////////////
+//                Types                   //
+////////////////////////////////////////////
+
 export type HeliusGetBalancesResponse = {
   nativeBalance: number;
   tokens: Array<{
@@ -147,7 +151,7 @@ export type HeliusGetTokenMetadataResponse = Array<{
       collection?: {
         key: string;
         verified: boolean;
-      };
+      } | null;
       collectionDetails?: any;
     };
   };
