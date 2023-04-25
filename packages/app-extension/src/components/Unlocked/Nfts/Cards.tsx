@@ -188,7 +188,7 @@ export function NFTCard({
           <>
             <Button
               className={classes.button}
-              onClick={xnft ? onOpenXnft : openDetails}
+              onClick={openDetails}
               disableRipple
               style={{
                 textTransform: "none",
@@ -234,7 +234,13 @@ export function NFTCard({
                 }}
               >
                 {xnft ? (
-                  <div className={`${classes.xnftIcon} xnftIcon`}>
+                  <div
+                    className={`${classes.xnftIcon} xnftIcon`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenXnft(e);
+                    }}
+                  >
                     <AppsColorIcon
                       className="appIcon"
                       style={{
@@ -255,11 +261,6 @@ export function NFTCard({
                   </div>
                 ) : null}
               </div>
-              {/* {xnft ? (
-          <div className={`${classes.openXnft} openXnft`}>
-            <Typography>Open xNFT</Typography>
-          </div>
-        ) : null} */}
             </Button>
             <div
               style={{
