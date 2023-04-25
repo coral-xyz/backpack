@@ -26,6 +26,7 @@ import {
   NegativeButton,
   DangerButton,
   Text as _Text,
+  StyledText,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -49,6 +50,7 @@ export {
   SecondaryButton,
   NegativeButton,
   DangerButton,
+  StyledText,
 };
 
 export function CallToAction({
@@ -96,38 +98,6 @@ const ctaStyles = StyleSheet.create({
     fontWeight: "500",
   },
 });
-
-export function StyledText({
-  fontWeight = "500",
-  fontSize = 16,
-  textAlign,
-  children,
-  style,
-  ...props
-}: {
-  fontSize?: number;
-  fontWeight?: string;
-  children: string;
-  textAlign?: string;
-  style?: StyleProp<TextStyle>;
-}) {
-  const theme = useTheme();
-  const color = theme.custom.colors.fontColor;
-  return (
-    <_Text
-      color={theme.custom.colors.fontColor}
-      fontSize={fontSize}
-      fontFamily="Inter"
-      fontWeight={fontWeight}
-      // @ts-expect-error
-      textAlign={textAlign}
-      style={[{ color }, style]}
-      {...props}
-    >
-      {children}
-    </_Text>
-  );
-}
 
 export function Screen({
   scrollable,
