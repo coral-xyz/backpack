@@ -49,7 +49,7 @@
     "react-virtualized-auto-sizer": "^1.0.7",
     "react-window": "^1.8.8",
     "recoil": "^0.7.6",
-    "tamagui": "^1.14.3",
+    "tamagui": "^1.15.39",
     "web-push": "^3.5.0"
   },
   "scripts": {
@@ -80,7 +80,7 @@
     "@types/node": "^12.0.0",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
-    "@types/react-native": "~0.71.3",
+    "@types/react-native": "~0.71.6",
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
     "babel-loader": "^9.1.2",
@@ -108,7 +108,7 @@
     "stream-browserify": "^3.0.0",
     "style-loader": "^3.3.1",
     "swc-loader": "^0.2.3",
-    "tamagui-loader": "^1.14.3",
+    "tamagui-loader": "^1.15.39",
     "typescript": "~4.9.3",
     "webpack": "^5.75.0",
     "webpack-bundle-analyzer": "^4.7.0",
