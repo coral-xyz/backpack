@@ -57,6 +57,12 @@ export class Ethereum implements Blockchain {
     };
   }
 
+  /**
+   * Get a list of NFT data for tokens owned by the argued address.
+   * @param {string} address
+   * @returns {Promise<any>}
+   * @memberof Ethereum
+   */
   async getNftsForAddress(address: string): Promise<any> {
     return []; // TODO:
   }

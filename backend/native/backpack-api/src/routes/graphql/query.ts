@@ -1,27 +1,75 @@
+import type { GraphQLResolveInfo } from "graphql";
+
 import { getBlockchainForId } from "./blockchain";
 import type {
   Nft,
   QueryResolvers,
   QueryWalletArgs,
+  RequireFields,
   Wallet,
   WalletBalances,
   WalletResolvers,
 } from "./types";
 
+/**
+ * Root `Query` object resolver.
+ */
 export const queryResolvers: QueryResolvers = {
-  async wallet(_, __, ___, ____): Promise<Wallet | null> {
+  /**
+   * Handler for the `wallet` query.
+   * @param {{}} _parent
+   * @param {RequireFields<QueryWalletArgs, 'address' | 'chainId'>} _args
+   * @param {any} _ctx
+   * @param {GraphQLResolveInfo} _info
+   * @returns {(Promise<Wallet | null>)}
+   */
+  async wallet(
+    _parent: {},
+    _args: RequireFields<QueryWalletArgs, "address" | "chainId">,
+    _ctx: any,
+    _info: GraphQLResolveInfo
+  ): Promise<Wallet | null> {
     return {};
   },
 };
 
+/**
+ * Type-level query resolver for the `Wallet` schema object.
+ */
 export const walletResolvers: WalletResolvers = {
-  async balances(_, __, ___, info): Promise<WalletBalances | null> {
+  /**
+   * Field-level resolver handler for the `balances` field.
+   * @param {Wallet} _parent
+   * @param {{}} _args
+   * @param {*} _ctx
+   * @param {GraphQLResolveInfo} info
+   * @returns {(Promise<WalletBalances | null>)}
+   */
+  async balances(
+    _parent: Wallet,
+    _args: {},
+    _ctx: any,
+    info: GraphQLResolveInfo
+  ): Promise<WalletBalances | null> {
     if (info.path.prev?.key !== "wallet") return null;
     const { address, chainId } = info.variableValues as QueryWalletArgs;
     return getBlockchainForId(chainId).getBalancesForAddress(address);
   },
 
-  async nfts(_, __, ___, info): Promise<Nft[] | null> {
+  /**
+   * Field-level resolver handler for the `nfts` field.
+   * @param {Wallet} _parent
+   * @param {{}} _args
+   * @param {*} _ctx
+   * @param {GraphQLResolveInfo} info
+   * @returns {(Promise<Nft[] | null>)}
+   */
+  async nfts(
+    _parent: Wallet,
+    _args: {},
+    _ctx: any,
+    info: GraphQLResolveInfo
+  ): Promise<Nft[] | null> {
     if (info.path.prev?.key !== "wallet") return null;
     const { address, chainId } = info.variableValues as QueryWalletArgs;
     return getBlockchainForId(chainId).getNftsForAddress(address);

@@ -3,6 +3,14 @@ import qs from "qs";
 const API_BASE = "https://api.coingecko.com/api/v3/simple";
 
 export abstract class CoinGecko {
+  /**
+   * Fetches the market price data for the argued asset IDs.
+   * @static
+   * @template I
+   * @param {I[]} ids
+   * @returns {Promise<CoinGeckoGetPricesResponse<I>>}
+   * @memberof CoinGecko
+   */
   static async getPrices<I extends string>(
     ids: I[]
   ): Promise<CoinGeckoGetPricesResponse<I>> {
