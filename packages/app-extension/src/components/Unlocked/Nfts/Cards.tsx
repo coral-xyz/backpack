@@ -272,7 +272,7 @@ export function NFTCard({
               }}
             >
               <Typography
-                onClick={xnft ? onOpenXnft : openDetails}
+                onClick={openDetails}
                 component="div"
                 style={{
                   display: "flex",
