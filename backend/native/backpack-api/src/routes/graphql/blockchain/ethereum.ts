@@ -2,7 +2,12 @@ import { BigNumber } from "alchemy-sdk";
 import { ethers } from "ethers";
 
 import type { ApiContext } from "../context";
-import { ChainId, type TokenBalance, type WalletBalances } from "../types";
+import {
+  ChainId,
+  type Nft,
+  type TokenBalance,
+  type WalletBalances,
+} from "../types";
 
 import type { Blockchain } from ".";
 
@@ -38,7 +43,7 @@ export class Ethereum implements Blockchain {
         amount: amt.toString(),
         decimals: t.decimals ?? 0,
         displayAmount: t.balance ?? "0",
-        marketData: null, // FIXME:
+        marketData: null, // FIXME:TODO:
         mint: t.contractAddress,
       };
     });
@@ -52,7 +57,7 @@ export class Ethereum implements Blockchain {
         amount: native.toString(),
         decimals: this.nativeDecimals(),
         displayAmount: ethers.utils.formatUnits(native, this.nativeDecimals()),
-        marketData: null, // FIXME:
+        marketData: null, // FIXME:TODO:
         mint: "",
       },
       tokens: [],
@@ -65,8 +70,30 @@ export class Ethereum implements Blockchain {
    * @returns {Promise<any>}
    * @memberof Ethereum
    */
-  async getNftsForAddress(address: string): Promise<any> {
-    return []; // TODO:
+  async getNftsForAddress(address: string): Promise<Nft[] | null> {
+    const nfts = await this.#ctx.dataSources.alchemy.nft.getNftsForOwner(
+      address
+    );
+
+    const x = nfts.ownedNfts.reduce<Nft[]>((acc, curr) => {
+      if (curr.spamInfo?.isSpam ?? false) return acc;
+      const n: Nft = {
+        id: curr.tokenId,
+        collection: curr.contract.openSea
+          ? {
+              address: curr.contract.address,
+              name: curr.contract.openSea.collectionName,
+              image: curr.contract.openSea.imageUrl,
+              verified:
+                curr.contract.openSea.safelistRequestStatus === "verified",
+            }
+          : undefined,
+        image: curr.rawMetadata?.image,
+        name: curr.title,
+      };
+      return [...acc, n];
+    }, []);
+    return x;
   }
 
   /**

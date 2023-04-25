@@ -29,7 +29,8 @@ export enum ChainId {
 
 export type Collection = {
   __typename?: "Collection";
-  mint: Scalars["ID"];
+  address: Scalars["ID"];
+  image?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
   verified: Scalars["Boolean"];
 };
@@ -47,8 +48,8 @@ export type MarketData = {
 export type Nft = {
   __typename?: "Nft";
   collection?: Maybe<Collection>;
-  imageUrl?: Maybe<Scalars["String"]>;
-  mint: Scalars["ID"];
+  id: Scalars["ID"];
+  image?: Maybe<Scalars["String"]>;
   name: Scalars["String"];
 };
 
@@ -230,7 +231,8 @@ export type CollectionResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Collection"] = ResolversParentTypes["Collection"]
 > = ResolversObject<{
-  mint?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  address?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  image?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   verified?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -258,8 +260,8 @@ export type NftResolvers<
     ParentType,
     ContextType
   >;
-  imageUrl?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  mint?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  image?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

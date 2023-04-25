@@ -26,7 +26,8 @@ type WalletBalances {
 }
 
 type Collection {
-  mint: ID!
+  address: ID!
+  image: String
   name: String
   verified: Boolean!
 }
@@ -41,9 +42,9 @@ type MarketData {
 }
 
 type Nft {
+  id: ID!
   collection: Collection
-  imageUrl: String
-  mint: ID!
+  image: String
   name: String!
 }
 

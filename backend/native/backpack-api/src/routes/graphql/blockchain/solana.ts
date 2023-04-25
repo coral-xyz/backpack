@@ -144,18 +144,18 @@ export class Solana implements Blockchain {
     }
 
     return metadatas.map((m) => ({
+      id: m.account,
       collection: m.onChainMetadata?.metadata.collection
         ? {
-            mint: m.onChainMetadata.metadata.collection.key,
-            name:
-              collectionNameMap.get(
-                m.onChainMetadata.metadata.collection.key
-              ) ?? null,
+            address: m.onChainMetadata.metadata.collection.key,
+            image: m.offChainMetadata?.metadata.image,
+            name: collectionNameMap.get(
+              m.onChainMetadata.metadata.collection.key
+            ),
             verified: m.onChainMetadata.metadata.collection.verified,
           }
         : null,
-      imageUrl: m.offChainMetadata?.metadata.image,
-      mint: m.account,
+      image: m.offChainMetadata?.metadata.image,
       name: m.onChainMetadata?.metadata.data.name ?? "",
     }));
   }
