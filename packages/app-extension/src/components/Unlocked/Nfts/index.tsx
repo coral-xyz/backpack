@@ -1,5 +1,12 @@
 import { useMemo } from "react";
-import { EmptyState } from "@coral-xyz/react-common";
+import {
+  BlurIcon,
+  EmptyState,
+  HyperspaceIcon,
+  MagicEdenIcon,
+  OpenSeaIcon,
+  TensorIcon,
+} from "@coral-xyz/react-common";
 import {
   isAggregateWallets,
   isOneLive,
@@ -57,24 +64,24 @@ export function Nfts() {
   const isEmpty = nftCount === 0 && !isLoading;
 
   const ethereumMarketplaces = [
-    { icon: "blur.jpeg", label: "Blur", link: "https://blur.io" },
-    { icon: "opensea.svg", label: "OpenSea", link: "https://opensea.io" },
+    { Icon: BlurIcon, label: "Blur", link: "https://blur.io" },
+    { Icon: OpenSeaIcon, label: "OpenSea", link: "https://opensea.io" },
     {
-      icon: "magicEden.svg",
+      Icon: MagicEdenIcon,
       label: "Magic Eden",
       link: "https://magiceden.io",
     },
   ];
 
   const solanaMarketplaces = [
-    { icon: "tensor.svg", label: "Tensor", link: "https://www.tensor.trade" },
+    { Icon: TensorIcon, label: "Tensor", link: "https://www.tensor.trade" },
     {
-      icon: "magicEden.svg",
+      Icon: MagicEdenIcon,
       label: "Magic Eden",
       link: "https://magiceden.io",
     },
     {
-      icon: "hyperspace.svg",
+      Icon: HyperspaceIcon,
       label: "Hyperspace",
       link: "https://hyperspace.xyz",
     },

@@ -9,7 +9,7 @@ export const EmptyState: React.FC<{
   title: string;
   subtitle: string;
   buttonText?: string;
-  marketplaces?: { icon: string; label: string; link: string }[];
+  marketplaces?: { Icon: any; label: string; link: string }[];
   onClick?: () => void;
   minimize?: boolean;
   verticallyCentered?: boolean;
@@ -83,8 +83,9 @@ export const EmptyState: React.FC<{
           >
             {title}
           </Typography>
-          {minimize !== true ? <Typography
-            style={{
+          {minimize !== true ? (
+            <Typography
+              style={{
                 marginTop: "8px",
                 color: theme.custom.colors.secondary,
                 textAlign: "center",
@@ -93,33 +94,32 @@ export const EmptyState: React.FC<{
                 fontWeight: 500,
               }}
             >
-            {subtitle}
-          </Typography> : null}
+              {subtitle}
+            </Typography>
+          ) : null}
 
-          {minimize !== true && marketplaces ? <Box
-            sx={{
+          {minimize !== true && marketplaces ? (
+            <Box
+              sx={{
                 display: "flex",
                 justifyContent: "center",
                 marginTop: "25px",
               }}
             >
-            {marketplaces.map(({ icon, label, link }, index) => (
-              <Box key={index} onClick={() => window.open(link)}>
-                <Box
-                  component="img"
-                  sx={{
+              {marketplaces.map(({ Icon, label, link }, index) => (
+                <Box key={index} onClick={() => window.open(link)}>
+                  <Icon
+                    style={{
                       height: 60,
                       width: 60,
-                      borderRadius: 2,
-                      marginX: "15px",
+                      borderRadius: 10,
+                      marginLeft: "15px",
+                      marginRight: "15px",
                     }}
-                  alt="marketplace"
-                  src={`../../../../app-extension/src/assets/${icon}`}
                   />
-
-                <Typography
-                  style={{
-                      marginTop: "3px",
+                  <Typography
+                    style={{
+                      marginTop: "1px",
                       color: theme.custom.colors.secondary,
                       textAlign: "center",
                       fontSize: "12px",
@@ -127,16 +127,18 @@ export const EmptyState: React.FC<{
                       fontWeight: 600,
                     }}
                   >
-                  {label}
-                </Typography>
-              </Box>
+                    {label}
+                  </Typography>
+                </Box>
               ))}
-          </Box> : null}
+            </Box>
+          ) : null}
 
-          {minimize !== true && buttonText ? <PrimaryButton
-            onClick={onClick}
-            label={buttonText}
-            style={{
+          {minimize !== true && buttonText ? (
+            <PrimaryButton
+              onClick={onClick}
+              label={buttonText}
+              style={{
                 marginTop: "40px",
                 ...(window.matchMedia("(max-width: 650px)").matches
                   ? {}
@@ -148,7 +150,8 @@ export const EmptyState: React.FC<{
                       padding: "0 24px",
                     }),
               }}
-            /> : null}
+            />
+          ) : null}
         </div>
       </div>
     </div>
