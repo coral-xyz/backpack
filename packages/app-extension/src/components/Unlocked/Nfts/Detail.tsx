@@ -233,12 +233,13 @@ function Image({ nft, style }: { nft: any; style?: any }) {
         display: "flex",
         position: "relative",
         alignItems: "center",
+        justifyContent: "center",
         ...(style || {}),
       }}
     >
       <ProxyImage
         style={{
-          width: "100%",
+          maxWidth: "100%",
           borderRadius: "8px",
         }}
         loadingStyles={{
