@@ -38,7 +38,7 @@
     "@react-navigation/native": "^6.0.11",
     "@react-navigation/native-stack": "^6.7.0",
     "@react-navigation/stack": "^6.3.2",
-    "@tamagui/font-inter": "^1.14.3",
+    "@tamagui/font-inter": "^1.15.39",
     "big-integer": "^1.6.51",
     "buffer": "^6.0.3",
     "ethers": "^5.7.2",
@@ -80,7 +80,7 @@
     "react-test-renderer": "^18.2.0",
     "recoil": "^0.7.6",
     "recoil-persist": "^4.2.0",
-    "tamagui": "^1.14.3",
+    "tamagui": "^1.15.39",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
@@ -88,7 +88,7 @@
     "@testing-library/jest-native": "^5.1.2",
     "@types/jest": "^28.1.6",
     "@types/react": "^18.0.28",
-    "@types/react-native": "~0.71.3",
+    "@types/react-native": "~0.71.6",
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
     "eslint-config-custom": "*",
     "jest": "^29.2.1",

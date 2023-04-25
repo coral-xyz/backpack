@@ -17,7 +17,7 @@
     "@solana/web3.js": "^1.74.0",
     "bip39": "^3.1.0",
     "ethers": "^5.7.2",
-    "expo": "^48.0.7",
+    "expo": "^48.0.9",
     "micro-ed25519-hdkey": "^0.1.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -29,7 +29,7 @@
     "@expo/webpack-config": "^18.0.1",
     "@types/react": "^18.0.32",
     "@types/react-dom": "^18.0.11",
-    "@types/react-native": "^0.71.5",
+    "@types/react-native": "~0.71.6",
     "typescript": "^5.0.2"
   }
 }
