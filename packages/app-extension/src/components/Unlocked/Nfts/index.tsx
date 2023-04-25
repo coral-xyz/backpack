@@ -7,7 +7,7 @@ import {
   useActiveWallet,
   useAllWalletsDisplayed,
 } from "@coral-xyz/recoil";
-import { Image as ImageIcon } from "@mui/icons-material";
+import { InterestsOutlined as ImageIcon } from "@mui/icons-material";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
 import { _BalancesTableHead } from "../Balances/Balances";
@@ -56,6 +56,30 @@ export function Nfts() {
     : 0;
   const isEmpty = nftCount === 0 && !isLoading;
 
+  const ethereumMarketplaces = [
+    { icon: "blur.jpeg", label: "Blur", link: "https://blur.io" },
+    { icon: "opensea.svg", label: "OpenSea", link: "https://opensea.io" },
+    {
+      icon: "magicEden.svg",
+      label: "Magic Eden",
+      link: "https://magiceden.io",
+    },
+  ];
+
+  const solanaMarketplaces = [
+    { icon: "tensor.svg", label: "Tensor", link: "https://www.tensor.trade" },
+    {
+      icon: "magicEden.svg",
+      label: "Magic Eden",
+      link: "https://magiceden.io",
+    },
+    {
+      icon: "hyperspace.svg",
+      label: "Hyperspace",
+      link: "https://hyperspace.xyz",
+    },
+  ];
+
   return (
     <div
       style={{
@@ -73,10 +97,13 @@ export function Nfts() {
           ) : null}
           <EmptyState
             icon={(props: any) => <ImageIcon {...props} />}
-            title="No NFTs"
-            subtitle="Get started with your first NFT"
-            buttonText="Browse Magic Eden"
-            onClick={() => window.open("https://magiceden.io")}
+            title="No Collectibles"
+            subtitle="Browse a marketplace to get started"
+            marketplaces={
+              activeWallet.blockchain == "solana"
+                ? solanaMarketplaces
+                : ethereumMarketplaces
+            }
             verticallyCentered={!oneLive}
             header={
               !_isAggregateWallets ? (
