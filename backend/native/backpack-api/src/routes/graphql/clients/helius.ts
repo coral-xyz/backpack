@@ -1,5 +1,6 @@
 import { RESTDataSource } from "@apollo/datasource-rest";
 import type { AccountInfo } from "@solana/web3.js";
+import type { EnrichedTransaction } from "helius-sdk";
 
 export class Helius extends RESTDataSource {
   readonly #apiKey: string;
@@ -86,6 +87,29 @@ export class Helius extends RESTDataSource {
         includeOffChain: includeOffChain ?? false,
         disableCache: false,
       }),
+    });
+  }
+
+  /**
+   * Get the transaction history for the given address.
+   * @param {string} address
+   * @param {string} [before]
+   * @param {string} [until]
+   * @returns {Promise<EnrichedTransaction[]>}
+   * @memberof Helius
+   */
+  async getTransactionHistory(
+    address: string,
+    before?: string,
+    until?: string
+  ): Promise<EnrichedTransaction[]> {
+    return this.get(`/v0/addresses/${address}/transactions`, {
+      params: {
+        "api-key": this.#apiKey,
+        commitment: "confirmed",
+        before,
+        until,
+      },
     });
   }
 }

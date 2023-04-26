@@ -8,6 +8,7 @@ import {
   type Collection,
   type Nft,
   type TokenBalance,
+  type Transaction,
   type WalletBalances,
 } from "../types";
 
@@ -49,7 +50,7 @@ export class Solana implements Blockchain {
     ]);
 
     const nativeData: TokenBalance = {
-      address,
+      id: address,
       amount: balances.nativeBalance.toString(),
       decimals: this.nativeDecimals(),
       displayAmount: toBalance(
@@ -74,7 +75,7 @@ export class Solana implements Blockchain {
       const meta = legacy.get(t.mint);
       const p: CoinGeckoPriceData | null = prices[meta?.id ?? ""] ?? null;
       return {
-        address: t.tokenAccount,
+        id: t.tokenAccount,
         amount: t.amount.toString(),
         decimals: t.decimals,
         displayAmount: toBalance(t.amount, t.decimals).toString(),
@@ -178,6 +179,34 @@ export class Solana implements Blockchain {
   }
 
   /**
+   * Get the transaction history with parameters for the argued address.
+   * @param {string} address
+   * @param {string} [before]
+   * @param {string} [after]
+   * @returns {(Promise<Transaction[] | null>)}
+   * @memberof Ethereum
+   */
+  async getTransactionsForAddress(
+    address: string,
+    before?: string,
+    after?: string
+  ): Promise<Transaction[] | null> {
+    const resp = await this.#ctx.dataSources.helius.getTransactionHistory(
+      address,
+      before,
+      after
+    );
+
+    return resp.map((r) => ({
+      id: r.signature,
+      block: r.slot,
+      fee: r.fee,
+      feePayer: r.feePayer,
+      timestamp: r.timestamp,
+    }));
+  }
+
+  /**
    * Chain ID enum variant.
    * @returns {ChainId}
    * @memberof Solana
@@ -216,7 +245,7 @@ export class Solana implements Blockchain {
 
     return hasCollection
       ? {
-          address: onChainMetadata!.metadata.collection!.key,
+          id: onChainMetadata!.metadata.collection!.key,
           image: mapValue?.image,
           name: mapValue?.name,
           verified: onChainMetadata!.metadata.collection!.verified,

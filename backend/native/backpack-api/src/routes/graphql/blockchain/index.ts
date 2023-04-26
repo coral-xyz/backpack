@@ -1,12 +1,22 @@
 import type { ApiContext } from "../context";
-import { ChainId, type WalletBalances } from "../types";
+import {
+  ChainId,
+  type Nft,
+  type Transaction,
+  type WalletBalances,
+} from "../types";
 
 import { Ethereum } from "./ethereum";
 import { Solana } from "./solana";
 
 export interface Blockchain {
   getBalancesForAddress(address: string): Promise<WalletBalances | null>;
-  getNftsForAddress(address: string): Promise<any>;
+  getNftsForAddress(address: string): Promise<Nft[] | null>;
+  getTransactionsForAddress(
+    address: string,
+    before?: string,
+    after?: string
+  ): Promise<Transaction[] | null>;
   id(): ChainId;
   nativeDecimals(): number;
 }

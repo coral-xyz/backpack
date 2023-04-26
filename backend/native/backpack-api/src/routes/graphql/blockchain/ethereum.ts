@@ -1,4 +1,9 @@
-import { BigNumber } from "alchemy-sdk";
+import {
+  AssetTransfersCategory,
+  type AssetTransfersParams,
+  BigNumber,
+  SortingOrder,
+} from "alchemy-sdk";
 import { ethers } from "ethers";
 
 import type { ApiContext } from "../context";
@@ -6,6 +11,7 @@ import {
   ChainId,
   type Nft,
   type TokenBalance,
+  type Transaction,
   type WalletBalances,
 } from "../types";
 
@@ -39,7 +45,7 @@ export class Ethereum implements Blockchain {
     const tokens: TokenBalance[] = nonEmptyTokens.map((t) => {
       const amt = BigNumber.from(t.rawBalance ?? "0");
       return {
-        address,
+        id: `${address}/${t.contractAddress}`,
         amount: amt.toString(),
         decimals: t.decimals ?? 0,
         displayAmount: t.balance ?? "0",
@@ -51,7 +57,7 @@ export class Ethereum implements Blockchain {
     return {
       aggregateValue: 0,
       native: {
-        address,
+        id: address,
         amount: native.toString(),
         decimals: this.nativeDecimals(),
         displayAmount: ethers.utils.formatUnits(native, this.nativeDecimals()),
@@ -82,7 +88,7 @@ export class Ethereum implements Blockchain {
         id: curr.tokenId,
         collection: curr.contract.openSea
           ? {
-              address: curr.contract.address,
+              id: curr.contract.address,
               name: curr.contract.openSea.collectionName,
               image: curr.contract.openSea.imageUrl,
               verified:
@@ -94,6 +100,57 @@ export class Ethereum implements Blockchain {
       };
       return [...acc, n];
     }, []);
+  }
+
+  /**
+   * Get the transaction history with parameters for the argued address.
+   * @param {string} address
+   * @param {string} [before]
+   * @param {string} [after]
+   * @returns {(Promise<Transaction[] | null>)}
+   * @memberof Ethereum
+   */
+  async getTransactionsForAddress(
+    address: string,
+    before?: string,
+    after?: string
+  ): Promise<Transaction[] | null> {
+    const params: AssetTransfersParams = {
+      category: [
+        AssetTransfersCategory.ERC1155,
+        AssetTransfersCategory.ERC20,
+        AssetTransfersCategory.ERC721,
+        AssetTransfersCategory.EXTERNAL,
+        AssetTransfersCategory.SPECIALNFT,
+      ],
+      fromBlock: after,
+      order: SortingOrder.DESCENDING,
+      toBlock: before,
+      withMetadata: true,
+    };
+
+    const txs = await Promise.allSettled([
+      this.#ctx.dataSources.alchemy.core.getAssetTransfers({
+        fromAddress: address,
+        ...params,
+      }),
+      this.#ctx.dataSources.alchemy.core.getAssetTransfers({
+        toAddress: address,
+        ...params,
+      }),
+    ]);
+
+    const combined = txs
+      .filter(isFulfilled)
+      .map((t) => t.value.transfers)
+      .flat()
+      .sort((a, b) => Number(b.blockNum) - Number(a.blockNum));
+
+    return combined.map((tx) => ({
+      id: tx.hash,
+      block: Number(tx.blockNum),
+      feePayer: tx.from,
+    }));
   }
 
   /**
@@ -114,3 +171,13 @@ export class Ethereum implements Blockchain {
     return 18;
   }
 }
+
+/**
+ * Utility to determine the result type of settled promise.
+ * @template T
+ * @param {PromiseSettledResult<T>} input
+ * @returns {input is PromiseFulfilledResult<T>}
+ */
+const isFulfilled = <T>(
+  input: PromiseSettledResult<T>
+): input is PromiseFulfilledResult<T> => input.status === "fulfilled";

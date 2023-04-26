@@ -14,9 +14,15 @@ enum ChainID {
   SOLANA
 }
 
-type Wallet {
+interface Node {
+  id: ID!
+}
+
+type Wallet implements Node {
+  id: ID!
   balances: WalletBalances
   nfts: [Nft]
+  transactions(before: String, after: String): [Transaction]
 }
 
 type WalletBalances {
@@ -25,15 +31,15 @@ type WalletBalances {
   tokens: [TokenBalance]!
 }
 
-type Collection {
-  address: ID!
+type Collection implements Node {
+  id: ID!
   image: String
   name: String
   verified: Boolean!
 }
 
-type MarketData {
-  id: String!
+type MarketData implements Node {
+  id: ID!
   change: Float!
   lastUpdatedAt: Int!
   logo: String!
@@ -41,18 +47,26 @@ type MarketData {
   value: Float!
 }
 
-type Nft {
+type Nft implements Node {
   id: ID!
   collection: Collection
   image: String
   name: String!
 }
 
-type TokenBalance {
-  address: ID!
+type TokenBalance implements Node {
+  id: ID!
   amount: String!
   decimals: Int!
   displayAmount: String!
   marketData: MarketData
   mint: String!
+}
+
+type Transaction implements Node {
+  id: ID!
+  block: Float!
+  fee: Int
+  feePayer: String!
+  timestamp: Float
 }

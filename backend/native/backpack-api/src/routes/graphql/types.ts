@@ -27,30 +27,34 @@ export enum ChainId {
   Solana = "SOLANA",
 }
 
-export type Collection = {
+export type Collection = Node & {
   __typename?: "Collection";
-  address: Scalars["ID"];
+  id: Scalars["ID"];
   image?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
   verified: Scalars["Boolean"];
 };
 
-export type MarketData = {
+export type MarketData = Node & {
   __typename?: "MarketData";
   change: Scalars["Float"];
-  id: Scalars["String"];
+  id: Scalars["ID"];
   lastUpdatedAt: Scalars["Int"];
   logo: Scalars["String"];
   price: Scalars["Float"];
   value: Scalars["Float"];
 };
 
-export type Nft = {
+export type Nft = Node & {
   __typename?: "Nft";
   collection?: Maybe<Collection>;
   id: Scalars["ID"];
   image?: Maybe<Scalars["String"]>;
   name: Scalars["String"];
+};
+
+export type Node = {
+  id: Scalars["ID"];
 };
 
 export type Query = {
@@ -63,20 +67,36 @@ export type QueryWalletArgs = {
   chainId: ChainId;
 };
 
-export type TokenBalance = {
+export type TokenBalance = Node & {
   __typename?: "TokenBalance";
-  address: Scalars["ID"];
   amount: Scalars["String"];
   decimals: Scalars["Int"];
   displayAmount: Scalars["String"];
+  id: Scalars["ID"];
   marketData?: Maybe<MarketData>;
   mint: Scalars["String"];
 };
 
-export type Wallet = {
+export type Transaction = Node & {
+  __typename?: "Transaction";
+  block: Scalars["Float"];
+  fee?: Maybe<Scalars["Int"]>;
+  feePayer: Scalars["String"];
+  id: Scalars["ID"];
+  timestamp?: Maybe<Scalars["Float"]>;
+};
+
+export type Wallet = Node & {
   __typename?: "Wallet";
   balances?: Maybe<WalletBalances>;
+  id: Scalars["ID"];
   nfts?: Maybe<Array<Maybe<Nft>>>;
+  transactions?: Maybe<Array<Maybe<Transaction>>>;
+};
+
+export type WalletTransactionsArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  before?: InputMaybe<Scalars["String"]>;
 };
 
 export type WalletBalances = {
@@ -204,9 +224,17 @@ export type ResolversTypes = ResolversObject<{
   Int: ResolverTypeWrapper<Scalars["Int"]>;
   MarketData: ResolverTypeWrapper<MarketData>;
   Nft: ResolverTypeWrapper<Nft>;
+  Node:
+    | ResolversTypes["Collection"]
+    | ResolversTypes["MarketData"]
+    | ResolversTypes["Nft"]
+    | ResolversTypes["TokenBalance"]
+    | ResolversTypes["Transaction"]
+    | ResolversTypes["Wallet"];
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars["String"]>;
   TokenBalance: ResolverTypeWrapper<TokenBalance>;
+  Transaction: ResolverTypeWrapper<Transaction>;
   Wallet: ResolverTypeWrapper<Wallet>;
   WalletBalances: ResolverTypeWrapper<WalletBalances>;
 }>;
@@ -220,9 +248,17 @@ export type ResolversParentTypes = ResolversObject<{
   Int: Scalars["Int"];
   MarketData: MarketData;
   Nft: Nft;
+  Node:
+    | ResolversParentTypes["Collection"]
+    | ResolversParentTypes["MarketData"]
+    | ResolversParentTypes["Nft"]
+    | ResolversParentTypes["TokenBalance"]
+    | ResolversParentTypes["Transaction"]
+    | ResolversParentTypes["Wallet"];
   Query: {};
   String: Scalars["String"];
   TokenBalance: TokenBalance;
+  Transaction: Transaction;
   Wallet: Wallet;
   WalletBalances: WalletBalances;
 }>;
@@ -231,7 +267,7 @@ export type CollectionResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Collection"] = ResolversParentTypes["Collection"]
 > = ResolversObject<{
-  address?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   verified?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
@@ -243,7 +279,7 @@ export type MarketDataResolvers<
   ParentType extends ResolversParentTypes["MarketData"] = ResolversParentTypes["MarketData"]
 > = ResolversObject<{
   change?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   lastUpdatedAt?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   logo?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   price?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
@@ -266,6 +302,23 @@ export type NftResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type NodeResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["Node"] = ResolversParentTypes["Node"]
+> = ResolversObject<{
+  __resolveType: TypeResolveFn<
+    | "Collection"
+    | "MarketData"
+    | "Nft"
+    | "TokenBalance"
+    | "Transaction"
+    | "Wallet",
+    ParentType,
+    ContextType
+  >;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+}>;
+
 export type QueryResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Query"] = ResolversParentTypes["Query"]
@@ -282,16 +335,28 @@ export type TokenBalanceResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["TokenBalance"] = ResolversParentTypes["TokenBalance"]
 > = ResolversObject<{
-  address?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   decimals?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   displayAmount?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   marketData?: Resolver<
     Maybe<ResolversTypes["MarketData"]>,
     ParentType,
     ContextType
   >;
   mint?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type TransactionResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["Transaction"] = ResolversParentTypes["Transaction"]
+> = ResolversObject<{
+  block?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  fee?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
+  feePayer?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  timestamp?: Resolver<Maybe<ResolversTypes["Float"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -304,10 +369,17 @@ export type WalletResolvers<
     ParentType,
     ContextType
   >;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   nfts?: Resolver<
     Maybe<Array<Maybe<ResolversTypes["Nft"]>>>,
     ParentType,
     ContextType
+  >;
+  transactions?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["Transaction"]>>>,
+    ParentType,
+    ContextType,
+    Partial<WalletTransactionsArgs>
   >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -330,8 +402,10 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Collection?: CollectionResolvers<ContextType>;
   MarketData?: MarketDataResolvers<ContextType>;
   Nft?: NftResolvers<ContextType>;
+  Node?: NodeResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   TokenBalance?: TokenBalanceResolvers<ContextType>;
+  Transaction?: TransactionResolvers<ContextType>;
   Wallet?: WalletResolvers<ContextType>;
   WalletBalances?: WalletBalancesResolvers<ContextType>;
 }>;
