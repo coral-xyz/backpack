@@ -1,0 +1,67 @@
+diff --git a/node_modules/react-native-gifted-chat/lib/GiftedChat.js b/node_modules/react-native-gifted-chat/lib/GiftedChat.js
+index a91d004..54fd541 100644
+--- a/node_modules/react-native-gifted-chat/lib/GiftedChat.js
++++ b/node_modules/react-native-gifted-chat/lib/GiftedChat.js
+@@ -44,6 +44,7 @@ class GiftedChat extends React.Component {
+             typingDisabled: false,
+             text: undefined,
+             messages: undefined,
++            contextValues: {}
+         };
+         this.getLocale = () => this._locale;
+         this.onKeyboardWillShow = (e) => {
+@@ -193,6 +194,11 @@ class GiftedChat extends React.Component {
+         this.initLocale();
+         this.setMessages(messages || []);
+         this.setTextFromProp(text);
++        this.setState({contextValues: {
++          actionSheet: this.props.actionSheet ||
++            (() => { var _a; return (_a = this._actionSheetRef.current) === null || _a === void 0 ? void 0 : _a.getContext(); }),
++          getLocale: this.getLocale,
++        }});
+     }
+     componentWillUnmount() {
+         this.setIsMounted(false);
+@@ -416,13 +422,7 @@ class GiftedChat extends React.Component {
+     }
+     render() {
+         if (this.state.isInitialized === true) {
+-            const actionSheet = this.props.actionSheet ||
+-                (() => { var _a; return (_a = this._actionSheetRef.current) === null || _a === void 0 ? void 0 : _a.getContext(); });
+-            const { getLocale } = this;
+-            return (<GiftedChatContext.Provider value={{
+-                    actionSheet,
+-                    getLocale,
+-                }}>
++        return (<GiftedChatContext.Provider value={this.state.contextValues}>
+           <View testID={TEST_ID.WRAPPER} style={styles.wrapper}>
+             <ActionSheetProvider ref={this._actionSheetRef}>
+               <View style={styles.container} onLayout={this.onMainViewLayout}>
+diff --git a/node_modules/react-native-gifted-chat/lib/MessageContainer.js b/node_modules/react-native-gifted-chat/lib/MessageContainer.js
+index 6bdf6da..7256f5a 100644
+--- a/node_modules/react-native-gifted-chat/lib/MessageContainer.js
++++ b/node_modules/react-native-gifted-chat/lib/MessageContainer.js
+@@ -54,6 +54,7 @@ export default class MessageContainer extends React.PureComponent {
+             showScrollBottom: false,
+             hasScrolled: false,
+         };
++        this._extraData = [undefined, undefined]
+         this.renderTypingIndicator = () => {
+             if (Platform.OS === 'web') {
+                 return null;
+@@ -191,8 +192,14 @@ export default class MessageContainer extends React.PureComponent {
+     }
+     render() {
+         const { inverted } = this.props;
++      if (
++            this._extraData[0] !== this.props.extraData ||
++            this._extraData[1] !== this.props.isTyping
++          ) {
++            this._extraData = [this.props.extraData, this.props.isTyping]
++          }
+         return (<View style={this.props.alignTop ? styles.containerAlignTop : styles.container}>
+-        <FlatList ref={this.props.forwardRef} extraData={[this.props.extraData, this.props.isTyping]} keyExtractor={this.keyExtractor} enableEmptySections automaticallyAdjustContentInsets={false} inverted={inverted} data={this.props.messages} style={styles.listStyle} contentContainerStyle={styles.contentContainerStyle} renderItem={this.renderRow} {...this.props.invertibleScrollViewProps} ListEmptyComponent={this.renderChatEmpty} ListFooterComponent={inverted ? this.renderHeaderWrapper : this.renderFooter} ListHeaderComponent={inverted ? this.renderFooter : this.renderHeaderWrapper} onScroll={this.handleOnScroll} scrollEventThrottle={100} onLayout={this.onLayoutList} onEndReached={this.onEndReached} onEndReachedThreshold={0.1} {...this.props.listViewProps}/>
++        <FlatList ref={this.props.forwardRef} extraData={this._extraData} keyExtractor={this.keyExtractor} enableEmptySections automaticallyAdjustContentInsets={false} inverted={inverted} data={this.props.messages} style={styles.listStyle} contentContainerStyle={styles.contentContainerStyle} renderItem={this.renderRow} {...this.props.invertibleScrollViewProps} ListEmptyComponent={this.renderChatEmpty} ListFooterComponent={inverted ? this.renderHeaderWrapper : this.renderFooter} ListHeaderComponent={inverted ? this.renderFooter : this.renderHeaderWrapper} onScroll={this.handleOnScroll} scrollEventThrottle={100} onLayout={this.onLayoutList} onEndReached={this.onEndReached} onEndReachedThreshold={0.1} {...this.props.listViewProps}/>
+         {this.state.showScrollBottom && this.props.scrollToBottom
+                 ? this.renderScrollToBottomWrapper()
+                 : null}
