@@ -6,6 +6,7 @@ import {
   ChainId,
   type Nft,
   type TokenBalance,
+  type Transaction,
   type WalletBalances,
 } from "../types";
 
@@ -39,7 +40,7 @@ export class Ethereum implements Blockchain {
     const tokens: TokenBalance[] = nonEmptyTokens.map((t) => {
       const amt = BigNumber.from(t.rawBalance ?? "0");
       return {
-        address,
+        id: `${address}/${t.contractAddress}`,
         amount: amt.toString(),
         decimals: t.decimals ?? 0,
         displayAmount: t.balance ?? "0",
@@ -51,7 +52,7 @@ export class Ethereum implements Blockchain {
     return {
       aggregateValue: 0,
       native: {
-        address,
+        id: address,
         amount: native.toString(),
         decimals: this.nativeDecimals(),
         displayAmount: ethers.utils.formatUnits(native, this.nativeDecimals()),
@@ -82,7 +83,7 @@ export class Ethereum implements Blockchain {
         id: curr.tokenId,
         collection: curr.contract.openSea
           ? {
-              address: curr.contract.address,
+              id: curr.contract.address,
               name: curr.contract.openSea.collectionName,
               image: curr.contract.openSea.imageUrl,
               verified:
@@ -94,6 +95,22 @@ export class Ethereum implements Blockchain {
       };
       return [...acc, n];
     }, []);
+  }
+
+  /**
+   * Get the transaction history with parameters for the argued address.
+   * @param {string} address
+   * @param {string} [before]
+   * @param {string} [after]
+   * @returns {(Promise<Transaction[] | null>)}
+   * @memberof Ethereum
+   */
+  async getTransactionsForAddress(
+    address: string,
+    before?: string,
+    after?: string
+  ): Promise<Transaction[] | null> {
+    return []; // TODO:
   }
 
   /**

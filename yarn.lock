@@ -16526,6 +16526,7 @@ __metadata:
     ethers: ^5.7.2
     express: ^4.18.2
     graphql: ^16.6.0
+    helius-sdk: ^1.0.3
     http-proxy-middleware: ^2.0.6
     http_ece: ^1.1.0
     jose: ^4.11.1
@@ -25000,6 +25001,15 @@ __metadata:
   dependencies:
     axios: ^1.2.3
   checksum: 6e4c69bdd94a260d1d08033d4418acebbe7518b884f532ecfb4955bd7413e7d58388920f4c0037c87bbc2d39f68bbe2f67d6f339972d555c7a47de9cf1b87459
+  languageName: node
+  linkType: hard
+
+"helius-sdk@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "helius-sdk@npm:1.0.3"
+  dependencies:
+    axios: ^1.2.3
+  checksum: 2194c5902dbf549c8597116b211466b754348d02bbad78e03f80e03afada3f58a7d2adc6cf1a2a77fe7009d22c8ae75c39d3c47b0e0850e9012db9c357cb07a7
   languageName: node
   linkType: hard
 
