@@ -14,10 +14,10 @@
     "start": "parcel src/service-worker-loader.html -p 9333"
   },
   "dependencies": {
-    "@coral-xyz/common": "*",
-    "@coral-xyz/recoil": "*",
     "@coral-xyz/blockchain-common": "*",
     "@coral-xyz/blockchain-keyring": "*",
+    "@coral-xyz/common": "*",
+    "@coral-xyz/recoil": "*",
     "@solana/web3.js": "^1.63.1",
     "bip32": "^2.0.6",
     "bip39": "^3.0.4",
@@ -29,6 +29,7 @@
   "devDependencies": {
     "@types/serviceworker": "^0.0.47",
     "eslint-config-custom": "*",
+    "parcel": "^2.8.3",
     "typescript": "~4.9.3"
   },
   "targets": {

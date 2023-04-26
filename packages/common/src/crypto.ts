@@ -19,15 +19,6 @@ export const getCoinType = (blockchain: Blockchain) => {
   return coinType + HARDENING;
 };
 
-export const getBlockchainFromPath = (derivationPath: string): Blockchain => {
-  const coinType = BIPPath.fromString(derivationPath).toPathArray()[1];
-  return Object.keys(blockchainCoinType).find(
-    (key) =>
-      blockchainCoinType[key] === coinType ||
-      blockchainCoinType[key] === coinType - HARDENING
-  ) as Blockchain;
-};
-
 export const legacyBip44Indexed = (blockchain: Blockchain, index: number) => {
   const coinType = getCoinType(blockchain);
   const path = [44 + HARDENING, coinType];
@@ -45,7 +36,7 @@ export const legacyBip44ChangeIndexed = (
 };
 
 /**
- * m/44'/60'/0'/0
+ * m/44'/60'/0'/0/x
  */
 export const ethereumIndexed = (index: number) => {
   const coinType = getCoinType(Blockchain.ETHEREUM);
@@ -54,7 +45,16 @@ export const ethereumIndexed = (index: number) => {
 };
 
 /**
- * m/44'/60'/0'
+ * m/44'/60'/x
+ */
+export const legacyEthereum = (index: number) => {
+  const coinType = getCoinType(Blockchain.ETHEREUM);
+  const path = [44 + HARDENING, coinType, index];
+  return new BIPPath.fromPathArray(path).toString();
+};
+
+/**
+ * m/44'/60'/0'/x
  */
 export const legacyLedgerIndexed = (index: number) => {
   const coinType = getCoinType(Blockchain.ETHEREUM);
@@ -63,11 +63,11 @@ export const legacyLedgerIndexed = (index: number) => {
 };
 
 /**
- * m/44'/60'
+ * m/44'/60'/x'/0/0
  */
-export const legacyLedgerLiveIndexed = (index: number) => {
+export const legacyLedgerLiveAccount = (accountIndex: number) => {
   const coinType = getCoinType(Blockchain.ETHEREUM);
-  const path = [44 + HARDENING, coinType, index];
+  const path = [44 + HARDENING, coinType, accountIndex + HARDENING, 0, 0];
   return new BIPPath.fromPathArray(path).toString();
 };
 
@@ -120,8 +120,8 @@ export const getAccountRecoveryPaths = (
   blockchain: Blockchain,
   accountIndex: number
 ) => {
-  return [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map((j) =>
-    getIndexedPath(blockchain, accountIndex, j)
+  return [...Array(LOAD_PUBLIC_KEY_AMOUNT + 1).keys()].map((j) =>
+    getIndexedPath(blockchain, accountIndex, j - 1)
   );
 };
 
@@ -176,7 +176,7 @@ export const nextIndicesFromPaths = (
   return { accountIndex, walletIndex };
 };
 
-export const getRecoveryPaths = (blockchain: Blockchain) => {
+export const getRecoveryPaths = (blockchain: Blockchain, ledger = false) => {
   /**
    * There is a fixed set of derivation paths we should check for wallets when
    * doing recovery.
@@ -203,11 +203,25 @@ export const getRecoveryPaths = (blockchain: Blockchain) => {
   let paths: Array<string> = [];
   // Legacy created/imported accounts (m/44/501'/ and m/44/501'/{0...n})
   paths = paths.concat(legacyBip44RecoveryPaths(blockchain));
-
-  // Legacy imported accounts (m/44/501'/0' and m/44/501'/0'/{0...n})
+  // Legacy imported accounts (m/44/501'/0' and m/44/501'/{0..n}'/0')
   paths = paths.concat(legacyBip44ChangeRecoveryPaths(blockchain));
-
-  if (blockchain === Blockchain.ETHEREUM) {
+  // Legacy imported accounts (m/44/501'/{0...n})/0'/0'
+  paths = paths.concat(
+    legacyBip44ChangeRecoveryPaths(blockchain).map((x) => x + "/0'")
+  );
+  if (blockchain === Blockchain.SOLANA && !ledger) {
+    // Handle legacy Solana wallets that were created in 0.5.0 that had
+    // Ethereum derivation paths. Ledger does not allow these paths and
+    // so is not impacted by this.
+    paths = paths.concat(
+      getAccountRecoveryPaths(Blockchain.SOLANA, 0).map((d) =>
+        d.replace("501", "60")
+      )
+    );
+  } else if (blockchain === Blockchain.ETHEREUM) {
+    paths = paths.concat(
+      [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(legacyEthereum)
+    );
     paths = paths.concat(
       [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(ethereumIndexed)
     );
@@ -215,7 +229,7 @@ export const getRecoveryPaths = (blockchain: Blockchain) => {
       [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(legacyLedgerIndexed)
     );
     paths = paths.concat(
-      [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(legacyLedgerLiveIndexed)
+      [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(legacyLedgerLiveAccount)
     );
   }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Navigate,
   Route,
@@ -6,10 +6,9 @@ import {
   useLocation,
   useSearchParams,
 } from "react-router-dom";
-import type { SubscriptionType } from "@coral-xyz/common";
+import type { SearchParamsFor, SubscriptionType } from "@coral-xyz/common";
 import {
   BACKPACK_TEAM,
-  MESSAGING_COMMUNICATION_FETCH_RESPONSE,
   NAV_COMPONENT_MESSAGE_PROFILE,
 } from "@coral-xyz/common";
 import {
@@ -19,8 +18,7 @@ import {
   ProfileScreen,
   RequestsScreen,
 } from "@coral-xyz/message-sdk";
-import { useBreakpoints, useUsersMetadata } from "@coral-xyz/react-common";
-import type { SearchParamsFor } from "@coral-xyz/recoil";
+import { useBreakpoints } from "@coral-xyz/react-common";
 import {
   useDarkMode,
   useDecodedSearchParams,
@@ -28,6 +26,7 @@ import {
   useRedirectUrl,
   useUser,
 } from "@coral-xyz/recoil";
+import { useUsersMetadata } from "@coral-xyz/tamagui";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 import { AnimatePresence } from "framer-motion";
@@ -388,7 +387,8 @@ function useNavBar() {
   const { props }: any = useDecodedSearchParams(); // TODO: fix type
   const { isXs } = useBreakpoints();
   const profileUser = useUsersMetadata({ remoteUserIds: [props?.userId] });
-  const image: string | undefined = profileUser[props?.userId]?.image;
+  const image: string | undefined =
+    props.image ?? profileUser[props?.userId]?.image;
 
   let navButtonLeft = null as any;
   let navButtonRight = null as any;
@@ -455,7 +455,7 @@ function useNavBar() {
 
   const notchViewComponent =
     pathname === "/nfts/chat" || pathname === "/messages/groupchat" ? (
-      <ChatDrawer setOpenDrawer={() => {}} />
+      <ChatDrawer image={image} setOpenDrawer={() => {}} />
     ) : null;
 
   return {
@@ -468,6 +468,8 @@ function useNavBar() {
         ? image
         : pathname === "/messages/groupchat" && props.id === "backpack-chat"
         ? "https://user-images.githubusercontent.com/321395/206757416-a80e662a-0ccc-41cc-a20f-ff397755d47f.png"
+        : pathname === "/messages/groupchat"
+        ? image
         : undefined,
     isVerified:
       (pathname === "/messages/groupchat" && props.id === "backpack-chat") ||

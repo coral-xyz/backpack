@@ -39,7 +39,6 @@ import {
 
 import { Scrollbar } from "../../../common/Layout/Scrollbar";
 import { _BalancesTableHead } from "../../Balances/Balances";
-import { updateLocalNftPfp } from "../../Nfts/Detail";
 
 type tempAvatar = {
   nft?: Nft;
@@ -56,7 +55,7 @@ export function UpdateProfilePicture({
   const [loading, setLoading] = useState(false);
   const _isAggregateWallets = useRecoilValue(isAggregateWallets);
   const avatarUrl = useAvatarUrl();
-  const { uuid, username } = useUser();
+  const { username } = useUser();
   const activeWallet = useActiveWallet();
   const setNewAvatar = useSetRecoilState(newAvatarAtom(username));
   const theme = useCustomTheme();
@@ -99,23 +98,25 @@ export function UpdateProfilePicture({
           <AvatarWrapper>
             <Avatar src={tempAvatar?.url || avatarUrl} />
           </AvatarWrapper>
-          {!isDefaultAvatar ? <IconButton
-            disableRipple
-            sx={{
+          {!isDefaultAvatar ? (
+            <IconButton
+              disableRipple
+              sx={{
                 position: "absolute",
                 top: "-8px",
                 right: "-8px",
                 color: theme.custom.colors.icon,
               }}
-            onClick={() =>
+              onClick={() =>
                 setTempAvatar({
                   id: "",
                   url: `https://avatars.xnfts.dev/v1/${username}`,
                 })
               }
             >
-            <DeleteIcon />
-          </IconButton> : null}
+              <DeleteIcon />
+            </IconButton>
+          ) : null}
         </div>
       </div>
       <Typography
@@ -141,16 +142,18 @@ export function UpdateProfilePicture({
               <Loading size={50} />
             ) : numberOfNFTs === 0 ? (
               <>
-                {!_isAggregateWallets ? <div
-                  style={{ position: "absolute", top: 0, left: 0, right: 0 }}
+                {!_isAggregateWallets ? (
+                  <div
+                    style={{ position: "absolute", top: 0, left: 0, right: 0 }}
                   >
-                  <_BalancesTableHead
-                    blockchain={activeWallet.blockchain}
-                    wallet={activeWallet}
-                    showContent
-                    setShowContent={() => {}}
+                    <_BalancesTableHead
+                      blockchain={activeWallet.blockchain}
+                      wallet={activeWallet}
+                      showContent
+                      setShowContent={() => {}}
                     />
-                </div> : null}
+                  </div>
+                ) : null}
                 <EmptyState
                   icon={(props: any) => <ImageIcon {...props} />}
                   title="No NFTs to use"
@@ -235,7 +238,9 @@ export function UpdateProfilePicture({
                 }),
               });
               await fetch(AVATAR_BASE_URL + "/" + username + "?bust_cache=1"); // bust edge cache
-              await updateLocalNftPfp(uuid, username, tempAvatar.nft!);
+
+              //  Need SWR mechanic for Local pfps before enabling again so we can update PFPs from xnfts.
+              // await updateLocalNftPfp(uuid, username, tempAvatar.nft!);
               setLoading(false);
               setNewAvatar(tempAvatar);
               setTempAvatar(null);
@@ -272,10 +277,10 @@ const BlockchainNFTs = React.memo(function BlockchainNFTs({
   const wallets = useActiveWallets();
   const wallet = wallets.find((wallet) => wallet.publicKey === publicKey)!;
   const blockchain = wallet.blockchain;
+  const solanaUrl = useSolanaConnectionUrl() ?? ""; // eslint dont move this line
+  const ethereumUrl = useEthereumConnectionUrl() ?? ""; // eslint dont move this line
   const connectionUrl =
-  blockchain === Blockchain.SOLANA
-    ? useSolanaConnectionUrl()
-    : useEthereumConnectionUrl();
+    blockchain === Blockchain.SOLANA ? solanaUrl : ethereumUrl;
 
   const nftsIds = collections.reduce<string[]>((flat, collection) => {
     flat.push(...collection.itemIds);

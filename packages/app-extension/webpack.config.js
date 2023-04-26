@@ -1,7 +1,5 @@
-const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const { DuplicatesPlugin } = require("inspectpack/plugin");
-const { ProgressPlugin, ProvidePlugin } = require("webpack");
+const { ProgressPlugin, ProvidePlugin, DefinePlugin } = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -9,10 +7,11 @@ const path = require("path");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const fs = require("fs");
 
+const NODE_ENV = process.env.NODE_ENV || "development";
 const EXTENSION_NAME =
-  process.env.NODE_ENV === "development" ? "(DEV) Backpack" : "Backpack";
+  NODE_ENV === "development" ? "(DEV) Backpack" : "Backpack";
 
-const isDevelopment = process.env.NODE_ENV === "development";
+const isDevelopment = NODE_ENV === "development";
 const appDirectory = path.resolve(__dirname);
 
 // This is needed for webpack to compile JavaScript.
@@ -68,6 +67,14 @@ const swcLoaderConfiguration = {
     },
   },
 };
+
+// const tamaguiLoaderConfiguration = {
+//   loader: "tamagui-loader",
+//   options: {
+//     config: "./tamagui.config.ts",
+//     components: ["@coral-xyz/tamagui", "tamagui"],
+//   },
+// };
 
 const fileExtensions = [
   "eot",
@@ -131,13 +138,14 @@ const {
     };
 
 const options = {
-  mode: process.env.NODE_ENV,
+  mode: NODE_ENV,
   entry: {
     background: "./src/background/index.ts",
     options: "./src/options/index.tsx",
     permissions: "./src/permissions/index.tsx",
     popup: "./src/index.tsx",
     redirects: "./src/redirects/index.tsx",
+    warning: "./src/warning.ts",
     contentScript: "./src/contentScript/index.ts",
     // injected: "../provider-injection/dist/browser/index.js",
   },
@@ -184,10 +192,16 @@ const options = {
       },
       babelLoaderConfiguration,
       swcLoaderConfiguration,
+      // tamaguiLoaderConfiguration, // NOTE(peter) turned off for now bc it's not working with our webpack conifg. it's just an optimization compiler that we can configure later once i figure it out
     ],
   },
   resolve: {
     alias: {
+      // // NOTE(peter): for whatever reason react is being installed in multiple places and breaking tamagui
+      // // this was the best i could do to ensure it pulls the correct version until i figure out why. this is what's supposed to happen anyway
+      // // if you find yourself here, run `ls node_modules/react` and if the folder exists, this stays, if it doesn't, you can safely remove
+      react: path.resolve("../../node_modules/react"),
+      "react-dom": path.resolve("../../node_modules/react-dom"),
       "react-native$": "react-native-web",
     },
     // Add support for web-based extensions so we can share code between mobile/extension
@@ -203,9 +217,22 @@ const options = {
       buffer: require.resolve("buffer/"), // trailing slash is intentional
       crypto: require.resolve("crypto-browserify"),
       stream: require.resolve("stream-browserify"),
+      path: require.resolve("path-browserify"),
+      zlib: require.resolve("browserify-zlib"),
     },
   },
   plugins: [
+    new DefinePlugin({
+      process: {
+        env: {
+          __DEV__: NODE_ENV === "development" ? "true" : "false",
+          IS_STATIC: '""',
+          NODE_ENV: JSON.stringify(NODE_ENV),
+          TAMAGUI_TARGET: JSON.stringify("web"),
+          DEBUG: JSON.stringify(process.env.DEBUG || "0"),
+        },
+      },
+    }),
     new CleanWebpackPlugin(),
     ...plugins,
     new MiniCssExtractPlugin(),
@@ -220,7 +247,7 @@ const options = {
         {
           from: "src/manifest.json",
           force: true,
-          transform: function (content, path) {
+          transform: function (content) {
             return Buffer.from(
               JSON.stringify(
                 {
@@ -242,7 +269,7 @@ const options = {
         },
         {
           // use a different icon depending on the NODE_ENV
-          from: `src/anchor-${process.env.NODE_ENV}.png`,
+          from: `src/anchor-${NODE_ENV}.png`,
           to: "anchor.png",
           force: true,
         },

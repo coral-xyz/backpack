@@ -16,6 +16,13 @@ import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, Check } from "@mui/icons-material";
 import { Button, IconButton, Popover, Typography } from "@mui/material";
 
+import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
+import {
+  NavStackEphemeral,
+  NavStackScreen,
+} from "../../common/Layout/NavStack";
+import { Logout } from "../../Locked/Reset/ResetWarning";
+
 import { SettingsNavStackDrawer } from "./SettingsNavStackDrawer";
 
 const useStyles = styles((theme) => ({
@@ -29,7 +36,7 @@ const useStyles = styles((theme) => ({
     },
   },
   popoverRoot: {
-    zIndex: 1,
+    zIndex: 2,
   },
 }));
 
@@ -132,6 +139,12 @@ function AvatarMenu() {
         }}
       />
       <AuxMenuList />
+      <div
+        style={{
+          borderTop: theme.custom.colors.borderFull,
+        }}
+      />
+      <LockMenuList />
     </div>
   );
 }
@@ -237,6 +250,7 @@ function UsersMenuList() {
     </MenuList>
   );
 }
+
 function AuxMenuList() {
   const theme = useCustomTheme();
   const { openSettings } = usePopoverContext();
@@ -295,6 +309,37 @@ function AuxMenuList() {
             Ctrl + G
           </Typography>
         </div>
+      </MenuListItem>
+    </MenuList>
+  );
+}
+
+function LockMenuList() {
+  const theme = useCustomTheme();
+  const background = useBackgroundClient();
+  return (
+    <MenuList>
+      <MenuListItem
+        onClick={() => {
+          background
+            .request({
+              method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+              params: [],
+            })
+            .catch(console.error);
+        }}
+      >
+        <Typography
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            color: theme.custom.colors.fontColor,
+            fontSize: "14px",
+          }}
+        >
+          Lock
+        </Typography>
       </MenuListItem>
     </MenuList>
   );

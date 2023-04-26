@@ -19,7 +19,6 @@ import { Box, IconButton, ListItemText, Toolbar } from "@mui/material";
 
 import { WithContaineredDrawer } from "../common/Layout/Drawer";
 import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
-import WaitingRoom from "../common/WaitingRoom";
 
 import { OnboardAccount } from "./pages/OnboardAccount";
 import { RecoverAccount } from "./pages/RecoverAccount";
@@ -31,12 +30,11 @@ export const Onboarding = ({
 }) => {
   const containerRef = useRef();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [action, setAction] = useState<"onboard" | "recover" | "waiting">(
-    "onboard"
-  );
+  const [action, setAction] = useState<"onboard" | "recover">("onboard");
+
+  const _ks = useKeyringStoreState();
   const isOnboarded =
-    !isAddingAccount &&
-    useKeyringStoreState() !== KeyringStoreStateEnum.NeedsOnboarding;
+    !isAddingAccount && _ks !== KeyringStoreStateEnum.NeedsOnboarding;
 
   const defaultProps = {
     containerRef,
@@ -68,18 +66,18 @@ export const Onboarding = ({
         <OnboardingProvider>
           <OnboardAccount
             onRecover={() => setAction("recover")}
-            onWaiting={() => setAction("waiting")}
             {...defaultProps}
           />
         </OnboardingProvider>
       ) : null}
-      {action === "waiting" ? <WaitingRoom /> : null}
-      {action === "recover" ? <OnboardingProvider>
-        <RecoverAccount
-          onClose={() => setAction("onboard")}
-          {...defaultProps}
+      {action === "recover" ? (
+        <OnboardingProvider>
+          <RecoverAccount
+            onClose={() => setAction("onboard")}
+            {...defaultProps}
           />
-      </OnboardingProvider> : null}
+        </OnboardingProvider>
+      ) : null}
     </OptionsContainer>
   );
 };

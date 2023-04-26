@@ -13,27 +13,24 @@ const chain = Chain(HASURA_URL, {
  * Get a user by their id.
  */
 export const getUser = async (id: string) => {
-  const response = await chain("query")({
-    auth_users_by_pk: [
-      {
-        id,
-      },
-      {
-        id: true,
-        username: true,
-        public_keys: [
-          {
-            where: {
-              user_active_publickey_mappings: {
-                user_id: { _eq: id },
-              },
-            },
-          },
-          { blockchain: true, public_key: true },
-        ],
-      },
-    ],
-  });
+  const response = await chain("query")(
+    {
+      auth_users_by_pk: [
+        {
+          id,
+        },
+        {
+          id: true,
+          username: true,
+          public_keys: [
+            { where: { is_primary: { _eq: true } } },
+            { blockchain: true, public_key: true, is_primary: true },
+          ],
+        },
+      ],
+    },
+    { operationName: "getUser" }
+  );
   if (!response.auth_users_by_pk) {
     throw new Error("user not found");
   }
@@ -61,35 +58,33 @@ const transformUser = (user: {
 };
 
 export const getUserIdFromPubkey = async ({ blockchain, publicKey }) => {
-  const response = await chain("query")({
-    auth_users: [
-      {
-        where: {
-          public_keys: {
-            public_key: { _eq: publicKey },
-            blockchain: { _eq: blockchain },
-            user_active_publickey_mappings: {
-              public_key: {
-                public_key: {
-                  _eq: publicKey,
-                },
-                blockchain: {
-                  _eq: blockchain,
-                },
-              },
+  const { auth_users } = await chain("query")(
+    {
+      auth_users: [
+        {
+          limit: 1,
+          where: {
+            public_keys: {
+              is_primary: { _eq: true },
+              public_key: { _eq: publicKey },
+              blockchain: { _eq: blockchain },
             },
           },
         },
-      },
-      {
-        id: true,
-        username: true,
-        public_keys: [{}, { blockchain: true, public_key: true }],
-      },
-    ],
-  });
+        {
+          id: true,
+          username: true,
+          public_keys: [
+            { where: { is_primary: { _eq: true } } },
+            { blockchain: true, public_key: true },
+          ],
+        },
+      ],
+    },
+    { operationName: "getUserIdFromPubkey" }
+  );
 
-  return response.auth_users[0] ?? null;
+  return auth_users[0];
 };
 
 export const getUserFromUsername = async ({
@@ -97,51 +92,28 @@ export const getUserFromUsername = async ({
 }: {
   username: string;
 }) => {
-  const response = await chain("query")({
-    auth_users: [
-      {
-        where: {
-          username: { _eq: username },
+  const { auth_users } = await chain("query")(
+    {
+      auth_users: [
+        {
+          limit: 1,
+          where: {
+            username: { _eq: username },
+            public_keys: { is_primary: { _eq: true } },
+          },
         },
-      },
-      {
-        id: true,
-        username: true,
-        public_keys: [{}, { blockchain: true, public_key: true }],
-      },
-    ],
-  });
-
-  const user = response.auth_users[0];
-  if (!user) {
-    return null;
-  }
-
-  const activePubkeys = await chain("query")({
-    auth_user_active_publickey_mapping: [
-      {
-        where: {
-          user_id: { _eq: user?.id },
+        {
+          id: true,
+          username: true,
+          public_keys: [
+            { where: { is_primary: { _eq: true } } },
+            { blockchain: true, public_key: true },
+          ],
         },
-      },
-      {
-        public_key: {
-          public_key: true,
-        },
-      },
-    ],
-  });
+      ],
+    },
+    { operationName: "getUserFromUsername" }
+  );
 
-  const activePubKeyArray: string[] =
-    activePubkeys.auth_user_active_publickey_mapping.map(
-      (x) => x.public_key.public_key
-    );
-
-  const gaurdedUser = {
-    ...user,
-    public_keys: user.public_keys.filter((x) =>
-      activePubKeyArray.includes(x.public_key)
-    ),
-  };
-  return gaurdedUser;
+  return auth_users[0];
 };

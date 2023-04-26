@@ -1,15 +1,17 @@
 import type {
   KeyringType,
+  PrivateKeyWalletDescriptor,
   ServerPublicKey,
   SignedWalletDescriptor,
   WalletDescriptor,
 } from "@coral-xyz/common";
 import { Blockchain, getAuthMessage } from "@coral-xyz/common";
-import { useOnboarding, useSignMessageForWallet } from "@coral-xyz/recoil";
+import { useOnboarding, useRpcRequests } from "@coral-xyz/recoil";
 
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
 import { MnemonicInput } from "../../common/Account/MnemonicInput";
+import { PrivateKeyInput } from "../../common/Account/PrivateKeyInput";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 import { useHardwareOnboardSteps } from "../../Onboarding/pages/HardwareOnboard";
 
@@ -17,7 +19,9 @@ import { AlreadyOnboarded } from "./AlreadyOnboarded";
 import { Finish } from "./Finish";
 import { KeyringTypeSelector } from "./KeyringTypeSelector";
 import { MnemonicSearch } from "./MnemonicSearch";
+import { NotificationsPermission } from "./NotificationsPermission";
 import { RecoverAccountUsernameForm } from "./RecoverAccountUsernameForm";
+import { TwitterConnect } from "./TwitterConnect";
 
 export const RecoverAccount = ({
   onClose,
@@ -31,7 +35,9 @@ export const RecoverAccount = ({
   isOnboarded?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
-  const { onboardingData, setOnboardingData } = useOnboarding();
+  const { signMessageForWallet } = useRpcRequests();
+  const { onboardingData, setOnboardingData, handlePrivateKeyInput } =
+    useOnboarding();
   const {
     userId,
     keyringType,
@@ -39,9 +45,7 @@ export const RecoverAccount = ({
     signedWalletDescriptors,
     serverPublicKeys,
   } = onboardingData;
-
   const authMessage = userId ? getAuthMessage(userId) : "";
-  const signMessageForWallet = useSignMessageForWallet(mnemonic);
   const hardwareOnboardSteps = useHardwareOnboardSteps({
     blockchain:
       serverPublicKeys.length > 0
@@ -66,6 +70,7 @@ export const RecoverAccount = ({
   });
 
   const steps = [
+    // <TwitterConnect key="TwitterConnect" />,
     <RecoverAccountUsernameForm
       key="RecoverAccountUsernameForm"
       onNext={(
@@ -91,7 +96,7 @@ export const RecoverAccount = ({
         <MnemonicInput
           key="MnemonicInput"
           buttonLabel="Next"
-          onNext={(mnemonic: string) => {
+          onNext={async (mnemonic: string) => {
               setOnboardingData({ mnemonic });
               nextStep();
             }}
@@ -100,20 +105,42 @@ export const RecoverAccount = ({
           key="MnemonicSearch"
           serverPublicKeys={serverPublicKeys!}
           mnemonic={mnemonic!}
+          onRetry={prevStep}
           onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
               const signedWalletDescriptors = await Promise.all(
                 walletDescriptors.map(async (w) => ({
                   ...w,
-                  signature: await signMessageForWallet(w, authMessage),
+                  signature: await signMessageForWallet(
+                    w.blockchain,
+                    w.publicKey,
+                    authMessage,
+                    {
+                      mnemonic,
+                      signedWalletDescriptors: [{ ...w, signature: "" }],
+                    }
+                  ),
                 }))
               );
               setOnboardingData({ signedWalletDescriptors });
               nextStep();
             }}
-          onRetry={prevStep}
           />,
         ]
-      : hardwareOnboardSteps),
+      : []),
+    ...(keyringType === "ledger" ? hardwareOnboardSteps : []),
+    ...(keyringType === "private-key"
+      ? [
+        <PrivateKeyInput
+          key="PrivateKeyInput"
+          serverPublicKeys={serverPublicKeys}
+          onNext={async (result: PrivateKeyWalletDescriptor) => {
+              await handlePrivateKeyInput(result);
+              nextStep();
+            }}
+          onboarding
+          />,
+        ]
+      : []),
     ...(!isAddingAccount
       ? [
         <CreatePassword
@@ -125,9 +152,8 @@ export const RecoverAccount = ({
           />,
         ]
       : []),
-    ...(signedWalletDescriptors.length > 0
-      ? [<Finish key="Finish" isAddingAccount={isAddingAccount} />]
-      : []),
+    <NotificationsPermission key="NotificationsPermission" onNext={nextStep} />,
+    <Finish key="Finish" isAddingAccount={isAddingAccount} />,
   ];
 
   // Cant go backwards from the last step as the keyring is already created

@@ -23,7 +23,6 @@ import {
 } from "@mui/material";
 
 import { Header, SubtextParagraph } from "../../common";
-import { ActionCard } from "../../common/Layout/ActionCard";
 import { AppStoreIcon } from "../Icon";
 
 export function SetupComplete({ onClose }: { onClose: () => void }) {
@@ -73,13 +72,15 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
             }}
           >
             <Grid container spacing={1} columns={1}>
-              {BACKPACK_FEATURE_XNFT ? <Grid item xs={6}>
-                <CallToAction
-                  icon={<AppStoreIcon />}
-                  title="Browse the xNFT library"
-                  onClick={() => window.open(XNFT_GG_LINK, "_blank")}
+              {BACKPACK_FEATURE_XNFT ? (
+                <Grid item xs={6}>
+                  <CallToAction
+                    icon={<AppStoreIcon />}
+                    title="Browse the xNFT library"
+                    onClick={() => window.open(XNFT_GG_LINK, "_blank")}
                   />
-              </Grid> : null}
+                </Grid>
+              ) : null}
               <Grid item xs={6}>
                 <CallToAction
                   icon={<TwitterIcon fill="#1D9BF0" />}

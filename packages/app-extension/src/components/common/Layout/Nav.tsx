@@ -1,5 +1,5 @@
 import React, { Suspense, useState } from "react";
-import { Loading } from "@coral-xyz/react-common";
+import { Loading, LocalImage } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowBack } from "@mui/icons-material";
 import KeyboardArrowDownSharpIcon from "@mui/icons-material/KeyboardArrowDownSharp";
@@ -263,7 +263,7 @@ function CenterDisplay({
             }}
             onClick={handleOpenDrawer}
           >
-            <img
+            <LocalImage
               style={{
                 width: 25,
                 height: 25,
@@ -279,7 +279,7 @@ function CenterDisplay({
             border: "none",
             padding: 0,
             margin: 0,
-            cursor: "pointer",
+            cursor: notchViewComponent ? "pointer" : "default",
           }}
           onClick={handleOpenDrawer}
         >

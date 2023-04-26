@@ -7,8 +7,9 @@ import {
   ethereumIndexed,
   legacyBip44ChangeIndexed,
   legacyBip44Indexed,
+  legacyEthereum,
   legacyLedgerIndexed,
-  legacyLedgerLiveIndexed,
+  legacyLedgerLiveAccount,
   legacySolletIndexed,
   LOAD_PUBLIC_KEY_AMOUNT,
   UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
@@ -16,7 +17,7 @@ import {
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
 } from "@coral-xyz/common";
 import { Loading, PrimaryButton, TextInput } from "@coral-xyz/react-common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useBackgroundClient, useDehydratedWallets } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import Ethereum from "@ledgerhq/hw-app-eth";
 import Solana from "@ledgerhq/hw-app-solana";
@@ -48,6 +49,7 @@ export function ImportWallets({
   transport,
   onNext,
   onError,
+  recovery,
   allowMultiple = true,
 }: {
   blockchain: Blockchain;
@@ -55,10 +57,16 @@ export function ImportWallets({
   transport?: Transport;
   onNext: (walletDescriptor: Array<WalletDescriptor>) => void;
   onError?: (error: Error) => void;
+  recovery?: string;
   allowMultiple?: boolean;
 }) {
   const background = useBackgroundClient();
   const theme = useCustomTheme();
+
+  const dehydrated = useDehydratedWallets();
+  const dehydratedPubkeys = dehydrated
+    .filter((d) => d.blockchain === blockchain)
+    .map((d) => d.publicKey);
 
   // Loaded balances for each public key
   const [balances, setBalances] = useState<{ [publicKey: string]: BigNumber }>(
@@ -84,23 +92,17 @@ export function ImportWallets({
     [Blockchain.SOLANA]: [
       {
         path: (i: number) => legacyBip44Indexed(Blockchain.SOLANA, i),
-        label: "m/44/501'/ ",
+        label: "m/44/501'/x'",
       },
       {
         path: (i: number) => legacyBip44ChangeIndexed(Blockchain.SOLANA, i),
-        label: "m/44/501'/0'",
+        label: "m/44/501'/x'/0'",
       },
       {
         path: (i: number) =>
           legacyBip44ChangeIndexed(Blockchain.SOLANA, i) + "/0'",
-        label: "m/44/501'/0'/0'",
+        label: "m/44/501'/x'/0'/0'",
       },
-      /**
-      {
-        path: (i: number) => getIndexedPath(Blockchain.SOLANA, i),
-        label: "Backpack",
-      },
-      **/
     ]
       // Note: We only allow importing the deprecated sollet derivation path for
       //       hot wallets. This UI is hidden behind a local storage flag we
@@ -117,36 +119,21 @@ export function ImportWallets({
           : []
       ),
     [Blockchain.ETHEREUM]: [
-      /**
-      // Used in older versions of Backpack
       {
-        path: (i: number) => legacyBip44Indexed(Blockchain.ETHEREUM, i),
-        label: "m/44/60'/",
+        path: (i: number) => legacyEthereum(i),
+        label: "m/44/60'/x",
       },
-      **/
-      {
-        path: (i: number) => legacyLedgerLiveIndexed(i),
-        label: "m/44/60' - Ledger Live",
-      },
-      /**
-      // Used in older versions of Backpack
-      {
-        path: (i: number) => legacyBip44ChangeIndexed(Blockchain.ETHEREUM, i),
-        label: "m/44/60'/0'",
-      },
-      **/
       {
         path: (i: number) => legacyLedgerIndexed(i),
-        label: "m/44/60'/0' - Ledger",
+        label: "m/44'/60'/0'/x' - Ledger",
+      },
+      {
+        path: (i: number) => legacyLedgerLiveAccount(i),
+        label: "m/44'/60'/x'/0/0 - Ledger Live",
       },
       {
         path: (i: number) => ethereumIndexed(i),
-        label: "m/44/60'/0'/0 - Ethereum Standard",
-      },
-      {
-        path: (i: number) =>
-          legacyBip44ChangeIndexed(Blockchain.ETHEREUM, i) + "/0'",
-        label: "m/44/60'/0'/0'",
+        label: "m/44'/60'/0'/0/x - Ethereum Standard",
       },
     ],
   }[blockchain];
@@ -203,7 +190,7 @@ export function ImportWallets({
         // If the query failed assume all are valid
       }
     })();
-  }, [walletDescriptors]);
+  }, [background, blockchain, walletDescriptors]);
 
   //
   // Load a list of accounts and their associated balances
@@ -232,6 +219,7 @@ export function ImportWallets({
       .then(async (publicKeys: string[]) => {
         setWalletDescriptors(
           derivationPaths.map((derivationPath, i) => ({
+            blockchain,
             publicKey: publicKeys[i],
             derivationPath,
           }))
@@ -363,6 +351,13 @@ export function ImportWallets({
     );
   };
 
+  const isDisabledPublicKey = (pk: string): boolean => {
+    if (recovery === undefined) {
+      return disabledPublicKeys.includes(pk);
+    }
+    return pk !== recovery || !dehydratedPubkeys.includes(pk);
+  };
+
   //
   // Handles checkbox clicks to select accounts to import.
   //
@@ -374,9 +369,10 @@ export function ImportWallets({
     if (currentIndex === -1) {
       // Not selected, add it
       const walletDescriptor = {
+        blockchain,
         derivationPath,
         publicKey,
-      } as WalletDescriptor;
+      };
       // Adding the account
       if (allowMultiple) {
         newCheckedWalletDescriptors.push(walletDescriptor);
@@ -434,8 +430,8 @@ export function ImportWallets({
             select
             disabled={ledgerLocked}
           >
-            {derivationPathOptions.map((o, index) => (
-              <MenuItem value={o.label} key={index}>
+            {derivationPathOptions.map((o) => (
+              <MenuItem value={o.label} key={o.label}>
                 {o.label}
               </MenuItem>
             ))}
@@ -468,6 +464,7 @@ export function ImportWallets({
                 })
                 .map(({ publicKey, derivationPath }) => (
                   <ListItemButton
+                    disableRipple
                     key={publicKey.toString()}
                     onClick={handleSelect(publicKey, derivationPath)}
                     sx={{
@@ -477,8 +474,7 @@ export function ImportWallets({
                       paddingTop: "5px",
                       paddingBottom: "5px",
                     }}
-                    disableRipple
-                    disabled={disabledPublicKeys.includes(publicKey.toString())}
+                    disabled={isDisabledPublicKey(publicKey.toString())}
                   >
                     <Box style={{ display: "flex", width: "100%" }}>
                       <div
@@ -497,9 +493,7 @@ export function ImportWallets({
                             importedPublicKeys.includes(publicKey.toString())
                           }
                           tabIndex={-1}
-                          disabled={disabledPublicKeys.includes(
-                            publicKey.toString()
-                          )}
+                          disabled={isDisabledPublicKey(publicKey.toString())}
                           disableRipple
                           style={{ marginLeft: 0 }}
                         />
@@ -548,7 +542,7 @@ export function ImportWallets({
         <PrimaryButton
           label={`Import Wallet${allowMultiple ? "s" : ""}`}
           onClick={() => onNext(checkedWalletDescriptors)}
-          disabled={walletDescriptors.length === 0}
+          disabled={checkedWalletDescriptors.length === 0}
         />
       </Box>
     </Box>

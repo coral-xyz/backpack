@@ -23,6 +23,13 @@ array_relationships:
         remote_table:
           name: user_nfts
           schema: auth
+computed_fields:
+  - name: is_primary
+    definition:
+      function:
+        name: public_key_is_primary
+        schema: auth
+    comment: computed field which is TRUE if there's a matching user_active_publickey_mapping
 insert_permissions:
   - role: auth_worker
     permission:
@@ -39,6 +46,8 @@ select_permissions:
         - id
         - public_key
         - user_id
+      computed_fields:
+        - is_primary
       filter: {}
       allow_aggregations: true
   - role: auth_worker
@@ -49,6 +58,20 @@ select_permissions:
         - public_key
         - created_at
         - user_id
+      computed_fields:
+        - is_primary
+      filter: {}
+      allow_aggregations: true
+  - role: one_xnft
+    permission:
+      columns:
+        - id
+        - blockchain
+        - public_key
+        - created_at
+        - user_id
+      computed_fields:
+        - is_primary
       filter: {}
       allow_aggregations: true
 delete_permissions:

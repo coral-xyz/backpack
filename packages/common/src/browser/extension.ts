@@ -54,56 +54,9 @@ export class BrowserRuntimeExtension {
     // that those promises can properly resolve with the right state,
     // i.e. user denied the request.
     //
-    UiActionRequestManager.cancelAllRequests();
-
-    return new Promise(async (resolve, reject) => {
-      // try to reuse existing popup window
-      try {
-        const popupWindowId: number | undefined =
-          await BrowserRuntimeCommon.getLocalStorage("popupWindowId");
-        if (popupWindowId) {
-          const popupWindow = await chrome?.windows.get(popupWindowId);
-          if (popupWindow) {
-            const tabs = await chrome.tabs.query({ windowId: popupWindowId });
-            if (tabs.length === 1) {
-              const tab = tabs[0];
-              const url: string = Array.isArray(options.url)
-                ? options.url[0]!
-                : options.url!;
-              const updatedTab = await chrome.tabs.update(tab.id!, { url });
-              if (updatedTab) {
-                const popupWindow = await chrome?.windows.update(
-                  updatedTab.windowId,
-                  { focused: true }
-                );
-                return resolve(popupWindow);
-              } else {
-                const error = BrowserRuntimeCommon.checkForError();
-                return reject(error);
-              }
-            }
-          }
-        }
-      } catch (e) {
-        // fall through to create new window
-      }
-      // if nothign to reuse create new window.
-      try {
-        const newPopupWindow = await chrome?.windows.create(options);
-        if (newPopupWindow) {
-          BrowserRuntimeCommon.setLocalStorage(
-            "popupWindowId",
-            newPopupWindow.id
-          );
-          resolve(newPopupWindow);
-        }
-        const error = BrowserRuntimeCommon.checkForError();
-        return reject(error);
-      } catch (e) {
-        const error = BrowserRuntimeCommon.checkForError();
-        return reject(error);
-      }
-    });
+    await UiActionRequestManager.cancelAllRequests();
+    const newPopupWindow = await chrome?.windows.create(options);
+    return newPopupWindow;
   }
 
   public static async getLastFocusedWindow(): Promise<chrome.windows.Window>;
@@ -214,42 +167,40 @@ export async function openApproveMessagePopupWindow(
 }
 
 export async function openPopupWindow(
-  url: string
+  url: string,
+  options?: { fullscreen?: boolean; height: number; width: number }
 ): Promise<chrome.windows.Window> {
-  const MACOS_TOOLBAR_HEIGHT = 28;
-  const WINDOWS_TOOLBAR_HEIGHT = 28; // TODO: confirm this.
-  function getOs() {
-    const os = ["Windows", "Linux", "Mac"];
-    return os.find((v) => navigator.appVersion.indexOf(v) >= 0);
-  }
-  function isMacOs(): boolean {
-    return getOs() === "Mac";
-  }
-  function isWindows(): boolean {
-    return getOs() === "Windows";
+  const lastWindow = await BrowserRuntimeExtension.getLastFocusedWindow();
+  const fullscreen = options?.fullscreen;
+
+  let width = isNaN(options?.width ?? NaN) ? EXTENSION_WIDTH : options!.width!;
+  let height = isNaN(options?.height ?? NaN)
+    ? EXTENSION_HEIGHT
+    : options!.height!;
+
+  if (fullscreen) {
+    height = screen.availHeight;
+    width = screen.availWidth;
   }
 
-  return new Promise((resolve) => {
-    BrowserRuntimeExtension.getLastFocusedWindow().then((window: any) => {
-      BrowserRuntimeExtension._openWindow({
-        url: `${url}`,
-        type: "popup",
-        width: EXTENSION_WIDTH,
-        height:
-          EXTENSION_HEIGHT +
-          (isMacOs()
-            ? MACOS_TOOLBAR_HEIGHT
-            : isWindows()
-            ? WINDOWS_TOOLBAR_HEIGHT
-            : 0),
-        top: window.top,
-        left: window.left + (window.width - EXTENSION_WIDTH),
-        focused: true,
-      }).then((window: any) => {
-        resolve(window);
-      });
-    });
+  const [EXTRA_HEIGHT, EXTRA_WIDTH] =
+    (navigator as any).userAgentData.platform === "Windows"
+      ? [36, 12]
+      : [28, 0];
+
+  const popupWindow = await BrowserRuntimeExtension._openWindow({
+    url: `${url}`,
+    type: "popup",
+    width: width + EXTRA_WIDTH,
+    height: height + EXTRA_HEIGHT,
+    top: fullscreen ? 0 : lastWindow.top,
+    left: fullscreen
+      ? 0
+      : (lastWindow.left ?? 0) +
+        ((lastWindow.width ?? 0) - width - EXTRA_WIDTH),
+    focused: true,
   });
+  return popupWindow;
 }
 
 export function openOnboarding() {

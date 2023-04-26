@@ -1,4 +1,4 @@
-import { type CSSProperties, useEffect, useState } from "react";
+import React, { type CSSProperties, useEffect, useState } from "react";
 import type { Nft } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
@@ -17,11 +17,11 @@ import {
 } from "@coral-xyz/common";
 import { LocalImageManager, refreshGroups } from "@coral-xyz/db";
 import {
+  LocalImage,
   NegativeButton,
   PrimaryButton,
   ProxyImage,
   SecondaryButton,
-  TextInput,
 } from "@coral-xyz/react-common";
 import {
   appStoreMetaTags,
@@ -35,6 +35,7 @@ import {
   useDecodedSearchParams,
   useEthereumCtx,
   useEthereumExplorer,
+  useIsValidAddress,
   useNavigation,
   useOpenPlugin,
   useSolanaCtx,
@@ -54,6 +55,7 @@ import {
 } from "recoil";
 
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
+import { CopyablePublicKey } from "../../common/CopyablePublicKey";
 import {
   CloseButton,
   useDrawerContext,
@@ -62,15 +64,20 @@ import {
 import {
   NavStackEphemeral,
   NavStackScreen,
+  useNavigation as useNavigationEphemeral,
 } from "../../common/Layout/NavStack";
 import PopoverMenu from "../../common/PopoverMenu";
+import type { SendData } from "../Balances/TokensWidget/AddressSelector";
+import { AddressSelector } from "../Balances/TokensWidget/AddressSelector";
 import { SendEthereumConfirmationCard } from "../Balances/TokensWidget/Ethereum";
 import {
   Error as ErrorConfirmation,
   Sending,
-  useIsValidAddress,
+  useStyles,
 } from "../Balances/TokensWidget/Send";
 import { SendSolanaConfirmationCard } from "../Balances/TokensWidget/Solana";
+
+import { SendDrawer } from "./SendDrawer";
 
 const logger = getLogger("app-extension/nft-detail");
 
@@ -187,18 +194,23 @@ export function NftsDetail({
             }}
           />
         ) : null}
-        <SendButton
-          invert={whitelistedChatCollectionId !== undefined}
-          // style={
-          //   whitelistedChatCollectionId
-          //     ? {
-          //         backgroundColor: theme.custom.colors.secondaryButton,
-          //         color: theme.custom.colors.secondaryButtonTextColor,
-          //       }
-          //     : undefined
-          // }
-          nft={nft}
-        />
+        <SendDrawer nft={nft}>
+          {(open) => (
+            <PrimaryButton
+              invert={whitelistedChatCollectionId !== undefined}
+              // style={
+              //   whitelistedChatCollectionId
+              //     ? {
+              //         backgroundColor: theme.custom.colors.secondaryButton,
+              //         color: theme.custom.colors.secondaryButtonTextColor,
+              //       }
+              //     : undefined
+              // }
+              onClick={() => open()}
+              label="Send"
+            />
+          )}
+        </SendDrawer>
       </div>
       {xnft ? <ApplicationButton xnft={xnft} mintAddress={nft.mint} /> : null}
       <Description nft={nft} />
@@ -209,8 +221,10 @@ export function NftsDetail({
   );
 }
 
-function Image({ nft }: { nft: any }) {
-  const src = isMadLads(nft) ? nft.lockScreenImageUrl : nft.imageUrl;
+function Image({ nft, style }: { nft: any; style?: any }) {
+  const src = isMadLads(nft.creators)
+    ? nft.lockScreenImageUrl ?? nft.imageUrl
+    : nft.imageUrl;
   return (
     <div
       style={{
@@ -219,6 +233,7 @@ function Image({ nft }: { nft: any }) {
         display: "flex",
         position: "relative",
         alignItems: "center",
+        ...(style || {}),
       }}
     >
       <ProxyImage
@@ -230,6 +245,7 @@ function Image({ nft }: { nft: any }) {
           minHeight: "343px",
         }}
         src={src}
+        original
         removeOnError
       />
     </div>
@@ -354,164 +370,6 @@ function Description({ nft }: { nft: any }) {
         {nft.description}
       </Typography>
     </div>
-  );
-}
-
-function SendButton({
-  invert,
-  nft,
-  style,
-}: {
-  invert: boolean;
-  nft: any;
-  style?: CSSProperties;
-}) {
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const send = () => {
-    setOpenDrawer(true);
-  };
-  return (
-    <>
-      <PrimaryButton
-        invert={invert}
-        style={style}
-        onClick={() => send()}
-        label="Send"
-      />
-      <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        <div style={{ height: "100%" }}>
-          <NavStackEphemeral
-            initialRoute={{ name: "send" }}
-            options={() => ({
-              title: nft.name ? `${nft.name} / Send` : "Send",
-            })}
-            navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
-          >
-            <NavStackScreen
-              name="send"
-              component={() => <SendScreen nft={nft} />}
-            />
-          </NavStackEphemeral>
-        </div>
-      </WithDrawer>
-    </>
-  );
-}
-
-function SendScreen({ nft }: { nft: any }) {
-  const background = useBackgroundClient();
-  const { close } = useDrawerContext();
-  const { provider: solanaProvider } = useAnchorContext();
-  const ethereumCtx = useEthereumCtx();
-  const [destinationAddress, setDestinationAddress] = useState("");
-  const [openConfirm, setOpenConfirm] = useState(false);
-  const [wasSent, setWasSent] = useState(false);
-  const { isValidAddress, isErrorAddress } = useIsValidAddress(
-    nft.blockchain,
-    destinationAddress,
-    solanaProvider.connection,
-    ethereumCtx.provider
-  );
-
-  useEffect(() => {
-    (async () => {
-      // If the modal is being closed and the NFT has been sent elsewhere then
-      // navigate back to the nav root because the send screen is no longer
-      // valid as the wallet no longer possesses the NFT.
-      if (!openConfirm && wasSent) {
-        await background.request({
-          method: UI_RPC_METHOD_NAVIGATION_TO_ROOT,
-          params: [],
-        });
-      }
-    })();
-  }, [openConfirm, wasSent, background]);
-
-  return (
-    <>
-      <div
-        style={{
-          paddingLeft: "16px",
-          paddingRight: "16px",
-          height: "100%",
-        }}
-      >
-        <div
-          style={{
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-          }}
-        >
-          <div>
-            <Image nft={nft} />
-            <TextInput
-              autoFocus
-              placeholder={`Recipient's ${toTitleCase(nft.blockchain)} Address`}
-              value={destinationAddress}
-              setValue={(e) => setDestinationAddress(e.target.value)}
-              error={isErrorAddress}
-              inputProps={{
-                name: "to",
-              }}
-            />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              paddingTop: "18px",
-              paddingBottom: "16px",
-            }}
-          >
-            <SecondaryButton
-              style={{
-                marginRight: "8px",
-              }}
-              onClick={close}
-              label="Cancel"
-            />
-            <PrimaryButton
-              disabled={!isValidAddress}
-              onClick={() => setOpenConfirm(true)}
-              label="Next"
-            />
-          </div>
-        </div>
-      </div>
-      <ApproveTransactionDrawer
-        openDrawer={openConfirm}
-        setOpenDrawer={setOpenConfirm}
-      >
-        {nft.blockchain === Blockchain.SOLANA ? (
-          <SendSolanaConfirmationCard
-            token={{
-              address: nft.publicKey,
-              logo: nft.imageUrl,
-              decimals: 0, // Are there any NFTs that don't use decimals 0?
-              mint: nft.mint,
-            }}
-            destinationAddress={destinationAddress}
-            amount={BigNumber.from(1)}
-            onComplete={() => setWasSent(true)}
-          />
-        ) : null}
-        {nft.blockchain === Blockchain.ETHEREUM ? (
-          <SendEthereumConfirmationCard
-            token={{
-              logo: nft.imageUrl,
-              decimals: 0, // Are there any NFTs that don't use decimals 0?
-              address: nft.contractAddress,
-              tokenId: nft.tokenId,
-            }}
-            destinationAddress={destinationAddress}
-            amount={BigNumber.from(1)}
-            onComplete={() => setWasSent(true)}
-          />
-        ) : null}
-      </ApproveTransactionDrawer>
-    </>
   );
 }
 
@@ -667,7 +525,8 @@ export function NftOptionsButton() {
       //
       // Store locally.
       //
-      await updateLocalNftPfp(uuid, username, nft);
+      // Need SWR mechanic for Local pfps before enabling again so we can update PFPs from xnfts.
+      // await updateLocalNftPfp(uuid, username, tempAvatar.nft!);
       setNewAvatar({ id, url: nft.imageUrl });
     }
   };
@@ -879,7 +738,7 @@ export async function updateLocalNftPfp(
   // Only show mad lads on the lock screen in full screen view.
   //
   let lockScreenImageUrl;
-  if (isMadLads(nft)) {
+  if (isMadLads(nft.creators)) {
     window.localStorage.setItem(
       lockScreenKey(uuid),
       JSON.stringify({

@@ -1,10 +1,40 @@
 name: app-mobile preview
 
 on:
-  pull_request:
-    paths:
-      - "packages/app-mobile/**"
-    types: [opened, synchronize]
+  workflow_dispatch:
+    inputs:
+      # platform:
+      #   description: Platform to build for (all/android/ios/native/web)
+      #   type: choice
+      #   required: true
+      #   default: native
+      #   options:
+      #     - all
+      #     - native
+      #     - android
+      #     - ios
+      #     - web
+      # profile:
+      #   description: EAS build profile (development/production/preview)
+      #   type: choice
+      #   required: true
+      #   default: development
+      #   options:
+      #     - development
+      #     - production
+      #     - preview
+      app_env:
+        description: APP_ENV (development/production)
+        type: choice
+        required: true
+        default: development
+        options:
+          - development
+          - production
+  # pull_request:
+    # paths:
+    #   - "packages/app-mobile/**"
+    # types: [opened, synchronize]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}

@@ -2,7 +2,7 @@ name: Deploy xnft-api-server
 on:
   push:
     branches:
-      - master
+      - production
 
 jobs:
   deploy:
@@ -39,13 +39,13 @@ jobs:
         run: |
           docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
       - name: Build the Docker image
-        run: docker build . --tag backpackapp/xnft-api-server:${{ github.sha }}
+        run: docker build . --tag backpackapp/xnft-api-server:${{ github.sha }}-xas
 
       - name: Docker Push
-        run: docker push backpackapp/xnft-api-server:${{ github.sha }}
+        run: docker push backpackapp/xnft-api-server:${{ github.sha }}-xas
 
       - name: Create zip
-        run: "mkdir deploy && cp ./docker/xnft-api-server/docker-compose.yml ./deploy && cp ./docker/Dockerrun.aws.json ./deploy && sed 's/{{tag}}/${{ github.sha }}/g' ./deploy/docker-compose.yml > ./deploy/temp.yml && mv ./deploy/temp.yml ./deploy/docker-compose.yml && cd deploy && zip deploy.zip * && cd .. && mv ./deploy/deploy.zip ."
+        run: "mkdir deploy && cp ./docker/xnft-api-server/docker-compose.yml ./deploy && cp ./docker/Dockerrun.aws.json ./deploy && sed 's/{{tag}}/${{ github.sha }}-xas/g' ./deploy/docker-compose.yml > ./deploy/temp.yml && mv ./deploy/temp.yml ./deploy/docker-compose.yml && cd deploy && zip deploy.zip * && cd .. && mv ./deploy/deploy.zip ."
 
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v20
@@ -54,6 +54,6 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_EB_SECRET_ACCESS_KEY }}
           application_name: backend-api
           environment_name: xnft-server-dockerhub
-          version_label: ${{ github.sha }}
+          version_label: ${{ github.sha }}-xas
           region: us-west-1
           deployment_package: deploy.zip

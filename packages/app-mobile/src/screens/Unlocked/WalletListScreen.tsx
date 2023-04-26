@@ -16,6 +16,7 @@ import {
   useAllWallets,
   useBackgroundClient,
   useBlockchainActiveWallet,
+  useDehydratedWallets,
 } from "@coral-xyz/recoil";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -28,7 +29,7 @@ import {
   Row,
   Screen,
 } from "~components/index";
-import { useBlockchainLogo, useTheme } from "~hooks/index";
+import { getBlockchainLogo, useTheme } from "~hooks/index";
 
 type Wallet = {
   publicKey: string;
@@ -37,11 +38,25 @@ type Wallet = {
   type: string;
 };
 
+// NOTE(peter): copied from app-extension/src/components/common/WalletList.tsx
 export function WalletListScreen({ navigation, route }): JSX.Element {
   const insets = useSafeAreaInsets();
   const activeWallet = useBlockchainActiveWallet(Blockchain.SOLANA);
   const background = useBackgroundClient();
   const wallets = useAllWallets();
+  const _dehydratedWallets = useDehydratedWallets();
+
+  const activeWallets = wallets.filter((w) => !w.isCold);
+  // const coldWallets = wallets.filter((w) => w.isCold);
+
+  // Dehydrated public keys are keys that exist on the server but cannot be
+  // used on the client as we don't have signing data, e.g. mnemonic, private
+  // key or ledger derivation path
+  const dehydratedWallets = _dehydratedWallets.map((w: any) => ({
+    ...w,
+    name: "", // TODO server side does not sync wallet names
+    type: "dehydrated",
+  }));
 
   const onSelectWallet = async (w: Wallet) => {
     await background.request({
@@ -55,7 +70,7 @@ export function WalletListScreen({ navigation, route }): JSX.Element {
   return (
     <Screen style={{ marginBottom: insets.bottom }}>
       <FlatList
-        data={wallets}
+        data={activeWallets.concat(dehydratedWallets)}
         ItemSeparatorComponent={() => <ListRowSeparator />}
         keyExtractor={(item) => item.publicKey.toString()}
         renderItem={({ item: wallet }) => {
@@ -111,7 +126,13 @@ function WalletListItem({
           </Margin>
           <View>
             <Text
-              style={{ fontSize: 16, fontWeight: isSelected ? "600" : "500" }}
+              style={{
+                fontSize: 16,
+                fontFamily: isSelected
+                  ? "Inter_600SemiBold"
+                  : "Inter_400Regular",
+                color: theme.custom.colors.fontColor,
+              }}
             >
               {name}
             </Text>
@@ -120,7 +141,9 @@ function WalletListItem({
                 type={type}
                 fill={isSelected ? theme.custom.colors.secondary : undefined}
               />
-              <Text style={{ fontSize: 14 }}>
+              <Text
+                style={{ fontSize: 14, color: theme.custom.colors.fontColor }}
+              >
                 {walletAddressDisplay(publicKey)}
               </Text>
             </Row>
@@ -133,7 +156,7 @@ function WalletListItem({
 }
 
 function NetworkIcon({ blockchain }: { blockchain: Blockchain }) {
-  const logo = useBlockchainLogo(blockchain);
+  const logo = getBlockchainLogo(blockchain);
   return <Image style={styles.logoContainer} source={logo} />;
 }
 
@@ -149,10 +172,6 @@ function WalletTypeIcon({ type, fill }: { type: string; fill?: string }) {
 }
 
 const styles = StyleSheet.create({
-  sectionHeaderTitle: {
-    fontWeight: "500",
-    marginBottom: 8,
-  },
   listItem: {
     flexDirection: "row",
     justifyContent: "space-between",

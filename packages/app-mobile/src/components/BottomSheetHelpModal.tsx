@@ -5,7 +5,6 @@ import { FlatList, Pressable, StyleSheet } from "react-native";
 
 import * as Linking from "expo-linking";
 
-import { Margin, RoundedContainerGroup } from "~components/index";
 import {
   BACKPACK_LINK,
   DISCORD_INVITE_LINK,
@@ -13,13 +12,15 @@ import {
 } from "@coral-xyz/common";
 import { MaterialIcons } from "@expo/vector-icons";
 import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
+
+import { BetterBottomSheet } from "~components/BottomSheetModal";
+import { DiscordIcon, TwitterIcon } from "~components/Icon";
+import { Margin, RoundedContainerGroup } from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 import {
   IconLaunchDetail,
   SettingsRow,
 } from "~screens/Unlocked/Settings/components/SettingsRow";
-
-import { DiscordIcon, TwitterIcon } from "~components/Icon";
-import { useTheme } from "~hooks/useTheme";
 
 export function HelpModalMenuButton({
   onPress,
@@ -57,35 +58,6 @@ export function BottomSheetHelpModal({
   extraOptions?: any[];
 }): JSX.Element {
   const theme = useTheme();
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-
-  useEffect(() => {
-    function handle() {
-      if (isVisible) {
-        bottomSheetModalRef.current?.present();
-        // Resets visibility since dismissing it is built-in
-        resetVisibility();
-      }
-    }
-
-    handle();
-  }, [isVisible, resetVisibility]);
-
-  const modalHeight = extraOptions.length
-    ? 240 + extraOptions.length * 48
-    : 240;
-  const snapPoints = useMemo(() => [modalHeight], [modalHeight]);
-  const renderBackdrop = useCallback(
-    (props: BottomSheetBackdropProps) => (
-      <BottomSheetBackdrop
-        {...props}
-        pressBehavior="close"
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-      />
-    ),
-    []
-  );
 
   const menuOptions = [
     ...extraOptions,
@@ -116,37 +88,29 @@ export function BottomSheetHelpModal({
   ];
 
   return (
-    <BottomSheetModal
-      ref={bottomSheetModalRef}
-      index={0}
-      snapPoints={snapPoints}
-      backdropComponent={renderBackdrop}
-      contentHeight={modalHeight}
-      handleStyle={{
-        marginBottom: 12,
-      }}
-      backgroundStyle={{
-        backgroundColor: theme.custom.colors.background,
-      }}
-    >
-      <Margin horizontal={16}>
-        <RoundedContainerGroup>
-          <FlatList
-            data={menuOptions}
-            scrollEnabled={false}
-            renderItem={({ item }) => {
-              return (
-                <SettingsRow
-                  onPress={item.onPress}
-                  icon={item.icon}
-                  detailIcon={item.detailIcon}
-                  label={item.label}
-                />
-              );
-            }}
-          />
-        </RoundedContainerGroup>
-      </Margin>
-    </BottomSheetModal>
+    <BetterBottomSheet isVisible={isVisible} resetVisibility={resetVisibility}>
+      <Content menuOptions={menuOptions} />
+    </BetterBottomSheet>
+  );
+}
+
+function Content({ menuOptions }: { menuOptions: any[] }): JSX.Element {
+  return (
+    <RoundedContainerGroup>
+      <FlatList
+        data={menuOptions}
+        scrollEnabled={false}
+        renderItem={({ item }) => {
+          return (
+            <SettingsRow
+              onPress={item.onPress}
+              icon={item.icon}
+              detailIcon={item.detailIcon}
+              label={item.label}
+            />
+          );
+        }}
+      />
+    </RoundedContainerGroup>
   );
 }

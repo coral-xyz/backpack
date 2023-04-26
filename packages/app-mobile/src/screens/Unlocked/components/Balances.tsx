@@ -67,7 +67,6 @@ export function TokenTables({
 }) {
   const wl = useRecoilValueLoadable(allWalletsDisplayed);
   const wallets = wl.state === "hasValue" ? wl.contents : [];
-  console.log("rrr:wallets", wallets);
   return (
     <>
       {wallets.map(
@@ -190,12 +189,23 @@ export function WalletPickerButton({
   name: string;
   onPress: () => void;
 }): JSX.Element {
+  const theme = useTheme();
   return (
     <Pressable onPress={onPress}>
-      <Margin left={4}>
+      <Margin left={6}>
         <Row>
-          <Text>{name}</Text>
-          <ExpandCollapseIcon size={15} isExpanded={false} />
+          <Text
+            style={{
+              color: theme.custom.colors.icon,
+            }}
+          >
+            {name}
+          </Text>
+          <ExpandCollapseIcon
+            size={15}
+            isExpanded={false}
+            color={theme.custom.colors.icon}
+          />
         </Row>
       </Margin>
     </Pressable>
@@ -211,7 +221,7 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
 
   return (
     <>
-      {percentChange !== undefined && positive && (
+      {percentChange !== undefined && positive ? (
         <Text
           style={[
             styles.tokenBalanceChangePositive,
@@ -220,8 +230,8 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
         >
           +{formatUSD(percentChange.toLocaleString())}
         </Text>
-      )}
-      {percentChange !== undefined && negative && (
+      ) : null}
+      {percentChange !== undefined && negative ? (
         <Text
           style={[
             styles.tokenBalanceChangeNegative,
@@ -230,8 +240,8 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
         >
           {formatUSD(percentChange.toLocaleString())}
         </Text>
-      )}
-      {percentChange !== undefined && neutral && (
+      ) : null}
+      {percentChange !== undefined && neutral ? (
         <Text
           style={[
             styles.tokenBalanceChangeNeutral,
@@ -240,7 +250,7 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
         >
           {formatUSD(percentChange.toLocaleString())}
         </Text>
-      )}
+      ) : null}
     </>
   );
 }

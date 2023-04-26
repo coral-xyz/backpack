@@ -419,6 +419,7 @@ export const AllTypesProps: Record<string, any> = {
     blockchain: "String_comparison_exp",
     created_at: "timestamptz_comparison_exp",
     id: "Int_comparison_exp",
+    is_primary: "Boolean_comparison_exp",
     public_key: "String_comparison_exp",
     user: "auth_users_bool_exp",
     user_active_publickey_mappings:
@@ -462,6 +463,7 @@ export const AllTypesProps: Record<string, any> = {
     blockchain: "order_by",
     created_at: "order_by",
     id: "order_by",
+    is_primary: "order_by",
     public_key: "order_by",
     user: "auth_users_order_by",
     user_active_publickey_mappings_aggregate:
@@ -709,11 +711,6 @@ export const AllTypesProps: Record<string, any> = {
   auth_user_nfts_stream_cursor_value_input: {},
   auth_user_nfts_update_column: "enum" as const,
   auth_users: {
-    dropzone_public_key: {
-      distinct_on: "auth_public_keys_select_column",
-      order_by: "auth_public_keys_order_by",
-      where: "auth_public_keys_bool_exp",
-    },
     public_keys: {
       distinct_on: "auth_public_keys_select_column",
       order_by: "auth_public_keys_order_by",
@@ -762,7 +759,6 @@ export const AllTypesProps: Record<string, any> = {
     _not: "auth_users_bool_exp",
     _or: "auth_users_bool_exp",
     created_at: "timestamptz_comparison_exp",
-    dropzone_public_key: "auth_public_keys_bool_exp",
     id: "uuid_comparison_exp",
     invitation: "auth_invitations_bool_exp",
     public_keys: "auth_public_keys_bool_exp",
@@ -774,6 +770,7 @@ export const AllTypesProps: Record<string, any> = {
   },
   auth_users_constraint: "enum" as const,
   auth_users_insert_input: {
+    id: "uuid",
     invitation: "auth_invitations_obj_rel_insert_input",
     invitation_id: "uuid",
     public_keys: "auth_public_keys_arr_rel_insert_input",
@@ -803,7 +800,6 @@ export const AllTypesProps: Record<string, any> = {
   },
   auth_users_order_by: {
     created_at: "order_by",
-    dropzone_public_key_aggregate: "auth_public_keys_aggregate_order_by",
     id: "order_by",
     invitation: "auth_invitations_order_by",
     public_keys_aggregate: "auth_public_keys_aggregate_order_by",
@@ -833,6 +829,7 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_users_set_input",
     where: "auth_users_bool_exp",
   },
+  auth_users_whose_username_matches_args: {},
   auth_xnft_preferences_bool_exp: {
     _and: "auth_xnft_preferences_bool_exp",
     _not: "auth_xnft_preferences_bool_exp",
@@ -975,9 +972,6 @@ export const AllTypesProps: Record<string, any> = {
     data: "jsonb",
   },
   dropzone_distributors_update_column: "enum" as const,
-  dropzone_user_dropzone_public_key_args: {
-    user_row: "users_scalar",
-  },
   invitations_aggregate_fields: {
     count: {
       columns: "invitations_select_column",
@@ -1432,6 +1426,18 @@ export const AllTypesProps: Record<string, any> = {
     auth_users_by_pk: {
       id: "uuid",
     },
+    auth_users_whose_username_matches: {
+      args: "auth_users_whose_username_matches_args",
+      distinct_on: "auth_users_select_column",
+      order_by: "auth_users_order_by",
+      where: "auth_users_bool_exp",
+    },
+    auth_users_whose_username_matches_aggregate: {
+      args: "auth_users_whose_username_matches_args",
+      distinct_on: "auth_users_select_column",
+      order_by: "auth_users_order_by",
+      where: "auth_users_bool_exp",
+    },
     auth_xnft_preferences: {
       distinct_on: "auth_xnft_preferences_select_column",
       order_by: "auth_xnft_preferences_order_by",
@@ -1455,18 +1461,6 @@ export const AllTypesProps: Record<string, any> = {
       where: "dropzone_distributors_bool_exp",
     },
     dropzone_distributors_by_pk: {},
-    dropzone_user_dropzone_public_key: {
-      args: "dropzone_user_dropzone_public_key_args",
-      distinct_on: "auth_public_keys_select_column",
-      order_by: "auth_public_keys_order_by",
-      where: "auth_public_keys_bool_exp",
-    },
-    dropzone_user_dropzone_public_key_aggregate: {
-      args: "dropzone_user_dropzone_public_key_args",
-      distinct_on: "auth_public_keys_select_column",
-      order_by: "auth_public_keys_order_by",
-      where: "auth_public_keys_bool_exp",
-    },
     invitations: {
       distinct_on: "invitations_select_column",
       order_by: "invitations_order_by",
@@ -1640,6 +1634,18 @@ export const AllTypesProps: Record<string, any> = {
       cursor: "auth_users_stream_cursor_input",
       where: "auth_users_bool_exp",
     },
+    auth_users_whose_username_matches: {
+      args: "auth_users_whose_username_matches_args",
+      distinct_on: "auth_users_select_column",
+      order_by: "auth_users_order_by",
+      where: "auth_users_bool_exp",
+    },
+    auth_users_whose_username_matches_aggregate: {
+      args: "auth_users_whose_username_matches_args",
+      distinct_on: "auth_users_select_column",
+      order_by: "auth_users_order_by",
+      where: "auth_users_bool_exp",
+    },
     auth_xnft_preferences: {
       distinct_on: "auth_xnft_preferences_select_column",
       order_by: "auth_xnft_preferences_order_by",
@@ -1675,18 +1681,6 @@ export const AllTypesProps: Record<string, any> = {
       cursor: "dropzone_distributors_stream_cursor_input",
       where: "dropzone_distributors_bool_exp",
     },
-    dropzone_user_dropzone_public_key: {
-      args: "dropzone_user_dropzone_public_key_args",
-      distinct_on: "auth_public_keys_select_column",
-      order_by: "auth_public_keys_order_by",
-      where: "auth_public_keys_bool_exp",
-    },
-    dropzone_user_dropzone_public_key_aggregate: {
-      args: "dropzone_user_dropzone_public_key_args",
-      distinct_on: "auth_public_keys_select_column",
-      order_by: "auth_public_keys_order_by",
-      where: "auth_public_keys_bool_exp",
-    },
     invitations: {
       distinct_on: "invitations_select_column",
       order_by: "invitations_order_by",
@@ -1713,7 +1707,6 @@ export const AllTypesProps: Record<string, any> = {
     _neq: "timestamptz",
     _nin: "timestamptz",
   },
-  users_scalar: `scalar.users_scalar` as const,
   uuid: `scalar.uuid` as const,
   uuid_comparison_exp: {
     _eq: "uuid",
@@ -1959,6 +1952,7 @@ export const ReturnTypes: Record<string, any> = {
     blockchain: "String",
     created_at: "timestamptz",
     id: "Int",
+    is_primary: "Boolean",
     public_key: "String",
     user: "auth_users",
     user_active_publickey_mappings: "auth_user_active_publickey_mapping",
@@ -2083,7 +2077,6 @@ export const ReturnTypes: Record<string, any> = {
   },
   auth_users: {
     created_at: "timestamptz",
-    dropzone_public_key: "auth_public_keys",
     id: "uuid",
     invitation: "auth_invitations",
     public_keys: "auth_public_keys",
@@ -2326,6 +2319,8 @@ export const ReturnTypes: Record<string, any> = {
     auth_users: "auth_users",
     auth_users_aggregate: "auth_users_aggregate",
     auth_users_by_pk: "auth_users",
+    auth_users_whose_username_matches: "auth_users",
+    auth_users_whose_username_matches_aggregate: "auth_users_aggregate",
     auth_xnft_preferences: "auth_xnft_preferences",
     auth_xnft_preferences_by_pk: "auth_xnft_preferences",
     auth_xnft_secrets: "auth_xnft_secrets",
@@ -2333,8 +2328,6 @@ export const ReturnTypes: Record<string, any> = {
     dropzone_distributors: "dropzone_distributors",
     dropzone_distributors_aggregate: "dropzone_distributors_aggregate",
     dropzone_distributors_by_pk: "dropzone_distributors",
-    dropzone_user_dropzone_public_key: "auth_public_keys",
-    dropzone_user_dropzone_public_key_aggregate: "auth_public_keys_aggregate",
     invitations: "invitations",
     invitations_aggregate: "invitations_aggregate",
   },
@@ -2385,6 +2378,8 @@ export const ReturnTypes: Record<string, any> = {
     auth_users_aggregate: "auth_users_aggregate",
     auth_users_by_pk: "auth_users",
     auth_users_stream: "auth_users",
+    auth_users_whose_username_matches: "auth_users",
+    auth_users_whose_username_matches_aggregate: "auth_users_aggregate",
     auth_xnft_preferences: "auth_xnft_preferences",
     auth_xnft_preferences_by_pk: "auth_xnft_preferences",
     auth_xnft_preferences_stream: "auth_xnft_preferences",
@@ -2395,14 +2390,11 @@ export const ReturnTypes: Record<string, any> = {
     dropzone_distributors_aggregate: "dropzone_distributors_aggregate",
     dropzone_distributors_by_pk: "dropzone_distributors",
     dropzone_distributors_stream: "dropzone_distributors",
-    dropzone_user_dropzone_public_key: "auth_public_keys",
-    dropzone_user_dropzone_public_key_aggregate: "auth_public_keys_aggregate",
     invitations: "invitations",
     invitations_aggregate: "invitations_aggregate",
     invitations_stream: "invitations",
   },
   timestamptz: `scalar.timestamptz` as const,
-  users_scalar: `scalar.users_scalar` as const,
   uuid: `scalar.uuid` as const,
 };
 

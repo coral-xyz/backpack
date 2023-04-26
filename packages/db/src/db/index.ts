@@ -8,6 +8,8 @@ import type {} from "@coral-xyz/common/src/messages/fromServer";
 import type { Table } from "dexie";
 import Dexie from "dexie";
 
+import { getIndexDb } from "./getIndexDb";
+
 export interface Friend {
   id?: number;
   name: string;
@@ -38,7 +40,9 @@ export class BackpackDb extends Dexie {
   localImageData!: Table<LocalImageData>;
 
   constructor(uuid) {
-    super(`DB_${uuid}`);
+    super(`DB_${uuid}`, {
+      ...getIndexDb(),
+    });
     this.version(15).stores({
       inbox: "remoteUserId, id, blocked, interacted, areFriends",
       messages: "client_generated_uuid, room, type, from_http_server",

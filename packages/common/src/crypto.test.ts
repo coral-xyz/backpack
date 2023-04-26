@@ -1,4 +1,8 @@
-import { getIndexedPath, nextIndicesFromPaths } from "./crypto";
+import {
+  getAccountRecoveryPaths,
+  getIndexedPath,
+  nextIndicesFromPaths,
+} from "./crypto";
 import { Blockchain } from "./types";
 
 test("gets correct account index for m/44'/501'", () => {
@@ -79,4 +83,20 @@ test("gets correct next path after m/44'/501'/9'/0'/2'", () => {
   expect(getIndexedPath(Blockchain.SOLANA, accountIndex, walletIndex)).toEqual(
     "m/44'/501'/9'/0'/3'"
   );
+});
+
+test("gets correct account recovery paths for Solana", () => {
+  const recoveryPaths = getAccountRecoveryPaths(Blockchain.SOLANA, 0);
+  expect(recoveryPaths[0]).toEqual("m/44'/501'/0'/0'");
+  expect(recoveryPaths[1]).toEqual("m/44'/501'/0'/0'/0'");
+  expect(recoveryPaths[2]).toEqual("m/44'/501'/0'/0'/1'");
+  expect(recoveryPaths[3]).toEqual("m/44'/501'/0'/0'/2'");
+});
+
+test("gets correct account recovery paths for Ethereum", () => {
+  const recoveryPaths = getAccountRecoveryPaths(Blockchain.ETHEREUM, 0);
+  expect(recoveryPaths[0]).toEqual("m/44'/60'/0'/0'");
+  expect(recoveryPaths[1]).toEqual("m/44'/60'/0'/0'/0'");
+  expect(recoveryPaths[2]).toEqual("m/44'/60'/0'/0'/1'");
+  expect(recoveryPaths[3]).toEqual("m/44'/60'/0'/0'/2'");
 });

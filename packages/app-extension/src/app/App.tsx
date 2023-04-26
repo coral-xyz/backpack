@@ -1,10 +1,7 @@
 import { lazy, Suspense } from "react";
 import { HashRouter } from "react-router-dom";
 import { EXTENSION_HEIGHT, EXTENSION_WIDTH } from "@coral-xyz/common";
-import {
-  NotificationsProvider,
-  useBackgroundKeepAlive,
-} from "@coral-xyz/recoil";
+import { NotificationsProvider, useKeyringStoreState } from "@coral-xyz/recoil";
 import {
   BACKGROUND_BACKDROP_COLOR,
   LIGHT_BACKGROUND_BACKDROP_COLOR,
@@ -20,10 +17,10 @@ import { ErrorBoundary } from "./ErrorBoundary";
 
 const Router = lazy(() => import("./Router"));
 
-import "./App.css";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "react-toastify/dist/ReactToastify.css";
+import "./App.css";
 
 const BACKDROP_STYLE = {
   height: "100vh",
@@ -61,7 +58,7 @@ export default function App() {
 }
 
 function _App() {
-  useBackgroundKeepAlive();
+  useKeyringStoreState();
   return (
     <NotificationsProvider>
       <ErrorBoundary>
@@ -81,7 +78,7 @@ function _Router() {
             ...BACKDROP_STYLE,
             background: theme.custom.colors.backgroundBackdrop,
           }}
-         />
+        />
       }
     >
       <Router />

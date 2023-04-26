@@ -1,4 +1,4 @@
-import type { SubscriptionType } from "@coral-xyz/common";
+import type { SubscriptionType, UserMetadata } from "@coral-xyz/common";
 
 import { getDb } from "../db";
 import { bulkGetImages } from "../db/images";
@@ -40,6 +40,10 @@ export class RecoilSync {
 
   getAllChats(uuid: string) {
     return getDb(uuid).messages.toArray();
+  }
+
+  getAllUsers(uuid: string): Promise<UserMetadata[]> {
+    return getDb(uuid).users.toArray();
   }
 
   async refreshUsersMetadata(uuid: string) {

@@ -1,3 +1,5 @@
+// TODO: remove the line below
+/* eslint-disable react-hooks/rules-of-hooks */
 import { Suspense, useEffect, useState } from "react";
 import type { EnrichedNotification } from "@coral-xyz/common";
 import {
@@ -8,25 +10,25 @@ import {
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
   BubbleTopLabel,
-  DangerButton,
   EmptyState,
   isFirstLastListItemStyle,
   Loading,
   ProxyImage,
-  SuccessButton,
-  useBreakpoints, UserAction,
-  useUserMetadata,
+  useBreakpoints,
+  UserAction,
 } from "@coral-xyz/react-common";
 import {
-  unreadCount, useAuthenticatedUser,
+  unreadCount,
+  useAuthenticatedUser,
   useFriendship,
   useRecentNotifications,
   useUpdateFriendships,
   useUser,
 } from "@coral-xyz/recoil";
+import { useUserMetadata } from "@coral-xyz/tamagui";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { Badge, IconButton, List, ListItem, Typography } from "@mui/material";
+import { IconButton, List, ListItem, Typography } from "@mui/material";
 import { useRecoilState } from "recoil";
 
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
@@ -181,11 +183,20 @@ const getGroupedNotifications = (notifications: EnrichedNotification[]) => {
     notifications: EnrichedNotification[];
   }[] = [];
 
-  const sortedNotifications = notifications
+  const uniqueNotifications = notifications
     .slice()
     .sort((a, b) =>
       new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime() ? 1 : -1
+    )
+    .filter(
+      (x, index) =>
+        x.xnft_id !== "friend_requests" ||
+        notifications.map((y) => y.body).indexOf(x.body) === index
     );
+  const sortedNotifications = uniqueNotifications.sort((a, b) =>
+    new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime() ? 1 : -1
+  );
+
   for (let i = 0; i < sortedNotifications.length; i++) {
     const date = formatDate(new Date(sortedNotifications[i].timestamp));
     if (
@@ -202,6 +213,7 @@ const getGroupedNotifications = (notifications: EnrichedNotification[]) => {
       );
     }
   }
+
   return groupedNotifications;
 };
 
@@ -230,22 +242,24 @@ export function Notifications() {
   }, []);
 
   useEffect(() => {
-    const allNotifications = notifications
-        .slice();
-    const uniqueNotifications = allNotifications.sort((a, b) =>
+    const allNotifications = notifications.slice();
+    const uniqueNotifications = allNotifications
+      .sort((a, b) =>
         new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime()
-            ? -1
-            : 1
-    ).filter((x, index) => (x.xnft_id !== "friend_requests" || (
-        allNotifications.map(y => y.body).indexOf(x.body) === index
-    )))
-    const sortedNotifications = uniqueNotifications.sort((a, b) =>
-        new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime()
-          ? -1
-          : 1
+          ? 1
+          : -1
+      )
+      .filter(
+        (x, index) =>
+          x.xnft_id !== "friend_requests" ||
+          allNotifications.map((y) => y.body).indexOf(x.body) === index
       );
-    const latestNotification =
-      sortedNotifications[sortedNotifications.length - 1];
+
+    const sortedNotifications = uniqueNotifications.sort((a, b) =>
+      new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime() ? 1 : -1
+    );
+
+    const latestNotification = sortedNotifications[0];
     if (latestNotification && latestNotification.id) {
       fetch(`${BACKEND_API_URL}/notifications/cursor`, {
         method: "PUT",
@@ -255,6 +269,7 @@ export function Notifications() {
         }),
       });
     }
+
     fetch(`${BACKEND_API_URL}/notifications/seen`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -281,30 +296,32 @@ export function Notifications() {
           groupedNotifications={groupedNotifications}
         />
       </Suspense>
-      {!isXs ? <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        <div style={{ height: "100%" }}>
-          <NavStackEphemeral
-            initialRoute={{ name: "root" }}
-            options={() => ({ title: "Notifications" })}
-            navButtonLeft={
-              <CloseButton onClick={() => setOpenDrawer(false)} />
+      {!isXs ? (
+        <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+          <div style={{ height: "100%" }}>
+            <NavStackEphemeral
+              initialRoute={{ name: "root" }}
+              options={() => ({ title: "Notifications" })}
+              navButtonLeft={
+                <CloseButton onClick={() => setOpenDrawer(false)} />
               }
             >
-            <NavStackScreen
-              name="root"
-              component={(props: any) => <Contacts {...props} />}
+              <NavStackScreen
+                name="root"
+                component={(props: any) => <Contacts {...props} />}
               />
-            <NavStackScreen
-              name="contact-requests"
-              component={(props: any) => <ContactRequests {...props} />}
+              <NavStackScreen
+                name="contact-requests"
+                component={(props: any) => <ContactRequests {...props} />}
               />
-            <NavStackScreen
-              name="contact-requests-sent"
-              component={(props: any) => <ContactRequests {...props} />}
+              <NavStackScreen
+                name="contact-requests-sent"
+                component={(props: any) => <ContactRequests {...props} />}
               />
-          </NavStackEphemeral>
-        </div>
-      </WithDrawer> : null}
+            </NavStackEphemeral>
+          </div>
+        </WithDrawer>
+      ) : null}
     </>
   );
 }
@@ -362,26 +379,26 @@ export function NotificationList({
   return groupedNotifications.length > 0 ? (
     <div
       style={{
-          paddingBottom: "16px",
-        }}
-      >
+        paddingBottom: "16px",
+      }}
+    >
       {groupedNotifications.map(({ date, notifications }) => (
         <div
           style={{
-              marginLeft: "16px",
-              marginRight: "16px",
-              marginTop: "16px",
-            }}
-          >
+            marginLeft: "16px",
+            marginRight: "16px",
+            marginTop: "16px",
+          }}
+        >
           <BubbleTopLabel text={date} />
           <List
             style={{
-                paddingTop: 0,
-                paddingBottom: 0,
-                borderRadius: "12px",
-                border: `${theme.custom.colors.borderFull}`,
-              }}
-            >
+              paddingTop: 0,
+              paddingBottom: 0,
+              borderRadius: "12px",
+              border: `${theme.custom.colors.borderFull}`,
+            }}
+          >
             <div>
               {notifications.map((notification: any, idx: number) => (
                 <NotificationListItem
@@ -390,12 +407,12 @@ export function NotificationList({
                   isFirst={idx === 0}
                   isLast={idx === notifications.length - 1}
                   onOpenDrawer={onOpenDrawer}
-                  />
-                ))}
+                />
+              ))}
             </div>
           </List>
         </div>
-        ))}
+      ))}
     </div>
   ) : (
     <NoNotificationsLabel minimize={false} />
@@ -537,46 +554,49 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
     return (
       <div style={{ display: "flex", marginTop: 5 }}>
         <UserAction
-            style={{ color: theme.custom.colors.blue, marginRight: 10 }}
-            text="Accept"
-            onClick={async (e: any) => {
-              e.stopPropagation();
-              setInProgress(true);
-              await sendFriendRequest({ to: userId, sendRequest: true });
-              await updateFriendshipIfExists(uuid, userId, {
-                requested: 0,
-                areFriends: 1,
-              });
-              await setFriendshipValue({
-                userId: userId,
-                friendshipValue: {
-                  requested: false,
-                  areFriends: true,
-                  remoteRequested: false,
-                },
-              });
-              setInProgress(false);
-            }}
+          style={{ color: theme.custom.colors.blue, marginRight: 10 }}
+          text="Accept"
+          onClick={async (e: any) => {
+            e.stopPropagation();
+            setInProgress(true);
+            await sendFriendRequest({ to: userId, sendRequest: true });
+            await updateFriendshipIfExists(uuid, userId, {
+              requested: 0,
+              areFriends: 1,
+            });
+            await setFriendshipValue({
+              userId: userId,
+              friendshipValue: {
+                requested: false,
+                areFriends: true,
+                remoteRequested: false,
+              },
+            });
+            setInProgress(false);
+          }}
         />
-        <UserAction text="Decline" onClick={async (e: any) => {
-          e.stopPropagation();
-          setInProgress(true);
-          await sendFriendRequest({ to: userId, sendRequest: false });
-          await updateFriendshipIfExists(uuid, userId, {
-            requested: 0,
-            areFriends: 0,
-            remoteRequested: 0,
-          });
-          await setFriendshipValue({
-            userId: userId,
-            friendshipValue: {
-              requested: false,
-              areFriends: false,
-              remoteRequested: false,
-            },
-          });
-          setInProgress(false);
-        }} />
+        <UserAction
+          text="Decline"
+          onClick={async (e: any) => {
+            e.stopPropagation();
+            setInProgress(true);
+            await sendFriendRequest({ to: userId, sendRequest: false });
+            await updateFriendshipIfExists(uuid, userId, {
+              requested: 0,
+              areFriends: 0,
+              remoteRequested: 0,
+            });
+            await setFriendshipValue({
+              userId: userId,
+              friendshipValue: {
+                requested: false,
+                areFriends: false,
+                remoteRequested: false,
+              },
+            });
+            setInProgress(false);
+          }}
+        />
       </div>
     );
   }
@@ -608,9 +628,6 @@ function FriendRequestListItem({
   const nav = isXs ? useNavigation() : undefined;
   const user = useUserMetadata({
     remoteUserId: parseJson(notification.body).from,
-  });
-  const friendshipValue = useFriendship({
-    userId: parseJson(notification.body).from,
   });
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -681,6 +698,7 @@ function NotificationListItemIcon({ image }: any) {
   const classes = useStyles();
   return (
     <ProxyImage
+      size={44}
       loadingStyles={{ marginRight: "12px", height: "44px", width: "44px" }}
       src={image}
       className={classes.recentActivityListItemIcon}

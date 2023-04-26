@@ -1,3 +1,5 @@
+// TODO: remove the following line
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from "react";
 import {
   PrimaryButton,
@@ -5,7 +7,11 @@ import {
   SmallInput,
 } from "@coral-xyz/react-common";
 import { useDeveloperMode, useEthereumFeeData } from "@coral-xyz/recoil";
-import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
+import {
+  HOVER_OPACITY,
+  styles as makeStyles,
+  useCustomTheme,
+} from "@coral-xyz/themes";
 import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import { Button, Skeleton, TextField, Typography } from "@mui/material";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
@@ -15,7 +21,7 @@ import { WithMiniDrawer } from "./Layout/Drawer";
 import { SettingsList } from "./Settings/List";
 import { CloseButton } from "./ApproveTransactionDrawer";
 
-const useStyles = styles((theme: any) => ({
+const useStyles = makeStyles((theme: any) => ({
   chip: {
     padding: "4px 16px",
     textTransform: "capitalize",
@@ -244,7 +250,7 @@ export function TransactionData({
         menuItems={{ ...menuItems, ...defaultMenuItems }}
         style={{
           margin: 0,
-          overflowY: "scroll",
+          overflowY: "auto",
           maxHeight: "40vh",
         }}
         textStyle={{

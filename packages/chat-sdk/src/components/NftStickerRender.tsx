@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { useBreakpoints } from "@coral-xyz/react-common";
-import { useCustomTheme } from "@coral-xyz/themes";
-import CallMadeIcon from "@mui/icons-material/CallMade";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import CheckIcon from "@mui/icons-material/Check";
 
-import { CheckMark } from "./barter/CheckMark";
 import { RemoteNftWithSuspense } from "./barter/SwapPage";
+import { useChatContext } from "./ChatContext";
+
+export const useStyles = styles((theme) => ({
+  hoverParent: {
+    "&:hover $hoverChild, & .Mui-focused $hoverChild": {
+      visibility: "visible",
+    },
+  },
+  hoverChild: {
+    visibility: "hidden",
+  },
+}));
 
 export const NftStickerRender = ({
   mint,
@@ -14,8 +25,10 @@ export const NftStickerRender = ({
   mint: string;
   uuid: string;
 }) => {
+  const classes = useStyles();
   const { isXs } = useBreakpoints();
   const theme = useCustomTheme();
+  const { remoteUsername } = useChatContext();
   const [ownerVerified, setOwnerVerified] = useState(false);
   const getDimensions = () => {
     if (isXs) {
@@ -50,34 +63,64 @@ export const NftStickerRender = ({
       <div
         style={{
           position: "relative",
-          background: theme.custom.colors.invertedBg4,
-          borderRadius: 8,
           width: getDimensions(),
-          border: `1px solid ${theme.custom.colors.icon}`,
           marginBottom: 10,
+          cursor: "pointer",
         }}
+        className={classes.hoverParent}
       >
-        <RemoteNftWithSuspense mint={mint} />
-        <div
-          style={{
-            cursor: "pointer",
-            color: theme.custom.colors.icon,
-            display: "flex",
-            justifyContent: "center",
-          }}
+        <RemoteNftWithSuspense
           onClick={() => {
             window.open(`https://magiceden.io/item-details/${mint}`, "_blank");
           }}
-        >
-          <div style={{ display: "flex", marginBottom: 5 }}>
-            <div>View on magiceden</div>{" "}
-            <CallMadeIcon style={{ fontSize: 18 }} />
+          mint={mint}
+          rounded
+        />
+        {ownerVerified ? (
+          <div
+            style={{
+              position: "absolute",
+              top: -44,
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+            }}
+            className={classes.hoverChild}
+          >
+            <div
+              style={{
+                padding: "8px 11px",
+                background: theme.custom.colors.invertedPrimary,
+                color: theme.custom.colors.bg3,
+                display: "inline-flex",
+                borderRadius: 5,
+                position: "relative",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                }}
+              >
+                <CheckIcon style={{ color: "#11A800", marginRight: 10 }} />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                }}
+              >
+                <div style={{ fontWeight: 500, fontSize: 13 }}>
+                  {" "}
+                  User owns this NFT{" "}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-        {ownerVerified ? <div style={{ position: "absolute", right: 10, top: 8 }}>
-          {" "}
-          <CheckMark />{" "}
-        </div> : null}
+        ) : null}
       </div>
     </div>
   );

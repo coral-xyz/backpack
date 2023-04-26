@@ -1,6 +1,7 @@
 export interface Env {
   // in secrets, see `npx wrangler secret --help`
   RPC_URL: string;
+  BACKUP_RPC_URL: string;
 }
 
 export default {
@@ -19,21 +20,27 @@ export default {
       // GET for websockets
       (request.method === "GET" && request.headers.get("Upgrade"))
     ) {
-      const { href, hostname } = new URL(
-        env.RPC_URL || "https://api.mainnet-beta.solana.com"
-      );
-      const rpcResponse = await fetch(
-        href,
-        (() => {
-          const _request = new Request(href, request);
-          // Only forward necessary headers from the client request
-          sanitizeHeaders(_request.headers);
-          return _request;
-        })()
-      );
-      const response = new Response(rpcResponse.body, rpcResponse);
-      // Add the RPC domain to the response headers for debugging purposes
-      response.headers.append("x-backpack-rpc", hostname);
+      // TODO:  is there a alternative way of doing this without cloning?
+      //        The ReadableStream cannot be read again unless it's been
+      //        cloned, as it is read and consumed during the first fetch
+      const clonedRequestForBackupAttempt = request.clone();
+
+      let response = await fetchRpc(request, env.RPC_URL);
+
+      if (!response) {
+        // Initial attempt failed, try to fetch using backup RPC if it exists
+        response = await fetchRpc(
+          clonedRequestForBackupAttempt,
+          env.BACKUP_RPC_URL || env.RPC_URL // try again in no backup exists
+        );
+      }
+
+      if (!response) {
+        return new Response("Unable to fetch from primary or backup RPCs", {
+          status: 503,
+        });
+      }
+
       return response;
     } else {
       return new Response(
@@ -45,6 +52,40 @@ export default {
     }
   },
 };
+
+async function fetchRpc(
+  request: Request,
+  rpcUrl: string
+): Promise<Response | null> {
+  try {
+    const { href, hostname } = new URL(rpcUrl);
+
+    const rpcResponse = await fetch(
+      href,
+      (() => {
+        const _request = new Request(href, request);
+        // Only forward necessary headers from the client request
+        sanitizeHeaders(_request.headers);
+        return _request;
+      })()
+    );
+
+    if (
+      !rpcResponse.ok &&
+      rpcResponse.status !== 101 // for websockets
+    ) {
+      throw new Error(`unable to fetch ${rpcResponse.status}`);
+    }
+
+    const response = new Response(rpcResponse.body, rpcResponse);
+    response.headers.append("x-backpack-rpc", hostname);
+
+    return response;
+  } catch (error) {
+    console.error(`Fetch failed for RPC URL: ${rpcUrl}`, error);
+    return null;
+  }
+}
 
 const sanitizeHeaders = (headers: Headers) => {
   const allowedHeaders = [

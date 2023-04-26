@@ -2,18 +2,15 @@ import { Pressable, Text, View } from "react-native";
 
 import { Token, NavTokenAction, NavTokenOptions } from "@@types/types";
 import { Blockchain } from "@coral-xyz/common";
-import {
-  SwapProvider, // TODO(peter): broken
-  enabledBlockchains as enabledBlockchainsAtom,
-} from "@coral-xyz/recoil";
+// import // SwapProvider, // TODO(peter): turn back on when app store approved
+// enabledBlockchains as enabledBlockchainsAtom,
+// "@coral-xyz/recoil";
+import { Box } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useRecoilValueLoadable } from "recoil";
+// import { useRecoilValueLoadable } from "recoil";
 
 import { Margin } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
-
-const HorizontalSpacer = () => <View style={{ width: 16 }} />;
-const ENABLE_ONRAMP = false;
 
 const getRouteFromAction = (
   action: NavTokenAction
@@ -31,23 +28,25 @@ const getRouteFromAction = (
 };
 
 export function TransferWidget({
-  blockchain,
   address,
+  blockchain,
   onPressOption,
+  rampEnabled,
+  swapEnabled,
   token,
 }: {
-  blockchain?: Blockchain;
   address?: string;
-  rampEnabled: boolean;
+  blockchain?: Blockchain;
   onPressOption: (action: NavTokenAction, options: NavTokenOptions) => void;
+  rampEnabled: boolean;
+  swapEnabled: boolean;
   token?: Token;
 }): JSX.Element {
-  const eb = useRecoilValueLoadable(enabledBlockchainsAtom);
-  const enabledBlockchains = eb.state === "hasValue" ? eb.contents : [];
-  const enableOnramp = ENABLE_ONRAMP;
-  const renderSwap =
-    blockchain !== Blockchain.ETHEREUM &&
-    enabledBlockchains.includes(Blockchain.SOLANA);
+  // const eb = useRecoilValueLoadable(enabledBlockchainsAtom);
+  // const enabledBlockchains = eb.state === "hasValue" ? eb.contents : [];
+  // const renderSwap =
+  //   blockchain !== Blockchain.ETHEREUM &&
+  //   enabledBlockchains.includes(Blockchain.SOLANA);
 
   const onPress = (action: NavTokenAction, options: NavTokenOptions) => {
     const route = getRouteFromAction(action);
@@ -57,29 +56,25 @@ export function TransferWidget({
   return (
     <View
       style={{
+        alignSelf: "center",
+        alignItems: "center",
         flexDirection: "row",
         justifyContent: "center",
-        alignItems: "center",
       }}
     >
-      {enableOnramp ? (
-        <>
-          <RampButton blockchain={blockchain} address={address} />
-          <HorizontalSpacer />
-        </>
+      {rampEnabled ? (
+        <RampButton blockchain={blockchain} address={address} />
       ) : null}
-      <ReceiveButton onPress={onPress} blockchain={blockchain} />
-      <HorizontalSpacer />
+      <Box mx={8}>
+        <ReceiveButton onPress={onPress} blockchain={blockchain} />
+      </Box>
       <SendButton onPress={onPress} blockchain={blockchain} token={token} />
-      {renderSwap ? (
-        <>
-          <HorizontalSpacer />
-          <SwapButton
-            onPress={onPress}
-            blockchain={blockchain}
-            address={address}
-          />
-        </>
+      {swapEnabled ? (
+        <SwapButton
+        // onPress={onPress}
+        // blockchain={blockchain}
+        // address={address}
+        />
       ) : null}
     </View>
   );
@@ -132,24 +127,27 @@ function TransferButton({
   );
 }
 
-function SwapButton({
-  blockchain,
-  address,
-  onPress,
-}: {
-  blockchain?: Blockchain;
-  address?: string;
-  onPress: (route: NavTokenAction, options: NavTokenOptions) => void;
-}) {
-  return (
-    <SwapProvider tokenAddress={address}>
-      <TransferButton
-        label="Swap"
-        icon="compare-arrows"
-        onPress={() => onPress(NavTokenAction.Swap, { blockchain })}
-      />
-    </SwapProvider>
-  );
+// NOTE(peter) turned off for app store launch
+function SwapButton() {
+  // function SwapButton({
+  // blockchain,
+  // address,
+  // onPress,
+  // }: {
+  // blockchain?: Blockchain;
+  // address?: string;
+  // onPress: (route: NavTokenAction, options: NavTokenOptions) => void;
+  // }) {
+  return null;
+  // return (
+  //   <SwapProvider tokenAddress={address}>
+  //     <TransferButton
+  //       label="Swap"
+  //       icon="compare-arrows"
+  //       onPress={() => onPress(NavTokenAction.Swap, { blockchain })}
+  //     />
+  //   </SwapProvider>
+  // );
 }
 
 function SendButton({

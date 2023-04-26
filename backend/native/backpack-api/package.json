@@ -7,9 +7,9 @@
     "@aws-sdk/client-s3": "^3.245.0",
     "@aws-sdk/s3-request-presigner": "^3.245.0",
     "@cardinal/common": "^6.0.1",
+    "@coral-xyz/backend-common": "*",
     "@coral-xyz/chat-zeus": "*",
     "@coral-xyz/common": "*",
-    "@coral-xyz/backend-common": "*",
     "@coral-xyz/zeus": "*",
     "@metaplex-foundation/js": "0.16.1",
     "@metaplex-foundation/mpl-token-metadata": "^2.8.1",
@@ -39,6 +39,8 @@
     "jsbi": "^4.3.0",
     "jsonwebtoken": "^8.5.1",
     "jws": "^4.0.0",
+    "passport": "^0.6.0",
+    "passport-twitter": "^1.0.4",
     "redis": "^4.6.2",
     "request": "^2.88.2",
     "tweetnacl": "^1.0.3",
@@ -48,7 +50,10 @@
     "zod": "^3.19.1"
   },
   "devDependencies": {
-    "eslint-config-custom": "*"
+    "@types/passport": "^1.0.12",
+    "@types/passport-twitter": "^1.0.37",
+    "eslint-config-custom": "*",
+    "vitest": "^0.29.8"
   },
   "scripts": {
     "build": "esbuild ./src/index.js --bundle --platform=node --outfile=dist/index.js",

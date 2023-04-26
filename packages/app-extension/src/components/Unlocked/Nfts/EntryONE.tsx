@@ -1,14 +1,13 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { isOneLive, useOpenPlugin } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
-import { CollectionsTwoTone } from "@mui/icons-material";
+import { styles as makeStyles } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
 import Card from "@mui/material/Card";
 import { useRecoilValue } from "recoil";
 
 import type { AllWalletCollections } from "./NftTable";
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   blockchainCard: {
     position: "relative",
     marginBottom: "12px",
@@ -18,6 +17,7 @@ const useStyles = styles((theme) => ({
     border: theme.custom.colors.border,
     height: "117px",
     overflow: "hidden",
+    pointerEvents: "all",
     backgroundColor: "transparent !important",
     "&:hover": {
       cursor: "pointer",
@@ -32,6 +32,7 @@ const useStyles = styles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#000",
+    pointerEvents: "all",
   },
   image: {
     zIndex: 1,
@@ -41,6 +42,7 @@ const useStyles = styles((theme) => ({
     backgroundSize: "547px 234px",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "0px 0px",
+    pointerEvents: "all",
     "&:hover": {
       backgroundPosition: "0px -117px",
     },
@@ -53,6 +55,7 @@ const useStyles = styles((theme) => ({
     height: "100%",
     width: "100%",
     transform: "none",
+    pointerEvents: "none",
     backgroundColor: theme.custom.colors.balanceSkeleton,
   },
   hidden: {
@@ -60,6 +63,7 @@ const useStyles = styles((theme) => ({
   },
   none: {
     display: "none",
+    pointerEvents: "none",
   },
   visuallyHidden: {
     zIndex: -1,
@@ -85,33 +89,47 @@ export default function EntryONE({
     if (!ref.current) {
       return;
     }
-    if (ref.current.complete) {
+    const current = ref.current;
+    if (current.complete) {
       setImageLoaded(true);
       return;
     }
-    ref.current.onload = () => {
+    current.onload = () => {
       setImageLoaded(true);
     };
     return () => {
-      if (ref.current) {
-        ref.current.onload = () => null;
+      if (current) {
+        current.onload = () => null;
       }
     };
   }, []);
 
   const isLoading = false || !imageLoaded;
 
-  const hasNft = !!allWalletCollections?.find((wallet) => {
+  const hasMadNft = !!allWalletCollections?.find((wallet) => {
     return !!wallet.collections?.find((collection) => {
       return (
-        collection.metadataCollectionId === oneLive.madCollection &&
+        collection.metadataCollectionId === oneLive.madladsCollection &&
+        collection.itemIds.length > 0
+      );
+    });
+  });
+
+  const hasWLNft = !!allWalletCollections?.find((wallet) => {
+    return !!wallet.collections?.find((collection) => {
+      return (
+        collection.metadataCollectionId === oneLive.wlCollection &&
         collection.itemIds.length > 0
       );
     });
   });
 
   const banner =
-    hasNft && oneLive.byeBanner ? oneLive.byeBanner : oneLive.banner;
+    hasMadNft && oneLive.hasMadladBanner
+      ? oneLive.hasMadladBanner
+      : hasWLNft && oneLive.hasWLBanner
+      ? oneLive.hasWLBanner
+      : oneLive.banner;
 
   const openXNFT = () => {
     if (oneLive.isLive) {
@@ -124,6 +142,7 @@ export default function EntryONE({
       <Skeleton
         className={`${classes.skeleton}  ${!isLoading ? classes.none : ""}`}
       />
+      <img ref={ref} className={classes.visuallyHidden} src={banner} />
       <div
         className={`${classes.imageBackground} ${
           isLoading ? classes.hidden : ""
@@ -136,7 +155,6 @@ export default function EntryONE({
           }}
         />
       </div>
-      <img ref={ref} className={classes.visuallyHidden} src={banner} />
     </Card>
   );
 }

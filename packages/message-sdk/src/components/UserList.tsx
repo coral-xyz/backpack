@@ -9,17 +9,18 @@ import {
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
-import {   BackpackStaffIcon,
+import {
+  BackpackStaffIcon,
   isFirstLastListItemStyle,
   LocalImage,
-  SignalingManager,
-UserAction ,
+  UserAction,
 } from "@coral-xyz/react-common";
 import {
   useNavigation,
   useUpdateFriendships,
   useUser,
 } from "@coral-xyz/recoil";
+import { SignalingManager } from "@coral-xyz/tamagui";
 import { useCustomTheme } from "@coral-xyz/themes";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { List, ListItem } from "@mui/material";
@@ -344,6 +345,7 @@ function UserIcon({ image }: any) {
   const classes = useStyles();
   return (
     <LocalImage
+      size={32}
       src={image}
       className={classes.iconCircular}
       style={{ width: 32, height: 32 }}

@@ -2,17 +2,13 @@ import type { MouseEvent } from "react";
 import { useState } from "react";
 import type { Nft, NftCollection } from "@coral-xyz/common";
 import {
-  NAV_COMPONENT_MESSAGE_GROUP_CHAT,
-  NAV_COMPONENT_NFT_CHAT,
   NAV_COMPONENT_NFT_COLLECTION,
   NAV_COMPONENT_NFT_DETAIL,
-  TAB_MESSAGES,
-  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UNKNOWN_NFT_ICON_SRC,
 } from "@coral-xyz/common";
 import {
   AppsColorIcon,
-  MessageBubbleUnreadIcon,
+  MessageBubbleIcon,
   ProxyImage,
 } from "@coral-xyz/react-common";
 import {
@@ -21,27 +17,66 @@ import {
   collectibleXnft,
   nftsByIds,
   useActiveWallet,
-  useBackgroundClient,
   useBlockchainConnectionUrl,
   useNavigation,
   useOpenPlugin,
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
-import { Sms } from "@mui/icons-material";
-import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import type { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 import {
   Button,
   CircularProgress,
-  IconButton,
+  Divider,
+  MenuItem,
   Typography,
 } from "@mui/material";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
+import { RightClickMenu } from "../../common/Layout/RightClickMenu";
+
 import { useOpenChat } from "./Detail";
+import { SendDrawer } from "./SendDrawer";
+
 const useStyles = styles((theme) => ({
+  openXnft: {
+    position: "absolute",
+    top: "50%",
+    display: "none",
+    background: theme.custom.colors.nav,
+    color: theme.custom.colors.fontColor,
+    borderRadius: "24px",
+    padding: "4px 12px",
+    marginTop: "-12px",
+    fontSize: "14px",
+  },
+  xnftIcon: {
+    background: theme.custom.colors.nav,
+    color: theme.custom.colors.fontColor,
+    borderRadius: "24px",
+    fontSize: "14px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    overflow: "hidden",
+    width: "32px",
+    flexWrap: "nowrap",
+    transition: "width 100ms 200ms ease-out",
+    "& .appIcon": {
+      transition: "transform 300ms ease-out",
+    },
+  },
   button: {
     "&:hover": {
       opacity: HOVER_OPACITY,
+    },
+    "&:hover .openXnft": {
+      display: "flex",
+    },
+    "&:hover .xnftIcon": {
+      width: "100%",
+    },
+    "&:hover .appIcon": {
+      transform: "rotate(360deg)",
     },
   },
 }));
@@ -99,9 +134,9 @@ export function NFTCard({
     }
   };
 
-  const openDetails = () => {
-    push({
-      title: subtitle?.name ?? nft.name,
+  const openDetails = async () => {
+    await push({
+      title: nft.name,
       componentId: NAV_COMPONENT_NFT_DETAIL,
       componentProps: {
         nftId: nft.id,
@@ -111,159 +146,206 @@ export function NFTCard({
     });
   };
 
+  const onOpenChat = async (e: any) => {
+    setJoiningChat(true);
+    await openChat(chat, nft.mint!);
+    setJoiningChat(false);
+    e.stopPropagation();
+  };
+
   return (
-    <div>
-      <Button
-        className={classes.button}
-        onClick={xnft ? onOpenXnft : openDetails}
-        disableRipple
-        style={{
-          textTransform: "none",
-          padding: 0,
-          borderRadius: "8px",
-          position: "relative",
-          overflow: "hidden",
-          minWidth: "153.5px",
-          minHeight: "153.5px",
-          aspectRatio: "1",
-          display: "flex",
-          flexDirection: "column",
-          background: theme.custom.colors.background,
-        }}
-      >
-        <ProxyImage
-          className="nftImage"
-          style={{
-            width: "100%",
-          }}
-          loadingStyles={{
-            height: "100%",
-          }}
-          removeOnError
-          src={nft.imageUrl}
-          onError={(e) => {
-            e.currentTarget.src = UNKNOWN_NFT_ICON_SRC;
-          }}
-        />
-        <div
-          style={{
-            width: "100%",
-            position: "absolute",
-            left: 0,
-            bottom: 8,
-            zIndex: 2,
-            display: "flex",
-            justifyContent: "flex-start",
-            padding: "0 5px",
-            gap: "6px",
-          }}
+    <SendDrawer nft={nft}>
+      {(openDrawer) => (
+        <RightClickMenu
+          renderItems={(closeMenu) => (
+            <>
+              {xnft ? (
+                <MenuItem onClick={onOpenXnft}>Open xNFT</MenuItem>
+              ) : null}
+              {chat ? (
+                <MenuItem
+                  onClick={async (e) => {
+                    closeMenu();
+                    await onOpenChat(e);
+                  }}
+                >
+                  Open Chat
+                </MenuItem>
+              ) : null}
+              {xnft || chat ? <Divider /> : null}
+              <MenuItem onClick={openDetails}>NFT Details</MenuItem>
+              <MenuItem
+                onClick={() => {
+                  closeMenu();
+                  openDrawer();
+                }}
+              >
+                Send NFT
+              </MenuItem>
+            </>
+          )}
         >
-          {xnft ? (
-            <div
-              className="xnftIcon"
+          <>
+            <Button
+              className={classes.button}
+              onClick={xnft ? onOpenXnft : openDetails}
+              disableRipple
               style={{
-                background: theme.custom.colors.nav,
+                textTransform: "none",
+                padding: 0,
+                borderRadius: "8px",
+                position: "relative",
+                overflow: "hidden",
+                minWidth: "153.5px",
+                minHeight: "153.5px",
+                height: "100%",
+                width: "100%",
+                aspectRatio: "1",
+                display: "flex",
+                flexDirection: "column",
+                background: theme.custom.colors.background,
+              }}
+            >
+              <ProxyImage
+                className="nftImage"
+                style={{
+                  width: "100%",
+                }}
+                loadingStyles={{
+                  height: "100%",
+                }}
+                removeOnError
+                src={nft.imageUrl}
+                onError={(e) => {
+                  e.currentTarget.src = UNKNOWN_NFT_ICON_SRC;
+                }}
+              />
+              <div
+                style={{
+                  width: "100%",
+                  position: "absolute",
+                  left: 0,
+                  bottom: 8,
+                  zIndex: 2,
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  padding: "0 8px",
+                  gap: "6px",
+                }}
+              >
+                {xnft ? (
+                  <div className={`${classes.xnftIcon} xnftIcon`}>
+                    <AppsColorIcon
+                      className="appIcon"
+                      style={{
+                        width: "16px",
+                        height: "16px",
+                        margin: "8px",
+                        flexShrink: 0,
+                      }}
+                    />
+                    <Typography
+                      sx={{
+                        flexShrink: 0,
+                        width: "100px",
+                      }}
+                    >
+                      Open xNFT
+                    </Typography>
+                  </div>
+                ) : null}
+              </div>
+              {/* {xnft ? (
+          <div className={`${classes.openXnft} openXnft`}>
+            <Typography>Open xNFT</Typography>
+          </div>
+        ) : null} */}
+            </Button>
+            <div
+              style={{
+                padding: "0px",
                 display: "flex",
                 alignItems: "center",
-                borderRadius: "50%",
-                padding: "5px",
+                justifyContent: "space-between",
+                width: "100%",
               }}
             >
-              <AppsColorIcon
+              <Typography
+                onClick={xnft ? onOpenXnft : openDetails}
+                component="div"
                 style={{
-                  width: "16px",
-                  height: "16px",
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  fontSize: "14px",
+                  color: theme.custom.colors.fontColor,
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  cursor: "pointer",
+                  padding: "8px 8px 8px 0px",
+                  flexGrow: 1,
                 }}
-              />
+              >
+                <div
+                  style={{
+                    textOverflow: "ellipsis",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {subtitle?.name ?? nft.name}
+                </div>
+                {subtitle?.length ?? 0 > 1 ? (
+                  <span
+                    style={{
+                      marginLeft: "8px",
+                      color: theme.custom.colors.secondary,
+                    }}
+                  >
+                    {subtitle?.length ?? ""}
+                  </span>
+                ) : null}
+              </Typography>
+              {chat && nft.mint ? (
+                <div
+                  style={{
+                    height: "24px",
+                    width: "24px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    cursor: "pointer",
+                  }}
+                  onClick={onOpenChat}
+                >
+                  {joiningChat ? (
+                    <CircularProgress
+                      sx={{
+                        color: theme.custom.colors.fontColor,
+                        height: "13px",
+                        width: "13px",
+                      }}
+                      size="small"
+                      thickness={3}
+                    />
+                  ) : (
+                    <MessageBubbleIcon
+                      sx={{
+                        width: "18px",
+                        color: theme.custom.colors.fontColor,
+                        "&:hover": {
+                          color: `${theme.custom.colors.fontColor3} !important`,
+                        },
+                      }}
+                    />
+                  )}
+                </div>
+              ) : null}
             </div>
-          ) : null}
-        </div>
-      </Button>
-      <div
-        style={{
-          padding: "0px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-        }}
-      >
-        <Typography
-          onClick={openDetails}
-          component="div"
-          style={{
-            display: "flex",
-            justifyContent: "flex-start",
-            fontSize: "12px",
-            color: theme.custom.colors.fontColor,
-            textOverflow: "ellipsis",
-            overflow: "hidden",
-            whiteSpace: "nowrap",
-            cursor: "pointer",
-            padding: "8px 8px 8px 0px",
-            flexGrow: 1,
-          }}
-        >
-          <div
-            style={{
-              textOverflow: "ellipsis",
-              overflow: "hidden",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {subtitle?.name ?? nft.name}
-          </div>
-          {subtitle?.length ?? 0 > 1 ? (
-            <span
-              style={{
-                marginLeft: "8px",
-                color: theme.custom.colors.secondary,
-              }}
-            >
-              {subtitle?.length ?? ""}
-            </span>
-          ) : null}
-        </Typography>
-        {chat && nft.mint ? (
-          <div
-            style={{
-              height: "24px",
-              width: "24px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
-            }}
-            onClick={async (e: any) => {
-              setJoiningChat(true);
-              await openChat(chat, nft.mint!);
-              setJoiningChat(false);
-              e.stopPropagation();
-            }}
-          >
-            {joiningChat ? (
-              <CircularProgress
-                sx={{
-                  color: theme.custom.colors.fontColor,
-                  height: "13px",
-                  width: "13px",
-                }}
-                size="small"
-                thickness={3}
-              />
-            ) : (
-              <Sms
-                fontSize="small"
-                sx={{
-                  fontSize: "18px",
-                  color: theme.custom.colors.fontColor,
-                }}
-              />
-            )}
-          </div>
-        ) : null}
-      </div>
-    </div>
+          </>
+        </RightClickMenu>
+      )}
+    </SendDrawer>
   );
 }
 
@@ -323,82 +405,110 @@ export function CollectionCard({ collection }: { collection: NftCollection }) {
   };
 
   return (
-    <div>
-      <Button
-        className={classes.button}
-        onClick={openCollection}
-        disableRipple
-        style={{
-          textTransform: "none",
-          padding: "4px",
-          borderRadius: "8px",
-          position: "relative",
-          overflow: "hidden",
-          minWidth: "153.5px",
-          minHeight: "153.5px",
-          aspectRatio: "1",
-          display: "flex",
-          flexDirection: "column",
-          background: theme.custom.colors.background,
-        }}
-      >
-        <div
+    <RightClickMenu
+      renderItems={(close) => (
+        <MenuItem onClick={openCollection}>View Items</MenuItem>
+      )}
+    >
+      <>
+        <Button
+          className={classes.button}
+          onClick={openCollection}
+          disableRipple
           style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            height: "100%",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-            alignItems: "center",
+            textTransform: "none",
+            padding: "4px",
+            borderRadius: "8px",
+            position: "relative",
             overflow: "hidden",
+            minWidth: "153.5px",
+            minHeight: "153.5px",
+            height: "100%",
+            width: "100%",
+            aspectRatio: "1",
+            display: "flex",
+            flexDirection: "column",
+            background: theme.custom.colors.background,
           }}
         >
-          {paddedCollectionDisplayNfts.map((nft, i) => {
-            return (
-              <div
-                key={nft?.id ?? i}
-                style={{
-                  width: "50%",
-                  height: "50%",
-                  overflow: "hidden",
-                }}
-              >
-                {nft ? (
-                  <ProxyImage
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              height: "100%",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+              alignItems: "center",
+              overflow: "hidden",
+            }}
+          >
+            {paddedCollectionDisplayNfts.map((nft, i) => {
+              return (
+                <div
+                  key={nft?.id ?? i}
+                  style={{
+                    position: "relative",
+                    width: "50%",
+                    height: "50%",
+                  }}
+                >
+                  <div
                     style={{
-                      width: "100%",
-                      padding: "3px",
+                      position: "absolute",
+                      top: "3px",
+                      right: "3px",
+                      bottom: "3px",
+                      left: "3px",
+                      overflow: "hidden",
                       borderRadius: "8px",
                     }}
-                    loadingStyles={{
-                      height: "100%",
-                    }}
-                    removeOnError
-                    src={nft.imageUrl}
-                    onError={(e) => {
-                      e.currentTarget.src = UNKNOWN_NFT_ICON_SRC;
-                    }}
-                  />
-                ) : null}
-              </div>
-            );
-          })}
-        </div>
-        <div
-          style={{
-            width: "100%",
-            position: "absolute",
-            left: 0,
-            bottom: 8,
-            zIndex: 2,
-            display: "flex",
-            justifyContent: "space-between",
-            padding: "0 5px",
-            gap: "6px",
-          }}
-        >
-          {/* {xnft ? (
+                  >
+                    <div
+                      style={{
+                        position: "relative",
+                        height: "100%",
+                        width: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      {nft ? (
+                        <ProxyImage
+                          style={{
+                            width: "100%",
+                          }}
+                          loadingStyles={{
+                            height: "100%",
+                          }}
+                          removeOnError
+                          src={nft.imageUrl}
+                          onError={(e) => {
+                            e.currentTarget.src = UNKNOWN_NFT_ICON_SRC;
+                          }}
+                        />
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div
+            style={{
+              width: "100%",
+              position: "absolute",
+              left: 0,
+              bottom: 8,
+              zIndex: 2,
+              display: "flex",
+              justifyContent: "space-between",
+              padding: "0 5px",
+              gap: "6px",
+            }}
+          >
+            {/* {xnft ? (
             <div
               style={{
                 background: theme.custom.colors.nav,
@@ -416,91 +526,94 @@ export function CollectionCard({ collection }: { collection: NftCollection }) {
               />
             </div>
           ) : null} */}
-        </div>
-      </Button>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-        }}
-      >
-        <Typography
-          onClick={openCollection}
-          component="div"
+          </div>
+        </Button>
+        <div
           style={{
             display: "flex",
-            justifyContent: "flex-start",
-            fontSize: "12px",
-            color: theme.custom.colors.fontColor,
-            textOverflow: "ellipsis",
-            overflow: "hidden",
-            whiteSpace: "nowrap",
-            cursor: "pointer",
-            padding: "8px 8px 8px 0px",
-            flexGrow: 1,
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
           }}
         >
-          <div
+          <Typography
+            onClick={openCollection}
+            component="div"
             style={{
+              display: "flex",
+              justifyContent: "flex-start",
+              fontSize: "14px",
+              color: theme.custom.colors.fontColor,
               textOverflow: "ellipsis",
               overflow: "hidden",
               whiteSpace: "nowrap",
+              cursor: "pointer",
+              padding: "8px 8px 8px 0px",
+              flexGrow: 1,
             }}
           >
-            {nft.collectionName}
-          </div>
-          {collection.itemIds.length > 0 ? (
-            <span
+            <div
               style={{
-                marginLeft: "8px",
-                color: theme.custom.colors.secondary,
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
               }}
             >
-              {collection.itemIds.length}
-            </span>
+              {nft.collectionName}
+            </div>
+            {collection.itemIds.length > 0 ? (
+              <span
+                style={{
+                  marginLeft: "8px",
+                  color: theme.custom.colors.secondary,
+                }}
+              >
+                {collection.itemIds.length}
+              </span>
+            ) : null}
+          </Typography>
+          {whitelistedChatCollection ? (
+            <div
+              style={{
+                height: "24px",
+                width: "24px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                cursor: "pointer",
+              }}
+              onClick={async (e: any) => {
+                setJoiningChat(true);
+                await openChat(whitelistedChatCollection, nft.mint!);
+                setJoiningChat(false);
+                e.stopPropagation();
+              }}
+            >
+              {joiningChat ? (
+                <CircularProgress
+                  sx={{
+                    color: theme.custom.colors.fontColor,
+                    height: "13px",
+                    width: "13px",
+                  }}
+                  size="small"
+                  thickness={3}
+                />
+              ) : (
+                <MessageBubbleIcon
+                  sx={{
+                    width: "18px",
+                    color: theme.custom.colors.fontColor,
+                    "&:hover": {
+                      color: `${theme.custom.colors.fontColor3} !important`,
+                    },
+                  }}
+                />
+              )}
+            </div>
           ) : null}
-        </Typography>
-        {whitelistedChatCollection ? (
-          <div
-            style={{
-              height: "24px",
-              width: "24px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
-            }}
-            onClick={async (e: any) => {
-              setJoiningChat(true);
-              await openChat(whitelistedChatCollection, nft.mint!);
-              setJoiningChat(false);
-              e.stopPropagation();
-            }}
-          >
-            {joiningChat ? (
-              <CircularProgress
-                sx={{
-                  color: theme.custom.colors.fontColor,
-                  height: "13px",
-                  width: "13px",
-                }}
-                size="small"
-                thickness={3}
-              />
-            ) : (
-              <Sms
-                fontSize="small"
-                sx={{
-                  fontSize: "18px",
-                  color: theme.custom.colors.fontColor,
-                }}
-              />
-            )}
-          </div>
-        ) : null}
-      </div>
-    </div>
+        </div>
+      </>
+    </RightClickMenu>
   );
 }

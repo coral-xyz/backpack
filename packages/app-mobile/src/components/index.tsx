@@ -25,10 +25,10 @@ import {
   SecondaryButton,
   NegativeButton,
   DangerButton,
-} from "@coral-xyz/react-native-core";
-import { useAvatarUrl } from "@coral-xyz/recoil";
+  Text as _Text,
+  StyledText,
+} from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
-import { SvgUri } from "react-native-svg";
 
 import { ContentCopyIcon, RedBackpack } from "~components/Icon";
 import { useTheme } from "~hooks/useTheme";
@@ -41,6 +41,7 @@ export { PasswordInput } from "./PasswordInput";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { StyledTokenTextInput } from "./TokenInputField";
+export { Avatar } from "./UserAvatar";
 export {
   Margin,
   BaseButton,
@@ -49,6 +50,7 @@ export {
   SecondaryButton,
   NegativeButton,
   DangerButton,
+  StyledText,
 };
 
 export function CallToAction({
@@ -97,30 +99,13 @@ const ctaStyles = StyleSheet.create({
   },
 });
 
-export function StyledText({
-  children,
-  style,
-  ...props
-}: {
-  children: string;
-  style?: StyleProp<TextStyle>;
-}) {
-  const theme = useTheme();
-  const color = theme.custom.colors.fontColor;
-  return (
-    <Text style={[{ color }, style]} {...props}>
-      {children}
-    </Text>
-  );
-}
-
 export function Screen({
   scrollable,
   children,
   style,
 }: {
   scrollable?: boolean;
-  children: JSX.Element | JSX.Element[];
+  children: JSX.Element | JSX.Element[] | null;
   style?: StyleProp<ViewStyle>;
 }) {
   const theme = useTheme();
@@ -166,16 +151,25 @@ const screenStyles = StyleSheet.create({
   },
 });
 
-export function Header({ text }: { text: string }) {
+export function Header({
+  text,
+  style,
+}: {
+  text: string;
+  style?: StyleProp<TextStyle>;
+}): JSX.Element {
   const theme = useTheme();
   return (
     <Text
-      style={{
-        color: theme.custom.colors.fontColor,
-        fontSize: 24,
-        fontWeight: "500",
-        lineHeight: 32,
-      }}
+      style={[
+        {
+          color: theme.custom.colors.fontColor,
+          fontSize: 24,
+          fontWeight: "500",
+          lineHeight: 32,
+        },
+        style,
+      ]}
     >
       {text}
     </Text>
@@ -197,8 +191,9 @@ export function SubtextParagraph({
       onPress={onPress}
       style={[
         {
+          fontSize: 18,
+          lineHeight: 24,
           fontWeight: "500",
-          marginTop: 8,
           color: theme.custom.colors.subtext,
         },
         style,
@@ -349,27 +344,6 @@ export function WalletAddressLabel({
   );
 }
 
-export function Avatar({ size = 64 }: { size?: number }): JSX.Element {
-  const avatarUrl = useAvatarUrl(size);
-  const theme = useTheme();
-
-  const outerSize = size + 6;
-
-  return (
-    <View
-      style={{
-        backgroundColor: theme.custom.colors.avatarIconBackground,
-        borderRadius: outerSize / 2,
-        padding: 3,
-        width: outerSize,
-        height: outerSize,
-      }}
-    >
-      <SvgUri width={size} height={size} uri={avatarUrl} />
-    </View>
-  );
-}
-
 export function Debug({ data }: any): JSX.Element {
   const theme = useTheme();
   return (
@@ -418,7 +392,14 @@ export function FullScreenLoading({ label }: { label?: string }): JSX.Element {
     >
       <ActivityIndicator size="large" color={theme.custom.colors.fontColor} />
       {label ? (
-        <Text style={{ textAlign: "center", fontSize: 16, marginTop: 16 }}>
+        <Text
+          style={{
+            textAlign: "center",
+            fontSize: 18,
+            marginTop: 16,
+            color: theme.custom.colors.fontColor,
+          }}
+        >
           {label}
         </Text>
       ) : null}
@@ -456,7 +437,7 @@ export function WelcomeLogoHeader() {
               color: theme.custom.colors.secondary,
             }}
           >
-            A home for your xNFTs
+            gm
           </Text>
         </Margin>
       </View>

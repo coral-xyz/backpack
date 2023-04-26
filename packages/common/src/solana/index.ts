@@ -51,6 +51,7 @@ import {
 import BN from "bn.js";
 
 import type { BackgroundClient } from "../";
+import { TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS } from "../constants";
 
 import * as assertOwner from "./programs/assert-owner";
 import {
@@ -70,6 +71,7 @@ export * from "./explorer";
 export * from "./programs";
 export * from "./provider";
 export * from "./rpc-helpers";
+export * from "./send-helpers";
 export * from "./transaction-helpers";
 export * from "./types";
 export * from "./wallet-adapter";
@@ -406,10 +408,10 @@ export class Solana {
     const { walletPublicKey, tokenClient, commitment } = solanaCtx;
     const { amount, mint, destination: destinationOwner } = req;
 
-    const sourceAta = associatedTokenAddress(mint, walletPublicKey);
+    const source = req.source ?? associatedTokenAddress(mint, walletPublicKey);
     const destinationAta = associatedTokenAddress(mint, destinationOwner);
 
-    const ownerTokenRecord = await tokenRecordAddress(mint, sourceAta);
+    const ownerTokenRecord = await tokenRecordAddress(mint, source);
 
     // we need to check whether the token is lock or listed
 
@@ -440,7 +442,7 @@ export class Solana {
     const transferAcccounts: TransferInstructionAccounts = {
       authority: walletPublicKey,
       tokenOwner: walletPublicKey,
-      token: sourceAta,
+      token: source,
       metadata: await metadataAddress(mint),
       mint,
       edition: await masterEditionAddress(mint),
@@ -679,13 +681,12 @@ export const generateUnwrapSolTx = async (
     );
   } else {
     const newAccount = Keypair.generate();
-    const rentExemptionLamports = 2039280;
     // Create a new account to transfer wSOL into and then close
     tx.instructions.push(
       SystemProgram.createAccount({
         fromPubkey: walletPublicKey,
         newAccountPubkey: newAccount.publicKey,
-        lamports: rentExemptionLamports,
+        lamports: TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
         space: 165,
         programId: TOKEN_PROGRAM_ID,
       })
@@ -726,6 +727,9 @@ export type TransferTokenRequest = {
   mint: PublicKey;
   amount: number;
   decimals?: number;
+  // Source token addess. If not provided, an ATA will
+  // be derived from the wallet.
+  source?: PublicKey;
 };
 
 export type TransferSolRequest = {

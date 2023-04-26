@@ -284,6 +284,9 @@ export const solanaFungibleTokenNativeBalance = selectorFamily<
             decimals: tokenMint.decimals,
           }
         : tokenRegistryItem ?? ({} as TokenInfo);
+
+      decimals = tokenMint ? tokenMint.decimals : tokenRegistryItem.decimals;
+
       if (tokenRegistryItem) {
         if (ticker === "") {
           ticker = tokenRegistryItem.symbol;
@@ -363,6 +366,7 @@ export const solanaFungibleTokenBalance = selectorFamily<
       const price = get(solanaPricesForIds({ publicKey })).get(
         nativeTokenBalance.priceMint
       ) as any;
+
       const usdBalance =
         (price?.usd ?? 0) *
         parseFloat(
@@ -371,15 +375,17 @@ export const solanaFungibleTokenBalance = selectorFamily<
             nativeTokenBalance.decimals
           )
         );
+
+      const recentPercentChange = parseFloat(
+        (price?.usd_24h_change ?? 0).toFixed(2)
+      );
+
       const oldUsdBalance =
         usdBalance === 0
           ? 0
-          : usdBalance - usdBalance * (price.usd_24h_change / 100);
+          : usdBalance - usdBalance * (recentPercentChange / 100);
+
       const recentUsdBalanceChange = usdBalance - oldUsdBalance;
-      const recentPercentChange =
-        price && price.usd_24h_change
-          ? parseFloat(price.usd_24h_change.toFixed(2))
-          : undefined;
 
       return {
         ...nativeTokenBalance,

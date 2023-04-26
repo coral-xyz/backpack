@@ -44,7 +44,7 @@ export const HardwareDefaultWallet = ({
       }[blockchain];
       setLedgerWallet(ledgerWallet);
     })();
-  }, [blockchain]);
+  }, [blockchain, transport]);
 
   // This is effectively the same as UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR
   useEffect(() => {
@@ -92,6 +92,7 @@ export const HardwareDefaultWallet = ({
         const publicKey = publicKeys[0];
         const derivationPath = recoveryPaths[0];
         onNext({
+          blockchain,
           derivationPath,
           publicKey,
         });
@@ -100,7 +101,7 @@ export const HardwareDefaultWallet = ({
         setAccountIndex(accountIndex + 1);
       }
     })();
-  }, [ledgerWallet, accountIndex]);
+  }, [accountIndex, background, blockchain, ledgerWallet, onError, onNext]);
 
   return <Loading />;
 };

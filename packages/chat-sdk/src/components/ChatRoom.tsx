@@ -6,13 +6,13 @@ import type {
 } from "@coral-xyz/common";
 import { CHAT_MESSAGES, SUBSCRIBE } from "@coral-xyz/common";
 import { createEmptyFriendship } from "@coral-xyz/db";
+import { useUser } from "@coral-xyz/recoil";
 import {
   refreshChatsFor,
   refreshUpdatesFor,
   SignalingManager,
   useChatsWithMetadata,
-} from "@coral-xyz/react-common";
-import { useUser } from "@coral-xyz/recoil";
+} from "@coral-xyz/tamagui";
 import { v4 as uuidv4 } from "uuid";
 
 import { MessagePluginRenderer } from "../MessagePluginRenderer";
@@ -51,7 +51,7 @@ export type AboveMessagePlugin =
   | {
       type: "nft-sticker";
       metadata: {
-        mint: string;
+        // mint: string;
       };
     }
   | {
@@ -95,7 +95,10 @@ export const ChatRoom = ({
   const [messageRef, setMessageRef] = useState<any>(null);
   const [jumpToBottom, setShowJumpToBottom] = useState(false);
   const [localUnreadCount, setLocalUnreadCount] = useState(0);
-  const [openPlugin, setOpenPlugin] = useState<MessagePlugins>("");
+  const [openPlugin, setOpenPlugin] = useState<MessagePlugins>({
+    type: "",
+    metadata: {},
+  });
   const [aboveMessagePlugin, setAboveMessagePlugin] =
     useState<AboveMessagePlugin>({ type: "", metadata: {} });
   const [selectedFile, setSelectedFile] = useState<any>(null);
@@ -225,11 +228,7 @@ export const ChatRoom = ({
     if (selectedFile && uploadingFile) {
       return;
     }
-    if (
-      messageTxt ||
-      selectedFile ||
-      aboveMessagePlugin.type === "nft-sticker"
-    ) {
+    if (messageTxt || selectedFile) {
       if (selectedFile) {
         messageKind = "media";
         messageMetadata = {
@@ -237,17 +236,6 @@ export const ChatRoom = ({
           media_link: uploadedImageUri,
         };
         setSelectedFile(null);
-      }
-      if (aboveMessagePlugin.type === "nft-sticker") {
-        messageKind = "nft-sticker";
-        messageMetadata = {
-          mint: aboveMessagePlugin.metadata.mint,
-        };
-        setAboveMessagePlugin({
-          type: "",
-          metadata: {},
-        });
-        setOpenPlugin("");
       }
       const client_generated_uuid = uuidv4();
       if (chats.length === 0 && type === "individual") {
@@ -375,7 +363,7 @@ export const ChatRoom = ({
       >
         <div
           style={{
-            height: !openPlugin
+            height: !openPlugin.type
               ? "100vh"
               : `${100 - PLUGIN_HEIGHT_PERCENTAGE}vh`,
           }}

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import type { EnrichedMessageWithMetadata } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { fetchMoreChatsFor } from "@coral-xyz/react-common";
+import { fetchMoreChatsFor } from "@coral-xyz/tamagui";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import FileUploadIcon from "@mui/icons-material/FileUploadRounded";
@@ -102,13 +102,17 @@ export const FullScreenChat = ({
   };
 
   const onMediaSelect = (file: File) => {
-    let reader = new FileReader();
-    reader.onload = (e) => {
-      setSelectedMediaKind(file.name.endsWith("mp4") ? "video" : "image");
-      setSelectedFile(e.target?.result);
-      uploadToS3(e.target?.result as string, file.name);
-    };
-    reader.readAsDataURL(file);
+    const fileType = file.type.split('/')[0];
+    
+    if(fileType === 'image' || fileType === 'video') {
+      let reader = new FileReader();
+      reader.onload = (e) => {
+        setSelectedMediaKind(file.name.endsWith("mp4") ? "video" : "image");
+        setSelectedFile(e.target?.result);
+        uploadToS3(e.target?.result as string, file.name);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (

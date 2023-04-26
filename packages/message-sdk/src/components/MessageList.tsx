@@ -16,9 +16,9 @@ import {
   BackpackStaffIcon,
   isFirstLastListItemStyle,
   LocalImage,
-  useUsersMetadata,
 } from "@coral-xyz/react-common";
 import { useDecodedSearchParams } from "@coral-xyz/recoil";
+import { useUsersMetadata } from "@coral-xyz/tamagui";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -42,6 +42,20 @@ export const MessageList = ({
 }) => {
   const theme = useCustomTheme();
 
+  const sortedChats = activeChats.sort(
+    (a, b) =>
+      new Date(
+        (b.chatType === "collection"
+          ? b.chatProps.lastMessageTimestamp
+          : b.chatProps.last_message_timestamp) ?? 0
+      ).getTime() -
+      new Date(
+        (a.chatType === "collection"
+          ? a.chatProps.lastMessageTimestamp
+          : a.chatProps.last_message_timestamp) ?? 0
+      ).getTime()
+  );
+
   return (
     <List
       style={{
@@ -58,7 +72,7 @@ export const MessageList = ({
           isLast={activeChats?.length === 0}
         />
       ) : null}
-      {activeChats?.map((activeChat, index) => (
+      {sortedChats?.map((activeChat, index) => (
         <ChatListItem
           toRoot={toRoot}
           type={activeChat.chatType}
@@ -177,6 +191,7 @@ export function ChatListItem({
             username: type === "individual" ? name : undefined,
             id: id,
             fromInbox: true,
+            image,
           },
           pushAboveRoot: toRoot,
         });
@@ -403,6 +418,7 @@ function UserIcon({ image }: any) {
   const classes = useStyles();
   return (
     <LocalImage
+      size={40}
       style={{ width: 40, height: 40 }}
       src={image}
       className={classes.iconCircularBig}

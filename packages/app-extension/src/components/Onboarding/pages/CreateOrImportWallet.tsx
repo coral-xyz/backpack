@@ -1,5 +1,4 @@
-// @ts-expect-error
-import { PrimaryButton } from "@coral-xyz/react-native-core";
+import { PrimaryButton } from "@coral-xyz/react-common";
 import { Box } from "@mui/material";
 
 import { SubtextParagraph } from "../../common";
@@ -8,7 +7,7 @@ import { BackpackHeader } from "../../Locked";
 export const CreateOrImportWallet = ({
   onNext,
 }: {
-  onNext: (action: "create" | "import") => void;
+  onNext: (data: any) => void;
 }) => {
   return (
     <div
@@ -19,7 +18,7 @@ export const CreateOrImportWallet = ({
         height: "100%",
       }}
     >
-      <Box style={{ flex: 1, textAlign: "center", padding: "0 16px" }}>
+      <Box style={{ flex: 1, textAlign: "center", padding: "32px 16px 0px" }}>
         <BackpackHeader disableUsername />
       </Box>
       <Box
@@ -29,15 +28,19 @@ export const CreateOrImportWallet = ({
           cursor: "pointer",
         }}
       >
-        <Box sx={{ mb: "16px" }}>
+        <Box sx={{ mt: "24px" }}>
           <PrimaryButton
             label="Create a new wallet"
-            onPress={() => onNext("create")}
+            onClick={() =>
+              onNext({ action: "create", keyringType: "mnemonic" })
+            }
           />
         </Box>
-        <SubtextParagraph onClick={() => onNext("import")}>
-          I already have a wallet
-        </SubtextParagraph>
+        <Box sx={{ mt: "16px" }}>
+          <SubtextParagraph onClick={() => onNext({ action: "import" })}>
+            I already have a wallet
+          </SubtextParagraph>
+        </Box>
       </Box>
     </div>
   );

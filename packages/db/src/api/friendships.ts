@@ -9,42 +9,53 @@ import {
   updateFriendship,
 } from "../db/friends";
 
-export const refreshFriendships = async (uuid: string) => {
+export const refreshFriendships = async (uuid: string, jwt?: string) => {
   const db = getDb(uuid);
   try {
-    const res = await fetch(`${BACKEND_API_URL}/inbox/all?uuid=${uuid}`);
+    const res = await fetch(`${BACKEND_API_URL}/inbox/all?uuid=${uuid}`, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    });
     const json = await res.json();
     const chats: EnrichedInboxDb[] = json.chats;
     if (!chats) {
       return;
     }
     const existingChats = await db.inbox.toArray();
-    existingChats.forEach((existingChat) => {
+    for (const existingChat of existingChats) {
       if (!chats.find((x) => x.remoteUserId === existingChat.remoteUserId)) {
-        db.inbox.delete(existingChat.remoteUserId);
+        await db.inbox.delete(existingChat.remoteUserId);
       }
-    });
+    }
     if (chats) {
-      chats?.forEach((chat) => {
-        db.inbox.put(chat);
-      });
+      await Promise.all(
+        chats?.map(async (chat) => {
+          await db.inbox.put(chat);
+        }) || []
+      );
     }
   } catch (e) {
     console.error(e);
   }
 };
 
-export const refreshGroups = async (uuid: string) => {
+export const refreshGroups = async (uuid: string, jwt?: string) => {
   try {
     const response = await fetch(`${BACKEND_API_URL}/nft/bulk?uuid=${uuid}`, {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
     });
 
     const res = await response.json();
     const collections: CollectionChatData[] = res.collections;
-    collections?.forEach((collection) => {
-      createOrUpdateCollection(uuid, collection);
-    });
+    await Promise.all(
+      collections?.map(async (collection) => {
+        await createOrUpdateCollection(uuid, collection);
+      }) || []
+    );
   } catch (e) {
     console.error(e);
   }

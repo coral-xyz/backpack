@@ -71,7 +71,9 @@ function encodeTransaction(transaction: any) {
   delete transaction.from;
   // Set transaction type if fully formed EIP1559
   if (
-    (transaction.type === 2 || transaction.type == null) &&
+    (transaction.type === 2 ||
+      transaction.type === "0x2" ||
+      transaction.type == null) &&
     transaction.maxFeePerGas != null &&
     transaction.maxPriorityFeePerGas != null
   ) {

@@ -9,58 +9,39 @@ const chain = Chain(AUTH_HASURA_URL, {
 });
 
 export const getSubscriptions = async (uuid: string) => {
-  return chain("query")({
-    auth_notification_subscriptions: [
-      {
-        where: { uuid: { _eq: (uuid as string) || "" } },
-        limit: 5,
-      },
-      {
-        username: true,
-        endpoint: true,
-        expirationTime: true,
-        p256dh: true,
-        auth: true,
-        id: true,
-      },
-    ],
-  });
+  return chain("query")(
+    {
+      auth_notification_subscriptions: [
+        {
+          where: { uuid: { _eq: (uuid as string) || "" } },
+          limit: 5,
+        },
+        {
+          username: true,
+          endpoint: true,
+          expirationTime: true,
+          p256dh: true,
+          auth: true,
+          id: true,
+        },
+      ],
+    },
+    { operationName: "getSubscriptions" }
+  );
 };
 
 export const deleteSubscription = (id: number) => {
-  return chain("mutation")({
-    delete_auth_notification_subscriptions_by_pk: [
-      {
-        id,
-      },
-      {
-        id: true,
-      },
-    ],
-  });
-};
-
-export const insertNotification = (
-  xnftId: string,
-  uuid: string,
-  { title, body }: { title: string; body: string }
-) => {
-  return chain("mutation")({
-    insert_auth_notifications_one: [
-      {
-        object: {
-          title,
-          body,
-          uuid,
-          xnft_id: xnftId,
-          timestamp: new Date(),
-          username: "",
-          image: "",
+  return chain("mutation")(
+    {
+      delete_auth_notification_subscriptions_by_pk: [
+        {
+          id,
         },
-      },
-      {
-        id: true,
-      },
-    ],
-  });
+        {
+          id: true,
+        },
+      ],
+    },
+    { operationName: "deleteSubscription" }
+  );
 };

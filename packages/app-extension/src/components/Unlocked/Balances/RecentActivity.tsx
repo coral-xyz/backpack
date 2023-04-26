@@ -1,3 +1,5 @@
+// TODO: remove the line below
+/* eslint-disable react-hooks/rules-of-hooks */
 import { Suspense, useState } from "react";
 import { Blockchain, explorerUrl, XNFT_GG_LINK } from "@coral-xyz/common";
 import {
@@ -6,17 +8,17 @@ import {
   Loading,
 } from "@coral-xyz/react-common";
 import {
+  getBlockchainLogo,
   useActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
-  useBlockchainLogo,
   useRecentEthereumTransactions,
   useRecentSolanaTransactions,
   useRecentTransactions,
 } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, Check, Clear } from "@mui/icons-material";
-import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
 import { IconButton, List, ListItem, Typography } from "@mui/material";
 
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
@@ -27,25 +29,7 @@ import {
 
 import { _RecentSolanaActivityList } from "./RecentSolanaActivity/RecentSolanaActivityList";
 
-const useStyles = styles((theme) => ({
-  recentActivityLabel: {
-    color: theme.custom.colors.fontColor,
-    fontWeight: 500,
-    fontSize: "14px",
-    lineHeight: "24px",
-  },
-  allWalletsLabel: {
-    fontWeight: 500,
-    fontSize: "12px",
-    color: theme.custom.colors.secondary,
-  },
-  noRecentActivityLabel: {
-    fontWeight: 500,
-    fontSize: "16px",
-    padding: "16px",
-    textAlign: "center",
-    color: theme.custom.colors.secondary,
-  },
+const useStyles = makeStyles((theme) => ({
   recentActivityListItemIconContainer: {
     width: "44px",
     height: "44px",
@@ -107,7 +91,9 @@ export function RecentActivityButton() {
         onClick={() => setOpenDrawer(true)}
         size="large"
       >
-        <FormatListBulletedIcon className={classes.networkSettingsIcon} />
+        <FormatListBulletedRoundedIcon
+          className={classes.networkSettingsIcon}
+        />
       </IconButton>
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         <div style={{ height: "100%" }}>
@@ -263,6 +249,7 @@ export function _RecentActivityList({
       >
         {transactions.map((tx: any, idx: number) => (
           <RecentActivityListItem
+            // eslint-disable-next-line react/no-array-index-key
             key={idx}
             transaction={tx}
             isFirst={idx === 0}
@@ -281,7 +268,7 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
   const theme = useCustomTheme();
   const explorer = useBlockchainExplorer(transaction.blockchain);
   const connectionUrl = useBlockchainConnectionUrl(transaction.blockchain);
-  const blockchainLogo = useBlockchainLogo(transaction.blockchain);
+  const blockchainLogo = getBlockchainLogo(transaction.blockchain);
   const onClick = () => {
     window.open(explorerUrl(explorer!, transaction.signature, connectionUrl!));
   };
@@ -335,7 +322,17 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
               {transaction.signature.slice(transaction.signature.length - 5)}
             </Typography>
             <Typography className={classes.txDate}>
-              {new Date(transaction.timestamp * 1000).toLocaleDateString()}
+              {
+                // TODO: Standardize the parsed ethereum and solana transactions
+                //       so that `transaction.date` can be used for both of them
+                (
+                  (transaction.date
+                    ? // ethereum transactions provide a date
+                      transaction.date
+                    : // solana transactions provide a timestamp in seconds
+                      new Date(transaction.timestamp * 1000)) as Date
+                ).toLocaleString()
+              }
             </Typography>
           </div>
         </div>
@@ -377,7 +374,7 @@ function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
       }}
     >
       <EmptyState
-        icon={(props: any) => <FormatListBulletedIcon {...props} />}
+        icon={(props: any) => <FormatListBulletedRoundedIcon {...props} />}
         title="No Recent Activity"
         subtitle="Your transactions and app activity will show up here when you start using Backpack!"
         onClick={() => window.open(XNFT_GG_LINK)}

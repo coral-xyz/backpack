@@ -7,6 +7,10 @@ import {
 } from "react";
 import type {
   KeyringType,
+  LedgerKeyringInit,
+  MnemonicKeyringInit,
+  PrivateKeyKeyringInit,
+  PrivateKeyWalletDescriptor,
   ServerPublicKey,
   SignedWalletDescriptor,
 } from "@coral-xyz/common";
@@ -14,19 +18,15 @@ import {
   BACKEND_API_URL,
   Blockchain,
   getAuthMessage,
-  getBlockchainFromPath,
   getCreateMessage,
   UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
 } from "@coral-xyz/common";
-import { ethers } from "ethers";
-import { v4 as uuidv4 } from "uuid";
 
 import { useBackgroundClient } from "../hooks/client";
 import { useAuthentication } from "../hooks/useAuthentication";
-const { base58 } = ethers.utils;
+import { useRpcRequests } from "../hooks/useRpcRequests";
 
 export const getWaitlistId = () => {
   if (window?.localStorage) {
@@ -88,7 +88,10 @@ export type OnboardingData = {
   mnemonic: string | undefined;
   blockchainOptions: BlockchainSelectOption[];
   waitlistId: string | undefined;
+  // Wallet descriptors are for onboarding with mnemonic or ledger
   signedWalletDescriptors: SignedWalletDescriptor[];
+  // Private key wallet descriptor is for onboarding with private key
+  privateKeyKeyringInit: PrivateKeyKeyringInit | null;
   isAddingAccount?: boolean;
   selectedBlockchains: Blockchain[];
   serverPublicKeys: ServerPublicKey[];
@@ -104,30 +107,36 @@ const defaultState = {
   blockchain: null,
   password: null,
   mnemonic: undefined,
+  privateKey: undefined,
   blockchainOptions: BLOCKCHAIN_OPTIONS,
   waitlistId: undefined,
   signedWalletDescriptors: [],
+  privateKeyKeyringInit: null,
   selectedBlockchains: [],
   serverPublicKeys: [],
 };
 
 type SelectBlockchainType = {
   blockchain: Blockchain;
-  onSelectImport?: () => void;
+  onStatus?: (status: string) => void;
 };
 
 type IOnboardingContext = {
   onboardingData: OnboardingData;
   setOnboardingData: (data: Partial<OnboardingData>) => void;
   handleSelectBlockchain: (data: SelectBlockchainType) => Promise<void>;
-  maybeCreateUser: (data: Partial<OnboardingData>) => Promise<{ ok: boolean }>;
+  maybeCreateUser: (
+    data: Partial<OnboardingData>
+  ) => Promise<{ ok: boolean; jwt: string }>;
+  handlePrivateKeyInput: (data: PrivateKeyWalletDescriptor) => Promise<void>;
 };
 
 const OnboardingContext = createContext<IOnboardingContext>({
   onboardingData: defaultState,
   setOnboardingData: () => {},
   handleSelectBlockchain: async () => {},
-  maybeCreateUser: async () => ({ ok: true }),
+  maybeCreateUser: async () => ({ ok: true, jwt: "" }),
+  handlePrivateKeyInput: async () => {},
 });
 
 export function OnboardingProvider({
@@ -138,6 +147,7 @@ export function OnboardingProvider({
 }) {
   const background = useBackgroundClient();
   const { authenticate } = useAuthentication();
+  const { signMessageForWallet } = useRpcRequests();
   const [data, setData] = useState<OnboardingData>(defaultState);
 
   const setOnboardingData = useCallback((data: Partial<OnboardingData>) => {
@@ -147,8 +157,8 @@ export function OnboardingProvider({
       selectedBlockchains: data.signedWalletDescriptors
         ? [
             ...new Set(
-              data.signedWalletDescriptors.map((s: SignedWalletDescriptor) =>
-                getBlockchainFromPath(s.derivationPath)
+              data.signedWalletDescriptors.map(
+                (s: SignedWalletDescriptor) => s.blockchain
               )
             ),
           ]
@@ -157,7 +167,14 @@ export function OnboardingProvider({
   }, []);
 
   const handleSelectBlockchain = useCallback(
-    async ({ blockchain, onSelectImport }: SelectBlockchainType) => {
+    async ({ blockchain, onStatus }: SelectBlockchainType) => {
+      const handleStatus = (status: string) => {
+        if (onStatus) {
+          console.log("mobile:status", status);
+          onStatus(status);
+        }
+      };
+
       const {
         selectedBlockchains,
         signedWalletDescriptors,
@@ -167,54 +184,113 @@ export function OnboardingProvider({
       } = data;
 
       if (selectedBlockchains.includes(blockchain)) {
+        handleStatus("deselected");
         // Blockchain is being deselected
         setOnboardingData({
           blockchain: null,
           signedWalletDescriptors: signedWalletDescriptors.filter(
-            (s) => getBlockchainFromPath(s.derivationPath) !== blockchain
+            (s) => s.blockchain !== blockchain
           ),
         });
       } else {
+        handleStatus("selected");
         // Blockchain is being selected
-        if (keyringType === "ledger" || action === "import") {
-          // If wallet is a ledger, step through the ledger onboarding flow
-          // OR if action is an import then open the drawer with the import accounts
-          // component
+        if (
+          keyringType === "ledger" ||
+          action === "import" ||
+          keyringType === "private-key"
+        ) {
+          handleStatus(`keyringType:${keyringType}, action:${action}`);
           setOnboardingData({ blockchain });
-          if (onSelectImport) {
-            onSelectImport();
-          }
         } else if (action === "create") {
-          const walletDescriptor = await background.request({
-            method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
-            params: [blockchain, 0, mnemonic],
-          });
+          handleStatus("action create");
+          try {
+            const walletDescriptor = await background.request({
+              method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
+              params: [blockchain, 0, mnemonic],
+            });
 
-          const signature = await background.request({
-            method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-            params: [
+            handleStatus("wallet descriptor found");
+
+            const signature = await signMessageForWallet(
               blockchain,
               walletDescriptor.publicKey,
-              base58.encode(
-                Buffer.from(
-                  getCreateMessage(walletDescriptor.publicKey),
-                  "utf-8"
-                )
-              ),
-              [mnemonic, [walletDescriptor.derivationPath]],
-            ],
-          });
-
-          setOnboardingData({
-            signedWalletDescriptors: [
-              ...signedWalletDescriptors,
+              getCreateMessage(walletDescriptor.publicKey),
               {
-                ...walletDescriptor,
-                signature,
-              },
-            ],
-          });
+                mnemonic,
+                signedWalletDescriptors: [
+                  { ...walletDescriptor, signature: "" },
+                ],
+              }
+            );
+
+            handleStatus("signature gotten");
+
+            setOnboardingData({
+              signedWalletDescriptors: [
+                ...signedWalletDescriptors,
+                {
+                  ...walletDescriptor,
+                  signature,
+                },
+              ],
+            });
+          } catch (err) {
+            console.error(err);
+            handleStatus(err);
+          }
         }
+      }
+    },
+    [data]
+  );
+
+  const handlePrivateKeyInput = useCallback(
+    async ({
+      blockchain,
+      publicKey,
+      privateKey,
+    }: {
+      blockchain: Blockchain;
+      publicKey: string;
+      privateKey: string;
+    }) => {
+      setOnboardingData({ blockchain });
+      const signature = await signMessageForWallet(
+        blockchain,
+        publicKey,
+        // Recover or create
+        data.userId ? getAuthMessage(data.userId) : getCreateMessage(publicKey),
+        { blockchain, publicKey, privateKey, signature: "" }
+      );
+
+      setOnboardingData({
+        privateKeyKeyringInit: {
+          blockchain,
+          publicKey,
+          privateKey,
+          signature,
+        },
+      });
+    },
+    [data]
+  );
+
+  const getKeyringInit = useCallback(
+    (
+      data: Partial<OnboardingData>
+    ): MnemonicKeyringInit | LedgerKeyringInit | PrivateKeyKeyringInit => {
+      if (data.keyringType === "private-key") {
+        return data.privateKeyKeyringInit!;
+      } else if (data.keyringType === "ledger") {
+        return {
+          signedWalletDescriptors: data.signedWalletDescriptors!,
+        };
+      } else {
+        return {
+          signedWalletDescriptors: data.signedWalletDescriptors!,
+          mnemonic: data.mnemonic,
+        };
       }
     },
     [data]
@@ -225,37 +301,34 @@ export function OnboardingProvider({
   //
   const createUser = useCallback(
     async (data: Partial<OnboardingData>) => {
-      const { inviteCode, userId, username, mnemonic } = data;
+      const { inviteCode, userId, username, keyringType } = data;
 
-      const keyringInit = {
-        signedWalletDescriptors: data.signedWalletDescriptors!,
-        mnemonic,
-      };
-
-      //
       // If userId is provided, then we are onboarding via the recover flow.
       if (userId) {
         // Authenticate the user that the recovery has a JWT.
         // Take the first keyring init to fetch the JWT, it doesn't matter which
         // we use if there are multiple.
-        const { derivationPath, publicKey, signature } =
-          keyringInit.signedWalletDescriptors[0];
+        const { blockchain, publicKey, signature } =
+          keyringType === "private-key"
+            ? data.privateKeyKeyringInit!
+            : data.signedWalletDescriptors![0];
 
         const authData = {
-          blockchain: getBlockchainFromPath(derivationPath),
+          blockchain: blockchain!,
           publicKey,
           signature,
           message: getAuthMessage(userId),
         };
+
         const { jwt } = await authenticate(authData!);
         return { id: userId, jwt };
       }
 
-      // If userId is not provided and an invite code is not provided, then
-      // this is dev mode.
-      if (!inviteCode) {
-        return { id: uuidv4(), jwt: "" };
-      }
+      // Signed blockchain public keys for POST to the server
+      const blockchainPublicKeys =
+        keyringType === "private-key"
+          ? [data.privateKeyKeyringInit]
+          : data.signedWalletDescriptors;
 
       //
       // If we're down here, then we are creating a user for the first time.
@@ -264,11 +337,7 @@ export function OnboardingProvider({
         username,
         inviteCode,
         waitlistId: getWaitlistId?.(),
-        blockchainPublicKeys: keyringInit.signedWalletDescriptors.map((b) => ({
-          blockchain: getBlockchainFromPath(b.derivationPath),
-          publicKey: b.publicKey,
-          signature: b.signature,
-        })),
+        blockchainPublicKeys,
       });
 
       try {
@@ -297,12 +366,9 @@ export function OnboardingProvider({
   //
   const createStore = useCallback(
     async (uuid: string, jwt: string, data: Partial<OnboardingData>) => {
-      const { isAddingAccount, username, mnemonic, password } = data;
+      const { isAddingAccount, username, password } = data;
 
-      const keyringInit = {
-        signedWalletDescriptors: data.signedWalletDescriptors!,
-        mnemonic,
-      };
+      const keyringInit = getKeyringInit(data);
 
       try {
         if (isAddingAccount) {
@@ -332,10 +398,10 @@ export function OnboardingProvider({
       try {
         const { id, jwt } = await createUser(data);
         await createStore(id, jwt, data);
-        return { ok: true };
+        return { ok: true, jwt };
       } catch (err) {
         console.error("OnboardingProvider:maybeCreateUser::error", err);
-        return { ok: false };
+        return { ok: false, jwt: "" };
       }
     },
     [data]
@@ -346,9 +412,16 @@ export function OnboardingProvider({
       onboardingData: data,
       setOnboardingData,
       handleSelectBlockchain,
+      handlePrivateKeyInput,
       maybeCreateUser,
     }),
-    [data, setOnboardingData, handleSelectBlockchain, maybeCreateUser]
+    [
+      data,
+      setOnboardingData,
+      handleSelectBlockchain,
+      handlePrivateKeyInput,
+      maybeCreateUser,
+    ]
   );
 
   return (

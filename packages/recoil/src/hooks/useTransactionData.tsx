@@ -31,7 +31,7 @@ import {
 const { base58: bs58 } = ethers.utils;
 const DEFAULT_GAS_LIMIT = BigNumber.from("150000");
 
-type TransactionData = {
+export type TransactionData = {
   loading: boolean;
   transaction: string;
   solanaFeeConfig?: { config: SolanaFeeConfig; disabled: boolean };
@@ -62,9 +62,24 @@ export function useTransactionData(
   blockchain: Blockchain,
   transaction: any
 ): TransactionData {
+  // FIXME: remove lint blocker
   return blockchain === Blockchain.ETHEREUM
-    ? useEthereumTxData(transaction)
-    : useSolanaTxData(transaction);
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      useEthereumTxData(transaction)
+    : // eslint-disable-next-line react-hooks/rules-of-hooks
+      useSolanaTxData(transaction);
+}
+
+export function useMultipleTransactionsData(
+  blockchain: Blockchain,
+  transactions: string[]
+): TransactionData[] {
+  // FIXME: remove lint blocker
+  return blockchain === Blockchain.ETHEREUM
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      transactions.map((tx) => useEthereumTxData(tx))
+    : // eslint-disable-next-line react-hooks/rules-of-hooks
+      transactions.map((tx) => useSolanaTxData(tx));
 }
 
 //
@@ -98,7 +113,7 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
     (async () => {
       const parsed = ethers.utils.parseTransaction(bs58.decode(serializedTx));
 
-      if (parsed.chainId === 0) {
+      if (!parsed.chainId || parsed.chainId === 0) {
         // chainId not passed in serialized transaction, use provider
         parsed.chainId = parseInt(ethereumCtx.chainId);
       }
@@ -113,8 +128,8 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
       // Set any transaction override values that were passed in the serialized
       // transaction
       const overridesToUpdate: Partial<TransactionOverrides> = {};
-      if (parsed.nonce !== 0) {
-        overridesToUpdate.nonce = 0;
+      if (parsed.nonce != 0) {
+        overridesToUpdate.nonce = parsed.nonce;
       } else {
         overridesToUpdate.nonce = await voidSigner.getTransactionCount();
       }
@@ -270,7 +285,7 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
         const response = await connection.getFeeForMessage(
           transaction.message as Message
         );
-        setEstimatedTxFee(response.value);
+        setEstimatedTxFee(response.value ?? 0);
       } catch (e) {
         // ignore
       }

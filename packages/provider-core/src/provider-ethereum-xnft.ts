@@ -107,7 +107,7 @@ export class ProviderEthereumXnftInjection extends PrivateEventEmitter {
     if (!isValidEventOrigin(event)) return;
     if (event.data.type !== CHANNEL_PLUGIN_NOTIFICATION) return;
 
-    logger.debug("handle notification", event);
+    logger.debug("ethereum provider: handle notification", event);
 
     const { name } = event.data.detail;
     switch (name) {

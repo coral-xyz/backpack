@@ -16,8 +16,10 @@ module.exports = {
     "@typescript-eslint",
     "simple-import-sort",
     "mui-unused-classes",
+    "zeus-custom",
   ],
   rules: {
+    "zeus-custom/require-operation-name": "warn",
     "mui-unused-classes/unused-classes": "error",
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/ban-types": "off",
@@ -51,6 +53,18 @@ module.exports = {
       "warn",
       {
         fixMixedExportsWithInlineTypeSpecifier: true,
+      },
+    ],
+    "no-restricted-syntax": [
+      "warn",
+      {
+        selector: "Literal[value=/publickey|PUBLICKEY/]",
+        message: "Public key should be two words",
+      },
+      {
+        selector: "Identifier[name=/publickey|PUBLICKEY/]",
+        message:
+          "Public key should be two words, publicKey or public_key are valid variable names",
       },
     ],
     "simple-import-sort/imports": [

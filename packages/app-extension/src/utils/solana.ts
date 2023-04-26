@@ -14,14 +14,18 @@ export const sanitizeTransactionWithFeeConfig = (
   blockchain: Blockchain,
   feeConfig?: { disabled: boolean; config: SolanaFeeConfig }
 ) => {
-  let tx = deserializeTransaction(txStr);
   if (
     blockchain === Blockchain.SOLANA &&
     feeConfig &&
     feeConfig?.config.priorityFee &&
-    tx.version === "legacy" &&
     !feeConfig.disabled
   ) {
+    let tx = deserializeTransaction(txStr);
+
+    if (tx.version === "legacy") {
+      return txStr;
+    }
+
     const transaction = deserializeLegacyTransaction(txStr);
     const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
       units: feeConfig.config.computeUnits,

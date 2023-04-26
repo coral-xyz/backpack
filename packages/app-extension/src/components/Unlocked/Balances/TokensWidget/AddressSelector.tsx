@@ -11,7 +11,6 @@ import {
   TextInput,
   UserIcon,
 } from "@coral-xyz/react-common";
-import type { TokenDataWithPrice } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useActiveEthereumWallet,
@@ -21,13 +20,14 @@ import {
   useAnchorContext,
   useAvatarUrl,
   useEthereumCtx,
+  useIsValidAddress,
   useLoader,
   useUser,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import BlockIcon from "@mui/icons-material/Block";
 import SearchIcon from "@mui/icons-material/Search";
-import { List, ListItem } from "@mui/material";
+import { List, ListItemButton } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import { createStyles, makeStyles } from "@mui/styles";
 
@@ -36,20 +36,18 @@ import {
   useNavigation as useNavigationEphemeral,
 } from "../../../common/Layout/NavStack";
 
-import { useIsValidAddress } from "./Send";
-
 let debouncedTimer = 0;
+
+export interface SendData {
+  address: string;
+  username?: string;
+  image?: string;
+  uuid?: string;
+  walletName?: string;
+}
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
-    hoverParent: {
-      "&:hover $hoverChild, & .Mui-focused $hoverChild": {
-        visibility: "visible",
-      },
-    },
-    hoverChild: {
-      visibility: "hidden",
-    },
     container: {
       display: "flex",
       flexDirection: "column",
@@ -58,17 +56,9 @@ const useStyles = makeStyles((theme: any) =>
     topHalf: {
       flex: 1,
     },
-    title: {
-      color: theme.custom.colors.fontColor,
-    },
     userText: {
       fontSize: 16,
       marginTop: 4,
-      color: theme.custom.colors.fontColor2,
-    },
-    address: {
-      fontWeight: 500,
-      fontSize: 14,
       color: theme.custom.colors.fontColor2,
     },
     buttonContainer: {
@@ -84,21 +74,25 @@ const useStyles = makeStyles((theme: any) =>
 
 type AddressSelectorContext = {
   blockchain: Blockchain;
-  token: TokenDataWithPrice;
+  name: string;
+  onSelect: (sendData: SendData) => void;
 };
 
 const AddressSelectorContext =
   React.createContext<AddressSelectorContext | null>(null);
+
 export function AddressSelectorProvider(props: {
   blockchain: Blockchain;
-  token: TokenDataWithPrice;
+  name: string;
+  onSelect: (sendData: SendData) => void;
   children: any;
 }) {
   return (
     <AddressSelectorContext.Provider
       value={{
         blockchain: props.blockchain,
-        token: props.token,
+        name: props.name,
+        onSelect: props.onSelect,
       }}
     >
       {props.children}
@@ -127,6 +121,7 @@ export const AddressSelectorLoader = ({
   // (rather than aggregate mode).
   const activePublicKey = useActiveWallet().publicKey;
   const publicKeyStr = publicKey ?? activePublicKey;
+  const { push } = useNavigation();
   const [token] = useLoader(
     blockchainTokenData({
       publicKey: publicKeyStr,
@@ -136,15 +131,63 @@ export const AddressSelectorLoader = ({
     null
   );
   if (!token) return null;
-  return <AddressSelector blockchain={blockchain} token={token} />;
+  return (
+    <AddressSelector
+      blockchain={blockchain}
+      name={token.ticker}
+      onSelect={(sendData) => {
+        push("send", {
+          blockchain,
+          token,
+          to: sendData,
+        });
+      }}
+    />
+  );
+};
+
+export const TokenAddressSelector = (props: any) => {
+  const { push } = useNavigation();
+
+  return (
+    <AddressSelector
+      {...props}
+      onSelect={(sendData) => {
+        push("send", {
+          blockchain: props.blockchain,
+          token: props.token,
+          to: sendData,
+        });
+      }}
+    />
+  );
+};
+
+export const NftAddressSelector = (props: any) => {
+  const { push } = useNavigation();
+
+  return (
+    <AddressSelector
+      {...props}
+      onSelect={(sendData) => {
+        push("send", {
+          blockchain: props.blockchain,
+          token: props.token,
+          to: sendData,
+        });
+      }}
+    />
+  );
 };
 
 export const AddressSelector = ({
   blockchain,
-  token,
+  name,
+  onSelect,
 }: {
   blockchain: Blockchain;
-  token: TokenDataWithPrice;
+  name: string;
+  onSelect: (sendData: SendData) => void;
 }) => {
   const classes = useStyles();
   const nav = useNavigationEphemeral();
@@ -152,8 +195,7 @@ export const AddressSelector = ({
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
-  const { push } = useNavigation();
-  const { isValidAddress } = useIsValidAddress(
+  const { isValidAddress, normalizedAddress } = useIsValidAddress(
     blockchain,
     inputContent,
     solanaProvider.connection,
@@ -162,14 +204,18 @@ export const AddressSelector = ({
 
   useEffect(() => {
     const prev = nav.title;
-    nav.setOptions({ headerTitle: `Send ${token.ticker}` });
+    nav.setOptions({ headerTitle: `Send ${name}` });
     return () => {
       nav.setOptions({ headerTitle: prev });
     };
   }, []);
 
   return (
-    <AddressSelectorProvider blockchain={blockchain} token={token}>
+    <AddressSelectorProvider
+      blockchain={blockchain}
+      name={name}
+      onSelect={onSelect}
+    >
       <div className={classes.container}>
         <div className={classes.topHalf}>
           <SearchInput
@@ -205,15 +251,11 @@ export const AddressSelector = ({
                     (result) => result.publicKey === inputContent
                   )
                 );
-                push("send", {
-                  blockchain,
-                  token,
-                  to: {
-                    address: inputContent,
-                    username: user?.username,
-                    image: user?.image,
-                    uuid: user?.id,
-                  },
+                onSelect({
+                  address: normalizedAddress || inputContent,
+                  username: user?.username,
+                  image: user?.image,
+                  uuid: user?.id,
                 });
               }}
               disabled={!isValidAddress}
@@ -266,8 +308,7 @@ function NotSelected({
   return (
     <div style={{ padding: 10 }}>
       <BubbleTopLabel text="Users without a primary wallet" />
-      <ListItem
-        button
+      <ListItemButton
         disableRipple
         onClick={() => {}}
         style={{
@@ -289,7 +330,7 @@ function NotSelected({
             }))}
           />
         </div>
-      </ListItem>
+      </ListItemButton>
     </div>
   );
 }
@@ -382,19 +423,23 @@ const Contacts = ({
         <div style={{ margin: "12px 12px" }}>
           <BubbleTopLabel text="Friends" />
           <AddressList
-            wallets={filteredContacts.map((c) => ({
-              username: c.remoteUsername,
-              addresses: c.public_keys
-                .filter(
-                  (x) =>
-                    x.blockchain === blockchain &&
-                    (x.publicKey.includes(searchFilter) ||
-                      c.remoteUsername.includes(searchFilter))
-                )
-                .map((x) => x.publicKey),
-              image: c.remoteUserImage,
-              uuid: c.remoteUserId,
-            }))}
+            wallets={filteredContacts
+              .map((c) => ({
+                username: c.remoteUsername,
+                addresses: c.public_keys
+                  .filter(
+                    (x) =>
+                      x.blockchain === blockchain &&
+                      (x.publicKey.includes(searchFilter) ||
+                        c.remoteUsername.includes(searchFilter))
+                  )
+                  .map((x) => x.publicKey),
+                image: c.remoteUserImage,
+                uuid: c.remoteUserId,
+              }))
+              .sort((a: any, b: any) =>
+                a.username[0] < b.username[0] ? -1 : 1
+              )}
           />
         </div>
       ) : null}
@@ -410,7 +455,7 @@ const YourAddresses = ({
   searchFilter: string;
 }) => {
   const wallets = useAllWallets().filter((x) => x.blockchain === blockchain);
-  const { uuid } = useUser();
+  const { uuid, username } = useUser();
   const avatarUrl = useAvatarUrl();
   const activeSolWallet = useActiveSolanaWallet();
   const activeEthWallet = useActiveEthereumWallet();
@@ -434,7 +479,8 @@ const YourAddresses = ({
               x.publicKey.includes(searchFilter)
           )
           .map((wallet) => ({
-            username: wallet.name,
+            username,
+            walletName: wallet.name,
             image: avatarUrl,
             uuid: uuid,
             addresses: [wallet.publicKey],
@@ -449,6 +495,7 @@ function AddressList({
 }: {
   wallets: {
     username: string;
+    walletName?: string;
     image: string;
     addresses: string[];
     uuid: string;
@@ -469,10 +516,11 @@ function AddressList({
     >
       {walletsWithPrimary.map((wallet, index) => (
         <AddressListItem
-          key={wallet.username}
+          key={[wallet.username, wallet.walletName].join(":")}
           isFirst={index === 0}
           isLast={index === walletsWithPrimary.length - 1}
           user={{
+            walletName: wallet.walletName,
             username: wallet.username,
             image: wallet.image,
             uuid: wallet.uuid,
@@ -492,6 +540,7 @@ const AddressListItem = ({
 }: {
   user: {
     username: string;
+    walletName?: string;
     image: string;
     uuid: string;
   };
@@ -501,26 +550,21 @@ const AddressListItem = ({
 }) => {
   const theme = useCustomTheme();
   const classes = useStyles();
-  const { push } = useNavigation();
-  const { blockchain, token } = useAddressSelectorContext();
+  const { onSelect } = useAddressSelectorContext();
 
   return (
-    <ListItem
-      button
+    <ListItemButton
       disableRipple
       onClick={() => {
         if (!address) {
           return;
         }
-        push("send", {
-          blockchain,
-          token,
-          to: {
-            address: address,
-            username: user.username,
-            image: user.image,
-            uuid: user.uuid,
-          },
+        onSelect({
+          address: address,
+          username: user.username,
+          walletName: user.walletName,
+          image: user.image,
+          uuid: user.uuid,
         });
       }}
       style={{
@@ -553,13 +597,15 @@ const AddressListItem = ({
           <UserIcon size={32} image={user.image} />
         </div>
         <div style={{ display: "flex" }}>
-          <div className={classes.userText}>{user.username}</div>
+          <div className={classes.userText}>
+            {user.walletName || user.username}
+          </div>
           {!address ? (
             <BlockIcon style={{ color: "#E33E3F", marginLeft: 10 }} />
           ) : null}
         </div>
       </div>
-    </ListItem>
+    </ListItemButton>
   );
 };
 
@@ -580,7 +626,7 @@ const SearchInput = ({
   const fetchUserDetails = async (address: string, blockchain: Blockchain) => {
     try {
       const response = await ParentCommunicationManager.getInstance().fetch(
-        `${BACKEND_API_URL}/users?usernamePrefix=${address}&blockchain=${blockchain}limit=6`
+        `${BACKEND_API_URL}/users?usernamePrefix=${address}&blockchain=${blockchain}&limit=6`
       );
       const json = await response.json();
       setSearchResults(
@@ -632,6 +678,11 @@ const SearchInput = ({
         inputProps={{
           name: "to",
           spellCheck: "false",
+          style: {
+            height: "48px",
+            paddingTop: 0,
+            paddingBottom: 0,
+          },
         }}
         margin="none"
       />

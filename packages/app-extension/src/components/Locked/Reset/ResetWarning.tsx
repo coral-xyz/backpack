@@ -17,26 +17,26 @@ import { useDrawerContext } from "../../common/Layout/Drawer";
 import { useNavigation } from "../../common/Layout/NavStack";
 
 export function Logout() {
-  const background = useBackgroundClient();
+  const { close } = useDrawerContext();
   const nav = useNavigation();
   const user = useUser();
-  const { close } = useDrawerContext();
+  const background = useBackgroundClient();
 
   useEffect(() => {
-    nav.setOptions({ headerTitle: `Log out ${user.username}` });
+    nav.setOptions({ headerTitle: `Remove ${user.username}` });
   }, []);
 
   return (
     <Warning
-      buttonTitle="Log out"
-      title="Log out"
+      buttonTitle="Remove"
+      title="Remove User"
       subtext="This will remove all the wallets you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
       onNext={async () => {
-        close();
         await background.request({
           method: UI_RPC_METHOD_USER_ACCOUNT_LOGOUT,
           params: [user.uuid],
         });
+        setTimeout(close, 250);
       }}
     />
   );

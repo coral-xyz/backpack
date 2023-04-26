@@ -53,18 +53,12 @@ array_relationships:
         table:
           name: users
           schema: auth
-computed_fields:
-  - name: dropzone_public_key
-    definition:
-      function:
-        name: user_dropzone_public_key
-        schema: dropzone
-    comment: the user's first solana public key inside an array due to hasura limitation
 insert_permissions:
   - role: auth_worker
     permission:
       check: {}
       columns:
+        - id
         - invitation_id
         - referrer_id
         - username
@@ -89,6 +83,7 @@ select_permissions:
   - role: one_xnft
     permission:
       columns:
+        - avatar_nft
         - created_at
         - id
         - is_internal
@@ -113,3 +108,9 @@ update_permissions:
         - updated_at
       filter: {}
       check: null
+  - role: one_xnft
+    permission:
+      columns:
+        - avatar_nft
+      filter: {}
+      check: {}

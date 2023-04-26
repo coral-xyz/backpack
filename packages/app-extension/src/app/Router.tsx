@@ -25,6 +25,7 @@ import {
   useEnabledBlockchains,
   useKeyringStoreState,
 } from "@coral-xyz/recoil";
+import { AuthenticatedSync } from "@coral-xyz/tamagui";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { AnimatePresence, motion } from "framer-motion";
@@ -38,7 +39,6 @@ import {
   ApproveAllTransactions,
   ApproveTransaction,
 } from "../components/Unlocked/Approvals/ApproveTransaction";
-import { AuthenticatedSync } from "../components/Unlocked/AuthenticatedSync";
 import { WithAuth } from "../components/Unlocked/WithAuth";
 import { refreshFeatureGates } from "../gates/FEATURES";
 import { sanitizeTransactionWithFeeConfig } from "../utils/solana";
@@ -54,7 +54,9 @@ export default function Router() {
     <WithSuspense>
       <>
         <ToastContainer
-          toastStyle={{ backgroundColor: theme.custom.colors.swapTokensButton }}
+          toastStyle={{
+            backgroundColor: theme.custom.colors.switchTokensButton,
+          }}
           theme={isDarkMode ? "dark" : "light"}
         />
         <_Router />

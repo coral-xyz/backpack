@@ -15,33 +15,41 @@ export async function getOrcreateXnftSecret(xnftId: string) {
     return existingSecret;
   } else {
     const secret = uuidv4();
-    await chain("mutation")({
-      insert_auth_xnft_secrets_one: [
-        {
-          object: {
-            xnft_id: xnftId,
-            secret: secret,
+    await chain("mutation")(
+      {
+        insert_auth_xnft_secrets_one: [
+          {
+            object: {
+              xnft_id: xnftId,
+              secret: secret,
+            },
           },
-        },
-        { id: true },
-      ],
-    });
+          { id: true },
+        ],
+      },
+      { operationName: "getOrcreateXnftSecret" }
+    );
     return secret;
   }
 }
 
 export async function fetchXnftSecret(xnftId: string) {
-  const response = await chain("query")({
-    auth_xnft_secrets: [
-      {
-        where: {
-          xnft_id: { _eq: xnftId },
+  const response = await chain("query")(
+    {
+      auth_xnft_secrets: [
+        {
+          where: {
+            xnft_id: { _eq: xnftId },
+          },
         },
-      },
-      {
-        secret: true,
-      },
-    ],
-  });
+        {
+          secret: true,
+        },
+      ],
+    },
+    {
+      operationName: "fetchXnftSecret",
+    }
+  );
   return response.auth_xnft_secrets[0]?.secret;
 }

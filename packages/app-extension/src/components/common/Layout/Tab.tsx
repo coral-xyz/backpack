@@ -16,18 +16,15 @@ import {
   GridIcon,
   ImageIcon,
   MessageBubbleIcon,
-  MessageBubbleUnreadIcon,
   useBreakpoints,
 } from "@coral-xyz/react-common";
 import {
   useAuthenticatedUser,
   useBackgroundClient,
-  useMessageUnreadCount,
   useTab,
-  useUser,
 } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
+import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
 import { Tab, Tabs } from "@mui/material";
 import Badge from "@mui/material/Badge";
 
@@ -36,7 +33,7 @@ import { NotificationIconWithBadge } from "../NotificationIconWithBadge";
 
 const TAB_HEIGHT = 64;
 
-const useStyles = styles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   tabXs: {
     opacity: "1 !important",
     height: `${TAB_HEIGHT}px`,
@@ -88,13 +85,6 @@ const useStyles = styles((theme) => ({
   tabIndicator: {
     color: "none",
   },
-  tabSelected: {
-    color: theme.custom.colors.brandColor,
-  },
-  tabUnselected: {},
-  tabButton: {
-    padding: 0,
-  },
   activeTab: {},
 }));
 
@@ -118,11 +108,13 @@ export function WithTabs(props: any) {
         {props.children}
       </div>
       {!location.pathname.startsWith("/xnft/") &&
-        location.pathname !== "/nfts/experience" &&
-        location.pathname !== "/nfts/chat" &&
-        (!isXs || location.pathname !== "/messages/chat") &&
-        (!isXs || location.pathname !== "/messages/groupchat") &&
-        (!isXs || location.pathname !== "/messages/profile") ? <TabBar /> : null}
+      location.pathname !== "/nfts/experience" &&
+      location.pathname !== "/nfts/chat" &&
+      (!isXs || location.pathname !== "/messages/chat") &&
+      (!isXs || location.pathname !== "/messages/groupchat") &&
+      (!isXs || location.pathname !== "/messages/profile") ? (
+        <TabBar />
+      ) : null}
     </div>
   );
 }
@@ -202,25 +194,27 @@ function TabBar() {
               />
             }
           />
-          {BACKPACK_FEATURE_XNFT ? <Tab
-            onClick={() => onTabClick(TAB_APPS)}
-            value={TAB_APPS}
-            disableRipple
-            className={isXs ? classes.tabXs : classes.tab}
-            icon={
-              <GridIcon
-                fill={
+          {BACKPACK_FEATURE_XNFT ? (
+            <Tab
+              onClick={() => onTabClick(TAB_APPS)}
+              value={TAB_APPS}
+              disableRipple
+              className={isXs ? classes.tabXs : classes.tab}
+              icon={
+                <GridIcon
+                  fill={
                     tab === TAB_APPS
                       ? theme.custom.colors.brandColor
                       : theme.custom.colors.icon
                   }
-                style={{
+                  style={{
                     width: "20px",
                     height: "20px",
                   }}
                 />
               }
-            /> : null}
+            />
+          ) : null}
           <Tab
             onClick={() => onTabClick(TAB_NFTS)}
             value={TAB_NFTS}
@@ -251,17 +245,18 @@ function TabBar() {
             }`}
             icon={<LocalMessageIcon />}
           />
-          {!isXs ? <>
-            <Tab
-              onClick={() => onTabClick(TAB_NOTIFICATIONS)}
-              value={TAB_NOTIFICATIONS}
-              disableRipple
-              className={`${isXs ? classes.tabXs : classes.tab} ${
+          {!isXs ? (
+            <>
+              <Tab
+                onClick={() => onTabClick(TAB_NOTIFICATIONS)}
+                value={TAB_NOTIFICATIONS}
+                disableRipple
+                className={`${isXs ? classes.tabXs : classes.tab} ${
                   tab === TAB_MESSAGES ? classes.activeTab : ""
                 }`}
-              icon={
-                <NotificationIconWithBadge
-                  style={{
+                icon={
+                  <NotificationIconWithBadge
+                    style={{
                       width: "28px",
                       height: "28px",
                       color:
@@ -272,16 +267,16 @@ function TabBar() {
                   />
                 }
               />
-            <Tab
-              onClick={() => onTabClick(TAB_RECENT_ACTIVITY)}
-              value={TAB_RECENT_ACTIVITY}
-              disableRipple
-              className={`${isXs ? classes.tabXs : classes.tab} ${
+              <Tab
+                onClick={() => onTabClick(TAB_RECENT_ACTIVITY)}
+                value={TAB_RECENT_ACTIVITY}
+                disableRipple
+                className={`${isXs ? classes.tabXs : classes.tab} ${
                   tab === TAB_MESSAGES ? classes.activeTab : ""
                 }`}
-              icon={
-                <FormatListBulletedIcon
-                  style={{
+                icon={
+                  <FormatListBulletedRoundedIcon
+                    style={{
                       width: "28px",
                       height: "28px",
                       color:
@@ -292,25 +287,28 @@ function TabBar() {
                   />
                 }
               />
-          </> : null}
+            </>
+          ) : null}
         </div>
-        {!isXs ? <div
-          style={{
+        {!isXs ? (
+          <div
+            style={{
               marginBottom: "16px",
             }}
           >
-          <AvatarPopoverButton
-            imgStyle={{
+            <AvatarPopoverButton
+              imgStyle={{
                 width: "38px",
                 height: "38px",
                 borderRadius: "20px",
               }}
-            buttonStyle={{
+              buttonStyle={{
                 marginLeft: "auto",
                 marginRight: "auto",
               }}
             />
-        </div> : null}
+          </div>
+        ) : null}
       </div>
     </Tabs>
   );
@@ -329,14 +327,13 @@ function LocalMessageIcon() {
     <>
       {!messagesUnread ? (
         <MessageBubbleIcon
-          fill={
-            tab === TAB_MESSAGES
-              ? theme.custom.colors.brandColor
-              : theme.custom.colors.icon
-          }
-          style={{
+          sx={{
             width: "20px",
             height: "20px",
+            color:
+              tab === TAB_MESSAGES
+                ? theme.custom.colors.brandColor
+                : theme.custom.colors.icon,
           }}
         />
       ) : (
@@ -344,10 +341,11 @@ function LocalMessageIcon() {
           sx={{
             "& .MuiBadge-badge": {
               padding: 0,
-              fontSize: 10,
-              height: 10,
-              width: 10,
-              minWidth: 10,
+              fontSize: 12,
+              height: 12,
+              width: 12,
+              minWidth: 12,
+              border: "2px solid white",
               borderRadius: "50%",
               backgroundColor: "#E33E3F",
               paddingBottom: "2px",
@@ -357,14 +355,13 @@ function LocalMessageIcon() {
           color="secondary"
         >
           <MessageBubbleIcon
-            fill={
-              tab === TAB_MESSAGES
-                ? theme.custom.colors.brandColor
-                : theme.custom.colors.icon
-            }
-            style={{
+            sx={{
               width: "20px",
               height: "20px",
+              color:
+                tab === TAB_MESSAGES
+                  ? theme.custom.colors.brandColor
+                  : theme.custom.colors.icon,
             }}
           />
         </Badge>

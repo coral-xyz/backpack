@@ -1,7 +1,4 @@
-import {
-  reverseScientificNotation,
-  walletAddressDisplay,
-} from "@coral-xyz/common";
+import { reverseScientificNotation } from "@coral-xyz/common";
 import { isFirstLastListItemStyle } from "@coral-xyz/react-common";
 import {
   metadataForRecentSolanaTransaction,
@@ -14,14 +11,13 @@ import type { TokenInfo } from "@solana/spl-token-registry";
 import { Source, TransactionType } from "helius-sdk/dist/types";
 import { useRecoilValueLoadable } from "recoil";
 
-import { UNKNOWN_ICON_SRC } from "../../../common/Icon";
-
 import {
   getTokenData,
   getTransactionCaption,
   getTransactionTitle,
   isNFTTransaction,
   isUserTxnSender,
+  parseSwapTransaction,
 } from "./detail-parser";
 import { ListItemIcons } from "./Icons";
 import type { HeliusParsedTransaction } from "./types";
@@ -187,10 +183,11 @@ function RecentActivityListItemIcon({
   if (transaction?.transactionError) return <ListItemIcons.Error />;
 
   if (transaction.type === TransactionType.SWAP) {
+    const [input, output] = parseSwapTransaction(transaction, tokenData);
     return (
       <ListItemIcons.Swap
-        tokenLogoOne={tokenData[0]?.logoURI || UNKNOWN_ICON_SRC}
-        tokenLogoTwo={tokenData[1]?.logoURI || UNKNOWN_ICON_SRC}
+        tokenLogoOne={input.tokenIcon}
+        tokenLogoTwo={output.tokenIcon}
       />
     );
   }
@@ -255,20 +252,11 @@ function RecentActivityListItemData({
   }
 
   if (transaction.type === TransactionType.SWAP) {
+    const [input, output] = parseSwapTransaction(transaction, tokenData);
     return (
       <>
-        <div className={classes.textReceived}>
-          {`+${transaction?.tokenTransfers?.[1]?.tokenAmount.toFixed(5)} ${
-            tokenData[1]?.symbol ||
-            walletAddressDisplay(transaction?.tokenTransfers?.[1]?.mint)
-          }`}
-        </div>
-        <div className={classes.textSecondary}>
-          {`-${transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5)} ${
-            tokenData[0]?.symbol ||
-            walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint)
-          }`}
-        </div>
+        <div className={classes.textReceived}>+{output.amountWithSymbol}</div>
+        <div className={classes.textSecondary}>-{input.amountWithSymbol}</div>
       </>
     );
   }

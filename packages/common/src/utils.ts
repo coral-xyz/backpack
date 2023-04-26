@@ -1,9 +1,16 @@
 import type { BigNumberish } from "@ethersproject/bignumber";
+import { Keypair } from "@solana/web3.js";
+import * as bs58 from "bs58";
 import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 import { v1 } from "uuid";
 
-import { IMAGE_PROXY_URL } from "./constants";
+import { Blockchain } from "./types";
+
+const usd = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
 
 export function toTitleCase(str: string) {
   return str?.slice(0, 1)?.toUpperCase() + str?.toLowerCase()?.slice(1);
@@ -21,10 +28,7 @@ export function formatUSD(amount: number | string) {
   } else {
     amountNumber = amount;
   }
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(amountNumber);
+  return usd.format(amountNumber);
 }
 
 /**
@@ -80,14 +84,17 @@ export function externalResourceUri(
     return uri.replace("ar://", "https://arweave.net/");
   }
   if (options.cached) {
-    return `https://swr.xnfts.dev/1hr/${uri}`;
+    return `https://swr.xnfts.dev/1min/${uri}`;
   }
   return `${uri}`;
 }
 
-export function proxyImageUrl(url: string): string {
+export function proxyImageUrl(url: string, size = 400): string {
   if (url && (url.startsWith("http://") || url.startsWith("https://"))) {
-    return `${IMAGE_PROXY_URL}/insecure/rs:fit:400:400:0:0/plain/${url}`;
+    if (url.includes("swr.xnfts.dev/avatars/")) {
+      url += `?size=${size}`;
+    }
+    return `https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=${size},height=${size},quality=85/${url}`;
   }
   return url;
 }
@@ -133,4 +140,86 @@ export function reverseScientificNotation(n: number): string {
   return `${base.replace(".", "")}${Array(decimals - baseDecimals)
     .fill("0")
     .join("")}`;
+}
+
+/**
+ * Validate a private key
+ */
+export function validatePrivateKey(
+  privateKey: string,
+  blockchain?: Blockchain
+): {
+  privateKey: string;
+  publicKey: string;
+  blockchain: Blockchain;
+} {
+  if (blockchain === Blockchain.SOLANA) {
+    return validateSolanaPrivateKey(privateKey);
+  } else if (blockchain === Blockchain.ETHEREUM) {
+    return validateEthereumPrivateKey(privateKey);
+  } else {
+    // If blockchain not explicitly passed, allow for any possible
+    try {
+      return validateSolanaPrivateKey(privateKey);
+    } catch {
+      try {
+        return validateEthereumPrivateKey(privateKey);
+      } catch {
+        // Don't throw the error from the Ethereum function because if we are
+        // down here no blockchain was specified in the args.
+        throw new Error("Invalid private key");
+      }
+    }
+  }
+}
+
+/**
+ * Validate an Ethereum private key
+ */
+export function validateEthereumPrivateKey(privateKey: string): {
+  privateKey: string;
+  publicKey: string;
+  blockchain: Blockchain;
+} {
+  let wallet: ethers.Wallet;
+  try {
+    wallet = new ethers.Wallet(privateKey);
+  } catch (_) {
+    throw new Error("Invalid Ethereum private key");
+  }
+  return {
+    privateKey: wallet.privateKey,
+    publicKey: wallet.address,
+    blockchain: Blockchain.ETHEREUM,
+  };
+}
+
+/**
+ * Validate a Solana private key
+ */
+export function validateSolanaPrivateKey(privateKey: string): {
+  privateKey: string;
+  publicKey: string;
+  blockchain: Blockchain;
+} {
+  let keypair: Keypair | null = null;
+  try {
+    // Attempt to create a keypair from JSON secret key
+    keypair = Keypair.fromSecretKey(new Uint8Array(JSON.parse(privateKey)));
+  } catch (_) {
+    // Try the next method
+    try {
+      // Attempt to create a keypair from bs58 decode of secret key
+      keypair = Keypair.fromSecretKey(new Uint8Array(bs58.decode(privateKey)));
+    } catch (_) {
+      // Failure, no other ways to interpret
+      throw new Error("Invalid Solana private key");
+    }
+  }
+
+  return {
+    privateKey: Buffer.from(keypair.secretKey).toString("hex"),
+    publicKey: keypair.publicKey.toString(),
+    blockchain: Blockchain.SOLANA,
+  };
 }

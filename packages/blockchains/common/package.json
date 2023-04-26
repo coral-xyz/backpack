@@ -17,9 +17,9 @@
     "lint:fix": "yarn run lint --fix"
   },
   "dependencies": {
-    "@coral-xyz/common": "*",
     "@coral-xyz/blockchain-evm": "*",
-    "@coral-xyz/blockchain-solana": "*"
+    "@coral-xyz/blockchain-solana": "*",
+    "@coral-xyz/common": "*"
   },
   "devDependencies": {
     "@coral-xyz/blockchain-keyring": "*",

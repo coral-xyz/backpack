@@ -60,7 +60,7 @@ export const SecureTransfer = ({
       }}
     >
       <IconButton
-        size={"small"}
+        size="small"
         sx={{
           color: theme.custom.colors.icon,
           cursor: "pointer",
@@ -71,7 +71,9 @@ export const SecureTransfer = ({
           style={{ fontSize: 20 }}
           onClick={() =>
             setAboveMessagePlugin((x) =>
-              x === "secure-transfer" ? "" : "secure-transfer"
+              x.type === "secure-transfer"
+                ? { type: "", metadata: {} }
+                : { type: "secure-transfer", metadata: {} }
             )
           }
         />

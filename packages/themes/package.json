@@ -2,8 +2,8 @@
   "name": "@coral-xyz/themes",
   "version": "0.0.1",
   "module": "dist/esm/index.js",
-  "source": "src/index.tsx",
-  "react-native": "dist/esm/index.js",
+  "source": "src/index.ts",
+  "react-native": "src/index.ts",
   "types": "dist/esm/index.d.ts",
   "files": [
     "dist"
@@ -16,6 +16,7 @@
   "dependencies": {
     "@mui/material": "^5.8.4",
     "@mui/styles": "^5.8.4",
+    "@mui/system": "^5.8.4",
     "react": "18.2.0"
   },
   "devDependencies": {

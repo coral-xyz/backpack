@@ -4,7 +4,6 @@ import type { Commitment } from "@solana/web3.js";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 
-import { Screen } from "~components/index";
 import {
   EthereumConnectionUrl,
   SolanaCluster,
@@ -23,8 +22,16 @@ import {
   useSolanaConnectionUrl,
   useSolanaExplorer,
 } from "@coral-xyz/recoil";
-import { useTheme } from "~hooks/useTheme";
 import { createStackNavigator } from "@react-navigation/stack";
+import { ethers } from "ethers";
+
+import { IconCheckmark } from "~components/Icon";
+import {
+  AccountDropdownHeader,
+  UserAccountMenu,
+} from "~components/UserAccountsMenu";
+import { Screen } from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 import { ImportPrivateKeyScreen } from "~screens/ImportPrivateKeyScreen";
 import {
   LogoutWarningScreen,
@@ -53,10 +60,7 @@ import {
   ShowRecoveryPhraseWarningScreen,
 } from "~screens/Unlocked/ShowRecoveryPhraseScreen";
 import { YourAccountScreen } from "~screens/Unlocked/YourAccountScreen";
-import { ethers } from "ethers";
 
-import { IconCheckmark } from "~components/Icon";
-import { AccountDropdownHeader } from "~components/UserAccountsMenu";
 const { hexlify } = ethers.utils;
 
 const Stack = createStackNavigator();
@@ -80,134 +84,148 @@ export function AccountSettingsNavigator(): JSX.Element {
           headerBackTitle: "Back",
         }}
       />
-      <Stack.Screen
-        name="YourAccount"
-        component={YourAccountScreen}
-        options={{
-          title: "Your Account",
-          headerBackTitle: "Profile",
-        }}
-      />
-      <Stack.Screen
-        options={{ title: "Change password" }}
-        name="change-password"
-        component={ChangePasswordScreen}
-      />
-      <Stack.Screen
-        options={{ title: "Preferences" }}
-        name="Preferences"
-        component={PreferencesScreen}
-      />
-      <Stack.Screen
-        options={{ title: "Preferences" }}
-        name="PreferencesEthereum"
-        component={PreferencesEthereum}
-      />
-      <Stack.Screen
-        options={{ title: "Preferences" }}
-        name="PreferencesEthereumConnection"
-        component={PreferencesEthereumConnection}
-      />
-      <Stack.Screen
-        options={{ title: "Preferences" }}
-        name="PreferencesEthereumCustomRpcUrl"
-        component={PreferencesEthereumCustomRpcUrl}
-      />
-      <Stack.Screen
-        options={{ title: "Solana Preferences" }}
-        name="PreferencesSolana"
-        component={PreferencesSolana}
-      />
-      <Stack.Screen
-        // options={{ title: "Preferences" }}
-        name="PreferencesSolanaConnection"
-        component={PreferencesSolanaConnection}
-      />
-      <Stack.Screen
-        // options={{ title: "Preferences" }}
-        name="PreferencesSolanaCommitment"
-        component={PreferencesSolanaCommitment}
-      />
-      <Stack.Screen
-        // options={{ title: "Preferences" }}
-        name="PreferencesSolanaExplorer"
-        component={PreferencesSolanaExplorer}
-      />
-      <Stack.Screen
-        // options={{ title: "Preferences" }}
-        name="PreferencesSolanaCustomRpcUrl"
-        component={PreferencesSolanaCustomRpcUrl}
-      />
-      <Stack.Screen
-        options={{ title: "Trusted Sites" }}
-        name="PreferencesTrustedSites"
-        component={PreferencesTrustedSitesScreen}
-      />
-      <Stack.Screen
-        options={{ title: "xNFTs" }}
-        name="xNFTSettings"
-        component={DummyScreen}
-      />
-      <Stack.Screen
-        options={{ title: "Waiting Room" }}
-        name="WaitingRoom"
-        component={DummyScreen}
-      />
-      <Stack.Screen
-        options={{ title: "Import Private Key" }}
-        name="import-private-key"
-        component={ImportPrivateKeyScreen}
-      />
-      <Stack.Screen name="reset-warning" component={ResetWarningScreen} />
-      <Stack.Screen
-        name="show-secret-phrase-warning"
-        component={ShowRecoveryPhraseWarningScreen}
-        options={{ title: "Secret Recovery Phrase" }}
-      />
-      <Stack.Screen
-        name="show-secret-phrase"
-        component={ShowRecoveryPhraseScreen}
-      />
-      <Stack.Screen
-        name="show-private-key-warning"
-        component={ShowPrivateKeyWarningScreen}
-        options={{ title: "Warning" }}
-      />
-      <Stack.Screen
-        name="show-private-key"
-        component={ShowPrivateKeyScreen}
-        options={{ title: "Show Private Key" }}
-      />
-      <Stack.Screen
-        name="edit-wallets"
-        component={EditWalletsScreen}
-        options={{ title: "Edit Wallets" }}
-      />
-      <Stack.Screen
-        name="edit-wallets-rename"
-        component={RenameWalletScreen}
-        options={{ title: "Rename Wallet" }}
-      />
-      <Stack.Screen
-        name="edit-wallets-wallet-detail"
-        component={EditWalletDetailScreen}
-        options={({ route }) => {
-          const { name, publicKey } = route.params;
-          return {
-            title: `${name} (${walletAddressDisplay(publicKey)})`,
-          };
-        }}
-      />
-      <Stack.Screen
-        options={{ title: "Add / Connect Wallet" }}
-        name="add-wallet"
-        component={AddConnectWalletScreen}
-      />
+      <Stack.Group
+        screenOptions={{ headerTintColor: theme.custom.colors.fontColor }}
+      >
+        <Stack.Screen
+          name="YourAccount"
+          component={YourAccountScreen}
+          options={{
+            title: "Your Account",
+            headerBackTitle: "Profile",
+          }}
+        />
+        <Stack.Screen
+          options={{ title: "Change password" }}
+          name="change-password"
+          component={ChangePasswordScreen}
+        />
+        <Stack.Screen
+          options={{ title: "Preferences" }}
+          name="Preferences"
+          component={PreferencesScreen}
+        />
+        <Stack.Screen
+          options={{ title: "Preferences" }}
+          name="PreferencesEthereum"
+          component={PreferencesEthereum}
+        />
+        <Stack.Screen
+          options={{ title: "Preferences" }}
+          name="PreferencesEthereumConnection"
+          component={PreferencesEthereumConnection}
+        />
+        <Stack.Screen
+          options={{ title: "Preferences" }}
+          name="PreferencesEthereumCustomRpcUrl"
+          component={PreferencesEthereumCustomRpcUrl}
+        />
+        <Stack.Screen
+          options={{ title: "Solana Preferences" }}
+          name="PreferencesSolana"
+          component={PreferencesSolana}
+        />
+        <Stack.Screen
+          // options={{ title: "Preferences" }}
+          name="PreferencesSolanaConnection"
+          component={PreferencesSolanaConnection}
+        />
+        <Stack.Screen
+          // options={{ title: "Preferences" }}
+          name="PreferencesSolanaCommitment"
+          component={PreferencesSolanaCommitment}
+        />
+        <Stack.Screen
+          // options={{ title: "Preferences" }}
+          name="PreferencesSolanaExplorer"
+          component={PreferencesSolanaExplorer}
+        />
+        <Stack.Screen
+          // options={{ title: "Preferences" }}
+          name="PreferencesSolanaCustomRpcUrl"
+          component={PreferencesSolanaCustomRpcUrl}
+        />
+        <Stack.Screen
+          options={{ title: "Trusted Sites" }}
+          name="PreferencesTrustedSites"
+          component={PreferencesTrustedSitesScreen}
+        />
+        <Stack.Screen
+          options={{ title: "xNFTs" }}
+          name="xNFTSettings"
+          component={DummyScreen}
+        />
+        <Stack.Screen
+          options={{ title: "Waiting Room" }}
+          name="WaitingRoom"
+          component={DummyScreen}
+        />
+        <Stack.Screen
+          options={{ title: "Import Private Key" }}
+          name="import-private-key"
+          component={ImportPrivateKeyScreen}
+        />
+        <Stack.Screen name="reset-warning" component={ResetWarningScreen} />
+        <Stack.Screen
+          name="show-secret-phrase-warning"
+          component={ShowRecoveryPhraseWarningScreen}
+          options={{ title: "Secret Recovery Phrase" }}
+        />
+        <Stack.Screen
+          name="show-secret-phrase"
+          component={ShowRecoveryPhraseScreen}
+        />
+        <Stack.Screen
+          name="show-private-key-warning"
+          component={ShowPrivateKeyWarningScreen}
+          options={{ title: "Warning" }}
+        />
+        <Stack.Screen
+          name="show-private-key"
+          component={ShowPrivateKeyScreen}
+          options={{ title: "Show Private Key" }}
+        />
+        <Stack.Screen
+          name="edit-wallets"
+          component={EditWalletsScreen}
+          options={{ title: "Edit Wallets" }}
+        />
+        <Stack.Screen
+          name="edit-wallets-rename"
+          component={RenameWalletScreen}
+          options={{ title: "Rename Wallet" }}
+        />
+        <Stack.Screen
+          name="edit-wallets-wallet-detail"
+          component={EditWalletDetailScreen}
+          options={({ route }) => {
+            const { name, publicKey } = route.params;
+            return {
+              title: `${name} (${walletAddressDisplay(publicKey)})`,
+            };
+          }}
+        />
+        <Stack.Screen
+          options={{ title: "Add / Connect Wallet" }}
+          name="add-wallet"
+          component={AddConnectWalletScreen}
+        />
+      </Stack.Group>
       <Stack.Group
         screenOptions={{ presentation: "modal", headerShown: false }}
       >
         <Stack.Screen name="forgot-password" component={ForgotPasswordScreen} />
         <Stack.Screen name="logout-warning" component={LogoutWarningScreen} />
+        <Stack.Screen
+          name="UserAccountMenu"
+          component={UserAccountMenu}
+          options={{
+            headerShown: true,
+            headerTintColor: theme.custom.colors.fontColor,
+            headerBackTitle: "Back",
+            title: "Your Accounts",
+          }}
+        />
       </Stack.Group>
     </Stack.Navigator>
   );

@@ -83,21 +83,16 @@ const app = new Hono();
 
 app.use("*", cors());
 
-app.use("*", async (c, next) => {
-  try {
-    await next();
-  } catch (err) {
-    console.error(err);
-    if (err instanceof ZodError) {
-      return c.json(
-        {
-          message: zodErrorToString(err),
-        },
-        400
-      );
-    } else {
-      return c.json(err, 500);
-    }
+app.onError((err, c) => {
+  if (err instanceof ZodError) {
+    return c.json(
+      {
+        message: zodErrorToString(err),
+      },
+      400
+    );
+  } else {
+    return c.json(err, 500);
   }
 });
 
@@ -113,11 +108,23 @@ app.get("/users/:username/info", async (c) => {
   const res = await chain("query")({
     auth_users: [
       {
-        where: { username: { _eq: username } },
+        where: {
+          username: { _eq: username },
+          public_keys: { is_primary: { _eq: true } },
+        },
         limit: 1,
       },
       {
-        public_keys: [{}, { blockchain: true, public_key: true }],
+        public_keys: [
+          {
+            where: { is_primary: { _eq: true } },
+          },
+          {
+            public_key: true,
+            blockchain: true,
+            is_primary: true,
+          },
+        ],
       },
     ],
   });

@@ -37,7 +37,7 @@ export const HardwareDeriveWallet = ({
       }[blockchain];
       setLedgerWallet(ledgerWallet);
     })();
-  }, [blockchain]);
+  }, [blockchain, transport]);
 
   useEffect(() => {
     (async () => {
@@ -71,11 +71,12 @@ export const HardwareDeriveWallet = ({
       // path if unusable
 
       onNext({
+        blockchain,
         derivationPath,
         publicKey,
       });
     })();
-  }, [ledgerWallet]);
+  }, [background, blockchain, ledgerWallet, onError, onNext]);
 
   return <Loading />;
 };

@@ -12,9 +12,15 @@ import { ResetWelcome } from "../../Locked/Reset/ResetWelcome";
 import { ContactRequests, Contacts } from "../Messages/Contacts";
 import { Requests } from "../Messages/Requests";
 
-import { CreateMenu } from "./AddConnectWallet/CreateMenu";
+import {
+  CreateMnemonic,
+  CreateOrImportMnemonic,
+} from "./AddConnectWallet/CreateMnemonic";
 import { ImportMenu } from "./AddConnectWallet/ImportMenu";
-import { ImportMnemonic } from "./AddConnectWallet/ImportMnemonic";
+import {
+  ImportMnemonic,
+  ImportMnemonicAutomatic,
+} from "./AddConnectWallet/ImportMnemonic";
 import { ImportSecretKey } from "./AddConnectWallet/ImportSecretKey";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
 import { PreferencesDomainContent } from "./Preferences/DomainContentResolver";
@@ -73,8 +79,12 @@ export function SettingsNavStackDrawer({
             component={(props: any) => <AddConnectWalletMenu {...props} />}
           />
           <NavStackScreen
-            name="create-wallet"
-            component={(props: any) => <CreateMenu {...props} />}
+            name="create-or-import-mnemonic"
+            component={(props: any) => <CreateOrImportMnemonic {...props} />}
+          />
+          <NavStackScreen
+            name="create-mnemonic"
+            component={(props: any) => <CreateMnemonic {...props} />}
           />
           <NavStackScreen
             name="import-wallet"
@@ -83,6 +93,10 @@ export function SettingsNavStackDrawer({
           <NavStackScreen
             name="import-from-mnemonic"
             component={(props: any) => <ImportMnemonic {...props} />}
+          />
+          <NavStackScreen
+            name="set-and-sync-mnemonic"
+            component={(props: any) => <ImportMnemonicAutomatic {...props} />}
           />
           <NavStackScreen
             name="import-from-secret-key"

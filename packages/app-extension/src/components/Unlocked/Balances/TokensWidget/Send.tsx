@@ -1,11 +1,6 @@
 import React, { type ChangeEvent, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {
-  getHashedName,
-  getNameAccountKey,
-  NameRegistryState,
-} from "@bonfida/spl-name-service";
-import {
   Blockchain,
   ETH_NATIVE_MINT,
   explorerUrl,
@@ -13,7 +8,6 @@ import {
   SOL_NATIVE_MINT,
   toDisplayBalance,
   toTitleCase,
-  walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
   CheckIcon,
@@ -32,37 +26,32 @@ import {
   blockchainTokenData,
   useActiveWallet,
   useAnchorContext,
-  useBackgroundClient,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
   useBlockchainTokenAccount,
   useDarkMode,
   useEthereumCtx,
   useFriendship,
+  useIsValidAddress,
   useLoader,
-  useNavigation,
   useUser,
 } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
-import { TldParser } from "@onsol/tldparser";
-import type { Connection } from "@solana/web3.js";
-import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
 
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
+import { CopyablePublicKey } from "../../../common/CopyablePublicKey";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
-import { useNavigation as useNavigationEphemeral } from "../../../common/Layout/NavStack";
+import { useNavigation } from "../../../common/Layout/NavStack";
 import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 import { TokenInputField } from "../../../common/TokenInput";
-import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 
 import { SendEthereumConfirmationCard } from "./Ethereum";
 import { SendSolanaConfirmationCard } from "./Solana";
 import { WithHeaderButton } from "./Token";
-import { TokenBadge } from "./TokenBadge";
 
-const useStyles = styles((theme) => ({
+export const useStyles = makeStyles((theme) => ({
   topImage: {
     width: 80,
   },
@@ -88,44 +77,11 @@ const useStyles = styles((theme) => ({
     paddingTop: "24px",
     flex: 1,
   },
-  inputContainer: {
-    paddingLeft: "12px",
-    paddingRight: "12px",
-    marginBottom: -10,
-  },
   textRoot: {
     marginTop: "0 !important",
     marginBottom: "0 !important",
     "& .MuiOutlinedInput-root": {
       backgroundColor: `${theme.custom.colors.nav} !important`,
-    },
-  },
-  bottomHalfLabel: {
-    fontWeight: 500,
-    color: theme.custom.colors.secondary,
-    fontSize: "12px",
-    lineHeight: "16px",
-  },
-  confirmRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: "8px",
-  },
-  confirmRowLabelLeft: {
-    fontSize: "12px",
-    lineHeight: "16px",
-    fontWeight: 500,
-    color: theme.custom.colors.secondary,
-  },
-  confirmRowLabelRight: {
-    fontSize: "12px",
-    lineHeight: "16px",
-    fontWeight: 500,
-    color: theme.custom.colors.fontColor,
-  },
-  confirmTableListItem: {
-    "&:hover": {
-      opacity: 1,
     },
   },
 }));
@@ -206,25 +162,24 @@ export function Send({
   to?: {
     address: string;
     username?: string;
+    walletName?: string;
     image?: string;
     uuid?: string;
   };
 }) {
-  const classes = useStyles() as any;
+  const classes = useStyles();
   const { uuid } = useUser();
-  const nav = useNavigationEphemeral();
-  const navOuter = useNavigation();
+  const drawer = useDrawerContext();
+  const nav = useNavigation();
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState(to?.address || "");
   const [amount, setAmount] = useState<BigNumber | null>(null);
+  const [strAmount, setStrAmount] = useState("");
   const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
   const [message, setMessage] = useState("");
   const friendship = useFriendship({ userId: to?.uuid || "" });
-  const theme = useCustomTheme();
-  const { push } = useNavigation();
-  const background = useBackgroundClient();
 
   useEffect(() => {
     const prev = nav.title;
@@ -232,7 +187,7 @@ export function Send({
     return () => {
       nav.setOptions({ headerTitle: prev });
     };
-  }, []);
+  }, []); // eslint-disable-line
 
   const {
     isValidAddress,
@@ -266,7 +221,7 @@ export function Send({
           )
       );
     }
-  }, [blockchain, token]);
+  }, [blockchain, token]); // eslint-disable-line
 
   const amountSubFee = BigNumber.from(token!.nativeBalance).sub(feeOffset);
   const maxAmount = amountSubFee.gt(0) ? amountSubFee : BigNumber.from(0);
@@ -298,6 +253,10 @@ export function Send({
       />
     );
   }
+
+  const onViewBalances = () => {
+    drawer.close();
+  };
 
   const SendConfirmComponent = {
     [Blockchain.SOLANA]: SendSolanaConfirmationCard,
@@ -334,6 +293,7 @@ export function Send({
           setMessage={setMessage}
           sendButton={sendButton}
           amount={amount}
+          strAmount={strAmount}
           token={token}
           blockchain={blockchain}
           isAmountError={isAmountError}
@@ -341,14 +301,21 @@ export function Send({
           maxAmount={maxAmount}
           setAddress={setAddress}
           setAmount={setAmount}
+          setStrAmount={setStrAmount}
         />
       ) : null}
       <ApproveTransactionDrawer
         openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
+        setOpenDrawer={(val) => {
+          if (!val) {
+            setAmount(BigNumber.from(0));
+            setStrAmount("");
+          }
+          setOpenDrawer(val);
+        }}
       >
         <SendConfirmComponent
-          onComplete={async (txSig) => {
+          onComplete={async () => {
             if (
               to?.uuid &&
               to?.uuid !== uuid &&
@@ -400,14 +367,14 @@ export function Send({
           token={token}
           destinationAddress={destinationAddress}
           destinationUser={
-            to?.uuid && to?.username && to?.image
-              ? {
-                  username: to.username,
-                  image: to.image,
-                }
-              : undefined
+            (to && to.uuid && to.username && to.image
+              ? to
+              : undefined) as React.ComponentProps<
+              typeof SendConfirmComponent
+            >["destinationUser"]
           }
           amount={amount!}
+          onViewBalances={onViewBalances}
         />
       </ApproveTransactionDrawer>
     </form>
@@ -507,18 +474,14 @@ function SendV2({
   token,
   maxAmount,
   setAmount,
+  strAmount,
+  setStrAmount,
   sendButton,
   to,
-  message,
-  setMessage,
-  blockchain,
 }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { uuid } = useUser();
   const isDarkMode = useDarkMode();
-  const [tooltipOpen, setTooltipOpen] = useState(false);
-  const [_amount, _setAmount] = useState<string>("");
 
   return (
     <>
@@ -532,6 +495,7 @@ function SendV2({
           <div className={classes.horizontalCenter} style={{ marginBottom: 6 }}>
             <div className={classes.topImageOuter}>
               <LocalImage
+                size={80}
                 className={classes.topImage}
                 src={
                   to?.image ||
@@ -542,7 +506,7 @@ function SendV2({
             </div>
           </div>
           <div className={classes.horizontalCenter}>
-            {to.username ? (
+            {to.walletName || to.username ? (
               <div
                 style={{
                   color: theme.custom.colors.fontColor,
@@ -550,25 +514,12 @@ function SendV2({
                   fontWeight: 500,
                 }}
               >
-                @{`${to.username}`}
+                {to.walletName ? to.walletName : `@${to.username}`}
               </div>
             ) : null}
           </div>
           <div className={classes.horizontalCenter} style={{ marginTop: 4 }}>
-            <WithCopyTooltip tooltipOpen={tooltipOpen}>
-              <div>
-                <TokenBadge
-                  fontSize={13}
-                  overwriteBackground={theme.custom.colors.bg2}
-                  onClick={async () => {
-                    setTooltipOpen(true);
-                    setTimeout(() => setTooltipOpen(false), 1000);
-                    await navigator.clipboard.writeText(to.address);
-                  }}
-                  label={walletAddressDisplay(to?.address)}
-                />
-              </div>
-            </WithCopyTooltip>
+            <CopyablePublicKey publicKey={to?.address} />
           </div>
         </div>
         <div>
@@ -586,14 +537,14 @@ function SendV2({
                 border: "none",
                 fontWeight: 600,
                 fontSize: 48,
-                height: 50,
+                height: 48,
                 color: theme.custom.colors.fontColor,
                 textAlign: "center",
                 width: "100%",
                 // @ts-ignore
                 fontFamily: theme.typography.fontFamily,
               }}
-              value={_amount}
+              value={strAmount}
               onChange={({
                 target: { value },
               }: ChangeEvent<HTMLInputElement>) => {
@@ -601,7 +552,7 @@ function SendV2({
                   const parsedVal =
                     value.length === 1 && value[0] === "." ? "0." : value;
 
-                  _setAmount(parsedVal);
+                  setStrAmount(parsedVal);
 
                   const num =
                     parsedVal === "" || parsedVal === "0."
@@ -660,7 +611,7 @@ function SendV2({
               }}
               onClick={() => {
                 const a = toDisplayBalance(maxAmount, token.decimals);
-                _setAmount(a);
+                setStrAmount(a);
                 setAmount(maxAmount);
               }}
             >
@@ -681,6 +632,7 @@ export function Sending({
   signature,
   isComplete,
   titleOverride,
+  onViewBalances,
 }: {
   blockchain: Blockchain;
   amount: BigNumber;
@@ -688,9 +640,9 @@ export function Sending({
   signature: string;
   isComplete: boolean;
   titleOverride?: string;
+  onViewBalances?: () => void;
 }) {
   const theme = useCustomTheme();
-  const nav = useNavigation();
   const drawer = useDrawerContext();
   const explorer = useBlockchainExplorer(blockchain);
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
@@ -754,10 +706,10 @@ export function Sending({
       >
         {explorer && connectionUrl ? (
           <SecondaryButton
-            onClick={() => {
+            onClick={async () => {
               if (isComplete) {
-                nav.toRoot();
                 drawer.close();
+                if (onViewBalances) onViewBalances();
               } else {
                 window.open(explorerUrl(explorer, signature, connectionUrl));
               }
@@ -849,146 +801,4 @@ export function Error({
       <PrimaryButton label="Retry" onClick={() => onRetry()} />
     </div>
   );
-}
-
-// TODO(peter) share between extension/mobile
-export function useIsValidAddress(
-  blockchain: Blockchain,
-  address: string,
-  solanaConnection?: Connection,
-  ethereumProvider?: ethers.providers.Provider
-) {
-  const [addressError, setAddressError] = useState<boolean>(false);
-  const [isFreshAccount, setIsFreshAccount] = useState<boolean>(false); // Not used for now.
-  const [accountValidated, setAccountValidated] = useState<boolean>(false);
-  const [normalizedAddress, setNormalizedAddress] = useState<string>(address);
-
-  // This effect validates the account address given.
-  useEffect(() => {
-    if (accountValidated) {
-      setAccountValidated(false);
-    }
-    if (address === "") {
-      setAccountValidated(false);
-      setAddressError(false);
-      return;
-    }
-    (async () => {
-      if (blockchain === Blockchain.SOLANA) {
-        let pubkey;
-
-        if (!solanaConnection) {
-          return;
-        }
-
-        // SNS Domain
-        if (address.includes(".sol")) {
-          try {
-            const hashedName = await getHashedName(address.replace(".sol", ""));
-            const nameAccountKey = await getNameAccountKey(
-              hashedName,
-              undefined,
-              new PublicKey("58PwtjSDuFHuUkYjH9BYnnQKHfwo9reZhC2zMJv9JPkx") // SOL TLD Authority
-            );
-
-            const owner = await NameRegistryState.retrieve(
-              solanaConnection,
-              nameAccountKey
-            );
-
-            pubkey = owner.registry.owner;
-          } catch (e) {
-            setAddressError(true);
-            return;
-          }
-        }
-
-        // ANS by ONSOL
-        if (!pubkey && address.split(".").length === 2) {
-          try {
-            // address would be e.g. miester.poor
-            const parser = new TldParser(solanaConnection);
-            const owner = await parser.getOwnerFromDomainTld(address);
-            if (!owner) {
-              setAddressError(true);
-              // Not a valid domain don't bother continuing since it has a dot in it.
-              return;
-            }
-            pubkey = owner;
-          } catch (e) {
-            setAddressError(true);
-            return;
-          }
-        }
-
-        if (!pubkey) {
-          // Solana address validation
-          try {
-            pubkey = new PublicKey(address);
-          } catch (err) {
-            setAddressError(true);
-            // Not valid address so don't bother validating it.
-            return;
-          }
-        }
-
-        const account = await solanaConnection?.getAccountInfo(pubkey);
-
-        // Null data means the account has no lamports. This is valid.
-        if (!account) {
-          setIsFreshAccount(true);
-          setAccountValidated(true);
-          setNormalizedAddress(pubkey.toString());
-          return;
-        }
-
-        // Only allow system program accounts to be given. ATAs only!
-        if (!account.owner.equals(SystemProgram.programId)) {
-          setAddressError(true);
-          return;
-        }
-
-        // The account data has been successfully validated.
-        setAddressError(false);
-        setAccountValidated(true);
-        setNormalizedAddress(pubkey.toString());
-      } else if (blockchain === Blockchain.ETHEREUM) {
-        // Ethereum address validation
-        let checksumAddress;
-
-        if (!ethereumProvider) {
-          return;
-        }
-
-        if (address.includes(".eth")) {
-          try {
-            checksumAddress = await ethereumProvider?.resolveName(address);
-          } catch (e) {
-            setAddressError(true);
-            return;
-          }
-        }
-
-        if (!checksumAddress) {
-          try {
-            checksumAddress = ethers.utils.getAddress(address);
-          } catch (e) {
-            setAddressError(true);
-            return;
-          }
-        }
-
-        setAddressError(false);
-        setAccountValidated(true);
-        setNormalizedAddress(checksumAddress);
-      }
-    })();
-  }, [address]);
-
-  return {
-    isValidAddress: accountValidated,
-    isFreshAddress: isFreshAccount,
-    isErrorAddress: addressError,
-    normalizedAddress: normalizedAddress,
-  };
 }

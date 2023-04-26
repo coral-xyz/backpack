@@ -1,6 +1,6 @@
 import { useState } from "react";
+import type { SearchParamsFor } from "@coral-xyz/common";
 import { Blockchain } from "@coral-xyz/common";
-import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useActiveEthereumWallet,
@@ -57,7 +57,7 @@ export function Token({
   const ethereumWallet = useActiveEthereumWallet();
   // Hack: This is hit for some reason due to the framer-motion animation.
   if (!blockchain || !tokenAddress) {
-    return <></>;
+    return null;
   }
 
   const activityAddress =
@@ -106,7 +106,7 @@ function TokenHeader({
     null
   );
 
-  if (!token) return <></>;
+  if (!token) return null;
 
   const percentClass =
     token.recentPercentChange === undefined
@@ -128,10 +128,13 @@ function TokenHeader({
           amount={token.nativeBalance}
           displayLogo={false}
         />
-        <Typography className={classes.usdBalanceLabel}>
-          ${parseFloat(token.usdBalance.toFixed(2)).toLocaleString()}{" "}
-          <span className={percentClass}>{token.recentPercentChange}%</span>
-        </Typography>
+        {token.priceData ? (
+          <Typography className={classes.usdBalanceLabel}>
+            ${parseFloat(token.usdBalance.toFixed(2)).toLocaleString()}
+            &nbsp;&nbsp;&nbsp;
+            <span className={percentClass}>{token.recentPercentChange}%</span>
+          </Typography>
+        ) : null}
       </div>
       <div className={classes.tokenHeaderButtonContainer}>
         <TransferWidget
