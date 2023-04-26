@@ -1,9 +1,11 @@
-import qs from "qs";
+import { RESTDataSource } from "@apollo/datasource-rest";
 
-export class CoinGecko {
-  static readonly #apiBase: string = "https://api.coingecko.com/api/v3/simple";
+export class CoinGecko extends RESTDataSource {
+  override baseURL = "https://api.coingecko.com";
 
-  constructor() {}
+  constructor() {
+    super();
+  }
 
   /**
    * Fetches the market price data for the argued asset IDs.
@@ -15,14 +17,14 @@ export class CoinGecko {
   async getPrices<I extends string>(
     ids: I[]
   ): Promise<CoinGeckoGetPricesResponse<I>> {
-    const query = qs.stringify({
-      ids: ids.join(","),
-      vs_currencies: "usd",
-      include_24hr_change: true,
-      include_last_updated_at: true,
+    return this.get("/api/v3/simple/price", {
+      params: {
+        ids: ids.join(","),
+        vs_currencies: "usd",
+        include_24hr_change: "true",
+        include_last_updated_at: "true",
+      },
     });
-    const resp = await fetch(`${CoinGecko.#apiBase}/price?${query}`);
-    return resp.json();
   }
 }
 
