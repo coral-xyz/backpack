@@ -36,6 +36,16 @@ function TopTabsNavigator(): JSX.Element {
         component={WalletOverviewScreen}
         options={{ title: "Tokens" }}
       />
+      <TopTabs.Screen
+        name="Collectibles"
+        component={NftCollectionListScreen}
+        options={{ title: "Collectibles" }}
+      />
+      <TopTabs.Screen
+        name="Activity"
+        component={RecentActivityScreen}
+        options={{ title: "Activity" }}
+      />
     </TopTabs.Navigator>
   );
 }

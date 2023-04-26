@@ -111,7 +111,7 @@ export function Screen({
   style?: StyleProp<ViewStyle>;
   headerPadding?: boolean;
 }) {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
   const insets = useSafeAreaInsets();
   const theme = useTheme();
 

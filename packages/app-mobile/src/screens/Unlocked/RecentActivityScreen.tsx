@@ -33,14 +33,21 @@ import {
   isUserTxnSender,
   parseSwapTransaction,
 } from "@coral-xyz/recoil";
-import { ListItem2, YGroup } from "@coral-xyz/tamagui";
+import { YGroup } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Source, TransactionType } from "helius-sdk/dist/types";
 import { ErrorBoundary } from "react-error-boundary";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { EmptyState, Screen, StyledText } from "~components/index";
+import {
+  ListItemActivity,
+  ListItemNotification,
+  ListItemSentReceived,
+  ListItemTokenSwap,
+} from "~components/ListItem";
+import { EmptyState, Screen, RoundedContainerGroup } from "~components/index";
 import { getBlockchainLogo, useTheme } from "~hooks/index";
+import { result__useRecentTransactionsGroupedByData } from "~hooks/recoil__FAKE_DATA";
 
 // Used since Solana transactions have a timestamp and Ethereum transactions have a date.
 const extractTime = (tx: any) => {
@@ -151,41 +158,81 @@ function FailedTransaction() {
 
 function SwapTransaction({ transaction, tokenData }) {
   const [input, output] = parseSwapTransaction(transaction, tokenData);
+  const sent = `-${input.amountWithSymbol}`;
+  const received = `+${output.amountWithSymbol}`;
 
   return (
-    <>
-      <Text style={styles.textReceived}>+{output.amountWithSymbol}</Text>
-      <Text style={styles.textSecondary}>-{input.amountWithSymbol}</Text>
-    </>
+    <ListItemTokenSwap
+      grouped
+      title={transaction.title}
+      caption={transaction.description}
+      sent={sent}
+      received={received}
+    />
   );
 }
 
 function BurnTransaction({ transaction }) {
+  const amount = transaction?.tokenTransfers[0]?.tokenAmount;
+
   return (
-    <Text style={styles.textSecondary}>
-      {transaction?.tokenTransfers[0]?.tokenAmount}
-    </Text>
+    <ListItemActivity
+      grouped={false}
+      onPress={console.log}
+      topLeftText="App Interaction"
+      bottomLeftText="Burned"
+      topRightText={amount}
+      bottomRightText=""
+      iconUrl="https://swr.xnfts.dev/1min/https://madlist-images.s3.us-west-2.amazonaws.com/backpack_dev.png"
+    />
   );
+
+  // return (
+  //   <Text style={styles.textSecondary}>
+  //     {transaction?.tokenTransfers[0]?.tokenAmount}
+  //   </Text>
+  // );
 }
 
 function NFTTransaction() {
-  return null;
+  return (
+    <ListItemActivity
+      grouped={false}
+      onPress={console.log}
+      topLeftText="Nokiamon"
+      bottomLeftText="Minted"
+      topRightText="-24.50SOL TODO"
+      bottomRightText="+1 TODO"
+      iconUrl="https://swr.xnfts.dev/1min/https://madlist-images.s3.us-west-2.amazonaws.com/backpack_dev.png"
+    />
+  );
 }
 
 function TransferTransaction({ transaction, tokenData, metadata }) {
   const activeWallet = useActiveWallet();
 
   const isSender = isUserTxnSender(transaction, activeWallet);
+  const action = isSender ? "Sent" : "Received";
 
   if (transaction.source === Source.SYSTEM_PROGRAM) {
     const amount = transaction?.nativeTransfers[0]?.amount / 10 ** 9;
     const value = reverseScientificNotation(amount);
 
-    if (isSender) {
-      return <Text style={styles.textSent}>-{value} SOL</Text>;
-    } else {
-      return <Text style={styles.textReceived}>+{value} SOL</Text>;
-    }
+    // if (isSender) {
+    //   return <Text style={styles.textSent}>-{value} SOL</Text>;
+    // } else {
+    //   return <Text style={styles.textReceived}>+{value} SOL</Text>;
+    // }
+
+    return (
+      <ListItemSentReceived
+        grouped
+        address="abc xyz TODO"
+        action={action}
+        amount={value}
+        iconUrl="https://swr.xnfts.dev/1min/https://madlist-images.s3.us-west-2.amazonaws.com/backpack_dev.png"
+      />
+    );
   } else {
     // const amount = new Number(
     //   transaction?.tokenTransfers?.[0]?.tokenAmount.toFixed(5)
@@ -198,26 +245,37 @@ function TransferTransaction({ transaction, tokenData, metadata }) {
     //   metadata?.onChainMetadata?.metadata?.data?.symbol ||
     //   "";
 
-    const symbol = "TODO";
-    console.log("debug3:else:symbol", amount);
+    // const symbol = "TODO";
+    // console.log("debug3:else:symbol", amount);
 
-    if (isSender) {
-      return (
-        <Text style={styles.textSent}>
-          -{amount} {symbol}
-        </Text>
-      );
-    } else {
-      return (
-        <Text style={styles.textReceived}>
-          +{amount} {symbol}
-        </Text>
-      );
-    }
+    return (
+      <ListItemSentReceived
+        grouped
+        address={transaction.signature}
+        action={action}
+        amount={amount}
+        iconUrl="https://swr.xnfts.dev/1min/https://madlist-images.s3.us-west-2.amazonaws.com/backpack_dev.png"
+      />
+    );
+
+    // if (isSender) {
+    //   return (
+    //     <Text style={styles.textSent}>
+    //       -{amount} {symbol}
+    //     </Text>
+    //   );
+    // } else {
+    //   return (
+    //     <Text style={styles.textReceived}>
+    //       +{amount} {symbol}
+    //     </Text>
+    //   );
+    // }
   }
 }
 
-function RecentActivityListItemData({ transaction, tokenData, metadata }) {
+function RecentActivityItem({ transaction }) {
+  const { tokenData, metadata } = useRecentTransactionData(transaction);
   if (transaction?.transactionError) {
     return <FailedTransaction />;
   }
@@ -247,22 +305,25 @@ function RecentActivityListItemData({ transaction, tokenData, metadata }) {
     );
   }
 
-  return null;
-}
+  if (transaction.type !== TransactionType.UNKNOWN) {
+    console.log("debug3:rest", transaction.type, {
+      transaction,
+      tokenData,
+      metadata,
+    });
+  }
 
-function ActivityItem({ transaction }) {
-  const t = useRecentTransactionData(transaction);
-
+  // Unknown type?
   return (
-    <ListItem2 multiLine title={t.description} subTitle={t.type}>
-      <StyledText>{t.title}</StyledText>
-      <StyledText>{t.caption}</StyledText>
-      <RecentActivityListItemData
-        transaction={transaction}
-        tokenData={t.tokenData}
-        metadata={t.metadata}
-      />
-    </ListItem2>
+    <ListItemActivity
+      grouped
+      onPress={console.log}
+      topLeftText={transaction.type}
+      bottomLeftText="Minted"
+      topRightText="-24.50 SOL"
+      bottomRightText="-$2,719.08"
+      iconUrl="https://swr.xnfts.dev/1min/https://madlist-images.s3.us-west-2.amazonaws.com/backpack_dev.png"
+    />
   );
 }
 
@@ -279,24 +340,26 @@ export function _RecentActivityList({
   minimize?: boolean;
   style?: StyleProp<ViewStyle>;
 }): JSX.Element {
-  const sections = useRecentTransactionsGroupedByDate({
-    blockchain: blockchain!,
-    address: address!,
-    contractAddresses: contractAddresses!,
-    transactions: _transactions,
-  });
+  const sections = result__useRecentTransactionsGroupedByData;
+  // const sections = useRecentTransactionsGroupedByDate({
+  //   blockchain: blockchain!,
+  //   address: address!,
+  //   contractAddresses: contractAddresses!,
+  //   transactions: _transactions,
+  // });
 
-  const renderItem = ({ item, section }: { item: HeliusParsedTransaction }) => {
-    if (section.data.length > 1) {
-      return (
-        <YGroup>
-          <YGroup.Item>
-            <ActivityItem transaction={item} numItems={section.data.length} />
-          </YGroup.Item>
-        </YGroup>
-      );
-    }
-    return <ActivityItem transaction={item} numItems={section.data.length} />;
+  const renderItem = ({ item, section, index }: any) => {
+    const isFirst = index === 0;
+    const isLast = index === section.data.length - 1;
+
+    return (
+      <RoundedContainerGroup
+        disableTopRadius={!isFirst}
+        disableBottomRadius={!isLast}
+      >
+        <RecentActivityItem transaction={item} />
+      </RoundedContainerGroup>
+    );
   };
 
   return (

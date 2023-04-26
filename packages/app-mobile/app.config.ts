@@ -70,6 +70,7 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
       favicon: "./assets/favicon.png",
     },
     extra: {
+      PLAYGROUND: true,
       FEATURE_MOBILE_CHAT: true,
       localWebViewUrl: "http://localhost:9333",
       remoteWebViewUrl,
