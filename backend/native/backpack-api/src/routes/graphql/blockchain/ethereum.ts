@@ -1,4 +1,9 @@
-import { BigNumber } from "alchemy-sdk";
+import {
+  AssetTransfersCategory,
+  type AssetTransfersParams,
+  BigNumber,
+  SortingOrder,
+} from "alchemy-sdk";
 import { ethers } from "ethers";
 
 import type { ApiContext } from "../context";
@@ -110,7 +115,42 @@ export class Ethereum implements Blockchain {
     before?: string,
     after?: string
   ): Promise<Transaction[] | null> {
-    return []; // TODO:
+    const params: AssetTransfersParams = {
+      category: [
+        AssetTransfersCategory.ERC1155,
+        AssetTransfersCategory.ERC20,
+        AssetTransfersCategory.ERC721,
+        AssetTransfersCategory.EXTERNAL,
+        AssetTransfersCategory.SPECIALNFT,
+      ],
+      fromBlock: after,
+      order: SortingOrder.DESCENDING,
+      toBlock: before,
+      withMetadata: true,
+    };
+
+    const txs = await Promise.allSettled([
+      this.#ctx.dataSources.alchemy.core.getAssetTransfers({
+        fromAddress: address,
+        ...params,
+      }),
+      this.#ctx.dataSources.alchemy.core.getAssetTransfers({
+        toAddress: address,
+        ...params,
+      }),
+    ]);
+
+    const combined = txs
+      .filter(isFulfilled)
+      .map((t) => t.value.transfers)
+      .flat()
+      .sort((a, b) => Number(b.blockNum) - Number(a.blockNum));
+
+    return combined.map((tx) => ({
+      id: tx.hash,
+      block: Number(tx.blockNum),
+      feePayer: tx.from,
+    }));
   }
 
   /**
@@ -131,3 +171,13 @@ export class Ethereum implements Blockchain {
     return 18;
   }
 }
+
+/**
+ * Utility to determine the result type of settled promise.
+ * @template T
+ * @param {PromiseSettledResult<T>} input
+ * @returns {input is PromiseFulfilledResult<T>}
+ */
+const isFulfilled = <T>(
+  input: PromiseSettledResult<T>
+): input is PromiseFulfilledResult<T> => input.status === "fulfilled";

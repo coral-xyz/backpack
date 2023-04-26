@@ -79,11 +79,11 @@ export type TokenBalance = Node & {
 
 export type Transaction = Node & {
   __typename?: "Transaction";
-  fee: Scalars["Int"];
+  block: Scalars["Float"];
+  fee?: Maybe<Scalars["Int"]>;
   feePayer: Scalars["String"];
   id: Scalars["ID"];
-  slot: Scalars["Float"];
-  timestamp: Scalars["Float"];
+  timestamp?: Maybe<Scalars["Float"]>;
 };
 
 export type Wallet = Node & {
@@ -352,11 +352,11 @@ export type TransactionResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Transaction"] = ResolversParentTypes["Transaction"]
 > = ResolversObject<{
-  fee?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  block?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  fee?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
   feePayer?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
-  slot?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
-  timestamp?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  timestamp?: Resolver<Maybe<ResolversTypes["Float"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

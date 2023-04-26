@@ -65,8 +65,8 @@ type TokenBalance implements Node {
 
 type Transaction implements Node {
   id: ID!
-  fee: Int!
+  block: Float!
+  fee: Int
   feePayer: String!
-  slot: Float!
-  timestamp: Float!
+  timestamp: Float
 }

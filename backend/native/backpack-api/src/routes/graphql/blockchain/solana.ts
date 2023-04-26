@@ -199,9 +199,9 @@ export class Solana implements Blockchain {
 
     return resp.map((r) => ({
       id: r.signature,
+      block: r.slot,
       fee: r.fee,
       feePayer: r.feePayer,
-      slot: r.slot,
       timestamp: r.timestamp,
     }));
   }
