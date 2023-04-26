@@ -41,6 +41,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@apollo/datasource-rest@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "@apollo/datasource-rest@npm:5.1.0"
+  dependencies:
+    "@apollo/utils.fetcher": ^2.0.0
+    "@apollo/utils.keyvaluecache": ^2.0.0
+    "@apollo/utils.logger": ^2.0.1
+    "@apollo/utils.withrequired": ^2.0.0
+    "@types/http-cache-semantics": ^4.0.1
+    http-cache-semantics: ^4.1.1
+    lodash.isplainobject: ^4.0.6
+    node-fetch: ^2.6.7
+  peerDependencies:
+    graphql: ^16.5.0
+  checksum: b508196c39ea2539521ab204b7bd2ff2e23f501f930c54c24e7a8a7f1f7f38e52fd54d786f3f4f25248cd19f2d274c862d26239649bd27e8cc6972445e0007c4
+  languageName: node
+  linkType: hard
+
 "@apollo/protobufjs@npm:1.2.7":
   version: 1.2.7
   resolution: "@apollo/protobufjs@npm:1.2.7"
@@ -156,7 +174,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/utils.keyvaluecache@npm:^2.1.0":
+"@apollo/utils.keyvaluecache@npm:^2.0.0, @apollo/utils.keyvaluecache@npm:^2.1.0":
   version: 2.1.1
   resolution: "@apollo/utils.keyvaluecache@npm:2.1.1"
   dependencies:
@@ -13366,7 +13384,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/http-cache-semantics@npm:*":
+"@types/http-cache-semantics@npm:*, @types/http-cache-semantics@npm:^4.0.1":
   version: 4.0.1
   resolution: "@types/http-cache-semantics@npm:4.0.1"
   checksum: 1048aacf627829f0d5f00184e16548205cd9f964bf0841c29b36bc504509230c40bc57c39778703a1c965a6f5b416ae2cbf4c1d4589c889d2838dd9dbfccf6e9
@@ -16470,6 +16488,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "backpack-api@workspace:backend/native/backpack-api"
   dependencies:
+    "@apollo/datasource-rest": ^5.1.0
     "@apollo/server": ^4.7.0
     "@aws-sdk/client-s3": ^3.245.0
     "@aws-sdk/s3-request-presigner": ^3.245.0
@@ -25239,7 +25258,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"http-cache-semantics@npm:^4.0.0, http-cache-semantics@npm:^4.1.0":
+"http-cache-semantics@npm:^4.0.0, http-cache-semantics@npm:^4.1.0, http-cache-semantics@npm:^4.1.1":
   version: 4.1.1
   resolution: "http-cache-semantics@npm:4.1.1"
   checksum: 83ac0bc60b17a3a36f9953e7be55e5c8f41acc61b22583060e8dedc9dd5e3607c823a88d0926f9150e571f90946835c7fe150732801010845c72cd8bbff1a236

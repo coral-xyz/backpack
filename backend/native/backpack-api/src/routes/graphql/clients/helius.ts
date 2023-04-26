@@ -1,10 +1,13 @@
+import { RESTDataSource } from "@apollo/datasource-rest";
 import type { AccountInfo } from "@solana/web3.js";
 
-export class Helius {
-  static readonly #apiBase: string = "https://api.helius.xyz";
+export class Helius extends RESTDataSource {
   readonly #apiKey: string;
 
+  override baseURL = "https://api.helius.xyz";
+
   constructor(apiKey: string) {
+    super();
     this.#apiKey = apiKey;
   }
 
@@ -15,10 +18,11 @@ export class Helius {
    * @memberof Helius
    */
   async getBalances(address: string): Promise<HeliusGetBalancesResponse> {
-    const resp = await fetch(
-      this._endpoint(`/v0/addresses/${address}/balances`)
-    );
-    return resp.json();
+    return this.get(`/v0/addresses/${address}/balances`, {
+      params: {
+        "api-key": this.#apiKey,
+      },
+    });
   }
 
   /**
@@ -31,20 +35,24 @@ export class Helius {
   async getLegacyMetadata(
     mints: string[]
   ): Promise<Map<string, { id: string; logo: string }>> {
-    const resp = await fetch(this._endpoint("/v0/token-metadata"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        mintAccounts: mints,
-        includeOffChain: false,
-        disableCache: false,
-      }),
-    });
+    const resp = await this.post<HeliusGetTokenMetadataResponse>(
+      "/v0/token-metadata",
+      {
+        headers: { "Content-Type": "application/json" },
+        params: {
+          "api-key": this.#apiKey,
+        },
+        body: JSON.stringify({
+          mintAccounts: mints,
+          includeOffChain: false,
+          disableCache: false,
+        }),
+      }
+    );
 
-    const json: HeliusGetTokenMetadataResponse = await resp.json();
     const mappings: Map<string, { id: string; logo: string }> = new Map();
 
-    for (const entry of json) {
+    for (const entry of resp) {
       const id = entry.legacyMetadata?.extensions?.coingeckoId ?? null;
       if (id && entry.legacyMetadata?.logoURI) {
         mappings.set(entry.account, {
@@ -68,28 +76,17 @@ export class Helius {
     mints: string[],
     includeOffChain?: boolean
   ): Promise<HeliusGetTokenMetadataResponse> {
-    const resp = await fetch(this._endpoint("/v0/token-metadata"), {
-      method: "POST",
+    return this.post("/v0/token-metadata", {
       headers: { "Content-Type": "application/json" },
+      params: {
+        "api-key": this.#apiKey,
+      },
       body: JSON.stringify({
         mintAccounts: mints,
         includeOffChain: includeOffChain ?? false,
         disableCache: false,
       }),
     });
-    return resp.json();
-  }
-
-  /**
-   * Build the API route endpoint based on the argued subpath.
-   * @param {string} route
-   * @returns {string}
-   * @memberof Helius
-   */
-  private _endpoint(route: string): string {
-    return `${Helius.#apiBase}/${route.replace(/^\//g, "")}?api-key=${
-      this.#apiKey
-    }`;
   }
 }
 
