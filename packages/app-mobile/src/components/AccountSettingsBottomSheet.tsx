@@ -93,7 +93,7 @@ export function AccountSettingsBottomSheet({ navigation }): JSX.Element {
         onPress={() => {
           setIsVisible(true);
         }}
-        style={{ paddingHorizontal: 12 }}
+        style={{ paddingHorizontal: 16 }}
       >
         <MaterialIcons
           name="settings"

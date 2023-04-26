@@ -22,7 +22,6 @@ export function ProfileScreen(): JSX.Element {
   return (
     <Screen>
       <AvatarHeader />
-      <SettingsList />
     </Screen>
   );
 }
@@ -30,7 +29,7 @@ export function ProfileScreen(): JSX.Element {
 function AvatarHeader(): JSX.Element {
   return (
     <View style={{ alignItems: "center", marginBottom: 24 }}>
-      <Avatar />
+      <Avatar size={140} />
     </View>
   );
 }
