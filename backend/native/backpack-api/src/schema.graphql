@@ -1,0 +1,58 @@
+schema {
+  query: Query
+}
+
+type Query {
+  # balances(chainId: ChainID!, address: String!): WalletBalances
+  # nfts(chainId: ChainID!, address: String!): [Nft]
+
+  wallet(chainId: ChainID!, address: String!): Wallet
+}
+
+enum ChainID {
+  ETHEREUM
+  SOLANA
+}
+
+type Wallet {
+  balances: WalletBalances
+  nfts: [Nft]
+}
+
+type WalletBalances {
+  aggregateValue: Float!
+  native: TokenBalance!
+  tokens: [TokenBalance]!
+}
+
+type Collection {
+  address: ID!
+  image: String
+  name: String
+  verified: Boolean!
+}
+
+type MarketData {
+  id: String!
+  change: Float!
+  lastUpdatedAt: Int!
+  logo: String!
+  price: Float!
+  value: Float!
+}
+
+type Nft {
+  id: ID!
+  collection: Collection
+  image: String
+  name: String!
+}
+
+type TokenBalance {
+  address: ID!
+  amount: String!
+  decimals: Int!
+  displayAmount: String!
+  marketData: MarketData
+  mint: String!
+}
