@@ -1,4 +1,4 @@
-schema: "./src/routes/graphql/schema.graphql"
+schema: "./src/schema.graphql"
 generates:
   "./src/routes/graphql/types.ts":
     plugins:

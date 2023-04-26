@@ -6,10 +6,11 @@ import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import { readFileSync } from "fs";
 import http from "http";
+import { join } from "path";
 import { ZodError } from "zod";
 
 import { resolvers } from "./routes/graphql";
-import type { ApiContext} from "./routes/graphql/context";
+import type { ApiContext } from "./routes/graphql/context";
 import { createContext } from "./routes/graphql/context";
 import authenticateRouter from "./routes/v1/authenticate";
 import barterRouter from "./routes/v1/barter";
@@ -34,7 +35,7 @@ const app = express();
 export const httpServer = http.createServer(app);
 
 const apollo = new ApolloServer<ApiContext>({
-  typeDefs: readFileSync("./src/routes/graphql/schema.graphql", "utf-8"),
+  typeDefs: readFileSync(join(__dirname, "schema.graphql"), "utf-8"),
   resolvers,
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
