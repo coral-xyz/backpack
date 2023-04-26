@@ -26,6 +26,10 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BlockchainLogo } from "~components/BlockchainLogo";
+import {
+  _ListItem,
+  ListItemSettings,
+} from "~components/ListItem";
 import { UserAvatar } from "~components/UserAvatar";
 import {
   StyledText,
@@ -33,7 +37,6 @@ import {
   ProxyImage,
   RoundedContainerGroup,
 } from "~components/index";
-import { useTheme } from "~hooks/useTheme";
 
 import { TextPercentChanged } from "./components/Balances";
 
@@ -385,66 +388,6 @@ function ListItemFriendRequest({
 const KeyboardArrowRight = () => (
   <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
 );
-
-const getIcon = (name: string) => (
-  <MaterialIcons name={name} size={28} color="gray" />
-);
-
-function _ListItem({
-  icon,
-  title,
-  rightText,
-  iconAfter,
-  onPress,
-}: {
-  icon: JSX.Element;
-  title: string;
-  rightText?: string;
-  iconAfter: JSX.Element;
-  onPress?: () => void;
-}): JSX.Element {
-  const theme = useTheme();
-  return (
-    <Pressable
-      disabled={!onPress}
-      onPress={onPress}
-      style={{ backgroundColor: theme.custom.colors.nav }}
-    >
-      <XStack py={8} px={16} f={1} bg="$nav" jc="space-between" ai="center">
-        <XStack ai="center">
-          <View style={{ width: 32, height: 32 }}>{icon}</View>
-          <StyledText ml={16} fontSize="$base" color="$fontColor">
-            {title}
-          </StyledText>
-        </XStack>
-        <XStack ai="center">
-          {rightText ? <StyledText mr={8}>{rightText}</StyledText> : null}
-          {iconAfter}
-        </XStack>
-      </XStack>
-    </Pressable>
-  );
-}
-
-function ListItemSettings({
-  title,
-  iconName,
-  onPress,
-}: {
-  title: string;
-  iconName: string;
-  onPress?: () => void;
-}): JSX.Element {
-  const Icon = getIcon(iconName);
-  return (
-    <_ListItem
-      onPress={onPress}
-      title={title}
-      icon={Icon}
-      iconAfter={<KeyboardArrowRight />}
-    />
-  );
-}
 
 function UserList() {
   const data = Array.from({ length: 10 }).map(() => {

@@ -38,6 +38,21 @@ import {
 import { useTheme } from "~hooks/useTheme";
 import { TextPercentChanged } from "~screens/Unlocked/components/Balances";
 
+// TODO(peter) something about padding looks weird
+export function PaddedListItemSeparator() {
+  const theme = useTheme();
+  return (
+    <View style={{ paddingLeft: 60, backgroundColor: theme.custom.colors.nav }}>
+      <View
+        style={{
+          borderColor: theme.custom.colors.fontColor,
+          // borderWidth: 2,
+        }}
+      />
+    </View>
+  );
+}
+
 function Sep() {
   return (
     <View style={{ paddingLeft: 60, backgroundColor: "white" }}>

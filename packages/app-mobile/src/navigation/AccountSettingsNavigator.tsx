@@ -2,7 +2,7 @@ import type { ChannelAppUiClient } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
 
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Text, View, Pressable } from "react-native";
 
 import {
   EthereumConnectionUrl,
@@ -22,9 +22,12 @@ import {
   useSolanaConnectionUrl,
   useSolanaExplorer,
 } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ethers } from "ethers";
 
+import { AccountSettingsBottomSheet } from "~components/AccountSettingsBottomSheet";
+import { BetterBottomSheet } from "~components/BottomSheetModal";
 import { IconCheckmark } from "~components/Icon";
 import {
   AccountDropdownHeader,
@@ -76,12 +79,17 @@ export function AccountSettingsNavigator(): JSX.Element {
       <Stack.Screen
         name="Profile"
         component={ProfileScreen}
-        options={{
-          headerTitle: ({ navigation, options }) => (
-            <AccountDropdownHeader navigation={navigation} options={options} />
-          ),
-          headerTintColor: theme.custom.colors.fontColor,
-          headerBackTitle: "Back",
+        options={({ navigation }) => {
+          return {
+            headerLeft: () => (
+              <AccountSettingsBottomSheet navigation={navigation} />
+            ),
+            headerTitle: ({ options }) => (
+              <AccountDropdownHeader options={options} />
+            ),
+            headerTintColor: theme.custom.colors.fontColor,
+            headerBackTitle: "Back",
+          };
         }}
       />
       <Stack.Group
