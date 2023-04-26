@@ -350,7 +350,10 @@ export function NFTCard({
                     ) : null}
                     <PopoverMenu.Item
                       sx={{ width: "100px" }}
-                      onClick={openDetails}
+                      onClick={async () => {
+                        await openDetails();
+                        setAnchorEl(null);
+                      }}
                     >
                       View
                     </PopoverMenu.Item>
@@ -366,6 +369,7 @@ export function NFTCard({
                     <PopoverMenu.Item
                       onClick={() => {
                         openDrawer();
+                        setAnchorEl(null);
                       }}
                     >
                       Send
