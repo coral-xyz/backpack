@@ -88,7 +88,6 @@ export type Transaction = Node & {
 
 export type Wallet = Node & {
   __typename?: "Wallet";
-  _chainId: ChainId;
   balances?: Maybe<WalletBalances>;
   id: Scalars["ID"];
   nfts?: Maybe<Array<Maybe<Nft>>>;
@@ -365,7 +364,6 @@ export type WalletResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Wallet"] = ResolversParentTypes["Wallet"]
 > = ResolversObject<{
-  _chainId?: Resolver<ResolversTypes["ChainID"], ParentType, ContextType>;
   balances?: Resolver<
     Maybe<ResolversTypes["WalletBalances"]>,
     ParentType,

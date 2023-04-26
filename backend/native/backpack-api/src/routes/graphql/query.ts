@@ -3,6 +3,7 @@ import type { GraphQLResolveInfo } from "graphql";
 import { getBlockchainForId } from "./blockchain";
 import type { ApiContext } from "./context";
 import type {
+  ChainId,
   Nft,
   QueryResolvers,
   QueryWalletArgs,
@@ -33,8 +34,7 @@ export const queryResolvers: QueryResolvers = {
     _info: GraphQLResolveInfo
   ): Promise<Wallet | null> {
     return {
-      _chainId: args.chainId,
-      id: args.address,
+      id: `${args.chainId}/${args.address}`,
     };
   },
 };
@@ -57,8 +57,8 @@ export const walletResolvers: WalletResolvers = {
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<WalletBalances | null> {
-    const { id, _chainId } = parent;
-    return getBlockchainForId(_chainId, ctx).getBalancesForAddress(id);
+    const [chainId, address] = parent.id.split("/") as [ChainId, string];
+    return getBlockchainForId(chainId, ctx).getBalancesForAddress(address);
   },
 
   /**
@@ -75,8 +75,8 @@ export const walletResolvers: WalletResolvers = {
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<Nft[] | null> {
-    const { id, _chainId } = parent;
-    return getBlockchainForId(_chainId, ctx).getNftsForAddress(id);
+    const [chainId, address] = parent.id.split("/") as [ChainId, string];
+    return getBlockchainForId(chainId, ctx).getNftsForAddress(address);
   },
 
   /**
@@ -93,9 +93,9 @@ export const walletResolvers: WalletResolvers = {
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<Transaction[] | null> {
-    const { id, _chainId } = parent;
-    return getBlockchainForId(_chainId, ctx).getTransactionsForAddress(
-      id,
+    const [chainId, address] = parent.id.split("/") as [ChainId, string];
+    return getBlockchainForId(chainId, ctx).getTransactionsForAddress(
+      address,
       args.before || undefined,
       args.after || undefined
     );

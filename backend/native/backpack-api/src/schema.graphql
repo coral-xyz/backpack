@@ -19,7 +19,6 @@ interface Node {
 }
 
 type Wallet implements Node {
-  _chainId: ChainID!
   id: ID!
   balances: WalletBalances
   nfts: [Nft]
