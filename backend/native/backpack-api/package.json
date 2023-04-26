@@ -3,7 +3,15 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "build": "esbuild ./src/index.js --bundle --platform=node --outfile=dist/index.js && cp ./src/schema.graphql ./dist/schema.graphql",
+    "generate": "graphql-codegen --config codegen.yml",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix",
+    "start": "npm run build && node dist/index.js"
+  },
   "dependencies": {
+    "@apollo/server": "^4.7.0",
     "@aws-sdk/client-s3": "^3.245.0",
     "@aws-sdk/s3-request-presigner": "^3.245.0",
     "@cardinal/common": "^6.0.1",
@@ -19,17 +27,13 @@
     "@saberhq/token-utils": "^1.14.11",
     "@solana/spl-token": "^0.3.7",
     "@solana/web3.js": "^1.73.0",
-    "@types/express": "^4.17.14",
-    "@types/redis": "^4.0.11",
-    "@types/request": "^2.48.8",
-    "@types/web-push": "^3.3.2",
+    "alchemy-sdk": "^2.8.0",
     "asn1.js": "^5.4.1",
     "body-parser": "^1.20.1",
     "bs58": "^5.0.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "esbuild": "^0.15.16",
     "ethers": "^5.7.2",
     "express": "^4.18.2",
     "graphql": "^16.6.0",
@@ -50,15 +54,17 @@
     "zod": "^3.19.1"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^3.3.0",
+    "@graphql-codegen/typescript": "^3.0.3",
+    "@graphql-codegen/typescript-resolvers": "^3.2.0",
+    "@types/express": "^4.17.14",
     "@types/passport": "^1.0.12",
     "@types/passport-twitter": "^1.0.37",
+    "@types/redis": "^4.0.11",
+    "@types/request": "^2.48.8",
+    "@types/web-push": "^3.3.2",
+    "esbuild": "^0.15.16",
     "eslint-config-custom": "*",
     "vitest": "^0.29.8"
-  },
-  "scripts": {
-    "build": "esbuild ./src/index.js --bundle --platform=node --outfile=dist/index.js",
-    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
-    "lint:fix": "yarn run lint --fix",
-    "start": "npm run build && node dist/index.js"
   }
 }
