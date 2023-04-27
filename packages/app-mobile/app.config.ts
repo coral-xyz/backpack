@@ -73,6 +73,7 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
       PLAYGROUND: true,
       FEATURE_MOBILE_CHAT: true,
       localWebViewUrl: "http://localhost:9333",
+      remoteGraphQLApi: "https://backpack-api.xnfts.dev/v2/graphql",
       remoteWebViewUrl,
       eas: {
         projectId: projectID,
