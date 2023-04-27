@@ -10,8 +10,8 @@ import { CircularProgress, Grid, Typography } from "@mui/material";
 import type { UnwrapRecoilValue } from "recoil";
 import { useRecoilValueLoadable } from "recoil";
 
-import { NFTCard } from "./Cards";
-import { useOpenChat } from "./Detail";
+import { useOpenChat } from "./NftDetail";
+import { NFTCard } from "./NftEntry";
 
 export function NftsCollection({
   publicKey,

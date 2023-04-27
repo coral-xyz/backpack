@@ -1,12 +1,22 @@
 import type { ApiContext } from "../context";
-import { ChainId, type WalletBalances } from "../types";
+import {
+  type Balances,
+  ChainId,
+  type NftConnection,
+  type TransactionConnection,
+} from "../types";
 
 import { Ethereum } from "./ethereum";
 import { Solana } from "./solana";
 
 export interface Blockchain {
-  getBalancesForAddress(address: string): Promise<WalletBalances | null>;
-  getNftsForAddress(address: string): Promise<any>;
+  getBalancesForAddress(address: string): Promise<Balances | null>;
+  getNftsForAddress(address: string): Promise<NftConnection | null>;
+  getTransactionsForAddress(
+    address: string,
+    before?: string,
+    after?: string
+  ): Promise<TransactionConnection | null>;
   id(): ChainId;
   nativeDecimals(): number;
 }
@@ -27,15 +37,4 @@ export function getBlockchainForId(id: ChainId, ctx: ApiContext): Blockchain {
       return new Solana(ctx);
     }
   }
-}
-
-/**
- * Calculate the decimaled value for an account's token balance.
- * @export
- * @param {number} amt
- * @param {number} decimals
- * @returns {number}
- */
-export function toBalance(amt: number, decimals: number): number {
-  return amt / 10 ** decimals;
 }

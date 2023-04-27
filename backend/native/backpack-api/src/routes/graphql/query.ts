@@ -3,13 +3,16 @@ import type { GraphQLResolveInfo } from "graphql";
 import { getBlockchainForId } from "./blockchain";
 import type { ApiContext } from "./context";
 import type {
-  Nft,
+  Balances,
+  ChainId,
+  NftConnection,
   QueryResolvers,
   QueryWalletArgs,
   RequireFields,
+  TransactionConnection,
   Wallet,
-  WalletBalances,
   WalletResolvers,
+  WalletTransactionsArgs,
 } from "./types";
 
 /**
@@ -19,18 +22,20 @@ export const queryResolvers: QueryResolvers = {
   /**
    * Handler for the `wallet` query.
    * @param {{}} _parent
-   * @param {RequireFields<QueryWalletArgs, 'address' | 'chainId'>} _args
+   * @param {RequireFields<QueryWalletArgs, 'address' | 'chainId'>} args
    * @param {ApiContext} _ctx
    * @param {GraphQLResolveInfo} _info
    * @returns {(Promise<Wallet | null>)}
    */
   async wallet(
     _parent: {},
-    _args: RequireFields<QueryWalletArgs, "address" | "chainId">,
+    args: RequireFields<QueryWalletArgs, "address" | "chainId">,
     _ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<Wallet | null> {
-    return {};
+    return {
+      id: `${args.chainId}/${args.address}`,
+    };
   },
 };
 
@@ -40,39 +45,59 @@ export const queryResolvers: QueryResolvers = {
 export const walletResolvers: WalletResolvers = {
   /**
    * Field-level resolver handler for the `balances` field.
-   * @param {Wallet} _parent
+   * @param {Wallet} parent
    * @param {{}} _args
    * @param {ApiContext} ctx
-   * @param {GraphQLResolveInfo} info
-   * @returns {(Promise<WalletBalances | null>)}
+   * @param {GraphQLResolveInfo} _info
+   * @returns {(Promise<Balances | null>)}
    */
   async balances(
-    _parent: Wallet,
+    parent: Wallet,
     _args: {},
     ctx: ApiContext,
-    info: GraphQLResolveInfo
-  ): Promise<WalletBalances | null> {
-    if (info.path.prev?.key !== "wallet") return null;
-    const { address, chainId } = info.variableValues as QueryWalletArgs;
+    _info: GraphQLResolveInfo
+  ): Promise<Balances | null> {
+    const [chainId, address] = parent.id.split("/") as [ChainId, string];
     return getBlockchainForId(chainId, ctx).getBalancesForAddress(address);
   },
 
   /**
    * Field-level resolver handler for the `nfts` field.
-   * @param {Wallet} _parent
+   * @param {Wallet} parent
    * @param {{}} _args
    * @param {ApiContext} ctx
-   * @param {GraphQLResolveInfo} info
-   * @returns {(Promise<Nft[] | null>)}
+   * @param {GraphQLResolveInfo} _info
+   * @returns {(Promise<NftConnection | null>)}
    */
   async nfts(
-    _parent: Wallet,
+    parent: Wallet,
     _args: {},
     ctx: ApiContext,
-    info: GraphQLResolveInfo
-  ): Promise<Nft[] | null> {
-    if (info.path.prev?.key !== "wallet") return null;
-    const { address, chainId } = info.variableValues as QueryWalletArgs;
+    _info: GraphQLResolveInfo
+  ): Promise<NftConnection | null> {
+    const [chainId, address] = parent.id.split("/") as [ChainId, string];
     return getBlockchainForId(chainId, ctx).getNftsForAddress(address);
+  },
+
+  /**
+   * Field-level resolver handler for the `transactions` field.
+   * @param {Wallet} parent
+   * @param {Partial<WalletTransactionsArgs>} args
+   * @param {ApiContext} ctx
+   * @param {GraphQLResolveInfo} _info
+   * @returns {(Promise<TransactionConnection | null>)}
+   */
+  async transactions(
+    parent: Wallet,
+    args: Partial<WalletTransactionsArgs>,
+    ctx: ApiContext,
+    _info: GraphQLResolveInfo
+  ): Promise<TransactionConnection | null> {
+    const [chainId, address] = parent.id.split("/") as [ChainId, string];
+    return getBlockchainForId(chainId, ctx).getTransactionsForAddress(
+      address,
+      args.before || undefined,
+      args.after || undefined
+    );
   },
 };
