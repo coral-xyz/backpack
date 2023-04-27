@@ -1,7 +1,7 @@
 {
   "name": "dropzone-cli",
   "description": "command line tools for interacting with dropzone",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "bin": "index.js",
   "dependencies": {
     "@coral-xyz/anchor": "^0.26.0",
