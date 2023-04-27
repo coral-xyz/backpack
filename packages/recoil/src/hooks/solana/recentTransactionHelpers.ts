@@ -1,3 +1,4 @@
+// Note(peter): copied from extension
 import {
   SOL_NATIVE_MINT,
   walletAddressDisplay,
