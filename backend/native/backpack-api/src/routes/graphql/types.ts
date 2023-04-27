@@ -45,11 +45,12 @@ export type Collection = Node & {
 
 export type MarketData = Node & {
   __typename?: "MarketData";
-  change: Scalars["Float"];
   id: Scalars["ID"];
   lastUpdatedAt: Scalars["Int"];
   logo: Scalars["String"];
+  percentChange: Scalars["Float"];
   price: Scalars["Float"];
+  usdChange: Scalars["Float"];
   value: Scalars["Float"];
 };
 
@@ -357,11 +358,12 @@ export type MarketDataResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["MarketData"] = ResolversParentTypes["MarketData"]
 > = ResolversObject<{
-  change?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   lastUpdatedAt?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   logo?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  percentChange?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   price?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  usdChange?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   value?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
