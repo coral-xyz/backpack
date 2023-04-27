@@ -1,3 +1,4 @@
+// Note(peter): copied from extension
 import { useEffect } from "react";
 import type { EnrichedNotification } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";

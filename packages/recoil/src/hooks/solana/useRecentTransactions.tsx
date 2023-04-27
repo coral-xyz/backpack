@@ -1,3 +1,4 @@
+// Note(peter): copied from extension
 import type { RecentTransaction } from "@coral-xyz/common";
 import { Blockchain } from "@coral-xyz/common";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
