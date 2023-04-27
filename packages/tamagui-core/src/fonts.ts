@@ -5,6 +5,7 @@ const fontSizes = {
   xs: 12,
   sm: 14,
   base: 16,
+  true: 16,
   lg: 18,
   xl: 20,
   "2xl": 24,

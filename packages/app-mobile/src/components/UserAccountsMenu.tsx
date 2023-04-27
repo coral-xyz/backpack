@@ -15,7 +15,7 @@ import { useTheme } from "~hooks/useTheme";
 import { SettingsRow } from "~screens/Unlocked/Settings/components/SettingsRow";
 
 // NOTE(peter) not used anymore in lieu of using react navigation modal
-export function AccountDropdownHeader({}): JSX.Element {
+export function AccountDropdownHeader(): JSX.Element {
   const navigation = useNavigation();
   const theme = useTheme();
   const user = useUser();
