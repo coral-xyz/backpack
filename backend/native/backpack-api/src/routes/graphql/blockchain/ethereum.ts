@@ -41,6 +41,11 @@ export class Ethereum implements Blockchain {
       (t) => (t.rawBalance ?? "0") !== "0"
     );
 
+    // Get price data from Coingecko for the discovered tokens
+    const prices = await this.#ctx.dataSources.coinGecko.getPrices([
+      "ethereum",
+    ]);
+
     // Map the non-empty token balances to their schema type
     const tokens: TokenBalance[] = nonEmptyTokens.map((t) => {
       const amt = BigNumber.from(t.rawBalance ?? "0");
@@ -61,7 +66,17 @@ export class Ethereum implements Blockchain {
         amount: native.toString(),
         decimals: this.nativeDecimals(),
         displayAmount: ethers.utils.formatUnits(native, this.nativeDecimals()),
-        marketData: null, // FIXME:TODO:
+        marketData: {
+          id: "ethereum",
+          change: prices.ethereum.usd_24h_change,
+          lastUpdatedAt: prices.ethereum.last_updated_at,
+          logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png",
+          price: prices.ethereum.usd,
+          value:
+            parseFloat(
+              ethers.utils.formatUnits(native, this.nativeDecimals())
+            ) * prices.ethereum.usd,
+        },
         mint: "0x0000000000000000000000000000000000000000",
       },
       tokens,

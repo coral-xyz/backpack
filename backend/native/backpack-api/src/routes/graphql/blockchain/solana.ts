@@ -1,4 +1,6 @@
 import { SystemProgram } from "@solana/web3.js";
+import { BigNumber } from "alchemy-sdk";
+import { ethers } from "ethers";
 
 import type { CoinGeckoPriceData } from "../clients/coingecko";
 import type { HeliusGetTokenMetadataResponse } from "../clients/helius";
@@ -12,7 +14,7 @@ import {
   type WalletBalances,
 } from "../types";
 
-import { type Blockchain, toBalance } from ".";
+import { type Blockchain } from ".";
 
 export class Solana implements Blockchain {
   readonly #ctx: ApiContext;
@@ -53,19 +55,23 @@ export class Solana implements Blockchain {
       id: address,
       amount: balances.nativeBalance.toString(),
       decimals: this.nativeDecimals(),
-      displayAmount: toBalance(
+      displayAmount: ethers.utils.formatUnits(
         balances.nativeBalance,
         this.nativeDecimals()
-      ).toString(),
+      ),
       marketData: {
         id: "solana",
         change: prices.solana.usd_24h_change,
         lastUpdatedAt: prices.solana.last_updated_at,
-        logo: "", // FIXME:
+        logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
         price: prices.solana.usd,
         value:
-          toBalance(balances.nativeBalance, this.nativeDecimals()) *
-          prices.solana.usd,
+          parseFloat(
+            ethers.utils.formatUnits(
+              balances.nativeBalance,
+              this.nativeDecimals()
+            )
+          ) * prices.solana.usd,
       },
       mint: SystemProgram.programId.toBase58(),
     };
@@ -78,7 +84,7 @@ export class Solana implements Blockchain {
         id: t.tokenAccount,
         amount: t.amount.toString(),
         decimals: t.decimals,
-        displayAmount: toBalance(t.amount, t.decimals).toString(),
+        displayAmount: ethers.utils.formatUnits(t.amount, t.decimals),
         marketData:
           p && meta
             ? {
@@ -87,7 +93,9 @@ export class Solana implements Blockchain {
                 lastUpdatedAt: p.last_updated_at,
                 logo: meta.logo,
                 price: p.usd,
-                value: toBalance(t.amount, t.decimals) * p.usd,
+                value:
+                  parseFloat(ethers.utils.formatUnits(t.amount, t.decimals)) *
+                  p.usd,
               }
             : null,
         mint: t.mint,

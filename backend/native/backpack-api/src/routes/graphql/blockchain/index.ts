@@ -38,14 +38,3 @@ export function getBlockchainForId(id: ChainId, ctx: ApiContext): Blockchain {
     }
   }
 }
-
-/**
- * Calculate the decimaled value for an account's token balance.
- * @export
- * @param {number} amt
- * @param {number} decimals
- * @returns {number}
- */
-export function toBalance(amt: number, decimals: number): number {
-  return amt / 10 ** decimals;
-}
