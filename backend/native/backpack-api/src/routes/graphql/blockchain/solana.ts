@@ -14,7 +14,7 @@ import {
 } from "../types";
 import { createConnection } from "..";
 
-import { type Blockchain, calculatePercentChange } from ".";
+import { type Blockchain, calculateUsdChange } from ".";
 
 export class Solana implements Blockchain {
   readonly #ctx: ApiContext;
@@ -62,8 +62,8 @@ export class Solana implements Blockchain {
       ),
       marketData: {
         id: "coingecko_market_data:solana",
-        usdChange: prices.solana.usd_24h_change,
-        percentChange: calculatePercentChange(
+        percentChange: parseFloat(prices.solana.usd_24h_change.toFixed(2)),
+        usdChange: calculateUsdChange(
           prices.solana.usd_24h_change,
           prices.solana.usd
         ),
