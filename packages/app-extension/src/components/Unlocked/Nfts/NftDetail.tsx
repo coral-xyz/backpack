@@ -17,11 +17,9 @@ import {
 } from "@coral-xyz/common";
 import { LocalImageManager, refreshGroups } from "@coral-xyz/db";
 import {
-  LocalImage,
   NegativeButton,
   PrimaryButton,
   ProxyImage,
-  SecondaryButton,
 } from "@coral-xyz/react-common";
 import {
   appStoreMetaTags,
@@ -30,12 +28,9 @@ import {
   newAvatarAtom,
   nftById,
   useActiveWallet,
-  useAnchorContext,
   useBackgroundClient,
   useDecodedSearchParams,
-  useEthereumCtx,
   useEthereumExplorer,
-  useIsValidAddress,
   useNavigation,
   useOpenPlugin,
   useSolanaCtx,
@@ -55,27 +50,11 @@ import {
 } from "recoil";
 
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
-import { CopyablePublicKey } from "../../common/CopyablePublicKey";
-import {
-  CloseButton,
-  useDrawerContext,
-  WithDrawer,
-} from "../../common/Layout/Drawer";
-import {
-  NavStackEphemeral,
-  NavStackScreen,
-  useNavigation as useNavigationEphemeral,
-} from "../../common/Layout/NavStack";
 import PopoverMenu from "../../common/PopoverMenu";
-import type { SendData } from "../Balances/TokensWidget/AddressSelector";
-import { AddressSelector } from "../Balances/TokensWidget/AddressSelector";
-import { SendEthereumConfirmationCard } from "../Balances/TokensWidget/Ethereum";
 import {
   Error as ErrorConfirmation,
   Sending,
-  useStyles,
 } from "../Balances/TokensWidget/Send";
-import { SendSolanaConfirmationCard } from "../Balances/TokensWidget/Solana";
 
 import { SendDrawer } from "./SendDrawer";
 

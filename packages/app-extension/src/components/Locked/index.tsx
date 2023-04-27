@@ -15,7 +15,7 @@ import { Error, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 
 import { WithDrawer } from "../common/Layout/Drawer";
-import { lockScreenKey, lockScreenKeyImage } from "../Unlocked/Nfts/Detail";
+import { lockScreenKey, lockScreenKeyImage } from "../Unlocked/Nfts/NftDetail";
 
 import { LockedMenu } from "./LockedMenu";
 
