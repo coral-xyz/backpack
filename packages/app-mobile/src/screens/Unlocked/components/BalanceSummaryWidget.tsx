@@ -1,17 +1,15 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Suspense } from "react";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 
-import { gql, useQuery } from "@apollo/client";
+import { gql, useSuspenseQuery_experimental } from "@apollo/client";
 import { formatUSD } from "@coral-xyz/common";
+import { useActiveWallet } from "@coral-xyz/recoil";
 import { XStack } from "@coral-xyz/tamagui";
-import { useRecoilValue } from "recoil";
-import { graphQLSelector } from "recoil-relay";
-import { graphql } from "relay-runtime";
+import { ErrorBoundary } from "react-error-boundary";
 
 import { StyledText } from "~components/index";
-import { useTotalBalance } from "~hooks/recoil";
+// import { useTotalBalance } from "~hooks/recoil";
 import { useTheme } from "~hooks/useTheme";
-
-import { RelayEnvironmentKey } from "../../../relay/environment";
 
 function TextTotalChange({
   totalChange,
@@ -97,55 +95,33 @@ const GET_BALANCE_SUMMARY = gql`
   }
 `;
 
-const walletQuery = graphQLSelector({
-  key: "WalletBalanceSummaryOk",
-  environment: RelayEnvironmentKey,
-  query: graphql`
-    query WalletBalanceSummary($chainId: ChainID!, $address: String!) {
-      wallet(chainId: $chainId, address: $address) {
-        id
-        balances {
-          aggregateValue
-          native {
-            id
-            address
-            amount
-            decimals
-            displayAmount
-            marketData {
-              id
-              change
-              lastUpdatedAt
-              logo
-              price
-              value
-            }
-          }
-        }
-      }
-    }
-  `,
-  variables: ({ get }) => ({
-    chainId: "SOLANA",
-    address: "5iM4vFHv7vdiZJYm7rQwHGgvpp9zHEwZHGNbNATFF5To",
-  }),
-  mapResponse: (data) => data,
-});
-
-export function BalanceSummaryWidget() {
-  const data2 = useRecoilValue(walletQuery);
-  console.log("debug2:data2", data2);
-  const data = useQuery(GET_BALANCE_SUMMARY, {
+function Container() {
+  // const { data, loading, error } = useQuery(GET_BALANCE_SUMMARY, {
+  //   variables: {
+  //     chainId: "SOLANA",
+  //     address: "5iM4vFHv7vdiZJYm7rQwHGgvpp9zHEwZHGNbNATFF5To",
+  //   },
+  // });
+  const { data } = useSuspenseQuery_experimental(GET_BALANCE_SUMMARY, {
     variables: {
       chainId: "SOLANA",
       address: "5iM4vFHv7vdiZJYm7rQwHGgvpp9zHEwZHGNbNATFF5To",
     },
   });
 
-  console.log("debugg2:data", data);
+  const totalBalance = data.wallet.balances.aggregateValue;
+  const totalChange = data.wallet.balances.native.marketData.change;
+  // const percentChange = data.wallet.balances.native.marketData.change;
 
-  const { totalBalance, totalChange, percentChange, isLoading } =
-    useTotalBalance();
+  function calculatePercentChange(marketData) {
+    const { change, price } = marketData;
+    const percentChange = (change / price) * 100;
+    return percentChange;
+  }
+
+  const percentChange = calculatePercentChange(
+    data.wallet.balances.native.marketData
+  );
 
   return (
     <View style={styles.container}>
@@ -155,12 +131,22 @@ export function BalanceSummaryWidget() {
       <XStack alignItems="center">
         <TextTotalChange totalChange={totalChange} />
         <TextPercentChange
-          isLoading={isLoading}
+          isLoading={false}
           totalChange={totalChange}
           percentChange={percentChange as number}
         />
       </XStack>
     </View>
+  );
+}
+
+export function BalanceSummaryWidget() {
+  return (
+    <ErrorBoundary fallbackRender={({ error }) => <Text>{error}</Text>}>
+      <Suspense fallback={<ActivityIndicator size="large" />}>
+        <Container />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 
