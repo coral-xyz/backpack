@@ -36,6 +36,7 @@ export enum ChainId {
 
 export type Collection = Node & {
   __typename?: "Collection";
+  address: Scalars["String"];
   id: Scalars["ID"];
   image?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
@@ -54,6 +55,7 @@ export type MarketData = Node & {
 
 export type Nft = Node & {
   __typename?: "Nft";
+  address: Scalars["String"];
   collection?: Maybe<Collection>;
   id: Scalars["ID"];
   image?: Maybe<Scalars["String"]>;
@@ -96,6 +98,7 @@ export type QueryWalletArgs = {
 
 export type TokenBalance = Node & {
   __typename?: "TokenBalance";
+  address: Scalars["String"];
   amount: Scalars["String"];
   decimals: Scalars["Int"];
   displayAmount: Scalars["String"];
@@ -342,6 +345,7 @@ export type CollectionResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Collection"] = ResolversParentTypes["Collection"]
 > = ResolversObject<{
+  address?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
@@ -366,6 +370,7 @@ export type NftResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Nft"] = ResolversParentTypes["Nft"]
 > = ResolversObject<{
+  address?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   collection?: Resolver<
     Maybe<ResolversTypes["Collection"]>,
     ParentType,
@@ -455,6 +460,7 @@ export type TokenBalanceResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["TokenBalance"] = ResolversParentTypes["TokenBalance"]
 > = ResolversObject<{
+  address?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   decimals?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   displayAmount?: Resolver<ResolversTypes["String"], ParentType, ContextType>;

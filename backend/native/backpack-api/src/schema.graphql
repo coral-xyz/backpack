@@ -37,6 +37,7 @@ type Balances {
 
 type Collection implements Node {
   id: ID!
+  address: String!
   image: String
   name: String
   verified: Boolean!
@@ -63,6 +64,7 @@ type NftEdge {
 
 type Nft implements Node {
   id: ID!
+  address: String!
   collection: Collection
   image: String
   name: String!
@@ -80,6 +82,7 @@ type TokenBalanceEdge {
 
 type TokenBalance implements Node {
   id: ID!
+  address: String!
   amount: String!
   decimals: Int!
   displayAmount: String!

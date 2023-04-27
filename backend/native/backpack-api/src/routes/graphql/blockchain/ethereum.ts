@@ -52,7 +52,8 @@ export class Ethereum implements Blockchain {
     const nodes: TokenBalance[] = nonEmptyTokens.map((t) => {
       const amt = BigNumber.from(t.rawBalance ?? "0");
       return {
-        id: `${address}/${t.contractAddress}`,
+        id: `ethereum_token_address:${address}/${t.contractAddress}`,
+        address: `${address}/${t.contractAddress}`,
         amount: amt.toString(),
         decimals: t.decimals ?? 0,
         displayAmount: t.balance ?? "0",
@@ -64,12 +65,13 @@ export class Ethereum implements Blockchain {
     return {
       aggregateValue: 0,
       native: {
-        id: address,
+        id: `ethereum_native_address:${address}`,
+        address,
         amount: native.toString(),
         decimals: this.nativeDecimals(),
         displayAmount: ethers.utils.formatUnits(native, this.nativeDecimals()),
         marketData: {
-          id: "ethereum",
+          id: "coingecko_market_data:ethereum",
           change: prices.ethereum.usd_24h_change,
           lastUpdatedAt: prices.ethereum.last_updated_at,
           logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png",
@@ -81,7 +83,7 @@ export class Ethereum implements Blockchain {
         },
         mint: "0x0000000000000000000000000000000000000000",
       },
-      tokens: createConnection(nodes, false, false, "eth_token_balance_edge"),
+      tokens: createConnection(nodes, false, false),
     };
   }
 
@@ -102,10 +104,12 @@ export class Ethereum implements Blockchain {
     const nodes = nfts.ownedNfts.reduce<Nft[]>((acc, curr) => {
       if (curr.spamInfo?.isSpam ?? false) return acc;
       const n: Nft = {
-        id: curr.tokenId,
+        id: `ethereum_nft:${curr.contract.address}/${curr.tokenId}`,
+        address: `${curr.contract.address}/${curr.tokenId}`,
         collection: curr.contract.openSea
           ? {
-              id: curr.contract.address,
+              id: `ethereum_nft_collection:${curr.contract.address}`,
+              address: curr.contract.address,
               name: curr.contract.openSea.collectionName,
               image: curr.contract.openSea.imageUrl,
               verified:
@@ -118,7 +122,7 @@ export class Ethereum implements Blockchain {
       return [...acc, n];
     }, []);
 
-    return createConnection(nodes, false, false, "eth_nft_edge");
+    return createConnection(nodes, false, false);
   }
 
   /**
@@ -166,7 +170,7 @@ export class Ethereum implements Blockchain {
       .sort((a, b) => Number(b.blockNum) - Number(a.blockNum));
 
     const nodes = combined.map((tx) => ({
-      id: tx.uniqueId,
+      id: `ethereum_transaction:${tx.uniqueId}`,
       block: Number(tx.blockNum),
       feePayer: tx.from,
       hash: tx.hash,
@@ -174,7 +178,7 @@ export class Ethereum implements Blockchain {
       type: tx.category,
     }));
 
-    return createConnection(nodes, false, false, "eth_transaction_edge"); // FIXME: next and previous page
+    return createConnection(nodes, false, false); // FIXME: next and previous page
   }
 
   /**

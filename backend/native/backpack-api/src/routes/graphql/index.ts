@@ -23,17 +23,15 @@ export type Connection<T extends Node> = {
  * @param {T[]} nodes
  * @param {boolean} hasNextPage
  * @param {boolean} hasPreviousPage
- * @param {string} cursorPrefix
  * @returns {(Connection<T> | null)}
  */
 export function createConnection<T extends Node>(
   nodes: T[],
   hasNextPage: boolean,
-  hasPreviousPage: boolean,
-  cursorPrefix: string
+  hasPreviousPage: boolean
 ): Connection<T> | null {
   const edges: Edge<T>[] = nodes.map((i) => ({
-    cursor: `${cursorPrefix}_${i.id}`,
+    cursor: Buffer.from(`edge_cursor:${i.id}`).toString("base64"),
     node: i,
   }));
 

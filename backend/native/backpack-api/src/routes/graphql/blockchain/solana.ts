@@ -52,7 +52,8 @@ export class Solana implements Blockchain {
     ]);
 
     const nativeData: TokenBalance = {
-      id: address,
+      id: `solana_native_address:${address}`,
+      address,
       amount: balances.nativeBalance.toString(),
       decimals: this.nativeDecimals(),
       displayAmount: ethers.utils.formatUnits(
@@ -60,7 +61,7 @@ export class Solana implements Blockchain {
         this.nativeDecimals()
       ),
       marketData: {
-        id: "solana",
+        id: "coingecko_market_data:solana",
         change: prices.solana.usd_24h_change,
         lastUpdatedAt: prices.solana.last_updated_at,
         logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
@@ -81,14 +82,15 @@ export class Solana implements Blockchain {
       const meta = legacy.get(t.mint);
       const p: CoinGeckoPriceData | null = prices[meta?.id ?? ""] ?? null;
       return {
-        id: t.tokenAccount,
+        id: `solana_token_address:${t.tokenAccount}`,
+        address: t.tokenAccount,
         amount: t.amount.toString(),
         decimals: t.decimals,
         displayAmount: ethers.utils.formatUnits(t.amount, t.decimals),
         marketData:
           p && meta
             ? {
-                id: meta.id,
+                id: `coingecko_market_data:${meta.id}`,
                 change: p.usd_24h_change,
                 lastUpdatedAt: p.last_updated_at,
                 logo: meta.logo,
@@ -111,12 +113,7 @@ export class Solana implements Blockchain {
     return {
       aggregateValue: nativeData.marketData!.value + splTokenValueSum,
       native: nativeData,
-      tokens: createConnection(
-        splTokenNodes,
-        false,
-        false,
-        "solana_token_balance_edge"
-      ),
+      tokens: createConnection(splTokenNodes, false, false),
     };
   }
 
@@ -183,14 +180,15 @@ export class Solana implements Blockchain {
       );
 
       return {
-        id: m.account,
+        id: `solana_nft:${m.account}`,
+        address: m.account,
         collection,
         image: m.offChainMetadata?.metadata.image,
         name: m.onChainMetadata?.metadata.data.name ?? "",
       };
     });
 
-    return createConnection(nodes, false, false, "solana_nft_edge");
+    return createConnection(nodes, false, false);
   }
 
   /**
@@ -213,7 +211,7 @@ export class Solana implements Blockchain {
     );
 
     const nodes = resp.map((r) => ({
-      id: r.signature,
+      id: `solana_transaction:${r.signature}`,
       block: r.slot,
       fee: r.fee,
       feePayer: r.feePayer,
@@ -223,7 +221,7 @@ export class Solana implements Blockchain {
       type: r.type,
     }));
 
-    return createConnection(nodes, false, false, "solana_transaction_edge");
+    return createConnection(nodes, false, false);
   }
 
   /**
@@ -265,7 +263,10 @@ export class Solana implements Blockchain {
 
     return hasCollection
       ? {
-          id: onChainMetadata!.metadata.collection!.key,
+          id: `solana_nft_collection:${
+            onChainMetadata!.metadata.collection!.key
+          }`,
+          address: onChainMetadata!.metadata.collection!.key,
           image: mapValue?.image,
           name: mapValue?.name,
           verified: onChainMetadata!.metadata.collection!.verified,
