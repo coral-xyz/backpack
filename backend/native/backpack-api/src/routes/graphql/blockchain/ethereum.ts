@@ -17,7 +17,7 @@ import {
 } from "../types";
 import { createConnection } from "..";
 
-import type { Blockchain } from ".";
+import { type Blockchain, calculatePercentChange } from ".";
 
 export class Ethereum implements Blockchain {
   readonly #ctx: ApiContext;
@@ -72,7 +72,11 @@ export class Ethereum implements Blockchain {
         displayAmount: ethers.utils.formatUnits(native, this.nativeDecimals()),
         marketData: {
           id: "coingecko_market_data:ethereum",
-          change: prices.ethereum.usd_24h_change,
+          usdChange: prices.ethereum.usd_24h_change,
+          percentChange: calculatePercentChange(
+            prices.ethereum.usd_24h_change,
+            prices.ethereum.usd
+          ),
           lastUpdatedAt: prices.ethereum.last_updated_at,
           logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png",
           price: prices.ethereum.usd,

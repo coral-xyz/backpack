@@ -45,7 +45,8 @@ type Collection implements Node {
 
 type MarketData implements Node {
   id: ID!
-  change: Float!
+  usdChange: Float!
+  percentChange: Float!
   lastUpdatedAt: Int!
   logo: String!
   price: Float!
