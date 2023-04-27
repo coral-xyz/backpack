@@ -40,8 +40,8 @@ import { ChatDrawer } from "../../Unlocked/Messages/ChatDrawer";
 import { MessageOptions } from "../../Unlocked/Messages/MessageOptions";
 import { Nfts } from "../../Unlocked/Nfts";
 import { NftsCollection } from "../../Unlocked/Nfts/Collection";
-import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/Detail";
 import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
+import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/NftDetail";
 import { SettingsButton } from "../../Unlocked/Settings";
 
 import { NavBackButton, WithNav } from "./Nav";
