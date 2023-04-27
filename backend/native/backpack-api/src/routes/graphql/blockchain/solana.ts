@@ -202,7 +202,10 @@ export class Solana implements Blockchain {
       block: r.slot,
       fee: r.fee,
       feePayer: r.feePayer,
-      timestamp: r.timestamp,
+      hash: r.signature,
+      source: r.source,
+      timestamp: new Date(r.timestamp * 1000).toISOString(),
+      type: r.type,
     }));
   }
 

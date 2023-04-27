@@ -81,9 +81,12 @@ export type Transaction = Node & {
   __typename?: "Transaction";
   block: Scalars["Float"];
   fee?: Maybe<Scalars["Int"]>;
-  feePayer: Scalars["String"];
+  feePayer?: Maybe<Scalars["String"]>;
+  hash: Scalars["String"];
   id: Scalars["ID"];
-  timestamp?: Maybe<Scalars["Float"]>;
+  source?: Maybe<Scalars["String"]>;
+  timestamp?: Maybe<Scalars["String"]>;
+  type: Scalars["String"];
 };
 
 export type Wallet = Node & {
@@ -354,9 +357,16 @@ export type TransactionResolvers<
 > = ResolversObject<{
   block?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   fee?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
-  feePayer?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  feePayer?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  hash?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
-  timestamp?: Resolver<Maybe<ResolversTypes["Float"]>, ParentType, ContextType>;
+  source?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  timestamp?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  type?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

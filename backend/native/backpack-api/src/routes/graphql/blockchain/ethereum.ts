@@ -62,7 +62,7 @@ export class Ethereum implements Blockchain {
         decimals: this.nativeDecimals(),
         displayAmount: ethers.utils.formatUnits(native, this.nativeDecimals()),
         marketData: null, // FIXME:TODO:
-        mint: "",
+        mint: "0x0000000000000000000000000000000000000000",
       },
       tokens,
     };
@@ -147,9 +147,12 @@ export class Ethereum implements Blockchain {
       .sort((a, b) => Number(b.blockNum) - Number(a.blockNum));
 
     return combined.map((tx) => ({
-      id: tx.hash,
+      id: tx.uniqueId,
       block: Number(tx.blockNum),
       feePayer: tx.from,
+      hash: tx.hash,
+      timestamp: (tx as any).metadata?.blockTimestamp || undefined,
+      type: tx.category,
     }));
   }
 

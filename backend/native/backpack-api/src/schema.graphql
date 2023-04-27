@@ -3,9 +3,6 @@ schema {
 }
 
 type Query {
-  # balances(chainId: ChainID!, address: String!): WalletBalances
-  # nfts(chainId: ChainID!, address: String!): [Nft]
-
   wallet(chainId: ChainID!, address: String!): Wallet
 }
 
@@ -67,6 +64,9 @@ type Transaction implements Node {
   id: ID!
   block: Float!
   fee: Int
-  feePayer: String!
-  timestamp: Float
+  feePayer: String
+  hash: String!
+  source: String
+  timestamp: String
+  type: String!
 }
