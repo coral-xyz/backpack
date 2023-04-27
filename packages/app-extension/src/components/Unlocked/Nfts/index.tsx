@@ -3,10 +3,9 @@ import {
   BlurIcon,
   EmptyState,
   HyperspaceIcon,
-  MagicEdenIcon,
+ InterestsIcon as ImageIcon,  MagicEdenIcon,
   OpenSeaIcon,
-  TensorIcon,
-} from "@coral-xyz/react-common";
+  TensorIcon } from "@coral-xyz/react-common";
 import {
   isAggregateWallets,
   isOneLive,
@@ -14,7 +13,6 @@ import {
   useActiveWallet,
   useAllWalletsDisplayed,
 } from "@coral-xyz/recoil";
-import { InterestsOutlined as ImageIcon } from "@mui/icons-material";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
 import { _BalancesTableHead } from "../Balances/Balances";
