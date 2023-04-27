@@ -1,18 +1,20 @@
 import { SystemProgram } from "@solana/web3.js";
+import { ethers } from "ethers";
 
 import type { CoinGeckoPriceData } from "../clients/coingecko";
 import type { HeliusGetTokenMetadataResponse } from "../clients/helius";
 import type { ApiContext } from "../context";
 import {
+  type Balances,
   ChainId,
   type Collection,
-  type Nft,
+  type NftConnection,
   type TokenBalance,
-  type Transaction,
-  type WalletBalances,
+  type TransactionConnection,
 } from "../types";
+import { createConnection } from "..";
 
-import { type Blockchain, toBalance } from ".";
+import { type Blockchain } from ".";
 
 export class Solana implements Blockchain {
   readonly #ctx: ApiContext;
@@ -25,10 +27,10 @@ export class Solana implements Blockchain {
    * Fetch and aggregate the native and token balances and
    * prices for the argued wallet address.
    * @param {string} address
-   * @returns {(Promise<WalletBalances | null>)}
+   * @returns {(Promise<Balances | null>)}
    * @memberof Solana
    */
-  async getBalancesForAddress(address: string): Promise<WalletBalances | null> {
+  async getBalancesForAddress(address: string): Promise<Balances | null> {
     // Get the address balances and filter out the NFTs and empty ATAs
     const balances = await this.#ctx.dataSources.helius.getBalances(address);
     const nonEmptyOrNftTokens = balances.tokens.filter(
@@ -50,44 +52,52 @@ export class Solana implements Blockchain {
     ]);
 
     const nativeData: TokenBalance = {
-      id: address,
+      id: `solana_native_address:${address}`,
+      address,
       amount: balances.nativeBalance.toString(),
       decimals: this.nativeDecimals(),
-      displayAmount: toBalance(
+      displayAmount: ethers.utils.formatUnits(
         balances.nativeBalance,
         this.nativeDecimals()
-      ).toString(),
+      ),
       marketData: {
-        id: "solana",
+        id: "coingecko_market_data:solana",
         change: prices.solana.usd_24h_change,
         lastUpdatedAt: prices.solana.last_updated_at,
-        logo: "", // FIXME:
+        logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
         price: prices.solana.usd,
         value:
-          toBalance(balances.nativeBalance, this.nativeDecimals()) *
-          prices.solana.usd,
+          parseFloat(
+            ethers.utils.formatUnits(
+              balances.nativeBalance,
+              this.nativeDecimals()
+            )
+          ) * prices.solana.usd,
       },
       mint: SystemProgram.programId.toBase58(),
     };
 
     // Map each SPL token into their `TokenBalance` return type object
-    const splTokenData = nonEmptyOrNftTokens.map((t): TokenBalance => {
+    const splTokenNodes = nonEmptyOrNftTokens.map((t): TokenBalance => {
       const meta = legacy.get(t.mint);
       const p: CoinGeckoPriceData | null = prices[meta?.id ?? ""] ?? null;
       return {
-        id: t.tokenAccount,
+        id: `solana_token_address:${t.tokenAccount}`,
+        address: t.tokenAccount,
         amount: t.amount.toString(),
         decimals: t.decimals,
-        displayAmount: toBalance(t.amount, t.decimals).toString(),
+        displayAmount: ethers.utils.formatUnits(t.amount, t.decimals),
         marketData:
           p && meta
             ? {
-                id: meta.id,
+                id: `coingecko_market_data:${meta.id}`,
                 change: p.usd_24h_change,
                 lastUpdatedAt: p.last_updated_at,
                 logo: meta.logo,
                 price: p.usd,
-                value: toBalance(t.amount, t.decimals) * p.usd,
+                value:
+                  parseFloat(ethers.utils.formatUnits(t.amount, t.decimals)) *
+                  p.usd,
               }
             : null,
         mint: t.mint,
@@ -95,7 +105,7 @@ export class Solana implements Blockchain {
     });
 
     // Calculate SPL token price value sum
-    const splTokenValueSum = splTokenData.reduce(
+    const splTokenValueSum = splTokenNodes.reduce(
       (acc, curr) => (curr.marketData ? acc + curr.marketData.value : acc),
       0
     );
@@ -103,17 +113,17 @@ export class Solana implements Blockchain {
     return {
       aggregateValue: nativeData.marketData!.value + splTokenValueSum,
       native: nativeData,
-      tokens: splTokenData,
+      tokens: createConnection(splTokenNodes, false, false),
     };
   }
 
   /**
    * Get a list of NFT data for tokens owned by the argued address.
    * @param {string} address
-   * @returns {(Promise<Nft[] | null>)}
+   * @returns {(Promise<NftConnection | null>)}
    * @memberof Solana
    */
-  async getNftsForAddress(address: string): Promise<Nft[] | null> {
+  async getNftsForAddress(address: string): Promise<NftConnection | null> {
     // Get the held SPL tokens for the address and reduce to only NFT mint addresses
     const assets = await this.#ctx.dataSources.helius.getBalances(address);
     const nftMints = assets.tokens.reduce<string[]>(
@@ -123,7 +133,7 @@ export class Solana implements Blockchain {
     );
 
     if (nftMints.length === 0) {
-      return [];
+      return null;
     }
 
     // Fetch the token metadata for each NFT mint address from Helius
@@ -163,19 +173,22 @@ export class Solana implements Blockchain {
     }
 
     // Map all NFT metadatas into their return type with possible collection data
-    return metadatas.map((m) => {
+    const nodes = metadatas.map((m) => {
       const collection = this._parseCollectionMetadata(
         collectionMap,
         m.onChainMetadata
       );
 
       return {
-        id: m.account,
+        id: `solana_nft:${m.account}`,
+        address: m.account,
         collection,
         image: m.offChainMetadata?.metadata.image,
         name: m.onChainMetadata?.metadata.data.name ?? "",
       };
     });
+
+    return createConnection(nodes, false, false);
   }
 
   /**
@@ -183,27 +196,32 @@ export class Solana implements Blockchain {
    * @param {string} address
    * @param {string} [before]
    * @param {string} [after]
-   * @returns {(Promise<Transaction[] | null>)}
+   * @returns {(Promise<TransactionConnection | null>)}
    * @memberof Ethereum
    */
   async getTransactionsForAddress(
     address: string,
     before?: string,
     after?: string
-  ): Promise<Transaction[] | null> {
+  ): Promise<TransactionConnection | null> {
     const resp = await this.#ctx.dataSources.helius.getTransactionHistory(
       address,
       before,
       after
     );
 
-    return resp.map((r) => ({
-      id: r.signature,
+    const nodes = resp.map((r) => ({
+      id: `solana_transaction:${r.signature}`,
       block: r.slot,
       fee: r.fee,
       feePayer: r.feePayer,
-      timestamp: r.timestamp,
+      hash: r.signature,
+      source: r.source,
+      timestamp: new Date(r.timestamp * 1000).toISOString(),
+      type: r.type,
     }));
+
+    return createConnection(nodes, false, false);
   }
 
   /**
@@ -245,7 +263,10 @@ export class Solana implements Blockchain {
 
     return hasCollection
       ? {
-          id: onChainMetadata!.metadata.collection!.key,
+          id: `solana_nft_collection:${
+            onChainMetadata!.metadata.collection!.key
+          }`,
+          address: onChainMetadata!.metadata.collection!.key,
           image: mapValue?.image,
           name: mapValue?.name,
           verified: onChainMetadata!.metadata.collection!.verified,

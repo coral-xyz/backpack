@@ -3,9 +3,6 @@ schema {
 }
 
 type Query {
-  # balances(chainId: ChainID!, address: String!): WalletBalances
-  # nfts(chainId: ChainID!, address: String!): [Nft]
-
   wallet(chainId: ChainID!, address: String!): Wallet
 }
 
@@ -18,21 +15,29 @@ interface Node {
   id: ID!
 }
 
-type Wallet implements Node {
-  id: ID!
-  balances: WalletBalances
-  nfts: [Nft]
-  transactions(before: String, after: String): [Transaction]
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
 }
 
-type WalletBalances {
+type Wallet implements Node {
+  id: ID!
+  balances: Balances
+  nfts: NftConnection
+  transactions(before: String, after: String): TransactionConnection
+}
+
+type Balances {
   aggregateValue: Float!
   native: TokenBalance!
-  tokens: [TokenBalance]!
+  tokens: TokenBalanceConnection
 }
 
 type Collection implements Node {
   id: ID!
+  address: String!
   image: String
   name: String
   verified: Boolean!
@@ -47,15 +52,37 @@ type MarketData implements Node {
   value: Float!
 }
 
+type NftConnection {
+  edges: [NftEdge]
+  pageInfo: PageInfo!
+}
+
+type NftEdge {
+  cursor: String!
+  node: Nft
+}
+
 type Nft implements Node {
   id: ID!
+  address: String!
   collection: Collection
   image: String
   name: String!
 }
 
+type TokenBalanceConnection {
+  edges: [TokenBalanceEdge]
+  pageInfo: PageInfo!
+}
+
+type TokenBalanceEdge {
+  cursor: String!
+  node: TokenBalance
+}
+
 type TokenBalance implements Node {
   id: ID!
+  address: String!
   amount: String!
   decimals: Int!
   displayAmount: String!
@@ -63,10 +90,23 @@ type TokenBalance implements Node {
   mint: String!
 }
 
+type TransactionConnection {
+  edges: [TransactionEdge]
+  pageInfo: PageInfo!
+}
+
+type TransactionEdge {
+  cursor: String!
+  node: Transaction
+}
+
 type Transaction implements Node {
   id: ID!
   block: Float!
   fee: Int
-  feePayer: String!
-  timestamp: Float
+  feePayer: String
+  hash: String!
+  source: String
+  timestamp: String
+  type: String!
 }

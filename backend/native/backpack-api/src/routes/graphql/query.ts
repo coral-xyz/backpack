@@ -3,14 +3,14 @@ import type { GraphQLResolveInfo } from "graphql";
 import { getBlockchainForId } from "./blockchain";
 import type { ApiContext } from "./context";
 import type {
+  Balances,
   ChainId,
-  Nft,
+  NftConnection,
   QueryResolvers,
   QueryWalletArgs,
   RequireFields,
-  Transaction,
+  TransactionConnection,
   Wallet,
-  WalletBalances,
   WalletResolvers,
   WalletTransactionsArgs,
 } from "./types";
@@ -49,14 +49,14 @@ export const walletResolvers: WalletResolvers = {
    * @param {{}} _args
    * @param {ApiContext} ctx
    * @param {GraphQLResolveInfo} _info
-   * @returns {(Promise<WalletBalances | null>)}
+   * @returns {(Promise<Balances | null>)}
    */
   async balances(
     parent: Wallet,
     _args: {},
     ctx: ApiContext,
     _info: GraphQLResolveInfo
-  ): Promise<WalletBalances | null> {
+  ): Promise<Balances | null> {
     const [chainId, address] = parent.id.split("/") as [ChainId, string];
     return getBlockchainForId(chainId, ctx).getBalancesForAddress(address);
   },
@@ -67,14 +67,14 @@ export const walletResolvers: WalletResolvers = {
    * @param {{}} _args
    * @param {ApiContext} ctx
    * @param {GraphQLResolveInfo} _info
-   * @returns {(Promise<Nft[] | null>)}
+   * @returns {(Promise<NftConnection | null>)}
    */
   async nfts(
     parent: Wallet,
     _args: {},
     ctx: ApiContext,
     _info: GraphQLResolveInfo
-  ): Promise<Nft[] | null> {
+  ): Promise<NftConnection | null> {
     const [chainId, address] = parent.id.split("/") as [ChainId, string];
     return getBlockchainForId(chainId, ctx).getNftsForAddress(address);
   },
@@ -85,14 +85,14 @@ export const walletResolvers: WalletResolvers = {
    * @param {Partial<WalletTransactionsArgs>} args
    * @param {ApiContext} ctx
    * @param {GraphQLResolveInfo} _info
-   * @returns {(Promise<Transaction[] | null>)}
+   * @returns {(Promise<TransactionConnection | null>)}
    */
   async transactions(
     parent: Wallet,
     args: Partial<WalletTransactionsArgs>,
     ctx: ApiContext,
     _info: GraphQLResolveInfo
-  ): Promise<Transaction[] | null> {
+  ): Promise<TransactionConnection | null> {
     const [chainId, address] = parent.id.split("/") as [ChainId, string];
     return getBlockchainForId(chainId, ctx).getTransactionsForAddress(
       address,
