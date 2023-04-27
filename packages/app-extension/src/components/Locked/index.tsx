@@ -218,14 +218,14 @@ function LockScreenAvatar({
         </>
       ) : (
         <ProxyImage
-          size={120}
+          size={240}
           src={avatarUrl}
           style={{
-            height: "120px",
-            width: "120px",
-            borderRadius: "60px",
+            height: "240px",
+            width: "240px",
+            borderRadius: "120px",
             position: "absolute",
-            bottom: -152,
+            bottom: -312,
             transform: "translate(-50%, 0%)",
             transformOrigin: undefined,
             display: "inline",
