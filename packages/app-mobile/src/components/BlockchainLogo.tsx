@@ -11,7 +11,6 @@ export function BlockchainLogo({
   size?: number;
   blockchain: Blockchain;
 }) {
-  console.log("blockchain", blockchain);
   const logo = getBlockchainLogo(blockchain);
   return (
     <Image
