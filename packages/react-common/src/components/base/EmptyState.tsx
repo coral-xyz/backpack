@@ -77,13 +77,14 @@ export const EmptyState: React.FC<{
               textAlign: "center",
               fontWeight: 500,
               color: theme.custom.colors.fontColor,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}
           >
             {title}
           </Typography>
-          {minimize !== true && (
-            <Typography
-              style={{
+          {minimize !== true ? <Typography
+            style={{
                 marginTop: "8px",
                 color: theme.custom.colors.secondary,
                 textAlign: "center",
@@ -92,14 +93,12 @@ export const EmptyState: React.FC<{
                 fontWeight: 500,
               }}
             >
-              {subtitle}
-            </Typography>
-          )}
-          {minimize !== true && buttonText && (
-            <PrimaryButton
-              onClick={onClick}
-              label={buttonText}
-              style={{
+            {subtitle}
+          </Typography> : null}
+          {minimize !== true && buttonText ? <PrimaryButton
+            onClick={onClick}
+            label={buttonText}
+            style={{
                 marginTop: "40px",
                 ...(window.matchMedia("(max-width: 650px)").matches
                   ? {}
@@ -111,8 +110,7 @@ export const EmptyState: React.FC<{
                       padding: "0 24px",
                     }),
               }}
-            />
-          )}
+            /> : null}
         </div>
       </div>
     </div>
