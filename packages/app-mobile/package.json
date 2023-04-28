@@ -18,7 +18,7 @@
     "postinstall": "npx patch-package"
   },
   "dependencies": {
-    "@apollo/client": "^3.8.0-alpha.0",
+    "@apollo/client": "^3.8.0-alpha.12",
     "@cardinal/payment-manager": "^1.7.9",
     "@cardinal/token-manager": "^1.7.9",
     "@coral-xyz/common": "*",
@@ -83,8 +83,6 @@
     "react-relay": "^15.0.0",
     "react-test-renderer": "^18.2.0",
     "recoil": "^0.7.6",
-    "recoil-persist": "^4.2.0",
-    "recoil-relay": "^0.1.0",
     "relay-runtime": "^15.0.0",
     "tamagui": "^1.15.39",
     "uuid": "^9.0.0"

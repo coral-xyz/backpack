@@ -8,7 +8,6 @@ import { XStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { StyledText } from "~components/index";
-// import { useTotalBalance } from "~hooks/recoil";
 import { useTheme } from "~hooks/useTheme";
 
 function TextTotalChange({
@@ -59,11 +58,10 @@ function TextPercentChange({
   return (
     <View style={{ borderRadius: 12, backgroundColor }}>
       <Text style={[styles.percentChangeText, { color }]}>
-        ({totalChange > 0 ? "+" : ""}
+        {totalChange > 0 ? "+" : ""}
         {Number.isFinite(percentChange)
           ? `${percentChange.toFixed(2)}%`
           : "0.00%"}
-        )
       </Text>
     </View>
   );
@@ -76,14 +74,15 @@ const GET_BALANCE_SUMMARY = gql`
       balances {
         aggregateValue
         native {
-          id
           address
           amount
           decimals
           displayAmount
+          id
           marketData {
             id
-            change
+            usdChange
+            percentChange
             lastUpdatedAt
             logo
             price
@@ -96,36 +95,21 @@ const GET_BALANCE_SUMMARY = gql`
 `;
 
 function Container() {
-  // const { data, loading, error } = useQuery(GET_BALANCE_SUMMARY, {
-  //   variables: {
-  //     chainId: "SOLANA",
-  //     address: "5iM4vFHv7vdiZJYm7rQwHGgvpp9zHEwZHGNbNATFF5To",
-  //   },
-  // });
+  const activeWallet = useActiveWallet();
   const { data } = useSuspenseQuery_experimental(GET_BALANCE_SUMMARY, {
     variables: {
-      chainId: "SOLANA",
-      address: "5iM4vFHv7vdiZJYm7rQwHGgvpp9zHEwZHGNbNATFF5To",
+      chainId: activeWallet.blockchain.toUpperCase(),
+      address: activeWallet.publicKey,
     },
   });
 
   const totalBalance = data.wallet.balances.aggregateValue;
-  const totalChange = data.wallet.balances.native.marketData.change;
-  // const percentChange = data.wallet.balances.native.marketData.change;
-
-  function calculatePercentChange(marketData) {
-    const { change, price } = marketData;
-    const percentChange = (change / price) * 100;
-    return percentChange;
-  }
-
-  const percentChange = calculatePercentChange(
-    data.wallet.balances.native.marketData
-  );
+  const totalChange = data.wallet.balances.native.marketData.usdChange;
+  const percentChange = data.wallet.balances.native.marketData.percentChange;
 
   return (
     <View style={styles.container}>
-      <StyledText mb={8} fontWeight="700" fontSize="$4xl" color="$fontColor">
+      <StyledText fontWeight="700" fontSize="$4xl" color="$fontColor">
         {formatUSD(totalBalance)}
       </StyledText>
       <XStack alignItems="center">
@@ -142,7 +126,7 @@ function Container() {
 
 export function BalanceSummaryWidget() {
   return (
-    <ErrorBoundary fallbackRender={({ error }) => <Text>{error}</Text>}>
+    <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
       <Suspense fallback={<ActivityIndicator size="large" />}>
         <Container />
       </Suspense>
@@ -152,6 +136,7 @@ export function BalanceSummaryWidget() {
 
 const styles = StyleSheet.create({
   container: {
+    justifyContent: "center",
     alignItems: "center",
   },
   totalChangeText: {
@@ -159,6 +144,9 @@ const styles = StyleSheet.create({
   },
   percentChangeText: {
     fontSize: 16,
-    marginLeft: 4,
+    lineHeight: 24,
+    borderRadius: 28,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
   },
 });

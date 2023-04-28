@@ -41,7 +41,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:^3.8.0-alpha.0":
+"@apollo/client@npm:^3.8.0-alpha.12":
   version: 3.8.0-alpha.12
   resolution: "@apollo/client@npm:3.8.0-alpha.12"
   dependencies:
@@ -3572,7 +3572,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/app-mobile@workspace:packages/app-mobile"
   dependencies:
-    "@apollo/client": ^3.8.0-alpha.0
+    "@apollo/client": ^3.8.0-alpha.12
     "@babel/core": ^7.19.3
     "@cardinal/payment-manager": ^1.7.9
     "@cardinal/token-manager": ^1.7.9
@@ -3649,8 +3649,6 @@ __metadata:
     react-relay: ^15.0.0
     react-test-renderer: ^18.2.0
     recoil: ^0.7.6
-    recoil-persist: ^4.2.0
-    recoil-relay: ^0.1.0
     relay-compiler: ^15.0.0
     relay-runtime: ^15.0.0
     tamagui: ^1.15.39
@@ -35268,26 +35266,6 @@ __metadata:
   dependencies:
     resolve: ^1.20.0
   checksum: ad3caed8afdefbc33fbc30e6d22b86c35b3d51c2005546f4e79bcc03c074df804b3640ad18945e6bef9ed12caedc035655ec1082f64a5e94c849ff939dc0a788
-  languageName: node
-  linkType: hard
-
-"recoil-persist@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "recoil-persist@npm:4.2.0"
-  peerDependencies:
-    recoil: ^0.7.2
-  checksum: 1c8a6be4bb914b383429603e910aba80734311d8657ddf9f94a39513da0eb41fd6a2b74439f93658daf465d2e66a2d890e9f6b2f8a047e4fb99dc5b31f301515
-  languageName: node
-  linkType: hard
-
-"recoil-relay@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "recoil-relay@npm:0.1.0"
-  peerDependencies:
-    react-relay: ">=13.2.0"
-    recoil: ">=0.7.3"
-    relay-runtime: ">=13.2.0"
-  checksum: c210bf9c3b0a2c7ce2fb130b6eb2b5d1d63680fca549b013c0b00b40b81dc15c3ff43389e6f069a17a7bdbb710f4a055bd754342eb445ce094d9b27ad006bfb6
   languageName: node
   linkType: hard
 
