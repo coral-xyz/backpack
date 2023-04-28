@@ -37,14 +37,9 @@ export function start(cfg: Config): Background {
     chrome.runtime.onInstalled.addListener(() => {
       chrome.alarms.get("keep-alive", (a) => {
         if (!a) {
-          console.log("registering keep alive alarm");
           chrome.alarms.create("keep-alive", { periodInMinutes: 0.5 });
         }
       });
-    });
-
-    chrome.alarms.onAlarm.addListener(() => {
-      console.log("keep alive alarm");
     });
   }
 
