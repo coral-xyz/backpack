@@ -1,3 +1,5 @@
+import type { ContextFunction } from "@apollo/server";
+import type { ExpressContextFunctionArgument } from "@apollo/server/express4";
 import { Alchemy } from "alchemy-sdk";
 
 import { CoinGecko } from "./clients/coingecko";
@@ -9,6 +11,7 @@ export interface ApiContext {
     coinGecko: CoinGecko;
     helius: Helius;
   };
+  jwt?: string;
 }
 
 /**
@@ -16,12 +19,23 @@ export interface ApiContext {
  * @export
  * @returns {Promise<ApiContext>}
  */
-export async function createContext(): Promise<ApiContext> {
+export const createContext: ContextFunction<
+  [ExpressContextFunctionArgument],
+  ApiContext
+> = async ({ req }): Promise<ApiContext> => {
+  let jwt: string | undefined = undefined;
+
+  const authHeader = req.headers.authorization ?? "";
+  if (authHeader.startsWith("Bearer ")) {
+    jwt = authHeader.split(" ")[1];
+  }
+
   return {
     dataSources: {
       alchemy: new Alchemy({ apiKey: process.env.ALCHEMY_API_KEY }),
       coinGecko: new CoinGecko(),
       helius: new Helius(process.env.HELIUS_API_KEY ?? ""),
     },
+    jwt,
   };
-}
+};
