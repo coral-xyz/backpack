@@ -533,6 +533,26 @@ export function NftOptionsButton() {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       >
         <PopoverMenu.Group>
+          <PopoverMenu.Item onClick={onSetPfp}>Set as PFP</PopoverMenu.Item>
+          <PopoverMenu.Item
+            onClick={() => {
+              const link = document.createElement("a");
+              link.href = nft.imageUrl;
+              link.download = nft.imageUrl.split("/").pop();
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+          >
+            Download Image
+          </PopoverMenu.Item>
+          <PopoverMenu.Item
+            onClick={() => {
+              navigator.clipboard.writeText(nft.imageUrl);
+            }}
+          >
+            Copy Image
+          </PopoverMenu.Item>
           <PopoverMenu.Item
             onClick={() => {
               const url = explorerNftUrl(explorer, nft, connectionUrl);
@@ -541,7 +561,6 @@ export function NftOptionsButton() {
           >
             View on Explorer
           </PopoverMenu.Item>
-          <PopoverMenu.Item onClick={onSetPfp}>Set as PFP</PopoverMenu.Item>
         </PopoverMenu.Group>
         <PopoverMenu.Group>
           <PopoverMenu.Item

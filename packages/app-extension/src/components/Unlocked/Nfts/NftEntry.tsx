@@ -2,6 +2,8 @@ import type { MouseEvent } from "react";
 import { useState } from "react";
 import type { Nft } from "@coral-xyz/common";
 import {
+  AVATAR_BASE_URL,
+  BACKEND_API_URL,
   NAV_COMPONENT_NFT_DETAIL,
   UNKNOWN_NFT_ICON_SRC,
 } from "@coral-xyz/common";
@@ -10,15 +12,21 @@ import {
   chatByCollectionId,
   chatByNftId,
   collectibleXnft,
+  newAvatarAtom,
   useActiveWallet,
   useBlockchainConnectionUrl,
   useNavigation,
   useOpenPlugin,
+  useUser,
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Button, IconButton, MenuItem, Typography } from "@mui/material";
-import { useRecoilValue, useRecoilValueLoadable } from "recoil";
+import {
+  useRecoilValue,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from "recoil";
 
 import { RightClickMenu } from "../../common/Layout/RightClickMenu";
 import PopoverMenu from "../../common/PopoverMenu";
@@ -71,6 +79,8 @@ export function NFTCard({
   };
   showCollectionChat?: boolean;
 }) {
+  const { username } = useUser();
+  const setNewAvatar = useSetRecoilState(newAvatarAtom(username));
   const activeWallet = useActiveWallet();
   const connectionUrl = useBlockchainConnectionUrl(activeWallet.blockchain);
   const { push } = useNavigation();
@@ -126,6 +136,33 @@ export function NFTCard({
     e.stopPropagation();
   };
 
+  const onSetPfp = async () => {
+    if (nft) {
+      //
+      // Store on server.
+      //
+      const id = `${nft.blockchain}/${
+        nft.blockchain === "solana" ? nft.mint : nft.id
+      }`;
+
+      await fetch(BACKEND_API_URL + "/users/avatar", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({ avatar: id }),
+      });
+      await fetch(`${AVATAR_BASE_URL}/${username}?bust_cache=1`);
+
+      //
+      // Store locally.
+      //
+      // Need SWR mechanic for Local pfps before enabling again so we can update PFPs from xnfts.
+      // await updateLocalNftPfp(uuid, username, tempAvatar.nft!);
+      setNewAvatar({ id, url: nft.imageUrl });
+    }
+  };
+
   return (
     <SendDrawer nft={nft}>
       {(openDrawer) => (
@@ -153,6 +190,7 @@ export function NFTCard({
               onOpenChat={chat ? onOpenChat : undefined}
               onOpenXnft={xnft ? onOpenXnft : undefined}
               onOpenSend={openDrawer}
+              onSetPfp={onSetPfp}
             />
           </>
         </RightClickMenu>
@@ -253,6 +291,7 @@ function NftCardFooter({
   onOpenChat,
   onOpenXnft,
   onOpenSend,
+  onSetPfp,
 }: {
   nft: any;
   subtitle?: {
@@ -263,6 +302,7 @@ function NftCardFooter({
   onOpenChat?: (e: any) => Promise<void>;
   onOpenXnft?: (e: MouseEvent) => void;
   onOpenSend: () => void;
+  onSetPfp: () => Promise<void>;
 }) {
   const theme = useCustomTheme();
   return (
@@ -316,6 +356,7 @@ function NftCardFooter({
         onOpenChat={onOpenChat}
         onOpenXnft={onOpenXnft}
         onOpenSend={onOpenSend}
+        onSetPfp={onSetPfp}
       />
     </div>
   );
@@ -367,11 +408,13 @@ function NftMoreInfoActionMenu({
   onOpenXnft,
   onOpenDetails,
   onOpenSend,
+  onSetPfp,
 }: {
   onOpenDetails: () => Promise<void>;
   onOpenChat?: (e: any) => Promise<void>;
   onOpenXnft?: (e: MouseEvent) => void;
   onOpenSend: () => void;
+  onSetPfp: () => Promise<void>;
 }) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const theme = useCustomTheme();
@@ -410,6 +453,9 @@ function NftMoreInfoActionMenu({
           >
             View
           </PopoverMenu.Item>
+          {onSetPfp ? (
+            <PopoverMenu.Item onClick={onSetPfp}>Set as PFP</PopoverMenu.Item>
+          ) : null}
           {onOpenChat ? (
             <PopoverMenu.Item
               onClick={async (e) => {
