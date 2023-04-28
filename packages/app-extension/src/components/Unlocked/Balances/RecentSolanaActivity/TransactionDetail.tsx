@@ -42,7 +42,6 @@ import {
   formatTimestamp,
   getTokenData,
   getTransactionDetailTitle,
-  getTransactionTitle,
   isNFTTransaction,
   isUserTxnSender,
   parseSwapTransaction,
@@ -82,7 +81,7 @@ const useStyles = styles((theme) => ({
     borderRadius: "14px",
     width: "100%",
     fontSize: "14px",
-    border: `${theme.custom.colors.borderFull}`,
+    border: "1px solid #F0F0F2",
   },
   firstRow: {
     paddingLeft: "12px",
@@ -90,7 +89,7 @@ const useStyles = styles((theme) => ({
     paddingTop: "10px",
     paddingBottom: "10px",
     display: "flex",
-    borderBottom: `solid 1pt ${theme.custom.colors.border}`,
+    borderBottom: "1px solid #F0F0F2",
     borderTopLeftRadius: "12px",
     borderTopRightRadius: "12px",
     backgroundColor: theme.custom.colors.nav,
@@ -101,7 +100,7 @@ const useStyles = styles((theme) => ({
     paddingTop: "10px",
     paddingBottom: "10px",
     display: "flex",
-    borderBottom: `solid 1pt ${theme.custom.colors.border}`,
+    borderBottom: "1px solid #F0F0F2",
     backgroundColor: theme.custom.colors.nav,
   },
   lastRow: {
@@ -505,29 +504,35 @@ function DetailTable({
         </div>
       </div>
 
-      {transaction.type ? <div className={classes.middleRow}>
-        <div className={classes.cell}>
-          <div className={classes.label}>Type</div>
-          <div className={classes.cellValue}>
-            {snakeToTitleCase(transaction.type)}
+      {transaction.type ? (
+        <div className={classes.middleRow}>
+          <div className={classes.cell}>
+            <div className={classes.label}>Type</div>
+            <div className={classes.cellValue}>
+              {snakeToTitleCase(transaction.type)}
+            </div>
           </div>
         </div>
-      </div> : null}
+      ) : null}
 
-      {offChainMetadata ? <div className={classes.middleRow}>
-        <div className={classes.cell}>
-          <div className={classes.label}>Item</div>
-          <div className={classes.cellValue}>{offChainMetadata.name}</div>
-        </div>
-      </div> : null}
-      {transaction.source ? <div className={classes.middleRow}>
-        <div className={classes.cell}>
-          <div className={classes.label}>Source</div>
-          <div className={classes.cellValue}>
-            {snakeToTitleCase(transaction.source)}
+      {offChainMetadata ? (
+        <div className={classes.middleRow}>
+          <div className={classes.cell}>
+            <div className={classes.label}>Item</div>
+            <div className={classes.cellValue}>{offChainMetadata.name}</div>
           </div>
         </div>
-      </div> : null}
+      ) : null}
+      {transaction.source ? (
+        <div className={classes.middleRow}>
+          <div className={classes.cell}>
+            <div className={classes.label}>Source</div>
+            <div className={classes.cellValue}>
+              {snakeToTitleCase(transaction.source)}
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {(transaction?.type === TransactionType.UNKNOWN ||
         transaction.type === TransactionType.TRANSFER) &&
