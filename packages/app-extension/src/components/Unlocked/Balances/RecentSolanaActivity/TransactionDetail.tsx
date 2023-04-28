@@ -1,5 +1,5 @@
-import type { Dispatch, SetStateAction} from "react";
-import { useEffect , useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Blockchain,
@@ -42,10 +42,10 @@ import {
   formatTimestamp,
   getTokenData,
   getTransactionDetailTitle,
-  getTransactionTitle,
   isNFTTransaction,
   isUserTxnSender,
   parseSwapTransaction,
+  snakeToTitleCase,
 } from "./detail-parser";
 import type { HeliusParsedTransaction } from "./types";
 
@@ -58,6 +58,7 @@ const useStyles = styles((theme) => ({
     height: "100%",
     alignItems: "center",
     backgroundColor: theme.custom.colors.background,
+    overflowY: "scroll",
   },
   nft: {
     borderRadius: "10px",
@@ -80,7 +81,7 @@ const useStyles = styles((theme) => ({
     borderRadius: "14px",
     width: "100%",
     fontSize: "14px",
-    border: `${theme.custom.colors.borderFull}`,
+    border: "1px solid #F0F0F2",
   },
   firstRow: {
     paddingLeft: "12px",
@@ -88,7 +89,7 @@ const useStyles = styles((theme) => ({
     paddingTop: "10px",
     paddingBottom: "10px",
     display: "flex",
-    borderBottom: `solid 1pt ${theme.custom.colors.border}`,
+    borderBottom: "1px solid #F0F0F2",
     borderTopLeftRadius: "12px",
     borderTopRightRadius: "12px",
     backgroundColor: theme.custom.colors.nav,
@@ -99,7 +100,7 @@ const useStyles = styles((theme) => ({
     paddingTop: "10px",
     paddingBottom: "10px",
     display: "flex",
-    borderBottom: `solid 1pt ${theme.custom.colors.border}`,
+    borderBottom: "1px solid #F0F0F2",
     backgroundColor: theme.custom.colors.nav,
   },
   lastRow: {
@@ -251,7 +252,7 @@ export function TransactionDetail({
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
-                    paddingBottom: "10px",
+                    paddingBottom: "6px",
                   }}
                 >
                   <DetailCardHeader
@@ -343,19 +344,15 @@ function DetailCardHeader({
   if (isNFTTransaction(transaction) && nftImage) {
     return (
       <>
-        {/* <img className={classes.nft} src={nftImage} /> */}
         <ProxyImage className={classes.nft} src={nftImage} />
-        <div
-          style={{
-            fontSize: "24px",
-            color: theme.custom.colors.fontColor,
-            paddingTop: "16px",
-          }}
-        >
-          {getTransactionTitle(activeWallet, transaction)}
-        </div>
         {nftPrice ? (
-          <div style={{ display: "flex", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              paddingTop: "16px",
+            }}
+          >
             <ProxyImage
               style={{
                 borderRadius: "50%",
@@ -507,6 +504,36 @@ function DetailTable({
         </div>
       </div>
 
+      {transaction.type ? (
+        <div className={classes.middleRow}>
+          <div className={classes.cell}>
+            <div className={classes.label}>Type</div>
+            <div className={classes.cellValue}>
+              {snakeToTitleCase(transaction.type)}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {offChainMetadata ? (
+        <div className={classes.middleRow}>
+          <div className={classes.cell}>
+            <div className={classes.label}>Item</div>
+            <div className={classes.cellValue}>{offChainMetadata.name}</div>
+          </div>
+        </div>
+      ) : null}
+      {transaction.source ? (
+        <div className={classes.middleRow}>
+          <div className={classes.cell}>
+            <div className={classes.label}>Source</div>
+            <div className={classes.cellValue}>
+              {snakeToTitleCase(transaction.source)}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {(transaction?.type === TransactionType.UNKNOWN ||
         transaction.type === TransactionType.TRANSFER) &&
       isUserTxnSender(transaction, activeWallet) ? (
@@ -568,7 +595,6 @@ function DetailTable({
       <div className={classes.middleRow}>
         <div className={classes.cell}>
           <div className={classes.label}>Network Fee</div>
-
           <div className={classes.cellValue}>
             {transaction?.fee / 10 ** 9} SOL
           </div>
@@ -577,7 +603,6 @@ function DetailTable({
       <div className={classes.middleRow}>
         <div className={classes.cell}>
           <div className={classes.label}>Status</div>
-
           {transaction?.transactionError ? (
             <div className={classes.failedStatus}>Failed</div>
           ) : (
@@ -585,12 +610,7 @@ function DetailTable({
           )}
         </div>
       </div>
-      {offChainMetadata ? <div className={classes.middleRow}>
-        <div className={classes.cell}>
-          <div className={classes.label}>NFT Item</div>
-          <div className={classes.cellValue}>{offChainMetadata.name}</div>
-        </div>
-      </div> : null}
+
       <div
         className={classes.lastRow}
         onClick={() => {

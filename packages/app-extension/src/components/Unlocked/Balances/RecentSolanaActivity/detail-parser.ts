@@ -367,3 +367,16 @@ export const parseSwapTransaction = (
     }));
   }
 };
+
+export function snakeToTitleCase(input: string): string {
+  const parts = input.split("_").map((t) => t.toLowerCase());
+  const titleCasesParts = parts.map((p) =>
+    p.length === 1 ? p : `${p[0].toUpperCase()}${p.slice(1)}`
+  );
+
+  if (titleCasesParts[0] === "Nft") {
+    titleCasesParts[0] = titleCasesParts[0].toUpperCase();
+  }
+
+  return titleCasesParts.join(" ");
+}
