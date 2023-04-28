@@ -11,10 +11,8 @@ import {
   useNavigation,
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
-import { Button, MenuItem, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { useRecoilValue } from "recoil";
-
-import { RightClickMenu } from "../../common/Layout/RightClickMenu";
 
 const useStyles = styles((theme) => ({
   button: {
@@ -84,143 +82,137 @@ export function CollectionCard({ collection }: { collection: NftCollection }) {
   };
 
   return (
-    <RightClickMenu
-      renderItems={(close) => (
-        <MenuItem onClick={openCollection}>View Items</MenuItem>
-      )}
-    >
-      <>
-        <Button
-          className={classes.button}
-          onClick={openCollection}
-          disableRipple
+    <>
+      <Button
+        className={classes.button}
+        onClick={openCollection}
+        disableRipple
+        style={{
+          textTransform: "none",
+          padding: "4px",
+          borderRadius: "8px",
+          position: "relative",
+          overflow: "hidden",
+          minWidth: "153.5px",
+          minHeight: "153.5px",
+          height: "100%",
+          width: "100%",
+          aspectRatio: "1",
+          display: "flex",
+          flexDirection: "column",
+          background: theme.custom.colors.background,
+        }}
+      >
+        <div
           style={{
-            textTransform: "none",
-            padding: "4px",
-            borderRadius: "8px",
-            position: "relative",
-            overflow: "hidden",
-            minWidth: "153.5px",
-            minHeight: "153.5px",
-            height: "100%",
-            width: "100%",
-            aspectRatio: "1",
             display: "flex",
-            flexDirection: "column",
-            background: theme.custom.colors.background,
+            flexDirection: "row",
+            width: "100%",
+            height: "100%",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+            alignItems: "center",
+            overflow: "hidden",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              width: "100%",
-              height: "100%",
-              flexWrap: "wrap",
-              justifyContent: "space-between",
-              alignItems: "center",
-              overflow: "hidden",
-            }}
-          >
-            {paddedCollectionDisplayNfts.map((nft, i) => {
-              return (
+          {paddedCollectionDisplayNfts.map((nft, i) => {
+            return (
+              <div
+                key={nft?.id ?? i}
+                style={{
+                  position: "relative",
+                  width: "50%",
+                  height: "50%",
+                }}
+              >
                 <div
-                  key={nft?.id ?? i}
                   style={{
-                    position: "relative",
-                    width: "50%",
-                    height: "50%",
+                    position: "absolute",
+                    top: "3px",
+                    right: "3px",
+                    bottom: "3px",
+                    left: "3px",
+                    overflow: "hidden",
+                    borderRadius: "8px",
                   }}
                 >
                   <div
                     style={{
-                      position: "absolute",
-                      top: "3px",
-                      right: "3px",
-                      bottom: "3px",
-                      left: "3px",
-                      overflow: "hidden",
-                      borderRadius: "8px",
+                      position: "relative",
+                      height: "100%",
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
-                    <div
-                      style={{
-                        position: "relative",
-                        height: "100%",
-                        width: "100%",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      {nft ? (
-                        <ProxyImage
-                          style={{
-                            width: "100%",
-                          }}
-                          loadingStyles={{
-                            height: "100%",
-                          }}
-                          removeOnError
-                          src={nft.imageUrl}
-                          onError={(e) => {
-                            e.currentTarget.src = UNKNOWN_NFT_ICON_SRC;
-                          }}
-                        />
-                      ) : null}
-                    </div>
+                    {nft ? (
+                      <ProxyImage
+                        style={{
+                          width: "100%",
+                        }}
+                        loadingStyles={{
+                          height: "100%",
+                        }}
+                        removeOnError
+                        src={nft.imageUrl}
+                        onError={(e) => {
+                          e.currentTarget.src = UNKNOWN_NFT_ICON_SRC;
+                        }}
+                      />
+                    ) : null}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </Button>
-        <div
+              </div>
+            );
+          })}
+        </div>
+      </Button>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
+        <Typography
+          onClick={openCollection}
+          component="div"
           style={{
             display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
+            justifyContent: "flex-start",
+            fontSize: "14px",
+            color: theme.custom.colors.fontColor,
+            textOverflow: "ellipsis",
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            cursor: "pointer",
+            padding: "8px 8px 8px 0px",
+            flexGrow: 1,
           }}
         >
-          <Typography
-            onClick={openCollection}
-            component="div"
+          <div
             style={{
-              display: "flex",
-              justifyContent: "flex-start",
-              fontSize: "14px",
-              color: theme.custom.colors.fontColor,
               textOverflow: "ellipsis",
               overflow: "hidden",
               whiteSpace: "nowrap",
-              cursor: "pointer",
-              padding: "8px 8px 8px 0px",
-              flexGrow: 1,
             }}
           >
-            <div
+            {nft.collectionName}
+          </div>
+          {collection.itemIds.length > 0 ? (
+            <span
               style={{
-                textOverflow: "ellipsis",
-                overflow: "hidden",
-                whiteSpace: "nowrap",
+                marginLeft: "8px",
+                color: theme.custom.colors.secondary,
               }}
             >
-              {nft.collectionName}
-            </div>
-            {collection.itemIds.length > 0 ? (
-              <span
-                style={{
-                  marginLeft: "8px",
-                  color: theme.custom.colors.secondary,
-                }}
-              >
-                {collection.itemIds.length}
-              </span>
-            ) : null}
-          </Typography>
-        </div>
-      </>
-    </RightClickMenu>
+              {collection.itemIds.length}
+            </span>
+          ) : null}
+        </Typography>
+      </div>
+    </>
   );
 }

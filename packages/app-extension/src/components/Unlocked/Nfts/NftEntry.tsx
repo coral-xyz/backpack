@@ -17,10 +17,9 @@ import {
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { Button, IconButton, MenuItem, Typography } from "@mui/material";
+import { Button, IconButton, Typography } from "@mui/material";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
-import { RightClickMenu } from "../../common/Layout/RightClickMenu";
 import PopoverMenu from "../../common/PopoverMenu";
 
 import { useOpenChat } from "./NftDetail";
@@ -129,33 +128,21 @@ export function NFTCard({
   return (
     <SendDrawer nft={nft}>
       {(openDrawer) => (
-        <RightClickMenu
-          renderItems={(closeMenu) => (
-            <NftRightClickActionMenu
-              onOpenDetails={openDetails}
-              onOpenChat={chat ? onOpenChat : undefined}
-              onOpenXnft={xnft ? onOpenXnft : undefined}
-              onOpenSend={openDrawer}
-              closeMenu={closeMenu}
-            />
-          )}
-        >
-          <>
-            <NftCardButton
-              onClick={xnft ? onOpenXnft : openDetails}
-              nft={nft}
-              isXnft={!!xnft}
-            />
-            <NftCardFooter
-              nft={nft}
-              subtitle={subtitle}
-              onOpenDetails={openDetails}
-              onOpenChat={chat ? onOpenChat : undefined}
-              onOpenXnft={xnft ? onOpenXnft : undefined}
-              onOpenSend={openDrawer}
-            />
-          </>
-        </RightClickMenu>
+        <>
+          <NftCardButton
+            onClick={xnft ? onOpenXnft : openDetails}
+            nft={nft}
+            isXnft={!!xnft}
+          />
+          <NftCardFooter
+            nft={nft}
+            subtitle={subtitle}
+            onOpenDetails={openDetails}
+            onOpenChat={chat ? onOpenChat : undefined}
+            onOpenXnft={xnft ? onOpenXnft : undefined}
+            onOpenSend={openDrawer}
+          />
+        </>
       )}
     </SendDrawer>
   );
@@ -318,47 +305,6 @@ function NftCardFooter({
         onOpenSend={onOpenSend}
       />
     </div>
-  );
-}
-
-function NftRightClickActionMenu({
-  onOpenChat,
-  onOpenXnft,
-  onOpenDetails,
-  onOpenSend,
-  closeMenu,
-}: {
-  onOpenChat?: (e: any) => Promise<void>;
-  onOpenXnft?: (e: MouseEvent) => void;
-  onOpenDetails: () => void;
-  onOpenSend: () => void;
-  closeMenu: () => void;
-}) {
-  return (
-    <>
-      {onOpenXnft ? <MenuItem onClick={onOpenXnft}>Open xNFT</MenuItem> : null}
-      {onOpenChat ? (
-        <MenuItem
-          onClick={async (e) => {
-            closeMenu();
-            await onOpenChat(e);
-          }}
-        >
-          Chat
-        </MenuItem>
-      ) : null}
-      <MenuItem sx={{ width: "100px" }} onClick={onOpenDetails}>
-        View
-      </MenuItem>
-      <MenuItem
-        onClick={() => {
-          closeMenu();
-          onOpenSend();
-        }}
-      >
-        Send
-      </MenuItem>
-    </>
   );
 }
 
