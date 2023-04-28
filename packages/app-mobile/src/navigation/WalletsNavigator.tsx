@@ -6,6 +6,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
 import { useTheme } from "~hooks/useTheme";
+import { CollectionListScreen } from "~screens/CollectionListScreen";
 import { HomeWalletListScreen } from "~screens/HomeWalletListScreen";
 import { BalanceDetailScreen } from "~screens/Unlocked/BalancesScreen";
 import { RecentActivityScreen } from "~screens/Unlocked/RecentActivityScreen";
@@ -38,7 +39,7 @@ function TopTabsNavigator(): JSX.Element {
       />
       <TopTabs.Screen
         name="Collectibles"
-        component={NftCollectionListScreen}
+        component={CollectionListScreen}
         options={{ title: "Collectibles" }}
       />
       <TopTabs.Screen

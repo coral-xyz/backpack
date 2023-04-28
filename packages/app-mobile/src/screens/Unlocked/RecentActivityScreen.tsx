@@ -274,6 +274,9 @@ function TransferTransaction({ transaction, tokenData, metadata }) {
   }
 }
 
+// SWAP, BURN, BURN_NFT, NFT, TRANSFER, UNKNOWN, ERROR?
+// see helius types (follow isNFTTransaaction)
+
 function RecentActivityItem({ transaction }) {
   const { tokenData, metadata } = useRecentTransactionData(transaction);
   if (transaction?.transactionError) {
