@@ -12,6 +12,11 @@ import { SubtextParagraph } from "../../../common";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavigation } from "../../../common/Layout/NavStack";
 
+enum PasswordError {
+  TOO_SHORT,
+  NO_MATCH,
+}
+
 export function ChangePassword() {
   const theme = useCustomTheme();
   const { close } = useDrawerContext();
@@ -23,7 +28,9 @@ export function ChangePassword() {
 
   const [currentPasswordError, setCurrentPasswordError] = useState(false);
   const [passwordMismatchError, setPasswordMismatchError] = useState(false);
+  const [passwordLengthError, setPasswordLengthError] = useState(false);
   const missingNewPw = newPw1.trim() === "" || newPw2.trim() === "";
+  const [error, setError] = useState<PasswordError | null>(null);
 
   useEffect(() => {
     const title = nav.title;
@@ -44,11 +51,15 @@ export function ChangePassword() {
               params: [currentPassword],
             });
             const mismatchError = newPw1.trim() === "" || newPw1 !== newPw2;
+            const passwordLengthError = newPw1.length >= 8;
 
             setCurrentPasswordError(!isCurrentCorrect);
             setPasswordMismatchError(mismatchError);
+            setPasswordLengthError(!passwordLengthError);
 
-            if (!isCurrentCorrect || mismatchError) {
+            if (!isCurrentCorrect || mismatchError || !passwordLengthError) {
+              if(mismatchError) setError(PasswordError.NO_MATCH);
+              else if(!passwordLengthError) setError(PasswordError.TOO_SHORT);
               return;
             }
 
@@ -98,7 +109,7 @@ export function ChangePassword() {
               Forgot Password?
             </Typography>
           </Button>
-          <Inputs error={passwordMismatchError}>
+          <Inputs error={passwordMismatchError || passwordLengthError}>
             <InputListItem
               isFirst
               value={newPw1}
@@ -118,6 +129,17 @@ export function ChangePassword() {
               title="Verify"
             />
           </Inputs>
+           {error !== null ? (
+            <Typography sx={{ color: theme.custom.colors.negative, textAlign: "center", fontSize: "14px" }}>
+              {
+                {
+                  [PasswordError.TOO_SHORT]:
+                    "Your password must be at least 8 characters.",
+                  [PasswordError.NO_MATCH]: "Your passwords do not match.",
+                }[error]
+              }
+            </Typography>
+          ) : null}
           <SubtextParagraph
             style={{
               fontWeight: 500,
