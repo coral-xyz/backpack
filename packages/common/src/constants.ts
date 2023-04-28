@@ -506,6 +506,8 @@ export const PLUGIN_RPC_METHOD_CLOSE_TO = "rpc-method-chat-open";
 
 export const PLUGIN_RPC_METHOD_POP_OUT = "rpc-method-pop-out";
 
+export const PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW = "rpc-method-resize-extension-window";
+
 export const BACKGROUND_SERVICE_WORKER_READY = "service-worker-ready";
 
 export const POST_MESSAGE_ORIGIN = "*";
