@@ -81,7 +81,7 @@ const useStyles = styles((theme) => ({
     borderRadius: "14px",
     width: "100%",
     fontSize: "14px",
-    border: "1px solid #F0F0F2",
+    border: theme.custom.colors.tableCellBorder,
   },
   firstRow: {
     paddingLeft: "12px",
@@ -89,7 +89,7 @@ const useStyles = styles((theme) => ({
     paddingTop: "10px",
     paddingBottom: "10px",
     display: "flex",
-    borderBottom: "1px solid #F0F0F2",
+    borderBottom: theme.custom.colors.tableCellBorder,
     borderTopLeftRadius: "12px",
     borderTopRightRadius: "12px",
     backgroundColor: theme.custom.colors.nav,
@@ -100,7 +100,7 @@ const useStyles = styles((theme) => ({
     paddingTop: "10px",
     paddingBottom: "10px",
     display: "flex",
-    borderBottom: "1px solid #F0F0F2",
+    borderBottom: theme.custom.colors.tableCellBorder,
     backgroundColor: theme.custom.colors.nav,
   },
   lastRow: {
