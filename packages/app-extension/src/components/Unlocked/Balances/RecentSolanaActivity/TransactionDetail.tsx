@@ -1,5 +1,5 @@
-import type { Dispatch, SetStateAction } from "react";
-import { useState } from "react";
+import type { Dispatch, SetStateAction} from "react";
+import { useEffect , useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Blockchain,
@@ -7,7 +7,7 @@ import {
   explorerUrl,
   walletAddressDisplay,
 } from "@coral-xyz/common";
-import { PrimaryButton } from "@coral-xyz/react-common";
+import { PrimaryButton, ProxyImage } from "@coral-xyz/react-common";
 import {
   SOL_LOGO_URI,
   useActiveWallet,
@@ -60,9 +60,10 @@ const useStyles = styles((theme) => ({
     backgroundColor: theme.custom.colors.background,
   },
   nft: {
-    borderRadius: "2px",
+    borderRadius: "10px",
     width: "168px",
     height: "168px",
+    objectFit: "cover",
   },
   ctaButton: {
     margin: "16px",
@@ -193,9 +194,27 @@ export function TransactionDetail({
   const activeWallet = useActiveWallet();
   const navigate = useNavigate();
   const [openDrawer, setOpenDrawer] = useState(true);
+  const [offChainMetadata, setOffChainMetadata] = useState<any | undefined>(
+    undefined
+  );
 
   // TODO - this is duplicated in ListItem.tsx, better to pass in setTransactionDetail state
   const tokenData = getTokenData(registry, transaction);
+
+  useEffect(() => {
+    if (
+      !metadata ||
+      !metadata.onChainMetadata ||
+      !metadata.onChainMetadata.metadata
+    ) {
+      return;
+    }
+
+    fetch(metadata.onChainMetadata.metadata.data.uri)
+      .then((res) => res.json())
+      .then(setOffChainMetadata)
+      .catch(console.error);
+  }, [metadata]);
 
   return (
     <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
@@ -239,6 +258,7 @@ export function TransactionDetail({
                     transaction={transaction}
                     tokenData={tokenData}
                     metadata={metadata}
+                    offChainMetadata={offChainMetadata}
                   />
                 </div>
 
@@ -257,7 +277,11 @@ export function TransactionDetail({
                   />
                 ) : null}
 
-                <DetailTable transaction={transaction} tokenData={tokenData} />
+                <DetailTable
+                  transaction={transaction}
+                  tokenData={tokenData}
+                  offChainMetadata={offChainMetadata}
+                />
               </Card>
             )}
           />
@@ -273,10 +297,12 @@ function DetailCardHeader({
   transaction,
   tokenData,
   metadata,
+  offChainMetadata,
 }: {
   transaction: HeliusParsedTransaction;
   tokenData: (TokenInfo | undefined)[];
   metadata?: any;
+  offChainMetadata?: any;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -291,14 +317,14 @@ function DetailCardHeader({
     return (
       <div className={classes.detailCardHeaderSwapContainer}>
         <div className={classes.detailCardHeaderSwapColumn}>
-          <img className={classes.tokenLogo} src={input.tokenIcon} />
+          <ProxyImage className={classes.tokenLogo} src={input.tokenIcon} />
           <div className={classes.detailCardHeaderSwapText}>
             {input.amountWithSymbol}
           </div>
         </div>
         <ArrowRightAltRounded className={classes.detailCardHeaderSwapArrow} />
         <div className={classes.detailCardHeaderSwapColumn}>
-          <img className={classes.tokenLogo} src={output.tokenIcon} />
+          <ProxyImage className={classes.tokenLogo} src={output.tokenIcon} />
           <div className={classes.detailCardHeaderSwapText}>
             {output.amountWithSymbol}
           </div>
@@ -308,7 +334,7 @@ function DetailCardHeader({
   }
 
   // if NFT url available, display it. Check on-chain data first
-  const nftImage = undefined; // FIXME: metadata?.onChainMetadata?.metadata?.data?.uri;
+  const nftImage = offChainMetadata?.image;
 
   const nftPrice = transaction?.events?.nft?.amount
     ? transaction?.events?.nft?.amount / 10 ** 9
@@ -317,7 +343,8 @@ function DetailCardHeader({
   if (isNFTTransaction(transaction) && nftImage) {
     return (
       <>
-        <img className={classes.nft} src={nftImage} />
+        {/* <img className={classes.nft} src={nftImage} /> */}
+        <ProxyImage className={classes.nft} src={nftImage} />
         <div
           style={{
             fontSize: "24px",
@@ -329,7 +356,7 @@ function DetailCardHeader({
         </div>
         {nftPrice ? (
           <div style={{ display: "flex", alignItems: "center" }}>
-            <img
+            <ProxyImage
               style={{
                 borderRadius: "50%",
                 width: "16px",
@@ -357,7 +384,7 @@ function DetailCardHeader({
     if (transaction.source === Source.SYSTEM_PROGRAM) {
       return (
         <>
-          <img className={classes.tokenLogo} src={SOL_LOGO_URI} />
+          <ProxyImage className={classes.tokenLogo} src={SOL_LOGO_URI} />
           <div className={classes.transferAmount}>
             {isUserTxnSender(transaction, activeWallet)
               ? "- " +
@@ -379,7 +406,11 @@ function DetailCardHeader({
     if (transferIcon) {
       return (
         <>
-          <img className={classes.tokenLogo} src={transferIcon} />
+          {transferIcon === UNKNOWN_ICON_SRC ? (
+            <img className={classes.tokenLogo} src={transferIcon} />
+          ) : (
+            <ProxyImage className={classes.tokenLogo} src={transferIcon} />
+          )}
           <div className={classes.transferAmount}>
             {isUserTxnSender(transaction, activeWallet)
               ? "- " +
@@ -452,9 +483,11 @@ function DetailCardHeader({
 function DetailTable({
   transaction,
   tokenData,
+  offChainMetadata,
 }: {
   transaction: HeliusParsedTransaction;
   tokenData: (TokenInfo | undefined)[];
+  offChainMetadata?: any;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -552,6 +585,12 @@ function DetailTable({
           )}
         </div>
       </div>
+      {offChainMetadata ? <div className={classes.middleRow}>
+        <div className={classes.cell}>
+          <div className={classes.label}>NFT Item</div>
+          <div className={classes.cellValue}>{offChainMetadata.name}</div>
+        </div>
+      </div> : null}
       <div
         className={classes.lastRow}
         onClick={() => {
@@ -563,11 +602,16 @@ function DetailTable({
         <div className={classes.cell}>
           <div className={classes.label}>Signature</div>
 
-          <div className={classes.cellValue}>
+          <div
+            className={classes.cellValue}
+            style={{ color: theme.custom.colors.blue }}
+          >
             {walletAddressDisplay(transaction?.signature)}
             <CallMade
+              fontSize="small"
               style={{
-                color: theme.custom.colors.icon,
+                fontSize: "16px",
+                color: theme.custom.colors.blue,
                 paddingLeft: "2px",
               }}
             />
