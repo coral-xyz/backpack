@@ -222,6 +222,7 @@ export const FullScreenChat = ({
           position: "absolute",
           bottom: 70,
           right: 0,
+          transition: "visibility 0.1s",
           visibility: jumpToBottom ? "visible" : "hidden",
         }}
       >
