@@ -102,9 +102,9 @@ export const FullScreenChat = ({
   };
 
   const onMediaSelect = (file: File) => {
-    const fileType = file.type.split('/')[0];
-    
-    if(fileType === 'image' || fileType === 'video') {
+    const fileType = file.type.split("/")[0];
+
+    if (fileType === "image" || fileType === "video") {
       let reader = new FileReader();
       reader.onload = (e) => {
         setSelectedMediaKind(file.name.endsWith("mp4") ? "video" : "image");
@@ -222,8 +222,7 @@ export const FullScreenChat = ({
           position: "absolute",
           bottom: 70,
           right: 0,
-          transition: "opacity 0.1s",
-          opacity: jumpToBottom ? 1 : 0,
+          visibility: jumpToBottom ? "visible" : "hidden",
         }}
       >
         <div
