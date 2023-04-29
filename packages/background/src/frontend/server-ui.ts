@@ -143,9 +143,6 @@ async function handle<T = any>(
 ): Promise<RpcResponse<T>> {
   logger.debug(`handle rpc ${msg.method}`, msg);
 
-  // User did something so restart the auto-lock countdown
-  ctx.backend.keyringStoreAutoLockCountdownRestart();
-
   /**
    * Enables or disables Auto-lock functionality to ensure
    * the wallet stays unlocked when an xNFT is being used
@@ -156,6 +153,12 @@ async function handle<T = any>(
     );
 
   const { method, params } = msg;
+
+  if (method !== UI_RPC_METHOD_KEYRING_STORE_STATE) {
+    // User did something so restart the auto-lock countdown
+    ctx.backend.keyringStoreAutoLockCountdownRestart();
+  }
+
   switch (method) {
     //
     // Keyring.

@@ -113,7 +113,10 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
                 placeholder="Password"
                 type={showPassword ? "text" : "password"}
                 value={password}
-                setValue={(e) => setPassword(e.target.value)}
+                setValue={(e) => {
+                  setPassword(e.target.value);
+                  setError(false);
+                }}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
