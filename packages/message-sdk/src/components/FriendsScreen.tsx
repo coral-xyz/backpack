@@ -11,7 +11,7 @@ import {
   LocalImage,
   TextInput,
 } from "@coral-xyz/react-common";
-import { useNavigation,useUser } from "@coral-xyz/recoil";
+import { useNavigation, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import SearchIcon from "@mui/icons-material/Search";
 import { List, ListItem } from "@mui/material";
@@ -195,7 +195,7 @@ function UsersList({ theme, users, push, classes, currUserId }) {
                 alignItems: "center",
               }}
             >
-              <div style={{ display: "flex" }}>
+              <div style={{ display: "flex", alignItems: "flex-start" }}>
                 <div
                   style={{
                     display: "flex",
