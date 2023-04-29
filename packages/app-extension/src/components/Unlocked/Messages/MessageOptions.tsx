@@ -20,8 +20,6 @@ import { useStyles } from "./styles";
 
 export const MessageOptions = () => {
   const { props }: any = useDecodedSearchParams();
-  console.log("props");
-  console.log(props);
   const userId = props.userId;
   const remoteUsername = props.username;
   const friendshipValue = useFriendship({ userId });

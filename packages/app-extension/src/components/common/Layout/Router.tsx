@@ -392,7 +392,6 @@ function useNavBar() {
   const pathname = useLocation().pathname;
   const theme = useCustomTheme();
   const { props }: any = useDecodedSearchParams();
-  console.log(props); // TODO: fix type
   const { isXs } = useBreakpoints();
   const profileUser = useUsersMetadata({ remoteUserIds: [props?.userId] });
   const image: string | undefined =

@@ -130,9 +130,9 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
           ))}
         </div>
       ) : null}
-      <div style={{ marginTop: "28px" }}>
+      <div style={{ marginTop: "25px" }}>
         <div className={classes.horizontalCenter}>
-          <div className={classes.topImageOuter}>
+          <div>
             <LocalImage
               size={150}
               className={classes.topImage}
@@ -202,9 +202,9 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
           style={{
             display: "flex",
             justifyContent: "space-between",
-            padding: "9px",
+            padding: "8px 10px",
             background: "white",
-            borderRadius: "6px",
+            borderRadius: "10px",
             alignItems: "center",
             cursor: "pointer",
           }}
@@ -223,7 +223,11 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
             {allChats.slice(0, 3).map((contact: EnrichedInboxDb) => (
               <img
                 width="26px"
-                style={{ marginLeft: "-10px" }}
+                style={{
+                  marginLeft: "-10px",
+                  border: "2.6px solid white",
+                  borderRadius: "50%",
+                }}
                 key={contact.remoteUserId}
                 src={contact.remoteUserImage}
               />
