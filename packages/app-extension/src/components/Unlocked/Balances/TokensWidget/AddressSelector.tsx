@@ -192,6 +192,7 @@ export const AddressSelector = ({
   const classes = useStyles();
   const nav = useNavigationEphemeral();
   const [inputContent, setInputContent] = useState("");
+  const [currentInputContent, setCurrentInputContent] = useState("");
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
@@ -223,6 +224,8 @@ export const AddressSelector = ({
             inputContent={inputContent}
             setInputContent={setInputContent}
             setSearchResults={setSearchResults}
+            currentInputContent={currentInputContent}
+            setCurrentInputContent={setCurrentInputContent}
           />
           {!inputContent ? (
             <YourAddresses
@@ -614,11 +617,15 @@ const SearchInput = ({
   setInputContent,
   setSearchResults,
   searchResults,
+  currentInputContent,
+  setCurrentInputContent
 }: {
   inputContent: string;
   setInputContent: any;
   setSearchResults: any;
   searchResults: any[];
+  currentInputContent: string;
+  setCurrentInputContent: any;
 }) => {
   const theme = useCustomTheme();
   const { blockchain } = useAddressSelectorContext();
@@ -672,8 +679,13 @@ const SearchInput = ({
             <SearchIcon style={{ color: theme.custom.colors.icon }} />
           </InputAdornment>
         }
-        value={inputContent}
-        setValue={(e) => setInputContent(e.target.value.trim())}
+        value={currentInputContent}
+        setValue={(e) => {
+          let text = e.target.value.trim();
+          if(text.startsWith('@')) setInputContent(text.slice(1));
+          else setInputContent(text);
+          setCurrentInputContent(text);
+        }}
         // error={isErrorAddress}
         inputProps={{
           name: "to",
