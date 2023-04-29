@@ -48,23 +48,30 @@ function CollectionImage({ images }: { images: string[] }): JSX.Element {
   }
 
   return (
-    <XStack height={164} backgroundColor="#333" padding={8}>
+    <View
+      style={{
+        flexDirection: "row",
+        flex: 1,
+        gap: 4,
+        flexWrap: "wrap",
+        padding: 8,
+      }}
+    >
       {images.slice(0, 4).map((uri) => {
         return (
           <Image
             key={uri}
             source={{ uri }}
             style={{
-              borderRadius: 16,
+              borderRadius: 8,
               aspectRatio: 1,
               width: "25%",
               backgroundColor: "black",
-              margin: 8,
             }}
           />
         );
       })}
-    </XStack>
+    </View>
   );
 }
 
