@@ -24,7 +24,7 @@ import {
   useBlockchainActiveWallet,
   useActiveEthereumWallet,
 } from "~hooks/recoil";
-import { RecentActivityList } from "~screens/Unlocked/RecentActivityScreen";
+import { RecentActivityList } from "~screens/Unlocked/RecentActivityScreen__OLD";
 
 import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";

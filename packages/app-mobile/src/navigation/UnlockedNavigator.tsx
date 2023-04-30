@@ -32,7 +32,7 @@ import {
 } from "~screens/Unlocked/DepositScreen";
 import { DummyScreen } from "~screens/Unlocked/DummyScreen";
 // import { NftCollectiblesNavigator } from "~screens/Unlocked/NftCollectiblesScreen";
-import { RecentActivityScreen } from "~screens/Unlocked/RecentActivityScreen";
+import { RecentActivityScreen } from "~screens/Unlocked/RecentActivityScreen__OLD";
 import {
   SendTokenSelectRecipientScreen,
   SendTokenListScreen,

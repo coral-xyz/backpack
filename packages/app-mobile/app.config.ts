@@ -16,7 +16,7 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
   const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
   const packageName = "app.backpack.mobile";
 
-  const getUrl = (hash: string = "8b0f1ba") =>
+  const getUrl = (hash: string = "1540e2d") =>
     `https://mobile-service-worker.xnfts.dev/background-scripts/${hash}/service-worker-loader.html`;
 
   const remoteWebViewUrl = getUrl();

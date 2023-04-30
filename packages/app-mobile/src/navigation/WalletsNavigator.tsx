@@ -8,10 +8,9 @@ import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
 import { useTheme } from "~hooks/useTheme";
 import { CollectionListScreen } from "~screens/CollectionListScreen";
 import { HomeWalletListScreen } from "~screens/HomeWalletListScreen";
+import { RecentActivityScreen } from "~screens/RecentActivityScreen";
 import { BalanceDetailScreen } from "~screens/Unlocked/BalancesScreen";
-import { RecentActivityScreen } from "~screens/Unlocked/RecentActivityScreen__OLD";
 import { WalletOverviewScreen } from "~screens/WalletOverviewScreen";
-import { NftCollectionListScreen } from "~screens/WalletsV2NftListScreen";
 
 const TopTabs = createMaterialTopTabNavigator();
 

@@ -103,6 +103,8 @@ function Container() {
     },
   });
 
+  return null;
+
   const totalBalance = data.wallet.balances.aggregateValue;
   const totalChange = data.wallet.balances.native.marketData.usdChange;
   const percentChange = data.wallet.balances.native.marketData.percentChange;
