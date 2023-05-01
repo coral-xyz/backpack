@@ -2,6 +2,7 @@ import type { ContextFunction } from "@apollo/server";
 import type { ExpressContextFunctionArgument } from "@apollo/server/express4";
 import { Chain } from "@coral-xyz/zeus";
 import { Alchemy } from "alchemy-sdk";
+import { GraphQLError } from "graphql";
 
 import { HASURA_URL, JWT } from "../../config";
 
@@ -15,7 +16,7 @@ export interface ApiContext {
     hasura: ReturnType<typeof Chain>;
     helius: Helius;
   };
-  jwt?: string;
+  jwt: string;
 }
 
 /**
@@ -32,6 +33,18 @@ export const createContext: ContextFunction<
   const authHeader = req.headers.authorization ?? "";
   if (authHeader.startsWith("Bearer ")) {
     jwt = authHeader.split(" ")[1];
+  }
+
+  // TODO: add jwt validation as well
+  if (!jwt) {
+    throw new GraphQLError("user authorization jwt was not found", {
+      extensions: {
+        code: "UNAUTHORIZED",
+        http: {
+          status: 401,
+        },
+      },
+    });
   }
 
   return {

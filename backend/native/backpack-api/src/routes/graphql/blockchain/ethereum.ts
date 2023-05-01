@@ -13,6 +13,7 @@ import {
   type Nft,
   type NftConnection,
   type TokenBalance,
+  type Transaction,
   type TransactionConnection,
 } from "../types";
 import { createConnection } from "..";
@@ -173,7 +174,7 @@ export class Ethereum implements Blockchain {
       .flat()
       .sort((a, b) => Number(b.blockNum) - Number(a.blockNum));
 
-    const nodes = combined.map((tx) => ({
+    const nodes: Transaction[] = combined.map((tx) => ({
       id: `ethereum_transaction:${tx.uniqueId}`,
       block: Number(tx.blockNum),
       feePayer: tx.from,

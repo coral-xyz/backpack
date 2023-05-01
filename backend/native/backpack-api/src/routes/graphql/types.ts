@@ -128,7 +128,7 @@ export type TokenBalanceEdge = {
 export type Transaction = Node & {
   __typename?: "Transaction";
   block: Scalars["Float"];
-  description: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
   fee?: Maybe<Scalars["Int"]>;
   feePayer?: Maybe<Scalars["String"]>;
   hash: Scalars["String"];
@@ -551,7 +551,11 @@ export type TransactionResolvers<
   ParentType extends ResolversParentTypes["Transaction"] = ResolversParentTypes["Transaction"]
 > = ResolversObject<{
   block?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
-  description?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  description?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
   fee?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
   feePayer?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   hash?: Resolver<ResolversTypes["String"], ParentType, ContextType>;

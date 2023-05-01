@@ -87,7 +87,7 @@ type TokenBalanceEdge {
 
 type Transaction implements Node {
   id: ID!
-  description: String!
+  description: String
   block: Float!
   fee: Int
   feePayer: String
