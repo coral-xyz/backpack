@@ -1,8 +1,11 @@
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box, Button, Card, CardContent, Typography } from "@mui/material";
 
+import { Checkbox } from "..";
+
 export function ActionCard({
   icon,
+  checked,
   text,
   textAdornment,
   subtext,
@@ -10,6 +13,7 @@ export function ActionCard({
   disabled = false,
 }: {
   icon?: any;
+  checked?: boolean;
   text: string;
   textAdornment?: React.ReactNode;
   subtext?: string;
@@ -44,7 +48,22 @@ export function ActionCard({
         }}
       >
         <CardContent style={{ padding: 0 }}>
-          {icon ? <Box sx={{ mb: 1, display: "flex" }}>{icon}</Box> : null}
+          {icon || typeof checked !== "undefined" ? (
+            <Box sx={{ mb: 1, display: "flex" }}>
+              {icon}
+              {typeof checked !== "undefined" ? (
+                <Checkbox
+                  checked={checked}
+                  setChecked={onClick}
+                  style={{
+                    position: "absolute",
+                    right: "18px",
+                    top: icon ? "18px" : "auto",
+                  }}
+                />
+              ) : null}
+            </Box>
+          ) : null}
           <Box
             style={{
               fontWeight: 500,
