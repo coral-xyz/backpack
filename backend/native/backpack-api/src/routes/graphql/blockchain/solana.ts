@@ -8,8 +8,10 @@ import {
   type Balances,
   ChainId,
   type Collection,
+  type Nft,
   type NftConnection,
   type TokenBalance,
+  type Transaction,
   type TransactionConnection,
 } from "../types";
 import { createConnection } from "..";
@@ -82,7 +84,7 @@ export class Solana implements Blockchain {
     };
 
     // Map each SPL token into their `TokenBalance` return type object
-    const splTokenNodes = nonEmptyOrNftTokens.map((t): TokenBalance => {
+    const splTokenNodes: TokenBalance[] = nonEmptyOrNftTokens.map((t) => {
       const meta = legacy.get(t.mint);
       const p: CoinGeckoPriceData | null = prices[meta?.id ?? ""] ?? null;
       return {
@@ -183,7 +185,7 @@ export class Solana implements Blockchain {
     }
 
     // Map all NFT metadatas into their return type with possible collection data
-    const nodes = metadatas.map((m) => {
+    const nodes: Nft[] = metadatas.map((m) => {
       const collection = this._parseCollectionMetadata(
         collectionMap,
         m.onChainMetadata
@@ -220,7 +222,7 @@ export class Solana implements Blockchain {
       after
     );
 
-    const nodes = resp.map((r) => ({
+    const nodes: Transaction[] = resp.map((r) => ({
       id: `solana_transaction:${r.signature}`,
       description: r.description,
       block: r.slot,

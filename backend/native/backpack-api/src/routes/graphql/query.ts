@@ -7,18 +7,57 @@ import type {
   ChainId,
   NftConnection,
   QueryResolvers,
+  QueryUserArgs,
   QueryWalletArgs,
   RequireFields,
   TransactionConnection,
+  User,
+  UserResolvers,
+  UserWalletsArgs,
   Wallet,
+  WalletConnection,
   WalletResolvers,
   WalletTransactionsArgs,
 } from "./types";
+import { createConnection, inferChainIdFromString } from ".";
 
 /**
  * Root `Query` object resolver.
  */
 export const queryResolvers: QueryResolvers = {
+  /**
+   * Handler for the `user` query.
+   * @param {{}} _parent
+   * @param {RequireFields<QueryUserArgs, "username">} args
+   * @param {ApiContext} ctx
+   * @param {GraphQLResolveInfo} _info
+   * @returns {(Promise<User | null>)}
+   */
+  async user(
+    _parent: {},
+    args: RequireFields<QueryUserArgs, "username">,
+    ctx: ApiContext,
+    _info: GraphQLResolveInfo
+  ): Promise<User | null> {
+    const resp = await ctx.dataSources.hasura("query")({
+      auth_users: [
+        { where: { username: { _eq: args.username } }, limit: 1 },
+        {
+          id: true,
+        },
+      ],
+    });
+
+    if (resp.auth_users.length === 0) {
+      return null;
+    }
+
+    return {
+      id: `user_${resp.auth_users[0].id}`,
+      username: args.username,
+    };
+  },
+
   /**
    * Handler for the `wallet` query.
    * @param {{}} _parent
@@ -36,6 +75,48 @@ export const queryResolvers: QueryResolvers = {
     return {
       id: `${args.chainId}/${args.address}`,
     };
+  },
+};
+
+/**
+ * Type-level query resolver for the `User` schema object.
+ */
+export const userResolvers: UserResolvers = {
+  async wallets(
+    parent: User,
+    args: Partial<UserWalletsArgs>,
+    ctx: ApiContext,
+    _info: GraphQLResolveInfo
+  ): Promise<WalletConnection | null> {
+    const resp = await ctx.dataSources.hasura("query")({
+      auth_users: [
+        {
+          where: { username: { _eq: parent.username } },
+          limit: 1,
+        },
+        {
+          public_keys: [
+            args.publicKeys
+              ? { where: { public_key: { _in: args.publicKeys } } }
+              : {},
+            {
+              blockchain: true,
+              public_key: true,
+            },
+          ],
+        },
+      ],
+    });
+
+    if (resp.auth_users.length === 0) {
+      return null;
+    }
+
+    const nodes = resp.auth_users[0].public_keys.map((pk) => ({
+      id: `${inferChainIdFromString(pk.blockchain)}/${pk.public_key}`,
+    }));
+
+    return createConnection(nodes, false, false);
   },
 };
 
