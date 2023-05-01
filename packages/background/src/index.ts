@@ -1,3 +1,4 @@
+import { IS_MOBILE } from "@coral-xyz/common";
 import { EventEmitter } from "eventemitter3";
 
 import * as coreBackend from "./backend/core";
@@ -32,15 +33,17 @@ export function start(cfg: Config): Background {
 
   initPushNotificationHandlers();
 
-  if (chrome && chrome?.runtime?.id) {
-    // Keep alive for Manifest V3 service worker
-    chrome.runtime.onInstalled.addListener(() => {
-      chrome.alarms.get("keep-alive", (a) => {
-        if (!a) {
-          chrome.alarms.create("keep-alive", { periodInMinutes: 0.5 });
-        }
+  if (!IS_MOBILE) {
+    if (chrome && chrome?.runtime?.id) {
+      // Keep alive for Manifest V3 service worker
+      chrome.runtime.onInstalled.addListener(() => {
+        chrome.alarms.get("keep-alive", (a) => {
+          if (!a) {
+            chrome.alarms.create("keep-alive", { periodInMinutes: 0.5 });
+          }
+        });
       });
-    });
+    }
   }
 
   return {

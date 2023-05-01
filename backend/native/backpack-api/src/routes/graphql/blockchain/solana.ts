@@ -8,8 +8,11 @@ import {
   type Balances,
   ChainId,
   type Collection,
+  type MarketData,
+  type Nft,
   type NftConnection,
   type TokenBalance,
+  type Transaction,
   type TransactionConnection,
 } from "../types";
 import { createConnection } from "..";
@@ -82,34 +85,37 @@ export class Solana implements Blockchain {
     };
 
     // Map each SPL token into their `TokenBalance` return type object
-    const splTokenNodes = nonEmptyOrNftTokens.map((t): TokenBalance => {
+    const splTokenNodes: TokenBalance[] = nonEmptyOrNftTokens.map((t) => {
       const meta = legacy.get(t.mint);
       const p: CoinGeckoPriceData | null = prices[meta?.id ?? ""] ?? null;
+
+      const marketData: MarketData | null =
+        p && meta
+          ? {
+              id: `coingecko_market_data:${meta.id}`,
+              percentChange: parseFloat(
+                prices.solana.usd_24h_change.toFixed(2)
+              ),
+              usdChange: calculateUsdChange(
+                prices.solana.usd_24h_change,
+                prices.solana.usd
+              ),
+              lastUpdatedAt: p.last_updated_at,
+              logo: meta.logo,
+              price: p.usd,
+              value:
+                parseFloat(ethers.utils.formatUnits(t.amount, t.decimals)) *
+                p.usd,
+            }
+          : null;
+
       return {
         id: `solana_token_address:${t.tokenAccount}`,
         address: t.tokenAccount,
         amount: t.amount.toString(),
         decimals: t.decimals,
         displayAmount: ethers.utils.formatUnits(t.amount, t.decimals),
-        marketData:
-          p && meta
-            ? {
-                id: `coingecko_market_data:${meta.id}`,
-                percentChange: parseFloat(
-                  prices.solana.usd_24h_change.toFixed(2)
-                ),
-                usdChange: calculateUsdChange(
-                  prices.solana.usd_24h_change,
-                  prices.solana.usd
-                ),
-                lastUpdatedAt: p.last_updated_at,
-                logo: meta.logo,
-                price: p.usd,
-                value:
-                  parseFloat(ethers.utils.formatUnits(t.amount, t.decimals)) *
-                  p.usd,
-              }
-            : null,
+        marketData,
         mint: t.mint,
       };
     });
@@ -183,7 +189,7 @@ export class Solana implements Blockchain {
     }
 
     // Map all NFT metadatas into their return type with possible collection data
-    const nodes = metadatas.map((m) => {
+    const nodes: Nft[] = metadatas.map((m) => {
       const collection = this._parseCollectionMetadata(
         collectionMap,
         m.onChainMetadata
@@ -220,7 +226,7 @@ export class Solana implements Blockchain {
       after
     );
 
-    const nodes = resp.map((r) => ({
+    const nodes: Transaction[] = resp.map((r) => ({
       id: `solana_transaction:${r.signature}`,
       description: r.description,
       block: r.slot,

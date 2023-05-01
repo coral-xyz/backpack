@@ -3,6 +3,7 @@ schema {
 }
 
 type Query {
+  user(username: String!): User
   wallet(chainId: ChainID!, address: String!): Wallet
 }
 
@@ -20,13 +21,6 @@ type PageInfo {
   hasPreviousPage: Boolean!
   startCursor: String
   endCursor: String
-}
-
-type Wallet implements Node {
-  id: ID!
-  balances: Balances
-  nfts: NftConnection
-  transactions(before: String, after: String): TransactionConnection
 }
 
 type Balances {
@@ -53,16 +47,6 @@ type MarketData implements Node {
   value: Float!
 }
 
-type NftConnection {
-  edges: [NftEdge]
-  pageInfo: PageInfo!
-}
-
-type NftEdge {
-  cursor: String!
-  node: Nft
-}
-
 type Nft implements Node {
   id: ID!
   address: String!
@@ -71,14 +55,14 @@ type Nft implements Node {
   name: String!
 }
 
-type TokenBalanceConnection {
-  edges: [TokenBalanceEdge]
+type NftConnection {
+  edges: [NftEdge]
   pageInfo: PageInfo!
 }
 
-type TokenBalanceEdge {
+type NftEdge {
   cursor: String!
-  node: TokenBalance
+  node: Nft
 }
 
 type TokenBalance implements Node {
@@ -91,6 +75,28 @@ type TokenBalance implements Node {
   mint: String!
 }
 
+type TokenBalanceConnection {
+  edges: [TokenBalanceEdge]
+  pageInfo: PageInfo!
+}
+
+type TokenBalanceEdge {
+  cursor: String!
+  node: TokenBalance
+}
+
+type Transaction implements Node {
+  id: ID!
+  description: String
+  block: Float!
+  fee: Int
+  feePayer: String
+  hash: String!
+  source: String
+  timestamp: String
+  type: String!
+}
+
 type TransactionConnection {
   edges: [TransactionEdge]
   pageInfo: PageInfo!
@@ -101,14 +107,27 @@ type TransactionEdge {
   node: Transaction
 }
 
-type Transaction implements Node {
+type User implements Node {
   id: ID!
-  description: String!
-  block: Float!
-  fee: Int
-  feePayer: String
-  hash: String!
-  source: String
-  timestamp: String
-  type: String!
+  username: String!
+  wallets(publicKeys: [String!]): WalletConnection
+}
+
+type Wallet implements Node {
+  id: ID!
+  address: String!
+  chainId: ChainID!
+  balances: Balances
+  nfts: NftConnection
+  transactions(before: String, after: String): TransactionConnection
+}
+
+type WalletConnection {
+  edges: [WalletEdge]
+  pageInfo: PageInfo!
+}
+
+type WalletEdge {
+  cursor: String!
+  node: Wallet
 }
