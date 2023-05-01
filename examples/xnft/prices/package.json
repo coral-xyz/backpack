@@ -6,7 +6,9 @@
   "scripts": {
     "build": "xnft legacy build",
     "start": "xnft legacy start",
-    "dev": "xnft legacy dev"
+    "dev": "xnft legacy dev",
+    "bundle": "node ../../../packages/xnft-cli/index.js bundle",
+    "publish": "yarn build; yarn bundle"
   },
   "author": "",
   "license": "ISC",
