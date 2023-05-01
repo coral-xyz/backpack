@@ -1,127 +1,22 @@
 import { Suspense, useCallback } from "react";
-import { View, Text, ActivityIndicator, SectionList } from "react-native";
-
-import * as Linking from "expo-linking";
+import { Text, ActivityIndicator, SectionList } from "react-native";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
-import { walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { IconCheckmark } from "~components/Icon";
+import { SectionHeader, SectionSeparator } from "~components/ListItem";
+import { NoRecentActivity } from "~components/RecentActivityList";
 import {
-  SectionHeader,
-  SectionSeparator,
-  ListItemSentReceived,
-  ListItemTokenSwap,
-  // ListItemNotification,
-  ListItemActivity,
-  // ListItemFriendRequest,
-} from "~components/ListItem";
-import { EmptyState, Screen, RoundedContainerGroup } from "~components/index";
+  ListItem,
+  type ListItemProps,
+} from "~components/RecentActivityListItem";
 import {
-  convertTransactionDataToSectionList,
-  parseTransactionDescription,
-} from "~lib/RecentActivityUtils";
-
-type ListItem = any;
-
-function NoNFTsEmptyState() {
-  return (
-    <View style={{ flex: 1, margin: 18 }}>
-      <EmptyState
-        icon={(props: any) => <MaterialIcons name="image" {...props} />}
-        title="No NFTs"
-        subtitle="Get started with your first NFT"
-        buttonText="Browse Magic Eden"
-        onPress={() => {
-          Linking.openURL("https://magiceden.io");
-        }}
-      />
-    </View>
-  );
-}
-
-function RowItem({
-  item,
-  handlePress,
-}: {
-  item: ListItem;
-  handlePress: (item: ListItem) => void;
-}): JSX.Element {
-  switch (item.type) {
-    case "SWAP": {
-      const { sent, received, display } = parseTransactionDescription(item);
-      return (
-        <ListItemTokenSwap
-          grouped
-          title="Token Swap"
-          caption={display}
-          sent={sent}
-          received={received}
-        />
-      );
-    }
-    case "TRANSFER": {
-      const { to, amount, action } = parseTransactionDescription(item);
-      return (
-        <ListItemSentReceived
-          grouped
-          address={to}
-          action={action}
-          amount={amount}
-          iconUrl="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
-        />
-      );
-    }
-    case "NFT_LISTING": {
-      const { nft, amount, marketplace } = parseTransactionDescription(item);
-      return (
-        <ListItemActivity
-          grouped
-          onPress={console.log}
-          topLeftText={nft}
-          bottomLeftText={`Listed on ${marketplace}`}
-          bottomRightText={amount} // TODO amount in USD
-          topRightText={amount}
-          // nft image sold
-          iconUrl="https://swr.xnfts.dev/1min/https://madlist-images.s3.us-west-2.amazonaws.com/backpack_dev.png"
-        />
-      );
-    }
-    case "NFT_SALE": {
-      const { nft, amount, marketplace } = parseTransactionDescription(item);
-      return (
-        <ListItemActivity
-          grouped
-          onPress={console.log}
-          topLeftText={nft}
-          bottomLeftText={`Sold on ${marketplace}`}
-          bottomRightText={amount} // TODO amount in USD
-          topRightText={amount}
-          // nft image sold
-          iconUrl="https://swr.xnfts.dev/1min/https://madlist-images.s3.us-west-2.amazonaws.com/backpack_dev.png"
-        />
-      );
-    }
-    case "UNKNOWN":
-    default: {
-      return (
-        <ListItemActivity
-          grouped
-          onPress={console.log}
-          topLeftText="App Interaction"
-          bottomLeftText={walletAddressDisplay(item.hash)}
-          bottomRightText=""
-          topRightText=""
-          showSuccessIcon={!item.transactionError}
-          showErrorIcon={item.transactionError}
-        />
-      );
-    }
-  }
-}
+  Screen,
+  RoundedContainerGroup,
+  FullScreenLoading,
+} from "~components/index";
+import { convertTransactionDataToSectionList } from "~lib/RecentActivityUtils";
 
 const GET_RECENT_TRANSACTIONS = gql`
   query WalletTransactions($chainId: ChainID!, $address: String!) {
@@ -150,15 +45,13 @@ function Container({ navigation }: any): JSX.Element {
   const activeWallet = useActiveWallet();
   const { data } = useSuspenseQuery_experimental(GET_RECENT_TRANSACTIONS, {
     variables: {
-      // TODO add blockchain_uppercase so we don't have to keep adding this everywhere
-      // alternatively make the graphql enum return lowercase if possible
       chainId: activeWallet.blockchain.toUpperCase(),
       address: activeWallet.publicKey,
     },
   });
 
   const handlePressItem = useCallback(
-    (item: ListItem) => {
+    (item: ListItemProps) => {
       navigation.push("ActivityDetail", {
         id: item.id,
         title: item.title,
@@ -171,9 +64,9 @@ function Container({ navigation }: any): JSX.Element {
     data?.wallet?.transactions.edges
   );
 
-  const keyExtractor = (item: ListItem) => item.id;
+  const keyExtractor = (item: ListItemProps) => item.id;
   const renderItem = useCallback(
-    ({ item, section, index }: { item: ListItem }) => {
+    ({ item, section, index }: { item: ListItemProps }) => {
       const isFirst = index === 0;
       const isLast = index === section.data.length - 1;
       return (
@@ -181,7 +74,7 @@ function Container({ navigation }: any): JSX.Element {
           disableTopRadius={!isFirst}
           disableBottomRadius={!isLast}
         >
-          <RowItem item={item} handlePress={handlePressItem} />
+          <ListItem item={item} handlePress={handlePressItem} />
         </RoundedContainerGroup>
       );
     },
@@ -196,12 +89,13 @@ function Container({ navigation }: any): JSX.Element {
     <Screen>
       <SectionList
         sections={sections}
-        ListEmptyComponent={NoNFTsEmptyState}
+        ListEmptyComponent={NoRecentActivity}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         renderSectionHeader={renderSectionHeader}
         SectionSeparatorComponent={SectionSeparator}
         stickySectionHeadersEnabled={false}
+        showsVerticalScrollIndicator={false}
       />
     </Screen>
   );
@@ -210,7 +104,7 @@ function Container({ navigation }: any): JSX.Element {
 export function RecentActivityScreen({ navigation }: any): JSX.Element {
   return (
     <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
-      <Suspense fallback={<ActivityIndicator size="large" />}>
+      <Suspense fallback={<FullScreenLoading />}>
         <Container navigation={navigation} />
       </Suspense>
     </ErrorBoundary>

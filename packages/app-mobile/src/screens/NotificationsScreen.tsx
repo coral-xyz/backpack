@@ -3,24 +3,25 @@ import type {
   GroupedNotification,
 } from "@coral-xyz/common";
 
-import {
-  View,
-  Text,
-  FlatList,
-  SectionList,
-  StyleSheet,
-  Image,
-} from "react-native";
+import { Suspense, useCallback } from "react";
+import { Text, SectionList, ActivityIndicator } from "react-native";
 
 import { NotificationsData } from "@coral-xyz/recoil";
-import { useUserMetadata, ListItem } from "@coral-xyz/tamagui";
+import { Separator, useUserMetadata } from "@coral-xyz/tamagui";
+import { ErrorBoundary } from "react-error-boundary";
 
-import { UserAvatar } from "~components/UserAvatar";
+import {
+  SectionHeader,
+  SectionSeparator,
+  ListItemNotification,
+  ListItemFriendRequest,
+} from "~components/ListItem";
+import { Screen, RoundedContainerGroup } from "~components/index";
 
 function parseJson(body: string) {
   try {
     return JSON.parse(body);
-  } catch (ex) {
+  } catch (_ex) {
     return {};
   }
 }
@@ -59,117 +60,113 @@ const FriendRequestListItem = ({ notification, title }) => {
     remoteUserId: parseJson(notification.body).from,
   });
 
+  if (user.username === "" && user.loading === false) {
+    return null;
+  }
+
   return (
-    <ListItem
-      pressTheme
-      hoverTheme
-      backgroundColor="$nav"
-      borderColor="$borderFull"
-      borderWidth={2}
-      title={notification.title}
-      subTitle={`@${user.username}`}
-      icon={<UserAvatar uri={user.image} size={32} />}
-    >
-      <Text>{getTimeStr(notification.timestamp)}</Text>
-    </ListItem>
+    <ListItemFriendRequest
+      grouped
+      text={notification.title}
+      username={`@${user.username}`}
+      time={getTimeStr(notification.timestamp)}
+      avatarUrl={user.image}
+    />
   );
 };
 
-const NotificationListItem = ({
-  notification,
-}: {
-  notification: EnrichedNotification;
-}) => {
-  if (notification.xnft_id === "friend_requests") {
-    return (
-      <FriendRequestListItem
-        title="Friend request"
-        notification={notification}
-      />
-    );
+const ListItem = ({ item }: { item: EnrichedNotification }) => {
+  if (item.xnft_id === "friend_requests") {
+    return <FriendRequestListItem title="Friend request" notification={item} />;
   }
 
-  if (notification.xnft_id === "friend_requests_accept") {
+  if (item.xnft_id === "friend_requests_accept") {
     return (
       <FriendRequestListItem
         title="Friend request accepted"
-        notification={notification}
+        notification={item}
       />
     );
   }
 
   return (
-    <ListItem
-      pressTheme
-      hoverTheme
-      backgroundColor="$nav"
-      borderColor="$borderFull"
-      borderWidth={2}
-      title={notification.xnftTitle}
-      subTitle={notification.body}
-      icon={
-        <Image
-          source={{ uri: notification.xnftImage }}
-          style={{ width: 32, height: 32 }}
-        />
-      }
-    >
-      <Text>{getTimeStr(notification.timestamp)}</Text>
-    </ListItem>
+    <ListItemNotification
+      grouped
+      unread
+      title={item.xnftTitle}
+      body={item.body}
+      time={getTimeStr(item.timestamp)}
+      iconUrl={item.xnftImage}
+    />
   );
 };
-
-export function NotificationsScreen({ navigation }) {
-  const renderItem = ({ item }) => <NotificationListItem notification={item} />;
-
-  return (
-    <NotificationsData>
-      {({
-        groupedNotifications,
-      }: {
-        groupedNotifications: GroupedNotification[];
-      }) => {
-        return <NotificationList groupedNotifications={groupedNotifications} />;
-      }}
-    </NotificationsData>
-  );
-}
 
 export function NotificationList({
   groupedNotifications,
 }: {
   groupedNotifications: GroupedNotification[];
 }) {
-  const renderSectionHeader = ({ section: { title } }) => <Text>{title}</Text>;
-
-  const renderItem = ({ item: notification, index }) => (
-    <NotificationListItem notification={notification} />
-  );
-
   const sections = groupedNotifications.map((groupedNotification) => ({
     title: groupedNotification.date,
     data: groupedNotification.notifications,
   }));
 
+  const keyExtractor = (item, index) => item.id.toString() + index.toString();
+  const renderItem = useCallback(({ item, section, index }: any) => {
+    const isFirst = index === 0;
+    const isLast = index === section.data.length - 1;
+    return (
+      <RoundedContainerGroup
+        disableTopRadius={!isFirst}
+        disableBottomRadius={!isLast}
+      >
+        <ListItem item={item} />
+      </RoundedContainerGroup>
+    );
+  }, []);
+
+  const renderSectionHeader = useCallback(({ section }: any) => {
+    return <SectionHeader title={section.title} />;
+  }, []);
+
   return (
     <SectionList
-      style={styles.container}
       sections={sections}
-      keyExtractor={(item, index) => item.id.toString() + index.toString()}
+      keyExtractor={keyExtractor}
       renderItem={renderItem}
       renderSectionHeader={renderSectionHeader}
-      contentContainerStyle={styles.contentContainerStyle}
+      ItemSeparatorComponent={Separator}
+      SectionSeparatorComponent={SectionSeparator}
+      stickySectionHeadersEnabled={false}
       showsVerticalScrollIndicator={false}
     />
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainerStyle: {
-    paddingBottom: 16,
-    paddingHorizontal: 16,
-  },
-});
+function Container(): JSX.Element {
+  return (
+    <Screen>
+      <NotificationsData>
+        {({
+          groupedNotifications,
+        }: {
+          groupedNotifications: GroupedNotification[];
+        }) => {
+          return (
+            <NotificationList groupedNotifications={groupedNotifications} />
+          );
+        }}
+      </NotificationsData>
+    </Screen>
+  );
+}
+
+export function NotificationsScreen(): JSX.Element {
+  return (
+    <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
+      <Suspense fallback={<ActivityIndicator size="large" />}>
+        <Container />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}

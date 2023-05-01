@@ -32,7 +32,6 @@ import {
 } from "~screens/Unlocked/DepositScreen";
 import { DummyScreen } from "~screens/Unlocked/DummyScreen";
 // import { NftCollectiblesNavigator } from "~screens/Unlocked/NftCollectiblesScreen";
-import { RecentActivityScreen } from "~screens/Unlocked/RecentActivityScreen__OLD";
 import {
   SendTokenSelectRecipientScreen,
   SendTokenListScreen,
@@ -100,11 +99,6 @@ export function UnlockedNavigator(): JSX.Element {
           headerBackImage: IconCloseModal,
         }}
       >
-        <Stack.Screen
-          name="RecentActivity"
-          component={RecentActivityScreen}
-          options={{ title: "Recent Activity" }}
-        />
         <Stack.Screen
           options={{ title: "Deposit" }}
           name="DepositList"

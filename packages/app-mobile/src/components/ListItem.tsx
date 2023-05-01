@@ -414,16 +414,16 @@ export function ListItemWalletOverview({
 
 export function ListItemFriendRequest({
   grouped = false,
-  iconUrl,
   text,
   username,
   time,
+  avatarUrl,
 }: {
   grouped?: boolean;
   text: string;
   username: string;
   time: string;
-  iconUrl: string;
+  avatarUrl: string;
 }): JSX.Element {
   return (
     <ListItem
@@ -433,7 +433,7 @@ export function ListItemFriendRequest({
       borderWidth={!grouped ? 2 : undefined}
       paddingHorizontal={16}
       paddingVertical={8}
-      icon={<UserAvatar uri={iconUrl} size={44} />}
+      icon={<UserAvatar uri={avatarUrl} size={44} />}
     >
       <XStack flex={1} justifyContent="space-between" alignItems="flex-start">
         <YStack>
