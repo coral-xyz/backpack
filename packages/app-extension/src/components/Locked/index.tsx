@@ -15,7 +15,7 @@ import { Error, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 
 import { WithDrawer } from "../common/Layout/Drawer";
-import { lockScreenKey, lockScreenKeyImage } from "../Unlocked/Nfts/Detail";
+import { lockScreenKey, lockScreenKeyImage } from "../Unlocked/Nfts/NftDetail";
 
 import { LockedMenu } from "./LockedMenu";
 
@@ -113,7 +113,10 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
                 placeholder="Password"
                 type={showPassword ? "text" : "password"}
                 value={password}
-                setValue={(e) => setPassword(e.target.value)}
+                setValue={(e) => {
+                  setPassword(e.target.value);
+                  setError(false);
+                }}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton

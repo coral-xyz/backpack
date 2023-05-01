@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useCustomTheme } from "@coral-xyz/themes";
 import type { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 import { Menu } from "@mui/material";
 
@@ -14,7 +13,6 @@ export function RightClickMenu({
   style?: React.StyleHTMLAttributes<"div">;
   renderItems: (close: () => void) => ReactJSXElement | ReactJSXElement[];
 }) {
-  const theme = useCustomTheme();
   const [contextMenu, setContextMenu] = useState<{
     mouseX: number;
     mouseY: number;
