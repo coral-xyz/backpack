@@ -110,3 +110,23 @@ export function parseNftSold(str: string) {
     return { nft: "", amount: "", marketplace: "" };
   }
 }
+
+export function parseTransactionDescription(transaction) {
+  const f = removeLastPeriod(transaction.description);
+  switch (transaction.type) {
+    case "SWAP": {
+      return parseSwap(f);
+    }
+    case "TRANSFER": {
+      return parseTransfer(f);
+    }
+    case "NFT_LISTING": {
+      return parseNftListing(f);
+    }
+    case "NFT_SALE": {
+      return parseNftSold(f);
+    }
+    default:
+      return transaction.description;
+  }
+}

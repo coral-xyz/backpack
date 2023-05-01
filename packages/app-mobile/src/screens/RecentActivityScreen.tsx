@@ -19,7 +19,11 @@ import {
   // ListItemFriendRequest,
 } from "~components/ListItem";
 import { EmptyState, Screen, RoundedContainerGroup } from "~components/index";
-import { convertTransactionDataToSectionList } from "~lib/RecentActivityUtils";
+import {
+  convertTransactionDataToSectionList,
+  parseTransactionDescription,
+} from "~lib/RecentActivityUtils";
+
 type ListItem = any;
 
 function NoNFTsEmptyState() {
@@ -45,10 +49,9 @@ function RowItem({
   item: ListItem;
   handlePress: (item: ListItem) => void;
 }): JSX.Element {
-  const formattedDescription = removeLastPeriod(item.description);
   switch (item.type) {
     case "SWAP": {
-      const { sent, received, display } = parseSwap(formattedDescription);
+      const { sent, received, display } = parseTransactionDescription(item);
       return (
         <ListItemTokenSwap
           grouped
@@ -60,7 +63,7 @@ function RowItem({
       );
     }
     case "TRANSFER": {
-      const { to, amount, action } = parseTransfer(formattedDescription);
+      const { to, amount, action } = parseTransactionDescription(item);
       return (
         <ListItemSentReceived
           grouped
@@ -72,8 +75,7 @@ function RowItem({
       );
     }
     case "NFT_LISTING": {
-      const { nft, amount, marketplace } =
-        parseNftListing(formattedDescription);
+      const { nft, amount, marketplace } = parseTransactionDescription(item);
       return (
         <ListItemActivity
           grouped
@@ -88,7 +90,7 @@ function RowItem({
       );
     }
     case "NFT_SALE": {
-      const { nft, amount, marketplace } = parseNftSold(formattedDescription);
+      const { nft, amount, marketplace } = parseTransactionDescription(item);
       return (
         <ListItemActivity
           grouped
@@ -136,7 +138,6 @@ const GET_RECENT_TRANSACTIONS = gql`
             source
             type
             timestamp
-            image(width: 60, height: 60)
           }
         }
       }
