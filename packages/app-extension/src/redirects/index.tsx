@@ -77,7 +77,4 @@ const main: () => Promise<void> = async () => {
   }
 };
 
-main().catch((error) => {
-  console.log("An unexpected error occurred:", error);
-  window.location.href = "./redirect404.html";
-});
+void main();
