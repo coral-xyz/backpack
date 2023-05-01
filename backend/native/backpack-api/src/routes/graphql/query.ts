@@ -74,6 +74,8 @@ export const queryResolvers: QueryResolvers = {
   ): Promise<Wallet | null> {
     return {
       id: `${args.chainId}/${args.address}`,
+      address: args.address,
+      chainId: args.chainId,
     };
   },
 };
@@ -112,9 +114,14 @@ export const userResolvers: UserResolvers = {
       return null;
     }
 
-    const nodes = resp.auth_users[0].public_keys.map((pk) => ({
-      id: `${inferChainIdFromString(pk.blockchain)}/${pk.public_key}`,
-    }));
+    const nodes: Wallet[] = resp.auth_users[0].public_keys.map((pk) => {
+      const chain = inferChainIdFromString(pk.blockchain);
+      return {
+        id: `${chain}/${pk.public_key}`,
+        address: pk.public_key,
+        chainId: chain,
+      };
+    });
 
     return createConnection(nodes, false, false);
   },

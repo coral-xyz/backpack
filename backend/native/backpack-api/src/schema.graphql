@@ -115,6 +115,8 @@ type User implements Node {
 
 type Wallet implements Node {
   id: ID!
+  address: String!
+  chainId: ChainID!
   balances: Balances
   nfts: NftConnection
   transactions(before: String, after: String): TransactionConnection
