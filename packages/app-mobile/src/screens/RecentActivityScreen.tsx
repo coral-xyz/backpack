@@ -19,7 +19,7 @@ import {
   // ListItemFriendRequest,
 } from "~components/ListItem";
 import { EmptyState, Screen, RoundedContainerGroup } from "~components/index";
-import { convertTransactionDataToSectionList } from "~lib/convertTransactionDataToSectionList";
+import { convertTransactionDataToSectionList } from "~lib/RecentActivityUtils";
 type ListItem = any;
 
 function NoNFTsEmptyState() {
@@ -36,81 +36,6 @@ function NoNFTsEmptyState() {
       />
     </View>
   );
-}
-
-function removeLastPeriod(str: string) {
-  if (str.endsWith(".")) {
-    return str.slice(0, -1);
-  }
-
-  return str;
-}
-
-function parseSwap(str: string) {
-  // "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz swapped 0.001 SOL for 0.022 USDC"
-  try {
-    const [sent, received] = str.split("swapped ")[1].split(" for ");
-    const sentToken = sent.split(" ")[1];
-    const receivedToken = received.split(" ")[1];
-    return {
-      sent: `-${sent}`,
-      received: `+${received}`,
-      display: `${sentToken} -> ${receivedToken}`,
-    };
-  } catch (_err) {
-    return {
-      sent: "",
-      received: "",
-      display: "",
-    };
-  }
-}
-
-function parseTransfer(str: string) {
-  // "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz transferred 0.1 SOL to 47iecF4gWQYrGMLh9gM3iuQFgb1581gThgfRw69S55T8."
-  try {
-    const _to = str.split("to ");
-    const to = _to[1]; // remove period at the end
-    const amount = _to[0].split("transferred ")[1].trim();
-    const action = "Sent"; // TODO sent/received, pass down publickey
-    return { to: walletAddressDisplay(to), amount, action };
-  } catch (_err) {
-    return { to: "", amount: "", action: "Sent" };
-  }
-}
-
-function parseNftListing(str: string) {
-  // '5iM4vFHv7vdiZJYm7rQwHGgvpp9zHEwZHGNbNATFF5To listed Mad Lad #8811 for 131 SOL on MAGIC_EDEN.'
-  try {
-    const [_address, _rest] = str.split(" listed ");
-    const [nft, _amounts] = _rest.split(" for ");
-    const [amount, marketplace] = _amounts.split(" on ");
-    return {
-      nft,
-      amount,
-      marketplace,
-    };
-  } catch (_err) {
-    return {
-      nft: "",
-      amount: "",
-      marketplace: "",
-    };
-  }
-}
-
-function parseNftSold(str: string) {
-  // '5iM4vFHv7vdiZJYm7rQwHGgvpp9zHEwZHGNbNATFF5To sold Mad Lad #3150 to 69X4Un6qqC8QBeBKk6zrqUVKGccnWqgUkwdLcC7wiLFB for 131 SOL on MAGIC_EDEN.'
-  try {
-    const [nft, _rest] = str.split(" sold ")[1].split(" to ");
-    const [amount, marketplace] = _rest
-      .split(" for ")[1]
-      .split(" for ")[1]
-      .split(" on ");
-    return { nft, amount, marketplace };
-  } catch (_err) {
-    return { nft: "", amount: "", marketplace: "" };
-  }
 }
 
 function RowItem({
@@ -211,6 +136,7 @@ const GET_RECENT_TRANSACTIONS = gql`
             source
             type
             timestamp
+            image(width: 60, height: 60)
           }
         }
       }

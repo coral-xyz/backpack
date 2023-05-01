@@ -134,8 +134,6 @@ function Container({ navigation }: any): JSX.Element {
     },
   });
 
-  return null;
-
   const handlePressItem = useCallback(
     (item: ListItem) => {
       if (item.type === "collection") {
