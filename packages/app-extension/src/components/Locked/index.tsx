@@ -12,12 +12,14 @@ import {
 import { useAvatarUrl, useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Error, Visibility, VisibilityOff } from "@mui/icons-material";
+import InfoIcon from "@mui/icons-material/Info";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 
 import { WithDrawer } from "../common/Layout/Drawer";
 import { lockScreenKey, lockScreenKeyImage } from "../Unlocked/Nfts/NftDetail";
 
 import { LockedMenu } from "./LockedMenu";
+import { useStyles } from "./styles";
 
 export const NAV_BAR_HEIGHT = 56;
 
@@ -31,6 +33,8 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<boolean>(false);
+
+  const isConnectionAvailable = navigator.onLine;
 
   const { uuid, nft } = (() => {
     try {
@@ -67,7 +71,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
       setError(true);
     }
   };
-
+  console.log("isOnline", navigator.onLine);
   return (
     <Box
       sx={{
@@ -89,17 +93,27 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         <Box>
           <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
           <div style={{ marginTop: "24px" }}>
+            {!isConnectionAvailable ? (
+              <TextBanner
+                fixed
+                type="danger"
+                title="Network connection error"
+              />
+            ) : null}
+
             <BackpackHeader forceWhite={isFullScreen} style={{ zIndex: 2 }} />
             <div
               style={{
                 position: "relative",
               }}
             >
-              <LockScreenAvatar
-                isFullScreen={isFullScreen}
-                nft={nft}
-                user={user}
-              />
+              {isConnectionAvailable ? (
+                <LockScreenAvatar
+                  isFullScreen={isFullScreen}
+                  nft={nft}
+                  user={user}
+                />
+              ) : null}
             </div>
           </div>
         </Box>
@@ -117,6 +131,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
                   setPassword(e.target.value);
                   setError(false);
                 }}
+                disabled={!isConnectionAvailable ? true : false}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
@@ -133,7 +148,11 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
               />
             </Box>
             <Box sx={{ mx: "12px" }}>
-              <PrimaryButton label="Unlock" type="submit" />
+              <PrimaryButton
+                label="Unlock"
+                type="submit"
+                disabled={!isConnectionAvailable ? true : false}
+              />
             </Box>
           </form>
           <Box
@@ -302,5 +321,65 @@ export function BackpackHeader({
         gm {disableUsername ? "" : `@${user.username}`}
       </Typography>
     </Box>
+  );
+}
+
+function TextBanner({
+  title,
+  buttonText,
+  onClick,
+  type,
+  fixed = false,
+}: {
+  title: String;
+  buttonText?: string;
+  onClick?: () => void;
+  type: "danger" | "normal" | "disabled";
+  fixed?: boolean;
+}) {
+  const theme = useCustomTheme();
+  const classes = useStyles({ type });
+  return (
+    <div
+      style={{
+        marginBottom: "12px",
+        ...(fixed ? { position: "absolute", top: "12%", width: "100%" } : {}),
+        zIndex: 10,
+      }}
+    >
+      <div
+        className={`${classes.noContactBanner} ${classes.horizontalCenter} ${classes.text}`}
+        style={{
+          color:
+            type === "disabled" ? theme.custom.colors.fontColor3 : "inherit",
+          fontSize: 14,
+          backgroundColor: "#FFEDEA",
+        }}
+      >
+        {" "}
+        {type !== "disabled" ? (
+          <InfoIcon
+            style={{
+              color:
+                type === "danger"
+                  ? theme.custom.colors.negative
+                  : theme.custom.colors.fontColor,
+              marginRight: 5,
+            }}
+          />
+        ) : null}{" "}
+        <div style={{ marginTop: type !== "disabled" ? 1 : 0 }}>
+          {title}
+          {buttonText ? (
+            <div
+              style={{ marginLeft: 10, cursor: "pointer" }}
+              onClick={onClick}
+            >
+              {buttonText}
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
   );
 }
