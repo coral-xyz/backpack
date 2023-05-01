@@ -103,6 +103,7 @@ type TransactionEdge {
 
 type Transaction implements Node {
   id: ID!
+  description: String!
   block: Float!
   fee: Int
   feePayer: String

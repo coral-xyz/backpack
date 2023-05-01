@@ -95,7 +95,13 @@ export class Solana implements Blockchain {
           p && meta
             ? {
                 id: `coingecko_market_data:${meta.id}`,
-                change: p.usd_24h_change,
+                percentChange: parseFloat(
+                  prices.solana.usd_24h_change.toFixed(2)
+                ),
+                usdChange: calculateUsdChange(
+                  prices.solana.usd_24h_change,
+                  prices.solana.usd
+                ),
                 lastUpdatedAt: p.last_updated_at,
                 logo: meta.logo,
                 price: p.usd,
@@ -216,6 +222,7 @@ export class Solana implements Blockchain {
 
     const nodes = resp.map((r) => ({
       id: `solana_transaction:${r.signature}`,
+      description: r.description,
       block: r.slot,
       fee: r.fee,
       feePayer: r.feePayer,
