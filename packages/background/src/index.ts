@@ -32,6 +32,17 @@ export function start(cfg: Config): Background {
 
   initPushNotificationHandlers();
 
+  if (chrome && chrome?.runtime?.id) {
+    // Keep alive for Manifest V3 service worker
+    chrome.runtime.onInstalled.addListener(() => {
+      chrome.alarms.get("keep-alive", (a) => {
+        if (!a) {
+          chrome.alarms.create("keep-alive", { periodInMinutes: 0.5 });
+        }
+      });
+    });
+  }
+
   return {
     _serverUi,
     _serverInjected,
