@@ -4,11 +4,14 @@ import { View, Text, ActivityIndicator, SectionList } from "react-native";
 import * as Linking from "expo-linking";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
+import { walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ErrorBoundary } from "react-error-boundary";
 
 import {
+  SectionHeader,
+  SectionSeparator,
   ListItemSentReceived,
   ListItemTokenSwap,
   // ListItemNotification,
@@ -33,6 +36,14 @@ function NoNFTsEmptyState() {
       />
     </View>
   );
+}
+
+function removeLastPeriod(str: string) {
+  if (str.endsWith(".")) {
+    return str.slice(0, -1);
+  }
+
+  return str;
 }
 
 function parseSwap(str: string) {
@@ -62,7 +73,7 @@ function parseTransfer(str: string) {
     const to = _to[1]; // remove period at the end
     const amount = _to[0].split("transferred ")[1].trim();
     const action = "Sent"; // TODO sent/received, pass down publickey
-    return { to, amount, action };
+    return { to: walletAddressDisplay(to), amount, action };
   } catch (_err) {
     return { to: "", amount: "", action: "Sent" };
   }
@@ -109,9 +120,10 @@ function RowItem({
   item: ListItem;
   handlePress: (item: ListItem) => void;
 }): JSX.Element {
+  const formattedDescription = removeLastPeriod(item.description);
   switch (item.type) {
     case "SWAP": {
-      const { sent, received, display } = parseSwap(item.description);
+      const { sent, received, display } = parseSwap(formattedDescription);
       return (
         <ListItemTokenSwap
           grouped
@@ -123,9 +135,10 @@ function RowItem({
       );
     }
     case "TRANSFER": {
-      const { to, amount, action } = parseTransfer(item.description);
+      const { to, amount, action } = parseTransfer(formattedDescription);
       return (
         <ListItemSentReceived
+          grouped
           address={to}
           action={action}
           amount={amount}
@@ -134,10 +147,11 @@ function RowItem({
       );
     }
     case "NFT_LISTING": {
-      const { nft, amount, marketplace } = parseNftListing(item.description);
+      const { nft, amount, marketplace } =
+        parseNftListing(formattedDescription);
       return (
         <ListItemActivity
-          grouped={false}
+          grouped
           onPress={console.log}
           topLeftText={nft}
           bottomLeftText={`Listed on ${marketplace}`}
@@ -149,10 +163,10 @@ function RowItem({
       );
     }
     case "NFT_SALE": {
-      const { nft, amount, marketplace } = parseNftSold(item.description);
+      const { nft, amount, marketplace } = parseNftSold(formattedDescription);
       return (
         <ListItemActivity
-          grouped={false}
+          grouped
           onPress={console.log}
           topLeftText={nft}
           bottomLeftText={`Sold on ${marketplace}`}
@@ -167,10 +181,10 @@ function RowItem({
     default: {
       return (
         <ListItemActivity
-          grouped={false}
+          grouped
           onPress={console.log}
           topLeftText="App Interaction"
-          bottomLeftText={item.hash}
+          bottomLeftText={walletAddressDisplay(item.hash)}
           bottomRightText=""
           topRightText=""
           // green checkmark
@@ -218,7 +232,7 @@ function Container({ navigation }: any): JSX.Element {
   const handlePressItem = useCallback(
     (item: ListItem) => {
       navigation.push("ActivityDetail", {
-        id: item.key,
+        id: item.id,
         title: item.title,
       });
     },
@@ -228,24 +242,39 @@ function Container({ navigation }: any): JSX.Element {
   const sections = convertTransactionDataToSectionList(
     data?.wallet?.transactions.edges
   );
-  const keyExtractor = (item: ListItem) => item.key;
+
+  const keyExtractor = (item: ListItem) => item.id;
   const renderItem = useCallback(
-    ({ item }: { item: ListItem }) => {
-      return <RowItem item={item} handlePress={handlePressItem} />;
+    ({ item, section, index }: { item: ListItem }) => {
+      const isFirst = index === 0;
+      const isLast = index === section.data.length - 1;
+      return (
+        <RoundedContainerGroup
+          disableTopRadius={!isFirst}
+          disableBottomRadius={!isLast}
+        >
+          <RowItem item={item} handlePress={handlePressItem} />
+        </RoundedContainerGroup>
+      );
     },
     [handlePressItem]
   );
 
+  const renderSectionHeader = useCallback(({ section }: any) => {
+    return <SectionHeader title={section.title} />;
+  }, []);
+
   return (
     <Screen>
-      <RoundedContainerGroup style={{ padding: 12 }}>
-        <SectionList
-          sections={sections}
-          ListEmptyComponent={NoNFTsEmptyState}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-        />
-      </RoundedContainerGroup>
+      <SectionList
+        sections={sections}
+        ListEmptyComponent={NoNFTsEmptyState}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        renderSectionHeader={renderSectionHeader}
+        SectionSeparatorComponent={SectionSeparator}
+        stickySectionHeadersEnabled={false}
+      />
     </Screen>
   );
 }

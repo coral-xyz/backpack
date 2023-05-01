@@ -275,7 +275,13 @@ export function ListItemActivity({
           <StyledText fontSize="$lg" color="$fontColor">
             {topLeftText}
           </StyledText>
-          <StyledText fontSize="$sm" color="$secondary">
+          <StyledText
+            fontSize="$sm"
+            color="$secondary"
+            maxWidth="80%"
+            ellipsizeMode="tail"
+            numberOfLines={1}
+          >
             {bottomLeftText}
           </StyledText>
         </YStack>
@@ -598,9 +604,10 @@ export function SectionedList() {
   return (
     <SectionList
       sections={sections}
+      stickySectionHeadersEnabled={false}
       ListHeaderComponent={<StyledText>Header</StyledText>}
       // separator cuts into the border but we can figure this out
-      ItemSeparatorComponent={Separator}
+      // ItemSeparatorComponent={Separator}
       renderSectionHeader={({ section: { title } }) => (
         <StyledText my={12}>{title}</StyledText>
       )}
@@ -625,4 +632,12 @@ export function SectionedList() {
       }}
     />
   );
+}
+
+export function SectionHeader({ title }: { title: string }): JSX.Element {
+  return <StyledText>{title}</StyledText>;
+}
+
+export function SectionSeparator() {
+  return <View style={{ height: 12 }} />;
 }
