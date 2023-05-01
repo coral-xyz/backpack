@@ -1,36 +1,60 @@
-import { ETH_TLD, SOL_TLD } from "./constants";
 import { addHttps } from "./ResolveDomainName";
-import * as dnsResolver from "./supportedNetworkDomains";
+import { isSupportedTLD, ResolveDomainName } from "./supportedNetworkDomains";
 
-async function main() {
+// Define the return type for the extractDomainParts function
+interface DomainParts {
+  hostNameArray: string[];
+  nameServiceDomain: string;
+  currentTLD: string;
+}
+
+/**
+ * A function to extract domain parts from a URL object.
+ * @param url - A URL object to extract domain parts from.
+ * @returns An object containing an array of hostNameArray, nameServiceDomain, and currentTLD.
+ *
+ * For example, given a URL like `blog.mjlee.sol`:
+ * - hostNameArray is an array ["blog", "mjlee", "sol"]
+ * - nameServiceDomain is the user's level domain, in this case, "mjlee"
+ * - currentTLD is the most Top level domain, in this case, "sol"
+ */
+export const extractDomainParts = (url: URL): DomainParts => {
+  const hostNameArray = url.hostname.split(".");
+  const nameServiceDomain = hostNameArray[hostNameArray.length - 2];
+  const currentTLD = hostNameArray[hostNameArray.length - 1];
+  return { hostNameArray, nameServiceDomain, currentTLD };
+};
+
+/**
+ * Main function that handles domain resolution and redirecting.
+ * This function extracts the domain from the URL, checks if the domain TLD is supported,
+ * updates the domain display text, and calls the relevant ResolveDomainName function.
+ * If an error occurs during domain resolution, it redirects the user to the error page.
+ */
+const main: () => Promise<void> = async () => {
   // Extract the domainUrl search parameter
   const domain = new URL(window.location.href).searchParams.get("domain");
   if (!domain) {
     return;
   }
 
-  // Add HTTPS to the domainUrl value
-  const domainUrl = addHttps(domain);
-  const urlParsed = new URL(domainUrl);
+  // Reformat URL if required, for parsing and extracting information we need.
+  const urlParsed = new URL(addHttps(domain));
+  const { hostNameArray, nameServiceDomain, currentTLD } =
+    extractDomainParts(urlParsed);
 
-  // Split the hostname into an array of parts
-  const hostNameArray = urlParsed.hostname.split(".");
-
-  let domainFull = "";
-
-  // Iterate through the array, concatenating each item until we reach the last two
-  for (let i = 0; i < hostNameArray.length - 2; i++) {
-    domainFull += hostNameArray[i] + ".";
+  // Exit early if the domain is not supported
+  if (!isSupportedTLD(currentTLD)) {
+    return;
   }
 
-  // Extract the name service domain and TLD
-  const nameServiceDomain = hostNameArray[hostNameArray.length - 2];
-  const currentTLD = hostNameArray[hostNameArray.length - 1];
-
-  // Concatenate the name service domain and TLD to form the full domain
-  domainFull += nameServiceDomain + "." + currentTLD;
-
-  //----------------------------------------------------------------
+  // Concatenate the domain parts to form the full domain
+  const leadingDomain = hostNameArray.slice(0, -2).join(".");
+  const domainFull =
+    (leadingDomain ? leadingDomain + "." : "") +
+    nameServiceDomain +
+    "." +
+    currentTLD;
 
   // Concatenate the name service path and search values
   const nameServicePathAndSearch = urlParsed.pathname + urlParsed.search;
@@ -40,32 +64,20 @@ async function main() {
   if (displayText) displayText.textContent = domainFull;
 
   try {
-    // Handle the domain based on the TLD
-    switch (currentTLD) {
-      case SOL_TLD:
-        await dnsResolver.handleDomainSOL(
-          nameServiceDomain,
-          hostNameArray,
-          nameServicePathAndSearch,
-          domainFull
-        );
-        break;
-      case ETH_TLD:
-        await dnsResolver.handleDomainETH(
-          nameServiceDomain,
-          hostNameArray,
-          nameServicePathAndSearch,
-          domainFull
-        );
-        break;
-      default:
-        throw new Error("invalid TLD");
-    }
+    // Call the relevant ResolveDomainName function for the current TLD
+    await ResolveDomainName[currentTLD](
+      nameServiceDomain,
+      hostNameArray,
+      nameServicePathAndSearch,
+      domainFull
+    );
   } catch (err) {
     console.log(err);
-    // Redirect to error page if something fails;;
     window.location.href = "./redirect404.html";
   }
-}
+};
 
-main();
+main().catch((error) => {
+  console.log("An unexpected error occurred:", error);
+  window.location.href = "./redirect404.html";
+});
