@@ -64,7 +64,6 @@ export const toggleSupportedNetworkResolution = async (
   network: string,
   enabled: boolean
 ) => {
-  console.log("NETWORK: ", network, "----- ENABLED: ", enabled);
   await new Promise<void>((resolve) => {
     chrome.storage.local.set({ [`${network}-domain`]: enabled }, () =>
       resolve()
