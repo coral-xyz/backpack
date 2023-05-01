@@ -1,8 +1,10 @@
-import { queryResolvers, walletResolvers } from "./query";
+import { queryResolvers, userResolvers, walletResolvers } from "./query";
 import type { Node, PageInfo, Resolvers } from "./types";
+import { ChainId } from "./types";
 
 export const resolvers: Resolvers = {
   Query: queryResolvers,
+  User: userResolvers,
   Wallet: walletResolvers,
 };
 
@@ -46,4 +48,26 @@ export function createConnection<T extends Node>(
           hasPreviousPage,
         },
       };
+}
+
+/**
+ * Infer and return a ChainId enum variant from the argued string value.
+ * @export
+ * @param {string} val
+ * @returns {(ChainId | never)}
+ */
+export function inferChainIdFromString(val: string): ChainId | never {
+  switch (val) {
+    case "ethereum": {
+      return ChainId.Ethereum;
+    }
+
+    case "solana": {
+      return ChainId.Solana;
+    }
+
+    default: {
+      throw new Error(`unknown chain id string: ${val}`);
+    }
+  }
 }

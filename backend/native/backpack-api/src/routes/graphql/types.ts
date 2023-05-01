@@ -89,7 +89,12 @@ export type PageInfo = {
 
 export type Query = {
   __typename?: "Query";
+  user?: Maybe<User>;
   wallet?: Maybe<Wallet>;
+};
+
+export type QueryUserArgs = {
+  username: Scalars["String"];
 };
 
 export type QueryWalletArgs = {
@@ -123,6 +128,7 @@ export type TokenBalanceEdge = {
 export type Transaction = Node & {
   __typename?: "Transaction";
   block: Scalars["Float"];
+  description: Scalars["String"];
   fee?: Maybe<Scalars["Int"]>;
   feePayer?: Maybe<Scalars["String"]>;
   hash: Scalars["String"];
@@ -144,6 +150,17 @@ export type TransactionEdge = {
   node?: Maybe<Transaction>;
 };
 
+export type User = Node & {
+  __typename?: "User";
+  id: Scalars["ID"];
+  username: Scalars["String"];
+  wallets?: Maybe<WalletConnection>;
+};
+
+export type UserWalletsArgs = {
+  publicKeys?: InputMaybe<Array<Scalars["String"]>>;
+};
+
 export type Wallet = Node & {
   __typename?: "Wallet";
   balances?: Maybe<Balances>;
@@ -155,6 +172,18 @@ export type Wallet = Node & {
 export type WalletTransactionsArgs = {
   after?: InputMaybe<Scalars["String"]>;
   before?: InputMaybe<Scalars["String"]>;
+};
+
+export type WalletConnection = {
+  __typename?: "WalletConnection";
+  edges?: Maybe<Array<Maybe<WalletEdge>>>;
+  pageInfo: PageInfo;
+};
+
+export type WalletEdge = {
+  __typename?: "WalletEdge";
+  cursor: Scalars["String"];
+  node?: Maybe<Wallet>;
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -284,6 +313,7 @@ export type ResolversTypes = ResolversObject<{
     | ResolversTypes["Nft"]
     | ResolversTypes["TokenBalance"]
     | ResolversTypes["Transaction"]
+    | ResolversTypes["User"]
     | ResolversTypes["Wallet"];
   PageInfo: ResolverTypeWrapper<PageInfo>;
   Query: ResolverTypeWrapper<{}>;
@@ -294,7 +324,10 @@ export type ResolversTypes = ResolversObject<{
   Transaction: ResolverTypeWrapper<Transaction>;
   TransactionConnection: ResolverTypeWrapper<TransactionConnection>;
   TransactionEdge: ResolverTypeWrapper<TransactionEdge>;
+  User: ResolverTypeWrapper<User>;
   Wallet: ResolverTypeWrapper<Wallet>;
+  WalletConnection: ResolverTypeWrapper<WalletConnection>;
+  WalletEdge: ResolverTypeWrapper<WalletEdge>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -315,6 +348,7 @@ export type ResolversParentTypes = ResolversObject<{
     | ResolversParentTypes["Nft"]
     | ResolversParentTypes["TokenBalance"]
     | ResolversParentTypes["Transaction"]
+    | ResolversParentTypes["User"]
     | ResolversParentTypes["Wallet"];
   PageInfo: PageInfo;
   Query: {};
@@ -325,7 +359,10 @@ export type ResolversParentTypes = ResolversObject<{
   Transaction: Transaction;
   TransactionConnection: TransactionConnection;
   TransactionEdge: TransactionEdge;
+  User: User;
   Wallet: Wallet;
+  WalletConnection: WalletConnection;
+  WalletEdge: WalletEdge;
 }>;
 
 export type BalancesResolvers<
@@ -416,6 +453,7 @@ export type NodeResolvers<
     | "Nft"
     | "TokenBalance"
     | "Transaction"
+    | "User"
     | "Wallet",
     ParentType,
     ContextType
@@ -450,6 +488,12 @@ export type QueryResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Query"] = ResolversParentTypes["Query"]
 > = ResolversObject<{
+  user?: Resolver<
+    Maybe<ResolversTypes["User"]>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryUserArgs, "username">
+  >;
   wallet?: Resolver<
     Maybe<ResolversTypes["Wallet"]>,
     ParentType,
@@ -507,6 +551,7 @@ export type TransactionResolvers<
   ParentType extends ResolversParentTypes["Transaction"] = ResolversParentTypes["Transaction"]
 > = ResolversObject<{
   block?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   fee?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
   feePayer?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   hash?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
@@ -547,6 +592,21 @@ export type TransactionEdgeResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type UserResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["User"] = ResolversParentTypes["User"]
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  username?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  wallets?: Resolver<
+    Maybe<ResolversTypes["WalletConnection"]>,
+    ParentType,
+    ContextType,
+    Partial<UserWalletsArgs>
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type WalletResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Wallet"] = ResolversParentTypes["Wallet"]
@@ -571,6 +631,28 @@ export type WalletResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type WalletConnectionResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["WalletConnection"] = ResolversParentTypes["WalletConnection"]
+> = ResolversObject<{
+  edges?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["WalletEdge"]>>>,
+    ParentType,
+    ContextType
+  >;
+  pageInfo?: Resolver<ResolversTypes["PageInfo"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type WalletEdgeResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["WalletEdge"] = ResolversParentTypes["WalletEdge"]
+> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  node?: Resolver<Maybe<ResolversTypes["Wallet"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type Resolvers<ContextType = any> = ResolversObject<{
   Balances?: BalancesResolvers<ContextType>;
   Collection?: CollectionResolvers<ContextType>;
@@ -587,5 +669,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Transaction?: TransactionResolvers<ContextType>;
   TransactionConnection?: TransactionConnectionResolvers<ContextType>;
   TransactionEdge?: TransactionEdgeResolvers<ContextType>;
+  User?: UserResolvers<ContextType>;
   Wallet?: WalletResolvers<ContextType>;
+  WalletConnection?: WalletConnectionResolvers<ContextType>;
+  WalletEdge?: WalletEdgeResolvers<ContextType>;
 }>;
