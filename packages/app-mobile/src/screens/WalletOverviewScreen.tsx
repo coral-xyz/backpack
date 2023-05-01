@@ -1,11 +1,11 @@
 import type { Token, NavTokenOptions } from "@@types/types";
 import type { Blockchain } from "@coral-xyz/common";
 
-import { useCallback } from "react";
-import { FlatList } from "react-native";
+import { Suspense, useCallback } from "react";
+import { FlatList, ActivityIndicator, Text } from "react-native";
 
 import { Box } from "@coral-xyz/tamagui";
-import { useIsFocused } from "@react-navigation/native";
+import { ErrorBoundary } from "react-error-boundary";
 
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import { Screen, RoundedContainerGroup } from "~components/index";
@@ -13,15 +13,7 @@ import { useBlockchainBalancesSorted, useActiveWallet } from "~hooks/recoil";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 import { TokenRow } from "~screens/Unlocked/components/Balances";
 
-export function WalletOverviewScreen({ navigation }) {
-  const isFocused = useIsFocused();
-  if (isFocused) {
-    return <_WalletOverviewScreen navigation={navigation} />;
-  }
-  return null;
-}
-
-function _WalletOverviewScreen({ navigation }) {
+function Container({ navigation }): JSX.Element {
   const { data: wallet } = useActiveWallet();
   const { data: balances } = useBlockchainBalancesSorted({
     publicKey: wallet.publicKey.toString(),
@@ -84,5 +76,15 @@ function _WalletOverviewScreen({ navigation }) {
         }
       />
     </Screen>
+  );
+}
+
+export function WalletOverviewScreen({ navigation }: any): JSX.Element {
+  return (
+    <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
+      <Suspense fallback={<ActivityIndicator size="large" />}>
+        <Container navigation={navigation} />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

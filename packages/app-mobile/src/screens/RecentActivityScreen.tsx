@@ -9,6 +9,7 @@ import { useActiveWallet } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ErrorBoundary } from "react-error-boundary";
 
+import { IconCheckmark } from "~components/Icon";
 import {
   SectionHeader,
   SectionSeparator,
@@ -114,8 +115,8 @@ function RowItem({
           bottomLeftText={walletAddressDisplay(item.hash)}
           bottomRightText=""
           topRightText=""
-          // green checkmark
-          iconUrl="https://swr.xnfts.dev/1min/https://madlist-images.s3.us-west-2.amazonaws.com/backpack_dev.png"
+          showSuccessIcon={!item.transactionError}
+          showErrorIcon={item.transactionError}
         />
       );
     }

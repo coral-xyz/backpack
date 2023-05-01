@@ -37,35 +37,28 @@ function NoNFTsEmptyState() {
   );
 }
 
-function CollectionImage({ images }: { images: string[] }): JSX.Element {
-  if (images.length === 1) {
-    return (
-      <Image
-        source={{ uri: images[0] }}
-        style={{ borderRadius: 16, aspectRatio: 1, height: 164, padding: 12 }}
-      />
-    );
-  }
-
+function ImageBox({ images }): JSX.Element {
+  console.log("debug1:images2", images);
   return (
     <View
       style={{
+        borderRadius: 12,
         flexDirection: "row",
-        flex: 1,
-        gap: 4,
         flexWrap: "wrap",
+        gap: 8,
         padding: 8,
+        backgroundColor: "orange",
       }}
     >
-      {images.slice(0, 4).map((uri) => {
+      {images.map((uri, index) => {
         return (
           <Image
-            key={uri}
+            key={`${uri}-${index}`}
             source={{ uri }}
             style={{
               borderRadius: 8,
-              aspectRatio: 1,
-              width: "25%",
+              width: "45%",
+              height: 70,
               backgroundColor: "black",
             }}
           />
@@ -73,6 +66,19 @@ function CollectionImage({ images }: { images: string[] }): JSX.Element {
       })}
     </View>
   );
+}
+
+function CollectionImage({ images }: { images: string[] }): JSX.Element {
+  if (images.length === 1) {
+    return (
+      <Image
+        source={{ uri: images[0] }}
+        style={{ borderRadius: 12, aspectRatio: 1, height: 164, padding: 12 }}
+      />
+    );
+  }
+
+  return <ImageBox images={images.slice(0, 4)} />;
 }
 
 function RowItem({
@@ -88,8 +94,14 @@ function RowItem({
       onPress={() => handlePress(item)}
     >
       <CollectionImage images={item.images} />
-      <XStack mt={16}>
-        <StyledText mr={4} fontSize="$base" maxWidth="90%" ellipsizeMode="tail">
+      <XStack mt={8}>
+        <StyledText
+          mr={4}
+          fontSize="$base"
+          numberOfLines={1}
+          maxWidth="80%"
+          ellipsizeMode="tail"
+        >
           {item.title}
         </StyledText>
         <StyledText fontSize="$base">{item.numItems.toString()}</StyledText>
