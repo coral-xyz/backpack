@@ -20,7 +20,8 @@ export function StyledText({
   textAlign?: SizableTextProps["textAlign"];
   color?: string;
   style?: StyleProp<TextStyle>;
-} & TextProps) {
+} & TextProps &
+  SizableTextProps) {
   const theme = useCustomTheme();
   const _color = color || theme.custom.colors.fontColor;
   return (

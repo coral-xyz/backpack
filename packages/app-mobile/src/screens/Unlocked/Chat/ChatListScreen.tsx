@@ -15,6 +15,7 @@ import { useChatHelper, type ChatRowData } from "./ChatHelpers";
 export function ChatListScreen({
   navigation,
 }: StackScreenProps<ChatStackNavigatorParamList, "ChatList">): JSX.Element {
+  console.log("hello from chatlist");
   const [searchResults, setSearchResults] = useState([]); // TODO(types) user search type
   const {
     allChats,

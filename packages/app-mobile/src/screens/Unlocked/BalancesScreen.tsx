@@ -12,6 +12,7 @@ import {
 import { createStackNavigator } from "@react-navigation/stack";
 
 import { NavHeader } from "~components/NavHeader";
+import { RecentActivityList } from "~components/RecentActivityList";
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import {
   Margin,
@@ -24,7 +25,6 @@ import {
   useBlockchainActiveWallet,
   useActiveEthereumWallet,
 } from "~hooks/recoil";
-import { RecentActivityList } from "~screens/Unlocked/RecentActivityScreen";
 
 import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";
@@ -78,7 +78,7 @@ function TokenHeader({
   );
 }
 
-function BalanceDetailScreen({
+export function BalanceDetailScreen({
   route,
   navigation,
 }: StackScreenProps<
@@ -122,7 +122,7 @@ function BalanceDetailScreen({
   );
 }
 
-function BalanceListScreen({
+export function BalanceListScreen({
   navigation,
 }: StackScreenProps<BalancesStackParamList, "BalanceList">): JSX.Element {
   return (

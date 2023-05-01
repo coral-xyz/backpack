@@ -261,7 +261,7 @@ export function DummyScreen({ navigation }): JSX.Element {
                 text="Friend request accepted"
                 username="@peterp"
                 time="7d"
-                iconUrl="https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681311728112?size=120"
+                avatarUrl="https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681311728112?size=120"
               />
             </YGroup.Item>
             <YGroup.Item>
@@ -270,7 +270,7 @@ export function DummyScreen({ navigation }): JSX.Element {
                 text="Friend request"
                 username="@peterp"
                 time="14d"
-                iconUrl="https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681311728112?size=120"
+                avatarUrl="https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681311728112?size=120"
               />
             </YGroup.Item>
           </YGroup>
@@ -279,7 +279,7 @@ export function DummyScreen({ navigation }): JSX.Element {
           text="Friend request accepted"
           username="@peterp"
           time="7d"
-          iconUrl="https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681311728112?size=120"
+          avatarUrl="https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681311728112?size=120"
         />
       </Screen>
     </ScrollView>
