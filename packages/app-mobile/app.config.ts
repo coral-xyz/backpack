@@ -2,7 +2,6 @@ import { ExpoConfig, ConfigContext } from "expo/config";
 
 type ExpoExtras = {
   extra: {
-    FEATURE_MOBILE_CHAT: boolean;
     localWebViewUrl: string;
     remoteWebViewUrl: string;
     graphqlApiUrl: string;
@@ -10,7 +9,7 @@ type ExpoExtras = {
 };
 
 const localGraphQLApi = "http://localhost:8080/v2/graphql";
-const remoteGraphQLApi = "https://backpack-api.xnfts.dev/v2/graphql";
+// const remoteGraphQLApi = "https://backpack-api.xnfts.dev/v2/graphql";
 
 export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
   const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
@@ -74,11 +73,8 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
       favicon: "./assets/favicon.png",
     },
     extra: {
-      PLAYGROUND: true,
-      FEATURE_MOBILE_CHAT: true,
       graphqlApiUrl: localGraphQLApi,
       localWebViewUrl: "http://localhost:9333",
-      remoteGraphQLApi: "https://backpack-api.xnfts.dev/v2/graphql",
       remoteWebViewUrl,
       eas: {
         projectId: projectID,
