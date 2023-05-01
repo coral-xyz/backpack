@@ -8,6 +8,7 @@ import {
   type Balances,
   ChainId,
   type Collection,
+  type MarketData,
   type Nft,
   type NftConnection,
   type TokenBalance,
@@ -87,31 +88,34 @@ export class Solana implements Blockchain {
     const splTokenNodes: TokenBalance[] = nonEmptyOrNftTokens.map((t) => {
       const meta = legacy.get(t.mint);
       const p: CoinGeckoPriceData | null = prices[meta?.id ?? ""] ?? null;
+
+      const marketData: MarketData | null =
+        p && meta
+          ? {
+              id: `coingecko_market_data:${meta.id}`,
+              percentChange: parseFloat(
+                prices.solana.usd_24h_change.toFixed(2)
+              ),
+              usdChange: calculateUsdChange(
+                prices.solana.usd_24h_change,
+                prices.solana.usd
+              ),
+              lastUpdatedAt: p.last_updated_at,
+              logo: meta.logo,
+              price: p.usd,
+              value:
+                parseFloat(ethers.utils.formatUnits(t.amount, t.decimals)) *
+                p.usd,
+            }
+          : null;
+
       return {
         id: `solana_token_address:${t.tokenAccount}`,
         address: t.tokenAccount,
         amount: t.amount.toString(),
         decimals: t.decimals,
         displayAmount: ethers.utils.formatUnits(t.amount, t.decimals),
-        marketData:
-          p && meta
-            ? {
-                id: `coingecko_market_data:${meta.id}`,
-                percentChange: parseFloat(
-                  prices.solana.usd_24h_change.toFixed(2)
-                ),
-                usdChange: calculateUsdChange(
-                  prices.solana.usd_24h_change,
-                  prices.solana.usd
-                ),
-                lastUpdatedAt: p.last_updated_at,
-                logo: meta.logo,
-                price: p.usd,
-                value:
-                  parseFloat(ethers.utils.formatUnits(t.amount, t.decimals)) *
-                  p.usd,
-              }
-            : null,
+        marketData,
         mint: t.mint,
       };
     });

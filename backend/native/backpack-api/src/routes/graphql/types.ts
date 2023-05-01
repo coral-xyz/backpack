@@ -163,7 +163,9 @@ export type UserWalletsArgs = {
 
 export type Wallet = Node & {
   __typename?: "Wallet";
+  address: Scalars["String"];
   balances?: Maybe<Balances>;
+  chainId: ChainId;
   id: Scalars["ID"];
   nfts?: Maybe<NftConnection>;
   transactions?: Maybe<TransactionConnection>;
@@ -615,11 +617,13 @@ export type WalletResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Wallet"] = ResolversParentTypes["Wallet"]
 > = ResolversObject<{
+  address?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   balances?: Resolver<
     Maybe<ResolversTypes["Balances"]>,
     ParentType,
     ContextType
   >;
+  chainId?: Resolver<ResolversTypes["ChainID"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   nfts?: Resolver<
     Maybe<ResolversTypes["NftConnection"]>,
