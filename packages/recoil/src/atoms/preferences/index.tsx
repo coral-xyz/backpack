@@ -2,10 +2,13 @@ import type {
   AutolockSettings,
   Blockchain,
   Preferences,
+  SupportedWebDNSNetworkResolutionData,
 } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   DEFAULT_AUTO_LOCK_INTERVAL_SECS,
+  DEFAULT_ENABLED_WEB_DNS_RESOLUTION_NETWORKS,
+  DEFAULT_GATEWAY,
   isMobile,
   UI_RPC_METHOD_ALL_USERS_READ,
   UI_RPC_METHOD_PREFERENCES_READ,
@@ -74,9 +77,21 @@ export const domainContentIpfsGateway = selector<string>({
   key: "domainContentIpfsGateway",
   get: async ({ get }) => {
     const p = get(preferences);
-    return p.ipfsGateway;
+    return p?.websiteDNSResolution?.ipfsGateway || DEFAULT_GATEWAY;
   },
 });
+
+export const enabledDNSResolverNetworks =
+  selector<SupportedWebDNSNetworkResolutionData>({
+    key: "enabledDNSResolverNetworks",
+    get: async ({ get }) => {
+      const p = get(preferences);
+      return (
+        p?.websiteDNSResolution?.supportedWebDNSNetwork ||
+        DEFAULT_ENABLED_WEB_DNS_RESOLUTION_NETWORKS
+      );
+    },
+  });
 
 export const autoLockSettings = selector<AutolockSettings>({
   key: "autoLockSettings",

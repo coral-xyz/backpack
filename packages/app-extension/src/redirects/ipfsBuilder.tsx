@@ -60,6 +60,39 @@ export async function setIPFSGateway(gateway: string) {
   });
 }
 
+export const toggleSupportedNetworkResolution = async (
+  network: string,
+  enabled: boolean
+) => {
+  console.log("NETWORK: ", network, "----- ENABLED: ", enabled);
+  await new Promise<void>((resolve) => {
+    chrome.storage.local.set({ [`${network}-domain`]: enabled }, () =>
+      resolve()
+    );
+  });
+};
+
+export interface SupportedWebDNSNetworkResolutionData {
+  [key: string]: boolean;
+}
+export const getSupportedNetworkResolution = async (
+  network: string
+): Promise<boolean> => {
+  const data = await new Promise<SupportedWebDNSNetworkResolutionData>(
+    (resolve, reject) => {
+      chrome.storage.local.get(`${network}-domain`, (data) =>
+        data ? resolve(data) : reject()
+      );
+    }
+  );
+
+  if (`${network}-domain` in data) {
+    return data[`${network}-domain`];
+  } else {
+    await toggleSupportedNetworkResolution(network, false);
+    return false;
+  }
+};
 /**
  * Checks if URL prefix starts with IPFS or IPNS
  * @param data Domain content

@@ -1,10 +1,29 @@
-export const redirect = async (urlString: string) => {
-  const tab: chrome.tabs.Tab = await getCurrentTab();
+import { DomainNetwork } from "./constants";
+import { getSupportedNetworkResolution } from "./ipfsBuilder";
+import { extractDomainParts } from ".";
 
-  if (tab !== undefined && urlString !== undefined) {
-    await chrome.tabs.update(tab.id || chrome.tabs.TAB_ID_NONE, {
-      url: `./redirect.html?domain=${urlString}`,
-    });
+const checkIfNetworkResolutionIsEnabled = async (
+  urlString: string
+): Promise<boolean> => {
+  const { currentTLD } = extractDomainParts(new URL(addHttps(urlString)));
+  // Check if the domain resolution is enabled
+  if (currentTLD in DomainNetwork) {
+    const blockchain = DomainNetwork[currentTLD as keyof typeof DomainNetwork];
+    return getSupportedNetworkResolution(blockchain);
+  }
+
+  return false;
+};
+
+export const redirect = async (urlString: string) => {
+  if (await checkIfNetworkResolutionIsEnabled(urlString)) {
+    const tab: chrome.tabs.Tab = await getCurrentTab();
+
+    if (tab !== undefined && urlString !== undefined) {
+      await chrome.tabs.update(tab.id || chrome.tabs.TAB_ID_NONE, {
+        url: `./redirect.html?domain=${urlString}`,
+      });
+    }
   }
 };
 

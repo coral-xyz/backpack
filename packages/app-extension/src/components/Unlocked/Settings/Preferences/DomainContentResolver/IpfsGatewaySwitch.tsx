@@ -36,7 +36,6 @@ export function PreferencesIpfsGateway() {
           params: [url],
         })
         .catch(console.error);
-
       await setIPFSGateway(url);
     } catch (err) {
       console.error(err);
@@ -50,7 +49,7 @@ export function PreferencesIpfsGateway() {
   const menuItems = DEFAULT_IPFS_GATEWAYS.reduce((acc, gateway) => {
     (acc as MenuItems)[gateway] = {
       onClick: () => changeIpfsGateway(gateway),
-      detail: currentIpfsGatewayUrl === gateway ? <Checkmark /> : <></>,
+      detail: currentIpfsGatewayUrl === gateway && <Checkmark />,
     };
     return acc;
   }, {});

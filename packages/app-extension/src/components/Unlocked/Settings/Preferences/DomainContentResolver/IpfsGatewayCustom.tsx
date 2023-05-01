@@ -3,31 +3,8 @@ import { setIPFSGateway } from "@coral-xyz/app-extension/src/redirects/ipfsBuild
 import { UI_RPC_METHOD_SETTINGS_DOMAIN_CONTENT_IPFS_GATEWAY_UPDATE } from "@coral-xyz/common";
 import { InputListItem, Inputs, PrimaryButton } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
 
 import { useNavigation } from "../../../../common/Layout/NavStack";
-
-const useStyles = styles((theme) => ({
-  textFieldRoot: {
-    color: theme.custom.colors.secondary,
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        border: "none",
-        color: theme.custom.colors.secondary,
-      },
-    },
-  },
-  listParent: {
-    border: `2px solid black`,
-    "&:hover": {
-      border: `2px solid red !important`,
-    },
-    "&:focussed": {
-      border: `2px solid yellow !important`,
-    },
-    borderRadius: "10px",
-  },
-}));
 
 export function PreferencesCustomIpfsGateway() {
   const nav = useNavigation();
@@ -55,7 +32,7 @@ export function PreferencesCustomIpfsGateway() {
     return () => {
       nav.setOptions({ headerTitle: title });
     };
-  }, []);
+  }, [nav]);
 
   return (
     <div style={{ paddingTop: "16px", height: "100%" }}>
@@ -66,11 +43,11 @@ export function PreferencesCustomIpfsGateway() {
         <div style={{ flex: 1, flexGrow: 1 }}>
           <Inputs error={false}>
             <InputListItem
-              isFirst={true}
-              isLast={true}
+              isFirst
+              isLast
               button={false}
-              title={"Gateway"}
-              placeholder={"Gateway URL"}
+              title="Gateway"
+              placeholder="Gateway URL"
               value={gatewayUrl}
               onChange={(e) => {
                 setGatewayUrl(e.target.value);

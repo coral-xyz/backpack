@@ -1,6 +1,14 @@
+import { Blockchain } from "@coral-xyz/common";
 // TLD constants
 export const ETH_TLD = "eth";
 export const SOL_TLD = "sol";
+
+export const DomainNetwork = {
+  [ETH_TLD]: Blockchain.ETHEREUM,
+  [SOL_TLD]: Blockchain.SOLANA,
+};
+
+export const supportedDomains: string[] = [SOL_TLD, ETH_TLD];
 
 // IPFS and IPNS prefix constants to be queried in the domain content
 export const ipnsOrIpfsPrefix = ["ipns=", "ipfs=", "ipfs://", "ipns://"];
@@ -12,8 +20,6 @@ export enum PREFIX {
   IPFS = "/ipfs/",
   IPNS = "/ipns/",
 }
-
-export const supportedDomains: string[] = ["sol", "eth"];
 
 // Url regex patterns for most popular search engines: Google, Bing and DuckDuckGo.
 export const urlPatterns: string[] = [
