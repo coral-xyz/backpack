@@ -3731,6 +3731,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@coral-xyz/barter-sdk@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@coral-xyz/barter-sdk@npm:0.1.0"
+  dependencies:
+    "@coral-xyz/anchor": ^0.27.0
+    "@solana/spl-token": ^0.3.7
+    "@solana/web3.js": ^1.74.0
+  checksum: 3ba1ab0be45c50a2c95ee33e169c2d1ade08b6991e5aa2e56b5a31a05ffa8a55cbb2a9b8fd017778376729cdebb8cf9021f547284c258301baedb0912b36201c
+  languageName: node
+  linkType: hard
+
 "@coral-xyz/blockchain-common@*, @coral-xyz/blockchain-common@workspace:packages/blockchains/common":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/blockchain-common@workspace:packages/blockchains/common"
@@ -3807,6 +3818,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/chat-sdk@workspace:packages/chat-sdk"
   dependencies:
+    "@coral-xyz/barter-sdk": ^0.1.0
     "@coral-xyz/common": "*"
     "@coral-xyz/db": "*"
     "@coral-xyz/react-common": "*"

@@ -11,6 +11,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@coral-xyz/barter-sdk": "^0.1.0",
     "@coral-xyz/common": "*",
     "@coral-xyz/db": "*",
     "@coral-xyz/react-common": "*",

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   useActiveSolanaWallet,
   useFeatureGates,
+  usePrimaryWallets,
   useUser,
 } from "@coral-xyz/recoil";
 import { useUsersMetadata } from "@coral-xyz/tamagui";
@@ -24,7 +25,6 @@ import { NftSticker } from "./NftSticker";
 import { ReplyContainer } from "./ReplyContainer";
 import { SecureTransfer } from "./SecureTransfer";
 
-const BARTER_ENABLED = true;
 const SECURE_TRANSFER_ENABLED = false;
 
 const useStyles = makeStyles((theme: any) =>
@@ -35,54 +35,6 @@ const useStyles = makeStyles((theme: any) =>
       backdropFilter: "blur(6px)",
       borderRadius: 8,
       margin: 12,
-    },
-    text: {
-      color: theme.custom.colors.fontColor2,
-    },
-    wrapText: {
-      width: "100%",
-    },
-    textFieldRoot: {
-      color: theme.custom.colors.secondary,
-      "& .MuiOutlinedInput-root": {
-        padding: 0,
-        "border-top-right-radius": 10,
-        "border-top-left-radius": 10,
-        "& fieldset": {
-          border: "none",
-        },
-      },
-      "& .MuiInputBase-input": {
-        padding: "10px 12px 10px 12px",
-        fontSize: "15px",
-      },
-    },
-    textFieldInputColorEmpty: {
-      color: theme.custom.colors.textPlaceholder,
-    },
-    textFieldInputColor: {
-      color: theme.custom.colors.fontColor2,
-    },
-    icon: {
-      color: theme.custom.colors.icon,
-    },
-    textInputRoot: {
-      "border-top-right-radius": 10,
-      "border-top-left-radius": 10,
-      color: theme.custom.colors.fontColor2,
-      fontWeight: 500,
-      borderRadius: "12px",
-      fontSize: "16px",
-      lineHeight: "24px",
-      "& .MuiOutlinedInput-root": {
-        "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-          outline: "none",
-        },
-        "&:active": {
-          outline: "none",
-        },
-        outline: "none",
-      },
     },
   })
 );
@@ -113,9 +65,15 @@ export const SendMessage = ({
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
   const featureGates = useFeatureGates();
+  const primaryWallets = usePrimaryWallets();
+  const activeSolanaWallet = useActiveSolanaWallet();
+  const isPrimary = primaryWallets.find(
+    (x) => x.publicKey === activeSolanaWallet?.publicKey
+  )
+    ? true
+    : false;
 
   const theme = useCustomTheme();
-  const activeSolanaWallet = useActiveSolanaWallet();
   const {
     setOpenPlugin,
     aboveMessagePlugin,
@@ -158,6 +116,7 @@ export const SendMessage = ({
     selectedMediaKind,
     activeReply,
     chats,
+    sendMessage,
   ]);
 
   const getOfflineMembers = () => {
@@ -306,7 +265,10 @@ export const SendMessage = ({
               )}
             </IconButton>
           </div>
-          <MessageInput onMediaSelect={onMediaSelect} setPluginMenuOpen={setPluginMenuOpen} />
+          <MessageInput
+            onMediaSelect={onMediaSelect}
+            setPluginMenuOpen={setPluginMenuOpen}
+          />
         </div>
         {pluginMenuOpen ? (
           <div style={{ display: "flex", marginLeft: 8, paddingBottom: 5 }}>
@@ -350,7 +312,9 @@ export const SendMessage = ({
                 setAboveMessagePlugin={setAboveMessagePlugin}
               />
             ) : null}
-            {type === "individual" && featureGates["BARTER_ENABLED"] ? (
+            {type === "individual" &&
+            activeSolanaWallet?.publicKey &&
+            isPrimary ? (
               <Barter
                 setOpenPlugin={setOpenPlugin}
                 onMediaSelect={onMediaSelect}

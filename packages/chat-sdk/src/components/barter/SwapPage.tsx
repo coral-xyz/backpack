@@ -1,4 +1,5 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect, useState } from "react";
+import { Barter } from "@coral-xyz/barter-sdk";
 import type { BarterOffers } from "@coral-xyz/common";
 import { BACKEND_API_URL, Blockchain } from "@coral-xyz/common";
 import {
@@ -7,9 +8,11 @@ import {
   SuccessButton,
   useBreakpoints,
 } from "@coral-xyz/react-common";
-import { useTokenMetadata } from "@coral-xyz/recoil";
+import { useAnchorContext, useTokenMetadata } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import CallMadeIcon from "@mui/icons-material/CallMade";
+import { BN } from "@project-serum/anchor";
+import { PublicKey } from "@solana/web3.js";
 import { v4 as uuidv4 } from "uuid";
 
 import { useChatContext } from "../ChatContext";
@@ -23,15 +26,19 @@ export function SwapPage({
   remoteSelection,
   localSelection,
   finalized,
+  remotePrimaryPubkey,
 }: {
   finalized?: boolean;
   remoteSelection: BarterOffers;
   localSelection: BarterOffers;
+  remotePrimaryPubkey: string | null;
 }) {
   const theme = useCustomTheme();
   const { roomId, setOpenPlugin, remoteUsername, sendMessage } =
     useChatContext();
   const { barterId } = useBarterContext();
+  const { provider } = useAnchorContext();
+  const barterClient = new Barter(provider);
   return (
     <div
       style={{
@@ -84,6 +91,7 @@ export function SwapPage({
           </div>
         </div>
       </div>
+
       <div style={{ padding: 10 }}>
         {remoteSelection.length === 0 ? (
           <SecondaryButton
@@ -107,10 +115,27 @@ export function SwapPage({
             }}
           />
         ) : null}
+
         {remoteSelection.length !== 0 ? (
           <SecondaryButton
             label="Approve trade"
             onClick={async () => {
+              if (!remotePrimaryPubkey) {
+                // Control shouldn't reach here
+                alert("Remote user doens't have a primary solana publickey");
+                return;
+              }
+              await barterClient.create({
+                expecting: remoteSelection.map((x) => ({
+                  amount: new BN(x.amount),
+                  mint: new PublicKey(x.mint),
+                })),
+                offer: localSelection.map((x) => ({
+                  amount: new BN(x.amount),
+                  mint: new PublicKey(x.mint),
+                })),
+                participant: new PublicKey(remotePrimaryPubkey),
+              });
               await fetch(
                 `${BACKEND_API_URL}/barter/execute?room=${roomId}&type=individual`,
                 {
@@ -208,8 +233,6 @@ export function RemoteNftWithSuspense({
   rounded?: boolean;
   onClick?: any;
 }) {
-  const theme = useCustomTheme();
-
   return (
     <Suspense fallback={<NftSkeleton dimension={dimension} />}>
       <RemoteNft onClick={onClick} mint={mint} rounded={rounded} />

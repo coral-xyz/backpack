@@ -1,6 +1,11 @@
 import type { Blockchain } from "../types";
 
-import type { CHAT_MESSAGES, DELETE_MESSAGE,SUBSCRIBE, UNSUBSCRIBE  } from "./fromServer";
+import type {
+  CHAT_MESSAGES,
+  DELETE_MESSAGE,
+  SUBSCRIBE,
+  UNSUBSCRIBE,
+} from "./fromServer";
 import { BarterOffers } from "./index";
 
 export type SubscriptionType = "collection" | "individual";
@@ -8,7 +13,7 @@ export type SubscriptionMessage = {
   type: SubscriptionType;
   room: string;
 };
-export type BarterState = "in_progress" | "cancelled" | "executed";
+export type BarterState = "in_progress" | "cancelled" | "executed" | "on_chain";
 
 export type MessageKind =
   | "gif"

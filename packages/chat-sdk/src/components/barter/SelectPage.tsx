@@ -297,8 +297,8 @@ export function Nfts({ localSelection, onSelect, rounded }: any) {
                   rounded={rounded}
                   nft={nft}
                   selected={localSelection
-                    .map((x) => x.mint)
-                    .includes(nft.mint)}
+                    .map((x) => x?.mint)
+                    .includes(nft?.mint)}
                   onSelect={onSelect}
                 />
               </div>
@@ -493,7 +493,7 @@ function RenderNFT({
             "0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -1px rgba(0, 0, 0, 0.06);",
           border: `3px solid ${theme.custom.colors.background}`,
         }}
-        src={nft.imageUrl}
+        src={nft?.imageUrl}
         removeOnError
       />
       {selected ? (
