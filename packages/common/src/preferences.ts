@@ -9,10 +9,12 @@ export const DEFAULT_DEVELOPER_MODE = false;
 export const DEFAULT_AGGREGATE_WALLETS = false;
 export const DEFAULT_AUTO_LOCK_INTERVAL_SECS = 15 * 60;
 export const DEFAULT_GATEWAY = DEFAULT_IPFS_GATEWAYS[0];
-export const DEFAULT_ENABLED_WEB_DNS_RESOLUTION_NETWORKS = {
-  [Blockchain.SOLANA]: false,
-  [Blockchain.ETHEREUM]: false,
-};
+export const DEFAULT_ENABLED_WEB_DNS_RESOLUTION_NETWORKS = Object.values(
+  Blockchain
+).reduce((acc, blockchain) => {
+  acc[blockchain] = false;
+  return acc;
+}, {} as Record<Blockchain, boolean>);
 
 export function defaultPreferences(): Preferences {
   return {
