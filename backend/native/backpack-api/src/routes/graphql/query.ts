@@ -98,8 +98,8 @@ export const userResolvers: UserResolvers = {
         },
         {
           public_keys: [
-            args.publicKeys
-              ? { where: { public_key: { _in: args.publicKeys } } }
+            args.filter?.pubkeys
+              ? { where: { public_key: { _in: args.filter.pubkeys } } }
               : {},
             {
               blockchain: true,
