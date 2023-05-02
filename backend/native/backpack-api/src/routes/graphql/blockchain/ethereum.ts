@@ -22,6 +22,12 @@ import { createConnection } from "..";
 
 import { type Blockchain, calculateUsdChange } from ".";
 
+/**
+ * Ethereum blockchain implementation for the common API.
+ * @export
+ * @class Ethereum
+ * @implements {Blockchain}
+ */
 export class Ethereum implements Blockchain {
   readonly #ctx: ApiContext;
 
@@ -53,13 +59,13 @@ export class Ethereum implements Blockchain {
 
     // Native token balance data
     const nativeData: TokenBalance = {
-      id: `ethereum_native_address:${address}`,
+      id: `${this.id()}_native_address:${address}`,
       address,
       amount: native.toString(),
       decimals: this.nativeDecimals(),
       displayAmount: ethers.utils.formatUnits(native, this.nativeDecimals()),
       marketData: {
-        id: "coingecko_market_data:ethereum",
+        id: this.#ctx.dataSources.coinGecko.id("ethereum"),
         percentChange: parseFloat(prices.ethereum.usd_24h_change.toFixed(2)),
         usdChange: calculateUsdChange(
           prices.ethereum.usd_24h_change,
@@ -79,7 +85,7 @@ export class Ethereum implements Blockchain {
     const nodes: TokenBalance[] = nonEmptyTokens.map((t) => {
       const amt = BigNumber.from(t.rawBalance ?? "0");
       return {
-        id: `ethereum_token_address:${address}/${t.contractAddress}`,
+        id: `${this.id()}_token_address:${address}/${t.contractAddress}`,
         address: `${address}/${t.contractAddress}`,
         amount: amt.toString(),
         decimals: t.decimals ?? 0,
@@ -96,7 +102,7 @@ export class Ethereum implements Blockchain {
     );
 
     return {
-      id: `ethereum_token_balance:${address}`,
+      id: `${this.id()}_balances:${address}`,
       aggregateValue: nativeData.marketData!.value + nonNativeSum,
       native: nativeData,
       tokens: createConnection(nodes, false, false),
@@ -122,7 +128,7 @@ export class Ethereum implements Blockchain {
 
       const collection: Collection | undefined = curr.contract.openSea
         ? {
-            id: `ethereum_nft_collection:${curr.contract.address}`,
+            id: `${this.id()}_nft_collection:${curr.contract.address}`,
             address: curr.contract.address,
             name: curr.contract.openSea.collectionName,
             image: curr.contract.openSea.imageUrl,
@@ -138,7 +144,7 @@ export class Ethereum implements Blockchain {
         }));
 
       const n: Nft = {
-        id: `ethereum_nft:${curr.contract.address}/${curr.tokenId}`,
+        id: `${this.id()}_nft:${curr.contract.address}/${curr.tokenId}`,
         address: `${curr.contract.address}/${curr.tokenId}`,
         attributes,
         collection,
@@ -197,7 +203,7 @@ export class Ethereum implements Blockchain {
       .sort((a, b) => Number(b.blockNum) - Number(a.blockNum));
 
     const nodes: Transaction[] = combined.map((tx) => ({
-      id: `ethereum_transaction:${tx.uniqueId}`,
+      id: `${this.id()}_transaction:${tx.uniqueId}`,
       block: Number(tx.blockNum),
       feePayer: tx.from,
       hash: tx.hash,

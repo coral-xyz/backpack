@@ -2,12 +2,6 @@ import { queryResolvers, userResolvers, walletResolvers } from "./query";
 import type { Node, PageInfo, Resolvers } from "./types";
 import { ChainId } from "./types";
 
-export const resolvers: Resolvers = {
-  Query: queryResolvers,
-  User: userResolvers,
-  Wallet: walletResolvers,
-};
-
 export type Edge<T extends Node> = {
   cursor: string;
   node: T;
@@ -16,6 +10,16 @@ export type Edge<T extends Node> = {
 export type Connection<T extends Node> = {
   edges: Edge<T>[];
   pageInfo: PageInfo;
+};
+
+/**
+ * Schema root and type-level resolvers.
+ * @export
+ */
+export const resolvers: Resolvers = {
+  Query: queryResolvers,
+  User: userResolvers,
+  Wallet: walletResolvers,
 };
 
 /**

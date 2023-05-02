@@ -2,20 +2,39 @@ schema {
   query: Query
 }
 
+"""
+Root level query type.
+"""
 type Query {
+  """
+  Fetch a user by their Backpack account username.
+  """
   user(username: String!): User
+
+  """
+  Fetching a wallet and it's assets by the public key address and associated `ChainID`.
+  """
   wallet(chainId: ChainID!, address: String!): Wallet
 }
 
+"""
+Chain ID enum variants for the supported blockchains in the API.
+"""
 enum ChainID {
   ETHEREUM
   SOLANA
 }
 
+"""
+Interface to enforce the implementation of an `id` field on a type.
+"""
 interface Node {
   id: ID!
 }
 
+"""
+Relay specification for a connection's page information.
+"""
 type PageInfo {
   hasNextPage: Boolean!
   hasPreviousPage: Boolean!
@@ -23,13 +42,20 @@ type PageInfo {
   endCursor: String
 }
 
-type Balances {
+"""
+Top-level type for providing wallet balance information.
+Should provide details about native and non-native token balances with aggregation details.
+"""
+type Balances implements Node {
   id: ID!
   aggregateValue: Float!
   native: TokenBalance!
   tokens: TokenBalanceConnection
 }
 
+"""
+`Nft` collection sub-type definition.
+"""
 type Collection implements Node {
   id: ID!
   address: String!
@@ -38,6 +64,9 @@ type Collection implements Node {
   verified: Boolean!
 }
 
+"""
+Coingecko and computed market and price data for a token.
+"""
 type MarketData implements Node {
   id: ID!
   usdChange: Float!
@@ -48,6 +77,9 @@ type MarketData implements Node {
   value: Float!
 }
 
+"""
+Generic NFT object type definition to provide on-chain and off-chain metadata.
+"""
 type Nft implements Node {
   id: ID!
   address: String!
@@ -58,21 +90,33 @@ type Nft implements Node {
   name: String!
 }
 
+"""
+Relay connection specification for `Nft` edges.
+"""
 type NftConnection {
   edges: [NftEdge]
   pageInfo: PageInfo!
 }
 
+"""
+Relay edge specification for `Nft` nodes.
+"""
 type NftEdge {
   cursor: String!
   node: Nft
 }
 
+"""
+NFT `attributes` list sub-type definition.
+"""
 type NftAttribute {
   trait: String!
   value: String!
 }
 
+"""
+Generic native or non-native token data and balance for a `Wallet`.
+"""
 type TokenBalance implements Node {
   id: ID!
   address: String!
@@ -83,16 +127,25 @@ type TokenBalance implements Node {
   mint: String!
 }
 
+"""
+Relay connection specification for `TokenBalance` edges.
+"""
 type TokenBalanceConnection {
   edges: [TokenBalanceEdge]
   pageInfo: PageInfo!
 }
 
+"""
+Relay edge specification for `TokenBalance` nodes.
+"""
 type TokenBalanceEdge {
   cursor: String!
   node: TokenBalance
 }
 
+"""
+Generic on-chain transaction details structure.
+"""
 type Transaction implements Node {
   id: ID!
   description: String
@@ -105,22 +158,35 @@ type Transaction implements Node {
   type: String!
 }
 
+"""
+Relay connection specification for `Transaction` edges.
+"""
 type TransactionConnection {
   edges: [TransactionEdge]
   pageInfo: PageInfo!
 }
 
+"""
+Relay edge specification for `Transaction` nodes.
+"""
 type TransactionEdge {
   cursor: String!
   node: Transaction
 }
 
+"""
+Backpack user type definition so provide data about all of the user's
+assets, peripheral information, and social data.
+"""
 type User implements Node {
   id: ID!
   username: String!
   wallets(filter: WalletsFilterInput): WalletConnection
 }
 
+"""
+Wallet definition to provide data about all assets owned by an address.
+"""
 type Wallet implements Node {
   id: ID!
   address: String!
@@ -130,16 +196,25 @@ type Wallet implements Node {
   transactions(before: String, after: String): TransactionConnection
 }
 
+"""
+Relay connection specification for `Wallet` edges.
+"""
 type WalletConnection {
   edges: [WalletEdge]
   pageInfo: PageInfo!
 }
 
+"""
+Relay edge specification for `Wallet` nodes.
+"""
 type WalletEdge {
   cursor: String!
   node: Wallet
 }
 
+"""
+Input filter type for fetching user wallets and their data.
+"""
 input WalletsFilterInput {
   pubkeys: [String!]
 }
