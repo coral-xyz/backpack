@@ -26,9 +26,10 @@ export type Scalars = {
  * Top-level type for providing wallet balance information.
  * Should provide details about native and non-native token balances with aggregation details.
  */
-export type Balances = {
+export type Balances = Node & {
   __typename?: "Balances";
   aggregateValue: Scalars["Float"];
+  id: Scalars["ID"];
   native: TokenBalance;
   tokens?: Maybe<TokenBalanceConnection>;
 };
@@ -360,6 +361,7 @@ export type ResolversTypes = ResolversObject<{
   NftConnection: ResolverTypeWrapper<NftConnection>;
   NftEdge: ResolverTypeWrapper<NftEdge>;
   Node:
+    | ResolversTypes["Balances"]
     | ResolversTypes["Collection"]
     | ResolversTypes["MarketData"]
     | ResolversTypes["Nft"]
@@ -397,6 +399,7 @@ export type ResolversParentTypes = ResolversObject<{
   NftConnection: NftConnection;
   NftEdge: NftEdge;
   Node:
+    | ResolversParentTypes["Balances"]
     | ResolversParentTypes["Collection"]
     | ResolversParentTypes["MarketData"]
     | ResolversParentTypes["Nft"]
@@ -425,6 +428,7 @@ export type BalancesResolvers<
   ParentType extends ResolversParentTypes["Balances"] = ResolversParentTypes["Balances"]
 > = ResolversObject<{
   aggregateValue?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   native?: Resolver<ResolversTypes["TokenBalance"], ParentType, ContextType>;
   tokens?: Resolver<
     Maybe<ResolversTypes["TokenBalanceConnection"]>,
@@ -522,6 +526,7 @@ export type NodeResolvers<
   ParentType extends ResolversParentTypes["Node"] = ResolversParentTypes["Node"]
 > = ResolversObject<{
   __resolveType: TypeResolveFn<
+    | "Balances"
     | "Collection"
     | "MarketData"
     | "Nft"

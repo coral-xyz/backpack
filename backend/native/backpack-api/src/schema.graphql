@@ -46,7 +46,8 @@ type PageInfo {
 Top-level type for providing wallet balance information.
 Should provide details about native and non-native token balances with aggregation details.
 """
-type Balances {
+type Balances implements Node {
+  id: ID!
   aggregateValue: Float!
   native: TokenBalance!
   tokens: TokenBalanceConnection

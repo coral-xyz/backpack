@@ -62,7 +62,7 @@ export class Solana implements Blockchain {
     ]);
 
     const nativeData: TokenBalance = {
-      id: `solana_native_address:${address}`,
+      id: `${this.id()}_native_address:${address}`,
       address,
       amount: balances.nativeBalance.toString(),
       decimals: this.nativeDecimals(),
@@ -71,7 +71,7 @@ export class Solana implements Blockchain {
         this.nativeDecimals()
       ),
       marketData: {
-        id: "coingecko_market_data:solana",
+        id: this.#ctx.dataSources.coinGecko.id("solana"),
         percentChange: parseFloat(prices.solana.usd_24h_change.toFixed(2)),
         usdChange: calculateUsdChange(
           prices.solana.usd_24h_change,
@@ -99,7 +99,7 @@ export class Solana implements Blockchain {
       const marketData: MarketData | null =
         p && meta
           ? {
-              id: `coingecko_market_data:${meta.id}`,
+              id: this.#ctx.dataSources.coinGecko.id(meta.id),
               percentChange: parseFloat(
                 prices.solana.usd_24h_change.toFixed(2)
               ),
@@ -117,7 +117,7 @@ export class Solana implements Blockchain {
           : null;
 
       return {
-        id: `solana_token_address:${t.tokenAccount}`,
+        id: `${this.id()}_token_address:${t.tokenAccount}`,
         address: t.tokenAccount,
         amount: t.amount.toString(),
         decimals: t.decimals,
@@ -134,6 +134,7 @@ export class Solana implements Blockchain {
     );
 
     return {
+      id: `${this.id()}_balances:${address}`,
       aggregateValue: nativeData.marketData!.value + splTokenValueSum,
       native: nativeData,
       tokens: createConnection(splTokenNodes, false, false),
@@ -209,7 +210,7 @@ export class Solana implements Blockchain {
         }));
 
       return {
-        id: `solana_nft:${m.account}`,
+        id: `${this.id()}_nft:${m.account}`,
         address: m.account,
         attributes,
         collection,
@@ -242,7 +243,7 @@ export class Solana implements Blockchain {
     );
 
     const nodes: Transaction[] = resp.map((r) => ({
-      id: `solana_transaction:${r.signature}`,
+      id: `${this.id()}_transaction:${r.signature}`,
       description: r.description,
       block: r.slot,
       fee: r.fee,
@@ -295,7 +296,7 @@ export class Solana implements Blockchain {
 
     return hasCollection
       ? {
-          id: `solana_nft_collection:${
+          id: `${this.id()}_nft_collection:${
             onChainMetadata!.metadata.collection!.key
           }`,
           address: onChainMetadata!.metadata.collection!.key,

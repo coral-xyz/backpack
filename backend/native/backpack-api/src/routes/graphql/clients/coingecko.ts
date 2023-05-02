@@ -14,6 +14,16 @@ export class CoinGecko extends RESTDataSource {
   }
 
   /**
+   * Return the prefix for all Coingecko based data nodes.
+   * @param {string} currency
+   * @returns {string}
+   * @memberof CoinGecko
+   */
+  id(currency: string): string {
+    return `coingecko_market_data:${currency}`;
+  }
+
+  /**
    * Fetches the market price data for the argued asset IDs.
    * @template I
    * @param {I[]} ids
