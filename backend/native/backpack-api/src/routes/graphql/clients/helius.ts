@@ -2,6 +2,12 @@ import { RESTDataSource } from "@apollo/datasource-rest";
 import type { AccountInfo } from "@solana/web3.js";
 import type { EnrichedTransaction } from "helius-sdk";
 
+/**
+ * Custom GraphQL REST data source class abstraction for Helius.
+ * @export
+ * @class Helius
+ * @extends {RESTDataSource}
+ */
 export class Helius extends RESTDataSource {
   readonly #apiKey: string;
 

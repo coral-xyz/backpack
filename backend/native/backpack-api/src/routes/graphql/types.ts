@@ -22,18 +22,25 @@ export type Scalars = {
   Float: number;
 };
 
-export type Balances = {
+/**
+ * Top-level type for providing wallet balance information.
+ * Should provide details about native and non-native token balances with aggregation details.
+ */
+export type Balances = Node & {
   __typename?: "Balances";
   aggregateValue: Scalars["Float"];
+  id: Scalars["ID"];
   native: TokenBalance;
   tokens?: Maybe<TokenBalanceConnection>;
 };
 
+/** Chain ID enum variants for the supported blockchains in the API. */
 export enum ChainId {
   Ethereum = "ETHEREUM",
   Solana = "SOLANA",
 }
 
+/** `Nft` collection sub-type definition. */
 export type Collection = Node & {
   __typename?: "Collection";
   address: Scalars["String"];
@@ -43,6 +50,7 @@ export type Collection = Node & {
   verified: Scalars["Boolean"];
 };
 
+/** Coingecko and computed market and price data for a token. */
 export type MarketData = Node & {
   __typename?: "MarketData";
   id: Scalars["ID"];
@@ -54,6 +62,7 @@ export type MarketData = Node & {
   value: Scalars["Float"];
 };
 
+/** Generic NFT object type definition to provide on-chain and off-chain metadata. */
 export type Nft = Node & {
   __typename?: "Nft";
   address: Scalars["String"];
@@ -65,28 +74,33 @@ export type Nft = Node & {
   name: Scalars["String"];
 };
 
+/** NFT `attributes` list sub-type definition. */
 export type NftAttribute = {
   __typename?: "NftAttribute";
   trait: Scalars["String"];
   value: Scalars["String"];
 };
 
+/** Relay connection specification for `Nft` edges. */
 export type NftConnection = {
   __typename?: "NftConnection";
   edges?: Maybe<Array<Maybe<NftEdge>>>;
   pageInfo: PageInfo;
 };
 
+/** Relay edge specification for `Nft` nodes. */
 export type NftEdge = {
   __typename?: "NftEdge";
   cursor: Scalars["String"];
   node?: Maybe<Nft>;
 };
 
+/** Interface to enforce the implementation of an `id` field on a type. */
 export type Node = {
   id: Scalars["ID"];
 };
 
+/** Relay specification for a connection's page information. */
 export type PageInfo = {
   __typename?: "PageInfo";
   endCursor?: Maybe<Scalars["String"]>;
@@ -95,21 +109,27 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars["String"]>;
 };
 
+/** Root level query type. */
 export type Query = {
   __typename?: "Query";
+  /** Fetch a user by their Backpack account username. */
   user?: Maybe<User>;
+  /** Fetching a wallet and it's assets by the public key address and associated `ChainID`. */
   wallet?: Maybe<Wallet>;
 };
 
+/** Root level query type. */
 export type QueryUserArgs = {
   username: Scalars["String"];
 };
 
+/** Root level query type. */
 export type QueryWalletArgs = {
   address: Scalars["String"];
   chainId: ChainId;
 };
 
+/** Generic native or non-native token data and balance for a `Wallet`. */
 export type TokenBalance = Node & {
   __typename?: "TokenBalance";
   address: Scalars["String"];
@@ -121,18 +141,21 @@ export type TokenBalance = Node & {
   mint: Scalars["String"];
 };
 
+/** Relay connection specification for `TokenBalance` edges. */
 export type TokenBalanceConnection = {
   __typename?: "TokenBalanceConnection";
   edges?: Maybe<Array<Maybe<TokenBalanceEdge>>>;
   pageInfo: PageInfo;
 };
 
+/** Relay edge specification for `TokenBalance` nodes. */
 export type TokenBalanceEdge = {
   __typename?: "TokenBalanceEdge";
   cursor: Scalars["String"];
   node?: Maybe<TokenBalance>;
 };
 
+/** Generic on-chain transaction details structure. */
 export type Transaction = Node & {
   __typename?: "Transaction";
   block: Scalars["Float"];
@@ -146,18 +169,24 @@ export type Transaction = Node & {
   type: Scalars["String"];
 };
 
+/** Relay connection specification for `Transaction` edges. */
 export type TransactionConnection = {
   __typename?: "TransactionConnection";
   edges?: Maybe<Array<Maybe<TransactionEdge>>>;
   pageInfo: PageInfo;
 };
 
+/** Relay edge specification for `Transaction` nodes. */
 export type TransactionEdge = {
   __typename?: "TransactionEdge";
   cursor: Scalars["String"];
   node?: Maybe<Transaction>;
 };
 
+/**
+ * Backpack user type definition so provide data about all of the user's
+ * assets, peripheral information, and social data.
+ */
 export type User = Node & {
   __typename?: "User";
   id: Scalars["ID"];
@@ -165,10 +194,15 @@ export type User = Node & {
   wallets?: Maybe<WalletConnection>;
 };
 
+/**
+ * Backpack user type definition so provide data about all of the user's
+ * assets, peripheral information, and social data.
+ */
 export type UserWalletsArgs = {
   filter?: InputMaybe<WalletsFilterInput>;
 };
 
+/** Wallet definition to provide data about all assets owned by an address. */
 export type Wallet = Node & {
   __typename?: "Wallet";
   address: Scalars["String"];
@@ -179,23 +213,27 @@ export type Wallet = Node & {
   transactions?: Maybe<TransactionConnection>;
 };
 
+/** Wallet definition to provide data about all assets owned by an address. */
 export type WalletTransactionsArgs = {
   after?: InputMaybe<Scalars["String"]>;
   before?: InputMaybe<Scalars["String"]>;
 };
 
+/** Relay connection specification for `Wallet` edges. */
 export type WalletConnection = {
   __typename?: "WalletConnection";
   edges?: Maybe<Array<Maybe<WalletEdge>>>;
   pageInfo: PageInfo;
 };
 
+/** Relay edge specification for `Wallet` nodes. */
 export type WalletEdge = {
   __typename?: "WalletEdge";
   cursor: Scalars["String"];
   node?: Maybe<Wallet>;
 };
 
+/** Input filter type for fetching user wallets and their data. */
 export type WalletsFilterInput = {
   pubkeys?: InputMaybe<Array<Scalars["String"]>>;
 };
@@ -323,6 +361,7 @@ export type ResolversTypes = ResolversObject<{
   NftConnection: ResolverTypeWrapper<NftConnection>;
   NftEdge: ResolverTypeWrapper<NftEdge>;
   Node:
+    | ResolversTypes["Balances"]
     | ResolversTypes["Collection"]
     | ResolversTypes["MarketData"]
     | ResolversTypes["Nft"]
@@ -360,6 +399,7 @@ export type ResolversParentTypes = ResolversObject<{
   NftConnection: NftConnection;
   NftEdge: NftEdge;
   Node:
+    | ResolversParentTypes["Balances"]
     | ResolversParentTypes["Collection"]
     | ResolversParentTypes["MarketData"]
     | ResolversParentTypes["Nft"]
@@ -388,6 +428,7 @@ export type BalancesResolvers<
   ParentType extends ResolversParentTypes["Balances"] = ResolversParentTypes["Balances"]
 > = ResolversObject<{
   aggregateValue?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   native?: Resolver<ResolversTypes["TokenBalance"], ParentType, ContextType>;
   tokens?: Resolver<
     Maybe<ResolversTypes["TokenBalanceConnection"]>,
@@ -485,6 +526,7 @@ export type NodeResolvers<
   ParentType extends ResolversParentTypes["Node"] = ResolversParentTypes["Node"]
 > = ResolversObject<{
   __resolveType: TypeResolveFn<
+    | "Balances"
     | "Collection"
     | "MarketData"
     | "Nft"

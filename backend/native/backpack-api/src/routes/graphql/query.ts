@@ -23,6 +23,7 @@ import { createConnection, inferChainIdFromString } from ".";
 
 /**
  * Root `Query` object resolver.
+ * @export
  */
 export const queryResolvers: QueryResolvers = {
   /**
@@ -53,7 +54,7 @@ export const queryResolvers: QueryResolvers = {
     }
 
     return {
-      id: `user_${resp.auth_users[0].id}`,
+      id: `user:${resp.auth_users[0].id}`,
       username: args.username,
     };
   },
@@ -73,7 +74,7 @@ export const queryResolvers: QueryResolvers = {
     _info: GraphQLResolveInfo
   ): Promise<Wallet | null> {
     return {
-      id: `${args.chainId}/${args.address}`,
+      id: `${args.chainId}_wallet:${args.address}`,
       address: args.address,
       chainId: args.chainId,
     };
@@ -82,8 +83,17 @@ export const queryResolvers: QueryResolvers = {
 
 /**
  * Type-level query resolver for the `User` schema object.
+ * @export
  */
 export const userResolvers: UserResolvers = {
+  /**
+   * Field-level resolver handler for the `wallets` field.
+   * @param {User} parent
+   * @param {Partial<UserWalletsArgs>} args
+   * @param {ApiContext} ctx
+   * @param {GraphQLResolveInfo} _info
+   * @returns {(Promise<WalletConnection | null>)}
+   */
   async wallets(
     parent: User,
     args: Partial<UserWalletsArgs>,
@@ -117,7 +127,7 @@ export const userResolvers: UserResolvers = {
     const nodes: Wallet[] = resp.auth_users[0].public_keys.map((pk) => {
       const chain = inferChainIdFromString(pk.blockchain);
       return {
-        id: `${chain}/${pk.public_key}`,
+        id: `${chain}_wallet:${pk.public_key}`,
         address: pk.public_key,
         chainId: chain,
       };
@@ -129,6 +139,7 @@ export const userResolvers: UserResolvers = {
 
 /**
  * Type-level query resolver for the `Wallet` schema object.
+ * @export
  */
 export const walletResolvers: WalletResolvers = {
   /**
@@ -145,8 +156,9 @@ export const walletResolvers: WalletResolvers = {
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<Balances | null> {
-    const [chainId, address] = parent.id.split("/") as [ChainId, string];
-    return getBlockchainForId(chainId, ctx).getBalancesForAddress(address);
+    return getBlockchainForId(parent.chainId, ctx).getBalancesForAddress(
+      parent.address
+    );
   },
 
   /**
@@ -163,8 +175,9 @@ export const walletResolvers: WalletResolvers = {
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<NftConnection | null> {
-    const [chainId, address] = parent.id.split("/") as [ChainId, string];
-    return getBlockchainForId(chainId, ctx).getNftsForAddress(address);
+    return getBlockchainForId(parent.chainId, ctx).getNftsForAddress(
+      parent.address
+    );
   },
 
   /**
@@ -181,9 +194,8 @@ export const walletResolvers: WalletResolvers = {
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<TransactionConnection | null> {
-    const [chainId, address] = parent.id.split("/") as [ChainId, string];
-    return getBlockchainForId(chainId, ctx).getTransactionsForAddress(
-      address,
+    return getBlockchainForId(parent.chainId, ctx).getTransactionsForAddress(
+      parent.address,
       args.before || undefined,
       args.after || undefined
     );
