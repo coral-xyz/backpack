@@ -2,6 +2,9 @@ import { RESTDataSource } from "@apollo/datasource-rest";
 import type { AccountInfo } from "@solana/web3.js";
 import type { EnrichedTransaction } from "helius-sdk";
 
+const balancesCache = new Map();
+const transactionCache = new Map();
+
 export class Helius extends RESTDataSource {
   readonly #apiKey: string;
 
@@ -19,11 +22,18 @@ export class Helius extends RESTDataSource {
    * @memberof Helius
    */
   async getBalances(address: string): Promise<HeliusGetBalancesResponse> {
-    return this.get(`/v0/addresses/${address}/balances`, {
+    if (balancesCache.has(address)) {
+      return JSON.parse(balancesCache.get(address));
+    }
+
+    const res = await this.get(`/v0/addresses/${address}/balances`, {
       params: {
         "api-key": this.#apiKey,
       },
     });
+
+    balancesCache.set(address, JSON.stringify(res));
+    return res;
   }
 
   /**
@@ -103,7 +113,11 @@ export class Helius extends RESTDataSource {
     before?: string,
     until?: string
   ): Promise<EnrichedTransaction[]> {
-    return this.get(`/v0/addresses/${address}/transactions`, {
+    if (transactionCache.has(address)) {
+      return JSON.parse(transactionCache.get(address));
+    }
+
+    const res = await this.get(`/v0/addresses/${address}/transactions`, {
       params: {
         "api-key": this.#apiKey,
         commitment: "confirmed",
@@ -111,6 +125,9 @@ export class Helius extends RESTDataSource {
         until,
       },
     });
+
+    transactionCache.set(address, JSON.stringify(res));
+    return res;
   }
 }
 

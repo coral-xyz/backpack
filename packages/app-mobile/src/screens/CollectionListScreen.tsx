@@ -87,7 +87,6 @@ export function ListItem({
   item: ListItemProps;
   handlePress: (item: ListItemProps) => void;
 }): JSX.Element {
-  console.log("data2:item", item);
   return (
     <Pressable
       style={{ flex: 1, marginBottom: 12, borderRadius: 16 }}
@@ -166,7 +165,6 @@ function Container({ navigation }: any): JSX.Element {
 
   const handlePressItem = useCallback(
     (item: ListItemProps) => {
-      console.log("debug1 handle press", item);
       if (item.type === "collection") {
         // navigate to collection detail
         navigation.push("CollectionDetail", {
@@ -199,6 +197,8 @@ function Container({ navigation }: any): JSX.Element {
 
   const numColumns = 2;
   const gap = 12;
+
+  console.log("debug2:rows", rows);
 
   return (
     <Screen>

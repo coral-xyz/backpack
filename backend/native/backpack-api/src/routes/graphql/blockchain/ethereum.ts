@@ -96,6 +96,7 @@ export class Ethereum implements Blockchain {
     );
 
     return {
+      id: `ethereum_token_balance:${address}`,
       aggregateValue: nativeData.marketData!.value + nonNativeSum,
       native: nativeData,
       tokens: createConnection(nodes, false, false),

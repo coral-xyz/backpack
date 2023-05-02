@@ -128,6 +128,7 @@ export class Solana implements Blockchain {
     );
 
     return {
+      id: `solana_token_balance:${address}`,
       aggregateValue: nativeData.marketData!.value + splTokenValueSum,
       native: nativeData,
       tokens: createConnection(splTokenNodes, false, false),

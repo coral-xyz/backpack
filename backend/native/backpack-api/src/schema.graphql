@@ -24,6 +24,7 @@ type PageInfo {
 }
 
 type Balances {
+  id: ID!
   aggregateValue: Float!
   native: TokenBalance!
   tokens: TokenBalanceConnection
