@@ -559,7 +559,12 @@ function SendV2({
                       ? 0.0
                       : parseFloat(parsedVal);
 
+                  const decimalsCount = num.toString().split(".")[1]?.length;
+
                   if (num >= 0) {
+                    if (decimalsCount > token.decimals) {
+                      return setAmount(null);
+                    }
                     setAmount(
                       ethers.utils.parseUnits(num.toString(), token.decimals)
                     );
