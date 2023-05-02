@@ -3,7 +3,7 @@ import { PublicKey } from "@solana/web3.js";
 import base32Encode from "base32-encode";
 import base58 from "bs58";
 
-import { openPopupWindow } from "./browser/extension";
+import { openPopupWindow, resizeExtensionWindow } from "./browser/extension";
 import type { BackgroundClient } from "./channel/app-ui";
 import { PluginServer } from "./channel/plugin";
 import {
@@ -33,6 +33,7 @@ import {
   PLUGIN_RPC_METHOD_PLUGIN_OPEN,
   PLUGIN_RPC_METHOD_POP_OUT,
   PLUGIN_RPC_METHOD_WINDOW_OPEN,
+  PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW,
   SOLANA_RPC_METHOD_SIGN_ALL_TXS as PLUGIN_SOLANA_RPC_METHOD_SIGN_ALL_TXS,
   SOLANA_RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
   SOLANA_RPC_METHOD_SIGN_MESSAGE as PLUGIN_SOLANA_RPC_METHOD_SIGN_MESSAGE,
@@ -427,6 +428,8 @@ export class Plugin {
         return await this._handleCloseTo(params[0], params[1]);
       case PLUGIN_RPC_METHOD_POP_OUT:
         return await this._handlePopout(params[0]);
+      case PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW:
+        return await this._handleResizeExtensionWindow(params[0]);
       case PLUGIN_ETHEREUM_RPC_METHOD_SIGN_TX:
         return await this._handleEthereumSignTransaction(params[0], params[1]);
       case PLUGIN_ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX:
@@ -591,6 +594,14 @@ export class Plugin {
   }): Promise<RpcResponse> {
     await openPopupWindow("popup.html", options);
     window.close();
+    return ["success"];
+  }
+
+  private async _handleResizeExtensionWindow(options?: {
+    width: number;
+    height: number;
+  }): Promise<RpcResponse> {
+    resizeExtensionWindow(options);
     return ["success"];
   }
 
