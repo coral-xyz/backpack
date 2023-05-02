@@ -11,12 +11,15 @@ import {
   Inter_600SemiBold,
 } from "@expo-google-fonts/inter";
 
+import { useApolloClient } from "../graphql/apollo";
+
 type status = "loading" | "ready" | "error";
 
 export function useLoadedAssets(): status {
   // const [intervalId, setIntervalId] = React.useState(0);
   // const [secondsPassed, setSecondsPassed] = React.useState(0);
   const [status, setStatus] = useState<status>("loading");
+  const { client } = useApolloClient();
   const webviewLoaded = useStore((state) => state.injectJavaScript);
 
   const [fontsLoaded] = useFonts({
@@ -36,6 +39,9 @@ export function useLoadedAssets(): status {
     }
 
     async function load() {
+      if (!client) {
+        return;
+      }
       try {
         await Font.loadAsync(MaterialCommunityIcons.font);
       } catch (e) {
@@ -45,7 +51,7 @@ export function useLoadedAssets(): status {
         setStatus("ready");
       }
     }
-  }, [webviewLoaded, fontsLoaded]);
+  }, [webviewLoaded, fontsLoaded, client]);
 
   //
   // React.useEffect(() => {

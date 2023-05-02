@@ -30,13 +30,17 @@ import {
 import { useTheme } from "~hooks/useTheme";
 import { TextPercentChanged } from "~screens/Unlocked/components/Balances";
 
-export function SectionHeader({ title }: { title: string }): JSX.Element {
-  return <StyledText>{title}</StyledText>;
-}
+export const ListHeader = ({ title }: { title: string }): JSX.Element => (
+  <StyledText fontSize="$base" color="$fontColor" mb={8} ml={18}>
+    {title}
+  </StyledText>
+);
 
-export function SectionSeparator() {
-  return <View style={{ height: 12 }} />;
-}
+export const SectionHeader = ({ title }: { title: string }): JSX.Element => (
+  <StyledText>{title}</StyledText>
+);
+
+export const SectionSeparator = () => <View style={{ height: 12 }} />;
 
 // TODO(peter) something about padding looks weird
 export function PaddedListItemSeparator() {

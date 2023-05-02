@@ -18,8 +18,8 @@ import { ErrorBoundary } from "react-error-boundary";
 import { EmptyState, Screen, RoundedContainerGroup } from "~components/index";
 import {
   convertNftDataToFlatlist,
-  type ListItem,
-} from "~lib/convertNftDataToFlatlist";
+  type ListItemProps,
+} from "~lib/CollectionUtils";
 
 function NoNFTsEmptyState() {
   return (
@@ -38,7 +38,6 @@ function NoNFTsEmptyState() {
 }
 
 function ImageBox({ images }): JSX.Element {
-  console.log("debug1:images2", images);
   return (
     <View
       style={{
@@ -81,13 +80,14 @@ function CollectionImage({ images }: { images: string[] }): JSX.Element {
   return <ImageBox images={images.slice(0, 4)} />;
 }
 
-function RowItem({
+export function ListItem({
   item,
   handlePress,
 }: {
-  item: ListItem;
-  handlePress: (item: ListItem) => void;
+  item: ListItemProps;
+  handlePress: (item: ListItemProps) => void;
 }): JSX.Element {
+  console.log("data2:item", item);
   return (
     <Pressable
       style={{ flex: 1, marginBottom: 12, borderRadius: 16 }}
@@ -102,32 +102,50 @@ function RowItem({
           maxWidth="80%"
           ellipsizeMode="tail"
         >
-          {item.title}
+          {item.name}
         </StyledText>
-        <StyledText fontSize="$base">{item.numItems.toString()}</StyledText>
       </XStack>
     </Pressable>
   );
 }
 
+export const NftCollectionFragment = gql`
+  fragment NftCollectionFragment on Collection {
+    id
+    address
+    image
+    name
+    verified
+  }
+`;
+
+export const NftNodeFragment = gql`
+  ${NftCollectionFragment}
+  fragment NftNodeFragment on Nft {
+    id
+    image
+    name
+    address
+    description
+    attributes {
+      trait
+      value
+    }
+    collection {
+      ...NftCollectionFragment
+    }
+  }
+`;
+
 const GET_NFT_COLLECTIONS = gql`
+  ${NftNodeFragment}
   query WalletNftCollections($chainId: ChainID!, $address: String!) {
     wallet(chainId: $chainId, address: $address) {
       id
       nfts {
         edges {
           node {
-            id
-            image
-            name
-            address
-            collection {
-              address
-              id
-              image
-              name
-              verified
-            }
+            ...NftNodeFragment
           }
         }
       }
@@ -139,34 +157,42 @@ function Container({ navigation }: any): JSX.Element {
   const activeWallet = useActiveWallet();
   const { data } = useSuspenseQuery_experimental(GET_NFT_COLLECTIONS, {
     variables: {
-      // TODO add blockchain_uppercase so we don't have to keep adding this everywhere
-      // alternatively make the graphql enum return lowercase if possible
       chainId: activeWallet.blockchain.toUpperCase(),
       address: activeWallet.publicKey,
     },
   });
 
+  console.log("debug2:data collections", data);
+
   const handlePressItem = useCallback(
-    (item: ListItem) => {
+    (item: ListItemProps) => {
+      console.log("debug1 handle press", item);
       if (item.type === "collection") {
         // navigate to collection detail
-        navigation.push("NftCollectionDetail", {
-          id: item.key,
-          title: item.title,
+        navigation.push("CollectionDetail", {
+          id: item.id,
+          title: item.name,
+          blockchain: activeWallet.blockchain,
+          nfts: item.nfts,
+          nftIds: item?.nfts.map((n) => n.id) ?? [],
         });
       } else {
         // navigation to nft detail
-        navigation.push("NftDetail", { item: item.key, title: item.title });
+        navigation.push("CollectionItemDetail", {
+          id: item.id,
+          title: item.name,
+          blockchain: activeWallet.blockchain,
+        });
       }
     },
-    [navigation]
+    [navigation, activeWallet.blockchain]
   );
 
   const rows = useMemo(() => convertNftDataToFlatlist(data), [data]);
-  const keyExtractor = (item: ListItem) => item.key;
+  const keyExtractor = (item: ListItemProps) => item.id;
   const renderItem = useCallback(
-    ({ item }: { item: ListItem }) => {
-      return <RowItem item={item} handlePress={handlePressItem} />;
+    ({ item }: { item: ListItemProps }) => {
+      return <ListItem item={item} handlePress={handlePressItem} />;
     },
     [handlePressItem]
   );
