@@ -212,7 +212,12 @@ export function RemoteNftWithSuspense({
 
   return (
     <Suspense fallback={<NftSkeleton rounded dimension={dimension} />}>
-      <RemoteNft onClick={onClick} mint={mint} rounded={rounded} />
+      <RemoteNft
+        dimension={dimension}
+        onClick={onClick}
+        mint={mint}
+        rounded={rounded}
+      />
     </Suspense>
   );
 }
@@ -221,10 +226,12 @@ export function RemoteNft({
   mint,
   rounded,
   onClick,
+  dimension,
 }: {
   mint: string;
   rounded?: boolean;
   onClick?: any;
+  dimension?: number;
 }) {
   const theme = useCustomTheme();
   const tokenData = useTokenMetadata({
@@ -237,6 +244,7 @@ export function RemoteNft({
       onClick={onClick}
       style={{
         width: "100%",
+        height: dimension || "",
         borderRadius: rounded ? "50%" : 8,
         border: rounded ? `3px solid ${theme.custom.colors.bg3}` : "",
         boxShadow:
