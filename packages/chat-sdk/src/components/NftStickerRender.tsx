@@ -21,9 +21,11 @@ export const useStyles = styles((theme) => ({
 export const NftStickerRender = ({
   mint,
   uuid,
+  displayName,
 }: {
   mint: string;
   uuid: string;
+  displayName: string;
 }) => {
   const classes = useStyles();
   const { isXs } = useBreakpoints();
@@ -115,7 +117,7 @@ export const NftStickerRender = ({
               >
                 <div style={{ fontWeight: 500, fontSize: 13 }}>
                   {" "}
-                  User owns this NFT{" "}
+                  @{displayName} owns this NFT{" "}
                 </div>
               </div>
             </div>

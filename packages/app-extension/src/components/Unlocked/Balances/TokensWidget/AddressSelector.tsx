@@ -48,14 +48,6 @@ export interface SendData {
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
-    hoverParent: {
-      "&:hover $hoverChild, & .Mui-focused $hoverChild": {
-        visibility: "visible",
-      },
-    },
-    hoverChild: {
-      visibility: "hidden",
-    },
     container: {
       display: "flex",
       flexDirection: "column",
@@ -64,17 +56,9 @@ const useStyles = makeStyles((theme: any) =>
     topHalf: {
       flex: 1,
     },
-    title: {
-      color: theme.custom.colors.fontColor,
-    },
     userText: {
       fontSize: 16,
       marginTop: 4,
-      color: theme.custom.colors.fontColor2,
-    },
-    address: {
-      fontWeight: 500,
-      fontSize: 14,
       color: theme.custom.colors.fontColor2,
     },
     buttonContainer: {
@@ -439,19 +423,23 @@ const Contacts = ({
         <div style={{ margin: "12px 12px" }}>
           <BubbleTopLabel text="Friends" />
           <AddressList
-            wallets={filteredContacts.map((c) => ({
-              username: c.remoteUsername,
-              addresses: c.public_keys
-                .filter(
-                  (x) =>
-                    x.blockchain === blockchain &&
-                    (x.publicKey.includes(searchFilter) ||
-                      c.remoteUsername.includes(searchFilter))
-                )
-                .map((x) => x.publicKey),
-              image: c.remoteUserImage,
-              uuid: c.remoteUserId,
-            }))}
+            wallets={filteredContacts
+              .map((c) => ({
+                username: c.remoteUsername,
+                addresses: c.public_keys
+                  .filter(
+                    (x) =>
+                      x.blockchain === blockchain &&
+                      (x.publicKey.includes(searchFilter) ||
+                        c.remoteUsername.includes(searchFilter))
+                  )
+                  .map((x) => x.publicKey),
+                image: c.remoteUserImage,
+                uuid: c.remoteUserId,
+              }))
+              .sort((a: any, b: any) =>
+                a.username[0] < b.username[0] ? -1 : 1
+              )}
           />
         </div>
       ) : null}
@@ -638,7 +626,7 @@ const SearchInput = ({
   const fetchUserDetails = async (address: string, blockchain: Blockchain) => {
     try {
       const response = await ParentCommunicationManager.getInstance().fetch(
-        `${BACKEND_API_URL}/users?usernamePrefix=${address}&blockchain=${blockchain}limit=6`
+        `${BACKEND_API_URL}/users?usernamePrefix=${address}&blockchain=${blockchain}&limit=6`
       );
       const json = await response.json();
       setSearchResults(

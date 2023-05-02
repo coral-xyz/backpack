@@ -84,19 +84,23 @@ export const OnboardAccount = ({
     />,
     <CreateOrImportWallet
       key="CreateOrImportWallet"
-      onNext={(action) => {
-        setOnboardingData({ action });
+      onNext={(data) => {
+        setOnboardingData({ ...data });
         nextStep();
       }}
     />,
-    <KeyringTypeSelector
-      key="KeyringTypeSelector"
-      action={action}
-      onNext={(keyringType: KeyringType) => {
-        setOnboardingData({ keyringType });
-        nextStep();
-      }}
-    />,
+    ...(action === "import"
+      ? [
+        <KeyringTypeSelector
+          key="KeyringTypeSelector"
+          action={action}
+          onNext={(keyringType: KeyringType) => {
+              setOnboardingData({ keyringType });
+              nextStep();
+            }}
+          />,
+        ]
+      : []),
     // Show the seed phrase if we are creating based on a mnemonic
     ...(keyringType === "mnemonic"
       ? [
@@ -121,6 +125,7 @@ export const OnboardAccount = ({
               handlePrivateKeyInput(result);
               nextStep();
             }}
+            onboarding
           />,
         ]
       : [

@@ -7,7 +7,6 @@ import {
 } from "@coral-xyz/common";
 import type { Request, Response } from "express";
 import express from "express";
-import rateLimit from "express-rate-limit";
 import jwt from "jsonwebtoken";
 
 import {
@@ -26,7 +25,6 @@ import {
   getUser,
   getUserByPublicKeyAndChain,
   getUserByUsername,
-  getUsers,
   getUsersByPrefix,
   getUsersByPublicKeys,
   getUsersMetadata,
@@ -41,13 +39,6 @@ import {
   CreatePublicKeys,
   CreateUserWithPublicKeys,
 } from "../../validation/user";
-
-const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
 
 const router = express.Router();
 
@@ -84,13 +75,10 @@ router.get("/", extractUserId, async (req, res) => {
     uuid
   );
 
-  const metadatas = await getUsers(users.map((x) => x.id));
   const usersWithFriendshipMetadata: RemoteUserData[] = users
     .filter((x) => x.id !== uuid)
-    .map(({ id, username }) => {
+    .map(({ id, username, public_keys }) => {
       const friendship = friendships.find((x) => x.id === id);
-      const public_keys = (metadatas.find((x) => x.id === id)?.publicKeys ||
-        []) as { blockchain: string; publicKey: string }[];
 
       return {
         id,
@@ -101,7 +89,11 @@ router.get("/", extractUserId, async (req, res) => {
         areFriends: friendship?.areFriends || false,
         searchedSolPubKey: isSolPublicKey ? usernamePrefix : undefined,
         searchedEthPubKey: isEthPublicKey ? usernamePrefix : undefined,
-        public_keys,
+        // TODO: fix the disambiguation with snake_case and camelCase in API responses
+        public_keys: public_keys.map((pk) => ({
+          ...pk,
+          publicKey: pk.public_key,
+        })),
       };
     });
 

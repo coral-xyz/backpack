@@ -15,7 +15,7 @@ import { Error, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 
 import { WithDrawer } from "../common/Layout/Drawer";
-import { lockScreenKey, lockScreenKeyImage } from "../Unlocked/Nfts/Detail";
+import { lockScreenKey, lockScreenKeyImage } from "../Unlocked/Nfts/NftDetail";
 
 import { LockedMenu } from "./LockedMenu";
 
@@ -43,7 +43,8 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
     }
   })();
 
-  const isFullScreen = uuid === user.uuid && nft !== undefined;
+  // TODO: uncomment this when ready to release the full screen feature.
+  const isFullScreen = false; //uuid === user.uuid && nft !== undefined;
 
   const _onUnlock = async (e: any) => {
     e.preventDefault();
@@ -112,7 +113,10 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
                 placeholder="Password"
                 type={showPassword ? "text" : "password"}
                 value={password}
-                setValue={(e) => setPassword(e.target.value)}
+                setValue={(e) => {
+                  setPassword(e.target.value);
+                  setError(false);
+                }}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
@@ -195,8 +199,8 @@ function LockScreenAvatar({
               inset: 0,
             }}
           >
-            <LocalImage
-              src={lockScreenKeyImage(user.username)}
+            <ProxyImage
+              src={avatarUrl}
               style={{
                 height: "100vh",
                 position: "absolute",
@@ -216,9 +220,9 @@ function LockScreenAvatar({
           </div>
         </>
       ) : (
-        <LocalImage
+        <ProxyImage
           size={120}
-          src={lockScreenKeyImage(user.username)}
+          src={avatarUrl}
           style={{
             height: "120px",
             width: "120px",

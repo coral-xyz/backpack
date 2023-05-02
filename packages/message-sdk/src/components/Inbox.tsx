@@ -37,14 +37,6 @@ export function InboxInner() {
   const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
   const [searchFilter, setSearchFilter] = useState("");
 
-  console.log({
-    username: user.username,
-    activeChats,
-    requestCount,
-    groupCollections,
-    searchResults,
-  });
-
   const getDefaultChats = () => {
     return groupCollections.filter((x) => x.name && x.image) || [];
   };
@@ -58,9 +50,7 @@ export function InboxInner() {
       chatProps: x,
       chatType: "individual",
     })),
-  ].sort((a, b) =>
-    a.last_message_timestamp < b.last_message_timestamp ? -1 : 1
-  );
+  ];
 
   const searchedUsersDistinct = searchResults.filter(
     (result) =>

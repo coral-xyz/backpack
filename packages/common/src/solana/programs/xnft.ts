@@ -9,6 +9,57 @@ export const XNFT_PROGRAM_ID = new PublicKey(
   "xnft5aaToUM4UFETUQfj7NUDUBdvYHTVhNFThEYTm55"
 );
 
+export const BAKED_IN_XNFTS = {
+  one: {
+    publicKey: "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8",
+    account: {
+      authority: PublicKey.default,
+      xnft: new PublicKey("CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8"),
+      masterMetadata: new PublicKey(
+        "ANRn3ypikUTDEsY6ShgeHskX8bmZGpbmXEDACGt8hQAR"
+      ),
+      edition: new anchor.BN("00"),
+      reserved: Array(64).fill(0),
+    },
+  },
+  explorer: {
+    publicKey: "oRN37pXigdDzpSPTe9ma5UWz9pZ4srKgS8To3juBNRi",
+    account: {
+      authority: PublicKey.default,
+      xnft: new PublicKey("oRN37pXigdDzpSPTe9ma5UWz9pZ4srKgS8To3juBNRi"),
+      masterMetadata: new PublicKey(
+        "6VJYeRDbQBUG87UisCtq5yrxwWVP5mfpv4GC4q1afJuG"
+      ),
+      edition: new anchor.BN("00"),
+      reserved: Array(64).fill(0),
+    },
+  },
+  prices: {
+    publicKey: "4GWq6KwrSmi3boGVayz4LM2Mz12GHQ3bpB1W2i7F5GRR",
+    account: {
+      authority: PublicKey.default,
+      xnft: new PublicKey("4GWq6KwrSmi3boGVayz4LM2Mz12GHQ3bpB1W2i7F5GRR"),
+      masterMetadata: new PublicKey(
+        "9tHKPiFsXy4kpXL4es9PUJ5w9bnzu8rHPdMNF5WyfJSD"
+      ),
+      edition: new anchor.BN("00"),
+      reserved: Array(64).fill(0),
+    },
+  },
+  mnemonics: {
+    publicKey: "GUt1LFqrs5Wbp6b6jLK1rXUvQKEavmAvM2UjAYWwJsNh",
+    account: {
+      authority: PublicKey.default,
+      xnft: new PublicKey("GUt1LFqrs5Wbp6b6jLK1rXUvQKEavmAvM2UjAYWwJsNh"),
+      masterMetadata: new PublicKey(
+        "4WatrHZmabx9jEEL18SEQEWAtbHCktEHBaLSWiZ2kDeK"
+      ),
+      edition: new anchor.BN("00"),
+      reserved: Array(64).fill(0),
+    },
+  },
+};
+
 export async function fetchXnfts(
   provider: Provider,
   wallet: PublicKey,
@@ -35,53 +86,9 @@ export async function fetchXnfts(
     },
   ]);
 
-  // HACK to get ONE xNFT installed for everyone
-  xnftInstalls.push({
-    // @ts-ignore
-    publicKey: "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8",
-    // @ts-ignore
-    account: {
-      authority: PublicKey.default,
-      xnft: new PublicKey("CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8"),
-      masterMetadata: new PublicKey(
-        "ANRn3ypikUTDEsY6ShgeHskX8bmZGpbmXEDACGt8hQAR"
-      ),
-      edition: new anchor.BN("00"),
-      reserved: Array(64).fill(0),
-    },
-  });
-
-  // HACK to get Explorer xNFT installed for everyone
-  xnftInstalls.push({
-    // @ts-ignore
-    publicKey: "oRN37pXigdDzpSPTe9ma5UWz9pZ4srKgS8To3juBNRi",
-    // @ts-ignore
-    account: {
-      authority: PublicKey.default,
-      xnft: new PublicKey("oRN37pXigdDzpSPTe9ma5UWz9pZ4srKgS8To3juBNRi"),
-      masterMetadata: new PublicKey(
-        "6VJYeRDbQBUG87UisCtq5yrxwWVP5mfpv4GC4q1afJuG"
-      ),
-      edition: new anchor.BN("00"),
-      reserved: Array(64).fill(0),
-    },
-  });
-
-  // HACK to get Prices xNFT installed for everyone
-  xnftInstalls.push({
-    // @ts-ignore
-    publicKey: "4GWq6KwrSmi3boGVayz4LM2Mz12GHQ3bpB1W2i7F5GRR",
-    // @ts-ignore
-    account: {
-      authority: PublicKey.default,
-      xnft: new PublicKey("4GWq6KwrSmi3boGVayz4LM2Mz12GHQ3bpB1W2i7F5GRR"),
-      masterMetadata: new PublicKey(
-        "9tHKPiFsXy4kpXL4es9PUJ5w9bnzu8rHPdMNF5WyfJSD"
-      ),
-      edition: new anchor.BN("00"),
-      reserved: Array(64).fill(0),
-    },
-  });
+  // Hack to get baked in xNFTs for all instances by mocking installations
+  // @ts-ignore
+  xnftInstalls.push(...Object.values(BAKED_IN_XNFTS));
 
   if (isDropzoneWallet) {
     // HACK to get Dropzone xNFT installed for everyone

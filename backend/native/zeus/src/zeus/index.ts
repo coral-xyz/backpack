@@ -4298,6 +4298,7 @@ export type ValueTypes = {
   ["auth_users_constraint"]: auth_users_constraint;
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
+    id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
     invitation?:
       | ValueTypes["auth_invitations_obj_rel_insert_input"]
       | undefined
@@ -4486,6 +4487,9 @@ export type ValueTypes = {
       | Variable<any, string>;
     /** filter the rows which have to be updated */
     where: ValueTypes["auth_users_bool_exp"] | Variable<any, string>;
+  };
+  ["auth_users_whose_username_matches_args"]: {
+    prefix?: string | undefined | null | Variable<any, string>;
   };
   /** columns and relationships of "auth.xnft_preferences" */
   ["auth_xnft_preferences"]: AliasType<{
@@ -6963,6 +6967,80 @@ export type ValueTypes = {
       { id: ValueTypes["uuid"] | Variable<any, string> },
       ValueTypes["auth_users"]
     ];
+    auth_users_whose_username_matches?: [
+      {
+        /** input parameters for function "auth_users_whose_username_matches" */
+        args:
+          | ValueTypes["auth_users_whose_username_matches_args"]
+          | Variable<any, string> /** distinct select on columns */;
+        distinct_on?:
+          | Array<ValueTypes["auth_users_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_users_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_users_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_users"]
+    ];
+    auth_users_whose_username_matches_aggregate?: [
+      {
+        /** input parameters for function "auth_users_whose_username_matches_aggregate" */
+        args:
+          | ValueTypes["auth_users_whose_username_matches_args"]
+          | Variable<any, string> /** distinct select on columns */;
+        distinct_on?:
+          | Array<ValueTypes["auth_users_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_users_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_users_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_users_aggregate"]
+    ];
     auth_xnft_preferences?: [
       {
         /** distinct select on columns */
@@ -8172,6 +8250,80 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_users"]
+    ];
+    auth_users_whose_username_matches?: [
+      {
+        /** input parameters for function "auth_users_whose_username_matches" */
+        args:
+          | ValueTypes["auth_users_whose_username_matches_args"]
+          | Variable<any, string> /** distinct select on columns */;
+        distinct_on?:
+          | Array<ValueTypes["auth_users_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_users_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_users_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_users"]
+    ];
+    auth_users_whose_username_matches_aggregate?: [
+      {
+        /** input parameters for function "auth_users_whose_username_matches_aggregate" */
+        args:
+          | ValueTypes["auth_users_whose_username_matches_args"]
+          | Variable<any, string> /** distinct select on columns */;
+        distinct_on?:
+          | Array<ValueTypes["auth_users_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_users_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_users_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_users_aggregate"]
     ];
     auth_xnft_preferences?: [
       {
@@ -10894,6 +11046,7 @@ export type ResolverInputTypes = {
   ["auth_users_constraint"]: auth_users_constraint;
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
+    id?: ResolverInputTypes["uuid"] | undefined | null;
     invitation?:
       | ResolverInputTypes["auth_invitations_obj_rel_insert_input"]
       | undefined
@@ -11014,6 +11167,9 @@ export type ResolverInputTypes = {
     _set?: ResolverInputTypes["auth_users_set_input"] | undefined | null;
     /** filter the rows which have to be updated */
     where: ResolverInputTypes["auth_users_bool_exp"];
+  };
+  ["auth_users_whose_username_matches_args"]: {
+    prefix?: string | undefined | null;
   };
   /** columns and relationships of "auth.xnft_preferences" */
   ["auth_xnft_preferences"]: AliasType<{
@@ -12884,6 +13040,54 @@ export type ResolverInputTypes = {
       { id: ResolverInputTypes["uuid"] },
       ResolverInputTypes["auth_users"]
     ];
+    auth_users_whose_username_matches?: [
+      {
+        /** input parameters for function "auth_users_whose_username_matches" */
+        args: ResolverInputTypes["auth_users_whose_username_matches_args"] /** distinct select on columns */;
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_users_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_users_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
+      },
+      ResolverInputTypes["auth_users"]
+    ];
+    auth_users_whose_username_matches_aggregate?: [
+      {
+        /** input parameters for function "auth_users_whose_username_matches_aggregate" */
+        args: ResolverInputTypes["auth_users_whose_username_matches_args"] /** distinct select on columns */;
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_users_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_users_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
+      },
+      ResolverInputTypes["auth_users_aggregate"]
+    ];
     auth_xnft_preferences?: [
       {
         /** distinct select on columns */
@@ -13775,6 +13979,54 @@ export type ResolverInputTypes = {
         where?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
       },
       ResolverInputTypes["auth_users"]
+    ];
+    auth_users_whose_username_matches?: [
+      {
+        /** input parameters for function "auth_users_whose_username_matches" */
+        args: ResolverInputTypes["auth_users_whose_username_matches_args"] /** distinct select on columns */;
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_users_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_users_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
+      },
+      ResolverInputTypes["auth_users"]
+    ];
+    auth_users_whose_username_matches_aggregate?: [
+      {
+        /** input parameters for function "auth_users_whose_username_matches_aggregate" */
+        args: ResolverInputTypes["auth_users_whose_username_matches_args"] /** distinct select on columns */;
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_users_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_users_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
+      },
+      ResolverInputTypes["auth_users_aggregate"]
     ];
     auth_xnft_preferences?: [
       {
@@ -15730,6 +15982,7 @@ export type ModelTypes = {
   ["auth_users_constraint"]: auth_users_constraint;
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
+    id?: ModelTypes["uuid"] | undefined;
     invitation?:
       | ModelTypes["auth_invitations_obj_rel_insert_input"]
       | undefined;
@@ -15829,6 +16082,9 @@ export type ModelTypes = {
     _set?: ModelTypes["auth_users_set_input"] | undefined;
     /** filter the rows which have to be updated */
     where: ModelTypes["auth_users_bool_exp"];
+  };
+  ["auth_users_whose_username_matches_args"]: {
+    prefix?: string | undefined;
   };
   /** columns and relationships of "auth.xnft_preferences" */
   ["auth_xnft_preferences"]: {
@@ -16589,6 +16845,10 @@ export type ModelTypes = {
     auth_users_aggregate: ModelTypes["auth_users_aggregate"];
     /** fetch data from the table: "auth.users" using primary key columns */
     auth_users_by_pk?: ModelTypes["auth_users"] | undefined;
+    /** execute function "auth.users_whose_username_matches" which returns "auth.users" */
+    auth_users_whose_username_matches: Array<ModelTypes["auth_users"]>;
+    /** execute function "auth.users_whose_username_matches" and query aggregates on result of table type "auth.users" */
+    auth_users_whose_username_matches_aggregate: ModelTypes["auth_users_aggregate"];
     /** fetch data from the table: "auth.xnft_preferences" */
     auth_xnft_preferences: Array<ModelTypes["auth_xnft_preferences"]>;
     /** fetch data from the table: "auth.xnft_preferences" using primary key columns */
@@ -16721,6 +16981,10 @@ export type ModelTypes = {
     auth_users_by_pk?: ModelTypes["auth_users"] | undefined;
     /** fetch data from the table in a streaming manner: "auth.users" */
     auth_users_stream: Array<ModelTypes["auth_users"]>;
+    /** execute function "auth.users_whose_username_matches" which returns "auth.users" */
+    auth_users_whose_username_matches: Array<ModelTypes["auth_users"]>;
+    /** execute function "auth.users_whose_username_matches" and query aggregates on result of table type "auth.users" */
+    auth_users_whose_username_matches_aggregate: ModelTypes["auth_users_aggregate"];
     /** fetch data from the table: "auth.xnft_preferences" */
     auth_xnft_preferences: Array<ModelTypes["auth_xnft_preferences"]>;
     /** fetch data from the table: "auth.xnft_preferences" using primary key columns */
@@ -18613,6 +18877,7 @@ export type GraphQLTypes = {
   ["auth_users_constraint"]: auth_users_constraint;
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
+    id?: GraphQLTypes["uuid"] | undefined;
     invitation?:
       | GraphQLTypes["auth_invitations_obj_rel_insert_input"]
       | undefined;
@@ -18719,6 +18984,9 @@ export type GraphQLTypes = {
     _set?: GraphQLTypes["auth_users_set_input"] | undefined;
     /** filter the rows which have to be updated */
     where: GraphQLTypes["auth_users_bool_exp"];
+  };
+  ["auth_users_whose_username_matches_args"]: {
+    prefix?: string | undefined;
   };
   /** columns and relationships of "auth.xnft_preferences" */
   ["auth_xnft_preferences"]: {
@@ -19528,6 +19796,10 @@ export type GraphQLTypes = {
     auth_users_aggregate: GraphQLTypes["auth_users_aggregate"];
     /** fetch data from the table: "auth.users" using primary key columns */
     auth_users_by_pk?: GraphQLTypes["auth_users"] | undefined;
+    /** execute function "auth.users_whose_username_matches" which returns "auth.users" */
+    auth_users_whose_username_matches: Array<GraphQLTypes["auth_users"]>;
+    /** execute function "auth.users_whose_username_matches" and query aggregates on result of table type "auth.users" */
+    auth_users_whose_username_matches_aggregate: GraphQLTypes["auth_users_aggregate"];
     /** fetch data from the table: "auth.xnft_preferences" */
     auth_xnft_preferences: Array<GraphQLTypes["auth_xnft_preferences"]>;
     /** fetch data from the table: "auth.xnft_preferences" using primary key columns */
@@ -19663,6 +19935,10 @@ export type GraphQLTypes = {
     auth_users_by_pk?: GraphQLTypes["auth_users"] | undefined;
     /** fetch data from the table in a streaming manner: "auth.users" */
     auth_users_stream: Array<GraphQLTypes["auth_users"]>;
+    /** execute function "auth.users_whose_username_matches" which returns "auth.users" */
+    auth_users_whose_username_matches: Array<GraphQLTypes["auth_users"]>;
+    /** execute function "auth.users_whose_username_matches" and query aggregates on result of table type "auth.users" */
+    auth_users_whose_username_matches_aggregate: GraphQLTypes["auth_users_aggregate"];
     /** fetch data from the table: "auth.xnft_preferences" */
     auth_xnft_preferences: Array<GraphQLTypes["auth_xnft_preferences"]>;
     /** fetch data from the table: "auth.xnft_preferences" using primary key columns */
@@ -20254,6 +20530,7 @@ type ZEUS_VARIABLES = {
   ["auth_users_stream_cursor_value_input"]: ValueTypes["auth_users_stream_cursor_value_input"];
   ["auth_users_update_column"]: ValueTypes["auth_users_update_column"];
   ["auth_users_updates"]: ValueTypes["auth_users_updates"];
+  ["auth_users_whose_username_matches_args"]: ValueTypes["auth_users_whose_username_matches_args"];
   ["auth_xnft_preferences_bool_exp"]: ValueTypes["auth_xnft_preferences_bool_exp"];
   ["auth_xnft_preferences_constraint"]: ValueTypes["auth_xnft_preferences_constraint"];
   ["auth_xnft_preferences_inc_input"]: ValueTypes["auth_xnft_preferences_inc_input"];

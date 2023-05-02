@@ -149,20 +149,6 @@ export const parseMessage = (
 
 const backpackSet = new Set(BACKPACK_TEAM);
 export const isBackpackTeam = (id: string): boolean => backpackSet.has(id);
-export const formatMessage = (message: string, users: any) => {
-  const parts = parseMessage(message || "");
-  const printText = parts
-    .map((x) => (x.type === "tag" ? users[x.value]?.username : x.value))
-    .join("");
-
-  if (printText) {
-    return printText.length > 25
-      ? printText.substring(0, 22) + "..."
-      : printText;
-  }
-
-  return "";
-};
 
 export interface BarterOffer {
   mint: string;

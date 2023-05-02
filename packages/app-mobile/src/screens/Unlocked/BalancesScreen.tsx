@@ -1,6 +1,6 @@
 import type { StackScreenProps } from "@react-navigation/stack";
 
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 import { Token, NavTokenAction, NavTokenOptions } from "@@types/types";
 import {
@@ -12,6 +12,7 @@ import {
 import { createStackNavigator } from "@react-navigation/stack";
 
 import { NavHeader } from "~components/NavHeader";
+import { RecentActivityList } from "~components/RecentActivityList";
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import {
   Margin,
@@ -24,7 +25,6 @@ import {
   useBlockchainActiveWallet,
   useActiveEthereumWallet,
 } from "~hooks/recoil";
-import { RecentActivityList } from "~screens/Unlocked/RecentActivityScreen";
 
 import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";
@@ -78,7 +78,7 @@ function TokenHeader({
   );
 }
 
-function BalanceDetailScreen({
+export function BalanceDetailScreen({
   route,
   navigation,
 }: StackScreenProps<
@@ -102,13 +102,15 @@ function BalanceDetailScreen({
 
   return (
     <Screen>
-      <TokenHeader
-        blockchain={blockchain}
-        address={tokenAddress}
-        onPressOption={(route: string, options: NavTokenOptions) => {
-          navigation.push(route, options);
-        }}
-      />
+      <View>
+        <TokenHeader
+          blockchain={blockchain}
+          address={tokenAddress}
+          onPressOption={(route: string, options: NavTokenOptions) => {
+            navigation.push(route, options);
+          }}
+        />
+      </View>
       <RecentActivityList
         blockchain={blockchain}
         address={activityAddress}
@@ -120,42 +122,44 @@ function BalanceDetailScreen({
   );
 }
 
-function BalanceListScreen({
+export function BalanceListScreen({
   navigation,
 }: StackScreenProps<BalancesStackParamList, "BalanceList">): JSX.Element {
   return (
-    <Screen>
-      <Margin bottom={18}>
-        <BalanceSummaryWidget />
-      </Margin>
-      <Margin bottom={18}>
-        <TransferWidget
-          swapEnabled={false}
-          rampEnabled={false}
-          onPressOption={(route: string, options: NavTokenOptions) => {
-            navigation.push(route, options);
+    <ScrollView>
+      <Screen>
+        <Margin bottom={18}>
+          <BalanceSummaryWidget />
+        </Margin>
+        <Margin bottom={18}>
+          <TransferWidget
+            swapEnabled={false}
+            rampEnabled={false}
+            onPressOption={(route: string, options: NavTokenOptions) => {
+              navigation.push(route, options);
+            }}
+          />
+        </Margin>
+        <TokenTables
+          onPressRow={(blockchain: Blockchain, token: Token) => {
+            navigation.push("BalanceDetail", {
+              blockchain,
+              tokenAddress: token.address,
+              tokenTicker: token.ticker,
+            });
+          }}
+          customFilter={(token: Token) => {
+            if (token.mint && token.mint === SOL_NATIVE_MINT) {
+              return true;
+            }
+            if (token.address && token.address === ETH_NATIVE_MINT) {
+              return true;
+            }
+            return !token.nativeBalance.isZero();
           }}
         />
-      </Margin>
-      <TokenTables
-        onPressRow={(blockchain: Blockchain, token: Token) => {
-          navigation.push("BalanceDetail", {
-            blockchain,
-            tokenAddress: token.address,
-            tokenTicker: token.ticker,
-          });
-        }}
-        customFilter={(token: Token) => {
-          if (token.mint && token.mint === SOL_NATIVE_MINT) {
-            return true;
-          }
-          if (token.address && token.address === ETH_NATIVE_MINT) {
-            return true;
-          }
-          return !token.nativeBalance.isZero();
-        }}
-      />
-    </Screen>
+      </Screen>
+    </ScrollView>
   );
 }
 

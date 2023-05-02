@@ -13,9 +13,7 @@ import { getUsers } from "../../db/users";
 const router = express.Router();
 
 router.post("/", extractUserId, async (req, res) => {
-  // @ts-ignore
-  const from: string = req.id;
-  // @ts-ignore
+  const from = req.id!;
   const to: string = req.body.to;
   if (!from || !to) {
     return res.status(411).json({ msg: "incorrect input" });
@@ -34,12 +32,9 @@ router.post("/", extractUserId, async (req, res) => {
 });
 
 router.get("/", extractUserId, async (req, res) => {
-  //@ts-ignore
-  const uuid: string = req.id;
-  //@ts-ignore
-  const limit: number = req.query.limit || 50;
-  //@ts-ignore
-  const offset: number = req.query.limit || 0;
+  const uuid = req.id!;
+  const limit = Math.min(Number(req.query.limit || 50), 100);
+  const offset = Number(req.query.limit || 0);
   const areConnected: boolean =
     req.query.areConnected === "true" ? true : false;
   const { friendships, requestCount } = await getFriendships({
@@ -53,14 +48,10 @@ router.get("/", extractUserId, async (req, res) => {
 });
 
 router.get("/all", extractUserId, async (req, res) => {
-  //@ts-ignore
-  const uuid: string = req.id;
-  //@ts-ignore
-  const limit: number = req.query.limit || 50;
-  //@ts-ignore
-  const offset: number = req.query.limit || 0;
-  //@ts-ignore
-  const userSpecifiedId: string = req.query.uuid;
+  const uuid = req.id!;
+  const limit = Number(req.query.limit || 50); // not currently used
+  const offset = Number(req.query.limit || 0);
+  const userSpecifiedId = req.query.uuid as string;
 
   if (uuid !== userSpecifiedId) {
     return res.json({ chats: [] });

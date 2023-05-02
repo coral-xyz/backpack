@@ -28,10 +28,14 @@
     "build:ext": "env-cmd --silent turbo run build --filter='@coral-xyz/app-extension...' --filter='@coral-xyz/background...'",
     "start:mobile": "env-cmd --silent turbo run start --filter='@coral-xyz/app-mobile...' --filter='@coral-xyz/background...'",
     "build:mobile": "env-cmd --silent turbo run build --filter='@coral-xyz/app-mobile...' --filter='@coral-xyz/background...'",
+    "upgrade:tamagui": "manypkg upgrade tamagui && manypkg upgrade @tamagui && manypkg upgrade tamagui-loader && manypkg upgrade react-native-web-lite",
+    "check-deps": "check-dependency-version-consistency .",
     "postinstall": "husky install"
   },
   "devDependencies": {
+    "@manypkg/cli": "^0.19.1",
     "buffer": "^5.5.0",
+    "check-dependency-version-consistency": "^3.0.3",
     "env-cmd": "^10.1.0",
     "eslint": "^8.31.0",
     "graphql": "^16.6.0",
@@ -61,7 +65,8 @@
     "react-refresh": "0.11.0",
     "typescript": "^4.9.5",
     "wrangler": "^2.10.0",
-    "zustand": "^4.3.5"
+    "zustand": "^4.3.5",
+    "@types/react-native": "0.71.6"
   },
   "engines": {
     "node": "18.x",

@@ -85,6 +85,7 @@ export const DARK_COLORS: CustomColors = {
   copyTooltipColor: BRAND_COLOR,
   copyTooltipTextColor: BACKGROUND_COLOR_1,
   tableBorder: BACKGROUND_COLOR_0,
+  tableCellBorder: "1px solid rgba(255,255,255,0.1)",
   balanceSkeleton: BACKGROUND_COLOR_1,
   balanceChangeNegative: "rgb(233, 80, 80, .1)",
   balanceChangePositive: "rgb(53, 166, 58, .1)",
@@ -92,7 +93,7 @@ export const DARK_COLORS: CustomColors = {
   textBackground: BACKGROUND_COLOR_1,
   textPlaceholder: FONT_COLOR_1,
   textBorder: BACKGROUND_COLOR_1,
-  swapTokensButton: BACKGROUND_COLOR_0,
+  switchTokensButton: BACKGROUND_COLOR_0,
   icon: "#787C89",
   approveTransactionTableBackground: BACKGROUND_COLOR_2,
   approveTransactionCloseBackground: BACKGROUND_COLOR_0,
@@ -156,6 +157,7 @@ export const LIGHT_COLORS: CustomColors = {
   copyTooltipColor: LIGHT_BRAND_COLOR,
   copyTooltipTextColor: LIGHT_BACKGROUND_COLOR_1,
   tableBorder: LIGHT_BORDER_COLOR,
+  tableCellBorder: "1px solid #F0F0F2",
   balanceSkeleton: "rgba(0,0,0,0.15)",
   balanceChangeNegative: "rgb(233, 80, 80, .1)",
   balanceChangePositive: "rgb(53, 166, 58, .1)",
@@ -164,7 +166,7 @@ export const LIGHT_COLORS: CustomColors = {
   textBorder: LIGHT_BORDER_COLOR,
   textPlaceholder: "#4E5768",
   textFieldTextColor: LIGHT_FONT_COLOR_2,
-  swapTokensButton: "#FFFFFF",
+  switchTokensButton: "#FFFFFF",
   icon: "#8F929E",
   approveTransactionTableBackground: LIGHT_BACKGROUND_COLOR_1,
   approveTransactionCloseBackground: "#C2C4CC",
@@ -333,8 +335,9 @@ export type CustomColors = {
   smallTextColor: string;
   subtext: string;
   successButton: string;
-  swapTokensButton: string;
+  switchTokensButton: string;
   tableBorder: string;
+  tableCellBorder: string;
   text: string;
   textBackground: string;
   textBorder: string;

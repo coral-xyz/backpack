@@ -1,0 +1,144 @@
+schema {
+  query: Query
+}
+
+type Query {
+  user(username: String!): User
+  wallet(chainId: ChainID!, address: String!): Wallet
+}
+
+enum ChainID {
+  ETHEREUM
+  SOLANA
+}
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type Balances {
+  aggregateValue: Float!
+  native: TokenBalance!
+  tokens: TokenBalanceConnection
+}
+
+type Collection implements Node {
+  id: ID!
+  address: String!
+  image: String
+  name: String
+  verified: Boolean!
+}
+
+type MarketData implements Node {
+  id: ID!
+  usdChange: Float!
+  percentChange: Float!
+  lastUpdatedAt: Int!
+  logo: String!
+  price: Float!
+  value: Float!
+}
+
+type Nft implements Node {
+  id: ID!
+  address: String!
+  attributes: [NftAttribute!]
+  collection: Collection
+  description: String
+  image: String
+  name: String!
+}
+
+type NftConnection {
+  edges: [NftEdge]
+  pageInfo: PageInfo!
+}
+
+type NftEdge {
+  cursor: String!
+  node: Nft
+}
+
+type NftAttribute {
+  trait: String!
+  value: String!
+}
+
+type TokenBalance implements Node {
+  id: ID!
+  address: String!
+  amount: String!
+  decimals: Int!
+  displayAmount: String!
+  marketData: MarketData
+  mint: String!
+}
+
+type TokenBalanceConnection {
+  edges: [TokenBalanceEdge]
+  pageInfo: PageInfo!
+}
+
+type TokenBalanceEdge {
+  cursor: String!
+  node: TokenBalance
+}
+
+type Transaction implements Node {
+  id: ID!
+  description: String
+  block: Float!
+  fee: Int
+  feePayer: String
+  hash: String!
+  source: String
+  timestamp: String
+  type: String!
+}
+
+type TransactionConnection {
+  edges: [TransactionEdge]
+  pageInfo: PageInfo!
+}
+
+type TransactionEdge {
+  cursor: String!
+  node: Transaction
+}
+
+type User implements Node {
+  id: ID!
+  username: String!
+  wallets(filter: WalletsFilterInput): WalletConnection
+}
+
+type Wallet implements Node {
+  id: ID!
+  address: String!
+  chainId: ChainID!
+  balances: Balances
+  nfts: NftConnection
+  transactions(before: String, after: String): TransactionConnection
+}
+
+type WalletConnection {
+  edges: [WalletEdge]
+  pageInfo: PageInfo!
+}
+
+type WalletEdge {
+  cursor: String!
+  node: Wallet
+}
+
+input WalletsFilterInput {
+  pubkeys: [String!]
+}

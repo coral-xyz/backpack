@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and run tests
     env:
-      RELEASE_PREFIX: "0.5.2"
+      RELEASE_PREFIX: "0.6.6"
     steps:
       ##########################################################################
       # Setup environment.
@@ -65,6 +65,17 @@ jobs:
 
       - run: yarn test
 
+      - name: "Check if any backend code has changed, to know if we should run backend tests"
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+
+      - if: steps.changes.outputs.backend == 'true'
+        uses: ./.github/actions/backend-tests
+
       ##########################################################################
       # GitHub Pages (mobile app and hardware wallet support)
       ##########################################################################
@@ -87,6 +98,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
         with:
+          cname: mobile-service-worker.xnfts.dev
           publish_dir: packages/background/build
           github_token: ${{ secrets.GITHUB_TOKEN }}
           destination_dir: "background-scripts/${{ env.short_sha }}"

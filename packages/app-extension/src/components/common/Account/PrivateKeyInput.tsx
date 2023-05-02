@@ -6,13 +6,7 @@ import {
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
-import {
-  useActivePublicKeys,
-  useAllWallets,
-  useBackgroundClient,
-  useDehydratedWallets,
-  useWalletPublicKeys,
-} from "@coral-xyz/recoil";
+import { useAllWallets, useBackgroundClient } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
 
 import { Header, SubtextParagraph } from "../../common";
@@ -22,6 +16,7 @@ export const PrivateKeyInput = ({
   onNext,
   serverPublicKeys,
   displayNameInput = false,
+  onboarding,
 }: {
   blockchain?: Blockchain;
   onNext: ({
@@ -37,10 +32,11 @@ export const PrivateKeyInput = ({
   }) => void;
   serverPublicKeys?: Array<ServerPublicKey>;
   displayNameInput?: boolean;
+  onboarding?: boolean;
 }) => {
   const background = useBackgroundClient();
-  const dehydrated = useDehydratedWallets();
-  const wallets = useAllWallets();
+  // eslint-disable-next-line
+  const wallets = onboarding ? [] : useAllWallets();
   const [name, setName] = useState("");
   const [privateKey, setPrivateKey] = useState("");
   const [loading, setLoading] = useState(false);
@@ -69,10 +65,7 @@ export const PrivateKeyInput = ({
       return;
     }
 
-    if (dehydrated.find((d) => d.publicKey === _publicKey)) {
-      setError("You can recover this private key from your wallets page.");
-      return;
-    } else if (wallets.find((w) => w.publicKey === _publicKey)) {
+    if (wallets.find((w) => w.publicKey === _publicKey)) {
       setError("This wallet is already active and available in your account.");
       return;
     }

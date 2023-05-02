@@ -7,8 +7,9 @@ import {
   ethereumIndexed,
   legacyBip44ChangeIndexed,
   legacyBip44Indexed,
+  legacyEthereum,
   legacyLedgerIndexed,
-  legacyLedgerLiveIndexed,
+  legacyLedgerLiveAccount,
   legacySolletIndexed,
   LOAD_PUBLIC_KEY_AMOUNT,
   UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
@@ -102,12 +103,6 @@ export function ImportWallets({
           legacyBip44ChangeIndexed(Blockchain.SOLANA, i) + "/0'",
         label: "m/44/501'/x'/0'/0'",
       },
-      /**
-      {
-        path: (i: number) => getIndexedPath(Blockchain.SOLANA, i),
-        label: "Backpack",
-      },
-      **/
     ]
       // Note: We only allow importing the deprecated sollet derivation path for
       //       hot wallets. This UI is hidden behind a local storage flag we
@@ -124,36 +119,21 @@ export function ImportWallets({
           : []
       ),
     [Blockchain.ETHEREUM]: [
-      /**
-      // Used in older versions of Backpack
       {
-        path: (i: number) => legacyBip44Indexed(Blockchain.ETHEREUM, i),
-        label: "m/44/60'/",
+        path: (i: number) => legacyEthereum(i),
+        label: "m/44/60'/x",
       },
-      **/
-      {
-        path: (i: number) => legacyLedgerLiveIndexed(i),
-        label: "m/44/60/x - Ledger Live",
-      },
-      /**
-      // Used in older versions of Backpack
-      {
-        path: (i: number) => legacyBip44ChangeIndexed(Blockchain.ETHEREUM, i),
-        label: "m/44/60'/0'",
-      },
-      **/
       {
         path: (i: number) => legacyLedgerIndexed(i),
-        label: "m/44/60'/0'/x' - Ledger",
+        label: "m/44'/60'/0'/x' - Ledger",
+      },
+      {
+        path: (i: number) => legacyLedgerLiveAccount(i),
+        label: "m/44'/60'/x'/0/0 - Ledger Live",
       },
       {
         path: (i: number) => ethereumIndexed(i),
-        label: "m/44/60'/0'/0/x - Ethereum Standard",
-      },
-      {
-        path: (i: number) =>
-          legacyBip44ChangeIndexed(Blockchain.ETHEREUM, i) + "/0'",
-        label: "m/44/60'/x'/0'/0'",
+        label: "m/44'/60'/0'/0/x - Ethereum Standard",
       },
     ],
   }[blockchain];

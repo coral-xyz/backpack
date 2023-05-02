@@ -6,8 +6,8 @@ import { useStore } from "@coral-xyz/common";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import {
   useFonts,
-  Inter_500Medium,
   Inter_400Regular,
+  Inter_500Medium,
   Inter_600SemiBold,
 } from "@expo-google-fonts/inter";
 
@@ -20,10 +20,13 @@ export function useLoadedAssets(): status {
   const webviewLoaded = useStore((state) => state.injectJavaScript);
 
   const [fontsLoaded] = useFonts({
-    Inter: Inter_400Regular,
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
+    Inter: require("@tamagui/font-inter/otf/Inter-Regular.otf"),
+    InterMedium: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
+    InterSemiBold: require("@tamagui/font-inter/otf/Inter-SemiBold.otf"),
+    InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
   });
 
   // Load any resources or data that we need prior to rendering the app

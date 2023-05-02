@@ -6,7 +6,7 @@ export { useIsONELive } from "./useIsONELive";
 export { useTheme } from "./useTheme";
 
 // TODO(peter) consolidate between extension/mobile-app or just live on S3
-export function getBlockchainLogo(blockchain: Blockchain): string {
+export function getBlockchainLogo(blockchain: Blockchain) {
   switch (blockchain) {
     case Blockchain.ETHEREUM:
       return Images.ethereumLogo;

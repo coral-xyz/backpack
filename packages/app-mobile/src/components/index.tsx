@@ -11,13 +11,13 @@ import {
   Text,
   View,
   ScrollView,
+  Button,
 } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
 import Constants from "expo-constants";
 
 import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
-import { useAvatarUrl } from "@coral-xyz/recoil";
 import {
   Margin,
   BaseButton,
@@ -26,13 +26,13 @@ import {
   SecondaryButton,
   NegativeButton,
   DangerButton,
+  StyledText,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ContentCopyIcon, RedBackpack } from "~components/Icon";
 import { useTheme } from "~hooks/useTheme";
-
-import { ImageSvg } from "./ImageSvg";
 
 export { ActionCard } from "./ActionCard";
 export { MnemonicInputFields } from "./MnemonicInputFields";
@@ -42,6 +42,7 @@ export { PasswordInput } from "./PasswordInput";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { StyledTokenTextInput } from "./TokenInputField";
+export { Avatar } from "./UserAvatar";
 export {
   Margin,
   BaseButton,
@@ -50,6 +51,7 @@ export {
   SecondaryButton,
   NegativeButton,
   DangerButton,
+  StyledText,
 };
 
 export function CallToAction({
@@ -98,33 +100,41 @@ const ctaStyles = StyleSheet.create({
   },
 });
 
-export function StyledText({
-  children,
-  style,
-  ...props
-}: {
-  children: string;
-  style?: StyleProp<TextStyle>;
-}) {
-  const theme = useTheme();
-  const color = theme.custom.colors.fontColor;
-  return (
-    <Text style={[{ color }, style]} {...props}>
-      {children}
-    </Text>
-  );
-}
-
 export function Screen({
   scrollable,
   children,
   style,
+  headerPadding,
 }: {
   scrollable?: boolean;
   children: JSX.Element | JSX.Element[] | null;
   style?: StyleProp<ViewStyle>;
+  headerPadding?: boolean;
 }) {
+  const [show, setShow] = useState(true);
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
+
+  // added for perf/dev reasons
+  if (!show) {
+    return (
+      <View
+        style={[
+          screenStyles.container,
+          {
+            flex: 1,
+            backgroundColor: "white",
+            alignItems: "center",
+            justifyContent: "center",
+          },
+          style,
+        ]}
+      >
+        <Button title="Load Screen" onPress={() => setShow(true)} />
+      </View>
+    );
+  }
+
   if (scrollable) {
     return (
       <ScrollView
@@ -147,6 +157,7 @@ export function Screen({
         screenStyles.container,
         {
           backgroundColor: theme.custom.colors.background,
+          marginTop: headerPadding ? insets.top : undefined,
         },
         style,
       ]}
@@ -356,27 +367,6 @@ export function WalletAddressLabel({
       <Text style={{ color: theme.custom.colors.secondary }}>
         ({walletAddressDisplay(publicKey)})
       </Text>
-    </View>
-  );
-}
-
-export function Avatar({ size = 64 }: { size?: number }): JSX.Element {
-  const avatarUrl = useAvatarUrl(size);
-  const theme = useTheme();
-
-  const outerSize = size + 6;
-
-  return (
-    <View
-      style={{
-        backgroundColor: theme.custom.colors.avatarIconBackground,
-        borderRadius: outerSize / 2,
-        padding: 3,
-        width: outerSize,
-        height: outerSize,
-      }}
-    >
-      <ImageSvg width={size} height={size} uri={avatarUrl} />
     </View>
   );
 }
@@ -745,14 +735,17 @@ export function RoundedContainerGroup({
       style={[
         roundedContainerStyles.container,
         {
+          backgroundColor: theme.custom.colors.nav,
           borderColor: theme.custom.colors.borderFull,
         },
-        disableTopRadius ? roundedContainerStyles.disableTopRadius : null,
-        disableBottomRadius ? roundedContainerStyles.disableBottomRadius : null,
+        disableTopRadius ? roundedContainerStyles.disableTopRadius : undefined,
+        disableBottomRadius
+          ? roundedContainerStyles.disableBottomRadius
+          : undefined,
         style,
       ]}
     >
-      {children}
+      <View style={{ overflow: "hidden", borderRadius: 16 }}>{children}</View>
     </View>
   );
 }
@@ -760,15 +753,21 @@ export function RoundedContainerGroup({
 const roundedContainerStyles = StyleSheet.create({
   container: {
     overflow: "hidden",
-    borderRadius: 12,
+    borderRadius: 16,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
   },
   disableTopRadius: {
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
+    borderTopWidth: 0,
   },
   disableBottomRadius: {
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
+    borderBottomWidth: 0,
   },
 });
 
