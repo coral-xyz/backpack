@@ -211,7 +211,7 @@ export function RemoteNftWithSuspense({
   const theme = useCustomTheme();
 
   return (
-    <Suspense fallback={<NftSkeleton dimension={dimension} />}>
+    <Suspense fallback={<NftSkeleton rounded dimension={dimension} />}>
       <RemoteNft onClick={onClick} mint={mint} rounded={rounded} />
     </Suspense>
   );
