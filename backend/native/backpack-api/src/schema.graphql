@@ -117,7 +117,7 @@ type TransactionEdge {
 type User implements Node {
   id: ID!
   username: String!
-  wallets(filter: WalletsFilter): WalletConnection
+  wallets(filter: WalletsFilterInput): WalletConnection
 }
 
 type Wallet implements Node {
@@ -139,6 +139,6 @@ type WalletEdge {
   node: Wallet
 }
 
-type WalletsFilter {
+input WalletsFilterInput {
   pubkeys: [String!]
 }
