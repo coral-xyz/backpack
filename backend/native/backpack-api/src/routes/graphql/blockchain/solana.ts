@@ -20,6 +20,12 @@ import { createConnection } from "..";
 
 import { type Blockchain, calculateUsdChange } from ".";
 
+/**
+ * Solana blockchain implementation for the common API.
+ * @export
+ * @class Solana
+ * @implements {Blockchain}
+ */
 export class Solana implements Blockchain {
   readonly #ctx: ApiContext;
 

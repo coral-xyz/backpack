@@ -23,6 +23,7 @@ import { createConnection, inferChainIdFromString } from ".";
 
 /**
  * Root `Query` object resolver.
+ * @export
  */
 export const queryResolvers: QueryResolvers = {
   /**
@@ -82,8 +83,17 @@ export const queryResolvers: QueryResolvers = {
 
 /**
  * Type-level query resolver for the `User` schema object.
+ * @export
  */
 export const userResolvers: UserResolvers = {
+  /**
+   * Field-level resolver handler for the `wallets` field.
+   * @param {User} parent
+   * @param {Partial<UserWalletsArgs>} args
+   * @param {ApiContext} ctx
+   * @param {GraphQLResolveInfo} _info
+   * @returns {(Promise<WalletConnection | null>)}
+   */
   async wallets(
     parent: User,
     args: Partial<UserWalletsArgs>,
@@ -129,6 +139,7 @@ export const userResolvers: UserResolvers = {
 
 /**
  * Type-level query resolver for the `Wallet` schema object.
+ * @export
  */
 export const walletResolvers: WalletResolvers = {
   /**

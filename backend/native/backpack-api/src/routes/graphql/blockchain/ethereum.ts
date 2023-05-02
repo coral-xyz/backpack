@@ -22,6 +22,12 @@ import { createConnection } from "..";
 
 import { type Blockchain, calculateUsdChange } from ".";
 
+/**
+ * Ethereum blockchain implementation for the common API.
+ * @export
+ * @class Ethereum
+ * @implements {Blockchain}
+ */
 export class Ethereum implements Blockchain {
   readonly #ctx: ApiContext;
 
