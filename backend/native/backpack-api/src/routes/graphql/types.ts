@@ -166,7 +166,7 @@ export type User = Node & {
 };
 
 export type UserWalletsArgs = {
-  filter?: InputMaybe<WalletsFilter>;
+  filter?: InputMaybe<WalletsFilterInput>;
 };
 
 export type Wallet = Node & {
@@ -196,9 +196,8 @@ export type WalletEdge = {
   node?: Maybe<Wallet>;
 };
 
-export type WalletsFilter = {
-  __typename?: "WalletsFilter";
-  pubkeys?: Maybe<Array<Scalars["String"]>>;
+export type WalletsFilterInput = {
+  pubkeys?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -344,7 +343,7 @@ export type ResolversTypes = ResolversObject<{
   Wallet: ResolverTypeWrapper<Wallet>;
   WalletConnection: ResolverTypeWrapper<WalletConnection>;
   WalletEdge: ResolverTypeWrapper<WalletEdge>;
-  WalletsFilter: ResolverTypeWrapper<WalletsFilter>;
+  WalletsFilterInput: WalletsFilterInput;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -381,7 +380,7 @@ export type ResolversParentTypes = ResolversObject<{
   Wallet: Wallet;
   WalletConnection: WalletConnection;
   WalletEdge: WalletEdge;
-  WalletsFilter: WalletsFilter;
+  WalletsFilterInput: WalletsFilterInput;
 }>;
 
 export type BalancesResolvers<
@@ -697,18 +696,6 @@ export type WalletEdgeResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type WalletsFilterResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes["WalletsFilter"] = ResolversParentTypes["WalletsFilter"]
-> = ResolversObject<{
-  pubkeys?: Resolver<
-    Maybe<Array<ResolversTypes["String"]>>,
-    ParentType,
-    ContextType
-  >;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export type Resolvers<ContextType = any> = ResolversObject<{
   Balances?: BalancesResolvers<ContextType>;
   Collection?: CollectionResolvers<ContextType>;
@@ -730,5 +717,4 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Wallet?: WalletResolvers<ContextType>;
   WalletConnection?: WalletConnectionResolvers<ContextType>;
   WalletEdge?: WalletEdgeResolvers<ContextType>;
-  WalletsFilter?: WalletsFilterResolvers<ContextType>;
 }>;
