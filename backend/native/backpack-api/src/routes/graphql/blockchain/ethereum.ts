@@ -10,9 +10,12 @@ import type { ApiContext } from "../context";
 import {
   type Balances,
   ChainId,
+  type Collection,
   type Nft,
+  type NftAttribute,
   type NftConnection,
   type TokenBalance,
+  type Transaction,
   type TransactionConnection,
 } from "../types";
 import { createConnection } from "..";
@@ -48,6 +51,30 @@ export class Ethereum implements Blockchain {
       "ethereum",
     ]);
 
+    // Native token balance data
+    const nativeData: TokenBalance = {
+      id: `ethereum_native_address:${address}`,
+      address,
+      amount: native.toString(),
+      decimals: this.nativeDecimals(),
+      displayAmount: ethers.utils.formatUnits(native, this.nativeDecimals()),
+      marketData: {
+        id: "coingecko_market_data:ethereum",
+        percentChange: parseFloat(prices.ethereum.usd_24h_change.toFixed(2)),
+        usdChange: calculateUsdChange(
+          prices.ethereum.usd_24h_change,
+          prices.ethereum.usd
+        ),
+        lastUpdatedAt: prices.ethereum.last_updated_at,
+        logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png",
+        price: prices.ethereum.usd,
+        value:
+          parseFloat(ethers.utils.formatUnits(native, this.nativeDecimals())) *
+          prices.ethereum.usd,
+      },
+      mint: "0x0000000000000000000000000000000000000000",
+    };
+
     // Map the non-empty token balances to their schema type
     const nodes: TokenBalance[] = nonEmptyTokens.map((t) => {
       const amt = BigNumber.from(t.rawBalance ?? "0");
@@ -62,31 +89,15 @@ export class Ethereum implements Blockchain {
       };
     });
 
+    // Summation of all market value amounts for non-native tokens
+    const nonNativeSum = nodes.reduce<number>(
+      (acc, curr) => (curr.marketData ? acc + curr.marketData.value : acc),
+      0
+    );
+
     return {
-      aggregateValue: 0,
-      native: {
-        id: `ethereum_native_address:${address}`,
-        address,
-        amount: native.toString(),
-        decimals: this.nativeDecimals(),
-        displayAmount: ethers.utils.formatUnits(native, this.nativeDecimals()),
-        marketData: {
-          id: "coingecko_market_data:ethereum",
-          percentChange: parseFloat(prices.ethereum.usd_24h_change.toFixed(2)),
-          usdChange: calculateUsdChange(
-            prices.ethereum.usd_24h_change,
-            prices.ethereum.usd
-          ),
-          lastUpdatedAt: prices.ethereum.last_updated_at,
-          logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png",
-          price: prices.ethereum.usd,
-          value:
-            parseFloat(
-              ethers.utils.formatUnits(native, this.nativeDecimals())
-            ) * prices.ethereum.usd,
-        },
-        mint: "0x0000000000000000000000000000000000000000",
-      },
+      aggregateValue: nativeData.marketData!.value + nonNativeSum,
+      native: nativeData,
       tokens: createConnection(nodes, false, false),
     };
   }
@@ -107,19 +118,30 @@ export class Ethereum implements Blockchain {
     // detected spam NFTs and mapping them with their possible collection data
     const nodes = nfts.ownedNfts.reduce<Nft[]>((acc, curr) => {
       if (curr.spamInfo?.isSpam ?? false) return acc;
+
+      const collection: Collection | undefined = curr.contract.openSea
+        ? {
+            id: `ethereum_nft_collection:${curr.contract.address}`,
+            address: curr.contract.address,
+            name: curr.contract.openSea.collectionName,
+            image: curr.contract.openSea.imageUrl,
+            verified:
+              curr.contract.openSea.safelistRequestStatus === "verified",
+          }
+        : undefined;
+
+      const attributes: NftAttribute[] | undefined =
+        curr.rawMetadata?.attributes?.map((a) => ({
+          trait: a.trait_type || a.traitType,
+          value: a.value,
+        }));
+
       const n: Nft = {
         id: `ethereum_nft:${curr.contract.address}/${curr.tokenId}`,
         address: `${curr.contract.address}/${curr.tokenId}`,
-        collection: curr.contract.openSea
-          ? {
-              id: `ethereum_nft_collection:${curr.contract.address}`,
-              address: curr.contract.address,
-              name: curr.contract.openSea.collectionName,
-              image: curr.contract.openSea.imageUrl,
-              verified:
-                curr.contract.openSea.safelistRequestStatus === "verified",
-            }
-          : undefined,
+        attributes,
+        collection,
+        description: curr.description,
         image: curr.rawMetadata?.image,
         name: curr.title,
       };
@@ -173,7 +195,7 @@ export class Ethereum implements Blockchain {
       .flat()
       .sort((a, b) => Number(b.blockNum) - Number(a.blockNum));
 
-    const nodes = combined.map((tx) => ({
+    const nodes: Transaction[] = combined.map((tx) => ({
       id: `ethereum_transaction:${tx.uniqueId}`,
       block: Number(tx.blockNum),
       feePayer: tx.from,

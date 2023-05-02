@@ -1,42 +1,42 @@
 import type { Token, PublicKey, Wallet } from "@@types/types";
 
-import { useCallback } from "react";
 import {
   SectionList,
   Image,
   StyleSheet,
   View,
-  Button,
   Pressable,
-  ScrollView,
   FlatList,
-  Text,
 } from "react-native";
 
 import { formatUSD, Blockchain } from "@coral-xyz/common";
 import {
-  Box,
   XStack,
   ListItem,
-  ListItem2,
   YStack,
   YGroup,
   Separator,
-  Switch,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BlockchainLogo } from "~components/BlockchainLogo";
+import { IconCheckmark } from "~components/Icon";
 import { UserAvatar } from "~components/UserAvatar";
 import {
   StyledText,
-  Screen,
   ProxyImage,
   RoundedContainerGroup,
 } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { TextPercentChanged } from "~screens/Unlocked/components/Balances";
+
+export function SectionHeader({ title }: { title: string }): JSX.Element {
+  return <StyledText>{title}</StyledText>;
+}
+
+export function SectionSeparator() {
+  return <View style={{ height: 12 }} />;
+}
 
 // TODO(peter) something about padding looks weird
 export function PaddedListItemSeparator() {
@@ -233,6 +233,8 @@ type ListItemActivityProps = {
   bottomRightText: string;
   iconUrl?: string;
   icon?: any;
+  showSuccessIcon?: boolean;
+  showErrorIcon?: boolean;
 };
 
 export function ListItemActivity({
@@ -244,8 +246,26 @@ export function ListItemActivity({
   bottomRightText,
   iconUrl,
   icon,
+  showSuccessIcon,
+  showErrorIcon,
 }: ListItemActivityProps) {
   const getIcon = (icon?: any, iconUrl?: string) => {
+    if (showSuccessIcon) {
+      return (
+        <View style={{ width: 32, height: 32 }}>
+          <IconCheckmark color="green" size={28} />
+        </View>
+      );
+    }
+
+    if (showErrorIcon) {
+      return (
+        <View style={{ width: 44, height: 44 }}>
+          <IconCheckmark color="red" size={28} />
+        </View>
+      );
+    }
+
     if (iconUrl) {
       return <Image style={styles.rowLogo} source={{ uri: iconUrl }} />;
     }
@@ -275,7 +295,13 @@ export function ListItemActivity({
           <StyledText fontSize="$lg" color="$fontColor">
             {topLeftText}
           </StyledText>
-          <StyledText fontSize="$sm" color="$secondary">
+          <StyledText
+            fontSize="$sm"
+            color="$secondary"
+            maxWidth="80%"
+            ellipsizeMode="tail"
+            numberOfLines={1}
+          >
             {bottomLeftText}
           </StyledText>
         </YStack>
@@ -388,16 +414,16 @@ export function ListItemWalletOverview({
 
 export function ListItemFriendRequest({
   grouped = false,
-  iconUrl,
   text,
   username,
   time,
+  avatarUrl,
 }: {
   grouped?: boolean;
   text: string;
   username: string;
   time: string;
-  iconUrl: string;
+  avatarUrl: string;
 }): JSX.Element {
   return (
     <ListItem
@@ -407,7 +433,7 @@ export function ListItemFriendRequest({
       borderWidth={!grouped ? 2 : undefined}
       paddingHorizontal={16}
       paddingVertical={8}
-      icon={<UserAvatar uri={iconUrl} size={44} />}
+      icon={<UserAvatar uri={avatarUrl} size={44} />}
     >
       <XStack flex={1} justifyContent="space-between" alignItems="flex-start">
         <YStack>
@@ -598,9 +624,10 @@ export function SectionedList() {
   return (
     <SectionList
       sections={sections}
+      stickySectionHeadersEnabled={false}
       ListHeaderComponent={<StyledText>Header</StyledText>}
       // separator cuts into the border but we can figure this out
-      ItemSeparatorComponent={Separator}
+      // ItemSeparatorComponent={Separator}
       renderSectionHeader={({ section: { title } }) => (
         <StyledText my={12}>{title}</StyledText>
       )}

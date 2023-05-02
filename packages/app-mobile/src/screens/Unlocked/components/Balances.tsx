@@ -213,7 +213,11 @@ export function WalletPickerButton({
 }
 
 // Used for each individual row  of Balances
-function TextPercentChanged({ percentChange }: { percentChange: number }) {
+export function TextPercentChanged({
+  percentChange,
+}: {
+  percentChange: number;
+}) {
   const theme = useTheme();
   const positive = !!(percentChange && percentChange > 0);
   const negative = !!(percentChange && percentChange < 0);
@@ -256,7 +260,7 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
 }
 
 // Used in BalanceDetail TokenHeader, slightly diff than the other one
-function RecentPercentChange({
+export function RecentPercentChange({
   recentPercentChange,
 }: {
   recentPercentChange: number | undefined;
@@ -297,7 +301,7 @@ export function UsdBalanceAndPercentChange({
 }
 
 // Renders the individual token row
-function TokenRow({
+export function TokenRow({
   onPressRow,
   token,
   blockchain,

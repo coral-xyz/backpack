@@ -196,7 +196,13 @@ export function NftsSkeleton() {
   );
 }
 
-export function NftSkeleton({ dimension }: { dimension?: number }) {
+export function NftSkeleton({
+  dimension,
+  rounded,
+}: {
+  dimension?: number;
+  rounded?: boolean;
+}) {
   const { isXs } = useBreakpoints();
 
   const getDimensions = () => {
@@ -211,7 +217,7 @@ export function NftSkeleton({ dimension }: { dimension?: number }) {
       variant="rectangular"
       height={dimension ?? getDimensions()}
       width={dimension ?? getDimensions()}
-      style={{ margin: isXs ? 4 : 12 }}
+      style={{ margin: isXs ? 4 : 12, borderRadius: rounded ? "50%" : 0 }}
     />
   );
 }
@@ -488,6 +494,7 @@ function RenderNFT({
         }}
         style={{
           width: getDimensions(),
+          height: getDimensions(),
           borderRadius: rounded ? "50%" : 8,
           boxShadow:
             "0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -1px rgba(0, 0, 0, 0.06);",

@@ -3,10 +3,10 @@ import type { Blockchain, Nft } from "@coral-xyz/common";
 
 import { useCallback } from "react";
 
-import Constants from "expo-constants";
-
 import { parseNftName } from "@coral-xyz/common";
+import { MaterialIcons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
 // import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
 
@@ -17,18 +17,21 @@ import {
   TabIconNfts,
   TabIconMessages,
 } from "~components/Icon";
+import { Avatar } from "~components/index";
 // import { NavHeader } from "~components/NavHeader";
 import { useTheme } from "~hooks/useTheme";
 import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 // import AppListScreen from "~screens/Unlocked/AppListScreen"; // TURNED off bc of app store restrictions (temporarily)
 import { ChatNavigator } from "~navigation/ChatNavigator";
+import { WalletsNavigator } from "~navigation/WalletsNavigator";
+import { NotificationsScreen } from "~screens/NotificationsScreen";
 import { BalancesNavigator } from "~screens/Unlocked/BalancesScreen";
 import {
   DepositListScreen,
   DepositSingleScreen,
 } from "~screens/Unlocked/DepositScreen";
-import { NftCollectiblesNavigator } from "~screens/Unlocked/NftCollectiblesScreen";
-import { RecentActivityScreen } from "~screens/Unlocked/RecentActivityScreen";
+import { DummyScreen } from "~screens/Unlocked/DummyScreen";
+// import { NftCollectiblesNavigator } from "~screens/Unlocked/NftCollectiblesScreen";
 import {
   SendTokenSelectRecipientScreen,
   SendTokenListScreen,
@@ -97,11 +100,6 @@ export function UnlockedNavigator(): JSX.Element {
         }}
       >
         <Stack.Screen
-          name="RecentActivity"
-          component={RecentActivityScreen}
-          options={{ title: "Recent Activity" }}
-        />
-        <Stack.Screen
           options={{ title: "Deposit" }}
           name="DepositList"
           component={DepositListScreen}
@@ -162,11 +160,15 @@ export function UnlockedNavigator(): JSX.Element {
 }
 
 type UnlockedTabNavigatorParamList = {
-  Balances: undefined;
-  Applications: undefined;
-  Collectibles: undefined;
+  Wallets: undefined;
   Chat: undefined;
+  AccountSettings: undefined;
+  Notifications: undefined;
 };
+
+const TabIconNotifications = ({ size, fill }) => (
+  <MaterialIcons name="notifications" size={size} color={fill} />
+);
 
 const Tab = createBottomTabNavigator<UnlockedTabNavigatorParamList>();
 function UnlockedBottomTabNavigator(): JSX.Element {
@@ -181,6 +183,10 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         return TabIconNfts;
       case "Chat":
         return TabIconMessages;
+      case "Notifications":
+        return TabIconNotifications;
+      case "AccountSettings":
+        return Avatar;
       default:
         return TabIconBalances;
     }
@@ -193,17 +199,23 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         headerShown: false,
         tabBarIcon: ({ color, size }) => {
           const Component = getIcon(route.name);
-          return <Component fill={color} width={size} height={size} />;
+          return (
+            <Component fill={color} width={size} height={size} size={size} />
+          );
         },
         tabBarActiveTintColor: theme.custom.colors.brandColor,
         tabBarInactiveTintColor: theme.custom.colors.icon,
       })}
     >
-      <Tab.Screen name="Balances" component={BalancesNavigator} />
-      <Tab.Screen name="Collectibles" component={NftCollectiblesNavigator} />
-      {Constants.expoConfig.extra.FEATURE_MOBILE_CHAT ? (
-        <Tab.Screen name="Chat" component={ChatNavigator} />
-      ) : null}
+      <Tab.Screen name="Wallets" component={WalletsNavigator} />
+      <Tab.Screen
+        name="Notifications"
+        component={NotificationsScreen}
+        options={{ headerShown: true }}
+      />
+      <Tab.Screen name="Chat" component={ChatNavigator} />
+      <Tab.Screen name="AccountSettings" component={AccountSettingsNavigator} />
+      <Tab.Screen name="Dummy" component={DummyScreen} />
     </Tab.Navigator>
   );
 }

@@ -72,6 +72,7 @@ export const NftStickerRender = ({
         className={classes.hoverParent}
       >
         <RemoteNftWithSuspense
+          dimension={getDimensions()}
           onClick={() => {
             window.open(`https://magiceden.io/item-details/${mint}`, "_blank");
           }}
