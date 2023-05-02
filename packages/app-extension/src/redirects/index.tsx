@@ -32,6 +32,9 @@ export const extractDomainParts = (url: URL): DomainParts => {
  * If an error occurs during domain resolution, it redirects the user to the error page.
  */
 const main: () => Promise<void> = async () => {
+  if (typeof window === "undefined") {
+    return;
+  }
   // Extract the domainUrl search parameter
   const domain = new URL(window.location.href).searchParams.get("domain");
   if (!domain) {
