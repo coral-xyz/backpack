@@ -57,10 +57,18 @@ export type MarketData = Node & {
 export type Nft = Node & {
   __typename?: "Nft";
   address: Scalars["String"];
+  attributes?: Maybe<Array<NftAttribute>>;
   collection?: Maybe<Collection>;
+  description?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
   image?: Maybe<Scalars["String"]>;
   name: Scalars["String"];
+};
+
+export type NftAttribute = {
+  __typename?: "NftAttribute";
+  trait: Scalars["String"];
+  value: Scalars["String"];
 };
 
 export type NftConnection = {
@@ -307,6 +315,7 @@ export type ResolversTypes = ResolversObject<{
   Int: ResolverTypeWrapper<Scalars["Int"]>;
   MarketData: ResolverTypeWrapper<MarketData>;
   Nft: ResolverTypeWrapper<Nft>;
+  NftAttribute: ResolverTypeWrapper<NftAttribute>;
   NftConnection: ResolverTypeWrapper<NftConnection>;
   NftEdge: ResolverTypeWrapper<NftEdge>;
   Node:
@@ -342,6 +351,7 @@ export type ResolversParentTypes = ResolversObject<{
   Int: Scalars["Int"];
   MarketData: MarketData;
   Nft: Nft;
+  NftAttribute: NftAttribute;
   NftConnection: NftConnection;
   NftEdge: NftEdge;
   Node:
@@ -412,14 +422,33 @@ export type NftResolvers<
   ParentType extends ResolversParentTypes["Nft"] = ResolversParentTypes["Nft"]
 > = ResolversObject<{
   address?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  attributes?: Resolver<
+    Maybe<Array<ResolversTypes["NftAttribute"]>>,
+    ParentType,
+    ContextType
+  >;
   collection?: Resolver<
     Maybe<ResolversTypes["Collection"]>,
+    ParentType,
+    ContextType
+  >;
+  description?: Resolver<
+    Maybe<ResolversTypes["String"]>,
     ParentType,
     ContextType
   >;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type NftAttributeResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["NftAttribute"] = ResolversParentTypes["NftAttribute"]
+> = ResolversObject<{
+  trait?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -666,6 +695,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Collection?: CollectionResolvers<ContextType>;
   MarketData?: MarketDataResolvers<ContextType>;
   Nft?: NftResolvers<ContextType>;
+  NftAttribute?: NftAttributeResolvers<ContextType>;
   NftConnection?: NftConnectionResolvers<ContextType>;
   NftEdge?: NftEdgeResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;

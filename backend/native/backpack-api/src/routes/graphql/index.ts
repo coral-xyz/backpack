@@ -32,6 +32,10 @@ export function createConnection<T extends Node>(
   hasNextPage: boolean,
   hasPreviousPage: boolean
 ): Connection<T> | null {
+  if (nodes.length === 0) {
+    return null;
+  }
+
   const edges: Edge<T>[] = nodes.map((i) => ({
     cursor: Buffer.from(`edge_cursor:${i.id}`).toString("base64"),
     node: i,
