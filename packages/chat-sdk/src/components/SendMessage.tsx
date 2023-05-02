@@ -116,7 +116,6 @@ export const SendMessage = ({
     selectedMediaKind,
     activeReply,
     chats,
-    sendMessage,
   ]);
 
   const getOfflineMembers = () => {
