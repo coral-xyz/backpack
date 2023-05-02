@@ -166,7 +166,7 @@ export type User = Node & {
 };
 
 export type UserWalletsArgs = {
-  publicKeys?: InputMaybe<Array<Scalars["String"]>>;
+  filter?: InputMaybe<WalletsFilter>;
 };
 
 export type Wallet = Node & {
@@ -194,6 +194,11 @@ export type WalletEdge = {
   __typename?: "WalletEdge";
   cursor: Scalars["String"];
   node?: Maybe<Wallet>;
+};
+
+export type WalletsFilter = {
+  __typename?: "WalletsFilter";
+  pubkeys?: Maybe<Array<Scalars["String"]>>;
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -339,6 +344,7 @@ export type ResolversTypes = ResolversObject<{
   Wallet: ResolverTypeWrapper<Wallet>;
   WalletConnection: ResolverTypeWrapper<WalletConnection>;
   WalletEdge: ResolverTypeWrapper<WalletEdge>;
+  WalletsFilter: ResolverTypeWrapper<WalletsFilter>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -375,6 +381,7 @@ export type ResolversParentTypes = ResolversObject<{
   Wallet: Wallet;
   WalletConnection: WalletConnection;
   WalletEdge: WalletEdge;
+  WalletsFilter: WalletsFilter;
 }>;
 
 export type BalancesResolvers<
@@ -690,6 +697,18 @@ export type WalletEdgeResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type WalletsFilterResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["WalletsFilter"] = ResolversParentTypes["WalletsFilter"]
+> = ResolversObject<{
+  pubkeys?: Resolver<
+    Maybe<Array<ResolversTypes["String"]>>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type Resolvers<ContextType = any> = ResolversObject<{
   Balances?: BalancesResolvers<ContextType>;
   Collection?: CollectionResolvers<ContextType>;
@@ -711,4 +730,5 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Wallet?: WalletResolvers<ContextType>;
   WalletConnection?: WalletConnectionResolvers<ContextType>;
   WalletEdge?: WalletEdgeResolvers<ContextType>;
+  WalletsFilter?: WalletsFilterResolvers<ContextType>;
 }>;
