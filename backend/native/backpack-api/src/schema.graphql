@@ -50,7 +50,9 @@ type MarketData implements Node {
 type Nft implements Node {
   id: ID!
   address: String!
+  attributes: [NftAttribute!]
   collection: Collection
+  description: String
   image: String
   name: String!
 }
@@ -63,6 +65,11 @@ type NftConnection {
 type NftEdge {
   cursor: String!
   node: Nft
+}
+
+type NftAttribute {
+  trait: String!
+  value: String!
 }
 
 type TokenBalance implements Node {
