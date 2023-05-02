@@ -10,7 +10,9 @@ import type { ApiContext } from "../context";
 import {
   type Balances,
   ChainId,
+  type Collection,
   type Nft,
+  type NftAttribute,
   type NftConnection,
   type TokenBalance,
   type Transaction,
@@ -116,19 +118,30 @@ export class Ethereum implements Blockchain {
     // detected spam NFTs and mapping them with their possible collection data
     const nodes = nfts.ownedNfts.reduce<Nft[]>((acc, curr) => {
       if (curr.spamInfo?.isSpam ?? false) return acc;
+
+      const collection: Collection | undefined = curr.contract.openSea
+        ? {
+            id: `ethereum_nft_collection:${curr.contract.address}`,
+            address: curr.contract.address,
+            name: curr.contract.openSea.collectionName,
+            image: curr.contract.openSea.imageUrl,
+            verified:
+              curr.contract.openSea.safelistRequestStatus === "verified",
+          }
+        : undefined;
+
+      const attributes: NftAttribute[] | undefined =
+        curr.rawMetadata?.attributes?.map((a) => ({
+          trait: a.trait_type || a.traitType,
+          value: a.value,
+        }));
+
       const n: Nft = {
         id: `ethereum_nft:${curr.contract.address}/${curr.tokenId}`,
         address: `${curr.contract.address}/${curr.tokenId}`,
-        collection: curr.contract.openSea
-          ? {
-              id: `ethereum_nft_collection:${curr.contract.address}`,
-              address: curr.contract.address,
-              name: curr.contract.openSea.collectionName,
-              image: curr.contract.openSea.imageUrl,
-              verified:
-                curr.contract.openSea.safelistRequestStatus === "verified",
-            }
-          : undefined,
+        attributes,
+        collection,
+        description: curr.description,
         image: curr.rawMetadata?.image,
         name: curr.title,
       };

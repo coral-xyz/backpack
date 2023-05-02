@@ -10,6 +10,7 @@ import {
   type Collection,
   type MarketData,
   type Nft,
+  type NftAttribute,
   type NftConnection,
   type TokenBalance,
   type Transaction,
@@ -195,10 +196,18 @@ export class Solana implements Blockchain {
         m.onChainMetadata
       );
 
+      const attributes: NftAttribute[] | undefined =
+        m.offChainMetadata?.metadata?.attributes?.map((a) => ({
+          trait: a.trait_type || (a as any).traitType,
+          value: a.value,
+        }));
+
       return {
         id: `solana_nft:${m.account}`,
         address: m.account,
+        attributes,
         collection,
+        description: m.offChainMetadata?.metadata.description,
         image: m.offChainMetadata?.metadata.image,
         name: m.onChainMetadata?.metadata.data.name ?? "",
       };

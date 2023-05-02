@@ -57,10 +57,18 @@ export type MarketData = Node & {
 export type Nft = Node & {
   __typename?: "Nft";
   address: Scalars["String"];
+  attributes?: Maybe<Array<NftAttribute>>;
   collection?: Maybe<Collection>;
+  description?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
   image?: Maybe<Scalars["String"]>;
   name: Scalars["String"];
+};
+
+export type NftAttribute = {
+  __typename?: "NftAttribute";
+  trait: Scalars["String"];
+  value: Scalars["String"];
 };
 
 export type NftConnection = {
@@ -158,7 +166,7 @@ export type User = Node & {
 };
 
 export type UserWalletsArgs = {
-  publicKeys?: InputMaybe<Array<Scalars["String"]>>;
+  filter?: InputMaybe<WalletsFilterInput>;
 };
 
 export type Wallet = Node & {
@@ -186,6 +194,10 @@ export type WalletEdge = {
   __typename?: "WalletEdge";
   cursor: Scalars["String"];
   node?: Maybe<Wallet>;
+};
+
+export type WalletsFilterInput = {
+  pubkeys?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -307,6 +319,7 @@ export type ResolversTypes = ResolversObject<{
   Int: ResolverTypeWrapper<Scalars["Int"]>;
   MarketData: ResolverTypeWrapper<MarketData>;
   Nft: ResolverTypeWrapper<Nft>;
+  NftAttribute: ResolverTypeWrapper<NftAttribute>;
   NftConnection: ResolverTypeWrapper<NftConnection>;
   NftEdge: ResolverTypeWrapper<NftEdge>;
   Node:
@@ -330,6 +343,7 @@ export type ResolversTypes = ResolversObject<{
   Wallet: ResolverTypeWrapper<Wallet>;
   WalletConnection: ResolverTypeWrapper<WalletConnection>;
   WalletEdge: ResolverTypeWrapper<WalletEdge>;
+  WalletsFilterInput: WalletsFilterInput;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -342,6 +356,7 @@ export type ResolversParentTypes = ResolversObject<{
   Int: Scalars["Int"];
   MarketData: MarketData;
   Nft: Nft;
+  NftAttribute: NftAttribute;
   NftConnection: NftConnection;
   NftEdge: NftEdge;
   Node:
@@ -365,6 +380,7 @@ export type ResolversParentTypes = ResolversObject<{
   Wallet: Wallet;
   WalletConnection: WalletConnection;
   WalletEdge: WalletEdge;
+  WalletsFilterInput: WalletsFilterInput;
 }>;
 
 export type BalancesResolvers<
@@ -412,14 +428,33 @@ export type NftResolvers<
   ParentType extends ResolversParentTypes["Nft"] = ResolversParentTypes["Nft"]
 > = ResolversObject<{
   address?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  attributes?: Resolver<
+    Maybe<Array<ResolversTypes["NftAttribute"]>>,
+    ParentType,
+    ContextType
+  >;
   collection?: Resolver<
     Maybe<ResolversTypes["Collection"]>,
+    ParentType,
+    ContextType
+  >;
+  description?: Resolver<
+    Maybe<ResolversTypes["String"]>,
     ParentType,
     ContextType
   >;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type NftAttributeResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["NftAttribute"] = ResolversParentTypes["NftAttribute"]
+> = ResolversObject<{
+  trait?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -666,6 +701,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Collection?: CollectionResolvers<ContextType>;
   MarketData?: MarketDataResolvers<ContextType>;
   Nft?: NftResolvers<ContextType>;
+  NftAttribute?: NftAttributeResolvers<ContextType>;
   NftConnection?: NftConnectionResolvers<ContextType>;
   NftEdge?: NftEdgeResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
