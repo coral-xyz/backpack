@@ -50,6 +50,15 @@ export type Collection = Node & {
   verified: Scalars["Boolean"];
 };
 
+/** NFT listing data pulling from marketplaces. */
+export type Listing = Node & {
+  __typename?: "Listing";
+  amount: Scalars["String"];
+  id: Scalars["ID"];
+  source: Scalars["String"];
+  url: Scalars["String"];
+};
+
 /** Coingecko and computed market and price data for a token. */
 export type MarketData = Node & {
   __typename?: "MarketData";
@@ -71,7 +80,9 @@ export type Nft = Node & {
   description?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
   image?: Maybe<Scalars["String"]>;
+  listing?: Maybe<Listing>;
   name: Scalars["String"];
+  owner: Scalars["String"];
 };
 
 /** NFT `attributes` list sub-type definition. */
@@ -93,6 +104,11 @@ export type NftEdge = {
   __typename?: "NftEdge";
   cursor: Scalars["String"];
   node?: Maybe<Nft>;
+};
+
+/** Input filter type for fetching user wallet NFTs. */
+export type NftFiltersInput = {
+  mints?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 /** Interface to enforce the implementation of an `id` field on a type. */
@@ -199,7 +215,7 @@ export type User = Node & {
  * assets, peripheral information, and social data.
  */
 export type UserWalletsArgs = {
-  filter?: InputMaybe<WalletsFilterInput>;
+  filters?: InputMaybe<WalletsFiltersInput>;
 };
 
 /** Wallet definition to provide data about all assets owned by an address. */
@@ -211,6 +227,11 @@ export type Wallet = Node & {
   id: Scalars["ID"];
   nfts?: Maybe<NftConnection>;
   transactions?: Maybe<TransactionConnection>;
+};
+
+/** Wallet definition to provide data about all assets owned by an address. */
+export type WalletNftsArgs = {
+  filters?: InputMaybe<NftFiltersInput>;
 };
 
 /** Wallet definition to provide data about all assets owned by an address. */
@@ -234,7 +255,8 @@ export type WalletEdge = {
 };
 
 /** Input filter type for fetching user wallets and their data. */
-export type WalletsFilterInput = {
+export type WalletsFiltersInput = {
+  chainId?: InputMaybe<ChainId>;
   pubkeys?: InputMaybe<Array<Scalars["String"]>>;
 };
 
@@ -355,14 +377,17 @@ export type ResolversTypes = ResolversObject<{
   Float: ResolverTypeWrapper<Scalars["Float"]>;
   ID: ResolverTypeWrapper<Scalars["ID"]>;
   Int: ResolverTypeWrapper<Scalars["Int"]>;
+  Listing: ResolverTypeWrapper<Listing>;
   MarketData: ResolverTypeWrapper<MarketData>;
   Nft: ResolverTypeWrapper<Nft>;
   NftAttribute: ResolverTypeWrapper<NftAttribute>;
   NftConnection: ResolverTypeWrapper<NftConnection>;
   NftEdge: ResolverTypeWrapper<NftEdge>;
+  NftFiltersInput: NftFiltersInput;
   Node:
     | ResolversTypes["Balances"]
     | ResolversTypes["Collection"]
+    | ResolversTypes["Listing"]
     | ResolversTypes["MarketData"]
     | ResolversTypes["Nft"]
     | ResolversTypes["TokenBalance"]
@@ -382,7 +407,7 @@ export type ResolversTypes = ResolversObject<{
   Wallet: ResolverTypeWrapper<Wallet>;
   WalletConnection: ResolverTypeWrapper<WalletConnection>;
   WalletEdge: ResolverTypeWrapper<WalletEdge>;
-  WalletsFilterInput: WalletsFilterInput;
+  WalletsFiltersInput: WalletsFiltersInput;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -393,14 +418,17 @@ export type ResolversParentTypes = ResolversObject<{
   Float: Scalars["Float"];
   ID: Scalars["ID"];
   Int: Scalars["Int"];
+  Listing: Listing;
   MarketData: MarketData;
   Nft: Nft;
   NftAttribute: NftAttribute;
   NftConnection: NftConnection;
   NftEdge: NftEdge;
+  NftFiltersInput: NftFiltersInput;
   Node:
     | ResolversParentTypes["Balances"]
     | ResolversParentTypes["Collection"]
+    | ResolversParentTypes["Listing"]
     | ResolversParentTypes["MarketData"]
     | ResolversParentTypes["Nft"]
     | ResolversParentTypes["TokenBalance"]
@@ -420,7 +448,7 @@ export type ResolversParentTypes = ResolversObject<{
   Wallet: Wallet;
   WalletConnection: WalletConnection;
   WalletEdge: WalletEdge;
-  WalletsFilterInput: WalletsFilterInput;
+  WalletsFiltersInput: WalletsFiltersInput;
 }>;
 
 export type BalancesResolvers<
@@ -447,6 +475,17 @@ export type CollectionResolvers<
   image?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   verified?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ListingResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["Listing"] = ResolversParentTypes["Listing"]
+> = ResolversObject<{
+  amount?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  source?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  url?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -486,7 +525,9 @@ export type NftResolvers<
   >;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  listing?: Resolver<Maybe<ResolversTypes["Listing"]>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -528,6 +569,7 @@ export type NodeResolvers<
   __resolveType: TypeResolveFn<
     | "Balances"
     | "Collection"
+    | "Listing"
     | "MarketData"
     | "Nft"
     | "TokenBalance"
@@ -705,7 +747,8 @@ export type WalletResolvers<
   nfts?: Resolver<
     Maybe<ResolversTypes["NftConnection"]>,
     ParentType,
-    ContextType
+    ContextType,
+    Partial<WalletNftsArgs>
   >;
   transactions?: Resolver<
     Maybe<ResolversTypes["TransactionConnection"]>,
@@ -741,6 +784,7 @@ export type WalletEdgeResolvers<
 export type Resolvers<ContextType = any> = ResolversObject<{
   Balances?: BalancesResolvers<ContextType>;
   Collection?: CollectionResolvers<ContextType>;
+  Listing?: ListingResolvers<ContextType>;
   MarketData?: MarketDataResolvers<ContextType>;
   Nft?: NftResolvers<ContextType>;
   NftAttribute?: NftAttributeResolvers<ContextType>;

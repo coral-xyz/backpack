@@ -4,7 +4,6 @@ import { getBlockchainForId } from "./blockchain";
 import type { ApiContext } from "./context";
 import type {
   Balances,
-  ChainId,
   NftConnection,
   QueryResolvers,
   QueryUserArgs,
@@ -16,6 +15,7 @@ import type {
   UserWalletsArgs,
   Wallet,
   WalletConnection,
+  WalletNftsArgs,
   WalletResolvers,
   WalletTransactionsArgs,
 } from "./types";
@@ -96,7 +96,7 @@ export const userResolvers: UserResolvers = {
    */
   async wallets(
     parent: User,
-    args: Partial<UserWalletsArgs>,
+    { filters }: Partial<UserWalletsArgs>,
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<WalletConnection | null> {
@@ -108,8 +108,17 @@ export const userResolvers: UserResolvers = {
         },
         {
           public_keys: [
-            args.filter?.pubkeys
-              ? { where: { public_key: { _in: args.filter.pubkeys } } }
+            filters && Object.keys(filters).length > 0
+              ? {
+                  where: {
+                    blockchain: filters.chainId
+                      ? { _eq: filters.chainId.toLowerCase() }
+                      : undefined,
+                    public_key: filters.pubkeys
+                      ? { _in: filters.pubkeys }
+                      : undefined,
+                  },
+                }
               : {},
             {
               blockchain: true,
@@ -164,19 +173,20 @@ export const walletResolvers: WalletResolvers = {
   /**
    * Field-level resolver handler for the `nfts` field.
    * @param {Wallet} parent
-   * @param {{}} _args
+   * @param {Partial<WalletNftsArgs>} args
    * @param {ApiContext} ctx
    * @param {GraphQLResolveInfo} _info
    * @returns {(Promise<NftConnection | null>)}
    */
   async nfts(
     parent: Wallet,
-    _args: {},
+    { filters }: Partial<WalletNftsArgs>,
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<NftConnection | null> {
     return getBlockchainForId(parent.chainId, ctx).getNftsForAddress(
-      parent.address
+      parent.address,
+      filters?.mints as string[] | undefined
     );
   },
 
