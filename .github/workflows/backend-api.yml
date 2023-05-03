@@ -34,6 +34,7 @@ jobs:
           printf 'TWITTER_CONSUMER_KEY=%s\n' '${{secrets.TWITTER_CONSUMER_KEY}}' >> .env
           printf 'TWITTER_CONSUMER_SECRET=%s\n' '${{secrets.TWITTER_CONSUMER_SECRET}}' >> .env
           printf 'OVERRIDE_RPC_URL=%s\n' '${{secrets.OVERRIDE_RPC_URL}}' >> .env
+          printf 'TENSOR_API_KEY=%s\n' '${{secrets.TENSOR_API_KEY}}' >> .env
           cd ../../..
 
       - name: docker login
