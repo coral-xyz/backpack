@@ -20,6 +20,8 @@
     "@coral-xyz/chat-zeus": "*",
     "@coral-xyz/common": "*",
     "@coral-xyz/zeus": "*",
+    "@graphql-tools/schema": "^9.0.19",
+    "@graphql-tools/utils": "^9.2.1",
     "@metaplex-foundation/js": "0.16.1",
     "@metaplex-foundation/mpl-token-metadata": "^2.8.1",
     "@saberhq/anchor-contrib": "^1.14.11",

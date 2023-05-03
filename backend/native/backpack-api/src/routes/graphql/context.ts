@@ -9,6 +9,9 @@ import { HASURA_URL, JWT } from "../../config";
 import { CoinGecko, Helius, Tensor } from "./clients";
 
 export interface ApiContext {
+  authorization: {
+    jwt?: string;
+  };
   dataSources: {
     alchemy: Alchemy;
     coinGecko: CoinGecko;
@@ -16,7 +19,6 @@ export interface ApiContext {
     helius: Helius;
     tensor: Tensor;
   };
-  jwt: string;
 }
 
 /**
@@ -35,19 +37,21 @@ export const createContext: ContextFunction<
     jwt = authHeader.split(" ")[1];
   }
 
+  // if (!jwt) {
+  //   throw new GraphQLError("User authorization token was not found", {
+  //     extensions: {
+  //       code: "UNAUTHORIZED",
+  //       http: { status: 401 },
+  //     },
+  //   });
+  // }
+
   // TODO: add jwt validation as well
-  if (!jwt) {
-    throw new GraphQLError("user authorization jwt was not found", {
-      extensions: {
-        code: "UNAUTHORIZED",
-        http: {
-          status: 401,
-        },
-      },
-    });
-  }
 
   return {
+    authorization: {
+      jwt,
+    },
     dataSources: {
       alchemy: new Alchemy({ apiKey: process.env.ALCHEMY_API_KEY }),
       coinGecko: new CoinGecko(),
@@ -59,6 +63,5 @@ export const createContext: ContextFunction<
       helius: new Helius(process.env.HELIUS_API_KEY ?? ""),
       tensor: new Tensor(process.env.TENSOR_API_KEY ?? ""),
     },
-    jwt,
   };
 };

@@ -1,3 +1,8 @@
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { readFileSync } from "fs";
+import { join } from "path";
+
+import { authDirectiveTransformer } from "./directives";
 import { queryResolvers, userResolvers, walletResolvers } from "./query";
 import type { Node, PageInfo, Resolvers } from "./types";
 import { ChainId } from "./types";
@@ -14,16 +19,26 @@ export type Connection<T extends Node> = {
 
 /**
  * Schema root and type-level resolvers.
- * @export
  */
-export const resolvers: Resolvers = {
+const resolvers: Resolvers = {
   Query: queryResolvers,
   User: userResolvers,
   Wallet: walletResolvers,
 };
 
 /**
- * Generate a Relay connection from a list of node objects
+ * Built schema to be executed on the Apollo server.
+ * @export
+ */
+export const schema = authDirectiveTransformer(
+  makeExecutableSchema({
+    resolvers,
+    typeDefs: readFileSync(join(__dirname, "schema.graphql"), "utf-8"), // Path resolution for the built distribution to schema file
+  })
+);
+
+/**
+ * Generate a Relay connection from a list of node objects.
  * @export
  * @template T
  * @param {T[]} nodes

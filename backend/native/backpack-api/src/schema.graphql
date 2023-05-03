@@ -3,13 +3,19 @@ schema {
 }
 
 """
+Custom authorization directive to mark private or token inferred operations.
+"""
+directive @auth on OBJECT | FIELD_DEFINITION
+
+"""
 Root level query type.
 """
 type Query {
   """
-  Fetch a user by their Backpack account username.
+  Fetch a user by their Backpack account username. The username is inferred by the
+  presence of a valid and verified JWT.
   """
-  user(username: String!): User
+  user: User @auth
 
   """
   Fetching a wallet and it's assets by the public key address and associated `ChainID`.
@@ -190,7 +196,7 @@ type TransactionEdge {
 Backpack user type definition so provide data about all of the user's
 assets, peripheral information, and social data.
 """
-type User implements Node {
+type User implements Node @auth {
   id: ID!
   username: String!
   wallets(filters: WalletsFiltersInput): WalletConnection
