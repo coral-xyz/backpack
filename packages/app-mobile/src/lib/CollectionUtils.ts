@@ -15,57 +15,71 @@ type GraphQLWalletData = {
             name: string;
             verified: true;
           };
+          attributes: { trait: string; value: string }[];
+          description: string;
         };
       }[];
     };
   };
 };
 
-export type ListItem = {
-  key: string;
-  title: string;
+export type ListItemProps = {
+  id: string;
   type: "collection" | "nft";
+  name: string;
   numItems: number;
   images: string[];
+  attributes: { trait: string; value: string }[];
+  description: string;
+  nfts: any[]; // TODO
 };
 
-export function convertNftDataToFlatlist(data: GraphQLWalletData): ListItem[] {
+export function convertNftDataToFlatlist(
+  data: GraphQLWalletData
+): ListItemProps[] {
   const nfts = data.wallet.nfts.edges.map((edge) => edge.node);
 
   // Group the nodes by collection
   const collectionMap = new Map();
   nfts.forEach((nft) => {
     if (!nft.collection) {
-      // If there's no collection, use the node name as the key
-      const key = nft.address;
-      if (!collectionMap.has(key)) {
-        collectionMap.set(key, {
-          title: nft.name,
-          type: "nft",
-          numItems: 1,
+      // If there's no collection, use the node name as the id
+      const id = nft.address;
+      if (!collectionMap.has(id)) {
+        collectionMap.set(id, {
           id: nft.id,
+          type: "nft",
+          name: nft.name,
+          numItems: 1,
           images: [nft.image],
+          attributes: nft.attributes,
+          description: nft.description,
+          nfts: [],
         });
       } else {
-        const collection = collectionMap.get(key);
+        const collection = collectionMap.get(id);
         collection.numItems++;
         collection.images.push(nft.image);
       }
     } else {
-      // If there is a collection, use the collection address as the key
-      const key = nft.collection.address;
-      if (!collectionMap.has(key)) {
-        collectionMap.set(key, {
-          title: nft.collection.name,
-          type: "collection",
-          numItems: 1,
+      // If there is a collection, use the collection address as the id
+      const id = nft.collection.address;
+      if (!collectionMap.has(id)) {
+        collectionMap.set(id, {
           id: nft.collection.id,
+          type: "collection",
+          name: nft.collection.name,
+          numItems: 1,
           images: [nft.image],
+          attributes: nft.attributes,
+          description: nft.description,
+          nfts: [nft],
         });
       } else {
-        const collection = collectionMap.get(key);
+        const collection = collectionMap.get(id);
         collection.numItems++;
         collection.images.push(nft.image);
+        collection.nfts.push(nft);
       }
     }
   });
@@ -78,10 +92,13 @@ export function convertNftDataToFlatlist(data: GraphQLWalletData): ListItem[] {
 
   // Return the converted data
   return collections.map((collection) => ({
-    key: collection.id,
-    title: collection.title,
+    id: collection.id,
+    name: collection.name,
     type: collection.type,
     numItems: collection.numItems,
     images: collection.images,
+    attributes: collection.attributes,
+    description: collection.description,
+    nfts: collection.nfts,
   }));
 }

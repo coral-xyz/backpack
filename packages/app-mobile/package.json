@@ -41,6 +41,7 @@
     "@react-navigation/native-stack": "^6.7.0",
     "@react-navigation/stack": "^6.3.2",
     "@tamagui/font-inter": "^1.15.39",
+    "apollo3-cache-persist": "^0.14.1",
     "big-integer": "^1.6.51",
     "buffer": "^6.0.3",
     "ethers": "^5.7.2",

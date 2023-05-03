@@ -25,7 +25,6 @@ import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 import { ChatNavigator } from "~navigation/ChatNavigator";
 import { WalletsNavigator } from "~navigation/WalletsNavigator";
 import { NotificationsScreen } from "~screens/NotificationsScreen";
-import { BalancesNavigator } from "~screens/Unlocked/BalancesScreen";
 import {
   DepositListScreen,
   DepositSingleScreen,

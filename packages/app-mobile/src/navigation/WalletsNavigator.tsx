@@ -1,4 +1,4 @@
-import { toTitleCase } from "@coral-xyz/common";
+import { Blockchain, toTitleCase } from "@coral-xyz/common";
 import { Box } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
@@ -6,14 +6,20 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
 import { useTheme } from "~hooks/useTheme";
+import { CollectionDetailScreen } from "~screens/CollectionDetailScreen";
+import { CollectionItemDetailScreen } from "~screens/CollectionItemDetailScreen";
 import { CollectionListScreen } from "~screens/CollectionListScreen";
 import { HomeWalletListScreen } from "~screens/HomeWalletListScreen";
 import { RecentActivityScreen } from "~screens/RecentActivityScreen";
-import { BalanceDetailScreen } from "~screens/Unlocked/BalancesScreen";
-import { WalletOverviewScreen } from "~screens/WalletOverviewScreen";
+import { TokenDetailScreen } from "~screens/TokenDetailScreen";
+import { TokenListScreen } from "~screens/TokenListScreen";
 
-const TopTabs = createMaterialTopTabNavigator();
-
+type TopTabsParamList = {
+  TokenList: undefined;
+  Collectibles: undefined;
+  Activity: undefined;
+};
+const TopTabs = createMaterialTopTabNavigator<TopTabsParamList>();
 function TopTabsNavigator(): JSX.Element {
   const theme = useTheme();
   return (
@@ -32,8 +38,8 @@ function TopTabsNavigator(): JSX.Element {
       }}
     >
       <TopTabs.Screen
-        name="WalletOverview"
-        component={WalletOverviewScreen}
+        name="TokenList"
+        component={TokenListScreen}
         options={{ title: "Tokens" }}
       />
       <TopTabs.Screen
@@ -50,18 +56,38 @@ function TopTabsNavigator(): JSX.Element {
   );
 }
 
-const Stack = createStackNavigator();
+export type WalletStackParamList = {
+  HomeWalletList: undefined;
+  TopTabsWalletDetail: undefined;
+  TokenDetail: {
+    blockchain: Blockchain;
+    tokenAddress: string;
+    tokenTicker: string;
+  };
+  // List of collectibles/nfts for a collection
+  CollectionDetail: {
+    id: string;
+    title: string;
+  };
+  // individual collection/nft
+  CollectionItemDetail: {
+    id: string;
+    title: string;
+    blockchain: Blockchain;
+  };
+};
+const Stack = createStackNavigator<WalletStackParamList>();
 export function WalletsNavigator(): JSX.Element {
   const theme = useTheme();
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="AllAccountsHome"
+        name="HomeWalletList"
         component={HomeWalletListScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="Main"
+        name="TopTabsWalletDetail"
         component={TopTabsNavigator}
         options={({ navigation }) => {
           return {
@@ -85,16 +111,41 @@ export function WalletsNavigator(): JSX.Element {
           };
         }}
       />
-
       <Stack.Screen
         name="TokenDetail"
-        component={BalanceDetailScreen}
+        component={TokenDetailScreen}
         options={({
           route: {
             params: { blockchain, tokenTicker },
           },
         }) => {
           const title = `${toTitleCase(blockchain)} / ${tokenTicker}`;
+          return {
+            title,
+          };
+        }}
+      />
+      <Stack.Screen
+        name="CollectionDetail"
+        component={CollectionDetailScreen}
+        options={({
+          route: {
+            params: { title },
+          },
+        }) => {
+          return {
+            title,
+          };
+        }}
+      />
+      <Stack.Screen
+        name="CollectionItemDetail"
+        component={CollectionItemDetailScreen}
+        options={({
+          route: {
+            params: { title },
+          },
+        }) => {
           return {
             title,
           };

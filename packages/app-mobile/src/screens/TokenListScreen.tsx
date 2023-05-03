@@ -79,7 +79,7 @@ function Container({ navigation }): JSX.Element {
   );
 }
 
-export function WalletOverviewScreen({ navigation }: any): JSX.Element {
+export function TokenListScreen({ navigation }: any): JSX.Element {
   return (
     <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
       <Suspense fallback={<ActivityIndicator size="large" />}>

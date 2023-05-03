@@ -1,33 +1,24 @@
 import type { StackScreenProps } from "@react-navigation/stack";
 
-import { ScrollView, StyleSheet, View } from "react-native";
+import { View, StyleSheet } from "react-native";
 
-import { Token, NavTokenAction, NavTokenOptions } from "@@types/types";
-import {
-  Blockchain,
-  ETH_NATIVE_MINT,
-  SOL_NATIVE_MINT,
-  toTitleCase,
-} from "@coral-xyz/common";
-import { createStackNavigator } from "@react-navigation/stack";
+import { NavTokenAction, NavTokenOptions } from "@@types/types";
+import { Blockchain } from "@coral-xyz/common";
 
-import { NavHeader } from "~components/NavHeader";
 import { RecentActivityList } from "~components/RecentActivityList";
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import {
-  Margin,
   Screen,
   TokenAmountHeader,
   FullScreenLoading,
 } from "~components/index";
 import {
+  useActiveEthereumWallet,
   useBlockchainTokenData,
   useBlockchainActiveWallet,
-  useActiveEthereumWallet,
 } from "~hooks/recoil";
-
-import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
-import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";
+import type { WalletStackParamList } from "~navigation/WalletsNavigator";
+import { UsdBalanceAndPercentChange } from "~screens/Unlocked/components/Balances";
 
 function TokenHeader({
   blockchain,
@@ -78,13 +69,10 @@ function TokenHeader({
   );
 }
 
-export function BalanceDetailScreen({
+export function TokenDetailScreen({
   route,
   navigation,
-}: StackScreenProps<
-  BalancesStackParamList,
-  "BalanceDetail"
->): JSX.Element | null {
+}: StackScreenProps<WalletStackParamList, "TokenDetail">): JSX.Element | null {
   const { blockchain, tokenAddress } = route.params;
 
   // We only use ethereumWallet here, even though its shared on the Solana side too.
@@ -122,91 +110,9 @@ export function BalanceDetailScreen({
   );
 }
 
-export function BalanceListScreen({
-  navigation,
-}: StackScreenProps<BalancesStackParamList, "BalanceList">): JSX.Element {
-  return (
-    <ScrollView>
-      <Screen>
-        <Margin bottom={18}>
-          <BalanceSummaryWidget />
-        </Margin>
-        <Margin bottom={18}>
-          <TransferWidget
-            swapEnabled={false}
-            rampEnabled={false}
-            onPressOption={(route: string, options: NavTokenOptions) => {
-              navigation.push(route, options);
-            }}
-          />
-        </Margin>
-        <TokenTables
-          onPressRow={(blockchain: Blockchain, token: Token) => {
-            navigation.push("BalanceDetail", {
-              blockchain,
-              tokenAddress: token.address,
-              tokenTicker: token.ticker,
-            });
-          }}
-          customFilter={(token: Token) => {
-            if (token.mint && token.mint === SOL_NATIVE_MINT) {
-              return true;
-            }
-            if (token.address && token.address === ETH_NATIVE_MINT) {
-              return true;
-            }
-            return !token.nativeBalance.isZero();
-          }}
-        />
-      </Screen>
-    </ScrollView>
-  );
-}
-
 const styles = StyleSheet.create({
   tokenHeaderButtonContainer: {
     justifyContent: "space-between",
     marginTop: 24,
   },
 });
-
-type BalancesStackParamList = {
-  BalanceList: undefined;
-  BalanceDetail: {
-    blockchain: Blockchain;
-    tokenAddress: string;
-    tokenTicker: string;
-  };
-};
-
-const Stack = createStackNavigator<BalancesStackParamList>();
-export function BalancesNavigator(): JSX.Element {
-  return (
-    <Stack.Navigator
-      initialRouteName="BalanceList"
-      screenOptions={{
-        header: NavHeader,
-      }}
-    >
-      <Stack.Screen
-        name="BalanceList"
-        component={BalanceListScreen}
-        options={{ title: "Balances" }}
-      />
-      <Stack.Screen
-        name="BalanceDetail"
-        component={BalanceDetailScreen}
-        options={({
-          route: {
-            params: { blockchain, tokenTicker },
-          },
-        }) => {
-          const title = `${toTitleCase(blockchain)} / ${tokenTicker}`;
-          return {
-            title,
-          };
-        }}
-      />
-    </Stack.Navigator>
-  );
-}
