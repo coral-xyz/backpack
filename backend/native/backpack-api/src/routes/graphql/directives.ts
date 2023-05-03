@@ -40,8 +40,7 @@ export function authDirectiveTransformer(schema: GraphQLSchema): GraphQLSchema {
                 http: { status: 401 },
               },
             });
-          } else if (ctx.authorization.jwt !== "abc1234") {
-            // FIXME:
+          } else if (!ctx.authorization.valid) {
             throw new GraphQLError(
               "Invalid user authorization token was provided",
               {
