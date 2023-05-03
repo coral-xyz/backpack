@@ -56,7 +56,7 @@ export const UsernameForm = ({
       <Box style={{ margin: "24px" }}>
         <Header text="Claim your username" />
         <SubtextParagraph style={{ margin: "16px 0", fontWeight: 700 }}>
-          Please save your username. You'll need it to to recover your account.
+          Please save your username. You'll need it to recover your account.
         </SubtextParagraph>
         <SubtextParagraph style={{ margin: "16px 0" }}>
           Others can see and find you by this username, and it will be
