@@ -235,6 +235,7 @@ export type WalletEdge = {
 
 /** Input filter type for fetching user wallets and their data. */
 export type WalletsFilterInput = {
+  chainId?: InputMaybe<ChainId>;
   pubkeys?: InputMaybe<Array<Scalars["String"]>>;
 };
 

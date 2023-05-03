@@ -17,6 +17,7 @@ import type {
   Wallet,
   WalletConnection,
   WalletResolvers,
+  WalletsFilterInput,
   WalletTransactionsArgs,
 } from "./types";
 import { createConnection, inferChainIdFromString } from ".";
@@ -96,7 +97,7 @@ export const userResolvers: UserResolvers = {
    */
   async wallets(
     parent: User,
-    args: Partial<UserWalletsArgs>,
+    { filter }: Partial<UserWalletsArgs>,
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<WalletConnection | null> {
@@ -108,8 +109,17 @@ export const userResolvers: UserResolvers = {
         },
         {
           public_keys: [
-            args.filter?.pubkeys
-              ? { where: { public_key: { _in: args.filter.pubkeys } } }
+            filter && Object.keys(filter).length > 0
+              ? {
+                  where: {
+                    blockchain: filter.chainId
+                      ? { _eq: filter.chainId.toLowerCase() }
+                      : undefined,
+                    public_key: filter.pubkeys
+                      ? { _in: filter.pubkeys }
+                      : undefined,
+                  },
+                }
               : {},
             {
               blockchain: true,

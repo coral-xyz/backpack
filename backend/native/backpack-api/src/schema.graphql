@@ -216,5 +216,6 @@ type WalletEdge {
 Input filter type for fetching user wallets and their data.
 """
 input WalletsFilterInput {
+  chainId: ChainID
   pubkeys: [String!]
 }
