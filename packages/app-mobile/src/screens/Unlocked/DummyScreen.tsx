@@ -1,10 +1,12 @@
-import { ScrollView } from "react-native";
+import { Alert, View, ScrollView } from "react-native";
 
 import { Blockchain } from "@coral-xyz/common";
 import { Box, YGroup, Separator } from "@coral-xyz/tamagui";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
+  ListItemLabelValue,
   ListItemSentReceived,
   ListItemTokenSwap,
   ListItemNotification,
@@ -18,11 +20,61 @@ import {
 } from "~components/ListItem";
 import { Screen } from "~components/index";
 
-export function DummyScreen({ navigation }): JSX.Element {
+function ActivityDetail() {
+  return (
+    <YGroup
+      overflow="hidden"
+      borderWidth={2}
+      borderColor="$borderFull"
+      borderRadius="$container"
+      backgroundColor="$nav"
+      separator={<Separator />}
+    >
+      <YGroup.Item>
+        <ListItemLabelValue label="Date" value="April 19th at 933pm" />
+      </YGroup.Item>
+      <YGroup.Item>
+        <ListItemLabelValue label="Type" value="NFT Mint" />
+      </YGroup.Item>
+      <YGroup.Item>
+        <ListItemLabelValue label="Item" value="Mad Lads #3664" />
+      </YGroup.Item>
+      <YGroup.Item>
+        <ListItemLabelValue label="Source" value="Candy Machine v3" />
+      </YGroup.Item>
+      <YGroup.Item>
+        <ListItemLabelValue label="Network Fee" value="0.0000005 SOL" />
+      </YGroup.Item>
+      <YGroup.Item>
+        <ListItemLabelValue
+          label="Status"
+          value="Confirmed"
+          valueColor="green"
+        />
+      </YGroup.Item>
+      <YGroup.Item>
+        <ListItemLabelValue
+          label="Signature"
+          value="4335...CRaM"
+          valueColor="blue"
+          iconAfter={<MaterialIcons name="keyboard-arrow-right" size={24} />}
+          onPress={() => {
+            Alert.alert("open explorer");
+          }}
+        />
+      </YGroup.Item>
+    </YGroup>
+  );
+}
+
+export function DummyScreen(): JSX.Element {
   const insets = useSafeAreaInsets();
   return (
     <ScrollView>
       <Screen style={{ marginTop: insets.top }}>
+        <Box marginBottom={12}>
+          <ActivityDetail />
+        </Box>
         <Box marginBottom={12}>
           <SectionedList />
         </Box>

@@ -76,6 +76,36 @@ const styles = StyleSheet.create({
   },
 });
 
+export function ListItemLabelValue({
+  label,
+  value,
+  valueColor,
+  onPress,
+  iconAfter,
+}: {
+  label: string;
+  value: string;
+  valueColor?: string;
+  onPress?: () => void;
+  iconAfter?: JSX.Element;
+}) {
+  return (
+    <ListItem
+      backgroundColor="$nav"
+      justifyContent="space-between"
+      onPress={onPress}
+    >
+      <StyledText>{label}</StyledText>
+      <XStack alignItems="center">
+        <StyledText color={valueColor}>{value}</StyledText>
+        {iconAfter ? (
+          <View style={{ marginLeft: 2, marginRight: -8 }}>{iconAfter}</View>
+        ) : null}
+      </XStack>
+    </ListItem>
+  );
+}
+
 export function ListItemSentReceived({
   grouped = false,
   onPress,
