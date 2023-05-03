@@ -6,7 +6,6 @@ import type {
   Balances,
   NftConnection,
   QueryResolvers,
-  QueryUserArgs,
   QueryWalletArgs,
   RequireFields,
   TransactionConnection,
@@ -29,22 +28,23 @@ export const queryResolvers: QueryResolvers = {
   /**
    * Handler for the `user` query.
    * @param {{}} _parent
-   * @param {RequireFields<QueryUserArgs, "username">} args
+   * @param {{}} _args
    * @param {ApiContext} ctx
    * @param {GraphQLResolveInfo} _info
    * @returns {(Promise<User | null>)}
    */
   async user(
     _parent: {},
-    args: RequireFields<QueryUserArgs, "username">,
+    _args: {},
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<User | null> {
     const resp = await ctx.dataSources.hasura("query")({
       auth_users: [
-        { where: { username: { _eq: args.username } }, limit: 1 },
+        { where: { id: { _eq: ctx.authorization.userId } }, limit: 1 },
         {
           id: true,
+          username: true,
         },
       ],
     });
@@ -55,7 +55,7 @@ export const queryResolvers: QueryResolvers = {
 
     return {
       id: `user:${resp.auth_users[0].id}`,
-      username: args.username,
+      username: resp.auth_users[0].username as string,
     };
   },
 

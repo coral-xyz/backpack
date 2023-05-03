@@ -6786,6 +6786,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@graphql-tools/schema@npm:^9.0.19":
+  version: 9.0.19
+  resolution: "@graphql-tools/schema@npm:9.0.19"
+  dependencies:
+    "@graphql-tools/merge": ^8.4.1
+    "@graphql-tools/utils": ^9.2.1
+    tslib: ^2.4.0
+    value-or-promise: ^1.0.12
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: 1be91f61bf4be0c1c9aa640a6ad5b58328d5434d15e78ba73a47263420939db6741ad6723dece4611257e7e1e56518e116b76513a3014305d3f52d67aafb62fb
+  languageName: node
+  linkType: hard
+
 "@graphql-tools/url-loader@npm:^7.13.2, @graphql-tools/url-loader@npm:^7.17.18, @graphql-tools/url-loader@npm:^7.9.7":
   version: 7.17.18
   resolution: "@graphql-tools/url-loader@npm:7.17.18"
@@ -16630,6 +16644,8 @@ __metadata:
     "@graphql-codegen/cli": ^3.3.0
     "@graphql-codegen/typescript": ^3.0.3
     "@graphql-codegen/typescript-resolvers": ^3.2.0
+    "@graphql-tools/schema": ^9.0.19
+    "@graphql-tools/utils": ^9.2.1
     "@metaplex-foundation/js": 0.16.1
     "@metaplex-foundation/mpl-token-metadata": ^2.8.1
     "@saberhq/anchor-contrib": ^1.14.11

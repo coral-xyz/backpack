@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 
 import type { CoinGeckoPriceData } from "../clients/coingecko";
 import type { HeliusGetTokenMetadataResponse } from "../clients/helius";
+import type { TensorActingListingsResponse } from "../clients/tensor";
 import type { ApiContext } from "../context";
 import {
   type Balances,
@@ -170,9 +171,17 @@ export class Solana implements Blockchain {
       return null;
     }
 
-    // Get active listings for the argued wallet address
-    const listings =
-      await this.#ctx.dataSources.tensor.getActiveListingsForWallet(address);
+    // Get active listings for the argued wallet address and assign empty
+    // listing data array if the request fails
+    let listings: TensorActingListingsResponse;
+    try {
+      listings = await this.#ctx.dataSources.tensor.getActiveListingsForWallet(
+        address
+      );
+    } catch (err) {
+      console.error(err);
+      listings = { data: { userActiveListings: { txs: [] } } };
+    }
 
     // Fetch the token metadata for each NFT mint address from Helius
     const metadatas = await this.#ctx.dataSources.helius.getTokenMetadata(

@@ -128,15 +128,13 @@ export type PageInfo = {
 /** Root level query type. */
 export type Query = {
   __typename?: "Query";
-  /** Fetch a user by their Backpack account username. */
+  /**
+   * Fetch a user by their Backpack account username. The username is inferred by the
+   * presence of a valid and verified JWT.
+   */
   user?: Maybe<User>;
   /** Fetching a wallet and it's assets by the public key address and associated `ChainID`. */
   wallet?: Maybe<Wallet>;
-};
-
-/** Root level query type. */
-export type QueryUserArgs = {
-  username: Scalars["String"];
 };
 
 /** Root level query type. */
@@ -451,6 +449,15 @@ export type ResolversParentTypes = ResolversObject<{
   WalletsFiltersInput: WalletsFiltersInput;
 }>;
 
+export type AuthDirectiveArgs = {};
+
+export type AuthDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = any,
+  Args = AuthDirectiveArgs
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
 export type BalancesResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Balances"] = ResolversParentTypes["Balances"]
@@ -609,12 +616,7 @@ export type QueryResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Query"] = ResolversParentTypes["Query"]
 > = ResolversObject<{
-  user?: Resolver<
-    Maybe<ResolversTypes["User"]>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryUserArgs, "username">
-  >;
+  user?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
   wallet?: Resolver<
     Maybe<ResolversTypes["Wallet"]>,
     ParentType,
@@ -803,4 +805,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Wallet?: WalletResolvers<ContextType>;
   WalletConnection?: WalletConnectionResolvers<ContextType>;
   WalletEdge?: WalletEdgeResolvers<ContextType>;
+}>;
+
+export type DirectiveResolvers<ContextType = any> = ResolversObject<{
+  auth?: AuthDirectiveResolver<any, any, ContextType>;
 }>;
