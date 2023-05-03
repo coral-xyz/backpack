@@ -112,13 +112,18 @@ export class Ethereum implements Blockchain {
   /**
    * Get a list of NFT data for tokens owned by the argued address.
    * @param {string} address
+   * @param {string[]} [mints]
    * @returns {Promise<NftConnection | null>}
    * @memberof Ethereum
    */
-  async getNftsForAddress(address: string): Promise<NftConnection | null> {
+  async getNftsForAddress(
+    address: string,
+    mints?: string[]
+  ): Promise<NftConnection | null> {
     // Get all NFTs held by the address from Alchemy
     const nfts = await this.#ctx.dataSources.alchemy.nft.getNftsForOwner(
-      address
+      address,
+      { contractAddresses: mints }
     );
 
     // Return an array of `Nft` schema types after filtering out all
@@ -151,6 +156,7 @@ export class Ethereum implements Blockchain {
         description: curr.description,
         image: curr.rawMetadata?.image,
         name: curr.title,
+        owner: address,
       };
       return [...acc, n];
     }, []);

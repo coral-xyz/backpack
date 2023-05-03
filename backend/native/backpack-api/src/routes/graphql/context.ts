@@ -6,8 +6,7 @@ import { GraphQLError } from "graphql";
 
 import { HASURA_URL, JWT } from "../../config";
 
-import { CoinGecko } from "./clients/coingecko";
-import { Helius } from "./clients/helius";
+import { CoinGecko, Helius, Tensor } from "./clients";
 
 export interface ApiContext {
   dataSources: {
@@ -15,6 +14,7 @@ export interface ApiContext {
     coinGecko: CoinGecko;
     hasura: ReturnType<typeof Chain>;
     helius: Helius;
+    tensor: Tensor;
   };
   jwt: string;
 }
@@ -57,6 +57,7 @@ export const createContext: ContextFunction<
         },
       }),
       helius: new Helius(process.env.HELIUS_API_KEY ?? ""),
+      tensor: new Tensor(process.env.TENSOR_API_KEY ?? ""),
     },
     jwt,
   };

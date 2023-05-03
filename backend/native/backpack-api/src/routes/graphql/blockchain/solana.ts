@@ -8,6 +8,7 @@ import {
   type Balances,
   ChainId,
   type Collection,
+  type Listing,
   type MarketData,
   type Nft,
   type NftAttribute,
@@ -144,21 +145,34 @@ export class Solana implements Blockchain {
   /**
    * Get a list of NFT data for tokens owned by the argued address.
    * @param {string} address
+   * @param {string[]} [mints]
    * @returns {(Promise<NftConnection | null>)}
    * @memberof Solana
    */
-  async getNftsForAddress(address: string): Promise<NftConnection | null> {
+  async getNftsForAddress(
+    address: string,
+    mints?: string[]
+  ): Promise<NftConnection | null> {
     // Get the held SPL tokens for the address and reduce to only NFT mint addresses
     const assets = await this.#ctx.dataSources.helius.getBalances(address);
-    const nftMints = assets.tokens.reduce<string[]>(
+    let nftMints = assets.tokens.reduce<string[]>(
       (acc, curr) =>
         curr.amount === 1 && curr.decimals === 0 ? [...acc, curr.mint] : acc,
       []
     );
 
+    // Optionally filter for only argued NFT mints if provided
+    if (mints) {
+      nftMints = nftMints.filter((n) => mints.includes(n));
+    }
+
     if (nftMints.length === 0) {
       return null;
     }
+
+    // Get active listings for the argued wallet address
+    const listings =
+      await this.#ctx.dataSources.tensor.getActiveListingsForWallet(address);
 
     // Fetch the token metadata for each NFT mint address from Helius
     const metadatas = await this.#ctx.dataSources.helius.getTokenMetadata(
@@ -209,6 +223,23 @@ export class Solana implements Blockchain {
           value: a.value,
         }));
 
+      let listing: Listing | undefined = undefined;
+      const tensorListing = listings.data.userActiveListings.txs.find(
+        (t) => t.tx.mintOnchainId === m.account
+      );
+
+      if (tensorListing) {
+        listing = {
+          id: this.#ctx.dataSources.tensor.id(m.account),
+          amount: ethers.utils.formatUnits(
+            tensorListing.tx.grossAmount,
+            this.nativeDecimals()
+          ),
+          source: tensorListing.tx.source,
+          url: this.#ctx.dataSources.tensor.getListingUrl(m.account),
+        };
+      }
+
       return {
         id: `${this.id()}_nft:${m.account}`,
         address: m.account,
@@ -216,7 +247,9 @@ export class Solana implements Blockchain {
         collection,
         description: m.offChainMetadata?.metadata.description,
         image: m.offChainMetadata?.metadata.image,
+        listing,
         name: m.onChainMetadata?.metadata.data.name ?? "",
+        owner: address,
       };
     });
 

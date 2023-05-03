@@ -65,6 +65,16 @@ type Collection implements Node {
 }
 
 """
+NFT listing data pulling from marketplaces.
+"""
+type Listing implements Node {
+  id: ID!
+  amount: String!
+  source: String!
+  url: String!
+}
+
+"""
 Coingecko and computed market and price data for a token.
 """
 type MarketData implements Node {
@@ -87,7 +97,17 @@ type Nft implements Node {
   collection: Collection
   description: String
   image: String
+  listing: Listing
   name: String!
+  owner: String!
+}
+
+"""
+NFT `attributes` list sub-type definition.
+"""
+type NftAttribute {
+  trait: String!
+  value: String!
 }
 
 """
@@ -104,14 +124,6 @@ Relay edge specification for `Nft` nodes.
 type NftEdge {
   cursor: String!
   node: Nft
-}
-
-"""
-NFT `attributes` list sub-type definition.
-"""
-type NftAttribute {
-  trait: String!
-  value: String!
 }
 
 """
@@ -181,7 +193,7 @@ assets, peripheral information, and social data.
 type User implements Node {
   id: ID!
   username: String!
-  wallets(filter: WalletsFilterInput): WalletConnection
+  wallets(filters: WalletsFiltersInput): WalletConnection
 }
 
 """
@@ -192,7 +204,7 @@ type Wallet implements Node {
   address: String!
   chainId: ChainID!
   balances: Balances
-  nfts: NftConnection
+  nfts(filters: NftFiltersInput): NftConnection
   transactions(before: String, after: String): TransactionConnection
 }
 
@@ -213,9 +225,16 @@ type WalletEdge {
 }
 
 """
+Input filter type for fetching user wallet NFTs.
+"""
+input NftFiltersInput {
+  mints: [String!]
+}
+
+"""
 Input filter type for fetching user wallets and their data.
 """
-input WalletsFilterInput {
+input WalletsFiltersInput {
   chainId: ChainID
   pubkeys: [String!]
 }

@@ -11,7 +11,10 @@ import { Solana } from "./solana";
 
 export interface Blockchain {
   getBalancesForAddress(address: string): Promise<Balances | null>;
-  getNftsForAddress(address: string): Promise<NftConnection | null>;
+  getNftsForAddress(
+    address: string,
+    mints?: string[]
+  ): Promise<NftConnection | null>;
   getTransactionsForAddress(
     address: string,
     before?: string,
