@@ -31,7 +31,7 @@ export type ListItemProps = {
   images: string[];
   attributes: { trait: string; value: string }[];
   description: string;
-  nfts?: any[]; // TODO
+  nfts: any[]; // TODO
 };
 
 export function convertNftDataToFlatlist(
@@ -54,6 +54,7 @@ export function convertNftDataToFlatlist(
           images: [nft.image],
           attributes: nft.attributes,
           description: nft.description,
+          nfts: [],
         });
       } else {
         const collection = collectionMap.get(id);

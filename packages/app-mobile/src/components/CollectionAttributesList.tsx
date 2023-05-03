@@ -1,7 +1,7 @@
 import { Text, View } from "react-native";
 
 import { toTitleCase } from "@coral-xyz/common";
-import { XStack, StyledText } from "@coral-xyz/tamagui";
+import { StyledText } from "@coral-xyz/tamagui";
 
 import { useTheme } from "~hooks/useTheme";
 
@@ -25,7 +25,7 @@ export function CollectionAttributes({
       <StyledText color="$secondary" size="$base">
         Attributes
       </StyledText>
-      <XStack space>
+      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
         {attributes.map((attr: Attribute) => {
           return (
             <View
@@ -64,7 +64,7 @@ export function CollectionAttributes({
             </View>
           );
         })}
-      </XStack>
+      </View>
     </>
   );
 }

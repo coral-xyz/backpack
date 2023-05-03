@@ -80,7 +80,7 @@ function CollectionImage({ images }: { images: string[] }): JSX.Element {
   return <ImageBox images={images.slice(0, 4)} />;
 }
 
-export function ListItem({
+function ListItem({
   item,
   handlePress,
 }: {
@@ -161,24 +161,22 @@ function Container({ navigation }: any): JSX.Element {
     },
   });
 
-  console.log("debug2:data collections", data);
-
   const handlePressItem = useCallback(
     (item: ListItemProps) => {
-      if (item.type === "collection") {
+      // TODO item.nfts not item.images
+      if (item.type === "collection" && item.images.length > 1) {
         // navigate to collection detail
         navigation.push("CollectionDetail", {
           id: item.id,
           title: item.name,
-          blockchain: activeWallet.blockchain,
-          nfts: item.nfts,
-          nftIds: item?.nfts.map((n) => n.id) ?? [],
+          nftIds: item?.nfts?.map((n) => n.id) ?? [],
         });
       } else {
+        const nft = item.type === "collection" ? item.nfts[0] : item;
         // navigation to nft detail
         navigation.push("CollectionItemDetail", {
-          id: item.id,
-          title: item.name,
+          id: nft.id,
+          title: nft.name,
           blockchain: activeWallet.blockchain,
         });
       }
@@ -197,8 +195,6 @@ function Container({ navigation }: any): JSX.Element {
 
   const numColumns = 2;
   const gap = 12;
-
-  console.log("debug2:rows", rows);
 
   return (
     <Screen>
