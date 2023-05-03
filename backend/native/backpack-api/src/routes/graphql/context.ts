@@ -2,15 +2,17 @@ import type { ContextFunction } from "@apollo/server";
 import type { ExpressContextFunctionArgument } from "@apollo/server/express4";
 import { Chain } from "@coral-xyz/zeus";
 import { Alchemy } from "alchemy-sdk";
+import type { Request } from "express";
+import { importSPKI, jwtVerify } from "jose";
 
-import { HASURA_URL, JWT } from "../../config";
+import { AUTH_JWT_PUBLIC_KEY, HASURA_URL, JWT } from "../../config";
 
 import { CoinGecko, Helius, Tensor } from "./clients";
 
 export interface ApiContext {
   authorization: {
     jwt?: string;
-    username?: string;
+    userId?: string;
     valid: boolean;
   };
   dataSources: {
@@ -32,26 +34,31 @@ export const createContext: ContextFunction<
   ApiContext
 > = async ({ req }): Promise<ApiContext> => {
   // Bootstrap authorization variables
-  let jwt: string | undefined = undefined;
-  let username: string | undefined = undefined;
+  let userId: string | undefined = undefined;
   let valid = false;
 
-  // Check for and parse the bearer token if found in the authorization header for a JWT
-  const authHeader = req.headers.authorization ?? "";
-  if (authHeader.startsWith("Bearer ")) {
-    jwt = authHeader.split(" ")[1];
-  }
-
-  // Verify and decode the JWT if found in the request for the inferred user
+  // Extract, verify, and decode the JWT if found in the request for the inferred user
+  const jwt = extractJwt(req);
   if (jwt) {
-    username = "backpack_dev"; // FIXME:TODO: add jwt verification and decoding
-    valid = true;
+    const publicKey = await importSPKI(AUTH_JWT_PUBLIC_KEY, "RS256");
+
+    try {
+      const resp = await jwtVerify(jwt, publicKey, {
+        issuer: "auth.xnfts.dev",
+        audience: "backpack",
+      });
+
+      userId = resp.payload.sub;
+      valid = true;
+    } catch {
+      // NOOP
+    }
   }
 
   return {
     authorization: {
       jwt,
-      username,
+      userId,
       valid,
     },
     dataSources: {
@@ -67,3 +74,21 @@ export const createContext: ContextFunction<
     },
   };
 };
+
+/**
+ * Attempt to find and extract a JWT from the argued request.
+ * @param {Request} req
+ * @returns {(string | undefined)}
+ */
+function extractJwt(req: Request): string | undefined {
+  let jwt: string | undefined = undefined;
+  const authHeader = req.headers.authorization ?? "";
+  if (authHeader.startsWith("Bearer")) {
+    jwt = authHeader.split(" ")[1];
+  } else if (req.cookies.jwt) {
+    jwt = req.cookies.jwt;
+  } else if (req.query.jwt) {
+    jwt = req.query.jwt as string;
+  }
+  return jwt;
+}

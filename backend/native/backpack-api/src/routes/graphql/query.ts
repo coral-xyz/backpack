@@ -39,13 +39,12 @@ export const queryResolvers: QueryResolvers = {
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<User | null> {
-    const username = "matt"; // FIXME:
-
     const resp = await ctx.dataSources.hasura("query")({
       auth_users: [
-        { where: { username: { _eq: username } }, limit: 1 },
+        { where: { id: { _eq: ctx.authorization.userId } }, limit: 1 },
         {
           id: true,
+          username: true,
         },
       ],
     });
@@ -56,7 +55,7 @@ export const queryResolvers: QueryResolvers = {
 
     return {
       id: `user:${resp.auth_users[0].id}`,
-      username,
+      username: resp.auth_users[0].username as string,
     };
   },
 
