@@ -34,6 +34,12 @@ export type Balances = Node & {
   tokens?: Maybe<TokenBalanceConnection>;
 };
 
+/** Scope enum for cache control. */
+export enum CacheControlScope {
+  Private = "PRIVATE",
+  Public = "PUBLIC",
+}
+
 /** Chain ID enum variants for the supported blockchains in the API. */
 export enum ChainId {
   Ethereum = "ETHEREUM",
@@ -381,6 +387,7 @@ export type DirectiveResolverFn<
 export type ResolversTypes = ResolversObject<{
   Balances: ResolverTypeWrapper<Balances>;
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]>;
+  CacheControlScope: CacheControlScope;
   ChainID: ChainId;
   Collection: ResolverTypeWrapper<Collection>;
   Float: ResolverTypeWrapper<Scalars["Float"]>;
@@ -463,6 +470,19 @@ export type ResolversParentTypes = ResolversObject<{
   WalletEdge: WalletEdge;
   WalletsFiltersInput: WalletsFiltersInput;
 }>;
+
+export type CacheControlDirectiveArgs = {
+  inheritMaxAge?: Maybe<Scalars["Boolean"]>;
+  maxAge?: Maybe<Scalars["Int"]>;
+  scope?: Maybe<CacheControlScope>;
+};
+
+export type CacheControlDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = any,
+  Args = CacheControlDirectiveArgs
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type BalancesResolvers<
   ContextType = any,
@@ -830,4 +850,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Wallet?: WalletResolvers<ContextType>;
   WalletConnection?: WalletConnectionResolvers<ContextType>;
   WalletEdge?: WalletEdgeResolvers<ContextType>;
+}>;
+
+export type DirectiveResolvers<ContextType = any> = ResolversObject<{
+  cacheControl?: CacheControlDirectiveResolver<any, any, ContextType>;
 }>;

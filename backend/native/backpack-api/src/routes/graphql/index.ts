@@ -36,11 +36,12 @@ const resolvers: Resolvers = {
 const permissions = shield(
   {
     Query: {
+      "*": allow,
       user: authorized,
     },
     User: authorized,
   },
-  { fallbackRule: allow }
+  { allowExternalErrors: true }
 );
 
 /**

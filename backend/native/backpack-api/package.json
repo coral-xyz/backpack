@@ -13,6 +13,7 @@
   "dependencies": {
     "@apollo/datasource-rest": "^5.1.0",
     "@apollo/server": "^4.7.0",
+    "@apollo/server-plugin-response-cache": "^4.1.2",
     "@aws-sdk/client-s3": "^3.245.0",
     "@aws-sdk/s3-request-presigner": "^3.245.0",
     "@cardinal/common": "^6.0.1",
@@ -48,6 +49,7 @@
     "jsbi": "^4.3.0",
     "jsonwebtoken": "^8.5.1",
     "jws": "^4.0.0",
+    "lru-cache": "^9.1.1",
     "passport": "^0.6.0",
     "passport-twitter": "^1.0.4",
     "redis": "^4.6.2",

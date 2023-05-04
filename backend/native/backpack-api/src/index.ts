@@ -1,6 +1,8 @@
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
+import { ApolloServerPluginCacheControl } from "@apollo/server/plugin/cacheControl";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import ApolloServerPluginResponseCache from "@apollo/server-plugin-response-cache";
 import cors from "cors";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
@@ -33,7 +35,19 @@ export const httpServer = http.createServer(app);
 
 const apollo = new ApolloServer<ApiContext>({
   schema,
-  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  plugins: [
+    ApolloServerPluginDrainHttpServer({ httpServer }),
+    ApolloServerPluginCacheControl({
+      calculateHttpHeaders: true,
+      defaultMaxAge: 30,
+    }),
+    ApolloServerPluginResponseCache({
+      async sessionId(req): Promise<string | null> {
+        const { jwt } = req.contextValue.authorization;
+        return jwt ? `session-id:${jwt}` : null;
+      },
+    }),
+  ],
 });
 
 // eslint-disable-next-line
