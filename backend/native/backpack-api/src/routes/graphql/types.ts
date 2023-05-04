@@ -464,15 +464,6 @@ export type ResolversParentTypes = ResolversObject<{
   WalletsFiltersInput: WalletsFiltersInput;
 }>;
 
-export type AuthDirectiveArgs = {};
-
-export type AuthDirectiveResolver<
-  Result,
-  Parent,
-  ContextType = any,
-  Args = AuthDirectiveArgs
-> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
 export type BalancesResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Balances"] = ResolversParentTypes["Balances"]
@@ -839,8 +830,4 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Wallet?: WalletResolvers<ContextType>;
   WalletConnection?: WalletConnectionResolvers<ContextType>;
   WalletEdge?: WalletEdgeResolvers<ContextType>;
-}>;
-
-export type DirectiveResolvers<ContextType = any> = ResolversObject<{
-  auth?: AuthDirectiveResolver<any, any, ContextType>;
 }>;
