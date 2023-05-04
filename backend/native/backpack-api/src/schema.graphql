@@ -63,6 +63,7 @@ Input filter type for fetching user wallets and their data.
 """
 input WalletsFiltersInput {
   chainId: ChainID
+  primaryOnly: Boolean
   pubkeys: [String!]
 }
 
@@ -271,7 +272,9 @@ type Wallet implements Node @cacheControl(maxAge: 60) {
   id: ID!
   address: String!
   chainId: ChainID!
+  createdAt: String!
   balances: Balances @cacheControl(maxAge: 60)
+  isPrimary: Boolean!
   nfts(filters: NftFiltersInput): NftConnection @cacheControl(maxAge: 60)
   transactions(before: String, after: String): TransactionConnection
     @cacheControl(maxAge: 30)

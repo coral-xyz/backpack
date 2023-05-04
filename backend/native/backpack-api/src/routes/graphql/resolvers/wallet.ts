@@ -19,20 +19,45 @@ import type {
  * @export
  * @param {{}} _parent
  * @param {RequireFields<QueryWalletArgs, 'address' | 'chainId'>} args
- * @param {ApiContext} _ctx
+ * @param {ApiContext} ctx
  * @param {GraphQLResolveInfo} _info
  * @returns {(Promise<Wallet | null>)}
  */
 export async function walletQueryResolver(
   _parent: {},
   args: RequireFields<QueryWalletArgs, "address" | "chainId">,
-  _ctx: ApiContext,
+  ctx: ApiContext,
   _info: GraphQLResolveInfo
 ): Promise<Wallet | null> {
+  // Query Hasura for the peripheral database details about the wallet
+  const resp = await ctx.dataSources.hasura("query")({
+    auth_public_keys: [
+      {
+        where: {
+          blockchain: { _eq: args.chainId.toLowerCase() },
+          public_key: { _eq: args.address },
+        },
+        limit: 1,
+      },
+      {
+        created_at: true,
+        is_primary: true,
+      },
+    ],
+  });
+
+  if (resp.auth_public_keys.length === 0) {
+    return null;
+  }
+
   return {
     id: `${args.chainId}_wallet:${args.address}`,
     address: args.address,
     chainId: args.chainId,
+    createdAt: new Date(
+      resp.auth_public_keys[0].created_at as string
+    ).toISOString(),
+    isPrimary: resp.auth_public_keys[0].is_primary ?? false,
   };
 }
 

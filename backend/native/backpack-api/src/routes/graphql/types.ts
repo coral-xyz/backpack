@@ -265,7 +265,9 @@ export type Wallet = Node & {
   address: Scalars["String"];
   balances?: Maybe<Balances>;
   chainId: ChainId;
+  createdAt: Scalars["String"];
   id: Scalars["ID"];
+  isPrimary: Scalars["Boolean"];
   nfts?: Maybe<NftConnection>;
   transactions?: Maybe<TransactionConnection>;
 };
@@ -298,6 +300,7 @@ export type WalletEdge = {
 /** Input filter type for fetching user wallets and their data. */
 export type WalletsFiltersInput = {
   chainId?: InputMaybe<ChainId>;
+  primaryOnly?: InputMaybe<Scalars["Boolean"]>;
   pubkeys?: InputMaybe<Array<Scalars["String"]>>;
 };
 
@@ -841,7 +844,9 @@ export type WalletResolvers<
     ContextType
   >;
   chainId?: Resolver<ResolversTypes["ChainID"], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  isPrimary?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
   nfts?: Resolver<
     Maybe<ResolversTypes["NftConnection"]>,
     ParentType,

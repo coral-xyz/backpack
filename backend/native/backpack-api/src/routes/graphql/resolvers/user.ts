@@ -204,46 +204,42 @@ export const userTypeResolvers: UserResolvers = {
     // optionally filtered by the field-level filter input if provided
     const resp = await ctx.dataSources.hasura("query")(
       {
-        auth_users: [
+        auth_public_keys: [
           {
-            where: { username: { _eq: parent.username } },
-            limit: 1,
+            where: {
+              blockchain: filters?.chainId
+                ? { _eq: filters.chainId.toLowerCase() }
+                : undefined,
+              is_primary: filters?.primaryOnly ? { _eq: true } : undefined,
+              public_key: filters?.pubkeys
+                ? { _in: filters.pubkeys }
+                : undefined,
+              user_id: { _eq: ctx.authorization.userId },
+            },
           },
           {
-            public_keys: [
-              filters && Object.keys(filters).length > 0
-                ? {
-                    where: {
-                      blockchain: filters.chainId
-                        ? { _eq: filters.chainId.toLowerCase() }
-                        : undefined,
-                      public_key: filters.pubkeys
-                        ? { _in: filters.pubkeys }
-                        : undefined,
-                    },
-                  }
-                : {},
-              {
-                blockchain: true,
-                public_key: true,
-              },
-            ],
+            blockchain: true,
+            created_at: true,
+            is_primary: true,
+            public_key: true,
           },
         ],
       },
       { operationName: "GetUserPublicKeys" }
     );
 
-    if (resp.auth_users.length === 0) {
+    if (resp.auth_public_keys.length === 0) {
       return null;
     }
 
-    const nodes: Wallet[] = resp.auth_users[0].public_keys.map((pk) => {
+    const nodes: Wallet[] = resp.auth_public_keys.map((pk) => {
       const chain = inferChainIdFromString(pk.blockchain);
       return {
         id: `${chain}_wallet:${pk.public_key}`,
         address: pk.public_key,
         chainId: chain,
+        createdAt: new Date(pk.created_at as string).toISOString(),
+        isPrimary: pk.is_primary ?? false,
       };
     });
 
