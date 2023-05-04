@@ -41,7 +41,7 @@ const permissions = shield(
     },
     User: authorized,
   },
-  { allowExternalErrors: true }
+  { allowExternalErrors: true, debug: process.env.NODE_ENV !== "production" }
 );
 
 /**
