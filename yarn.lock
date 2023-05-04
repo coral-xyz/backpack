@@ -4144,18 +4144,18 @@ __metadata:
   resolution: "@coral-xyz/wallet-standard@workspace:packages/wallet-standard"
   dependencies:
     "@coral-xyz/provider-core": "*"
-    "@solana/wallet-standard-features": ^1.0.0
+    "@solana/wallet-standard-features": ^1.0.1
     "@solana/web3.js": ^1.63.1
     "@types/bs58": ^4.0.1
     "@types/node": ^18.6.4
     "@typescript-eslint/eslint-plugin": ^5.32.0
     "@typescript-eslint/parser": ^5.32.0
-    "@wallet-standard/base": ^1.0.0
-    "@wallet-standard/features": ^1.0.0
+    "@wallet-standard/base": ^1.0.1
+    "@wallet-standard/features": ^1.0.3
     bs58: ^4.0.1
     eslint: 8.22.0
     eslint-config-prettier: ^8.5.0
-    eslint-plugin-require-extensions: ^0.1.1
+    eslint-plugin-require-extensions: ^0.1.3
     prettier: ^2.7.1
     shx: ^0.3.4
     typescript: ~4.9.3
@@ -14371,7 +14371,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wallet-standard/features@npm:^1.0.0, @wallet-standard/features@npm:^1.0.3":
+"@wallet-standard/features@npm:^1.0.3":
   version: 1.0.3
   resolution: "@wallet-standard/features@npm:1.0.3"
   dependencies:
@@ -22122,12 +22122,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-require-extensions@npm:^0.1.1":
-  version: 0.1.2
-  resolution: "eslint-plugin-require-extensions@npm:0.1.2"
+"eslint-plugin-require-extensions@npm:^0.1.3":
+  version: 0.1.3
+  resolution: "eslint-plugin-require-extensions@npm:0.1.3"
   peerDependencies:
     eslint: "*"
-  checksum: 68616c4e7ed3588f5ee1306c40b6e88a9947a5bcfea41a8287a0087ce801615bcc00525d828d0800834bd77d66b56c55507623bf5ba92fb77ff88fbd30bed4d2
+  checksum: 698c2e92b0309b8646f734f9c4b95d6cd9ff06a408187fe9ef79b3415c4a444b7e818a1cbb8ae820795961d9de54d2af42c77cb298450518c206f89513305932
   languageName: node
   linkType: hard
 
