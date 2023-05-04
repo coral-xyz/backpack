@@ -132,7 +132,7 @@ type MarketData implements Node {
 """
 Generic NFT object type definition to provide on-chain and off-chain metadata.
 """
-type Nft implements Node @cacheControl(maxAge: 180) {
+type Nft implements Node @cacheControl(maxAge: 1800) {
   id: ID!
   address: String!
   attributes: [NftAttribute!] @cacheControl(inheritMaxAge: true)

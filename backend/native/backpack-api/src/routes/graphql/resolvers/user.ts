@@ -26,6 +26,8 @@ export async function userQueryResolver(
   ctx: ApiContext,
   _info: GraphQLResolveInfo
 ): Promise<User | null> {
+  // Query Hasura for the user details for the user ID inferred
+  // from the discover and decoded JWT in the request
   const resp = await ctx.dataSources.hasura("query")(
     {
       auth_users: [
@@ -69,6 +71,8 @@ export const userTypeResolvers: UserResolvers = {
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<Friend[] | null> {
+    // Query Hasura for a list of user ID pairs that represent the active
+    // friendships of the user inferred by the user ID in the decoded JWT
     const idsResp = await ctx.dataSources.hasura("query")(
       {
         auth_friendships: [
@@ -98,6 +102,8 @@ export const userTypeResolvers: UserResolvers = {
       f.user1 === ctx.authorization.userId ? f.user2 : f.user1
     );
 
+    // Query Hasura for the username of the each user ID in the
+    // discovered friends list from the previous query
     const detailsResp = await ctx.dataSources.hasura("query")(
       {
         auth_users: [
@@ -138,6 +144,9 @@ export const userTypeResolvers: UserResolvers = {
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<WalletConnection | null> {
+    // Query Hasura for the list of registered wallet public keys
+    // and associated blockchains for the parent `User` username,
+    // optionally filtered by the field-level filter input if provided
     const resp = await ctx.dataSources.hasura("query")(
       {
         auth_users: [
