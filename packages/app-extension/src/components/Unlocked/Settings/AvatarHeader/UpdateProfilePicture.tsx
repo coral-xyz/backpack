@@ -338,6 +338,7 @@ function RenderNFT({
     nftById({ publicKey, connectionUrl, nftId })
   );
   const nft = (state === "hasValue" && contents) || null;
+  const theme = useCustomTheme();
 
   return useMemo(
     () =>
@@ -362,7 +363,10 @@ function RenderNFT({
             height: "72px",
             borderRadius: "40px",
             margin: "16px 0px 0px 16px",
-            border: tempAvatar?.url === nft.imageUrl ? "3px solid black" : "",
+            border:
+              tempAvatar?.url === nft.imageUrl
+                ? `3px solid ${theme.custom.colors.selectedNftBorder}`
+                : "",
           }}
           src={nft.imageUrl}
           removeOnError

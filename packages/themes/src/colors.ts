@@ -121,6 +121,7 @@ export const DARK_COLORS: CustomColors = {
   verified: "#DFE0E5",
   linkColor: "#4C94FF",
   chatFadeGradientStart: "rgba(255, 255, 255, 0.04)",
+  selectedNftBorder: "#fff",
 };
 
 // NOTE: Do not include anything but colors in here. No box shadows, borders, etc.
@@ -193,6 +194,7 @@ export const LIGHT_COLORS: CustomColors = {
   verified: "#212938",
   chatFadeGradientStart: "rgba(248,248,248,255)",
   linkColor: "#0057EB",
+  selectedNftBorder: "#000",
 };
 
 const LIGHT_WEB_ONLY_NON_COLORS: WebOnlyNonColors = {
@@ -332,6 +334,7 @@ export type CustomColors = {
   secondary: string;
   secondaryButton: string;
   secondaryButtonTextColor: string;
+  selectedNftBorder: string;
   smallTextColor: string;
   subtext: string;
   successButton: string;
