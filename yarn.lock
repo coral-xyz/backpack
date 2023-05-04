@@ -132,6 +132,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@apollo/server-plugin-response-cache@npm:^4.1.2":
+  version: 4.1.2
+  resolution: "@apollo/server-plugin-response-cache@npm:4.1.2"
+  dependencies:
+    "@apollo/utils.createhash": ^2.0.0
+    "@apollo/utils.keyvaluecache": ^2.1.0
+  peerDependencies:
+    "@apollo/server": ^4.0.1
+    graphql: ^16.6.0
+  checksum: f228897b636ac19731d3f5f9feab7050cbc8e51049aa6ef6a9bc7279f80df64415edf88df52824f8dafa24e3aecac0d0af12484cf8db2a0df83d4d58157eb787
+  languageName: node
+  linkType: hard
+
 "@apollo/server@npm:^4.7.0":
   version: 4.7.0
   resolution: "@apollo/server@npm:4.7.0"
@@ -16724,6 +16737,7 @@ __metadata:
   dependencies:
     "@apollo/datasource-rest": ^5.1.0
     "@apollo/server": ^4.7.0
+    "@apollo/server-plugin-response-cache": ^4.1.2
     "@aws-sdk/client-s3": ^3.245.0
     "@aws-sdk/s3-request-presigner": ^3.245.0
     "@cardinal/common": ^6.0.1
@@ -16770,6 +16784,7 @@ __metadata:
     jsbi: ^4.3.0
     jsonwebtoken: ^8.5.1
     jws: ^4.0.0
+    lru-cache: ^9.1.1
     passport: ^0.6.0
     passport-twitter: ^1.0.4
     redis: ^4.6.2
@@ -30181,6 +30196,13 @@ __metadata:
   version: 7.18.3
   resolution: "lru-cache@npm:7.18.3"
   checksum: e550d772384709deea3f141af34b6d4fa392e2e418c1498c078de0ee63670f1f46f5eee746e8ef7e69e1c895af0d4224e62ee33e66a543a14763b0f2e74c1356
+  languageName: node
+  linkType: hard
+
+"lru-cache@npm:^9.1.1":
+  version: 9.1.1
+  resolution: "lru-cache@npm:9.1.1"
+  checksum: 4d703bb9b66216bbee55ead82a9682820a2b6acbdfca491b235390b1ef1056000a032d56dfb373fdf9ad4492f1fa9d04cc9a05a77f25bd7ce6901d21ad9b68b7
   languageName: node
   linkType: hard
 
