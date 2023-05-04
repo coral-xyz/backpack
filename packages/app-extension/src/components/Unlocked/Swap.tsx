@@ -37,7 +37,7 @@ import {
   Typography,
 } from "@mui/material";
 import type { BigNumberish } from "ethers";
-import { ethers,FixedNumber } from "ethers";
+import { BigNumber , ethers, FixedNumber } from "ethers";
 
 import { Button as XnftButton } from "../../plugin/Component";
 import { TextField } from "../common";
@@ -644,6 +644,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     isLoadingTransactions,
     transactionFees,
     swapFee,
+    rateAmount,
   } = useSwapContext();
 
   // Loading indicator when routes are being loaded due to polling
@@ -663,21 +664,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     );
   }
 
-  if (!fromAmount || !toAmount || !fromToken || !toToken) {
-    return (
-      <SwapInfoRows
-        {...{
-          compact,
-          youPay: "-",
-          rate: "-",
-          priceImpact: "-",
-          networkFee: "-",
-        }}
-      />
-    );
-  }
-
-  const decimalDifference = fromToken.decimals - toToken.decimals;
+  const decimalDifference = fromToken!.decimals - toToken!.decimals;
 
   // Scale a FixedNumber up or down by a number of decimals
   const scale = (x: FixedNumber, decimalDifference: number) => {
@@ -689,14 +676,37 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     return x;
   };
 
-  const rate = fromAmount.gt(Zero)
+  // if formAmount is undefined that means user has not inputed any value and haence we will use rateAmount as toAmount and fromAmount as BigNumber.from(1000000000)
+  const rate = (fromAmount ? fromAmount.gt(Zero) : BigNumber.from(1000000000))
     ? ethers.utils.commify(
         scale(
-          FixedNumber.from(toAmount).divUnsafe(FixedNumber.from(fromAmount)),
+          FixedNumber.from(
+            fromAmount && toAmount ? toAmount : rateAmount
+          ).divUnsafe(
+            FixedNumber.from(
+              fromAmount ? fromAmount : BigNumber.from(1000000000)
+            )
+          ),
           decimalDifference
         ).toString()
       )
     : "0";
+
+  if (!fromAmount || !toAmount || !fromToken || !toToken) {
+    return (
+      <SwapInfoRows
+        {...{
+          compact,
+          youPay: "-",
+          rate: `1 ${fromToken!.ticker} ≈ ${rate.substring(0, 10)} ${
+            toToken!.ticker
+          }`,
+          priceImpact: "-",
+          networkFee: "-",
+        }}
+      />
+    );
+  }
 
   return (
     <SwapInfoRows

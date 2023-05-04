@@ -81,6 +81,7 @@ export type SwapContext = {
   fromAmount: BigNumber | undefined;
   setFromAmount: (a: BigNumber | undefined) => void;
   toAmount: BigNumber | undefined;
+  rateAmount: BigNumber | undefined;
   // Slippage
   slippage: number;
   setSlippage: (s: number) => void;
@@ -156,6 +157,9 @@ export function SwapProvider({
     USDC_MINT,
   ]);
   const [fromAmount, _setFromAmount] = useState<BigNumber | undefined>(
+    undefined
+  );
+  const [rateAmount, _setRateAmount] = useState<BigNumber | undefined>(
     undefined
   );
   const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE_PERCENT);
@@ -292,6 +296,10 @@ export function SwapProvider({
 
   useEffect(() => {
     (async () => {
+      // if fromAmount is undefined i.e user has not input any value and hence it will fetch routes for amount 1
+      if (!fromAmount) {
+        setRoutes(await fetchRoutes());
+      }
       const loadRoutes = async () => {
         if (
           fromAmount &&
@@ -397,13 +405,13 @@ export function SwapProvider({
   // Fetch the Jupiter routes that can be used to execute the swap.
   //
   const fetchRoutes = async () => {
-    if (!fromAmount) return [];
     const params = {
       // If the swap is to or from native SOL we want Jupiter to return wSOL
       // routes because it does not support native SOL routes.
       inputMint: fromMint === SOL_NATIVE_MINT ? WSOL_MINT : fromMint,
       outputMint: toMint === SOL_NATIVE_MINT ? WSOL_MINT : toMint,
-      amount: fromAmount.toString(),
+      // when no fromAmount value is given by user we will take it as 1 in order to calculate rate
+      amount: fromAmount ? fromAmount.toString() : "1000000000",
       slippageBps: (slippage * 100).toString(),
       // As ledger wallet does not support v0 yet and we don't want to handle the fallback we request a v0 tx
       asLegacyTransaction: "true",
@@ -418,6 +426,10 @@ export function SwapProvider({
       }
       const { data } = await response.json();
       setIsJupiterError(false);
+      if (!fromAmount) {
+        // setting prefetched rate amount
+        _setRateAmount(BigNumber.from(data[0].outAmount));
+      }
       return data;
     } catch (e) {
       console.error("error fetching swap routes", e);
@@ -564,6 +576,7 @@ export function SwapProvider({
         toAmount,
         swapToFromMints,
         slippage,
+        rateAmount,
         setSlippage,
         executeSwap,
         priceImpactPct,
