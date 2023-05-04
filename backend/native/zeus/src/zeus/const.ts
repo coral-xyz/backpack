@@ -830,6 +830,29 @@ export const AllTypesProps: Record<string, any> = {
     where: "auth_users_bool_exp",
   },
   auth_users_whose_username_matches_args: {},
+  auth_users_with_primary_keys_bool_exp: {
+    _and: "auth_users_with_primary_keys_bool_exp",
+    _not: "auth_users_with_primary_keys_bool_exp",
+    _or: "auth_users_with_primary_keys_bool_exp",
+    created_at: "timestamptz_comparison_exp",
+    id: "uuid_comparison_exp",
+    username: "citext_comparison_exp",
+  },
+  auth_users_with_primary_keys_order_by: {
+    created_at: "order_by",
+    id: "order_by",
+    username: "order_by",
+  },
+  auth_users_with_primary_keys_select_column: "enum" as const,
+  auth_users_with_primary_keys_stream_cursor_input: {
+    initial_value: "auth_users_with_primary_keys_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  auth_users_with_primary_keys_stream_cursor_value_input: {
+    created_at: "timestamptz",
+    id: "uuid",
+    username: "citext",
+  },
   auth_xnft_preferences_bool_exp: {
     _and: "auth_xnft_preferences_bool_exp",
     _not: "auth_xnft_preferences_bool_exp",
@@ -1438,6 +1461,11 @@ export const AllTypesProps: Record<string, any> = {
       order_by: "auth_users_order_by",
       where: "auth_users_bool_exp",
     },
+    auth_users_with_primary_keys: {
+      distinct_on: "auth_users_with_primary_keys_select_column",
+      order_by: "auth_users_with_primary_keys_order_by",
+      where: "auth_users_with_primary_keys_bool_exp",
+    },
     auth_xnft_preferences: {
       distinct_on: "auth_xnft_preferences_select_column",
       order_by: "auth_xnft_preferences_order_by",
@@ -1645,6 +1673,15 @@ export const AllTypesProps: Record<string, any> = {
       distinct_on: "auth_users_select_column",
       order_by: "auth_users_order_by",
       where: "auth_users_bool_exp",
+    },
+    auth_users_with_primary_keys: {
+      distinct_on: "auth_users_with_primary_keys_select_column",
+      order_by: "auth_users_with_primary_keys_order_by",
+      where: "auth_users_with_primary_keys_bool_exp",
+    },
+    auth_users_with_primary_keys_stream: {
+      cursor: "auth_users_with_primary_keys_stream_cursor_input",
+      where: "auth_users_with_primary_keys_bool_exp",
     },
     auth_xnft_preferences: {
       distinct_on: "auth_xnft_preferences_select_column",
@@ -2109,6 +2146,11 @@ export const ReturnTypes: Record<string, any> = {
     affected_rows: "Int",
     returning: "auth_users",
   },
+  auth_users_with_primary_keys: {
+    created_at: "timestamptz",
+    id: "uuid",
+    username: "citext",
+  },
   auth_xnft_preferences: {
     disabled: "String",
     id: "Int",
@@ -2321,6 +2363,7 @@ export const ReturnTypes: Record<string, any> = {
     auth_users_by_pk: "auth_users",
     auth_users_whose_username_matches: "auth_users",
     auth_users_whose_username_matches_aggregate: "auth_users_aggregate",
+    auth_users_with_primary_keys: "auth_users_with_primary_keys",
     auth_xnft_preferences: "auth_xnft_preferences",
     auth_xnft_preferences_by_pk: "auth_xnft_preferences",
     auth_xnft_secrets: "auth_xnft_secrets",
@@ -2380,6 +2423,8 @@ export const ReturnTypes: Record<string, any> = {
     auth_users_stream: "auth_users",
     auth_users_whose_username_matches: "auth_users",
     auth_users_whose_username_matches_aggregate: "auth_users_aggregate",
+    auth_users_with_primary_keys: "auth_users_with_primary_keys",
+    auth_users_with_primary_keys_stream: "auth_users_with_primary_keys",
     auth_xnft_preferences: "auth_xnft_preferences",
     auth_xnft_preferences_by_pk: "auth_xnft_preferences",
     auth_xnft_preferences_stream: "auth_xnft_preferences",

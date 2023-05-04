@@ -4491,6 +4491,85 @@ export type ValueTypes = {
   ["auth_users_whose_username_matches_args"]: {
     prefix?: string | undefined | null | Variable<any, string>;
   };
+  /** columns and relationships of "auth.users_with_primary_keys" */
+  ["auth_users_with_primary_keys"]: AliasType<{
+    created_at?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    username?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.users_with_primary_keys". All fields are combined with a logical 'AND'. */
+  ["auth_users_with_primary_keys_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["auth_users_with_primary_keys_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["auth_users_with_primary_keys_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["auth_users_with_primary_keys_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    created_at?:
+      | ValueTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["uuid_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    username?:
+      | ValueTypes["citext_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "auth.users_with_primary_keys". */
+  ["auth_users_with_primary_keys_order_by"]: {
+    created_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    username?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** select columns of table "auth.users_with_primary_keys" */
+  ["auth_users_with_primary_keys_select_column"]: auth_users_with_primary_keys_select_column;
+  /** Streaming cursor of the table "auth_users_with_primary_keys" */
+  ["auth_users_with_primary_keys_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["auth_users_with_primary_keys_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_users_with_primary_keys_stream_cursor_value_input"]: {
+    created_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+    username?: ValueTypes["citext"] | undefined | null | Variable<any, string>;
+  };
   /** columns and relationships of "auth.xnft_preferences" */
   ["auth_xnft_preferences"]: AliasType<{
     disabled?: boolean | `@${string}`;
@@ -7041,6 +7120,40 @@ export type ValueTypes = {
       },
       ValueTypes["auth_users_aggregate"]
     ];
+    auth_users_with_primary_keys?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_users_with_primary_keys_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_users_with_primary_keys_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_users_with_primary_keys_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_users_with_primary_keys"]
+    ];
     auth_xnft_preferences?: [
       {
         /** distinct select on columns */
@@ -8324,6 +8437,64 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_users_aggregate"]
+    ];
+    auth_users_with_primary_keys?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_users_with_primary_keys_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_users_with_primary_keys_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_users_with_primary_keys_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_users_with_primary_keys"]
+    ];
+    auth_users_with_primary_keys_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["auth_users_with_primary_keys_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_users_with_primary_keys_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_users_with_primary_keys"]
     ];
     auth_xnft_preferences?: [
       {
@@ -11171,6 +11342,55 @@ export type ResolverInputTypes = {
   ["auth_users_whose_username_matches_args"]: {
     prefix?: string | undefined | null;
   };
+  /** columns and relationships of "auth.users_with_primary_keys" */
+  ["auth_users_with_primary_keys"]: AliasType<{
+    created_at?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    username?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.users_with_primary_keys". All fields are combined with a logical 'AND'. */
+  ["auth_users_with_primary_keys_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["auth_users_with_primary_keys_bool_exp"]>
+      | undefined
+      | null;
+    _not?:
+      | ResolverInputTypes["auth_users_with_primary_keys_bool_exp"]
+      | undefined
+      | null;
+    _or?:
+      | Array<ResolverInputTypes["auth_users_with_primary_keys_bool_exp"]>
+      | undefined
+      | null;
+    created_at?:
+      | ResolverInputTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null;
+    id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
+    username?: ResolverInputTypes["citext_comparison_exp"] | undefined | null;
+  };
+  /** Ordering options when selecting data from "auth.users_with_primary_keys". */
+  ["auth_users_with_primary_keys_order_by"]: {
+    created_at?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    username?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** select columns of table "auth.users_with_primary_keys" */
+  ["auth_users_with_primary_keys_select_column"]: auth_users_with_primary_keys_select_column;
+  /** Streaming cursor of the table "auth_users_with_primary_keys" */
+  ["auth_users_with_primary_keys_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["auth_users_with_primary_keys_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_users_with_primary_keys_stream_cursor_value_input"]: {
+    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    id?: ResolverInputTypes["uuid"] | undefined | null;
+    username?: ResolverInputTypes["citext"] | undefined | null;
+  };
   /** columns and relationships of "auth.xnft_preferences" */
   ["auth_xnft_preferences"]: AliasType<{
     disabled?: boolean | `@${string}`;
@@ -13088,6 +13308,34 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_users_aggregate"]
     ];
+    auth_users_with_primary_keys?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<
+              ResolverInputTypes["auth_users_with_primary_keys_select_column"]
+            >
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_users_with_primary_keys_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_users_with_primary_keys_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_users_with_primary_keys"]
+    ];
     auth_xnft_preferences?: [
       {
         /** distinct select on columns */
@@ -14027,6 +14275,50 @@ export type ResolverInputTypes = {
         where?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
       },
       ResolverInputTypes["auth_users_aggregate"]
+    ];
+    auth_users_with_primary_keys?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<
+              ResolverInputTypes["auth_users_with_primary_keys_select_column"]
+            >
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_users_with_primary_keys_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_users_with_primary_keys_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_users_with_primary_keys"]
+    ];
+    auth_users_with_primary_keys_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["auth_users_with_primary_keys_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_users_with_primary_keys_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_users_with_primary_keys"]
     ];
     auth_xnft_preferences?: [
       {
@@ -16086,6 +16378,45 @@ export type ModelTypes = {
   ["auth_users_whose_username_matches_args"]: {
     prefix?: string | undefined;
   };
+  /** columns and relationships of "auth.users_with_primary_keys" */
+  ["auth_users_with_primary_keys"]: {
+    created_at?: ModelTypes["timestamptz"] | undefined;
+    id?: ModelTypes["uuid"] | undefined;
+    username?: ModelTypes["citext"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "auth.users_with_primary_keys". All fields are combined with a logical 'AND'. */
+  ["auth_users_with_primary_keys_bool_exp"]: {
+    _and?:
+      | Array<ModelTypes["auth_users_with_primary_keys_bool_exp"]>
+      | undefined;
+    _not?: ModelTypes["auth_users_with_primary_keys_bool_exp"] | undefined;
+    _or?:
+      | Array<ModelTypes["auth_users_with_primary_keys_bool_exp"]>
+      | undefined;
+    created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
+    id?: ModelTypes["uuid_comparison_exp"] | undefined;
+    username?: ModelTypes["citext_comparison_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.users_with_primary_keys". */
+  ["auth_users_with_primary_keys_order_by"]: {
+    created_at?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    username?: ModelTypes["order_by"] | undefined;
+  };
+  ["auth_users_with_primary_keys_select_column"]: auth_users_with_primary_keys_select_column;
+  /** Streaming cursor of the table "auth_users_with_primary_keys" */
+  ["auth_users_with_primary_keys_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["auth_users_with_primary_keys_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_users_with_primary_keys_stream_cursor_value_input"]: {
+    created_at?: ModelTypes["timestamptz"] | undefined;
+    id?: ModelTypes["uuid"] | undefined;
+    username?: ModelTypes["citext"] | undefined;
+  };
   /** columns and relationships of "auth.xnft_preferences" */
   ["auth_xnft_preferences"]: {
     disabled?: string | undefined;
@@ -16849,6 +17180,10 @@ export type ModelTypes = {
     auth_users_whose_username_matches: Array<ModelTypes["auth_users"]>;
     /** execute function "auth.users_whose_username_matches" and query aggregates on result of table type "auth.users" */
     auth_users_whose_username_matches_aggregate: ModelTypes["auth_users_aggregate"];
+    /** fetch data from the table: "auth.users_with_primary_keys" */
+    auth_users_with_primary_keys: Array<
+      ModelTypes["auth_users_with_primary_keys"]
+    >;
     /** fetch data from the table: "auth.xnft_preferences" */
     auth_xnft_preferences: Array<ModelTypes["auth_xnft_preferences"]>;
     /** fetch data from the table: "auth.xnft_preferences" using primary key columns */
@@ -16985,6 +17320,14 @@ export type ModelTypes = {
     auth_users_whose_username_matches: Array<ModelTypes["auth_users"]>;
     /** execute function "auth.users_whose_username_matches" and query aggregates on result of table type "auth.users" */
     auth_users_whose_username_matches_aggregate: ModelTypes["auth_users_aggregate"];
+    /** fetch data from the table: "auth.users_with_primary_keys" */
+    auth_users_with_primary_keys: Array<
+      ModelTypes["auth_users_with_primary_keys"]
+    >;
+    /** fetch data from the table in a streaming manner: "auth.users_with_primary_keys" */
+    auth_users_with_primary_keys_stream: Array<
+      ModelTypes["auth_users_with_primary_keys"]
+    >;
     /** fetch data from the table: "auth.xnft_preferences" */
     auth_xnft_preferences: Array<ModelTypes["auth_xnft_preferences"]>;
     /** fetch data from the table: "auth.xnft_preferences" using primary key columns */
@@ -18988,6 +19331,47 @@ export type GraphQLTypes = {
   ["auth_users_whose_username_matches_args"]: {
     prefix?: string | undefined;
   };
+  /** columns and relationships of "auth.users_with_primary_keys" */
+  ["auth_users_with_primary_keys"]: {
+    __typename: "auth_users_with_primary_keys";
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
+    id?: GraphQLTypes["uuid"] | undefined;
+    username?: GraphQLTypes["citext"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "auth.users_with_primary_keys". All fields are combined with a logical 'AND'. */
+  ["auth_users_with_primary_keys_bool_exp"]: {
+    _and?:
+      | Array<GraphQLTypes["auth_users_with_primary_keys_bool_exp"]>
+      | undefined;
+    _not?: GraphQLTypes["auth_users_with_primary_keys_bool_exp"] | undefined;
+    _or?:
+      | Array<GraphQLTypes["auth_users_with_primary_keys_bool_exp"]>
+      | undefined;
+    created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
+    id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
+    username?: GraphQLTypes["citext_comparison_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.users_with_primary_keys". */
+  ["auth_users_with_primary_keys_order_by"]: {
+    created_at?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    username?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** select columns of table "auth.users_with_primary_keys" */
+  ["auth_users_with_primary_keys_select_column"]: auth_users_with_primary_keys_select_column;
+  /** Streaming cursor of the table "auth_users_with_primary_keys" */
+  ["auth_users_with_primary_keys_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["auth_users_with_primary_keys_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_users_with_primary_keys_stream_cursor_value_input"]: {
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
+    id?: GraphQLTypes["uuid"] | undefined;
+    username?: GraphQLTypes["citext"] | undefined;
+  };
   /** columns and relationships of "auth.xnft_preferences" */
   ["auth_xnft_preferences"]: {
     __typename: "auth_xnft_preferences";
@@ -19800,6 +20184,10 @@ export type GraphQLTypes = {
     auth_users_whose_username_matches: Array<GraphQLTypes["auth_users"]>;
     /** execute function "auth.users_whose_username_matches" and query aggregates on result of table type "auth.users" */
     auth_users_whose_username_matches_aggregate: GraphQLTypes["auth_users_aggregate"];
+    /** fetch data from the table: "auth.users_with_primary_keys" */
+    auth_users_with_primary_keys: Array<
+      GraphQLTypes["auth_users_with_primary_keys"]
+    >;
     /** fetch data from the table: "auth.xnft_preferences" */
     auth_xnft_preferences: Array<GraphQLTypes["auth_xnft_preferences"]>;
     /** fetch data from the table: "auth.xnft_preferences" using primary key columns */
@@ -19939,6 +20327,14 @@ export type GraphQLTypes = {
     auth_users_whose_username_matches: Array<GraphQLTypes["auth_users"]>;
     /** execute function "auth.users_whose_username_matches" and query aggregates on result of table type "auth.users" */
     auth_users_whose_username_matches_aggregate: GraphQLTypes["auth_users_aggregate"];
+    /** fetch data from the table: "auth.users_with_primary_keys" */
+    auth_users_with_primary_keys: Array<
+      GraphQLTypes["auth_users_with_primary_keys"]
+    >;
+    /** fetch data from the table in a streaming manner: "auth.users_with_primary_keys" */
+    auth_users_with_primary_keys_stream: Array<
+      GraphQLTypes["auth_users_with_primary_keys"]
+    >;
     /** fetch data from the table: "auth.xnft_preferences" */
     auth_xnft_preferences: Array<GraphQLTypes["auth_xnft_preferences"]>;
     /** fetch data from the table: "auth.xnft_preferences" using primary key columns */
@@ -20259,6 +20655,12 @@ export const enum auth_users_update_column {
   avatar_nft = "avatar_nft",
   updated_at = "updated_at",
 }
+/** select columns of table "auth.users_with_primary_keys" */
+export const enum auth_users_with_primary_keys_select_column {
+  created_at = "created_at",
+  id = "id",
+  username = "username",
+}
 /** unique or primary key constraints on table "auth.xnft_preferences" */
 export const enum auth_xnft_preferences_constraint {
   xnft_preferences_pkey = "xnft_preferences_pkey",
@@ -20531,6 +20933,11 @@ type ZEUS_VARIABLES = {
   ["auth_users_update_column"]: ValueTypes["auth_users_update_column"];
   ["auth_users_updates"]: ValueTypes["auth_users_updates"];
   ["auth_users_whose_username_matches_args"]: ValueTypes["auth_users_whose_username_matches_args"];
+  ["auth_users_with_primary_keys_bool_exp"]: ValueTypes["auth_users_with_primary_keys_bool_exp"];
+  ["auth_users_with_primary_keys_order_by"]: ValueTypes["auth_users_with_primary_keys_order_by"];
+  ["auth_users_with_primary_keys_select_column"]: ValueTypes["auth_users_with_primary_keys_select_column"];
+  ["auth_users_with_primary_keys_stream_cursor_input"]: ValueTypes["auth_users_with_primary_keys_stream_cursor_input"];
+  ["auth_users_with_primary_keys_stream_cursor_value_input"]: ValueTypes["auth_users_with_primary_keys_stream_cursor_value_input"];
   ["auth_xnft_preferences_bool_exp"]: ValueTypes["auth_xnft_preferences_bool_exp"];
   ["auth_xnft_preferences_constraint"]: ValueTypes["auth_xnft_preferences_constraint"];
   ["auth_xnft_preferences_inc_input"]: ValueTypes["auth_xnft_preferences_inc_input"];

@@ -16,6 +16,7 @@
 - "!include auth_user_active_publickey_mapping.yaml"
 - "!include auth_user_nfts.yaml"
 - "!include auth_users.yaml"
+- "!include auth_users_with_primary_keys.yaml"
 - "!include auth_waolist_tokens.yaml"
 - "!include auth_xnft_preferences.yaml"
 - "!include auth_xnft_secrets.yaml"

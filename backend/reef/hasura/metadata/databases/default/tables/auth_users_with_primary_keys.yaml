@@ -1,0 +1,27 @@
+table:
+  name: users_with_primary_keys
+  schema: auth
+select_permissions:
+  - role: appstore
+    permission:
+      columns:
+        - created_at
+        - last_active_at
+        - username
+      filter: {}
+  - role: auth_worker
+    permission:
+      columns:
+        - created_at
+        - id
+        - username
+      filter: {}
+  - role: public_avatar
+    permission:
+      columns:
+        - avatar_nft
+        - created_at
+        - id
+        - is_internal
+        - username
+      filter: {}
