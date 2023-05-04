@@ -3,7 +3,9 @@ import type { GraphQLResolveInfo } from "graphql";
 import type { ApiContext } from "../context";
 import type {
   Friend,
+  Notification,
   User,
+  UserNotificationsArgs,
   UserResolvers,
   UserWalletsArgs,
   Wallet,
@@ -127,6 +129,59 @@ export const userTypeResolvers: UserResolvers = {
       id: `friend:${u.id}`,
       avatar: `https://swr.xnfts.dev/avatars/${u.username}`,
       username: u.username as string,
+    }));
+  },
+
+  /**
+   * Field-level resolver handler for the `notifications` field.
+   * @param {User} parent
+   * @param {Partial<UserNotificationsArgs>} args
+   * @param {ApiContext} ctx
+   * @param {GraphQLResolveInfo} _info
+   * @returns {(Promise<Notification[] | null>)}
+   */
+  async notifications(
+    parent: User,
+    { filters }: Partial<UserNotificationsArgs>,
+    ctx: ApiContext,
+    _info: GraphQLResolveInfo
+  ): Promise<Notification[] | null> {
+    // Query Hasura for the list of notifications for the user
+    // that match the input filter(s) if provided
+    const resp = await ctx.dataSources.hasura("query")(
+      {
+        auth_notifications: [
+          {
+            where: {
+              uuid: { _eq: ctx.authorization.userId },
+              viewed: filters?.unreadOnly ? { _eq: false } : undefined,
+            },
+            limit: filters?.limit,
+          },
+          {
+            id: true,
+            body: true,
+            timestamp: true,
+            title: true,
+            viewed: true,
+            xnft_id: true,
+          },
+        ],
+      },
+      { operationName: "GetUserNotifications" }
+    );
+
+    if (resp.auth_notifications.length === 0) {
+      return null;
+    }
+
+    return resp.auth_notifications.map((n) => ({
+      id: `notification:${n.id}`,
+      body: n.body,
+      source: n.xnft_id,
+      timestamp: new Date(n.timestamp as string).toISOString(),
+      title: n.title,
+      viewed: n.viewed ?? false,
     }));
   },
 

@@ -51,6 +51,14 @@ input NftFiltersInput {
 }
 
 """
+Input filter type for fetching user notifications.
+"""
+input NotificationsFiltersInput {
+  limit: Int
+  unreadOnly: Boolean
+}
+
+"""
 Input filter type for fetching user wallets and their data.
 """
 input WalletsFiltersInput {
@@ -169,6 +177,18 @@ type NftEdge {
 }
 
 """
+Notification data type for user notification reads.
+"""
+type Notification implements Node {
+  id: ID!
+  body: String!
+  source: String!
+  timestamp: String!
+  title: String!
+  viewed: Boolean!
+}
+
+"""
 Generic native or non-native token data and balance for a `Wallet`.
 """
 type TokenBalance implements Node {
@@ -237,6 +257,8 @@ type User implements Node @cacheControl(maxAge: 60, scope: PRIVATE) {
   avatar: String!
   createdAt: String!
   friends: [Friend!] @cacheControl(maxAge: 60, scope: PRIVATE)
+  notifications(filters: NotificationsFiltersInput): [Notification!]
+    @cacheControl(maxAge: 60, scope: PRIVATE)
   username: String!
   wallets(filters: WalletsFiltersInput): WalletConnection
     @cacheControl(maxAge: 60)

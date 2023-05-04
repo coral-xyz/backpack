@@ -130,6 +130,23 @@ export type Node = {
   id: Scalars["ID"];
 };
 
+/** Notification data type for user notification reads. */
+export type Notification = Node & {
+  __typename?: "Notification";
+  body: Scalars["String"];
+  id: Scalars["ID"];
+  source: Scalars["String"];
+  timestamp: Scalars["String"];
+  title: Scalars["String"];
+  viewed: Scalars["Boolean"];
+};
+
+/** Input filter type for fetching user notifications. */
+export type NotificationsFiltersInput = {
+  limit?: InputMaybe<Scalars["Int"]>;
+  unreadOnly?: InputMaybe<Scalars["Boolean"]>;
+};
+
 /** Relay specification for a connection's page information. */
 export type PageInfo = {
   __typename?: "PageInfo";
@@ -221,8 +238,17 @@ export type User = Node & {
   createdAt: Scalars["String"];
   friends?: Maybe<Array<Friend>>;
   id: Scalars["ID"];
+  notifications?: Maybe<Array<Notification>>;
   username: Scalars["String"];
   wallets?: Maybe<WalletConnection>;
+};
+
+/**
+ * Backpack user type definition so provide data about all of the user's
+ * assets, peripheral information, and social data.
+ */
+export type UserNotificationsArgs = {
+  filters?: InputMaybe<NotificationsFiltersInput>;
 };
 
 /**
@@ -408,10 +434,13 @@ export type ResolversTypes = ResolversObject<{
     | ResolversTypes["Listing"]
     | ResolversTypes["MarketData"]
     | ResolversTypes["Nft"]
+    | ResolversTypes["Notification"]
     | ResolversTypes["TokenBalance"]
     | ResolversTypes["Transaction"]
     | ResolversTypes["User"]
     | ResolversTypes["Wallet"];
+  Notification: ResolverTypeWrapper<Notification>;
+  NotificationsFiltersInput: NotificationsFiltersInput;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars["String"]>;
@@ -451,10 +480,13 @@ export type ResolversParentTypes = ResolversObject<{
     | ResolversParentTypes["Listing"]
     | ResolversParentTypes["MarketData"]
     | ResolversParentTypes["Nft"]
+    | ResolversParentTypes["Notification"]
     | ResolversParentTypes["TokenBalance"]
     | ResolversParentTypes["Transaction"]
     | ResolversParentTypes["User"]
     | ResolversParentTypes["Wallet"];
+  Notification: Notification;
+  NotificationsFiltersInput: NotificationsFiltersInput;
   PageInfo: PageInfo;
   Query: {};
   String: Scalars["String"];
@@ -616,6 +648,7 @@ export type NodeResolvers<
     | "Listing"
     | "MarketData"
     | "Nft"
+    | "Notification"
     | "TokenBalance"
     | "Transaction"
     | "User"
@@ -624,6 +657,19 @@ export type NodeResolvers<
     ContextType
   >;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+}>;
+
+export type NotificationResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["Notification"] = ResolversParentTypes["Notification"]
+> = ResolversObject<{
+  body?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  source?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  timestamp?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  viewed?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type PageInfoResolvers<
@@ -768,6 +814,12 @@ export type UserResolvers<
     ContextType
   >;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  notifications?: Resolver<
+    Maybe<Array<ResolversTypes["Notification"]>>,
+    ParentType,
+    ContextType,
+    Partial<UserNotificationsArgs>
+  >;
   username?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   wallets?: Resolver<
     Maybe<ResolversTypes["WalletConnection"]>,
@@ -838,6 +890,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   NftConnection?: NftConnectionResolvers<ContextType>;
   NftEdge?: NftEdgeResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
+  Notification?: NotificationResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   TokenBalance?: TokenBalanceResolvers<ContextType>;
