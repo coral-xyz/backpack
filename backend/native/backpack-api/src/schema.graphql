@@ -71,6 +71,15 @@ type Collection implements Node {
 }
 
 """
+Represents a friend reference for the parent `User`.
+"""
+type Friend implements Node {
+  id: ID!
+  avatar: String!
+  username: String!
+}
+
+"""
 NFT listing data pulling from marketplaces.
 """
 type Listing implements Node {
@@ -198,6 +207,9 @@ assets, peripheral information, and social data.
 """
 type User implements Node @auth {
   id: ID!
+  avatar: String!
+  createdAt: String!
+  friends: [Friend!]
   username: String!
   wallets(filters: WalletsFiltersInput): WalletConnection
 }

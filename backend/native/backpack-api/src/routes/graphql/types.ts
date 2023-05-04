@@ -50,6 +50,14 @@ export type Collection = Node & {
   verified: Scalars["Boolean"];
 };
 
+/** Represents a friend reference for the parent `User`. */
+export type Friend = Node & {
+  __typename?: "Friend";
+  avatar: Scalars["String"];
+  id: Scalars["ID"];
+  username: Scalars["String"];
+};
+
 /** NFT listing data pulling from marketplaces. */
 export type Listing = Node & {
   __typename?: "Listing";
@@ -203,6 +211,9 @@ export type TransactionEdge = {
  */
 export type User = Node & {
   __typename?: "User";
+  avatar: Scalars["String"];
+  createdAt: Scalars["String"];
+  friends?: Maybe<Array<Friend>>;
   id: Scalars["ID"];
   username: Scalars["String"];
   wallets?: Maybe<WalletConnection>;
@@ -373,6 +384,7 @@ export type ResolversTypes = ResolversObject<{
   ChainID: ChainId;
   Collection: ResolverTypeWrapper<Collection>;
   Float: ResolverTypeWrapper<Scalars["Float"]>;
+  Friend: ResolverTypeWrapper<Friend>;
   ID: ResolverTypeWrapper<Scalars["ID"]>;
   Int: ResolverTypeWrapper<Scalars["Int"]>;
   Listing: ResolverTypeWrapper<Listing>;
@@ -385,6 +397,7 @@ export type ResolversTypes = ResolversObject<{
   Node:
     | ResolversTypes["Balances"]
     | ResolversTypes["Collection"]
+    | ResolversTypes["Friend"]
     | ResolversTypes["Listing"]
     | ResolversTypes["MarketData"]
     | ResolversTypes["Nft"]
@@ -414,6 +427,7 @@ export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars["Boolean"];
   Collection: Collection;
   Float: Scalars["Float"];
+  Friend: Friend;
   ID: Scalars["ID"];
   Int: Scalars["Int"];
   Listing: Listing;
@@ -426,6 +440,7 @@ export type ResolversParentTypes = ResolversObject<{
   Node:
     | ResolversParentTypes["Balances"]
     | ResolversParentTypes["Collection"]
+    | ResolversParentTypes["Friend"]
     | ResolversParentTypes["Listing"]
     | ResolversParentTypes["MarketData"]
     | ResolversParentTypes["Nft"]
@@ -482,6 +497,16 @@ export type CollectionResolvers<
   image?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   verified?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type FriendResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["Friend"] = ResolversParentTypes["Friend"]
+> = ResolversObject<{
+  avatar?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  username?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -576,6 +601,7 @@ export type NodeResolvers<
   __resolveType: TypeResolveFn<
     | "Balances"
     | "Collection"
+    | "Friend"
     | "Listing"
     | "MarketData"
     | "Nft"
@@ -723,6 +749,13 @@ export type UserResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["User"] = ResolversParentTypes["User"]
 > = ResolversObject<{
+  avatar?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  friends?: Resolver<
+    Maybe<Array<ResolversTypes["Friend"]>>,
+    ParentType,
+    ContextType
+  >;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   username?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   wallets?: Resolver<
@@ -786,6 +819,7 @@ export type WalletEdgeResolvers<
 export type Resolvers<ContextType = any> = ResolversObject<{
   Balances?: BalancesResolvers<ContextType>;
   Collection?: CollectionResolvers<ContextType>;
+  Friend?: FriendResolvers<ContextType>;
   Listing?: ListingResolvers<ContextType>;
   MarketData?: MarketDataResolvers<ContextType>;
   Nft?: NftResolvers<ContextType>;
