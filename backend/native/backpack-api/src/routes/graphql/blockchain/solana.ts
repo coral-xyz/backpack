@@ -18,7 +18,7 @@ import {
   type Transaction,
   type TransactionConnection,
 } from "../types";
-import { createConnection } from "..";
+import { createConnection } from "../utils";
 
 import { type Blockchain, calculateUsdChange } from ".";
 
