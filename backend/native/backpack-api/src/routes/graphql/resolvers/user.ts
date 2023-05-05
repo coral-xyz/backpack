@@ -3,7 +3,9 @@ import type { GraphQLResolveInfo } from "graphql";
 import type { ApiContext } from "../context";
 import type {
   Friend,
+  Notification,
   User,
+  UserNotificationsArgs,
   UserResolvers,
   UserWalletsArgs,
   Wallet,
@@ -131,6 +133,59 @@ export const userTypeResolvers: UserResolvers = {
   },
 
   /**
+   * Field-level resolver handler for the `notifications` field.
+   * @param {User} parent
+   * @param {Partial<UserNotificationsArgs>} args
+   * @param {ApiContext} ctx
+   * @param {GraphQLResolveInfo} _info
+   * @returns {(Promise<Notification[] | null>)}
+   */
+  async notifications(
+    parent: User,
+    { filters }: Partial<UserNotificationsArgs>,
+    ctx: ApiContext,
+    _info: GraphQLResolveInfo
+  ): Promise<Notification[] | null> {
+    // Query Hasura for the list of notifications for the user
+    // that match the input filter(s) if provided
+    const resp = await ctx.dataSources.hasura("query")(
+      {
+        auth_notifications: [
+          {
+            where: {
+              uuid: { _eq: ctx.authorization.userId },
+              viewed: filters?.unreadOnly ? { _eq: false } : undefined,
+            },
+            limit: filters?.limit,
+          },
+          {
+            id: true,
+            body: true,
+            timestamp: true,
+            title: true,
+            viewed: true,
+            xnft_id: true,
+          },
+        ],
+      },
+      { operationName: "GetUserNotifications" }
+    );
+
+    if (resp.auth_notifications.length === 0) {
+      return null;
+    }
+
+    return resp.auth_notifications.map((n) => ({
+      id: `notification:${n.id}`,
+      body: n.body,
+      source: n.xnft_id,
+      timestamp: new Date(n.timestamp as string).toISOString(),
+      title: n.title,
+      viewed: n.viewed ?? false,
+    }));
+  },
+
+  /**
    * Field-level resolver handler for the `wallets` field.
    * @param {User} parent
    * @param {Partial<UserWalletsArgs>} args
@@ -149,46 +204,42 @@ export const userTypeResolvers: UserResolvers = {
     // optionally filtered by the field-level filter input if provided
     const resp = await ctx.dataSources.hasura("query")(
       {
-        auth_users: [
+        auth_public_keys: [
           {
-            where: { username: { _eq: parent.username } },
-            limit: 1,
+            where: {
+              blockchain: filters?.chainId
+                ? { _eq: filters.chainId.toLowerCase() }
+                : undefined,
+              is_primary: filters?.primaryOnly ? { _eq: true } : undefined,
+              public_key: filters?.pubkeys
+                ? { _in: filters.pubkeys }
+                : undefined,
+              user_id: { _eq: ctx.authorization.userId },
+            },
           },
           {
-            public_keys: [
-              filters && Object.keys(filters).length > 0
-                ? {
-                    where: {
-                      blockchain: filters.chainId
-                        ? { _eq: filters.chainId.toLowerCase() }
-                        : undefined,
-                      public_key: filters.pubkeys
-                        ? { _in: filters.pubkeys }
-                        : undefined,
-                    },
-                  }
-                : {},
-              {
-                blockchain: true,
-                public_key: true,
-              },
-            ],
+            blockchain: true,
+            created_at: true,
+            is_primary: true,
+            public_key: true,
           },
         ],
       },
       { operationName: "GetUserPublicKeys" }
     );
 
-    if (resp.auth_users.length === 0) {
+    if (resp.auth_public_keys.length === 0) {
       return null;
     }
 
-    const nodes: Wallet[] = resp.auth_users[0].public_keys.map((pk) => {
+    const nodes: Wallet[] = resp.auth_public_keys.map((pk) => {
       const chain = inferChainIdFromString(pk.blockchain);
       return {
         id: `${chain}_wallet:${pk.public_key}`,
         address: pk.public_key,
         chainId: chain,
+        createdAt: new Date(pk.created_at as string).toISOString(),
+        isPrimary: pk.is_primary ?? false,
       };
     });
 
