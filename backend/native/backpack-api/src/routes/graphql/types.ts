@@ -34,6 +34,12 @@ export type Balances = Node & {
   tokens?: Maybe<TokenBalanceConnection>;
 };
 
+/** Scope enum for cache control. */
+export enum CacheControlScope {
+  Private = "PRIVATE",
+  Public = "PUBLIC",
+}
+
 /** Chain ID enum variants for the supported blockchains in the API. */
 export enum ChainId {
   Ethereum = "ETHEREUM",
@@ -122,6 +128,23 @@ export type NftFiltersInput = {
 /** Interface to enforce the implementation of an `id` field on a type. */
 export type Node = {
   id: Scalars["ID"];
+};
+
+/** Notification data type for user notification reads. */
+export type Notification = Node & {
+  __typename?: "Notification";
+  body: Scalars["String"];
+  id: Scalars["ID"];
+  source: Scalars["String"];
+  timestamp: Scalars["String"];
+  title: Scalars["String"];
+  viewed: Scalars["Boolean"];
+};
+
+/** Input filter type for fetching user notifications. */
+export type NotificationsFiltersInput = {
+  limit?: InputMaybe<Scalars["Int"]>;
+  unreadOnly?: InputMaybe<Scalars["Boolean"]>;
 };
 
 /** Relay specification for a connection's page information. */
@@ -215,8 +238,17 @@ export type User = Node & {
   createdAt: Scalars["String"];
   friends?: Maybe<Array<Friend>>;
   id: Scalars["ID"];
+  notifications?: Maybe<Array<Notification>>;
   username: Scalars["String"];
   wallets?: Maybe<WalletConnection>;
+};
+
+/**
+ * Backpack user type definition so provide data about all of the user's
+ * assets, peripheral information, and social data.
+ */
+export type UserNotificationsArgs = {
+  filters?: InputMaybe<NotificationsFiltersInput>;
 };
 
 /**
@@ -233,7 +265,9 @@ export type Wallet = Node & {
   address: Scalars["String"];
   balances?: Maybe<Balances>;
   chainId: ChainId;
+  createdAt: Scalars["String"];
   id: Scalars["ID"];
+  isPrimary: Scalars["Boolean"];
   nfts?: Maybe<NftConnection>;
   transactions?: Maybe<TransactionConnection>;
 };
@@ -266,6 +300,7 @@ export type WalletEdge = {
 /** Input filter type for fetching user wallets and their data. */
 export type WalletsFiltersInput = {
   chainId?: InputMaybe<ChainId>;
+  primaryOnly?: InputMaybe<Scalars["Boolean"]>;
   pubkeys?: InputMaybe<Array<Scalars["String"]>>;
 };
 
@@ -381,6 +416,7 @@ export type DirectiveResolverFn<
 export type ResolversTypes = ResolversObject<{
   Balances: ResolverTypeWrapper<Balances>;
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]>;
+  CacheControlScope: CacheControlScope;
   ChainID: ChainId;
   Collection: ResolverTypeWrapper<Collection>;
   Float: ResolverTypeWrapper<Scalars["Float"]>;
@@ -401,10 +437,13 @@ export type ResolversTypes = ResolversObject<{
     | ResolversTypes["Listing"]
     | ResolversTypes["MarketData"]
     | ResolversTypes["Nft"]
+    | ResolversTypes["Notification"]
     | ResolversTypes["TokenBalance"]
     | ResolversTypes["Transaction"]
     | ResolversTypes["User"]
     | ResolversTypes["Wallet"];
+  Notification: ResolverTypeWrapper<Notification>;
+  NotificationsFiltersInput: NotificationsFiltersInput;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars["String"]>;
@@ -444,10 +483,13 @@ export type ResolversParentTypes = ResolversObject<{
     | ResolversParentTypes["Listing"]
     | ResolversParentTypes["MarketData"]
     | ResolversParentTypes["Nft"]
+    | ResolversParentTypes["Notification"]
     | ResolversParentTypes["TokenBalance"]
     | ResolversParentTypes["Transaction"]
     | ResolversParentTypes["User"]
     | ResolversParentTypes["Wallet"];
+  Notification: Notification;
+  NotificationsFiltersInput: NotificationsFiltersInput;
   PageInfo: PageInfo;
   Query: {};
   String: Scalars["String"];
@@ -463,6 +505,19 @@ export type ResolversParentTypes = ResolversObject<{
   WalletEdge: WalletEdge;
   WalletsFiltersInput: WalletsFiltersInput;
 }>;
+
+export type CacheControlDirectiveArgs = {
+  inheritMaxAge?: Maybe<Scalars["Boolean"]>;
+  maxAge?: Maybe<Scalars["Int"]>;
+  scope?: Maybe<CacheControlScope>;
+};
+
+export type CacheControlDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = any,
+  Args = CacheControlDirectiveArgs
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type BalancesResolvers<
   ContextType = any,
@@ -596,6 +651,7 @@ export type NodeResolvers<
     | "Listing"
     | "MarketData"
     | "Nft"
+    | "Notification"
     | "TokenBalance"
     | "Transaction"
     | "User"
@@ -604,6 +660,19 @@ export type NodeResolvers<
     ContextType
   >;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+}>;
+
+export type NotificationResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["Notification"] = ResolversParentTypes["Notification"]
+> = ResolversObject<{
+  body?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  source?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  timestamp?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  viewed?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type PageInfoResolvers<
@@ -748,6 +817,12 @@ export type UserResolvers<
     ContextType
   >;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  notifications?: Resolver<
+    Maybe<Array<ResolversTypes["Notification"]>>,
+    ParentType,
+    ContextType,
+    Partial<UserNotificationsArgs>
+  >;
   username?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   wallets?: Resolver<
     Maybe<ResolversTypes["WalletConnection"]>,
@@ -769,7 +844,9 @@ export type WalletResolvers<
     ContextType
   >;
   chainId?: Resolver<ResolversTypes["ChainID"], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  isPrimary?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
   nfts?: Resolver<
     Maybe<ResolversTypes["NftConnection"]>,
     ParentType,
@@ -818,6 +895,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   NftConnection?: NftConnectionResolvers<ContextType>;
   NftEdge?: NftEdgeResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
+  Notification?: NotificationResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   TokenBalance?: TokenBalanceResolvers<ContextType>;
@@ -830,4 +908,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Wallet?: WalletResolvers<ContextType>;
   WalletConnection?: WalletConnectionResolvers<ContextType>;
   WalletEdge?: WalletEdgeResolvers<ContextType>;
+}>;
+
+export type DirectiveResolvers<ContextType = any> = ResolversObject<{
+  cacheControl?: CacheControlDirectiveResolver<any, any, ContextType>;
 }>;

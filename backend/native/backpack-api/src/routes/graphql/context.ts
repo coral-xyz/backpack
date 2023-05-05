@@ -4,10 +4,17 @@ import { Chain } from "@coral-xyz/zeus";
 import { Alchemy } from "alchemy-sdk";
 import type { Request } from "express";
 import { importSPKI, jwtVerify } from "jose";
+import { LRUCache } from "lru-cache";
 
 import { AUTH_JWT_PUBLIC_KEY, HASURA_URL, JWT } from "../../config";
 
 import { CoinGecko, Helius, Tensor } from "./clients";
+
+const IN_MEM_JWT_CACHE = new LRUCache<string, string>({
+  allowStale: false,
+  max: 1000,
+  ttl: 1000 * 60 * 5,
+});
 
 export interface ApiContext {
   authorization: {
@@ -40,18 +47,25 @@ export const createContext: ContextFunction<
   // Extract, verify, and decode the JWT if found in the request for the inferred user
   const jwt = extractJwt(req);
   if (jwt) {
-    const publicKey = await importSPKI(AUTH_JWT_PUBLIC_KEY, "RS256");
-
-    try {
-      const resp = await jwtVerify(jwt, publicKey, {
-        issuer: "auth.xnfts.dev",
-        audience: "backpack",
-      });
-
-      userId = resp.payload.sub;
+    if (IN_MEM_JWT_CACHE.has(jwt)) {
+      userId = IN_MEM_JWT_CACHE.get(jwt);
       valid = true;
-    } catch {
-      // NOOP
+    } else {
+      const publicKey = await importSPKI(AUTH_JWT_PUBLIC_KEY, "RS256");
+
+      try {
+        const resp = await jwtVerify(jwt, publicKey, {
+          issuer: "auth.xnfts.dev",
+          audience: "backpack",
+        });
+
+        userId = resp.payload.sub;
+        valid = true;
+
+        IN_MEM_JWT_CACHE.set(jwt, userId);
+      } catch {
+        // NOOP
+      }
     }
   }
 

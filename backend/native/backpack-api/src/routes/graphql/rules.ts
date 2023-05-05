@@ -8,7 +8,7 @@ import type { ApiContext } from "./context";
  * Shield rule to ensure there is a valid JWT present in the context.
  * @export
  */
-export const authorized: Rule = rule("auth")(
+export const authorized: Rule = rule("auth", { cache: "contextual" })(
   async (_parent, _args, ctx: ApiContext, _info) => {
     const { jwt, valid } = ctx.authorization;
     if (!jwt) {

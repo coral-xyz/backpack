@@ -3,6 +3,15 @@ schema {
 }
 
 """
+Definition of cache control directive for Apollo to leverage with the plugin.
+"""
+directive @cacheControl(
+  maxAge: Int
+  scope: CacheControlScope
+  inheritMaxAge: Boolean
+) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+
+"""
 Root level query type.
 """
 type Query {
@@ -10,12 +19,20 @@ type Query {
   Fetch a user by their Backpack account username. The username is inferred by the
   presence of a valid and verified JWT.
   """
-  user: User
+  user: User @cacheControl(maxAge: 60, scope: PRIVATE)
 
   """
   Fetching a wallet and it's assets by the public key address and associated `ChainID`.
   """
-  wallet(chainId: ChainID!, address: String!): Wallet
+  wallet(chainId: ChainID!, address: String!): Wallet @cacheControl(maxAge: 60)
+}
+
+"""
+Scope enum for cache control.
+"""
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
 }
 
 """
@@ -24,6 +41,30 @@ Chain ID enum variants for the supported blockchains in the API.
 enum ChainID {
   ETHEREUM
   SOLANA
+}
+
+"""
+Input filter type for fetching user wallet NFTs.
+"""
+input NftFiltersInput {
+  mints: [String!]
+}
+
+"""
+Input filter type for fetching user notifications.
+"""
+input NotificationsFiltersInput {
+  limit: Int
+  unreadOnly: Boolean
+}
+
+"""
+Input filter type for fetching user wallets and their data.
+"""
+input WalletsFiltersInput {
+  chainId: ChainID
+  primaryOnly: Boolean
+  pubkeys: [String!]
 }
 
 """
@@ -47,11 +88,11 @@ type PageInfo {
 Top-level type for providing wallet balance information.
 Should provide details about native and non-native token balances with aggregation details.
 """
-type Balances implements Node {
+type Balances implements Node @cacheControl(maxAge: 60) {
   id: ID!
   aggregateValue: Float!
-  native: TokenBalance!
-  tokens: TokenBalanceConnection
+  native: TokenBalance! @cacheControl(inheritMaxAge: true)
+  tokens: TokenBalanceConnection @cacheControl(inheritMaxAge: true)
 }
 
 """
@@ -100,14 +141,14 @@ type MarketData implements Node {
 """
 Generic NFT object type definition to provide on-chain and off-chain metadata.
 """
-type Nft implements Node {
+type Nft implements Node @cacheControl(maxAge: 1800) {
   id: ID!
   address: String!
-  attributes: [NftAttribute!]
-  collection: Collection
+  attributes: [NftAttribute!] @cacheControl(inheritMaxAge: true)
+  collection: Collection @cacheControl(inheritMaxAge: true)
   description: String
   image: String
-  listing: Listing
+  listing: Listing @cacheControl(maxAge: 60)
   name: String!
   owner: String!
 }
@@ -137,6 +178,18 @@ type NftEdge {
 }
 
 """
+Notification data type for user notification reads.
+"""
+type Notification implements Node {
+  id: ID!
+  body: String!
+  source: String!
+  timestamp: String!
+  title: String!
+  viewed: Boolean!
+}
+
+"""
 Generic native or non-native token data and balance for a `Wallet`.
 """
 type TokenBalance implements Node {
@@ -145,7 +198,7 @@ type TokenBalance implements Node {
   amount: String!
   decimals: Int!
   displayAmount: String!
-  marketData: MarketData
+  marketData: MarketData @cacheControl(maxAge: 180)
   mint: String!
 }
 
@@ -200,25 +253,31 @@ type TransactionEdge {
 Backpack user type definition so provide data about all of the user's
 assets, peripheral information, and social data.
 """
-type User implements Node {
+type User implements Node @cacheControl(maxAge: 60, scope: PRIVATE) {
   id: ID!
   avatar: String!
   createdAt: String!
-  friends: [Friend!]
+  friends: [Friend!] @cacheControl(maxAge: 60, scope: PRIVATE)
+  notifications(filters: NotificationsFiltersInput): [Notification!]
+    @cacheControl(maxAge: 60, scope: PRIVATE)
   username: String!
   wallets(filters: WalletsFiltersInput): WalletConnection
+    @cacheControl(maxAge: 60)
 }
 
 """
 Wallet definition to provide data about all assets owned by an address.
 """
-type Wallet implements Node {
+type Wallet implements Node @cacheControl(maxAge: 60) {
   id: ID!
   address: String!
   chainId: ChainID!
-  balances: Balances
-  nfts(filters: NftFiltersInput): NftConnection
+  createdAt: String!
+  balances: Balances @cacheControl(maxAge: 60)
+  isPrimary: Boolean!
+  nfts(filters: NftFiltersInput): NftConnection @cacheControl(maxAge: 60)
   transactions(before: String, after: String): TransactionConnection
+    @cacheControl(maxAge: 30)
 }
 
 """
@@ -235,19 +294,4 @@ Relay edge specification for `Wallet` nodes.
 type WalletEdge {
   cursor: String!
   node: Wallet
-}
-
-"""
-Input filter type for fetching user wallet NFTs.
-"""
-input NftFiltersInput {
-  mints: [String!]
-}
-
-"""
-Input filter type for fetching user wallets and their data.
-"""
-input WalletsFiltersInput {
-  chainId: ChainID
-  pubkeys: [String!]
 }
