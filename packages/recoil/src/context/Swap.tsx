@@ -351,7 +351,11 @@ export function SwapProvider({
             const tx = Transaction.from(Buffer.from(transaction, "base64"));
             // Under the hood this just calls connection.getFeeForMessage with
             // the message, it's a convenience method
-            return await tx.getEstimatedFee(connection);
+            const solNetworkFee = await tx.getEstimatedFee(connection);
+            if (solNetworkFee === null) {
+              return 5000;
+            }
+            return solNetworkFee;
           } catch (e) {
             // Couldn't load fees, assume 5000, not worth failing over
             return 5000;
