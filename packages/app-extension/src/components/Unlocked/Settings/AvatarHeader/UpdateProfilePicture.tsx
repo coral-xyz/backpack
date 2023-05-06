@@ -224,9 +224,6 @@ export function UpdateProfilePicture({
           }
           onClick={async () => {
             if (tempAvatar) {
-              if (!tempAvatar.nft) {
-                throw new Error("invariant violation");
-              }
               setLoading(true);
               await fetch(BACKEND_API_URL + "/users/avatar", {
                 headers: {
