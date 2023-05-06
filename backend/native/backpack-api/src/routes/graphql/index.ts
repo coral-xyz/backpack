@@ -5,6 +5,7 @@ import { allow, shield } from "graphql-shield";
 import { join } from "path";
 
 import {
+  friendshipTypeResolvers,
   userQueryResolver,
   userTypeResolvers,
   walletQueryResolver,
@@ -26,6 +27,7 @@ const queryResolvers: QueryResolvers = {
  */
 const resolvers: Resolvers = {
   Query: queryResolvers,
+  Friendship: friendshipTypeResolvers,
   User: userTypeResolvers,
   Wallet: walletTypeResolvers,
 };

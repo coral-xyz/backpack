@@ -2,7 +2,7 @@ import type { GraphQLResolveInfo } from "graphql";
 
 import type { ApiContext } from "../context";
 import type {
-  Friend,
+  Friendship,
   Notification,
   User,
   UserNotificationsArgs,
@@ -67,81 +67,35 @@ export async function userQueryResolver(
  * @export
  */
 export const userTypeResolvers: UserResolvers = {
-  async friends(
+  /**
+   * Field-level resolver handler for the `friendship` field.
+   * @param {User} _parent
+   * @param {{}} _args
+   * @param {ApiContext} _ctx
+   * @param {GraphQLResolveInfo} _info
+   * @returns {*}  {(Promise<Friendship | null>)}
+   */
+  async friendship(
     _parent: User,
     _args: {},
-    ctx: ApiContext,
+    _ctx: ApiContext,
     _info: GraphQLResolveInfo
-  ): Promise<Friend[] | null> {
-    // Query Hasura for a list of user ID pairs that represent the active
-    // friendships of the user inferred by the user ID in the decoded JWT
-    const idsResp = await ctx.dataSources.hasura("query")(
-      {
-        auth_friendships: [
-          {
-            where: {
-              are_friends: { _eq: true },
-              _or: [
-                { user1: { _eq: ctx.authorization.userId } },
-                { user2: { _eq: ctx.authorization.userId } },
-              ],
-            },
-          },
-          {
-            user1: true,
-            user2: true,
-          },
-        ],
-      },
-      { operationName: "GetFriends" }
-    );
-
-    if (idsResp.auth_friendships.length === 0) {
-      return null;
-    }
-
-    const friendIds = idsResp.auth_friendships.map((f) =>
-      f.user1 === ctx.authorization.userId ? f.user2 : f.user1
-    );
-
-    // Query Hasura for the username of the each user ID in the
-    // discovered friends list from the previous query
-    const detailsResp = await ctx.dataSources.hasura("query")(
-      {
-        auth_users: [
-          {
-            where: { id: { _in: friendIds } },
-          },
-          {
-            id: true,
-            username: true,
-          },
-        ],
-      },
-      { operationName: "GetFriendsDetails" }
-    );
-
-    if (detailsResp.auth_users.length === 0) {
-      return null;
-    }
-
-    return detailsResp.auth_users.map((u) => ({
-      id: `friend:${u.id}`,
-      avatar: `https://swr.xnfts.dev/avatars/${u.username}`,
-      username: u.username as string,
-    }));
+  ): Promise<Friendship | null> {
+    // Return an empty object so that the separate resolvers
+    // for the `friendship` sub-fields are executed if requested
+    return {};
   },
 
   /**
    * Field-level resolver handler for the `notifications` field.
-   * @param {User} parent
+   * @param {User} _parent
    * @param {Partial<UserNotificationsArgs>} args
    * @param {ApiContext} ctx
    * @param {GraphQLResolveInfo} _info
    * @returns {(Promise<Notification[] | null>)}
    */
   async notifications(
-    parent: User,
+    _parent: User,
     { filters }: Partial<UserNotificationsArgs>,
     ctx: ApiContext,
     _info: GraphQLResolveInfo
