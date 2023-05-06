@@ -44,6 +44,14 @@ enum ChainID {
 }
 
 """
+Enum for associating a friend request with the direction of how it was sent.
+"""
+enum FriendRequestType {
+  RECEIVED
+  SENT
+}
+
+"""
 Input filter type for fetching user wallet NFTs.
 """
 input NftFiltersInput {
@@ -113,6 +121,23 @@ type Friend implements Node {
   id: ID!
   avatar: String!
   username: String!
+}
+
+"""
+Friend request data for a user.
+"""
+type FriendRequest implements Node {
+  id: ID!
+  type: FriendRequestType!
+  user: String!
+}
+
+"""
+Wrapper type for all user friendship data.
+"""
+type Friendship {
+  friends: [Friend!] @cacheControl(maxAge: 60, scope: PRIVATE)
+  requests: [FriendRequest!] @cacheControl(maxAge: 60, scope: PRIVATE)
 }
 
 """
@@ -257,7 +282,7 @@ type User implements Node @cacheControl(maxAge: 60, scope: PRIVATE) {
   id: ID!
   avatar: String!
   createdAt: String!
-  friends: [Friend!] @cacheControl(maxAge: 60, scope: PRIVATE)
+  friendship: Friendship @cacheControl(inheritMaxAge: true)
   notifications(filters: NotificationsFiltersInput): [Notification!]
     @cacheControl(maxAge: 60, scope: PRIVATE)
   username: String!

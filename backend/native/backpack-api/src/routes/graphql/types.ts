@@ -64,6 +64,27 @@ export type Friend = Node & {
   username: Scalars["String"];
 };
 
+/** Friend request data for a user. */
+export type FriendRequest = Node & {
+  __typename?: "FriendRequest";
+  id: Scalars["ID"];
+  type: FriendRequestType;
+  user: Scalars["String"];
+};
+
+/** Enum for associating a friend request with the direction of how it was sent. */
+export enum FriendRequestType {
+  Received = "RECEIVED",
+  Sent = "SENT",
+}
+
+/** Wrapper type for all user friendship data. */
+export type Friendship = {
+  __typename?: "Friendship";
+  friends?: Maybe<Array<Friend>>;
+  requests?: Maybe<Array<FriendRequest>>;
+};
+
 /** NFT listing data pulling from marketplaces. */
 export type Listing = Node & {
   __typename?: "Listing";
@@ -236,7 +257,7 @@ export type User = Node & {
   __typename?: "User";
   avatar: Scalars["String"];
   createdAt: Scalars["String"];
-  friends?: Maybe<Array<Friend>>;
+  friendship?: Maybe<Friendship>;
   id: Scalars["ID"];
   notifications?: Maybe<Array<Notification>>;
   username: Scalars["String"];
@@ -421,6 +442,9 @@ export type ResolversTypes = ResolversObject<{
   Collection: ResolverTypeWrapper<Collection>;
   Float: ResolverTypeWrapper<Scalars["Float"]>;
   Friend: ResolverTypeWrapper<Friend>;
+  FriendRequest: ResolverTypeWrapper<FriendRequest>;
+  FriendRequestType: FriendRequestType;
+  Friendship: ResolverTypeWrapper<Friendship>;
   ID: ResolverTypeWrapper<Scalars["ID"]>;
   Int: ResolverTypeWrapper<Scalars["Int"]>;
   Listing: ResolverTypeWrapper<Listing>;
@@ -434,6 +458,7 @@ export type ResolversTypes = ResolversObject<{
     | ResolversTypes["Balances"]
     | ResolversTypes["Collection"]
     | ResolversTypes["Friend"]
+    | ResolversTypes["FriendRequest"]
     | ResolversTypes["Listing"]
     | ResolversTypes["MarketData"]
     | ResolversTypes["Nft"]
@@ -467,6 +492,8 @@ export type ResolversParentTypes = ResolversObject<{
   Collection: Collection;
   Float: Scalars["Float"];
   Friend: Friend;
+  FriendRequest: FriendRequest;
+  Friendship: Friendship;
   ID: Scalars["ID"];
   Int: Scalars["Int"];
   Listing: Listing;
@@ -480,6 +507,7 @@ export type ResolversParentTypes = ResolversObject<{
     | ResolversParentTypes["Balances"]
     | ResolversParentTypes["Collection"]
     | ResolversParentTypes["Friend"]
+    | ResolversParentTypes["FriendRequest"]
     | ResolversParentTypes["Listing"]
     | ResolversParentTypes["MarketData"]
     | ResolversParentTypes["Nft"]
@@ -553,6 +581,33 @@ export type FriendResolvers<
   avatar?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   username?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type FriendRequestResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["FriendRequest"] = ResolversParentTypes["FriendRequest"]
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes["FriendRequestType"], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type FriendshipResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["Friendship"] = ResolversParentTypes["Friendship"]
+> = ResolversObject<{
+  friends?: Resolver<
+    Maybe<Array<ResolversTypes["Friend"]>>,
+    ParentType,
+    ContextType
+  >;
+  requests?: Resolver<
+    Maybe<Array<ResolversTypes["FriendRequest"]>>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -648,6 +703,7 @@ export type NodeResolvers<
     | "Balances"
     | "Collection"
     | "Friend"
+    | "FriendRequest"
     | "Listing"
     | "MarketData"
     | "Nft"
@@ -811,8 +867,8 @@ export type UserResolvers<
 > = ResolversObject<{
   avatar?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  friends?: Resolver<
-    Maybe<Array<ResolversTypes["Friend"]>>,
+  friendship?: Resolver<
+    Maybe<ResolversTypes["Friendship"]>,
     ParentType,
     ContextType
   >;
@@ -888,6 +944,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Balances?: BalancesResolvers<ContextType>;
   Collection?: CollectionResolvers<ContextType>;
   Friend?: FriendResolvers<ContextType>;
+  FriendRequest?: FriendRequestResolvers<ContextType>;
+  Friendship?: FriendshipResolvers<ContextType>;
   Listing?: ListingResolvers<ContextType>;
   MarketData?: MarketDataResolvers<ContextType>;
   Nft?: NftResolvers<ContextType>;
