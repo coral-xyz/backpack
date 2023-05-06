@@ -21,6 +21,7 @@ import {
   useActiveWallet,
   useActiveWallets,
   useAvatarUrl,
+  useDarkMode,
   useEthereumConnectionUrl,
   useSolanaConnectionUrl,
   useUser,
@@ -51,6 +52,7 @@ export function UpdateProfilePicture({
 }: {
   setOpenDrawer: (open: boolean) => void;
 }) {
+  const isDarkMode = useDarkMode();
   const [tempAvatar, setTempAvatar] = useState<tempAvatar | null>(null);
   const [loading, setLoading] = useState(false);
   const _isAggregateWallets = useRecoilValue(isAggregateWallets);
@@ -216,7 +218,11 @@ export function UpdateProfilePicture({
             loading ? (
               <CircularProgress
                 size={24}
-                sx={{ color: "white", display: "flex", alignSelf: "center" }}
+                sx={{
+                  color: isDarkMode ? "black" : "white",
+                  display: "flex",
+                  alignSelf: "center",
+                }}
               />
             ) : (
               "Update"
