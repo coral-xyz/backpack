@@ -4301,6 +4301,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@coral-xyz/xnft@npm:^0.2.52":
+  version: 0.2.52
+  resolution: "@coral-xyz/xnft@npm:0.2.52"
+  dependencies:
+    "@coral-xyz/anchor": ^0.27.0
+    "@metaplex-foundation/js": ^0.18.3
+    "@solana/spl-token": ^0.3.7
+    "@solana/web3.js": ^1.74.0
+    semver: ^7.3.8
+    zod: ^3.21.4
+  checksum: de0e67b24521eabdf33b12b86d94781630c762696afcd3fc0d3dc41e7384d18e2845b6d016b94b08456869f72cf0c822a517a29f1298e3e841165b3d90374115
+  languageName: node
+  linkType: hard
+
 "@coral-xyz/zeus@*, @coral-xyz/zeus@workspace:backend/native/zeus":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/zeus@workspace:backend/native/zeus"
@@ -16744,6 +16758,7 @@ __metadata:
     "@coral-xyz/backend-common": "*"
     "@coral-xyz/chat-zeus": "*"
     "@coral-xyz/common": "*"
+    "@coral-xyz/xnft": ^0.2.52
     "@coral-xyz/zeus": "*"
     "@graphql-codegen/cli": ^3.3.0
     "@graphql-codegen/typescript": ^3.0.3

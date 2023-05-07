@@ -6,6 +6,7 @@ import { join } from "path";
 
 import {
   friendshipTypeResolvers,
+  jsonObjectScalar,
   userQueryResolver,
   userTypeResolvers,
   walletQueryResolver,
@@ -30,6 +31,7 @@ const resolvers: Resolvers = {
   Friendship: friendshipTypeResolvers,
   User: userTypeResolvers,
   Wallet: walletTypeResolvers,
+  JSONObject: jsonObjectScalar,
 };
 
 /**

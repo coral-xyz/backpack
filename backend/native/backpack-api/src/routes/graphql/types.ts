@@ -1,4 +1,8 @@
-import type { GraphQLResolveInfo } from "graphql";
+import type {
+  GraphQLResolveInfo,
+  GraphQLScalarType,
+  GraphQLScalarTypeConfig,
+} from "graphql";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -20,6 +24,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** Custom scalar to handle the parsing of arbitrary JSON object data. */
+  JSONObject: any;
 };
 
 /**
@@ -154,7 +160,7 @@ export type Node = {
 /** Notification data type for user notification reads. */
 export type Notification = Node & {
   __typename?: "Notification";
-  body: Scalars["String"];
+  body: Scalars["JSONObject"];
   id: Scalars["ID"];
   source: Scalars["String"];
   timestamp: Scalars["String"];
@@ -447,6 +453,7 @@ export type ResolversTypes = ResolversObject<{
   Friendship: ResolverTypeWrapper<Friendship>;
   ID: ResolverTypeWrapper<Scalars["ID"]>;
   Int: ResolverTypeWrapper<Scalars["Int"]>;
+  JSONObject: ResolverTypeWrapper<Scalars["JSONObject"]>;
   Listing: ResolverTypeWrapper<Listing>;
   MarketData: ResolverTypeWrapper<MarketData>;
   Nft: ResolverTypeWrapper<Nft>;
@@ -496,6 +503,7 @@ export type ResolversParentTypes = ResolversObject<{
   Friendship: Friendship;
   ID: Scalars["ID"];
   Int: Scalars["Int"];
+  JSONObject: Scalars["JSONObject"];
   Listing: Listing;
   MarketData: MarketData;
   Nft: Nft;
@@ -611,6 +619,11 @@ export type FriendshipResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export interface JsonObjectScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes["JSONObject"], any> {
+  name: "JSONObject";
+}
+
 export type ListingResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Listing"] = ResolversParentTypes["Listing"]
@@ -722,7 +735,7 @@ export type NotificationResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Notification"] = ResolversParentTypes["Notification"]
 > = ResolversObject<{
-  body?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  body?: Resolver<ResolversTypes["JSONObject"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   source?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
@@ -946,6 +959,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Friend?: FriendResolvers<ContextType>;
   FriendRequest?: FriendRequestResolvers<ContextType>;
   Friendship?: FriendshipResolvers<ContextType>;
+  JSONObject?: GraphQLScalarType;
   Listing?: ListingResolvers<ContextType>;
   MarketData?: MarketDataResolvers<ContextType>;
   Nft?: NftResolvers<ContextType>;
