@@ -168,6 +168,21 @@ export type Notification = Node & {
   viewed: Scalars["Boolean"];
 };
 
+/** Relay connection specification for `Notification` edges. */
+export type NotificationConnection = {
+  __typename?: "NotificationConnection";
+  edges?: Maybe<Array<Maybe<NotificationEdge>>>;
+  lastReadId?: Maybe<Scalars["Int"]>;
+  pageInfo: PageInfo;
+};
+
+/** Relay edge specification for `Notification` nodes. */
+export type NotificationEdge = {
+  __typename?: "NotificationEdge";
+  cursor: Scalars["String"];
+  node?: Maybe<Notification>;
+};
+
 /** Input filter type for fetching user notifications. */
 export type NotificationsFiltersInput = {
   limit?: InputMaybe<Scalars["Int"]>;
@@ -265,7 +280,7 @@ export type User = Node & {
   createdAt: Scalars["String"];
   friendship?: Maybe<Friendship>;
   id: Scalars["ID"];
-  notifications?: Maybe<Array<Notification>>;
+  notifications?: Maybe<NotificationConnection>;
   username: Scalars["String"];
   wallets?: Maybe<WalletConnection>;
 };
@@ -475,6 +490,8 @@ export type ResolversTypes = ResolversObject<{
     | ResolversTypes["User"]
     | ResolversTypes["Wallet"];
   Notification: ResolverTypeWrapper<Notification>;
+  NotificationConnection: ResolverTypeWrapper<NotificationConnection>;
+  NotificationEdge: ResolverTypeWrapper<NotificationEdge>;
   NotificationsFiltersInput: NotificationsFiltersInput;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   Query: ResolverTypeWrapper<{}>;
@@ -525,6 +542,8 @@ export type ResolversParentTypes = ResolversObject<{
     | ResolversParentTypes["User"]
     | ResolversParentTypes["Wallet"];
   Notification: Notification;
+  NotificationConnection: NotificationConnection;
+  NotificationEdge: NotificationEdge;
   NotificationsFiltersInput: NotificationsFiltersInput;
   PageInfo: PageInfo;
   Query: {};
@@ -744,6 +763,33 @@ export type NotificationResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type NotificationConnectionResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["NotificationConnection"] = ResolversParentTypes["NotificationConnection"]
+> = ResolversObject<{
+  edges?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["NotificationEdge"]>>>,
+    ParentType,
+    ContextType
+  >;
+  lastReadId?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes["PageInfo"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type NotificationEdgeResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["NotificationEdge"] = ResolversParentTypes["NotificationEdge"]
+> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  node?: Resolver<
+    Maybe<ResolversTypes["Notification"]>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type PageInfoResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["PageInfo"] = ResolversParentTypes["PageInfo"]
@@ -887,7 +933,7 @@ export type UserResolvers<
   >;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   notifications?: Resolver<
-    Maybe<Array<ResolversTypes["Notification"]>>,
+    Maybe<ResolversTypes["NotificationConnection"]>,
     ParentType,
     ContextType,
     Partial<UserNotificationsArgs>
@@ -968,6 +1014,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   NftEdge?: NftEdgeResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
   Notification?: NotificationResolvers<ContextType>;
+  NotificationConnection?: NotificationConnectionResolvers<ContextType>;
+  NotificationEdge?: NotificationEdgeResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   TokenBalance?: TokenBalanceResolvers<ContextType>;

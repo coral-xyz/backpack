@@ -220,6 +220,23 @@ type Notification implements Node {
 }
 
 """
+Relay connection specification for `Notification` edges.
+"""
+type NotificationConnection {
+  edges: [NotificationEdge]
+  lastReadId: Int
+  pageInfo: PageInfo!
+}
+
+"""
+Relay edge specification for `Notification` nodes.
+"""
+type NotificationEdge {
+  cursor: String!
+  node: Notification
+}
+
+"""
 Generic native or non-native token data and balance for a `Wallet`.
 """
 type TokenBalance implements Node {
@@ -288,7 +305,7 @@ type User implements Node {
   avatar: String!
   createdAt: String!
   friendship: Friendship @cacheControl(inheritMaxAge: true)
-  notifications(filters: NotificationsFiltersInput): [Notification!]
+  notifications(filters: NotificationsFiltersInput): NotificationConnection
     @cacheControl(maxAge: 60, scope: PRIVATE)
   username: String!
   wallets(filters: WalletsFiltersInput): WalletConnection

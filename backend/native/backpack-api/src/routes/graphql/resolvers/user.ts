@@ -4,6 +4,7 @@ import type { ApiContext } from "../context";
 import type {
   Friendship,
   Notification,
+  NotificationConnection,
   User,
   UserNotificationsArgs,
   UserResolvers,
@@ -92,14 +93,14 @@ export const userTypeResolvers: UserResolvers = {
    * @param {Partial<UserNotificationsArgs>} args
    * @param {ApiContext} ctx
    * @param {GraphQLResolveInfo} _info
-   * @returns {(Promise<Notification[] | null>)}
+   * @returns {(Promise<NotificationConnection | null>)}
    */
   async notifications(
     _parent: User,
     { filters }: Partial<UserNotificationsArgs>,
     ctx: ApiContext,
     _info: GraphQLResolveInfo
-  ): Promise<Notification[] | null> {
+  ): Promise<NotificationConnection | null> {
     // Query Hasura for the list of notifications for the user
     // that match the input filter(s) if provided
     const resp = await ctx.dataSources.hasura("query")(
@@ -121,6 +122,16 @@ export const userTypeResolvers: UserResolvers = {
             xnft_id: true,
           },
         ],
+        auth_notification_cursor: [
+          {
+            where: {
+              uuid: { _eq: ctx.authorization.userId },
+            },
+          },
+          {
+            last_read_notificaiton: true,
+          },
+        ],
       },
       { operationName: "GetUserNotifications" }
     );
@@ -129,7 +140,8 @@ export const userTypeResolvers: UserResolvers = {
       return null;
     }
 
-    return resp.auth_notifications.map((n) => ({
+    // Create the connection nodes from the received array of notifications
+    const nodes: Notification[] = resp.auth_notifications.map((n) => ({
       id: `notification:${n.id}`,
       body: n.body,
       source: n.xnft_id,
@@ -137,18 +149,32 @@ export const userTypeResolvers: UserResolvers = {
       title: n.title,
       viewed: n.viewed ?? false,
     }));
+
+    const conn = createConnection(
+      nodes,
+      false,
+      false
+    ) as NotificationConnection | null;
+
+    // Append the last read notification ID to the connection object
+    // if one was found and there is a valid connection to be returned
+    if (conn && resp.auth_notification_cursor.length > 0) {
+      conn.lastReadId = resp.auth_notification_cursor[0].last_read_notificaiton;
+    }
+
+    return conn;
   },
 
   /**
    * Field-level resolver handler for the `wallets` field.
-   * @param {User} parent
+   * @param {User} _parent
    * @param {Partial<UserWalletsArgs>} args
    * @param {ApiContext} ctx
    * @param {GraphQLResolveInfo} _info
    * @returns {(Promise<WalletConnection | null>)}
    */
   async wallets(
-    parent: User,
+    _parent: User,
     { filters }: Partial<UserWalletsArgs>,
     ctx: ApiContext,
     _info: GraphQLResolveInfo
