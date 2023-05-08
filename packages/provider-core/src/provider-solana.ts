@@ -66,6 +66,7 @@ export class ProviderSolanaInjection
 
   #isBackpack: boolean;
   #isConnected: boolean;
+  #isXnft: boolean;
   #publicKey?: PublicKey;
   #connection: Connection;
   #handlePublicKeyUpdated: any;
@@ -167,6 +168,7 @@ export class ProviderSolanaInjection
     this.#requestManager = this.#xnftRequestManager;
     const publicKey = publicKeys[Blockchain.SOLANA];
     const connectionUrl = connectionUrls[Blockchain.SOLANA];
+    this.#isXnft = true;
     this.#connect(publicKey, connectionUrl);
     this.emit("connect", event.data.detail);
   }
@@ -229,6 +231,9 @@ export class ProviderSolanaInjection
     if (this.#isConnected) {
       throw new Error("provider already connected");
     }
+    if (this.#isXnft) {
+      console.warn("xnft already connected");
+    }
     // Send request to the RPC API.
     const result = await this.#requestManager.request({
       method: SOLANA_RPC_METHOD_CONNECT,
@@ -239,6 +244,9 @@ export class ProviderSolanaInjection
   }
 
   async disconnect() {
+    if (this.#isXnft) {
+      console.warn("xnft can't be disconnected");
+    }
     await this.#requestManager.request({
       method: SOLANA_RPC_METHOD_DISCONNECT,
       params: [],
@@ -248,6 +256,9 @@ export class ProviderSolanaInjection
   }
 
   async openXnft(xnftAddress: string | PublicKey) {
+    if (this.#isXnft) {
+      throw new Error("xnft context: use window.xnft.openPlugin instead");
+    }
     await this.#requestManager.request({
       method: SOLANA_RPC_METHOD_OPEN_XNFT,
       params: [xnftAddress.toString()],
@@ -377,6 +388,10 @@ export class ProviderSolanaInjection
 
   public get isConnected() {
     return this.#isConnected;
+  }
+
+  public get isXnft() {
+    return this.#isXnft;
   }
 
   public get publicKey() {
