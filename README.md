@@ -36,8 +36,7 @@
 
 ## Installing the Latest Release
 
-If you'd like to install the latest dev release, grab the latest **build.zip** [here](https://github.com/coral-xyz/backpack/releases)
-and add it to your local chrome profile, using developer mode. See the video below.
+To install the latest dev release of a Chrome extension you're contributing to, download and extract the build  **build.zip** [here](https://github.com/coral-xyz/backpack/releases) zip file and  add it to your local chrome profile by enabling developer mode on the extensions page in Chrome, and load the extension by selecting the extracted folder.
 
 ## Developing Locally
 
