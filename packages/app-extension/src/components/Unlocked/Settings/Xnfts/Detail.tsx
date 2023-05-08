@@ -74,7 +74,6 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
         <SwitchToggle
           enabled={!!xnftPreference?.disabled}
           onChange={async () => {
-            console.log(xnftPreference);
             const updatedDisabled = !xnftPreference?.disabled;
             await background.request({
               method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
