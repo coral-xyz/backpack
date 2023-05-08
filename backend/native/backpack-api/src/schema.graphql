@@ -3,6 +3,11 @@ schema {
 }
 
 """
+Custom scalar to handle the parsing of arbitrary JSON object data.
+"""
+scalar JSONObject
+
+"""
 Definition of cache control directive for Apollo to leverage with the plugin.
 """
 directive @cacheControl(
@@ -41,6 +46,14 @@ Chain ID enum variants for the supported blockchains in the API.
 enum ChainID {
   ETHEREUM
   SOLANA
+}
+
+"""
+Enum for associating a friend request with the direction of how it was sent.
+"""
+enum FriendRequestType {
+  RECEIVED
+  SENT
 }
 
 """
@@ -88,7 +101,7 @@ type PageInfo {
 Top-level type for providing wallet balance information.
 Should provide details about native and non-native token balances with aggregation details.
 """
-type Balances implements Node @cacheControl(maxAge: 60) {
+type Balances implements Node {
   id: ID!
   aggregateValue: Float!
   native: TokenBalance! @cacheControl(inheritMaxAge: true)
@@ -113,6 +126,23 @@ type Friend implements Node {
   id: ID!
   avatar: String!
   username: String!
+}
+
+"""
+Friend request data for a user.
+"""
+type FriendRequest implements Node {
+  id: ID!
+  type: FriendRequestType!
+  user: String!
+}
+
+"""
+Wrapper type for all user friendship data.
+"""
+type Friendship {
+  friends: [Friend!] @cacheControl(maxAge: 60, scope: PRIVATE)
+  requests: [FriendRequest!] @cacheControl(maxAge: 60, scope: PRIVATE)
 }
 
 """
@@ -141,7 +171,7 @@ type MarketData implements Node {
 """
 Generic NFT object type definition to provide on-chain and off-chain metadata.
 """
-type Nft implements Node @cacheControl(maxAge: 1800) {
+type Nft implements Node {
   id: ID!
   address: String!
   attributes: [NftAttribute!] @cacheControl(inheritMaxAge: true)
@@ -182,11 +212,28 @@ Notification data type for user notification reads.
 """
 type Notification implements Node {
   id: ID!
-  body: String!
+  body: JSONObject!
   source: String!
   timestamp: String!
   title: String!
   viewed: Boolean!
+}
+
+"""
+Relay connection specification for `Notification` edges.
+"""
+type NotificationConnection {
+  edges: [NotificationEdge]
+  lastReadId: Int
+  pageInfo: PageInfo!
+}
+
+"""
+Relay edge specification for `Notification` nodes.
+"""
+type NotificationEdge {
+  cursor: String!
+  node: Notification
 }
 
 """
@@ -253,12 +300,12 @@ type TransactionEdge {
 Backpack user type definition so provide data about all of the user's
 assets, peripheral information, and social data.
 """
-type User implements Node @cacheControl(maxAge: 60, scope: PRIVATE) {
+type User implements Node {
   id: ID!
   avatar: String!
   createdAt: String!
-  friends: [Friend!] @cacheControl(maxAge: 60, scope: PRIVATE)
-  notifications(filters: NotificationsFiltersInput): [Notification!]
+  friendship: Friendship @cacheControl(inheritMaxAge: true)
+  notifications(filters: NotificationsFiltersInput): NotificationConnection
     @cacheControl(maxAge: 60, scope: PRIVATE)
   username: String!
   wallets(filters: WalletsFiltersInput): WalletConnection
@@ -268,7 +315,7 @@ type User implements Node @cacheControl(maxAge: 60, scope: PRIVATE) {
 """
 Wallet definition to provide data about all assets owned by an address.
 """
-type Wallet implements Node @cacheControl(maxAge: 60) {
+type Wallet implements Node {
   id: ID!
   address: String!
   chainId: ChainID!

@@ -1,4 +1,8 @@
-import type { GraphQLResolveInfo } from "graphql";
+import type {
+  GraphQLResolveInfo,
+  GraphQLScalarType,
+  GraphQLScalarTypeConfig,
+} from "graphql";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -20,6 +24,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** Custom scalar to handle the parsing of arbitrary JSON object data. */
+  JSONObject: any;
 };
 
 /**
@@ -62,6 +68,27 @@ export type Friend = Node & {
   avatar: Scalars["String"];
   id: Scalars["ID"];
   username: Scalars["String"];
+};
+
+/** Friend request data for a user. */
+export type FriendRequest = Node & {
+  __typename?: "FriendRequest";
+  id: Scalars["ID"];
+  type: FriendRequestType;
+  user: Scalars["String"];
+};
+
+/** Enum for associating a friend request with the direction of how it was sent. */
+export enum FriendRequestType {
+  Received = "RECEIVED",
+  Sent = "SENT",
+}
+
+/** Wrapper type for all user friendship data. */
+export type Friendship = {
+  __typename?: "Friendship";
+  friends?: Maybe<Array<Friend>>;
+  requests?: Maybe<Array<FriendRequest>>;
 };
 
 /** NFT listing data pulling from marketplaces. */
@@ -133,12 +160,27 @@ export type Node = {
 /** Notification data type for user notification reads. */
 export type Notification = Node & {
   __typename?: "Notification";
-  body: Scalars["String"];
+  body: Scalars["JSONObject"];
   id: Scalars["ID"];
   source: Scalars["String"];
   timestamp: Scalars["String"];
   title: Scalars["String"];
   viewed: Scalars["Boolean"];
+};
+
+/** Relay connection specification for `Notification` edges. */
+export type NotificationConnection = {
+  __typename?: "NotificationConnection";
+  edges?: Maybe<Array<Maybe<NotificationEdge>>>;
+  lastReadId?: Maybe<Scalars["Int"]>;
+  pageInfo: PageInfo;
+};
+
+/** Relay edge specification for `Notification` nodes. */
+export type NotificationEdge = {
+  __typename?: "NotificationEdge";
+  cursor: Scalars["String"];
+  node?: Maybe<Notification>;
 };
 
 /** Input filter type for fetching user notifications. */
@@ -236,9 +278,9 @@ export type User = Node & {
   __typename?: "User";
   avatar: Scalars["String"];
   createdAt: Scalars["String"];
-  friends?: Maybe<Array<Friend>>;
+  friendship?: Maybe<Friendship>;
   id: Scalars["ID"];
-  notifications?: Maybe<Array<Notification>>;
+  notifications?: Maybe<NotificationConnection>;
   username: Scalars["String"];
   wallets?: Maybe<WalletConnection>;
 };
@@ -421,8 +463,12 @@ export type ResolversTypes = ResolversObject<{
   Collection: ResolverTypeWrapper<Collection>;
   Float: ResolverTypeWrapper<Scalars["Float"]>;
   Friend: ResolverTypeWrapper<Friend>;
+  FriendRequest: ResolverTypeWrapper<FriendRequest>;
+  FriendRequestType: FriendRequestType;
+  Friendship: ResolverTypeWrapper<Friendship>;
   ID: ResolverTypeWrapper<Scalars["ID"]>;
   Int: ResolverTypeWrapper<Scalars["Int"]>;
+  JSONObject: ResolverTypeWrapper<Scalars["JSONObject"]>;
   Listing: ResolverTypeWrapper<Listing>;
   MarketData: ResolverTypeWrapper<MarketData>;
   Nft: ResolverTypeWrapper<Nft>;
@@ -434,6 +480,7 @@ export type ResolversTypes = ResolversObject<{
     | ResolversTypes["Balances"]
     | ResolversTypes["Collection"]
     | ResolversTypes["Friend"]
+    | ResolversTypes["FriendRequest"]
     | ResolversTypes["Listing"]
     | ResolversTypes["MarketData"]
     | ResolversTypes["Nft"]
@@ -443,6 +490,8 @@ export type ResolversTypes = ResolversObject<{
     | ResolversTypes["User"]
     | ResolversTypes["Wallet"];
   Notification: ResolverTypeWrapper<Notification>;
+  NotificationConnection: ResolverTypeWrapper<NotificationConnection>;
+  NotificationEdge: ResolverTypeWrapper<NotificationEdge>;
   NotificationsFiltersInput: NotificationsFiltersInput;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   Query: ResolverTypeWrapper<{}>;
@@ -467,8 +516,11 @@ export type ResolversParentTypes = ResolversObject<{
   Collection: Collection;
   Float: Scalars["Float"];
   Friend: Friend;
+  FriendRequest: FriendRequest;
+  Friendship: Friendship;
   ID: Scalars["ID"];
   Int: Scalars["Int"];
+  JSONObject: Scalars["JSONObject"];
   Listing: Listing;
   MarketData: MarketData;
   Nft: Nft;
@@ -480,6 +532,7 @@ export type ResolversParentTypes = ResolversObject<{
     | ResolversParentTypes["Balances"]
     | ResolversParentTypes["Collection"]
     | ResolversParentTypes["Friend"]
+    | ResolversParentTypes["FriendRequest"]
     | ResolversParentTypes["Listing"]
     | ResolversParentTypes["MarketData"]
     | ResolversParentTypes["Nft"]
@@ -489,6 +542,8 @@ export type ResolversParentTypes = ResolversObject<{
     | ResolversParentTypes["User"]
     | ResolversParentTypes["Wallet"];
   Notification: Notification;
+  NotificationConnection: NotificationConnection;
+  NotificationEdge: NotificationEdge;
   NotificationsFiltersInput: NotificationsFiltersInput;
   PageInfo: PageInfo;
   Query: {};
@@ -555,6 +610,38 @@ export type FriendResolvers<
   username?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
+
+export type FriendRequestResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["FriendRequest"] = ResolversParentTypes["FriendRequest"]
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes["FriendRequestType"], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type FriendshipResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["Friendship"] = ResolversParentTypes["Friendship"]
+> = ResolversObject<{
+  friends?: Resolver<
+    Maybe<Array<ResolversTypes["Friend"]>>,
+    ParentType,
+    ContextType
+  >;
+  requests?: Resolver<
+    Maybe<Array<ResolversTypes["FriendRequest"]>>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export interface JsonObjectScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes["JSONObject"], any> {
+  name: "JSONObject";
+}
 
 export type ListingResolvers<
   ContextType = any,
@@ -648,6 +735,7 @@ export type NodeResolvers<
     | "Balances"
     | "Collection"
     | "Friend"
+    | "FriendRequest"
     | "Listing"
     | "MarketData"
     | "Nft"
@@ -666,12 +754,39 @@ export type NotificationResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Notification"] = ResolversParentTypes["Notification"]
 > = ResolversObject<{
-  body?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  body?: Resolver<ResolversTypes["JSONObject"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   source?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   title?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   viewed?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type NotificationConnectionResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["NotificationConnection"] = ResolversParentTypes["NotificationConnection"]
+> = ResolversObject<{
+  edges?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["NotificationEdge"]>>>,
+    ParentType,
+    ContextType
+  >;
+  lastReadId?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes["PageInfo"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type NotificationEdgeResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["NotificationEdge"] = ResolversParentTypes["NotificationEdge"]
+> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  node?: Resolver<
+    Maybe<ResolversTypes["Notification"]>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -811,14 +926,14 @@ export type UserResolvers<
 > = ResolversObject<{
   avatar?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  friends?: Resolver<
-    Maybe<Array<ResolversTypes["Friend"]>>,
+  friendship?: Resolver<
+    Maybe<ResolversTypes["Friendship"]>,
     ParentType,
     ContextType
   >;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   notifications?: Resolver<
-    Maybe<Array<ResolversTypes["Notification"]>>,
+    Maybe<ResolversTypes["NotificationConnection"]>,
     ParentType,
     ContextType,
     Partial<UserNotificationsArgs>
@@ -888,6 +1003,9 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Balances?: BalancesResolvers<ContextType>;
   Collection?: CollectionResolvers<ContextType>;
   Friend?: FriendResolvers<ContextType>;
+  FriendRequest?: FriendRequestResolvers<ContextType>;
+  Friendship?: FriendshipResolvers<ContextType>;
+  JSONObject?: GraphQLScalarType;
   Listing?: ListingResolvers<ContextType>;
   MarketData?: MarketDataResolvers<ContextType>;
   Nft?: NftResolvers<ContextType>;
@@ -896,6 +1014,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   NftEdge?: NftEdgeResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
   Notification?: NotificationResolvers<ContextType>;
+  NotificationConnection?: NotificationConnectionResolvers<ContextType>;
+  NotificationEdge?: NotificationEdgeResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   TokenBalance?: TokenBalanceResolvers<ContextType>;

@@ -20,6 +20,7 @@
     "@coral-xyz/backend-common": "*",
     "@coral-xyz/chat-zeus": "*",
     "@coral-xyz/common": "*",
+    "@coral-xyz/xnft": "^0.2.52",
     "@coral-xyz/zeus": "*",
     "@graphql-tools/schema": "^9.0.19",
     "@metaplex-foundation/js": "0.16.1",
