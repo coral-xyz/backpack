@@ -2,6 +2,11 @@ import { RESTDataSource } from "@apollo/datasource-rest";
 import type { AccountInfo } from "@solana/web3.js";
 import type { EnrichedTransaction } from "helius-sdk";
 
+type HeliusOptions = {
+  apiKey: string;
+  devnet?: boolean;
+};
+
 /**
  * Custom GraphQL REST data source class abstraction for Helius.
  * @export
@@ -13,9 +18,12 @@ export class Helius extends RESTDataSource {
 
   override baseURL = "https://api.helius.xyz";
 
-  constructor(apiKey: string) {
+  constructor(opts: HeliusOptions) {
     super();
-    this.#apiKey = apiKey;
+    this.#apiKey = opts.apiKey;
+    if (opts.devnet) {
+      this.baseURL = "https://api-devnet.helius.xyz";
+    }
   }
 
   /**

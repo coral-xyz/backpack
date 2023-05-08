@@ -1,5 +1,9 @@
 import { RESTDataSource } from "@apollo/datasource-rest";
 
+type TensorOptions = {
+  apiKey: string;
+};
+
 /**
  * Custom GraphQL REST data source class for the Tensor API.
  * @export
@@ -11,9 +15,9 @@ export class Tensor extends RESTDataSource {
 
   override baseURL = "https://api.tensor.so";
 
-  constructor(apiKey: string) {
+  constructor(opts: TensorOptions) {
     super();
-    this.#apiKey = apiKey;
+    this.#apiKey = opts.apiKey;
   }
 
   /**
