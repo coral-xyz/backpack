@@ -1,6 +1,10 @@
 import type { Event } from "@coral-xyz/common";
 import {
   BackgroundSolanaConnection,
+  Blockchain,
+  CHANNEL_PLUGIN_NOTIFICATION,
+  CHANNEL_PLUGIN_RPC_REQUEST,
+  CHANNEL_PLUGIN_RPC_RESPONSE,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
   CHANNEL_SOLANA_NOTIFICATION,
@@ -12,6 +16,12 @@ import {
   NOTIFICATION_SOLANA_CONNECTED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_DISCONNECTED,
+  PLUGIN_NOTIFICATION_CONNECT,
+  PLUGIN_NOTIFICATION_MOUNT,
+  PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
+  PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED,
+  PLUGIN_NOTIFICATION_UNMOUNT,
+  PLUGIN_NOTIFICATION_UPDATE_METADATA,
   SOLANA_RPC_METHOD_CONNECT,
   SOLANA_RPC_METHOD_DISCONNECT,
   SOLANA_RPC_METHOD_OPEN_XNFT,
@@ -32,7 +42,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 import * as cmn from "./common/solana";
 import { RequestManager } from "./request-manager";
-import { isValidEventOrigin } from ".";
+import { ChainedRequestManager, isValidEventOrigin } from ".";
 
 const logger = getLogger("provider-solana-injection");
 
@@ -45,7 +55,10 @@ export class ProviderSolanaInjection
   //
   // Channel to send extension specific RPC requests to the extension.
   //
-  #requestManager: RequestManager;
+  #backpackRequestManager: RequestManager;
+  #xnftRequestManager: ChainedRequestManager;
+
+  #requestManager: RequestManager | ChainedRequestManager;
   //
   // Channel to send Solana Connection API requests to the extension.
   //
@@ -53,8 +66,10 @@ export class ProviderSolanaInjection
 
   #isBackpack: boolean;
   #isConnected: boolean;
+  #isXnft: boolean;
   #publicKey?: PublicKey;
   #connection: Connection;
+  #handlePublicKeyUpdated: any;
 
   constructor() {
     super();
@@ -62,10 +77,11 @@ export class ProviderSolanaInjection
       Object.freeze(this);
     }
     this.#options = undefined;
-    this.#requestManager = new RequestManager(
+    this.#backpackRequestManager = new RequestManager(
       CHANNEL_SOLANA_RPC_REQUEST,
       CHANNEL_SOLANA_RPC_RESPONSE
     );
+    this.#requestManager = this.#backpackRequestManager;
     this.#connectionRequestManager = new RequestManager(
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
       CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
@@ -92,10 +108,15 @@ export class ProviderSolanaInjection
 
   #handleNotification(event: Event) {
     if (!isValidEventOrigin(event)) return;
-    if (event.data.type !== CHANNEL_SOLANA_NOTIFICATION) return;
+    if (
+      event.data.type !== CHANNEL_SOLANA_NOTIFICATION &&
+      event.data.type !== CHANNEL_PLUGIN_NOTIFICATION
+    )
+      return;
     logger.debug("notification", event);
 
     switch (event.data.detail.name) {
+      // BROWSER EVENTS
       case NOTIFICATION_SOLANA_CONNECTED:
         this.#handleNotificationConnected(event);
         break;
@@ -108,11 +129,75 @@ export class ProviderSolanaInjection
       case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
         this.#handleNotificationActiveWalletUpdated(event);
         break;
+
+      // PLUGIN EVENTS
+      case PLUGIN_NOTIFICATION_CONNECT:
+        this.#handlePluginConnect(event);
+        break;
+      case PLUGIN_NOTIFICATION_MOUNT:
+        this.#handlePluginMount(event);
+        break;
+      case PLUGIN_NOTIFICATION_UPDATE_METADATA:
+        this.#handlePluginUpdateMetadata(event);
+        break;
+      case PLUGIN_NOTIFICATION_UNMOUNT:
+        this.#handlePluginUnmount(event);
+        break;
+      case PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
+        this.#handlePluginConnectionUrlUpdated(event);
+        break;
+      case PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED:
+        this.#handlePluginPublicKeyUpdated(event);
+        break;
+
       default:
         throw new Error(`unexpected notification ${event.data.detail.name}`);
     }
 
     this.emit(_mapNotificationName(event.data.detail.name));
+  }
+
+  #handlePluginConnect(event: Event) {
+    const { publicKeys, connectionUrls } = event.data.detail.data;
+    if (!this.#xnftRequestManager) {
+      this.#xnftRequestManager = new ChainedRequestManager(
+        CHANNEL_PLUGIN_RPC_REQUEST,
+        CHANNEL_PLUGIN_RPC_RESPONSE
+      );
+    }
+    this.#requestManager = this.#xnftRequestManager;
+    const publicKey = publicKeys[Blockchain.SOLANA];
+    const connectionUrl = connectionUrls[Blockchain.SOLANA];
+    this.#isXnft = true;
+    this.#connect(publicKey, connectionUrl);
+    this.emit("connect", event.data.detail);
+  }
+
+  #handlePluginMount(event: Event) {
+    this.emit("mount", event.data.detail);
+  }
+
+  #handlePluginUpdateMetadata(event: Event) {
+    this.emit("metadata", event.data.detail);
+  }
+
+  #handlePluginUnmount(event: Event) {
+    this.emit("unmount", event.data.detail);
+  }
+
+  #handlePluginConnectionUrlUpdated(event: Event) {
+    const connectionUrl = event.data.detail.data.url;
+    this.#connection = new BackgroundSolanaConnection(
+      this.#connectionRequestManager,
+      connectionUrl
+    );
+    this.emit("connectionUpdate", event.data.detail);
+  }
+
+  #handlePluginPublicKeyUpdated(event: Event) {
+    const publicKey = event.data.detail.data.publicKey;
+    this.#publicKey = publicKey;
+    this.emit("publicKeyUpdate", event.data.detail);
   }
 
   #handleNotificationConnected(event: Event) {}
@@ -146,6 +231,9 @@ export class ProviderSolanaInjection
     if (this.#isConnected) {
       throw new Error("provider already connected");
     }
+    if (this.#isXnft) {
+      console.warn("xnft already connected");
+    }
     // Send request to the RPC API.
     const result = await this.#requestManager.request({
       method: SOLANA_RPC_METHOD_CONNECT,
@@ -156,6 +244,9 @@ export class ProviderSolanaInjection
   }
 
   async disconnect() {
+    if (this.#isXnft) {
+      console.warn("xnft can't be disconnected");
+    }
     await this.#requestManager.request({
       method: SOLANA_RPC_METHOD_DISCONNECT,
       params: [],
@@ -165,6 +256,9 @@ export class ProviderSolanaInjection
   }
 
   async openXnft(xnftAddress: string | PublicKey) {
+    if (this.#isXnft) {
+      throw new Error("xnft context: use window.xnft.openPlugin instead");
+    }
     await this.#requestManager.request({
       method: SOLANA_RPC_METHOD_OPEN_XNFT,
       params: [xnftAddress.toString()],
@@ -294,6 +388,10 @@ export class ProviderSolanaInjection
 
   public get isConnected() {
     return this.#isConnected;
+  }
+
+  public get isXnft() {
+    return this.#isXnft;
   }
 
   public get publicKey() {
