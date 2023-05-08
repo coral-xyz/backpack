@@ -74,7 +74,7 @@ export const userTypeResolvers: UserResolvers = {
    * @param {{}} _args
    * @param {ApiContext} _ctx
    * @param {GraphQLResolveInfo} _info
-   * @returns {*}  {(Promise<Friendship | null>)}
+   * @returns {(Promise<Friendship | null>)}
    */
   async friendship(
     _parent: User,
