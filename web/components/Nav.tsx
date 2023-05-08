@@ -9,7 +9,7 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ');
 }
 
-const mainMenu = [
+export const mainMenu = [
   { title: 'Backpack', path: '/' },
   {
     title: 'Blog',
