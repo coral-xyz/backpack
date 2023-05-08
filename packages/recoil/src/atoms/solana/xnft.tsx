@@ -13,10 +13,10 @@ import type { Xnft } from "@coral-xyz/xnft/lib/cjs/xnft";
 import type { IdlAccounts } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import * as cheerio from "cheerio";
-import { atomFamily, selectorFamily } from "recoil";
+import { atomFamily, selectorFamily, useRecoilValue } from "recoil";
 
 import { featureGates } from "../feature-gates";
-import { isDeveloperMode } from "../preferences";
+import { isDeveloperMode,xnftPreferences  } from "../preferences";
 import { connectionUrls } from "../preferences/connection-urls";
 import { primaryWallets } from "../primaryWallets";
 import { activePublicKeys } from "../wallet";
@@ -212,7 +212,43 @@ export const filteredPlugins = selectorFamily<
       const developerMode = get(isDeveloperMode);
       const _plugins = get(plugins({ publicKey, connectionUrl }));
 
-      return _plugins.filter(
+      const preferences = get(xnftPreferences);
+      const _pluginsFiltered = _plugins.filter(
+        (xnft) =>
+          // hide autoinstalled ONE xNft -> entrypoint in collectibles.
+          xnft.install.account.xnft.toString() !==
+            BAKED_IN_XNFTS.one.publicKey &&
+          // hide autoinstalled Explorer xNFT and the Mnemonic Inspect xNFT if not in devmode
+          (developerMode ||
+            xnft.install.account.xnft.toString() !==
+              BAKED_IN_XNFTS.explorer.publicKey) &&
+          (developerMode ||
+            xnft.install.account.xnft.toString() !==
+              BAKED_IN_XNFTS.mnemonics.publicKey) &&
+          // filter based on xnft preferences
+          preferences?.[xnft.install.account.xnft.toString()]?.disabled !==
+            false
+      );
+
+      return _pluginsFiltered;
+    },
+});
+
+export const filteredPluginsForSettings = selectorFamily<
+  any,
+  {
+    publicKey: string;
+    connectionUrl: string;
+  }
+>({
+  key: "filteredPluginsForSettings",
+  get:
+    ({ publicKey, connectionUrl }) =>
+    ({ get }) => {
+      const developerMode = get(isDeveloperMode);
+      const _plugins = get(plugins({ publicKey, connectionUrl }));
+
+      const _pluginsFiltered = _plugins.filter(
         (xnft) =>
           // hide autoinstalled ONE xNft -> entrypoint in collectibles.
           xnft.install.account.xnft.toString() !==
@@ -225,5 +261,7 @@ export const filteredPlugins = selectorFamily<
             xnft.install.account.xnft.toString() !==
               BAKED_IN_XNFTS.mnemonics.publicKey)
       );
+
+      return _pluginsFiltered;
     },
 });

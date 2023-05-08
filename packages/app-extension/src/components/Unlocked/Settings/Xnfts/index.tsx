@@ -7,7 +7,7 @@ import {
   PushDetail,
 } from "@coral-xyz/react-common";
 import {
-  filteredPlugins,
+  filteredPluginsForSettings,
   useActiveSolanaWallet,
   useSolanaConnectionUrl,
 } from "@coral-xyz/recoil";
@@ -24,7 +24,7 @@ export function XnftSettings() {
   const connectionUrl = useSolanaConnectionUrl();
   const publicKey = activeSolanaWallet?.publicKey;
   const { contents, state } = useRecoilValueLoadable(
-    filteredPlugins({ publicKey, connectionUrl })
+    filteredPluginsForSettings({ publicKey, connectionUrl })
   );
 
   useEffect(() => {

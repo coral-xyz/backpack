@@ -71,7 +71,22 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   const menuItems = {
     Display: {
       detail: (
-        <SwitchToggle enabled={!xnftPreference?.disabled} onChange={() => {}} />
+        <SwitchToggle
+          enabled={!!xnftPreference?.disabled}
+          onChange={async () => {
+            console.log(xnftPreference);
+            const updatedDisabled = !xnftPreference?.disabled;
+            await background.request({
+              method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
+              params: [
+                xnft.install.account.xnft.toString(),
+                {
+                  disabled: updatedDisabled,
+                },
+              ],
+            });
+          }}
+        />
       ),
       onClick: () => {},
       style: {
@@ -240,11 +255,13 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
             ? "This xNFT was developed by the Backpack team and cannot be uninstalled."
             : "Uninstalling will remove this xNFT from your account."}
         </Typography>
-        {!isBaked ? <NegativeButton
-          disabled={isDisabled}
-          label="Uninstall xNFT"
-          onClick={() => setOpenConfirm(true)}
-          /> : null}
+        {!isBaked ? (
+          <NegativeButton
+            disabled={isDisabled}
+            label="Uninstall xNFT"
+            onClick={() => setOpenConfirm(true)}
+          />
+        ) : null}
       </div>
       <ApproveTransactionDrawer
         openDrawer={openConfirm}

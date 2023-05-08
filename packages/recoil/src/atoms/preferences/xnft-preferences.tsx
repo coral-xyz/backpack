@@ -29,7 +29,7 @@ export const xnftPreferences = atom<XnftPreferenceStore | null>({
           pushNotifications: true,
           mediaPermissions: false,
         },
-        ...(response ?? null),
+        ...response,
       };
 
       return result;
