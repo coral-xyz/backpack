@@ -167,6 +167,7 @@ export function Send({
     uuid?: string;
   };
 }) {
+  const activeWallet = useActiveWallet();
   const classes = useStyles();
   const { uuid } = useUser();
   const drawer = useDrawerContext();
@@ -179,7 +180,15 @@ export function Send({
   const [strAmount, setStrAmount] = useState("");
   const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
   const [message, setMessage] = useState("");
+  const [tokenData, setTokendata] = useState<any>(
+    blockchainTokenData({
+      publicKey: address,
+      blockchain,
+      tokenAddress: activeWallet.publicKey,
+    })
+  );
   const friendship = useFriendship({ userId: to?.uuid || "" });
+  const [newToken, loading] = useLoader(tokenData, null);
 
   useEffect(() => {
     const prev = nav.title;
@@ -223,8 +232,26 @@ export function Send({
     }
   }, [blockchain, token]); // eslint-disable-line
 
+  const getTokenData = () => {
+    const publicKeyStr = activeWallet.publicKey;
+    const tokenDataFetched = blockchainTokenData({
+      publicKey: publicKeyStr,
+      blockchain,
+      tokenAddress: publicKeyStr,
+    });
+    setTokendata(tokenDataFetched);
+  };
+
+  useEffect(() => {
+    if (newToken) {
+      setmaxAmount(BigNumber.from((newToken as any)!.nativeBalance));
+    }
+  }, [newToken]);
+
   const amountSubFee = BigNumber.from(token!.nativeBalance).sub(feeOffset);
-  const maxAmount = amountSubFee.gt(0) ? amountSubFee : BigNumber.from(0);
+  const [maxAmount, setmaxAmount] = useState(
+    amountSubFee.gt(0) ? amountSubFee : BigNumber.from(0)
+  );
   const exceedsBalance = amount && amount.gt(maxAmount);
   const isSendDisabled =
     !isValidAddress || amount === null || amount.eq(0) || !!exceedsBalance;
@@ -310,6 +337,7 @@ export function Send({
           if (!val) {
             setAmount(BigNumber.from(0));
             setStrAmount("");
+            getTokenData();
           }
           setOpenDrawer(val);
         }}
