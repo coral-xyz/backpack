@@ -1,4 +1,5 @@
 schema {
+  mutation: Mutation
   query: Query
 }
 
@@ -15,6 +16,20 @@ directive @cacheControl(
   scope: CacheControlScope
   inheritMaxAge: Boolean
 ) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+
+"""
+Root level mutation type.
+"""
+type Mutation {
+  """
+  Attempt to add a new wallet public key to the user account.
+  """
+  importPublicKey(
+    chainId: ChainID!
+    address: String!
+    signature: String!
+  ): Boolean
+}
 
 """
 Root level query type.

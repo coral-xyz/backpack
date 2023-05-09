@@ -90,14 +90,14 @@ export const userTypeResolvers: UserResolvers = {
   /**
    * Field-level resolver handler for the `notifications` field.
    * @param {User} _parent
-   * @param {Partial<UserNotificationsArgs>} args
+   * @param {UserNotificationsArgs} args
    * @param {ApiContext} ctx
    * @param {GraphQLResolveInfo} _info
    * @returns {(Promise<NotificationConnection | null>)}
    */
   async notifications(
     _parent: User,
-    { filters }: Partial<UserNotificationsArgs>,
+    { filters }: UserNotificationsArgs,
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<NotificationConnection | null> {
@@ -168,14 +168,14 @@ export const userTypeResolvers: UserResolvers = {
   /**
    * Field-level resolver handler for the `wallets` field.
    * @param {User} _parent
-   * @param {Partial<UserWalletsArgs>} args
+   * @param {UserWalletsArgs} args
    * @param {ApiContext} ctx
    * @param {GraphQLResolveInfo} _info
    * @returns {(Promise<WalletConnection | null>)}
    */
   async wallets(
     _parent: User,
-    { filters }: Partial<UserWalletsArgs>,
+    { filters }: UserWalletsArgs,
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<WalletConnection | null> {
