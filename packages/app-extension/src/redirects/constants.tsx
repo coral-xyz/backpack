@@ -21,6 +21,17 @@ export enum PREFIX {
   IPNS = "/ipns/",
 }
 
+// Custom prefixes to resolve
+export const arweavePrefix = "arw://";
+export const shadowDrivePrefix = "shdw://";
+export const customPrefixes = [arweavePrefix, shadowDrivePrefix];
+
+export const allPrefixes = [
+  ...ipnsOrIpfsPrefix,
+  arweavePrefix,
+  shadowDrivePrefix,
+];
+
 // Url regex patterns for most popular search engines: Google, Bing and DuckDuckGo.
 export const urlPatterns: string[] = [
   "^[^:]+://www\\.google(\\.[a-z]{2,3}){1,2}/search\\?q=.*",

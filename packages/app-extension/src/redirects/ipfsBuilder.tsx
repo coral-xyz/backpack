@@ -1,29 +1,17 @@
 // Modified implementation from https://github.com/zhvng/sns-resolver. Thank @zhvng!
 
 import {
+  allPrefixes,
+  arweavePrefix,
   DEFAULT_GATEWAY,
   ipAddressRegex,
-  ipnsOrIpfsPrefix,
   PREFIX,
+  shadowDrivePrefix,
 } from "./constants";
 import { addHttps } from "./ResolveDomainName";
 
-/**
- * Build IPFS url from cid and path
- *
- * @param {string} cid IPFS cid to access with url
- * @param {string} path path of the url (containing any search params)
- * @param {PREFIX} prefix prefix of the url
- */
-export async function build_IPFS_OR_IPNS_Url(
-  cid: string,
-  path: string,
-  prefix: PREFIX
-) {
-  const gatewayUrl = await getIPFSGateway();
-  return addHttps(gatewayUrl + prefix + cid + path);
-}
-
+// ----------------------------------------------------------------
+// Handles IPFS Gateway Fetching and Resolution Toggle
 interface GatewayData {
   IPFSGateway?: string;
 }
@@ -50,8 +38,7 @@ export async function getIPFSGateway() {
 
 /**
  * Set user's preferred IPFS gateway to a new gateway url.
- * Retreive url from the `IPFSGateways` object or use a custom url if needed
- *
+ * Retrieve url from the `IPFSGateways` object or use a custom url if needed
  * @param {string} gateway New IPFS Gateway url
  */
 export async function setIPFSGateway(gateway: string) {
@@ -92,6 +79,26 @@ export const getSupportedNetworkResolution = async (
     return false;
   }
 };
+
+// ----------------------------------------------------------------
+// Url Builder Helpers
+
+/**
+ * Build IPFS url from cid and path
+ *
+ * @param {string} cid IPFS cid to access with url
+ * @param {string} path path of the url (containing any search params)
+ * @param {PREFIX} prefix prefix of the url
+ */
+export async function build_IPFS_OR_IPNS_Url(
+  cid: string,
+  path: string,
+  prefix: PREFIX
+) {
+  const gatewayUrl = await getIPFSGateway();
+  return addHttps(gatewayUrl + prefix + cid + path);
+}
+
 /**
  * Checks if URL prefix starts with IPFS or IPNS
  * @param data Domain content
@@ -100,7 +107,7 @@ export const getSupportedNetworkResolution = async (
  */
 export const checkUrlPrefix = (
   data: string,
-  prefixes: string[] = ipnsOrIpfsPrefix
+  prefixes: string[] = allPrefixes
 ) => {
   for (let prefix of prefixes) {
     if (data.startsWith(prefix)) {
@@ -120,14 +127,10 @@ const redirectToIpfs = async (
   nameServicePathAndSearch: string
 ) => {
   const urlPrefix = checkUrlPrefix(data);
-  let url: string;
+  let url = "";
   if (urlPrefix) {
-    const cid = data.slice(urlPrefix.length);
-    url = await build_IPFS_OR_IPNS_Url(
-      cid,
-      nameServicePathAndSearch,
-      urlPrefix.includes("ipfs") ? PREFIX.IPFS : PREFIX.IPNS
-    );
+    const content = data.slice(urlPrefix.length);
+    url = await getUrlByPrefix(urlPrefix, content, nameServicePathAndSearch);
   } else if (data.match(ipAddressRegex)) {
     url = "http://" + data + nameServicePathAndSearch;
   } else {
@@ -138,6 +141,32 @@ const redirectToIpfs = async (
     throw new Error("invalid url");
   }
   window.location.href = url;
+};
+
+/**
+ * Helper function to get the URL based on the prefix
+ * @param prefix The prefix of the URL
+ * @param content The content identifier or hash
+ * @param pathAndSearch The path and search query of the URL
+ * @returns The formatted URL
+ */
+const getUrlByPrefix = async (
+  prefix: string,
+  content: string,
+  pathAndSearch: string
+): Promise<string> => {
+  if (prefix.includes("ipfs") || prefix.includes("ipns")) {
+    return await build_IPFS_OR_IPNS_Url(
+      content,
+      pathAndSearch,
+      prefix.includes("ipfs") ? PREFIX.IPFS : PREFIX.IPNS
+    );
+  } else if (prefix === arweavePrefix) {
+    return `https://arweave.net/${content}${pathAndSearch}`;
+  } else if (prefix === shadowDrivePrefix) {
+    return `https://shdw-drive.genesysgo.net/${content}${pathAndSearch}`;
+  }
+  return "";
 };
 
 export default redirectToIpfs;
