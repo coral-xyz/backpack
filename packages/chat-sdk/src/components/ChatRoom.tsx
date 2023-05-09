@@ -266,7 +266,7 @@ export const ChatRoom = ({
           messages: [
             {
               client_generated_uuid: client_generated_uuid,
-              message: messageTxt,
+              message: messageTxt.replace(/\n/g, "\\n"),
               message_kind: messageKind,
               message_metadata: messageMetadata,
               parent_client_generated_uuid:

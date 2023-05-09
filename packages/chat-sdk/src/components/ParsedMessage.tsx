@@ -23,7 +23,7 @@ export function ParsedMessage({ message }) {
       {parts.map((part) => {
         if (part.type === "text") {
           return (
-            <span style={{ wordBreak: "break-word" }}>
+            <span style={{ wordBreak: "break-word", whiteSpace: "pre-wrap" }}>
               {/*<Linkify*/}
               {/*  options={{*/}
               {/*    target: "_blank",*/}
@@ -41,7 +41,12 @@ export function ParsedMessage({ message }) {
               {/*    },*/}
               {/*  }}*/}
               {/*>*/}
-              {part.value}
+              {part.value.split("\\n").map((str) => {
+                if (str.length === 0) {
+                  return;
+                }
+                return <p style={{ margin: 0 }}>{str}</p>;
+              })}
               {/*</Linkify>*/}
             </span>
           );

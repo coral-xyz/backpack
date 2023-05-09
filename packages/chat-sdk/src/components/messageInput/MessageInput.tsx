@@ -21,7 +21,7 @@ export const chatMessageInputId = "backpack-message-input";
 export function MessageInput({
   setPluginMenuOpen,
   autoFocus = true,
-  onMediaSelect
+  onMediaSelect,
 }: {
   setPluginMenuOpen: any;
   autoFocus?: boolean;
@@ -32,12 +32,14 @@ export function MessageInput({
   const { type, remoteUsername, activeReply } = useChatContext();
   const { activeSearch } = useContext(RichMentionsContext);
 
-  const uploadFromClipboard = (e:React.ClipboardEvent<HTMLDivElement>):void => {
-    if(e.clipboardData.files.length > 0) {
+  const uploadFromClipboard = (
+    e: React.ClipboardEvent<HTMLDivElement>
+  ): void => {
+    if (e.clipboardData.files.length > 0) {
       let file = e.clipboardData.files[0];
-      onMediaSelect(file)
+      onMediaSelect(file);
     }
-  }
+  };
 
   useEffect(() => {
     if (autoFocus) {
@@ -54,6 +56,34 @@ export function MessageInput({
       <RichMentionsInput
         id={chatMessageInputId}
         onKeyDown={(event) => {
+          if (event.key === "Enter" && event.shiftKey) {
+            event.preventDefault();
+            event.stopPropagation();
+            const div = event.target as HTMLDivElement;
+            const range = window.getSelection()!.getRangeAt(0);
+            const br = document.createElement("br");
+            const text = document.createTextNode("\u00a0"); // non-breaking space
+            range.insertNode(br);
+            range.collapse(false);
+            range.insertNode(text);
+            range.setStartAfter(text);
+            range.setEndAfter(text);
+            const newRange = document.createRange();
+            newRange.setStartAfter(text);
+            newRange.setEndAfter(text);
+            const newSelection = window.getSelection();
+            newSelection!.removeAllRanges();
+            newSelection!.addRange(newRange);
+
+            if (div.childNodes.length === 1 && div.childNodes[0] === br) {
+              const parent = div.parentNode;
+              if (parent) {
+                parent.removeChild(div);
+              }
+            }
+            div.focus();
+            return;
+          }
           if (event.key === "Enter" && activeSearch) {
             event.stopPropagation();
           }
