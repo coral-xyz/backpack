@@ -1,6 +1,5 @@
 import type { ContextFunction } from "@apollo/server";
 import type { ExpressContextFunctionArgument } from "@apollo/server/express4";
-import { Chain } from "@coral-xyz/zeus";
 import { Alchemy, Network } from "alchemy-sdk";
 import type { Request } from "express";
 import { importSPKI, jwtVerify } from "jose";
@@ -15,7 +14,7 @@ import {
   TENSOR_API_KEY,
 } from "../../config";
 
-import { CoinGecko, Helius, Tensor } from "./clients";
+import { CoinGecko, Hasura, Helius, Tensor } from "./clients";
 
 const IN_MEM_JWT_CACHE = new LRUCache<string, string>({
   allowStale: false,
@@ -32,7 +31,7 @@ export interface ApiContext {
   dataSources: {
     alchemy: Alchemy;
     coinGecko: CoinGecko;
-    hasura: ReturnType<typeof Chain>;
+    hasura: Hasura;
     helius: Helius;
     tensor: Tensor;
   };
@@ -93,11 +92,7 @@ export const createContext: ContextFunction<
         network: devnet ? Network.ETH_SEPOLIA : Network.ETH_MAINNET,
       }),
       coinGecko: new CoinGecko(),
-      hasura: Chain(HASURA_URL, {
-        headers: {
-          Authorization: `Bearer ${HASURA_JWT}`,
-        },
-      }),
+      hasura: new Hasura({ secret: HASURA_JWT, url: HASURA_URL }),
       helius: new Helius({ apiKey: HELIUS_API_KEY, devnet }),
       tensor: new Tensor({ apiKey: TENSOR_API_KEY }),
     },
