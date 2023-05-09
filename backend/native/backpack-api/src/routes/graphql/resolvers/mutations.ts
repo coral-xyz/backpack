@@ -2,7 +2,7 @@ import { type Blockchain, getAddMessage } from "@coral-xyz/common";
 import type { GraphQLResolveInfo } from "graphql";
 import { GraphQLError } from "graphql";
 
-import { createUserPublicKey,getUsersByPublicKeys  } from "../../../db/users";
+import { createUserPublicKey, getUsersByPublicKeys } from "../../../db/users";
 import { validateSignature } from "../../../validation/signature";
 import { CreatePublicKeys } from "../../../validation/user";
 import type { ApiContext } from "../context";
@@ -16,6 +16,7 @@ import type { MutationImportPublicKeyArgs, MutationResolvers } from "../types";
  * @param {GraphQLResolveInfo} _info
  * @returns
  */
+// FIXME:TODO: move to new hasura client abstraction
 export const importPublicKeyMutation: MutationResolvers["importPublicKey"] =
   async (
     _parent: {},

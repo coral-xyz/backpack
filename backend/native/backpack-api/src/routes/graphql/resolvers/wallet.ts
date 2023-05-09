@@ -28,36 +28,7 @@ export async function walletQueryResolver(
   ctx: ApiContext,
   _info: GraphQLResolveInfo
 ): Promise<Wallet | null> {
-  // Query Hasura for the peripheral database details about the wallet
-  const resp = await ctx.dataSources.hasura("query")({
-    auth_public_keys: [
-      {
-        where: {
-          blockchain: { _eq: args.chainId.toLowerCase() },
-          public_key: { _eq: args.address },
-        },
-        limit: 1,
-      },
-      {
-        created_at: true,
-        is_primary: true,
-      },
-    ],
-  });
-
-  if (resp.auth_public_keys.length === 0) {
-    return null;
-  }
-
-  return {
-    id: `${args.chainId}_wallet:${args.address}`,
-    address: args.address,
-    chainId: args.chainId,
-    createdAt: new Date(
-      resp.auth_public_keys[0].created_at as string
-    ).toISOString(),
-    isPrimary: resp.auth_public_keys[0].is_primary ?? false,
-  };
+  return ctx.dataSources.hasura.getWallet(args.chainId, args.address);
 }
 
 /**
