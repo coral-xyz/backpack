@@ -1,9 +1,10 @@
 import { Chain } from "@coral-xyz/zeus";
 
-import type {
-  ChainId,
+import {
+  type ChainId,
   type Friend,
   type FriendRequest,
+  FriendRequestType,
   type Notification,
   type NotificationConnection,
   type NotificationsFiltersInput,
@@ -12,8 +13,6 @@ import type {
   type WalletConnection,
   type WalletsFiltersInput,
 } from "../types";
-import {
-  FriendRequestType} from "../types";
 import { createConnection, inferChainIdFromString } from "../utils";
 
 type HasuraOptions = {
