@@ -1,2 +1,1 @@
-
 export const USER = "USER";

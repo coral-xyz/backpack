@@ -5,7 +5,7 @@ import type {
   RemoteUserData,
 } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { BubbleTopLabel, EmptyState,SearchBox  } from "@coral-xyz/react-common";
+import { BubbleTopLabel, EmptyState, SearchBox } from "@coral-xyz/react-common";
 import {
   useFriendships,
   useGroupCollections,
@@ -29,7 +29,8 @@ export function Inbox() {
 
 export function InboxInner() {
   const classes = useStyles();
-  const { uuid } = useUser();
+  const user = useUser();
+  const { uuid } = user;
   const activeChats = useFriendships({ uuid });
   const requestCount = useRequestsCount({ uuid });
   const groupCollections = useGroupCollections({ uuid });
@@ -49,9 +50,7 @@ export function InboxInner() {
       chatProps: x,
       chatType: "individual",
     })),
-  ].sort((a, b) =>
-    a.last_message_timestamp < b.last_message_timestamp ? -1 : 1
-  );
+  ];
 
   const searchedUsersDistinct = searchResults.filter(
     (result) =>

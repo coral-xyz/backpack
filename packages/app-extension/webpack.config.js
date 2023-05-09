@@ -68,13 +68,13 @@ const swcLoaderConfiguration = {
   },
 };
 
-const tamaguiLoaderConfiguration = {
-  loader: "tamagui-loader",
-  options: {
-    config: "./tamagui.config.ts",
-    components: ["@coral-xyz/tamagui", "tamagui"],
-  },
-};
+// const tamaguiLoaderConfiguration = {
+//   loader: "tamagui-loader",
+//   options: {
+//     config: "./tamagui.config.ts",
+//     components: ["@coral-xyz/tamagui", "tamagui"],
+//   },
+// };
 
 const fileExtensions = [
   "eot",
@@ -144,6 +144,7 @@ const options = {
     options: "./src/options/index.tsx",
     permissions: "./src/permissions/index.tsx",
     popup: "./src/index.tsx",
+    warning: "./src/warning.ts",
     contentScript: "./src/contentScript/index.ts",
     // injected: "../provider-injection/dist/browser/index.js",
   },
@@ -215,6 +216,8 @@ const options = {
       buffer: require.resolve("buffer/"), // trailing slash is intentional
       crypto: require.resolve("crypto-browserify"),
       stream: require.resolve("stream-browserify"),
+      path: require.resolve("path-browserify"),
+      zlib: require.resolve("browserify-zlib"),
     },
   },
   plugins: [
@@ -243,7 +246,7 @@ const options = {
         {
           from: "src/manifest.json",
           force: true,
-          transform: function (content, path) {
+          transform: function (content) {
             return Buffer.from(
               JSON.stringify(
                 {

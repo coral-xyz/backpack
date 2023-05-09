@@ -12,14 +12,16 @@ export function BaseCard({
   imageUrl,
   subtitle,
 }: {
-  onPress: () => void;
+  onPress: (name?: string) => void;
   imageUrl: string | null;
   subtitle?: { name: string; length: string };
 }): JSX.Element {
   const theme = useTheme();
   return (
     <Pressable
-      onPress={onPress}
+      onPress={() => {
+        onPress(subtitle?.name);
+      }}
       style={{
         width: "50%",
         padding: 4,
@@ -42,9 +44,9 @@ export function BaseCard({
           style={{
             backgroundColor: theme.custom.colors.nav,
             position: "absolute",
-            bottom: 8,
-            left: 8,
-            right: 8,
+            bottom: 4,
+            left: 4,
+            right: 4,
             borderRadius: 8,
             paddingHorizontal: 8,
             paddingVertical: 6,
@@ -59,9 +61,11 @@ export function BaseCard({
           >
             <Text
               numberOfLines={1}
+              ellipsizeMode="tail"
               style={{
                 justifyContent: "space-between",
                 color: theme.custom.colors.fontColor,
+                maxWidth: 100,
               }}
             >
               {subtitle.name}
@@ -109,7 +113,12 @@ export function NFTCard({
     return null;
   }
 
+  const _subtitle = {
+    name: subtitle?.name || nft.name,
+    length: subtitle?.length || "",
+  };
+
   return (
-    <BaseCard onPress={onPress} imageUrl={nft.imageUrl} subtitle={subtitle} />
+    <BaseCard onPress={onPress} imageUrl={nft.imageUrl} subtitle={_subtitle} />
   );
 }

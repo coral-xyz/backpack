@@ -45,7 +45,7 @@ export function SettingsList() {
 
   const walletsMenu = [
     {
-      label: "Manage Wallets",
+      label: "Wallets",
       onPress: () => navigation.push("edit-wallets"),
       icon: <IconLeft name="account-balance-wallet" />,
       detailIcon: <IconPushDetail />,

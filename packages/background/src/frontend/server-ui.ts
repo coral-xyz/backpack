@@ -25,7 +25,6 @@ import {
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ,
@@ -57,7 +56,6 @@ import {
   UI_RPC_METHOD_KEYRING_SET_MNEMONIC,
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
-  UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
@@ -69,6 +67,7 @@ import {
   UI_RPC_METHOD_LEDGER_IMPORT,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+  UI_RPC_METHOD_NAVIGATION_OPEN_CHAT,
   UI_RPC_METHOD_NAVIGATION_POP,
   UI_RPC_METHOD_NAVIGATION_PUSH,
   UI_RPC_METHOD_NAVIGATION_READ,
@@ -76,8 +75,6 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_DEFAULT,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   UI_RPC_METHOD_PASSWORD_UPDATE,
-  UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
-  UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
   UI_RPC_METHOD_PREFERENCES_READ,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_SET_FEATURE_GATES,
@@ -148,9 +145,6 @@ async function handle<T = any>(
 ): Promise<RpcResponse<T>> {
   logger.debug(`handle rpc ${msg.method}`, msg);
 
-  // User did something so restart the auto-lock countdown
-  ctx.backend.keyringStoreAutoLockCountdownRestart();
-
   /**
    * Enables or disables Auto-lock functionality to ensure
    * the wallet stays unlocked when an xNFT is being used
@@ -161,6 +155,12 @@ async function handle<T = any>(
     );
 
   const { method, params } = msg;
+
+  if (method !== UI_RPC_METHOD_KEYRING_STORE_STATE) {
+    // User did something so restart the auto-lock countdown
+    ctx.backend.keyringStoreAutoLockCountdownRestart();
+  }
+
   switch (method) {
     //
     // Keyring.
@@ -183,8 +183,6 @@ async function handle<T = any>(
       return await handleKeyringKeyDelete(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_STORE_STATE:
       return await handleKeyringStoreState(ctx);
-    case UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE:
-      return handleKeyringStoreKeepAlive(ctx);
     case UI_RPC_METHOD_KEYRING_DERIVE_WALLET:
       return await handleKeyringDeriveWallet(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH:
@@ -253,6 +251,9 @@ async function handle<T = any>(
         toggleAutoLockEnabled(params[0]);
       }
       return await handleNavigationCurrentUrlUpdate(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_NAVIGATION_OPEN_CHAT:
+      return await handleNavigationOpenChat(ctx, params[0]);
+
     case UI_RPC_METHOD_NAVIGATION_READ:
       const navigationData = await handleNavRead(ctx);
       if (navigationData) {
@@ -317,8 +318,6 @@ async function handle<T = any>(
         // @ts-ignore
         ...params
       );
-    case UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ:
-      return await handleBlockchainKeyringsRead(ctx);
     case UI_RPC_METHOD_KEY_IS_COLD_UPDATE:
       return await handleKeyIsColdUpdate(ctx, params[0], params[1]);
     //
@@ -377,18 +376,6 @@ async function handle<T = any>(
       return await handlePasswordUpdate(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD:
       return await handleKeyringStoreCheckPassword(ctx, params[0]);
-    //
-    // xNFT storage.
-    //
-    case UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET:
-      return await handlePluginLocalStorageGet(ctx, params[0], params[1]);
-    case UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT:
-      return await handlePluginLocalStoragePut(
-        ctx,
-        params[0],
-        params[1],
-        params[2]
-      );
     //
     // Solana.
     //
@@ -813,6 +800,13 @@ async function handleNavigationCurrentUrlUpdate(
   const resp = await ctx.backend.navigationCurrentUrlUpdate(url, activeTab);
   return [resp];
 }
+async function handleNavigationOpenChat(
+  ctx: Context<Backend>,
+  chatName: string
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.navigationOpenChat(chatName);
+  return [resp];
+}
 
 async function handleNavRead(
   ctx: Context<Backend>
@@ -1150,13 +1144,6 @@ async function handleBlockchainKeyringsAdd(
   return [resp];
 }
 
-async function handleBlockchainKeyringsRead(
-  ctx: Context<Backend>
-): Promise<RpcResponse<Array<string>>> {
-  const resp = await ctx.backend.blockchainKeyringsRead();
-  return [resp];
-}
-
 async function handleKeyringLedgerImport(
   ctx: Context<Backend>,
   ...args: Parameters<Backend["ledgerImport"]>
@@ -1170,30 +1157,5 @@ async function handlePreviewPubkeys(
   ...args: Parameters<Backend["previewPubkeys"]>
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.previewPubkeys(...args);
-  return [resp];
-}
-
-// This API is only safe because it assumes the frontend UI code is doing
-// the proper gatekeeping. It shouldn't allow other xNFTs to call this
-// api with a fake plugin string.
-async function handlePluginLocalStorageGet(
-  ctx: Context<Backend>,
-  xnftAddress: string,
-  key: string
-): Promise<RpcResponse<any>> {
-  const resp = await ctx.backend.pluginLocalStorageGet(xnftAddress, key);
-  return [resp];
-}
-
-// This API is only safe because it assumes the frontend UI code is doing
-// the proper gatekeeping. It shouldn't allow other xNFTs to call this
-// api with a fake plugin string.
-async function handlePluginLocalStoragePut(
-  ctx: Context<Backend>,
-  xnftAddress: string,
-  key: string,
-  value: any
-): Promise<RpcResponse<any>> {
-  const resp = await ctx.backend.pluginLocalStoragePut(xnftAddress, key, value);
   return [resp];
 }

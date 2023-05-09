@@ -10,8 +10,6 @@ import {
 import {
   BackpackStaffIcon,
   LocalImage,
-  refreshIndividualChatsFor,
-  SignalingManager,
   SuccessButton,
 } from "@coral-xyz/react-common";
 import {
@@ -24,6 +22,10 @@ import {
   useNavigation,
   useUser,
 } from "@coral-xyz/recoil";
+import {
+  refreshIndividualChatsFor,
+  SignalingManager,
+} from "@coral-xyz/tamagui";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Gif as GifComponent } from "@giphy/react-components";
@@ -97,12 +99,6 @@ const useStyles = makeStyles((theme: any) =>
       width: "100%",
       color: theme.custom.colors.fontColor2,
     },
-    avatarNothing: {
-      color: "transparent",
-      backgroundColor: "transparent",
-      width: theme.spacing(4),
-      height: theme.spacing(4),
-    },
     displayName: {
       fontWeight: 600,
       marginLeft: "10px",
@@ -114,12 +110,6 @@ const useStyles = makeStyles((theme: any) =>
       padding: "2px 12px",
       borderRadius: 12,
       cursor: "pointer",
-    },
-    roundBtn: {
-      padding: "2px",
-      height: 26,
-      width: 26,
-      borderRadius: "13px",
     },
     messageLeftContainer: {
       display: "flex",
@@ -261,7 +251,7 @@ export const MessageLine = (props) => {
     <div
       className={classes.messageRow}
       style={{
-        marginTop: sameUserMessage ? 0 : 16,
+        marginTop: sameUserMessage ? 0 : 8,
         paddingLeft: sameUserMessage ? 32 : 0,
       }}
     >
@@ -327,6 +317,7 @@ export const MessageLine = (props) => {
                         <NftStickerRender
                           uuid={props.uuid}
                           mint={props.metadata?.mint}
+                          displayName={displayName}
                         />
                       </div>
                     ) : (
@@ -398,6 +389,7 @@ export const MessageLine = (props) => {
           >
             {photoURL ? (
               <LocalImage
+                size={32}
                 onClick={() => openProfilePage({ uuid: props.uuid })}
                 alt={displayName}
                 className={classes.avatar}
@@ -500,6 +492,7 @@ export const MessageLine = (props) => {
                           <NftStickerRender
                             mint={props.metadata?.mint}
                             uuid={props.uuid}
+                            displayName={displayName}
                           />
                         </div>
                       ) : props.messageKind === "media" ? (
@@ -1044,9 +1037,7 @@ function MessageLeft(props) {
                 parent_username: `@${props.username}`,
                 parent_message_author_uuid: props.userId,
               });
-              document
-                .getElementById(chatMessageInputId)
-                ?.focus();
+              document.getElementById(chatMessageInputId)?.focus();
             }}
           >
             <ReplyIcon fill={theme.custom.colors.icon} />
@@ -1097,9 +1088,7 @@ function MessageRight(props) {
                   parent_message_author_uuid: props.userId,
                   parent_username: "Yourself",
                 });
-                document
-                  .getElementById(chatMessageInputId)
-                  ?.focus();
+                document.getElementById(chatMessageInputId)?.focus();
               }}
             >
               <ReplyIcon fill={theme.custom.colors.icon} />

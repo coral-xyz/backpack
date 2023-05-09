@@ -104,8 +104,6 @@ export const UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE =
   "ui-rpc-method-blockchains-enabled-delete";
 export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD =
   "ui-rpc-method-blockchain-keyrings-add";
-export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ =
-  "ui-rpc-method-blockchain-keyrings-read";
 export const UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS =
   "ui-rpc-method-find-server-public-key-conflicts";
 export const UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR =
@@ -142,8 +140,6 @@ export const UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD =
   "ui-rpc-method-keyring-store-check-password";
 export const UI_RPC_METHOD_KEYRING_STORE_CREATE =
   "ui-rpc-method-keyring-store-create";
-export const UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE =
-  "ui-rpc-method-keyring-store-keep-alive";
 export const UI_RPC_METHOD_KEYRING_STORE_LOCK =
   "ui-rpc-method-keyring-store-lock";
 export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
@@ -164,6 +160,8 @@ export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
 export const UI_RPC_METHOD_LEDGER_IMPORT = "ui-rpc-method-ledger-import";
 export const UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE =
   "ui-rpc-method-navigation-active-tab-update";
+export const UI_RPC_METHOD_NAVIGATION_OPEN_CHAT =
+  "ui-rpc-method-navigation-open-chat";
 export const UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE =
   "ui-rpc-method-navigation-current-url-update";
 export const UI_RPC_METHOD_NAVIGATION_POP = "ui-rpc-method-navigation-pop";
@@ -176,10 +174,6 @@ export const UI_RPC_METHOD_NAVIGATION_TO_ROOT =
 export const UI_RPC_METHOD_NAVIGATION_TO_DEFAULT =
   "ui-rpc-method-navigation-to-default";
 export const UI_RPC_METHOD_PASSWORD_UPDATE = "ui-rpc-method-password-update";
-export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET =
-  "ui-rpc-method-plugin-storage-get";
-export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT =
-  "ui-rpc-method-plugin-storage-put";
 export const UI_RPC_METHOD_SET_FEATURE_GATES =
   "ui-rpc-method-set-feature-gates";
 export const UI_RPC_METHOD_GET_FEATURE_GATES =
@@ -374,6 +368,7 @@ export const NOTIFICATION_SOLANA_COMPRESSED_NFTS_UPDATED =
 // Ethereum web injected provider API.
 //
 export const ETHEREUM_RPC_METHOD_CONNECT = "ethereum-connect";
+export const ETHEREUM_RPC_METHOD_SWITCH_CHAIN = "ethereum-switch-chain";
 export const ETHEREUM_RPC_METHOD_DISCONNECT = "ethereum-disconnect";
 export const ETHEREUM_RPC_METHOD_SIGN_TX = "ethereum-sign-tx";
 export const ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX = "ethereum-sign-and-send-tx";
@@ -511,7 +506,13 @@ export const PLUGIN_RPC_METHOD_WINDOW_OPEN = "rpc-method-window-open";
 
 export const PLUGIN_RPC_METHOD_PLUGIN_OPEN = "rpc-method-plugin-open";
 
+export const PLUGIN_RPC_METHOD_CHAT_OPEN = "rpc-method-plugin-close-to";
+
+export const PLUGIN_RPC_METHOD_CLOSE_TO = "rpc-method-chat-open";
+
 export const PLUGIN_RPC_METHOD_POP_OUT = "rpc-method-pop-out";
+
+export const PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW = "rpc-method-resize-extension-window";
 
 export const BACKGROUND_SERVICE_WORKER_READY = "service-worker-ready";
 
@@ -581,12 +582,10 @@ export const BACKPACK_LINK = "https://backpack.app";
 export const BACKPACK_TERMS_OF_SERVICE = "https://backpack.app/terms";
 export const BACKPACK_GITHUB_LINK = "https://github.com/coral-xyz/backpack";
 
-export const ALCHEMY_ETHEREUM_MAINNET_API_KEY =
-  "DlJr6QuBC2EaE-L60-iqQQGq9hi9-XSZ";
-
 export const AVATAR_BASE_URL = "https://swr.xnfts.dev/avatars";
 export const BACKEND_API_URL = "https://backpack-api.xnfts.dev";
 export const REALTIME_API_URL = "https://backend-ws.xnfts.dev";
+export const REALTIME_WS_URL = "wss://backend-ws.xnfts.dev";
 export const MESSAGING_COMMUNICATION_PUSH = "MESSAGING_COMMUNICATION_PUSH";
 export const MESSAGING_COMMUNICATION_FETCH = "MESSAGING_COMMUNICATION_FETCH";
 export const MESSAGING_COMMUNICATION_FETCH_RESPONSE =
@@ -647,16 +646,17 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     collectionId: "ajM4QBHtZBBRcMqqq9gawdHK28GXcb2yeRs6WBnqhay",
   },
   {
-    id: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
-    name: "The Madlist",
+    id: "J1S9H3QjnRtBbbuD4HjPV6RpRhwuk4zKbxsnCHuTgh9w",
+    name: "Mad Lads",
     image: "https://www.madlads.com/mad_lads_logo.svg",
-    collectionId: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
+    collectionId: "J1S9H3QjnRtBbbuD4HjPV6RpRhwuk4zKbxsnCHuTgh9w",
   },
   {
-    id: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
-    name: "The Madlist",
-    image: "https://www.madlads.com/mad_lads_logo.svg",
-    collectionId: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
+    id: "Et9ckpQCXFN5PsiYN781AczSVuQYyGEdDEPDJ7jrxz4c",
+    name: "Sporting F1",
+    image:
+      "https://arweave.net/Dh3FfZurEtmQD52mmq-axte9M6IMKmNSGzzdTpN9sJc?ext=png",
+    collectionId: "Et9ckpQCXFN5PsiYN781AczSVuQYyGEdDEPDJ7jrxz4c",
   },
 ];
 
@@ -679,4 +679,5 @@ export const BACKPACK_TEAM = [
   "b580347f-2ec8-4600-8af1-0f5982dc93e1",
   "b6615f78-b096-4d50-b247-05db6fe74ea4",
   "7c01a3a2-dc39-4369-afb8-0dd2189412fc",
+  "50752e18-8796-4702-b140-a3d78960ee94",
 ];

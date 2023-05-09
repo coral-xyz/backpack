@@ -62,7 +62,7 @@ export class BackgroundEthereumProvider extends JsonRpcProvider {
       method: ETHEREUM_PROVIDER_RPC_GET_BALANCE,
       params: [address, blockTag],
     });
-    return BigNumber.from(result);
+    return result;
   }
 
   async getCode(

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import type { BarterOffers, BarterResponse } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { Loading, SignalingManager } from "@coral-xyz/react-common";
+import { Loading } from "@coral-xyz/react-common";
+import { SignalingManager } from "@coral-xyz/tamagui";
 import { useCustomTheme } from "@coral-xyz/themes";
 
 import { PLUGIN_HEIGHT_PERCENTAGE } from "../../utils/constants";

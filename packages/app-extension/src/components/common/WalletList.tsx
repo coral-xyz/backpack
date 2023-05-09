@@ -43,10 +43,15 @@ import {
   AddConnectPreview,
   AddConnectWalletMenu,
 } from "../Unlocked/Settings/AddConnectWallet";
-import { CreateMenu } from "../Unlocked/Settings/AddConnectWallet/CreateMenu";
-import { CreateMnemonic } from "../Unlocked/Settings/AddConnectWallet/CreateMnemonic";
+import {
+  CreateMnemonic,
+  CreateOrImportMnemonic,
+} from "../Unlocked/Settings/AddConnectWallet/CreateMnemonic";
 import { ImportMenu } from "../Unlocked/Settings/AddConnectWallet/ImportMenu";
-import { ImportMnemonic } from "../Unlocked/Settings/AddConnectWallet/ImportMnemonic";
+import {
+  ImportMnemonic,
+  ImportMnemonicAutomatic,
+} from "../Unlocked/Settings/AddConnectWallet/ImportMnemonic";
 import { ImportSecretKey } from "../Unlocked/Settings/AddConnectWallet/ImportSecretKey";
 import { RemoveWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RenameWallet";
@@ -249,8 +254,12 @@ function WalletNavStack({
         component={(props: any) => <WalletListBlockchainSelector {...props} />}
       />
       <NavStackScreen
-        name="create-wallet"
-        component={(props: any) => <CreateMenu {...props} />}
+        name="create-or-import-mnemonic"
+        component={(props: any) => <CreateOrImportMnemonic {...props} />}
+      />
+      <NavStackScreen
+        name="set-and-sync-mnemonic"
+        component={(props: any) => <ImportMnemonicAutomatic {...props} />}
       />
       <NavStackScreen
         name="import-wallet"

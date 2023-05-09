@@ -1,4 +1,5 @@
 import { ChatRoom } from "@coral-xyz/chat-sdk";
+import { updateFriendshipIfExists } from "@coral-xyz/db";
 import { useFriendship, useUpdateFriendships } from "@coral-xyz/recoil";
 
 export const ChatScreen = ({
@@ -17,7 +18,7 @@ export const ChatScreen = ({
 
   if (!friendshipValue || !friendshipValue.id) {
     console.error(`Friendship not found with user ${userId} or jwt not found`);
-    return <div></div>;
+    return <div />;
   }
 
   return (
@@ -27,9 +28,9 @@ export const ChatScreen = ({
       }}
     >
       <ChatRoom
-        type={"individual"}
+        type="individual"
         remoteUsername={username}
-        username={""}
+        username=""
         roomId={friendshipValue.id?.toString()}
         userId={uuid}
         areFriends={friendshipValue.areFriends}
@@ -38,14 +39,30 @@ export const ChatScreen = ({
         blocked={friendshipValue.blocked}
         remoteRequested={friendshipValue.remoteRequested}
         spam={friendshipValue.spam}
-        setRequested={(updatedValue: boolean) =>
-          setFriendshipValue({
-            userId: userId,
-            friendshipValue: {
-              requested: updatedValue,
-            },
-          })
-        }
+        setRequested={(updatedValue: boolean) => {
+          if (!friendshipValue.remoteRequested && !friendshipValue.areFriends)
+            setFriendshipValue({
+              userId: userId,
+              friendshipValue: {
+                requested: updatedValue,
+              },
+            });
+          else if (!friendshipValue.areFriends) {
+            updateFriendshipIfExists(uuid, userId, {
+              requested: 0,
+              areFriends: 1,
+            });
+
+            setFriendshipValue({
+              userId: userId,
+              friendshipValue: {
+                areFriends: updatedValue,
+                remoteRequested: false,
+                requested: false,
+              },
+            });
+          }
+        }}
         setSpam={(updatedValue: boolean) =>
           setFriendshipValue({
             userId: userId,

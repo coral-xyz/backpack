@@ -1,5 +1,4 @@
 const {
-  sleep,
   SolanaProvider,
   TransactionEnvelope,
 } = require("@saberhq/solana-contrib");
@@ -21,37 +20,54 @@ process.env.ANCHOR_WALLET ||= join(homedir(), "wallet.json");
 
 const anchorProvider = AnchorProvider.env();
 setProvider(anchorProvider);
-
 const provider = SolanaProvider.init(anchorProvider);
+const { connection, wallet } = anchorProvider;
 
 program.name(name).description(description).version(version);
 
 program
   .command("create")
   .description("Creates a dropzone drop")
-  .option("-l, --local", "use local api")
-  .option("-f, --fund", "fund the token account")
-  .option("-m, --mint <string>", "mint public key")
-  .option("-b, --balances <string>", "balances json string")
+  .requiredOption("-m, --mint <string>", "mint public key string")
+  .requiredOption(
+    "-b, --balances <string>",
+    `object of usernames and balances to be dropped e.g. '{ "foo": 123, "bar": 456 }'`
+  )
+  .option("-l, --local", "use backpack-api running on localhost")
+  .option(
+    "-f, --fund",
+    "fund the distributor account with SUM(balances) of the mint"
+  )
   .action(async (options) => {
+    const url = [
+      options.local
+        ? "http://localhost:8080"
+        : "https://backpack-api.xnfts.dev",
+      "dropzone/drops",
+    ].join("/");
+
     const {
-      data: { msg, distributor, ata, base },
-    } = await axios.post(
-      `${
-        options.local
-          ? "http://localhost:8080"
-          : "https://backpack-api.xnfts.dev"
-      }/dropzone/drops`,
-      {
-        creator: anchorProvider.publicKey.toBase58(),
-        mint: options.mint,
-        balances: JSON.parse(options.balances),
-      }
-    );
+      data: { msg, distributor, ata },
+    } = await axios.post(url, {
+      creator: anchorProvider.publicKey.toBase58(),
+      mint: options.mint,
+      balances: JSON.parse(options.balances),
+    });
 
     const tx = Transaction.from(decode(msg));
-    await anchorProvider.wallet.signTransaction(tx);
-    await anchorProvider.connection.sendRawTransaction(tx.serialize());
+
+    await wallet.signTransaction(tx);
+
+    const signature = await connection.sendRawTransaction(tx.serialize());
+
+    const { blockhash, lastValidBlockHeight } =
+      await connection.getLatestBlockhash();
+
+    await connection.confirmTransaction({
+      blockhash,
+      lastValidBlockHeight,
+      signature,
+    });
 
     console.log({
       transaction: `https://explorer.solana.com/tx/${encode(
@@ -75,14 +91,11 @@ program
 
       console.log(`minting ${total} ${options.mint} to ${ata}...`);
 
-      // wait for token account to be created, will be replaced with confirmation
-      await sleep(10_000);
-
       const ix = SPLToken.createMintToInstruction(
         TOKEN_PROGRAM_ID,
         new PublicKey(options.mint),
         new PublicKey(ata),
-        anchorProvider.wallet.publicKey,
+        wallet.publicKey,
         [],
         total
       );

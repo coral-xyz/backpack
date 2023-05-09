@@ -13,28 +13,31 @@ export const insertNotification = async (
   uuid: string,
   { title, body }: { title: string; body: string }
 ) => {
-  const response = await chain("mutation")({
-    insert_auth_notifications_one: [
-      {
-        object: {
-          title,
-          body,
-          uuid,
-          xnft_id: xnftId,
-          timestamp: new Date(),
-          username: "",
-          image: "",
+  const response = await chain("mutation")(
+    {
+      insert_auth_notifications_one: [
+        {
+          object: {
+            title,
+            body,
+            uuid,
+            xnft_id: xnftId,
+            timestamp: new Date(),
+            username: "",
+            image: "",
+          },
         },
-      },
-      {
-        id: true,
-        title: true,
-        body: true,
-        xnft_id: true,
-        timestamp: true,
-        uuid: true,
-      },
-    ],
-  });
+        {
+          id: true,
+          title: true,
+          body: true,
+          xnft_id: true,
+          timestamp: true,
+          uuid: true,
+        },
+      ],
+    },
+    { operationName: "insertNotification" }
+  );
   return response.insert_auth_notifications_one;
 };

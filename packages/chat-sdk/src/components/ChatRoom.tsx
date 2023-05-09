@@ -6,13 +6,13 @@ import type {
 } from "@coral-xyz/common";
 import { CHAT_MESSAGES, SUBSCRIBE } from "@coral-xyz/common";
 import { createEmptyFriendship } from "@coral-xyz/db";
+import { useUser } from "@coral-xyz/recoil";
 import {
   refreshChatsFor,
   refreshUpdatesFor,
   SignalingManager,
   useChatsWithMetadata,
-} from "@coral-xyz/react-common";
-import { useUser } from "@coral-xyz/recoil";
+} from "@coral-xyz/tamagui";
 import { v4 as uuidv4 } from "uuid";
 
 import { MessagePluginRenderer } from "../MessagePluginRenderer";

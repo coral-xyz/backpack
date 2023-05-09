@@ -27,14 +27,12 @@ import { NotificationsPermission } from "./NotificationsPermission";
 import { UsernameForm } from "./UsernameForm";
 
 export const OnboardAccount = ({
-  onWaiting,
   onRecover,
   containerRef,
   navProps,
   isAddingAccount,
   isOnboarded,
 }: {
-  onWaiting: () => void;
   onRecover: () => void;
   containerRef: any;
   navProps: any;
@@ -70,7 +68,6 @@ export const OnboardAccount = ({
   const steps = [
     <InviteCodeForm
       key="InviteCodeForm"
-      onClickWaiting={onWaiting}
       onClickRecover={onRecover}
       onSubmit={(inviteCode) => {
         setOnboardingData({ inviteCode });
@@ -87,19 +84,23 @@ export const OnboardAccount = ({
     />,
     <CreateOrImportWallet
       key="CreateOrImportWallet"
-      onNext={(action) => {
-        setOnboardingData({ action });
+      onNext={(data) => {
+        setOnboardingData({ ...data });
         nextStep();
       }}
     />,
-    <KeyringTypeSelector
-      key="KeyringTypeSelector"
-      action={action}
-      onNext={(keyringType: KeyringType) => {
-        setOnboardingData({ keyringType });
-        nextStep();
-      }}
-    />,
+    ...(action === "import"
+      ? [
+        <KeyringTypeSelector
+          key="KeyringTypeSelector"
+          action={action}
+          onNext={(keyringType: KeyringType) => {
+              setOnboardingData({ keyringType });
+              nextStep();
+            }}
+          />,
+        ]
+      : []),
     // Show the seed phrase if we are creating based on a mnemonic
     ...(keyringType === "mnemonic"
       ? [
@@ -124,6 +125,7 @@ export const OnboardAccount = ({
               handlePrivateKeyInput(result);
               nextStep();
             }}
+            onboarding
           />,
         ]
       : [

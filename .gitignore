@@ -10,6 +10,7 @@ node_modules
 
 # production
 build/
+web-build/
 
 # misc
 .DS_Store
@@ -29,16 +30,13 @@ dist/
 .turbo
 .env
 .idea
-deptool-report.html
 test-ledger/
 
-.yarn
 .expo
 .next
 
 *-e
 
-.yarnrc
 .eslintcache
 .js.map
 .d.ts.map
@@ -48,3 +46,13 @@ test-ledger/
 .tamagui
 .d.ts
 .d.ts.map
+
+# Not using zero-installs
+# https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

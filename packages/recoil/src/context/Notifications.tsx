@@ -643,6 +643,7 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleUserAccountAuthenticated = (notif: Notification) => {
+      logger.debug("dd handleUserAccountAuthenticated:notf", notif.data);
       setAuthenticatedUser({
         username: notif.data.username,
         uuid: notif.data.uuid,

@@ -29,6 +29,11 @@ export function explorerUrl(
         SolanaExplorer.SOLANA_FM,
         `tx/${tx}${clusterSuffix(base, connectionUrl)}`
       );
+    case SolanaExplorer.XRAY:
+      return join(
+        SolanaExplorer.XRAY,
+        `tx/${tx}${clusterSuffix(base, connectionUrl)}`
+      );
     default:
       throw new Error("unknown explorer base");
   }
@@ -61,6 +66,11 @@ export function exploreAddressUrl(
       return join(
         SolanaExplorer.SOLANA_FM,
         `address/${address}${clusterSuffix(base, connectionUrl)}`
+      );
+    case SolanaExplorer.XRAY:
+      return join(
+        SolanaExplorer.XRAY,
+        `account/${address}${clusterSuffix(base, connectionUrl)}`
       );
     default:
       throw new Error("unknown explorer base");
@@ -99,6 +109,11 @@ export function explorerNftUrl(
         SolanaExplorer.SOLANA_FM,
         `address/${nft.mint.toString()}${clusterSuffix(base, connectionUrl)}`
       );
+    case SolanaExplorer.XRAY:
+      return join(
+        SolanaExplorer.XRAY,
+        `token/${nft.mint.toString()}${clusterSuffix(base, connectionUrl)}`
+      );
     default:
       throw new Error("unknown explorer base");
   }
@@ -113,6 +128,7 @@ function clusterSuffix(base: string, connectionUrl: string): string {
     case SolanaExplorer.SOLSCAN:
     case SolanaExplorer.SOLANA_FM:
     case SolanaExplorer.SOLANA_BEACH:
+    case SolanaExplorer.XRAY:
       switch (connectionUrl) {
         case SolanaCluster.MAINNET:
           return "?cluster=mainnet";

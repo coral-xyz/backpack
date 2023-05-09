@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { useUsersMetadata } from "@coral-xyz/react-common";
 import {
   useActiveSolanaWallet,
   useFeatureGates,
   useUser,
 } from "@coral-xyz/recoil";
+import { useUsersMetadata } from "@coral-xyz/tamagui";
 import { useCustomTheme } from "@coral-xyz/themes";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
@@ -306,7 +306,7 @@ export const SendMessage = ({
               )}
             </IconButton>
           </div>
-          <MessageInput setPluginMenuOpen={setPluginMenuOpen} />
+          <MessageInput onMediaSelect={onMediaSelect} setPluginMenuOpen={setPluginMenuOpen} />
         </div>
         {pluginMenuOpen ? (
           <div style={{ display: "flex", marginLeft: 8, paddingBottom: 5 }}>

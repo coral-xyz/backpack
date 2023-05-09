@@ -10,9 +10,9 @@ import {
   LocalImage,
   MessageBubbleIcon,
   PrimaryButton,
-  useUsersMetadata,
 } from "@coral-xyz/react-common";
 import { useNavigation } from "@coral-xyz/recoil";
+import { useUsersMetadata } from "@coral-xyz/tamagui";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ContentCopy from "@mui/icons-material/ContentCopy";
@@ -126,6 +126,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
         <div className={classes.horizontalCenter}>
           <div className={classes.topImageOuter}>
             <LocalImage
+              size={150}
               className={classes.topImage}
               src={userMetadata[userId]?.image}
               style={{ width: 150, height: 150 }}

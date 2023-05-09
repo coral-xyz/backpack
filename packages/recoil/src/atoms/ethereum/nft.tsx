@@ -72,6 +72,7 @@ const ethereumNftCollections = selectorFamily<
                 value: a.value,
               })
             ),
+
           collectionName: nft.contractMetadata.name,
         });
       }

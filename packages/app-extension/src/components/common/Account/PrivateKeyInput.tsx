@@ -6,7 +6,7 @@ import {
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useAllWallets, useBackgroundClient } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
 
 import { Header, SubtextParagraph } from "../../common";
@@ -16,6 +16,7 @@ export const PrivateKeyInput = ({
   onNext,
   serverPublicKeys,
   displayNameInput = false,
+  onboarding,
 }: {
   blockchain?: Blockchain;
   onNext: ({
@@ -31,8 +32,11 @@ export const PrivateKeyInput = ({
   }) => void;
   serverPublicKeys?: Array<ServerPublicKey>;
   displayNameInput?: boolean;
+  onboarding?: boolean;
 }) => {
   const background = useBackgroundClient();
+  // eslint-disable-next-line
+  const wallets = onboarding ? [] : useAllWallets();
   const [name, setName] = useState("");
   const [privateKey, setPrivateKey] = useState("");
   const [loading, setLoading] = useState(false);
@@ -58,6 +62,11 @@ export const PrivateKeyInput = ({
     } catch (e) {
       setLoading(false);
       setError((e as Error).message);
+      return;
+    }
+
+    if (wallets.find((w) => w.publicKey === _publicKey)) {
+      setError("This wallet is already active and available in your account.");
       return;
     }
 
@@ -91,6 +100,7 @@ export const PrivateKeyInput = ({
         method: UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
         params: [[{ blockchain: _blockchain, publicKey: _publicKey }]],
       });
+
       if (response.length > 0) {
         setError("Wallet address is used by another Backpack account");
         return;
@@ -149,7 +159,7 @@ export const PrivateKeyInput = ({
             placeholder="Enter private key"
             value={privateKey}
             setValue={(e) => {
-              setPrivateKey(e.target.value);
+              setPrivateKey(e.target.value.trim());
             }}
             onKeyDown={async (e) => {
               if (e.key === "Enter") {

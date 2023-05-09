@@ -1,7 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-import { openAddUserAccount, openConnectHardware } from "@coral-xyz/common";
 import {
+  getAddMessage,
+  openAddUserAccount,
+  openConnectHardware,
+  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+  UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
+  UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+  UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
+} from "@coral-xyz/common";
+import {
+  BackpackMnemonicIcon,
   CheckIcon,
   HardwareIcon,
   ImportedIcon,
@@ -13,12 +22,24 @@ import {
   PushDetail,
   SecondaryButton,
 } from "@coral-xyz/react-common";
-import { useAvatarUrl, useUser, useWalletName } from "@coral-xyz/recoil";
+import {
+  useAvatarUrl,
+  useBackgroundClient,
+  useEnabledBlockchains,
+  useKeyringHasMnemonic,
+  useRpcRequests,
+  useUser,
+  useWalletName,
+  useWalletPublicKeys,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box, Typography } from "@mui/material";
 
 import { Header, SubtextParagraph } from "../../../common";
-import { useDrawerContext } from "../../../common/Layout/Drawer";
+import {
+  useDrawerContext,
+  WithMiniDrawer,
+} from "../../../common/Layout/Drawer";
 import { useNavigation } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 import { WalletListItem } from "../YourAccount/EditWallets";
@@ -145,35 +166,147 @@ export function AddWalletMenu({ blockchain }: { blockchain: Blockchain }) {
   const navigation = useNavigation();
   const user = useUser();
 
-  const createOrImportMenu = {
-    "Create a new wallet": {
-      onClick: () => navigation.push("create-wallet", { blockchain }),
-      icon: (props: any) => <PlusCircleIcon {...props} />,
-      detailIcon: <PushDetail />,
-    },
-    "Advanced wallet import": {
-      onClick: () => navigation.push("import-wallet", { blockchain }),
-      icon: (props: any) => <ImportedIcon {...props} />,
-      detailIcon: <PushDetail />,
-    },
+  const nav = useNavigation();
+  const drawer = useDrawerContext();
+  const background = useBackgroundClient();
+  const hasMnemonic = useKeyringHasMnemonic();
+  const { close: closeParentDrawer } = useDrawerContext();
+  const { signMessageForWallet } = useRpcRequests();
+  const publicKeys = useWalletPublicKeys();
+  const keyringExists = publicKeys[blockchain];
+  // If the keyring or if we don't have any public keys of the type we are
+  // adding then additional logic is required to select the account index of
+  // the first derivation path added
+  const hasHdPublicKeys =
+    publicKeys?.[blockchain]?.["hdPublicKeys"]?.length > 0;
+
+  const [newPublicKey, setNewPublicKey] = useState("");
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const createNewWithPhrase = async () => {
+    // Mnemonic based keyring. This is the simple case because we don't
+    // need to prompt for the user to open their Ledger app to get the
+    // required public key. We also don't need a signature to prove
+    // ownership of the public key because that can't be done
+    // transparently by the backend.
+    if (loading) {
+      return;
+    }
+
+    setOpenDrawer(true);
+    setLoading(true);
+    let newPublicKey;
+    if (!keyringExists || !hasHdPublicKeys) {
+      // No keyring or no existing mnemonic public keys so can't derive next
+      const walletDescriptor = await background.request({
+        method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
+        params: [blockchain, 0],
+      });
+      const signature = await signMessageForWallet(
+        blockchain,
+        walletDescriptor.publicKey,
+        getAddMessage(walletDescriptor.publicKey),
+        {
+          mnemonic: true,
+          signedWalletDescriptors: [
+            {
+              ...walletDescriptor,
+              signature: "",
+            },
+          ],
+        }
+      );
+      const signedWalletDescriptor = { ...walletDescriptor, signature };
+      if (!keyringExists) {
+        // Keyring doesn't exist, create it
+        await background.request({
+          method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+          params: [
+            {
+              mnemonic: true, // Use the existing mnemonic
+              signedWalletDescriptors: [signedWalletDescriptor],
+            },
+          ],
+        });
+      } else {
+        // Keyring exists but the hd keyring is not initialised, import
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
+          params: [signedWalletDescriptor],
+        });
+      }
+      newPublicKey = walletDescriptor.publicKey;
+    } else {
+      newPublicKey = await background.request({
+        method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+        params: [blockchain],
+      });
+    }
+    setNewPublicKey(newPublicKey);
+    setLoading(false);
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-      }}
-    >
-      <Box sx={{ margin: "24px" }}>
-        <Header text="Create or import a wallet" />
-        <SubtextParagraph>
-          Add a new wallet for @{user.username} on Backpack.
-        </SubtextParagraph>
-      </Box>
-      <SettingsList menuItems={createOrImportMenu} />
-    </div>
+    <>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+        }}
+      >
+        <Box sx={{ margin: "24px" }}>
+          <Header text="Create or import a wallet" />
+          <SubtextParagraph>
+            Add a new wallet for @{user.username} on Backpack.
+          </SubtextParagraph>
+        </Box>
+        <SettingsList
+          menuItems={{
+            [hasMnemonic ? "Create a new wallet" : "Setup recovery phrase"]: {
+              onClick: () =>
+                hasMnemonic
+                  ? createNewWithPhrase()
+                  : nav.push("create-or-import-mnemonic", {
+                      blockchain,
+                      keyringExists,
+                    }),
+              icon: (props: any) => <PlusCircleIcon {...props} />,
+            },
+            "Advanced wallet import": {
+              onClick: () => navigation.push("import-wallet", { blockchain }),
+              icon: (props: any) => <ImportedIcon {...props} />,
+            },
+          }}
+        />
+      </div>
+      <WithMiniDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={(open: boolean) => {
+          setOpenDrawer(open);
+          if (!open) {
+            drawer.close();
+          }
+        }}
+        backdropProps={{
+          style: {
+            opacity: 0.8,
+            background: "#18181b",
+          },
+        }}
+      >
+        <ConfirmCreateWallet
+          blockchain={blockchain}
+          publicKey={newPublicKey}
+          onClose={() => {
+            setOpenDrawer(false);
+            closeParentDrawer();
+          }}
+          isLoading={loading}
+        />
+      </WithMiniDrawer>
+    </>
   );
 }
 
@@ -185,22 +318,16 @@ export function RecoverWalletMenu({
   publicKey: string;
 }) {
   const nav = useNavigation();
+  const enabledBlockchains = useEnabledBlockchains();
+  const keyringExists = enabledBlockchains.includes(blockchain);
 
   const recoverMenu = {
-    "Hardware wallet": {
-      onClick: () => {
-        openConnectHardware(blockchain, "search", publicKey);
-        window.close();
-      },
-      icon: (props: any) => <HardwareIcon {...props} />,
-      detailIcon: <PushDetail />,
-    },
     "Other recovery phrase": {
       onClick: () =>
         nav.push("import-from-mnemonic", {
           blockchain,
           inputMnemonic: true,
-          keyringExists: true,
+          keyringExists,
           publicKey,
         }),
       icon: (props: any) => <MnemonicIcon {...props} />,
@@ -213,6 +340,14 @@ export function RecoverWalletMenu({
           publicKey,
         }),
       icon: (props: any) => <PlusCircleIcon {...props} />,
+      detailIcon: <PushDetail />,
+    },
+    "Hardware wallet": {
+      onClick: () => {
+        openConnectHardware(blockchain, "search", publicKey);
+        window.close();
+      },
+      icon: (props: any) => <HardwareIcon {...props} />,
       detailIcon: <PushDetail />,
     },
   };

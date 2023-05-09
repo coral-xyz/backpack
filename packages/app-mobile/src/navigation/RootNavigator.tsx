@@ -1,6 +1,11 @@
 import { useState } from "react";
 
-import { KeyringStoreStateEnum, useKeyringStoreState } from "@coral-xyz/recoil";
+import {
+  KeyringStoreStateEnum,
+  useKeyringStoreState,
+  WithAuth,
+} from "@coral-xyz/recoil";
+import { AuthenticatedSync } from "@coral-xyz/tamagui";
 import {
   DarkTheme,
   DefaultTheme,
@@ -32,7 +37,6 @@ export function RootNavigation({
 function RootNavigator(): JSX.Element {
   const [status, setStatus] = useState(null);
   const keyringStoreState = useKeyringStoreState();
-
   switch (keyringStoreState) {
     case KeyringStoreStateEnum.NeedsOnboarding:
       return <OnboardingNavigator onStart={setStatus} />;
@@ -42,7 +46,15 @@ function RootNavigator(): JSX.Element {
       if (status === "onboarding") {
         return <OnboardingCompleteWelcome onComplete={setStatus} />;
       }
-      return <UnlockedNavigator />;
+
+      return (
+        <>
+          <AuthenticatedSync />
+          <WithAuth>
+            <UnlockedNavigator />
+          </WithAuth>
+        </>
+      );
     default:
       return <NotFoundScreen />;
   }

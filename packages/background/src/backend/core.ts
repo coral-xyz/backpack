@@ -25,6 +25,7 @@ import {
   getAccountRecoveryPaths,
   getAddMessage,
   getRecoveryPaths,
+  makeUrl,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
@@ -68,11 +69,7 @@ import {
   TAB_XNFT,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
-import {
-  KeyringStoreStateEnum,
-  makeDefaultNav,
-  makeUrl,
-} from "@coral-xyz/recoil";
+import { KeyringStoreStateEnum, makeDefaultNav } from "@coral-xyz/recoil";
 import type {
   Commitment,
   SendOptions,
@@ -1250,9 +1247,27 @@ export class Backend {
         mnemonic,
         recoveryPaths
       );
+
+      //
+      // The set of all keys currently in the keyring store. Don't try to sync
+      // a key if it's already client side.
+      //
+      const allLocalKeys = Object.values(
+        await this.keyringStoreReadAllPubkeys()
+      )
+        .map((p) =>
+          p.hdPublicKeys
+            .concat(p.importedPublicKeys)
+            .concat(p.ledgerPublicKeys)
+            .map((p) => p.publicKey)
+        )
+        .reduce((a, b) => a.concat(b), []);
+
       const searchPublicKeys = serverPublicKeys
         .filter((b) => b.blockchain === blockchain)
-        .map((p) => p.publicKey);
+        .map((p) => p.publicKey)
+        .filter((p) => !allLocalKeys.includes(p));
+
       for (const searchPublicKey of searchPublicKeys) {
         const index = publicKeys.findIndex(
           (p: string) => p === searchPublicKey
@@ -1270,11 +1285,23 @@ export class Backend {
             // Doesn't exist, we can create it
           }
           if (blockchainKeyring) {
-            // Exists, just add the missing derivation path
-            const { publicKey, name } =
-              await this.keyringStore.activeUserKeyring
-                .keyringForBlockchain(blockchain)
-                .addDerivationPath(recoveryPaths[index]);
+            let [publicKey, name] = await (async () => {
+              const derivationPath = recoveryPaths[index];
+              if (!blockchainKeyring.hasHdKeyring()) {
+                const [[publicKey, name]] =
+                  await blockchainKeyring.initHdKeyring(mnemonic, [
+                    derivationPath,
+                  ]);
+                return [publicKey, name];
+              } else {
+                // Exists, just add the missing derivation path
+                const { publicKey, name } =
+                  await this.keyringStore.activeUserKeyring
+                    .keyringForBlockchain(blockchain)
+                    .addDerivationPath(derivationPath);
+                return [publicKey, name];
+              }
+            })();
             this.events.emit(BACKEND_EVENT, {
               name: NOTIFICATION_KEYRING_DERIVED_WALLET,
               data: {
@@ -1328,6 +1355,10 @@ export class Backend {
     );
   }
 
+  ///////////////////////////////////////////////////////////////////////////////
+  // User account.
+  ///////////////////////////////////////////////////////////////////////////////
+
   /**
    * Add a public key to a Backpack account via the Backpack API.
    */
@@ -1362,15 +1393,12 @@ export class Backend {
       throw new Error((await response.json()).msg);
     }
 
-    // TODO cleaner to return this in the server response
-    const blockchainKeyring =
-      this.keyringStore.activeUserKeyring.keyringForBlockchain(blockchain);
-    const blockchainPublicKeys = Object.values(
-      blockchainKeyring.publicKeys()
-    ).flat();
-    // If this is the only public key for the blockchain it would have been set to
-    // be primary by the server
-    const primary = blockchainPublicKeys.length === 1;
+    // 204 => the key was already created on the server previously.
+    if (response.status === 204) {
+      return;
+    }
+
+    const primary = (await response.json()).isPrimary;
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
@@ -1493,14 +1521,14 @@ export class Backend {
           blockchainKeyrings,
         },
       });
+    } else {
+      //
+      // Notify the UI about the removal.
+      //
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_KEYRING_STORE_REMOVED_USER,
+      });
     }
-
-    //
-    // Notify the UI about the removal.
-    //
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_KEYRING_STORE_REMOVED_USER,
-    });
 
     //
     // Done.
@@ -1550,30 +1578,11 @@ export class Backend {
   }
 
   /**
-   * Query the Backpack API to check if a user has already used any of the
-   * blockchain/public key pairs from a list.
-   */
-  async findServerPublicKeyConflicts(
-    serverPublicKeys: ServerPublicKey[]
-  ): Promise<string[]> {
-    const url = `${BACKEND_API_URL}/publicKeys`;
-    const response = await fetch(url, {
-      method: "POST",
-      body: JSON.stringify(serverPublicKeys),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((r) => r.json());
-
-    return response;
-  }
-
-  /**
    * Find a `WalletDescriptor` that can be used to create a new account.
    * This requires that the sub wallets on the account index are not used by a
    * existing user account. This is checked by querying the Backpack API.
    *
-   * This only works for mnemonics or a keyring store unlocked with a mnemoni
+   * This only works for mnemonics or a keyring store unlocked with a mnemonic
    * because the background service worker can't use a Ledger.
    */
   async findWalletDescriptor(
@@ -1611,6 +1620,25 @@ export class Backend {
       // Iterate on account index
       return this.findWalletDescriptor(blockchain, accountIndex + 1, mnemonic!);
     }
+  }
+
+  /**
+   * Query the Backpack API to check if a user has already used any of the
+   * blockchain/public key pairs from a list.
+   */
+  async findServerPublicKeyConflicts(
+    serverPublicKeys: ServerPublicKey[]
+  ): Promise<string[]> {
+    const url = `${BACKEND_API_URL}/publicKeys`;
+    const response = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify(serverPublicKeys),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((r) => r.json());
+
+    return response;
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -1876,6 +1904,8 @@ export class Backend {
           throw new Error("opening an xnft that is not whitelisted");
         }
       }
+    } else {
+      delete nav.data[TAB_XNFT];
     }
 
     nav.data[targetTab] = nav.data[targetTab] ?? { id: targetTab, urls: [] };
@@ -1990,10 +2020,15 @@ export class Backend {
     if (!currNav) {
       throw new Error("invariant violation");
     }
+
     const nav = {
       ...currNav,
       activeTab,
     };
+
+    if (activeTab !== TAB_XNFT) {
+      delete nav.data[TAB_XNFT];
+    }
 
     // Newly introduced messages tab needs to be added to the
     // store for backward compatability
@@ -2019,6 +2054,12 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async navigationOpenChat(chatName: string): Promise<string> {
+    console.log("openchat");
+
+    return SUCCESS_RESPONSE;
+  }
+
   async navigationCurrentUrlUpdate(
     url: string,
     activeTab?: string
@@ -2027,6 +2068,10 @@ export class Backend {
     const currNav = await store.getNav();
     if (!currNav) {
       throw new Error("invariant violation");
+    }
+
+    if (activeTab !== TAB_XNFT) {
+      delete currNav.data[TAB_XNFT];
     }
 
     // Update the active tab's nav stack.
@@ -2055,19 +2100,6 @@ export class Backend {
       });
     }
 
-    return SUCCESS_RESPONSE;
-  }
-
-  async pluginLocalStorageGet(xnftAddress: string, key: string): Promise<any> {
-    return await store.LocalStorageDb.get(`${xnftAddress}:${key}`);
-  }
-
-  async pluginLocalStoragePut(
-    xnftAddress: string,
-    key: string,
-    value: any
-  ): Promise<any> {
-    await store.LocalStorageDb.set(`${xnftAddress}:${key}`, value);
     return SUCCESS_RESPONSE;
   }
 }

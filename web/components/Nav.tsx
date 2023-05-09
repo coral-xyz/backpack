@@ -1,15 +1,15 @@
-import { memo } from 'react';
 import { Disclosure } from '@headlessui/react';
 import { ExternalLinkIcon, MenuIcon, XIcon } from '@heroicons/react/outline';
 import Image from 'next/legacy/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { memo } from 'react';
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ');
 }
 
-const mainMenu = [
+export const mainMenu = [
   { title: 'Backpack', path: '/' },
   {
     title: 'Blog',
@@ -67,7 +67,8 @@ function Nav() {
                         <Link key={index} href={item.path}>
                           <button
                             className={classNames(
-                              'flex gap-1 px-3 py-2 text-sm font-medium tracking-wide text-zinc-100',
+                              'flex gap-1 px-3 py-2 text-sm font-medium',
+                              'tracking-wide text-zinc-100',
                               router.pathname === item.path && 'rounded-lg bg-zinc-900'
                             )}
                           >

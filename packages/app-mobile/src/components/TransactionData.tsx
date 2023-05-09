@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { Text, View, TextInput } from "react-native";
+import { Text, View, TextInput, ActivityIndicator } from "react-native";
 
 import { useEthereumFeeData } from "@coral-xyz/recoil";
+import { Box, Button, XGroup } from "@coral-xyz/tamagui";
 import { ethers } from "ethers";
 
-import { IconCloseModal } from "~components/Icon";
-import { PrimaryButton, SecondaryButton } from "~components/index";
+import { Header, Container } from "~components/BottomDrawerCards";
+import { IconCloseModal, ExpandCollapseIcon } from "~components/Icon";
+import { PrimaryButton, Row, SecondaryButton } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 
@@ -14,9 +16,11 @@ type TransactionMode = "normal" | "fast" | "degen" | "custom";
 export function TransactionData({
   transactionData,
   menuItems,
+  onToggleAdvanced,
 }: {
   transactionData: any;
   menuItems: any;
+  onToggleAdvanced: any;
 }) {
   const theme = useTheme();
   const {
@@ -28,10 +32,8 @@ export function TransactionData({
     setTransactionOverrides,
     simulationError,
   } = transactionData;
-  const [ethSettingsDrawerOpen, setEthSettingsDrawerOpen] = useState(false);
   const [mode, setMode] = useState<TransactionMode>("normal");
 
-  // The default transaction data that appears on all transactions
   const defaultMenuItems = {
     Network: {
       disabled: true,
@@ -40,7 +42,7 @@ export function TransactionData({
     "Network Fee": {
       disabled: true,
       detail: loading ? (
-        <Text>LOADING TODO</Text>
+        <ActivityIndicator size="small" />
       ) : (
         <Text>
           {networkFee} {network === "Ethereum" ? "ETH" : "SOL"}{" "}
@@ -50,13 +52,23 @@ export function TransactionData({
     ...(network === "Ethereum"
       ? {
           Speed: {
-            onPress: () => setEthSettingsDrawerOpen(true),
-            detail: <Text> TODO </Text>,
-            // detail: (
-            //   <Button disableRipple disableElevation disabled={loading}>
-            //     {mode} <ArrowDropDown />
-            //   </Button>
-            // ),
+            onPress: () => onToggleAdvanced(),
+            detail: (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  borderRadius: 12,
+                  backgroundColor: theme.custom.colors.secondaryButton,
+                  paddingHorizontal: 8,
+                }}
+              >
+                <Text style={{ color: theme.custom.colors.fontColor }}>
+                  {mode}
+                </Text>
+                <ExpandCollapseIcon isExpanded={false} />
+              </View>
+            ),
           },
         }
       : {}),
@@ -76,17 +88,6 @@ export function TransactionData({
           This transaction is unlikely to succeed.
         </Text>
       ) : null}
-      {network === "Ethereum" && !loading ? (
-        <EthereumSettingsDrawer
-          mode={mode}
-          setMode={setMode}
-          transactionOverrides={transactionOverrides}
-          setTransactionOverrides={setTransactionOverrides}
-          networkFeeUsd={networkFeeUsd}
-          openDrawer={ethSettingsDrawerOpen}
-          setOpenDrawer={setEthSettingsDrawerOpen}
-        />
-      ) : null}
     </>
   );
 }
@@ -97,8 +98,7 @@ export function EthereumSettingsDrawer({
   transactionOverrides,
   setTransactionOverrides,
   networkFeeUsd,
-  openDrawer,
-  setOpenDrawer,
+  onClose,
 }: any) {
   const theme = useTheme();
   const feeData = useEthereumFeeData();
@@ -133,10 +133,10 @@ export function EthereumSettingsDrawer({
         ...transactionOverrides,
         // Add 10% for fast mode
         maxFeePerGas: feeData.maxFeePerGas.add(
-          feeData.maxFeePerGas.mul(10).View(100)
+          feeData.maxFeePerGas.mul(10).div(100)
         ),
         maxPriorityFeePerGas: feeData.maxPriorityFeePerGas.add(
-          feeData.maxPriorityFeePerGas.mul(10).View(100)
+          feeData.maxPriorityFeePerGas.mul(10).div(100)
         ),
         nonce,
       });
@@ -145,10 +145,10 @@ export function EthereumSettingsDrawer({
         ...transactionOverrides,
         // Add 50% for degen mode
         maxFeePerGas: feeData.maxFeePerGas.add(
-          feeData.maxFeePerGas.mul(50).View(100)
+          feeData.maxFeePerGas.mul(50).div(100)
         ),
         maxPriorityFeePerGas: feeData.maxPriorityFeePerGas.add(
-          feeData.maxPriorityFeePerGas.mul(50).View(100)
+          feeData.maxPriorityFeePerGas.mul(50).div(100)
         ),
         nonce,
       });
@@ -158,21 +158,6 @@ export function EthereumSettingsDrawer({
   useEffect(() => {
     setEditingGas(mode === "custom");
   }, [mode]);
-
-  // Escape handler that closes edit modes if they are active, otherwise closes
-  // the entire drawer.
-  const handleEsc = (event: KeyboardEvent) => {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      if (editingGas) {
-        setEditingGas(false);
-      } else if (editingNonce) {
-        setEditingNonce(false);
-      } else {
-        setOpenDrawer(false);
-      }
-    }
-  };
 
   const handleSave = () => {
     setTransactionOverrides({
@@ -294,107 +279,81 @@ export function EthereumSettingsDrawer({
   };
 
   return (
-    <>
-      <View
-        onPress={() => setOpenDrawer(false)}
-        style={{
-          height: 50,
-          zIndex: 1,
-          backgroundColor: "transparent",
-        }}
-      >
-        <IconCloseModal onPress={() => setOpenDrawer(false)} />
-      </View>
-      <View
-        style={{
-          borderTopLeftRadius: 12,
-          borderTopRightRadius: 12,
-          borderTopWidth: 1,
-          borderColor: theme.custom.colors.borderColor,
-          backgroundColor: theme.custom.colors.background,
-        }}
-      >
-        <View
-          style={{
-            // height: "100%",
-            borderTopLeftRadius: 12,
-            borderTopRightRadius: 12,
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              paddingBottom: 24,
-              height: "100%",
-            }}
-          >
-            <View>
-              <Text
-                style={{
-                  color: theme.custom.colors.fontColor,
-                  fontWeight: "500",
-                  fontSize: 18,
-                  lineHeight: 24,
-                  textAlign: "center",
-                  paddingTop: 24,
-                }}
-              >
-                Advanced Settings
-              </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-around",
-                }}
-              >
-                {["normal", "fast", "degen", "custom"].map((m) => (
-                  <ModeChip
-                    key={m}
-                    mode={m as TransactionMode}
-                    currentMode={mode}
-                    setMode={setMode}
-                    disabled={editingNonce}
-                  />
-                ))}
-              </View>
-              <View style={{ marginVertical: 24, marginHorizontal: 16 }}>
-                <SettingsList menuItems={menuItems} />
-              </View>
-            </View>
-            <View style={{ marginHorizontal: 16 }}>
-              {(mode === "custom" && editingGas) || editingNonce ? (
-                <PrimaryButton label="Save" onPress={handleSave} />
-              ) : null}
-              <SecondaryButton
-                label="Close"
-                onPress={() => setOpenDrawer(false)}
-              />
-            </View>
-          </View>
-        </View>
-      </View>
-    </>
+    <Container>
+      <Header text="Advanced Settings" />
+      <Box my={12}>
+        <Modes
+          currentMode={mode}
+          onChangeMode={setMode}
+          disabled={editingNonce}
+        />
+      </Box>
+      <SettingsList menuItems={menuItems} />
+      <Box mt={12}>
+        <FooterButtons
+          mode={mode}
+          editingGas={editingGas}
+          editingNonce={editingNonce}
+          onPressSave={handleSave}
+          onPressClose={onClose}
+        />
+      </Box>
+    </Container>
   );
 }
 
-// Note we don't use the MUI Button component because it currently doesn't
-// have any way to disable the ripple.
-function ModeChip({
+function FooterButtons({
   mode,
+  editingGas,
+  editingNonce,
+  onPressSave,
+  onPressClose,
+}: any) {
+  return (
+    <View>
+      {(mode === "custom" && editingGas) || editingNonce ? (
+        <PrimaryButton label="Save" onPress={onPressSave} />
+      ) : null}
+      <SecondaryButton label="Close" onPress={onPressClose} />
+    </View>
+  );
+}
+
+function Modes({
   currentMode,
-  setMode,
+  onChangeMode,
   disabled,
 }: {
-  mode: TransactionMode;
   currentMode: TransactionMode;
-  setMode: (mode: TransactionMode) => void;
-  disabled?: boolean;
-}) {
+  onChangeMode: (mode: TransactionMode) => void;
+  disabled: boolean;
+}): JSX.Element {
+  const theme = useTheme();
   return (
-    <PrimaryButton onPress={() => setMode(mode)} disabled={disabled}>
-      {mode}
-    </PrimaryButton>
+    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      {["normal", "fast", "degen", "custom"].map((m) => (
+        <Button
+          disabled={disabled}
+          key={m}
+          mx={4}
+          borderRadius={16}
+          px={20}
+          color={
+            currentMode === m
+              ? theme.custom.colors.primaryButtonTextColor
+              : theme.custom.colors.secondaryButtonTextColor
+          }
+          onPress={() => onChangeMode(m as TransactionMode)}
+          backgroundColor={
+            currentMode === m
+              ? theme.custom.colors.primaryButton
+              : theme.custom.colors.secondaryButton
+          }
+        >
+          {m}
+        </Button>
+      ))}
+    </View>
   );
 }
 
@@ -413,12 +372,12 @@ export function ValueWithUnit({
       {...containerProps}
       style={{
         flexDirection: "row",
-        justifyContent: "space-between",
-        width: "50%",
         ...(containerProps.style ? containerProps.style : {}),
       }}
     >
-      <Text>{value}</Text>
+      <Text style={{ color: theme.custom.colors.fontColor, marginRight: 4 }}>
+        {value}
+      </Text>
       <Text style={{ color: theme.custom.colors.secondary }}>{unit}</Text>
     </View>
   );

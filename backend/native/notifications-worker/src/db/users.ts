@@ -11,19 +11,22 @@ const chain = Chain(AUTH_HASURA_URL, {
 export const getUsersFromIds = async (
   remoteUserIds: string[]
 ): Promise<{ username: string; id: string }[]> => {
-  const response = await chain("query")({
-    auth_users: [
-      {
-        where: {
-          id: { _in: remoteUserIds },
+  const response = await chain("query")(
+    {
+      auth_users: [
+        {
+          where: {
+            id: { _in: remoteUserIds },
+          },
         },
-      },
-      {
-        id: true,
-        username: true,
-      },
-    ],
-  });
+        {
+          id: true,
+          username: true,
+        },
+      ],
+    },
+    { operationName: "getUsersFromIds" }
+  );
   return response.auth_users.map((x) => ({
     id: x.id as string,
     username: x.username as string,

@@ -1,0 +1,359 @@
+schema {
+  mutation: Mutation
+  query: Query
+}
+
+"""
+Custom scalar to handle the parsing of arbitrary JSON object data.
+"""
+scalar JSONObject
+
+"""
+Definition of cache control directive for Apollo to leverage with the plugin.
+"""
+directive @cacheControl(
+  maxAge: Int
+  scope: CacheControlScope
+  inheritMaxAge: Boolean
+) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+
+"""
+Root level mutation type.
+"""
+type Mutation {
+  """
+  Attempt to add a new wallet public key to the user account.
+  """
+  importPublicKey(
+    chainId: ChainID!
+    address: String!
+    signature: String!
+  ): Boolean
+}
+
+"""
+Root level query type.
+"""
+type Query {
+  """
+  Fetch a user by their Backpack account username. The username is inferred by the
+  presence of a valid and verified JWT.
+  """
+  user: User @cacheControl(maxAge: 60, scope: PRIVATE)
+
+  """
+  Fetching a wallet and it's assets by the public key address and associated `ChainID`.
+  """
+  wallet(chainId: ChainID!, address: String!): Wallet @cacheControl(maxAge: 60)
+}
+
+"""
+Scope enum for cache control.
+"""
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
+}
+
+"""
+Chain ID enum variants for the supported blockchains in the API.
+"""
+enum ChainID {
+  ETHEREUM
+  SOLANA
+}
+
+"""
+Enum for associating a friend request with the direction of how it was sent.
+"""
+enum FriendRequestType {
+  RECEIVED
+  SENT
+}
+
+"""
+Input filter type for fetching user wallet NFTs.
+"""
+input NftFiltersInput {
+  mints: [String!]
+}
+
+"""
+Input filter type for fetching user notifications.
+"""
+input NotificationsFiltersInput {
+  limit: Int
+  unreadOnly: Boolean
+}
+
+"""
+Input filter type for fetching user wallets and their data.
+"""
+input WalletsFiltersInput {
+  chainId: ChainID
+  primaryOnly: Boolean
+  pubkeys: [String!]
+}
+
+"""
+Interface to enforce the implementation of an `id` field on a type.
+"""
+interface Node {
+  id: ID!
+}
+
+"""
+Relay specification for a connection's page information.
+"""
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+"""
+Top-level type for providing wallet balance information.
+Should provide details about native and non-native token balances with aggregation details.
+"""
+type Balances implements Node {
+  id: ID!
+  aggregateValue: Float!
+  native: TokenBalance! @cacheControl(inheritMaxAge: true)
+  tokens: TokenBalanceConnection @cacheControl(inheritMaxAge: true)
+}
+
+"""
+`Nft` collection sub-type definition.
+"""
+type Collection implements Node {
+  id: ID!
+  address: String!
+  image: String
+  name: String
+  verified: Boolean!
+}
+
+"""
+Represents a friend reference for the parent `User`.
+"""
+type Friend implements Node {
+  id: ID!
+  avatar: String!
+  username: String!
+}
+
+"""
+Friend request data for a user.
+"""
+type FriendRequest implements Node {
+  id: ID!
+  type: FriendRequestType!
+  user: String!
+}
+
+"""
+Wrapper type for all user friendship data.
+"""
+type Friendship {
+  friends: [Friend!] @cacheControl(maxAge: 60, scope: PRIVATE)
+  requests: [FriendRequest!] @cacheControl(maxAge: 60, scope: PRIVATE)
+}
+
+"""
+NFT listing data pulling from marketplaces.
+"""
+type Listing implements Node {
+  id: ID!
+  amount: String!
+  source: String!
+  url: String!
+}
+
+"""
+Coingecko and computed market and price data for a token.
+"""
+type MarketData implements Node {
+  id: ID!
+  usdChange: Float!
+  percentChange: Float!
+  lastUpdatedAt: Int!
+  logo: String!
+  price: Float!
+  value: Float!
+}
+
+"""
+Generic NFT object type definition to provide on-chain and off-chain metadata.
+"""
+type Nft implements Node {
+  id: ID!
+  address: String!
+  attributes: [NftAttribute!] @cacheControl(inheritMaxAge: true)
+  collection: Collection @cacheControl(inheritMaxAge: true)
+  description: String
+  image: String
+  listing: Listing @cacheControl(maxAge: 60)
+  name: String!
+  owner: String!
+}
+
+"""
+NFT `attributes` list sub-type definition.
+"""
+type NftAttribute {
+  trait: String!
+  value: String!
+}
+
+"""
+Relay connection specification for `Nft` edges.
+"""
+type NftConnection {
+  edges: [NftEdge]
+  pageInfo: PageInfo!
+}
+
+"""
+Relay edge specification for `Nft` nodes.
+"""
+type NftEdge {
+  cursor: String!
+  node: Nft
+}
+
+"""
+Notification data type for user notification reads.
+"""
+type Notification implements Node {
+  id: ID!
+  body: JSONObject!
+  source: String!
+  timestamp: String!
+  title: String!
+  viewed: Boolean!
+}
+
+"""
+Relay connection specification for `Notification` edges.
+"""
+type NotificationConnection {
+  edges: [NotificationEdge]
+  lastReadId: Int
+  pageInfo: PageInfo!
+}
+
+"""
+Relay edge specification for `Notification` nodes.
+"""
+type NotificationEdge {
+  cursor: String!
+  node: Notification
+}
+
+"""
+Generic native or non-native token data and balance for a `Wallet`.
+"""
+type TokenBalance implements Node {
+  id: ID!
+  address: String!
+  amount: String!
+  decimals: Int!
+  displayAmount: String!
+  marketData: MarketData @cacheControl(maxAge: 180)
+  mint: String!
+}
+
+"""
+Relay connection specification for `TokenBalance` edges.
+"""
+type TokenBalanceConnection {
+  edges: [TokenBalanceEdge]
+  pageInfo: PageInfo!
+}
+
+"""
+Relay edge specification for `TokenBalance` nodes.
+"""
+type TokenBalanceEdge {
+  cursor: String!
+  node: TokenBalance
+}
+
+"""
+Generic on-chain transaction details structure.
+"""
+type Transaction implements Node {
+  id: ID!
+  description: String
+  block: Float!
+  fee: Int
+  feePayer: String
+  hash: String!
+  source: String
+  timestamp: String
+  type: String!
+}
+
+"""
+Relay connection specification for `Transaction` edges.
+"""
+type TransactionConnection {
+  edges: [TransactionEdge]
+  pageInfo: PageInfo!
+}
+
+"""
+Relay edge specification for `Transaction` nodes.
+"""
+type TransactionEdge {
+  cursor: String!
+  node: Transaction
+}
+
+"""
+Backpack user type definition so provide data about all of the user's
+assets, peripheral information, and social data.
+"""
+type User implements Node {
+  id: ID!
+  avatar: String!
+  createdAt: String!
+  friendship: Friendship @cacheControl(inheritMaxAge: true)
+  notifications(filters: NotificationsFiltersInput): NotificationConnection
+    @cacheControl(maxAge: 60, scope: PRIVATE)
+  username: String!
+  wallets(filters: WalletsFiltersInput): WalletConnection
+    @cacheControl(maxAge: 60)
+}
+
+"""
+Wallet definition to provide data about all assets owned by an address.
+"""
+type Wallet implements Node {
+  id: ID!
+  address: String!
+  chainId: ChainID!
+  createdAt: String!
+  balances: Balances @cacheControl(maxAge: 60)
+  isPrimary: Boolean!
+  nfts(filters: NftFiltersInput): NftConnection @cacheControl(maxAge: 60)
+  transactions(before: String, after: String): TransactionConnection
+    @cacheControl(maxAge: 30)
+}
+
+"""
+Relay connection specification for `Wallet` edges.
+"""
+type WalletConnection {
+  edges: [WalletEdge]
+  pageInfo: PageInfo!
+}
+
+"""
+Relay edge specification for `Wallet` nodes.
+"""
+type WalletEdge {
+  cursor: String!
+  node: Wallet
+}

@@ -14,23 +14,26 @@
     "*.css"
   ],
   "dependencies": {
+    "@coral-xyz/common": "*",
     "@coral-xyz/recoil": "*",
-    "@tamagui/animations-react-native": "^1.7.1",
-    "@tamagui/babel-plugin": "^1.7.1",
-    "@tamagui/config": "^1.7.1",
-    "@tamagui/core": "*",
-    "@tamagui/font-inter": "^1.7.1",
-    "@tamagui/shorthands": "^1.7.1",
-    "@tamagui/theme-base": "^1.7.1",
-    "@tamagui/themes": "^1.7.1",
-    "tamagui": "^1.7.1"
+    "@coral-xyz/themes": "*",
+    "@tamagui/animations-react-native": "^1.15.39",
+    "@tamagui/babel-plugin": "^1.15.39",
+    "@tamagui/config": "^1.15.39",
+    "@tamagui/core": "^1.15.39",
+    "@tamagui/font-inter": "^1.15.39",
+    "@tamagui/lucide-icons": "^1.15.39",
+    "@tamagui/shorthands": "^1.15.39",
+    "@tamagui/theme-base": "^1.15.39",
+    "@tamagui/themes": "^1.15.39",
+    "tamagui": "^1.15.39"
   },
   "scripts": {
     "build": "tamagui-build",
     "start": "tamagui-build --watch"
   },
   "devDependencies": {
-    "@tamagui/build": "*",
-    "@types/react-native": "^0.71.3"
+    "@tamagui/build": "^1.15.39",
+    "@types/react-native": "~0.71.6"
   }
 }

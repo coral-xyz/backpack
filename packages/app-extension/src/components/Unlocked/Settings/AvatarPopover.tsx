@@ -29,7 +29,7 @@ const useStyles = styles((theme) => ({
     },
   },
   popoverRoot: {
-    zIndex: 1,
+    zIndex: 2,
   },
 }));
 
@@ -132,6 +132,12 @@ function AvatarMenu() {
         }}
       />
       <AuxMenuList />
+      <div
+        style={{
+          borderTop: theme.custom.colors.borderFull,
+        }}
+      />
+      <LockMenuList />
     </div>
   );
 }
@@ -237,6 +243,7 @@ function UsersMenuList() {
     </MenuList>
   );
 }
+
 function AuxMenuList() {
   const theme = useCustomTheme();
   const { openSettings } = usePopoverContext();
@@ -295,6 +302,37 @@ function AuxMenuList() {
             Ctrl + G
           </Typography>
         </div>
+      </MenuListItem>
+    </MenuList>
+  );
+}
+
+function LockMenuList() {
+  const theme = useCustomTheme();
+  const background = useBackgroundClient();
+  return (
+    <MenuList>
+      <MenuListItem
+        onClick={() => {
+          background
+            .request({
+              method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+              params: [],
+            })
+            .catch(console.error);
+        }}
+      >
+        <Typography
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            color: theme.custom.colors.fontColor,
+            fontSize: "14px",
+          }}
+        >
+          Lock
+        </Typography>
       </MenuListItem>
     </MenuList>
   );

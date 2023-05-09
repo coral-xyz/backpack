@@ -7,6 +7,7 @@ export function UserIcon({ image, size, marginRight }: any) {
   const theme = useCustomTheme();
   return (
     <LocalImage
+      size={size || 44}
       src={image}
       style={{
         width: size || 44,

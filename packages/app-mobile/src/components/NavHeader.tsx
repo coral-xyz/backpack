@@ -1,24 +1,23 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { Avatar, Margin } from "~components/index";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "~hooks/useTheme";
+import { HeaderBackButton, getHeaderTitle } from "@react-navigation/elements";
+import { StackHeaderProps } from "@react-navigation/stack";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { Avatar, Margin } from "~components/index";
+import { useTheme } from "~hooks/useTheme";
+
 export function NavHeader({
-  title,
   navigation,
-}: {
-  title: string;
-  navigation: any;
-}) {
+  route,
+  options,
+  back,
+}: StackHeaderProps): JSX.Element {
+  const title = getHeaderTitle(options, route.name);
+
   const insets = useSafeAreaInsets();
   const theme = useTheme();
-  const emoji = title.startsWith("Balances")
-    ? "💰"
-    : title.startsWith("Apps")
-    ? "👾"
-    : "🎨";
 
   return (
     <View
@@ -32,26 +31,37 @@ export function NavHeader({
         styles.container,
       ]}
     >
+      {back ? (
+        <HeaderBackButton
+          tintColor={theme.custom.colors.fontColor}
+          onPress={navigation.goBack}
+        />
+      ) : null}
+
       <View style={styles.centeredRow}>
-        <Text style={styles.emoji}>{emoji}</Text>
         <Text style={[{ color: theme.custom.colors.fontColor }, styles.title]}>
           {title}
         </Text>
       </View>
-      <View style={styles.centeredRow}>
-        <Margin right={12}>
-          <Pressable onPress={() => navigation.navigate("RecentActivity")}>
-            <MaterialIcons
-              name="list"
-              size={28}
-              color={theme.custom.colors.icon}
-            />
+
+      {back ? (
+        <View style={{ width: 50, height: 40 }} />
+      ) : (
+        <View style={styles.centeredRow}>
+          <Margin right={12}>
+            <Pressable onPress={() => navigation.navigate("RecentActivity")}>
+              <MaterialIcons
+                name="list"
+                size={28}
+                color={theme.custom.colors.icon}
+              />
+            </Pressable>
+          </Margin>
+          <Pressable onPress={() => navigation.navigate("AccountSettings")}>
+            <Avatar size={28} />
           </Pressable>
-        </Margin>
-        <Pressable onPress={() => navigation.navigate("AccountSettings")}>
-          <Avatar size={28} />
-        </Pressable>
-      </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -68,12 +78,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
   },
-  emoji: {
-    fontSize: 24,
-    marginRight: 8,
-  },
   title: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "600",
   },
 });

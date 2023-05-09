@@ -1,3 +1,4 @@
+import type { Wallet } from "@@types/types";
 import type { Blockchain } from "@coral-xyz/common";
 
 import { useState } from "react";
@@ -17,17 +18,10 @@ import {
 import { WalletListItem } from "~screens/Unlocked/EditWalletsScreen";
 import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsList";
 
-type Wallet = {
-  name: string;
-  publicKey: string;
-  type: string;
-};
-
 export function ProfileScreen(): JSX.Element {
   return (
     <Screen>
       <AvatarHeader />
-      <SettingsList />
     </Screen>
   );
 }
@@ -35,7 +29,7 @@ export function ProfileScreen(): JSX.Element {
 function AvatarHeader(): JSX.Element {
   return (
     <View style={{ alignItems: "center", marginBottom: 24 }}>
-      <Avatar />
+      <Avatar size={140} />
     </View>
   );
 }

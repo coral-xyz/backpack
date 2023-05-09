@@ -1,6 +1,6 @@
 import { useState } from "react";
+import type { SearchParamsFor } from "@coral-xyz/common";
 import { Blockchain } from "@coral-xyz/common";
-import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useActiveEthereumWallet,
@@ -128,11 +128,13 @@ function TokenHeader({
           amount={token.nativeBalance}
           displayLogo={false}
         />
-        <Typography className={classes.usdBalanceLabel}>
-          ${parseFloat(token.usdBalance.toFixed(2)).toLocaleString()}
-          &nbsp;&nbsp;&nbsp;
-          <span className={percentClass}>{token.recentPercentChange}%</span>
-        </Typography>
+        {token.priceData ? (
+          <Typography className={classes.usdBalanceLabel}>
+            ${parseFloat(token.usdBalance.toFixed(2)).toLocaleString()}
+            &nbsp;&nbsp;&nbsp;
+            <span className={percentClass}>{token.recentPercentChange}%</span>
+          </Typography>
+        ) : null}
       </div>
       <div className={classes.tokenHeaderButtonContainer}>
         <TransferWidget

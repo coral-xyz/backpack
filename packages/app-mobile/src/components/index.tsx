@@ -11,13 +11,13 @@ import {
   Text,
   View,
   ScrollView,
+  Button,
 } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
 import Constants from "expo-constants";
 
 import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
-import { useAvatarUrl } from "@coral-xyz/recoil";
 import {
   Margin,
   BaseButton,
@@ -26,9 +26,10 @@ import {
   SecondaryButton,
   NegativeButton,
   DangerButton,
+  StyledText,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
-import { SvgUri } from "react-native-svg";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ContentCopyIcon, RedBackpack } from "~components/Icon";
 import { useTheme } from "~hooks/useTheme";
@@ -41,6 +42,7 @@ export { PasswordInput } from "./PasswordInput";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { StyledTokenTextInput } from "./TokenInputField";
+export { Avatar } from "./UserAvatar";
 export {
   Margin,
   BaseButton,
@@ -49,6 +51,7 @@ export {
   SecondaryButton,
   NegativeButton,
   DangerButton,
+  StyledText,
 };
 
 export function CallToAction({
@@ -97,33 +100,41 @@ const ctaStyles = StyleSheet.create({
   },
 });
 
-export function StyledText({
-  children,
-  style,
-  ...props
-}: {
-  children: string;
-  style?: StyleProp<TextStyle>;
-}) {
-  const theme = useTheme();
-  const color = theme.custom.colors.fontColor;
-  return (
-    <Text style={[{ color }, style]} {...props}>
-      {children}
-    </Text>
-  );
-}
-
 export function Screen({
   scrollable,
   children,
   style,
+  headerPadding,
 }: {
   scrollable?: boolean;
-  children: JSX.Element | JSX.Element[];
+  children: JSX.Element | JSX.Element[] | null;
   style?: StyleProp<ViewStyle>;
+  headerPadding?: boolean;
 }) {
+  const [show, setShow] = useState(true);
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
+
+  // added for perf/dev reasons
+  if (!show) {
+    return (
+      <View
+        style={[
+          screenStyles.container,
+          {
+            flex: 1,
+            backgroundColor: "white",
+            alignItems: "center",
+            justifyContent: "center",
+          },
+          style,
+        ]}
+      >
+        <Button title="Load Screen" onPress={() => setShow(true)} />
+      </View>
+    );
+  }
+
   if (scrollable) {
     return (
       <ScrollView
@@ -146,6 +157,7 @@ export function Screen({
         screenStyles.container,
         {
           backgroundColor: theme.custom.colors.background,
+          marginTop: headerPadding ? insets.top : undefined,
         },
         style,
       ]}
@@ -166,16 +178,25 @@ const screenStyles = StyleSheet.create({
   },
 });
 
-export function Header({ text }: { text: string }) {
+export function Header({
+  text,
+  style,
+}: {
+  text: string;
+  style?: StyleProp<TextStyle>;
+}): JSX.Element {
   const theme = useTheme();
   return (
     <Text
-      style={{
-        color: theme.custom.colors.fontColor,
-        fontSize: 24,
-        fontWeight: "500",
-        lineHeight: 32,
-      }}
+      style={[
+        {
+          color: theme.custom.colors.fontColor,
+          fontSize: 24,
+          fontWeight: "500",
+          lineHeight: 32,
+        },
+        style,
+      ]}
     >
       {text}
     </Text>
@@ -350,27 +371,6 @@ export function WalletAddressLabel({
   );
 }
 
-export function Avatar({ size = 64 }: { size?: number }): JSX.Element {
-  const avatarUrl = useAvatarUrl(size);
-  const theme = useTheme();
-
-  const outerSize = size + 6;
-
-  return (
-    <View
-      style={{
-        backgroundColor: theme.custom.colors.avatarIconBackground,
-        borderRadius: outerSize / 2,
-        padding: 3,
-        width: outerSize,
-        height: outerSize,
-      }}
-    >
-      <SvgUri width={size} height={size} uri={avatarUrl} />
-    </View>
-  );
-}
-
 export function Debug({ data }: any): JSX.Element {
   const theme = useTheme();
   return (
@@ -419,7 +419,14 @@ export function FullScreenLoading({ label }: { label?: string }): JSX.Element {
     >
       <ActivityIndicator size="large" color={theme.custom.colors.fontColor} />
       {label ? (
-        <Text style={{ textAlign: "center", fontSize: 16, marginTop: 16 }}>
+        <Text
+          style={{
+            textAlign: "center",
+            fontSize: 18,
+            marginTop: 16,
+            color: theme.custom.colors.fontColor,
+          }}
+        >
           {label}
         </Text>
       ) : null}
@@ -457,7 +464,7 @@ export function WelcomeLogoHeader() {
               color: theme.custom.colors.secondary,
             }}
           >
-            A home for your xNFTs
+            gm
           </Text>
         </Margin>
       </View>
@@ -728,14 +735,17 @@ export function RoundedContainerGroup({
       style={[
         roundedContainerStyles.container,
         {
+          backgroundColor: theme.custom.colors.nav,
           borderColor: theme.custom.colors.borderFull,
         },
-        disableTopRadius ? roundedContainerStyles.disableTopRadius : null,
-        disableBottomRadius ? roundedContainerStyles.disableBottomRadius : null,
+        disableTopRadius ? roundedContainerStyles.disableTopRadius : undefined,
+        disableBottomRadius
+          ? roundedContainerStyles.disableBottomRadius
+          : undefined,
         style,
       ]}
     >
-      {children}
+      <View style={{ overflow: "hidden", borderRadius: 16 }}>{children}</View>
     </View>
   );
 }
@@ -743,15 +753,21 @@ export function RoundedContainerGroup({
 const roundedContainerStyles = StyleSheet.create({
   container: {
     overflow: "hidden",
-    borderRadius: 12,
+    borderRadius: 16,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
   },
   disableTopRadius: {
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
+    borderTopWidth: 0,
   },
   disableBottomRadius: {
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
+    borderBottomWidth: 0,
   },
 });
 

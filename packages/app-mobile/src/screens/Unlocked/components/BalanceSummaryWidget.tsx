@@ -1,10 +1,14 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Suspense } from "react";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 
-import { Margin } from "~components/index";
+import { gql, useSuspenseQuery_experimental } from "@apollo/client";
 import { formatUSD } from "@coral-xyz/common";
-import { useTheme } from "~hooks/useTheme";
+import { useActiveWallet } from "@coral-xyz/recoil";
+import { XStack } from "@coral-xyz/tamagui";
+import { ErrorBoundary } from "react-error-boundary";
 
-import { useTotalBalance } from "~hooks/recoil";
+import { StyledText } from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
 function TextTotalChange({
   totalChange,
@@ -52,41 +56,86 @@ function TextPercentChange({
     : theme.custom.colors.balanceChangePositive;
 
   return (
-    <Text style={[styles.percentChangeText, { backgroundColor, color }]}>
-      {totalChange > 0 ? "+" : ""}
-      {Number.isFinite(percentChange)
-        ? `${percentChange.toFixed(2)}%`
-        : "0.00%"}
-    </Text>
+    <View style={{ borderRadius: 12, backgroundColor }}>
+      <Text style={[styles.percentChangeText, { color }]}>
+        {totalChange > 0 ? "+" : ""}
+        {Number.isFinite(percentChange)
+          ? `${percentChange.toFixed(2)}%`
+          : "0.00%"}
+      </Text>
+    </View>
+  );
+}
+
+const GET_BALANCE_SUMMARY = gql`
+  query WalletBalanceSummary($chainId: ChainID!, $address: String!) {
+    wallet(chainId: $chainId, address: $address) {
+      id
+      balances {
+        id
+        aggregateValue
+        native {
+          id
+          address
+          amount
+          decimals
+          displayAmount
+          marketData {
+            id
+            usdChange
+            percentChange
+            lastUpdatedAt
+            logo
+            price
+            value
+          }
+        }
+      }
+    }
+  }
+`;
+
+function Container() {
+  const activeWallet = useActiveWallet();
+  const { data } = useSuspenseQuery_experimental(GET_BALANCE_SUMMARY, {
+    variables: {
+      chainId: activeWallet.blockchain.toUpperCase(),
+      address: activeWallet.publicKey,
+    },
+  });
+
+  console.log("debug2:data balances", data);
+
+  const totalBalance = data.wallet.balances?.aggregateValue;
+  const totalChange =
+    data.wallet.balances?.native?.marketData?.usdChange ?? "$0.00";
+  const percentChange =
+    data.wallet.balances?.native?.marketData?.percentChange ?? "0.00";
+
+  return (
+    <View style={styles.container}>
+      <StyledText fontWeight="700" fontSize="$4xl" color="$fontColor">
+        {formatUSD(totalBalance)}
+      </StyledText>
+      <XStack alignItems="center">
+        <TextTotalChange totalChange={totalChange} />
+        <TextPercentChange
+          isLoading={false}
+          totalChange={totalChange}
+          percentChange={percentChange as number}
+        />
+      </XStack>
+    </View>
   );
 }
 
 export function BalanceSummaryWidget() {
-  const theme = useTheme();
-  const { totalBalance, totalChange, percentChange, isLoading } =
-    useTotalBalance();
-
   return (
-    <View style={styles.container}>
-      <Text
-        style={[
-          styles.totalBalanceText,
-          { color: theme.custom.colors.fontColor },
-        ]}
-      >
-        {formatUSD(totalBalance)}
-      </Text>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Margin right={12}>
-          <TextTotalChange totalChange={totalChange} />
-        </Margin>
-        <TextPercentChange
-          isLoading={isLoading}
-          totalChange={totalChange}
-          percentChange={percentChange}
-        />
-      </View>
-    </View>
+    <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
+      <Suspense fallback={<ActivityIndicator size="large" />}>
+        <Container />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 
@@ -95,17 +144,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  totalBalanceText: {
-    fontWeight: "600",
-    fontSize: 40,
-  },
   totalChangeText: {
-    fontSize: 12,
-    lineHeight: 24,
-    paddingVertical: 12,
+    fontSize: 16,
   },
   percentChangeText: {
-    fontSize: 12,
+    fontSize: 16,
     lineHeight: 24,
     borderRadius: 28,
     paddingHorizontal: 8,

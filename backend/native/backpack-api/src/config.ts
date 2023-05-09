@@ -38,9 +38,16 @@ export const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 export const NOTIFICATIONS_QUEUE = "NOTIFICATIONS";
 
 export const HELIUS_API_KEY = process.env.HELIUS_API_KEY || "";
+export const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY || "";
+export const TENSOR_API_KEY = process.env.TENSOR_API_KEY || "";
 
 export const DROPZONE_XNFT_SECRET = process.env.DROPZONE_XNFT_SECRET || "";
 export const DROPZONE_PERMITTED_AUTHORITIES =
   process.env.NODE_ENV === "production"
     ? ["DoCHcPut2WAuVEpqukF6CKh5NSnF4muJaif8zh4qfubu"]
     : [];
+
+export const TWITTER_CONSUMER_KEY =
+  process.env.TWITTER_CONSUMER_KEY || "EXAMPLE_KEY_TO_BE_REPLACED_BY_ENV";
+export const TWITTER_CONSUMER_SECRET =
+  process.env.TWITTER_CONSUMER_SECRET || "EXAMPLE_SECRET_TO_BE_REPLACED_BY_ENV";

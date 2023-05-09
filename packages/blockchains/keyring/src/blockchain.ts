@@ -5,7 +5,6 @@ import type {
   LedgerKeyringInit,
   MnemonicKeyringInit,
   PrivateKeyKeyringInit,
-  SignedWalletDescriptor,
 } from "@coral-xyz/common";
 import { getLogger } from "@coral-xyz/common";
 import * as bs58 from "bs58";

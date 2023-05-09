@@ -1,5 +1,10 @@
-import { walletAddressDisplay, WSOL_MINT } from "@coral-xyz/common";
+import {
+  SOL_NATIVE_MINT,
+  walletAddressDisplay,
+  WSOL_MINT,
+} from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { NftEventTypes, Source, TransactionType } from "helius-sdk/dist/types";
 
 import { UNKNOWN_ICON_SRC } from "../../../common/Icon";
@@ -312,3 +317,66 @@ export const getTokenData = (
 
   return tokenData;
 };
+
+export const parseSwapTransaction = (
+  transaction: HeliusParsedTransaction,
+  tokenData: ReturnType<typeof getTokenData>
+) => {
+  try {
+    const {
+      nativeInput,
+      nativeOutput,
+      tokenInputs: [tokenInput],
+      tokenOutputs: [tokenOutput],
+    } = transaction.events.swap;
+
+    return [
+      [nativeInput, tokenInput],
+      [nativeOutput, tokenOutput],
+    ].map(([n, t], i) => {
+      const { mint, amount } = n
+        ? {
+            mint: SOL_NATIVE_MINT,
+            amount: (Number(n.amount) / LAMPORTS_PER_SOL).toFixed(5),
+          }
+        : {
+            mint: t.mint,
+            amount: (
+              Number(t.rawTokenAmount.tokenAmount) /
+              10 ** t.rawTokenAmount.decimals
+            ).toFixed(5),
+          };
+
+      return {
+        tokenIcon: tokenData[i]?.logoURI || UNKNOWN_ICON_SRC,
+        amountWithSymbol: `${amount} ${
+          tokenData?.[i]?.symbol || walletAddressDisplay(mint)
+        }`,
+      };
+    });
+  } catch (err) {
+    console.error(err);
+    // TODO: remove this previous behavior after some testing
+    return Array(2).map((_, i) => ({
+      tokenIcon: tokenData[i]?.logoURI || UNKNOWN_ICON_SRC,
+      amountWithSymbol: [
+        transaction?.tokenTransfers?.[i]?.tokenAmount.toFixed(5),
+        tokenData[i]?.symbol ||
+          walletAddressDisplay(transaction?.tokenTransfers?.[i]?.mint),
+      ].join(" "),
+    }));
+  }
+};
+
+export function snakeToTitleCase(input: string): string {
+  const parts = input.split("_").map((t) => t.toLowerCase());
+  const titleCasesParts = parts.map((p) =>
+    p.length === 1 ? p : `${p[0].toUpperCase()}${p.slice(1)}`
+  );
+
+  if (titleCasesParts[0] === "Nft") {
+    titleCasesParts[0] = titleCasesParts[0].toUpperCase();
+  }
+
+  return titleCasesParts.join(" ");
+}

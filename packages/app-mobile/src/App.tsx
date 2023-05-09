@@ -1,5 +1,5 @@
 import { Suspense, useCallback, useRef } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Platform } from "react-native";
 
 import Constants from "expo-constants";
 import * as Device from "expo-device";
@@ -11,11 +11,6 @@ import {
   useStore,
   WEB_VIEW_EVENTS,
 } from "@coral-xyz/common";
-import { NotificationsProvider } from "@coral-xyz/recoil";
-import { TamaguiProvider, config } from "@coral-xyz/tamagui";
-import { ActionSheetProvider } from "@expo/react-native-action-sheet";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import { RecoilRoot } from "recoil";
 
@@ -23,6 +18,7 @@ import { ErrorBoundary } from "~components/ErrorBoundary";
 import { useTheme } from "~hooks/useTheme";
 import { maybeParseLog } from "~lib/helpers";
 
+import { Providers } from "./Providers";
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import { RootNavigation } from "./navigation/RootNavigator";
 
@@ -38,21 +34,6 @@ export function App(): JSX.Element {
         </RecoilRoot>
       </Suspense>
     </ErrorBoundary>
-  );
-}
-
-function Providers({ children }: { children: JSX.Element }): JSX.Element {
-  const theme = useTheme();
-  return (
-    <TamaguiProvider config={config} defaultTheme={theme.colorScheme}>
-      <SafeAreaProvider>
-        <NotificationsProvider>
-          <ActionSheetProvider>
-            <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
-          </ActionSheetProvider>
-        </NotificationsProvider>
-      </SafeAreaProvider>
-    </TamaguiProvider>
   );
 }
 
@@ -114,22 +95,30 @@ function Main(): JSX.Element | null {
           },
         ]}
       >
-        <StatusBar style={theme.colorScheme === "dark" ? "light" : "dark"} />
+        <StatusBar />
         <RootNavigation colorScheme={theme.colorScheme as "dark" | "light"} />
       </View>
     </Providers>
   );
 }
 
+const getWebviewUrl = () => {
+  const { localWebViewUrl, remoteWebViewUrl } =
+    Constants.expoConfig?.extra || {};
+
+  if (process.env.NODE_ENV === "development" && Platform.OS === "android") {
+    return remoteWebViewUrl;
+  }
+
+  return Device.isDevice ? remoteWebViewUrl : localWebViewUrl;
+};
+
 function BackgroundHiddenWebView(): JSX.Element {
   const setInjectJavaScript = useStore(
     (state: any) => state.setInjectJavaScript
   );
   const ref = useRef(null);
-  const { localWebViewUrl, remoteWebViewUrl } =
-    Constants?.expoConfig?.extra || {};
-
-  const webViewUrl = Device.isDevice ? remoteWebViewUrl : localWebViewUrl;
+  const webviewUrl = getWebviewUrl();
 
   return (
     <View style={styles.webview}>
@@ -141,8 +130,10 @@ function BackgroundHiddenWebView(): JSX.Element {
         cacheEnabled
         limitsNavigationsToAppBoundDomains
         source={{
-          uri: webViewUrl,
+          uri: webviewUrl,
         }}
+        onError={(error) => console.log("WebView error:", error)}
+        onHttpError={(error) => console.log("WebView HTTP error:", error)}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
           maybeParseLog(msg);

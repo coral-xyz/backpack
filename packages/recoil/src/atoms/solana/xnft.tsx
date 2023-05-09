@@ -1,4 +1,5 @@
 import {
+  BAKED_IN_XNFTS,
   Blockchain,
   DEFAULT_PUBKEY_STR,
   externalResourceUri,
@@ -7,6 +8,9 @@ import {
   XNFT_GG_LINK,
   XNFT_PROGRAM_ID,
 } from "@coral-xyz/common";
+import { buildAnonymousProgram } from "@coral-xyz/xnft/lib/cjs/util";
+import type { Xnft } from "@coral-xyz/xnft/lib/cjs/xnft";
+import type { IdlAccounts } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import * as cheerio from "cheerio";
 import { atomFamily, selectorFamily } from "recoil";
@@ -20,6 +24,13 @@ import { activePublicKeys } from "../wallet";
 import { anchorContext } from "./wallet";
 
 export const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
+
+// const xnftProgram = (conn: Connection): Program<Xnft> =>
+//   new Program(
+//     IDL,
+//     XNFT_PROGRAM_ID,
+//     new AnchorProvider(conn, new Wallet(Keypair.generate()), {})
+//   );
 
 export const appStoreMetaTags = selectorFamily<
   { name?: string; description?: string; image?: string },
@@ -56,6 +67,8 @@ export const collectibleXnft = selectorFamily<
       }
 
       const { connection } = get(anchorContext);
+      const program = buildAnonymousProgram(connection);
+
       if (params.collection) {
         const [maybeCollectionXnft] = await PublicKey.findProgramAddress(
           [Buffer.from("xnft"), new PublicKey(params.collection).toBytes()],
@@ -64,7 +77,14 @@ export const collectibleXnft = selectorFamily<
 
         const acc = await connection.getAccountInfo(maybeCollectionXnft);
         if (acc) {
-          return maybeCollectionXnft.toBase58();
+          const data = program.coder.accounts.decode<IdlAccounts<Xnft>["xnft"]>(
+            "xnft",
+            acc.data
+          );
+
+          if (!data.suspended) {
+            return maybeCollectionXnft.toBase58();
+          }
         }
       }
 
@@ -74,7 +94,14 @@ export const collectibleXnft = selectorFamily<
           XNFT_PROGRAM_ID
         );
         const acc = await connection.getAccountInfo(maybeItemXnft);
-        return acc ? maybeItemXnft.toBase58() : undefined;
+
+        if (acc) {
+          const data = program.coder.accounts.decode<IdlAccounts<Xnft>["xnft"]>(
+            "xnft",
+            acc.data
+          );
+          return !data.suspended ? maybeItemXnft.toBase58() : undefined;
+        }
       }
       return undefined;
     },
@@ -187,15 +214,16 @@ export const filteredPlugins = selectorFamily<
 
       return _plugins.filter(
         (xnft) =>
-          // @ts-ignore
           // hide autoinstalled ONE xNft -> entrypoint in collectibles.
           xnft.install.account.xnft.toString() !==
-            "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8" &&
-          // hide autoinstalled Explorer xNft if not in devmode
+            BAKED_IN_XNFTS.one.publicKey &&
+          // hide autoinstalled Explorer xNFT and the Mnemonic Inspect xNFT if not in devmode
           (developerMode ||
-            // @ts-ignore
             xnft.install.account.xnft.toString() !==
-              "oRN37pXigdDzpSPTe9ma5UWz9pZ4srKgS8To3juBNRi")
+              BAKED_IN_XNFTS.explorer.publicKey) &&
+          (developerMode ||
+            xnft.install.account.xnft.toString() !==
+              BAKED_IN_XNFTS.mnemonics.publicKey)
       );
     },
 });

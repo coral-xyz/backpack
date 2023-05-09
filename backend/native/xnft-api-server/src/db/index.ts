@@ -10,39 +10,45 @@ const chain = Chain(HASURA_URL, {
 });
 
 export const getSubscriptions = async (uuid: string) => {
-  return chain("query")({
-    auth_notification_subscriptions: [
-      {
-        where: { uuid: { _eq: (uuid as string) || "" } },
-        limit: 5,
-      },
-      {
-        username: true,
-        endpoint: true,
-        expirationTime: true,
-        p256dh: true,
-        auth: true,
-        id: true,
-      },
-    ],
-  });
+  return chain("query")(
+    {
+      auth_notification_subscriptions: [
+        {
+          where: { uuid: { _eq: (uuid as string) || "" } },
+          limit: 5,
+        },
+        {
+          username: true,
+          endpoint: true,
+          expirationTime: true,
+          p256dh: true,
+          auth: true,
+          id: true,
+        },
+      ],
+    },
+    { operationName: "getSubscriptions" }
+  );
 };
 
 export const hasNotificationAccess = async (
   xnftId: string,
   uuid: string
 ): Promise<boolean> => {
-  const response = await chain("query")({
-    auth_xnft_preferences: [
-      {
-        where: { xnft_id: { _eq: xnftId }, uuid: { _eq: uuid } },
-        limit: 1,
-      },
-      {
-        notifications: true,
-      },
-    ],
-  });
+  const response = await chain("query")(
+    {
+      auth_xnft_preferences: [
+        {
+          where: { xnft_id: { _eq: xnftId }, uuid: { _eq: uuid } },
+          limit: 1,
+        },
+        {
+          notifications: true,
+        },
+      ],
+    },
+    { operationName: "hasNotificationAccess" }
+  );
 
   if (response.auth_xnft_preferences?.[0]?.notifications) {
     return true;
@@ -65,16 +71,19 @@ export const hasNotificationAccess = async (
 };
 
 export const deleteSubscription = (id: number) => {
-  return chain("mutation")({
-    delete_auth_notification_subscriptions_by_pk: [
-      {
-        id,
-      },
-      {
-        id: true,
-      },
-    ],
-  });
+  return chain("mutation")(
+    {
+      delete_auth_notification_subscriptions_by_pk: [
+        {
+          id,
+        },
+        {
+          id: true,
+        },
+      ],
+    },
+    { operationName: "deleteSubscription" }
+  );
 };
 
 export const insertNotification = (
@@ -82,22 +91,25 @@ export const insertNotification = (
   uuid: string,
   { title, body }: NotificationProps
 ) => {
-  return chain("mutation")({
-    insert_auth_notifications_one: [
-      {
-        object: {
-          title,
-          body,
-          uuid,
-          xnft_id: xnftId,
-          timestamp: new Date(),
-          username: "",
-          image: "",
+  return chain("mutation")(
+    {
+      insert_auth_notifications_one: [
+        {
+          object: {
+            title,
+            body,
+            uuid,
+            xnft_id: xnftId,
+            timestamp: new Date(),
+            username: "",
+            image: "",
+          },
         },
-      },
-      {
-        id: true,
-      },
-    ],
-  });
+        {
+          id: true,
+        },
+      ],
+    },
+    { operationName: "insertNotification" }
+  );
 };

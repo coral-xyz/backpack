@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { ArrowRightIcon } from '@heroicons/react/outline';
 import Image from 'next/legacy/image';
 
@@ -41,7 +42,7 @@ export default function Posts() {
         {articles.map((article, index) => (
           <div
             key={index}
-            className="grid grid-cols-1 items-center justify-around gap-6 rounded-xl bg-zinc-800 
+            className="grid grid-cols-1 items-center justify-around gap-6 rounded-xl bg-zinc-800
               py-8 px-8 md:grid-cols-2 md:gap-2"
           >
             <div className="flex flex-col">
@@ -56,7 +57,7 @@ export default function Posts() {
                 target="_blank"
                 rel="noreferrer"
                 href={article.href}
-                className="item-center mt-4 w-40 rounded-xl bg-zinc-100 py-3 px-2 text-center 
+                className="item-center mt-4 w-40 rounded-xl bg-zinc-100 py-3 px-2 text-center
                   font-medium transition delay-100 ease-in-out hover:scale-110"
               >
                 Read Article

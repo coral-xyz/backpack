@@ -5,6 +5,17 @@ version: "3.8"
 # with local development environments by supporting every achitecture.
 
 services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+
   postgres:
     image: postgres:15.0-alpine
     restart: unless-stopped
@@ -15,16 +26,16 @@ services:
     command: "postgres -c listen_addresses='*'"
     healthcheck:
       test: pg_isready --username=user --dbname=reef_dev --quiet
-      interval: 15s
-      timeout: 5s
-      retries: 5
+      interval: 5s
+      timeout: 2s
+      retries: 10
     environment:
       POSTGRES_DB: reef_dev
       POSTGRES_PASSWORD: pass
       POSTGRES_USER: user
 
   hasura:
-    image: hasura/graphql-engine:v2.18.0.cli-migrations-v3
+    image: hasura/graphql-engine:v2.22.0.cli-migrations-v3
     ports:
       - 8112:8080
     depends_on:
@@ -32,7 +43,12 @@ services:
     volumes:
       - "./hasura/metadata:/hasura-metadata"
       - "./hasura/migrations:/hasura-migrations"
-    restart: always
+    restart: unless-stopped
+    healthcheck:
+      test: curl -f http://localhost:8080/healthz || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 15
     environment:
       HASURA_GRAPHQL_CORS_DOMAIN: "*"
       HASURA_GRAPHQL_DATABASE_URL: postgres://user:pass@postgres/reef_dev
@@ -42,6 +58,8 @@ services:
       HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anon
       HASURA_GRAPHQL_JWT_SECRET: '{ "type": "RS256", "key": "-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAylHKUmdK1oOl/LqeoYNY\nH9PUR9+cJYKG0XlCLdk47svWDpJA0BKPHq0GfJqPZxTFUOAgnN7Rq2ho1mujsMmy\nq2IENXU1Il7K4tY9Skg8DiWMQGZcS8EycWrfVGPNpMXp+pfUFs4ZtXlPj4lHydVU\ndvyAaTw1bJ7jNZbMzEoeWkAJiwqgJTW715C+DFErczMR1Fu6CE1lwLRnpLejWc1J\n54KtQ8FSKossO7JBvwJqpT/j5jXiO2c852VwygjzO+3mTLUPXjYZC9X3KjZqbE0s\nkAoHoZ+Zc+eHI4mVbyK890fX8IDJ3riUWBrbJvkeXag9WjGifxf0o1tXwO/f0YCk\nFbtDJNhesaOgjuU+4KMdpULWolNy5tRbl50ypkqqwGVtJXL4VF4tb3Zj9BLbogn9\nLacFOJoCpINiYNm1sGpneBajODHWyLnlNL/jR0iygzEI6wjXv9A5dhBuTAs9SNE0\nXV9pgJzgXrPPy5y9SOIDSYrG3ymYjAD0zLGwPXo1pvN0G50fZMk42sniq1N5ghsd\ntfY6L8Z+mn6KNkJzg1vQSc6U3EtOlp432kyhPpDaqZ86Mg0jG17HidY/G8OUsTXh\n+L47q5usE/jDeyIqEmQAqa6ltDx4qTZhZOaB8kzxqoHAT2Xx5ZynnPS0UHk53PDD\nwmA77DSVcvQNDJ62XkSAPiMCAwEAAQ==\n-----END PUBLIC KEY-----" }'
+      HASURA_GRAPHQL_LOG_LEVEL: debug
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, query-log, execution-log, http-log, websocket-log, webhook-log
 
 volumes:
   data:

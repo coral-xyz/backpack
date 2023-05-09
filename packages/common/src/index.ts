@@ -25,6 +25,7 @@ export * from "./explorer";
 export * from "./feature-gates";
 export * from "./logging";
 export * from "./messages";
+export * from "./navigation";
 export * from "./notifications";
 export * from "./plugin";
 export * from "./preferences";
@@ -146,7 +147,13 @@ export function isValidEventOrigin(event: Event): boolean {
   return false;
 }
 
-export function isMadLads(nft: Nft) {
-  // TODO
-  return nft.id === "FLMYJnabb2HvyGzE6EgXfLu4bHxugkwVyeEmSitisWKa";
+export function isMadLads(creators: Nft["creators"]) {
+  const secondCreator = creators?.[1];
+  return (
+    secondCreator?.address === "2RtGg6fsFiiF1EQzHqbd66AhW7R5bWeQGpTbv2UMkCdW"
+  );
+}
+
+export function parseNftName(nft: Nft): string {
+  return nft.name !== "" ? nft.name : nft.collectionName;
 }

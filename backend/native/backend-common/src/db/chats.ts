@@ -117,32 +117,35 @@ export const postChat = (
         }
       : {};
 
-  chain("mutation")({
-    insert_chats_one: [
-      {
-        object: {
-          ...secureTransferMutation,
-          ...mediaMessageMutation,
-          ...simpleTransferMutation,
-          ...barterMessageMutation,
-          ...nftStickerMutation,
-          ...barterRequestMutation,
-          username: "",
-          room,
-          message: message,
-          uuid,
-          message_kind,
-          client_generated_uuid,
-          parent_client_generated_uuid,
-          type: type,
-          created_at: new Date(),
+  chain("mutation")(
+    {
+      insert_chats_one: [
+        {
+          object: {
+            ...secureTransferMutation,
+            ...mediaMessageMutation,
+            ...simpleTransferMutation,
+            ...barterMessageMutation,
+            ...nftStickerMutation,
+            ...barterRequestMutation,
+            username: "",
+            room,
+            message: message,
+            uuid,
+            message_kind,
+            client_generated_uuid,
+            parent_client_generated_uuid,
+            type: type,
+            created_at: new Date(),
+          },
         },
-      },
-      {
-        id: true,
-      },
-    ],
-  })
+        {
+          id: true,
+        },
+      ],
+    },
+    { operationName: "postChat" }
+  )
     .then((x) => console.log(x))
     .catch((e) => {
       console.log(`Error while adding chat msg to DB`);
@@ -153,22 +156,25 @@ export const postChat = (
 export const getChatFromClientGeneratedUuid = async (
   clientGeneratedUuid: string
 ) => {
-  const response = await chain("query")({
-    chats: [
-      {
-        where: {
-          client_generated_uuid: { _eq: clientGeneratedUuid },
+  const response = await chain("query")(
+    {
+      chats: [
+        {
+          where: {
+            client_generated_uuid: { _eq: clientGeneratedUuid },
+          },
         },
-      },
-      {
-        id: true,
-        room: true,
-        type: true,
-        client_generated_uuid: true,
-        uuid: true,
-      },
-    ],
-  });
+        {
+          id: true,
+          room: true,
+          type: true,
+          client_generated_uuid: true,
+          uuid: true,
+        },
+      ],
+    },
+    { operationName: "getChatFromClientGeneratedUuid" }
+  );
   return response.chats[0]?.id
     ? {
         id: response.chats[0]?.id,
@@ -181,27 +187,30 @@ export const getChatFromClientGeneratedUuid = async (
 };
 
 export const deleteChat = async (clientGeneratedUuid, room) => {
-  await chain("mutation")({
-    update_chats: [
-      {
-        _set: { deleted: true },
-        where: { client_generated_uuid: { _eq: clientGeneratedUuid } },
-      },
-      { affected_rows: true },
-    ],
-    insert_chat_update_history_one: [
-      {
-        object: {
-          type: DELETE_MESSAGE,
-          client_generated_uuid: clientGeneratedUuid,
-          room,
+  await chain("mutation")(
+    {
+      update_chats: [
+        {
+          _set: { deleted: true },
+          where: { client_generated_uuid: { _eq: clientGeneratedUuid } },
         },
-      },
-      {
-        id: true,
-      },
-    ],
-  });
+        { affected_rows: true },
+      ],
+      insert_chat_update_history_one: [
+        {
+          object: {
+            type: DELETE_MESSAGE,
+            client_generated_uuid: clientGeneratedUuid,
+            room,
+          },
+        },
+        {
+          id: true,
+        },
+      ],
+    },
+    { operationName: "deleteChat" }
+  );
 };
 
 export const getChatsFromParentGuids = async (
@@ -209,27 +218,30 @@ export const getChatsFromParentGuids = async (
   type: SubscriptionType,
   parentClientGeneratedGuids: string[]
 ) => {
-  const response = await chain("query")({
-    chats: [
-      {
-        where: {
-          room: { _eq: roomId },
-          //@ts-ignore
-          type: { _eq: type },
-          client_generated_uuid: { _in: parentClientGeneratedGuids },
+  const response = await chain("query")(
+    {
+      chats: [
+        {
+          where: {
+            room: { _eq: roomId },
+            //@ts-ignore
+            type: { _eq: type },
+            client_generated_uuid: { _in: parentClientGeneratedGuids },
+          },
         },
-      },
-      {
-        id: true,
-        uuid: true,
-        message: true,
-        client_generated_uuid: true,
-        created_at: true,
-        message_kind: true,
-        parent_client_generated_uuid: true,
-        deleted: true,
-      },
-    ],
-  });
+        {
+          id: true,
+          uuid: true,
+          message: true,
+          client_generated_uuid: true,
+          created_at: true,
+          message_kind: true,
+          parent_client_generated_uuid: true,
+          deleted: true,
+        },
+      ],
+    },
+    { operationName: "getChatsFromParentGuids" }
+  );
   return response.chats || [];
 };

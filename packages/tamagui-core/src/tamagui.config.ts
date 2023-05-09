@@ -1,52 +1,69 @@
-// import { createAnimations } from "@tamagui/animations-react-native";
-// import { createInterFont } from "@tamagui/font-inter";
-// import { createMedia } from "@tamagui/react-native-media-driver";
+import {
+  baseTheme,
+  DARK_COLORS,
+  LIGHT_COLORS,
+  MOBILE_DARK_OVERRIDES,
+  MOBILE_LIGHT_OVERRIDES,
+} from "@coral-xyz/themes";
 import { config } from "@tamagui/config";
-// import { tokens as tTokens } from "@tamagui/theme-base";
-import { themes, tokens as tTokens } from "@tamagui/themes";
+import { themes as _themes, tokens as _tokens } from "@tamagui/themes";
 import { createTamagui, createTheme, createTokens } from "tamagui";
 
-import * as BackpackTheme from "./theme";
+import { bodyFont } from "./fonts";
 
 const tokens = createTokens({
-  ...tTokens,
+  ..._tokens,
   size: {
-    ...tTokens.size,
-    input: 48,
+    ..._tokens.size,
+    container: 48,
+    borderWidth: 2,
+    xs: 12,
+    sm: 14,
+    base: 16,
+    lg: 18,
+    xl: 20,
+    "2xl": 24,
+    "3xl": 28,
+    "4xl": 32,
+    "5xl": 36,
+    "6xl": 40,
   },
   radius: {
-    ...tTokens.radius,
-    ...BackpackTheme.baseTheme.borderRadius,
+    ..._tokens.radius,
+    ...baseTheme.custom.borderRadius,
   },
 });
 
-export const darkTheme = createTheme({
-  ...BackpackTheme.darkTheme.custom.colors,
+const darkTheme = createTheme({
+  ...DARK_COLORS,
+  ...MOBILE_DARK_OVERRIDES,
 });
 
-export const lightTheme = createTheme({
-  ...BackpackTheme.lightTheme.custom.colors,
+const lightTheme = createTheme({
+  ...LIGHT_COLORS,
+  ...MOBILE_LIGHT_OVERRIDES,
 });
 
-const allThemes = {
-  dark: darkTheme,
-  light: lightTheme,
-};
-
-type BaseTheme = typeof lightTheme;
-type ThemeName = keyof typeof allThemes;
-
-type Themes = {
-  [key in ThemeName]: BaseTheme;
-};
-
-// export const themes: Themes = allThemes;
-
-export const appConfig = createTamagui({ ...config, themes, tokens });
+export const appConfig = createTamagui({
+  ...config,
+  tokens,
+  fonts: {
+    ...config.fonts,
+    body: bodyFont,
+  },
+  themes: {
+    dark: {
+      ..._themes.dark,
+      ...darkTheme,
+    },
+    light: {
+      ..._themes.light,
+      ...lightTheme,
+    },
+  },
+});
 
 export type AppConfig = typeof appConfig;
 declare module "tamagui" {
-  // overrides TamaguiCustomConfig so your custom types
-  // work everywhere you import `tamagui`
   type TamaguiCustomConfig = AppConfig;
 }

@@ -1,33 +1,38 @@
 import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
 
 import { useCallback, useMemo, useRef } from "react";
-import { Pressable, Text, View } from "react-native";
+import { ScrollView, Pressable, Text, View } from "react-native";
 
 import { UI_RPC_METHOD_ACTIVE_USER_UPDATE } from "@coral-xyz/common";
 import { useAllUsers, useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
 import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
-import { SettingsRow } from "~screens/Unlocked/Settings/components/SettingsRow";
+import { useNavigation } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ExpandCollapseIcon, IconCheckmark } from "~components/Icon";
-import { Avatar, Margin, RoundedContainerGroup } from "~components/index";
+import { Screen, Avatar, RoundedContainerGroup } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
+import { SettingsRow } from "~screens/Unlocked/Settings/components/SettingsRow";
 
+// NOTE(peter) not used anymore in lieu of using react navigation modal
 export function AccountDropdownHeader(): JSX.Element {
+  const navigation = useNavigation();
   const theme = useTheme();
   const user = useUser();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ["25%"], []);
+  const snapPoints = useMemo(() => [440], []);
 
   const handleShowModal = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
+    navigation.navigate("UserAccountMenu");
+    // bottomSheetModalRef.current?.present();
+  }, [navigation]);
 
   const handleDismissModal = useCallback(() => {
-    bottomSheetModalRef.current?.dismiss();
-  }, []);
+    navigation.goBack();
+    // bottomSheetModalRef.current?.dismiss();
+  }, [navigation]);
 
-  const modalHeight = 240;
+  const modalHeight = 440;
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
@@ -44,7 +49,7 @@ export function AccountDropdownHeader(): JSX.Element {
   return (
     <>
       <Pressable
-        onPress={handleShowModal}
+        onPress={() => handleShowModal()}
         style={{
           flexDirection: "row",
           justifyContent: "center",
@@ -78,66 +83,46 @@ export function AccountDropdownHeader(): JSX.Element {
           backgroundColor: theme.custom.colors.backgroundBackdrop,
         }}
       >
-        <UserAccountMenu onDismiss={handleDismissModal} />
+        <View />
       </BottomSheetModal>
     </>
   );
 }
 
-function UserAccountMenu({ onDismiss }: () => void): JSX.Element {
-  const theme = useTheme();
+// function AddMoreButton({ onPress }: { onPress: () => void }): JSX.Element {
+//   const theme = useTheme();
+//   return (
+//     <PrimaryButton
+//       label="Add another account"
+//       onPress={onPress}
+//       icon={
+//         <MaterialIcons
+//           color={theme.custom.colors.primaryButtonTextColor}
+//           name="add"
+//           size={24}
+//         />
+//       }
+//     />
+//   );
+// }
+
+export function UserAccountMenu({ navigation }): JSX.Element {
+  const insets = useSafeAreaInsets();
+
   return (
-    <View
-      style={{
-        backgroundColor: theme.custom.colors.backgroundBackdrop,
-        paddingHorizontal: 16,
-      }}
+    <Screen
+      style={{ justifyContent: "space-between", marginBottom: insets.bottom }}
     >
-      <Text
-        style={{
-          marginTop: 8,
-          marginBottom: 16,
-          fontSize: 18,
-          fontWeight: "600",
-          color: theme.custom.colors.fontColor,
+      <UsersList
+        onDismiss={() => {
+          navigation.goBack();
         }}
-      >
-        Accounts
-      </Text>
-      <UsersList onDismiss={onDismiss} />
-      <Margin vertical={12}>
-        <AddAnotherAccountButton />
-      </Margin>
-    </View>
+      />
+    </Screen>
   );
 }
 
-function AddAnotherAccountButton() {
-  return (
-    <Pressable
-      disabled
-      style={{ flexDirection: "row", alignItems: "center" }}
-      onPress={() => {
-        // openAddUserAccount();
-      }}
-    >
-      <MaterialIcons name="add" size={28} style={{ marginRight: 4 }} />
-      <Text
-        style={{
-          fontSize: 16,
-          color: "inherit",
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "column",
-        }}
-      >
-        Add Another Account
-      </Text>
-    </Pressable>
-  );
-}
-
-function UsersList({ onDismiss }: () => void): JSX.Element {
+function UsersList({ onDismiss }: { onDismiss: () => void }): JSX.Element {
   const background = useBackgroundClient();
   const users = useAllUsers();
   const _user = useUser();
@@ -151,18 +136,40 @@ function UsersList({ onDismiss }: () => void): JSX.Element {
     onDismiss();
   };
 
+  const s = users.find((u) => u.uuid === _user.uuid);
+
+  // NOTE: Do not do this! Wrapping ScrollView in a map is bad for performance.
+  // Look for FlatList example until Peter fixes this
   return (
-    <RoundedContainerGroup>
-      {users.map(({ username, uuid }: any, idx: number) => (
-        <UserAccountListItem
-          key={username}
-          uuid={uuid}
-          username={username}
-          isActive={_user.username === username}
-          onPress={handlePressItem}
-        />
-      ))}
-    </RoundedContainerGroup>
+    <ScrollView>
+      <RoundedContainerGroup>
+        <>
+          {s ? (
+            <UserAccountListItem
+              key={s.username}
+              uuid={s.uuid}
+              username={s.username}
+              isActive={_user.username === s.username}
+              onPress={handlePressItem}
+            />
+          ) : null}
+          {users.map(({ username, uuid }: any) => {
+            if (username === s.username) {
+              return null;
+            }
+            return (
+              <UserAccountListItem
+                key={username}
+                uuid={uuid}
+                username={username}
+                isActive={_user.username === username}
+                onPress={handlePressItem}
+              />
+            );
+          })}
+        </>
+      </RoundedContainerGroup>
+    </ScrollView>
   );
 }
 

@@ -1,75 +1,30 @@
-import { type FormEvent, useCallback, useEffect, useState } from "react";
-import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
-import { styles } from "@coral-xyz/themes";
-import { ArrowForward } from "@mui/icons-material";
+import { type FormEvent, useCallback } from "react";
+import { PrimaryButton } from "@coral-xyz/react-common";
 import { Box } from "@mui/material";
-import { createPopup } from "@typeform/embed";
 
 import { SubtextParagraph } from "../../common";
-import { getWaitlistId, setWaitlistId } from "../../common/WaitingRoom";
 import { BackpackHeader } from "../../Locked";
 
-const useStyles = styles(() => ({
-  inviteCodeBox: {
-    "& .MuiFormControl-root": {
-      marginTop: 0,
-    },
-  },
-}));
+const WAITLIST_RES_ID_KEY = "waitlist-form-res-id";
+
+export const setWaitlistId = (responseId: string) =>
+  window.localStorage.setItem(WAITLIST_RES_ID_KEY, responseId);
+
+export const getWaitlistId = () =>
+  window.localStorage.getItem(WAITLIST_RES_ID_KEY) ?? undefined;
 
 export const InviteCodeForm = ({
   onClickRecover,
-  onClickWaiting,
   onSubmit,
 }: {
   onClickRecover: () => void;
-  onClickWaiting: () => void;
   onSubmit: (inviteCode: string) => void;
 }) => {
-  const [error, setError] = useState("");
-  const [inviteCode, setInviteCode] = useState("");
-  const [waitlistResponseId, setWaitlistResponseId] = useState(
-    getWaitlistId() || ""
-  );
-  const classes = useStyles();
-
-  useEffect(() => {
-    setError("");
-  }, [inviteCode]);
-
-  const typeform = createPopup("PCnBjycW", {
-    autoClose: true,
-    onSubmit({ responseId }) {
-      setWaitlistId(responseId);
-      setWaitlistResponseId(responseId);
-    },
-  });
-
-  const handleSubmit = useCallback(
-    async (e: FormEvent) => {
-      e.preventDefault();
-      setError("");
-
-      try {
-        if (
-          !inviteCode.match(
-            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/
-          )
-        ) {
-          throw new Error("Invite code is not valid");
-        }
-        const res = await fetch(
-          `https://invites.xnfts.dev/check/${inviteCode}`
-        );
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.message);
-        onSubmit(inviteCode);
-      } catch (err: any) {
-        setError(err.message);
-      }
-    },
-    [inviteCode]
-  );
+  const handleSubmit = useCallback(async (e: FormEvent) => {
+    e.preventDefault();
+    const inviteCode = "c841a546-4898-4c63-8075-01273be0fad4";
+    onSubmit(inviteCode);
+  }, []);
 
   return (
     <div
@@ -90,68 +45,21 @@ export const InviteCodeForm = ({
         <BackpackHeader disableUsername />
       </Box>
 
-      <form
-        onSubmit={handleSubmit}
+      <Box
         style={{
           padding: "0 16px 36px",
           paddingBottom: 0,
           marginTop: 0,
         }}
-        noValidate
       >
-        <Box style={{ marginBottom: 8 }} className={classes.inviteCodeBox}>
-          <TextInput
-            inputProps={{
-              name: "inviteCode",
-              autoComplete: "off",
-              spellCheck: "false",
-              style: {
-                // slightly smaller text so it fits
-                fontSize: "0.9em",
-              },
-              autoFocus: true,
-            }}
-            placeholder="Invite code"
-            type="text"
-            value={inviteCode}
-            setValue={(e: any) => {
-              setInviteCode(e.target.value.replace(/[^a-zA-Z0-9\\-]/g, ""));
-            }}
-            error={error ? true : false}
-            errorMessage={error}
-          />
-        </Box>
-
-        <PrimaryButton label="Go" type="submit" />
-
         <Box style={{ textAlign: "center", cursor: "pointer" }}>
           <Box style={{ marginTop: 24 }}>
-            {waitlistResponseId ? (
-              <SubtextParagraph
-                onClick={onClickWaiting}
-                style={{
-                  textDecoration: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <img
-                  src="/blue_ball.png"
-                  height="20px"
-                  width="20px"
-                  style={{ marginRight: "4px" }}
-                />
-                Waiting Room
-                <ArrowForward sx={{ marginLeft: "4px", fontSize: "18px" }} />
-              </SubtextParagraph>
-            ) : (
-              <SubtextParagraph onClick={typeform.open}>
-                Apply for an invite code
-              </SubtextParagraph>
-            )}
+            <PrimaryButton
+              label="Create account"
+              type="submit"
+              onClick={handleSubmit}
+            />
           </Box>
-
           <Box
             style={{
               marginTop: 24,
@@ -163,7 +71,7 @@ export const InviteCodeForm = ({
             </SubtextParagraph>
           </Box>
         </Box>
-      </form>
+      </Box>
     </div>
   );
 };

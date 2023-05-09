@@ -11,3 +11,8 @@ export interface DbNotification {
   id: number;
   viewed: boolean;
 }
+
+export type GroupedNotification = {
+  date: string;
+  notifications: EnrichedNotification[];
+};
