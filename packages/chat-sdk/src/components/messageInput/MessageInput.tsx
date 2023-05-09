@@ -74,14 +74,6 @@ export function MessageInput({
             const newSelection = window.getSelection();
             newSelection!.removeAllRanges();
             newSelection!.addRange(newRange);
-
-            if (div.childNodes.length === 1 && div.childNodes[0] === br) {
-              const parent = div.parentNode;
-              if (parent) {
-                parent.removeChild(div);
-              }
-            }
-            div.focus();
             return;
           }
           if (event.key === "Enter" && activeSearch) {
