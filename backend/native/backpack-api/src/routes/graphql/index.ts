@@ -6,6 +6,7 @@ import { join } from "path";
 
 import {
   friendshipTypeResolvers,
+  importPublicKeyMutation,
   jsonObjectScalar,
   userQueryResolver,
   userTypeResolvers,
@@ -13,7 +14,14 @@ import {
   walletTypeResolvers,
 } from "./resolvers";
 import { authorized } from "./rules";
-import type { QueryResolvers, Resolvers } from "./types";
+import type { MutationResolvers, QueryResolvers, Resolvers } from "./types";
+
+/**
+ * Root `Mutation` object resolver.
+ */
+const mutationResolvers: MutationResolvers = {
+  importPublicKey: importPublicKeyMutation,
+};
 
 /**
  * Root `Query` object resolver.
@@ -27,6 +35,7 @@ const queryResolvers: QueryResolvers = {
  * Schema root and type-level resolvers.
  */
 const resolvers: Resolvers = {
+  Mutation: mutationResolvers,
   Query: queryResolvers,
   Friendship: friendshipTypeResolvers,
   User: userTypeResolvers,
@@ -39,6 +48,9 @@ const resolvers: Resolvers = {
  */
 const permissions = shield(
   {
+    Mutation: {
+      "*": authorized,
+    },
     Query: {
       "*": allow,
       user: authorized,

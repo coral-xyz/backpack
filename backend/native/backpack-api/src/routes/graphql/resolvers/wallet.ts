@@ -6,7 +6,6 @@ import type {
   Balances,
   NftConnection,
   QueryWalletArgs,
-  RequireFields,
   TransactionConnection,
   Wallet,
   WalletNftsArgs,
@@ -18,14 +17,14 @@ import type {
  * Handler for the `wallet` query.
  * @export
  * @param {{}} _parent
- * @param {RequireFields<QueryWalletArgs, 'address' | 'chainId'>} args
+ * @param {QueryWalletArgs} args
  * @param {ApiContext} ctx
  * @param {GraphQLResolveInfo} _info
  * @returns {(Promise<Wallet | null>)}
  */
 export async function walletQueryResolver(
   _parent: {},
-  args: RequireFields<QueryWalletArgs, "address" | "chainId">,
+  args: QueryWalletArgs,
   ctx: ApiContext,
   _info: GraphQLResolveInfo
 ): Promise<Wallet | null> {
@@ -108,14 +107,14 @@ export const walletTypeResolvers: WalletResolvers = {
   /**
    * Field-level resolver handler for the `transactions` field.
    * @param {Wallet} parent
-   * @param {Partial<WalletTransactionsArgs>} args
+   * @param {WalletTransactionsArgs} args
    * @param {ApiContext} ctx
    * @param {GraphQLResolveInfo} _info
    * @returns {(Promise<TransactionConnection | null>)}
    */
   async transactions(
     parent: Wallet,
-    args: Partial<WalletTransactionsArgs>,
+    args: WalletTransactionsArgs,
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<TransactionConnection | null> {

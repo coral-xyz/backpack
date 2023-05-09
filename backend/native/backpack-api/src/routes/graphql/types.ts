@@ -112,6 +112,20 @@ export type MarketData = Node & {
   value: Scalars["Float"];
 };
 
+/** Root level mutation type. */
+export type Mutation = {
+  __typename?: "Mutation";
+  /** Attempt to add a new wallet public key to the user account. */
+  importPublicKey?: Maybe<Scalars["Boolean"]>;
+};
+
+/** Root level mutation type. */
+export type MutationImportPublicKeyArgs = {
+  address: Scalars["String"];
+  chainId: ChainId;
+  signature: Scalars["String"];
+};
+
 /** Generic NFT object type definition to provide on-chain and off-chain metadata. */
 export type Nft = Node & {
   __typename?: "Nft";
@@ -471,6 +485,7 @@ export type ResolversTypes = ResolversObject<{
   JSONObject: ResolverTypeWrapper<Scalars["JSONObject"]>;
   Listing: ResolverTypeWrapper<Listing>;
   MarketData: ResolverTypeWrapper<MarketData>;
+  Mutation: ResolverTypeWrapper<{}>;
   Nft: ResolverTypeWrapper<Nft>;
   NftAttribute: ResolverTypeWrapper<NftAttribute>;
   NftConnection: ResolverTypeWrapper<NftConnection>;
@@ -523,6 +538,7 @@ export type ResolversParentTypes = ResolversObject<{
   JSONObject: Scalars["JSONObject"];
   Listing: Listing;
   MarketData: MarketData;
+  Mutation: {};
   Nft: Nft;
   NftAttribute: NftAttribute;
   NftConnection: NftConnection;
@@ -666,6 +682,21 @@ export type MarketDataResolvers<
   usdChange?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   value?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type MutationResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["Mutation"] = ResolversParentTypes["Mutation"]
+> = ResolversObject<{
+  importPublicKey?: Resolver<
+    Maybe<ResolversTypes["Boolean"]>,
+    ParentType,
+    ContextType,
+    RequireFields<
+      MutationImportPublicKeyArgs,
+      "address" | "chainId" | "signature"
+    >
+  >;
 }>;
 
 export type NftResolvers<
@@ -1008,6 +1039,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   JSONObject?: GraphQLScalarType;
   Listing?: ListingResolvers<ContextType>;
   MarketData?: MarketDataResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
   Nft?: NftResolvers<ContextType>;
   NftAttribute?: NftAttributeResolvers<ContextType>;
   NftConnection?: NftConnectionResolvers<ContextType>;
