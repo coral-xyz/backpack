@@ -1,7 +1,7 @@
 import type { ContextFunction } from "@apollo/server";
 import type { ExpressContextFunctionArgument } from "@apollo/server/express4";
 import { Alchemy, Network } from "alchemy-sdk";
-import type { Request } from "express";
+import type { Request, Response } from "express";
 import { importSPKI, jwtVerify } from "jose";
 import { LRUCache } from "lru-cache";
 
@@ -36,6 +36,10 @@ export interface ApiContext {
     tensor: Tensor;
   };
   devnet: boolean;
+  http: {
+    req: Request;
+    res: Response;
+  };
 }
 
 /**
@@ -46,7 +50,7 @@ export interface ApiContext {
 export const createContext: ContextFunction<
   [ExpressContextFunctionArgument],
   ApiContext
-> = async ({ req }): Promise<ApiContext> => {
+> = async ({ req, res }): Promise<ApiContext> => {
   // Bootstrap authorization variables
   let userId: string | undefined = undefined;
   let valid = false;
@@ -97,6 +101,10 @@ export const createContext: ContextFunction<
       tensor: new Tensor({ apiKey: TENSOR_API_KEY }),
     },
     devnet,
+    http: {
+      req,
+      res,
+    },
   };
 };
 

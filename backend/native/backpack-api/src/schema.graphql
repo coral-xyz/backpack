@@ -22,6 +22,21 @@ Root level mutation type.
 """
 type Mutation {
   """
+  Authenticate a user and set the JWT in their cookies.
+  """
+  authenticate(
+    chainId: ChainID!
+    message: String!
+    publicKey: String!
+    signature: String!
+  ): String!
+
+  """
+  Deauthenticate the current user and clear their JWT cookie.
+  """
+  deauthenticate: String!
+
+  """
   Attempt to add a new wallet public key to the user account.
   """
   importPublicKey(

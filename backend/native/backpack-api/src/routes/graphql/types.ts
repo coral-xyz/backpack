@@ -115,8 +115,20 @@ export type MarketData = Node & {
 /** Root level mutation type. */
 export type Mutation = {
   __typename?: "Mutation";
+  /** Authenticate a user and set the JWT in their cookies. */
+  authenticate: Scalars["String"];
+  /** Deauthenticate the current user and clear their JWT cookie. */
+  deauthenticate: Scalars["String"];
   /** Attempt to add a new wallet public key to the user account. */
   importPublicKey?: Maybe<Scalars["Boolean"]>;
+};
+
+/** Root level mutation type. */
+export type MutationAuthenticateArgs = {
+  chainId: ChainId;
+  message: Scalars["String"];
+  publicKey: Scalars["String"];
+  signature: Scalars["String"];
 };
 
 /** Root level mutation type. */
@@ -688,6 +700,16 @@ export type MutationResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Mutation"] = ResolversParentTypes["Mutation"]
 > = ResolversObject<{
+  authenticate?: Resolver<
+    ResolversTypes["String"],
+    ParentType,
+    ContextType,
+    RequireFields<
+      MutationAuthenticateArgs,
+      "chainId" | "message" | "publicKey" | "signature"
+    >
+  >;
+  deauthenticate?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   importPublicKey?: Resolver<
     Maybe<ResolversTypes["Boolean"]>,
     ParentType,
