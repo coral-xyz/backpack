@@ -1,12 +1,98 @@
 import { type Blockchain, getAddMessage } from "@coral-xyz/common";
+import base58 from "bs58";
 import type { GraphQLResolveInfo } from "graphql";
 import { GraphQLError } from "graphql";
 
+import { clearCookie, setJWTCookie } from "../../../auth/util";
 import { createUserPublicKey, getUsersByPublicKeys } from "../../../db/users";
 import { validateSignature } from "../../../validation/signature";
 import { CreatePublicKeys } from "../../../validation/user";
 import type { ApiContext } from "../context";
-import type { MutationImportPublicKeyArgs, MutationResolvers } from "../types";
+import type {
+  MutationAuthenticateArgs,
+  MutationImportPublicKeyArgs,
+  MutationResolvers,
+} from "../types";
+
+const AUTH_MESSAGE_PREFIX = "Backpack login ";
+
+/**
+ * Handler for the mutation to authenticate a user and set their JWT.
+ * @param {{}} _parent
+ * @param {MutationAuthenticateArgs} args
+ * @param {ApiContext} ctx
+ * @param {GraphQLResolveInfo} _info
+ * @returns {Promise<string>}
+ */
+export const authenticateMutation: MutationResolvers["authenticate"] = async (
+  _parent: {},
+  args: MutationAuthenticateArgs,
+  ctx: ApiContext,
+  _info: GraphQLResolveInfo
+): Promise<string> => {
+  const decoded = Buffer.from(base58.decode(args.message));
+  if (!decoded.toString().startsWith(AUTH_MESSAGE_PREFIX)) {
+    throw new GraphQLError("Invalid signed message", {
+      extensions: {
+        code: "FORBIDDEN",
+        http: { code: 403 },
+      },
+    });
+  }
+
+  if (
+    !validateSignature(
+      decoded,
+      args.chainId.toLowerCase() as Blockchain,
+      args.signature,
+      args.publicKey
+    )
+  ) {
+    throw new GraphQLError(`Invalid ${args.chainId.toLowerCase()} signature`, {
+      extensions: {
+        code: "FORBIDDEN",
+        http: { code: 403 },
+      },
+    });
+  }
+
+  const uuid = decoded.toString().replace(AUTH_MESSAGE_PREFIX, "");
+  const pks = await ctx.dataSources.hasura.getWallets(uuid, {
+    chainId: args.chainId,
+    pubkeys: [args.publicKey],
+  });
+
+  if ((pks?.edges?.length ?? 0) === 0) {
+    throw new GraphQLError("Invalid signing public key for user", {
+      extensions: {
+        code: "FORBIDDEN",
+        http: { code: 403 },
+      },
+    });
+  }
+
+  const jwt = await setJWTCookie(ctx.http.req, ctx.http.res, uuid);
+  return jwt;
+};
+
+/**
+ * Handler for the deauthentication mutation.
+ * @param {{}} _parent
+ * @param {{}} _args
+ * @param {ApiContext} ctx
+ * @param {GraphQLResolveInfo} _info
+ * @returns {Promise<string>}
+ */
+export const deauthenticateMutation: MutationResolvers["deauthenticate"] =
+  async (
+    _parent: {},
+    _args: {},
+    ctx: ApiContext,
+    _info: GraphQLResolveInfo
+  ): Promise<string> => {
+    clearCookie(ctx.http.res, "jwt");
+    return "ok";
+  };
 
 /**
  * Handler for the mutation to import a new public key to a user account.
@@ -14,7 +100,7 @@ import type { MutationImportPublicKeyArgs, MutationResolvers } from "../types";
  * @param {MutationImportPublicKeyArgs} args
  * @param {ApiContext} ctx
  * @param {GraphQLResolveInfo} _info
- * @returns
+ * @returns {Promise<boolean | null>}
  */
 // FIXME:TODO: move to new hasura client abstraction
 export const importPublicKeyMutation: MutationResolvers["importPublicKey"] =
