@@ -17,7 +17,10 @@ const moduleExports = withPlausibleProxy()({
       'content.fortune.com',
       'techcrunch.com',
       'coindesk.com',
-      'www.tbstat.com'
+      'www.tbstat.com',
+      'img.decrypt.co',
+      'blockworks.co',
+      'nftnow.com'
     ],
     formats: ['image/avif', 'image/webp']
   },
