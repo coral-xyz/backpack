@@ -30,6 +30,7 @@ export const authenticateMutation: MutationResolvers["authenticate"] = async (
   ctx: ApiContext,
   _info: GraphQLResolveInfo
 ): Promise<string> => {
+  // Base58 decode the argued signed message and check the prefix
   const decoded = Buffer.from(base58.decode(args.message));
   if (!decoded.toString().startsWith(AUTH_MESSAGE_PREFIX)) {
     throw new GraphQLError("Invalid signed message", {
@@ -40,6 +41,7 @@ export const authenticateMutation: MutationResolvers["authenticate"] = async (
     });
   }
 
+  // Throw error if the signature does not match the blockchain and public key
   if (
     !validateSignature(
       decoded,
@@ -56,6 +58,7 @@ export const authenticateMutation: MutationResolvers["authenticate"] = async (
     });
   }
 
+  // Parse the user ID and check if the public key is registered to their account
   const uuid = decoded.toString().replace(AUTH_MESSAGE_PREFIX, "");
   const pks = await ctx.dataSources.hasura.getWallets(uuid, {
     chainId: args.chainId,
@@ -71,6 +74,7 @@ export const authenticateMutation: MutationResolvers["authenticate"] = async (
     });
   }
 
+  // Set and return the new signed JWT
   const jwt = await setJWTCookie(ctx.http.req, ctx.http.res, uuid);
   return jwt;
 };
