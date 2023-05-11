@@ -175,6 +175,7 @@ const useStyles = styles((theme) => ({
     color: theme.custom.colors.fontColor,
     marginTop: "5px",
     textAlign: "center",
+    minHeight: "24px", // keep alignment in case there's no text
   },
 }));
 

@@ -233,9 +233,9 @@ export const getTransactionCaption = (
 
     case TransactionType.SWAP:
       const [input, output] = parseSwapTransaction(transaction, tokenData);
-      return [input.symbolOrAddress, output.symbolOrAddress]
-        .filter(Boolean)
-        .join(" -> ");
+      return input.symbolOrAddress && output.symbolOrAddress
+        ? [input.symbolOrAddress, output.symbolOrAddress].join(" -> ")
+        : "";
 
     case TransactionType.NFT_LISTING:
       return `Listed on ${getSourceOrTypeFormatted(transaction.source)}`;
@@ -320,6 +320,13 @@ export const parseSwapTransaction = (
   transaction: HeliusParsedTransaction,
   tokenData: ReturnType<typeof getTokenData>
 ) => {
+  // should only be returned if parsing fails
+  const fallbackObject = {
+    tokenIcon: UNKNOWN_ICON_SRC,
+    amountWithSymbol: "",
+    symbolOrAddress: "",
+  };
+
   try {
     const {
       nativeInput,
@@ -332,44 +339,43 @@ export const parseSwapTransaction = (
       [nativeInput, tokenInput],
       [nativeOutput, tokenOutput],
     ].map(([n, t]) => {
-      const { mint, amount } = n
-        ? {
-            mint: SOL_NATIVE_MINT,
-            amount: (Number(n.amount) / LAMPORTS_PER_SOL).toFixed(5),
-          }
-        : {
-            mint: t.mint,
-            amount: (
-              Number(t.rawTokenAmount.tokenAmount) /
-              10 ** t.rawTokenAmount.decimals
-            ).toFixed(5),
-          };
+      try {
+        const { mint, amount } = n
+          ? {
+              mint: SOL_NATIVE_MINT,
+              amount: (Number(n.amount) / LAMPORTS_PER_SOL).toFixed(5),
+            }
+          : {
+              mint: t.mint,
+              amount: (
+                Number(t.rawTokenAmount.tokenAmount) /
+                10 ** t.rawTokenAmount.decimals
+              ).toFixed(5),
+            };
 
-      const token = tokenData
-        .concat({
-          address: SOL_NATIVE_MINT,
-          symbol: "SOL",
-          logoURI: SOL_LOGO_URI,
-        } as any)
-        .find((t) => t?.address === mint);
+        const token = tokenData
+          .concat({
+            address: SOL_NATIVE_MINT,
+            symbol: "SOL",
+            logoURI: SOL_LOGO_URI,
+          } as any)
+          .find((t) => t?.address === mint);
 
-      const symbolOrAddress = token?.symbol || walletAddressDisplay(mint);
+        const symbolOrAddress = token?.symbol || walletAddressDisplay(mint);
 
-      return {
-        tokenIcon: token?.logoURI || UNKNOWN_ICON_SRC,
-        symbolOrAddress,
-        amountWithSymbol: [amount, symbolOrAddress].join(" "),
-      };
+        return {
+          tokenIcon: token?.logoURI || UNKNOWN_ICON_SRC,
+          symbolOrAddress,
+          amountWithSymbol: [amount, symbolOrAddress].join(" "),
+        };
+      } catch (err) {
+        console.error(err);
+        return fallbackObject;
+      }
     });
   } catch (err) {
     console.error(err);
-    return Array(2)
-      .fill(undefined)
-      .map(() => ({
-        tokenIcon: UNKNOWN_ICON_SRC,
-        amountWithSymbol: "",
-        symbolOrAddress: "",
-      }));
+    return [fallbackObject, fallbackObject];
   }
 };
 

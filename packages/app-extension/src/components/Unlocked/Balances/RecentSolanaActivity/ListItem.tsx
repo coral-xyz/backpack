@@ -253,12 +253,16 @@ function RecentActivityListItemData({
 
   if (transaction.type === TransactionType.SWAP) {
     const [input, output] = parseSwapTransaction(transaction, tokenData);
-    return input?.amountWithSymbol && output?.amountWithSymbol ? (
+    return (
       <>
-        <div className={classes.textReceived}>+{output.amountWithSymbol}</div>
-        <div className={classes.textSecondary}>-{input.amountWithSymbol}</div>
+        {output?.amountWithSymbol ? (
+          <div className={classes.textReceived}>+{output.amountWithSymbol}</div>
+        ) : null}
+        {input?.amountWithSymbol ? (
+          <div className={classes.textSecondary}>-{input.amountWithSymbol}</div>
+        ) : null}
       </>
-    ) : null;
+    );
   }
 
   // BURN
