@@ -653,20 +653,24 @@ const SwapTransaction = ({
   const [input, output] = parseSwapTransaction(transaction, tokenData);
   return (
     <>
-      <div className={classes.middleRow}>
-        <div className={classes.cell}>
-          <div className={classes.label}>You paid</div>
-          <div className={classes.cellValue}>{input.amountWithSymbol}</div>
-        </div>
-      </div>
-      <div className={classes.middleRow}>
-        <div className={classes.cell}>
-          <div className={classes.label}>You Received</div>
-          <div className={classes.confirmedStatus}>
-            {output.amountWithSymbol}
+      {input?.amountWithSymbol ? (
+        <div className={classes.middleRow}>
+          <div className={classes.cell}>
+            <div className={classes.label}>You paid</div>
+            <div className={classes.cellValue}>{input.amountWithSymbol}</div>
           </div>
         </div>
-      </div>
+      ) : null}
+      {output?.amountWithSymbol ? (
+        <div className={classes.middleRow}>
+          <div className={classes.cell}>
+            <div className={classes.label}>You Received</div>
+            <div className={classes.confirmedStatus}>
+              {output.amountWithSymbol}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 };

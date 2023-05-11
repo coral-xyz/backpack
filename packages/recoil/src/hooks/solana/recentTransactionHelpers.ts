@@ -8,6 +8,8 @@ import type { TokenInfo } from "@solana/spl-token-registry";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { NftEventTypes, Source, TransactionType } from "helius-sdk/dist/types";
 
+import { SOL_LOGO_URI } from "../../atoms";
+
 export const UNKNOWN_ICON_SRC =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12ZM10.9645 15.3015C10.9645 15.7984 11.3677 16.2015 11.8645 16.2015C12.3612 16.2015 12.7645 15.7984 12.7645 15.3015C12.7645 14.8047 12.3612 14.4015 11.8645 14.4015C11.3677 14.4015 10.9645 14.8047 10.9645 15.3015ZM13.3939 11.8791C13.9135 11.5085 14.2656 11.1748 14.4511 10.8777C14.8776 10.1948 14.8728 9.02088 14.0532 8.35291C12.9367 7.44383 10.8943 7.77224 9.6001 8.49763L10.2067 9.7155C10.9189 9.35193 11.553 9.17 12.1092 9.17C12.6546 9.17 13.1214 9.36453 13.1214 9.91004C13.1214 10.4891 12.6543 10.8231 12.1713 11.1684L12.171 11.1686L12.1645 11.173C11.9915 11.2996 11.8416 11.4235 11.7147 11.5442C11.5451 11.7059 11.4168 11.8621 11.3298 12.013C11.1013 12.4085 11.1014 12.736 11.1019 13.152V13.2015H12.5761L12.576 13.158C12.5755 12.6312 12.5753 12.4844 13.3939 11.8791ZM20.5 12C20.5 16.6944 16.6944 20.5 12 20.5C7.30558 20.5 3.5 16.6944 3.5 12C3.5 7.30558 7.30558 3.5 12 3.5C16.6944 3.5 20.5 7.30558 20.5 12ZM22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z' fill='%238F929E'/%3E%3C/svg%3E";
 
@@ -276,14 +278,10 @@ export const getTransactionCaption = (
         : "";
 
     case TransactionType.SWAP:
-      // fallback to truncated mint address if token metadata was not found
-      return `${
-        tokenData?.[0]?.symbol ||
-        walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint)
-      } -> ${
-        tokenData?.[1]?.symbol ||
-        walletAddressDisplay(transaction?.tokenTransfers?.[1]?.mint)
-      }`;
+      const [input, output] = parseSwapTransaction(transaction, tokenData);
+      return [input.symbolOrAddress, output.symbolOrAddress]
+        .filter(Boolean)
+        .join(" -> ");
 
     case TransactionType.NFT_LISTING:
       return `Listed on ${getSourceOrTypeFormatted(transaction.source)}`;
@@ -363,6 +361,7 @@ export const getTokenData = (
   return tokenData;
 };
 
+// NOTE: this function is also in RecentSolanaActivity
 export const parseSwapTransaction = (
   transaction: HeliusParsedTransaction,
   tokenData: ReturnType<typeof getTokenData>
@@ -378,7 +377,7 @@ export const parseSwapTransaction = (
     return [
       [nativeInput, tokenInput],
       [nativeOutput, tokenOutput],
-    ].map(([n, t], i) => {
+    ].map(([n, t]) => {
       const { mint, amount } = n
         ? {
             mint: SOL_NATIVE_MINT,
@@ -392,23 +391,30 @@ export const parseSwapTransaction = (
             ).toFixed(5),
           };
 
+      const token = tokenData
+        .concat({
+          address: SOL_NATIVE_MINT,
+          symbol: "SOL",
+          logoURI: SOL_LOGO_URI,
+        } as any)
+        .find((t) => t?.address === mint);
+
+      const symbolOrAddress = token?.symbol || walletAddressDisplay(mint);
+
       return {
-        tokenIcon: tokenData[i]?.logoURI || UNKNOWN_ICON_SRC,
-        amountWithSymbol: `${amount} ${
-          tokenData?.[i]?.symbol || walletAddressDisplay(mint)
-        }`,
+        tokenIcon: token?.logoURI || UNKNOWN_ICON_SRC,
+        symbolOrAddress,
+        amountWithSymbol: [amount, symbolOrAddress].join(" "),
       };
     });
   } catch (err) {
     console.error(err);
-    // TODO: remove this previous behavior after some testing
-    return Array(2).map((_, i) => ({
-      tokenIcon: tokenData[i]?.logoURI || UNKNOWN_ICON_SRC,
-      amountWithSymbol: [
-        transaction?.tokenTransfers?.[i]?.tokenAmount.toFixed(5),
-        tokenData[i]?.symbol ||
-          walletAddressDisplay(transaction?.tokenTransfers?.[i]?.mint),
-      ].join(" "),
-    }));
+    return Array(2)
+      .fill(undefined)
+      .map(() => ({
+        tokenIcon: UNKNOWN_ICON_SRC,
+        amountWithSymbol: "",
+        symbolOrAddress: "",
+      }));
   }
 };

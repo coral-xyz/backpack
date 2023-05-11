@@ -3,6 +3,7 @@ import {
   walletAddressDisplay,
   WSOL_MINT,
 } from "@coral-xyz/common";
+import { SOL_LOGO_URI } from "@coral-xyz/recoil";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { NftEventTypes, Source, TransactionType } from "helius-sdk/dist/types";
@@ -231,14 +232,10 @@ export const getTransactionCaption = (
         : "";
 
     case TransactionType.SWAP:
-      // fallback to truncated mint address if token metadata was not found
-      return `${
-        tokenData?.[0]?.symbol ||
-        walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint)
-      } -> ${
-        tokenData?.[1]?.symbol ||
-        walletAddressDisplay(transaction?.tokenTransfers?.[1]?.mint)
-      }`;
+      const [input, output] = parseSwapTransaction(transaction, tokenData);
+      return [input.symbolOrAddress, output.symbolOrAddress]
+        .filter(Boolean)
+        .join(" -> ");
 
     case TransactionType.NFT_LISTING:
       return `Listed on ${getSourceOrTypeFormatted(transaction.source)}`;
@@ -318,6 +315,7 @@ export const getTokenData = (
   return tokenData;
 };
 
+// NOTE: this function code has been duplicated in recoil
 export const parseSwapTransaction = (
   transaction: HeliusParsedTransaction,
   tokenData: ReturnType<typeof getTokenData>
@@ -333,7 +331,7 @@ export const parseSwapTransaction = (
     return [
       [nativeInput, tokenInput],
       [nativeOutput, tokenOutput],
-    ].map(([n, t], i) => {
+    ].map(([n, t]) => {
       const { mint, amount } = n
         ? {
             mint: SOL_NATIVE_MINT,
@@ -347,24 +345,31 @@ export const parseSwapTransaction = (
             ).toFixed(5),
           };
 
+      const token = tokenData
+        .concat({
+          address: SOL_NATIVE_MINT,
+          symbol: "SOL",
+          logoURI: SOL_LOGO_URI,
+        } as any)
+        .find((t) => t?.address === mint);
+
+      const symbolOrAddress = token?.symbol || walletAddressDisplay(mint);
+
       return {
-        tokenIcon: tokenData[i]?.logoURI || UNKNOWN_ICON_SRC,
-        amountWithSymbol: `${amount} ${
-          tokenData?.[i]?.symbol || walletAddressDisplay(mint)
-        }`,
+        tokenIcon: token?.logoURI || UNKNOWN_ICON_SRC,
+        symbolOrAddress,
+        amountWithSymbol: [amount, symbolOrAddress].join(" "),
       };
     });
   } catch (err) {
     console.error(err);
-    // TODO: remove this previous behavior after some testing
-    return Array(2).map((_, i) => ({
-      tokenIcon: tokenData[i]?.logoURI || UNKNOWN_ICON_SRC,
-      amountWithSymbol: [
-        transaction?.tokenTransfers?.[i]?.tokenAmount.toFixed(5),
-        tokenData[i]?.symbol ||
-          walletAddressDisplay(transaction?.tokenTransfers?.[i]?.mint),
-      ].join(" "),
-    }));
+    return Array(2)
+      .fill(undefined)
+      .map(() => ({
+        tokenIcon: UNKNOWN_ICON_SRC,
+        amountWithSymbol: "",
+        symbolOrAddress: "",
+      }));
   }
 };
 
