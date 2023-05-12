@@ -7,15 +7,16 @@
   },
   "scripts": {
     "eas-build-post-install": "cd ../../ && yarn build:mobile",
-    "android": "expo start --android --localhost --dev-client",
-    "ios": "expo start --ios --localhost --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "add": "expo add",
     "eject": "expo eject",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
     "lint:fix": "yarn run lint --fix",
     "relay": "relay-compiler",
-    "postinstall": "npx patch-package"
+    "postinstall": "npx patch-package",
+    "start": "expo start --dev-client"
   },
   "dependencies": {
     "@apollo/client": "^3.8.0-alpha.12",
@@ -45,9 +46,10 @@
     "big-integer": "^1.6.51",
     "buffer": "^6.0.3",
     "ethers": "^5.7.2",
-    "expo": "^48.0.9",
+    "expo": "~48.0.15",
     "expo-av": "~13.2.1",
     "expo-blur": "~12.2.1",
+    "expo-build-properties": "~0.6.0",
     "expo-checkbox": "~2.3.1",
     "expo-clipboard": "~4.1.2",
     "expo-constants": "~14.2.1",

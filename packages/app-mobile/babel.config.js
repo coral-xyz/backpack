@@ -1,3 +1,4 @@
+process.env.EXPO_USE_CUSTOM_INSPECTOR_PROXY = "true";
 process.env.TAMAGUI_TARGET = "native"; // Don't forget to specify your TAMAGUI_TARGET here
 
 module.exports = function (api) {
