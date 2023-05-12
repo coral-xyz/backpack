@@ -7,8 +7,8 @@
   },
   "scripts": {
     "eas-build-post-install": "cd ../../ && yarn build:mobile",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo start --android --localhost --dev-client",
+    "ios": "expo start --ios --localhost",
     "web": "expo start --web",
     "add": "expo add",
     "eject": "expo eject",
@@ -52,6 +52,7 @@
     "expo-clipboard": "~4.1.2",
     "expo-constants": "~14.2.1",
     "expo-crypto": "~12.2.1",
+    "expo-dev-client": "~2.2.1",
     "expo-device": "~5.2.1",
     "expo-font": "~11.1.1",
     "expo-linking": "~4.0.1",

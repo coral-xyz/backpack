@@ -16,13 +16,10 @@
       "autoIncrement": true,
       "channel": "production"
     },
-    "simulator": {
-      "extends": "monorepo",
-      "channel": "simulator",
+    "development-simulator": {
+      "node": "18.15.0",
+      "developmentClient": true,
       "distribution": "internal",
-      "env": {
-        "APP_ENV": "production"
-      },
       "ios": {
         "simulator": true,
         "resourceClass": "m-medium"
