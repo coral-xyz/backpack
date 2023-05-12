@@ -42,12 +42,6 @@ export function TransferWidget({
   swapEnabled: boolean;
   token?: Token;
 }): JSX.Element {
-  // const eb = useRecoilValueLoadable(enabledBlockchainsAtom);
-  // const enabledBlockchains = eb.state === "hasValue" ? eb.contents : [];
-  // const renderSwap =
-  //   blockchain !== Blockchain.ETHEREUM &&
-  //   enabledBlockchains.includes(Blockchain.SOLANA);
-
   const onPress = (action: NavTokenAction, options: NavTokenOptions) => {
     const route = getRouteFromAction(action);
     onPressOption(route, options);
