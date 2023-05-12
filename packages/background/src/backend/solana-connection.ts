@@ -22,8 +22,8 @@ import {
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
-  ReadApiConnection,
 } from "@coral-xyz/common";
+import { ReadApiConnection } from "@metaplex-foundation/js";
 import type {
   AccountBalancePair,
   AccountChangeCallback,
@@ -57,7 +57,6 @@ import type {
   LogsCallback,
   LogsFilter,
   Message,
-  MessageV0,
   NonceAccount,
   ParsedAccountData,
   ParsedConfirmedTransaction,

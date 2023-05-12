@@ -3,7 +3,6 @@ import type {
   ReadApiAssetList,
   ReadApiConnection,
 } from "@metaplex-foundation/js";
-import { Metaplex } from "@metaplex-foundation/js";
 import {
   Metadata,
   TokenStandard,
@@ -231,8 +230,7 @@ export async function fetchReadApiNfts(
   connection: ReadApiConnection,
   publicKey: PublicKey
 ) {
-  const metaplex = Metaplex.make(connection);
-  const result = await metaplex.rpc().getAssetsByOwner({
+  const result = await connection.getAssetsByOwner({
     ownerAddress: publicKey.toBase58(),
   });
 

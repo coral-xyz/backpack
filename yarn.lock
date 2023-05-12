@@ -3731,6 +3731,7 @@ __metadata:
     "@coral-xyz/blockchain-keyring": "*"
     "@coral-xyz/common": "*"
     "@coral-xyz/recoil": "*"
+    "@metaplex-foundation/js": ^0.19.3
     "@solana/web3.js": ^1.63.1
     "@types/serviceworker": ^0.0.47
     bip32: ^2.0.6
@@ -4165,6 +4166,7 @@ __metadata:
     "@tamagui/themes": ^1.15.39
     "@types/react-native": ~0.71.6
     tamagui: ^1.15.39
+    typescript: ^5.0.4
   languageName: unknown
   linkType: soft
 
@@ -8396,7 +8398,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metaplex-foundation/js@npm:latest":
+"@metaplex-foundation/js@npm:^0.19.3, @metaplex-foundation/js@npm:latest":
   version: 0.19.3
   resolution: "@metaplex-foundation/js@npm:0.19.3"
   dependencies:

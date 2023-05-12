@@ -18,6 +18,7 @@
     "@coral-xyz/blockchain-keyring": "*",
     "@coral-xyz/common": "*",
     "@coral-xyz/recoil": "*",
+    "@metaplex-foundation/js": "^0.19.3",
     "@solana/web3.js": "^1.63.1",
     "bip32": "^2.0.6",
     "bip39": "^3.0.4",
