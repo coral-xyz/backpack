@@ -8,7 +8,7 @@
   "scripts": {
     "eas-build-post-install": "cd ../../ && yarn build:mobile",
     "android": "expo start --android --localhost --dev-client",
-    "ios": "expo start --ios --localhost",
+    "ios": "expo start --ios --localhost --dev-client",
     "web": "expo start --web",
     "add": "expo add",
     "eject": "expo eject",
