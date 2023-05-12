@@ -20,8 +20,8 @@ export const mainMenu = [
     path: '/about'
   },
   {
-    title: 'Download',
-    path: 'https://chrome.google.com/webstore/detail/backpack/aflkmfhebedbjioipglgcbcmnbpgliof'
+    title: 'Downloads',
+    path: '/downloads'
   }
 ];
 
