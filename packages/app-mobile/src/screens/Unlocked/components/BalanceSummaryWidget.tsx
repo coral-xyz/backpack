@@ -104,8 +104,6 @@ function Container() {
     },
   });
 
-  console.log("debug2:data balances", data);
-
   const totalBalance = data.wallet.balances?.aggregateValue;
   const totalChange =
     data.wallet.balances?.native?.marketData?.usdChange ?? "$0.00";

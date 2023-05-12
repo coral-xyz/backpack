@@ -412,6 +412,7 @@ const AddressListItem = ({
         hoverTheme
         pressTheme
         height={48}
+        backgroundColor="$nav"
         justifyContent="flex-start"
         icon={<UserAvatar size={32} uri={user.image} />}
         onPress={onPress}

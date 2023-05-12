@@ -77,6 +77,55 @@ export type UnlockedNavigatorStackParamList = {
   };
 };
 
+const ModalStack = createStackNavigator();
+function SendModalStackNavigator(): JSX.Element {
+  const theme = useTheme();
+  return (
+    <ModalStack.Navigator
+      screenOptions={{
+        headerTintColor: theme.custom.colors.fontColor,
+        headerBackTitleVisible: false,
+      }}
+    >
+      <Stack.Screen
+        options={{ title: "Select Token" }}
+        name="SendSelectTokenModal"
+        component={SendTokenListScreen}
+      />
+      <Stack.Screen
+        name="SendTokenModal"
+        component={SendTokenSelectRecipientScreen}
+        options={({ route }) => {
+          const { token } = route.params;
+          return {
+            title: `Send ${token.ticker}`,
+          };
+        }}
+      />
+      <Stack.Screen
+        name="SendTokenConfirm"
+        component={SendTokenConfirmScreen}
+        options={({ route }) => {
+          const { token } = route.params;
+          return {
+            title: `Send ${token.ticker}`,
+          };
+        }}
+      />
+      <Stack.Screen
+        name="SendNFTConfirm"
+        component={SendNFTConfirmScreen}
+        options={({ route }) => {
+          const { nft } = route.params;
+          return {
+            title: parseNftName(nft),
+          };
+        }}
+      />
+    </ModalStack.Navigator>
+  );
+}
+
 const Stack = createStackNavigator<UnlockedNavigatorStackParamList>();
 export function UnlockedNavigator(): JSX.Element {
   const theme = useTheme();
@@ -108,11 +157,14 @@ export function UnlockedNavigator(): JSX.Element {
           name="DepositSingle"
           component={DepositSingleScreen}
         />
-        <Stack.Screen
-          options={{ title: "Select Token" }}
-          name="SendSelectTokenModal"
-          component={SendTokenListScreen}
-        />
+        <Stack.Group
+          screenOptions={{ presentation: "modal", headerShown: false }}
+        >
+          <Stack.Screen
+            name="SendSelectTokenModal"
+            component={SendModalStackNavigator}
+          />
+        </Stack.Group>
         <Stack.Screen
           name="SendTokenModal"
           component={SendTokenSelectRecipientScreen}
