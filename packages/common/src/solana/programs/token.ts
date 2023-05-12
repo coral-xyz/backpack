@@ -1,3 +1,9 @@
+import type {
+  MetaplexError,
+  ReadApiAssetList,
+  ReadApiConnection,
+} from "@metaplex-foundation/js";
+import { Metaplex } from "@metaplex-foundation/js";
 import {
   Metadata,
   TokenStandard,
@@ -6,13 +12,12 @@ import type { Program, Provider, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { AnchorProvider, BN, Spl } from "@project-serum/anchor";
 import type { RawMint } from "@solana/spl-token";
-import { getAssociatedTokenAddress, MintLayout } from "@solana/spl-token";
+import { MintLayout } from "@solana/spl-token";
 import type { Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 
 import { getLogger } from "../../logging";
 import { externalResourceUri } from "../../utils";
-import type { ReadApiConnection } from "../read-api-connection";
 import type {
   ReplaceTypes,
   SolanaTokenAccount,
@@ -216,11 +221,24 @@ export async function fetchSplMetadata(
   return tokenMetaAccounts;
 }
 
+const isMetaplexError = (
+  result: ReadApiAssetList | MetaplexError
+): result is MetaplexError => {
+  return !!(result as MetaplexError).cause;
+};
+
 export async function fetchReadApiNfts(
   connection: ReadApiConnection,
   publicKey: PublicKey
 ) {
-  const result = await connection.getAssetsByOwner(publicKey);
+  const metaplex = Metaplex.make(connection);
+  const result = await metaplex.rpc().getAssetsByOwner({
+    ownerAddress: publicKey.toBase58(),
+  });
+
+  if (isMetaplexError(result)) {
+    throw result;
+  }
 
   let nftTokens: any[] = [];
   let nftTokenMetadata: any[] = [];
@@ -230,7 +248,7 @@ export async function fetchReadApiNfts(
       authority: nft.ownership.owner,
       amount: 1,
       // TODO(jon): Figure out what this state is
-      state: 1,
+      state: 0,
       isNative: null,
       delegatedAmount: nft.ownership.delegated ? "1" : "0",
       key: nft.id,
@@ -268,8 +286,8 @@ export async function fetchReadApiNfts(
           ? new PublicKey(updateAuthority.address)
           : null,
         data: {
-          name: nft.content.metadata.name,
-          symbol: nft.content.metadata.symbol,
+          name: nft.content.metadata?.name,
+          symbol: nft.content.metadata?.symbol,
           uri: nft.content.json_uri,
           sellerFeeBasisPoint: nft.royalty.basis_points,
           creators: nft.creators,
@@ -277,16 +295,14 @@ export async function fetchReadApiNfts(
         primarySaleHappened: nft.royalty.primary_sale_happened,
         isMutable: nft.mutable,
         editionNonce: nft.supply.edition_nonce,
-        // TODO(jon): Figure out which one to use
-        tokenStandard: nft.interface,
-        // TODO(jon): Figure this out
+        tokenStandard: "nft",
         collection: nftCollection
           ? { key: new PublicKey(nftCollection.group_value) }
           : null,
-        // TODO(jon): Figure this out
+        // Collection NFTs are not eligible to be compressed
         collectionDetails: null,
-        // TODO(jon): get this exposed in the API
-        uses: 0,
+        // TODO(jon): This field is not surfaced in Read API
+        uses: null,
         programmableConfig: null,
       },
       compression: {

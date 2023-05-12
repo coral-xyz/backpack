@@ -14,10 +14,7 @@ import {
   findFreezeAuthorityPk,
   findMintStatePk,
 } from "@magiceden-oss/open_creator_protocol";
-import {
-  createTransferInstruction as createTransferLeafInstruction,
-  PROGRAM_ID as BUBBLEGUM_PROGRAM_ID,
-} from "@metaplex-foundation/mpl-bubblegum";
+import { Metaplex, ReadApiConnection } from "@metaplex-foundation/js";
 import type {
   TransferInstructionAccounts,
   TransferInstructionArgs,
@@ -30,12 +27,6 @@ import {
 } from "@metaplex-foundation/mpl-token-metadata";
 import type { Program, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
-import { bs58 } from "@project-serum/anchor/dist/cjs/utils/bytes";
-import {
-  ConcurrentMerkleTreeAccount,
-  SPL_ACCOUNT_COMPRESSION_PROGRAM_ID,
-  SPL_NOOP_PROGRAM_ID,
-} from "@solana/spl-account-compression";
 import {
   createAssociatedTokenAccountInstruction,
   createCloseAccountInstruction,
@@ -62,7 +53,6 @@ import BN from "bn.js";
 
 import type { BackgroundClient } from "../";
 import { TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS } from "../constants";
-import { ReadApiConnection } from "../";
 
 import * as assertOwner from "./programs/assert-owner";
 import {
@@ -81,7 +71,6 @@ export * from "./cluster";
 export * from "./explorer";
 export * from "./programs";
 export * from "./provider";
-export * from "./read-api-connection";
 export * from "./rpc-helpers";
 export * from "./send-helpers";
 export * from "./transaction-helpers";
@@ -329,87 +318,22 @@ export class Solana {
       };
     }
   ): Promise<string> {
-    const { walletPublicKey, tokenClient, commitment } = solanaCtx;
-    const { mint, destination, compression } = req;
-
-    const transaction: Transaction = new Transaction();
-
-    const [treeAuthority] = PublicKey.findProgramAddressSync(
-      [bs58.decode(compression.tree)],
-      BUBBLEGUM_PROGRAM_ID
-    );
-
-    const treeAccount = await ConcurrentMerkleTreeAccount.fromAccountAddress(
-      solanaCtx.connection,
-      new PublicKey(compression.tree)
-    );
-    const canopyHeight = treeAccount.getCanopyDepth() ?? 0;
+    const { commitment } = solanaCtx;
+    const { mint, destination } = req;
 
     const readApiConnection = new ReadApiConnection(
       solanaCtx.connection.rpcEndpoint,
       commitment
     );
-    let result;
-    try {
-      result = await readApiConnection.getAssetProof(mint);
-    } catch (e) {
-      if (e) {
-        // TODO(jon): Handle this a little better
-        console.error(e);
-        throw new Error("something went wrong");
-      }
-    }
+    const metaplex = Metaplex.make(readApiConnection);
 
-    const { root, proof, tree_id } = result;
-    const { ownership, leaf_id } = compression;
+    const nft = await metaplex.nfts().findByAssetId({ assetId: mint });
 
-    const proofPath = proof
-      .slice(0, proof.length - canopyHeight)
-      .map((node) => ({
-        pubkey: new PublicKey(node),
-        isSigner: false,
-        isWritable: false,
-      }));
+    const {
+      response: { signature },
+    } = await metaplex.nfts().transfer({ nftOrSft: nft, toOwner: destination });
 
-    const transferInstruction = createTransferLeafInstruction(
-      {
-        treeAuthority,
-        leafOwner: new PublicKey(ownership.owner),
-        leafDelegate: ownership.delegated
-          ? new PublicKey(ownership.delegate)
-          : new PublicKey(ownership.owner),
-        newLeafOwner: destination,
-        merkleTree: new PublicKey(tree_id),
-        logWrapper: SPL_NOOP_PROGRAM_ID,
-        compressionProgram: SPL_ACCOUNT_COMPRESSION_PROGRAM_ID,
-        anchorRemainingAccounts: proofPath,
-      },
-      {
-        root: [...bs58.decode(root)],
-        dataHash: [...bs58.decode(compression.data_hash.trim())],
-        creatorHash: [...bs58.decode(compression.creator_hash.trim())],
-        nonce: leaf_id,
-        index: leaf_id,
-      }
-    );
-
-    transaction.add(transferInstruction);
-
-    transaction.feePayer = walletPublicKey;
-    transaction.recentBlockhash = (
-      await tokenClient.provider.connection.getLatestBlockhash(commitment)
-    ).blockhash;
-
-    const signedTx = await SolanaProvider.signTransaction(
-      solanaCtx,
-      transaction
-    );
-    const rawTx = signedTx.serialize();
-
-    return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
-      skipPreflight: false,
-      preflightCommitment: commitment,
-    });
+    return signature;
   }
 
   public static async transferOpenCreatorProtocol(
