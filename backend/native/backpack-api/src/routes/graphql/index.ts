@@ -5,6 +5,8 @@ import { allow, shield } from "graphql-shield";
 import { join } from "path";
 
 import {
+  authenticateMutation,
+  deauthenticateMutation,
   friendshipTypeResolvers,
   importPublicKeyMutation,
   jsonObjectScalar,
@@ -20,6 +22,8 @@ import type { MutationResolvers, QueryResolvers, Resolvers } from "./types";
  * Root `Mutation` object resolver.
  */
 const mutationResolvers: MutationResolvers = {
+  authenticate: authenticateMutation,
+  deauthenticate: deauthenticateMutation,
   importPublicKey: importPublicKeyMutation,
 };
 
@@ -50,6 +54,7 @@ const permissions = shield(
   {
     Mutation: {
       "*": authorized,
+      authenticate: allow,
     },
     Query: {
       "*": allow,

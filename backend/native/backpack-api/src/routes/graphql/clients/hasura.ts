@@ -222,8 +222,8 @@ export class Hasura {
     // from the discover and decoded JWT in the request
     const resp = await this.#chain("query")(
       {
-        auth_users: [
-          { where: { id: { _eq: id } }, limit: 1 },
+        auth_users_by_pk: [
+          { id },
           {
             id: true,
             created_at: true,
@@ -234,11 +234,11 @@ export class Hasura {
       { operationName: "GetUserDetailsById" }
     );
 
-    if (resp.auth_users.length === 0) {
+    if (!resp.auth_users_by_pk) {
       return null;
     }
 
-    const user = resp.auth_users[0] as {
+    const user = resp.auth_users_by_pk as {
       id: string;
       created_at: string;
       username: string;

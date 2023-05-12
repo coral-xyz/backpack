@@ -512,7 +512,8 @@ export const PLUGIN_RPC_METHOD_CLOSE_TO = "rpc-method-chat-open";
 
 export const PLUGIN_RPC_METHOD_POP_OUT = "rpc-method-pop-out";
 
-export const PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW = "rpc-method-resize-extension-window";
+export const PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW =
+  "rpc-method-resize-extension-window";
 
 export const BACKGROUND_SERVICE_WORKER_READY = "service-worker-ready";
 
@@ -657,6 +658,13 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     image:
       "https://arweave.net/Dh3FfZurEtmQD52mmq-axte9M6IMKmNSGzzdTpN9sJc?ext=png",
     collectionId: "Et9ckpQCXFN5PsiYN781AczSVuQYyGEdDEPDJ7jrxz4c",
+  },
+  {
+    id: "4wUE3tH2MTjNnxKQPYyx3owgL95ZYbYAtW1EsQPz9hfV",
+    name: "ROGUE SHARKS",
+    image:
+      "https://www.arweave.net/1f5b49zDrkC9Lot6jKFMCzyeZ57DSK8x_KkFvCFNtek?ext=png",
+    collectionId: "4wUE3tH2MTjNnxKQPYyx3owgL95ZYbYAtW1EsQPz9hfV",
   },
 ];
 
