@@ -3918,8 +3918,8 @@ __metadata:
     "@ethersproject/transactions": ^5.7.0
     "@magiceden-oss/open_creator_protocol": ^0.3.2
     "@metaplex-foundation/beet": ^0.7.1
-    "@metaplex-foundation/js": latest
-    "@metaplex-foundation/mpl-core": latest
+    "@metaplex-foundation/js": ^0.19.3
+    "@metaplex-foundation/mpl-core": ^0.6.1
     "@metaplex-foundation/mpl-token-metadata": ^2.7.0
     "@project-serum/anchor": ^0.25.0
     "@project-serum/token": ^0.1.0
@@ -4166,7 +4166,6 @@ __metadata:
     "@tamagui/themes": ^1.15.39
     "@types/react-native": ~0.71.6
     tamagui: ^1.15.39
-    typescript: ^5.0.4
   languageName: unknown
   linkType: soft
 
@@ -8398,7 +8397,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metaplex-foundation/js@npm:^0.19.3, @metaplex-foundation/js@npm:latest":
+"@metaplex-foundation/js@npm:^0.19.3":
   version: 0.19.3
   resolution: "@metaplex-foundation/js@npm:0.19.3"
   dependencies:
@@ -8523,7 +8522,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metaplex-foundation/mpl-core@npm:^0.6.1, @metaplex-foundation/mpl-core@npm:latest":
+"@metaplex-foundation/mpl-core@npm:^0.6.1":
   version: 0.6.1
   resolution: "@metaplex-foundation/mpl-core@npm:0.6.1"
   dependencies:

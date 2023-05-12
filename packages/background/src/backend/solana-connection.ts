@@ -181,7 +181,6 @@ export class SolanaConnectionBackend {
       handleKeyringStoreUnlocked(notif);
     };
 
-    // This is what i want
     const handleKeyringStoreUnlocked = (notif: Notification) => {
       const {
         blockchainActiveWallets,

@@ -304,19 +304,7 @@ export class Solana {
 
   public static async transferCompressedNft(
     solanaCtx: SolanaContext,
-    req: Omit<TransferTokenRequest, "amount"> & {
-      compression: {
-        ownership: {
-          delegated: boolean;
-          delegate: string;
-          owner: string;
-        };
-        tree: string;
-        data_hash: string;
-        creator_hash: string;
-        leaf_id: number;
-      };
-    }
+    req: TransferTokenRequest
   ): Promise<string> {
     const { commitment } = solanaCtx;
     const { mint, destination } = req;
