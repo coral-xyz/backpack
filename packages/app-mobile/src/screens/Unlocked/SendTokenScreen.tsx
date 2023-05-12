@@ -23,6 +23,7 @@ import {
   isMadLads,
 } from "@coral-xyz/common";
 import {
+  useActiveWallet,
   useAnchorContext,
   useEthereumCtx,
   useIsValidAddress,
@@ -43,11 +44,7 @@ import {
   SendSolanaConfirmationCard,
   ConfirmSendSolanaTable,
 } from "~components/BottomDrawerSolanaConfirmation";
-import {
-  Header,
-  BetterBottomSheet,
-  BottomSheetModal,
-} from "~components/BottomSheetModal";
+import { Header, BetterBottomSheet } from "~components/BottomSheetModal";
 import { UnstyledTokenTextInput } from "~components/TokenInputField";
 import { UserAvatar } from "~components/UserAvatar";
 import { StyledText, Screen, TwoButtonFooter } from "~components/index";
@@ -425,6 +422,7 @@ export function SendTokenConfirmScreen({
 }
 
 export function SendNFTConfirmScreen({ route, navigation }): JSX.Element {
+  const activeWallet = useActiveWallet();
   const insets = useSafeAreaInsets();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { nft, to } = route.params;
@@ -432,7 +430,7 @@ export function SendNFTConfirmScreen({ route, navigation }): JSX.Element {
   const SendConfirmComponent = {
     [Blockchain.SOLANA]: SendSolanaConfirmationCard,
     [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
-  }[nft.blockchain];
+  }[activeWallet.blockchain];
 
   return (
     <>
@@ -441,12 +439,14 @@ export function SendNFTConfirmScreen({ route, navigation }): JSX.Element {
       >
         <YStack ai="center" mt={24}>
           <Box mb={24}>
-            <AvatarHeader
-              walletName={to.walletName}
-              address={to.address}
-              username={to.username}
-              image={to.image}
-            />
+            {to ? (
+              <AvatarHeader
+                walletName={to.walletName}
+                address={to.address}
+                username={to.username}
+                image={to.image}
+              />
+            ) : null}
           </Box>
           <NFTPreviewImage nft={nft} width={192} height={192} />
         </YStack>
@@ -492,24 +492,6 @@ export function SendNFTConfirmScreen({ route, navigation }): JSX.Element {
           }}
         />
       </BetterBottomSheet>
-    </>
-  );
-}
-
-function ReviewSendNFT({ nft, address, onConfirm }): JSX.Element {
-  return (
-    <>
-      <YStack ai="center" mb={18}>
-        <Header text="Review Send" />
-        <XStack space ai="center" my={18}>
-          <NFTPreviewImage nft={nft} width={48} height={48} />
-          <StyledText fontWeight="700" fontSize={24}>
-            1
-          </StyledText>
-        </XStack>
-        <ConfirmSendSolanaTable destinationAddress={address} />
-      </YStack>
-      <PrimaryButton label="Send" onPress={onConfirm} />
     </>
   );
 }

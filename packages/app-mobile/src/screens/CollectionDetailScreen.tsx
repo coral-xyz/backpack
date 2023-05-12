@@ -23,8 +23,6 @@ function ListItem({ id, onPress }: { id: string; onPress: any }): JSX.Element {
     },
   });
 
-  console.log("debug3:item", item);
-
   return (
     <Pressable
       style={{ flex: 1, marginBottom: 12, borderRadius: 16 }}

@@ -145,7 +145,9 @@ function Container({ navigation, route }): JSX.Element {
           <PrimaryButton
             label="Send"
             onPress={() => {
-              navigation.push("SendNFT", { nft: item });
+              navigation.navigate("SendCollectibleSelectRecipient", {
+                nft: item,
+              });
             }}
           />
         </Box>

@@ -30,6 +30,7 @@ import {
   DepositSingleScreen,
 } from "~screens/Unlocked/DepositScreen";
 import { DummyScreen } from "~screens/Unlocked/DummyScreen";
+import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollectibleSelectRecipientScreen";
 // import { NftCollectiblesNavigator } from "~screens/Unlocked/NftCollectiblesScreen";
 import {
   SendTokenSelectRecipientScreen,
@@ -57,6 +58,16 @@ export type UnlockedNavigatorStackParamList = {
   SendTokenConfirm: {
     blockchain: Blockchain;
     token: Token;
+    to: {
+      walletName?: string | undefined; // TBD
+      address: string;
+      username: string;
+      image: string;
+      uuid: string;
+    };
+  };
+  SendCollectibleSelectRecipient: {
+    nft: Nft;
     to: {
       walletName?: string | undefined; // TBD
       address: string;
@@ -163,6 +174,16 @@ export function UnlockedNavigator(): JSX.Element {
           <Stack.Screen
             name="SendSelectTokenModal"
             component={SendModalStackNavigator}
+          />
+          <Stack.Screen
+            name="SendCollectibleSelectRecipient"
+            component={SendCollectibleSendRecipientScreen}
+            options={({ route }) => {
+              const { nft } = route.params;
+              return {
+                title: `Send ${nft.name}`,
+              };
+            }}
           />
         </Stack.Group>
         <Stack.Screen
