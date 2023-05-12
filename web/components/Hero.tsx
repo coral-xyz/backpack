@@ -48,11 +48,10 @@ function Hero() {
                     className="block flex h-12 w-28 flex-row items-center justify-center
                     rounded-md bg-indigo-500 font-medium text-indigo-50 shadow
                     hover:bg-indigo-600"
-                    href={mainMenu.find(m => m.title === 'Download').path}
-                    target="_blank"
+                    href={mainMenu.find(m => m.title === 'Downloads').path}
                     rel="noopener noreferrer"
                   >
-                    Download
+                    Downloads
                   </a>
                 </div>
                 {/* <form onSubmit={subscribeEmail} className="sm:mx-auto sm:max-w-xl lg:mx-0">
