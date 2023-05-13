@@ -3,6 +3,7 @@ import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginCacheControl } from "@apollo/server/plugin/cacheControl";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import ApolloServerPluginResponseCache from "@apollo/server-plugin-response-cache";
+import { createHash } from "@apollo/utils.createhash";
 import cors from "cors";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
@@ -31,7 +32,7 @@ import usersRouter from "./routes/v1/users";
 import { zodErrorToString } from "./util";
 
 const app = express();
-export const httpServer = http.createServer(app);
+const httpServer = http.createServer(app);
 
 const apollo = new ApolloServer<ApiContext>({
   schema,
@@ -42,6 +43,12 @@ const apollo = new ApolloServer<ApiContext>({
       defaultMaxAge: 30,
     }),
     ApolloServerPluginResponseCache({
+      generateCacheKey(req, keyData): string {
+        const { devnet } = req.contextValue as ApiContext;
+        return createHash("sha256")
+          .update(`${devnet ? "devnet" : ""}-${JSON.stringify(keyData)}`)
+          .digest("hex");
+      },
       async sessionId(req): Promise<string | null> {
         const { jwt } = req.contextValue.authorization;
         return jwt ? `session-id:${jwt}` : null;

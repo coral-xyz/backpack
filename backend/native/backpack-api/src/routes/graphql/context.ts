@@ -1,14 +1,20 @@
 import type { ContextFunction } from "@apollo/server";
 import type { ExpressContextFunctionArgument } from "@apollo/server/express4";
-import { Chain } from "@coral-xyz/zeus";
-import { Alchemy } from "alchemy-sdk";
-import type { Request } from "express";
+import { Alchemy, Network } from "alchemy-sdk";
+import type { Request, Response } from "express";
 import { importSPKI, jwtVerify } from "jose";
 import { LRUCache } from "lru-cache";
 
-import { AUTH_JWT_PUBLIC_KEY, HASURA_URL, JWT } from "../../config";
+import {
+  ALCHEMY_API_KEY,
+  AUTH_JWT_PUBLIC_KEY,
+  HASURA_URL,
+  HELIUS_API_KEY,
+  JWT as HASURA_JWT,
+  TENSOR_API_KEY,
+} from "../../config";
 
-import { CoinGecko, Helius, Tensor } from "./clients";
+import { CoinGecko, Hasura, Helius, Tensor } from "./clients";
 
 const IN_MEM_JWT_CACHE = new LRUCache<string, string>({
   allowStale: false,
@@ -25,9 +31,14 @@ export interface ApiContext {
   dataSources: {
     alchemy: Alchemy;
     coinGecko: CoinGecko;
-    hasura: ReturnType<typeof Chain>;
+    hasura: Hasura;
     helius: Helius;
     tensor: Tensor;
+  };
+  devnet: boolean;
+  http: {
+    req: Request;
+    res: Response;
   };
 }
 
@@ -39,7 +50,7 @@ export interface ApiContext {
 export const createContext: ContextFunction<
   [ExpressContextFunctionArgument],
   ApiContext
-> = async ({ req }): Promise<ApiContext> => {
+> = async ({ req, res }): Promise<ApiContext> => {
   // Bootstrap authorization variables
   let userId: string | undefined = undefined;
   let valid = false;
@@ -69,6 +80,10 @@ export const createContext: ContextFunction<
     }
   }
 
+  // Extract the target blockchain network from the headers if present
+  const devnet: boolean =
+    (req.headers["x-blockchain-devnet"] || "false") === "true";
+
   return {
     authorization: {
       jwt,
@@ -76,15 +91,19 @@ export const createContext: ContextFunction<
       valid,
     },
     dataSources: {
-      alchemy: new Alchemy({ apiKey: process.env.ALCHEMY_API_KEY }),
-      coinGecko: new CoinGecko(),
-      hasura: Chain(HASURA_URL, {
-        headers: {
-          Authorization: `Bearer ${JWT}`,
-        },
+      alchemy: new Alchemy({
+        apiKey: ALCHEMY_API_KEY,
+        network: devnet ? Network.ETH_SEPOLIA : Network.ETH_MAINNET,
       }),
-      helius: new Helius(process.env.HELIUS_API_KEY ?? ""),
-      tensor: new Tensor(process.env.TENSOR_API_KEY ?? ""),
+      coinGecko: new CoinGecko(),
+      hasura: new Hasura({ secret: HASURA_JWT, url: HASURA_URL }),
+      helius: new Helius({ apiKey: HELIUS_API_KEY, devnet }),
+      tensor: new Tensor({ apiKey: TENSOR_API_KEY }),
+    },
+    devnet,
+    http: {
+      req,
+      res,
     },
   };
 };

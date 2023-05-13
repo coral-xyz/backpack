@@ -1,24 +1,25 @@
-import { memo, useState } from 'react';
-import { CheckIcon } from '@heroicons/react/outline';
+import { memo } from 'react';
+// import { CheckIcon } from '@heroicons/react/outline';
 
-import { subscribe } from '../lib/mailchimp';
+// import { subscribe } from '../lib/mailchimp';
+import { mainMenu } from './Nav';
 
 function Hero() {
-  const [email, setEmail] = useState<string>('');
-  const [subscribed, setSubscribed] = useState<boolean>(false);
+  // const [email, setEmail] = useState<string>('');
+  // const [subscribed, setSubscribed] = useState<boolean>(false);
 
-  async function subscribeEmail(e) {
-    e.preventDefault();
+  // async function subscribeEmail(e) {
+  //   e.preventDefault();
 
-    // TODO: improve error handling
-    try {
-      await subscribe(email);
-      setEmail('');
-      setSubscribed(true);
-    } catch {
-      // Pass
-    }
-  }
+  //   // TODO: improve error handling
+  //   try {
+  //     await subscribe(email);
+  //     setEmail('');
+  //     setSubscribed(true);
+  //   } catch {
+  //     // Pass
+  //   }
+  // }
 
   return (
     <div className="pb-20 sm:pb-48 lg:pb-20">
@@ -39,10 +40,21 @@ function Hero() {
                 className="mt-3 text-base text-gray-300 sm:mt-5 sm:text-xl
                   lg:text-lg xl:text-xl"
               >
-                Coming soon to your mobile and browser.
+                Coming soon on mobile.
               </p>
-              <div className="mt-10 sm:mt-12">
-                <form onSubmit={subscribeEmail} className="sm:mx-auto sm:max-w-xl lg:mx-0">
+              <div className="mt-5 sm:mt-8">
+                <div>
+                  <a
+                    className="block flex h-12 w-28 flex-row items-center justify-center
+                    rounded-md bg-indigo-500 font-medium text-indigo-50 shadow
+                    hover:bg-indigo-600"
+                    href={mainMenu.find(m => m.title === 'Downloads').path}
+                    rel="noopener noreferrer"
+                  >
+                    Downloads
+                  </a>
+                </div>
+                {/* <form onSubmit={subscribeEmail} className="sm:mx-auto sm:max-w-xl lg:mx-0">
                   <div className="sm:flex">
                     <div className="min-w-0 flex-1">
                       <label htmlFor="email" className="sr-only">
@@ -76,7 +88,7 @@ function Hero() {
                       ? 'You’ll be the first to know when Backpack is ready.'
                       : 'We hate spam as much as you do.'}
                   </p>
-                </form>
+                </form> */}
               </div>
             </div>
           </div>

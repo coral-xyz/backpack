@@ -20,6 +20,8 @@ import {
 } from "~components/ListItem";
 import { Screen } from "~components/index";
 
+import BottomSheetExample from "./DummyScreenModal";
+
 function ActivityDetail() {
   return (
     <YGroup

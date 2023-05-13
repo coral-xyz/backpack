@@ -6,7 +6,6 @@ import type {
   Balances,
   NftConnection,
   QueryWalletArgs,
-  RequireFields,
   TransactionConnection,
   Wallet,
   WalletNftsArgs,
@@ -18,47 +17,18 @@ import type {
  * Handler for the `wallet` query.
  * @export
  * @param {{}} _parent
- * @param {RequireFields<QueryWalletArgs, 'address' | 'chainId'>} args
+ * @param {QueryWalletArgs} args
  * @param {ApiContext} ctx
  * @param {GraphQLResolveInfo} _info
  * @returns {(Promise<Wallet | null>)}
  */
 export async function walletQueryResolver(
   _parent: {},
-  args: RequireFields<QueryWalletArgs, "address" | "chainId">,
+  args: QueryWalletArgs,
   ctx: ApiContext,
   _info: GraphQLResolveInfo
 ): Promise<Wallet | null> {
-  // Query Hasura for the peripheral database details about the wallet
-  const resp = await ctx.dataSources.hasura("query")({
-    auth_public_keys: [
-      {
-        where: {
-          blockchain: { _eq: args.chainId.toLowerCase() },
-          public_key: { _eq: args.address },
-        },
-        limit: 1,
-      },
-      {
-        created_at: true,
-        is_primary: true,
-      },
-    ],
-  });
-
-  if (resp.auth_public_keys.length === 0) {
-    return null;
-  }
-
-  return {
-    id: `${args.chainId}_wallet:${args.address}`,
-    address: args.address,
-    chainId: args.chainId,
-    createdAt: new Date(
-      resp.auth_public_keys[0].created_at as string
-    ).toISOString(),
-    isPrimary: resp.auth_public_keys[0].is_primary ?? false,
-  };
+  return ctx.dataSources.hasura.getWallet(args.chainId, args.address);
 }
 
 /**
@@ -108,14 +78,14 @@ export const walletTypeResolvers: WalletResolvers = {
   /**
    * Field-level resolver handler for the `transactions` field.
    * @param {Wallet} parent
-   * @param {Partial<WalletTransactionsArgs>} args
+   * @param {WalletTransactionsArgs} args
    * @param {ApiContext} ctx
    * @param {GraphQLResolveInfo} _info
    * @returns {(Promise<TransactionConnection | null>)}
    */
   async transactions(
     parent: Wallet,
-    args: Partial<WalletTransactionsArgs>,
+    args: WalletTransactionsArgs,
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<TransactionConnection | null> {

@@ -200,6 +200,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@apollo/utils.createhash@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@apollo/utils.createhash@npm:3.0.0"
+  dependencies:
+    "@apollo/utils.isnodelike": ^3.0.0
+    sha.js: ^2.4.11
+  checksum: 117432d024162f0a78e3cf7db7613a226884ad363d8f1679e74b94bec81a81926aed3e25d9a41d9f5bc05125044c7a873c162b2d91294f0687a689386a597583
+  languageName: node
+  linkType: hard
+
 "@apollo/utils.dropunuseddefinitions@npm:^2.0.1":
   version: 2.0.1
   resolution: "@apollo/utils.dropunuseddefinitions@npm:2.0.1"
@@ -220,6 +230,13 @@ __metadata:
   version: 2.0.1
   resolution: "@apollo/utils.isnodelike@npm:2.0.1"
   checksum: c2e858186a60cccb7e4fc53e8b97b2a4d5470cd4975ad9cccd29e57a23eff1aa3a0c03edceb13c423632224ce2c327c6f1bb8bd77dc3fb039316bba5750536ec
+  languageName: node
+  linkType: hard
+
+"@apollo/utils.isnodelike@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@apollo/utils.isnodelike@npm:3.0.0"
+  checksum: c441fe25ae8a01167ad50806d7ba81f0f461ad28a413579d37867e76936bac03bf0938faee87afeeaf9e2b5dd5a6ae27595cfcc19aa213b990eef77e195103c5
   languageName: node
   linkType: hard
 
@@ -3568,6 +3585,7 @@ __metadata:
     react-custom-scrollbars: ^4.2.1
     react-dom: 18.2.0
     react-dropzone: ^14.2.3
+    react-error-boundary: ^4.0.4
     react-native-web: ^0.18.12
     react-refresh: ^0.14.0
     react-router-dom: ^6.3.0
@@ -16752,6 +16770,7 @@ __metadata:
     "@apollo/datasource-rest": ^5.1.0
     "@apollo/server": ^4.7.0
     "@apollo/server-plugin-response-cache": ^4.1.2
+    "@apollo/utils.createhash": ^3.0.0
     "@aws-sdk/client-s3": ^3.245.0
     "@aws-sdk/s3-request-presigner": ^3.245.0
     "@cardinal/common": ^6.0.1

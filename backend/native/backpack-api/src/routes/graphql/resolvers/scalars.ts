@@ -1,5 +1,9 @@
 import { GraphQLScalarType } from "graphql";
 
+/**
+ * Custom `JSONObject` scalar implementation for parsing arbitrary data objects.
+ * @export
+ */
 export const jsonObjectScalar = new GraphQLScalarType({
   name: "JSONObject",
   serialize(value) {
