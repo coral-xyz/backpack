@@ -4,6 +4,7 @@ export const baseTheme = {
       container: 16,
       large: 12,
       medium: 8,
+      small: 4,
     },
   },
 };
