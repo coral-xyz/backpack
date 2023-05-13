@@ -38,11 +38,13 @@ export const BubbleTopLabel = ({ text }: { text: string }) => {
 
 let debouncedTimer = 0;
 
-function NotSelected() {
-  return null;
-}
-
-type User = any;
+type User = {
+  walletName?: string;
+  username: string;
+  image: string;
+  uuid: string;
+  // addresses: { publicKey: string; blockchain: Blockchain }[];
+};
 
 type SelectUserResultProp = {
   user: User;

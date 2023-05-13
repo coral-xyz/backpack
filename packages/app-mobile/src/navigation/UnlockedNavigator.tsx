@@ -36,7 +36,7 @@ import {
   SendTokenSelectRecipientScreen,
   SendTokenListScreen,
   SendTokenConfirmScreen,
-  SendNFTConfirmScreen,
+  // SendNFTConfirmScreen,
 } from "~screens/Unlocked/SendTokenScreen";
 import { SwapTokenScreen } from "~screens/Unlocked/SwapTokenScreen";
 import { WalletListScreen } from "~screens/Unlocked/WalletListScreen";
@@ -76,16 +76,16 @@ export type UnlockedNavigatorStackParamList = {
       uuid: string;
     };
   };
-  SendNFTConfirm: {
-    nft: Nft;
-    to: {
-      walletName?: string | undefined; // TBD
-      address: string;
-      username: string;
-      image: string;
-      uuid: string;
-    };
-  };
+  // SendNFTConfirm: {
+  //   nft: Nft;
+  //   to: {
+  //     walletName?: string | undefined; // TBD
+  //     address: string;
+  //     username: string;
+  //     image: string;
+  //     uuid: string;
+  //   };
+  // };
 };
 
 const ModalStack = createStackNavigator();
@@ -120,16 +120,6 @@ function SendModalStackNavigator(): JSX.Element {
           const { token } = route.params;
           return {
             title: `Send ${token.ticker}`,
-          };
-        }}
-      />
-      <Stack.Screen
-        name="SendNFTConfirm"
-        component={SendNFTConfirmScreen}
-        options={({ route }) => {
-          const { nft } = route.params;
-          return {
-            title: parseNftName(nft),
           };
         }}
       />
@@ -203,16 +193,6 @@ export function UnlockedNavigator(): JSX.Element {
             const { token } = route.params;
             return {
               title: `Send ${token.ticker}`,
-            };
-          }}
-        />
-        <Stack.Screen
-          name="SendNFTConfirm"
-          component={SendNFTConfirmScreen}
-          options={({ route }) => {
-            const { nft } = route.params;
-            return {
-              title: parseNftName(nft),
             };
           }}
         />

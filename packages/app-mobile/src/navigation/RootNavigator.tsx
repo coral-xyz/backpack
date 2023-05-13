@@ -12,8 +12,6 @@ import {
   NavigationContainer,
 } from "@react-navigation/native";
 
-import { DummyScreen } from "~screens/Unlocked/DummyScreen";
-
 import { LockedScreen } from "./LockedNavigator";
 import {
   OnboardingCompleteWelcome,

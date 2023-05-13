@@ -11,23 +11,33 @@ import {
   useStore,
   WEB_VIEW_EVENTS,
 } from "@coral-xyz/common";
+import { ErrorBoundary } from "react-error-boundary";
 import { WebView } from "react-native-webview";
 import { RecoilRoot } from "recoil";
 
-import { ErrorBoundary } from "~components/ErrorBoundary";
 import { useTheme } from "~hooks/useTheme";
 import { maybeParseLog } from "~lib/helpers";
 
 import { Providers } from "./Providers";
+import { FullScreenLoading } from "./components";
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import { RootNavigation } from "./navigation/RootNavigator";
 
 SplashScreen.preventAutoHideAsync();
 
 export function App(): JSX.Element {
+  const renderError = useCallback(
+    ({ error }: { error: { message: string } }) => (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>{error.message}</Text>
+      </View>
+    ),
+    []
+  );
+
   return (
-    <ErrorBoundary>
-      <Suspense fallback={null}>
+    <ErrorBoundary fallbackRender={renderError}>
+      <Suspense fallback={<FullScreenLoading />}>
         <RecoilRoot>
           <BackgroundHiddenWebView />
           <Main />

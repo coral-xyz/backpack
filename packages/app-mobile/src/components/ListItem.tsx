@@ -82,13 +82,19 @@ export function ListItemLabelValue({
   valueColor,
   onPress,
   iconAfter,
+  children,
 }: {
   label: string;
-  value: string;
+  value?: string;
   valueColor?: string;
   onPress?: () => void;
   iconAfter?: JSX.Element;
+  children?: JSX.Element;
 }) {
+  if (!value && !children) {
+    throw new Error("You must use either value or children");
+  }
+
   return (
     <ListItem
       backgroundColor="$nav"
@@ -96,13 +102,32 @@ export function ListItemLabelValue({
       onPress={onPress}
     >
       <StyledText>{label}</StyledText>
-      <XStack alignItems="center">
-        <StyledText color={valueColor}>{value}</StyledText>
-        {iconAfter ? (
-          <View style={{ marginLeft: 2, marginRight: -8 }}>{iconAfter}</View>
-        ) : null}
-      </XStack>
+      {children ? (
+        children
+      ) : (
+        <XStack alignItems="center">
+          {value ? <StyledText color={valueColor}>{value}</StyledText> : null}
+          {iconAfter ? (
+            <View style={{ marginLeft: 2, marginRight: -8 }}>{iconAfter}</View>
+          ) : null}
+        </XStack>
+      )}
     </ListItem>
+  );
+}
+
+export function ListItemTableWrapper({ children }): JSX.Element {
+  return (
+    <YGroup
+      overflow="hidden"
+      borderWidth={2}
+      borderColor="$borderFull"
+      borderRadius="$container"
+      backgroundColor="$nav"
+      separator={<Separator />}
+    >
+      {children}
+    </YGroup>
   );
 }
 

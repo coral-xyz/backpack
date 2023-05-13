@@ -112,22 +112,9 @@ function Description({ description }: { description: string }) {
   );
 }
 
-function NftImage({ imageUrl }: { imageUrl: string }): JSX.Element {
-  return (
-    <ProxyImage
-      style={{
-        width: "100%",
-        borderRadius: 8,
-        aspectRatio: 1,
-      }}
-      src={imageUrl ?? UNKNOWN_NFT_ICON_SRC}
-    />
-  );
-}
-
 function Container({ navigation, route }): JSX.Element {
   const { blockchain } = route.params;
-  const { data: item } = useFragment_experimental({
+  const { data: nft } = useFragment_experimental({
     fragment: NftNodeFragment,
     fragmentName: "NftNodeFragment",
     from: {
@@ -139,20 +126,27 @@ function Container({ navigation, route }): JSX.Element {
   return (
     <ScrollView>
       <Screen>
-        <NftImage imageUrl={item.image} />
-        <Description description={item.description} />
+        <ProxyImage
+          src={nft.image ?? UNKNOWN_NFT_ICON_SRC}
+          style={{
+            width: "100%",
+            borderRadius: 8,
+            aspectRatio: 1,
+          }}
+        />
+        <Description description={nft.description} />
         <Box marginVertical={12}>
           <PrimaryButton
             label="Send"
             onPress={() => {
               navigation.navigate("SendCollectibleSelectRecipient", {
-                nft: item,
+                nft,
               });
             }}
           />
         </Box>
-        <CollectionAttributes attributes={item.attributes} />
-        <ActionMenu nft={item} blockchain={blockchain} />
+        <CollectionAttributes attributes={nft.attributes} />
+        <ActionMenu nft={nft} blockchain={blockchain} />
       </Screen>
     </ScrollView>
   );

@@ -37,7 +37,7 @@ function NoNFTsEmptyState() {
   );
 }
 
-function ImageBox({ images }): JSX.Element {
+function ImageBox({ images }: { images: string[] }): JSX.Element {
   return (
     <View
       style={{
@@ -49,10 +49,10 @@ function ImageBox({ images }): JSX.Element {
         backgroundColor: "orange",
       }}
     >
-      {images.map((uri, index) => {
+      {images.map((uri: string) => {
         return (
           <Image
-            key={`${uri}-${index}`}
+            key={uri}
             source={{ uri }}
             style={{
               borderRadius: 8,
@@ -108,6 +108,15 @@ function ListItem({
   );
 }
 
+// TODO generate these from the server
+export type NftCollectionFragmentType = {
+  id: string;
+  name: string;
+  address: string;
+  image: string;
+  verified: boolean;
+};
+
 export const NftCollectionFragment = gql`
   fragment NftCollectionFragment on Collection {
     id
@@ -118,14 +127,26 @@ export const NftCollectionFragment = gql`
   }
 `;
 
+export type NftNodeFragmentType = {
+  id: string;
+  address: string;
+  name: string;
+  owner: string;
+  description: string;
+  image: string;
+  attributes: { trait: string; value: string }[];
+  collection: NftCollectionFragmentType;
+};
+
 export const NftNodeFragment = gql`
   ${NftCollectionFragment}
   fragment NftNodeFragment on Nft {
     id
-    image
-    name
     address
+    name
+    owner
     description
+    image
     attributes {
       trait
       value

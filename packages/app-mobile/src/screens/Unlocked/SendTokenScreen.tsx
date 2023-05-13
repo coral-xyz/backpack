@@ -40,14 +40,11 @@ import { BigNumber } from "ethers";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SendEthereumConfirmationCard } from "~components/BottomDrawerEthereumConfirmation";
-import {
-  SendSolanaConfirmationCard,
-  ConfirmSendSolanaTable,
-} from "~components/BottomDrawerSolanaConfirmation";
-import { Header, BetterBottomSheet } from "~components/BottomSheetModal";
+import { SendSolanaConfirmationCard } from "~components/BottomDrawerSolanaConfirmation";
+import { BetterBottomSheet } from "~components/BottomSheetModal";
 import { UnstyledTokenTextInput } from "~components/TokenInputField";
 import { UserAvatar } from "~components/UserAvatar";
-import { StyledText, Screen, TwoButtonFooter } from "~components/index";
+import { Screen, TwoButtonFooter } from "~components/index";
 import { useTheme as useCustomTheme } from "~hooks/useTheme";
 import type { UnlockedNavigatorStackParamList } from "~navigation/UnlockedNavigator";
 
@@ -91,7 +88,9 @@ export function SendTokenSelectRecipientScreen({
           inputContent={address}
           setInputContent={setAddress}
           hasInputError={hasInputError}
+          // selected from the list of available users
           onSelectUserResult={({ user, address }) => {
+            // this should error out probably
             if (!address) {
               return;
             }
@@ -108,6 +107,7 @@ export function SendTokenSelectRecipientScreen({
               },
             });
           }}
+          // used the text input to enter in a publickey or username
           onPressNext={({ user }) => {
             navigation.navigate("SendTokenConfirm", {
               blockchain,
@@ -356,10 +356,17 @@ export function SendTokenConfirmScreen({
     []
   );
 
-  const SendConfirmComponent = {
+  const SendConfirmation = {
     [Blockchain.SOLANA]: SendSolanaConfirmationCard,
     [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
   }[blockchain];
+
+  const destination = {
+    address,
+    walletName,
+    username,
+    image,
+  };
 
   return (
     <>
@@ -405,11 +412,12 @@ export function SendTokenConfirmScreen({
           setIsModalVisible(() => false);
         }}
       >
-        <SendConfirmComponent
+        <SendConfirmation
+          type="token"
           navigation={navigation}
           token={token}
-          destinationAddress={address}
           amount={amount!}
+          destination={destination}
           onCompleteStep={(_step: string) => {
             // if (step !== "confirm") {
             //   setModalIndex(() => 1);
@@ -418,102 +426,5 @@ export function SendTokenConfirmScreen({
         />
       </BetterBottomSheet>
     </>
-  );
-}
-
-export function SendNFTConfirmScreen({ route, navigation }): JSX.Element {
-  const activeWallet = useActiveWallet();
-  const insets = useSafeAreaInsets();
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const { nft, to } = route.params;
-
-  const SendConfirmComponent = {
-    [Blockchain.SOLANA]: SendSolanaConfirmationCard,
-    [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
-  }[activeWallet.blockchain];
-
-  return (
-    <>
-      <Screen
-        style={{ justifyContent: "space-between", marginBottom: insets.bottom }}
-      >
-        <YStack ai="center" mt={24}>
-          <Box mb={24}>
-            {to ? (
-              <AvatarHeader
-                walletName={to.walletName}
-                address={to.address}
-                username={to.username}
-                image={to.image}
-              />
-            ) : null}
-          </Box>
-          <NFTPreviewImage nft={nft} width={192} height={192} />
-        </YStack>
-        <TwoButtonFooter
-          leftButton={
-            <SecondaryButton
-              label="Cancel"
-              onPress={() => {
-                navigation.goBack();
-              }}
-            />
-          }
-          rightButton={
-            <PrimaryButton
-              label="Next"
-              onPress={async () => {
-                setIsModalVisible(() => true);
-              }}
-            />
-          }
-        />
-      </Screen>
-      <BetterBottomSheet
-        isVisible={isModalVisible}
-        resetVisibility={() => setIsModalVisible(false)}
-      >
-        <SendConfirmComponent
-          navigation={navigation}
-          token={{
-            address: nft.publicKey,
-            logo: nft.imageUrl,
-            decimals: 0,
-            mint: nft.mint,
-          }}
-          // TODO destinationUser
-          destinationAddress={to.address}
-          amount={BigNumber.from(1)}
-          onCompleteStep={(step: string) => {
-            if (step !== "confirm") {
-              console.log("hi");
-              // setModalIndex(() => 1);
-            }
-          }}
-        />
-      </BetterBottomSheet>
-    </>
-  );
-}
-
-function NFTPreviewImage({
-  nft,
-  width,
-  height,
-}: {
-  nft: Nft;
-  width: number;
-  height: number;
-}): JSX.Element {
-  const uri = isMadLads(nft.creators) ? nft.lockScreenImageUrl : nft.imageUrl;
-  return (
-    <Image
-      source={{ uri }}
-      style={{
-        borderRadius: 8,
-        width,
-        height,
-      }}
-    />
   );
 }

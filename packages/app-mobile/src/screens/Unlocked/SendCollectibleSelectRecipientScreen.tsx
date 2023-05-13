@@ -8,25 +8,15 @@ import {
   useEthereumCtx,
   useIsValidAddress,
 } from "@coral-xyz/recoil";
-import {
-  Separator,
-  Box,
-  YStack,
-  StyledText,
-  YGroup,
-  Image,
-  PrimaryButton,
-} from "@coral-xyz/tamagui";
-import { BigNumber } from "ethers";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { SendEthereumConfirmationCard } from "~components/BottomDrawerEthereumConfirmation";
 import {
   SendSolanaConfirmationCard,
-  ConfirmSendSolanaTable,
+  type Destination,
+  type TokenTypeCollectible,
 } from "~components/BottomDrawerSolanaConfirmation";
 import { BetterBottomSheet } from "~components/BottomSheetModal";
-import { ListItemLabelValue } from "~components/ListItem";
 import { Screen, FullScreenLoading } from "~components/index";
 
 import { SendTokenSelectUserScreen } from "./SendTokenScreen2";
@@ -34,8 +24,8 @@ import { SendTokenSelectUserScreen } from "./SendTokenScreen2";
 function Container({ navigation, route }): JSX.Element {
   const activeWallet = useActiveWallet();
   const blockchain = activeWallet.blockchain;
+  const [destination, setDestination] = useState<Destination | null>(null);
 
-  const [to, setTo] = useState({});
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { nft } = route.params;
   const [address, setAddress] = useState<string>("");
@@ -55,10 +45,16 @@ function Container({ navigation, route }): JSX.Element {
 
   const hasInputError = !isValidAddress && address.length > 15;
 
-  const SendConfirmComponent = {
+  const SendConfirmation = {
     [Blockchain.SOLANA]: SendSolanaConfirmationCard,
     [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
   }[activeWallet.blockchain];
+
+  const token = {
+    address: nft.publicKey,
+    image: nft.image,
+    mint: nft.mint,
+  } as TokenTypeCollectible;
 
   return (
     <>
@@ -73,52 +69,33 @@ function Container({ navigation, route }): JSX.Element {
             inputContent={address}
             setInputContent={setAddress}
             hasInputError={hasInputError}
+            // select an address that you see
             onSelectUserResult={({ user, address }) => {
+              // this should error out probably
               if (!address) {
                 return;
               }
 
-              const to = {
-                address: destinationAddress,
-                username: user?.username,
-                image: user?.image,
-                uuid: user?.uuid,
-              };
+              setDestination({
+                address,
+                username: user.username,
+                image: user.image,
+                walletName: user.walletName,
+                uuid: user.uuid,
+              });
 
-              console.log("debug1:to", to);
-
-              setTo({ to });
               setIsModalVisible(true);
-              // navigation.navigate("SendNFTConfirm", {
-              //   nft,
-              //   to: {
-              //     address,
-              //     username: user.username,
-              //     walletName: user.walletName,
-              //     image: user.image,
-              //     uuid: user.uuid,
-              //   },
-              // });
             }}
+            // used the text input to enter in a publickey or username
             onPressNext={({ user }) => {
-              const to = {
+              setDestination({
                 address: destinationAddress,
                 username: user?.username,
                 image: user?.image,
+                walletName: user?.walletName,
                 uuid: user?.uuid,
-              };
-              console.log("debug1:to", to);
-              setTo({ to });
+              });
               setIsModalVisible(true);
-              // navigation.navigate("SendNFTConfirm", {
-              //   nft,
-              //   to: {
-              //     address: destinationAddress,
-              //     username: user?.username,
-              //     image: user?.image,
-              //     uuid: user?.uuid,
-              //   },
-              // });
             }}
           />
         </Screen>
@@ -127,20 +104,14 @@ function Container({ navigation, route }): JSX.Element {
         isVisible={isModalVisible}
         resetVisibility={() => setIsModalVisible(false)}
       >
-        <SendConfirmComponent
+        <SendConfirmation
+          type="nft"
           navigation={navigation}
-          token={{
-            address: nft.publicKey,
-            logo: nft.image,
-            decimals: 0,
-            mint: nft.mint,
-          }}
-          // TODO destinationUser
-          destinationAddress={to.address}
-          amount={BigNumber.from(1)}
-          onCompleteStep={(step: string) => {
-            if (step !== "confirm") {
-            }
+          token={token}
+          destination={destination!}
+          onCompleteStep={(_step: string) => {
+            // if (step !== "confirm") {
+            // }
           }}
         />
       </BetterBottomSheet>

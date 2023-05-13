@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { View, Image, StyleSheet } from "react-native";
 
 import { useAvatarUrl } from "@coral-xyz/recoil";
@@ -10,7 +10,8 @@ import { useTheme } from "~hooks/useTheme";
 const cache = new Map();
 
 // This component exists because our avatars return either SVG or PNG or GIF from 1 endpoint with no extension
-export function UserAvatar({
+// used for any user
+export const UserAvatar = memo(function UserAvatar({
   uri,
   size = 32,
   style,
@@ -63,7 +64,7 @@ export function UserAvatar({
       ]}
     />
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -74,8 +75,7 @@ const styles = StyleSheet.create({
   },
 });
 
-// Old avatar component
-export function Avatar({ size = 64 }: { size: number }): JSX.Element {
+export function Avatar({ size = 64 }: { size?: number }): JSX.Element {
   const avatarUrl = useAvatarUrl(size);
   const theme = useTheme();
 
@@ -95,3 +95,7 @@ export function Avatar({ size = 64 }: { size: number }): JSX.Element {
     </View>
   );
 }
+
+export const CurrentUserAvatar = ({ size = 64 }: { size?: number }) => (
+  <Avatar size={size} />
+);
