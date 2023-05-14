@@ -150,6 +150,7 @@ export type Nft = Node & {
   listing?: Maybe<Listing>;
   name: Scalars["String"];
   owner: Scalars["String"];
+  token: Scalars["String"];
 };
 
 /** NFT `attributes` list sub-type definition. */
@@ -746,6 +747,7 @@ export type NftResolvers<
   listing?: Resolver<Maybe<ResolversTypes["Listing"]>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   owner?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  token?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
