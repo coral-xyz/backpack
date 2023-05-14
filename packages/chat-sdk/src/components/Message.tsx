@@ -349,6 +349,7 @@ export const MessageLine = (props) => {
                 </div>
                 {!props.deleted ? (
                   <div>
+                    {/* reply icon will be visible if messageKind is either of text or media  */}
                     {props.messageKind === "text" ||
                     props.messageKind === "media" ? (
                       <div
@@ -367,6 +368,7 @@ export const MessageLine = (props) => {
                               .getElementById(chatMessageInputId)
                               ?.focus();
 
+                            // props.metadata will be defined only if user wants to reply on media
                             if (props.metadata) {
                               setActiveReply({
                                 parent_client_generated_uuid:
