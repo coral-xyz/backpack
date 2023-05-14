@@ -227,7 +227,11 @@ export function DummyScreen(): JSX.Element {
           </ListItem>
         </Box>
         <Box marginBottom={12}>
-          <SendDetail />
+          <SendDetail
+            username="peter"
+            image="https://swr.xnfts.dev/avatars/backpack_dev/1683979620504"
+            address="6XxTYK4sKYU8G71emxkeCCLpHQx7xmgwy2mDhUTPD5Xm"
+          />
         </Box>
         <Box marginBottom={12}>
           <ActivityDetail />

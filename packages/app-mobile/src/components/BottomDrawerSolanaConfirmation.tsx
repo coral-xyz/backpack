@@ -104,7 +104,12 @@ function ConfirmCollectible({
       <Margin vertical={24}>
         <Image
           source={{ uri: nft.image }}
-          style={{ width: 128, height: 128, borderRadius: 12 }}
+          style={{
+            alignSelf: "center",
+            width: 128,
+            height: 128,
+            borderRadius: 12,
+          }}
         />
       </Margin>
       <Margin bottom={24}>

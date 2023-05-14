@@ -1,74 +1,191 @@
 import { useEffect, useRef, useState } from "react";
-import { Text, View, TextInput, ActivityIndicator } from "react-native";
+import {
+  Text,
+  View,
+  TextInput,
+  ActivityIndicator,
+  Pressable,
+} from "react-native";
 
-import { useEthereumFeeData } from "@coral-xyz/recoil";
-import { Box, Button, XGroup } from "@coral-xyz/tamagui";
+import { useEthereumFeeData, useDeveloperMode } from "@coral-xyz/recoil";
+import { Box, Button, XGroup, StyledText } from "@coral-xyz/tamagui";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { ethers } from "ethers";
 
 import { Header, Container } from "~components/BottomDrawerCards";
 import { IconCloseModal, ExpandCollapseIcon } from "~components/Icon";
-import { PrimaryButton, Row, SecondaryButton } from "~components/index";
+import { Table, type MenuItem, type Row } from "~components/Table";
+import { PrimaryButton, SecondaryButton } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 
 type TransactionMode = "normal" | "fast" | "degen" | "custom";
+type SolanaFeeConfig = {
+  disabled: boolean;
+  config: {
+    computeUnits: any;
+    priorityFee: any;
+  };
+};
+type TransactionDataProps = {
+  loading: boolean;
+  network: any;
+  networkFee: any;
+  networkFeeUsd: any;
+  transactionOverrides: any;
+  setTransactionOverrides: any;
+  simulationError: any;
+  setSolanaFeeConfig: any; // todo function
+  solanaFeeConfig: SolanaFeeConfig;
+};
+
+function TextInputMaxComputeUnits({
+  solanaFeeConfig,
+  setSolanaFeeConfig,
+}: {
+  solanaFeeConfig: SolanaFeeConfig;
+  setSolanaFeeConfig: (c: any) => any;
+}) {
+  return (
+    <TextInput
+      disabled={solanaFeeConfig?.disabled}
+      placeholder="Compute units"
+      value={solanaFeeConfig?.config?.computeUnits.toString() || 0}
+      onChangeText={(text: string) => {
+        const computeUnits = parseInt(text || "0", 10);
+        if (
+          computeUnits < 0 ||
+          computeUnits > 1200000 ||
+          isNaN(parseInt(text, 10))
+        ) {
+          return;
+        }
+
+        const updatedValue = {
+          ...(solanaFeeConfig?.config || {}),
+          computeUnits,
+        };
+
+        setSolanaFeeConfig((x: any) => ({
+          config: updatedValue,
+          disabled: x.disabled,
+        }));
+      }}
+    />
+  );
+}
+
+function TextInputPriorityFee({
+  solanaFeeConfig,
+  setSolanaFeeConfig,
+}: {
+  solanaFeeConfig: SolanaFeeConfig;
+  setSolanaFeeConfig: (c: any) => any;
+}) {
+  return (
+    <TextInput
+      // disabled={solanaFeeConfig?.disabled}
+      placeholder="Priority fee"
+      value={solanaFeeConfig.config?.priorityFee?.toString() || 0}
+      onChangeText={(text: string) => {
+        const priorityFee = parseInt(text || "0", 10);
+        if (priorityFee < 0 || isNaN(parseInt(text, 10))) {
+          return;
+        }
+
+        const updatedValue = {
+          ...(solanaFeeConfig?.config || {}),
+          priorityFee: BigInt(priorityFee),
+        };
+
+        setSolanaFeeConfig((x: any) => ({
+          disabled: x.disabled,
+          config: updatedValue,
+        }));
+      }}
+    />
+  );
+}
 
 export function TransactionData({
   transactionData,
   menuItems,
   onToggleAdvanced,
 }: {
-  transactionData: any;
-  menuItems: any;
-  onToggleAdvanced: any;
+  transactionData: TransactionDataProps;
+  menuItems: {
+    [key: string]: Row;
+  };
+  onToggleAdvanced: () => void;
 }) {
   const theme = useTheme();
+  const developerMode = useDeveloperMode();
+  const [mode, setMode] = useState<TransactionMode>("normal");
+
   const {
     loading,
     network,
     networkFee,
-    networkFeeUsd,
-    transactionOverrides,
-    setTransactionOverrides,
+    solanaFeeConfig,
+    // networkFeeUsd,
+    // transactionOverrides,
+    // setTransactionOverrides,
     simulationError,
   } = transactionData;
-  const [mode, setMode] = useState<TransactionMode>("normal");
+
+  const renderMaxPriorityFee = (solanaFeeConfig: SolanaFeeConfig): string => {
+    const fee = solanaFeeConfig?.config?.computeUnits
+      ? solanaFeeConfig?.config?.computeUnits *
+        (Number(solanaFeeConfig?.config?.priorityFee) /
+          LAMPORTS_PER_SOL /
+          1000000 || 0)
+      : 0;
+
+    return `${fee} SOL`;
+  };
 
   const defaultMenuItems = {
     Network: {
-      disabled: true,
-      detail: <Text>{network}</Text>,
+      label: "Network",
+      value: network,
     },
     "Network Fee": {
-      disabled: true,
-      detail: loading ? (
-        <ActivityIndicator size="small" />
-      ) : (
-        <Text>
-          {networkFee} {network === "Ethereum" ? "ETH" : "SOL"}{" "}
-        </Text>
-      ),
+      label: "Network Fee",
+      value: `${networkFee} ${network === "Ethereum" ? "ETH" : "SOL"}`,
+      children: loading ? <ActivityIndicator size="small" /> : undefined,
     },
     ...(network === "Ethereum"
       ? {
           Speed: {
+            label: "Speed",
+            value: mode,
             onPress: () => onToggleAdvanced(),
-            detail: (
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  borderRadius: 12,
-                  backgroundColor: theme.custom.colors.secondaryButton,
-                  paddingHorizontal: 8,
-                }}
-              >
-                <Text style={{ color: theme.custom.colors.fontColor }}>
-                  {mode}
-                </Text>
-                <ExpandCollapseIcon isExpanded={false} />
-              </View>
+          },
+        }
+      : {}),
+    ...(network === "Solana" && developerMode
+      ? {
+          "Max Compute units": {
+            label: "Max Compute Units",
+            children: (
+              <TextInputMaxComputeUnits
+                solanaFeeConfig={solanaFeeConfig}
+                setSolanaFeeConfig={transactionData.setSolanaFeeConfig}
+              />
             ),
+          },
+          "Priority fee (micro lamports)": {
+            label: "Priority fee (micro lamports)",
+            children: (
+              <TextInputPriorityFee
+                solanaFeeConfig={solanaFeeConfig}
+                setSolanaFeeConfig={transactionData.setSolanaFeeConfig}
+              />
+            ),
+          },
+          "Max Priority fee": {
+            label: "Max Priority fee",
+            value: renderMaxPriorityFee(solanaFeeConfig),
           },
         }
       : {}),
@@ -76,7 +193,7 @@ export function TransactionData({
 
   return (
     <>
-      <SettingsList menuItems={{ ...menuItems, ...defaultMenuItems }} />
+      <Table menuItems={{ ...menuItems, ...defaultMenuItems }} />
       {simulationError ? (
         <Text
           style={{
@@ -92,6 +209,14 @@ export function TransactionData({
   );
 }
 
+function EditInPlace({ onChange, value, isEditing }) {
+  if (isEditing) {
+    return <TextInput value={value} onChangeText={onChange} />;
+  }
+
+  return <StyledText>{value}</StyledText>;
+}
+
 export function EthereumSettingsDrawer({
   mode,
   setMode,
@@ -100,7 +225,6 @@ export function EthereumSettingsDrawer({
   networkFeeUsd,
   onClose,
 }: any) {
-  const theme = useTheme();
   const feeData = useEthereumFeeData();
   const [maxFeePerGas, setMaxFeePerGas] = useState(
     ethers.utils.formatUnits(transactionOverrides.maxFeePerGas, 9)
@@ -155,10 +279,6 @@ export function EthereumSettingsDrawer({
     }
   }, [mode]);
 
-  useEffect(() => {
-    setEditingGas(mode === "custom");
-  }, [mode]);
-
   const handleSave = () => {
     setTransactionOverrides({
       ...transactionOverrides,
@@ -171,110 +291,87 @@ export function EthereumSettingsDrawer({
     setEditingGas(false);
   };
 
-  const menuItemBase = {
-    onPress: () => {},
-    button: false,
-  };
-
   const nonceEditOnClick = !editingGas;
   const gasEditOnClick = mode === "custom" && !editingNonce && !editingGas;
 
   const menuItems = {
     "Max base fee": {
-      detail: editingGas ? (
-        <TextInput
-          variant="outlined"
-          margin="dense"
-          size="small"
-          InputLabelProps={{
-            shrink: false,
-            style: {
-              backgroundColor: theme.custom.colors.nav,
-            },
-          }}
-          value={maxFeePerGas}
-          onChange={(e) => setMaxFeePerGas(e.target.value)}
-        />
-      ) : (
-        <ValueWithUnit
-          value={ethers.utils.formatUnits(transactionOverrides.maxFeePerGas, 9)}
-          unit="Gwei"
-          containerProps={{
-            style: { cursor: gasEditOnClick ? "pointer" : "inherit" },
-            onPress: () => {
-              if (gasEditOnClick) {
-                setEditingGas(true);
-              }
-            },
-          }}
+      label: "Max base fee",
+      onPress: () => {
+        if (gasEditOnClick) {
+          setEditingGas(true);
+        }
+      },
+      children: (
+        <EditInPlace
+          isEditing={editingGas}
+          onChange={setMaxFeePerGas}
+          value={
+            editingGas
+              ? maxFeePerGas
+              : `${ethers.utils.formatUnits(
+                  transactionOverrides.maxFeePerGas,
+                  9
+                )} Gwei`
+          }
         />
       ),
-      ...menuItemBase,
     },
     "Priority fee": {
-      detail: editingGas ? (
-        <TextInput
-          value={maxPriorityFeePerGas}
-          onChange={(e) => setMaxPriorityFeePerGas(e.target.value)}
-        />
-      ) : (
-        <ValueWithUnit
-          value={ethers.utils.formatUnits(
-            transactionOverrides.maxPriorityFeePerGas,
-            9
-          )}
-          unit="Gwei"
-          containerProps={{
-            style: { cursor: gasEditOnClick ? "pointer" : "inherit" },
-            onPress: () => {
-              if (gasEditOnClick) {
-                setEditingGas(true);
-              }
-            },
-          }}
+      label: "Priority fee",
+      onPress: () => {
+        if (gasEditOnClick) {
+          setEditingGas(true);
+        }
+      },
+      children: (
+        <EditInPlace
+          isEditing={editingGas}
+          onChange={setMaxPriorityFeePerGas}
+          value={
+            editingGas
+              ? maxPriorityFeePerGas
+              : `${ethers.utils.formatUnits(
+                  transactionOverrides.maxPriorityFeePerGas,
+                  9
+                )} Gwei`
+          }
         />
       ),
-      ...menuItemBase,
     },
     "Gas limit": {
-      detail: editingGas ? (
-        <TextInput
-          value={gasLimit}
-          onChange={(e) => setGasLimit(e.target.value)}
+      label: "Gas limit",
+      onPress: () => {
+        if (gasEditOnClick) {
+          setEditingGas(true);
+        }
+      },
+      children: (
+        <EditInPlace
+          isEditing={editingGas}
+          onChange={(text: string) => setGasLimit(text)}
+          value={
+            editingGas ? gasLimit : transactionOverrides.gasLimit.toString()
+          }
         />
-      ) : (
-        <Text
-          // style={{ cursor: gasEditOnClick ? "pointer" : "inherit" }}
-          onPress={() => {
-            if (gasEditOnClick) {
-              setEditingGas(true);
-            }
-          }}
-        >
-          {transactionOverrides.gasLimit.toString()}
-        </Text>
       ),
-      ...menuItemBase,
     },
     Nonce: {
-      detail: editingNonce ? (
-        <TextInput value={nonce} onChange={(e) => setNonce(e.target.value)} />
-      ) : (
-        <Text
-          onPress={() => {
-            if (nonceEditOnClick) {
-              setEditingNonce(true);
-            }
-          }}
-        >
-          {transactionOverrides.nonce}
-        </Text>
+      label: "Nonce",
+      onPress: () => {
+        setEditingNonce(true);
+      },
+      children: (
+        <EditInPlace
+          isEditing={editingNonce}
+          onChange={(text: string) => setNonce(text)}
+          value={editingNonce ? nonce : transactionOverrides.nonce}
+        />
       ),
-      ...menuItemBase,
     },
     "Max transaction fee": {
-      detail: <Text>${networkFeeUsd}</Text>,
-      ...menuItemBase,
+      label: "Max transaction fee",
+      value: `$${networkFeeUsd}`,
     },
   };
 
@@ -288,7 +385,7 @@ export function EthereumSettingsDrawer({
           disabled={editingNonce}
         />
       </Box>
-      <SettingsList menuItems={menuItems} />
+      <Table menuItems={menuItems} />
       <Box mt={12}>
         <FooterButtons
           mode={mode}
@@ -353,32 +450,6 @@ function Modes({
           {m}
         </Button>
       ))}
-    </View>
-  );
-}
-
-export function ValueWithUnit({
-  value,
-  unit,
-  containerProps,
-}: {
-  value: string;
-  unit: string;
-  containerProps?: any;
-}) {
-  const theme = useTheme();
-  return (
-    <View
-      {...containerProps}
-      style={{
-        flexDirection: "row",
-        ...(containerProps.style ? containerProps.style : {}),
-      }}
-    >
-      <Text style={{ color: theme.custom.colors.fontColor, marginRight: 4 }}>
-        {value}
-      </Text>
-      <Text style={{ color: theme.custom.colors.secondary }}>{unit}</Text>
     </View>
   );
 }

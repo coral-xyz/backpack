@@ -10,7 +10,6 @@ import {
   View,
   ScrollView,
   Button,
-  XStack,
 } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
@@ -23,6 +22,7 @@ import {
 } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import {
+  XStack,
   Margin,
   BaseButton,
   LinkButton,

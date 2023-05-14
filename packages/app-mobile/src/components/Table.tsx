@@ -22,17 +22,19 @@ function TableWrapper({
   );
 }
 
-type Row = {
+export type Row = {
   label: string;
   value?: string;
   children?: JSX.Element;
   onPress?: () => void;
 };
 
+export type MenuItem = {
+  [key: string]: Row;
+};
+
 type TableListProps = {
-  menuItems: {
-    [key: string]: Row;
-  };
+  menuItems: MenuItem;
 };
 
 export function Table({ menuItems }: TableListProps): JSX.Element {
