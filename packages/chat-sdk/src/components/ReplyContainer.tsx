@@ -2,15 +2,11 @@ import Close from "@mui/icons-material/Close";
 import { createStyles, makeStyles } from "@mui/styles";
 
 import { useChatContext } from "./ChatContext";
+import { MediaContent } from "./MediaContent";
 import { ParsedMessage } from "./ParsedMessage";
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
-    outerDiv: {
-      padding: 10,
-      background: theme.custom.colors.textBackground,
-      backdropFilter: "blur(6px)",
-    },
     text: {
       color: theme.custom.colors.fontColor2,
     },
@@ -29,6 +25,7 @@ const useStyles = makeStyles((theme: any) =>
 
 export const ReplyContainer = ({
   parent_username,
+  mediaLink = "none",
   text,
   showCloseBtn,
   marginBottom,
@@ -64,17 +61,19 @@ export const ReplyContainer = ({
             fontSize: 14,
           }}
         >
-          <ParsedMessage message={text} />
+          {text ? (
+            <ParsedMessage message={text} />
+          ) : (
+            <MediaContent mediaLink={mediaLink} mediaKind="image" />
+          )}
         </div>
       </div>
-      {showCloseBtn && (
-        <div
-          style={{ cursor: "pointer" }}
-          onClick={() => setActiveReply({ parent_client_generated_uuid: null })}
+      {showCloseBtn ? <div
+        style={{ cursor: "pointer" }}
+        onClick={() => setActiveReply({ parent_client_generated_uuid: null })}
         >
-          <Close className={classes.icon} />
-        </div>
-      )}
+        <Close className={classes.icon} />
+      </div> : null}
     </div>
   );
 };

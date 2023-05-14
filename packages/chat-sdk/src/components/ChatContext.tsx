@@ -26,6 +26,7 @@ type ChatContext = {
   activeReply: {
     parent_client_generated_uuid: string | null;
     text: string;
+    mediaLink: string;
     parent_username: string;
     parent_message_author_uuid: string;
   };

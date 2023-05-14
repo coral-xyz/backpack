@@ -36,54 +36,6 @@ const useStyles = makeStyles((theme: any) =>
       borderRadius: 8,
       margin: 12,
     },
-    text: {
-      color: theme.custom.colors.fontColor2,
-    },
-    wrapText: {
-      width: "100%",
-    },
-    textFieldRoot: {
-      color: theme.custom.colors.secondary,
-      "& .MuiOutlinedInput-root": {
-        padding: 0,
-        "border-top-right-radius": 10,
-        "border-top-left-radius": 10,
-        "& fieldset": {
-          border: "none",
-        },
-      },
-      "& .MuiInputBase-input": {
-        padding: "10px 12px 10px 12px",
-        fontSize: "15px",
-      },
-    },
-    textFieldInputColorEmpty: {
-      color: theme.custom.colors.textPlaceholder,
-    },
-    textFieldInputColor: {
-      color: theme.custom.colors.fontColor2,
-    },
-    icon: {
-      color: theme.custom.colors.icon,
-    },
-    textInputRoot: {
-      "border-top-right-radius": 10,
-      "border-top-left-radius": 10,
-      color: theme.custom.colors.fontColor2,
-      fontWeight: 500,
-      borderRadius: "12px",
-      fontSize: "16px",
-      lineHeight: "24px",
-      "& .MuiOutlinedInput-root": {
-        "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-          outline: "none",
-        },
-        "&:active": {
-          outline: "none",
-        },
-        outline: "none",
-      },
-    },
   })
 );
 
@@ -261,6 +213,7 @@ export const SendMessage = ({
             parent_username={activeReply.parent_username || ""}
             showCloseBtn
             text={activeReply.text}
+            mediaLink={activeReply.mediaLink}
           />
         ) : null}
         {aboveMessagePlugin ? (
@@ -306,7 +259,10 @@ export const SendMessage = ({
               )}
             </IconButton>
           </div>
-          <MessageInput onMediaSelect={onMediaSelect} setPluginMenuOpen={setPluginMenuOpen} />
+          <MessageInput
+            onMediaSelect={onMediaSelect}
+            setPluginMenuOpen={setPluginMenuOpen}
+          />
         </div>
         {pluginMenuOpen ? (
           <div style={{ display: "flex", marginLeft: 8, paddingBottom: 5 }}>

@@ -210,6 +210,7 @@ export const MessageLine = (props) => {
   const received = props.received;
   const theme = useCustomTheme();
   const sameUserMessage = props.sameUserMessage;
+  const mediaLink = props.metadata ? props.metadata.media_link : "";
 
   const classes = useStyles();
   const { setActiveReply } = useChatContext();
@@ -264,16 +265,37 @@ export const MessageLine = (props) => {
             <div>
               {props.parent_message_author_uuid ? (
                 <div>
-                  <ReplyContainer
-                    marginBottom={2}
-                    padding={0}
-                    parent_username={props.parent_message_author_username || ""}
-                    showCloseBtn={false}
-                    text={props.parent_message_text}
-                  />
+                  {props.parent_chat_metadata ? (
+                    <ReplyContainer
+                      marginBottom={2}
+                      padding={0}
+                      parent_username={
+                        props.parent_message_author_username || ""
+                      }
+                      showCloseBtn={false}
+                      text={props.parent_message_text}
+                      mediaLink={props.parent_chat_metadata.media_link}
+                    />
+                  ) : (
+                    <ReplyContainer
+                      marginBottom={2}
+                      padding={0}
+                      parent_username={
+                        props.parent_message_author_username || ""
+                      }
+                      showCloseBtn={false}
+                      text={props.parent_message_text}
+                    />
+                  )}
                 </div>
               ) : null}
-              <div style={{ display: "flex" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection:
+                    props.messageKind === "media" ? "column" : "row",
+                }}
+              >
                 <div>
                   <p className={classes.messageContent}>
                     {props.deleted ? (
@@ -327,7 +349,8 @@ export const MessageLine = (props) => {
                 </div>
                 {!props.deleted ? (
                   <div>
-                    {props.messageKind === "text" ? (
+                    {props.messageKind === "text" ||
+                    props.messageKind === "media" ? (
                       <div
                         style={{ display: "flex" }}
                         className={classes.hoverChild}
@@ -340,6 +363,22 @@ export const MessageLine = (props) => {
                             marginRight: 5,
                           }}
                           onClick={() => {
+                            document
+                              .getElementById(chatMessageInputId)
+                              ?.focus();
+
+                            if (props.metadata) {
+                              setActiveReply({
+                                parent_client_generated_uuid:
+                                  props.client_generated_uuid,
+                                text: message,
+                                mediaLink: props.metadata.media_link,
+                                parent_username: `@${props.username}`,
+                                parent_message_author_uuid: props.userId,
+                              });
+                              return;
+                            }
+
                             setActiveReply({
                               parent_client_generated_uuid:
                                 props.client_generated_uuid,
@@ -347,9 +386,6 @@ export const MessageLine = (props) => {
                               parent_username: `@${props.username}`,
                               parent_message_author_uuid: props.userId,
                             });
-                            document
-                              .getElementById(chatMessageInputId)
-                              ?.focus();
                           }}
                         >
                           <ReplyIcon fill={theme.custom.colors.icon} />
@@ -446,15 +482,29 @@ export const MessageLine = (props) => {
                 <div>
                   {props.parent_message_author_uuid ? (
                     <div style={{}}>
-                      <ReplyContainer
-                        marginBottom={0}
-                        padding={0}
-                        parent_username={
-                          props.parent_message_author_username || ""
-                        }
-                        showCloseBtn={false}
-                        text={props.parent_message_text}
-                      />
+                      {props.metadata ? (
+                        <ReplyContainer
+                          marginBottom={0}
+                          padding={0}
+                          parent_username={
+                            props.parent_message_author_username || ""
+                          }
+                          showCloseBtn={false}
+                          text={props.parent_message_text}
+                          mediaLink={mediaLink}
+                        />
+                      ) : (
+                        <ReplyContainer
+                          marginBottom={0}
+                          padding={0}
+                          mediaLink={mediaLink}
+                          parent_username={
+                            props.parent_message_author_username || ""
+                          }
+                          showCloseBtn={false}
+                          text={props.parent_message_text}
+                        />
+                      )}
                     </div>
                   ) : null}
                   <div>
@@ -515,7 +565,8 @@ export const MessageLine = (props) => {
                   <div
                     style={{ display: "flex", justifyContent: "space-between" }}
                   >
-                    {props.messageKind === "text" ? (
+                    {props.messageKind === "text" ||
+                    props.messageKind === "media" ? (
                       <div
                         style={{ display: "flex" }}
                         className={classes.hoverChild}
@@ -529,6 +580,7 @@ export const MessageLine = (props) => {
                           className={classes.hoverChild}
                           onClick={() => {
                             setActiveReply({
+                              mediaLink: mediaLink,
                               parent_client_generated_uuid:
                                 props.client_generated_uuid,
                               text: message,
@@ -911,6 +963,19 @@ export function ChatMessages() {
   const { chats, userId } = useChatContext();
   const theme = useCustomTheme();
 
+  const get_parent_msg_img = (chat) => {
+    if (chat.parent_message_text !== "") {
+      return null;
+    }
+    const parentChat = chats.find(
+      (m) => m.client_generated_uuid === chat.parent_client_generated_uuid
+    );
+    if (!parentChat) {
+      return null;
+    }
+    return parentChat!.message_metadata;
+  };
+
   return (
     <div style={{ paddingLeft: 18, paddingRight: 18 }}>
       {chats.map((chat, index) => {
@@ -930,6 +995,7 @@ export function ChatMessages() {
             color={chat.color || theme.custom.colors.fontColor2}
             colorIndex={chat.colorIndex}
             timestamp={chat.created_at}
+            parent_chat_metadata={get_parent_msg_img(chat)}
             message={chat.message}
             deleted={chat.deleted}
             messageKind={chat.message_kind}

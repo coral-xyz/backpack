@@ -89,6 +89,7 @@ export const ChatRoom = ({
     parent_client_generated_uuid: null,
     parent_message_author_uuid: "",
     text: "",
+    mediaLink: "",
   });
   const { chats, usersMetadata } = useChatsWithMetadata({ room: roomId, type });
   const [refreshing, setRefreshing] = useState(true);
@@ -284,6 +285,9 @@ export const ChatRoom = ({
                 : undefined,
               parent_message_author_uuid:
                 activeReply.parent_message_author_uuid,
+              mediaLink: activeReply.mediaLink
+                ? activeReply.mediaLink
+                : undefined,
             },
           ],
           type: type,
@@ -308,6 +312,7 @@ export const ChatRoom = ({
         parent_client_generated_uuid: null,
         text: "",
         parent_message_author_uuid: "",
+        mediaLink: "",
       });
       inputRef.current.setValue("");
     }
