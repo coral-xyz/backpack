@@ -90,14 +90,24 @@ enum FriendRequestType {
 Input filter type for fetching user wallet NFTs.
 """
 input NftFiltersInput {
-  mints: [String!]
+  """
+  A list of mint or contract addresses to filter the response.
+  """
+  addresses: [String!]
 }
 
 """
 Input filter type for fetching user notifications.
 """
 input NotificationsFiltersInput {
+  """
+  The limit for number of items desired in the response.
+  """
   limit: Int
+
+  """
+  Flag to filter for only unread notifications of the user.
+  """
   unreadOnly: Boolean
 }
 
@@ -105,8 +115,19 @@ input NotificationsFiltersInput {
 Input filter type for fetching user wallets and their data.
 """
 input WalletsFiltersInput {
+  """
+  A `ChainID` value to filter for all of the public keys of the user for a given blockchain.
+  """
   chainId: ChainID
+
+  """
+  Flag to filter for only the primary wallets for each registered blockchain of the user.
+  """
   primaryOnly: Boolean
+
+  """
+  A list of public keys to filter in the response.
+  """
   pubkeys: [String!]
 }
 
@@ -114,6 +135,9 @@ input WalletsFiltersInput {
 Interface to enforce the implementation of an `id` field on a type.
 """
 interface Node {
+  """
+  Globally unique identifier.
+  """
   id: ID!
 }
 
@@ -121,9 +145,24 @@ interface Node {
 Relay specification for a connection's page information.
 """
 type PageInfo {
+  """
+  Flag to indicate if the connection has another page of edges.
+  """
   hasNextPage: Boolean!
+
+  """
+  Flag to indicate if the connection has a previous page of edges.
+  """
   hasPreviousPage: Boolean!
+
+  """
+  Cursor for the first edge in the page.
+  """
   startCursor: String
+
+  """
+  Cursor for the last edge in the page.
+  """
   endCursor: String
 }
 
@@ -132,9 +171,24 @@ Top-level type for providing wallet balance information.
 Should provide details about native and non-native token balances with aggregation details.
 """
 type Balances implements Node {
+  """
+  Globally unique identifier for a wallet's balances data.
+  """
   id: ID!
+
+  """
+  The numerical value representing the aggregated market value of all fungible assets in the wallet.
+  """
   aggregateValue: Float!
+
+  """
+  Token account balance and market data for the blockchain's native currency.
+  """
   native: TokenBalance! @cacheControl(inheritMaxAge: true)
+
+  """
+  The Relay connection of token account balances and market data for non-native token types owned by the wallet.
+  """
   tokens: TokenBalanceConnection @cacheControl(inheritMaxAge: true)
 }
 
@@ -142,10 +196,29 @@ type Balances implements Node {
 `Nft` collection sub-type definition.
 """
 type Collection implements Node {
+  """
+  Globally unique identifier for an NFT collection object.
+  """
   id: ID!
+
+  """
+  The mint or contract address of the collection, presenting an NFT's parental entity.
+  """
   address: String!
+
+  """
+  The image link for the collection or parental contract entity.
+  """
   image: String
+
+  """
+  The name of the collection or parental contract entity.
+  """
   name: String
+
+  """
+  Flag to indicate whether or not it has been verified by the relevant ecosystem standards.
+  """
   verified: Boolean!
 }
 
@@ -153,8 +226,19 @@ type Collection implements Node {
 Represents a friend reference for the parent `User`.
 """
 type Friend implements Node {
+  """
+  Globally unique identifier for a friend of a user.
+  """
   id: ID!
+
+  """
+  The image link for a friend's user avatar.
+  """
   avatar: String!
+
+  """
+  The Backpack username of the friend.
+  """
   username: String!
 }
 
@@ -162,16 +246,34 @@ type Friend implements Node {
 Friend request data for a user.
 """
 type FriendRequest implements Node {
+  """
+  Globally unique identifier for a single friend request entity.
+  """
   id: ID!
+
+  """
+  The type of friend request to indicate whether it was sent or received by the user.
+  """
   type: FriendRequestType!
-  user: String!
+
+  """
+  The recipient or sending Backpack user ID of the request.
+  """
+  userId: String!
 }
 
 """
 Wrapper type for all user friendship data.
 """
 type Friendship {
+  """
+  A list of Backpack friends of the user.
+  """
   friends: [Friend!] @cacheControl(maxAge: 60, scope: PRIVATE)
+
+  """
+  A list of pending Backpack friend requests related to the user.
+  """
   requests: [FriendRequest!] @cacheControl(maxAge: 60, scope: PRIVATE)
 }
 
@@ -179,9 +281,24 @@ type Friendship {
 NFT listing data pulling from marketplaces.
 """
 type Listing implements Node {
+  """
+  Globally unique identifier for an NFT marketplace listing.
+  """
   id: ID!
+
+  """
+  The display amount of the current listing price.
+  """
   amount: String!
+
+  """
+  The marketplace or platform that the NFT is currently listing on.
+  """
   source: String!
+
+  """
+  A link to the NFT's listing on the marketplace.
+  """
   url: String!
 }
 
@@ -189,12 +306,39 @@ type Listing implements Node {
 Coingecko and computed market and price data for a token.
 """
 type MarketData implements Node {
+  """
+  Globally unqiue identifier for the token's market data.
+  """
   id: ID!
-  usdChange: Float!
-  percentChange: Float!
+
+  """
+  A timestamp of the last date of when the market data was updated.
+  """
   lastUpdatedAt: Int!
+
+  """
+  The image link to the logo of the token's market listing.
+  """
   logo: String!
+
+  """
+  The percentage of change since the latest market data update.
+  """
+  percentChange: Float!
+
+  """
+  The current USD price of the token according to the market data.
+  """
   price: Float!
+
+  """
+  The numerical amount change in USD since the latest market data update.
+  """
+  usdChange: Float!
+
+  """
+  The value of the wallet's currently holdings of the token in USD.
+  """
   value: Float!
 }
 
@@ -202,15 +346,54 @@ type MarketData implements Node {
 Generic NFT object type definition to provide on-chain and off-chain metadata.
 """
 type Nft implements Node {
+  """
+  Globally unique identifier for an NFT.
+  """
   id: ID!
+
+  """
+  The mint or contract address of the item.
+  """
   address: String!
+
+  """
+  The list of attributes or traits found in the item's metadata.
+  """
   attributes: [NftAttribute!] @cacheControl(inheritMaxAge: true)
+
+  """
+  The collection or contract parental entity of the item.
+  """
   collection: Collection @cacheControl(inheritMaxAge: true)
+
+  """
+  The description of the NFT found in the metadata.
+  """
   description: String
+
+  """
+  The image link of the NFT found in the metadata.
+  """
   image: String
+
+  """
+  Possible marketplace or platform listing data for the NFT for sale.
+  """
   listing: Listing @cacheControl(maxAge: 60)
+
+  """
+  The name of the NFT found in the metadata.
+  """
   name: String!
+
+  """
+  The owning wallet's public key.
+  """
   owner: String!
+
+  """
+  The associated token account address or contract token ID of the individual item.
+  """
   token: String!
 }
 
@@ -218,7 +401,14 @@ type Nft implements Node {
 NFT `attributes` list sub-type definition.
 """
 type NftAttribute {
+  """
+  The trait name of the attribute.
+  """
   trait: String!
+
+  """
+  The item's value for the specified trait type.
+  """
   value: String!
 }
 
@@ -242,11 +432,34 @@ type NftEdge {
 Notification data type for user notification reads.
 """
 type Notification implements Node {
+  """
+  Globally unique identifier for a specific notification.
+  """
   id: ID!
+
+  """
+  Arbitrary body data of the notification parsed as an object.
+  """
   body: JSONObject!
+
+  """
+  The emitting source of the notification.
+  """
   source: String!
+
+  """
+  The timestamp that the notification was created.
+  """
   timestamp: String!
+
+  """
+  The title of the notification.
+  """
   title: String!
+
+  """
+  Flag to indicate whether it has been viewed or not by the user.
+  """
   viewed: Boolean!
 }
 
@@ -254,8 +467,11 @@ type Notification implements Node {
 Relay connection specification for `Notification` edges.
 """
 type NotificationConnection {
-  edges: [NotificationEdge]
+  """
+  The database integer ID of the last read notification of the user.
+  """
   lastReadId: Int
+  edges: [NotificationEdge]
   pageInfo: PageInfo!
 }
 
@@ -271,12 +487,39 @@ type NotificationEdge {
 Generic native or non-native token data and balance for a `Wallet`.
 """
 type TokenBalance implements Node {
+  """
+  Globally unqiue identifier for the token balance object in a wallet.
+  """
   id: ID!
+
+  """
+  The associated token account or wallet + contract address of the wallet.
+  """
   address: String!
+
+  """
+  The unformated amount of tokens held for the specific contract or mint.
+  """
   amount: String!
+
+  """
+  The number of decimals associated with the contract or mint.
+  """
   decimals: Int!
+
+  """
+  The formatted display amount for the wallet's holdings of the token.
+  """
   displayAmount: String!
+
+  """
+  Market price data for the token contract or mint.
+  """
   marketData: MarketData @cacheControl(maxAge: 180)
+
+  """
+  The address of the token mint or contract.
+  """
   mint: String!
 }
 
@@ -300,14 +543,49 @@ type TokenBalanceEdge {
 Generic on-chain transaction details structure.
 """
 type Transaction implements Node {
+  """
+  Globally unique identifier for a single transaction.
+  """
   id: ID!
+
+  """
+  The semantic description of the transaction effects.
+  """
   description: String
+
+  """
+  The block number or slot that the transaction was committed to.
+  """
   block: Float!
+
+  """
+  The amount in fees that were paid for processing the transaction.
+  """
   fee: Int
+
+  """
+  The address of the wallet that paid the processing fees.
+  """
   feePayer: String
+
+  """
+  The transaction hash or signature.
+  """
   hash: String!
+
+  """
+  The source or program that is associated with the transaction.
+  """
   source: String
+
+  """
+  The timestamp of the execution or commitment of the transaction.
+  """
   timestamp: String
+
+  """
+  The category or type of transaction.
+  """
   type: String!
 }
 
@@ -332,13 +610,40 @@ Backpack user type definition so provide data about all of the user's
 assets, peripheral information, and social data.
 """
 type User implements Node {
+  """
+  Globally unique identifier for a Backpack user.
+  """
   id: ID!
+
+  """
+  The image link for the avatar of the user.
+  """
   avatar: String!
+
+  """
+  The timestamp of the creation of the user.
+  """
   createdAt: String!
+
+  """
+  A grouping object of the friends and friend request data for the user.
+  """
   friendship: Friendship @cacheControl(inheritMaxAge: true)
+
+  """
+  The Relay connection for the notifications received by the user.
+  """
   notifications(filters: NotificationsFiltersInput): NotificationConnection
     @cacheControl(maxAge: 60, scope: PRIVATE)
+
+  """
+  The user's Backpack username.
+  """
   username: String!
+
+  """
+  The Relay connection for the wallet's and their data that are registered to the user.
+  """
   wallets(filters: WalletsFiltersInput): WalletConnection
     @cacheControl(maxAge: 60)
 }
@@ -347,13 +652,44 @@ type User implements Node {
 Wallet definition to provide data about all assets owned by an address.
 """
 type Wallet implements Node {
+  """
+  Globally unique identifier for a specific wallet on a blockchain.
+  """
   id: ID!
+
+  """
+  The public key address of the wallet.
+  """
   address: String!
+
+  """
+  The blockchain enum variant that the wallet is associated with.
+  """
   chainId: ChainID!
+
+  """
+  The timestamp that the wallet was imported or registered to the Backpack user.
+  """
   createdAt: String!
+
+  """
+  The detailed and aggregate balance data for the wallet.
+  """
   balances: Balances @cacheControl(maxAge: 60)
+
+  """
+  Flag to indicate whether it is the user's primary wallet for the designated blockchain.
+  """
   isPrimary: Boolean!
+
+  """
+  The Relay connection for all of the NFTs owned by the wallet.
+  """
   nfts(filters: NftFiltersInput): NftConnection @cacheControl(maxAge: 60)
+
+  """
+  The Relay connection for all transactions initiated or associated with the wallet.
+  """
   transactions(before: String, after: String): TransactionConnection
     @cacheControl(maxAge: 30)
 }

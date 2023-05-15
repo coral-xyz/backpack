@@ -71,7 +71,7 @@ export const walletTypeResolvers: WalletResolvers = {
   ): Promise<NftConnection | null> {
     return getBlockchainForId(parent.chainId, ctx).getNftsForAddress(
       parent.address,
-      filters?.mints as string[] | undefined
+      filters ?? undefined
     );
   },
 
