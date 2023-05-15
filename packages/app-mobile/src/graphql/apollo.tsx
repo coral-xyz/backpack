@@ -41,7 +41,7 @@ export const useApolloClient = () => {
       });
 
       const apolloClient = new ApolloClient({
-        cache: new InMemoryCache(),
+        cache,
         link: authLink.concat(httpLink),
       });
 

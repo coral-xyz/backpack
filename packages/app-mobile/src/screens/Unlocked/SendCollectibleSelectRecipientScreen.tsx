@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense, useState, useMemo } from "react";
 import { Text, KeyboardAvoidingView, Platform, View } from "react-native";
 
 import { Blockchain } from "@coral-xyz/common";
@@ -51,11 +51,17 @@ function Container({ navigation, route }): JSX.Element {
     [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
   }[activeWallet.blockchain];
 
-  const token = {
-    address: nft.address,
-    image: nft.image,
-    mint: nft.mint,
-  } as TokenTypeCollectible;
+  // the names are confusing but necessary for cross-chain work
+  // mint is the address
+  // token is the ATA
+  const tokenToSend = useMemo(
+    () => ({
+      mint: nft.address,
+      address: nft.token,
+      image: nft.image,
+    }),
+    [nft.address, nft.token, nft.image]
+  );
 
   return (
     <>
@@ -108,7 +114,7 @@ function Container({ navigation, route }): JSX.Element {
         <SendConfirmation
           type="nft"
           navigation={navigation}
-          token={token}
+          token={tokenToSend as TokenTypeCollectible}
           amount={BigNumber.from(1)}
           destination={destination!}
           onCompleteStep={(_step: string) => {

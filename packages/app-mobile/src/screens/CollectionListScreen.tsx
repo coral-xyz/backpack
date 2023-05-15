@@ -130,6 +130,7 @@ export const NftCollectionFragment = gql`
 export type NftNodeFragmentType = {
   id: string;
   address: string;
+  token: string;
   name: string;
   owner: string;
   description: string;
@@ -143,6 +144,7 @@ export const NftNodeFragment = gql`
   fragment NftNodeFragment on Nft {
     id
     address
+    token
     name
     owner
     description
