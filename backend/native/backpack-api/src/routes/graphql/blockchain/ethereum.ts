@@ -44,9 +44,10 @@ export class Ethereum implements Blockchain {
    */
   async getBalancesForAddress(address: string): Promise<Balances | null> {
     // Fetch the native and all token balances of the address and filter out the empty balances
-    const native = await this.#ctx.dataSources.alchemy.core.getBalance(address);
-    const tokenBalances =
-      await this.#ctx.dataSources.alchemy.core.getTokensForOwner(address);
+    const [native, tokenBalances] = await Promise.all([
+      this.#ctx.dataSources.alchemy.core.getBalance(address),
+      this.#ctx.dataSources.alchemy.core.getTokensForOwner(address),
+    ]);
 
     const nonEmptyTokens = tokenBalances.tokens.filter(
       (t) => (t.rawBalance ?? "0") !== "0"
