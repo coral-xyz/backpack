@@ -33,10 +33,10 @@ export const useAuthentication = () => {
     } catch (error) {
       console.error("error auth", error);
       // Relock if authentication failed
-      // await background.request({
-      //   method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-      //   params: [],
-      // });
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+        params: [],
+      });
     }
   };
 
@@ -60,10 +60,10 @@ export const useAuthentication = () => {
     } catch (error) {
       // Relock if authentication failed
       console.error("error checking auth", error);
-      // await background.request({
-      //   method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-      //   params: [],
-      // });
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+        params: [],
+      });
     }
   };
 
@@ -129,10 +129,10 @@ export const useAuthentication = () => {
     if (signers.length === 0) {
       // This should never happen
       console.error("no valid auth signers found");
-      // await background.request({
-      //   method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-      //   params: [],
-      // });
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+        params: [],
+      });
     }
     // Try and find a transparent server (i.e. not hardware based) as the first
     // choice
