@@ -250,6 +250,7 @@ export const MessageLine = (props) => {
   return (
     <div
       className={classes.messageRow}
+      id={props.client_generated_uuid}
       style={{
         marginTop: sameUserMessage ? 0 : 8,
         paddingLeft: sameUserMessage ? 32 : 0,
@@ -265,6 +266,7 @@ export const MessageLine = (props) => {
               {props.parent_message_author_uuid ? (
                 <div>
                   <ReplyContainer
+                    replyMsgId={props.parent_client_generated_uuid}
                     marginBottom={2}
                     padding={0}
                     parent_username={props.parent_message_author_username || ""}
@@ -447,6 +449,7 @@ export const MessageLine = (props) => {
                   {props.parent_message_author_uuid ? (
                     <div style={{}}>
                       <ReplyContainer
+                        replyMsgId={props.parent_client_generated_uuid}
                         marginBottom={0}
                         padding={0}
                         parent_username={
@@ -911,6 +914,7 @@ export function ChatMessages() {
   const { chats, userId } = useChatContext();
   const theme = useCustomTheme();
 
+  console.log(chats);
   return (
     <div style={{ paddingLeft: 18, paddingRight: 18 }}>
       {chats.map((chat, index) => {
@@ -926,6 +930,7 @@ export function ChatMessages() {
             parent_message_author_username={chat.parent_message_author_username}
             parent_message_text={chat.parent_message_text}
             parent_message_author_uuid={chat.parent_message_author_uuid}
+            parent_client_generated_uuid={chat.parent_client_generated_uuid}
             client_generated_uuid={chat.client_generated_uuid}
             color={chat.color || theme.custom.colors.fontColor2}
             colorIndex={chat.colorIndex}
@@ -1000,6 +1005,7 @@ function MessageLeft(props) {
       {props.parent_message_author_uuid ? (
         <div style={{ paddingLeft: 19, marginBottom: -10 }}>
           <ReplyContainer
+            replyMsgId={props.parent_client_generated_uuid}
             marginBottom={0}
             padding={0}
             parent_username={props.parent_message_author_username || ""}
@@ -1059,6 +1065,7 @@ function MessageRight(props) {
       {props.parent_message_author_uuid ? (
         <div style={{ paddingLeft: 19, marginBottom: -10 }}>
           <ReplyContainer
+            replyMsgId={props.parent_client_generated_uuid}
             align="right"
             marginBottom={0}
             padding={0}

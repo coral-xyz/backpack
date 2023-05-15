@@ -6,11 +6,6 @@ import { ParsedMessage } from "./ParsedMessage";
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
-    outerDiv: {
-      padding: 10,
-      background: theme.custom.colors.textBackground,
-      backdropFilter: "blur(6px)",
-    },
     text: {
       color: theme.custom.colors.fontColor2,
     },
@@ -28,6 +23,7 @@ const useStyles = makeStyles((theme: any) =>
 );
 
 export const ReplyContainer = ({
+  replyMsgId,
   parent_username,
   text,
   showCloseBtn,
@@ -37,6 +33,16 @@ export const ReplyContainer = ({
 }) => {
   const { setActiveReply } = useChatContext();
   const classes = useStyles();
+
+  const scrollIntoView = () => {
+    const element = document.getElementById(replyMsgId);
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
 
   return (
     <div
@@ -64,17 +70,17 @@ export const ReplyContainer = ({
             fontSize: 14,
           }}
         >
-          <ParsedMessage message={text} />
+          <div onClick={scrollIntoView} style={{ cursor: "pointer" }}>
+            <ParsedMessage message={text} />
+          </div>
         </div>
       </div>
-      {showCloseBtn && (
-        <div
-          style={{ cursor: "pointer" }}
-          onClick={() => setActiveReply({ parent_client_generated_uuid: null })}
+      {showCloseBtn ? <div
+        style={{ cursor: "pointer" }}
+        onClick={() => setActiveReply({ parent_client_generated_uuid: null })}
         >
-          <Close className={classes.icon} />
-        </div>
-      )}
+        <Close className={classes.icon} />
+      </div> : null}
     </div>
   );
 };
