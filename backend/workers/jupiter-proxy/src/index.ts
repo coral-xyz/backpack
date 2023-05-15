@@ -9,7 +9,17 @@ import ACCOUNTS from "./feeAccounts.json";
 
 type MintAddress = keyof typeof ACCOUNTS | undefined;
 
-const app = new Hono();
+type Env = {
+  AUTH_JWT_PUBLIC_KEY: string;
+  DEFAULT_FEE_BPS: number;
+  FEE_AUTHORITY_ADDRESS: string;
+  RPC: string;
+  SUPABASE_KEY: string;
+  SUPABASE_URL: string;
+  TOKEN_PROGRAM_ADDRESS: string;
+};
+
+const app = new Hono<{ Bindings: Env }>();
 
 app.use("*", cors());
 
@@ -51,16 +61,16 @@ app.post("/swap-webhook", async (c) => {
     const conn = new Connection(c.env.RPC, "confirmed");
     const tx = await conn.getParsedTransaction(json.record.signature);
 
-    const result = tx.meta
-      .postTokenBalances!.filter(
+    const result = tx!
+      .meta!.postTokenBalances!.filter(
         (t) =>
           t.owner === c.env.FEE_AUTHORITY_ADDRESS &&
           t.programId === c.env.TOKEN_PROGRAM_ADDRESS
       )
       ?.map((post) => {
-        const pre = tx?.meta?.preTokenBalances?.find(
+        const pre = tx!.meta!.preTokenBalances!.find(
           (t) => t.accountIndex === post.accountIndex
-        );
+        )!;
         return {
           ...post,
           fees:
@@ -68,7 +78,7 @@ app.post("/swap-webhook", async (c) => {
             Number(pre.uiTokenAmount.amount),
         };
       });
-    const [{ mint, fees }] = result;
+    const [{ mint, fees }] = result!;
 
     const { data, error } = await supabase
       .from("swaps")
@@ -131,22 +141,6 @@ app.use("/v4/*", async (c) => {
   );
   return response;
 });
-
-//  TODO: add later and store in KV, not adding now due to node deps
-// app.get("/accounts", async (c) => {
-//   (async function () {
-//     const fees: Record<string, { address: string }> = {};
-//     (
-//       await getPlatformFeeAccounts(
-//         new Connection(c.env.RPC),
-//         new PublicKey(c.env.FEE_AUTHORITY_ADDRESS)
-//       )
-//     ).forEach((account, mint) => {
-//       fees[mint] = { address: account.toBase58() };
-//     });
-//     c.json(fees);
-//   })();
-// });
 
 // end routes ----------------------------------------
 
