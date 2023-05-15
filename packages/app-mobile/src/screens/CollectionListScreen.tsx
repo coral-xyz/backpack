@@ -46,7 +46,9 @@ function ImageBox({ images }: { images: string[] }): JSX.Element {
         flexWrap: "wrap",
         gap: 8,
         padding: 8,
-        backgroundColor: "orange",
+        alignItems: "center",
+        backgroundColor: "#eee",
+        justifyContent: "space-evenly",
       }}
     >
       {images.map((uri: string) => {
@@ -56,9 +58,8 @@ function ImageBox({ images }: { images: string[] }): JSX.Element {
             source={{ uri }}
             style={{
               borderRadius: 8,
-              width: "45%",
-              height: 70,
-              backgroundColor: "black",
+              width: 64,
+              height: 64,
             }}
           />
         );
