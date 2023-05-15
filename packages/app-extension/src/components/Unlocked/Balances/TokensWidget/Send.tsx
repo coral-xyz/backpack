@@ -649,7 +649,7 @@ export function Sending({
   return (
     <div
       style={{
-        height: "264px",
+        height: "364px",
         display: "flex",
         flexDirection: "column",
       }}

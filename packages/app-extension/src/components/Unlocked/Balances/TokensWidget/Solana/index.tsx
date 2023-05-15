@@ -122,7 +122,7 @@ export function ConfirmSendSolana({
     <div
       style={{
         padding: "16px",
-        height: "402px",
+        height: `${token.decimals === 0 ? "500px" : "402px"}`,
         display: "flex",
         justifyContent: "space-between",
         flexDirection: "column",

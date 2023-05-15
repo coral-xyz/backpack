@@ -22,6 +22,15 @@ const useStyles = styles((theme: CustomTheme) => ({
     lineHeight: "16px",
     color: theme.custom.colors.fontColor,
   },
+  useValWrapper: {
+    background: theme.custom.colors.bg2,
+    borderRadius: "5px",
+    fontWeight: 500,
+    fontSize: "14px",
+    lineHeight: "16px",
+    padding: "5px 10px",
+    color: theme.custom.colors.fontColor,
+  },
   clickable: {
     cursor: "pointer",
     "&:hover": {
@@ -82,6 +91,35 @@ export const MaxLabel = ({
     >
       <span style={{ color: theme.custom.colors.secondary }}>Max: </span>
       {amount !== null ? toDisplayBalance(amount, decimals) : "-"}
+    </div>
+  );
+};
+
+export const UseValueLabel = ({
+  amount,
+  onSetAmount,
+  decimals,
+  labelProperty,
+}: {
+  amount: BigNumber | null;
+  onSetAmount: (amount: BigNumber) => void;
+  decimals: number;
+  labelProperty: string;
+}) => {
+  const theme = useCustomTheme();
+  const classes = useStyles();
+  return (
+    <div
+      className={[
+        classes.useValWrapper,
+        amount && !amount.isZero() ? classes.clickable : "",
+      ].join(" ")}
+      onClick={() => amount && onSetAmount(amount)}
+    >
+      <span style={{ color: theme.custom.colors.secondary }}>
+        {labelProperty}:{" "}
+      </span>
+      {amount !== null ? `${toDisplayBalance(amount, decimals)} SOL` : "-"}
     </div>
   );
 };

@@ -57,6 +57,18 @@ const useStyles = styles((theme) => ({
       transform: "rotate(360deg)",
     },
   },
+  listedInfo: {
+    backgroundColor: theme.custom.colors.background,
+    borderRadius: "8px",
+    color: theme.custom.colors.fontColor3,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    padding: "0 10px",
+    margin: "10px",
+    opacity: 0.92,
+    zIndex: 1,
+  },
 }));
 
 export function NFTCard({
@@ -121,6 +133,10 @@ export function NFTCard({
     });
   };
 
+  // TODO change name to edit or list if listed before
+  const listed = false;
+  const listPageTitle = listed ? "Edit Listing" : `List for Sale on Tensor`;
+
   const onOpenChat = async (e: any) => {
     await openChat(chat, nft.mint!);
     e.stopPropagation();
@@ -172,6 +188,9 @@ function NftCardButton({
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
+
+  let listed = 500; //! REMOVE AND USE UPDATED VALUES FROM API
+
   return (
     <Button
       className={classes.button}
@@ -193,20 +212,42 @@ function NftCardButton({
         background: theme.custom.colors.background,
       }}
     >
-      <ProxyImage
-        className="nftImage"
-        style={{
-          width: "100%",
-        }}
-        loadingStyles={{
-          height: "100%",
-        }}
-        removeOnError
-        src={nft.imageUrl}
-        onError={(e) => {
-          e.currentTarget.src = UNKNOWN_NFT_ICON_SRC;
-        }}
-      />
+      <div style={{ position: "relative" }}>
+        <ProxyImage
+          className="nftImage"
+          style={{
+            height: "100%",
+            width: "100%",
+          }}
+          loadingStyles={{
+            height: "100%",
+          }}
+          removeOnError
+          src={nft.imageUrl}
+          onError={(e) => {
+            e.currentTarget.src = UNKNOWN_NFT_ICON_SRC;
+          }}
+        />
+        {listed > 0 ? (
+          <div
+            style={{
+              backgroundColor: theme.custom.colors.background,
+              borderRadius: "8px",
+              color: theme.custom.colors.fontColor3,
+              position: "absolute",
+              top: 0,
+              left: 0,
+              padding: "0 10px",
+              margin: "10px",
+              opacity: 0.92,
+              zIndex: 1,
+            }}
+          >
+            <p style={{ all: "unset" }}>listed: {listed} SOL</p>
+          </div>
+        ) : null}
+      </div>
+
       <div
         style={{
           width: "100%",

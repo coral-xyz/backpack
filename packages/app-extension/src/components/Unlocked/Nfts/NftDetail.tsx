@@ -1,4 +1,4 @@
-import React, { type CSSProperties, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { Nft } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
@@ -20,6 +20,7 @@ import {
   NegativeButton,
   PrimaryButton,
   ProxyImage,
+  SecondaryButton,
 } from "@coral-xyz/react-common";
 import {
   appStoreMetaTags,
@@ -56,6 +57,7 @@ import {
   Sending,
 } from "../Balances/TokensWidget/Send";
 
+import { ListDrawer } from "./ListDrawer";
 import { SendDrawer } from "./SendDrawer";
 
 const logger = getLogger("app-extension/nft-detail");
@@ -109,6 +111,8 @@ export function NftsDetail({
   nftId: string;
 }) {
   const theme = useCustomTheme();
+  const { push } = useNavigation();
+  const activeWallet = useActiveWallet();
   const whitelistedChatCollection = useRecoilValue(
     chatByNftId({ publicKey, connectionUrl, nftId })
   );
@@ -128,6 +132,9 @@ export function NftsDetail({
   const [joiningChat, setJoiningChat] = useState(false);
 
   const whitelistedChatCollectionId = whitelistedChatCollection?.collectionId;
+
+  let listed = true; //! REMOVE AND USE UPDATED VALUES FROM API
+  let listedNo = 500; //! REMOVE AND USE UPDATED VALUES FROM API
 
   // Hack: needed because this is undefined due to framer-motion animation.
   if (!nftId) {
@@ -151,7 +158,53 @@ export function NftsDetail({
         paddingBottom: "8px",
       }}
     >
-      <Image nft={nft} />
+      <div style={{ position: "relative" }}>
+        <Image nft={nft} />
+        {listedNo > 0 ? (
+          <div
+            style={{
+              backgroundColor: theme.custom.colors.background,
+              borderRadius: "8px",
+              color: theme.custom.colors.fontColor3,
+              position: "absolute",
+              top: 0,
+              left: 0,
+              padding: "0 10px",
+              margin: "10px",
+              opacity: 0.92,
+              zIndex: 1,
+            }}
+          >
+            <p style={{ all: "unset" }}>listed: {listedNo} SOL</p>
+          </div>
+        ) : null}
+      </div>
+
+      {listed ? (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "15px",
+            marginTop: "16px",
+          }}
+        >
+          <ListDrawer nft={nft} title="Edit Listing">
+            {(open) => (
+              <SecondaryButton onClick={() => open()} label="Edit Listing" />
+            )}
+          </ListDrawer>
+          <ListDrawer nft={nft} title="List for Sale on Tensor">
+            {(open) => (
+              <PrimaryButton
+                label="View Listing"
+                onClick={() => open()} // !  REMOVE LATER, WHAT'S SUPPOSED TO HAPPEN HERE -> GO TO TENSOR SITE??
+              />
+            )}
+          </ListDrawer>
+        </div>
+      ) : null}
+
       <div
         style={{
           display: "flex",
