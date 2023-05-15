@@ -2,7 +2,6 @@ import type { V4SwapPostRequest } from "@jup-ag/api";
 import { Connection } from "@solana/web3.js";
 import { createClient } from "@supabase/supabase-js";
 import { Hono } from "hono";
-import { cors } from "hono/cors";
 import { importSPKI, jwtVerify } from "jose";
 
 import ACCOUNTS from "./feeAccounts.json";
@@ -20,8 +19,6 @@ type Env = {
 };
 
 const app = new Hono<{ Bindings: Env }>();
-
-app.use("*", cors());
 
 // start routes ----------------------------------------
 
@@ -104,7 +101,7 @@ app.use("/v4/quote", async (c) => {
       : _url;
   })();
 
-  const response = await fetch(new Request(url, c.req));
+  const response = await fetch(url, c.req);
   return response;
 });
 
@@ -146,7 +143,9 @@ app.use("/v4/*", async (c) => {
 
 const changeOriginToJupiter = (url: string) => {
   const ob = new URL(url);
+  ob.protocol = "https:";
   ob.host = "quote-api.jup.ag";
+  ob.port = "";
   return ob.href;
 };
 
