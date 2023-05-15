@@ -4,6 +4,7 @@
   "description": "A next level crypto wallet for Solana and Ethereum",
   "private": true,
   "dependencies": {
+    "@apollo/client": "3.8.0-alpha.12",
     "@bonfida/spl-name-service": "^0.1.51",
     "@cardinal/token-manager": "^1.7.9",
     "@coral-xyz/background": "*",

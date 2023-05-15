@@ -41,7 +41,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:^3.8.0-alpha.12":
+"@apollo/client@npm:3.8.0-alpha.12, @apollo/client@npm:^3.8.0-alpha.12":
   version: 3.8.0-alpha.12
   resolution: "@apollo/client@npm:3.8.0-alpha.12"
   dependencies:
@@ -3513,6 +3513,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/app-extension@workspace:packages/app-extension"
   dependencies:
+    "@apollo/client": 3.8.0-alpha.12
     "@bonfida/spl-name-service": ^0.1.51
     "@cardinal/token-manager": ^1.7.9
     "@coral-xyz/background": "*"
@@ -3908,6 +3909,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/common@workspace:packages/common"
   dependencies:
+    "@apollo/client": 3.8.0-alpha.12
     "@cardinal/creator-standard": ^2.1.10
     "@cardinal/token-manager": ^1.7.9
     "@ethersproject/abstract-provider": ^5.7.0
@@ -3931,6 +3933,7 @@ __metadata:
     "@types/firefox-webext-browser": ^94.0.1
     "@types/jest": ^29.4.0
     "@types/uuid": ^8.3.4
+    apollo3-cache-persist: ^0.14.1
     base32-encode: ^2.0.0
     bip32-path: ^0.4.2
     bn.js: ^5.2.1
