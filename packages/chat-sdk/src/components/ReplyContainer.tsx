@@ -1,3 +1,4 @@
+import { fetchMoreChatsFor } from "@coral-xyz/tamagui";
 import Close from "@mui/icons-material/Close";
 import { createStyles, makeStyles } from "@mui/styles";
 
@@ -29,18 +30,23 @@ export const ReplyContainer = ({
   showCloseBtn,
   marginBottom,
   padding,
+  uuid,
+  type,
+  room,
   align = "left",
 }) => {
   const { setActiveReply } = useChatContext();
   const classes = useStyles();
 
-  const scrollIntoView = () => {
-    const element = document.getElementById(replyMsgId);
-    if (element) {
-      element.scrollIntoView({
+  const scrollToMessage = () => {
+    const msgElement = document.getElementById(replyMsgId);
+    if (msgElement) {
+      msgElement.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
+    } else {
+      fetchMoreChatsFor(uuid, room, type).then(scrollToMessage);
     }
   };
 
@@ -70,17 +76,19 @@ export const ReplyContainer = ({
             fontSize: 14,
           }}
         >
-          <div onClick={scrollIntoView} style={{ cursor: "pointer" }}>
+          <div onClick={scrollToMessage} style={{ cursor: "pointer" }}>
             <ParsedMessage message={text} />
           </div>
         </div>
       </div>
-      {showCloseBtn ? <div
-        style={{ cursor: "pointer" }}
-        onClick={() => setActiveReply({ parent_client_generated_uuid: null })}
+      {showCloseBtn ? (
+        <div
+          style={{ cursor: "pointer" }}
+          onClick={() => setActiveReply({ parent_client_generated_uuid: null })}
         >
-        <Close className={classes.icon} />
-      </div> : null}
+          <Close className={classes.icon} />
+        </div>
+      ) : null}
     </div>
   );
 };

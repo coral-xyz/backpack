@@ -272,6 +272,9 @@ export const MessageLine = (props) => {
                     parent_username={props.parent_message_author_username || ""}
                     showCloseBtn={false}
                     text={props.parent_message_text}
+                    uuid={props.uuid}
+                    type={props.type}
+                    room={props.room}
                   />
                 </div>
               ) : null}
@@ -457,6 +460,9 @@ export const MessageLine = (props) => {
                         }
                         showCloseBtn={false}
                         text={props.parent_message_text}
+                        uuid={props.uuid}
+                        type={props.type}
+                        room={props.room}
                       />
                     </div>
                   ) : null}
@@ -913,8 +919,6 @@ function SecureTransferElement({
 export function ChatMessages() {
   const { chats, userId } = useChatContext();
   const theme = useCustomTheme();
-
-  console.log(chats);
   return (
     <div style={{ paddingLeft: 18, paddingRight: 18 }}>
       {chats.map((chat, index) => {
@@ -939,7 +943,9 @@ export function ChatMessages() {
             deleted={chat.deleted}
             messageKind={chat.message_kind}
             image={chat.image}
+            type={chat.type}
             username={chat.username}
+            room={chat.room}
             uuid={chat.uuid}
             userId={chat.uuid}
             metadata={chat.message_metadata}
@@ -1011,6 +1017,9 @@ function MessageLeft(props) {
             parent_username={props.parent_message_author_username || ""}
             showCloseBtn={false}
             text={props.parent_message_text}
+            uuid={props.uuid}
+            type={props.type}
+            room={props.room}
           />
         </div>
       ) : null}
@@ -1072,6 +1081,9 @@ function MessageRight(props) {
             parent_username={props.parent_message_author_username || ""}
             showCloseBtn={false}
             text={props.parent_message_text}
+            uuid={props.uuid}
+            type={props.type}
+            room={props.room}
           />
         </div>
       ) : null}
