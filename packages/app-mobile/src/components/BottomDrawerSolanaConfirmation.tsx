@@ -4,7 +4,11 @@ import { memo, Suspense } from "react";
 import { Image, ActivityIndicator, Text } from "react-native";
 
 import { Blockchain } from "@coral-xyz/common";
-import { useSolanaTransaction, SolTransactionStep } from "@coral-xyz/recoil";
+import {
+  useSolanaTransaction,
+  SolTransactionStep,
+  useUser,
+} from "@coral-xyz/recoil";
 import { ErrorBoundary } from "react-error-boundary";
 
 import {
@@ -57,9 +61,12 @@ function ConfirmToken({
   amount: BigNumber;
   onConfirm: () => void;
 }) {
-  const title = !destination.username
-    ? "Send to your wallet"
-    : `Send to ${destination.username}`;
+  const user = useUser();
+
+  const title =
+    destination.username === user.username
+      ? "Send to your wallet"
+      : `Send to ${destination.username}`;
 
   const destinationLabel = (destination.username ||
     destination.walletName) as string;
@@ -91,9 +98,12 @@ function ConfirmCollectible({
   nft: TokenTypeCollectible;
   onConfirm: () => void;
 }) {
-  const title = !destination.username
-    ? "Send to your wallet"
-    : `Send to ${destination.username}`;
+  const user = useUser();
+
+  const title =
+    destination.username === user.username
+      ? "Send to your wallet"
+      : `Send to ${destination.username}`;
 
   const destinationLabel = (destination.username ||
     destination.walletName) as string;

@@ -8,6 +8,7 @@ import {
   useEthereumCtx,
   useIsValidAddress,
 } from "@coral-xyz/recoil";
+import { BigNumber } from "ethers";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { SendEthereumConfirmationCard } from "~components/BottomDrawerEthereumConfirmation";
@@ -51,7 +52,7 @@ function Container({ navigation, route }): JSX.Element {
   }[activeWallet.blockchain];
 
   const token = {
-    address: nft.publicKey,
+    address: nft.address,
     image: nft.image,
     mint: nft.mint,
   } as TokenTypeCollectible;
@@ -108,6 +109,7 @@ function Container({ navigation, route }): JSX.Element {
           type="nft"
           navigation={navigation}
           token={token}
+          amount={BigNumber.from(1)}
           destination={destination!}
           onCompleteStep={(_step: string) => {
             // if (step !== "confirm") {
