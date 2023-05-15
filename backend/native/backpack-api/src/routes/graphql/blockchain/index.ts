@@ -3,6 +3,7 @@ import {
   type Balances,
   ChainId,
   type NftConnection,
+  type NftFiltersInput,
   type TransactionConnection,
 } from "../types";
 
@@ -13,7 +14,7 @@ export interface Blockchain {
   getBalancesForAddress(address: string): Promise<Balances | null>;
   getNftsForAddress(
     address: string,
-    mints?: string[]
+    filters?: Partial<NftFiltersInput>
   ): Promise<NftConnection | null>;
   getTransactionsForAddress(
     address: string,

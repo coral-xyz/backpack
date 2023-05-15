@@ -14,6 +14,7 @@ import {
   type Nft,
   type NftAttribute,
   type NftConnection,
+  type NftFiltersInput,
   type TokenBalance,
   type Transaction,
   type TransactionConnection,
@@ -44,9 +45,10 @@ export class Ethereum implements Blockchain {
    */
   async getBalancesForAddress(address: string): Promise<Balances | null> {
     // Fetch the native and all token balances of the address and filter out the empty balances
-    const native = await this.#ctx.dataSources.alchemy.core.getBalance(address);
-    const tokenBalances =
-      await this.#ctx.dataSources.alchemy.core.getTokensForOwner(address);
+    const [native, tokenBalances] = await Promise.all([
+      this.#ctx.dataSources.alchemy.core.getBalance(address),
+      this.#ctx.dataSources.alchemy.core.getTokensForOwner(address),
+    ]);
 
     const nonEmptyTokens = tokenBalances.tokens.filter(
       (t) => (t.rawBalance ?? "0") !== "0"
@@ -112,18 +114,18 @@ export class Ethereum implements Blockchain {
   /**
    * Get a list of NFT data for tokens owned by the argued address.
    * @param {string} address
-   * @param {string[]} [mints]
+   * @param {Partial<NftFiltersInput>} [filters]
    * @returns {Promise<NftConnection | null>}
    * @memberof Ethereum
    */
   async getNftsForAddress(
     address: string,
-    mints?: string[]
+    filters?: Partial<NftFiltersInput>
   ): Promise<NftConnection | null> {
     // Get all NFTs held by the address from Alchemy
     const nfts = await this.#ctx.dataSources.alchemy.nft.getNftsForOwner(
       address,
-      { contractAddresses: mints }
+      { contractAddresses: filters?.addresses ?? undefined }
     );
 
     // Return an array of `Nft` schema types after filtering out all
@@ -212,6 +214,7 @@ export class Ethereum implements Blockchain {
     const nodes: Transaction[] = combined.map((tx) => ({
       id: `${this.id()}_transaction:${tx.uniqueId}`,
       block: Number(tx.blockNum),
+      fee: undefined, // FIXME: find gas amount paid for processing
       feePayer: tx.from,
       hash: tx.hash,
       timestamp: (tx as any).metadata?.blockTimestamp || undefined,

@@ -34,9 +34,13 @@ export type Scalars = {
  */
 export type Balances = Node & {
   __typename?: "Balances";
+  /** The numerical value representing the aggregated market value of all fungible assets in the wallet. */
   aggregateValue: Scalars["Float"];
+  /** Globally unique identifier for a wallet's balances data. */
   id: Scalars["ID"];
+  /** Token account balance and market data for the blockchain's native currency. */
   native: TokenBalance;
+  /** The Relay connection of token account balances and market data for non-native token types owned by the wallet. */
   tokens?: Maybe<TokenBalanceConnection>;
 };
 
@@ -55,27 +59,38 @@ export enum ChainId {
 /** `Nft` collection sub-type definition. */
 export type Collection = Node & {
   __typename?: "Collection";
+  /** The mint or contract address of the collection, presenting an NFT's parental entity. */
   address: Scalars["String"];
+  /** Globally unique identifier for an NFT collection object. */
   id: Scalars["ID"];
+  /** The image link for the collection or parental contract entity. */
   image?: Maybe<Scalars["String"]>;
+  /** The name of the collection or parental contract entity. */
   name?: Maybe<Scalars["String"]>;
+  /** Flag to indicate whether or not it has been verified by the relevant ecosystem standards. */
   verified: Scalars["Boolean"];
 };
 
 /** Represents a friend reference for the parent `User`. */
 export type Friend = Node & {
   __typename?: "Friend";
+  /** The image link for a friend's user avatar. */
   avatar: Scalars["String"];
+  /** Globally unique identifier for a friend of a user. */
   id: Scalars["ID"];
+  /** The Backpack username of the friend. */
   username: Scalars["String"];
 };
 
 /** Friend request data for a user. */
 export type FriendRequest = Node & {
   __typename?: "FriendRequest";
+  /** Globally unique identifier for a single friend request entity. */
   id: Scalars["ID"];
+  /** The type of friend request to indicate whether it was sent or received by the user. */
   type: FriendRequestType;
-  user: Scalars["String"];
+  /** The recipient or sending Backpack user ID of the request. */
+  userId: Scalars["String"];
 };
 
 /** Enum for associating a friend request with the direction of how it was sent. */
@@ -87,28 +102,41 @@ export enum FriendRequestType {
 /** Wrapper type for all user friendship data. */
 export type Friendship = {
   __typename?: "Friendship";
+  /** A list of Backpack friends of the user. */
   friends?: Maybe<Array<Friend>>;
+  /** A list of pending Backpack friend requests related to the user. */
   requests?: Maybe<Array<FriendRequest>>;
 };
 
 /** NFT listing data pulling from marketplaces. */
 export type Listing = Node & {
   __typename?: "Listing";
+  /** The display amount of the current listing price. */
   amount: Scalars["String"];
+  /** Globally unique identifier for an NFT marketplace listing. */
   id: Scalars["ID"];
+  /** The marketplace or platform that the NFT is currently listing on. */
   source: Scalars["String"];
+  /** A link to the NFT's listing on the marketplace. */
   url: Scalars["String"];
 };
 
 /** Coingecko and computed market and price data for a token. */
 export type MarketData = Node & {
   __typename?: "MarketData";
+  /** Globally unqiue identifier for the token's market data. */
   id: Scalars["ID"];
+  /** A timestamp of the last date of when the market data was updated. */
   lastUpdatedAt: Scalars["Int"];
+  /** The image link to the logo of the token's market listing. */
   logo: Scalars["String"];
+  /** The percentage of change since the latest market data update. */
   percentChange: Scalars["Float"];
+  /** The current USD price of the token according to the market data. */
   price: Scalars["Float"];
+  /** The numerical amount change in USD since the latest market data update. */
   usdChange: Scalars["Float"];
+  /** The value of the wallet's currently holdings of the token in USD. */
   value: Scalars["Float"];
 };
 
@@ -141,22 +169,34 @@ export type MutationImportPublicKeyArgs = {
 /** Generic NFT object type definition to provide on-chain and off-chain metadata. */
 export type Nft = Node & {
   __typename?: "Nft";
+  /** The mint or contract address of the item. */
   address: Scalars["String"];
+  /** The list of attributes or traits found in the item's metadata. */
   attributes?: Maybe<Array<NftAttribute>>;
+  /** The collection or contract parental entity of the item. */
   collection?: Maybe<Collection>;
+  /** The description of the NFT found in the metadata. */
   description?: Maybe<Scalars["String"]>;
+  /** Globally unique identifier for an NFT. */
   id: Scalars["ID"];
+  /** The image link of the NFT found in the metadata. */
   image?: Maybe<Scalars["String"]>;
+  /** Possible marketplace or platform listing data for the NFT for sale. */
   listing?: Maybe<Listing>;
+  /** The name of the NFT found in the metadata. */
   name: Scalars["String"];
+  /** The owning wallet's public key. */
   owner: Scalars["String"];
+  /** The associated token account address or contract token ID of the individual item. */
   token: Scalars["String"];
 };
 
 /** NFT `attributes` list sub-type definition. */
 export type NftAttribute = {
   __typename?: "NftAttribute";
+  /** The trait name of the attribute. */
   trait: Scalars["String"];
+  /** The item's value for the specified trait type. */
   value: Scalars["String"];
 };
 
@@ -176,22 +216,30 @@ export type NftEdge = {
 
 /** Input filter type for fetching user wallet NFTs. */
 export type NftFiltersInput = {
-  mints?: InputMaybe<Array<Scalars["String"]>>;
+  /** A list of mint or contract addresses to filter the response. */
+  addresses?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 /** Interface to enforce the implementation of an `id` field on a type. */
 export type Node = {
+  /** Globally unique identifier. */
   id: Scalars["ID"];
 };
 
 /** Notification data type for user notification reads. */
 export type Notification = Node & {
   __typename?: "Notification";
+  /** Arbitrary body data of the notification parsed as an object. */
   body: Scalars["JSONObject"];
+  /** Globally unique identifier for a specific notification. */
   id: Scalars["ID"];
+  /** The emitting source of the notification. */
   source: Scalars["String"];
+  /** The timestamp that the notification was created. */
   timestamp: Scalars["String"];
+  /** The title of the notification. */
   title: Scalars["String"];
+  /** Flag to indicate whether it has been viewed or not by the user. */
   viewed: Scalars["Boolean"];
 };
 
@@ -199,6 +247,7 @@ export type Notification = Node & {
 export type NotificationConnection = {
   __typename?: "NotificationConnection";
   edges?: Maybe<Array<Maybe<NotificationEdge>>>;
+  /** The database integer ID of the last read notification of the user. */
   lastReadId?: Maybe<Scalars["Int"]>;
   pageInfo: PageInfo;
 };
@@ -212,16 +261,22 @@ export type NotificationEdge = {
 
 /** Input filter type for fetching user notifications. */
 export type NotificationsFiltersInput = {
+  /** The limit for number of items desired in the response. */
   limit?: InputMaybe<Scalars["Int"]>;
+  /** Flag to filter for only unread notifications of the user. */
   unreadOnly?: InputMaybe<Scalars["Boolean"]>;
 };
 
 /** Relay specification for a connection's page information. */
 export type PageInfo = {
   __typename?: "PageInfo";
+  /** Cursor for the last edge in the page. */
   endCursor?: Maybe<Scalars["String"]>;
+  /** Flag to indicate if the connection has another page of edges. */
   hasNextPage: Scalars["Boolean"];
+  /** Flag to indicate if the connection has a previous page of edges. */
   hasPreviousPage: Scalars["Boolean"];
+  /** Cursor for the first edge in the page. */
   startCursor?: Maybe<Scalars["String"]>;
 };
 
@@ -246,12 +301,19 @@ export type QueryWalletArgs = {
 /** Generic native or non-native token data and balance for a `Wallet`. */
 export type TokenBalance = Node & {
   __typename?: "TokenBalance";
+  /** The associated token account or wallet + contract address of the wallet. */
   address: Scalars["String"];
+  /** The unformated amount of tokens held for the specific contract or mint. */
   amount: Scalars["String"];
+  /** The number of decimals associated with the contract or mint. */
   decimals: Scalars["Int"];
+  /** The formatted display amount for the wallet's holdings of the token. */
   displayAmount: Scalars["String"];
+  /** Globally unqiue identifier for the token balance object in a wallet. */
   id: Scalars["ID"];
+  /** Market price data for the token contract or mint. */
   marketData?: Maybe<MarketData>;
+  /** The address of the token mint or contract. */
   mint: Scalars["String"];
 };
 
@@ -272,14 +334,23 @@ export type TokenBalanceEdge = {
 /** Generic on-chain transaction details structure. */
 export type Transaction = Node & {
   __typename?: "Transaction";
+  /** The block number or slot that the transaction was committed to. */
   block: Scalars["Float"];
+  /** The semantic description of the transaction effects. */
   description?: Maybe<Scalars["String"]>;
+  /** The amount in fees that were paid for processing the transaction. */
   fee?: Maybe<Scalars["Int"]>;
+  /** The address of the wallet that paid the processing fees. */
   feePayer?: Maybe<Scalars["String"]>;
+  /** The transaction hash or signature. */
   hash: Scalars["String"];
+  /** Globally unique identifier for a single transaction. */
   id: Scalars["ID"];
+  /** The source or program that is associated with the transaction. */
   source?: Maybe<Scalars["String"]>;
+  /** The timestamp of the execution or commitment of the transaction. */
   timestamp?: Maybe<Scalars["String"]>;
+  /** The category or type of transaction. */
   type: Scalars["String"];
 };
 
@@ -303,12 +374,19 @@ export type TransactionEdge = {
  */
 export type User = Node & {
   __typename?: "User";
+  /** The image link for the avatar of the user. */
   avatar: Scalars["String"];
+  /** The timestamp of the creation of the user. */
   createdAt: Scalars["String"];
+  /** A grouping object of the friends and friend request data for the user. */
   friendship?: Maybe<Friendship>;
+  /** Globally unique identifier for a Backpack user. */
   id: Scalars["ID"];
+  /** The Relay connection for the notifications received by the user. */
   notifications?: Maybe<NotificationConnection>;
+  /** The user's Backpack username. */
   username: Scalars["String"];
+  /** The Relay connection for the wallet's and their data that are registered to the user. */
   wallets?: Maybe<WalletConnection>;
 };
 
@@ -331,13 +409,21 @@ export type UserWalletsArgs = {
 /** Wallet definition to provide data about all assets owned by an address. */
 export type Wallet = Node & {
   __typename?: "Wallet";
+  /** The public key address of the wallet. */
   address: Scalars["String"];
+  /** The detailed and aggregate balance data for the wallet. */
   balances?: Maybe<Balances>;
+  /** The blockchain enum variant that the wallet is associated with. */
   chainId: ChainId;
+  /** The timestamp that the wallet was imported or registered to the Backpack user. */
   createdAt: Scalars["String"];
+  /** Globally unique identifier for a specific wallet on a blockchain. */
   id: Scalars["ID"];
+  /** Flag to indicate whether it is the user's primary wallet for the designated blockchain. */
   isPrimary: Scalars["Boolean"];
+  /** The Relay connection for all of the NFTs owned by the wallet. */
   nfts?: Maybe<NftConnection>;
+  /** The Relay connection for all transactions initiated or associated with the wallet. */
   transactions?: Maybe<TransactionConnection>;
 };
 
@@ -368,8 +454,11 @@ export type WalletEdge = {
 
 /** Input filter type for fetching user wallets and their data. */
 export type WalletsFiltersInput = {
+  /** A `ChainID` value to filter for all of the public keys of the user for a given blockchain. */
   chainId?: InputMaybe<ChainId>;
+  /** Flag to filter for only the primary wallets for each registered blockchain of the user. */
   primaryOnly?: InputMaybe<Scalars["Boolean"]>;
+  /** A list of public keys to filter in the response. */
   pubkeys?: InputMaybe<Array<Scalars["String"]>>;
 };
 
@@ -646,7 +735,7 @@ export type FriendRequestResolvers<
 > = ResolversObject<{
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   type?: Resolver<ResolversTypes["FriendRequestType"], ParentType, ContextType>;
-  user?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
