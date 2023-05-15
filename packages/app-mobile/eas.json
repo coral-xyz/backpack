@@ -1,37 +1,33 @@
 {
   "cli": {
     "appVersionSource": "remote",
-    "version": ">= 3.8.0"
+    "version": "^3.12.0"
   },
   "build": {
     "production": {
       "node": "18.15.0",
       "autoIncrement": true,
       "channel": "production",
-      "ios": {
-        "resourceClass": "m-medium"
-      }
+      "resourceClass": "large"
     },
     "development-simulator": {
       "node": "18.15.0",
       "developmentClient": true,
       "distribution": "internal",
+      "resourceClass": "large",
       "env": {
         "APP_ENV": "production"
       },
       "ios": {
-        "simulator": true,
-        "resourceClass": "m-medium"
+        "simulator": true
       }
     },
     "preview": {
       "node": "18.15.0",
       "distribution": "internal",
+      "resourceClass": "large",
       "env": {
         "APP_ENV": "production"
-      },
-      "ios": {
-        "resourceClass": "m-medium"
       }
     }
   },

@@ -3635,6 +3635,7 @@ __metadata:
     "@react-navigation/native": ^6.0.11
     "@react-navigation/native-stack": ^6.7.0
     "@react-navigation/stack": ^6.3.2
+    "@shopify/flash-list": 1.4.0
     "@tamagui/font-inter": ^1.15.39
     "@testing-library/jest-native": ^5.1.2
     "@types/jest": ^28.1.6
@@ -3658,6 +3659,8 @@ __metadata:
     expo-dev-client: ~2.2.1
     expo-device: ~5.2.1
     expo-font: ~11.1.1
+    expo-image: ~1.0.0
+    expo-linear-gradient: ~12.1.2
     expo-linking: ~4.0.1
     expo-random: ~13.1.1
     expo-secure-store: ~12.1.1
@@ -11138,6 +11141,20 @@ __metadata:
     component-type: ^1.2.1
     join-component: ^1.1.0
   checksum: 8c4aacc903fb717619b69ca7eecf8d4a7b928661b0e835c9cd98f1b858a85ce62c348369ad9a52cb2df8df02578c0525a73fce4c69a42ac414d9554cc6be7117
+  languageName: node
+  linkType: hard
+
+"@shopify/flash-list@npm:1.4.0":
+  version: 1.4.0
+  resolution: "@shopify/flash-list@npm:1.4.0"
+  dependencies:
+    recyclerlistview: 4.2.0
+    tslib: 2.4.0
+  peerDependencies:
+    "@babel/runtime": "*"
+    react: "*"
+    react-native: "*"
+  checksum: c6510b0d6ae6404fe92ede0c918ba184bc2b27ed39c627eebad16a6542792cb34e750e2004e1a9ce165f9d729f1af0555cba1e4c224fd52bfd2a600fdc9e2a65
   languageName: node
   linkType: hard
 
@@ -23240,6 +23257,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-image@npm:~1.0.0":
+  version: 1.0.0
+  resolution: "expo-image@npm:1.0.0"
+  peerDependencies:
+    expo: "*"
+  checksum: 203e8b3e2528f40855be9c1f7cb038ae1b84f05770424cecc7bd39ec785aca2879e7ea80b70d5550dd9470f62da7a1560fab592efaec3189c6646765e311905d
+  languageName: node
+  linkType: hard
+
 "expo-json-utils@npm:~0.5.0":
   version: 0.5.1
   resolution: "expo-json-utils@npm:0.5.1"
@@ -23253,6 +23279,15 @@ __metadata:
   peerDependencies:
     expo: "*"
   checksum: 49bb74c53c9db2408c53a002f62809841a22b6b6cca3f9e5153f83738dc593bc1f420406bc3efa2d82a4249e03b86e2ef6a5cbd5707ec0d0e4677d55805b281f
+  languageName: node
+  linkType: hard
+
+"expo-linear-gradient@npm:~12.1.2":
+  version: 12.1.2
+  resolution: "expo-linear-gradient@npm:12.1.2"
+  peerDependencies:
+    expo: "*"
+  checksum: 02a8bdd8f27d5f1d41d2ecb4bed60e44e85b3ba22ae9ac70fcadc86d1d8982415adb3ee4568067a3c0a054f86d3f66b5354240cdccbe500f15af6037fc34156e
   languageName: node
   linkType: hard
 
@@ -30111,7 +30146,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.debounce@npm:^4.0.8":
+"lodash.debounce@npm:4.0.8, lodash.debounce@npm:^4.0.8":
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
   checksum: a3f527d22c548f43ae31c861ada88b2637eb48ac6aa3eb56e82d44917971b8aa96fbb37aa60efea674dc4ee8c42074f90f7b1f772e9db375435f6c83a19b3bc6
@@ -34492,7 +34527,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:*, prop-types@npm:^15.5.10, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.7.x, prop-types@npm:^15.8.1":
+"prop-types@npm:*, prop-types@npm:15.8.1, prop-types@npm:^15.5.10, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.7.x, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -35774,6 +35809,20 @@ __metadata:
     react-native:
       optional: true
   checksum: 65edecbcb8d2cde89bfd61ec679c200483472a6cd343c33e4e9142b6ce524fb17d1fecc2bfd8c392926aaa8178c81457f165b32abce2a9662f51f98822c0a9cc
+  languageName: node
+  linkType: hard
+
+"recyclerlistview@npm:4.2.0":
+  version: 4.2.0
+  resolution: "recyclerlistview@npm:4.2.0"
+  dependencies:
+    lodash.debounce: 4.0.8
+    prop-types: 15.8.1
+    ts-object-utils: 0.0.5
+  peerDependencies:
+    react: ">= 15.2.1"
+    react-native: ">= 0.30.0"
+  checksum: 6cba6a99fb487067c509112b94e3d4d3905d782bbcb7af2cffbd57c601a4650d670e4eee5fec18d195d58ff6ec01a47288c5510379a2f37da3c5fc0a58860441
   languageName: node
   linkType: hard
 
@@ -39366,6 +39415,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ts-object-utils@npm:0.0.5":
+  version: 0.0.5
+  resolution: "ts-object-utils@npm:0.0.5"
+  checksum: 83c48fbdaba392fb2c01cea53b267ed5538d2bb44fc6c3eecc10bcfabc1780bfa6ec8569b52bbf0140d9b521d9049d5f15884e12286918244d463d854dbc73cb
+  languageName: node
+  linkType: hard
+
 "tsc-alias@npm:^1.7.0, tsc-alias@npm:^1.7.1, tsc-alias@npm:^1.8.3":
   version: 1.8.4
   resolution: "tsc-alias@npm:1.8.4"
@@ -39398,6 +39454,13 @@ __metadata:
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: dbe628ef87f66691d5d2959b3e41b9ca0045c3ee3c7c7b906cc1e328b39f199bb1ad9e671c39025bd56122ac57dfbf7385a94843b1cc07c60a4db74795829acd
+  languageName: node
+  linkType: hard
+
+"tslib@npm:2.4.0":
+  version: 2.4.0
+  resolution: "tslib@npm:2.4.0"
+  checksum: 8c4aa6a3c5a754bf76aefc38026134180c053b7bd2f81338cb5e5ebf96fefa0f417bff221592bf801077f5bf990562f6264fecbc42cd3309b33872cb6fc3b113
   languageName: node
   linkType: hard
 
