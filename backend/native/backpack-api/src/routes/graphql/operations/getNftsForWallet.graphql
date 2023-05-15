@@ -1,0 +1,35 @@
+query GetNftsForWallet($chainId: ChainID!, $address: String!) {
+  wallet(chainId: $chainId, address: $address) {
+    id
+    nfts {
+      edges {
+        node {
+          ...NftNode
+        }
+      }
+    }
+  }
+}
+
+fragment NftNode on Nft {
+  id
+  image
+  name
+  address
+  description
+  attributes {
+    trait
+    value
+  }
+  collection {
+    ...NftCollection
+  }
+}
+
+fragment NftCollection on Collection {
+  id
+  address
+  image
+  name
+  verified
+}

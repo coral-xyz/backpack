@@ -4,8 +4,11 @@ import {
   InMemoryCache,
   type NormalizedCacheObject,
 } from "@apollo/client";
-import { BACKEND_API_URL } from "@coral-xyz/common";
 import { LocalStorageWrapper, persistCacheSync } from "apollo3-cache-persist";
+
+import { BACKEND_API_URL } from "../constants";
+
+export * as gql from "./generated";
 
 const cache = new InMemoryCache();
 const httpLink = createHttpLink({
