@@ -1,6 +1,4 @@
-import type { Blockchain } from "@coral-xyz/common";
-
-import { useState } from "react";
+import { memo, useState } from "react";
 import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from "react-native";
 import {
   ActivityIndicator,
@@ -17,8 +15,14 @@ import {
 import * as Clipboard from "expo-clipboard";
 import Constants from "expo-constants";
 
-import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
 import {
+  Blockchain,
+  proxyImageUrl,
+  walletAddressDisplay,
+} from "@coral-xyz/common";
+import { useActiveWallet } from "@coral-xyz/recoil";
+import {
+  XStack,
   Margin,
   BaseButton,
   LinkButton,
@@ -32,6 +36,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ContentCopyIcon, RedBackpack } from "~components/Icon";
+import { CurrentUserAvatar, UserAvatar } from "~components/UserAvatar";
 import { useTheme } from "~hooks/useTheme";
 
 export { ActionCard } from "./ActionCard";
@@ -42,7 +47,7 @@ export { PasswordInput } from "./PasswordInput";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { StyledTokenTextInput } from "./TokenInputField";
-export { Avatar } from "./UserAvatar";
+export { Avatar, CurrentUserAvatar } from "./UserAvatar";
 export {
   Margin,
   BaseButton,
@@ -342,32 +347,6 @@ export function ProxyImage({
       // }}
       {...props}
     />
-  );
-}
-
-export function WalletAddressLabel({
-  publicKey,
-  name,
-  style,
-  nameStyle,
-}: {
-  publicKey: string;
-  name: string;
-  style: StyleProp<ViewStyle>;
-  nameStyle: StyleProp<TextStyle>;
-}): JSX.Element {
-  const theme = useTheme();
-  return (
-    <View style={[{ flexDirection: "row", alignItems: "center" }, style]}>
-      <Margin right={8}>
-        <Text style={[{ color: theme.custom.colors.fontColor }, nameStyle]}>
-          {name}
-        </Text>
-      </Margin>
-      <Text style={{ color: theme.custom.colors.secondary }}>
-        ({walletAddressDisplay(publicKey)})
-      </Text>
-    </View>
   );
 }
 
@@ -785,3 +764,70 @@ const rowStyles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
+// original component we use in a bunch of places, wrapped
+export const WalletAddressLabel = memo(function WalletAddressLabel({
+  publicKey,
+}: {
+  publicKey: string;
+}): JSX.Element {
+  return (
+    <Box p={4} backgroundColor="$background" borderRadius="$small">
+      <StyledText fontSize="$sm" color="$secondary">
+        ({walletAddressDisplay(publicKey)})
+      </StyledText>
+    </Box>
+  );
+});
+
+// returns a name (username or wallet name) next to an address (public key)
+export function NameAddressLabel({
+  publicKey,
+  name,
+}: {
+  publicKey: string;
+  name: string;
+}): JSX.Element {
+  return (
+    <XStack alignItems="center">
+      <StyledText mr={8} fontSize="$sm" color="$fontColor">
+        {name}
+      </StyledText>
+      <WalletAddressLabel publicKey={publicKey} />
+    </XStack>
+  );
+}
+
+// Used for the "from" functionality in sending
+export function CurrentUserAvatarWalletNameAddress() {
+  const w = useActiveWallet();
+  return (
+    <XStack alignItems="center">
+      <Box mr={8}>
+        <CurrentUserAvatar size={24} />
+      </Box>
+      <NameAddressLabel publicKey={w.publicKey} name={w.name} />
+    </XStack>
+  );
+}
+
+// used for the "to" functionality in sending
+// can also be used for the current user "to" when sending to another wallet, just pass in that info
+export function AvatarUserNameAddress({
+  username,
+  avatarUrl,
+  publicKey,
+}: {
+  username: string;
+  avatarUrl: string;
+  publicKey: string;
+}): JSX.Element {
+  return (
+    <XStack alignItems="center">
+      <Box mr={8}>
+        <UserAvatar uri={avatarUrl} size={24} />
+      </Box>
+      <NameAddressLabel publicKey={publicKey} name={username} />
+    </XStack>
+  );
+}

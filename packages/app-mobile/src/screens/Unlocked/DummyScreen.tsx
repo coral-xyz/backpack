@@ -1,7 +1,16 @@
-import { Alert, View, ScrollView } from "react-native";
+import { memo } from "react";
+import { Alert, ScrollView, View } from "react-native";
 
-import { Blockchain } from "@coral-xyz/common";
-import { Box, YGroup, Separator } from "@coral-xyz/tamagui";
+import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
+import { useActiveWallet } from "@coral-xyz/recoil";
+import {
+  Box,
+  YGroup,
+  Separator,
+  ListItem,
+  XStack,
+  StyledText,
+} from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -18,9 +27,121 @@ import {
   SectionedList,
   SettingsList,
 } from "~components/ListItem";
+import { CurrentUserAvatar, UserAvatar } from "~components/UserAvatar";
 import { Screen } from "~components/index";
 
-import BottomSheetExample from "./DummyScreenModal";
+// original component we use in a bunch of places, wrapped
+export const WalletAddressLabel = memo(function WalletAddressLabel({
+  publicKey,
+}: {
+  publicKey: string;
+}): JSX.Element {
+  return (
+    <Box p={4} backgroundColor="$background" borderRadius="$small">
+      <StyledText fontSize="$sm" color="$secondary">
+        ({walletAddressDisplay(publicKey)})
+      </StyledText>
+    </Box>
+  );
+});
+
+// returns a name (username or wallet name) next to an address (public key)
+export function NameAddressLabel({
+  publicKey,
+  name,
+}: {
+  publicKey: string;
+  name: string;
+}): JSX.Element {
+  return (
+    <XStack alignItems="center">
+      <StyledText mr={8} fontSize="$sm" color="$fontColor">
+        {name}
+      </StyledText>
+      <WalletAddressLabel publicKey={publicKey} />
+    </XStack>
+  );
+}
+
+// Used for the "from" functionality in sending
+export function CurrentUserAvatarWalletNameAddress() {
+  const w = useActiveWallet();
+  return (
+    <XStack alignItems="center">
+      <Box mr={8}>
+        <CurrentUserAvatar size={24} />
+      </Box>
+      <NameAddressLabel publicKey={w.publicKey} name={w.name} />
+    </XStack>
+  );
+}
+
+// used for the "to" functionality in sending
+// can also be used for the current user "to" when sending to another wallet, just pass in that info
+export function AvatarUserNameAddress({
+  username,
+  avatarUrl,
+  publicKey,
+}: {
+  username: string;
+  avatarUrl: string;
+  publicKey: string;
+}): JSX.Element {
+  return (
+    <XStack alignItems="center">
+      <Box mr={8}>
+        <UserAvatar uri={avatarUrl} size={24} />
+      </Box>
+      <NameAddressLabel publicKey={publicKey} name={username} />
+    </XStack>
+  );
+}
+
+// address,
+// username: user?.username,
+// walletName: user?.walletName, // TODO see if we need walletName
+// image: user?.image,
+// uuid: user?.uuid,
+
+function TableWrapper({ children }) {
+  return (
+    <YGroup
+      overflow="hidden"
+      borderWidth={2}
+      borderColor="$borderFull"
+      borderRadius="$container"
+      backgroundColor="$nav"
+      separator={<Separator />}
+    >
+      {children}
+    </YGroup>
+  );
+}
+
+function SendDetail({ username, image, address, networkFee = "0.0000005" }) {
+  const feeValue = `${networkFee} SOL`;
+  return (
+    <TableWrapper>
+      <YGroup.Item>
+        <ListItemLabelValue label="From">
+          <CurrentUserAvatarWalletNameAddress />
+        </ListItemLabelValue>
+      </YGroup.Item>
+      <YGroup.Item>
+        <ListItemLabelValue label="To">
+          <AvatarUserNameAddress
+            username={username}
+            avatarUrl={image}
+            publicKey={address}
+          />
+        </ListItemLabelValue>
+      </YGroup.Item>
+      <YGroup.Item>
+        <ListItemLabelValue label="Network fee" value={feeValue} />
+      </YGroup.Item>
+    </TableWrapper>
+  );
+}
 
 function ActivityDetail() {
   return (
@@ -74,6 +195,44 @@ export function DummyScreen(): JSX.Element {
   return (
     <ScrollView>
       <Screen style={{ marginTop: insets.top }}>
+        <Box marginBottom={12}>
+          <StyledText fontSize="$sm" mb={8}>
+            AvatarUserNameAddress
+          </StyledText>
+          <ListItem backgroundColor="$nav">
+            <AvatarUserNameAddress
+              username="peter"
+              avatarUrl="https://swr.xnfts.dev/avatars/backpack_dev/1683979620504"
+              publicKey="6XxTYK4sKYU8G71emxkeCCLpHQx7xmgwy2mDhUTPD5Xm"
+            />
+          </ListItem>
+        </Box>
+        <Box marginBottom={12}>
+          <StyledText fontSize="$sm" mb={8}>
+            CurrentUserAvatarWalletNameAddress
+          </StyledText>
+          <ListItem backgroundColor="$nav">
+            <CurrentUserAvatarWalletNameAddress />
+          </ListItem>
+        </Box>
+        <Box marginBottom={12}>
+          <StyledText fontSize="$sm" mb={8}>
+            NameAddressLabel
+          </StyledText>
+          <ListItem backgroundColor="$nav">
+            <NameAddressLabel
+              name="Wallet 1"
+              publicKey="6XxTYK4sKYU8G71emxkeCCLpHQx7xmgwy2mDhUTPD5Xm"
+            />
+          </ListItem>
+        </Box>
+        <Box marginBottom={12}>
+          <SendDetail
+            username="peter"
+            image="https://swr.xnfts.dev/avatars/backpack_dev/1683979620504"
+            address="6XxTYK4sKYU8G71emxkeCCLpHQx7xmgwy2mDhUTPD5Xm"
+          />
+        </Box>
         <Box marginBottom={12}>
           <ActivityDetail />
         </Box>

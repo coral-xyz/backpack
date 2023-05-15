@@ -6,7 +6,7 @@ import { StyledText } from "@coral-xyz/tamagui";
 import { useTheme } from "~hooks/useTheme";
 
 type Attribute = {
-  traitType: string;
+  trait: string;
   value: string;
 };
 
@@ -29,7 +29,7 @@ export function CollectionAttributes({
         {attributes.map((attr: Attribute) => {
           return (
             <View
-              key={attr.traitType}
+              key={attr.trait}
               style={{
                 padding: 4,
               }}
@@ -50,7 +50,7 @@ export function CollectionAttributes({
                     fontSize: 14,
                   }}
                 >
-                  {toTitleCase(attr.traitType)}
+                  {toTitleCase(attr.trait)}
                 </Text>
                 <Text
                   style={{
