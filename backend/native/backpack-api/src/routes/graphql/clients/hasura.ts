@@ -130,7 +130,7 @@ export class Hasura {
           id: `friend_request:${r.id}`,
           type:
             id === r.from ? FriendRequestType.Sent : FriendRequestType.Received,
-          user: id === r.from ? r.to : r.from,
+          userId: id === r.from ? r.to : r.from,
         }))
       : null;
   }

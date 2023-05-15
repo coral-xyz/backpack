@@ -15,6 +15,7 @@ import {
   type Nft,
   type NftAttribute,
   type NftConnection,
+  type NftFiltersInput,
   type TokenBalance,
   type Transaction,
   type TransactionConnection,
@@ -147,13 +148,13 @@ export class Solana implements Blockchain {
   /**
    * Get a list of NFT data for tokens owned by the argued address.
    * @param {string} address
-   * @param {string[]} [mints]
+   * @param {Partial<NftFiltersInput>} [filters]
    * @returns {(Promise<NftConnection | null>)}
    * @memberof Solana
    */
   async getNftsForAddress(
     address: string,
-    mints?: string[]
+    filters?: Partial<NftFiltersInput>
   ): Promise<NftConnection | null> {
     // Get the held SPL tokens for the address and reduce to only NFT mint addresses
     const assets = await this.#ctx.dataSources.helius.getBalances(address);
@@ -164,8 +165,8 @@ export class Solana implements Blockchain {
     );
 
     // Optionally filter for only argued NFT mints if provided
-    if (mints) {
-      nftMints = nftMints.filter((n) => mints.includes(n));
+    if (filters?.addresses) {
+      nftMints = nftMints.filter((n) => filters.addresses!.includes(n));
     }
 
     if (nftMints.length === 0) {
