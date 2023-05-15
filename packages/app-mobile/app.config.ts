@@ -34,6 +34,19 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
       resizeMode: "cover",
       backgroundColor: "#000",
     },
+    plugins: [
+      [
+        "expo-build-properties",
+        {
+          android: {
+            unstable_networkInspector: true,
+          },
+          ios: {
+            unstable_networkInspector: true,
+          },
+        },
+      ],
+    ],
     updates: {
       fallbackToCacheTimeout: 0,
       url: "https://u.expo.dev/" + projectID,

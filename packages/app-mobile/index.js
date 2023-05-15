@@ -1,3 +1,4 @@
+import "expo-dev-client";
 import * as SQLite from "expo-sqlite";
 
 import { registerRootComponent } from "expo";
