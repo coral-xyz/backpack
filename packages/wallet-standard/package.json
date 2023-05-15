@@ -26,16 +26,16 @@
         "bs58": "^4.0.1"
     },
     "devDependencies": {
-        "@solana/wallet-standard-features": "^1.0.0",
+        "@solana/wallet-standard-features": "^1.0.1",
         "@types/bs58": "^4.0.1",
         "@types/node": "^18.6.4",
         "@typescript-eslint/eslint-plugin": "^5.32.0",
         "@typescript-eslint/parser": "^5.32.0",
-        "@wallet-standard/base": "^1.0.0",
-        "@wallet-standard/features": "^1.0.0",
+        "@wallet-standard/base": "^1.0.1",
+        "@wallet-standard/features": "^1.0.3",
         "eslint": "8.22.0",
         "eslint-config-prettier": "^8.5.0",
-        "eslint-plugin-require-extensions": "^0.1.1",
+        "eslint-plugin-require-extensions": "^0.1.3",
         "prettier": "^2.7.1",
         "shx": "^0.3.4",
         "typescript": "~4.9.3"

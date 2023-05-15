@@ -1,4 +1,5 @@
-import { SystemProgram } from "@solana/web3.js";
+import { getATAAddressesSync } from "@saberhq/token-utils";
+import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { ethers } from "ethers";
 
 import type { CoinGeckoPriceData } from "../clients/coingecko";
@@ -219,6 +220,15 @@ export class Solana implements Blockchain {
       }
     }
 
+    // Create a map of associated token account addresses
+    const atas = getATAAddressesSync({
+      mints: metadatas.reduce<Record<string, PublicKey>>((acc, curr) => {
+        acc[curr.account] = new PublicKey(curr.account);
+        return acc;
+      }, {}),
+      owner: new PublicKey(address),
+    });
+
     // Map all NFT metadatas into their return type with possible collection data
     const nodes: Nft[] = metadatas.map((m) => {
       const collection = this._parseCollectionMetadata(
@@ -259,6 +269,7 @@ export class Solana implements Blockchain {
         listing,
         name: m.onChainMetadata?.metadata.data.name ?? "",
         owner: address,
+        token: atas.accounts[m.account].address.toBase58(),
       };
     });
 

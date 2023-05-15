@@ -211,6 +211,7 @@ type Nft implements Node {
   listing: Listing @cacheControl(maxAge: 60)
   name: String!
   owner: String!
+  token: String!
 }
 
 """

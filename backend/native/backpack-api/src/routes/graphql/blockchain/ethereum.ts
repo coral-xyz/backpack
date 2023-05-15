@@ -157,6 +157,7 @@ export class Ethereum implements Blockchain {
         image: curr.rawMetadata?.image,
         name: curr.title,
         owner: address,
+        token: curr.tokenId,
       };
       return [...acc, n];
     }, []);
