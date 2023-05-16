@@ -96,7 +96,7 @@ export function ListScreen({
 
   const [openListDrawer, setOpenListDrawer] = useState(false);
   const [tensorTx, setTensorTx] = useState("");
-  const [listingAmt, setListingAmt] = useState(initialListingAmtStr);
+  const [listingAmt, setListingAmt] = useState(initialListingAmtStr); //todo make sure string aren't allowed
   const [cardType, setCardType] = useState("confirm");
 
   //doing the listing
@@ -445,7 +445,7 @@ const SendingNft = ({
   const connectionUrl = useBlockchainConnectionUrl(Blockchain.SOLANA); //listing on tensor
 
   //check whether the token is listed and the price is being updated for this
-  const isListed = false; // ! UPDATE WITH REAL VALUES
+  const isListed = token.listPrice > 0 ? true : false;
 
   return (
     <div style={{ height: "450px" }}>
@@ -459,13 +459,15 @@ const SendingNft = ({
           textAlign: "center",
         }}
       >
-        {!isComplete && isListed
+        {isComplete && isListed
+          ? "Updated!"
+          : !isComplete && isListed
           ? "Updating Listing"
           : isComplete && !isListed
+          ? "Listed on Tensor"
+          : !isComplete && !isListed
           ? "Listing on Tensor..."
-          : isComplete && isListed
-          ? "Updated!"
-          : "Listed on Tensor"}
+          : ""}
       </Typography>
       <TokenAmountHeader
         style={{
