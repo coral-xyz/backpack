@@ -115,7 +115,7 @@ export class Ethereum implements Blockchain {
 
     return {
       id: `${this.id()}_balances:${address}`,
-      aggregate: calculateBalanceAggregate([nativeData, ...nodes]),
+      aggregate: calculateBalanceAggregate(address, [nativeData, ...nodes]),
       native: nativeData,
       tokens: createConnection(nodes, false, false),
     };

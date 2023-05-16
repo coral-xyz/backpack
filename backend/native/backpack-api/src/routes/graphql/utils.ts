@@ -1,10 +1,5 @@
-import type {
-  type BalanceAggregate,
-  type Node,
-  type PageInfo,
-  TokenBalance} from "./types";
-import {
-  ChainId} from "./types";
+import type { BalanceAggregate, Node, PageInfo, TokenBalance } from "./types";
+import { ChainId } from "./types";
 
 export type Edge<T extends Node> = {
   cursor: string;
@@ -20,10 +15,12 @@ export type Connection<T extends Node> = {
  * Calculate the aggregate value and changes of market data for the argued
  * list of token balance objects.
  * @export
+ * @param {string} owner
  * @param {TokenBalance[]} balances
  * @returns {BalanceAggregate}
  */
 export function calculateBalanceAggregate(
+  owner: string,
   balances: TokenBalance[]
 ): BalanceAggregate {
   const totalValue = balances.reduce(
@@ -37,6 +34,7 @@ export function calculateBalanceAggregate(
   );
 
   return {
+    id: `balance_aggregate:${owner}`,
     percentChange: (totalValueChange / (totalValue - totalValueChange)) * 100,
     value: totalValue,
     valueChange: totalValueChange,
