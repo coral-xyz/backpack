@@ -7,14 +7,16 @@ import {
   FlatList,
 } from "react-native";
 
+import { Image } from "expo-image";
 import * as Linking from "expo-linking";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
-import { Image, XStack, StyledText } from "@coral-xyz/tamagui";
+import { XStack, StyledText } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ErrorBoundary } from "react-error-boundary";
 
+import { ItemSeparator } from "~components/ListItem";
 import { EmptyState, Screen, RoundedContainerGroup } from "~components/index";
 import {
   convertNftDataToFlatlist,
@@ -46,19 +48,20 @@ function ImageBox({ images }: { images: string[] }): JSX.Element {
         flexWrap: "wrap",
         gap: 8,
         padding: 8,
-        backgroundColor: "orange",
+        alignItems: "center",
+        backgroundColor: "#eee",
+        justifyContent: "space-evenly",
       }}
     >
       {images.map((uri: string) => {
         return (
           <Image
             key={uri}
-            source={{ uri }}
+            source={uri}
             style={{
               borderRadius: 8,
-              width: "45%",
-              height: 70,
-              backgroundColor: "black",
+              width: 64,
+              height: 64,
             }}
           />
         );
@@ -71,7 +74,7 @@ function CollectionImage({ images }: { images: string[] }): JSX.Element {
   if (images.length === 1) {
     return (
       <Image
-        source={{ uri: images[0] }}
+        source={images[0]}
         style={{ borderRadius: 12, aspectRatio: 1, height: 164, padding: 12 }}
       />
     );
@@ -88,10 +91,7 @@ function ListItem({
   handlePress: (item: ListItemProps) => void;
 }): JSX.Element {
   return (
-    <Pressable
-      style={{ flex: 1, marginBottom: 12, borderRadius: 16 }}
-      onPress={() => handlePress(item)}
-    >
+    <Pressable style={{ flex: 1 }} onPress={() => handlePress(item)}>
       <CollectionImage images={item.images} />
       <XStack mt={8}>
         <StyledText
@@ -225,6 +225,7 @@ function Container({ navigation }: any): JSX.Element {
         <FlatList
           data={rows}
           numColumns={numColumns}
+          ItemSeparatorComponent={ItemSeparator}
           ListEmptyComponent={NoNFTsEmptyState}
           keyExtractor={keyExtractor}
           renderItem={renderItem}

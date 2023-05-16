@@ -40,6 +40,9 @@ export const SectionHeader = ({ title }: { title: string }): JSX.Element => (
   <StyledText>{title}</StyledText>
 );
 
+// FlatList items like the collection list
+export const ItemSeparator = () => <View style={{ height: 8 }} />;
+// Sectioned list items like Recent activity
 export const SectionSeparator = () => <View style={{ height: 12 }} />;
 
 // TODO(peter) something about padding looks weird

@@ -1,5 +1,7 @@
-import { Suspense, useCallback, useMemo } from "react";
-import { FlatList, Pressable, Text, Image } from "react-native";
+import { Suspense, useCallback } from "react";
+import { FlatList, Pressable, Text } from "react-native";
+
+import { Image } from "expo-image";
 
 import { useFragment_experimental } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
