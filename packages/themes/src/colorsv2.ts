@@ -4,7 +4,7 @@ import color from "color";
 // Hover can be 0.8 opacity if complex component
 
 // Brand Colors
-export const brandWhite = "#ffffff";
+export const baseWhite = "#ffffff";
 export const brandBackpackLogoRed = "#e33e3f";
 export const brandPixelBlurple = "#6360ff";
 export const brandPixelLavender = "#c061f7";
@@ -71,7 +71,7 @@ export const lightBaseBorderLight = base100; // default border color
 // Light Mode Buttons
 export const lightButtonPrimaryBackground = base900;
 export const lightButtonPrimaryText = base50;
-export const lightButtonSecondaryBackground = brandWhite;
+export const lightButtonSecondaryBackground = baseWhite;
 export const lightButtonSecondaryText = base900;
 
 // Light Mode Success
@@ -111,11 +111,11 @@ export const darkBaseBackgroundL0 = base900; // dark container background
 export const darkBaseBackgroundL1 = base800; // dark content background
 
 // Dark Mode Borders
-export const darkBaseBorderLight = color(brandWhite).alpha(0.1);
-// export const darkBaseBorderMed = color(brandWhite).alpha(0.25); idk if we need this
+export const darkBaseBorderLight = color(baseWhite).alpha(0.1);
+// export const darkBaseBorderMed = color(baseWhite).alpha(0.25); idk if we need this
 
 // Dark Mode Buttons
-export const darkButtonPrimaryBackground = brandWhite;
+export const darkButtonPrimaryBackground = baseWhite;
 export const darkButtonPrimaryText = base900;
 export const darkButtonSecondaryBackground = base800;
 export const darkButtonSecondaryText = base50;
