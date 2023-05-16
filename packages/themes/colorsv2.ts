@@ -79,7 +79,7 @@ export const lightGreenText = green700;
 export const lightGreenIcon = green600;
 export const lightGreenBorder = color(green600).alpha(0.4);
 export const lightGreenBackgroundSolid = green100;
-export const lightGreenBackgroundTransparent = color(green600).alpha(0.12);
+export const lightGreenBackgroundTransparent = color(green500).alpha(0.12);
 
 // Light Mode Warning
 export const lightYellowText = yellow700;
@@ -92,7 +92,7 @@ export const lightRedText = red700;
 export const lightRedIcon = red600;
 export const lightRedBorder = color(red700).alpha(0.5);
 export const lightRedBackgroundSolid = red100;
-export const lightRedBackgroundTransparent = color(red600).alpha(0.12);
+export const lightRedBackgroundTransparent = color(red500).alpha(0.12);
 
 // Dark Mode //////////////////////////////////////////////////////
 // Dark Mode Text
