@@ -1,7 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
-  Alert,
-  DevSettings,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -9,11 +7,8 @@ import {
   Keyboard,
 } from "react-native";
 
-import { deleteItemAsync } from "expo-secure-store";
-
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -29,50 +24,6 @@ import {
   Screen,
   WelcomeLogoHeader,
 } from "~components/index";
-import { useTheme } from "~hooks/useTheme";
-import { IconPushDetail } from "~screens/Unlocked/Settings/components/SettingsRow";
-
-const maybeResetApp = () => {
-  Alert.alert(
-    "Are your sure?",
-    "This will wipe all data that's been stored in the app",
-    [
-      {
-        text: "Yes",
-        onPress: () => {
-          doReset(true);
-        },
-      },
-      {
-        text: "No",
-        onPress: () => {},
-      },
-    ]
-  );
-};
-
-const doReset = async (shouldReset: boolean) => {
-  if (!shouldReset) {
-    return;
-  }
-  // TODO: don't manually specify this list of keys
-  const stores = [
-    "keyring-store",
-    "keyname-store",
-    "wallet-data",
-    "nav-store7",
-  ];
-  for (const store of stores) {
-    try {
-      await deleteItemAsync(store);
-    } catch (err) {
-      console.error(err);
-      // ignore
-    }
-  }
-
-  DevSettings.reload();
-};
 
 interface FormData {
   password: string;
@@ -81,7 +32,6 @@ interface FormData {
 export function LockedScreen(): JSX.Element {
   const background = useBackgroundClient();
   const user = useUser(); // TODO look into why this breaks
-  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
@@ -107,23 +57,6 @@ export function LockedScreen(): JSX.Element {
   //
   //   f();
   // });
-
-  const extraOptions = [
-    {
-      icon: (
-        <MaterialIcons
-          name="people"
-          size={24}
-          color={theme.custom.colors.secondary}
-        />
-      ),
-      label: "Reset Backpack",
-      detailIcon: <IconPushDetail />,
-      onPress: () => {
-        maybeResetApp();
-      },
-    },
-  ];
 
   return (
     <>
@@ -170,7 +103,7 @@ export function LockedScreen(): JSX.Element {
         </Screen>
       </KeyboardAvoidingView>
       <BottomSheetHelpModal
-        extraOptions={extraOptions}
+        showResetButton
         isVisible={isModalVisible}
         resetVisibility={() => {
           setIsModalVisible(() => false);

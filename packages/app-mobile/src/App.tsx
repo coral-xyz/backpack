@@ -134,14 +134,10 @@ function BackgroundHiddenWebView(): JSX.Element {
     <View style={styles.webview}>
       <WebView
         ref={ref}
-        // useWebView2
-        // originWhitelist={["*", "https://*", "https://backpack-api.xnfts.dev/*"]}
         cacheMode="LOAD_CACHE_ELSE_NETWORK"
         cacheEnabled
         limitsNavigationsToAppBoundDomains
-        source={{
-          uri: webviewUrl,
-        }}
+        source={{ uri: webviewUrl }}
         onError={(error) => console.log("WebView error:", error)}
         onHttpError={(error) => console.log("WebView HTTP error:", error)}
         onMessage={(event) => {

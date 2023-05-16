@@ -2,7 +2,6 @@ import { Blockchain } from "@coral-xyz/common";
 
 import Images from "../Images";
 
-export { useIsONELive } from "./useIsONELive";
 export { useTheme } from "./useTheme";
 
 // TODO(peter) consolidate between extension/mobile-app or just live on S3

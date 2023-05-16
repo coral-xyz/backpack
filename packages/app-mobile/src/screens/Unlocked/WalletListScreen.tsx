@@ -1,8 +1,7 @@
 import type { Wallet, PublicKey } from "@@types/types";
 
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import {
-  Alert,
   FlatList,
   Image,
   Pressable,
@@ -12,7 +11,6 @@ import {
 } from "react-native";
 
 import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
-import { ListItem, XStack, ListItem2 } from "@coral-xyz/tamagui";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HardwareIcon, ImportedIcon, MnemonicIcon } from "~components/Icon";
@@ -26,7 +24,8 @@ import {
   Screen,
   StyledText,
 } from "~components/index";
-import { getBlockchainLogo, useTheme } from "~hooks/index";
+import { getBlockchainLogo } from "~hooks/index";
+import { useTheme } from "~hooks/useTheme";
 import { useWallets } from "~hooks/wallets";
 
 // function MainWalletListItem({
