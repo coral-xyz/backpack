@@ -124,11 +124,11 @@ export async function customSplTokenAccounts(
     fetchTokens(publicKey, tokenInterface.withProgramId(TOKEN_PROGRAM_ID)),
     fetchTokens(publicKey, tokenInterface.withProgramId(TOKEN_2022_PROGRAM_ID)),
   ]);
-  const chain = function* (...iters) {
+  const chainIter = function* (...iters) {
     for (let it of iters) yield* it;
   };
   const tokenAccountsArray = Array.from(
-    chain(tokenAccounts.values(), token2022Accounts.values())
+    chainIter(tokenAccounts.values(), token2022Accounts.values())
   );
 
   //
