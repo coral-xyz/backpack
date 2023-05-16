@@ -30,7 +30,6 @@ import {
   TWITTER_LINK,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
-  UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
 import {
@@ -912,21 +911,6 @@ function CreateAccountLoadingScreen(
 
   useEffect(() => {
     (async () => {
-      // This is a mitigation to ensure the keyring store doesn't lock before
-      // creating the user on the server.
-      //
-      // Would be better (though probably not a priority atm) to ensure atomicity.
-      // E.g. we could generate the UUID here on the client, create the keyring store,
-      // and only then create the user on the server. If the server fails, then
-      // rollback on the client.
-      //
-      // An improvement for the future!
-      if (onboardingData.isAddingAccount) {
-        await background.request({
-          method: UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
-          params: [],
-        });
-      }
       const res = await maybeCreateUser({
         ...onboardingData,
         keyringType: "mnemonic",
