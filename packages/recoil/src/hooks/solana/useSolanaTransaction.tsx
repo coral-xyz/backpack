@@ -71,6 +71,7 @@ export function useSolanaTransaction({
         txSig = await Solana.transferProgrammableNft(solanaCtx, {
           destination: new PublicKey(destinationAddress),
           mint: new PublicKey(token.mint!),
+          programId: new PublicKey(token.programId!),
           amount: amount.toNumber(),
           decimals: token.decimals,
           source: new PublicKey(token.address),
@@ -90,6 +91,7 @@ export function useSolanaTransaction({
               destination: new PublicKey(destinationAddress),
               amount: amount.toNumber(),
               mint: new PublicKey(token.mint!),
+              programId: new PublicKey(token.programId!),
             },
             ocpMintState
           );
@@ -97,6 +99,7 @@ export function useSolanaTransaction({
           txSig = await Solana.transferCreatorStandardToken(solanaCtx, {
             destination: new PublicKey(destinationAddress),
             mint: new PublicKey(token.mint!),
+            programId: new PublicKey(token.programId!),
             amount: amount.toNumber(),
             decimals: token.decimals,
           });
@@ -106,6 +109,7 @@ export function useSolanaTransaction({
           txSig = await Solana.transferCardinalManagedToken(solanaCtx, {
             destination: new PublicKey(destinationAddress),
             mint: new PublicKey(token.mint!),
+            programId: new PublicKey(token.programId!),
             amount: amount.toNumber(),
             decimals: token.decimals,
           });
@@ -113,6 +117,7 @@ export function useSolanaTransaction({
           txSig = await Solana.transferToken(solanaCtx, {
             destination: new PublicKey(destinationAddress),
             mint: new PublicKey(token.mint!),
+            programId: new PublicKey(token.programId!),
             amount: amount.toNumber(),
             decimals: token.decimals,
           });

@@ -95,7 +95,7 @@ export class Solana {
     ctx: SolanaContext,
     req: BurnNftRequest
   ): Promise<string> {
-    const { solDestination, mint } = req;
+    const { solDestination, mint, programId } = req;
     const { walletPublicKey, tokenInterface, commitment } = ctx;
 
     const provider = tokenInterface.provider;
@@ -104,7 +104,7 @@ export class Solana {
     const tx = new Transaction();
     tx.add(
       await tokenInterface
-        .withProgramId(TOKEN_PROGRAM_ID)
+        .withProgramId(programId)
         .methods.burn(new BN(req.amount ?? 1))
         .accounts({
           source: associatedToken,
@@ -115,7 +115,7 @@ export class Solana {
     );
     tx.add(
       await tokenInterface
-        .withProgramId(TOKEN_PROGRAM_ID)
+        .withProgramId(programId)
         .methods.closeAccount()
         .accounts({
           account: associatedToken,
@@ -142,7 +142,7 @@ export class Solana {
     req: TransferTokenRequest
   ): Promise<string> {
     const { walletPublicKey, registry, tokenInterface, commitment } = ctx;
-    const { mint, destination, amount } = req;
+    const { mint, programId, destination, amount } = req;
 
     const decimals = (() => {
       if (req.decimals !== undefined) {
@@ -199,7 +199,7 @@ export class Solana {
     }
 
     const tx = await tokenInterface
-      .withProgramId(TOKEN_PROGRAM_ID)
+      .withProgramId(programId)
       .methods.transferChecked(nativeAmount, decimals)
       .accounts({
         source: sourceAta,
@@ -228,7 +228,7 @@ export class Solana {
     req: TransferTokenRequest
   ): Promise<string> {
     const { walletPublicKey, tokenInterface, commitment } = ctx;
-    const { mint, destination } = req;
+    const { mint, programId, destination } = req;
 
     const destinationAta = associatedTokenAddress(mint, destination);
     const sourceAta = associatedTokenAddress(mint, walletPublicKey);
@@ -409,7 +409,7 @@ export class Solana {
     req: TransferTokenRequest
   ): Promise<string> {
     const { walletPublicKey, tokenInterface, commitment } = solanaCtx;
-    const { amount, mint, destination: destinationOwner } = req;
+    const { amount, mint, programId, destination: destinationOwner } = req;
 
     const source = req.source ?? associatedTokenAddress(mint, walletPublicKey);
     const destinationAta = associatedTokenAddress(mint, destinationOwner);
@@ -740,6 +740,7 @@ export type TransferTokenRequest = {
   // SOL address.
   destination: PublicKey;
   mint: PublicKey;
+  programId: PublicKey;
   amount: number;
   decimals?: number;
   // Source token addess. If not provided, an ATA will
@@ -774,5 +775,6 @@ export type DeleteInstallRequest = {
 export type BurnNftRequest = {
   solDestination: PublicKey;
   mint: PublicKey;
+  programId: PublicKey;
   amount?: number;
 };

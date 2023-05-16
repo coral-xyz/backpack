@@ -598,6 +598,7 @@ function BurnConfirmationCard({
       const _signature = await Solana.burnAndCloseNft(solanaCtx, {
         solDestination: solanaCtx.walletPublicKey,
         mint: new PublicKey(nft.mint.toString()),
+        programId: new PublicKey(nft.programId.toString()),
         amount,
       });
       setSignature(_signature);

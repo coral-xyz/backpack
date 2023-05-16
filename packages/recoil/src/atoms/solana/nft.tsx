@@ -1,7 +1,7 @@
 import type {
   Nft,
   NftCollection,
-  SolanaTokenAccountWithKeyString,
+  SolanaTokenAccountWithKeyAndProgramIdString,
   TokenMetadataString,
 } from "@coral-xyz/common";
 import {
@@ -266,7 +266,7 @@ type MetadataMap = {
   metadata: {
     [metadataPublicKey: string]: {
       metadataPublicKey: string;
-      nftToken: SolanaTokenAccountWithKeyString;
+      nftToken: SolanaTokenAccountWithKeyAndProgramIdString;
       nftTokenMetadata: TokenMetadataString | null;
     };
   };
