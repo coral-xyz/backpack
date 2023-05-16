@@ -4182,6 +4182,7 @@ __metadata:
     "@mui/material": ^5.8.4
     "@mui/styles": ^5.8.4
     "@mui/system": ^5.8.4
+    color: ^4.2.3
     eslint-config-custom: "*"
     react: 18.2.0
     typescript: ~4.9.3
