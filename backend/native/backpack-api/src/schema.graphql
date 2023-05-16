@@ -195,7 +195,12 @@ type Balances implements Node {
 """
 The aggregate market balance data for all balances in a wallet.
 """
-type BalanceAggregate {
+type BalanceAggregate implements Node {
+  """
+  Globally unique identifier for the balance aggregate.
+  """
+  id: ID!
+
   """
   The aggregate percentage of change.
   """

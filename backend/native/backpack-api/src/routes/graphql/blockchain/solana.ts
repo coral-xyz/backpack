@@ -147,7 +147,10 @@ export class Solana implements Blockchain {
 
     return {
       id: `${this.id()}_balances:${address}`,
-      aggregate: calculateBalanceAggregate([nativeData, ...splTokenNodes]),
+      aggregate: calculateBalanceAggregate(address, [
+        nativeData,
+        ...splTokenNodes,
+      ]),
       native: nativeData,
       tokens: createConnection(splTokenNodes, false, false),
     };

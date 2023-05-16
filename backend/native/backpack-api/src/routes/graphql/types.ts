@@ -29,8 +29,10 @@ export type Scalars = {
 };
 
 /** The aggregate market balance data for all balances in a wallet. */
-export type BalanceAggregate = {
+export type BalanceAggregate = Node & {
   __typename?: "BalanceAggregate";
+  /** Globally unique identifier for the balance aggregate. */
+  id: Scalars["ID"];
   /** The aggregate percentage of change. */
   percentChange: Scalars["Float"];
   /** The aggregate USD value of all balance holdings. */
@@ -610,6 +612,7 @@ export type ResolversTypes = ResolversObject<{
   NftEdge: ResolverTypeWrapper<NftEdge>;
   NftFiltersInput: NftFiltersInput;
   Node:
+    | ResolversTypes["BalanceAggregate"]
     | ResolversTypes["Balances"]
     | ResolversTypes["Collection"]
     | ResolversTypes["Friend"]
@@ -664,6 +667,7 @@ export type ResolversParentTypes = ResolversObject<{
   NftEdge: NftEdge;
   NftFiltersInput: NftFiltersInput;
   Node:
+    | ResolversParentTypes["BalanceAggregate"]
     | ResolversParentTypes["Balances"]
     | ResolversParentTypes["Collection"]
     | ResolversParentTypes["Friend"]
@@ -713,6 +717,7 @@ export type BalanceAggregateResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["BalanceAggregate"] = ResolversParentTypes["BalanceAggregate"]
 > = ResolversObject<{
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   percentChange?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   value?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   valueChange?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
@@ -909,6 +914,7 @@ export type NodeResolvers<
   ParentType extends ResolversParentTypes["Node"] = ResolversParentTypes["Node"]
 > = ResolversObject<{
   __resolveType: TypeResolveFn<
+    | "BalanceAggregate"
     | "Balances"
     | "Collection"
     | "Friend"
