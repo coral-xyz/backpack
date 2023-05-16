@@ -1,4 +1,10 @@
-import { ChainId, type Node, type PageInfo } from "./types";
+import type {
+  type BalanceAggregate,
+  type Node,
+  type PageInfo,
+  TokenBalance} from "./types";
+import {
+  ChainId} from "./types";
 
 export type Edge<T extends Node> = {
   cursor: string;
@@ -9,6 +15,48 @@ export type Connection<T extends Node> = {
   edges: Edge<T>[];
   pageInfo: PageInfo;
 };
+
+/**
+ * Calculate the aggregate value and changes of market data for the argued
+ * list of token balance objects.
+ * @export
+ * @param {TokenBalance[]} balances
+ * @returns {BalanceAggregate}
+ */
+export function calculateBalanceAggregate(
+  balances: TokenBalance[]
+): BalanceAggregate {
+  const totalValue = balances.reduce(
+    (acc, curr) => (curr.marketData ? acc + curr.marketData.value : acc),
+    0
+  );
+
+  const totalValueChange = balances.reduce(
+    (acc, curr) => (curr.marketData ? acc + curr.marketData.valueChange : acc),
+    0
+  );
+
+  return {
+    percentChange: (totalValueChange / (totalValue - totalValueChange)) * 100,
+    value: totalValue,
+    valueChange: totalValueChange,
+  };
+}
+
+/**
+ * Calculates percent change from coingecko data
+ * @export
+ * @param {number} percentChange
+ * @param {number} price
+ * @returns {number}
+ */
+export function calculateUsdChange(
+  percentChange: number,
+  price: number
+): number {
+  const usdChange = (percentChange / 100) * price;
+  return Number(usdChange.toFixed(2));
+}
 
 /**
  * Generate a Relay connection from a list of node objects.

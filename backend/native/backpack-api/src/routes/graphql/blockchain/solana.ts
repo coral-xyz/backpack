@@ -20,9 +20,13 @@ import {
   type Transaction,
   type TransactionConnection,
 } from "../types";
-import { createConnection } from "../utils";
+import {
+  calculateBalanceAggregate,
+  calculateUsdChange,
+  createConnection,
+} from "../utils";
 
-import { type Blockchain, calculateUsdChange } from ".";
+import type { Blockchain } from ".";
 
 /**
  * Solana blockchain implementation for the common API.
@@ -91,6 +95,14 @@ export class Solana implements Blockchain {
               this.nativeDecimals()
             )
           ) * prices.solana.usd,
+        valueChange:
+          parseFloat(
+            ethers.utils.formatUnits(
+              balances.nativeBalance,
+              this.nativeDecimals()
+            )
+          ) *
+          calculateUsdChange(prices.solana.usd_24h_change, prices.solana.usd),
       },
       mint: SystemProgram.programId.toBase58(),
     };
@@ -104,19 +116,21 @@ export class Solana implements Blockchain {
         p && meta
           ? {
               id: this.#ctx.dataSources.coinGecko.id(meta.id),
-              percentChange: parseFloat(
-                prices.solana.usd_24h_change.toFixed(2)
-              ),
-              usdChange: calculateUsdChange(
-                prices.solana.usd_24h_change,
-                prices.solana.usd
-              ),
+              percentChange: parseFloat(p.usd_24h_change.toFixed(2)),
+              usdChange: calculateUsdChange(p.usd_24h_change, p.usd),
               lastUpdatedAt: p.last_updated_at,
               logo: meta.logo,
               price: p.usd,
               value:
                 parseFloat(ethers.utils.formatUnits(t.amount, t.decimals)) *
                 p.usd,
+              valueChange:
+                parseFloat(
+                  ethers.utils.formatUnits(
+                    balances.nativeBalance,
+                    this.nativeDecimals()
+                  )
+                ) * calculateUsdChange(p.usd_24h_change, p.usd),
             }
           : null;
 
@@ -131,15 +145,9 @@ export class Solana implements Blockchain {
       };
     });
 
-    // Calculate SPL token price value sum
-    const splTokenValueSum = splTokenNodes.reduce(
-      (acc, curr) => (curr.marketData ? acc + curr.marketData.value : acc),
-      0
-    );
-
     return {
       id: `${this.id()}_balances:${address}`,
-      aggregateValue: nativeData.marketData!.value + splTokenValueSum,
+      aggregate: calculateBalanceAggregate([nativeData, ...splTokenNodes]),
       native: nativeData,
       tokens: createConnection(splTokenNodes, false, false),
     };
