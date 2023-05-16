@@ -529,6 +529,55 @@ export type NftCollectionFragment = {
   verified: boolean;
 };
 
+export type GetRecentTransactionsForWalletQueryVariables = Exact<{
+  chainId: ChainId;
+  address: Scalars["String"];
+}>;
+
+export type GetRecentTransactionsForWalletQuery = {
+  __typename?: "Query";
+  wallet?: {
+    __typename?: "Wallet";
+    id: string;
+    transactions?: {
+      __typename?: "TransactionConnection";
+      edges?: Array<{
+        __typename?: "TransactionEdge";
+        node?: {
+          __typename?: "Transaction";
+          id: string;
+          description?: string | null;
+          block: number;
+          fee?: number | null;
+          feePayer?: string | null;
+          hash: string;
+          source?: string | null;
+          timestamp?: string | null;
+          type: string;
+        } | null;
+      } | null> | null;
+    } | null;
+  } | null;
+};
+
+export type GetWalletAggregateQueryVariables = Exact<{
+  chainId: ChainId;
+  address: Scalars["String"];
+}>;
+
+export type GetWalletAggregateQuery = {
+  __typename?: "Query";
+  wallet?: {
+    __typename?: "Wallet";
+    id: string;
+    balances?: {
+      __typename?: "Balances";
+      id: string;
+      aggregateValue: number;
+    } | null;
+  } | null;
+};
+
 export const NftCollectionFragmentDoc = gql`
   fragment NftCollection on Collection {
     id
@@ -573,4 +622,45 @@ export const GetNftsForWalletDocument = gql`
 export type GetNftsForWalletQueryResult = Apollo.QueryResult<
   GetNftsForWalletQuery,
   GetNftsForWalletQueryVariables
+>;
+export const GetRecentTransactionsForWalletDocument = gql`
+  query GetRecentTransactionsForWallet($chainId: ChainID!, $address: String!) {
+    wallet(chainId: $chainId, address: $address) {
+      id
+      transactions {
+        edges {
+          node {
+            id
+            description
+            block
+            fee
+            feePayer
+            hash
+            source
+            timestamp
+            type
+          }
+        }
+      }
+    }
+  }
+`;
+export type GetRecentTransactionsForWalletQueryResult = Apollo.QueryResult<
+  GetRecentTransactionsForWalletQuery,
+  GetRecentTransactionsForWalletQueryVariables
+>;
+export const GetWalletAggregateDocument = gql`
+  query GetWalletAggregate($chainId: ChainID!, $address: String!) {
+    wallet(chainId: $chainId, address: $address) {
+      id
+      balances {
+        id
+        aggregateValue
+      }
+    }
+  }
+`;
+export type GetWalletAggregateQueryResult = Apollo.QueryResult<
+  GetWalletAggregateQuery,
+  GetWalletAggregateQueryVariables
 >;
