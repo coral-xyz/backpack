@@ -3660,9 +3660,10 @@ __metadata:
     expo-dev-client: ~2.2.1
     expo-device: ~5.2.1
     expo-font: ~11.1.1
-    expo-image: ~1.0.0
+    expo-image: ~1.2.3
     expo-linear-gradient: ~12.1.2
     expo-linking: ~4.0.1
+    expo-local-authentication: ~13.3.0
     expo-random: ~13.1.1
     expo-secure-store: ~12.1.1
     expo-splash-screen: ~0.18.2
@@ -23287,12 +23288,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-image@npm:~1.0.0":
-  version: 1.0.0
-  resolution: "expo-image@npm:1.0.0"
+"expo-image@npm:~1.2.3":
+  version: 1.2.3
+  resolution: "expo-image@npm:1.2.3"
   peerDependencies:
     expo: "*"
-  checksum: 203e8b3e2528f40855be9c1f7cb038ae1b84f05770424cecc7bd39ec785aca2879e7ea80b70d5550dd9470f62da7a1560fab592efaec3189c6646765e311905d
+  checksum: 458a2d581da21c6196efe2395e30473e0af50c86f76b72c7d49a55fe8bfc7fde10c1b3012b21dc860ee09ba302ba65aff9eb8e771040f22d4f2063c0425a89d9
   languageName: node
   linkType: hard
 
@@ -23331,6 +23332,17 @@ __metadata:
     qs: ^6.11.0
     url-parse: ^1.5.9
   checksum: 631656c9cad78c345b35b7decd8c2bc22014b867321fcbb0c740b15001a492080ee3be26d27a89587eb2736223c82a39c600950930cf44b6dd95d37acb7e1527
+  languageName: node
+  linkType: hard
+
+"expo-local-authentication@npm:~13.3.0":
+  version: 13.3.0
+  resolution: "expo-local-authentication@npm:13.3.0"
+  dependencies:
+    invariant: ^2.2.4
+  peerDependencies:
+    expo: "*"
+  checksum: 5526dbb211b25d0e50700658d2afb55c564c47136096bf8835f891f1e97b79c3a9e30cef41f988b4ca163be6d7b16515331baecc7e54d928186566bb40660b41
   languageName: node
   linkType: hard
 

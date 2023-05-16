@@ -4,31 +4,40 @@
     "version": "^3.12.0"
   },
   "build": {
-    "production": {
+    "monorepo": {
       "node": "18.15.0",
-      "autoIncrement": true,
-      "channel": "production",
-      "resourceClass": "large"
-    },
-    "development-simulator": {
-      "node": "18.15.0",
-      "developmentClient": true,
-      "distribution": "internal",
       "resourceClass": "large",
+      "ios": {
+        "image": "latest"
+      },
+      "android": {
+        "image": "latest"
+      },
       "env": {
         "APP_ENV": "production"
       },
+      "cache": {
+        "key": "turbo",
+        "paths": ["../../node_modules/.cache/turbo"]
+      }
+    },
+    "development-simulator": {
+      "extends": "monorepo",
+      "developmentClient": true,
+      "distribution": "internal",
       "ios": {
         "simulator": true
       }
     },
     "preview": {
-      "node": "18.15.0",
-      "distribution": "internal",
-      "resourceClass": "large",
-      "env": {
-        "APP_ENV": "production"
-      }
+      "extends": "monorepo",
+      "distribution": "internal"
+    },
+    "production": {
+      "extends": "monorepo",
+      "channel": "production",
+      "distribution": "store",
+      "autoIncrement": true
     }
   },
   "submit": {
