@@ -19,9 +19,13 @@ import {
   type Transaction,
   type TransactionConnection,
 } from "../types";
-import { createConnection } from "../utils";
+import {
+  calculateBalanceAggregate,
+  calculateUsdChange,
+  createConnection,
+} from "../utils";
 
-import { type Blockchain, calculateUsdChange } from ".";
+import type { Blockchain } from ".";
 
 /**
  * Ethereum blockchain implementation for the common API.
@@ -79,6 +83,12 @@ export class Ethereum implements Blockchain {
         value:
           parseFloat(ethers.utils.formatUnits(native, this.nativeDecimals())) *
           prices.ethereum.usd,
+        valueChange:
+          parseFloat(ethers.utils.formatUnits(native, this.nativeDecimals())) *
+          calculateUsdChange(
+            prices.ethereum.usd_24h_change,
+            prices.ethereum.usd
+          ),
       },
       mint: "0x0000000000000000000000000000000000000000",
     };
@@ -105,7 +115,7 @@ export class Ethereum implements Blockchain {
 
     return {
       id: `${this.id()}_balances:${address}`,
-      aggregateValue: nativeData.marketData!.value + nonNativeSum,
+      aggregate: calculateBalanceAggregate([nativeData, ...nodes]),
       native: nativeData,
       tokens: createConnection(nodes, false, false),
     };

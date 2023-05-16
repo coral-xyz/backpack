@@ -179,7 +179,7 @@ type Balances implements Node {
   """
   The numerical value representing the aggregated market value of all fungible assets in the wallet.
   """
-  aggregateValue: Float!
+  aggregate: BalanceAggregate!
 
   """
   Token account balance and market data for the blockchain's native currency.
@@ -190,6 +190,26 @@ type Balances implements Node {
   The Relay connection of token account balances and market data for non-native token types owned by the wallet.
   """
   tokens: TokenBalanceConnection @cacheControl(inheritMaxAge: true)
+}
+
+"""
+The aggregate market balance data for all balances in a wallet.
+"""
+type BalanceAggregate {
+  """
+  The aggregate percentage of change.
+  """
+  percentChange: Float!
+
+  """
+  The aggregate USD value of all balance holdings.
+  """
+  value: Float!
+
+  """
+  The aggregate change in USD value.
+  """
+  valueChange: Float!
 }
 
 """
@@ -340,6 +360,11 @@ type MarketData implements Node {
   The value of the wallet's currently holdings of the token in USD.
   """
   value: Float!
+
+  """
+  The value change in USD of the wallet's holdings of the token is USD.
+  """
+  valueChange: Float!
 }
 
 """

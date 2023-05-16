@@ -28,6 +28,17 @@ export type Scalars = {
   JSONObject: any;
 };
 
+/** The aggregate market balance data for all balances in a wallet. */
+export type BalanceAggregate = {
+  __typename?: "BalanceAggregate";
+  /** The aggregate percentage of change. */
+  percentChange: Scalars["Float"];
+  /** The aggregate USD value of all balance holdings. */
+  value: Scalars["Float"];
+  /** The aggregate change in USD value. */
+  valueChange: Scalars["Float"];
+};
+
 /**
  * Top-level type for providing wallet balance information.
  * Should provide details about native and non-native token balances with aggregation details.
@@ -35,7 +46,7 @@ export type Scalars = {
 export type Balances = Node & {
   __typename?: "Balances";
   /** The numerical value representing the aggregated market value of all fungible assets in the wallet. */
-  aggregateValue: Scalars["Float"];
+  aggregate: BalanceAggregate;
   /** Globally unique identifier for a wallet's balances data. */
   id: Scalars["ID"];
   /** Token account balance and market data for the blockchain's native currency. */
@@ -138,6 +149,8 @@ export type MarketData = Node & {
   usdChange: Scalars["Float"];
   /** The value of the wallet's currently holdings of the token in USD. */
   value: Scalars["Float"];
+  /** The value change in USD of the wallet's holdings of the token is USD. */
+  valueChange: Scalars["Float"];
 };
 
 /** Root level mutation type. */
@@ -574,6 +587,7 @@ export type DirectiveResolverFn<
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  BalanceAggregate: ResolverTypeWrapper<BalanceAggregate>;
   Balances: ResolverTypeWrapper<Balances>;
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]>;
   CacheControlScope: CacheControlScope;
@@ -630,6 +644,7 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
+  BalanceAggregate: BalanceAggregate;
   Balances: Balances;
   Boolean: Scalars["Boolean"];
   Collection: Collection;
@@ -694,11 +709,25 @@ export type CacheControlDirectiveResolver<
   Args = CacheControlDirectiveArgs
 > = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
+export type BalanceAggregateResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["BalanceAggregate"] = ResolversParentTypes["BalanceAggregate"]
+> = ResolversObject<{
+  percentChange?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  valueChange?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type BalancesResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Balances"] = ResolversParentTypes["Balances"]
 > = ResolversObject<{
-  aggregateValue?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  aggregate?: Resolver<
+    ResolversTypes["BalanceAggregate"],
+    ParentType,
+    ContextType
+  >;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   native?: Resolver<ResolversTypes["TokenBalance"], ParentType, ContextType>;
   tokens?: Resolver<
@@ -785,6 +814,7 @@ export type MarketDataResolvers<
   price?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   usdChange?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   value?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  valueChange?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1147,6 +1177,7 @@ export type WalletEdgeResolvers<
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  BalanceAggregate?: BalanceAggregateResolvers<ContextType>;
   Balances?: BalancesResolvers<ContextType>;
   Collection?: CollectionResolvers<ContextType>;
   Friend?: FriendResolvers<ContextType>;

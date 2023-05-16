@@ -42,18 +42,3 @@ export function getBlockchainForId(id: ChainId, ctx: ApiContext): Blockchain {
     }
   }
 }
-
-/**
- * Calculates percent change from coingecko data
- * @export
- * @param {number} percentChange
- * @param {number} price
- * @returns {number}
- */
-export function calculateUsdChange(
-  percentChange: number,
-  price: number
-): number {
-  const usdChange = (percentChange / 100) * price;
-  return Number(usdChange.toFixed(2));
-}

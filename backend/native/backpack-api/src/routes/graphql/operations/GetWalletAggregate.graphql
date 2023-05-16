@@ -3,7 +3,9 @@ query GetWalletAggregate($chainId: ChainID!, $address: String!) {
     id
     balances {
       id
-      aggregateValue
+      aggregate {
+        value
+      }
     }
   }
 }

@@ -22,6 +22,17 @@ export type Scalars = {
   JSONObject: any;
 };
 
+/** The aggregate market balance data for all balances in a wallet. */
+export type BalanceAggregate = {
+  __typename?: "BalanceAggregate";
+  /** The aggregate percentage of change. */
+  percentChange: Scalars["Float"];
+  /** The aggregate USD value of all balance holdings. */
+  value: Scalars["Float"];
+  /** The aggregate change in USD value. */
+  valueChange: Scalars["Float"];
+};
+
 /**
  * Top-level type for providing wallet balance information.
  * Should provide details about native and non-native token balances with aggregation details.
@@ -29,7 +40,7 @@ export type Scalars = {
 export type Balances = Node & {
   __typename?: "Balances";
   /** The numerical value representing the aggregated market value of all fungible assets in the wallet. */
-  aggregateValue: Scalars["Float"];
+  aggregate: BalanceAggregate;
   /** Globally unique identifier for a wallet's balances data. */
   id: Scalars["ID"];
   /** Token account balance and market data for the blockchain's native currency. */
@@ -132,6 +143,8 @@ export type MarketData = Node & {
   usdChange: Scalars["Float"];
   /** The value of the wallet's currently holdings of the token in USD. */
   value: Scalars["Float"];
+  /** The value change in USD of the wallet's holdings of the token is USD. */
+  valueChange: Scalars["Float"];
 };
 
 /** Root level mutation type. */
@@ -573,7 +586,7 @@ export type GetWalletAggregateQuery = {
     balances?: {
       __typename?: "Balances";
       id: string;
-      aggregateValue: number;
+      aggregate: { __typename?: "BalanceAggregate"; value: number };
     } | null;
   } | null;
 };
@@ -655,7 +668,9 @@ export const GetWalletAggregateDocument = gql`
       id
       balances {
         id
-        aggregateValue
+        aggregate {
+          value
+        }
       }
     }
   }
