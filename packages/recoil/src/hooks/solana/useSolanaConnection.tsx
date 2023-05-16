@@ -25,13 +25,13 @@ export function useAnchorContextLoadable(): Loadable<any> {
 
 export function useSolanaCtx(): SolanaContext {
   const { publicKey } = useActiveSolanaWallet();
-  const { tokenClient, provider } = useAnchorContext();
+  const { tokenInterface, provider } = useAnchorContext();
   const registry = useSplTokenRegistry();
   const commitment = useSolanaCommitment();
   const backgroundClient = useBackgroundClient();
   return {
     walletPublicKey: new PublicKey(publicKey),
-    tokenClient,
+    tokenInterface,
     registry,
     commitment,
     backgroundClient,

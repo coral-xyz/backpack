@@ -25,6 +25,9 @@ import type {
 export const TOKEN_PROGRAM_ID = new PublicKey(
   "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
 );
+export const TOKEN_2022_PROGRAM_ID = new PublicKey(
+  "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+);
 export const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
   "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
 );
@@ -44,6 +47,50 @@ export const SOL_NATIVE_MINT = PublicKey.default.toString();
 
 const logger = getLogger("common/solana/programs/token");
 
+export class TokenInterface {
+  /**
+   * Wallet and network provider.
+   */
+  public get provider(): Provider {
+    return this._provider;
+  }
+  private _provider: Provider;
+
+  /**
+   * Utility function that must be used to access any inner token program. Creates
+   * new clients on the fly as needed, so that new token programs can be easily
+   * added without impacting performance.
+   */
+  public withProgramId(programId: PublicKey): Program<SplToken> {
+    const maybeFound = this._clients.get(programId);
+    if (maybeFound !== undefined) {
+      return maybeFound;
+    } else {
+      const newClient = new anchor.Program<SplToken>(
+        this._fallbackClient.idl,
+        programId,
+        this.provider,
+        this._fallbackClient.coder
+      );
+      this._clients.set(programId, newClient);
+      return newClient;
+    }
+  }
+  private _clients: Map<PublicKey, Program<SplToken>>;
+  private _fallbackClient: Program<SplToken>;
+
+  /**
+   * The constructor looks just like the normal `Spl.token` constructor for ease
+   * of use.
+   */
+  public constructor(provider: Provider) {
+    this._provider = provider;
+    const fallbackClient = Spl.token(provider);
+    this._clients = new Map([[TOKEN_PROGRAM_ID, fallbackClient]]);
+    this._fallbackClient = fallbackClient;
+  }
+}
+
 export function associatedTokenAddress(
   mint: PublicKey,
   wallet: PublicKey
@@ -60,12 +107,12 @@ export async function customSplTokenAccounts(
 ): Promise<CustomSplTokenAccountsResponse> {
   // @ts-ignore
   const provider = new AnchorProvider(connection, { publicKey });
-  const tokenClient = Spl.token(provider);
+  const tokenInterface = new TokenInterface(provider);
 
   //
   // Fetch all tokenAccounts.
   //
-  const [accountInfo, tokenAccounts] = await Promise.all([
+  const [accountInfo, tokenAccounts, token2022Accounts] = await Promise.all([
     //
     // Fetch native sol data.
     //
@@ -73,9 +120,15 @@ export async function customSplTokenAccounts(
     //
     // Fetch tokens.
     //
-    fetchTokens(publicKey, tokenClient),
+    fetchTokens(publicKey, tokenInterface.withProgramId(TOKEN_PROGRAM_ID)),
+    fetchTokens(publicKey, tokenInterface.withProgramId(TOKEN_2022_PROGRAM_ID)),
   ]);
-  const tokenAccountsArray = Array.from(tokenAccounts.values());
+  const chain = function* (...iters) {
+    for (let it of iters) yield* it;
+  };
+  const tokenAccountsArray = Array.from(
+    chain(tokenAccounts.values(), token2022Accounts.values())
+  );
 
   //
   // Fetch all mints.
@@ -84,7 +137,7 @@ export async function customSplTokenAccounts(
     fetchMints(provider, tokenAccountsArray).then((mint) =>
       mint.filter((m) => m[1] !== null)
     ),
-    fetchSplMetadata(tokenClient.provider, tokenAccountsArray),
+    fetchSplMetadata(tokenInterface.provider, tokenAccountsArray),
   ]);
 
   //

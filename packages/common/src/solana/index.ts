@@ -24,7 +24,6 @@ import {
   TokenRecord,
   TokenState,
 } from "@metaplex-foundation/mpl-token-metadata";
-import type { Program, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import {
   createAssociatedTokenAccountInstruction,
@@ -54,6 +53,7 @@ import type { BackgroundClient } from "../";
 import { TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS } from "../constants";
 
 import * as assertOwner from "./programs/assert-owner";
+import type { TokenInterface } from "./programs/token";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   associatedTokenAddress,
@@ -78,7 +78,7 @@ export * from "./wallet-adapter";
 
 export type SolanaContext = {
   walletPublicKey: PublicKey;
-  tokenClient: Program<SplToken>;
+  tokenInterface: TokenInterface;
   connection: Connection;
   registry: Map<string, TokenInfo>;
   commitment: Commitment;
@@ -96,15 +96,16 @@ export class Solana {
     req: BurnNftRequest
   ): Promise<string> {
     const { solDestination, mint } = req;
-    const { walletPublicKey, tokenClient, commitment } = ctx;
+    const { walletPublicKey, tokenInterface, commitment } = ctx;
 
-    const provider = tokenClient.provider;
+    const provider = tokenInterface.provider;
     const associatedToken = associatedTokenAddress(mint, walletPublicKey);
 
     const tx = new Transaction();
     tx.add(
-      await tokenClient.methods
-        .burn(new BN(req.amount ?? 1))
+      await tokenInterface
+        .withProgramId(TOKEN_PROGRAM_ID)
+        .methods.burn(new BN(req.amount ?? 1))
         .accounts({
           source: associatedToken,
           mint,
@@ -113,8 +114,9 @@ export class Solana {
         .instruction()
     );
     tx.add(
-      await tokenClient.methods
-        .closeAccount()
+      await tokenInterface
+        .withProgramId(TOKEN_PROGRAM_ID)
+        .methods.closeAccount()
         .accounts({
           account: associatedToken,
           destination: solDestination,
@@ -139,7 +141,7 @@ export class Solana {
     ctx: SolanaContext,
     req: TransferTokenRequest
   ): Promise<string> {
-    const { walletPublicKey, registry, tokenClient, commitment } = ctx;
+    const { walletPublicKey, registry, tokenInterface, commitment } = ctx;
     const { mint, destination, amount } = req;
 
     const decimals = (() => {
@@ -161,7 +163,7 @@ export class Solana {
 
     const [destinationAccount, destinationAtaAccount] =
       await anchor.utils.rpc.getMultipleAccounts(
-        tokenClient.provider.connection,
+        tokenInterface.provider.connection,
         [destination, destinationAta],
         commitment
       );
@@ -196,8 +198,9 @@ export class Solana {
       );
     }
 
-    const tx = await tokenClient.methods
-      .transferChecked(nativeAmount, decimals)
+    const tx = await tokenInterface
+      .withProgramId(TOKEN_PROGRAM_ID)
+      .methods.transferChecked(nativeAmount, decimals)
       .accounts({
         source: sourceAta,
         mint,
@@ -208,12 +211,12 @@ export class Solana {
       .transaction();
     tx.feePayer = walletPublicKey;
     tx.recentBlockhash = (
-      await tokenClient.provider.connection.getLatestBlockhash(commitment)
+      await tokenInterface.provider.connection.getLatestBlockhash(commitment)
     ).blockhash;
     const signedTx = await SolanaProvider.signTransaction(ctx, tx);
     const rawTx = signedTx.serialize();
 
-    return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
+    return await tokenInterface.provider.connection.sendRawTransaction(rawTx, {
       skipPreflight: false,
       preflightCommitment: commitment,
     });
@@ -224,7 +227,7 @@ export class Solana {
     ctx: SolanaContext,
     req: TransferTokenRequest
   ): Promise<string> {
-    const { walletPublicKey, tokenClient, commitment } = ctx;
+    const { walletPublicKey, tokenInterface, commitment } = ctx;
     const { mint, destination } = req;
 
     const destinationAta = associatedTokenAddress(mint, destination);
@@ -232,7 +235,7 @@ export class Solana {
 
     const [destinationAccount, destinationAtaAccount] =
       await anchor.utils.rpc.getMultipleAccounts(
-        tokenClient.provider.connection,
+        tokenInterface.provider.connection,
         [destination, destinationAta],
         commitment
       );
@@ -289,13 +292,13 @@ export class Solana {
     );
     transaction.feePayer = walletPublicKey;
     transaction.recentBlockhash = (
-      await tokenClient.provider.connection.getLatestBlockhash(commitment)
+      await tokenInterface.provider.connection.getLatestBlockhash(commitment)
     ).blockhash;
 
     const signedTx = await SolanaProvider.signTransaction(ctx, transaction);
     const rawTx = signedTx.serialize();
 
-    return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
+    return await tokenInterface.provider.connection.sendRawTransaction(rawTx, {
       skipPreflight: false,
       preflightCommitment: commitment,
     });
@@ -306,14 +309,14 @@ export class Solana {
     req: TransferTokenRequest,
     mintState: MintState
   ): Promise<string> {
-    const { walletPublicKey, tokenClient, commitment } = solanaCtx;
+    const { walletPublicKey, tokenInterface, commitment } = solanaCtx;
     const { mint, destination } = req;
 
     const sourceAta = associatedTokenAddress(mint, walletPublicKey);
     const destinationAta = associatedTokenAddress(mint, destination);
 
     const destinationAtaAccount =
-      await tokenClient.provider.connection.getAccountInfo(destinationAta);
+      await tokenInterface.provider.connection.getAccountInfo(destinationAta);
 
     const transaction: Transaction = new Transaction();
     transaction.add(computeBudgetIx);
@@ -354,7 +357,7 @@ export class Solana {
 
     transaction.feePayer = walletPublicKey;
     transaction.recentBlockhash = (
-      await tokenClient.provider.connection.getLatestBlockhash(commitment)
+      await tokenInterface.provider.connection.getLatestBlockhash(commitment)
     ).blockhash;
 
     const signedTx = await SolanaProvider.signTransaction(
@@ -363,7 +366,7 @@ export class Solana {
     );
     const rawTx = signedTx.serialize();
 
-    return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
+    return await tokenInterface.provider.connection.sendRawTransaction(rawTx, {
       skipPreflight: true,
       preflightCommitment: commitment,
     });
@@ -373,14 +376,14 @@ export class Solana {
     ctx: SolanaContext,
     req: TransferTokenRequest
   ): Promise<string> {
-    const { walletPublicKey, tokenClient, commitment } = ctx;
+    const { walletPublicKey, tokenInterface, commitment } = ctx;
     const { mint, destination } = req;
 
     const sourceAta = associatedTokenAddress(mint, walletPublicKey);
 
     const tx = await withSend(
       new Transaction(),
-      tokenClient.provider.connection,
+      tokenInterface.provider.connection,
       emptyWallet(walletPublicKey),
       mint,
       sourceAta,
@@ -389,13 +392,13 @@ export class Solana {
 
     tx.feePayer = walletPublicKey;
     tx.recentBlockhash = (
-      await tokenClient.provider.connection.getLatestBlockhash(commitment)
+      await tokenInterface.provider.connection.getLatestBlockhash(commitment)
     ).blockhash;
 
     const signedTx = await SolanaProvider.signTransaction(ctx, tx);
     const rawTx = signedTx.serialize();
 
-    return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
+    return await tokenInterface.provider.connection.sendRawTransaction(rawTx, {
       skipPreflight: false,
       preflightCommitment: commitment,
     });
@@ -405,7 +408,7 @@ export class Solana {
     solanaCtx: SolanaContext,
     req: TransferTokenRequest
   ): Promise<string> {
-    const { walletPublicKey, tokenClient, commitment } = solanaCtx;
+    const { walletPublicKey, tokenInterface, commitment } = solanaCtx;
     const { amount, mint, destination: destinationOwner } = req;
 
     const source = req.source ?? associatedTokenAddress(mint, walletPublicKey);
@@ -416,7 +419,7 @@ export class Solana {
     // we need to check whether the token is lock or listed
 
     const tokenRecord = await TokenRecord.fromAccountAddress(
-      tokenClient.provider.connection,
+      tokenInterface.provider.connection,
       ownerTokenRecord
     );
 
@@ -429,7 +432,7 @@ export class Solana {
     // we need the metadata object to retrieve the programmable config
 
     const metadata = await Metadata.fromAccountAddress(
-      tokenClient.provider.connection,
+      tokenInterface.provider.connection,
       await metadataAddress(mint)
     );
 
@@ -476,7 +479,7 @@ export class Solana {
 
     transaction.feePayer = walletPublicKey;
     transaction.recentBlockhash = (
-      await tokenClient.provider.connection.getLatestBlockhash(commitment)
+      await tokenInterface.provider.connection.getLatestBlockhash(commitment)
     ).blockhash;
 
     const signedTx = await SolanaProvider.signTransaction(
@@ -485,7 +488,7 @@ export class Solana {
     );
     const rawTx = signedTx.serialize();
 
-    return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
+    return await tokenInterface.provider.connection.sendRawTransaction(rawTx, {
       skipPreflight: true,
       preflightCommitment: commitment,
     });
@@ -495,7 +498,7 @@ export class Solana {
     ctx: SolanaContext,
     req: TransferSolRequest
   ): Promise<string> {
-    const { walletPublicKey, tokenClient, commitment } = ctx;
+    const { walletPublicKey, tokenInterface, commitment } = ctx;
     const tx = new Transaction();
     tx.add(
       SystemProgram.transfer({
@@ -506,15 +509,18 @@ export class Solana {
     );
     tx.feePayer = walletPublicKey;
     tx.recentBlockhash = (
-      await tokenClient.provider.connection.getLatestBlockhash(commitment)
+      await tokenInterface.provider.connection.getLatestBlockhash(commitment)
     ).blockhash;
     const signedTx = await SolanaProvider.signTransaction(ctx, tx);
     const rawTx = signedTx.serialize();
 
-    return await ctx.tokenClient.provider.connection.sendRawTransaction(rawTx, {
-      skipPreflight: false,
-      preflightCommitment: ctx.commitment,
-    });
+    return await ctx.tokenInterface.provider.connection.sendRawTransaction(
+      rawTx,
+      {
+        skipPreflight: false,
+        preflightCommitment: ctx.commitment,
+      }
+    );
   }
 
   public static async wrapSol(
@@ -523,10 +529,13 @@ export class Solana {
   ): Promise<string> {
     const { destination, amount } = req;
     const rawTx = await generateWrapSolTx(ctx, destination, amount);
-    return await ctx.tokenClient.provider.connection.sendRawTransaction(rawTx, {
-      skipPreflight: false,
-      preflightCommitment: ctx.commitment,
-    });
+    return await ctx.tokenInterface.provider.connection.sendRawTransaction(
+      rawTx,
+      {
+        skipPreflight: false,
+        preflightCommitment: ctx.commitment,
+      }
+    );
   }
 
   public static async unwrapSol(
@@ -535,17 +544,20 @@ export class Solana {
   ): Promise<string> {
     const { destination, amount } = req;
     const rawTx = await generateUnwrapSolTx(ctx, destination, amount);
-    return await ctx.tokenClient.provider.connection.sendRawTransaction(rawTx, {
-      skipPreflight: false,
-      preflightCommitment: ctx.commitment,
-    });
+    return await ctx.tokenInterface.provider.connection.sendRawTransaction(
+      rawTx,
+      {
+        skipPreflight: false,
+        preflightCommitment: ctx.commitment,
+      }
+    );
   }
 
   public static async uninstallXnft(
     ctx: SolanaContext,
     req: DeleteInstallRequest
   ): Promise<string> {
-    const client = xnftClient(ctx.tokenClient.provider);
+    const client = xnftClient(ctx.tokenInterface.provider);
     const { install } = req;
     const receiver = ctx.walletPublicKey;
     const authority = ctx.walletPublicKey;
@@ -563,10 +575,13 @@ export class Solana {
     ).blockhash;
     const signedTx = await SolanaProvider.signTransaction(ctx, tx);
     const rawTx = signedTx.serialize();
-    return await ctx.tokenClient.provider.connection.sendRawTransaction(rawTx, {
-      skipPreflight: false,
-      preflightCommitment: ctx.commitment,
-    });
+    return await ctx.tokenInterface.provider.connection.sendRawTransaction(
+      rawTx,
+      {
+        skipPreflight: false,
+        preflightCommitment: ctx.commitment,
+      }
+    );
   }
 }
 
@@ -579,12 +594,12 @@ export const generateWrapSolTx = async (
   destination: PublicKey,
   lamports: number
 ) => {
-  const { walletPublicKey, tokenClient, commitment } = ctx;
+  const { walletPublicKey, tokenInterface, commitment } = ctx;
   const destinationAta = associatedTokenAddress(NATIVE_MINT, destination);
 
   const [destinationAccount, destinationAtaAccount] =
     await anchor.utils.rpc.getMultipleAccounts(
-      tokenClient.provider.connection,
+      tokenInterface.provider.connection,
       [destination, destinationAta],
       commitment
     );
@@ -623,7 +638,7 @@ export const generateWrapSolTx = async (
   );
   tx.feePayer = walletPublicKey;
   tx.recentBlockhash = (
-    await tokenClient.provider.connection.getLatestBlockhash(commitment)
+    await tokenInterface.provider.connection.getLatestBlockhash(commitment)
   ).blockhash;
   return tx.serialize({ requireAllSignatures: false });
 };
@@ -638,7 +653,7 @@ export const generateUnwrapSolTx = async (
   destination: PublicKey,
   lamports: number
 ) => {
-  const { walletPublicKey, tokenClient, commitment } = ctx;
+  const { walletPublicKey, tokenInterface, commitment } = ctx;
   // Unwrapping partial SOL amounts appears to not be possible in token program.
   // This unwrap works by closing the account, and then creating a new wSOL account
   // and transferring the difference between the previous amount and the requested
@@ -648,7 +663,7 @@ export const generateUnwrapSolTx = async (
 
   const [destinationAccount, destinationAtaAccount] =
     await anchor.utils.rpc.getMultipleAccounts(
-      tokenClient.provider.connection,
+      tokenInterface.provider.connection,
       [destination, destinationAta],
       commitment
     );
@@ -671,7 +686,7 @@ export const generateUnwrapSolTx = async (
   const tx = new Transaction();
   tx.feePayer = walletPublicKey;
   tx.recentBlockhash = (
-    await tokenClient.provider.connection.getLatestBlockhash(commitment)
+    await tokenInterface.provider.connection.getLatestBlockhash(commitment)
   ).blockhash;
 
   // recreate the account with the new balance
