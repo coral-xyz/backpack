@@ -16,6 +16,7 @@ import { XStack, StyledText } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ErrorBoundary } from "react-error-boundary";
 
+import { ItemSeparator } from "~components/ListItem";
 import { EmptyState, Screen, RoundedContainerGroup } from "~components/index";
 import {
   convertNftDataToFlatlist,
@@ -90,10 +91,7 @@ function ListItem({
   handlePress: (item: ListItemProps) => void;
 }): JSX.Element {
   return (
-    <Pressable
-      style={{ flex: 1, marginBottom: 12, borderRadius: 16 }}
-      onPress={() => handlePress(item)}
-    >
+    <Pressable style={{ flex: 1 }} onPress={() => handlePress(item)}>
       <CollectionImage images={item.images} />
       <XStack mt={8}>
         <StyledText
@@ -227,6 +225,7 @@ function Container({ navigation }: any): JSX.Element {
         <FlatList
           data={rows}
           numColumns={numColumns}
+          ItemSeparatorComponent={ItemSeparator}
           ListEmptyComponent={NoNFTsEmptyState}
           keyExtractor={keyExtractor}
           renderItem={renderItem}

@@ -74,7 +74,7 @@ export function SendTokenSelectUserScreen({
 
   return (
     <ScrollView style={{ flex: 1 }}>
-      <YStack flex={1} jc="flex-between" mb={insets.bottom}>
+      <YStack flex={1} jc="space-between" mb={insets.bottom}>
         <View style={{ flex: 1 }}>
           <Box marginBottom={8}>
             <SearchInput
