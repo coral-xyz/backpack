@@ -86,6 +86,7 @@ export const lightYellowText = yellow700;
 export const lightYellowIcon = yellow600;
 export const lightYellowBorder = color(yellow700).alpha(0.5);
 export const lightYellowBackgroundSolid = yellow100;
+export const lightYellowBackgroundTransparent = color(yellow500).alpha(12);
 
 // Light Mode Error
 export const lightRedText = red700;
