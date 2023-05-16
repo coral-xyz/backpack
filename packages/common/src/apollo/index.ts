@@ -8,8 +8,6 @@ import { LocalStorageWrapper, persistCacheSync } from "apollo3-cache-persist";
 
 import { BACKEND_API_URL } from "../constants";
 
-export * from "./generated";
-
 const cache = new InMemoryCache();
 const httpLink = createHttpLink({
   uri: `${BACKEND_API_URL}/v2/graphql`,
