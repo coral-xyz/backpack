@@ -99,7 +99,8 @@ export class Solana {
     const { walletPublicKey, tokenInterface, commitment } = ctx;
 
     const provider = tokenInterface.provider;
-    const associatedToken = associatedTokenAddress(mint, walletPublicKey);
+    const source =
+      req.source ?? associatedTokenAddress(mint, walletPublicKey, programId);
 
     const tx = new Transaction();
     tx.add(
@@ -107,7 +108,7 @@ export class Solana {
         .withProgramId(programId)
         .methods.burn(new BN(req.amount ?? 1))
         .accounts({
-          source: associatedToken,
+          source,
           mint,
           authority: walletPublicKey,
         })
@@ -118,7 +119,7 @@ export class Solana {
         .withProgramId(programId)
         .methods.closeAccount()
         .accounts({
-          account: associatedToken,
+          account: source,
           destination: solDestination,
           authority: walletPublicKey,
         })
@@ -158,8 +159,8 @@ export class Solana {
 
     const nativeAmount = new BN(amount);
 
-    const destinationAta = associatedTokenAddress(mint, destination);
-    const sourceAta = associatedTokenAddress(mint, walletPublicKey);
+    const destinationAta = associatedTokenAddress(mint, destination, programId);
+    const sourceAta = associatedTokenAddress(mint, walletPublicKey, programId);
 
     const [destinationAccount, destinationAtaAccount] =
       await anchor.utils.rpc.getMultipleAccounts(
@@ -230,8 +231,8 @@ export class Solana {
     const { walletPublicKey, tokenInterface, commitment } = ctx;
     const { mint, programId, destination } = req;
 
-    const destinationAta = associatedTokenAddress(mint, destination);
-    const sourceAta = associatedTokenAddress(mint, walletPublicKey);
+    const destinationAta = associatedTokenAddress(mint, destination, programId);
+    const sourceAta = associatedTokenAddress(mint, walletPublicKey, programId);
 
     const [destinationAccount, destinationAtaAccount] =
       await anchor.utils.rpc.getMultipleAccounts(
@@ -310,10 +311,10 @@ export class Solana {
     mintState: MintState
   ): Promise<string> {
     const { walletPublicKey, tokenInterface, commitment } = solanaCtx;
-    const { mint, destination } = req;
+    const { mint, destination, programId } = req;
 
-    const sourceAta = associatedTokenAddress(mint, walletPublicKey);
-    const destinationAta = associatedTokenAddress(mint, destination);
+    const sourceAta = associatedTokenAddress(mint, walletPublicKey, programId);
+    const destinationAta = associatedTokenAddress(mint, destination, programId);
 
     const destinationAtaAccount =
       await tokenInterface.provider.connection.getAccountInfo(destinationAta);
@@ -377,9 +378,9 @@ export class Solana {
     req: TransferTokenRequest
   ): Promise<string> {
     const { walletPublicKey, tokenInterface, commitment } = ctx;
-    const { mint, destination } = req;
+    const { mint, destination, programId } = req;
 
-    const sourceAta = associatedTokenAddress(mint, walletPublicKey);
+    const sourceAta = associatedTokenAddress(mint, walletPublicKey, programId);
 
     const tx = await withSend(
       new Transaction(),
@@ -411,8 +412,13 @@ export class Solana {
     const { walletPublicKey, tokenInterface, commitment } = solanaCtx;
     const { amount, mint, programId, destination: destinationOwner } = req;
 
-    const source = req.source ?? associatedTokenAddress(mint, walletPublicKey);
-    const destinationAta = associatedTokenAddress(mint, destinationOwner);
+    const source =
+      req.source ?? associatedTokenAddress(mint, walletPublicKey, programId);
+    const destinationAta = associatedTokenAddress(
+      mint,
+      destinationOwner,
+      programId
+    );
 
     const ownerTokenRecord = await tokenRecordAddress(mint, source);
 
@@ -595,7 +601,11 @@ export const generateWrapSolTx = async (
   lamports: number
 ) => {
   const { walletPublicKey, tokenInterface, commitment } = ctx;
-  const destinationAta = associatedTokenAddress(NATIVE_MINT, destination);
+  const destinationAta = associatedTokenAddress(
+    NATIVE_MINT,
+    destination,
+    TOKEN_PROGRAM_ID
+  );
 
   const [destinationAccount, destinationAtaAccount] =
     await anchor.utils.rpc.getMultipleAccounts(
@@ -658,8 +668,16 @@ export const generateUnwrapSolTx = async (
   // This unwrap works by closing the account, and then creating a new wSOL account
   // and transferring the difference between the previous amount and the requested
   // amount into the newly created account.
-  const destinationAta = associatedTokenAddress(NATIVE_MINT, destination);
-  const sourceAta = associatedTokenAddress(NATIVE_MINT, walletPublicKey);
+  const destinationAta = associatedTokenAddress(
+    NATIVE_MINT,
+    destination,
+    TOKEN_PROGRAM_ID
+  );
+  const sourceAta = associatedTokenAddress(
+    NATIVE_MINT,
+    walletPublicKey,
+    TOKEN_PROGRAM_ID
+  );
 
   const [destinationAccount, destinationAtaAccount] =
     await anchor.utils.rpc.getMultipleAccounts(
@@ -777,4 +795,7 @@ export type BurnNftRequest = {
   mint: PublicKey;
   programId: PublicKey;
   amount?: number;
+  // Source token addess. If not provided, an ATA will
+  // be derived from the wallet.
+  source?: PublicKey;
 };

@@ -41,6 +41,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { Whatshot } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Button, IconButton, Typography } from "@mui/material";
+import type { ParsedAccountData } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber } from "ethers";
 import {
@@ -586,19 +587,29 @@ function BurnConfirmationCard({
   const onConfirm = async () => {
     try {
       // TODO: should use recoil for this to avoid the extra, unnecessary request.
-      const amount = parseInt(
-        (
-          await solanaCtx.connection.getTokenAccountBalance(
-            new PublicKey(nft.publicKey)
-          )
-        ).value.amount
+      const source = new PublicKey(nft.publicKey);
+      const accountInfo = await solanaCtx.connection.getParsedAccountInfo(
+        source
       );
+      if (accountInfo.value === null) {
+        throw new Error("NFT account not found");
+      }
+      const programId = accountInfo.value.owner;
+      const data = accountInfo.value.data;
+      if ((data as ParsedAccountData).parsed === null) {
+        throw new Error("NFT account not a token account");
+      }
+      const amount = parseInt(
+        (data as ParsedAccountData).parsed.info.tokenAmount.amount
+      );
+
       setState("sending");
 
       const _signature = await Solana.burnAndCloseNft(solanaCtx, {
         solDestination: solanaCtx.walletPublicKey,
         mint: new PublicKey(nft.mint.toString()),
-        programId: new PublicKey(nft.programId.toString()),
+        programId: new PublicKey(programId.toString()),
+        source,
         amount,
       });
       setSignature(_signature);

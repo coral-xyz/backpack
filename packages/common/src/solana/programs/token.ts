@@ -93,10 +93,11 @@ export class TokenInterface {
 
 export function associatedTokenAddress(
   mint: PublicKey,
-  wallet: PublicKey
+  wallet: PublicKey,
+  programId: PublicKey
 ): PublicKey {
   return anchor.utils.publicKey.findProgramAddressSync(
-    [wallet.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
+    [wallet.toBuffer(), programId.toBuffer(), mint.toBuffer()],
     ASSOCIATED_TOKEN_PROGRAM_ID
   )[0];
 }
