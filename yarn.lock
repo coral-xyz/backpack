@@ -3660,7 +3660,7 @@ __metadata:
     expo-dev-client: ~2.2.1
     expo-device: ~5.2.1
     expo-font: ~11.1.1
-    expo-image: ~1.0.0
+    expo-image: ~1.2.3
     expo-linear-gradient: ~12.1.2
     expo-linking: ~4.0.1
     expo-random: ~13.1.1
@@ -23260,12 +23260,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-image@npm:~1.0.0":
-  version: 1.0.0
-  resolution: "expo-image@npm:1.0.0"
+"expo-image@npm:~1.2.3":
+  version: 1.2.3
+  resolution: "expo-image@npm:1.2.3"
   peerDependencies:
     expo: "*"
-  checksum: 203e8b3e2528f40855be9c1f7cb038ae1b84f05770424cecc7bd39ec785aca2879e7ea80b70d5550dd9470f62da7a1560fab592efaec3189c6646765e311905d
+  checksum: 458a2d581da21c6196efe2395e30473e0af50c86f76b72c7d49a55fe8bfc7fde10c1b3012b21dc860ee09ba302ba65aff9eb8e771040f22d4f2063c0425a89d9
   languageName: node
   linkType: hard
 
