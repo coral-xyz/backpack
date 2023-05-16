@@ -38,6 +38,8 @@ export const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 export const NOTIFICATIONS_QUEUE = "NOTIFICATIONS";
 
 export const HELIUS_API_KEY = process.env.HELIUS_API_KEY || "";
+export const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY || "";
+export const TENSOR_API_KEY = process.env.TENSOR_API_KEY || "";
 
 export const DROPZONE_XNFT_SECRET = process.env.DROPZONE_XNFT_SECRET || "";
 export const DROPZONE_PERMITTED_AUTHORITIES =

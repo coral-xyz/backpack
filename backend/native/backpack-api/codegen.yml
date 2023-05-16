@@ -6,3 +6,4 @@ generates:
       - "typescript-resolvers"
     config:
       useIndexSignature: true
+      useTypeImports: true

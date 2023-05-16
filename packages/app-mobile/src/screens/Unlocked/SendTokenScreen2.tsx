@@ -38,11 +38,13 @@ export const BubbleTopLabel = ({ text }: { text: string }) => {
 
 let debouncedTimer = 0;
 
-function NotSelected() {
-  return null;
-}
-
-type User = any;
+type User = {
+  walletName?: string;
+  username: string;
+  image: string;
+  uuid: string;
+  // addresses: { publicKey: string; blockchain: Blockchain }[];
+};
 
 type SelectUserResultProp = {
   user: User;
@@ -72,7 +74,7 @@ export function SendTokenSelectUserScreen({
 
   return (
     <ScrollView style={{ flex: 1 }}>
-      <YStack flex={1} jc="flex-between" mb={insets.bottom}>
+      <YStack flex={1} jc="space-between" mb={insets.bottom}>
         <View style={{ flex: 1 }}>
           <Box marginBottom={8}>
             <SearchInput
@@ -412,6 +414,7 @@ const AddressListItem = ({
         hoverTheme
         pressTheme
         height={48}
+        backgroundColor="$nav"
         justifyContent="flex-start"
         icon={<UserAvatar size={32} uri={user.image} />}
         onPress={onPress}

@@ -1,17 +1,17 @@
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
+import { ApolloServerPluginCacheControl } from "@apollo/server/plugin/cacheControl";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import ApolloServerPluginResponseCache from "@apollo/server-plugin-response-cache";
+import { createHash } from "@apollo/utils.createhash";
 import cors from "cors";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
-import { readFileSync } from "fs";
 import http from "http";
-import { join } from "path";
 import { ZodError } from "zod";
 
-import { resolvers } from "./routes/graphql";
-import type { ApiContext } from "./routes/graphql/context";
-import { createContext } from "./routes/graphql/context";
+import { schema } from "./routes/graphql";
+import { type ApiContext, createContext } from "./routes/graphql/context";
 import authenticateRouter from "./routes/v1/authenticate";
 import barterRouter from "./routes/v1/barter";
 import chatRouter from "./routes/v1/chats";
@@ -32,12 +32,29 @@ import usersRouter from "./routes/v1/users";
 import { zodErrorToString } from "./util";
 
 const app = express();
-export const httpServer = http.createServer(app);
+const httpServer = http.createServer(app);
 
 const apollo = new ApolloServer<ApiContext>({
-  typeDefs: readFileSync(join(__dirname, "schema.graphql"), "utf-8"),
-  resolvers,
-  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  schema,
+  plugins: [
+    ApolloServerPluginDrainHttpServer({ httpServer }),
+    ApolloServerPluginCacheControl({
+      calculateHttpHeaders: true,
+      defaultMaxAge: 30,
+    }),
+    ApolloServerPluginResponseCache({
+      generateCacheKey(req, keyData): string {
+        const { devnet } = req.contextValue as ApiContext;
+        return createHash("sha256")
+          .update(`${devnet ? "devnet" : ""}-${JSON.stringify(keyData)}`)
+          .digest("hex");
+      },
+      async sessionId(req): Promise<string | null> {
+        const { jwt } = req.contextValue.authorization;
+        return jwt ? `session-id:${jwt}` : null;
+      },
+    }),
+  ],
 });
 
 // eslint-disable-next-line

@@ -16,7 +16,6 @@ import {
 } from "@coral-xyz/common";
 import type { SubscriptionType } from "@coral-xyz/common/dist/esm/messages/toServer";
 import type WebSocket from "ws";
-
 const NSFW_VALIDATION_SERVER = "https://nsfw-check.xnfts.dev";
 
 import {
@@ -25,6 +24,19 @@ import {
   validateCollectionOwnership,
 } from "../db/nfts";
 import { RedisSubscriptionManager } from "../subscriptions/RedisSubscriptionManager";
+
+function isValidURL(str: string): boolean {
+  const pattern = new RegExp(
+    "^(https?:\\/\\/)?" +
+      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" +
+      "((\\d{1,3}\\.){3}\\d{1,3}))" +
+      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" +
+      "(\\?[;&a-z\\d%_.~+=-]*)?" +
+      "(\\#[-a-z\\d_]*)?$",
+    "i"
+  );
+  return !!pattern.test(str);
+}
 
 export class User {
   id: string;
@@ -83,6 +95,23 @@ export class User {
               x.message_metadata?.media_kind === "image"
             ) {
               try {
+                if (
+                  !isValidURL(x.message_metadata?.media_link) ||
+                  !x.message_metadata?.media_link
+                    .lower()
+                    .endswith(
+                      (".jpg",
+                      ".jpeg",
+                      ".png",
+                      ".gif",
+                      ".bmp",
+                      ".tif",
+                      ".tiff",
+                      ".webp")
+                    )
+                ) {
+                  nsfwImage = true;
+                }
                 const res = await fetch(`${NSFW_VALIDATION_SERVER}/validate`, {
                   method: "post",
                   headers: {

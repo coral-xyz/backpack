@@ -1,33 +1,29 @@
 import type { Wallet } from "@@types/types";
 
 import { Suspense, useCallback } from "react";
-import { FlatList, ActivityIndicator, Text } from "react-native";
+import { FlatList, Text } from "react-native";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
-// import { walletPublicKeyData } from "@coral-xyz/recoil";
 import { Box } from "@coral-xyz/tamagui";
 import { useNavigation } from "@react-navigation/native";
 import { ErrorBoundary } from "react-error-boundary";
-// import { useRecoilValue } from "recoil";
 
-import { ListItemWalletOverview } from "~components/ListItem";
-import { RoundedContainerGroup, Screen, StyledText } from "~components/index";
-// import { useWalletBalance } from "~hooks/recoil";
+import { ListItemWalletOverview, ListHeader } from "~components/ListItem";
+import {
+  RoundedContainerGroup,
+  Screen,
+  FullScreenLoading,
+} from "~components/index";
 import { useWallets } from "~hooks/wallets";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 
-// TODO(tamagui)
-const ListHeaderTitle = ({ title }: { title: string }): JSX.Element => (
-  <StyledText fontSize="$base" color="$fontColor" mb={8} ml={18}>
-    {title}
-  </StyledText>
-);
-
+// TOOD(peter) GET_WALLET_DATA + ListItemData is a hack until we have aggregate wallets
 const GET_WALLET_DATA = gql`
   query WalletData($chainId: ChainID!, $address: String!) {
     wallet(chainId: $chainId, address: $address) {
       id
       balances {
+        id
         aggregateValue
       }
     }
@@ -64,7 +60,6 @@ function ListItem({
   item: Wallet;
   onPress: any;
 }): JSX.Element {
-  // const { data: balance } = useWalletBalance(wallet);
   return (
     <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
       <Suspense>
@@ -80,7 +75,7 @@ function WalletList() {
 
   const handlePressWallet = useCallback(
     (w: Wallet) => {
-      navigation.push("Main");
+      navigation.push("TopTabsWalletDetail");
       onSelectWallet(w, console.log);
     },
     [navigation, onSelectWallet]
@@ -89,6 +84,9 @@ function WalletList() {
   const keyExtractor = (wallet: Wallet) => wallet.publicKey.toString();
   const renderItem = useCallback(
     ({ item: wallet }: { item: Wallet }) => {
+      if (wallet.name !== "Wallet 1") {
+        return null;
+      }
       return <ListItem item={wallet} onPress={handlePressWallet} />;
     },
     [handlePressWallet]
@@ -96,7 +94,7 @@ function WalletList() {
 
   return (
     <>
-      <ListHeaderTitle title={`${allWallets.length.toString()} Wallets`} />
+      <ListHeader title={`${allWallets.length.toString()} Wallets`} />
       <RoundedContainerGroup>
         <FlatList
           data={allWallets}
@@ -119,10 +117,10 @@ function Container() {
   );
 }
 
-export function HomeWalletListScreen({ navigation }: any): JSX.Element {
+export function HomeWalletListScreen(): JSX.Element {
   return (
     <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
-      <Suspense fallback={<ActivityIndicator size="large" />}>
+      <Suspense fallback={<FullScreenLoading />}>
         <Container />
       </Suspense>
     </ErrorBoundary>

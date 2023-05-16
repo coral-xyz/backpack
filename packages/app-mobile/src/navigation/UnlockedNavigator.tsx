@@ -25,18 +25,18 @@ import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 import { ChatNavigator } from "~navigation/ChatNavigator";
 import { WalletsNavigator } from "~navigation/WalletsNavigator";
 import { NotificationsScreen } from "~screens/NotificationsScreen";
-import { BalancesNavigator } from "~screens/Unlocked/BalancesScreen";
 import {
   DepositListScreen,
   DepositSingleScreen,
 } from "~screens/Unlocked/DepositScreen";
 import { DummyScreen } from "~screens/Unlocked/DummyScreen";
+import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollectibleSelectRecipientScreen";
 // import { NftCollectiblesNavigator } from "~screens/Unlocked/NftCollectiblesScreen";
 import {
   SendTokenSelectRecipientScreen,
   SendTokenListScreen,
   SendTokenConfirmScreen,
-  SendNFTConfirmScreen,
+  // SendNFTConfirmScreen,
 } from "~screens/Unlocked/SendTokenScreen";
 import { SwapTokenScreen } from "~screens/Unlocked/SwapTokenScreen";
 import { WalletListScreen } from "~screens/Unlocked/WalletListScreen";
@@ -66,7 +66,7 @@ export type UnlockedNavigatorStackParamList = {
       uuid: string;
     };
   };
-  SendNFTConfirm: {
+  SendCollectibleSelectRecipient: {
     nft: Nft;
     to: {
       walletName?: string | undefined; // TBD
@@ -76,7 +76,56 @@ export type UnlockedNavigatorStackParamList = {
       uuid: string;
     };
   };
+  // SendNFTConfirm: {
+  //   nft: Nft;
+  //   to: {
+  //     walletName?: string | undefined; // TBD
+  //     address: string;
+  //     username: string;
+  //     image: string;
+  //     uuid: string;
+  //   };
+  // };
 };
+
+const ModalStack = createStackNavigator();
+function SendModalStackNavigator(): JSX.Element {
+  const theme = useTheme();
+  return (
+    <ModalStack.Navigator
+      screenOptions={{
+        headerTintColor: theme.custom.colors.fontColor,
+        headerBackTitleVisible: false,
+      }}
+    >
+      <Stack.Screen
+        options={{ title: "Select Token" }}
+        name="SendSelectTokenModal"
+        component={SendTokenListScreen}
+      />
+      <Stack.Screen
+        name="SendTokenModal"
+        component={SendTokenSelectRecipientScreen}
+        options={({ route }) => {
+          const { token } = route.params;
+          return {
+            title: `Send ${token.ticker}`,
+          };
+        }}
+      />
+      <Stack.Screen
+        name="SendTokenConfirm"
+        component={SendTokenConfirmScreen}
+        options={({ route }) => {
+          const { token } = route.params;
+          return {
+            title: `Send ${token.ticker}`,
+          };
+        }}
+      />
+    </ModalStack.Navigator>
+  );
+}
 
 const Stack = createStackNavigator<UnlockedNavigatorStackParamList>();
 export function UnlockedNavigator(): JSX.Element {
@@ -109,11 +158,24 @@ export function UnlockedNavigator(): JSX.Element {
           name="DepositSingle"
           component={DepositSingleScreen}
         />
-        <Stack.Screen
-          options={{ title: "Select Token" }}
-          name="SendSelectTokenModal"
-          component={SendTokenListScreen}
-        />
+        <Stack.Group
+          screenOptions={{ presentation: "modal", headerShown: false }}
+        >
+          <Stack.Screen
+            name="SendSelectTokenModal"
+            component={SendModalStackNavigator}
+          />
+          <Stack.Screen
+            name="SendCollectibleSelectRecipient"
+            component={SendCollectibleSendRecipientScreen}
+            options={({ route }) => {
+              const { nft } = route.params;
+              return {
+                title: `Send ${nft.name}`,
+              };
+            }}
+          />
+        </Stack.Group>
         <Stack.Screen
           name="SendTokenModal"
           component={SendTokenSelectRecipientScreen}
@@ -131,16 +193,6 @@ export function UnlockedNavigator(): JSX.Element {
             const { token } = route.params;
             return {
               title: `Send ${token.ticker}`,
-            };
-          }}
-        />
-        <Stack.Screen
-          name="SendNFTConfirm"
-          component={SendNFTConfirmScreen}
-          options={({ route }) => {
-            const { nft } = route.params;
-            return {
-              title: parseNftName(nft),
             };
           }}
         />

@@ -30,13 +30,20 @@ import {
 import { useTheme } from "~hooks/useTheme";
 import { TextPercentChanged } from "~screens/Unlocked/components/Balances";
 
-export function SectionHeader({ title }: { title: string }): JSX.Element {
-  return <StyledText>{title}</StyledText>;
-}
+export const ListHeader = ({ title }: { title: string }): JSX.Element => (
+  <StyledText fontSize="$base" color="$fontColor" mb={8} ml={18}>
+    {title}
+  </StyledText>
+);
 
-export function SectionSeparator() {
-  return <View style={{ height: 12 }} />;
-}
+export const SectionHeader = ({ title }: { title: string }): JSX.Element => (
+  <StyledText>{title}</StyledText>
+);
+
+// FlatList items like the collection list
+export const ItemSeparator = () => <View style={{ height: 8 }} />;
+// Sectioned list items like Recent activity
+export const SectionSeparator = () => <View style={{ height: 12 }} />;
 
 // TODO(peter) something about padding looks weird
 export function PaddedListItemSeparator() {
@@ -71,6 +78,61 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
 });
+
+export function ListItemLabelValue({
+  label,
+  value,
+  valueColor,
+  onPress,
+  iconAfter,
+  children,
+}: {
+  label: string;
+  value?: string;
+  valueColor?: string;
+  onPress?: () => void;
+  iconAfter?: JSX.Element;
+  children?: JSX.Element;
+}) {
+  if (!value && !children) {
+    throw new Error("You must use either value or children");
+  }
+
+  return (
+    <ListItem
+      backgroundColor="$nav"
+      justifyContent="space-between"
+      onPress={onPress}
+    >
+      <StyledText>{label}</StyledText>
+      {children ? (
+        children
+      ) : (
+        <XStack alignItems="center">
+          {value ? <StyledText color={valueColor}>{value}</StyledText> : null}
+          {iconAfter ? (
+            <View style={{ marginLeft: 2, marginRight: -8 }}>{iconAfter}</View>
+          ) : null}
+        </XStack>
+      )}
+    </ListItem>
+  );
+}
+
+export function ListItemTableWrapper({ children }): JSX.Element {
+  return (
+    <YGroup
+      overflow="hidden"
+      borderWidth={2}
+      borderColor="$borderFull"
+      borderRadius="$container"
+      backgroundColor="$nav"
+      separator={<Separator />}
+    >
+      {children}
+    </YGroup>
+  );
+}
 
 export function ListItemSentReceived({
   grouped = false,

@@ -15,6 +15,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@apollo/client": "3.8.0-alpha.12",
     "@cardinal/creator-standard": "^2.1.10",
     "@cardinal/token-manager": "^1.7.9",
     "@ethersproject/abstract-provider": "^5.7.0",
@@ -34,6 +35,7 @@
     "@solana/wallet-adapter-base": "^0.9.18",
     "@solana/web3.js": "^1.63.1",
     "@types/jest": "^29.4.0",
+    "apollo3-cache-persist": "^0.14.1",
     "base32-encode": "^2.0.0",
     "bip32-path": "^0.4.2",
     "bn.js": "^5.2.1",

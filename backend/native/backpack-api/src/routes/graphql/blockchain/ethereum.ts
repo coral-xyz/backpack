@@ -14,14 +14,25 @@ import {
   type Nft,
   type NftAttribute,
   type NftConnection,
+  type NftFiltersInput,
   type TokenBalance,
   type Transaction,
   type TransactionConnection,
 } from "../types";
-import { createConnection } from "..";
+import {
+  calculateBalanceAggregate,
+  calculateUsdChange,
+  createConnection,
+} from "../utils";
 
-import { type Blockchain, calculateUsdChange } from ".";
+import type { Blockchain } from ".";
 
+/**
+ * Ethereum blockchain implementation for the common API.
+ * @export
+ * @class Ethereum
+ * @implements {Blockchain}
+ */
 export class Ethereum implements Blockchain {
   readonly #ctx: ApiContext;
 
@@ -38,9 +49,10 @@ export class Ethereum implements Blockchain {
    */
   async getBalancesForAddress(address: string): Promise<Balances | null> {
     // Fetch the native and all token balances of the address and filter out the empty balances
-    const native = await this.#ctx.dataSources.alchemy.core.getBalance(address);
-    const tokenBalances =
-      await this.#ctx.dataSources.alchemy.core.getTokensForOwner(address);
+    const [native, tokenBalances] = await Promise.all([
+      this.#ctx.dataSources.alchemy.core.getBalance(address),
+      this.#ctx.dataSources.alchemy.core.getTokensForOwner(address),
+    ]);
 
     const nonEmptyTokens = tokenBalances.tokens.filter(
       (t) => (t.rawBalance ?? "0") !== "0"
@@ -53,13 +65,13 @@ export class Ethereum implements Blockchain {
 
     // Native token balance data
     const nativeData: TokenBalance = {
-      id: `ethereum_native_address:${address}`,
+      id: `${this.id()}_native_address:${address}`,
       address,
       amount: native.toString(),
       decimals: this.nativeDecimals(),
       displayAmount: ethers.utils.formatUnits(native, this.nativeDecimals()),
       marketData: {
-        id: "coingecko_market_data:ethereum",
+        id: this.#ctx.dataSources.coinGecko.id("ethereum"),
         percentChange: parseFloat(prices.ethereum.usd_24h_change.toFixed(2)),
         usdChange: calculateUsdChange(
           prices.ethereum.usd_24h_change,
@@ -71,6 +83,12 @@ export class Ethereum implements Blockchain {
         value:
           parseFloat(ethers.utils.formatUnits(native, this.nativeDecimals())) *
           prices.ethereum.usd,
+        valueChange:
+          parseFloat(ethers.utils.formatUnits(native, this.nativeDecimals())) *
+          calculateUsdChange(
+            prices.ethereum.usd_24h_change,
+            prices.ethereum.usd
+          ),
       },
       mint: "0x0000000000000000000000000000000000000000",
     };
@@ -79,7 +97,7 @@ export class Ethereum implements Blockchain {
     const nodes: TokenBalance[] = nonEmptyTokens.map((t) => {
       const amt = BigNumber.from(t.rawBalance ?? "0");
       return {
-        id: `ethereum_token_address:${address}/${t.contractAddress}`,
+        id: `${this.id()}_token_address:${address}/${t.contractAddress}`,
         address: `${address}/${t.contractAddress}`,
         amount: amt.toString(),
         decimals: t.decimals ?? 0,
@@ -96,7 +114,8 @@ export class Ethereum implements Blockchain {
     );
 
     return {
-      aggregateValue: nativeData.marketData!.value + nonNativeSum,
+      id: `${this.id()}_balances:${address}`,
+      aggregate: calculateBalanceAggregate([nativeData, ...nodes]),
       native: nativeData,
       tokens: createConnection(nodes, false, false),
     };
@@ -105,13 +124,18 @@ export class Ethereum implements Blockchain {
   /**
    * Get a list of NFT data for tokens owned by the argued address.
    * @param {string} address
+   * @param {Partial<NftFiltersInput>} [filters]
    * @returns {Promise<NftConnection | null>}
    * @memberof Ethereum
    */
-  async getNftsForAddress(address: string): Promise<NftConnection | null> {
+  async getNftsForAddress(
+    address: string,
+    filters?: Partial<NftFiltersInput>
+  ): Promise<NftConnection | null> {
     // Get all NFTs held by the address from Alchemy
     const nfts = await this.#ctx.dataSources.alchemy.nft.getNftsForOwner(
-      address
+      address,
+      { contractAddresses: filters?.addresses ?? undefined }
     );
 
     // Return an array of `Nft` schema types after filtering out all
@@ -121,7 +145,7 @@ export class Ethereum implements Blockchain {
 
       const collection: Collection | undefined = curr.contract.openSea
         ? {
-            id: `ethereum_nft_collection:${curr.contract.address}`,
+            id: `${this.id()}_nft_collection:${curr.contract.address}`,
             address: curr.contract.address,
             name: curr.contract.openSea.collectionName,
             image: curr.contract.openSea.imageUrl,
@@ -137,13 +161,16 @@ export class Ethereum implements Blockchain {
         }));
 
       const n: Nft = {
-        id: `ethereum_nft:${curr.contract.address}/${curr.tokenId}`,
+        id: `${this.id()}_nft:${curr.contract.address}/${curr.tokenId}`,
         address: `${curr.contract.address}/${curr.tokenId}`,
         attributes,
         collection,
         description: curr.description,
         image: curr.rawMetadata?.image,
+        metadataUri: curr.tokenUri?.raw || "",
         name: curr.title,
+        owner: address,
+        token: curr.tokenId,
       };
       return [...acc, n];
     }, []);
@@ -196,8 +223,9 @@ export class Ethereum implements Blockchain {
       .sort((a, b) => Number(b.blockNum) - Number(a.blockNum));
 
     const nodes: Transaction[] = combined.map((tx) => ({
-      id: `ethereum_transaction:${tx.uniqueId}`,
+      id: `${this.id()}_transaction:${tx.uniqueId}`,
       block: Number(tx.blockNum),
+      fee: undefined, // FIXME: find gas amount paid for processing
       feePayer: tx.from,
       hash: tx.hash,
       timestamp: (tx as any).metadata?.blockTimestamp || undefined,

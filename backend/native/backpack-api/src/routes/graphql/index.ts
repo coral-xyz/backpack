@@ -1,77 +1,78 @@
-import { queryResolvers, userResolvers, walletResolvers } from "./query";
-import type { Node, PageInfo, Resolvers } from "./types";
-import { ChainId } from "./types";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { readFileSync } from "fs";
+import { applyMiddleware } from "graphql-middleware";
+import { allow, shield } from "graphql-shield";
+import { join } from "path";
 
-export const resolvers: Resolvers = {
+import {
+  authenticateMutation,
+  deauthenticateMutation,
+  friendshipTypeResolvers,
+  importPublicKeyMutation,
+  jsonObjectScalar,
+  userQueryResolver,
+  userTypeResolvers,
+  walletQueryResolver,
+  walletTypeResolvers,
+} from "./resolvers";
+import { authorized } from "./rules";
+import type { MutationResolvers, QueryResolvers, Resolvers } from "./types";
+
+/**
+ * Root `Mutation` object resolver.
+ */
+const mutationResolvers: MutationResolvers = {
+  authenticate: authenticateMutation,
+  deauthenticate: deauthenticateMutation,
+  importPublicKey: importPublicKeyMutation,
+};
+
+/**
+ * Root `Query` object resolver.
+ */
+const queryResolvers: QueryResolvers = {
+  user: userQueryResolver,
+  wallet: walletQueryResolver,
+};
+
+/**
+ * Schema root and type-level resolvers.
+ */
+const resolvers: Resolvers = {
+  Mutation: mutationResolvers,
   Query: queryResolvers,
-  User: userResolvers,
-  Wallet: walletResolvers,
-};
-
-export type Edge<T extends Node> = {
-  cursor: string;
-  node: T;
-};
-
-export type Connection<T extends Node> = {
-  edges: Edge<T>[];
-  pageInfo: PageInfo;
+  Friendship: friendshipTypeResolvers,
+  User: userTypeResolvers,
+  Wallet: walletTypeResolvers,
+  JSONObject: jsonObjectScalar,
 };
 
 /**
- * Generate a Relay connection from a list of node objects
- * @export
- * @template T
- * @param {T[]} nodes
- * @param {boolean} hasNextPage
- * @param {boolean} hasPreviousPage
- * @returns {(Connection<T> | null)}
+ * Permissions map for Shield rule applications on operations and types.
  */
-export function createConnection<T extends Node>(
-  nodes: T[],
-  hasNextPage: boolean,
-  hasPreviousPage: boolean
-): Connection<T> | null {
-  if (nodes.length === 0) {
-    return null;
-  }
-
-  const edges: Edge<T>[] = nodes.map((i) => ({
-    cursor: Buffer.from(`edge_cursor:${i.id}`).toString("base64"),
-    node: i,
-  }));
-
-  return edges.length === 0
-    ? null
-    : {
-        edges,
-        pageInfo: {
-          startCursor: edges[0].cursor,
-          endCursor: edges.at(-1)?.cursor,
-          hasNextPage,
-          hasPreviousPage,
-        },
-      };
-}
+const permissions = shield(
+  {
+    Mutation: {
+      "*": authorized,
+      authenticate: allow,
+    },
+    Query: {
+      "*": allow,
+      user: authorized,
+    },
+    User: authorized,
+  },
+  { allowExternalErrors: true, debug: process.env.NODE_ENV !== "production" }
+);
 
 /**
- * Infer and return a ChainId enum variant from the argued string value.
+ * Built schema to be executed on the Apollo server.
  * @export
- * @param {string} val
- * @returns {(ChainId | never)}
  */
-export function inferChainIdFromString(val: string): ChainId | never {
-  switch (val) {
-    case "ethereum": {
-      return ChainId.Ethereum;
-    }
-
-    case "solana": {
-      return ChainId.Solana;
-    }
-
-    default: {
-      throw new Error(`unknown chain id string: ${val}`);
-    }
-  }
-}
+export const schema = applyMiddleware(
+  makeExecutableSchema({
+    resolvers,
+    typeDefs: readFileSync(join(__dirname, "schema.graphql"), "utf-8"), // Path resolution for the built distribution to schema file
+  }),
+  permissions
+);

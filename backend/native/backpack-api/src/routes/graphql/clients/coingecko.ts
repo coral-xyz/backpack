@@ -1,5 +1,11 @@
 import { RESTDataSource } from "@apollo/datasource-rest";
 
+/**
+ * Custom GraphQL REST data source class abstraction for CoinGecko.
+ * @export
+ * @class CoinGecko
+ * @extends {RESTDataSource}
+ */
 export class CoinGecko extends RESTDataSource {
   override baseURL = "https://api.coingecko.com";
 
@@ -25,6 +31,16 @@ export class CoinGecko extends RESTDataSource {
         include_last_updated_at: "true",
       },
     });
+  }
+
+  /**
+   * Return the node ID for Coingecko market data.
+   * @param {string} currency
+   * @returns {string}
+   * @memberof CoinGecko
+   */
+  id(currency: string): string {
+    return `coingecko_market_data:${currency}`;
   }
 }
 
