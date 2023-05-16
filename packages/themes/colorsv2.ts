@@ -48,7 +48,6 @@ export const red500 = rgba(23,80,80,1); // previously FF6269
 export const red600 = rgba(234,56,59,1); // previously #f13236
 export const red700 = rgba(210,0,36,1); // previously #d20024
 
-
 // Light Mode /////////////////////////////////////////////////////
 // Light Mode Backgrounds
 export const lightNeutralBackgroundAppBackground =
@@ -78,8 +77,9 @@ export const lightButtonSecondaryText = base900;
 // Light Mode Success
 export const lightGreenText = green700;
 export const lightGreenIcon = green600;
-export const lightGreenBorder = color(green600).alpha(0.4); // green600 at 40%
+export const lightGreenBorder = color(green600).alpha(0.4);
 export const lightGreenBackgroundSolid = green100;
+export const lightGreenBackgroundTransparent = color(green600).alpha(0.12);
 
 // Light Mode Warning
 export const lightYellowText = yellow700;
@@ -92,6 +92,7 @@ export const lightRedText = red700;
 export const lightRedIcon = red600;
 export const lightRedBorder = color(red700).alpha(0.5);
 export const lightRedBackgroundSolid = red100;
+export const lightRedBackgroundTransparent = color(red600).alpha(0.12);
 
 // Dark Mode //////////////////////////////////////////////////////
 // Dark Mode Text
