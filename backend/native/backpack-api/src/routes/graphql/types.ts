@@ -183,6 +183,8 @@ export type Nft = Node & {
   image?: Maybe<Scalars["String"]>;
   /** Possible marketplace or platform listing data for the NFT for sale. */
   listing?: Maybe<Listing>;
+  /** The link to the off-chain metadata. */
+  metadataUri: Scalars["String"];
   /** The name of the NFT found in the metadata. */
   name: Scalars["String"];
   /** The owning wallet's public key. */
@@ -834,6 +836,7 @@ export type NftResolvers<
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   listing?: Resolver<Maybe<ResolversTypes["Listing"]>, ParentType, ContextType>;
+  metadataUri?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   owner?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   token?: Resolver<ResolversTypes["String"], ParentType, ContextType>;

@@ -1,4 +1,6 @@
 schema: "./src/schema.graphql"
+documents:
+  - "./src/routes/graphql/operations/*.graphql"
 generates:
   "./src/routes/graphql/types.ts":
     plugins:
@@ -6,3 +8,15 @@ generates:
       - "typescript-resolvers"
     config:
       useIndexSignature: true
+      useTypeImports: true
+  "../../../packages/common/src/apollo/generated.ts":
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      reactApolloVersion: 3
+      useTypeImports: true
+      withComponent: false
+      withHOC: false
+      withHooks: false

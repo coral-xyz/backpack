@@ -1,0 +1,9 @@
+query GetWalletAggregate($chainId: ChainID!, $address: String!) {
+  wallet(chainId: $chainId, address: $address) {
+    id
+    balances {
+      id
+      aggregateValue
+    }
+  }
+}

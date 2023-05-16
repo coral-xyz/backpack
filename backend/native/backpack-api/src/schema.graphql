@@ -382,6 +382,11 @@ type Nft implements Node {
   listing: Listing @cacheControl(maxAge: 60)
 
   """
+  The link to the off-chain metadata.
+  """
+  metadataUri: String!
+
+  """
   The name of the NFT found in the metadata.
   """
   name: String!

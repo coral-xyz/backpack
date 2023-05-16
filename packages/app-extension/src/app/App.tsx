@@ -1,6 +1,11 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import { HashRouter } from "react-router-dom";
-import { EXTENSION_HEIGHT, EXTENSION_WIDTH } from "@coral-xyz/common";
+import { ApolloProvider } from "@apollo/client";
+import {
+  createApolloClient,
+  EXTENSION_HEIGHT,
+  EXTENSION_WIDTH,
+} from "@coral-xyz/common";
 import { NotificationsProvider, useKeyringStoreState } from "@coral-xyz/recoil";
 import {
   BACKGROUND_BACKDROP_COLOR,
@@ -37,6 +42,8 @@ export default function App() {
   const pStr = window.localStorage.getItem("preferences");
   const preferences = pStr ? JSON.parse(pStr) : {};
 
+  const apolloClient = useMemo(() => createApolloClient(), []);
+
   return (
     <div
       style={{
@@ -48,9 +55,11 @@ export default function App() {
     >
       <HashRouter>
         <RecoilRoot>
-          <WithTheme>
-            <_App />
-          </WithTheme>
+          <ApolloProvider client={apolloClient}>
+            <WithTheme>
+              <_App />
+            </WithTheme>
+          </ApolloProvider>
         </RecoilRoot>
       </HashRouter>
     </div>
