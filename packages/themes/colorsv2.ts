@@ -1,7 +1,7 @@
 
 // Opacities without color values ///////////////////////////////////////////////
 // Disabled elements should be 0.5 opacity
-// Hover can be 0.8 opacity if complex component rather than changing color values of everything (e.g. background, text, border, icon)
+// Hover can be 0.8 opacity if complex component
 
 // Brand Colors
 export const brandWhite = "#ffffff";
@@ -50,58 +50,89 @@ export const red700 = rgba(210,0,36,1); // previously #d20024
 
 
 // Light Mode /////////////////////////////////////////////////////
+// Light Mode Backgrounds
 export const lightNeutralBackgroundAppBackground =
   "linear-gradient(to bottom, #f8f8f9 0%,#f0f0f2 100%)";
 export const lightBaseBackgroundL1 = base50; // card background
 export const lightBaseBackgroundL2 = base100; // light mode border
+
+// Light Mode Text
 export const lightBaseTextHighEmphasis = base900;
 export const lightBaseTextMedEmphasis = base600;
+
+// Light Mode Icons
 export const lightBaseIcon = base400; // this meets 3:1 color contrast on white for WCAG AA
 export const lightBaseIconHover = base500; // increase contrast on hover
 export const lightBaseIconPress = base400; // decrease contrast on press
+
+// Light Mode Borders
 export const lightBaseBorderLight = base100; // default border color
+// export const lightBaseBorderMed = base200; // idk if we need this
+
+// Light Mode Buttons
 export const lightButtonPrimaryBackground = base900;
 export const lightButtonPrimaryText = base50;
 export const lightButtonSecondaryBackground = brandWhite;
 export const lightButtonSecondaryText = base900;
+
+// Light Mode Success
 export const lightGreenText = green700;
 export const lightGreenIcon = green600;
 export const lightGreenBorder = color(green600).alpha(0.4); // green600 at 40%
 export const lightGreenBackgroundSolid = green100;
+
+// Light Mode Warning
 export const lightYellowText = yellow700;
 export const lightYellowIcon = yellow600;
 export const lightYellowBorder = color(yellow700).alpha(0.5);
 export const lightYellowBackgroundSolid = yellow100;
+
+// Light Mode Error
 export const lightRedText = red700;
 export const lightRedIcon = red600;
 export const lightRedBorder = color(red700).alpha(0.5);
 export const lightRedBackgroundSolid = red100;
 
 // Dark Mode //////////////////////////////////////////////////////
+// Dark Mode Text
 export const darkBaseTextHighEmphasis = base50;
 export const darkBaseTextMedEmphasis = base400;
+
+// Dark Mode Icons
 export const darkBaseIcon = base500; // meets 3:1 color contrast on base800 for WCAG AA
 export const darkBaseIconHover = base400; // increase contrast on hover
 export const darkBaseIconPress = base500; // decrease contrast on press
-export const darkBaseIconHighContrast = base400; icon hover if not using opacity
+export const darkBaseIconHighContrast = base400; // icon hover if not using opacity
+
+// Dark Mode Backgrounds
 export const darkBaseBackgroundL0 = base900; // dark container background
 export const darkBaseBackgroundL1 = base800; // dark content background
+
+// Dark Mode Borders
 export const darkBaseBorderLight = color(baseWhite).alpha(0.1);
-export const darkBaseBorderMed = color(baseWhite).alpha(0.25);
+// export const darkBaseBorderMed = color(baseWhite).alpha(0.25); idk if we need this
+
+// Dark Mode Buttons
 export const darkButtonPrimaryBackground = brandWhite;
 export const darkButtonPrimaryText = base900;
 export const darkButtonSecondaryBackground = base800;
 export const darkButtonSecondaryText = base50;
+
+// Dark Mode Success
 export const darkGreenText = green500;
 export const darkGreenIcon = green600;
 export const darkGreenBorder = color(green500).alpha(0.4); // green500 at 40%
 export const darkGreenBackgroundOpacity = color(green500).alpha(0.08); // green500 at 8%
 export const darkGreenBackgroundSolid = rgba(18,35,34,1); // derived from putting green500 at 8% opacity on base900
+
+// Dark Mode Warning
 export const darkYellowText = yellow500;
 export const darkYellowIcon = yellow600;
 export const darkYellowBorder = color(yellow500).alpha(0.5);
 export const darkYellowBackgroundTransparent = color(yellow500).alpha(0.08);
 export const darkYellowBackgroundSolid = rgba(38,32,26,1); // derived from putting yellow500 at 8% opacity on base900
+
+// Dark Mode Error
 export const darkRedText = red500;
 export const darkRedIcon = red600;
 export const darkRedBorder = color(red600).alpha(0.5);
