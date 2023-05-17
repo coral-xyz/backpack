@@ -220,7 +220,7 @@ export type NftAttribute = {
 /** Relay connection specification for `Nft` edges. */
 export type NftConnection = {
   __typename?: "NftConnection";
-  edges?: Maybe<Array<Maybe<NftEdge>>>;
+  edges: Array<NftEdge>;
   pageInfo: PageInfo;
 };
 
@@ -263,7 +263,7 @@ export type Notification = Node & {
 /** Relay connection specification for `Notification` edges. */
 export type NotificationConnection = {
   __typename?: "NotificationConnection";
-  edges?: Maybe<Array<Maybe<NotificationEdge>>>;
+  edges: Array<NotificationEdge>;
   /** The database integer ID of the last read notification of the user. */
   lastReadId?: Maybe<Scalars["Int"]>;
   pageInfo: PageInfo;
@@ -345,7 +345,7 @@ export type TokenBalance = Node & {
 /** Relay connection specification for `TokenBalance` edges. */
 export type TokenBalanceConnection = {
   __typename?: "TokenBalanceConnection";
-  edges?: Maybe<Array<Maybe<TokenBalanceEdge>>>;
+  edges: Array<TokenBalanceEdge>;
   pageInfo: PageInfo;
 };
 
@@ -382,7 +382,7 @@ export type Transaction = Node & {
 /** Relay connection specification for `Transaction` edges. */
 export type TransactionConnection = {
   __typename?: "TransactionConnection";
-  edges?: Maybe<Array<Maybe<TransactionEdge>>>;
+  edges: Array<TransactionEdge>;
   pageInfo: PageInfo;
 };
 
@@ -466,7 +466,7 @@ export type WalletTransactionsArgs = {
 /** Relay connection specification for `Wallet` edges. */
 export type WalletConnection = {
   __typename?: "WalletConnection";
-  edges?: Maybe<Array<Maybe<WalletEdge>>>;
+  edges: Array<WalletEdge>;
   pageInfo: PageInfo;
 };
 
@@ -900,11 +900,7 @@ export type NftConnectionResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["NftConnection"] = ResolversParentTypes["NftConnection"]
 > = ResolversObject<{
-  edges?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes["NftEdge"]>>>,
-    ParentType,
-    ContextType
-  >;
+  edges?: Resolver<Array<ResolversTypes["NftEdge"]>, ParentType, ContextType>;
   pageInfo?: Resolver<ResolversTypes["PageInfo"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -960,7 +956,7 @@ export type NotificationConnectionResolvers<
   ParentType extends ResolversParentTypes["NotificationConnection"] = ResolversParentTypes["NotificationConnection"]
 > = ResolversObject<{
   edges?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes["NotificationEdge"]>>>,
+    Array<ResolversTypes["NotificationEdge"]>,
     ParentType,
     ContextType
   >;
@@ -1041,7 +1037,7 @@ export type TokenBalanceConnectionResolvers<
   ParentType extends ResolversParentTypes["TokenBalanceConnection"] = ResolversParentTypes["TokenBalanceConnection"]
 > = ResolversObject<{
   edges?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes["TokenBalanceEdge"]>>>,
+    Array<ResolversTypes["TokenBalanceEdge"]>,
     ParentType,
     ContextType
   >;
@@ -1091,7 +1087,7 @@ export type TransactionConnectionResolvers<
   ParentType extends ResolversParentTypes["TransactionConnection"] = ResolversParentTypes["TransactionConnection"]
 > = ResolversObject<{
   edges?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes["TransactionEdge"]>>>,
+    Array<ResolversTypes["TransactionEdge"]>,
     ParentType,
     ContextType
   >;
@@ -1174,7 +1170,7 @@ export type WalletConnectionResolvers<
   ParentType extends ResolversParentTypes["WalletConnection"] = ResolversParentTypes["WalletConnection"]
 > = ResolversObject<{
   edges?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes["WalletEdge"]>>>,
+    Array<ResolversTypes["WalletEdge"]>,
     ParentType,
     ContextType
   >;

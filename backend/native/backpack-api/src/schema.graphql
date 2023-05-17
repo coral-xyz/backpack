@@ -464,7 +464,7 @@ type NftAttribute {
 Relay connection specification for `Nft` edges.
 """
 type NftConnection {
-  edges: [NftEdge]
+  edges: [NftEdge!]!
   pageInfo: PageInfo!
 }
 
@@ -519,7 +519,7 @@ type NotificationConnection {
   The database integer ID of the last read notification of the user.
   """
   lastReadId: Int
-  edges: [NotificationEdge]
+  edges: [NotificationEdge!]!
   pageInfo: PageInfo!
 }
 
@@ -575,7 +575,7 @@ type TokenBalance implements Node {
 Relay connection specification for `TokenBalance` edges.
 """
 type TokenBalanceConnection {
-  edges: [TokenBalanceEdge]
+  edges: [TokenBalanceEdge!]!
   pageInfo: PageInfo!
 }
 
@@ -641,7 +641,7 @@ type Transaction implements Node {
 Relay connection specification for `Transaction` edges.
 """
 type TransactionConnection {
-  edges: [TransactionEdge]
+  edges: [TransactionEdge!]!
   pageInfo: PageInfo!
 }
 
@@ -746,7 +746,7 @@ type Wallet implements Node {
 Relay connection specification for `Wallet` edges.
 """
 type WalletConnection {
-  edges: [WalletEdge]
+  edges: [WalletEdge!]!
   pageInfo: PageInfo!
 }
 
