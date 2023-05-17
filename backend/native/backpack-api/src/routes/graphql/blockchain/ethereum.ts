@@ -107,12 +107,6 @@ export class Ethereum implements Blockchain {
       };
     });
 
-    // Summation of all market value amounts for non-native tokens
-    const nonNativeSum = nodes.reduce<number>(
-      (acc, curr) => (curr.marketData ? acc + curr.marketData.value : acc),
-      0
-    );
-
     return {
       id: `${this.id()}_balances:${address}`,
       aggregate: calculateBalanceAggregate(address, [nativeData, ...nodes]),

@@ -66,33 +66,27 @@ export function calculateUsdChange(
  * @param {T[]} nodes
  * @param {boolean} hasNextPage
  * @param {boolean} hasPreviousPage
- * @returns {(Connection<T> | null)}
+ * @returns {Connection<T>}
  */
 export function createConnection<T extends Node>(
   nodes: T[],
   hasNextPage: boolean,
   hasPreviousPage: boolean
-): Connection<T> | null {
-  if (nodes.length === 0) {
-    return null;
-  }
-
+): Connection<T> {
   const edges: Edge<T>[] = nodes.map((i) => ({
     cursor: Buffer.from(`edge_cursor:${i.id}`).toString("base64"),
     node: i,
   }));
 
-  return edges.length === 0
-    ? null
-    : {
-        edges,
-        pageInfo: {
-          startCursor: edges[0].cursor,
-          endCursor: edges.at(-1)?.cursor,
-          hasNextPage,
-          hasPreviousPage,
-        },
-      };
+  return {
+    edges,
+    pageInfo: {
+      startCursor: edges[0].cursor,
+      endCursor: edges.at(-1)?.cursor,
+      hasNextPage,
+      hasPreviousPage,
+    },
+  };
 }
 
 /**
