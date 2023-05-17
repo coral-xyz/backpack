@@ -1,0 +1,10 @@
+schema: '../../backend/native/backpack-api/src/schema.graphql'
+documents: ['src/components/**/*.tsx']
+ignoreNoDocuments: true
+generates:
+  './src/graphql/':
+    preset: 'client'
+    presetConfig:
+      gqlTagName: 'gql'
+    config:
+      useTypeImports: true

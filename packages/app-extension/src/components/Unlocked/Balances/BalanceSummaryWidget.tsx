@@ -1,8 +1,10 @@
-import { gql, useSuspenseQuery_experimental } from "@apollo/client";
+import { useSuspenseQuery_experimental } from "@apollo/client";
 import { formatUSD } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import { Skeleton, Typography } from "@mui/material";
+
+import { gql } from "../../../graphql";
 
 const useStyles = makeStyles(() => ({
   balancesHeaderContainer: {
@@ -39,8 +41,8 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const GET_BALANCE_SUMMARY = gql`
-  query GetWalletSummary($address: String!) {
+const GET_BALANCE_SUMMARY = gql(`
+  query GetBalanceSummary($address: String!) {
     user {
       id
       wallets(filters: { pubkeys: [$address] }) {
@@ -61,7 +63,7 @@ const GET_BALANCE_SUMMARY = gql`
       }
     }
   }
-`;
+`);
 
 export function BalanceSummaryWidget() {
   const theme = useCustomTheme();
@@ -74,11 +76,8 @@ export function BalanceSummaryWidget() {
     },
   });
 
-  console.log(
-    `============ QUERY DATA ===============\n${JSON.stringify(data, null, 2)}`
-  );
-
-  const aggregate = data?.user.wallets?.edges[0].node.balances.aggregate ?? {
+  const aggregate = data?.user?.wallets?.edges?.[0]?.node?.balances
+    ?.aggregate ?? {
     percentChange: 0,
     value: 0,
     valueChange: 0,
