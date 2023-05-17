@@ -3,11 +3,8 @@ import type { Blockchain, Nft } from "@coral-xyz/common";
 
 import { useCallback } from "react";
 
-import { parseNftName } from "@coral-xyz/common";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-
-// import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import {
@@ -29,17 +26,15 @@ import {
   DepositListScreen,
   DepositSingleScreen,
 } from "~screens/Unlocked/DepositScreen";
-import { DummyScreen } from "~screens/Unlocked/DummyScreen";
 import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollectibleSelectRecipientScreen";
-// import { NftCollectiblesNavigator } from "~screens/Unlocked/NftCollectiblesScreen";
 import {
   SendTokenSelectRecipientScreen,
   SendTokenListScreen,
   SendTokenConfirmScreen,
-  // SendNFTConfirmScreen,
 } from "~screens/Unlocked/SendTokenScreen";
 import { SwapTokenScreen } from "~screens/Unlocked/SwapTokenScreen";
 import { WalletListScreen } from "~screens/Unlocked/WalletListScreen";
+import { UtilsDesignScreen } from "~screens/Utils/UtilsDesignScreen";
 
 export type UnlockedNavigatorStackParamList = {
   Tabs: undefined;
@@ -216,10 +211,15 @@ type UnlockedTabNavigatorParamList = {
   Chat: undefined;
   AccountSettings: undefined;
   Notifications: undefined;
+  Utils: undefined;
 };
 
 const TabIconNotifications = ({ size, fill }) => (
   <MaterialIcons name="notifications" size={size} color={fill} />
+);
+
+const TabIconUtils = ({ size, fill }) => (
+  <MaterialIcons name="design-services" size={size} color={fill} />
 );
 
 const Tab = createBottomTabNavigator<UnlockedTabNavigatorParamList>();
@@ -239,6 +239,8 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         return TabIconNotifications;
       case "AccountSettings":
         return Avatar;
+      case "Utils":
+        return TabIconUtils;
       default:
         return TabIconBalances;
     }
@@ -267,7 +269,7 @@ function UnlockedBottomTabNavigator(): JSX.Element {
       />
       <Tab.Screen name="Chat" component={ChatNavigator} />
       <Tab.Screen name="AccountSettings" component={AccountSettingsNavigator} />
-      <Tab.Screen name="Dummy" component={DummyScreen} />
+      <Tab.Screen name="Utils" component={UtilsDesignScreen} />
     </Tab.Navigator>
   );
 }
