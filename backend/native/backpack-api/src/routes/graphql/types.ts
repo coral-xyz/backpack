@@ -280,6 +280,8 @@ export type NotificationEdge = {
 export type NotificationsFiltersInput = {
   /** The limit for number of items desired in the response. */
   limit?: InputMaybe<Scalars["Int"]>;
+  /** The direction to sort the timestamps by. */
+  sortDirection?: InputMaybe<SortDirection>;
   /** Flag to filter for only unread notifications of the user. */
   unreadOnly?: InputMaybe<Scalars["Boolean"]>;
 };
@@ -314,6 +316,12 @@ export type QueryWalletArgs = {
   address: Scalars["String"];
   chainId: ChainId;
 };
+
+/** Enum for specifying the direction of sorting a list of items. */
+export enum SortDirection {
+  Asc = "ASC",
+  Desc = "DESC",
+}
 
 /** Generic native or non-native token data and balance for a `Wallet`. */
 export type TokenBalance = Node & {
@@ -631,6 +639,7 @@ export type ResolversTypes = ResolversObject<{
   NotificationsFiltersInput: NotificationsFiltersInput;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   Query: ResolverTypeWrapper<{}>;
+  SortDirection: SortDirection;
   String: ResolverTypeWrapper<Scalars["String"]>;
   TokenBalance: ResolverTypeWrapper<TokenBalance>;
   TokenBalanceConnection: ResolverTypeWrapper<TokenBalanceConnection>;

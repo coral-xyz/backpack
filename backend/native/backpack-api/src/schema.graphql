@@ -87,6 +87,14 @@ enum FriendRequestType {
 }
 
 """
+Enum for specifying the direction of sorting a list of items.
+"""
+enum SortDirection {
+  ASC
+  DESC
+}
+
+"""
 Input filter type for fetching user wallet NFTs.
 """
 input NftFiltersInput {
@@ -104,6 +112,11 @@ input NotificationsFiltersInput {
   The limit for number of items desired in the response.
   """
   limit: Int
+
+  """
+  The direction to sort the timestamps by.
+  """
+  sortDirection: SortDirection
 
   """
   Flag to filter for only unread notifications of the user.
