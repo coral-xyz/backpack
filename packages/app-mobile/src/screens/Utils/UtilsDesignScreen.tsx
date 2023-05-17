@@ -1,5 +1,7 @@
-import { memo } from "react";
-import { Alert, ScrollView, View } from "react-native";
+import { memo, useState } from "react";
+import { Alert, ScrollView, View, Button } from "react-native";
+
+import Constants from "expo-constants";
 
 import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
@@ -190,11 +192,32 @@ function ActivityDetail() {
   );
 }
 
-export function DummyScreen(): JSX.Element {
+function ExpoConfigSettings() {
+  const [show, setShow] = useState(false);
+  return (
+    <View style={{ marginVertical: 8 }}>
+      <Button
+        title={show ? "hide" : "show config variables"}
+        onPress={() => setShow(!show)}
+      />
+      {show ? (
+        <StyledText fontSize="$xs">
+          {JSON.stringify(Constants.expoConfig?.extra, null, 2)}
+        </StyledText>
+      ) : null}
+    </View>
+  );
+}
+
+export function UtilsDesignScreen(): JSX.Element {
   const insets = useSafeAreaInsets();
   return (
     <ScrollView>
       <Screen style={{ marginTop: insets.top }}>
+        <StyledText fontSize="$xl" fontWeight={800}>
+          Design System & Diagnostics
+        </StyledText>
+        <ExpoConfigSettings />
         <Box marginBottom={12}>
           <StyledText fontSize="$sm" mb={8}>
             AvatarUserNameAddress
