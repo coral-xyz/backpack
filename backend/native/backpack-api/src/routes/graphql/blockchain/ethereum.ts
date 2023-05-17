@@ -44,10 +44,10 @@ export class Ethereum implements Blockchain {
    * Fetch and aggregate the native and token balances and
    * prices for the argued wallet address.
    * @param {string} address
-   * @returns {(Promise<Balances | null>)}
+   * @returns {Promise<Balances>}
    * @memberof Ethereum
    */
-  async getBalancesForAddress(address: string): Promise<Balances | null> {
+  async getBalancesForAddress(address: string): Promise<Balances> {
     // Fetch the native and all token balances of the address and filter out the empty balances
     const [native, tokenBalances] = await Promise.all([
       this.#ctx.dataSources.alchemy.core.getBalance(address),
@@ -119,13 +119,13 @@ export class Ethereum implements Blockchain {
    * Get a list of NFT data for tokens owned by the argued address.
    * @param {string} address
    * @param {Partial<NftFiltersInput>} [filters]
-   * @returns {Promise<NftConnection | null>}
+   * @returns {Promise<NftConnection>}
    * @memberof Ethereum
    */
   async getNftsForAddress(
     address: string,
     filters?: Partial<NftFiltersInput>
-  ): Promise<NftConnection | null> {
+  ): Promise<NftConnection> {
     // Get all NFTs held by the address from Alchemy
     const nfts = await this.#ctx.dataSources.alchemy.nft.getNftsForOwner(
       address,
@@ -177,14 +177,14 @@ export class Ethereum implements Blockchain {
    * @param {string} address
    * @param {string} [before]
    * @param {string} [after]
-   * @returns {(Promise<TransactionConnection | null>)}
+   * @returns {Promise<TransactionConnection>}
    * @memberof Ethereum
    */
   async getTransactionsForAddress(
     address: string,
     before?: string,
     after?: string
-  ): Promise<TransactionConnection | null> {
+  ): Promise<TransactionConnection> {
     const params: AssetTransfersParams = {
       category: [
         AssetTransfersCategory.ERC1155,
