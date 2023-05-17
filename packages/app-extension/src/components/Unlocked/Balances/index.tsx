@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import {
   Blockchain,
   ETH_NATIVE_MINT,
@@ -6,17 +7,26 @@ import {
   toTitleCase,
 } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
-import { useAllWalletsDisplayed, useNavigation } from "@coral-xyz/recoil";
+import {
+  useActiveWallet,
+  useAllWalletsDisplayed,
+  useNavigation,
+} from "@coral-xyz/recoil";
 
 import { TokenTables } from "../../common/TokenTable";
 
-import { BalanceSummaryWidget } from "./BalanceSummaryWidget";
+import {
+  BalanceSummaryWidget,
+  BalanceSummaryWidgetSkeleton,
+} from "./BalanceSummaryWidget";
 import { TransferWidget } from "./TransferWidget";
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
 export function Balances() {
   const { push } = useNavigation();
+  const activeWallet = useActiveWallet();
+
   const swapEnabled =
     useAllWalletsDisplayed().find((w) => w.blockchain === Blockchain.SOLANA) !==
     undefined;
@@ -39,7 +49,9 @@ export function Balances() {
 
   return (
     <div>
-      <BalanceSummaryWidget />
+      <Suspense fallback={<BalanceSummaryWidgetSkeleton />}>
+        <BalanceSummaryWidget address={activeWallet.publicKey} />
+      </Suspense>
       <div
         style={{
           marginTop: "32px",

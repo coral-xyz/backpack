@@ -1,12 +1,21 @@
-import { lazy, Suspense, useMemo } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { HashRouter } from "react-router-dom";
-import { ApolloProvider } from "@apollo/client";
+import {
+  type ApolloClient,
+  ApolloProvider,
+  type NormalizedCacheObject,
+  SuspenseCache,
+} from "@apollo/client";
 import {
   createApolloClient,
   EXTENSION_HEIGHT,
   EXTENSION_WIDTH,
 } from "@coral-xyz/common";
-import { NotificationsProvider, useKeyringStoreState } from "@coral-xyz/recoil";
+import {
+  NotificationsProvider,
+  useKeyringStoreState,
+  useUser,
+} from "@coral-xyz/recoil";
 import {
   BACKGROUND_BACKDROP_COLOR,
   LIGHT_BACKGROUND_BACKDROP_COLOR,
@@ -34,6 +43,8 @@ const BACKDROP_STYLE = {
   background: "red",
 };
 
+const suspenseCache = new SuspenseCache();
+
 export default function App() {
   //
   // We use an extra copy of preferences in the local storage backend to avoid
@@ -41,8 +52,6 @@ export default function App() {
   //
   const pStr = window.localStorage.getItem("preferences");
   const preferences = pStr ? JSON.parse(pStr) : {};
-
-  const apolloClient = useMemo(() => createApolloClient(), []);
 
   return (
     <div
@@ -55,11 +64,9 @@ export default function App() {
     >
       <HashRouter>
         <RecoilRoot>
-          <ApolloProvider client={apolloClient}>
-            <WithTheme>
-              <_App />
-            </WithTheme>
-          </ApolloProvider>
+          <WithTheme>
+            <_App />
+          </WithTheme>
         </RecoilRoot>
       </HashRouter>
     </div>
@@ -68,12 +75,18 @@ export default function App() {
 
 function _App() {
   useKeyringStoreState();
+  const user = useUser();
+
+  const apolloClient = createApolloClient(user.jwt);
+
   return (
-    <NotificationsProvider>
-      <ErrorBoundary>
-        <_Router />
-      </ErrorBoundary>
-    </NotificationsProvider>
+    <ApolloProvider client={apolloClient} suspenseCache={suspenseCache}>
+      <NotificationsProvider>
+        <ErrorBoundary>
+          <_Router />
+        </ErrorBoundary>
+      </NotificationsProvider>
+    </ApolloProvider>
   );
 }
 

@@ -1,8 +1,5 @@
+import { gql, useSuspenseQuery_experimental } from "@apollo/client";
 import { formatUSD } from "@coral-xyz/common";
-import {
-  totalBalance as totalBalanceSelector,
-  useLoader,
-} from "@coral-xyz/recoil";
 import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import { Skeleton, Typography } from "@mui/material";
 
@@ -13,6 +10,9 @@ const useStyles = makeStyles(() => ({
     marginTop: "24px",
     width: "100%",
     borderRadius: "12px",
+    textAlign: "center",
+    marginLeft: "12px",
+    marginRight: "12px",
   },
   totalBalance: {
     fontWeight: 600,
@@ -20,43 +20,74 @@ const useStyles = makeStyles(() => ({
     lineHeight: "36px",
     color: "inherit",
   },
+  percentChange: {
+    paddingLeft: "8px",
+    paddingRight: "8px",
+    paddingTop: "2px",
+    paddingBottom: "2px",
+    borderRadius: "28px",
+    lineHeight: "24px",
+  },
+  valueChange: {
+    paddingLeft: "0px",
+    paddingRight: "0px",
+    paddingTop: "2px",
+    paddingBottom: "2px",
+    marginRight: "12px",
+    lineHeight: "24px",
+  },
 }));
 
-export function BalanceSummaryWidget() {
+const GET_BALANCE_SUMMARY = gql`
+  query GetWalletSummary($address: String!) {
+    user {
+      id
+      wallets(filters: { pubkeys: [$address] }) {
+        edges {
+          node {
+            id
+            balances {
+              id
+              aggregate {
+                id
+                percentChange
+                value
+                valueChange
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export function BalanceSummaryWidget({ address }: { address: string }) {
   const theme = useCustomTheme();
   const classes = useStyles();
-  const [{ totalBalance, totalChange, percentChange }, , isLoading] = useLoader(
-    totalBalanceSelector,
-    {
-      totalBalance: 0,
-      totalChange: 0,
-      percentChange: 0,
-    }
-  );
+
+  const { data } = useSuspenseQuery_experimental(GET_BALANCE_SUMMARY, {
+    variables: {
+      address,
+    },
+  });
+
+  const aggregate = data?.user.wallets?.edges[0].node.balances.aggregate ?? {
+    percentChange: 0,
+    value: 0,
+    valueChange: 0,
+  };
+
   return (
     <div style={{ display: "flex" }}>
-      <div
-        className={classes.balancesHeaderContainer}
-        style={{
-          textAlign: "center",
-          marginLeft: "12px",
-          marginRight: "12px",
-          borderRadius: "12px",
-        }}
-      >
+      <div className={classes.balancesHeaderContainer}>
         <Typography
           className={classes.totalBalance}
           style={{
             color: theme.custom.colors.fontColor,
           }}
         >
-          {isLoading ? (
-            <Skeleton
-              sx={{ backgroundColor: theme.custom.colors.balanceSkeleton }}
-            />
-          ) : (
-            formatUSD(totalBalance)
-          )}
+          {formatUSD(aggregate.value)}
         </Typography>
         <div
           style={{
@@ -66,69 +97,84 @@ export function BalanceSummaryWidget() {
         >
           <div style={{ flex: 1 }} />
           <Typography
+            className={classes.valueChange}
             style={{
               color:
-                totalChange === 0
+                aggregate.valueChange === 0
                   ? theme.custom.colors.neutral
-                  : totalChange < 0
+                  : aggregate.valueChange < 0
                   ? theme.custom.colors.negative
                   : theme.custom.colors.positive,
-              paddingLeft: "0px",
-              paddingRight: "0px",
-              paddingTop: "2px",
-              paddingBottom: "2px",
-              marginRight: "12px",
-              lineHeight: "24px",
             }}
           >
-            {isLoading ? (
-              <Skeleton
-                width="100px"
-                sx={{ backgroundColor: theme.custom.colors.balanceSkeleton }}
-              />
-            ) : (
-              <>
-                {totalChange > 0 ? "+" : ""}
-                {formatUSD(totalChange)}
-              </>
-            )}
+            {aggregate.valueChange > 0 ? "+" : ""}
+            {formatUSD(aggregate.valueChange)}
           </Typography>
           <Typography
+            className={classes.percentChange}
             style={{
               color:
-                totalChange === 0
+                aggregate.valueChange === 0
                   ? theme.custom.colors.neutral
-                  : totalChange < 0
+                  : aggregate.valueChange < 0
                   ? theme.custom.colors.negative
                   : theme.custom.colors.positive,
-              paddingLeft: "8px",
-              paddingRight: "8px",
-              paddingTop: "2px",
-              paddingBottom: "2px",
-              backgroundColor: isLoading
+              backgroundColor: !data
                 ? undefined
-                : totalChange === 0
+                : aggregate.valueChange === 0
                 ? theme.custom.colors.balanceChangeNeutral
-                : totalChange < 0
+                : aggregate.valueChange < 0
                 ? theme.custom.colors.balanceChangeNegative
                 : theme.custom.colors.balanceChangePositive,
-              borderRadius: "28px",
-              lineHeight: "24px",
             }}
           >
-            {isLoading ? (
-              <Skeleton
-                width="100px"
-                sx={{ backgroundColor: theme.custom.colors.balanceSkeleton }}
-              />
-            ) : (
-              <>
-                {totalChange > 0 ? "+" : ""}
-                {Number.isFinite(percentChange)
-                  ? `${percentChange?.toFixed(2)}%`
-                  : "0.00%"}
-              </>
-            )}
+            {aggregate.valueChange > 0 ? "+" : ""}
+            {Number.isFinite(aggregate.percentChange)
+              ? `${aggregate.percentChange?.toFixed(2)}%`
+              : "0.00%"}
+          </Typography>
+          <div style={{ flex: 1 }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function BalanceSummaryWidgetSkeleton() {
+  const theme = useCustomTheme();
+  const classes = useStyles();
+
+  return (
+    <div style={{ display: "flex" }}>
+      <div className={classes.balancesHeaderContainer}>
+        <Typography
+          className={classes.totalBalance}
+          style={{
+            color: theme.custom.colors.fontColor,
+          }}
+        >
+          <Skeleton
+            sx={{ backgroundColor: theme.custom.colors.balanceSkeleton }}
+          />
+        </Typography>
+        <div
+          style={{
+            display: "flex",
+            marginTop: "16px",
+          }}
+        >
+          <div style={{ flex: 1 }} />
+          <Typography className={classes.valueChange}>
+            <Skeleton
+              width="100px"
+              sx={{ backgroundColor: theme.custom.colors.balanceSkeleton }}
+            />
+          </Typography>
+          <Typography className={classes.percentChange}>
+            <Skeleton
+              width="100px"
+              sx={{ backgroundColor: theme.custom.colors.balanceSkeleton }}
+            />
           </Typography>
           <div style={{ flex: 1 }} />
         </div>
