@@ -22,7 +22,6 @@ export function createApolloClient(
 ): ApolloClient<NormalizedCacheObject> {
   const httpLink = createHttpLink({
     uri: `${BACKEND_API_URL}/v2/graphql`,
-    credentials: "include",
   });
 
   const authLink = setContext(async (_, { headers }) => {

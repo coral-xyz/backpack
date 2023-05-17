@@ -7,11 +7,7 @@ import {
   toTitleCase,
 } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
-import {
-  useActiveWallet,
-  useAllWalletsDisplayed,
-  useNavigation,
-} from "@coral-xyz/recoil";
+import { useAllWalletsDisplayed, useNavigation } from "@coral-xyz/recoil";
 
 import { TokenTables } from "../../common/TokenTable";
 
@@ -25,7 +21,6 @@ export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
 export function Balances() {
   const { push } = useNavigation();
-  const activeWallet = useActiveWallet();
 
   const swapEnabled =
     useAllWalletsDisplayed().find((w) => w.blockchain === Blockchain.SOLANA) !==
@@ -50,7 +45,7 @@ export function Balances() {
   return (
     <div>
       <Suspense fallback={<BalanceSummaryWidgetSkeleton />}>
-        <BalanceSummaryWidget address={activeWallet.publicKey} />
+        <BalanceSummaryWidget />
       </Suspense>
       <div
         style={{

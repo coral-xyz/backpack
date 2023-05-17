@@ -1,5 +1,6 @@
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
 import { formatUSD } from "@coral-xyz/common";
+import { useActiveWallet } from "@coral-xyz/recoil";
 import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import { Skeleton, Typography } from "@mui/material";
 
@@ -62,15 +63,20 @@ const GET_BALANCE_SUMMARY = gql`
   }
 `;
 
-export function BalanceSummaryWidget({ address }: { address: string }) {
+export function BalanceSummaryWidget() {
   const theme = useCustomTheme();
   const classes = useStyles();
+  const activeWallet = useActiveWallet();
 
   const { data } = useSuspenseQuery_experimental(GET_BALANCE_SUMMARY, {
     variables: {
-      address,
+      address: activeWallet.publicKey,
     },
   });
+
+  console.log(
+    `============ QUERY DATA ===============\n${JSON.stringify(data, null, 2)}`
+  );
 
   const aggregate = data?.user.wallets?.edges[0].node.balances.aggregate ?? {
     percentChange: 0,

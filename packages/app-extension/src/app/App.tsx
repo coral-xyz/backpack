@@ -1,21 +1,7 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense } from "react";
 import { HashRouter } from "react-router-dom";
-import {
-  type ApolloClient,
-  ApolloProvider,
-  type NormalizedCacheObject,
-  SuspenseCache,
-} from "@apollo/client";
-import {
-  createApolloClient,
-  EXTENSION_HEIGHT,
-  EXTENSION_WIDTH,
-} from "@coral-xyz/common";
-import {
-  NotificationsProvider,
-  useKeyringStoreState,
-  useUser,
-} from "@coral-xyz/recoil";
+import { EXTENSION_HEIGHT, EXTENSION_WIDTH } from "@coral-xyz/common";
+import { NotificationsProvider, useKeyringStoreState } from "@coral-xyz/recoil";
 import {
   BACKGROUND_BACKDROP_COLOR,
   LIGHT_BACKGROUND_BACKDROP_COLOR,
@@ -42,8 +28,6 @@ const BACKDROP_STYLE = {
   minWidth: `${EXTENSION_WIDTH}px`,
   background: "red",
 };
-
-const suspenseCache = new SuspenseCache();
 
 export default function App() {
   //
@@ -75,18 +59,12 @@ export default function App() {
 
 function _App() {
   useKeyringStoreState();
-  const user = useUser();
-
-  const apolloClient = createApolloClient(user.jwt);
-
   return (
-    <ApolloProvider client={apolloClient} suspenseCache={suspenseCache}>
-      <NotificationsProvider>
-        <ErrorBoundary>
-          <_Router />
-        </ErrorBoundary>
-      </NotificationsProvider>
-    </ApolloProvider>
+    <NotificationsProvider>
+      <ErrorBoundary>
+        <_Router />
+      </ErrorBoundary>
+    </NotificationsProvider>
   );
 }
 
