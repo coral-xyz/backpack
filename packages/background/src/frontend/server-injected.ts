@@ -71,6 +71,7 @@ const whitelistedOrigins = [
   /^https:\/\/xnft\.wao\.gg$/,
   /^https:\/\/one\.xnfts\.dev$/,
   /^https:\/\/rafffle\.famousfoxes\.com$/,
+  /^https:\/\/spherepay\.co$/,
 ];
 
 export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
