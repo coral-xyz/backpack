@@ -135,13 +135,13 @@ export class Hasura {
    *
    * @param {string} id
    * @param {NotificationsFiltersInput | null} [filters]
-   * @returns {(Promise<NotificationConnection | null>)}
+   * @returns {Promise<NotificationConnection>}
    * @memberof Hasura
    */
   async getNotifications(
     id: string,
     filters?: NotificationsFiltersInput | null
-  ): Promise<NotificationConnection | null> {
+  ): Promise<NotificationConnection> {
     // Query Hasura for the list of notifications for the user
     // that match the input filter(s) if provided
     const resp = await this.#chain("query")(
@@ -185,7 +185,7 @@ export class Hasura {
     );
 
     if (resp.auth_notifications.length === 0) {
-      return null;
+      return createConnection([], false, false);
     }
 
     // Create the list of notification type nodes for the connection
@@ -202,7 +202,7 @@ export class Hasura {
       nodes,
       false,
       false
-    ) as NotificationConnection | null;
+    ) as NotificationConnection;
 
     // Append the last read notification ID to the connection object
     // if one was found and there is a valid connection to be returned

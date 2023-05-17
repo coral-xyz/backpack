@@ -45,10 +45,10 @@ export class Solana implements Blockchain {
    * Fetch and aggregate the native and token balances and
    * prices for the argued wallet address.
    * @param {string} address
-   * @returns {(Promise<Balances | null>)}
+   * @returns {Promise<Balances>}
    * @memberof Solana
    */
-  async getBalancesForAddress(address: string): Promise<Balances | null> {
+  async getBalancesForAddress(address: string): Promise<Balances> {
     // Get the address balances and filter out the NFTs and empty ATAs
     const balances = await this.#ctx.dataSources.helius.getBalances(address);
     const nonEmptyOrNftTokens = balances.tokens.filter(
@@ -160,13 +160,13 @@ export class Solana implements Blockchain {
    * Get a list of NFT data for tokens owned by the argued address.
    * @param {string} address
    * @param {Partial<NftFiltersInput>} [filters]
-   * @returns {(Promise<NftConnection | null>)}
+   * @returns {Promise<NftConnection>}
    * @memberof Solana
    */
   async getNftsForAddress(
     address: string,
     filters?: Partial<NftFiltersInput>
-  ): Promise<NftConnection | null> {
+  ): Promise<NftConnection> {
     // Get the held SPL tokens for the address and reduce to only NFT mint addresses
     const assets = await this.#ctx.dataSources.helius.getBalances(address);
     let nftMints = assets.tokens.reduce<string[]>(
@@ -181,7 +181,7 @@ export class Solana implements Blockchain {
     }
 
     if (nftMints.length === 0) {
-      return null;
+      return createConnection([], false, false);
     }
 
     // Get active listings for the argued wallet address and assign empty
@@ -298,14 +298,14 @@ export class Solana implements Blockchain {
    * @param {string} address
    * @param {string} [before]
    * @param {string} [after]
-   * @returns {(Promise<TransactionConnection | null>)}
+   * @returns {Promise<TransactionConnection>}
    * @memberof Ethereum
    */
   async getTransactionsForAddress(
     address: string,
     before?: string,
     after?: string
-  ): Promise<TransactionConnection | null> {
+  ): Promise<TransactionConnection> {
     const resp = await this.#ctx.dataSources.helius.getTransactionHistory(
       address,
       before,
