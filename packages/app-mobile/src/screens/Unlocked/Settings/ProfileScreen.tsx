@@ -1,30 +1,10 @@
-import type { Wallet } from "@@types/types";
-import type { Blockchain } from "@coral-xyz/common";
+import { View, Image } from "react-native";
 
-import { useState } from "react";
-import { SectionList, View } from "react-native";
+import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
+import { getBlockchainLogo, useActiveWallets } from "@coral-xyz/recoil";
+import { StyledText, XStack } from "@coral-xyz/tamagui";
 
-import { toTitleCase } from "@coral-xyz/common";
-import { useActiveWallets, useWalletPublicKeys } from "@coral-xyz/recoil";
-
-import { ExpandCollapseIcon } from "~components/Icon";
-import {
-  AddConnectWalletButton,
-  Avatar,
-  Margin,
-  RoundedContainerGroup,
-  Screen,
-} from "~components/index";
-import { WalletListItem } from "~screens/Unlocked/EditWalletsScreen";
-import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsList";
-
-export function ProfileScreen(): JSX.Element {
-  return (
-    <Screen>
-      <AvatarHeader />
-    </Screen>
-  );
-}
+import { Avatar, Screen } from "~components/index";
 
 function AvatarHeader(): JSX.Element {
   return (
@@ -34,106 +14,59 @@ function AvatarHeader(): JSX.Element {
   );
 }
 
-function buildSectionList(blockchainKeyrings: any, activeWallets: any[]) {
-  return Object.entries(blockchainKeyrings).map(([blockchain, keyring]) => {
-    const activeWallet = activeWallets.filter(
-      (a) => a.blockchain === blockchain
-    )[0];
-
-    const data = [
-      ...keyring.hdPublicKeys.map((k: any) => ({ ...k, type: "derived" })),
-      ...keyring.importedPublicKeys.map((k: any) => ({
-        ...k,
-        type: "imported",
-      })),
-      ...keyring.ledgerPublicKeys.map((k: any) => ({
-        ...k,
-        type: "hardware",
-      })),
-    ].filter(({ publicKey }: any) => {
-      return activeWallet.publicKey !== publicKey;
-    });
-
-    return {
-      blockchain,
-      title: toTitleCase(blockchain),
-      data: [activeWallet, ...data],
-    };
-  });
+function NetworkIcon({
+  size,
+  blockchain,
+}: {
+  size?: number;
+  blockchain: Blockchain;
+}) {
+  const logo = getBlockchainLogo(blockchain);
+  return <Image style={[{ width: size, height: size }]} source={logo} />;
 }
 
-function WalletLists({
-  ListHeaderComponent,
-  ListFooterComponent,
-  onPressItem,
-  onPressAddWallet,
+function ActiveWallet({
+  blockchain,
+  publicKey,
 }: {
-  ListHeaderComponent?: JSX.Element;
-  ListFooterComponent?: JSX.Element;
-  onPressItem: (blockchain: Blockchain, wallet: Wallet) => void;
-  onPressAddWallet: (blockchain: Blockchain) => void;
+  blockchain: Blockchain;
+  publicKey: string;
 }): JSX.Element {
-  const blockchainKeyrings = useWalletPublicKeys();
+  return (
+    <XStack backgroundColor="yellow" borderRadius={8} padding={8}>
+      <NetworkIcon blockchain={blockchain} size={12} />
+      <StyledText fontSize="$base">
+        {walletAddressDisplay(publicKey)}
+      </StyledText>
+    </XStack>
+  );
+}
+
+function ActiveWalletList() {
   const activeWallets = useActiveWallets();
-  const sections = buildSectionList(blockchainKeyrings, activeWallets);
-  const [expandedSections, setExpandedSections] = useState(new Set());
-
-  const handleToggle = (blockchain: Blockchain) => {
-    const newExpandedSections = new Set(expandedSections);
-    if (newExpandedSections.has(blockchain)) {
-      newExpandedSections.delete(blockchain);
-    } else {
-      newExpandedSections.add(blockchain);
-    }
-
-    setExpandedSections(newExpandedSections);
-  };
 
   return (
-    <SectionList
-      sections={sections}
-      keyExtractor={(item, index) => item + index}
-      extraData={expandedSections}
-      renderItem={({ section, item: wallet, index }) => {
-        const blockchain = section.blockchain as Blockchain;
-        const isFirst = index === 0;
-        const isLast = index === section.data.length - 1;
-        const isExpanded = expandedSections.has(blockchain);
-
-        if (!isExpanded && !isFirst) {
-          return null;
-        }
-
-        const disableBottomRadius = expandedSections.has(blockchain) && !isLast;
-
-        return (
-          <RoundedContainerGroup
-            disableTopRadius={!isFirst}
-            disableBottomRadius={disableBottomRadius}
-          >
-            <WalletListItem
-              name={wallet.name}
-              publicKey={wallet.publicKey}
-              type={wallet.type}
-              blockchain={blockchain}
-              onPress={isFirst ? handleToggle : onPressItem}
-              icon={
-                isFirst ? <ExpandCollapseIcon isExpanded={isExpanded} /> : null
-              }
-            />
-          </RoundedContainerGroup>
-        );
-      }}
-      renderSectionFooter={({ section }) => (
-        <Margin bottom={24} top={8}>
-          <AddConnectWalletButton
-            blockchain={section.blockchain}
-            onPress={onPressAddWallet}
-          />
-        </Margin>
-      )}
-      ListHeaderComponent={ListHeaderComponent}
-      ListFooterComponent={ListFooterComponent}
-    />
+    <XStack alignSelf="center" space>
+      {activeWallets.map((wallet) => (
+        <ActiveWallet
+          key={wallet.publicKey}
+          blockchain={wallet.blockchain}
+          publicKey={wallet.publicKey}
+        />
+      ))}
+    </XStack>
   );
+}
+
+function Container(): JSX.Element {
+  return (
+    <Screen>
+      <AvatarHeader />
+      <ActiveWalletList />
+    </Screen>
+  );
+}
+
+export function ProfileScreen(): JSX.Element {
+  return <Container />;
 }

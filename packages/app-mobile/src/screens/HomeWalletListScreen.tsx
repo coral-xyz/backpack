@@ -4,7 +4,7 @@ import { Suspense, useCallback } from "react";
 import { FlatList, Text } from "react-native";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
-import { Box } from "@coral-xyz/tamagui";
+import { Box, StyledText } from "@coral-xyz/tamagui";
 import { useNavigation } from "@react-navigation/native";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -109,7 +109,10 @@ function WalletList() {
 function Container() {
   return (
     <Screen headerPadding>
-      <Box mb={12}>
+      <StyledText fontSize="$xl" textAlign="center">
+        All balances
+      </StyledText>
+      <Box my={12}>
         <BalanceSummaryWidget />
       </Box>
       <WalletList />
