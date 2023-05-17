@@ -44,7 +44,7 @@ function ListItemData({ wallet, onPress }: { wallet: Wallet }): JSX.Element {
     },
   });
 
-  const balance = data.wallet.balances?.aggregateValue?.toFixed(2) ?? "$0.00";
+  const balance = data.wallet.balances?.aggregate.value?.toFixed(2) ?? "0.00";
 
   return (
     <ListItemWalletOverview
