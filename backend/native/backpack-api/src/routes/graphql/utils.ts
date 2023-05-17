@@ -35,7 +35,10 @@ export function calculateBalanceAggregate(
 
   return {
     id: `balance_aggregate:${owner}`,
-    percentChange: (totalValueChange / (totalValue - totalValueChange)) * 100,
+    percentChange:
+      totalValueChange > 0
+        ? (totalValueChange / (totalValue - totalValueChange)) * 100
+        : 0,
     value: totalValue,
     valueChange: totalValueChange,
   };
