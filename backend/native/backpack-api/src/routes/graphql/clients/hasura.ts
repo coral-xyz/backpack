@@ -43,7 +43,7 @@ export class Hasura {
    * @returns {Promise<string[]>}
    * @memberof Hasura
    */
-  async getFriends(id: string): Promise<Friend[] | null> {
+  async getFriends(id: string): Promise<Friend[]> {
     // Query Hasura for a list of user ID pairs that represent the active
     // friendships of the user argued
     const resp = await this.#chain("query")(
@@ -65,7 +65,7 @@ export class Hasura {
     );
 
     if (resp.auth_friendships.length === 0) {
-      return null;
+      return [];
     }
 
     const ids = resp.auth_friendships.map((f) =>
@@ -89,23 +89,21 @@ export class Hasura {
       { operationName: "GetFriendDetailsFromIds" }
     );
 
-    return detailsResp.auth_users.length > 0
-      ? detailsResp.auth_users.map((u) => ({
-          id: `friend:${u.id}`,
-          avatar: `https://swr.xnfts.dev/avatars/${u.username}`,
-          username: u.username as string,
-        }))
-      : null;
+    return detailsResp.auth_users.map((u) => ({
+      id: `friend:${u.id}`,
+      avatar: `https://swr.xnfts.dev/avatars/${u.username}`,
+      username: u.username as string,
+    }));
   }
 
   /**
    * Return a list of friend requests that have been sent
    * or received by the argued user ID.
    * @param {string} id
-   * @returns {(Promise<FriendRequest[] | null>)}
+   * @returns {Promise<FriendRequest[]>}
    * @memberof Hasura
    */
-  async getFriendRequests(id: string): Promise<FriendRequest[] | null> {
+  async getFriendRequests(id: string): Promise<FriendRequest[]> {
     // Query Hasura for a list inbound and outbound friend requests
     // for the user ID derived from the contextual JWT
     const resp = await this.#chain("query")(
@@ -126,14 +124,11 @@ export class Hasura {
       { operationName: "GetFriendRequestsForUser" }
     );
 
-    return resp.auth_friend_requests.length > 0
-      ? resp.auth_friend_requests.map((r) => ({
-          id: `friend_request:${r.id}`,
-          type:
-            id === r.from ? FriendRequestType.Sent : FriendRequestType.Received,
-          userId: id === r.from ? r.to : r.from,
-        }))
-      : null;
+    return resp.auth_friend_requests.map((r) => ({
+      id: `friend_request:${r.id}`,
+      type: id === r.from ? FriendRequestType.Sent : FriendRequestType.Received,
+      userId: id === r.from ? r.to : r.from,
+    }));
   }
 
   /**

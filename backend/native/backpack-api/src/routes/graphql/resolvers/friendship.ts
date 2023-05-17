@@ -19,14 +19,14 @@ export const friendshipTypeResolvers: FriendshipResolvers = {
    * @param {{}} _args
    * @param {ApiContext} ctx
    * @param {GraphQLResolveInfo} _info
-   * @returns {(Promise<Friend[] | null>)}
+   * @returns {Promise<Friend[]>}
    */
   async friends(
     _parent: Friendship,
     _args: {},
     ctx: ApiContext,
     _info: GraphQLResolveInfo
-  ): Promise<Friend[] | null> {
+  ): Promise<Friend[]> {
     return ctx.dataSources.hasura.getFriends(ctx.authorization.userId!);
   },
 
@@ -36,14 +36,14 @@ export const friendshipTypeResolvers: FriendshipResolvers = {
    * @param {{}} _args
    * @param {ApiContext} ctx
    * @param {GraphQLResolveInfo} _info
-   * @returns {(Promise<FriendRequest[] | null>)}
+   * @returns {Promise<FriendRequest[]>}
    */
   async requests(
     _parent: Friendship,
     _args: {},
     ctx: ApiContext,
     _info: GraphQLResolveInfo
-  ): Promise<FriendRequest[] | null> {
+  ): Promise<FriendRequest[]> {
     return ctx.dataSources.hasura.getFriendRequests(ctx.authorization.userId!);
   },
 };
