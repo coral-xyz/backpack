@@ -24,7 +24,12 @@ const GET_WALLET_DATA = gql`
       id
       balances {
         id
-        aggregateValue
+        aggregate {
+          id
+          percentChange
+          value
+          valueChange
+        }
       }
     }
   }
