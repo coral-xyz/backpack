@@ -11,16 +11,16 @@ import { Ethereum } from "./ethereum";
 import { Solana } from "./solana";
 
 export interface Blockchain {
-  getBalancesForAddress(address: string): Promise<Balances | null>;
+  getBalancesForAddress(address: string): Promise<Balances>;
   getNftsForAddress(
     address: string,
     filters?: Partial<NftFiltersInput>
-  ): Promise<NftConnection | null>;
+  ): Promise<NftConnection>;
   getTransactionsForAddress(
     address: string,
     before?: string,
     after?: string
-  ): Promise<TransactionConnection | null>;
+  ): Promise<TransactionConnection>;
   id(): ChainId;
   nativeDecimals(): number;
 }

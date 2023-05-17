@@ -81,7 +81,7 @@ export function createConnection<T extends Node>(
   return {
     edges,
     pageInfo: {
-      startCursor: edges[0].cursor,
+      startCursor: edges.at(0)?.cursor,
       endCursor: edges.at(-1)?.cursor,
       hasNextPage,
       hasPreviousPage,
