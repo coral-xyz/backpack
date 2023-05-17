@@ -8,6 +8,7 @@ import {
   type Notification,
   type NotificationConnection,
   type NotificationsFiltersInput,
+  SortDirection,
   type User,
   type Wallet,
   type WalletConnection,
@@ -156,6 +157,13 @@ export class Hasura {
               uuid: { _eq: id },
               viewed: filters?.unreadOnly ? { _eq: false } : undefined,
             },
+            order_by: filters?.sortDirection
+              ? [
+                  {
+                    timestamp: filters.sortDirection.toLowerCase() as any,
+                  },
+                ]
+              : undefined,
             limit: filters?.limit,
           },
           {
