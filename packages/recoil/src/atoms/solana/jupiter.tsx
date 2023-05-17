@@ -129,6 +129,7 @@ export const jupiterOutputTokens = selectorFamily({
       // If input mint is SOL native then we can use WSOL with unwrapping
       const routeMapMint =
         inputMint === SOL_NATIVE_MINT ? WSOL_MINT : inputMint;
+
       if (!routeMap || !routeMap[routeMapMint]) return [];
 
       // Lookup
@@ -156,12 +157,25 @@ export const jupiterOutputTokens = selectorFamily({
         // we are using routes for wSOL for native SOL, and wSOL is not an
         // output token for itself.
         const wrappedSol = tokenRegistry.get(WSOL_MINT);
-        swapTokens.push({
+        swapTokens.unshift({
           name: wrappedSol.name,
           ticker: wrappedSol.symbol,
           logo: wrappedSol.logoURI,
           decimals: wrappedSol.decimals,
           mint: WSOL_MINT,
+        });
+      }
+
+      // Add native SOL as an output for wSOL since native SOL is not
+      // listed in the jupiter routeMaps for wSOL
+      if (inputMint === WSOL_MINT) {
+        const unwrappedSol = tokenRegistry.get(SOL_NATIVE_MINT);
+        swapTokens.unshift({
+          name: unwrappedSol.name,
+          ticker: unwrappedSol.symbol,
+          logo: unwrappedSol.logoURI,
+          decimals: unwrappedSol.decimals,
+          mint: SOL_NATIVE_MINT,
         });
       }
 

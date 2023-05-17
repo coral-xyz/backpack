@@ -209,7 +209,10 @@ export function SwapProvider({
       }
     } else {
       // If not a Jupiter swap then 1:1
-      return fromAmount;
+      if (fromAmount?.gt(0)) {
+        return fromAmount;
+      }
+      return undefined;
     }
   })();
 
@@ -474,8 +477,12 @@ export function SwapProvider({
   // Switch the trade direction.
   //
   const swapToFromMints = () => {
+    // SOL will change to wSOL and vice versa when swapped
     if (fromMint === SOL_NATIVE_MINT) {
-      setFromMintToMint([toMint, WSOL_MINT]);
+      setFromMintToMint([
+        toMint,
+        toMint === WSOL_MINT ? SOL_NATIVE_MINT : WSOL_MINT,
+      ]);
     } else if (toMint === WSOL_MINT) {
       setFromMintToMint([SOL_NATIVE_MINT, fromMint]);
     } else {
@@ -545,8 +552,7 @@ export function SwapProvider({
 
   // Only allow users to switch input and output tokens if they currently
   // have a balance of the output token
-  const canSwitch =
-    toToken?.mint === WSOL_MINT || fromTokens.some((t) => t.mint === toMint);
+  const canSwitch = fromTokens.some((t) => t.mint === toMint);
 
   return (
     <_SwapContext.Provider

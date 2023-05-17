@@ -37,7 +37,7 @@ import {
   Typography,
 } from "@mui/material";
 import type { BigNumberish } from "ethers";
-import { ethers,FixedNumber } from "ethers";
+import { ethers, FixedNumber } from "ethers";
 
 import { Button as XnftButton } from "../../plugin/Component";
 import { TextField } from "../common";
