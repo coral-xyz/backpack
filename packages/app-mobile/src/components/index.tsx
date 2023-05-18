@@ -28,12 +28,13 @@ import {
   StyledText,
   RoundedContainerGroup,
   ProxyImage,
+  UserAvatar,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ContentCopyIcon, RedBackpack } from "~components/Icon";
-import { CurrentUserAvatar, UserAvatar } from "~components/UserAvatar";
+import { CurrentUserAvatar } from "~components/UserAvatar";
 import { useTheme } from "~hooks/useTheme";
 
 export { ActionCard } from "./ActionCard";
@@ -56,6 +57,7 @@ export {
   StyledText,
   RoundedContainerGroup,
   ProxyImage,
+  UserAvatar,
 };
 
 export function CallToAction({

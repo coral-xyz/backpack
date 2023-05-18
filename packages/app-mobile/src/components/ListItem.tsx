@@ -21,11 +21,11 @@ import {
   RoundedContainerGroup,
   StyledText,
   ProxyImage,
+  UserAvatar,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import { IconCheckmark } from "~components/Icon";
-import { UserAvatar } from "~components/UserAvatar";
 import { useTheme } from "~hooks/useTheme";
 
 export const ListHeader = ({ title }: { title: string }): JSX.Element => (
