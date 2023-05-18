@@ -24,7 +24,7 @@ import {
   useBlockchainExplorer,
   useSolanaCtx,
 } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 import * as anchor from "@project-serum/anchor";
 import * as web3 from "@solana/web3.js";
@@ -41,6 +41,139 @@ import {
 import { SettingsList } from "../../common/Settings/List";
 import { TokenAmountHeader } from "../../common/TokenAmountHeader";
 import { Error } from "../Balances/TokensWidget/Send";
+
+const useLocalStyles = styles((theme) => ({
+  listScreenContainer: {
+    padding: "0 16px 8px 16px",
+  },
+  inputInfoContainer: {
+    alignItems: "center",
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px",
+    margin: "60px 0 75px 0",
+    textAlign: "center",
+  },
+  priceTitleText: {
+    color: theme.custom.colors.secondary,
+    fontSize: "15px",
+    fontWeight: 500,
+    marginTop: "10px",
+  },
+  logoSolContainer: {
+    display: "flex",
+    gap: "15px",
+    justifyContent: "center",
+  },
+  logoSolImageContainer: {
+    margin: "auto 0",
+  },
+  logoSolInputContainer: {
+    display: "flex",
+    justifyContent: "center",
+    margin: "auto 0",
+  },
+  priceAmtText: {
+    color: theme.custom.colors.secondary,
+    fontSize: "15px",
+    fontWeight: 500,
+  },
+  metadataContainer: {
+    backgroundColor: theme.custom.colors.bg4, //bg2
+    borderRadius: "8px",
+    margin: "20px 0",
+    padding: "15px",
+  },
+  metadataInnerContainer: {
+    display: "flex",
+    gap: "15px",
+  },
+  metadataTextContainer: {
+    margin: "auto 0",
+  },
+  metadataNameText: {
+    color: theme.custom.colors.fontColor,
+    fontWeight: 500,
+    fontSize: "18px",
+    lineHeight: "24px",
+  },
+  metadataCollectionText: {
+    color: theme.custom.colors.secondary,
+    fontSize: "14px",
+    fontWeight: 500,
+    marginTop: "10px",
+  },
+  metadataLineDivider: {
+    margin: "15px 0",
+    borderColor: theme.custom.colors.secondary,
+    borderWidth: "0.1px",
+  },
+  listScreenFooterBtnsContainer: {
+    alignItems: "center",
+    display: "flex",
+    gap: "15px",
+  },
+
+  //confirm drawer
+  confirmDrawerContainer: {
+    padding: "16px",
+    height: "602px",
+    display: "flex",
+    justifyContent: "space-between",
+    flexDirection: "column",
+    paddingBottom: "24px",
+  },
+  confirmDrawerTitle: {
+    color: theme.custom.colors.fontColor,
+    fontWeight: 500,
+    fontSize: "18px",
+    lineHeight: "24px",
+    textAlign: "center",
+  },
+
+  //sending drawer
+  sendingDrawerContainer: {
+    height: "450px",
+  },
+  sendingDrawerTitle: {
+    color: theme.custom.colors.fontColor,
+    fontWeight: 500,
+    fontSize: "18px",
+    lineHeight: "24px",
+    padding: "20px",
+    textAlign: "center",
+  },
+  SendingDrawerFooterContainer: {
+    textAlign: "center",
+  },
+  SendingDrawerCloseOptionsContainer: {
+    display: "flex",
+    gap: "15px",
+    padding: "20px",
+  },
+  ViewTxSuccessText: {
+    color: theme.custom.colors.secondary,
+    fontSize: "12px",
+    fontWeight: 500,
+    "&:hover": {
+      cursor: "pointer",
+    },
+  },
+  sendingDrawerLoadingContainer: {
+    height: "20px",
+    marginTop: "60px",
+  },
+  ViewTxLoadingText: {
+    color: theme.custom.colors.secondary,
+    fontSize: "12px",
+    fontWeight: 500,
+    textAlign: "center",
+    marginTop: "50px",
+    "&:hover": {
+      cursor: "pointer",
+    },
+  },
+}));
 
 export function ListDrawer({
   children,
@@ -93,6 +226,7 @@ export function ListScreen({
   closePageDrawer: () => void;
 }) {
   const theme = useCustomTheme();
+  const classes = useLocalStyles();
   const activeWallet = useActiveWallet();
   const solanaCtx = useSolanaCtx();
   const provider = useAnchorContext();
@@ -188,39 +322,18 @@ export function ListScreen({
           params: [],
         });
       }
+      // TODO force a hard reload
     })();
   }, [cardType, background]);
 
   return (
-    <div
-      style={{
-        padding: "0 16px 8px 16px",
-      }}
-    >
-      <div
-        style={{
-          alignItems: "center",
-          display: "flex",
-          flexDirection: "column",
-          gap: "15px",
-          margin: "60px 0 75px 0",
-          textAlign: "center",
-        }}
-      >
+    <div className={classes.listScreenContainer}>
+      <div className={classes.inputInfoContainer}>
         <div>
-          <Typography
-            style={{
-              color: theme.custom.colors.secondary,
-              fontSize: "15px",
-              fontWeight: 500,
-              marginTop: "10px",
-            }}
-          >
-            Price
-          </Typography>
+          <Typography className={classes.priceTitleText}>Price</Typography>
         </div>
-        <div style={{ display: "flex", gap: "15px", justifyContent: "center" }}>
-          <div style={{ margin: "auto 0" }}>
+        <div className={classes.logoSolContainer}>
+          <div className={classes.logoSolImageContainer}>
             <ProxyImage
               src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png" //SOLANA ONLY
               style={{
@@ -231,13 +344,7 @@ export function ListScreen({
               removeOnError
             />
           </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              margin: "auto 0",
-            }}
-          >
+          <div className={classes.logoSolInputContainer}>
             <input
               placeholder="0"
               autoFocus
@@ -270,13 +377,7 @@ export function ListScreen({
           </div>
         </div>
         <div>
-          <Typography
-            style={{
-              color: theme.custom.colors.secondary,
-              fontSize: "15px",
-              fontWeight: 500,
-            }}
-          >
+          <Typography className={classes.priceAmtText}>
             $10,100 {/* //! REMOVE UPDATE LATER, IS THERE AN API FOR THIS */}
           </Typography>
         </div>
@@ -288,17 +389,10 @@ export function ListScreen({
         />
       </div>
 
-      <div
-        style={{
-          backgroundColor: theme.custom.colors.bg4, //bg2
-          borderRadius: "8px",
-          margin: "20px 0",
-          padding: "15px",
-        }}
-      >
+      <div className={classes.metadataContainer}>
         {" "}
         {/* // ! infor container here */}
-        <div style={{ display: "flex", gap: "15px" }}>
+        <div className={classes.metadataInnerContainer}>
           <div>
             <ProxyImage
               src={nft?.imageUrl}
@@ -310,36 +404,16 @@ export function ListScreen({
               removeOnError
             />
           </div>
-          <div style={{ margin: "auto 0" }}>
-            <Typography
-              style={{
-                color: theme.custom.colors.fontColor,
-                fontWeight: 500,
-                fontSize: "18px",
-                lineHeight: "24px",
-              }}
-            >
+          <div className={classes.metadataTextContainer}>
+            <Typography className={classes.metadataNameText}>
               {nft?.name}
             </Typography>
-            <Typography
-              style={{
-                color: theme.custom.colors.secondary,
-                fontSize: "14px",
-                fontWeight: 500,
-                marginTop: "10px",
-              }}
-            >
+            <Typography className={classes.metadataCollectionText}>
               {nft?.collectionName}
             </Typography>
           </div>
         </div>
-        <hr
-          style={{
-            margin: "15px 0",
-            borderColor: theme.custom.colors.secondary,
-            borderWidth: "0.1px",
-          }}
-        />
+        <hr className={classes.metadataLineDivider} />
         <div>
           <DangerButton
             style={{
@@ -350,13 +424,7 @@ export function ListScreen({
           />
         </div>
       </div>
-      <div
-        style={{
-          alignItems: "center",
-          display: "flex",
-          gap: "15px",
-        }}
-      >
+      <div className={classes.listScreenFooterBtnsContainer}>
         <SecondaryButton label="Cancel" onClick={closePageDrawer} />
         <PrimaryButton
           label={`${listed ? "Edit" : "save"}`} // ! CHANGE DEPENDING ON PAGE REQ CAME FROM
@@ -405,28 +473,11 @@ function ConfirmListScreen({
   token: any;
   onConfirm: () => void;
 }) {
-  const theme = useCustomTheme();
+  const classes = useLocalStyles();
   return (
-    <div
-      style={{
-        padding: "16px",
-        height: "602px",
-        display: "flex",
-        justifyContent: "space-between",
-        flexDirection: "column",
-        paddingBottom: "24px",
-      }}
-    >
+    <div className={classes.confirmDrawerContainer}>
       <div>
-        <Typography
-          style={{
-            color: theme.custom.colors.fontColor,
-            fontWeight: 500,
-            fontSize: "18px",
-            lineHeight: "24px",
-            textAlign: "center",
-          }}
-        >
+        <Typography className={classes.confirmDrawerTitle}>
           Review List for Sale
         </Typography>
         <TokenAmountHeader
@@ -436,7 +487,6 @@ function ConfirmListScreen({
           amount={BigNumber.from(1)}
           token={token}
         />
-
         <ListNftTable listFee="200" />
       </div>
       <PrimaryButton onClick={() => onConfirm()} label="List for Sale" />
@@ -521,6 +571,7 @@ const SendingNft = ({
   closeDrawer?: () => void;
 }) => {
   const theme = useCustomTheme();
+  const classes = useLocalStyles();
   const explorer = useBlockchainExplorer(Blockchain.SOLANA); //listing on
   const connectionUrl = useBlockchainConnectionUrl(Blockchain.SOLANA); //listing on tensor
 
@@ -528,17 +579,8 @@ const SendingNft = ({
   const isListed = token.listPrice > 0 ? true : false;
 
   return (
-    <div style={{ height: "450px" }}>
-      <Typography
-        style={{
-          color: theme.custom.colors.fontColor,
-          fontWeight: 500,
-          fontSize: "18px",
-          lineHeight: "24px",
-          padding: "20px",
-          textAlign: "center",
-        }}
-      >
+    <div className={classes.sendingDrawerContainer}>
+      <Typography className={classes.sendingDrawerTitle}>
         {isComplete && isListed
           ? "Updated!"
           : !isComplete && isListed
@@ -557,9 +599,9 @@ const SendingNft = ({
         token={token}
       />
       {isComplete ? (
-        <div style={{ textAlign: "center" }}>
+        <div className={classes.sendingDrawerFooterContainer}>
           <CheckIcon />
-          <div style={{ display: "flex", gap: "15px", padding: "20px" }}>
+          <div className={classes.SendingDrawerCloseOptionsContainer}>
             <SecondaryButton label="Close" onClick={closeDrawer} />
             <PrimaryButton
               label="view listing"
@@ -567,14 +609,7 @@ const SendingNft = ({
             />
           </div>
           <Typography
-            sx={{
-              color: theme.custom.colors.secondary,
-              fontSize: "12px",
-              fontWeight: 500,
-              "&:hover": {
-                cursor: "pointer",
-              },
-            }}
+            className={classes.ViewTxSuccessText}
             onClick={() =>
               window.open(explorerUrl(explorer, signature, connectionUrl))
             }
@@ -583,7 +618,7 @@ const SendingNft = ({
           </Typography>
         </div>
       ) : (
-        <div style={{ height: "20px", marginTop: "60px" }}>
+        <div className={classes.sendingDrawerLoadingContainer}>
           <Loading
             size={48}
             iconStyle={{
@@ -594,16 +629,7 @@ const SendingNft = ({
             }}
           />
           <Typography
-            sx={{
-              color: theme.custom.colors.secondary,
-              fontSize: "12px",
-              fontWeight: 500,
-              textAlign: "center",
-              marginTop: "50px",
-              "&:hover": {
-                cursor: "pointer",
-              },
-            }}
+            className={classes.ViewTxLoadingText}
             onClick={() =>
               window.open(explorerUrl(explorer, signature, connectionUrl))
             }
