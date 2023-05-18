@@ -140,13 +140,15 @@ export type MarketData = Node & {
   /** Globally unqiue identifier for the token's market data. */
   id: Scalars["ID"];
   /** A timestamp of the last date of when the market data was updated. */
-  lastUpdatedAt: Scalars["Int"];
+  lastUpdatedAt: Scalars["String"];
   /** The image link to the logo of the token's market listing. */
   logo: Scalars["String"];
   /** The percentage of change since the latest market data update. */
   percentChange: Scalars["Float"];
   /** The current USD price of the token according to the market data. */
   price: Scalars["Float"];
+  /** Time series price data for the token to be used for creating a sparkline. */
+  sparkline: Array<Scalars["Float"]>;
   /** The numerical amount change in USD since the latest market data update. */
   usdChange: Scalars["Float"];
   /** The value of the wallet's currently holdings of the token in USD. */
@@ -418,7 +420,7 @@ export type TransactionTransfer = {
   from: Scalars["String"];
   /** The address that the transfer was sent to. */
   to: Scalars["String"];
-  /** The token mint or contract address of the toke type. */
+  /** The token mint or contract address of the token type. */
   token: Scalars["String"];
   /** The token mint or contract address symbol. */
   tokenName?: Maybe<Scalars["String"]>;
@@ -856,10 +858,11 @@ export type MarketDataResolvers<
   ParentType extends ResolversParentTypes["MarketData"] = ResolversParentTypes["MarketData"]
 > = ResolversObject<{
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
-  lastUpdatedAt?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  lastUpdatedAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   logo?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   percentChange?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   price?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  sparkline?: Resolver<Array<ResolversTypes["Float"]>, ParentType, ContextType>;
   usdChange?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   value?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   valueChange?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;

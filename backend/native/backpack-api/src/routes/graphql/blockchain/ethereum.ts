@@ -22,11 +22,7 @@ import {
   type TransactionFiltersInput,
   type TransactionTransfer,
 } from "../types";
-import {
-  calculateBalanceAggregate,
-  calculateUsdChange,
-  createConnection,
-} from "../utils";
+import { calculateBalanceAggregate, createConnection } from "../utils";
 
 import type { Blockchain } from ".";
 
@@ -77,23 +73,20 @@ export class Ethereum implements Blockchain {
       displayAmount: ethers.utils.formatUnits(native, this.nativeDecimals()),
       marketData: {
         id: this.#ctx.dataSources.coinGecko.id("ethereum"),
-        percentChange: parseFloat(prices.ethereum.usd_24h_change.toFixed(2)),
-        usdChange: calculateUsdChange(
-          prices.ethereum.usd_24h_change,
-          prices.ethereum.usd
+        percentChange: parseFloat(
+          prices.ethereum.price_change_percentage_24h.toFixed(2)
         ),
-        lastUpdatedAt: prices.ethereum.last_updated_at,
+        usdChange: prices.ethereum.price_change_24h,
+        lastUpdatedAt: prices.ethereum.last_updated,
         logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png",
-        price: prices.ethereum.usd,
+        price: prices.ethereum.current_price,
+        sparkline: prices.ethereum.sparkline_in_7d.price,
         value:
           parseFloat(ethers.utils.formatUnits(native, this.nativeDecimals())) *
-          prices.ethereum.usd,
+          prices.ethereum.current_price,
         valueChange:
           parseFloat(ethers.utils.formatUnits(native, this.nativeDecimals())) *
-          calculateUsdChange(
-            prices.ethereum.usd_24h_change,
-            prices.ethereum.usd
-          ),
+          prices.ethereum.price_change_24h,
       },
       token: ETH_DEFAULT_ADDRESS,
     };

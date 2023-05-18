@@ -45,21 +45,6 @@ export function calculateBalanceAggregate(
 }
 
 /**
- * Calculates percent change from coingecko data
- * @export
- * @param {number} percentChange
- * @param {number} price
- * @returns {number}
- */
-export function calculateUsdChange(
-  percentChange: number,
-  price: number
-): number {
-  const usdChange = (percentChange / 100) * price;
-  return Number(usdChange.toFixed(2));
-}
-
-/**
  * Generate a Relay connection from a list of node objects.
  * @export
  * @template T
