@@ -31,6 +31,7 @@ import {
   NegativeButton,
   DangerButton,
   StyledText,
+  RoundedContainerGroup,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -57,6 +58,7 @@ export {
   NegativeButton,
   DangerButton,
   StyledText,
+  RoundedContainerGroup,
 };
 
 export function CallToAction({
@@ -694,59 +696,6 @@ const headerIconSubtitleStyles = StyleSheet.create({
   container: {
     alignItems: "center",
     marginBottom: 24,
-  },
-});
-
-export function RoundedContainerGroup({
-  children,
-  style,
-  disableTopRadius = false,
-  disableBottomRadius = false,
-}: {
-  children: JSX.Element;
-  style?: StyleProp<ViewStyle>;
-  disableTopRadius?: boolean;
-  disableBottomRadius?: boolean;
-}): JSX.Element {
-  const theme = useTheme();
-  return (
-    <View
-      style={[
-        roundedContainerStyles.container,
-        {
-          backgroundColor: theme.custom.colors.nav,
-          borderColor: theme.custom.colors.borderFull,
-        },
-        disableTopRadius ? roundedContainerStyles.disableTopRadius : undefined,
-        disableBottomRadius
-          ? roundedContainerStyles.disableBottomRadius
-          : undefined,
-        style,
-      ]}
-    >
-      <View style={{ overflow: "hidden", borderRadius: 16 }}>{children}</View>
-    </View>
-  );
-}
-
-const roundedContainerStyles = StyleSheet.create({
-  container: {
-    overflow: "hidden",
-    borderRadius: 16,
-    borderLeftWidth: 2,
-    borderRightWidth: 2,
-    borderTopWidth: 2,
-    borderBottomWidth: 2,
-  },
-  disableTopRadius: {
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
-    borderTopWidth: 0,
-  },
-  disableBottomRadius: {
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-    borderBottomWidth: 0,
   },
 });
 

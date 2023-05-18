@@ -16,6 +16,7 @@ import {
   YStack,
   YGroup,
   Separator,
+  TextPercentChanged,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -28,7 +29,6 @@ import {
   RoundedContainerGroup,
 } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
-import { TextPercentChanged } from "~screens/Unlocked/components/Balances";
 
 export const ListHeader = ({ title }: { title: string }): JSX.Element => (
   <StyledText fontSize="$base" color="$fontColor" mb={8} ml={18}>
