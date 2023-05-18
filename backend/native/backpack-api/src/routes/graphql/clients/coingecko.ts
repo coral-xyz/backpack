@@ -1,5 +1,11 @@
 import { RESTDataSource } from "@apollo/datasource-rest";
 
+/**
+ * Custom GraphQL REST data source class abstraction for CoinGecko.
+ * @export
+ * @class CoinGecko
+ * @extends {RESTDataSource}
+ */
 export class CoinGecko extends RESTDataSource {
   override baseURL = "https://api.coingecko.com";
 
@@ -14,17 +20,31 @@ export class CoinGecko extends RESTDataSource {
    * @returns {Promise<CoinGeckoGetPricesResponse<I>>}
    * @memberof CoinGecko
    */
-  async getPrices<I extends string>(
-    ids: I[]
-  ): Promise<CoinGeckoGetPricesResponse<I>> {
-    return this.get("/api/v3/simple/price", {
+  async getPrices(ids: string[]): Promise<CoinGeckoGetPricesResponse> {
+    const resp: CoinGeckoPriceData[] = await this.get("/api/v3/coins/markets", {
       params: {
         ids: ids.join(","),
-        vs_currencies: "usd",
-        include_24hr_change: "true",
-        include_last_updated_at: "true",
+        page: "1",
+        price_change_percentage: "24h",
+        sparkline: "true",
+        vs_currency: "usd",
       },
     });
+
+    return resp.reduce<CoinGeckoGetPricesResponse>((acc, curr) => {
+      acc[curr.id] = curr;
+      return acc;
+    }, {});
+  }
+
+  /**
+   * Return the node ID for Coingecko market data.
+   * @param {string} currency
+   * @returns {string}
+   * @memberof CoinGecko
+   */
+  id(currency: string): string {
+    return `coingecko_market_data:${currency}`;
   }
 }
 
@@ -32,13 +52,37 @@ export class CoinGecko extends RESTDataSource {
 //                Types                   //
 ////////////////////////////////////////////
 
-export type CoinGeckoGetPricesResponse<I extends string> = Record<
-  I,
-  CoinGeckoPriceData
->;
+export type CoinGeckoGetPricesResponse = Record<string, CoinGeckoPriceData>;
 
 export type CoinGeckoPriceData = {
-  usd: number;
-  usd_24h_change: number;
-  last_updated_at: number;
+  id: string;
+  symbol: string;
+  name: string;
+  image: string;
+  current_price: number;
+  market_cap: number;
+  market_cap_rank: number;
+  fully_filuted_valuation: number;
+  total_volume: number;
+  high_24h: number;
+  low_24h: number;
+  price_change_24h: number;
+  price_change_percentage_24h: number;
+  market_cap_change_24h: number;
+  market_cap_change_percentage_24h: number;
+  circulating_supply: number;
+  total_supply: number;
+  max_supply: number | null;
+  ath: number;
+  ath_change_percentage: number;
+  ath_date: string;
+  atl: number;
+  atl_change_percentage: number;
+  atl_date: string;
+  roi: any | null;
+  last_updated: string;
+  sparkline_in_7d: {
+    price: number[];
+  };
+  price_change_percentage_24h_in_currency: number;
 };

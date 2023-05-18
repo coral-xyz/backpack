@@ -1,7 +1,7 @@
-import dynamic from 'next/dynamic';
+import { Suspense, lazy } from 'react';
 
-const Newsletter = dynamic(() => import('../components/Newsletter'));
-const Partners = dynamic(() => import('../components/Partners'));
+const Newsletter = lazy(() => import('../components/Newsletter'));
+const Partners = lazy(() => import('../components/Partners'));
 
 export default function About() {
   return (
@@ -63,8 +63,12 @@ export default function About() {
           </p>
         </div>
       </div>
-      <Partners />
-      <Newsletter />
+      <Suspense fallback={null}>
+        <Partners />
+      </Suspense>
+      <Suspense fallback={null}>
+        <Newsletter />
+      </Suspense>
     </>
   );
 }

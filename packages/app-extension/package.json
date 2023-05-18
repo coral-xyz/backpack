@@ -1,9 +1,10 @@
 {
   "name": "@coral-xyz/app-extension",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "description": "A next level crypto wallet for Solana and Ethereum",
   "private": true,
   "dependencies": {
+    "@apollo/client": "3.8.0-alpha.12",
     "@bonfida/spl-name-service": "^0.1.51",
     "@cardinal/token-manager": "^1.7.9",
     "@coral-xyz/background": "*",
@@ -43,6 +44,7 @@
     "react-custom-scrollbars": "^4.2.1",
     "react-dom": "18.2.0",
     "react-dropzone": "^14.2.3",
+    "react-error-boundary": "^4.0.4",
     "react-native-web": "^0.18.12",
     "react-router-dom": "^6.3.0",
     "react-toastify": "^9.1.1",

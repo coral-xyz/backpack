@@ -15,7 +15,7 @@ const tokens = createTokens({
   ..._tokens,
   size: {
     ..._tokens.size,
-    container: 48,
+    container: 56,
     borderWidth: 2,
     xs: 12,
     sm: 14,

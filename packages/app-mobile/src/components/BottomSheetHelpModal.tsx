@@ -1,7 +1,4 @@
-import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
-
-import { useCallback, useEffect, useMemo, useRef } from "react";
-import { FlatList, Pressable, StyleSheet } from "react-native";
+import { Alert, FlatList, Pressable, StyleSheet } from "react-native";
 
 import * as Linking from "expo-linking";
 
@@ -11,13 +8,14 @@ import {
   TWITTER_LINK,
 } from "@coral-xyz/common";
 import { MaterialIcons } from "@expo/vector-icons";
-import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
 
 import { BetterBottomSheet } from "~components/BottomSheetModal";
 import { DiscordIcon, TwitterIcon } from "~components/Icon";
-import { Margin, RoundedContainerGroup } from "~components/index";
+import { RoundedContainerGroup } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
+import { useSession } from "~lib/SessionProvider";
 import {
+  IconPushDetail,
   IconLaunchDetail,
   SettingsRow,
 } from "~screens/Unlocked/Settings/components/SettingsRow";
@@ -51,16 +49,16 @@ const styles = StyleSheet.create({
 export function BottomSheetHelpModal({
   isVisible,
   resetVisibility,
-  extraOptions = [],
+  showResetButton,
 }: {
   isVisible: boolean;
   resetVisibility: () => void;
-  extraOptions?: any[];
+  showResetButton?: boolean;
 }): JSX.Element {
   const theme = useTheme();
+  const { reset } = useSession();
 
   const menuOptions = [
-    ...extraOptions,
     {
       icon: (
         <MaterialIcons
@@ -86,6 +84,36 @@ export function BottomSheetHelpModal({
       detailIcon: <IconLaunchDetail />,
     },
   ];
+
+  if (showResetButton) {
+    menuOptions.push({
+      icon: (
+        <MaterialIcons
+          name="people"
+          size={24}
+          color={theme.custom.colors.secondary}
+        />
+      ),
+      label: "Reset Backpack",
+      detailIcon: <IconPushDetail />,
+      onPress: async () => {
+        Alert.alert(
+          "Are your sure?",
+          "This will wipe all data that's been stored in the app",
+          [
+            {
+              text: "Yes",
+              onPress: () => reset(),
+            },
+            {
+              text: "No",
+              onPress: () => {},
+            },
+          ]
+        );
+      },
+    });
+  }
 
   return (
     <BetterBottomSheet isVisible={isVisible} resetVisibility={resetVisibility}>

@@ -151,8 +151,9 @@ app.use("/v4/*", async (c) => {
 // end routes ----------------------------------------
 
 const changeOriginToJupiter = (url: string) => {
-  const { origin } = new URL(url);
-  return url.replace(origin, "https://quote-api.jup.ag");
+  const ob = new URL(url);
+  ob.host = "quote-api.jup.ag";
+  return ob.href;
 };
 
 export default app;

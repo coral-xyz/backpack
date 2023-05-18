@@ -1,11 +1,8 @@
-import type { Blockchain } from "@coral-xyz/common";
-
-import { useState } from "react";
-import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from "react-native";
+import { memo, useState } from "react";
+import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import {
   ActivityIndicator,
   Alert,
-  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -17,8 +14,10 @@ import {
 import * as Clipboard from "expo-clipboard";
 import Constants from "expo-constants";
 
-import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
+import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
+import { useActiveWallet } from "@coral-xyz/recoil";
 import {
+  XStack,
   Margin,
   BaseButton,
   LinkButton,
@@ -27,11 +26,15 @@ import {
   NegativeButton,
   DangerButton,
   StyledText,
+  RoundedContainerGroup,
+  ProxyImage,
+  UserAvatar,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ContentCopyIcon, RedBackpack } from "~components/Icon";
+import { CurrentUserAvatar } from "~components/UserAvatar";
 import { useTheme } from "~hooks/useTheme";
 
 export { ActionCard } from "./ActionCard";
@@ -42,7 +45,7 @@ export { PasswordInput } from "./PasswordInput";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { StyledTokenTextInput } from "./TokenInputField";
-export { Avatar } from "./UserAvatar";
+export { Avatar, CurrentUserAvatar } from "./UserAvatar";
 export {
   Margin,
   BaseButton,
@@ -52,6 +55,9 @@ export {
   NegativeButton,
   DangerButton,
   StyledText,
+  RoundedContainerGroup,
+  ProxyImage,
+  UserAvatar,
 };
 
 export function CallToAction({
@@ -318,55 +324,6 @@ export function EmptyState({
           />
         </Margin>
       ) : null}
-    </View>
-  );
-}
-
-// React Native apps need to specifcy a width and height for remote images
-export function ProxyImage({
-  src,
-  style,
-  ...props
-}: {
-  src: string;
-  style: StyleProp<ImageStyle>;
-}): JSX.Element {
-  const uri = proxyImageUrl(src);
-  return (
-    <Image
-      style={style}
-      source={{ uri }}
-      // onError={({ currentTarget }) => {
-      //   currentTarget.onerror = props.onError || null;
-      //   currentTarget.src = props.src;
-      // }}
-      {...props}
-    />
-  );
-}
-
-export function WalletAddressLabel({
-  publicKey,
-  name,
-  style,
-  nameStyle,
-}: {
-  publicKey: string;
-  name: string;
-  style: StyleProp<ViewStyle>;
-  nameStyle: StyleProp<TextStyle>;
-}): JSX.Element {
-  const theme = useTheme();
-  return (
-    <View style={[{ flexDirection: "row", alignItems: "center" }, style]}>
-      <Margin right={8}>
-        <Text style={[{ color: theme.custom.colors.fontColor }, nameStyle]}>
-          {name}
-        </Text>
-      </Margin>
-      <Text style={{ color: theme.custom.colors.secondary }}>
-        ({walletAddressDisplay(publicKey)})
-      </Text>
     </View>
   );
 }
@@ -718,59 +675,6 @@ const headerIconSubtitleStyles = StyleSheet.create({
   },
 });
 
-export function RoundedContainerGroup({
-  children,
-  style,
-  disableTopRadius = false,
-  disableBottomRadius = false,
-}: {
-  children: JSX.Element;
-  style?: StyleProp<ViewStyle>;
-  disableTopRadius?: boolean;
-  disableBottomRadius?: boolean;
-}): JSX.Element {
-  const theme = useTheme();
-  return (
-    <View
-      style={[
-        roundedContainerStyles.container,
-        {
-          backgroundColor: theme.custom.colors.nav,
-          borderColor: theme.custom.colors.borderFull,
-        },
-        disableTopRadius ? roundedContainerStyles.disableTopRadius : undefined,
-        disableBottomRadius
-          ? roundedContainerStyles.disableBottomRadius
-          : undefined,
-        style,
-      ]}
-    >
-      <View style={{ overflow: "hidden", borderRadius: 16 }}>{children}</View>
-    </View>
-  );
-}
-
-const roundedContainerStyles = StyleSheet.create({
-  container: {
-    overflow: "hidden",
-    borderRadius: 16,
-    borderLeftWidth: 2,
-    borderRightWidth: 2,
-    borderTopWidth: 2,
-    borderBottomWidth: 2,
-  },
-  disableTopRadius: {
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
-    borderTopWidth: 0,
-  },
-  disableBottomRadius: {
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-    borderBottomWidth: 0,
-  },
-});
-
 export function Row({
   children,
 }: {
@@ -785,3 +689,70 @@ const rowStyles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
+// original component we use in a bunch of places, wrapped
+export const WalletAddressLabel = memo(function WalletAddressLabel({
+  publicKey,
+}: {
+  publicKey: string;
+}): JSX.Element {
+  return (
+    <Box p={4} backgroundColor="$background" borderRadius="$small">
+      <StyledText fontSize="$sm" color="$secondary">
+        ({walletAddressDisplay(publicKey)})
+      </StyledText>
+    </Box>
+  );
+});
+
+// returns a name (username or wallet name) next to an address (public key)
+export function NameAddressLabel({
+  publicKey,
+  name,
+}: {
+  publicKey: string;
+  name: string;
+}): JSX.Element {
+  return (
+    <XStack alignItems="center">
+      <StyledText mr={8} fontSize="$sm" color="$fontColor">
+        {name}
+      </StyledText>
+      <WalletAddressLabel publicKey={publicKey} />
+    </XStack>
+  );
+}
+
+// Used for the "from" functionality in sending
+export function CurrentUserAvatarWalletNameAddress() {
+  const w = useActiveWallet();
+  return (
+    <XStack alignItems="center">
+      <Box mr={8}>
+        <CurrentUserAvatar size={24} />
+      </Box>
+      <NameAddressLabel publicKey={w.publicKey} name={w.name} />
+    </XStack>
+  );
+}
+
+// used for the "to" functionality in sending
+// can also be used for the current user "to" when sending to another wallet, just pass in that info
+export function AvatarUserNameAddress({
+  username,
+  avatarUrl,
+  publicKey,
+}: {
+  username: string;
+  avatarUrl: string;
+  publicKey: string;
+}): JSX.Element {
+  return (
+    <XStack alignItems="center">
+      <Box mr={8}>
+        <UserAvatar uri={avatarUrl} size={24} />
+      </Box>
+      <NameAddressLabel publicKey={publicKey} name={username} />
+    </XStack>
+  );
+}

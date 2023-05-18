@@ -1,17 +1,25 @@
-import dynamic from 'next/dynamic';
+import { lazy, Suspense } from 'react';
 
-const Hero = dynamic(() => import('../components/Hero'));
-const Posts = dynamic(() => import('../components/Posts'));
-const Newsletter = dynamic(() => import('../components/Newsletter'));
-const Partners = dynamic(() => import('../components/Partners'));
+const Hero = lazy(() => import('../components/Hero'));
+const Posts = lazy(() => import('../components/Posts'));
+const Newsletter = lazy(() => import('../components/Newsletter'));
+const Partners = lazy(() => import('../components/Partners'));
 
 export default function Home() {
   return (
     <div className="mb-20 flex flex-col gap-10">
-      <Hero />
-      <Posts />
-      <Partners />
-      <Newsletter />
+      <Suspense fallback={null}>
+        <Hero />
+      </Suspense>
+      <Suspense fallback={null}>
+        <Posts />
+      </Suspense>
+      <Suspense fallback={null}>
+        <Partners />
+      </Suspense>
+      <Suspense fallback={null}>
+        <Newsletter />
+      </Suspense>
     </div>
   );
 }

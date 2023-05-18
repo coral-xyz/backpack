@@ -3,20 +3,24 @@ import {
   type Balances,
   ChainId,
   type NftConnection,
+  type NftFiltersInput,
   type TransactionConnection,
+  type TransactionFiltersInput,
 } from "../types";
 
 import { Ethereum } from "./ethereum";
 import { Solana } from "./solana";
 
 export interface Blockchain {
-  getBalancesForAddress(address: string): Promise<Balances | null>;
-  getNftsForAddress(address: string): Promise<NftConnection | null>;
+  getBalancesForAddress(address: string): Promise<Balances>;
+  getNftsForAddress(
+    address: string,
+    filters?: Partial<NftFiltersInput>
+  ): Promise<NftConnection>;
   getTransactionsForAddress(
     address: string,
-    before?: string,
-    after?: string
-  ): Promise<TransactionConnection | null>;
+    filters?: TransactionFiltersInput
+  ): Promise<TransactionConnection>;
   id(): ChainId;
   nativeDecimals(): number;
 }
@@ -37,19 +41,4 @@ export function getBlockchainForId(id: ChainId, ctx: ApiContext): Blockchain {
       return new Solana(ctx);
     }
   }
-}
-
-/**
- * Calculates percent change from coingecko data
- * @export
- * @param {number} percentChange
- * @param {number} price
- * @returns {number}
- */
-export function calculateUsdChange(
-  percentChange: number,
-  price: number
-): number {
-  const usdChange = (percentChange / 100) * price;
-  return Number(usdChange.toFixed(2));
 }

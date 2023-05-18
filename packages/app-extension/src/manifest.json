@@ -26,5 +26,5 @@
     "192": "anchor.png",
     "512": "anchor.png"
   },
-  "permissions": ["alarms", "webNavigation", "storage", "tabs"]
+  "permissions": ["alarms", "storage", "background", "webNavigation", "tabs"]
 }

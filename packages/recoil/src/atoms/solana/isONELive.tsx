@@ -19,7 +19,7 @@ export const isOneLive = selector<{
       return { isLive: false };
     }
     return (
-      fetch("https://one.xnfts.dev/api/isLive")
+      fetch("https://one.xnfts.dev/api/isLive?wallet=" + wallet.publicKey)
         // return fetch("http://localhost:3000/api/isLive")
         .then((r) => r.json())
         .catch(() => ({ isLive: false }))

@@ -203,6 +203,62 @@ export async function openPopupWindow(
   return popupWindow;
 }
 
+export function resizeExtensionWindow(
+  options?: { height: number; width: number }
+): (Window | undefined) {
+  const extensionWindows = chrome.extension.getViews();
+
+  if(!extensionWindows || extensionWindows.length == 0){
+    return undefined
+  }
+
+  const extensionWindow = extensionWindows[0]
+
+  let width = isNaN(options?.width ?? NaN) ? EXTENSION_WIDTH : options!.width!;
+  let height = isNaN(options?.height ?? NaN)
+    ? EXTENSION_HEIGHT
+    : options!.height!;
+
+  //Please note that there is a maximum size of 800x600
+  //https://developer.chrome.com/docs/extensions/reference/browserAction/#popup
+  //If bigger than that, scrollbars will appear
+  extensionWindow.document.documentElement.style.width = `${width}px`
+  extensionWindow.document.documentElement.style.height = `${height}px`
+  extensionWindow.document.documentElement.style.minHeight = 'unset'
+  extensionWindow.document.documentElement.style.minWidth = 'unset'
+
+  extensionWindow.document.body.style.width = `${width}px`
+  extensionWindow.document.body.style.height = `${height}px`
+  extensionWindow.document.body.style.minHeight = 'unset'
+  extensionWindow.document.body.style.minWidth = 'unset'
+
+  //this is an element created by backpack,
+  //whose minHeight value is preventing the set height to work
+  const rootElement = extensionWindow.document.getElementById('root')
+  if(rootElement){
+    rootElement.style.minHeight = 'unset'
+    rootElement.style.minWidth = 'unset'
+  }
+
+  //Do it also on the window in case we are popped out
+  extensionWindow.resizeTo(width, height)
+
+  //Use a timeout to set this listener to avoid a race condition with the first time it opens
+  setTimeout(() => {
+    extensionWindow.addEventListener('resize', (event) => {
+      //If it gets resized to something other than what we set, means that we are in a popup.
+      //Remove the previously set values and the listener.
+      extensionWindow.document.documentElement.style.width = 'unset'
+      extensionWindow.document.documentElement.style.height = 'unset'
+      extensionWindow.document.body.style.width = 'unset'
+      extensionWindow.document.body.style.height = 'unset'
+      extensionWindow.removeEventListener('resize', this)
+    })  
+  },1000)
+
+  return extensionWindow
+}
+
 export function openOnboarding() {
   const url = `${EXPANDED_HTML}?${QUERY_ONBOARDING}`;
   BrowserRuntimeExtension.openTab({

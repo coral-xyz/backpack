@@ -1,49 +1,78 @@
-import { queryResolvers, walletResolvers } from "./query";
-import type { Node, PageInfo, Resolvers } from "./types";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { readFileSync } from "fs";
+import { applyMiddleware } from "graphql-middleware";
+import { allow, shield } from "graphql-shield";
+import { join } from "path";
 
-export const resolvers: Resolvers = {
-  Query: queryResolvers,
-  Wallet: walletResolvers,
-};
+import {
+  authenticateMutation,
+  deauthenticateMutation,
+  friendshipTypeResolvers,
+  importPublicKeyMutation,
+  jsonObjectScalar,
+  userQueryResolver,
+  userTypeResolvers,
+  walletQueryResolver,
+  walletTypeResolvers,
+} from "./resolvers";
+import { authorized } from "./rules";
+import type { MutationResolvers, QueryResolvers, Resolvers } from "./types";
 
-export type Edge<T extends Node> = {
-  cursor: string;
-  node: T;
-};
-
-export type Connection<T extends Node> = {
-  edges: Edge<T>[];
-  pageInfo: PageInfo;
+/**
+ * Root `Mutation` object resolver.
+ */
+const mutationResolvers: MutationResolvers = {
+  authenticate: authenticateMutation,
+  deauthenticate: deauthenticateMutation,
+  importPublicKey: importPublicKeyMutation,
 };
 
 /**
- * Generate a Relay connection from a list of node objects
- * @export
- * @template T
- * @param {T[]} nodes
- * @param {boolean} hasNextPage
- * @param {boolean} hasPreviousPage
- * @returns {(Connection<T> | null)}
+ * Root `Query` object resolver.
  */
-export function createConnection<T extends Node>(
-  nodes: T[],
-  hasNextPage: boolean,
-  hasPreviousPage: boolean
-): Connection<T> | null {
-  const edges: Edge<T>[] = nodes.map((i) => ({
-    cursor: Buffer.from(`edge_cursor:${i.id}`).toString("base64"),
-    node: i,
-  }));
+const queryResolvers: QueryResolvers = {
+  user: userQueryResolver,
+  wallet: walletQueryResolver,
+};
 
-  return edges.length === 0
-    ? null
-    : {
-        edges,
-        pageInfo: {
-          startCursor: edges[0].cursor,
-          endCursor: edges.at(-1)?.cursor,
-          hasNextPage,
-          hasPreviousPage,
-        },
-      };
-}
+/**
+ * Schema root and type-level resolvers.
+ */
+const resolvers: Resolvers = {
+  Mutation: mutationResolvers,
+  Query: queryResolvers,
+  Friendship: friendshipTypeResolvers,
+  User: userTypeResolvers,
+  Wallet: walletTypeResolvers,
+  JSONObject: jsonObjectScalar,
+};
+
+/**
+ * Permissions map for Shield rule applications on operations and types.
+ */
+const permissions = shield(
+  {
+    Mutation: {
+      "*": authorized,
+      authenticate: allow,
+    },
+    Query: {
+      "*": allow,
+      user: authorized,
+    },
+    User: authorized,
+  },
+  { allowExternalErrors: true, debug: process.env.NODE_ENV !== "production" }
+);
+
+/**
+ * Built schema to be executed on the Apollo server.
+ * @export
+ */
+export const schema = applyMiddleware(
+  makeExecutableSchema({
+    resolvers,
+    typeDefs: readFileSync(join(__dirname, "schema.graphql"), "utf-8"), // Path resolution for the built distribution to schema file
+  }),
+  permissions
+);

@@ -1,15 +1,31 @@
 import { RESTDataSource } from "@apollo/datasource-rest";
+import { getATAAddressSync } from "@saberhq/token-utils";
 import type { AccountInfo } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import type { EnrichedTransaction } from "helius-sdk";
 
+type HeliusOptions = {
+  apiKey: string;
+  devnet?: boolean;
+};
+
+/**
+ * Custom GraphQL REST data source class abstraction for Helius.
+ * @export
+ * @class Helius
+ * @extends {RESTDataSource}
+ */
 export class Helius extends RESTDataSource {
   readonly #apiKey: string;
 
   override baseURL = "https://api.helius.xyz";
 
-  constructor(apiKey: string) {
+  constructor(opts: HeliusOptions) {
     super();
-    this.#apiKey = apiKey;
+    this.#apiKey = opts.apiKey;
+    if (opts.devnet) {
+      this.baseURL = "https://api-devnet.helius.xyz";
+    }
   }
 
   /**
@@ -28,14 +44,12 @@ export class Helius extends RESTDataSource {
 
   /**
    * Fetch and create a mapping between token mint address and discoverable
-   * CoinGecko token ID and logo URIs through the legacy token metadata extensions.
+   * CoinGecko token ID through the legacy token metadata extensions.
    * @param {string[]} mints
-   * @returns {Promise<Map<string, { id: string, logo: string }>>}
+   * @returns {Promise<Map<string, string>>}
    * @memberof Helius
    */
-  async getLegacyMetadata(
-    mints: string[]
-  ): Promise<Map<string, { id: string; logo: string }>> {
+  async getTokenMarketIds(mints: string[]): Promise<Map<string, string>> {
     const resp = await this.post<HeliusGetTokenMetadataResponse>(
       "/v0/token-metadata",
       {
@@ -51,15 +65,11 @@ export class Helius extends RESTDataSource {
       }
     );
 
-    const mappings: Map<string, { id: string; logo: string }> = new Map();
-
+    const mappings: Map<string, string> = new Map();
     for (const entry of resp) {
       const id = entry.legacyMetadata?.extensions?.coingeckoId ?? null;
-      if (id && entry.legacyMetadata?.logoURI) {
-        mappings.set(entry.account, {
-          id,
-          logo: entry.legacyMetadata.logoURI,
-        });
+      if (id) {
+        mappings.set(entry.account, id);
       }
     }
 
@@ -95,15 +105,25 @@ export class Helius extends RESTDataSource {
    * @param {string} address
    * @param {string} [before]
    * @param {string} [until]
+   * @param {string} [mint]
    * @returns {Promise<EnrichedTransaction[]>}
    * @memberof Helius
    */
   async getTransactionHistory(
     address: string,
     before?: string,
-    until?: string
+    until?: string,
+    mint?: string
   ): Promise<EnrichedTransaction[]> {
-    return this.get(`/v0/addresses/${address}/transactions`, {
+    let target = address;
+    if (mint) {
+      target = getATAAddressSync({
+        mint: new PublicKey(mint),
+        owner: new PublicKey(address),
+      }).toBase58();
+    }
+
+    return this.get(`/v0/addresses/${target}/transactions`, {
       params: {
         "api-key": this.#apiKey,
         commitment: "confirmed",

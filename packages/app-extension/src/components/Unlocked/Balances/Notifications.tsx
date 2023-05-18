@@ -384,6 +384,7 @@ export function NotificationList({
     >
       {groupedNotifications.map(({ date, notifications }) => (
         <div
+          key={date}
           style={{
             marginLeft: "16px",
             marginRight: "16px",

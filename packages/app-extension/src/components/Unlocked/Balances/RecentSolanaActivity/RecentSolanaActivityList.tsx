@@ -1,7 +1,12 @@
 import { useState } from "react";
-import type { Blockchain } from "@coral-xyz/common";
+import { ErrorBoundary } from "react-error-boundary";
+import { Blockchain, explorerUrl } from "@coral-xyz/common";
 import { BubbleTopLabel } from "@coral-xyz/react-common";
-import { useRecentTransactions } from "@coral-xyz/recoil";
+import {
+  useBlockchainConnectionUrl,
+  useBlockchainExplorer,
+  useRecentTransactions,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List } from "@mui/material";
 
@@ -29,11 +34,14 @@ export function _RecentSolanaActivityList({
   const theme = useCustomTheme();
   const [transactionDetail, setTransactionDetail] = useState(null);
   const [metadata, setMetadata] = useState(null);
+  const explorer = useBlockchainExplorer(Blockchain.SOLANA);
+  const connectionUrl = useBlockchainConnectionUrl(Blockchain.SOLANA);
 
   // Load transactions if not passed in as a prop
   const transactions = _transactions
     ? _transactions
-    : useRecentTransactions({
+    : // eslint-disable-next-line react-hooks/rules-of-hooks
+      useRecentTransactions({
         blockchain: blockchain!,
         address: address!,
         contractAddresses: contractAddresses!,
@@ -82,14 +90,28 @@ export function _RecentSolanaActivityList({
               }}
             >
               {group.map((tx: HeliusParsedTransaction, idx: number) => (
-                <SolanaTransactionListItem
-                  key={idx}
-                  transaction={tx}
-                  isFirst={idx === 0}
-                  isLast={idx === group.length - 1}
-                  setMetadata={setMetadata}
-                  setTransactionDetail={setTransactionDetail}
-                />
+                <ErrorBoundary
+                  key={tx.signature}
+                  fallback={
+                    <div
+                      onClick={() => {
+                        window.open(
+                          explorerUrl(explorer, tx.signature, connectionUrl)
+                        );
+                      }}
+                    >
+                      {tx.signature}
+                    </div>
+                  }
+                >
+                  <SolanaTransactionListItem
+                    transaction={tx}
+                    isFirst={idx === 0}
+                    isLast={idx === group.length - 1}
+                    setMetadata={setMetadata}
+                    setTransactionDetail={setTransactionDetail}
+                  />
+                </ErrorBoundary>
               ))}
             </List>
           </div>
