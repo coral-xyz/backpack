@@ -627,6 +627,11 @@ type Transaction implements Node {
   block: Float!
 
   """
+  The error message for the transaction if it failed.
+  """
+  error: String
+
+  """
   The amount in fees that were paid for processing the transaction.
   """
   fee: Int
