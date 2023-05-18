@@ -1,7 +1,6 @@
 import { Chain } from "@coral-xyz/zeus";
 
 import {
-  type ChainId,
   type Friend,
   type FriendRequest,
   FriendRequestType,
@@ -255,43 +254,49 @@ export class Hasura {
   }
 
   /**
-   * Get the details for the wallet matching the argued address
-   * and blockchain ID.
-   * @param {ChainId} chainId
+   * Get a single wallet matching the argued address that is owned
+   * by the user ID in the database.
+   * @param {string} id
    * @param {string} address
-   * @returns {(Promise<Wallet | null>)}
+   * @returns {Promise<Wallet | null>}
    * @memberof Hasura
    */
-  async getWallet(chainId: ChainId, address: string): Promise<Wallet | null> {
-    // Query Hasura for the peripheral database details about the wallet
-    const resp = await this.#chain("query")({
-      auth_public_keys: [
-        {
-          where: {
-            blockchain: { _eq: chainId.toLowerCase() },
-            public_key: { _eq: address },
+  async getWallet(id: string, address: string): Promise<Wallet | null> {
+    // Query Hasura for a single public key owned by the argued user ID
+    // and matches the argued public key address
+    const resp = await this.#chain("query")(
+      {
+        auth_public_keys: [
+          {
+            limit: 1,
+            where: {
+              public_key: { _eq: address },
+              user_id: { _eq: id },
+            },
           },
-          limit: 1,
-        },
-        {
-          created_at: true,
-          is_primary: true,
-        },
-      ],
-    });
+          {
+            blockchain: true,
+            created_at: true,
+            is_primary: true,
+          },
+        ],
+      },
+      { operationName: "GetSingleUserPublicKey" }
+    );
 
     if (resp.auth_public_keys.length === 0) {
       return null;
     }
 
+    const { blockchain, created_at, is_primary } = resp.auth_public_keys[0];
+    const chain = inferChainIdFromString(blockchain);
+
     return {
-      id: `${chainId}_wallet:${address}`,
-      address: address,
-      chainId: chainId,
-      createdAt: new Date(
-        resp.auth_public_keys[0].created_at as string
-      ).toISOString(),
-      isPrimary: resp.auth_public_keys[0].is_primary ?? false,
+      id: `${chain}_wallet:${address}`,
+      address,
+      chainId: chain,
+      createdAt: new Date(created_at as string).toISOString(),
+      isPrimary: is_primary ?? false,
     };
   }
 

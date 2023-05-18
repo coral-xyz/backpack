@@ -313,7 +313,10 @@ export type Query = {
    * presence of a valid and verified JWT.
    */
   user?: Maybe<User>;
-  /** Fetching a wallet and it's assets by the public key address and associated `ChainID`. */
+  /**
+   * Fetching a wallet and it's assets by the public key address and associated `ChainID`.
+   * @deprecated Should use the user entrypoint for authentication identities.
+   */
   wallet?: Maybe<Wallet>;
 };
 
@@ -448,6 +451,8 @@ export type User = Node & {
   notifications?: Maybe<NotificationConnection>;
   /** The user's Backpack username. */
   username: Scalars["String"];
+  /** Get a single wallet object for the argued public key address. */
+  wallet?: Maybe<Wallet>;
   /** The Relay connection for the wallet's and their data that are registered to the user. */
   wallets?: Maybe<WalletConnection>;
 };
@@ -458,6 +463,14 @@ export type User = Node & {
  */
 export type UserNotificationsArgs = {
   filters?: InputMaybe<NotificationFiltersInput>;
+};
+
+/**
+ * Backpack user type definition so provide data about all of the user's
+ * assets, peripheral information, and social data.
+ */
+export type UserWalletArgs = {
+  address: Scalars["String"];
 };
 
 /**
@@ -1185,6 +1198,12 @@ export type UserResolvers<
     Partial<UserNotificationsArgs>
   >;
   username?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  wallet?: Resolver<
+    Maybe<ResolversTypes["Wallet"]>,
+    ParentType,
+    ContextType,
+    RequireFields<UserWalletArgs, "address">
+  >;
   wallets?: Resolver<
     Maybe<ResolversTypes["WalletConnection"]>,
     ParentType,
