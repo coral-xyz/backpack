@@ -281,15 +281,17 @@ export class Solana implements Blockchain {
         address: m.account,
         attributes,
         collection,
-        description: m.offChainMetadata?.metadata.description,
-        image: m.offChainMetadata?.metadata.image,
+        description: m.offChainMetadata?.metadata.description || undefined,
+        image: m.offChainMetadata?.metadata.image || undefined,
         listing,
         metadataUri:
-          m.onChainMetadata?.metadata.data.uri || m.offChainMetadata?.uri || "",
+          m.onChainMetadata?.metadata.data.uri ||
+          m.offChainMetadata?.uri ||
+          undefined,
         name:
           m.onChainMetadata?.metadata.data.name ||
           m.offChainMetadata?.metadata.name ||
-          "",
+          undefined,
         owner: address,
         token: atas.accounts[m.account].address.toBase58(),
       };
