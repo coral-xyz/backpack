@@ -124,7 +124,7 @@ export class Backend {
     this.xnftWhitelist = new Promise(async (resolve, reject) => {
       try {
         const resp = await fetch(
-          "https://app-store-api.backpack.workers.dev/api/curation/whitelist"
+          "https://api.app-store.xnfts.dev/api/curation/whitelist"
         );
         const { whitelist } = await resp.json();
         resolve(whitelist);
@@ -1864,7 +1864,7 @@ export class Backend {
       if (!cachedWhitelist.includes(pk)) {
         // Secondary lazy check to ensure there wasn't a whitelist update in-between cache updates
         const resp = await fetch(
-          `https://app-store-api.backpack.workers.dev/api/curation/whitelist/check?address=${pk}`
+          `https://api.app-store.xnfts.dev/api/curation/whitelist/check?address=${pk}`
         );
         const { whitelisted } = await resp.json();
 
