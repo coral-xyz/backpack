@@ -380,6 +380,11 @@ type MarketData implements Node {
   logo: String!
 
   """
+  The name of the token on the market.
+  """
+  name: String!
+
+  """
   The percentage of change since the latest market data update.
   """
   percentChange: Float!
@@ -393,6 +398,11 @@ type MarketData implements Node {
   Time series price data for the token to be used for creating a sparkline.
   """
   sparkline: [Float!]!
+
+  """
+  The symbol of the token on the market.
+  """
+  symbol: String!
 
   """
   The numerical amount change in USD since the latest market data update.

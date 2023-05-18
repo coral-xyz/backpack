@@ -59,12 +59,12 @@ export class Solana implements Blockchain {
     // Get the list of SPL mints and fetch their Coingecko IDs from the
     // Helius legacy token metadata
     const nonNftMints = nonEmptyOrNftTokens.map((t) => t.mint);
-    const legacy = await this.#ctx.dataSources.helius.getLegacyMetadata(
+    const legacy = await this.#ctx.dataSources.helius.getTokenMarketIds(
       nonNftMints
     );
 
     // Query market data for SOL and each of the found SPL token IDs
-    const ids = [...legacy.values()].map((v) => v.id);
+    const ids = [...legacy.values()];
     const prices = await this.#ctx.dataSources.coinGecko.getPrices([
       "solana",
       ...ids,
@@ -81,14 +81,16 @@ export class Solana implements Blockchain {
       ),
       marketData: {
         id: this.#ctx.dataSources.coinGecko.id("solana"),
+        lastUpdatedAt: prices.solana.last_updated,
+        logo: prices.solana.image,
+        name: prices.solana.name,
         percentChange: parseFloat(
           prices.solana.price_change_percentage_24h.toFixed(2)
         ),
-        usdChange: prices.solana.price_change_24h,
-        lastUpdatedAt: prices.solana.last_updated,
-        logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
         price: prices.solana.current_price,
         sparkline: prices.solana.sparkline_in_7d.price,
+        symbol: prices.solana.symbol,
+        usdChange: prices.solana.price_change_24h,
         value:
           parseFloat(
             ethers.utils.formatUnits(
@@ -109,33 +111,31 @@ export class Solana implements Blockchain {
 
     // Map each SPL token into their `TokenBalance` return type object
     const splTokenNodes: TokenBalance[] = nonEmptyOrNftTokens.map((t) => {
-      const meta = legacy.get(t.mint);
-      const p: CoinGeckoPriceData | null = prices[meta?.id ?? ""] ?? null;
-
-      const marketData: MarketData | null =
-        p && meta
-          ? {
-              id: this.#ctx.dataSources.coinGecko.id(meta.id),
-              percentChange: parseFloat(
-                p.price_change_percentage_24h.toFixed(2)
-              ),
-              usdChange: p.price_change_24h,
-              lastUpdatedAt: p.last_updated,
-              logo: meta.logo,
-              price: p.current_price,
-              sparkline: p.sparkline_in_7d.price,
-              value:
-                parseFloat(ethers.utils.formatUnits(t.amount, t.decimals)) *
-                p.current_price,
-              valueChange:
-                parseFloat(
-                  ethers.utils.formatUnits(
-                    balances.nativeBalance,
-                    this.nativeDecimals()
-                  )
-                ) * p.price_change_24h,
-            }
-          : null;
+      const id = legacy.get(t.mint);
+      const p: CoinGeckoPriceData | null = prices[id ?? ""] ?? null;
+      const marketData: MarketData | null = p
+        ? {
+            id: this.#ctx.dataSources.coinGecko.id(p.id),
+            lastUpdatedAt: p.last_updated,
+            logo: p.image,
+            name: p.name,
+            percentChange: parseFloat(p.price_change_percentage_24h.toFixed(2)),
+            price: p.current_price,
+            sparkline: p.sparkline_in_7d.price,
+            symbol: p.symbol,
+            usdChange: p.price_change_24h,
+            value:
+              parseFloat(ethers.utils.formatUnits(t.amount, t.decimals)) *
+              p.current_price,
+            valueChange:
+              parseFloat(
+                ethers.utils.formatUnits(
+                  balances.nativeBalance,
+                  this.nativeDecimals()
+                )
+              ) * p.price_change_24h,
+          }
+        : null;
 
       return {
         id: `${this.id()}_token_address:${t.tokenAccount}`,

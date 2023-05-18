@@ -44,14 +44,12 @@ export class Helius extends RESTDataSource {
 
   /**
    * Fetch and create a mapping between token mint address and discoverable
-   * CoinGecko token ID and logo URIs through the legacy token metadata extensions.
+   * CoinGecko token ID through the legacy token metadata extensions.
    * @param {string[]} mints
-   * @returns {Promise<Map<string, { id: string, logo: string }>>}
+   * @returns {Promise<Map<string, string>>}
    * @memberof Helius
    */
-  async getLegacyMetadata(
-    mints: string[]
-  ): Promise<Map<string, { id: string; logo: string }>> {
+  async getTokenMarketIds(mints: string[]): Promise<Map<string, string>> {
     const resp = await this.post<HeliusGetTokenMetadataResponse>(
       "/v0/token-metadata",
       {
@@ -67,15 +65,11 @@ export class Helius extends RESTDataSource {
       }
     );
 
-    const mappings: Map<string, { id: string; logo: string }> = new Map();
-
+    const mappings: Map<string, string> = new Map();
     for (const entry of resp) {
       const id = entry.legacyMetadata?.extensions?.coingeckoId ?? null;
-      if (id && entry.legacyMetadata?.logoURI) {
-        mappings.set(entry.account, {
-          id,
-          logo: entry.legacyMetadata.logoURI,
-        });
+      if (id) {
+        mappings.set(entry.account, id);
       }
     }
 
