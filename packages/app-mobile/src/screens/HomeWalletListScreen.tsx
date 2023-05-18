@@ -20,9 +20,6 @@ import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummar
 // TOOD(peter) GET_WALLET_DATA + ListItemData is a hack until we have aggregate wallets
 const GET_WALLET_DATA = gql`
   query WalletData($chainId: ChainID!, $address: String!) {
-    user {
-      id
-    }
     wallet(chainId: $chainId, address: $address) {
       id
       balances {
@@ -46,8 +43,6 @@ function ListItemData({ wallet, onPress }: { wallet: Wallet }): JSX.Element {
       address: wallet.publicKey,
     },
   });
-
-  console.log("debug1:user", data);
 
   const balance = data.wallet.balances?.aggregate.value?.toFixed(2) ?? "0.00";
 

@@ -19,8 +19,7 @@ function ListItemSettingsLockWallet(): JSX.Element {
       iconName="lock"
       onPress={async () => {
         try {
-          // TODO(peter) make sure this is the right way
-          background.request({
+          await background.request({
             method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
             params: [],
           });
