@@ -23,11 +23,7 @@ import {
   type TransactionFiltersInput,
   type TransactionTransfer,
 } from "../types";
-import {
-  calculateBalanceAggregate,
-  calculateUsdChange,
-  createConnection,
-} from "../utils";
+import { calculateBalanceAggregate, createConnection } from "../utils";
 
 import type { Blockchain } from ".";
 
@@ -85,29 +81,28 @@ export class Solana implements Blockchain {
       ),
       marketData: {
         id: this.#ctx.dataSources.coinGecko.id("solana"),
-        percentChange: parseFloat(prices.solana.usd_24h_change.toFixed(2)),
-        usdChange: calculateUsdChange(
-          prices.solana.usd_24h_change,
-          prices.solana.usd
+        percentChange: parseFloat(
+          prices.solana.price_change_percentage_24h.toFixed(2)
         ),
-        lastUpdatedAt: prices.solana.last_updated_at,
+        usdChange: prices.solana.price_change_24h,
+        lastUpdatedAt: prices.solana.last_updated,
         logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
-        price: prices.solana.usd,
+        price: prices.solana.current_price,
+        sparkline: prices.solana.sparkline_in_7d.price,
         value:
           parseFloat(
             ethers.utils.formatUnits(
               balances.nativeBalance,
               this.nativeDecimals()
             )
-          ) * prices.solana.usd,
+          ) * prices.solana.current_price,
         valueChange:
           parseFloat(
             ethers.utils.formatUnits(
               balances.nativeBalance,
               this.nativeDecimals()
             )
-          ) *
-          calculateUsdChange(prices.solana.usd_24h_change, prices.solana.usd),
+          ) * prices.solana.price_change_24h,
       },
       token: SOLANA_DEFAULT_ADDRESS,
     };
@@ -121,21 +116,24 @@ export class Solana implements Blockchain {
         p && meta
           ? {
               id: this.#ctx.dataSources.coinGecko.id(meta.id),
-              percentChange: parseFloat(p.usd_24h_change.toFixed(2)),
-              usdChange: calculateUsdChange(p.usd_24h_change, p.usd),
-              lastUpdatedAt: p.last_updated_at,
+              percentChange: parseFloat(
+                p.price_change_percentage_24h.toFixed(2)
+              ),
+              usdChange: p.price_change_24h,
+              lastUpdatedAt: p.last_updated,
               logo: meta.logo,
-              price: p.usd,
+              price: p.current_price,
+              sparkline: p.sparkline_in_7d.price,
               value:
                 parseFloat(ethers.utils.formatUnits(t.amount, t.decimals)) *
-                p.usd,
+                p.current_price,
               valueChange:
                 parseFloat(
                   ethers.utils.formatUnits(
                     balances.nativeBalance,
                     this.nativeDecimals()
                   )
-                ) * calculateUsdChange(p.usd_24h_change, p.usd),
+                ) * p.price_change_24h,
             }
           : null;
 
