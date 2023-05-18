@@ -473,7 +473,7 @@ Relay edge specification for `Nft` nodes.
 """
 type NftEdge {
   cursor: String!
-  node: Nft
+  node: Nft!
 }
 
 """
@@ -528,7 +528,7 @@ Relay edge specification for `Notification` nodes.
 """
 type NotificationEdge {
   cursor: String!
-  node: Notification
+  node: Notification!
 }
 
 """
@@ -584,7 +584,7 @@ Relay edge specification for `TokenBalance` nodes.
 """
 type TokenBalanceEdge {
   cursor: String!
-  node: TokenBalance
+  node: TokenBalance!
 }
 
 """
@@ -650,7 +650,7 @@ Relay edge specification for `Transaction` nodes.
 """
 type TransactionEdge {
   cursor: String!
-  node: Transaction
+  node: Transaction!
 }
 
 """
@@ -755,5 +755,5 @@ Relay edge specification for `Wallet` nodes.
 """
 type WalletEdge {
   cursor: String!
-  node: Wallet
+  node: Wallet!
 }
