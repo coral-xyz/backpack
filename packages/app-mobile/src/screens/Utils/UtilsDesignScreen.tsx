@@ -1,5 +1,14 @@
 import { memo, useState } from "react";
-import { Alert, ScrollView, View, Button } from "react-native";
+import {
+  Alert,
+  ScrollView,
+  Button,
+  SectionList,
+  Image,
+  StyleSheet,
+  View,
+  FlatList,
+} from "react-native";
 
 import Constants from "expo-constants";
 
@@ -12,11 +21,9 @@ import {
   ListItem,
   XStack,
   StyledText,
-} from "@coral-xyz/tamagui";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-import {
+  RoundedContainerGroup,
+  _ListItemOneLine,
+  ListItemSettings,
   ListItemLabelValue,
   ListItemSentReceived,
   ListItemTokenSwap,
@@ -25,10 +32,10 @@ import {
   ListItemToken,
   ListItemWalletOverview,
   ListItemFriendRequest,
-  UserList,
-  SectionedList,
-  SettingsList,
-} from "~components/ListItem";
+} from "@coral-xyz/tamagui";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import { CurrentUserAvatar, UserAvatar } from "~components/UserAvatar";
 import { Screen } from "~components/index";
 
@@ -117,6 +124,160 @@ function TableWrapper({ children }) {
     >
       {children}
     </YGroup>
+  );
+}
+
+const KeyboardArrowRight = () => (
+  <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
+);
+
+function Sep() {
+  return (
+    <View style={{ paddingLeft: 60, backgroundColor: "white" }}>
+      <View
+        style={{ height: StyleSheet.hairlineWidth, backgroundColor: "gray" }}
+      />
+    </View>
+  );
+}
+
+function UserList() {
+  const data = Array.from({ length: 10 }).map(() => {
+    return {
+      title: "armani",
+      iconUrl:
+        "https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681404388701?size=120",
+    };
+  });
+
+  return (
+    <RoundedContainerGroup>
+      <FlatList
+        data={data}
+        ItemSeparatorComponent={Separator}
+        renderItem={({ item }) => {
+          return (
+            <_ListItemOneLine
+              title={item.title}
+              icon={
+                <Image
+                  source={{
+                    uri: "https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681404388701?size=120",
+                  }}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 64,
+                    aspectRatio: 1,
+                  }}
+                />
+              }
+              iconAfter={<KeyboardArrowRight />}
+            />
+          );
+        }}
+      />
+    </RoundedContainerGroup>
+  );
+}
+
+function SettingsList() {
+  return (
+    <YGroup
+      overflow="hidden"
+      borderWidth={2}
+      borderColor="$borderFull"
+      borderRadius="$container"
+      separator={<Sep />}
+    >
+      <YGroup.Item>
+        <ListItemSettings title="Wallets" iconName="account-balance-wallet" />
+      </YGroup.Item>
+      <YGroup.Item>
+        <ListItemSettings title="Account" iconName="account-circle" />
+      </YGroup.Item>
+      <YGroup.Item>
+        <ListItemSettings title="Preferences" iconName="settings" />
+      </YGroup.Item>
+      <YGroup.Item>
+        <ListItemSettings title="xNFTs" iconName="apps" />
+      </YGroup.Item>
+      <YGroup.Item>
+        <ListItemSettings title="Authenticated Apps" iconName="vpn-key" />
+      </YGroup.Item>
+      <YGroup.Item>
+        <ListItemSettings title="Lock" iconName="lock" />
+      </YGroup.Item>
+    </YGroup>
+  );
+}
+
+function SectionedList() {
+  const sections = [
+    {
+      title: "A",
+      data: [
+        {
+          address: "5iM4...F5To",
+          action: "Sent",
+          amount: "4 USDC",
+          iconUrl:
+            "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
+        },
+        // add more sent transactions here
+      ],
+    },
+    {
+      title: "B",
+      data: [
+        {
+          address: "5iM4...F5To",
+          action: "Received",
+          amount: "4 USDC",
+          iconUrl:
+            "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
+        },
+        {
+          address: "5iM4...F5To",
+          action: "Received",
+          amount: "4 USDC",
+          iconUrl:
+            "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
+        },
+      ],
+    },
+  ];
+
+  return (
+    <SectionList
+      sections={sections}
+      stickySectionHeadersEnabled={false}
+      ListHeaderComponent={<StyledText>Header</StyledText>}
+      // separator cuts into the border but we can figure this out
+      // ItemSeparatorComponent={Separator}
+      renderSectionHeader={({ section: { title } }) => (
+        <StyledText my={12}>{title}</StyledText>
+      )}
+      renderItem={({ item, section, index }) => {
+        const isFirst = index === 0;
+        const isLast = index === section.data.length - 1;
+
+        return (
+          <RoundedContainerGroup
+            disableTopRadius={!isFirst}
+            disableBottomRadius={!isLast}
+          >
+            <ListItemSentReceived
+              grouped
+              address={item.address}
+              action={item.action}
+              amount={item.amount}
+              iconUrl={item.iconUrl}
+            />
+          </RoundedContainerGroup>
+        );
+      }}
+    />
   );
 }
 
