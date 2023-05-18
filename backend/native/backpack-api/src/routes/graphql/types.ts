@@ -199,9 +199,9 @@ export type Nft = Node & {
   /** Possible marketplace or platform listing data for the NFT for sale. */
   listing?: Maybe<Listing>;
   /** The link to the off-chain metadata. */
-  metadataUri: Scalars["String"];
+  metadataUri?: Maybe<Scalars["String"]>;
   /** The name of the NFT found in the metadata. */
-  name: Scalars["String"];
+  name?: Maybe<Scalars["String"]>;
   /** The owning wallet's public key. */
   owner: Scalars["String"];
   /** The associated token account address or contract token ID of the individual item. */
@@ -914,8 +914,12 @@ export type NftResolvers<
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   listing?: Resolver<Maybe<ResolversTypes["Listing"]>, ParentType, ContextType>;
-  metadataUri?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  metadataUri?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   owner?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   token?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

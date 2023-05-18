@@ -447,12 +447,12 @@ type Nft implements Node {
   """
   The link to the off-chain metadata.
   """
-  metadataUri: String!
+  metadataUri: String
 
   """
   The name of the NFT found in the metadata.
   """
-  name: String!
+  name: String
 
   """
   The owning wallet's public key.
@@ -708,7 +708,7 @@ type TransactionTransfer {
   to: String!
 
   """
-  The token mint or contract address of the toke type.
+  The token mint or contract address of the token type.
   """
   token: String!
 
