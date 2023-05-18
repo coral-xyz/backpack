@@ -11,11 +11,11 @@ import { useRecoilState } from "recoil";
 import { gql } from "../../../graphql";
 import { SortDirection } from "../../../graphql/graphql";
 
-import { NotificationListItem } from "./Item";
+import { NotificationListItem } from "./NotificationListItem";
 import { getGroupedNotifications } from "./utils";
 
 const GET_NOTIFICATIONS = gql(`
-  query GetNotifications($filters: NotificationsFiltersInput) {
+  query GetNotifications($filters: NotificationFiltersInput) {
     user {
       id
       notifications(filters: $filters) {
@@ -52,8 +52,8 @@ export function NotificationList({
   });
 
   const notifications = useMemo(
-    () => data?.user?.notifications?.edges.map((e) => e.node) ?? [],
-    [data]
+    () => data.user?.notifications?.edges.map((e) => e.node) ?? [],
+    [data.user]
   );
 
   const groupedNotifications = useMemo(

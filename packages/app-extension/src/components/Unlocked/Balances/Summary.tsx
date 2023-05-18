@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useMemo } from "react";
 import { useSuspenseQuery_experimental } from "@apollo/client";
 import { formatUSD } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
@@ -85,12 +85,15 @@ function _BalanceSummaryWidget() {
     },
   });
 
-  const aggregate = data?.user?.wallets?.edges?.[0]?.node?.balances
-    ?.aggregate ?? {
-    percentChange: 0,
-    value: 0,
-    valueChange: 0,
-  };
+  const aggregate = useMemo(
+    () =>
+      data.user?.wallets?.edges?.[0]?.node?.balances?.aggregate ?? {
+        percentChange: 0,
+        value: 0,
+        valueChange: 0,
+      },
+    [data.user]
+  );
 
   return (
     <div style={{ display: "flex" }}>

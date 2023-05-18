@@ -271,7 +271,7 @@ export type NotificationEdge = {
 };
 
 /** Input filter type for fetching user notifications. */
-export type NotificationsFiltersInput = {
+export type NotificationFiltersInput = {
   /** The limit for number of items desired in the response. */
   limit?: InputMaybe<Scalars["Int"]>;
   /** The direction to sort the timestamps by. */
@@ -387,6 +387,16 @@ export type TransactionEdge = {
   node: Transaction;
 };
 
+/** Input filter type for fetching transaction history. */
+export type TransactionFiltersInput = {
+  /** Block hash or signature to search after. */
+  after?: InputMaybe<Scalars["String"]>;
+  /** Block hash or signature to search before. */
+  before?: InputMaybe<Scalars["String"]>;
+  /** A token mint or contract address to filter for. */
+  token?: InputMaybe<Scalars["String"]>;
+};
+
 /**
  * Backpack user type definition so provide data about all of the user's
  * assets, peripheral information, and social data.
@@ -414,7 +424,7 @@ export type User = Node & {
  * assets, peripheral information, and social data.
  */
 export type UserNotificationsArgs = {
-  filters?: InputMaybe<NotificationsFiltersInput>;
+  filters?: InputMaybe<NotificationFiltersInput>;
 };
 
 /**
@@ -422,7 +432,7 @@ export type UserNotificationsArgs = {
  * assets, peripheral information, and social data.
  */
 export type UserWalletsArgs = {
-  filters?: InputMaybe<WalletsFiltersInput>;
+  filters?: InputMaybe<WalletFiltersInput>;
 };
 
 /** Wallet definition to provide data about all assets owned by an address. */
@@ -453,8 +463,7 @@ export type WalletNftsArgs = {
 
 /** Wallet definition to provide data about all assets owned by an address. */
 export type WalletTransactionsArgs = {
-  after?: InputMaybe<Scalars["String"]>;
-  before?: InputMaybe<Scalars["String"]>;
+  filters?: InputMaybe<TransactionFiltersInput>;
 };
 
 /** Relay connection specification for `Wallet` edges. */
@@ -472,7 +481,7 @@ export type WalletEdge = {
 };
 
 /** Input filter type for fetching user wallets and their data. */
-export type WalletsFiltersInput = {
+export type WalletFiltersInput = {
   /** A `ChainID` value to filter for all of the public keys of the user for a given blockchain. */
   chainId?: InputMaybe<ChainId>;
   /** Flag to filter for only the primary wallets for each registered blockchain of the user. */
@@ -515,7 +524,7 @@ export type GetBalanceSummaryQuery = {
 };
 
 export type GetNotificationsQueryVariables = Exact<{
-  filters?: InputMaybe<NotificationsFiltersInput>;
+  filters?: InputMaybe<NotificationFiltersInput>;
 }>;
 
 export type GetNotificationsQuery = {
@@ -535,6 +544,45 @@ export type GetNotificationsQuery = {
           timestamp: string;
           title: string;
           viewed: boolean;
+        };
+      }>;
+    } | null;
+  } | null;
+};
+
+export type GetTransactionsQueryVariables = Exact<{
+  address: Scalars["String"];
+  filters?: InputMaybe<TransactionFiltersInput>;
+}>;
+
+export type GetTransactionsQuery = {
+  __typename?: "Query";
+  user?: {
+    __typename?: "User";
+    id: string;
+    wallets?: {
+      __typename?: "WalletConnection";
+      edges: Array<{
+        __typename?: "WalletEdge";
+        node: {
+          __typename?: "Wallet";
+          id: string;
+          chainId: ChainId;
+          transactions?: {
+            __typename?: "TransactionConnection";
+            edges: Array<{
+              __typename?: "TransactionEdge";
+              node: {
+                __typename?: "Transaction";
+                id: string;
+                description?: string | null;
+                hash: string;
+                source?: string | null;
+                timestamp?: string | null;
+                type: string;
+              };
+            }>;
+          } | null;
         };
       }>;
     } | null;
@@ -709,7 +757,7 @@ export const GetNotificationsDocument = {
           },
           type: {
             kind: "NamedType",
-            name: { kind: "Name", value: "NotificationsFiltersInput" },
+            name: { kind: "Name", value: "NotificationFiltersInput" },
           },
         },
       ],
@@ -794,4 +842,212 @@ export const GetNotificationsDocument = {
 } as unknown as DocumentNode<
   GetNotificationsQuery,
   GetNotificationsQueryVariables
+>;
+export const GetTransactionsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "GetTransactions" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "address" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "filters" },
+          },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "TransactionFiltersInput" },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "user" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "wallets" },
+                  arguments: [
+                    {
+                      kind: "Argument",
+                      name: { kind: "Name", value: "filters" },
+                      value: {
+                        kind: "ObjectValue",
+                        fields: [
+                          {
+                            kind: "ObjectField",
+                            name: { kind: "Name", value: "pubkeys" },
+                            value: {
+                              kind: "ListValue",
+                              values: [
+                                {
+                                  kind: "Variable",
+                                  name: { kind: "Name", value: "address" },
+                                },
+                              ],
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "edges" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "node" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "chainId" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: {
+                                      kind: "Name",
+                                      value: "transactions",
+                                    },
+                                    arguments: [
+                                      {
+                                        kind: "Argument",
+                                        name: {
+                                          kind: "Name",
+                                          value: "filters",
+                                        },
+                                        value: {
+                                          kind: "Variable",
+                                          name: {
+                                            kind: "Name",
+                                            value: "filters",
+                                          },
+                                        },
+                                      },
+                                    ],
+                                    selectionSet: {
+                                      kind: "SelectionSet",
+                                      selections: [
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "edges",
+                                          },
+                                          selectionSet: {
+                                            kind: "SelectionSet",
+                                            selections: [
+                                              {
+                                                kind: "Field",
+                                                name: {
+                                                  kind: "Name",
+                                                  value: "node",
+                                                },
+                                                selectionSet: {
+                                                  kind: "SelectionSet",
+                                                  selections: [
+                                                    {
+                                                      kind: "Field",
+                                                      name: {
+                                                        kind: "Name",
+                                                        value: "id",
+                                                      },
+                                                    },
+                                                    {
+                                                      kind: "Field",
+                                                      name: {
+                                                        kind: "Name",
+                                                        value: "description",
+                                                      },
+                                                    },
+                                                    {
+                                                      kind: "Field",
+                                                      name: {
+                                                        kind: "Name",
+                                                        value: "hash",
+                                                      },
+                                                    },
+                                                    {
+                                                      kind: "Field",
+                                                      name: {
+                                                        kind: "Name",
+                                                        value: "source",
+                                                      },
+                                                    },
+                                                    {
+                                                      kind: "Field",
+                                                      name: {
+                                                        kind: "Name",
+                                                        value: "timestamp",
+                                                      },
+                                                    },
+                                                    {
+                                                      kind: "Field",
+                                                      name: {
+                                                        kind: "Name",
+                                                        value: "type",
+                                                      },
+                                                    },
+                                                  ],
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetTransactionsQuery,
+  GetTransactionsQueryVariables
 >;

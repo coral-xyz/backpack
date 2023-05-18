@@ -22,7 +22,7 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { IconButton, Typography } from "@mui/material";
 
 import { useNavigation } from "../../common/Layout/NavStack";
-import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
+import { TransactionsButton } from "../../Unlocked/Transactions";
 import { NotificationButton } from "../Notifications";
 
 import { AvatarHeader } from "./AvatarHeader/AvatarHeader";
@@ -32,7 +32,7 @@ export function SettingsButton() {
   return (
     <div style={{ display: "flex" }}>
       <SearchButton />
-      <RecentActivityButton />
+      <TransactionsButton />
       <NotificationButton />
       <div style={{ width: "16px" }} />
       <AvatarPopoverButton />

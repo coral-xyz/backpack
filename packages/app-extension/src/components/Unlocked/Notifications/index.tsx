@@ -14,7 +14,7 @@ import {
 import { NotificationIconWithBadge } from "../../common/NotificationIconWithBadge";
 import { ContactRequests, Contacts } from "../Messages/Contacts";
 
-import { NotificationList } from "./List";
+import { NotificationList } from "./NotificationList";
 
 const useStyles = styles(() => ({
   networkSettingsButtonContainer: {
