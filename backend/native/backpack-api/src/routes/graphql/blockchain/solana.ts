@@ -312,17 +312,26 @@ export class Solana implements Blockchain {
       filters?.token ?? undefined
     );
 
-    const nodes: Transaction[] = resp.map((r) => ({
-      id: `${this.id()}_transaction:${r.signature}`,
-      description: r.description,
-      block: r.slot,
-      fee: r.fee,
-      feePayer: r.feePayer,
-      hash: r.signature,
-      source: r.source,
-      timestamp: new Date(r.timestamp * 1000).toISOString(),
-      type: r.type,
-    }));
+    const nodes: Transaction[] = resp.map((r) => {
+      const transactionError = r.transactionError
+        ? typeof r.transactionError === "string"
+          ? r.transactionError
+          : (r.transactionError as any).error
+        : undefined;
+
+      return {
+        id: `${this.id()}_transaction:${r.signature}`,
+        description: r.description,
+        block: r.slot,
+        error: transactionError,
+        fee: r.fee,
+        feePayer: r.feePayer,
+        hash: r.signature,
+        source: r.source,
+        timestamp: new Date(r.timestamp * 1000).toISOString(),
+        type: r.type,
+      };
+    });
 
     return createConnection(nodes, false, false);
   }
