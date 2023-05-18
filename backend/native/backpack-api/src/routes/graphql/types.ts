@@ -339,7 +339,7 @@ export type TokenBalance = Node & {
   /** Market price data for the token contract or mint. */
   marketData?: Maybe<MarketData>;
   /** The address of the token mint or contract. */
-  mint: Scalars["String"];
+  token: Scalars["String"];
 };
 
 /** Relay connection specification for `TokenBalance` edges. */
@@ -379,6 +379,8 @@ export type Transaction = Node & {
   source?: Maybe<Scalars["String"]>;
   /** The timestamp of the execution or commitment of the transaction. */
   timestamp?: Maybe<Scalars["String"]>;
+  /** A list of all token transfers that occured during the transaction. */
+  transfers: Array<TransactionTransfer>;
   /** The category or type of transaction. */
   type: Scalars["String"];
 };
@@ -405,6 +407,21 @@ export type TransactionFiltersInput = {
   before?: InputMaybe<Scalars["String"]>;
   /** A token mint or contract address to filter for. */
   token?: InputMaybe<Scalars["String"]>;
+};
+
+/** Describes a single token transfer from a transaction. */
+export type TransactionTransfer = {
+  __typename?: "TransactionTransfer";
+  /** The numerical amount of the token that was transferred. */
+  amount: Scalars["Float"];
+  /** The address that the transfer was initiated from. */
+  from: Scalars["String"];
+  /** The address that the transfer was sent to. */
+  to: Scalars["String"];
+  /** The token mint or contract address of the toke type. */
+  token: Scalars["String"];
+  /** The token mint or contract address symbol. */
+  tokenName?: Maybe<Scalars["String"]>;
 };
 
 /**
@@ -661,6 +678,7 @@ export type ResolversTypes = ResolversObject<{
   TransactionConnection: ResolverTypeWrapper<TransactionConnection>;
   TransactionEdge: ResolverTypeWrapper<TransactionEdge>;
   TransactionFiltersInput: TransactionFiltersInput;
+  TransactionTransfer: ResolverTypeWrapper<TransactionTransfer>;
   User: ResolverTypeWrapper<User>;
   Wallet: ResolverTypeWrapper<Wallet>;
   WalletConnection: ResolverTypeWrapper<WalletConnection>;
@@ -717,6 +735,7 @@ export type ResolversParentTypes = ResolversObject<{
   TransactionConnection: TransactionConnection;
   TransactionEdge: TransactionEdge;
   TransactionFiltersInput: TransactionFiltersInput;
+  TransactionTransfer: TransactionTransfer;
   User: User;
   Wallet: Wallet;
   WalletConnection: WalletConnection;
@@ -1039,7 +1058,7 @@ export type TokenBalanceResolvers<
     ParentType,
     ContextType
   >;
-  mint?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  token?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1087,6 +1106,11 @@ export type TransactionResolvers<
     ParentType,
     ContextType
   >;
+  transfers?: Resolver<
+    Array<ResolversTypes["TransactionTransfer"]>,
+    ParentType,
+    ContextType
+  >;
   type?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -1110,6 +1134,22 @@ export type TransactionEdgeResolvers<
 > = ResolversObject<{
   cursor?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   node?: Resolver<ResolversTypes["Transaction"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type TransactionTransferResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["TransactionTransfer"] = ResolversParentTypes["TransactionTransfer"]
+> = ResolversObject<{
+  amount?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  from?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  to?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  token?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  tokenName?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1219,6 +1259,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Transaction?: TransactionResolvers<ContextType>;
   TransactionConnection?: TransactionConnectionResolvers<ContextType>;
   TransactionEdge?: TransactionEdgeResolvers<ContextType>;
+  TransactionTransfer?: TransactionTransferResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   Wallet?: WalletResolvers<ContextType>;
   WalletConnection?: WalletConnectionResolvers<ContextType>;

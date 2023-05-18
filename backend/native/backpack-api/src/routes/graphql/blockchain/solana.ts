@@ -1,6 +1,7 @@
 import { getATAAddressesSync } from "@saberhq/token-utils";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { ethers } from "ethers";
+import type { EnrichedTransaction } from "helius-sdk";
 
 import type { CoinGeckoPriceData } from "../clients/coingecko";
 import type { HeliusGetTokenMetadataResponse } from "../clients/helius";
@@ -20,6 +21,7 @@ import {
   type Transaction,
   type TransactionConnection,
   type TransactionFiltersInput,
+  type TransactionTransfer,
 } from "../types";
 import {
   calculateBalanceAggregate,
@@ -28,6 +30,8 @@ import {
 } from "../utils";
 
 import type { Blockchain } from ".";
+
+const SOLANA_DEFAULT_ADDRESS = SystemProgram.programId.toBase58();
 
 /**
  * Solana blockchain implementation for the common API.
@@ -105,7 +109,7 @@ export class Solana implements Blockchain {
           ) *
           calculateUsdChange(prices.solana.usd_24h_change, prices.solana.usd),
       },
-      mint: SystemProgram.programId.toBase58(),
+      token: SOLANA_DEFAULT_ADDRESS,
     };
 
     // Map each SPL token into their `TokenBalance` return type object
@@ -142,7 +146,7 @@ export class Solana implements Blockchain {
         decimals: t.decimals,
         displayAmount: ethers.utils.formatUnits(t.amount, t.decimals),
         marketData,
-        mint: t.mint,
+        token: t.mint,
       };
     });
 
@@ -313,7 +317,7 @@ export class Solana implements Blockchain {
     );
 
     const nodes: Transaction[] = resp.map((r) => {
-      const transactionError = r.transactionError
+      const transactionError: string | undefined = r.transactionError
         ? typeof r.transactionError === "string"
           ? r.transactionError
           : (r.transactionError as any).error
@@ -330,6 +334,7 @@ export class Solana implements Blockchain {
         raw: r,
         source: r.source,
         timestamp: new Date(r.timestamp * 1000).toISOString(),
+        transfers: generateTokenTransfers(r),
         type: r.type,
       };
     });
@@ -386,4 +391,45 @@ export class Solana implements Blockchain {
         }
       : undefined;
   }
+}
+
+/**
+ * Generate a semantic list of token transfers from the argued transaction.
+ * @param {EnrichedTransaction} tx
+ * @returns {TransactionTransfer[]}
+ */
+function generateTokenTransfers(
+  tx: EnrichedTransaction
+): TransactionTransfer[] {
+  const transfers: TransactionTransfer[] = [];
+
+  if (tx.nativeTransfers && tx.nativeTransfers.length > 0) {
+    transfers.push(
+      ...tx.nativeTransfers.map(
+        (t): TransactionTransfer => ({
+          amount: t.amount,
+          from: t.fromUserAccount ?? SOLANA_DEFAULT_ADDRESS,
+          to: t.toUserAccount ?? SOLANA_DEFAULT_ADDRESS,
+          token: SOLANA_DEFAULT_ADDRESS,
+          tokenName: "SOL",
+        })
+      )
+    );
+  }
+
+  if (tx.tokenTransfers && tx.tokenTransfers.length > 0) {
+    transfers.push(
+      ...tx.tokenTransfers.map(
+        (t): TransactionTransfer => ({
+          amount: t.tokenAmount,
+          from: t.fromUserAccount ?? SOLANA_DEFAULT_ADDRESS,
+          to: t.toUserAccount ?? SOLANA_DEFAULT_ADDRESS,
+          token: t.mint,
+          tokenName: undefined, // FIXME: TODO:
+        })
+      )
+    );
+  }
+
+  return transfers;
 }

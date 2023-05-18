@@ -1,6 +1,7 @@
 import {
   AssetTransfersCategory,
   type AssetTransfersParams,
+  type AssetTransfersResult,
   BigNumber,
   SortingOrder,
 } from "alchemy-sdk";
@@ -19,6 +20,7 @@ import {
   type Transaction,
   type TransactionConnection,
   type TransactionFiltersInput,
+  type TransactionTransfer,
 } from "../types";
 import {
   calculateBalanceAggregate,
@@ -27,6 +29,8 @@ import {
 } from "../utils";
 
 import type { Blockchain } from ".";
+
+const ETH_DEFAULT_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 /**
  * Ethereum blockchain implementation for the common API.
@@ -91,7 +95,7 @@ export class Ethereum implements Blockchain {
             prices.ethereum.usd
           ),
       },
-      mint: "0x0000000000000000000000000000000000000000",
+      token: ETH_DEFAULT_ADDRESS,
     };
 
     // Map the non-empty token balances to their schema type
@@ -104,7 +108,7 @@ export class Ethereum implements Blockchain {
         decimals: t.decimals ?? 0,
         displayAmount: t.balance ?? "0",
         marketData: null, // FIXME:TODO:
-        mint: t.contractAddress,
+        token: t.contractAddress,
       };
     });
 
@@ -216,16 +220,19 @@ export class Ethereum implements Blockchain {
       .flat()
       .sort((a, b) => Number(b.blockNum) - Number(a.blockNum));
 
-    const nodes: Transaction[] = combined.map((tx) => ({
-      id: `${this.id()}_transaction:${tx.uniqueId}`,
-      block: Number(tx.blockNum),
-      fee: undefined, // FIXME: find gas amount paid for processing
-      feePayer: tx.from,
-      hash: tx.hash,
-      raw: tx,
-      timestamp: (tx as any).metadata?.blockTimestamp || undefined,
-      type: tx.category,
-    }));
+    const nodes: Transaction[] = combined.map((tx) => {
+      return {
+        id: `${this.id()}_transaction:${tx.uniqueId}`,
+        block: Number(tx.blockNum),
+        fee: undefined, // FIXME: find gas amount paid for processing
+        feePayer: tx.from,
+        hash: tx.hash,
+        raw: tx,
+        timestamp: (tx as any).metadata?.blockTimestamp || undefined,
+        transfers: generateTokenTransfers(tx),
+        type: tx.category,
+      };
+    });
 
     return createConnection(nodes, false, false); // FIXME: next and previous page
   }
@@ -247,6 +254,53 @@ export class Ethereum implements Blockchain {
   nativeDecimals(): number {
     return 18;
   }
+}
+
+/**
+ * Infers and generates the list of token transfers that occured
+ * in the argued transaction object.
+ * @param {AssetTransfersResult} tx
+ * @returns {TransactionTransfer[]}
+ */
+function generateTokenTransfers(
+  tx: AssetTransfersResult
+): TransactionTransfer[] {
+  const transfers: TransactionTransfer[] = [];
+
+  if (tx.value) {
+    transfers.push({
+      amount: tx.value,
+      from: tx.from,
+      to: tx.to ?? ETH_DEFAULT_ADDRESS,
+      token: tx.rawContract.address ?? ETH_DEFAULT_ADDRESS,
+      tokenName: tx.asset,
+    });
+  }
+
+  if (tx.erc1155Metadata && tx.erc1155Metadata.length > 0) {
+    transfers.push(
+      ...tx.erc1155Metadata.map(
+        (m): TransactionTransfer => ({
+          amount: ethers.BigNumber.from(m.value).toNumber(),
+          from: tx.from,
+          to: tx.to ?? ETH_DEFAULT_ADDRESS,
+          token: `${tx.rawContract.address}/${m.tokenId}`,
+        })
+      )
+    );
+  }
+
+  if (tx.erc721TokenId) {
+    transfers.push({
+      amount: 1,
+      from: tx.from,
+      to: tx.to ?? ETH_DEFAULT_ADDRESS,
+      token: `${tx.rawContract.address}/${tx.erc721TokenId}`,
+      tokenName: tx.asset,
+    });
+  }
+
+  return transfers;
 }
 
 /**

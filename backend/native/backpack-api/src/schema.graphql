@@ -588,7 +588,7 @@ type TokenBalance implements Node {
   """
   The address of the token mint or contract.
   """
-  mint: String!
+  token: String!
 }
 
 """
@@ -662,6 +662,11 @@ type Transaction implements Node {
   timestamp: String
 
   """
+  A list of all token transfers that occured during the transaction.
+  """
+  transfers: [TransactionTransfer!]!
+
+  """
   The category or type of transaction.
   """
   type: String!
@@ -681,6 +686,36 @@ Relay edge specification for `Transaction` nodes.
 type TransactionEdge {
   cursor: String!
   node: Transaction!
+}
+
+"""
+Describes a single token transfer from a transaction.
+"""
+type TransactionTransfer {
+  """
+  The numerical amount of the token that was transferred.
+  """
+  amount: Float!
+
+  """
+  The address that the transfer was initiated from.
+  """
+  from: String!
+
+  """
+  The address that the transfer was sent to.
+  """
+  to: String!
+
+  """
+  The token mint or contract address of the toke type.
+  """
+  token: String!
+
+  """
+  The token mint or contract address symbol.
+  """
+  tokenName: String
 }
 
 """
