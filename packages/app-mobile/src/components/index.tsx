@@ -1,9 +1,8 @@
 import { memo, useState } from "react";
-import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from "react-native";
+import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import {
   ActivityIndicator,
   Alert,
-  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -15,11 +14,7 @@ import {
 import * as Clipboard from "expo-clipboard";
 import Constants from "expo-constants";
 
-import {
-  Blockchain,
-  proxyImageUrl,
-  walletAddressDisplay,
-} from "@coral-xyz/common";
+import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import {
   XStack,
@@ -32,6 +27,7 @@ import {
   DangerButton,
   StyledText,
   RoundedContainerGroup,
+  ProxyImage,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -59,6 +55,7 @@ export {
   DangerButton,
   StyledText,
   RoundedContainerGroup,
+  ProxyImage,
 };
 
 export function CallToAction({
@@ -326,29 +323,6 @@ export function EmptyState({
         </Margin>
       ) : null}
     </View>
-  );
-}
-
-// React Native apps need to specifcy a width and height for remote images
-export function ProxyImage({
-  src,
-  style,
-  ...props
-}: {
-  src: string;
-  style: StyleProp<ImageStyle>;
-}): JSX.Element {
-  const uri = proxyImageUrl(src);
-  return (
-    <Image
-      style={style}
-      source={{ uri }}
-      // onError={({ currentTarget }) => {
-      //   currentTarget.onerror = props.onError || null;
-      //   currentTarget.src = props.src;
-      // }}
-      {...props}
-    />
   );
 }
 

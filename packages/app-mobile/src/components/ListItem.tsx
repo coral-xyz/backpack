@@ -17,17 +17,15 @@ import {
   YGroup,
   Separator,
   TextPercentChanged,
+  BlockchainLogo,
+  RoundedContainerGroup,
+  StyledText,
+  ProxyImage,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 
-import { BlockchainLogo } from "~components/BlockchainLogo";
 import { IconCheckmark } from "~components/Icon";
 import { UserAvatar } from "~components/UserAvatar";
-import {
-  StyledText,
-  ProxyImage,
-  RoundedContainerGroup,
-} from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 
 export const ListHeader = ({ title }: { title: string }): JSX.Element => (
