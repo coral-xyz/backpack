@@ -277,7 +277,7 @@ export type NotificationEdge = {
 };
 
 /** Input filter type for fetching user notifications. */
-export type NotificationsFiltersInput = {
+export type NotificationFiltersInput = {
   /** The limit for number of items desired in the response. */
   limit?: InputMaybe<Scalars["Int"]>;
   /** The direction to sort the timestamps by. */
@@ -393,6 +393,16 @@ export type TransactionEdge = {
   node: Transaction;
 };
 
+/** Input filter type for fetching transaction history. */
+export type TransactionFiltersInput = {
+  /** Block hash or signature to search after. */
+  after?: InputMaybe<Scalars["String"]>;
+  /** Block hash or signature to search before. */
+  before?: InputMaybe<Scalars["String"]>;
+  /** A token mint or contract address to filter for. */
+  token?: InputMaybe<Scalars["String"]>;
+};
+
 /**
  * Backpack user type definition so provide data about all of the user's
  * assets, peripheral information, and social data.
@@ -420,7 +430,7 @@ export type User = Node & {
  * assets, peripheral information, and social data.
  */
 export type UserNotificationsArgs = {
-  filters?: InputMaybe<NotificationsFiltersInput>;
+  filters?: InputMaybe<NotificationFiltersInput>;
 };
 
 /**
@@ -428,7 +438,7 @@ export type UserNotificationsArgs = {
  * assets, peripheral information, and social data.
  */
 export type UserWalletsArgs = {
-  filters?: InputMaybe<WalletsFiltersInput>;
+  filters?: InputMaybe<WalletFiltersInput>;
 };
 
 /** Wallet definition to provide data about all assets owned by an address. */
@@ -459,8 +469,7 @@ export type WalletNftsArgs = {
 
 /** Wallet definition to provide data about all assets owned by an address. */
 export type WalletTransactionsArgs = {
-  after?: InputMaybe<Scalars["String"]>;
-  before?: InputMaybe<Scalars["String"]>;
+  filters?: InputMaybe<TransactionFiltersInput>;
 };
 
 /** Relay connection specification for `Wallet` edges. */
@@ -478,7 +487,7 @@ export type WalletEdge = {
 };
 
 /** Input filter type for fetching user wallets and their data. */
-export type WalletsFiltersInput = {
+export type WalletFiltersInput = {
   /** A `ChainID` value to filter for all of the public keys of the user for a given blockchain. */
   chainId?: InputMaybe<ChainId>;
   /** Flag to filter for only the primary wallets for each registered blockchain of the user. */
@@ -636,7 +645,7 @@ export type ResolversTypes = ResolversObject<{
   Notification: ResolverTypeWrapper<Notification>;
   NotificationConnection: ResolverTypeWrapper<NotificationConnection>;
   NotificationEdge: ResolverTypeWrapper<NotificationEdge>;
-  NotificationsFiltersInput: NotificationsFiltersInput;
+  NotificationFiltersInput: NotificationFiltersInput;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   Query: ResolverTypeWrapper<{}>;
   SortDirection: SortDirection;
@@ -647,11 +656,12 @@ export type ResolversTypes = ResolversObject<{
   Transaction: ResolverTypeWrapper<Transaction>;
   TransactionConnection: ResolverTypeWrapper<TransactionConnection>;
   TransactionEdge: ResolverTypeWrapper<TransactionEdge>;
+  TransactionFiltersInput: TransactionFiltersInput;
   User: ResolverTypeWrapper<User>;
   Wallet: ResolverTypeWrapper<Wallet>;
   WalletConnection: ResolverTypeWrapper<WalletConnection>;
   WalletEdge: ResolverTypeWrapper<WalletEdge>;
-  WalletsFiltersInput: WalletsFiltersInput;
+  WalletFiltersInput: WalletFiltersInput;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -692,7 +702,7 @@ export type ResolversParentTypes = ResolversObject<{
   Notification: Notification;
   NotificationConnection: NotificationConnection;
   NotificationEdge: NotificationEdge;
-  NotificationsFiltersInput: NotificationsFiltersInput;
+  NotificationFiltersInput: NotificationFiltersInput;
   PageInfo: PageInfo;
   Query: {};
   String: Scalars["String"];
@@ -702,11 +712,12 @@ export type ResolversParentTypes = ResolversObject<{
   Transaction: Transaction;
   TransactionConnection: TransactionConnection;
   TransactionEdge: TransactionEdge;
+  TransactionFiltersInput: TransactionFiltersInput;
   User: User;
   Wallet: Wallet;
   WalletConnection: WalletConnection;
   WalletEdge: WalletEdge;
-  WalletsFiltersInput: WalletsFiltersInput;
+  WalletFiltersInput: WalletFiltersInput;
 }>;
 
 export type CacheControlDirectiveArgs = {

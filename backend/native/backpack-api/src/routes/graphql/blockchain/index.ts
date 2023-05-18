@@ -5,6 +5,7 @@ import {
   type NftConnection,
   type NftFiltersInput,
   type TransactionConnection,
+  type TransactionFiltersInput,
 } from "../types";
 
 import { Ethereum } from "./ethereum";
@@ -18,8 +19,7 @@ export interface Blockchain {
   ): Promise<NftConnection>;
   getTransactionsForAddress(
     address: string,
-    before?: string,
-    after?: string
+    filters?: TransactionFiltersInput
   ): Promise<TransactionConnection>;
   id(): ChainId;
   nativeDecimals(): number;

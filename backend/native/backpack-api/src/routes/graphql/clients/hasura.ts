@@ -7,12 +7,11 @@ import {
   FriendRequestType,
   type Notification,
   type NotificationConnection,
-  type NotificationsFiltersInput,
-  SortDirection,
+  type NotificationFiltersInput,
   type User,
   type Wallet,
   type WalletConnection,
-  type WalletsFiltersInput,
+  type WalletFiltersInput,
 } from "../types";
 import { createConnection, inferChainIdFromString } from "../utils";
 
@@ -134,13 +133,13 @@ export class Hasura {
   /**
    *
    * @param {string} id
-   * @param {NotificationsFiltersInput | null} [filters]
+   * @param {NotificationFiltersInput | null} [filters]
    * @returns {Promise<NotificationConnection>}
    * @memberof Hasura
    */
   async getNotifications(
     id: string,
-    filters?: NotificationsFiltersInput | null
+    filters?: NotificationFiltersInput | null
   ): Promise<NotificationConnection> {
     // Query Hasura for the list of notifications for the user
     // that match the input filter(s) if provided
@@ -299,13 +298,13 @@ export class Hasura {
   /**
    * Get the list of wallets registered for the argued user ID.
    * @param {string} id
-   * @param {(WalletsFiltersInput | null)} [filters]
+   * @param {(WalletFiltersInput | null)} [filters]
    * @returns {(Promise<WalletConnection | null>)}
    * @memberof Hasura
    */
   async getWallets(
     id: string,
-    filters?: WalletsFiltersInput | null
+    filters?: WalletFiltersInput | null
   ): Promise<WalletConnection | null> {
     // Query Hasura for the list of registered wallet public keys
     // and associated blockchains for the parent `User` username,

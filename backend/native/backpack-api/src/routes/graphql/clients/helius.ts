@@ -1,5 +1,7 @@
 import { RESTDataSource } from "@apollo/datasource-rest";
-import type { AccountInfo } from "@solana/web3.js";
+import { getATAAddressSync } from "@saberhq/token-utils";
+import type { AccountInfo} from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import type { EnrichedTransaction } from "helius-sdk";
 
 type HeliusOptions = {
@@ -109,15 +111,25 @@ export class Helius extends RESTDataSource {
    * @param {string} address
    * @param {string} [before]
    * @param {string} [until]
+   * @param {string} [mint]
    * @returns {Promise<EnrichedTransaction[]>}
    * @memberof Helius
    */
   async getTransactionHistory(
     address: string,
     before?: string,
-    until?: string
+    until?: string,
+    mint?: string
   ): Promise<EnrichedTransaction[]> {
-    return this.get(`/v0/addresses/${address}/transactions`, {
+    let target = address;
+    if (mint) {
+      target = getATAAddressSync({
+        mint: new PublicKey(mint),
+        owner: new PublicKey(address),
+      }).toBase58();
+    }
+
+    return this.get(`/v0/addresses/${target}/transactions`, {
       params: {
         "api-key": this.#apiKey,
         commitment: "confirmed",

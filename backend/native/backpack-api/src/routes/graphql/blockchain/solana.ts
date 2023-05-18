@@ -19,6 +19,7 @@ import {
   type TokenBalance,
   type Transaction,
   type TransactionConnection,
+  type TransactionFiltersInput,
 } from "../types";
 import {
   calculateBalanceAggregate,
@@ -296,20 +297,19 @@ export class Solana implements Blockchain {
   /**
    * Get the transaction history with parameters for the argued address.
    * @param {string} address
-   * @param {string} [before]
-   * @param {string} [after]
+   * @param {TransactionFiltersInput} [filters]
    * @returns {Promise<TransactionConnection>}
    * @memberof Ethereum
    */
   async getTransactionsForAddress(
     address: string,
-    before?: string,
-    after?: string
+    filters?: TransactionFiltersInput
   ): Promise<TransactionConnection> {
     const resp = await this.#ctx.dataSources.helius.getTransactionHistory(
       address,
-      before,
-      after
+      filters?.before ?? undefined,
+      filters?.after ?? undefined,
+      filters?.token ?? undefined
     );
 
     const nodes: Transaction[] = resp.map((r) => ({
