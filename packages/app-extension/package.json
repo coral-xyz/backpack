@@ -38,7 +38,7 @@
     "ethers": "^5.7.0",
     "figma-squircle": "^0.2.1",
     "framer-motion": "^9.0.4",
-    "helius-sdk": "^0.3.1",
+    "helius-sdk": "^1.0.5",
     "linkify-react": "^4.1.0",
     "linkifyjs": "^4.1.0",
     "react": "18.2.0",

@@ -46,19 +46,15 @@ const GET_BALANCE_SUMMARY = gql(`
   query GetBalanceSummary($address: String!) {
     user {
       id
-      wallets(filters: { pubkeys: [$address] }) {
-        edges {
-          node {
+      wallet(address: $address) {
+        id
+        balances {
+          id
+          aggregate {
             id
-            balances {
-              id
-              aggregate {
-                id
-                percentChange
-                value
-                valueChange
-              }
-            }
+            percentChange
+            value
+            valueChange
           }
         }
       }
@@ -87,7 +83,7 @@ function _BalanceSummaryWidget() {
 
   const aggregate = useMemo(
     () =>
-      data.user?.wallets?.edges?.[0]?.node?.balances?.aggregate ?? {
+      data.user?.wallet?.balances?.aggregate ?? {
         percentChange: 0,
         value: 0,
         valueChange: 0,

@@ -16,22 +16,19 @@ const GET_TRANSACTIONS = gql(`
   query GetTransactions($address: String!, $filters: TransactionFiltersInput) {
     user {
       id
-      wallets(filters: { pubkeys: [$address] }) {
-        edges {
-          node {
-            id
-            chainId
-            transactions(filters: $filters) {
-              edges {
-                node {
-                  id
-                  description
-                  hash
-                  source
-                  timestamp
-                  type
-                }
-              }
+      wallet(address: $address) {
+        id
+        chainId
+        transactions(filters: $filters) {
+          edges {
+            node {
+              id
+              description
+              error
+              hash
+              source
+              timestamp
+              type
             }
           }
         }
@@ -61,8 +58,7 @@ export function TransactionList({
     },
   });
 
-  const wallet = useMemo(() => data.user?.wallets!.edges[0].node, [data.user]);
-
+  const wallet = useMemo(() => data.user?.wallet, [data.user]);
   const transactions = useMemo(
     () => wallet?.transactions?.edges.map((e) => e.node) ?? [],
     [wallet]

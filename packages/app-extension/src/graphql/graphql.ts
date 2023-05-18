@@ -134,13 +134,19 @@ export type MarketData = Node & {
   /** Globally unqiue identifier for the token's market data. */
   id: Scalars["ID"];
   /** A timestamp of the last date of when the market data was updated. */
-  lastUpdatedAt: Scalars["Int"];
+  lastUpdatedAt: Scalars["String"];
   /** The image link to the logo of the token's market listing. */
   logo: Scalars["String"];
+  /** The name of the token on the market. */
+  name: Scalars["String"];
   /** The percentage of change since the latest market data update. */
   percentChange: Scalars["Float"];
   /** The current USD price of the token according to the market data. */
   price: Scalars["Float"];
+  /** Time series price data for the token to be used for creating a sparkline. */
+  sparkline: Array<Scalars["Float"]>;
+  /** The symbol of the token on the market. */
+  symbol: Scalars["String"];
   /** The numerical amount change in USD since the latest market data update. */
   usdChange: Scalars["Float"];
   /** The value of the wallet's currently holdings of the token in USD. */
@@ -193,9 +199,9 @@ export type Nft = Node & {
   /** Possible marketplace or platform listing data for the NFT for sale. */
   listing?: Maybe<Listing>;
   /** The link to the off-chain metadata. */
-  metadataUri: Scalars["String"];
+  metadataUri?: Maybe<Scalars["String"]>;
   /** The name of the NFT found in the metadata. */
-  name: Scalars["String"];
+  name?: Maybe<Scalars["String"]>;
   /** The owning wallet's public key. */
   owner: Scalars["String"];
   /** The associated token account address or contract token ID of the individual item. */
@@ -301,7 +307,10 @@ export type Query = {
    * presence of a valid and verified JWT.
    */
   user?: Maybe<User>;
-  /** Fetching a wallet and it's assets by the public key address and associated `ChainID`. */
+  /**
+   * Fetching a wallet and it's assets by the public key address and associated `ChainID`.
+   * @deprecated Should use the user entrypoint for authentication identities.
+   */
   wallet?: Maybe<Wallet>;
 };
 
@@ -333,7 +342,7 @@ export type TokenBalance = Node & {
   /** Market price data for the token contract or mint. */
   marketData?: Maybe<MarketData>;
   /** The address of the token mint or contract. */
-  mint: Scalars["String"];
+  token: Scalars["String"];
 };
 
 /** Relay connection specification for `TokenBalance` edges. */
@@ -357,6 +366,8 @@ export type Transaction = Node & {
   block: Scalars["Float"];
   /** The semantic description of the transaction effects. */
   description?: Maybe<Scalars["String"]>;
+  /** The error message for the transaction if it failed. */
+  error?: Maybe<Scalars["String"]>;
   /** The amount in fees that were paid for processing the transaction. */
   fee?: Maybe<Scalars["Int"]>;
   /** The address of the wallet that paid the processing fees. */
@@ -365,10 +376,14 @@ export type Transaction = Node & {
   hash: Scalars["String"];
   /** Globally unique identifier for a single transaction. */
   id: Scalars["ID"];
+  /** The raw JSON data received from the index API response for the item. */
+  raw: Scalars["JSONObject"];
   /** The source or program that is associated with the transaction. */
   source?: Maybe<Scalars["String"]>;
   /** The timestamp of the execution or commitment of the transaction. */
   timestamp?: Maybe<Scalars["String"]>;
+  /** A list of all token transfers that occured during the transaction. */
+  transfers: Array<TransactionTransfer>;
   /** The category or type of transaction. */
   type: Scalars["String"];
 };
@@ -397,6 +412,21 @@ export type TransactionFiltersInput = {
   token?: InputMaybe<Scalars["String"]>;
 };
 
+/** Describes a single token transfer from a transaction. */
+export type TransactionTransfer = {
+  __typename?: "TransactionTransfer";
+  /** The numerical amount of the token that was transferred. */
+  amount: Scalars["Float"];
+  /** The address that the transfer was initiated from. */
+  from: Scalars["String"];
+  /** The address that the transfer was sent to. */
+  to: Scalars["String"];
+  /** The token mint or contract address of the token type. */
+  token: Scalars["String"];
+  /** The token mint or contract address symbol. */
+  tokenName?: Maybe<Scalars["String"]>;
+};
+
 /**
  * Backpack user type definition so provide data about all of the user's
  * assets, peripheral information, and social data.
@@ -415,6 +445,8 @@ export type User = Node & {
   notifications?: Maybe<NotificationConnection>;
   /** The user's Backpack username. */
   username: Scalars["String"];
+  /** Get a single wallet object for the argued public key address. */
+  wallet?: Maybe<Wallet>;
   /** The Relay connection for the wallet's and their data that are registered to the user. */
   wallets?: Maybe<WalletConnection>;
 };
@@ -425,6 +457,14 @@ export type User = Node & {
  */
 export type UserNotificationsArgs = {
   filters?: InputMaybe<NotificationFiltersInput>;
+};
+
+/**
+ * Backpack user type definition so provide data about all of the user's
+ * assets, peripheral information, and social data.
+ */
+export type UserWalletArgs = {
+  address: Scalars["String"];
 };
 
 /**
@@ -499,26 +539,20 @@ export type GetBalanceSummaryQuery = {
   user?: {
     __typename?: "User";
     id: string;
-    wallets?: {
-      __typename?: "WalletConnection";
-      edges: Array<{
-        __typename?: "WalletEdge";
-        node: {
-          __typename?: "Wallet";
+    wallet?: {
+      __typename?: "Wallet";
+      id: string;
+      balances?: {
+        __typename?: "Balances";
+        id: string;
+        aggregate: {
+          __typename?: "BalanceAggregate";
           id: string;
-          balances?: {
-            __typename?: "Balances";
-            id: string;
-            aggregate: {
-              __typename?: "BalanceAggregate";
-              id: string;
-              percentChange: number;
-              value: number;
-              valueChange: number;
-            };
-          } | null;
+          percentChange: number;
+          value: number;
+          valueChange: number;
         };
-      }>;
+      } | null;
     } | null;
   } | null;
 };
@@ -560,31 +594,26 @@ export type GetTransactionsQuery = {
   user?: {
     __typename?: "User";
     id: string;
-    wallets?: {
-      __typename?: "WalletConnection";
-      edges: Array<{
-        __typename?: "WalletEdge";
-        node: {
-          __typename?: "Wallet";
-          id: string;
-          chainId: ChainId;
-          transactions?: {
-            __typename?: "TransactionConnection";
-            edges: Array<{
-              __typename?: "TransactionEdge";
-              node: {
-                __typename?: "Transaction";
-                id: string;
-                description?: string | null;
-                hash: string;
-                source?: string | null;
-                timestamp?: string | null;
-                type: string;
-              };
-            }>;
-          } | null;
-        };
-      }>;
+    wallet?: {
+      __typename?: "Wallet";
+      id: string;
+      chainId: ChainId;
+      transactions?: {
+        __typename?: "TransactionConnection";
+        edges: Array<{
+          __typename?: "TransactionEdge";
+          node: {
+            __typename?: "Transaction";
+            id: string;
+            description?: string | null;
+            error?: string | null;
+            hash: string;
+            source?: string | null;
+            timestamp?: string | null;
+            type: string;
+          };
+        }>;
+      } | null;
     } | null;
   } | null;
 };
@@ -624,43 +653,34 @@ export const GetBalanceSummaryDocument = {
                 { kind: "Field", name: { kind: "Name", value: "id" } },
                 {
                   kind: "Field",
-                  name: { kind: "Name", value: "wallets" },
+                  name: { kind: "Name", value: "wallet" },
                   arguments: [
                     {
                       kind: "Argument",
-                      name: { kind: "Name", value: "filters" },
+                      name: { kind: "Name", value: "address" },
                       value: {
-                        kind: "ObjectValue",
-                        fields: [
-                          {
-                            kind: "ObjectField",
-                            name: { kind: "Name", value: "pubkeys" },
-                            value: {
-                              kind: "ListValue",
-                              values: [
-                                {
-                                  kind: "Variable",
-                                  name: { kind: "Name", value: "address" },
-                                },
-                              ],
-                            },
-                          },
-                        ],
+                        kind: "Variable",
+                        name: { kind: "Name", value: "address" },
                       },
                     },
                   ],
                   selectionSet: {
                     kind: "SelectionSet",
                     selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
                       {
                         kind: "Field",
-                        name: { kind: "Name", value: "edges" },
+                        name: { kind: "Name", value: "balances" },
                         selectionSet: {
                           kind: "SelectionSet",
                           selections: [
                             {
                               kind: "Field",
-                              name: { kind: "Name", value: "node" },
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "aggregate" },
                               selectionSet: {
                                 kind: "SelectionSet",
                                 selections: [
@@ -670,55 +690,20 @@ export const GetBalanceSummaryDocument = {
                                   },
                                   {
                                     kind: "Field",
-                                    name: { kind: "Name", value: "balances" },
-                                    selectionSet: {
-                                      kind: "SelectionSet",
-                                      selections: [
-                                        {
-                                          kind: "Field",
-                                          name: { kind: "Name", value: "id" },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "aggregate",
-                                          },
-                                          selectionSet: {
-                                            kind: "SelectionSet",
-                                            selections: [
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "id",
-                                                },
-                                              },
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "percentChange",
-                                                },
-                                              },
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "value",
-                                                },
-                                              },
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "valueChange",
-                                                },
-                                              },
-                                            ],
-                                          },
-                                        },
-                                      ],
+                                    name: {
+                                      kind: "Name",
+                                      value: "percentChange",
+                                    },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "value" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: {
+                                      kind: "Name",
+                                      value: "valueChange",
                                     },
                                   },
                                 ],
@@ -889,144 +874,92 @@ export const GetTransactionsDocument = {
                 { kind: "Field", name: { kind: "Name", value: "id" } },
                 {
                   kind: "Field",
-                  name: { kind: "Name", value: "wallets" },
+                  name: { kind: "Name", value: "wallet" },
                   arguments: [
                     {
                       kind: "Argument",
-                      name: { kind: "Name", value: "filters" },
+                      name: { kind: "Name", value: "address" },
                       value: {
-                        kind: "ObjectValue",
-                        fields: [
-                          {
-                            kind: "ObjectField",
-                            name: { kind: "Name", value: "pubkeys" },
-                            value: {
-                              kind: "ListValue",
-                              values: [
-                                {
-                                  kind: "Variable",
-                                  name: { kind: "Name", value: "address" },
-                                },
-                              ],
-                            },
-                          },
-                        ],
+                        kind: "Variable",
+                        name: { kind: "Name", value: "address" },
                       },
                     },
                   ],
                   selectionSet: {
                     kind: "SelectionSet",
                     selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
                       {
                         kind: "Field",
-                        name: { kind: "Name", value: "edges" },
+                        name: { kind: "Name", value: "chainId" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "transactions" },
+                        arguments: [
+                          {
+                            kind: "Argument",
+                            name: { kind: "Name", value: "filters" },
+                            value: {
+                              kind: "Variable",
+                              name: { kind: "Name", value: "filters" },
+                            },
+                          },
+                        ],
                         selectionSet: {
                           kind: "SelectionSet",
                           selections: [
                             {
                               kind: "Field",
-                              name: { kind: "Name", value: "node" },
+                              name: { kind: "Name", value: "edges" },
                               selectionSet: {
                                 kind: "SelectionSet",
                                 selections: [
                                   {
                                     kind: "Field",
-                                    name: { kind: "Name", value: "id" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "chainId" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: {
-                                      kind: "Name",
-                                      value: "transactions",
-                                    },
-                                    arguments: [
-                                      {
-                                        kind: "Argument",
-                                        name: {
-                                          kind: "Name",
-                                          value: "filters",
-                                        },
-                                        value: {
-                                          kind: "Variable",
-                                          name: {
-                                            kind: "Name",
-                                            value: "filters",
-                                          },
-                                        },
-                                      },
-                                    ],
+                                    name: { kind: "Name", value: "node" },
                                     selectionSet: {
                                       kind: "SelectionSet",
                                       selections: [
                                         {
                                           kind: "Field",
+                                          name: { kind: "Name", value: "id" },
+                                        },
+                                        {
+                                          kind: "Field",
                                           name: {
                                             kind: "Name",
-                                            value: "edges",
+                                            value: "description",
                                           },
-                                          selectionSet: {
-                                            kind: "SelectionSet",
-                                            selections: [
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "node",
-                                                },
-                                                selectionSet: {
-                                                  kind: "SelectionSet",
-                                                  selections: [
-                                                    {
-                                                      kind: "Field",
-                                                      name: {
-                                                        kind: "Name",
-                                                        value: "id",
-                                                      },
-                                                    },
-                                                    {
-                                                      kind: "Field",
-                                                      name: {
-                                                        kind: "Name",
-                                                        value: "description",
-                                                      },
-                                                    },
-                                                    {
-                                                      kind: "Field",
-                                                      name: {
-                                                        kind: "Name",
-                                                        value: "hash",
-                                                      },
-                                                    },
-                                                    {
-                                                      kind: "Field",
-                                                      name: {
-                                                        kind: "Name",
-                                                        value: "source",
-                                                      },
-                                                    },
-                                                    {
-                                                      kind: "Field",
-                                                      name: {
-                                                        kind: "Name",
-                                                        value: "timestamp",
-                                                      },
-                                                    },
-                                                    {
-                                                      kind: "Field",
-                                                      name: {
-                                                        kind: "Name",
-                                                        value: "type",
-                                                      },
-                                                    },
-                                                  ],
-                                                },
-                                              },
-                                            ],
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "error",
                                           },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "hash" },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "source",
+                                          },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "timestamp",
+                                          },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "type" },
                                         },
                                       ],
                                     },

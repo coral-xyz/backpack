@@ -1,4 +1,4 @@
-import type { Blockchain} from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import { explorerUrl } from "@coral-xyz/common";
 import { isFirstLastListItemStyle } from "@coral-xyz/react-common";
 import {
@@ -8,33 +8,14 @@ import {
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import CallMade from "@mui/icons-material/CallMade";
-import Check from "@mui/icons-material/Check";
-import Clear from "@mui/icons-material/Clear";
 import ListItem from "@mui/material/ListItem";
 import Typography from "@mui/material/Typography";
 
 import type { ChainId, Transaction } from "../../../graphql/graphql";
 
+import { TransactionListItemIcon } from "./TransactionListItemIcon";
+
 const useStyles = styles((theme) => ({
-  recentActivityListItemIconContainer: {
-    width: "44px",
-    height: "44px",
-    borderRadius: "22px",
-    marginRight: "12px",
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-  },
-  recentActivityListItemIcon: {
-    color: theme.custom.colors.positive,
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
-  recentActivityListItemIconNegative: {
-    color: theme.custom.colors.negative,
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
   txSig: {
     color: theme.custom.colors.fontColor,
     fontSize: "16px",
@@ -110,7 +91,7 @@ export function TransactionListItem({
               justifyContent: "center",
             }}
           >
-            <TransactionListItemIcon succeeded />
+            <TransactionListItemIcon transaction={transaction} />
           </div>
           <div>
             <Typography className={classes.txSig}>
@@ -141,18 +122,5 @@ export function TransactionListItem({
         </div>
       </div>
     </ListItem>
-  );
-}
-
-function TransactionListItemIcon({ succeeded }: { succeeded: boolean }) {
-  const classes = useStyles();
-  return (
-    <div className={classes.recentActivityListItemIconContainer}>
-      {!succeeded ? (
-        <Clear className={classes.recentActivityListItemIconNegative} />
-      ) : (
-        <Check className={classes.recentActivityListItemIcon} />
-      )}
-    </div>
   );
 }
