@@ -26,47 +26,44 @@ function formatDate(date: Date): string {
   return `${dd} ${mm} ${yyyy}`;
 }
 
+type NotificationGroup = {
+  date: string;
+  notifications: Notification[];
+};
+
 /**
  * Group the argued list of notifications by date.
  * @export
  * @param {Notification[]} notifications
- * @returns {{ date: string; notifications: Notification[] }[]}
+ * @returns {NotificationGroup[]}
  */
 export function getGroupedNotifications(
   notifications: Notification[]
-): { date: string; notifications: Notification[] }[] {
-  const groupedNotifications: {
-    date: string;
-    notifications: Notification[];
-  }[] = [];
+): NotificationGroup[] {
+  const groupedNotifications: NotificationGroup[] = [];
+  const bodies = notifications.map((n) => JSON.stringify(n.body));
 
   const uniqueNotifications = notifications
     .slice()
-    .sort((a, b) =>
-      new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime() ? 1 : -1
-    )
     .filter(
       (x, index) =>
         x.source !== "friend_requests" ||
-        notifications.map((y) => y.body).indexOf(x.body) === index
+        bodies.indexOf(JSON.stringify(x.body)) === index
     );
-  const sortedNotifications = uniqueNotifications.sort((a, b) =>
-    new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime() ? 1 : -1
-  );
 
-  for (let i = 0; i < sortedNotifications.length; i++) {
-    const date = formatDate(new Date(sortedNotifications[i].timestamp));
+  for (let i = 0; i < uniqueNotifications.length; i++) {
+    const date = formatDate(new Date(uniqueNotifications[i].timestamp));
     if (
       groupedNotifications.length === 0 ||
       groupedNotifications[groupedNotifications.length - 1].date !== date
     ) {
       groupedNotifications.push({
         date,
-        notifications: [sortedNotifications[i]],
+        notifications: [uniqueNotifications[i]],
       });
     } else {
       groupedNotifications[groupedNotifications.length - 1].notifications.push(
-        sortedNotifications[i]
+        uniqueNotifications[i]
       );
     }
   }
