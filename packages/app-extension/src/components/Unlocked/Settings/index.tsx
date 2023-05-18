@@ -19,11 +19,11 @@ import {
   Settings,
 } from "@mui/icons-material";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import { IconButton,Typography } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
 
 import { useNavigation } from "../../common/Layout/NavStack";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
-import { NotificationButton } from "../Balances/Notifications";
+import { NotificationButton } from "../Notifications";
 
 import { AvatarHeader } from "./AvatarHeader/AvatarHeader";
 import { AvatarPopoverButton } from "./AvatarPopover";
@@ -75,7 +75,7 @@ export function SettingsMenu() {
 
   useEffect(() => {
     nav.setOptions({ headerTitle: "" });
-  }, [nav.setOptions]);
+  }, [nav]);
 
   return (
     <Suspense fallback={<div />}>

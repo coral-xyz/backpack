@@ -7,4 +7,6 @@ generates:
     presetConfig:
       gqlTagName: 'gql'
     config:
+      scalars:
+        JSONObject: '{ data: string } | Record<string, any>'
       useTypeImports: true

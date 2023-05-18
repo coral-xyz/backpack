@@ -60,7 +60,7 @@
     "build": "cross-env NODE_ENV=production webpack",
     "build:release": "cross-env NODE_ENV=production webpack",
     "e2e": "jest --maxWorkers 1 --detectOpenHandles --forceExit --verbose",
-    "generate": "graphql-codegen --config codegen.yml",
+    "gql:generate": "graphql-codegen --config codegen.yml",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
     "lint:fix": "yarn run lint --fix"
   },

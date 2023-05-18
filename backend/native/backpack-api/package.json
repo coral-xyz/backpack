@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "esbuild ./src/index.js --bundle --platform=node --outfile=dist/index.js && cp ./src/schema.graphql ./dist/schema.graphql",
-    "generate": "graphql-codegen --config codegen.yml",
+    "gql:generate": "graphql-codegen --config codegen.yml",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
     "lint:fix": "yarn run lint --fix",
     "start": "npm run build && node dist/index.js"

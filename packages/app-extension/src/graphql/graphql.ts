@@ -19,7 +19,7 @@ export type Scalars = {
   Int: number;
   Float: number;
   /** Custom scalar to handle the parsing of arbitrary JSON object data. */
-  JSONObject: any;
+  JSONObject: { data: string } | Record<string, any>;
 };
 
 /** The aggregate market balance data for all balances in a wallet. */
@@ -222,7 +222,7 @@ export type NftConnection = {
 export type NftEdge = {
   __typename?: "NftEdge";
   cursor: Scalars["String"];
-  node?: Maybe<Nft>;
+  node: Nft;
 };
 
 /** Input filter type for fetching user wallet NFTs. */
@@ -267,7 +267,7 @@ export type NotificationConnection = {
 export type NotificationEdge = {
   __typename?: "NotificationEdge";
   cursor: Scalars["String"];
-  node?: Maybe<Notification>;
+  node: Notification;
 };
 
 /** Input filter type for fetching user notifications. */
@@ -347,7 +347,7 @@ export type TokenBalanceConnection = {
 export type TokenBalanceEdge = {
   __typename?: "TokenBalanceEdge";
   cursor: Scalars["String"];
-  node?: Maybe<TokenBalance>;
+  node: TokenBalance;
 };
 
 /** Generic on-chain transaction details structure. */
@@ -384,7 +384,7 @@ export type TransactionConnection = {
 export type TransactionEdge = {
   __typename?: "TransactionEdge";
   cursor: Scalars["String"];
-  node?: Maybe<Transaction>;
+  node: Transaction;
 };
 
 /**
@@ -468,7 +468,7 @@ export type WalletConnection = {
 export type WalletEdge = {
   __typename?: "WalletEdge";
   cursor: Scalars["String"];
-  node?: Maybe<Wallet>;
+  node: Wallet;
 };
 
 /** Input filter type for fetching user wallets and their data. */
@@ -494,7 +494,7 @@ export type GetBalanceSummaryQuery = {
       __typename?: "WalletConnection";
       edges: Array<{
         __typename?: "WalletEdge";
-        node?: {
+        node: {
           __typename?: "Wallet";
           id: string;
           balances?: {
@@ -508,7 +508,34 @@ export type GetBalanceSummaryQuery = {
               valueChange: number;
             };
           } | null;
-        } | null;
+        };
+      }>;
+    } | null;
+  } | null;
+};
+
+export type GetNotificationsQueryVariables = Exact<{
+  filters?: InputMaybe<NotificationsFiltersInput>;
+}>;
+
+export type GetNotificationsQuery = {
+  __typename?: "Query";
+  user?: {
+    __typename?: "User";
+    id: string;
+    notifications?: {
+      __typename?: "NotificationConnection";
+      edges: Array<{
+        __typename?: "NotificationEdge";
+        node: {
+          __typename?: "Notification";
+          id: string;
+          body: { data: string } | Record<string, any>;
+          source: string;
+          timestamp: string;
+          title: string;
+          viewed: boolean;
+        };
       }>;
     } | null;
   } | null;
@@ -665,4 +692,106 @@ export const GetBalanceSummaryDocument = {
 } as unknown as DocumentNode<
   GetBalanceSummaryQuery,
   GetBalanceSummaryQueryVariables
+>;
+export const GetNotificationsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "GetNotifications" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "filters" },
+          },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "NotificationsFiltersInput" },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "user" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "notifications" },
+                  arguments: [
+                    {
+                      kind: "Argument",
+                      name: { kind: "Name", value: "filters" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "filters" },
+                      },
+                    },
+                  ],
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "edges" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "node" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "body" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "source" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "timestamp" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "title" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "viewed" },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetNotificationsQuery,
+  GetNotificationsQueryVariables
 >;
