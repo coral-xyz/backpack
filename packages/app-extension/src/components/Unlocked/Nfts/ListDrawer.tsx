@@ -1,5 +1,11 @@
-import React, { useState } from "react";
-import { Blockchain, explorerUrl } from "@coral-xyz/common";
+import React, { useEffect, useState } from "react";
+import {
+  associatedTokenAddress,
+  Blockchain,
+  explorerUrl,
+  SolanaProvider,
+  UI_RPC_METHOD_NAVIGATION_TO_ROOT,
+} from "@coral-xyz/common";
 import {
   CheckIcon,
   DangerButton,
@@ -11,12 +17,18 @@ import {
   UseValueLabel,
 } from "@coral-xyz/react-common";
 import {
+  useActiveWallet,
+  useAnchorContext,
+  useBackgroundClient,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
   useSolanaCtx,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
+import * as anchor from "@project-serum/anchor";
+import * as web3 from "@solana/web3.js";
+import { TensorSwapSDK } from "@tensor-hq/tensorswap-sdk";
 import { BigNumber } from "ethers";
 
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
@@ -81,6 +93,13 @@ export function ListScreen({
   closePageDrawer: () => void;
 }) {
   const theme = useCustomTheme();
+  const activeWallet = useActiveWallet();
+  const solanaCtx = useSolanaCtx();
+  const provider = useAnchorContext();
+  const background = useBackgroundClient();
+
+  const swapSdk = new TensorSwapSDK({ provider });
+  const activeWalletPubKey = new web3.PublicKey(activeWallet.publicKey);
 
   const token = {
     address: nft?.publicKey,
@@ -98,22 +117,79 @@ export function ListScreen({
   const [tensorTx, setTensorTx] = useState("");
   const [listingAmt, setListingAmt] = useState(initialListingAmtStr); //todo make sure string aren't allowed
   const [cardType, setCardType] = useState("confirm");
+  const [wasListed, setWasListed] = useState(false);
 
-  //doing the listing
   async function listOnTensor() {
     setCardType("sending");
-    //
-    setTensorTx(
-      "21mVjw8mGjsUCeof65VsM7hvy5q7CU68X5qzQwWGd1KHMNGPCvTchWduAVBtYrr33Qb2oHJjm2pXfomFUsFRjXgp"
+    const nftMint = new web3.PublicKey(nft.mint);
+    let tokenAcc = associatedTokenAddress(nftMint, activeWalletPubKey);
+    const data = await swapSdk.list({
+      owner: activeWalletPubKey,
+      nftMint,
+      nftSource: tokenAcc,
+      // Create listing to sell for 0.1 SOL.
+      price: new anchor.BN(Number(listingAmt) * web3.LAMPORTS_PER_SOL),
+    });
+    const txToSend = new web3.Transaction().add(...data.tx.ixs);
+    // setTensorTx(txToSend.signature);
+    let txSig = await SolanaProvider.signAndSendTransaction(
+      solanaCtx,
+      txToSend
     );
-    setTimeout(() => {
-      setCardType("complete"); // ! SIMULATING SUCCESS
-    }, 5000);
+    setTensorTx(txSig);
+    setCardType("complete"); // ! WHAT IF TX FAILS
   }
 
-  async function deList() {
-    //
+  async function removeListing() {
+    setCardType("sending");
+    const nftMint = new web3.PublicKey(nft.mint);
+    let tokenAcc = associatedTokenAddress(nftMint, activeWalletPubKey);
+
+    const data = await swapSdk.delist({
+      owner: activeWalletPubKey,
+      nftMint,
+      //the token account for the nft
+      nftDest: tokenAcc,
+    });
+    const txToSend = new web3.Transaction().add(...data.tx.ixs);
+    let txSig = await SolanaProvider.signAndSendTransaction(
+      solanaCtx,
+      txToSend
+    );
+    setTensorTx(txSig);
+    setCardType("complete"); // ! WHAT IF TX FAILS
   }
+
+  async function editListing() {
+    setCardType("sending");
+    const nftMint = new web3.PublicKey(nft.mint);
+    const data = await swapSdk.editSingleListing({
+      owner: activeWalletPubKey,
+      nftMint,
+      // Change listing to 0.5 SOL.
+      price: new anchor.BN(Number(listingAmt) * web3.LAMPORTS_PER_SOL),
+    });
+    const txToSend = new web3.Transaction().add(...data.tx.ixs);
+    let txSig = await SolanaProvider.signAndSendTransaction(
+      solanaCtx,
+      txToSend
+    );
+    setTensorTx(txSig);
+    setCardType("complete"); // ! WHAT IF TX FAILS
+  }
+
+  useEffect(() => {
+    (async () => {
+      // navigate back to the nav root because the list screen is no longer
+      //  wallet no longer possesses the NFT.
+      if (cardType === "complete") {
+        await background.request({
+          method: UI_RPC_METHOD_NAVIGATION_TO_ROOT,
+          params: [],
+        });
+      }
+    })();
+  }, [cardType, background]);
 
   return (
     <div
@@ -269,6 +345,7 @@ export function ListScreen({
             style={{
               height: "40px",
             }}
+            onClick={() => removeListing()}
             label="Remove Listing"
           />
         </div>
@@ -294,7 +371,10 @@ export function ListScreen({
           setOpenDrawer={setOpenListDrawer}
         >
           {cardType === "confirm" ? (
-            <ConfirmListScreen onConfirm={() => listOnTensor()} token={token} />
+            <ConfirmListScreen
+              onConfirm={() => (listed ? editListing() : listOnTensor())}
+              token={token}
+            />
           ) : cardType === "sending" ? (
             <SendingNft isComplete={false} token={token} signature={tensorTx} />
           ) : cardType === "complete" ? (

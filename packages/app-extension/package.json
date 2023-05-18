@@ -28,7 +28,7 @@
     "@mui/styles": "^5.11.9",
     "@project-serum/anchor": "^0.24.2",
     "@solana/web3.js": "^1.63.1",
-    "@tensor-hq/tensorswap-sdk": "^1.9.2",
+    "@tensor-hq/tensorswap-sdk": "^1.9.4",
     "@typeform/embed": "^1.38.0",
     "@types/react-custom-scrollbars": "^4.0.10",
     "@types/react-dropzone": "^5.1.0",
