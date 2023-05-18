@@ -6,3 +6,4 @@ export * from "./RoundedContainerGroup";
 export { SearchBox } from "./SearchBox";
 export { StyledText } from "./StyledText";
 export * from "./TextPercentChanged";
+export * from "./UsdBalanceAndPercentChange";

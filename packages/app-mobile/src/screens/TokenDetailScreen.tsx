@@ -4,6 +4,7 @@ import { View, StyleSheet } from "react-native";
 
 import { NavTokenAction, NavTokenOptions } from "@@types/types";
 import { Blockchain } from "@coral-xyz/common";
+import { UsdBalanceAndPercentChange } from "@coral-xyz/tamagui";
 
 import { RecentActivityList } from "~components/RecentActivityList";
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
@@ -18,7 +19,6 @@ import {
   useBlockchainActiveWallet,
 } from "~hooks/recoil";
 import type { WalletStackParamList } from "~navigation/WalletsNavigator";
-import { UsdBalanceAndPercentChange } from "~screens/Unlocked/components/Balances";
 
 function TokenHeader({
   blockchain,

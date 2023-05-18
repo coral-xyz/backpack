@@ -213,49 +213,6 @@ export function WalletPickerButton({
   );
 }
 
-// Used for each individual row  of Balances
-
-// Used in BalanceDetail TokenHeader, slightly diff than the other one
-export function RecentPercentChange({
-  recentPercentChange,
-}: {
-  recentPercentChange: number | undefined;
-}): JSX.Element {
-  const theme = useTheme();
-  const color =
-    recentPercentChange === undefined
-      ? ""
-      : recentPercentChange > 0
-      ? theme.custom.colors.positive
-      : theme.custom.colors.negative;
-
-  return <Text style={{ color }}>{recentPercentChange}%</Text>;
-}
-
-// Used in BalanceDetail TokenHeader, slightly diff than other recent percent changes
-export function UsdBalanceAndPercentChange({
-  usdBalance,
-  recentPercentChange,
-}: {
-  usdBalance: number;
-  recentPercentChange: number | undefined;
-}): JSX.Element {
-  const theme = useTheme();
-  return (
-    <View style={usdBalanceAndPercentChangeStyles.container}>
-      <Text
-        style={[
-          usdBalanceAndPercentChangeStyles.usdBalanceLabel,
-          { color: theme.custom.colors.secondary },
-        ]}
-      >
-        ${parseFloat(usdBalance.toFixed(2)).toLocaleString()}{" "}
-        <RecentPercentChange recentPercentChange={recentPercentChange} />
-      </Text>
-    </View>
-  );
-}
-
 // Renders the individual token row
 export function TokenRow({
   onPressRow,
@@ -350,21 +307,6 @@ const styles = StyleSheet.create({
   tokenBalance: {
     fontWeight: "500",
     fontSize: 16,
-    lineHeight: 24,
-  },
-});
-
-const usdBalanceAndPercentChangeStyles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "center",
-  },
-  usdBalanceLabel: {
-    fontWeight: "500",
-    fontSize: 14,
-    textAlign: "center",
-    marginTop: 4,
     lineHeight: 24,
   },
 });
