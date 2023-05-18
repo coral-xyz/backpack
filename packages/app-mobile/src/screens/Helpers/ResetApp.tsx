@@ -41,5 +41,5 @@ const doReset = async (shouldReset: boolean) => {
       }
     }
   }
-  DevSettings.reload();
+  // DevSettings.reload();
 };

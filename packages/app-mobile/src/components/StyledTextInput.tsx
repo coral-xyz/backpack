@@ -1,9 +1,58 @@
 import type { TextInputProps } from "react-native";
 import { View, StyleSheet, TextInput as RNTextInput } from "react-native";
 
+import { XStack, StyledText } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import { useTheme } from "~hooks/useTheme";
+
+function Container({ children }: { children: JSX.Element }): JSX.Element {
+  const theme = useTheme();
+  return (
+    <View
+      style={[
+        {
+          backgroundColor: theme.custom.colors.textBackground,
+          borderColor: theme.custom.colors.textInputBorderFull,
+          borderWidth: theme.custom.size.borderWidth,
+          borderRadius: theme.custom.borderRadius.container,
+          height: theme.custom.size.container,
+          paddingHorizontal: 16,
+          justifyContent: "center",
+        },
+      ]}
+    >
+      {children}
+    </View>
+  );
+}
+
+export function UsernameInput({
+  username,
+  onChange,
+}: {
+  username: string;
+  onChange: (username: string) => void;
+}): JSX.Element {
+  return (
+    <Container>
+      <XStack>
+        <StyledText color="$fontColor">@</StyledText>
+        <RNTextInput
+          style={{ paddingLeft: 4 }}
+          autoFocus
+          placeholder="Username"
+          returnKeyType="next"
+          value={username}
+          onChangeText={(text) => {
+            const username = text.toLowerCase().replace(/[^a-z0-9_]/g, "");
+            onChange(username);
+          }}
+        />
+      </XStack>
+    </Container>
+  );
+}
 
 export function StyledTextInput({
   style,
@@ -24,8 +73,12 @@ export function StyledTextInput({
           backgroundColor: theme.custom.colors.textBackground,
           borderColor: theme.custom.colors.textInputBorderFull,
           color: theme.custom.colors.secondary,
-          minHeight: multiline && numberOfLines ? numberOfLines * 24 : 48,
-          borderWidth: 2,
+          minHeight:
+            multiline && numberOfLines
+              ? numberOfLines * 24
+              : theme.custom.size.container,
+          borderWidth: theme.custom.size.borderWidth,
+          borderRadius: theme.custom.borderRadius.medium,
         },
         styles.container,
         styles.textInput,
@@ -57,8 +110,8 @@ export function SearchInput({ style, ...props }: TextInputProps): JSX.Element {
           backgroundColor: theme.custom.colors.textBackground,
           borderColor: theme.custom.colors.textInputBorderFull,
           color: theme.custom.colors.secondary,
-          borderWidth: 2,
-          height: 48,
+          borderWidth: theme.custom.size.borderWidth,
+          height: theme.custom.size.container,
         },
         styles.container,
         styles.inputContainer,
