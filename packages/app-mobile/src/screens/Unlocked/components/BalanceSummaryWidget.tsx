@@ -73,7 +73,12 @@ const GET_BALANCE_SUMMARY = gql`
       id
       balances {
         id
-        aggregateValue
+        aggregate {
+          id
+          percentChange
+          value
+          valueChange
+        }
         native {
           id
           address
@@ -104,11 +109,10 @@ function Container() {
     },
   });
 
-  const totalBalance = data.wallet.balances?.aggregateValue;
-  const totalChange =
-    data.wallet.balances?.native?.marketData?.usdChange ?? "$0.00";
-  const percentChange =
-    data.wallet.balances?.native?.marketData?.percentChange ?? "0.00";
+  const { aggregate } = data.wallet.balances;
+  const totalBalance = aggregate.value ?? 0.0;
+  const totalChange = aggregate.valueChange ?? 0.0;
+  const percentChange = aggregate.percentChange ?? 0.0;
 
   return (
     <View style={styles.container}>

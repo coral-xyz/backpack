@@ -4,7 +4,7 @@ import { Suspense, useCallback } from "react";
 import { FlatList, Text } from "react-native";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
-import { Box } from "@coral-xyz/tamagui";
+import { Box, StyledText } from "@coral-xyz/tamagui";
 import { useNavigation } from "@react-navigation/native";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -24,7 +24,12 @@ const GET_WALLET_DATA = gql`
       id
       balances {
         id
-        aggregateValue
+        aggregate {
+          id
+          percentChange
+          value
+          valueChange
+        }
       }
     }
   }
@@ -39,7 +44,7 @@ function ListItemData({ wallet, onPress }: { wallet: Wallet }): JSX.Element {
     },
   });
 
-  const balance = data.wallet.balances?.aggregateValue?.toFixed(2) ?? "$0.00";
+  const balance = data.wallet.balances?.aggregate.value?.toFixed(2) ?? "0.00";
 
   return (
     <ListItemWalletOverview
@@ -109,7 +114,10 @@ function WalletList() {
 function Container() {
   return (
     <Screen headerPadding>
-      <Box mb={12}>
+      <StyledText fontSize="$xl" textAlign="center">
+        All balances
+      </StyledText>
+      <Box my={12}>
         <BalanceSummaryWidget />
       </Box>
       <WalletList />
