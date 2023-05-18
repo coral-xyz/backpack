@@ -1,5 +1,4 @@
 import { UserIcon } from "@coral-xyz/react-common";
-import { useCustomTheme } from "@coral-xyz/themes";
 
 import { GroupIdentifier } from "./GroupIdentifier";
 import { SpotlightCell } from "./SpotlightCell";

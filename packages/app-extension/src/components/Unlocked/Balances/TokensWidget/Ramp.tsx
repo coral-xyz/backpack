@@ -1,17 +1,13 @@
 import { useState } from "react";
-import { Blockchain, toTitleCase } from "@coral-xyz/common";
+import { Blockchain } from "@coral-xyz/common";
 import { ProxyImage } from "@coral-xyz/react-common";
 import {
-  isAggregateWallets,
   SOL_LOGO_URI,
-  useActiveWallet,
-  useActiveWallets,
   useAllWalletsDisplayed,
   useWalletName,
 } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import { ListItemIcon, Typography } from "@mui/material";
-import { useRecoilValue } from "recoil";
 
 import { TextField } from "../../../common";
 import { useNavigation } from "../../../common/Layout/NavStack";
@@ -228,24 +224,28 @@ function RampTokenCell({ token }: any) {
   const classes = useStyles();
   return (
     <div className={classes.balancesTableCellContainer}>
-      {icon ? <ListItemIcon
-        className={classes.tokenListItemIcon}
-        classes={{ root: classes.tokenListItemIconRoot }}
+      {icon ? (
+        <ListItemIcon
+          className={classes.tokenListItemIcon}
+          classes={{ root: classes.tokenListItemIconRoot }}
         >
-        <ProxyImage
-          src={icon}
-          className={classes.logoIcon}
-          onError={(event: any) =>
+          <ProxyImage
+            src={icon}
+            className={classes.logoIcon}
+            onError={(event: any) =>
               (event.currentTarget.style.display = "none")
             }
           />
-      </ListItemIcon> : null}
+        </ListItemIcon>
+      ) : null}
       <div className={classes.tokenListItemContent}>
         <div className={classes.tokenListItemRow}>
           <Typography className={classes.tokenName}>{title}</Typography>
         </div>
         <div className={classes.tokenListItemRow}>
-          {subtitle ? <Typography className={classes.tokenAmount}>{subtitle}</Typography> : null}
+          {subtitle ? (
+            <Typography className={classes.tokenAmount}>{subtitle}</Typography>
+          ) : null}
         </div>
       </div>
     </div>

@@ -199,14 +199,9 @@ export function useNavigation(): NavStackContext {
   return ctx;
 }
 
-export function NavStackScreen({
-  // eslint-disable-next-line
-  name,
-  // eslint-disable-next-line
-  component,
-}: {
+export function NavStackScreen(_props: {
   name: string;
   component: (props: any) => React.ReactNode;
 }) {
-  return <></>;
+  return null;
 }

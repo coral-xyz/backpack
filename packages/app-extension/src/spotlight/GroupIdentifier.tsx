@@ -1,8 +1,6 @@
 import { PushDetail } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 
-import { ActionRow } from "./ActionRow";
-
 export const GroupIdentifier = ({ name }: { name: string }) => {
   const theme = useCustomTheme();
 

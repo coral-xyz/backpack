@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { useSuspenseQuery_experimental } from "@apollo/client";
 import { formatUSD } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
@@ -66,6 +67,14 @@ const GET_BALANCE_SUMMARY = gql(`
 `);
 
 export function BalanceSummaryWidget() {
+  return (
+    <Suspense fallback={<BalanceSummaryLoader />}>
+      <_BalanceSummaryWidget />
+    </Suspense>
+  );
+}
+
+function _BalanceSummaryWidget() {
   const theme = useCustomTheme();
   const classes = useStyles();
   const activeWallet = useActiveWallet();
@@ -145,7 +154,7 @@ export function BalanceSummaryWidget() {
   );
 }
 
-export function BalanceSummaryWidgetSkeleton() {
+function BalanceSummaryLoader() {
   const theme = useCustomTheme();
   const classes = useStyles();
 

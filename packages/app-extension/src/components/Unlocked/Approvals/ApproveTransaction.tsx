@@ -78,8 +78,7 @@ export function ApproveTransaction({
   const classes = useStyles();
   const blockchain = useWalletBlockchain(wallet);
   const transactionData = useTransactionData(blockchain as Blockchain, tx);
-  const { loading, balanceChanges, transaction, solanaFeeConfig } =
-    transactionData;
+  const { loading, transaction, solanaFeeConfig } = transactionData;
   const _isKeyCold = useRecoilValue(isKeyCold(wallet));
 
   if (loading) {
@@ -278,25 +277,27 @@ export function ApproveAllTransactions({
               menuItemClasses={{ root: classes.txMenuItemRoot }}
             />
           </div>
-          {showAll ? transactionsData.map((tx, i) => (
-            <div
-              key={i + 1}
-              style={{
-                  marginTop: "10px",
-                  marginLeft: "8px",
-                  marginRight: "8px",
-                }}
-              >
-              <Typography className={classes.listDescription}>
-                [{i + 1}] Transaction details
-              </Typography>
-              <TransactionData
-                transactionData={tx}
-                menuItems={createTransactionDataMenuItems(tx, classes)}
-                menuItemClasses={{ root: classes.txMenuItemRoot }}
-                />
-            </div>
-            )) : null}
+          {showAll
+            ? transactionsData.map((tx, i) => (
+              <div
+                key={i + 1}
+                style={{
+                    marginTop: "10px",
+                    marginLeft: "8px",
+                    marginRight: "8px",
+                  }}
+                >
+                <Typography className={classes.listDescription}>
+                  [{i + 1}] Transaction details
+                </Typography>
+                <TransactionData
+                  transactionData={tx}
+                  menuItems={createTransactionDataMenuItems(tx, classes)}
+                  menuItemClasses={{ root: classes.txMenuItemRoot }}
+                  />
+              </div>
+              ))
+            : null}
         </div>
       )}
       <Typography

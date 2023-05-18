@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import {
   Blockchain,
   ETH_NATIVE_MINT,
@@ -11,10 +10,7 @@ import { useAllWalletsDisplayed, useNavigation } from "@coral-xyz/recoil";
 
 import { TokenTables } from "../../common/TokenTable";
 
-import {
-  BalanceSummaryWidget,
-  BalanceSummaryWidgetSkeleton,
-} from "./BalanceSummaryWidget";
+import { BalanceSummaryWidget } from "./Summary";
 import { TransferWidget } from "./TransferWidget";
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
@@ -44,9 +40,7 @@ export function Balances() {
 
   return (
     <div>
-      <Suspense fallback={<BalanceSummaryWidgetSkeleton />}>
-        <BalanceSummaryWidget />
-      </Suspense>
+      <BalanceSummaryWidget />
       <div
         style={{
           marginTop: "32px",

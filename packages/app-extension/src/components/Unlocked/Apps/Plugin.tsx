@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useState } from "react";
 import type { Plugin } from "@coral-xyz/common";
 import { DEFAULT_PUBKEY_STR } from "@coral-xyz/common";
-import { Loading, MoreIcon, PowerIcon } from "@coral-xyz/react-common";
+import { Loading, PowerIcon } from "@coral-xyz/react-common";
 import {
   transactionRequest,
   useActiveSolanaWallet,
@@ -14,8 +14,8 @@ import {
   usePlugins,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Button, CircularProgress, Divider } from "@mui/material";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { Button } from "@mui/material";
+import { useSetRecoilState } from "recoil";
 
 import { PluginRenderer } from "./Renderer";
 import { Simulator } from "./Simulator";
@@ -109,11 +109,13 @@ export function PluginDisplay({
     <>
       <PluginControl plugin={plugin} />
       <Suspense fallback={<Loading />}>
-        {plugin ? <PluginRenderer
-          key={plugin?.iframeRootUrl}
-          plugin={plugin}
-          deepXnftPath={deepXnftPath}
-          /> : null}
+        {plugin ? (
+          <PluginRenderer
+            key={plugin?.iframeRootUrl}
+            plugin={plugin}
+            deepXnftPath={deepXnftPath}
+          />
+        ) : null}
       </Suspense>
     </>
   );
