@@ -40,7 +40,6 @@ import {
 } from "@coral-xyz/recoil";
 import { Stack as Box } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -66,7 +65,7 @@ import {
   TwitterIcon,
   WidgetIcon,
 } from "~components/Icon";
-import { StyledTextInput } from "~components/StyledTextInput";
+import { UsernameInput } from "~components/StyledTextInput";
 import {
   ActionCard,
   // Box,
@@ -87,6 +86,7 @@ import {
   CallToAction,
 } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
+import { useSession } from "~lib/SessionProvider";
 import { maybeRender } from "~lib/index";
 
 function Network({
@@ -404,16 +404,7 @@ function CreateOrRecoverUsernameScreen({
         {text}
         <View>
           <Box marginBottom={18}>
-            <StyledTextInput
-              autoFocus
-              placeholder="@Username"
-              returnKeyType="next"
-              value={username}
-              onChangeText={(text) => {
-                const username = text.toLowerCase().replace(/[^a-z0-9_]/g, "");
-                setUsername(username);
-              }}
-            />
+            <UsernameInput username={username} onChange={setUsername} />
           </Box>
           {maybeRender(error !== "", () => (
             <ErrorMessage for={{ message: error }} />
@@ -905,6 +896,7 @@ function OnboardingImportAccountsScreen({
 function CreateAccountLoadingScreen(
   _p: StackScreenProps<OnboardingStackParamList, "CreateAccountLoading">
 ): JSX.Element {
+  const { setAuthToken } = useSession();
   const background = useBackgroundClient();
   const { onboardingData, maybeCreateUser } = useOnboarding();
   const [error, setError] = useState(false);
@@ -915,12 +907,16 @@ function CreateAccountLoadingScreen(
         ...onboardingData,
         keyringType: "mnemonic",
       });
-      await AsyncStorage.setItem("@bk-jwt", res.jwt);
+
       if (!res.ok) {
         setError(true);
       }
+
+      console.log("debug1:jwt", res.jwt);
+
+      setAuthToken(res.jwt);
     })();
-  }, [onboardingData, background, maybeCreateUser]);
+  }, [onboardingData, background, maybeCreateUser, setAuthToken]);
 
   if (error) {
     return (

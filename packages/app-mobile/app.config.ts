@@ -56,6 +56,9 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
     },
     assetBundlePatterns: ["**/*"],
     ios: {
+      config: {
+        usesNonExemptEncryption: false,
+      },
       supportsTablet: false,
       bundleIdentifier: packageName,
       infoPlist: {

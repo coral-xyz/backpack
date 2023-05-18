@@ -6,6 +6,7 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { useTheme } from "~hooks/useTheme";
+import { SessionProvider } from "~lib/SessionProvider";
 
 import RelayEnvironment from "./graphql/RelayEnvironment";
 import { useApolloClient } from "./graphql/apollo";
@@ -26,18 +27,22 @@ export function Providers({
   }
 
   return (
-    <RelayEnvironment>
-      <ApolloProvider client={client} suspenseCache={suspenseCache}>
-        <TamaguiProvider config={config} defaultTheme={theme.colorScheme}>
-          <SafeAreaProvider>
-            <NotificationsProvider>
-              <ActionSheetProvider>
-                <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
-              </ActionSheetProvider>
-            </NotificationsProvider>
-          </SafeAreaProvider>
-        </TamaguiProvider>
-      </ApolloProvider>
-    </RelayEnvironment>
+    <SessionProvider>
+      <RelayEnvironment>
+        <ApolloProvider client={client} suspenseCache={suspenseCache}>
+          <TamaguiProvider config={config} defaultTheme={theme.colorScheme}>
+            <SafeAreaProvider>
+              <NotificationsProvider>
+                <ActionSheetProvider>
+                  <BottomSheetModalProvider>
+                    {children}
+                  </BottomSheetModalProvider>
+                </ActionSheetProvider>
+              </NotificationsProvider>
+            </SafeAreaProvider>
+          </TamaguiProvider>
+        </ApolloProvider>
+      </RelayEnvironment>
+    </SessionProvider>
   );
 }

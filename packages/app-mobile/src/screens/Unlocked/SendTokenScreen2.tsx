@@ -22,11 +22,11 @@ import {
   YGroup,
   YStack,
 } from "@coral-xyz/tamagui";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SearchInput as BaseSearchInput } from "~components/StyledTextInput";
 import { UserAvatar } from "~components/UserAvatar";
+import { useSession } from "~lib/SessionProvider";
 
 export const BubbleTopLabel = ({ text }: { text: string }) => {
   return (
@@ -142,13 +142,13 @@ export const SearchInput = ({
   searchResults: RemoteUserData[];
   blockchain: Blockchain;
 }) => {
+  const { token } = useSession();
   const fetchUserDetails = async (address: string, blockchain: Blockchain) => {
     try {
-      const jwt = await AsyncStorage.getItem("@bk-jwt");
       const url = `${BACKEND_API_URL}/users?usernamePrefix=${address}&blockchain=${blockchain}&limit=6`;
       const response = await fetch(url, {
         headers: {
-          authorization: `Bearer ${jwt}`,
+          authorization: `Bearer ${token}`,
         },
       });
 

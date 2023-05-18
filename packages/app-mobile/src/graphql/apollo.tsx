@@ -1,4 +1,3 @@
-// https://github.com/apollographql/apollo-cache-persist/tree/master/examples/react-native/src/hooks
 import { useState, useEffect } from "react";
 
 import Constants from "expo-constants";
@@ -11,45 +10,55 @@ import {
 import { InMemoryCache } from "@apollo/client/core";
 import { setContext } from "@apollo/client/link/context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+// https://github.com/apollographql/apollo-cache-persist/tree/master/examples/react-native/src/hooks
 import { persistCache, AsyncStorageWrapper } from "apollo3-cache-persist";
 
+import { useSession, getTokenAsync } from "~lib/SessionProvider";
+
 const cache = new InMemoryCache();
-
 const API_URL = Constants.expoConfig?.extra?.graphqlApiUrl;
-const httpLink = createHttpLink({
-  uri: API_URL,
-});
 
-const authLink = setContext((_, { headers }) => {
-  const token = "Bearer abc1234";
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : "",
-    },
-  };
-});
+const makeApolloClient = (token: string | null) => {
+  const httpLink = createHttpLink({
+    uri: API_URL,
+  });
+
+  const authLink = setContext((_, { headers }) => {
+    console.log("debug1:authLink:token", token);
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : "",
+      },
+    };
+  });
+
+  const client = new ApolloClient({
+    cache,
+    link: authLink.concat(httpLink),
+  });
+
+  return client;
+};
 
 export const useApolloClient = () => {
+  const { token } = useSession();
   const [client, setClient] = useState<ApolloClient<NormalizedCacheObject>>();
 
   useEffect(() => {
     async function init() {
+      const token = await getTokenAsync();
       await persistCache({
         cache,
         storage: new AsyncStorageWrapper(AsyncStorage),
       });
 
-      const apolloClient = new ApolloClient({
-        cache,
-        link: authLink.concat(httpLink),
-      });
-
+      const apolloClient = makeApolloClient(token);
       setClient(apolloClient);
     }
 
     init();
-  }, []);
+  }, [token]);
 
   return {
     client,

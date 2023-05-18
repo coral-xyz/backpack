@@ -1,5 +1,5 @@
 import type { StyleProp, ViewStyle } from "react-native";
-import { Pressable, StyleSheet } from "react-native";
+import { Platform, Pressable, StyleSheet } from "react-native";
 import { HOVER_OPACITY } from "@coral-xyz/themes";
 import { Text } from "tamagui";
 
@@ -66,7 +66,7 @@ export function BaseButton({
 const baseButtonStyles = StyleSheet.create({
   button: {
     userSelect: "none",
-    height: 48,
+    height: Platform.select({ native: 56, web: 48 }),
     paddingHorizontal: 12,
     borderRadius: 12,
     justifyContent: "center",

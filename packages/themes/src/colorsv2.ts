@@ -49,9 +49,10 @@ export const red600 = "rgba(234, 56, 59, 1)"; // previously #f13236
 export const red700 = "rgba(210, 0, 36, 1)"; // previously #d20024
 
 // Light Mode /////////////////////////////////////////////////////
+
+// export const lightNeutralBackgroundAppBackground = "linear-gradient(to bottom, #f8f8f9 0%,#f0f0f2 100%)";
+
 // Light Mode Backgrounds
-export const lightNeutralBackgroundAppBackground =
-  "linear-gradient(to bottom, #f8f8f9 0%,#f0f0f2 100%)";
 export const lightBaseBackgroundL1 = base50; // card background
 export const lightBaseBackgroundL2 = base100; // light mode border
 
@@ -96,6 +97,11 @@ export const lightRedBackgroundSolid = red100;
 export const lightRedBackgroundTransparent = color(red500).alpha(0.12);
 
 // Dark Mode //////////////////////////////////////////////////////
+
+// Dark Mode Backgrounds
+export const darkBaseBackgroundL0 = base900; // dark container background
+export const darkBaseBackgroundL1 = base800; // dark content background
+
 // Dark Mode Text
 export const darkBaseTextHighEmphasis = base50;
 export const darkBaseTextMedEmphasis = base400;
@@ -105,10 +111,6 @@ export const darkBaseIcon = base500; // meets 3:1 color contrast on base800 for 
 export const darkBaseIconHover = base400; // increase contrast on hover
 export const darkBaseIconPress = base500; // decrease contrast on press
 export const darkBaseIconHighContrast = base400; // icon hover if not using opacity
-
-// Dark Mode Backgrounds
-export const darkBaseBackgroundL0 = base900; // dark container background
-export const darkBaseBackgroundL1 = base800; // dark content background
 
 // Dark Mode Borders
 export const darkBaseBorderLight = color(baseWhite).alpha(0.1);
@@ -144,37 +146,100 @@ export const darkRedBackgroundSolid = "rgba(53, 26, 31, 1)"; // derived from put
 // Misc Color Definitions ////////////////////////////////////////
 export const overlayBackground = color(base900).alpha(0.4); // overlay background is base900 at 40% opacity
 
-// Username Colors in Messaging
-export const lightUsernameColors = {
-  color_01: "#E02929",
-  color_02: "#CC2578",
-  color_03: "#9930B8",
-  color_04: "#5E35B1",
-  color_05: "#3949AB",
-  color_06: "#0072DB",
-  color_07: "#0C5ADF",
-  color_08: "#008577",
-  color_09: "#1A841F",
-  color_10: "#6C7D26",
-  color_11: "#BD5B00",
-  color_12: "#CC4218",
-  color_13: "#6D4C41",
-  color_14: "#2D4363",
+const lightUsernameColors = {
+  username01: "#E02929",
+  username02: "#CC2578",
+  username03: "#9930B8",
+  username04: "#5E35B1",
+  username05: "#3949AB",
+  username06: "#0072DB",
+  username07: "#0C5ADF",
+  username08: "#008577",
+  username09: "#1A841F",
+  username10: "#6C7D26",
+  username11: "#BD5B00",
+  username12: "#CC4218",
+  username13: "#6D4C41",
+  username14: "#2D4363",
 };
 
-export const darkUsernameColors = {
-  color_01: "#F88484",
-  color_02: "#E57AB0",
-  color_03: "#DA8BE7",
-  color_04: "#C2A6F4",
-  color_05: "#97A4F4",
-  color_06: "#57AEFF",
-  color_07: "#5596F6",
-  color_08: "#7ACCC7",
-  color_09: "#75DD7A",
-  color_10: "#BEE05A",
-  color_11: "#FFD080",
-  color_12: "#FA9476",
-  color_13: "#BCAAA4",
-  color_14: "#A3B5CF",
+const darkUsernameColors = {
+  username01: "#F88484",
+  username02: "#E57AB0",
+  username03: "#DA8BE7",
+  username04: "#C2A6F4",
+  username05: "#97A4F4",
+  username06: "#57AEFF",
+  username07: "#5596F6",
+  username08: "#7ACCC7",
+  username09: "#75DD7A",
+  username10: "#BEE05A",
+  username11: "#FFD080",
+  username12: "#FA9476",
+  username13: "#BCAAA4",
+  username14: "#A3B5CF",
+};
+
+export const colorTokens = {
+  light: {
+    ...lightUsernameColors,
+    baseBackgroundL0: lightBaseBackgroundL1,
+    baseBackgroundL1: lightBaseBackgroundL2,
+    baseTextHighEmphasis: lightBaseTextHighEmphasis,
+    baseTextMedEmphasis: lightBaseTextMedEmphasis,
+    baseIcon: lightBaseIcon,
+    baseIconHover: lightBaseIconHover,
+    baseIconPress: lightBaseIconPress,
+    baseBorderLight: lightBaseBorderLight,
+    buttonPrimaryBackground: lightButtonPrimaryBackground,
+    buttonPrimaryText: lightButtonPrimaryText,
+    buttonSecondaryBackground: lightButtonSecondaryBackground,
+    buttonSecondaryText: lightButtonSecondaryText,
+    greenText: lightGreenText,
+    greenIcon: lightGreenIcon,
+    greenBorder: lightGreenBorder,
+    greenBackgroundSolid: lightGreenBackgroundSolid,
+    greenBackgroundTransparent: lightGreenBackgroundTransparent,
+    yellowText: lightYellowText,
+    yellowIcon: lightYellowIcon,
+    yellowBorder: lightYellowBorder,
+    yellowBackgroundSolid: lightYellowBackgroundSolid,
+    yellowBackgroundTransparent: lightYellowBackgroundTransparent,
+    redText: lightRedText,
+    redIcon: lightRedIcon,
+    redBorder: lightRedBorder,
+    redBackgroundSolid: lightRedBackgroundSolid,
+    redBackgroundTransparent: lightRedBackgroundTransparent,
+  },
+  dark: {
+    ...darkUsernameColors,
+    baseBackgroundL0: darkBaseBackgroundL0,
+    baseBackgroundL1: darkBaseBackgroundL1,
+    baseTextHighEmphasis: darkBaseTextHighEmphasis,
+    baseTextMedEmphasis: darkBaseTextMedEmphasis,
+    baseIcon: darkBaseIcon,
+    baseIconHover: darkBaseIconHover,
+    baseIconPress: darkBaseIconPress,
+    baseIconHighContrast: darkBaseIconHighContrast,
+    baseBorderLight: darkBaseBorderLight,
+    buttonPrimaryBackground: darkButtonPrimaryBackground,
+    buttonPrimaryText: darkButtonPrimaryText,
+    buttonSecondaryBackground: darkButtonSecondaryBackground,
+    buttonSecondaryText: darkButtonSecondaryText,
+    greenText: darkGreenText,
+    greenIcon: darkGreenIcon,
+    greenBorder: darkGreenBorder,
+    greenBackgroundOpacity: darkGreenBackgroundOpacity,
+    greenBackgroundSolid: darkGreenBackgroundSolid,
+    yellowText: darkYellowText,
+    yellowIcon: darkYellowIcon,
+    yellowBorder: darkYellowBorder,
+    yellowBackgroundTransparent: darkYellowBackgroundTransparent,
+    yellowBackgroundSolid: darkYellowBackgroundSolid,
+    redText: darkRedText,
+    redIcon: darkRedIcon,
+    redBorder: darkRedBorder,
+    redBackgroundTransparent: darkRedBackgroundTransparent,
+    redBackgroundSolid: darkRedBackgroundSolid,
+  },
 };
