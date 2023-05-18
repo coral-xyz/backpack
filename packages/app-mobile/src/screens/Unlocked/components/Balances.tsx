@@ -12,6 +12,7 @@ import {
   blockchainBalancesSorted,
   allWalletsDisplayed,
 } from "@coral-xyz/recoil";
+import { TextPercentChanged } from "@coral-xyz/tamagui";
 import { useNavigation } from "@react-navigation/native";
 import { useRecoilValueLoadable } from "recoil";
 
@@ -212,94 +213,6 @@ export function WalletPickerButton({
   );
 }
 
-// Used for each individual row  of Balances
-export function TextPercentChanged({
-  percentChange,
-}: {
-  percentChange: number;
-}) {
-  const theme = useTheme();
-  const positive = !!(percentChange && percentChange > 0);
-  const negative = !!(percentChange && percentChange < 0);
-  const neutral = !!(percentChange && percentChange === 0);
-
-  return (
-    <>
-      {percentChange !== undefined && positive ? (
-        <Text
-          style={[
-            styles.tokenBalanceChangePositive,
-            { color: theme.custom.colors.positive },
-          ]}
-        >
-          +{formatUSD(percentChange.toLocaleString())}
-        </Text>
-      ) : null}
-      {percentChange !== undefined && negative ? (
-        <Text
-          style={[
-            styles.tokenBalanceChangeNegative,
-            { color: theme.custom.colors.negative },
-          ]}
-        >
-          {formatUSD(percentChange.toLocaleString())}
-        </Text>
-      ) : null}
-      {percentChange !== undefined && neutral ? (
-        <Text
-          style={[
-            styles.tokenBalanceChangeNeutral,
-            { color: theme.custom.colors.secondary },
-          ]}
-        >
-          {formatUSD(percentChange.toLocaleString())}
-        </Text>
-      ) : null}
-    </>
-  );
-}
-
-// Used in BalanceDetail TokenHeader, slightly diff than the other one
-export function RecentPercentChange({
-  recentPercentChange,
-}: {
-  recentPercentChange: number | undefined;
-}): JSX.Element {
-  const theme = useTheme();
-  const color =
-    recentPercentChange === undefined
-      ? ""
-      : recentPercentChange > 0
-      ? theme.custom.colors.positive
-      : theme.custom.colors.negative;
-
-  return <Text style={{ color }}>{recentPercentChange}%</Text>;
-}
-
-// Used in BalanceDetail TokenHeader, slightly diff than other recent percent changes
-export function UsdBalanceAndPercentChange({
-  usdBalance,
-  recentPercentChange,
-}: {
-  usdBalance: number;
-  recentPercentChange: number | undefined;
-}): JSX.Element {
-  const theme = useTheme();
-  return (
-    <View style={usdBalanceAndPercentChangeStyles.container}>
-      <Text
-        style={[
-          usdBalanceAndPercentChangeStyles.usdBalanceLabel,
-          { color: theme.custom.colors.secondary },
-        ]}
-      >
-        ${parseFloat(usdBalance.toFixed(2)).toLocaleString()}{" "}
-        <RecentPercentChange recentPercentChange={recentPercentChange} />
-      </Text>
-    </View>
-  );
-}
-
 // Renders the individual token row
 export function TokenRow({
   onPressRow,
@@ -394,35 +307,6 @@ const styles = StyleSheet.create({
   tokenBalance: {
     fontWeight: "500",
     fontSize: 16,
-    lineHeight: 24,
-  },
-  tokenBalanceChangeNeutral: {
-    fontWeight: "500",
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  tokenBalanceChangePositive: {
-    fontWeight: "500",
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  tokenBalanceChangeNegative: {
-    fontWeight: "500",
-    fontSize: 12,
-  },
-});
-
-const usdBalanceAndPercentChangeStyles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "center",
-  },
-  usdBalanceLabel: {
-    fontWeight: "500",
-    fontSize: 14,
-    textAlign: "center",
-    marginTop: 4,
     lineHeight: 24,
   },
 });
