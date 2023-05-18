@@ -253,6 +253,17 @@ export function ListScreen({
   const [cardType, setCardType] = useState("confirm");
   const [wasListed, setWasListed] = useState(false);
 
+  // async function simulateListingOnTensor() {
+  //   setCardType("sending");
+  //   //
+  //   setTensorTx(
+  //     "21mVjw8mGjsUCeof65VsM7hvy5q7CU68X5qzQwWGd1KHMNGPCvTchWduAVBtYrr33Qb2oHJjm2pXfomFUsFRjXgp"
+  //   );
+  //   setTimeout(() => {
+  //     setCardType("complete"); // ! SIMULATING SUCCESS
+  //   }, 5000);
+  // }
+
   async function listOnTensor() {
     setCardType("sending");
     const nftMint = new web3.PublicKey(nft.mint);
@@ -316,7 +327,7 @@ export function ListScreen({
     (async () => {
       // navigate back to the nav root because the list screen is no longer
       //  wallet no longer possesses the NFT.
-      if (cardType === "complete") {
+      if (cardType === "complete" && !openListDrawer) {
         await background.request({
           method: UI_RPC_METHOD_NAVIGATION_TO_ROOT,
           params: [],
@@ -324,7 +335,7 @@ export function ListScreen({
       }
       // TODO force a hard reload
     })();
-  }, [cardType, background]);
+  }, [cardType, background, openListDrawer]);
 
   return (
     <div className={classes.listScreenContainer}>
@@ -440,7 +451,10 @@ export function ListScreen({
         >
           {cardType === "confirm" ? (
             <ConfirmListScreen
-              onConfirm={() => (listed ? editListing() : listOnTensor())}
+              onConfirm={
+                (/*  simulateListingOnTensor() */) =>
+                  listed ? editListing() : listOnTensor()
+              }
               token={token}
             />
           ) : cardType === "sending" ? (
@@ -599,7 +613,7 @@ const SendingNft = ({
         token={token}
       />
       {isComplete ? (
-        <div className={classes.sendingDrawerFooterContainer}>
+        <div className={classes.SendingDrawerFooterContainer}>
           <CheckIcon />
           <div className={classes.SendingDrawerCloseOptionsContainer}>
             <SecondaryButton label="Close" onClick={closeDrawer} />
