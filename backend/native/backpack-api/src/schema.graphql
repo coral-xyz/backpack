@@ -59,7 +59,11 @@ type Query {
   """
   Fetching a wallet and it's assets by the public key address and associated `ChainID`.
   """
-  wallet(chainId: ChainID!, address: String!): Wallet @cacheControl(maxAge: 60)
+  wallet(chainId: ChainID!, address: String!): Wallet
+    @deprecated(
+      reason: "Should use the user entrypoint for authentication identities."
+    )
+    @cacheControl(maxAge: 60)
 }
 
 """
@@ -768,6 +772,11 @@ type User implements Node {
   The user's Backpack username.
   """
   username: String!
+
+  """
+  Get a single wallet object for the argued public key address.
+  """
+  wallet(address: String!): Wallet
 
   """
   The Relay connection for the wallet's and their data that are registered to the user.

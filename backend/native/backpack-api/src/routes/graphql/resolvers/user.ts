@@ -7,7 +7,9 @@ import type {
   User,
   UserNotificationsArgs,
   UserResolvers,
+  UserWalletArgs,
   UserWalletsArgs,
+  Wallet,
   WalletConnection,
 } from "../types";
 
@@ -71,6 +73,23 @@ export const userTypeResolvers: UserResolvers = {
       ctx.authorization.userId!,
       filters
     );
+  },
+
+  /**
+   * Field-level resolver handler for the `wallet` field.
+   * @param {User} _parent
+   * @param {UserWalletArgs} args
+   * @param {ApiContext} ctx
+   * @param {GraphQLResolveInfo} _info
+   * @returns {Promise<Wallet | null>}
+   */
+  async wallet(
+    _parent: User,
+    { address }: UserWalletArgs,
+    ctx: ApiContext,
+    _info: GraphQLResolveInfo
+  ): Promise<Wallet | null> {
+    return ctx.dataSources.hasura.getWallet(ctx.authorization.userId!, address);
   },
 
   /**

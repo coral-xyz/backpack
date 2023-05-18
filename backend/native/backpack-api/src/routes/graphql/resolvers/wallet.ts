@@ -18,17 +18,23 @@ import type {
  * @export
  * @param {{}} _parent
  * @param {QueryWalletArgs} args
- * @param {ApiContext} ctx
+ * @param {ApiContext} _ctx
  * @param {GraphQLResolveInfo} _info
  * @returns {(Promise<Wallet | null>)}
  */
 export async function walletQueryResolver(
   _parent: {},
-  args: QueryWalletArgs,
-  ctx: ApiContext,
+  { address, chainId }: QueryWalletArgs,
+  _ctx: ApiContext,
   _info: GraphQLResolveInfo
 ): Promise<Wallet | null> {
-  return ctx.dataSources.hasura.getWallet(args.chainId, args.address);
+  return {
+    id: `${chainId}_wallet:${address}`,
+    address: address,
+    chainId: chainId,
+    createdAt: new Date().toISOString(),
+    isPrimary: false,
+  };
 }
 
 /**
