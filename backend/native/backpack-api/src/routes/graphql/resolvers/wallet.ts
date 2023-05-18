@@ -85,14 +85,13 @@ export const walletTypeResolvers: WalletResolvers = {
    */
   async transactions(
     parent: Wallet,
-    args: WalletTransactionsArgs,
+    { filters }: WalletTransactionsArgs,
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<TransactionConnection | null> {
     return getBlockchainForId(parent.chainId, ctx).getTransactionsForAddress(
       parent.address,
-      args.before || undefined,
-      args.after || undefined
+      filters ?? undefined
     );
   },
 };

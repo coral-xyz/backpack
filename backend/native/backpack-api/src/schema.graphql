@@ -107,7 +107,7 @@ input NftFiltersInput {
 """
 Input filter type for fetching user notifications.
 """
-input NotificationsFiltersInput {
+input NotificationFiltersInput {
   """
   The limit for number of items desired in the response.
   """
@@ -125,9 +125,29 @@ input NotificationsFiltersInput {
 }
 
 """
+Input filter type for fetching transaction history.
+"""
+input TransactionFiltersInput {
+  """
+  Block hash or signature to search after.
+  """
+  after: String
+
+  """
+  Block hash or signature to search before.
+  """
+  before: String
+
+  """
+  A token mint or contract address to filter for.
+  """
+  token: String
+}
+
+"""
 Input filter type for fetching user wallets and their data.
 """
-input WalletsFiltersInput {
+input WalletFiltersInput {
   """
   A `ChainID` value to filter for all of the public keys of the user for a given blockchain.
   """
@@ -681,7 +701,7 @@ type User implements Node {
   """
   The Relay connection for the notifications received by the user.
   """
-  notifications(filters: NotificationsFiltersInput): NotificationConnection
+  notifications(filters: NotificationFiltersInput): NotificationConnection
     @cacheControl(maxAge: 60, scope: PRIVATE)
 
   """
@@ -692,7 +712,7 @@ type User implements Node {
   """
   The Relay connection for the wallet's and their data that are registered to the user.
   """
-  wallets(filters: WalletsFiltersInput): WalletConnection
+  wallets(filters: WalletFiltersInput): WalletConnection
     @cacheControl(maxAge: 60)
 }
 
@@ -738,7 +758,7 @@ type Wallet implements Node {
   """
   The Relay connection for all transactions initiated or associated with the wallet.
   """
-  transactions(before: String, after: String): TransactionConnection
+  transactions(filters: TransactionFiltersInput): TransactionConnection
     @cacheControl(maxAge: 30)
 }
 
