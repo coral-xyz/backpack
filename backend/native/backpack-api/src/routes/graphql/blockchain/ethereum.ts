@@ -222,6 +222,7 @@ export class Ethereum implements Blockchain {
       fee: undefined, // FIXME: find gas amount paid for processing
       feePayer: tx.from,
       hash: tx.hash,
+      raw: tx,
       timestamp: (tx as any).metadata?.blockTimestamp || undefined,
       type: tx.category,
     }));

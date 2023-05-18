@@ -373,6 +373,8 @@ export type Transaction = Node & {
   hash: Scalars["String"];
   /** Globally unique identifier for a single transaction. */
   id: Scalars["ID"];
+  /** The raw JSON data received from the index API response for the item. */
+  raw: Scalars["JSONObject"];
   /** The source or program that is associated with the transaction. */
   source?: Maybe<Scalars["String"]>;
   /** The timestamp of the execution or commitment of the transaction. */
@@ -1078,6 +1080,7 @@ export type TransactionResolvers<
   feePayer?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   hash?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  raw?: Resolver<ResolversTypes["JSONObject"], ParentType, ContextType>;
   source?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   timestamp?: Resolver<
     Maybe<ResolversTypes["String"]>,

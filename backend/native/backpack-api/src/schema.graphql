@@ -647,6 +647,11 @@ type Transaction implements Node {
   hash: String!
 
   """
+  The raw JSON data received from the index API response for the item.
+  """
+  raw: JSONObject!
+
+  """
   The source or program that is associated with the transaction.
   """
   source: String
