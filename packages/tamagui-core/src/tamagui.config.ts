@@ -7,9 +7,8 @@ import {
 import { config as defaultConfig } from "@tamagui/config";
 import { createTamagui, createTheme } from "tamagui";
 
-import { dark, light } from "./colors";
 import { interFont } from "./font-inter";
-import { tokens } from "./tokens";
+import { darkThemeColors, lightThemeColors, tokens } from "./tokens";
 
 const darkTheme = createTheme({
   ...DARK_COLORS,
@@ -29,11 +28,11 @@ export const config = createTamagui({
   },
   themes: {
     light: {
-      ...createTheme(light),
+      ...createTheme(lightThemeColors),
       ...lightTheme,
     },
     dark: {
-      ...createTheme(dark),
+      ...createTheme(darkThemeColors),
       ...darkTheme,
     },
   },
