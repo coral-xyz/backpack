@@ -59,6 +59,29 @@ const useStyles = styles((theme) => ({
     alignItems: "center",
     backgroundColor: theme.custom.colors.background,
     overflowY: "scroll",
+    "&::-webkit-scrollbar": {
+      width: "6px",
+    },
+    "&::-webkit-scrollbar-track": {
+      bottom: "2px",
+      cursor: "pointer",
+      height: "91px",
+      opacity: "0",
+      position: "absolute",
+      right: "2px",
+      top: "2px",
+      transition: "opacity 200ms ease 0s",
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#99A4B4",
+      borderRadius: "inherit",
+      position: "relative",
+      display: " block",
+      width: "100%",
+      height: "91px",
+      opacity: "0",
+      cursor: "pointer",
+    },
   },
   nft: {
     borderRadius: "10px",
@@ -253,6 +276,7 @@ export function TransactionDetail({
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
+                    textAlign: "center",
                     paddingBottom: "6px",
                   }}
                 >
