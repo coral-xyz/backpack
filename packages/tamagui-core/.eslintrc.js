@@ -10,11 +10,11 @@ module.exports = {
       "error",
       {
         name: "@coral-xyz/app-extension",
-        message: "pls ser... think of the children",
+        message: "never",
       },
       {
         name: "@coral-xyz/app-mobile",
-        message: "pls ser... think of the children",
+        message: "never",
       },
       {
         name: "@coral-xyz/db",
@@ -22,7 +22,7 @@ module.exports = {
       },
       {
         name: "@coral-xyz/recoil",
-        message: "don't even bother",
+        message: "not worth it",
       },
     ],
   },
