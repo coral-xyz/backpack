@@ -6,14 +6,14 @@ import * as Crypto from "expo-crypto";
 
 // import { Video, ResizeMode, AVPlaybackStatus } from "expo-av";
 
-import { CHAT_MESSAGES } from "@coral-xyz/common";
-import { createEmptyFriendship } from "@coral-xyz/db";
-import { useUser, useAvatarUrl } from "@coral-xyz/recoil";
 import {
   fetchMoreChatsFor,
   SignalingManager,
   useChatsWithMetadata,
-} from "@coral-xyz/tamagui";
+} from "@coral-xyz/chat-xplat";
+import { CHAT_MESSAGES } from "@coral-xyz/common";
+import { createEmptyFriendship } from "@coral-xyz/db";
+import { useUser, useAvatarUrl } from "@coral-xyz/recoil";
 import { GiftedChat, Send } from "react-native-gifted-chat";
 import { v4 as uuidv4 } from "uuid";
 

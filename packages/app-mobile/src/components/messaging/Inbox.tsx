@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button, Image, ScrollView, Text, TextInput, View } from "react-native";
 
+import { SignalingManager, useChatsWithMetadata } from "@coral-xyz/chat-xplat";
 import { CHAT_MESSAGES, SubscriptionType } from "@coral-xyz/common";
 import { createEmptyFriendship } from "@coral-xyz/db";
 import {
@@ -9,7 +10,6 @@ import {
   useRequestsCount,
   useUser,
 } from "@coral-xyz/recoil";
-import { SignalingManager, useChatsWithMetadata } from "@coral-xyz/tamagui";
 import { v4 as uuidv4 } from "uuid";
 
 export const Inbox = () => {

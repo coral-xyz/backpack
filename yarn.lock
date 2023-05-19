@@ -3617,6 +3617,7 @@ __metadata:
     "@babel/core": ^7.19.3
     "@cardinal/payment-manager": ^1.7.9
     "@cardinal/token-manager": ^1.7.9
+    "@coral-xyz/chat-xplat": "*"
     "@coral-xyz/common": "*"
     "@coral-xyz/db": "*"
     "@coral-xyz/recoil": "*"
@@ -3877,6 +3878,19 @@ __metadata:
     tsc-alias: ^1.7.0
     typescript: ~4.9.3
     uuid: ^9.0.0
+  languageName: unknown
+  linkType: soft
+
+"@coral-xyz/chat-xplat@*, @coral-xyz/chat-xplat@workspace:packages/chat-xplat":
+  version: 0.0.0-use.local
+  resolution: "@coral-xyz/chat-xplat@workspace:packages/chat-xplat"
+  dependencies:
+    "@coral-xyz/common": "*"
+    "@coral-xyz/db": "*"
+    "@coral-xyz/recoil": "*"
+    eslint-config-custom: "*"
+    recoil: "*"
+    typescript: ~4.9.3
   languageName: unknown
   linkType: soft
 
@@ -35846,7 +35860,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"recoil@npm:^0.7.5, recoil@npm:^0.7.6":
+"recoil@npm:*, recoil@npm:^0.7.5, recoil@npm:^0.7.6":
   version: 0.7.7
   resolution: "recoil@npm:0.7.7"
   dependencies:
