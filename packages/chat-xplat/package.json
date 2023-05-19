@@ -18,6 +18,7 @@
     "@coral-xyz/common": "*",
     "@coral-xyz/db": "*",
     "@coral-xyz/recoil": "*",
+    "react": "*",
     "recoil": "*"
   },
   "devDependencies": {

@@ -3890,6 +3890,7 @@ __metadata:
     "@coral-xyz/db": "*"
     "@coral-xyz/recoil": "*"
     eslint-config-custom: "*"
+    react: "*"
     recoil: "*"
     typescript: ~4.9.3
   languageName: unknown
