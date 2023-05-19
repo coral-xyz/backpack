@@ -1,0 +1,12 @@
+schema: '../../backend/native/backpack-api/src/schema.graphql'
+documents: ['src/components/**/*.tsx']
+ignoreNoDocuments: true
+generates:
+  './src/apollo/':
+    preset: 'client'
+    presetConfig:
+      gqlTagName: 'gql'
+    config:
+      scalars:
+        JSONObject: '{ data: string } | Record<string, any>'
+      useTypeImports: true

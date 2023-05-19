@@ -6,7 +6,7 @@ import {
   useJupiterTokenMap,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { ListItem, Skeleton, Typography } from "@mui/material";
+import { ListItem, Typography } from "@mui/material";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { Source, TransactionType } from "helius-sdk/dist/types";
 import { useRecoilValueLoadable } from "recoil";
@@ -160,7 +160,6 @@ export function SolanaTransactionListItem({
 // 1.) add desired icon to ListItemIcons in "./Icons";
 // 2.) map txn to icon below
 function RecentActivityListItemIcon({
-  loading,
   transaction,
   tokenData,
 }: {
@@ -169,28 +168,6 @@ function RecentActivityListItemIcon({
   tokenData: (TokenInfo | undefined)[];
 }) {
   const activeWallet = useActiveWallet();
-  if (loading) {
-    return (
-      <Skeleton
-        sx={{ mr: "15px" }}
-        variant="rounded"
-        height="44px"
-        width="44px"
-      />
-    );
-  }
-
-  if (transaction?.transactionError) return <ListItemIcons.Error />;
-
-  if (transaction.type === TransactionType.SWAP) {
-    const [input, output] = parseSwapTransaction(transaction, tokenData);
-    return (
-      <ListItemIcons.Swap
-        tokenLogoOne={input.tokenIcon}
-        tokenLogoTwo={output.tokenIcon}
-      />
-    );
-  }
 
   // if NFT url available, display it. Check on-chain data first
   const nftImage = undefined; // FIXME: metadata?.onChainMetadata?.metadata?.data?.uri;
@@ -200,16 +177,12 @@ function RecentActivityListItemIcon({
   }
 
   if (transaction.type === TransactionType.TRANSFER) {
-    //SOL transfer
-    if (transaction.source === Source.SYSTEM_PROGRAM) {
-      return <ListItemIcons.Sol />;
-    }
-
     // other SPL token Transfer. Check tokenRegistry first, then Helius metadata
     const transferIcon = tokenData[0]?.logoURI; // FIXME: metadata offchain image
 
     if (transferIcon) {
-      return <ListItemIcons.Transfer tokenLogo={transferIcon} />;
+      // return <ListItemIcons.Transfer tokenLogo={transferIcon} />; FIXME:
+      return null;
     }
 
     // if it is an NFT transfer and no NFT image was found above, show default Icon
@@ -220,17 +193,9 @@ function RecentActivityListItemIcon({
     if (isUserTxnSender(transaction, activeWallet)) {
       return <ListItemIcons.Sent />;
     }
-
-    return <ListItemIcons.Received />;
   }
 
-  if (
-    transaction?.type === TransactionType.BURN ||
-    transaction?.type === TransactionType.BURN_NFT
-  )
-    return <ListItemIcons.Burn />;
-
-  return <ListItemIcons.Default />;
+  return null;
 }
 
 // Controls data displayed on right side of 'Transactions' list

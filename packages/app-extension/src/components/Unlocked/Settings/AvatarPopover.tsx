@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { createContext, type CSSProperties, useContext, useState } from "react";
 import {
   openAddUserAccount,
   openPopupWindow,
@@ -37,8 +37,8 @@ export function AvatarPopoverButton({
   buttonStyle,
   imgStyle,
 }: {
-  buttonStyle?: React.CSSProperties;
-  imgStyle?: React.CSSProperties;
+  buttonStyle?: CSSProperties;
+  imgStyle?: CSSProperties;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -410,42 +410,11 @@ function UserMenuItem({ user, onClick }: { user: any; onClick: () => void }) {
   );
 }
 
-function LockList() {
-  const theme = useCustomTheme();
-  const background = useBackgroundClient();
-  return (
-    <MenuList>
-      <MenuListItem
-        onClick={() => {
-          background
-            .request({
-              method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-              params: [],
-            })
-            .catch(console.error);
-        }}
-      >
-        <Typography
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            color: theme.custom.colors.fontColor,
-            fontSize: "14px",
-          }}
-        >
-          Lock Wallet
-        </Typography>
-      </MenuListItem>
-    </MenuList>
-  );
-}
-
 type PopoverContext = {
   close: () => void;
   openSettings: () => void;
 };
-const _PopoverContext = React.createContext<PopoverContext | null>(null);
+const _PopoverContext = createContext<PopoverContext | null>(null);
 
 function PopoverProvider({ children, close, openSettings }: any) {
   return (

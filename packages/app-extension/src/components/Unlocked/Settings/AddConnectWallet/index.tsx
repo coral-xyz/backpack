@@ -10,7 +10,6 @@ import {
   UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
 } from "@coral-xyz/common";
 import {
-  BackpackMnemonicIcon,
   CheckIcon,
   HardwareIcon,
   ImportedIcon,

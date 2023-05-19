@@ -1,13 +1,6 @@
 import type { DbNotification, EnrichedNotification } from "@coral-xyz/common";
-import {
-  BACKEND_API_URL,
-  EnrichedMessage,
-  fetchXnftsFromPubkey,
-  SubscriptionType,
-} from "@coral-xyz/common";
+import { BACKEND_API_URL, fetchXnftsFromPubkey } from "@coral-xyz/common";
 import { atomFamily, selectorFamily } from "recoil";
-
-import { anchorContext } from "./solana/wallet";
 
 export const recentNotifications = atomFamily<
   Array<EnrichedNotification>,
@@ -21,16 +14,8 @@ export const recentNotifications = atomFamily<
   default: selectorFamily({
     key: "recentNotificationsDefault",
     get:
-      ({
-        limit,
-        offset,
-        uuid,
-      }: {
-        limit: number;
-        offset: number;
-        uuid: string;
-      }) =>
-      async ({ get }: any) => {
+      ({ limit, offset }: { limit: number; offset: number; uuid: string }) =>
+      async () => {
         try {
           const notifications = (await fetchNotifications(offset, limit)) || [];
           const xnftIds = notifications.map((x) => x.xnft_id);

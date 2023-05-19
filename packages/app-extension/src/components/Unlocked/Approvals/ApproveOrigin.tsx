@@ -7,7 +7,7 @@ import {
   useBlockchainActiveWallet,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { ExpandMore, Settings } from "@mui/icons-material";
+import { ExpandMore } from "@mui/icons-material";
 import _CheckIcon from "@mui/icons-material/Check";
 import {
   Button,
@@ -227,7 +227,7 @@ function WalletSelectorButton({
   );
 }
 
-function AvatarWithBlockchainImage({ blockchain }: { blockchain: Blockchain }) {
+function AvatarWithBlockchainImage(_props: { blockchain: Blockchain }) {
   const avatarUrl = useAvatarUrl(32);
   // TODO: use this blockchain icon here.
   return (

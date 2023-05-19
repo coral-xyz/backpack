@@ -33,8 +33,6 @@ import { AnimatePresence } from "framer-motion";
 
 import { Apps } from "../../Unlocked/Apps";
 import { Balances } from "../../Unlocked/Balances";
-import { Notifications } from "../../Unlocked/Balances/Notifications";
-import { RecentActivity } from "../../Unlocked/Balances/RecentActivity";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { ChatDrawer } from "../../Unlocked/Messages/ChatDrawer";
 import { MessageOptions } from "../../Unlocked/Messages/MessageOptions";
@@ -42,7 +40,9 @@ import { Nfts } from "../../Unlocked/Nfts";
 import { NftsCollection } from "../../Unlocked/Nfts/Collection";
 import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
 import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/NftDetail";
+import { Notifications } from "../../Unlocked/Notifications";
 import { SettingsButton } from "../../Unlocked/Settings";
+import { Transactions } from "../../Unlocked/Transactions";
 
 import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
@@ -67,7 +67,7 @@ export function Router() {
         {!isXs ? (
           <>
             <Route path="/notifications" element={<NotificationsPage />} />
-            <Route path="/recent-activity" element={<RecentActivityPage />} />
+            <Route path="/recent-activity" element={<TransactionsPage />} />
           </>
         ) : null}
         {/*
@@ -90,8 +90,8 @@ export function NotificationsPage() {
   return <NavScreen component={<Notifications />} />;
 }
 
-export function RecentActivityPage() {
-  return <NavScreen component={<RecentActivity />} />;
+export function TransactionsPage() {
+  return <NavScreen component={<Transactions />} />;
 }
 
 export function Redirect() {

@@ -3,7 +3,6 @@ import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import {
   Backpack,
   EmptyState,
-  LocalImage,
   PrimaryButton,
   ProxyImage,
   RedBackpack,
@@ -15,7 +14,7 @@ import { Error, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 
 import { WithDrawer } from "../common/Layout/Drawer";
-import { lockScreenKey, lockScreenKeyImage } from "../Unlocked/Nfts/NftDetail";
+import { lockScreenKey } from "../Unlocked/Nfts/NftDetail";
 
 import { LockedMenu } from "./LockedMenu";
 
@@ -32,7 +31,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<boolean>(false);
 
-  const { uuid, nft } = (() => {
+  const { nft }: { uuid?: any; nft?: any } = (() => {
     try {
       return JSON.parse(
         window.localStorage.getItem(lockScreenKey(user.uuid)) ??
@@ -169,7 +168,6 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
 
 function LockScreenAvatar({
   isFullScreen,
-  nft,
   user,
 }: {
   isFullScreen: boolean;

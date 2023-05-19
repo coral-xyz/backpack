@@ -8,11 +8,16 @@ options.resolve.alias = {
   react: path.resolve("../../node_modules/react"),
   "react-dom": path.resolve("../../node_modules/react-dom"),
   "@coral-xyz/chat-sdk": path.resolve(__dirname, "../chat-sdk/src"),
+  "@coral-xyz/data-components": path.resolve(
+    __dirname,
+    "../data-components/src"
+  ),
   "@coral-xyz/themes": path.resolve(__dirname, "../themes/src"),
   "@coral-xyz/recoil": path.resolve(__dirname, "../recoil/src"),
   "@coral-xyz/react-common": path.resolve(__dirname, "../react-common/src"),
   "@coral-xyz/db": path.resolve(__dirname, "../db/src"),
   "@coral-xyz/message-sdk": path.resolve(__dirname, "../message-sdk/src"),
+  "@coral-xyz/tamagui": path.resolve(__dirname, "../tamagui-core/src"),
   "react-native$": "react-native-web",
 };
 

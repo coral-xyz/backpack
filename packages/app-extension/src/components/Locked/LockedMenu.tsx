@@ -1,4 +1,3 @@
-import { useEffect,useState } from "react";
 import {
   BACKPACK_LINK,
   DISCORD_INVITE_LINK,

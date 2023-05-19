@@ -1,8 +1,26 @@
 {
+  "private": true,
   "name": "@coral-xyz/app-extension",
   "version": "0.6.7",
   "description": "A next level crypto wallet for Solana and Ethereum",
-  "private": true,
+  "bundlewatch": {
+    "files": [
+      {
+        "path": "build/*.js",
+        "maxSize": "5mb"
+      }
+    ]
+  },
+  "browserslist": "last 2 chrome versions",
+  "scripts": {
+    "start": "cross-env NODE_ENV=development webpack serve --config webpack.dev.config.js",
+    "build": "cross-env NODE_ENV=production webpack",
+    "build:release": "cross-env NODE_ENV=production webpack",
+    "e2e": "jest --maxWorkers 1 --detectOpenHandles --forceExit --verbose",
+    "gql:generate": "graphql-codegen --config codegen.yml",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix"
+  },
   "dependencies": {
     "@apollo/client": "3.8.0-alpha.12",
     "@bonfida/spl-name-service": "^0.1.51",
@@ -11,6 +29,7 @@
     "@coral-xyz/chat-sdk": "*",
     "@coral-xyz/chat-xplat": "*",
     "@coral-xyz/common": "*",
+    "@coral-xyz/data-components": "*",
     "@coral-xyz/db": "*",
     "@coral-xyz/message-sdk": "*",
     "@coral-xyz/react-common": "*",
@@ -38,7 +57,7 @@
     "ethers": "^5.7.0",
     "figma-squircle": "^0.2.1",
     "framer-motion": "^9.0.4",
-    "helius-sdk": "^0.3.1",
+    "helius-sdk": "^1.0.5",
     "linkify-react": "^4.1.0",
     "linkifyjs": "^4.1.0",
     "react": "18.2.0",
@@ -55,24 +74,9 @@
     "tamagui": "^1.28.1",
     "web-push": "^3.5.0"
   },
-  "scripts": {
-    "start": "cross-env NODE_ENV=development webpack serve --config webpack.dev.config.js",
-    "build": "cross-env NODE_ENV=production webpack",
-    "build:release": "cross-env NODE_ENV=production webpack",
-    "e2e": "jest --maxWorkers 1 --detectOpenHandles --forceExit --verbose",
-    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
-    "lint:fix": "yarn run lint --fix"
-  },
-  "bundlewatch": {
-    "files": [
-      {
-        "path": "build/*.js",
-        "maxSize": "5mb"
-      }
-    ]
-  },
-  "browserslist": "last 2 chrome versions",
   "devDependencies": {
+    "@graphql-codegen/cli": "^3.3.1",
+    "@graphql-codegen/client-preset": "^3.0.1",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.10",
     "@swc/core": "^1.3.22",
     "@testing-library/jest-dom": "^5.11.4",

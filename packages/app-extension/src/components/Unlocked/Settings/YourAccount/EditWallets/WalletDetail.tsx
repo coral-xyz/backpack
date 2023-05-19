@@ -9,7 +9,6 @@ import {
 import {
   PrimaryButton,
   SecondaryButton,
-  toast,
   WarningIcon,
 } from "@coral-xyz/react-common";
 import {
@@ -17,7 +16,6 @@ import {
   serverPublicKeys,
   useBackgroundClient,
   usePrimaryWallets,
-  useWalletPublicKeys,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ContentCopy } from "@mui/icons-material";
@@ -42,7 +40,6 @@ export const WalletDetail: React.FC<{
   const background = useBackgroundClient();
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [walletName, setWalletName] = useState(name);
-  const publicKeyData = useWalletPublicKeys();
   const isCold = useRecoilValue(isKeyCold(publicKey));
   const primaryWallets = usePrimaryWallets();
   const setServerPublicKeys = useSetRecoilState(serverPublicKeys);

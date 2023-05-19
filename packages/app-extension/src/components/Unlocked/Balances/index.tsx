@@ -5,18 +5,19 @@ import {
   SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
+import { BalanceSummaryWidget } from "@coral-xyz/data-components";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import { useAllWalletsDisplayed, useNavigation } from "@coral-xyz/recoil";
 
 import { TokenTables } from "../../common/TokenTable";
 
-import { BalanceSummaryWidget } from "./BalanceSummaryWidget";
 import { TransferWidget } from "./TransferWidget";
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
 export function Balances() {
   const { push } = useNavigation();
+
   const swapEnabled =
     useAllWalletsDisplayed().find((w) => w.blockchain === Blockchain.SOLANA) !==
     undefined;
@@ -39,7 +40,7 @@ export function Balances() {
 
   return (
     <div>
-      <BalanceSummaryWidget />
+      <BalanceSummaryWidget style={{ marginTop: 24 }} />
       <div
         style={{
           marginTop: "32px",

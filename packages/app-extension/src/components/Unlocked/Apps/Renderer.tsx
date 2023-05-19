@@ -1,10 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import type { Plugin, XnftPreference } from "@coral-xyz/common";
+import type { Plugin } from "@coral-xyz/common";
 import {
   BACKPACK_CONFIG_GITHUB_RUN_NUMBER,
   BACKPACK_FEATURE_FORCE_LATEST_VERSION,
 } from "@coral-xyz/common";
-import { Loading } from "@coral-xyz/react-common";
 import {
   useAvatarUrl,
   useDarkMode,
@@ -12,7 +11,6 @@ import {
   useXnftJwt,
   xnftPreference as xnftPreferenceAtom,
 } from "@coral-xyz/recoil";
-import { off } from "process";
 import { useRecoilValue } from "recoil";
 
 const buildNumber = BACKPACK_FEATURE_FORCE_LATEST_VERSION
@@ -103,7 +101,7 @@ export function PluginRenderer({
         backgroundSize: "cover",
         backgroundPosition: "center center",
       }}
-     />
+    />
   );
 }
 
