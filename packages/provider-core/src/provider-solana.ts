@@ -153,8 +153,6 @@ export class ProviderSolanaInjection
       default:
         throw new Error(`unexpected notification ${event.data.detail.name}`);
     }
-
-    this.emit(_mapNotificationName(event.data.detail.name));
   }
 
   #handlePluginConnect(event: Event) {
@@ -191,7 +189,7 @@ export class ProviderSolanaInjection
       this.#connectionRequestManager,
       connectionUrl
     );
-    this.emit("connectionUpdate", event.data.detail);
+    this.emit("connectionDidChange", event.data.detail);
   }
 
   #handlePluginPublicKeyUpdated(event: Event) {
@@ -200,7 +198,9 @@ export class ProviderSolanaInjection
     this.emit("publicKeyUpdate", event.data.detail);
   }
 
-  #handleNotificationConnected(event: Event) {}
+  #handleNotificationConnected(event: Event) {
+    this.emit("connect", event.data.detail);
+  }
 
   #connect(publicKey: string, connectionUrl: string) {
     this.#isConnected = true;
@@ -214,6 +214,7 @@ export class ProviderSolanaInjection
   #handleNotificationDisconnected(event: Event) {
     this.#isConnected = false;
     this.#connection = this.defaultConnection();
+    this.emit("disconnect", event.data.detail);
   }
 
   #handleNotificationConnectionUrlUpdated(event: Event) {
@@ -221,10 +222,12 @@ export class ProviderSolanaInjection
       this.#connectionRequestManager,
       event.data.detail.data.url
     );
+    this.emit("connectionDidChange", event.data.detail);
   }
 
   #handleNotificationActiveWalletUpdated(event: Event) {
     this.#publicKey = new PublicKey(event.data.detail.data.activeWallet);
+    this.emit("activeWalletDidChange", event.data.detail);
   }
 
   async connect() {
@@ -400,21 +403,5 @@ export class ProviderSolanaInjection
 
   public get connection() {
     return this.#connection;
-  }
-}
-
-// Maps the notification name (internal) to the event name.
-function _mapNotificationName(notificationName: string) {
-  switch (notificationName) {
-    case NOTIFICATION_SOLANA_CONNECTED:
-      return "connect";
-    case NOTIFICATION_SOLANA_DISCONNECTED:
-      return "disconnect";
-    case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
-      return "connectionDidChange";
-    case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
-      return "activeWalletDidChange";
-    default:
-      throw new Error(`unexpected notification name ${notificationName}`);
   }
 }
