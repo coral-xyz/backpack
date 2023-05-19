@@ -44,6 +44,7 @@ const lineHeight = {
 // - Black 900
 
 const weight = {
+  true: "400",
   base: "400",
   medium: "500",
   semiBold: "600",

@@ -64,7 +64,7 @@ const CustomListItemFrame = styled(ListItemFrame, {
 });
 
 const CustomListItemText = styled(ListItemText, {
-  fontFamily: "Inter_500Medium",
+  fontFamily: "InterMedium",
   fontSize: 16,
   lineHeight: 24,
 });

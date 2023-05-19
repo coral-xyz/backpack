@@ -7,8 +7,9 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import {
   useFonts,
   Inter_400Regular,
-  Inter_500Medium,
+  InterMedium,
   Inter_600SemiBold,
+  Inter_700Bold,
 } from "@expo-google-fonts/inter";
 
 type status = "loading" | "ready" | "error";
@@ -20,13 +21,10 @@ export function useLoadedAssets(): status {
   const webviewLoaded = useStore((state) => state.injectJavaScript);
 
   const [fontsLoaded] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter: require("@tamagui/font-inter/otf/Inter-Regular.otf"),
-    InterMedium: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
-    InterSemiBold: require("@tamagui/font-inter/otf/Inter-SemiBold.otf"),
-    InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
+    Inter: Inter_400Regular,
+    InterMedium,
+    InterSemiBold: Inter_600SemiBold,
+    InterBold: Inter_700Bold,
   });
 
   // Load any resources or data that we need prior to rendering the app
