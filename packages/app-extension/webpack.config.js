@@ -206,6 +206,10 @@ const options = {
     },
     // Add support for web-based extensions so we can share code between mobile/extension
     extensions: [
+      "!.native.tsx",
+      "!.native.ts",
+      "!.native.js",
+      "!.native.jsx",
       ".web.js",
       ".web.jsx",
       ".web.ts",
