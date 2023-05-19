@@ -4181,6 +4181,7 @@ __metadata:
     "@coral-xyz/common": "*"
     "@coral-xyz/recoil": "*"
     "@coral-xyz/themes": "*"
+    "@expo/vector-icons": ^13.0.0
     "@tamagui/animations-react-native": ^1.15.39
     "@tamagui/babel-plugin": ^1.15.39
     "@tamagui/build": ^1.15.39

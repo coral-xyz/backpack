@@ -10,8 +10,4 @@ export { SearchBox } from "./SearchBox";
 export { StyledText } from "./StyledText";
 export * from "./TextPercentChanged";
 export * from "./UsdBalanceAndPercentChange";
-// @ts-expect-error .web vs .native
 export * from "./UserAvatar";
-
-// @ts-exepct-error .web vs .native
-// export * from "./Icon";

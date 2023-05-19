@@ -1,4 +1,3 @@
-// @ts-expect-error pulls into mobile app directly
 import { MaterialIcons } from "@expo/vector-icons";
 
 export const IconKeyboardArrowRight = () => (
@@ -15,6 +14,6 @@ export function IconCheckmark({
   return <MaterialIcons name="check" size={size} color={color} />;
 }
 
-export const getIcon = (name: string) => (
+export const getIcon = (name: any) => (
   <MaterialIcons name={name} size={28} color="gray" />
 );
