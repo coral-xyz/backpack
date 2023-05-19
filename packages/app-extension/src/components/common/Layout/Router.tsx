@@ -6,6 +6,7 @@ import {
   useLocation,
   useSearchParams,
 } from "react-router-dom";
+import { useUsersMetadata } from "@coral-xyz/chat-xplat";
 import type { SearchParamsFor, SubscriptionType } from "@coral-xyz/common";
 import {
   BACKPACK_TEAM,
@@ -26,7 +27,6 @@ import {
   useRedirectUrl,
   useUser,
 } from "@coral-xyz/recoil";
-import { useUsersMetadata } from "@coral-xyz/tamagui";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 import { AnimatePresence } from "framer-motion";
