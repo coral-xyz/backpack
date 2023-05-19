@@ -1,7 +1,7 @@
 import { Suspense, useMemo } from "react";
 import { useSuspenseQuery_experimental } from "@apollo/client";
-import { formatUSD } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
+import { BalanceSummary as _BalanceSummary } from "@coral-xyz/tamagui";
 import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import { Skeleton, Typography } from "@mui/material";
 
@@ -71,8 +71,8 @@ export function BalanceSummaryWidget() {
 }
 
 function _BalanceSummaryWidget() {
-  const theme = useCustomTheme();
-  const classes = useStyles();
+  // const theme = useCustomTheme();
+  // const classes = useStyles();
   const activeWallet = useActiveWallet();
 
   const { data } = useSuspenseQuery_experimental(GET_BALANCE_SUMMARY, {
@@ -92,65 +92,73 @@ function _BalanceSummaryWidget() {
   );
 
   return (
-    <div style={{ display: "flex" }}>
-      <div className={classes.balancesHeaderContainer}>
-        <Typography
-          className={classes.totalBalance}
-          style={{
-            color: theme.custom.colors.fontColor,
-          }}
-        >
-          {formatUSD(aggregate.value)}
-        </Typography>
-        <div
-          style={{
-            display: "flex",
-            marginTop: "16px",
-          }}
-        >
-          <div style={{ flex: 1 }} />
-          <Typography
-            className={classes.valueChange}
-            style={{
-              color:
-                aggregate.valueChange === 0
-                  ? theme.custom.colors.neutral
-                  : aggregate.valueChange < 0
-                  ? theme.custom.colors.negative
-                  : theme.custom.colors.positive,
-            }}
-          >
-            {aggregate.valueChange > 0 ? "+" : ""}
-            {formatUSD(aggregate.valueChange)}
-          </Typography>
-          <Typography
-            className={classes.percentChange}
-            style={{
-              color:
-                aggregate.valueChange === 0
-                  ? theme.custom.colors.neutral
-                  : aggregate.valueChange < 0
-                  ? theme.custom.colors.negative
-                  : theme.custom.colors.positive,
-              backgroundColor: !data
-                ? undefined
-                : aggregate.valueChange === 0
-                ? theme.custom.colors.balanceChangeNeutral
-                : aggregate.valueChange < 0
-                ? theme.custom.colors.balanceChangeNegative
-                : theme.custom.colors.balanceChangePositive,
-            }}
-          >
-            {aggregate.valueChange > 0 ? "+" : ""}
-            {Number.isFinite(aggregate.percentChange)
-              ? `${aggregate.percentChange?.toFixed(2)}%`
-              : "0.00%"}
-          </Typography>
-          <div style={{ flex: 1 }} />
-        </div>
-      </div>
-    </div>
+    <_BalanceSummary
+      percentChange={aggregate.percentChange}
+      value={aggregate.value}
+      valueChange={aggregate.valueChange}
+    />
   );
+
+  // return (
+  //   <div style={{ display: "flex" }}>
+  //     <div className={classes.balancesHeaderContainer}>
+  //       <Typography
+  //         className={classes.totalBalance}
+  //         style={{
+  //           color: theme.custom.colors.fontColor,
+  //         }}
+  //       >
+  //         {formatUSD(aggregate.value)}
+  //       </Typography>
+  //       <div
+  //         style={{
+  //           display: "flex",
+  //           marginTop: "16px",
+  //         }}
+  //       >
+  //         <div style={{ flex: 1 }} />
+  //         <Typography
+  //           className={classes.valueChange}
+  //           style={{
+  //             color:
+  //               aggregate.valueChange === 0
+  //                 ? theme.custom.colors.neutral
+  //                 : aggregate.valueChange < 0
+  //                 ? theme.custom.colors.negative
+  //                 : theme.custom.colors.positive,
+  //           }}
+  //         >
+  //           {aggregate.valueChange > 0 ? "+" : ""}
+  //           {formatUSD(aggregate.valueChange)}
+  //         </Typography>
+  //         <Typography
+  //           className={classes.percentChange}
+  //           style={{
+  //             color:
+  //               aggregate.valueChange === 0
+  //                 ? theme.custom.colors.neutral
+  //                 : aggregate.valueChange < 0
+  //                 ? theme.custom.colors.negative
+  //                 : theme.custom.colors.positive,
+  //             backgroundColor: !data
+  //               ? undefined
+  //               : aggregate.valueChange === 0
+  //               ? theme.custom.colors.balanceChangeNeutral
+  //               : aggregate.valueChange < 0
+  //               ? theme.custom.colors.balanceChangeNegative
+  //               : theme.custom.colors.balanceChangePositive,
+  //           }}
+  //         >
+  //           {aggregate.valueChange > 0 ? "+" : ""}
+  //           {Number.isFinite(aggregate.percentChange)
+  //             ? `${aggregate.percentChange?.toFixed(2)}%`
+  //             : "0.00%"}
+  //         </Typography>
+  //         <div style={{ flex: 1 }} />
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
 }
 
 function BalanceSummaryLoader() {

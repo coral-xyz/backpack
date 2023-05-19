@@ -1,3 +1,4 @@
+export * from "./Balances";
 export * from "./BlockchainLogo";
 export * from "./Button";
 export * from "./Container";
