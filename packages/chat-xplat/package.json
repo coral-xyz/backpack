@@ -8,11 +8,16 @@
   "main": "dist/main.js",
   "module": "dist/module.js",
   "types": "dist/types.d.ts",
+  "alias": {
+    "~src": "./src/"
+  },
   "scripts": {
     "build": "parcel build",
     "watch": "parcel watch",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
-    "lint:fix": "yarn run lint --fix"
+    "check": "tsc --noEmit",
+    "lint:fix": "yarn run lint --fix",
+    "ci": "yarn build && yarn lint && yarn check"
   },
   "dependencies": {
     "@coral-xyz/common": "*",
