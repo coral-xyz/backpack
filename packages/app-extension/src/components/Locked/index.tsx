@@ -29,7 +29,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<boolean>(false);
 
-  const { uuid, nft } = (() => {
+  const { nft }: { uuid?: any; nft?: any } = (() => {
     try {
       return JSON.parse(
         window.localStorage.getItem(lockScreenKey(user.uuid)) ??
@@ -166,7 +166,6 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
 
 function LockScreenAvatar({
   isFullScreen,
-  nft,
   user,
 }: {
   isFullScreen: boolean;

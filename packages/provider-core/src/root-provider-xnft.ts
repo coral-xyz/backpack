@@ -14,6 +14,7 @@ import {
   PLUGIN_RPC_METHOD_PLUGIN_OPEN,
   PLUGIN_RPC_METHOD_POP_OUT,
   PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW,
+  PLUGIN_RPC_METHOD_WINDOW_OPEN,
 } from "@coral-xyz/common";
 import type {
   Commitment,
