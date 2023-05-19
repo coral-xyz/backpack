@@ -87,6 +87,7 @@ export function NotificationListItem({
       disableRipple
       onClick={() => {}}
       style={{
+        margin: 0,
         paddingLeft: "12px",
         paddingRight: "12px",
         paddingTop: "10px",
@@ -99,7 +100,7 @@ export function NotificationListItem({
         borderBottom: isLast
           ? undefined
           : `solid 1pt ${theme.custom.colors.border}`,
-        ...isFirstLastListItemStyle(isFirst, isLast, 12),
+        ...isFirstLastListItemStyle(isFirst, isLast, 10),
       }}
     >
       <div
@@ -147,6 +148,91 @@ function NotificationListItemIcon({ image }: any) {
       src={image}
       className={classes.recentActivityListItemIcon}
     />
+  );
+}
+
+function FriendRequestListItem({
+  notification,
+  isFirst,
+  isLast,
+  onOpenDrawer,
+  title,
+}: {
+  notification: Notification;
+  isFirst: boolean;
+  isLast: boolean;
+  onOpenDrawer?: () => void;
+  title: string;
+}) {
+  const { isXs } = useBreakpoints();
+  const nav = isXs ? useNavigation() : undefined;
+  const user = useUserMetadata({
+    remoteUserId: (notification.body as Record<string, any>).from,
+  });
+  const classes = useStyles();
+  const theme = useCustomTheme();
+
+  return (
+    <ListItem
+      button
+      disableRipple
+      onClick={() => (isXs ? nav!.push("contacts") : onOpenDrawer!())}
+      style={{
+        paddingLeft: "12px",
+        paddingRight: "12px",
+        paddingTop: "10px",
+        paddingBottom: "10px",
+        display: "flex",
+        backgroundColor: !notification.viewed
+          ? theme.custom.colors.unreadBackground
+          : theme.custom.colors.nav,
+        borderBottom: isLast
+          ? undefined
+          : `solid 1pt ${theme.custom.colors.border1}`,
+        ...isFirstLastListItemStyle(isFirst, isLast, 10),
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <div style={{ flex: 1, display: "flex", alignItems: "flex-start" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <NotificationListItemIcon image={user?.image} />
+          </div>
+          <div style={{ width: "100%" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <div>
+                <Typography className={classes.txSig}>{title}</Typography>
+              </div>
+              <div className={classes.time}>
+                {getTimeStr(notification.timestamp)}
+              </div>
+            </div>
+            <Typography className={classes.txBody}>@{user.username}</Typography>
+            <AcceptRejectRequest
+              userId={(notification.body as Record<string, any>).from}
+            />
+          </div>
+        </div>
+      </div>
+    </ListItem>
   );
 }
 
@@ -208,89 +294,4 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
     );
   }
   return <div />;
-}
-
-function FriendRequestListItem({
-  notification,
-  isFirst,
-  isLast,
-  onOpenDrawer,
-  title,
-}: {
-  notification: Notification;
-  isFirst: boolean;
-  isLast: boolean;
-  onOpenDrawer?: () => void;
-  title: string;
-}) {
-  const { isXs } = useBreakpoints();
-  const nav = isXs ? useNavigation() : undefined;
-  const user = useUserMetadata({
-    remoteUserId: (notification.body as Record<string, any>).from,
-  });
-  const classes = useStyles();
-  const theme = useCustomTheme();
-
-  return (
-    <ListItem
-      button
-      disableRipple
-      onClick={() => (isXs ? nav!.push("contacts") : onOpenDrawer!())}
-      style={{
-        paddingLeft: "12px",
-        paddingRight: "12px",
-        paddingTop: "10px",
-        paddingBottom: "10px",
-        display: "flex",
-        backgroundColor: !notification.viewed
-          ? theme.custom.colors.unreadBackground
-          : theme.custom.colors.nav,
-        borderBottom: isLast
-          ? undefined
-          : `solid 1pt ${theme.custom.colors.border1}`,
-        ...isFirstLastListItemStyle(isFirst, isLast, 12),
-      }}
-    >
-      <div
-        style={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <div style={{ flex: 1, display: "flex", alignItems: "flex-start" }}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-            }}
-          >
-            <NotificationListItemIcon image={user?.image} />
-          </div>
-          <div style={{ width: "100%" }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                width: "100%",
-              }}
-            >
-              <div>
-                <Typography className={classes.txSig}>{title}</Typography>
-              </div>
-              <div className={classes.time}>
-                {getTimeStr(notification.timestamp)}
-              </div>
-            </div>
-            <Typography className={classes.txBody}>@{user.username}</Typography>
-            <AcceptRejectRequest
-              userId={(notification.body as Record<string, any>).from}
-            />
-          </div>
-        </div>
-      </div>
-    </ListItem>
-  );
 }

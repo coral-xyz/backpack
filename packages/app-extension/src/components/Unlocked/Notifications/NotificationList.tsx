@@ -111,17 +111,15 @@ export function NotificationList({
               border: `${theme.custom.colors.borderFull}`,
             }}
           >
-            <div>
-              {notifications.map((notification, idx) => (
-                <NotificationListItem
-                  key={notification.id}
-                  notification={notification}
-                  isFirst={idx === 0}
-                  isLast={idx === notifications.length - 1}
-                  onOpenDrawer={onOpenDrawer}
-                />
-              ))}
-            </div>
+            {notifications.map((notification, idx) => (
+              <NotificationListItem
+                key={notification.id}
+                notification={notification}
+                isFirst={idx === 0}
+                isLast={idx === notifications.length - 1}
+                onOpenDrawer={onOpenDrawer}
+              />
+            ))}
           </List>
         </div>
       ))}
