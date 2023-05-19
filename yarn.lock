@@ -4061,6 +4061,7 @@ __metadata:
   resolution: "@coral-xyz/message-sdk@workspace:packages/message-sdk"
   dependencies:
     "@coral-xyz/chat-sdk": "*"
+    "@coral-xyz/chat-xplat": "*"
     "@coral-xyz/common": "*"
     "@coral-xyz/db": "*"
     "@coral-xyz/react-common": "*"
