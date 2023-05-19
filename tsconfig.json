@@ -6,6 +6,7 @@
     { "path": "packages/background" },
     { "path": "packages/blockchains" },
     { "path": "packages/chat-sdk" },
+    { "path": "packages/chat-xplat" },
     { "path": "packages/common" },
     { "path": "packages/db" },
     { "path": "packages/ledger-injection" },

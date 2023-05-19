@@ -4,6 +4,7 @@ import type {
   EnrichedInboxDb,
 } from "@coral-xyz/common";
 
+import { useUsersMetadata } from "@coral-xyz/chat-xplat";
 import { parseMessage, searchUsersByBlockchain } from "@coral-xyz/common";
 import {
   useFriendships,
@@ -11,7 +12,6 @@ import {
   useRequestsCount,
   useUser,
 } from "@coral-xyz/recoil";
-import { useUsersMetadata } from "@coral-xyz/tamagui";
 
 type ChatType =
   | { chatType: "individual"; chatProps: EnrichedInboxDb }

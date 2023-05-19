@@ -1,6 +1,7 @@
 // TODO: remove the line below
 /* eslint-disable react-hooks/rules-of-hooks */
 import { Suspense, useEffect, useState } from "react";
+import { useUserMetadata } from "@coral-xyz/chat-xplat";
 import type { EnrichedNotification } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
@@ -25,7 +26,6 @@ import {
   useUpdateFriendships,
   useUser,
 } from "@coral-xyz/recoil";
-import { useUserMetadata } from "@coral-xyz/tamagui";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { IconButton, List, ListItem, Typography } from "@mui/material";

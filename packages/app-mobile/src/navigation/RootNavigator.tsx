@@ -1,11 +1,11 @@
 import { useState } from "react";
 
+import { AuthenticatedSync } from "@coral-xyz/chat-xplat";
 import {
   KeyringStoreStateEnum,
   useKeyringStoreState,
   WithAuth,
 } from "@coral-xyz/recoil";
-import { AuthenticatedSync } from "@coral-xyz/tamagui";
 import {
   DarkTheme,
   DefaultTheme,

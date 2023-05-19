@@ -1,5 +1,6 @@
 import React, { Suspense, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
+import { AuthenticatedSync } from "@coral-xyz/chat-xplat";
 import type { Blockchain, FeeConfig } from "@coral-xyz/common";
 import {
   EXTENSION_HEIGHT,
@@ -25,7 +26,6 @@ import {
   useEnabledBlockchains,
   useKeyringStoreState,
 } from "@coral-xyz/recoil";
-import { AuthenticatedSync } from "@coral-xyz/tamagui";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { AnimatePresence, motion } from "framer-motion";

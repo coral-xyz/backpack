@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useUsersMetadata } from "@coral-xyz/chat-xplat";
 import {
   BACKEND_API_URL,
   NAV_COMPONENT_MESSAGE_CHAT,
@@ -12,7 +13,6 @@ import {
   PrimaryButton,
 } from "@coral-xyz/react-common";
 import { useNavigation } from "@coral-xyz/recoil";
-import { useUsersMetadata } from "@coral-xyz/tamagui";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ContentCopy from "@mui/icons-material/ContentCopy";

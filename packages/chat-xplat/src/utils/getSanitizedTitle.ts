@@ -1,4 +1,4 @@
-import type { MessageKind} from "@coral-xyz/common";
+import type { MessageKind } from "@coral-xyz/common";
 import { MessageWithMetadata } from "@coral-xyz/common";
 
 export const getSanitizedTitle = (message: {

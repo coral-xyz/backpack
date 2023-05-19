@@ -3518,6 +3518,7 @@ __metadata:
     "@cardinal/token-manager": ^1.7.9
     "@coral-xyz/background": "*"
     "@coral-xyz/chat-sdk": "*"
+    "@coral-xyz/chat-xplat": "*"
     "@coral-xyz/common": "*"
     "@coral-xyz/db": "*"
     "@coral-xyz/message-sdk": "*"
@@ -3617,6 +3618,7 @@ __metadata:
     "@babel/core": ^7.19.3
     "@cardinal/payment-manager": ^1.7.9
     "@cardinal/token-manager": ^1.7.9
+    "@coral-xyz/chat-xplat": "*"
     "@coral-xyz/common": "*"
     "@coral-xyz/db": "*"
     "@coral-xyz/recoil": "*"
@@ -3880,6 +3882,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@coral-xyz/chat-xplat@*, @coral-xyz/chat-xplat@workspace:packages/chat-xplat":
+  version: 0.0.0-use.local
+  resolution: "@coral-xyz/chat-xplat@workspace:packages/chat-xplat"
+  dependencies:
+    "@coral-xyz/common": "*"
+    "@coral-xyz/db": "*"
+    "@coral-xyz/recoil": "*"
+    eslint-config-custom: "*"
+    react: "*"
+    recoil: "*"
+    typescript: ~4.9.3
+  languageName: unknown
+  linkType: soft
+
 "@coral-xyz/chat-zeus@*, @coral-xyz/chat-zeus@workspace:backend/native/chat-zeus":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/chat-zeus@workspace:backend/native/chat-zeus"
@@ -4046,6 +4062,7 @@ __metadata:
   resolution: "@coral-xyz/message-sdk@workspace:packages/message-sdk"
   dependencies:
     "@coral-xyz/chat-sdk": "*"
+    "@coral-xyz/chat-xplat": "*"
     "@coral-xyz/common": "*"
     "@coral-xyz/db": "*"
     "@coral-xyz/react-common": "*"
@@ -35846,7 +35863,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"recoil@npm:^0.7.5, recoil@npm:^0.7.6":
+"recoil@npm:*, recoil@npm:^0.7.5, recoil@npm:^0.7.6":
   version: 0.7.7
   resolution: "recoil@npm:0.7.7"
   dependencies:
