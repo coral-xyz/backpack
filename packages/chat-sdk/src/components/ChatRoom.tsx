@@ -12,7 +12,7 @@ import {
   refreshUpdatesFor,
   SignalingManager,
   useChatsWithMetadata,
-} from "@coral-xyz/tamagui";
+} from "@coral-xyz/chat-xplat";
 import { v4 as uuidv4 } from "uuid";
 
 import { MessagePluginRenderer } from "../MessagePluginRenderer";

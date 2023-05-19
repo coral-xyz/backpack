@@ -4,7 +4,7 @@ import {
   useFeatureGates,
   useUser,
 } from "@coral-xyz/recoil";
-import { useUsersMetadata } from "@coral-xyz/tamagui";
+import { useUsersMetadata } from "@coral-xyz/chat-xplat";
 import { useCustomTheme } from "@coral-xyz/themes";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";

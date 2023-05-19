@@ -25,7 +25,7 @@ import {
 import {
   refreshIndividualChatsFor,
   SignalingManager,
-} from "@coral-xyz/tamagui";
+} from "@coral-xyz/chat-xplat";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Gif as GifComponent } from "@giphy/react-components";

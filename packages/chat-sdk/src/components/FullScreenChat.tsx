@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import type { EnrichedMessageWithMetadata } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { fetchMoreChatsFor } from "@coral-xyz/tamagui";
+import { fetchMoreChatsFor } from "@coral-xyz/chat-xplat";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import FileUploadIcon from "@mui/icons-material/FileUploadRounded";
