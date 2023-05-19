@@ -23,6 +23,7 @@
     "recoil": "*"
   },
   "devDependencies": {
+    "@parcel/transformer-typescript-tsc": "^2.8.3",
     "eslint-config-custom": "*",
     "parcel": "latest",
     "typescript": "~4.9.3"

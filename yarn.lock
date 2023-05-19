@@ -3889,6 +3889,7 @@ __metadata:
     "@coral-xyz/common": "*"
     "@coral-xyz/db": "*"
     "@coral-xyz/recoil": "*"
+    "@parcel/transformer-typescript-tsc": ^2.8.3
     eslint-config-custom: "*"
     eventemitter3: "*"
     parcel: latest
@@ -10159,6 +10160,19 @@ __metadata:
     posthtml-render: ^3.0.0
     semver: ^5.7.1
   checksum: 1f3db309e47d07849a2b4ffe11b508fd7ae792c0c0ce7b03e442fffb25f5e7425c5027428729bf2b587309265bba0be6da635d62c51ae8ab7e54483eff3f575e
+  languageName: node
+  linkType: hard
+
+"@parcel/transformer-typescript-tsc@npm:^2.8.3":
+  version: 2.8.3
+  resolution: "@parcel/transformer-typescript-tsc@npm:2.8.3"
+  dependencies:
+    "@parcel/plugin": 2.8.3
+    "@parcel/source-map": ^2.1.1
+    "@parcel/ts-utils": 2.8.3
+  peerDependencies:
+    typescript: ">=3.0.0"
+  checksum: 3195fccf16d0ceccaab32b649546440d0fb8d103371953c260b3ebf7960c24b1b15ffb1d33f9278927ddf4ec8581105e3a1ffcc811c30a0f315d4560d0e0e8ba
   languageName: node
   linkType: hard
 
