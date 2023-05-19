@@ -1,11 +1,11 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "./",
     "outDir": "dist/esm/",
     "rootDir": "./src",
     "paths": {
-      "~*": ["./*"]
+      "~src": ["./src/"]
     }
   }
 }
