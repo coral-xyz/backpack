@@ -53,8 +53,8 @@ export const red700 = "rgba(210, 0, 36, 1)"; // previously #d20024
 // export const lightNeutralBackgroundAppBackground = "linear-gradient(to bottom, #f8f8f9 0%,#f0f0f2 100%)";
 
 // Light Mode Backgrounds
-export const lightBaseBackgroundL1 = base50; // card background
-export const lightBaseBackgroundL2 = base100; // light mode border
+export const lightBaseBackgroundL0 = base50; // card background
+export const lightBaseBackgroundL1 = base100; // light mode border
 
 // Light Mode Text
 export const lightBaseTextHighEmphasis = base900;
@@ -78,23 +78,27 @@ export const lightButtonSecondaryText = base900;
 // Light Mode Success
 export const lightGreenText = green700;
 export const lightGreenIcon = green600;
-export const lightGreenBorder = color(green600).alpha(0.4);
+export const lightGreenBorder = color(green600).alpha(0.4).string();
 export const lightGreenBackgroundSolid = green100;
-export const lightGreenBackgroundTransparent = color(green500).alpha(0.12);
+export const lightGreenBackgroundTransparent = color(green500)
+  .alpha(0.12)
+  .string();
 
 // Light Mode Warning
 export const lightYellowText = yellow700;
 export const lightYellowIcon = yellow600;
-export const lightYellowBorder = color(yellow700).alpha(0.5);
+export const lightYellowBorder = color(yellow700).alpha(0.5).string();
 export const lightYellowBackgroundSolid = yellow100;
-export const lightYellowBackgroundTransparent = color(yellow500).alpha(12);
+export const lightYellowBackgroundTransparent = color(yellow500)
+  .alpha(12)
+  .string();
 
 // Light Mode Error
 export const lightRedText = red700;
 export const lightRedIcon = red600;
-export const lightRedBorder = color(red700).alpha(0.5);
+export const lightRedBorder = color(red700).alpha(0.5).string();
 export const lightRedBackgroundSolid = red100;
-export const lightRedBackgroundTransparent = color(red500).alpha(0.12);
+export const lightRedBackgroundTransparent = color(red500).alpha(0.12).string();
 
 // Dark Mode //////////////////////////////////////////////////////
 
@@ -113,7 +117,7 @@ export const darkBaseIconPress = base500; // decrease contrast on press
 export const darkBaseIconHighContrast = base400; // icon hover if not using opacity
 
 // Dark Mode Borders
-export const darkBaseBorderLight = color(baseWhite).alpha(0.1);
+export const darkBaseBorderLight = color(baseWhite).alpha(0.1).string();
 // export const darkBaseBorderMed = color(baseWhite).alpha(0.25); idk if we need this
 
 // Dark Mode Buttons
@@ -125,121 +129,122 @@ export const darkButtonSecondaryText = base50;
 // Dark Mode Success
 export const darkGreenText = green500;
 export const darkGreenIcon = green600;
-export const darkGreenBorder = color(green500).alpha(0.4); // green500 at 40%
-export const darkGreenBackgroundOpacity = color(green500).alpha(0.08); // green500 at 8%
+export const darkGreenBorder = color(green500).alpha(0.4).string(); // green500 at 40%
+export const darkGreenBackgroundOpacity = color(green500).alpha(0.08).string(); // green500 at 8%
 export const darkGreenBackgroundSolid = "rgba(18, 35, 34, 1)"; // derived from putting green500 at 8% opacity on base900
 
 // Dark Mode Warning
 export const darkYellowText = yellow500;
 export const darkYellowIcon = yellow600;
-export const darkYellowBorder = color(yellow500).alpha(0.5);
-export const darkYellowBackgroundTransparent = color(yellow500).alpha(0.08);
+export const darkYellowBorder = color(yellow500).alpha(0.5).string();
+export const darkYellowBackgroundTransparent = color(yellow500)
+  .alpha(0.08)
+  .string();
 export const darkYellowBackgroundSolid = "rgba(38, 32, 26, 1)"; // derived from putting yellow500 at 8% opacity on base900
 
 // Dark Mode Error
 export const darkRedText = red500;
 export const darkRedIcon = red600;
-export const darkRedBorder = color(red600).alpha(0.5);
-export const darkRedBackgroundTransparent = color(red600).alpha(0.12);
+export const darkRedBorder = color(red600).alpha(0.5).string();
+export const darkRedBackgroundTransparent = color(red600).alpha(0.12).string();
 export const darkRedBackgroundSolid = "rgba(53, 26, 31, 1)"; // derived from putting red600 at 12% opacity on base900
 
 // Misc Color Definitions ////////////////////////////////////////
-export const overlayBackground = color(base900).alpha(0.4); // overlay background is base900 at 40% opacity
+export const overlayBackground = color(base900).alpha(0.4).string(); // overlay background is base900 at 40% opacity
 
 const lightUsernameColors = {
-  username01: "#E02929",
-  username02: "#CC2578",
-  username03: "#9930B8",
-  username04: "#5E35B1",
-  username05: "#3949AB",
-  username06: "#0072DB",
-  username07: "#0C5ADF",
-  username08: "#008577",
-  username09: "#1A841F",
-  username10: "#6C7D26",
-  username11: "#BD5B00",
-  username12: "#CC4218",
-  username13: "#6D4C41",
-  username14: "#2D4363",
+  lightUser01: "#E02929",
+  lightUser02: "#CC2578",
+  lightUser03: "#9930B8",
+  lightUser04: "#5E35B1",
+  lightUser05: "#3949AB",
+  lightUser06: "#0072DB",
+  lightUser07: "#0C5ADF",
+  lightUser08: "#008577",
+  lightUser09: "#1A841F",
+  lightUser10: "#6C7D26",
+  lightUser11: "#BD5B00",
+  lightUser12: "#CC4218",
+  lightUser13: "#6D4C41",
+  lightUser14: "#2D4363",
 };
 
 const darkUsernameColors = {
-  username01: "#F88484",
-  username02: "#E57AB0",
-  username03: "#DA8BE7",
-  username04: "#C2A6F4",
-  username05: "#97A4F4",
-  username06: "#57AEFF",
-  username07: "#5596F6",
-  username08: "#7ACCC7",
-  username09: "#75DD7A",
-  username10: "#BEE05A",
-  username11: "#FFD080",
-  username12: "#FA9476",
-  username13: "#BCAAA4",
-  username14: "#A3B5CF",
+  darkUser01: "#F88484",
+  darkUser02: "#E57AB0",
+  darkUser03: "#DA8BE7",
+  darkUser04: "#C2A6F4",
+  darkUser05: "#97A4F4",
+  darkUser06: "#57AEFF",
+  darkUser07: "#5596F6",
+  darkUser08: "#7ACCC7",
+  darkUser09: "#75DD7A",
+  darkUser10: "#BEE05A",
+  darkUser11: "#FFD080",
+  darkUser12: "#FA9476",
+  darkUser13: "#BCAAA4",
+  darkUser14: "#A3B5CF",
 };
 
-export const colorTokens = {
-  light: {
-    ...lightUsernameColors,
-    baseBackgroundL0: lightBaseBackgroundL1,
-    baseBackgroundL1: lightBaseBackgroundL2,
-    baseTextHighEmphasis: lightBaseTextHighEmphasis,
-    baseTextMedEmphasis: lightBaseTextMedEmphasis,
-    baseIcon: lightBaseIcon,
-    baseIconHover: lightBaseIconHover,
-    baseIconPress: lightBaseIconPress,
-    baseBorderLight: lightBaseBorderLight,
-    buttonPrimaryBackground: lightButtonPrimaryBackground,
-    buttonPrimaryText: lightButtonPrimaryText,
-    buttonSecondaryBackground: lightButtonSecondaryBackground,
-    buttonSecondaryText: lightButtonSecondaryText,
-    greenText: lightGreenText,
-    greenIcon: lightGreenIcon,
-    greenBorder: lightGreenBorder,
-    greenBackgroundSolid: lightGreenBackgroundSolid,
-    greenBackgroundTransparent: lightGreenBackgroundTransparent,
-    yellowText: lightYellowText,
-    yellowIcon: lightYellowIcon,
-    yellowBorder: lightYellowBorder,
-    yellowBackgroundSolid: lightYellowBackgroundSolid,
-    yellowBackgroundTransparent: lightYellowBackgroundTransparent,
-    redText: lightRedText,
-    redIcon: lightRedIcon,
-    redBorder: lightRedBorder,
-    redBackgroundSolid: lightRedBackgroundSolid,
-    redBackgroundTransparent: lightRedBackgroundTransparent,
-  },
-  dark: {
-    ...darkUsernameColors,
-    baseBackgroundL0: darkBaseBackgroundL0,
-    baseBackgroundL1: darkBaseBackgroundL1,
-    baseTextHighEmphasis: darkBaseTextHighEmphasis,
-    baseTextMedEmphasis: darkBaseTextMedEmphasis,
-    baseIcon: darkBaseIcon,
-    baseIconHover: darkBaseIconHover,
-    baseIconPress: darkBaseIconPress,
-    baseIconHighContrast: darkBaseIconHighContrast,
-    baseBorderLight: darkBaseBorderLight,
-    buttonPrimaryBackground: darkButtonPrimaryBackground,
-    buttonPrimaryText: darkButtonPrimaryText,
-    buttonSecondaryBackground: darkButtonSecondaryBackground,
-    buttonSecondaryText: darkButtonSecondaryText,
-    greenText: darkGreenText,
-    greenIcon: darkGreenIcon,
-    greenBorder: darkGreenBorder,
-    greenBackgroundOpacity: darkGreenBackgroundOpacity,
-    greenBackgroundSolid: darkGreenBackgroundSolid,
-    yellowText: darkYellowText,
-    yellowIcon: darkYellowIcon,
-    yellowBorder: darkYellowBorder,
-    yellowBackgroundTransparent: darkYellowBackgroundTransparent,
-    yellowBackgroundSolid: darkYellowBackgroundSolid,
-    redText: darkRedText,
-    redIcon: darkRedIcon,
-    redBorder: darkRedBorder,
-    redBackgroundTransparent: darkRedBackgroundTransparent,
-    redBackgroundSolid: darkRedBackgroundSolid,
-  },
+export const lightColors = {
+  ...lightUsernameColors,
+  lightBaseBackgroundL0,
+  lightBaseBackgroundL1,
+  lightBaseBorderLight,
+  lightBaseIcon,
+  lightBaseIconHover,
+  lightBaseIconPress,
+  lightBaseTextHighEmphasis,
+  lightBaseTextMedEmphasis,
+  lightButtonPrimaryBackground,
+  lightButtonPrimaryText,
+  lightButtonSecondaryBackground,
+  lightButtonSecondaryText,
+  lightGreenBackgroundSolid,
+  lightGreenBackgroundTransparent,
+  lightGreenBorder,
+  lightGreenIcon,
+  lightGreenText,
+  lightRedBackgroundSolid,
+  lightRedBackgroundTransparent,
+  lightRedBorder,
+  lightRedIcon,
+  lightRedText,
+  lightYellowBackgroundSolid,
+  lightYellowBackgroundTransparent,
+  lightYellowBorder,
+  lightYellowIcon,
+  lightYellowText,
+};
+
+export const darkColors = {
+  ...darkUsernameColors,
+  darkBaseBackgroundL0,
+  darkBaseBackgroundL1,
+  darkBaseBorderLight,
+  darkBaseIcon,
+  darkBaseIconHighContrast,
+  darkBaseIconHover,
+  darkBaseIconPress,
+  darkBaseTextHighEmphasis,
+  darkBaseTextMedEmphasis,
+  darkButtonPrimaryBackground,
+  darkButtonPrimaryText,
+  darkButtonSecondaryBackground,
+  darkButtonSecondaryText,
+  darkGreenBackgroundOpacity,
+  darkGreenBackgroundSolid,
+  darkGreenBorder,
+  darkGreenIcon,
+  darkGreenText,
+  darkRedBackgroundSolid,
+  darkRedBackgroundTransparent,
+  darkRedBorder,
+  darkRedIcon,
+  darkRedText,
+  darkYellowBackgroundSolid,
+  darkYellowBackgroundTransparent,
+  darkYellowBorder,
+  darkYellowIcon,
+  darkYellowText,
 };

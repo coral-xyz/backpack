@@ -31,7 +31,9 @@
   },
   "scripts": {
     "build": "tamagui-build",
-    "start": "tamagui-build --watch"
+    "start": "tamagui-build --watch",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix"
   },
   "devDependencies": {
     "@tamagui/build": "^1.28.1",
