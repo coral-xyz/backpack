@@ -42,7 +42,7 @@
     "@react-navigation/native-stack": "^6.7.0",
     "@react-navigation/stack": "^6.3.2",
     "@shopify/flash-list": "1.4.0",
-    "@tamagui/font-inter": "^1.15.39",
+    "@tamagui/font-inter": "^1.28.1",
     "apollo3-cache-persist": "^0.14.1",
     "big-integer": "^1.6.51",
     "buffer": "^6.0.3",
@@ -92,7 +92,7 @@
     "react-test-renderer": "^18.2.0",
     "recoil": "^0.7.6",
     "relay-runtime": "^15.0.0",
-    "tamagui": "^1.15.39",
+    "tamagui": "^1.28.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

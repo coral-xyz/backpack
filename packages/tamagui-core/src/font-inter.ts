@@ -1,11 +1,17 @@
-// import type { GenericFont } from "@tamagui/web";
+// https://github.com/tamagui/tamagui/blob/master/packages/font-inter/src/index.ts
+// copied over from here but doing our own thing because we're not using their system
 import { createFont, isWeb } from "@tamagui/core";
 
-const fontSizes = {
+// the following keys are meant to match:
+// - fontSize
+// - lineHeight
+// - letterSpacing
+// - fontWeight
+const size = {
   xs: 12,
   sm: 14,
   base: 16,
-  true: 16,
+  // true: 16,
   lg: 18,
   xl: 20,
   "2xl": 24,
@@ -15,10 +21,11 @@ const fontSizes = {
   "6xl": 60,
 } as const;
 
-const lineHeights = {
+const lineHeight = {
   xs: 16,
   sm: 20,
   base: 24,
+  // true: 24,
   lg: 28,
   xl: 28,
   "2xl": 32,
@@ -36,13 +43,18 @@ const lineHeights = {
 // - Extra-bold 800
 // - Black 900
 
-const weights = {
-  1: "500",
-  7: "600",
+const weight = {
+  true: "400",
+  base: "400",
+  medium: "500",
+  semiBold: "600",
+  bold: "700",
+  // extraBold: "800",
+  // black: "900",
 } as const;
 
-// For react-native
-const nativeFaces = {
+// react-native has a different font system
+const face = {
   400: { normal: "Inter" },
   500: { normal: "InterMedium" },
   600: { normal: "InterSemiBold" },
@@ -51,15 +63,17 @@ const nativeFaces = {
   // 900: { normal: "InterBlack" },
 };
 
-const letterSpacings = {} as const;
+const letterSpacing = {
+  base: 0,
+} as const;
 
-export const bodyFont = createFont({
+export const interFont = createFont({
   family: isWeb
     ? 'Inter, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
     : "Inter",
-  size: fontSizes,
-  lineHeight: lineHeights,
-  weight: weights,
-  letterSpacing: letterSpacings,
-  face: nativeFaces,
+  size,
+  lineHeight,
+  weight,
+  letterSpacing,
+  face,
 });

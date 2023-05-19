@@ -32,7 +32,7 @@ function TopTabsNavigator(): JSX.Element {
         tabBarLabelStyle: {
           textTransform: "capitalize",
           fontSize: 15,
-          fontFamily: "Inter_500Medium",
+          fontFamily: "InterMedium",
           color: theme.custom.colors.fontColor,
         },
       }}

@@ -30,7 +30,7 @@ import { useSession } from "~lib/SessionProvider";
 
 export const BubbleTopLabel = ({ text }: { text: string }) => {
   return (
-    <Text mb={8} fontSize={15} fontFamily="Inter_500Medium">
+    <Text mb={8} fontSize={15} fontFamily="InterMedium">
       {text}
     </Text>
   );
@@ -419,7 +419,7 @@ const AddressListItem = ({
         icon={<UserAvatar size={32} uri={user.image} />}
         onPress={onPress}
       >
-        <Text fontSize={16} fontFamily="Inter_500Medium">
+        <Text fontSize={16} fontFamily="InterMedium">
           {title}
         </Text>
         {!address ? (

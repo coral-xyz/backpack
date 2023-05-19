@@ -180,17 +180,12 @@ function WalletListItem({
             <NetworkIcon blockchain={blockchain} />
           </Margin>
           <View>
-            <Text
-              style={{
-                fontSize: 16,
-                fontFamily: isSelected
-                  ? "Inter_600SemiBold"
-                  : "Inter_400Regular",
-                color: theme.custom.colors.fontColor,
-              }}
+            <StyledText
+              color="$fontColor"
+              fontWeight={isSelected ? "$semibold" : "$base"}
             >
               {name}
-            </Text>
+            </StyledText>
             <Row>
               <WalletTypeIcon
                 type={type}

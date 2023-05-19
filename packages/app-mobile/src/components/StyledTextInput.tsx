@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     fontSize: 16,
-    fontFamily: "Inter_500Medium",
+    fontFamily: "InterMedium",
     fontWeight: "500",
     width: "100%",
   },

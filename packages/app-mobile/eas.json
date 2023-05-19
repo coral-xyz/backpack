@@ -15,10 +15,6 @@
       },
       "env": {
         "APP_ENV": "production"
-      },
-      "cache": {
-        "key": "turbo",
-        "paths": ["../../node_modules/.cache/turbo"]
       }
     },
     "development-simulator": {
