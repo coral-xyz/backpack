@@ -3518,6 +3518,7 @@ __metadata:
     "@cardinal/token-manager": ^1.7.9
     "@coral-xyz/background": "*"
     "@coral-xyz/chat-sdk": "*"
+    "@coral-xyz/chat-xplat": "*"
     "@coral-xyz/common": "*"
     "@coral-xyz/db": "*"
     "@coral-xyz/message-sdk": "*"
