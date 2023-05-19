@@ -181,9 +181,8 @@ function WalletListItem({
           </Margin>
           <View>
             <StyledText
-              fontSize="$base"
               color="$fontColor"
-              fontWeight={isSelected ? "600" : "400"}
+              fontWeight={isSelected ? "$semibold" : "$base"}
             >
               {name}
             </StyledText>
