@@ -13,6 +13,10 @@
   "sideEffects": [
     "*.css"
   ],
+  "scripts": {
+    "build": "tamagui-build",
+    "start": "tamagui-build --watch"
+  },
   "dependencies": {
     "@coral-xyz/common": "*",
     "@coral-xyz/recoil": "*",
@@ -27,11 +31,9 @@
     "@tamagui/shorthands": "^1.15.39",
     "@tamagui/theme-base": "^1.15.39",
     "@tamagui/themes": "^1.15.39",
+    "react-content-loader": "^6.2.1",
+    "react-native-svg": "^13.9.0",
     "tamagui": "^1.15.39"
-  },
-  "scripts": {
-    "build": "tamagui-build",
-    "start": "tamagui-build --watch"
   },
   "devDependencies": {
     "@tamagui/build": "^1.15.39",

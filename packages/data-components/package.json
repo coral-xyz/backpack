@@ -1,0 +1,27 @@
+{
+  "private": true,
+  "name": "@coral-xyz/data-components",
+  "version": "1.0.0",
+  "module": "dist/esm/index.js",
+  "source": "src/index.ts",
+  "types": "dist/esm/index.d.ts",
+  "scripts": {
+    "build": "tsc -b && tsc-alias",
+    "gql:generate": "graphql-codegen --config codegen.yml"
+  },
+  "dependencies": {
+    "@apollo/client": "3.8.0-alpha.12",
+    "@coral-xyz/recoil": "*",
+    "@coral-xyz/tamagui": "*",
+    "@coral-xyz/themes": "*",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^3.3.1",
+    "@graphql-codegen/client-preset": "^3.0.1",
+    "@types/react": "^18.2.6",
+    "eslint-config-custom": "*",
+    "tsc-alias": "^1.8.6",
+    "typescript": "^5.0.4"
+  }
+}

@@ -13,8 +13,6 @@ import type { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-  "\n  query GetBalanceSummary($address: String!) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        balances {\n          id\n          aggregate {\n            id\n            percentChange\n            value\n            valueChange\n          }\n        }\n      }\n    }\n  }\n":
-    types.GetBalanceSummaryDocument,
   "\n  query GetNotifications($filters: NotificationFiltersInput) {\n    user {\n      id\n      notifications(filters: $filters) {\n        edges {\n          node {\n            id\n            body\n            source\n            timestamp\n            title\n            viewed\n          }\n        }\n      }\n    }\n  }\n":
     types.GetNotificationsDocument,
   "\n  query GetTransactions($address: String!, $filters: TransactionFiltersInput) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        chainId\n        transactions(filters: $filters) {\n          edges {\n            node {\n              id\n              description\n              error\n              hash\n              source\n              timestamp\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n":
@@ -35,12 +33,6 @@ const documents = {
  */
 export function gql(source: string): unknown;
 
-/**
- * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function gql(
-  source: "\n  query GetBalanceSummary($address: String!) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        balances {\n          id\n          aggregate {\n            id\n            percentChange\n            value\n            valueChange\n          }\n        }\n      }\n    }\n  }\n"
-): (typeof documents)["\n  query GetBalanceSummary($address: String!) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        balances {\n          id\n          aggregate {\n            id\n            percentChange\n            value\n            valueChange\n          }\n        }\n      }\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

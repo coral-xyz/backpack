@@ -1,6 +1,5 @@
 import { memo, useEffect, useState } from "react";
 import { Image, StyleSheet, View } from "react-native";
-// @ts-expect-error
 import { SvgUri } from "react-native-svg";
 
 // Caches the content-type of the image so we don't have to continue double-fetching

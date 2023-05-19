@@ -16,8 +16,8 @@ import {
   PLUGIN_RPC_METHOD_CLOSE_TO,
   PLUGIN_RPC_METHOD_PLUGIN_OPEN,
   PLUGIN_RPC_METHOD_POP_OUT,
-  PLUGIN_RPC_METHOD_WINDOW_OPEN,
   PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW,
+  PLUGIN_RPC_METHOD_WINDOW_OPEN,
 } from "@coral-xyz/common";
 import type {
   Commitment,
@@ -131,7 +131,7 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
   public async resizeExtensionWindow(width: number, height: number) {
     await this.#requestManager.request({
       method: PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW,
-      params: [{width,height}],
+      params: [{ width, height }],
     });
   }
 

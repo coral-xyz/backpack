@@ -530,39 +530,11 @@ export type WalletFiltersInput = {
   pubkeys?: InputMaybe<Array<Scalars["String"]>>;
 };
 
-export type GetNotificationsQueryVariables = Exact<{
-  filters?: InputMaybe<NotificationFiltersInput>;
-}>;
-
-export type GetNotificationsQuery = {
-  __typename?: "Query";
-  user?: {
-    __typename?: "User";
-    id: string;
-    notifications?: {
-      __typename?: "NotificationConnection";
-      edges: Array<{
-        __typename?: "NotificationEdge";
-        node: {
-          __typename?: "Notification";
-          id: string;
-          body: { data: string } | Record<string, any>;
-          source: string;
-          timestamp: string;
-          title: string;
-          viewed: boolean;
-        };
-      }>;
-    } | null;
-  } | null;
-};
-
-export type GetTransactionsQueryVariables = Exact<{
+export type GetBalanceSummaryQueryVariables = Exact<{
   address: Scalars["String"];
-  filters?: InputMaybe<TransactionFiltersInput>;
 }>;
 
-export type GetTransactionsQuery = {
+export type GetBalanceSummaryQuery = {
   __typename?: "Query";
   user?: {
     __typename?: "User";
@@ -570,136 +542,28 @@ export type GetTransactionsQuery = {
     wallet?: {
       __typename?: "Wallet";
       id: string;
-      chainId: ChainId;
-      transactions?: {
-        __typename?: "TransactionConnection";
-        edges: Array<{
-          __typename?: "TransactionEdge";
-          node: {
-            __typename?: "Transaction";
-            id: string;
-            description?: string | null;
-            error?: string | null;
-            hash: string;
-            source?: string | null;
-            timestamp?: string | null;
-            type: string;
-          };
-        }>;
+      balances?: {
+        __typename?: "Balances";
+        id: string;
+        aggregate: {
+          __typename?: "BalanceAggregate";
+          id: string;
+          percentChange: number;
+          value: number;
+          valueChange: number;
+        };
       } | null;
     } | null;
   } | null;
 };
 
-export const GetNotificationsDocument = {
+export const GetBalanceSummaryDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
       operation: "query",
-      name: { kind: "Name", value: "GetNotifications" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "filters" },
-          },
-          type: {
-            kind: "NamedType",
-            name: { kind: "Name", value: "NotificationFiltersInput" },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "user" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "notifications" },
-                  arguments: [
-                    {
-                      kind: "Argument",
-                      name: { kind: "Name", value: "filters" },
-                      value: {
-                        kind: "Variable",
-                        name: { kind: "Name", value: "filters" },
-                      },
-                    },
-                  ],
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "edges" },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "node" },
-                              selectionSet: {
-                                kind: "SelectionSet",
-                                selections: [
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "id" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "body" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "source" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "timestamp" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "title" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "viewed" },
-                                  },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  GetNotificationsQuery,
-  GetNotificationsQueryVariables
->;
-export const GetTransactionsDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "GetTransactions" },
+      name: { kind: "Name", value: "GetBalanceSummary" },
       variableDefinitions: [
         {
           kind: "VariableDefinition",
@@ -713,17 +577,6 @@ export const GetTransactionsDocument = {
               kind: "NamedType",
               name: { kind: "Name", value: "String" },
             },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "filters" },
-          },
-          type: {
-            kind: "NamedType",
-            name: { kind: "Name", value: "TransactionFiltersInput" },
           },
         },
       ],
@@ -756,77 +609,40 @@ export const GetTransactionsDocument = {
                       { kind: "Field", name: { kind: "Name", value: "id" } },
                       {
                         kind: "Field",
-                        name: { kind: "Name", value: "chainId" },
-                      },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "transactions" },
-                        arguments: [
-                          {
-                            kind: "Argument",
-                            name: { kind: "Name", value: "filters" },
-                            value: {
-                              kind: "Variable",
-                              name: { kind: "Name", value: "filters" },
-                            },
-                          },
-                        ],
+                        name: { kind: "Name", value: "balances" },
                         selectionSet: {
                           kind: "SelectionSet",
                           selections: [
                             {
                               kind: "Field",
-                              name: { kind: "Name", value: "edges" },
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "aggregate" },
                               selectionSet: {
                                 kind: "SelectionSet",
                                 selections: [
                                   {
                                     kind: "Field",
-                                    name: { kind: "Name", value: "node" },
-                                    selectionSet: {
-                                      kind: "SelectionSet",
-                                      selections: [
-                                        {
-                                          kind: "Field",
-                                          name: { kind: "Name", value: "id" },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "description",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "error",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: { kind: "Name", value: "hash" },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "source",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "timestamp",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: { kind: "Name", value: "type" },
-                                        },
-                                      ],
+                                    name: { kind: "Name", value: "id" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: {
+                                      kind: "Name",
+                                      value: "percentChange",
+                                    },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "value" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: {
+                                      kind: "Name",
+                                      value: "valueChange",
                                     },
                                   },
                                 ],
@@ -846,6 +662,6 @@ export const GetTransactionsDocument = {
     },
   ],
 } as unknown as DocumentNode<
-  GetTransactionsQuery,
-  GetTransactionsQueryVariables
+  GetBalanceSummaryQuery,
+  GetBalanceSummaryQueryVariables
 >;
