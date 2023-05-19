@@ -84,9 +84,7 @@ export class Solana implements Blockchain {
         lastUpdatedAt: prices.solana.last_updated,
         logo: prices.solana.image,
         name: prices.solana.name,
-        percentChange: parseFloat(
-          prices.solana.price_change_percentage_24h.toFixed(2)
-        ),
+        percentChange: prices.solana.price_change_percentage_24h,
         price: prices.solana.current_price,
         sparkline: prices.solana.sparkline_in_7d.price,
         symbol: prices.solana.symbol,
@@ -119,7 +117,7 @@ export class Solana implements Blockchain {
             lastUpdatedAt: p.last_updated,
             logo: p.image,
             name: p.name,
-            percentChange: parseFloat(p.price_change_percentage_24h.toFixed(2)),
+            percentChange: p.price_change_percentage_24h,
             price: p.current_price,
             sparkline: p.sparkline_in_7d.price,
             symbol: p.symbol,

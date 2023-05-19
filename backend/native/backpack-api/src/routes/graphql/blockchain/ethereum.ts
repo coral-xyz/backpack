@@ -76,9 +76,7 @@ export class Ethereum implements Blockchain {
         lastUpdatedAt: prices.ethereum.last_updated,
         logo: prices.ethereum.image,
         name: prices.ethereum.name,
-        percentChange: parseFloat(
-          prices.ethereum.price_change_percentage_24h.toFixed(2)
-        ),
+        percentChange: prices.ethereum.price_change_percentage_24h,
         price: prices.ethereum.current_price,
         sparkline: prices.ethereum.sparkline_in_7d.price,
         symbol: prices.ethereum.symbol,
