@@ -496,8 +496,6 @@ export const LEDGER_METHOD_ETHEREUM_SIGN_EIP712_MESSAGE =
 export const LEDGER_METHOD_ETHEREUM_SIGN_EIP712_HASHED_MESSAGE =
   "ledger-method-ethereum-sign-eip712-hashed-message";
 
-export const PLUGIN_RPC_METHOD_WINDOW_OPEN = "rpc-method-window-open";
-
 export const PLUGIN_RPC_METHOD_PLUGIN_OPEN = "rpc-method-plugin-open";
 
 export const PLUGIN_RPC_METHOD_CHAT_OPEN = "rpc-method-plugin-close-to";

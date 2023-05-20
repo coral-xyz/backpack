@@ -16,7 +16,6 @@ import {
   PLUGIN_RPC_METHOD_CLOSE_TO,
   PLUGIN_RPC_METHOD_PLUGIN_OPEN,
   PLUGIN_RPC_METHOD_POP_OUT,
-  PLUGIN_RPC_METHOD_WINDOW_OPEN,
   PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW,
 } from "@coral-xyz/common";
 import type {
@@ -72,11 +71,14 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
     this.#setupChannels();
   }
 
-  public async openWindow(url: string) {
-    await this.#requestManager.request({
-      method: PLUGIN_RPC_METHOD_WINDOW_OPEN,
-      params: [url],
-    });
+  public async openWindow(_url: string) {
+    const url = new URL(_url);
+
+    if (!url.protocol.startsWith("http")) {
+      throw "Invalid url.";
+    }
+
+    window.open(url, "_blank");
   }
 
   public async openPlugin(xnftAddress: string) {
@@ -131,7 +133,7 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
   public async resizeExtensionWindow(width: number, height: number) {
     await this.#requestManager.request({
       method: PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW,
-      params: [{width,height}],
+      params: [{ width, height }],
     });
   }
 

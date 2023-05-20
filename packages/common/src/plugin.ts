@@ -32,7 +32,6 @@ import {
   PLUGIN_RPC_METHOD_CLOSE_TO,
   PLUGIN_RPC_METHOD_PLUGIN_OPEN,
   PLUGIN_RPC_METHOD_POP_OUT,
-  PLUGIN_RPC_METHOD_WINDOW_OPEN,
   PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW,
   SOLANA_RPC_METHOD_SIGN_ALL_TXS as PLUGIN_SOLANA_RPC_METHOD_SIGN_ALL_TXS,
   SOLANA_RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
@@ -418,8 +417,6 @@ export class Plugin {
 
     const { method, params } = req;
     switch (method) {
-      case PLUGIN_RPC_METHOD_WINDOW_OPEN:
-        return await this._handleWindowOpen(params[0]);
       case PLUGIN_RPC_METHOD_PLUGIN_OPEN:
         return await this._handlePluginOpen(params[0]);
       case PLUGIN_RPC_METHOD_CHAT_OPEN:
@@ -602,17 +599,6 @@ export class Plugin {
     height: number;
   }): Promise<RpcResponse> {
     resizeExtensionWindow(options);
-    return ["success"];
-  }
-
-  private async _handleWindowOpen(_url: string): Promise<RpcResponse> {
-    const url = new URL(_url);
-
-    if (!url.protocol.startsWith("http")) {
-      throw "Invalid url.";
-    }
-
-    window.open(url, "_blank");
     return ["success"];
   }
 
