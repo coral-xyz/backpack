@@ -58,6 +58,7 @@ import {
   withContextPort,
 } from "@coral-xyz/common";
 import type { SendOptions } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 
 import type { Backend } from "../backend/core";
 import { SUCCESS_RESPONSE } from "../backend/core";
@@ -586,6 +587,13 @@ async function handleSolanaOpenXnft(
   ctx: Context<Backend>,
   xnftAddress: string
 ): Promise<RpcResponse<string>> {
+  // Validate the xnftAddress.
+  try {
+    new PublicKey(xnftAddress);
+  } catch (err) {
+    throw new Error("invalid xnft address");
+  }
+
   const url = `xnft/${xnftAddress}`;
   await ctx.backend.navigationPush(url, TAB_XNFT);
   await openPopupWindow(`popup.html`);
