@@ -8,10 +8,12 @@ import {
   StyledText,
   useCustomTheme,
   XStack,
+  YStack,
 } from "@coral-xyz/tamagui";
 
 import type { Notification } from "../../apollo/graphql";
 
+import { NotificationListItemFriendRequestAction } from "./NotificationListItemActions";
 import { getTimeStr } from "./utils";
 
 export type NotificationListItemProps = {
@@ -32,7 +34,7 @@ export function NotificationListItem({
     notification.source === "friend_requests_accept"
   ) {
     return (
-      <NotificationFriendRequestItem
+      <NotificationListItemFriendRequest
         first={first}
         last={last}
         notification={notification}
@@ -41,7 +43,7 @@ export function NotificationListItem({
     );
   } else if (notification.app) {
     return (
-      <NotificationApplicationItem
+      <NotificationListItemApplication
         first={first}
         last={last}
         notification={notification}
@@ -68,7 +70,7 @@ function NotificationListItemIcon({ image }: NotificationListItemIconProps) {
   );
 }
 
-function NotificationApplicationItem({
+function NotificationListItemApplication({
   first,
   last,
   notification,
@@ -103,7 +105,7 @@ function NotificationApplicationItem({
   );
 }
 
-function NotificationFriendRequestItem({
+function NotificationListItemFriendRequest({
   first,
   last,
   notification,
@@ -142,9 +144,14 @@ function NotificationFriendRequestItem({
         </XStack>
       }
       subtitle={
-        <StyledText color={theme.custom.colors.smallTextColor} fontSize={14}>
-          @{user.username}
-        </StyledText>
+        <YStack>
+          <StyledText color={theme.custom.colors.smallTextColor} fontSize={14}>
+            @{user.username}
+          </StyledText>
+          <NotificationListItemFriendRequestAction
+            userId={(notification.body as Record<string, any>).from}
+          />
+        </YStack>
       }
     />
   );

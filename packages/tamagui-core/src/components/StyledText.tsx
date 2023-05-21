@@ -5,6 +5,16 @@ import { Text } from "tamagui";
 
 import { useCustomTheme } from "../hooks/index";
 
+export type StyledTextProps = TextProps &
+  SizableTextProps & {
+    fontSize?: number | string;
+    fontWeight?: string;
+    children: string | string[];
+    textAlign?: SizableTextProps["textAlign"];
+    color?: string;
+    style?: StyleProp<TextStyle>;
+  };
+
 export function StyledText({
   fontWeight = "500",
   fontSize = "$base",
@@ -13,15 +23,7 @@ export function StyledText({
   color,
   style,
   ...props
-}: {
-  fontSize?: number | string;
-  fontWeight?: string;
-  children: string | string[];
-  textAlign?: SizableTextProps["textAlign"];
-  color?: string;
-  style?: StyleProp<TextStyle>;
-} & TextProps &
-  SizableTextProps) {
+}: StyledTextProps) {
   const theme = useCustomTheme();
   const _color = color || theme.custom.colors.fontColor;
   return (

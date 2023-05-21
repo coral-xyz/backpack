@@ -602,6 +602,27 @@ export type GetNotificationsQuery = {
   } | null;
 };
 
+export type UserIdFragmentFragment = { __typename?: "User"; id: string } & {
+  " $fragmentName"?: "UserIdFragmentFragment";
+};
+
+export const UserIdFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "UserIdFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "User" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [{ kind: "Field", name: { kind: "Name", value: "id" } }],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UserIdFragmentFragment, unknown>;
 export const GetBalanceSummaryDocument = {
   kind: "Document",
   definitions: [
