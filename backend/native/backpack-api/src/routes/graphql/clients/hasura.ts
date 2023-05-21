@@ -1,4 +1,5 @@
 import { Chain } from "@coral-xyz/zeus";
+import { GraphQLError } from "graphql";
 
 import {
   type Friend,
@@ -33,6 +34,60 @@ export class Hasura {
         Authorization: `Bearer ${opts.secret}`,
       },
     });
+  }
+
+  /**
+   * Inserts a new notification entry for the argued data.
+   * @param {string} userId
+   * @param {string} source
+   * @param {string} title
+   * @param {(string | Record<string, any>)} body
+   * @returns {Promise<Notification>}
+   * @memberof Hasura
+   */
+  async createNotification(
+    userId: string,
+    source: string,
+    title: string,
+    body: string | Record<string, any>
+  ): Promise<Notification> {
+    const b = JSON.stringify(typeof body === "string" ? { data: body } : body);
+    const timestamp = new Date();
+
+    const resp = await this.#chain("mutation")(
+      {
+        insert_auth_notifications_one: [
+          {
+            object: {
+              body: b,
+              image: "",
+              timestamp,
+              title,
+              uuid: userId,
+              username: "",
+              xnft_id: source,
+            },
+          },
+          {
+            id: true,
+          },
+        ],
+      },
+      { operationName: "CreateNotification" }
+    );
+
+    if (!resp.insert_auth_notifications_one) {
+      throw new GraphQLError("Failed to create new notification");
+    }
+
+    return {
+      id: `notification:${resp.insert_auth_notifications_one.id}`,
+      body: b,
+      source,
+      title,
+      timestamp: timestamp.toISOString(),
+      viewed: false,
+    };
   }
 
   /**

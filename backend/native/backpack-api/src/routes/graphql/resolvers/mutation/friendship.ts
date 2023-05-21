@@ -1,4 +1,3 @@
-import { insertNotification } from "@coral-xyz/backend-common";
 import { NOTIFICATION_ADD } from "@coral-xyz/common";
 import type { GraphQLResolveInfo } from "graphql";
 
@@ -8,6 +7,7 @@ import type { ApiContext } from "../../context";
 import type {
   MutationResolvers,
   MutationSendFriendRequestArgs,
+  Notification,
 } from "../../types";
 
 /**
@@ -32,14 +32,14 @@ export const sendFriendRequestMutation: MutationResolvers["sendFriendRequest"] =
     });
 
     if (accept) {
+      let notification: Notification;
+
       if (areFriends) {
-        const notification = await insertNotification(
-          "friend_requests_accept",
+        notification = await ctx.dataSources.hasura.createNotification(
           otherUserId,
-          {
-            title: "Friend request accepted",
-            body: JSON.stringify({ from: ctx.authorization.userId }),
-          }
+          "friend_requests_accept",
+          "Friend request accepted",
+          { from: ctx.authorization.userId }
         );
 
         await Redis.getInstance().send(
@@ -51,21 +51,12 @@ export const sendFriendRequestMutation: MutationResolvers["sendFriendRequest"] =
             },
           })
         );
-
-        await Redis.getInstance().publish(`INDIVIDUAL_${otherUserId}`, {
-          type: NOTIFICATION_ADD,
-          payload: notification,
-        });
       } else {
-        const notificationData = await insertNotification(
-          "friend_requests",
+        notification = await ctx.dataSources.hasura.createNotification(
           otherUserId,
-          {
-            title: "Friend request",
-            body: JSON.stringify({
-              from: ctx.authorization.userId,
-            }),
-          }
+          "friend_requests",
+          "Friend request",
+          { from: ctx.authorization.userId }
         );
 
         await Redis.getInstance().send(
@@ -77,12 +68,12 @@ export const sendFriendRequestMutation: MutationResolvers["sendFriendRequest"] =
             },
           })
         );
-
-        await Redis.getInstance().publish(`INDIVIDUAL_${otherUserId}`, {
-          type: NOTIFICATION_ADD,
-          payload: notificationData,
-        });
       }
+
+      await Redis.getInstance().publish(`INDIVIDUAL_${otherUserId}`, {
+        type: NOTIFICATION_ADD,
+        payload: notification,
+      });
     }
 
     return areFriends ?? null;
