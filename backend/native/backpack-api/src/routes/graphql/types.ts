@@ -191,7 +191,8 @@ export type MutationImportPublicKeyArgs = {
 
 /** Root level mutation type. */
 export type MutationSendFriendRequestArgs = {
-  to: Scalars["String"];
+  accept: Scalars["Boolean"];
+  otherUserId: Scalars["String"];
 };
 
 /** Generic NFT object type definition to provide on-chain and off-chain metadata. */
@@ -938,7 +939,7 @@ export type MutationResolvers<
     Maybe<ResolversTypes["Boolean"]>,
     ParentType,
     ContextType,
-    RequireFields<MutationSendFriendRequestArgs, "to">
+    RequireFields<MutationSendFriendRequestArgs, "accept" | "otherUserId">
   >;
 }>;
 

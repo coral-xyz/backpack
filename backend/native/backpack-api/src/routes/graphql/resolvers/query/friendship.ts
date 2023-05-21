@@ -1,12 +1,12 @@
 import type { GraphQLResolveInfo } from "graphql";
 
-import type { ApiContext } from "../context";
+import type { ApiContext } from "../../context";
 import type {
   Friend,
   FriendRequest,
   Friendship,
   FriendshipResolvers,
-} from "../types";
+} from "../../types";
 
 /**
  * Type-level query resolver for the `Friendship` schema object.

@@ -1,6 +1,6 @@
 import type { GraphQLResolveInfo } from "graphql";
 
-import type { ApiContext } from "../context";
+import type { ApiContext } from "../../context";
 import type {
   Friendship,
   NotificationConnection,
@@ -11,7 +11,7 @@ import type {
   UserWalletsArgs,
   Wallet,
   WalletConnection,
-} from "../types";
+} from "../../types";
 
 /**
  * Handler for the `user` query.

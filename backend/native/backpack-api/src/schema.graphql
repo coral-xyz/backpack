@@ -48,7 +48,7 @@ type Mutation {
   """
   Allows users to send friend requests to another remote user.
   """
-  sendFriendRequest(to: String!): Boolean
+  sendFriendRequest(otherUserId: String!, accept: Boolean!): Boolean
 }
 
 """

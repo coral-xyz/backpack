@@ -36,6 +36,27 @@ export class Hasura {
   }
 
   /**
+   * Deletes a friend request in the data from the argued user ID to
+   * the other user ID.
+   * @param {string} from
+   * @param {string} to
+   * @memberof Hasura
+   */
+  async deleteFriendRequest(from: string, to: string) {
+    await this.#chain("mutation")(
+      {
+        delete_auth_friend_requests: [
+          {
+            where: { from: { _eq: from }, to: { _eq: to } },
+          },
+          { affected_rows: true },
+        ],
+      },
+      { operationName: "DeleteFriendRequest" }
+    );
+  }
+
+  /**
    * Return a list of friends for the argued user ID.
    * @param {string} id
    * @returns {Promise<string[]>}
