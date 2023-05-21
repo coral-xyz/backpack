@@ -170,6 +170,8 @@ export type Mutation = {
   deauthenticate: Scalars["String"];
   /** Attempt to add a new wallet public key to the user account. */
   importPublicKey?: Maybe<Scalars["Boolean"]>;
+  /** Allows users to send friend requests to another remote user. */
+  sendFriendRequest?: Maybe<Scalars["Boolean"]>;
 };
 
 /** Root level mutation type. */
@@ -185,6 +187,11 @@ export type MutationImportPublicKeyArgs = {
   address: Scalars["String"];
   chainId: ChainId;
   signature: Scalars["String"];
+};
+
+/** Root level mutation type. */
+export type MutationSendFriendRequestArgs = {
+  to: Scalars["String"];
 };
 
 /** Generic NFT object type definition to provide on-chain and off-chain metadata. */
@@ -926,6 +933,12 @@ export type MutationResolvers<
       MutationImportPublicKeyArgs,
       "address" | "chainId" | "signature"
     >
+  >;
+  sendFriendRequest?: Resolver<
+    Maybe<ResolversTypes["Boolean"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationSendFriendRequestArgs, "to">
   >;
 }>;
 
