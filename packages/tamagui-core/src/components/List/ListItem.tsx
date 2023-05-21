@@ -1,5 +1,5 @@
 import type { ViewStyleWithPseudos } from "@tamagui/core";
-import { ListItem, type ListItemProps,YGroup } from "tamagui";
+import { ListItem, type ListItemProps, YGroup } from "tamagui";
 
 import { useCustomTheme } from "../../hooks";
 
@@ -27,6 +27,7 @@ export function ListItemCore({
         icon={icon}
         paddingHorizontal={12}
         paddingVertical={10}
+        pointerEvents="box-only"
         subTitle={subtitle}
         title={title}
         {...style}

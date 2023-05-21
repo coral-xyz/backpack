@@ -58,9 +58,9 @@ export function NotificationList({ onOpenDrawer }: NotificationListProps) {
         <ListCore key={group.date} heading={group.date}>
           {group.notifications.map((notif, idx) => (
             <NotificationListItem
+              first={idx === 0}
+              last={idx === group.notifications.length - 1}
               key={notif.id}
-              isFirst={idx === 0}
-              isLast={idx === group.notifications.length - 1}
               notification={notif}
               onClick={onOpenDrawer}
             />

@@ -12,15 +12,15 @@ import type { Notification } from "../../apollo/graphql";
 import { getTimeStr } from "./utils";
 
 export type NotificationListItemProps = {
-  isFirst?: boolean;
-  isLast?: boolean;
+  first?: boolean;
+  last?: boolean;
   notification: Notification;
   onClick?: () => void;
 };
 
 export function NotificationListItem({
-  isFirst,
-  isLast,
+  first,
+  last,
   notification,
 }: NotificationListItemProps) {
   if (
@@ -28,14 +28,21 @@ export function NotificationListItem({
     notification.source === "friend_requests_accept"
   ) {
     return (
-      <FriendRequestNotificationItem
-        isFirst={isFirst}
-        isLast={isLast}
+      <NotificationFriendRequestItem
+        first={first}
+        last={last}
         notification={notification}
       />
     );
   }
-  return null;
+
+  return (
+    <NotificationApplicationItem
+      first={first}
+      last={last}
+      notification={notification}
+    />
+  );
 }
 
 export type NotificationListItemIconProps = {
@@ -51,9 +58,36 @@ function NotificationListItemIcon({ image }: NotificationListItemIconProps) {
   );
 }
 
-function FriendRequestNotificationItem({
-  isFirst,
-  isLast,
+function NotificationApplicationItem({
+  first,
+  last,
+  notification,
+}: NotificationListItemProps) {
+  const theme = useCustomTheme();
+  return (
+    <ListItemCore
+      style={{
+        backgroundColor: notification.viewed
+          ? theme.custom.colors.nav
+          : theme.custom.colors.unreadBackground,
+      }}
+      first={first}
+      last={last}
+      title={
+        <XStack display="flex" alignItems="center">
+          <StyledText flex={1}>{notification.title}</StyledText>
+          <StyledText color={theme.custom.colors.smallTextColor} fontSize={14}>
+            {getTimeStr(notification.timestamp)}
+          </StyledText>
+        </XStack>
+      }
+    />
+  );
+}
+
+function NotificationFriendRequestItem({
+  first,
+  last,
   notification,
 }: NotificationListItemProps) {
   const theme = useCustomTheme();
@@ -67,9 +101,10 @@ function FriendRequestNotificationItem({
         backgroundColor: notification.viewed
           ? theme.custom.colors.nav
           : theme.custom.colors.unreadBackground,
+        cursor: "pointer",
       }}
-      first={isFirst}
-      last={isLast}
+      first={first}
+      last={last}
       icon={<NotificationListItemIcon image={user?.image} />}
       title={
         <XStack display="flex" alignItems="center">
