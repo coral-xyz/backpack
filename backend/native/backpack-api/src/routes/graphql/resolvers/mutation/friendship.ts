@@ -21,63 +21,69 @@ import type {
 export const sendFriendRequestMutation: MutationResolvers["sendFriendRequest"] =
   async (
     _parent: {},
-    { to }: MutationSendFriendRequestArgs,
+    { accept, otherUserId }: MutationSendFriendRequestArgs,
     ctx: ApiContext,
     _info: GraphQLResolveInfo
-  ): Promise<boolean> => {
+  ): Promise<boolean | null> => {
     const areFriends = await setFriendship({
       from: ctx.authorization.userId!,
-      to,
-      sendRequest: true,
+      to: otherUserId,
+      sendRequest: accept,
     });
 
-    if (areFriends) {
-      const notification = await insertNotification(
-        "friend_requests_accept",
-        to,
-        {
-          title: "Friend request accepted",
-          body: JSON.stringify({ from: ctx.authorization.userId }),
-        }
-      );
+    if (accept) {
+      if (areFriends) {
+        const notification = await insertNotification(
+          "friend_requests_accept",
+          otherUserId,
+          {
+            title: "Friend request accepted",
+            body: JSON.stringify({ from: ctx.authorization.userId }),
+          }
+        );
 
-      await Redis.getInstance().send(
-        JSON.stringify({
-          type: "friend_request_accept",
-          payload: {
-            from: ctx.authorization.userId,
-            to,
-          },
-        })
-      );
+        await Redis.getInstance().send(
+          JSON.stringify({
+            type: "friend_request_accept",
+            payload: {
+              from: ctx.authorization.userId,
+              to: otherUserId,
+            },
+          })
+        );
 
-      await Redis.getInstance().publish(`INDIVIDUAL_${to}`, {
-        type: NOTIFICATION_ADD,
-        payload: notification,
-      });
-    } else {
-      const notificationData = await insertNotification("friend_requests", to, {
-        title: "Friend request",
-        body: JSON.stringify({
-          from: ctx.authorization.userId,
-        }),
-      });
+        await Redis.getInstance().publish(`INDIVIDUAL_${otherUserId}`, {
+          type: NOTIFICATION_ADD,
+          payload: notification,
+        });
+      } else {
+        const notificationData = await insertNotification(
+          "friend_requests",
+          otherUserId,
+          {
+            title: "Friend request",
+            body: JSON.stringify({
+              from: ctx.authorization.userId,
+            }),
+          }
+        );
 
-      await Redis.getInstance().send(
-        JSON.stringify({
-          type: "friend_request",
-          payload: {
-            from: ctx.authorization.userId,
-            to,
-          },
-        })
-      );
+        await Redis.getInstance().send(
+          JSON.stringify({
+            type: "friend_request",
+            payload: {
+              from: ctx.authorization.userId,
+              to: otherUserId,
+            },
+          })
+        );
 
-      await Redis.getInstance().publish(`INDIVIDUAL_${to}`, {
-        type: NOTIFICATION_ADD,
-        payload: notificationData,
-      });
+        await Redis.getInstance().publish(`INDIVIDUAL_${otherUserId}`, {
+          type: NOTIFICATION_ADD,
+          payload: notificationData,
+        });
+      }
     }
 
-    return true;
+    return areFriends ?? null;
   };
