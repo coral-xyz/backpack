@@ -2,9 +2,9 @@ import { Suspense, useMemo } from "react";
 import { useSuspenseQuery_experimental } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import {
-  BalanceSummary,
-  BalanceSummaryLoader,
-  type ViewStyleWithPseudos,
+  BalanceSummaryCore,
+  BalanceSummaryCoreLoader,
+  type BalanceSummaryCoreProps,
 } from "@coral-xyz/tamagui";
 
 import { gql } from "../../apollo";
@@ -30,12 +30,12 @@ const GET_BALANCE_SUMMARY = gql(`
 `);
 
 export type BalanceSummaryWidgetProps = {
-  style?: ViewStyleWithPseudos;
+  style?: BalanceSummaryCoreProps["style"];
 };
 
 export function BalanceSummaryWidget({ style }: BalanceSummaryWidgetProps) {
   return (
-    <Suspense fallback={<BalanceSummaryLoader />}>
+    <Suspense fallback={<BalanceSummaryCoreLoader />}>
       <_BalanceSummaryWidget style={style} />
     </Suspense>
   );
@@ -59,5 +59,5 @@ function _BalanceSummaryWidget({ style }: BalanceSummaryWidgetProps) {
     [data.user]
   );
 
-  return <BalanceSummary {...aggregate} style={style} />;
+  return <BalanceSummaryCore {...aggregate} style={style} />;
 }

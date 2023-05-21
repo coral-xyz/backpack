@@ -1,6 +1,7 @@
 {
   "name": "@coral-xyz/tamagui",
   "version": "1.0.0",
+  "license": "MIT",
   "types": "./types/index.d.ts",
   "main": "src/index.tsx",
   "module:jsx": "src",
@@ -59,7 +60,12 @@
 =======
 >>>>>>> 962d2646 (gql: data resolution for parts of the extension (#3991))
   "devDependencies": {
+<<<<<<< HEAD
     "@tamagui/build": "^1.28.1",
+=======
+    "@tamagui/build": "^1.15.39",
+    "@types/react": "^18.2.6",
+>>>>>>> 66b595a9 (add standardized tamagui list and list item components)
     "@types/react-native": "~0.71.6",
     "eslint-config-custom": "*"
   }

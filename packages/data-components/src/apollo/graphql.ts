@@ -557,6 +557,33 @@ export type GetBalanceSummaryQuery = {
   } | null;
 };
 
+export type GetNotificationsQueryVariables = Exact<{
+  filters?: InputMaybe<NotificationFiltersInput>;
+}>;
+
+export type GetNotificationsQuery = {
+  __typename?: "Query";
+  user?: {
+    __typename?: "User";
+    id: string;
+    notifications?: {
+      __typename?: "NotificationConnection";
+      edges: Array<{
+        __typename?: "NotificationEdge";
+        node: {
+          __typename?: "Notification";
+          id: string;
+          body: { data: string } | Record<string, any>;
+          source: string;
+          timestamp: string;
+          title: string;
+          viewed: boolean;
+        };
+      }>;
+    } | null;
+  } | null;
+};
+
 export const GetBalanceSummaryDocument = {
   kind: "Document",
   definitions: [
@@ -664,4 +691,106 @@ export const GetBalanceSummaryDocument = {
 } as unknown as DocumentNode<
   GetBalanceSummaryQuery,
   GetBalanceSummaryQueryVariables
+>;
+export const GetNotificationsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "GetNotifications" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "filters" },
+          },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "NotificationFiltersInput" },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "user" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "notifications" },
+                  arguments: [
+                    {
+                      kind: "Argument",
+                      name: { kind: "Name", value: "filters" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "filters" },
+                      },
+                    },
+                  ],
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "edges" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "node" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "body" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "source" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "timestamp" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "title" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "viewed" },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetNotificationsQuery,
+  GetNotificationsQueryVariables
 >;
