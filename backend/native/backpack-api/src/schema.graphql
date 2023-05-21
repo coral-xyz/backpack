@@ -525,6 +525,11 @@ type Notification implements Node {
   id: ID!
 
   """
+  Application identity information if the notification was from an xNFT.
+  """
+  app: NotificationApplicationData @cacheControl(maxAge: 180)
+
+  """
   Arbitrary body data of the notification parsed as an object.
   """
   body: JSONObject!
@@ -548,6 +553,23 @@ type Notification implements Node {
   Flag to indicate whether it has been viewed or not by the user.
   """
   viewed: Boolean!
+}
+
+type NotificationApplicationData implements Node {
+  """
+  Globally unique identifier for the node.
+  """
+  id: ID!
+
+  """
+  The image link to the application's icon.
+  """
+  image: String!
+
+  """
+  The name of the application.
+  """
+  name: String!
 }
 
 """

@@ -10,6 +10,7 @@ import {
   friendshipTypeResolvers,
   importPublicKeyMutation,
   jsonObjectScalar,
+  notificationTypeResolvers,
   userQueryResolver,
   userTypeResolvers,
   walletQueryResolver,
@@ -39,9 +40,10 @@ const queryResolvers: QueryResolvers = {
  * Schema root and type-level resolvers.
  */
 const resolvers: Resolvers = {
-  Mutation: mutationResolvers,
   Query: queryResolvers,
+  Mutation: mutationResolvers,
   Friendship: friendshipTypeResolvers,
+  Notification: notificationTypeResolvers,
   User: userTypeResolvers,
   Wallet: walletTypeResolvers,
   JSONObject: jsonObjectScalar,

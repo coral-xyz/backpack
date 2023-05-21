@@ -252,6 +252,8 @@ export type Node = {
 /** Notification data type for user notification reads. */
 export type Notification = Node & {
   __typename?: "Notification";
+  /** Application identity information if the notification was from an xNFT. */
+  app?: Maybe<NotificationApplicationData>;
   /** Arbitrary body data of the notification parsed as an object. */
   body: Scalars["JSONObject"];
   /** Globally unique identifier for a specific notification. */
@@ -264,6 +266,16 @@ export type Notification = Node & {
   title: Scalars["String"];
   /** Flag to indicate whether it has been viewed or not by the user. */
   viewed: Scalars["Boolean"];
+};
+
+export type NotificationApplicationData = Node & {
+  __typename?: "NotificationApplicationData";
+  /** Globally unique identifier for the node. */
+  id: Scalars["ID"];
+  /** The image link to the application's icon. */
+  image: Scalars["String"];
+  /** The name of the application. */
+  name: Scalars["String"];
 };
 
 /** Relay connection specification for `Notification` edges. */
@@ -678,11 +690,13 @@ export type ResolversTypes = ResolversObject<{
     | ResolversTypes["MarketData"]
     | ResolversTypes["Nft"]
     | ResolversTypes["Notification"]
+    | ResolversTypes["NotificationApplicationData"]
     | ResolversTypes["TokenBalance"]
     | ResolversTypes["Transaction"]
     | ResolversTypes["User"]
     | ResolversTypes["Wallet"];
   Notification: ResolverTypeWrapper<Notification>;
+  NotificationApplicationData: ResolverTypeWrapper<NotificationApplicationData>;
   NotificationConnection: ResolverTypeWrapper<NotificationConnection>;
   NotificationEdge: ResolverTypeWrapper<NotificationEdge>;
   NotificationFiltersInput: NotificationFiltersInput;
@@ -736,11 +750,13 @@ export type ResolversParentTypes = ResolversObject<{
     | ResolversParentTypes["MarketData"]
     | ResolversParentTypes["Nft"]
     | ResolversParentTypes["Notification"]
+    | ResolversParentTypes["NotificationApplicationData"]
     | ResolversParentTypes["TokenBalance"]
     | ResolversParentTypes["Transaction"]
     | ResolversParentTypes["User"]
     | ResolversParentTypes["Wallet"];
   Notification: Notification;
+  NotificationApplicationData: NotificationApplicationData;
   NotificationConnection: NotificationConnection;
   NotificationEdge: NotificationEdge;
   NotificationFiltersInput: NotificationFiltersInput;
@@ -988,6 +1004,7 @@ export type NodeResolvers<
     | "MarketData"
     | "Nft"
     | "Notification"
+    | "NotificationApplicationData"
     | "TokenBalance"
     | "Transaction"
     | "User"
@@ -1002,12 +1019,27 @@ export type NotificationResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Notification"] = ResolversParentTypes["Notification"]
 > = ResolversObject<{
+  app?: Resolver<
+    Maybe<ResolversTypes["NotificationApplicationData"]>,
+    ParentType,
+    ContextType
+  >;
   body?: Resolver<ResolversTypes["JSONObject"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   source?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   title?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   viewed?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type NotificationApplicationDataResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["NotificationApplicationData"] = ResolversParentTypes["NotificationApplicationData"]
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  image?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1281,6 +1313,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   NftEdge?: NftEdgeResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
   Notification?: NotificationResolvers<ContextType>;
+  NotificationApplicationData?: NotificationApplicationDataResolvers<ContextType>;
   NotificationConnection?: NotificationConnectionResolvers<ContextType>;
   NotificationEdge?: NotificationEdgeResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
