@@ -44,6 +44,11 @@ type Mutation {
     address: String!
     signature: String!
   ): Boolean
+
+  """
+  Allows users to send friend requests to another remote user.
+  """
+  sendFriendRequest(to: String!): Boolean
 }
 
 """

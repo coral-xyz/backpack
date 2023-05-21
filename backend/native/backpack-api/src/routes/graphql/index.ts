@@ -11,6 +11,7 @@ import {
   importPublicKeyMutation,
   jsonObjectScalar,
   notificationTypeResolvers,
+  sendFriendRequestMutation,
   userQueryResolver,
   userTypeResolvers,
   walletQueryResolver,
@@ -26,6 +27,7 @@ const mutationResolvers: MutationResolvers = {
   authenticate: authenticateMutation,
   deauthenticate: deauthenticateMutation,
   importPublicKey: importPublicKeyMutation,
+  sendFriendRequest: sendFriendRequestMutation,
 };
 
 /**
@@ -54,13 +56,13 @@ const resolvers: Resolvers = {
  */
 const permissions = shield(
   {
-    Mutation: {
-      "*": authorized,
-      authenticate: allow,
-    },
     Query: {
       "*": allow,
       user: authorized,
+    },
+    Mutation: {
+      "*": authorized,
+      authenticate: allow,
     },
     User: authorized,
   },
