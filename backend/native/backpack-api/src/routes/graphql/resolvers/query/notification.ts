@@ -1,12 +1,12 @@
 import { PublicKey } from "@solana/web3.js";
 import type { GraphQLResolveInfo } from "graphql";
 
-import type { ApiContext } from "../context";
+import type { ApiContext } from "../../context";
 import type {
   Notification,
   NotificationApplicationData,
   NotificationResolvers,
-} from "../types";
+} from "../../types";
 
 /**
  * Type-level query resolver for the `Notification` schema object.

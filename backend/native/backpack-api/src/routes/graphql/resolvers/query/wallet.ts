@@ -1,7 +1,7 @@
 import type { GraphQLResolveInfo } from "graphql";
 
-import { getBlockchainForId } from "../blockchain";
-import type { ApiContext } from "../context";
+import { getBlockchainForId } from "../../blockchain";
+import type { ApiContext } from "../../context";
 import type {
   Balances,
   NftConnection,
@@ -11,7 +11,7 @@ import type {
   WalletNftsArgs,
   WalletResolvers,
   WalletTransactionsArgs,
-} from "../types";
+} from "../../types";
 
 /**
  * Handler for the `wallet` query.
