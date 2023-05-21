@@ -14,7 +14,7 @@ import {
   TENSOR_API_KEY,
 } from "../../config";
 
-import { CoinGecko, Hasura, Helius, Tensor } from "./clients";
+import { CoinGecko, Hasura, Helius, Swr, Tensor } from "./clients";
 
 const IN_MEM_JWT_CACHE = new LRUCache<string, string>({
   allowStale: false,
@@ -33,6 +33,7 @@ export interface ApiContext {
     coinGecko: CoinGecko;
     hasura: Hasura;
     helius: Helius;
+    swr: Swr;
     tensor: Tensor;
   };
   devnet: boolean;
@@ -98,6 +99,7 @@ export const createContext: ContextFunction<
       coinGecko: new CoinGecko(),
       hasura: new Hasura({ secret: HASURA_JWT, url: HASURA_URL }),
       helius: new Helius({ apiKey: HELIUS_API_KEY, devnet }),
+      swr: new Swr({}),
       tensor: new Tensor({ apiKey: TENSOR_API_KEY }),
     },
     devnet,
