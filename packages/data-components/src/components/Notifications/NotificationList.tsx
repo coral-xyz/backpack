@@ -3,7 +3,7 @@ import { useSuspenseQuery_experimental } from "@apollo/client";
 import { ListCore, YStack } from "@coral-xyz/tamagui";
 
 import { gql } from "../../apollo";
-import { SortDirection } from "../../apollo/graphql";
+import { type Notification, SortDirection } from "../../apollo/graphql";
 
 import { NotificationListItem } from "./NotificationListItem";
 import { getGroupedNotifications } from "./utils";
@@ -16,6 +16,11 @@ const GET_NOTIFICATIONS = gql(`
         edges {
           node {
             id
+            app {
+              id
+              image
+              name
+            }
             body
             source
             timestamp
@@ -29,10 +34,10 @@ const GET_NOTIFICATIONS = gql(`
 `);
 
 export type NotificationListProps = {
-  onOpenDrawer?: () => void;
+  onItemClick?: (n: Notification) => void;
 };
 
-export function NotificationList({ onOpenDrawer }: NotificationListProps) {
+export function NotificationList({ onItemClick }: NotificationListProps) {
   const { data } = useSuspenseQuery_experimental(GET_NOTIFICATIONS, {
     variables: {
       filters: {
@@ -62,7 +67,7 @@ export function NotificationList({ onOpenDrawer }: NotificationListProps) {
               last={idx === group.notifications.length - 1}
               key={notif.id}
               notification={notif}
-              onClick={onOpenDrawer}
+              onClick={onItemClick}
             />
           ))}
         </ListCore>

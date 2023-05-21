@@ -101,7 +101,7 @@ export function Notifications() {
   return (
     <>
       <Suspense fallback={<NotificationsLoader />}>
-        <NotificationList onOpenDrawer={() => setOpenDrawer(true)} />
+        <NotificationList onItemClick={(_n) => setOpenDrawer(true)} />
       </Suspense>
       {!isXs ? (
         <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>

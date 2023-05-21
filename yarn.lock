@@ -4163,6 +4163,7 @@ __metadata:
   dependencies:
     "@apollo/client": 3.8.0-alpha.12
     "@coral-xyz/chat-xplat": "*"
+    "@coral-xyz/common": "*"
     "@coral-xyz/recoil": "*"
     "@coral-xyz/tamagui": "*"
     "@coral-xyz/themes": "*"

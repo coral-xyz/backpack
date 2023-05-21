@@ -41,13 +41,14 @@ export function getGroupedNotifications(
   notifications: Notification[]
 ): NotificationGroup[] {
   const groupedNotifications: NotificationGroup[] = [];
-  const bodies = notifications.map((n) => n.body);
+  const bodies = notifications.map((n) => JSON.stringify(n.body));
 
   const uniqueNotifications = notifications
     .slice()
     .filter(
       (x, index) =>
-        x.source !== "friend_requests" || bodies.indexOf(x.body) === index
+        x.source !== "friend_requests" ||
+        bodies.indexOf(JSON.stringify(x.body)) === index
     );
 
   for (let i = 0; i < uniqueNotifications.length; i++) {

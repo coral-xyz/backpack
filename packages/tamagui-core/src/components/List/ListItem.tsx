@@ -1,12 +1,11 @@
 import type { ViewStyleWithPseudos } from "@tamagui/core";
-import { ListItem, type ListItemProps, YGroup } from "tamagui";
-
-import { useCustomTheme } from "../../hooks";
+import { ListItem, type ListItemProps,YGroup } from "tamagui";
 
 export type ListItemCoreProps = {
   first?: boolean;
   icon?: ListItemProps["icon"];
   last?: boolean;
+  onClick?: () => void;
   title: ListItemProps["title"];
   style?: ViewStyleWithPseudos;
   subtitle?: ListItemProps["subTitle"];
@@ -16,6 +15,7 @@ export function ListItemCore({
   first,
   icon,
   last,
+  onClick,
   title,
   subtitle,
   style,
@@ -25,6 +25,7 @@ export function ListItemCore({
       <ListItem
         display="flex"
         icon={icon}
+        onPress={onClick}
         paddingHorizontal={12}
         paddingVertical={10}
         pointerEvents="box-only"

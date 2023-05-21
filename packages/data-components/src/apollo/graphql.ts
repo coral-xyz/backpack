@@ -246,6 +246,8 @@ export type Node = {
 /** Notification data type for user notification reads. */
 export type Notification = Node & {
   __typename?: "Notification";
+  /** Application identity information if the notification was from an xNFT. */
+  app?: Maybe<NotificationApplicationData>;
   /** Arbitrary body data of the notification parsed as an object. */
   body: Scalars["JSONObject"];
   /** Globally unique identifier for a specific notification. */
@@ -258,6 +260,16 @@ export type Notification = Node & {
   title: Scalars["String"];
   /** Flag to indicate whether it has been viewed or not by the user. */
   viewed: Scalars["Boolean"];
+};
+
+export type NotificationApplicationData = Node & {
+  __typename?: "NotificationApplicationData";
+  /** Globally unique identifier for the node. */
+  id: Scalars["ID"];
+  /** The image link to the application's icon. */
+  image: Scalars["String"];
+  /** The name of the application. */
+  name: Scalars["String"];
 };
 
 /** Relay connection specification for `Notification` edges. */
@@ -578,6 +590,12 @@ export type GetNotificationsQuery = {
           timestamp: string;
           title: string;
           viewed: boolean;
+          app?: {
+            __typename?: "NotificationApplicationData";
+            id: string;
+            image: string;
+            name: string;
+          } | null;
         };
       }>;
     } | null;
@@ -753,6 +771,30 @@ export const GetNotificationsDocument = {
                                   {
                                     kind: "Field",
                                     name: { kind: "Name", value: "id" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "app" },
+                                    selectionSet: {
+                                      kind: "SelectionSet",
+                                      selections: [
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "id" },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "image",
+                                          },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "name" },
+                                        },
+                                      ],
+                                    },
                                   },
                                   {
                                     kind: "Field",
