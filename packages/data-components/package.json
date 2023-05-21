@@ -2,6 +2,7 @@
   "private": true,
   "name": "@coral-xyz/data-components",
   "version": "1.0.0",
+  "license": "MIT",
   "module": "dist/esm/index.js",
   "source": "src/index.ts",
   "types": "dist/esm/index.d.ts",
@@ -11,6 +12,8 @@
   },
   "dependencies": {
     "@apollo/client": "3.8.0-alpha.12",
+    "@coral-xyz/chat-xplat": "*",
+    "@coral-xyz/common": "*",
     "@coral-xyz/recoil": "*",
     "@coral-xyz/tamagui": "*",
     "@coral-xyz/themes": "*",

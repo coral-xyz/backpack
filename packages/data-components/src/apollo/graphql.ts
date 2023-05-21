@@ -246,6 +246,8 @@ export type Node = {
 /** Notification data type for user notification reads. */
 export type Notification = Node & {
   __typename?: "Notification";
+  /** Application identity information if the notification was from an xNFT. */
+  app?: Maybe<NotificationApplicationData>;
   /** Arbitrary body data of the notification parsed as an object. */
   body: Scalars["JSONObject"];
   /** Globally unique identifier for a specific notification. */
@@ -258,6 +260,16 @@ export type Notification = Node & {
   title: Scalars["String"];
   /** Flag to indicate whether it has been viewed or not by the user. */
   viewed: Scalars["Boolean"];
+};
+
+export type NotificationApplicationData = Node & {
+  __typename?: "NotificationApplicationData";
+  /** Globally unique identifier for the node. */
+  id: Scalars["ID"];
+  /** The image link to the application's icon. */
+  image: Scalars["String"];
+  /** The name of the application. */
+  name: Scalars["String"];
 };
 
 /** Relay connection specification for `Notification` edges. */
@@ -557,6 +569,60 @@ export type GetBalanceSummaryQuery = {
   } | null;
 };
 
+export type GetNotificationsQueryVariables = Exact<{
+  filters?: InputMaybe<NotificationFiltersInput>;
+}>;
+
+export type GetNotificationsQuery = {
+  __typename?: "Query";
+  user?: {
+    __typename?: "User";
+    id: string;
+    notifications?: {
+      __typename?: "NotificationConnection";
+      edges: Array<{
+        __typename?: "NotificationEdge";
+        node: {
+          __typename?: "Notification";
+          id: string;
+          body: { data: string } | Record<string, any>;
+          source: string;
+          timestamp: string;
+          title: string;
+          viewed: boolean;
+          app?: {
+            __typename?: "NotificationApplicationData";
+            id: string;
+            image: string;
+            name: string;
+          } | null;
+        };
+      }>;
+    } | null;
+  } | null;
+};
+
+export type UserIdFragmentFragment = { __typename?: "User"; id: string } & {
+  " $fragmentName"?: "UserIdFragmentFragment";
+};
+
+export const UserIdFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "UserIdFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "User" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [{ kind: "Field", name: { kind: "Name", value: "id" } }],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UserIdFragmentFragment, unknown>;
 export const GetBalanceSummaryDocument = {
   kind: "Document",
   definitions: [
@@ -664,4 +730,130 @@ export const GetBalanceSummaryDocument = {
 } as unknown as DocumentNode<
   GetBalanceSummaryQuery,
   GetBalanceSummaryQueryVariables
+>;
+export const GetNotificationsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "GetNotifications" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "filters" },
+          },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "NotificationFiltersInput" },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "user" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "notifications" },
+                  arguments: [
+                    {
+                      kind: "Argument",
+                      name: { kind: "Name", value: "filters" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "filters" },
+                      },
+                    },
+                  ],
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "edges" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "node" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "app" },
+                                    selectionSet: {
+                                      kind: "SelectionSet",
+                                      selections: [
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "id" },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "image",
+                                          },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "name" },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "body" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "source" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "timestamp" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "title" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "viewed" },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetNotificationsQuery,
+  GetNotificationsQueryVariables
 >;

@@ -4116,6 +4116,8 @@ __metadata:
   resolution: "@coral-xyz/data-components@workspace:packages/data-components"
   dependencies:
     "@apollo/client": 3.8.0-alpha.12
+    "@coral-xyz/chat-xplat": "*"
+    "@coral-xyz/common": "*"
     "@coral-xyz/recoil": "*"
     "@coral-xyz/tamagui": "*"
     "@coral-xyz/themes": "*"
@@ -4384,6 +4386,7 @@ __metadata:
     "@tamagui/shorthands": ^1.28.1
     "@tamagui/theme-base": ^1.28.1
     "@tamagui/themes": ^1.28.1
+    "@types/react": ^18.2.6
     "@types/react-native": ~0.71.6
     eslint-config-custom: "*"
     expo-image: ~1.2.3

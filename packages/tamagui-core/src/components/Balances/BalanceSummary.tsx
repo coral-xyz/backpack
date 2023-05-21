@@ -7,17 +7,19 @@ import { useCustomTheme } from "../../hooks";
 import { Skeleton } from "../Skeleton";
 import { StyledText } from "../StyledText";
 
-export function BalanceSummary({
-  percentChange,
-  value,
-  valueChange,
-  style,
-}: {
+export type BalanceSummaryCoreProps = {
   percentChange: number;
   value: number;
   valueChange: number;
   style?: ViewStyleWithPseudos;
-}) {
+};
+
+export function BalanceSummaryCore({
+  percentChange,
+  value,
+  valueChange,
+  style,
+}: BalanceSummaryCoreProps) {
   return (
     <YStack alignItems="center" justifyContent="center" {...style}>
       <StyledText color="$fontColor" fontSize="$4xl" fontWeight="700">
@@ -31,7 +33,7 @@ export function BalanceSummary({
   );
 }
 
-export function BalanceSummaryLoader() {
+export function BalanceSummaryCoreLoader() {
   return (
     <YStack
       alignItems="center"

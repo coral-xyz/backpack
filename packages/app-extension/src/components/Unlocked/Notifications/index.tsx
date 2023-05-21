@@ -1,6 +1,7 @@
 // TODO: remove the line below
 /* eslint-disable react-hooks/rules-of-hooks */
 import { Suspense, useEffect, useState } from "react";
+import { NotificationList } from "@coral-xyz/data-components";
 import { Loading, useBreakpoints } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import IconButton from "@mui/material/IconButton";
@@ -14,7 +15,7 @@ import {
 import { NotificationIconWithBadge } from "../../common/NotificationIconWithBadge";
 import { ContactRequests, Contacts } from "../Messages/Contacts";
 
-import { NotificationList } from "./NotificationList";
+// import { NotificationList } from "./NotificationList";
 
 const useStyles = styles(() => ({
   networkSettingsButtonContainer: {
@@ -100,7 +101,7 @@ export function Notifications() {
   return (
     <>
       <Suspense fallback={<NotificationsLoader />}>
-        <NotificationList onOpenDrawer={() => setOpenDrawer(true)} />
+        <NotificationList onItemClick={(_n) => setOpenDrawer(true)} />
       </Suspense>
       {!isXs ? (
         <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
