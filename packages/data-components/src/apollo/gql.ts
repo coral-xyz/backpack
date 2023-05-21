@@ -17,8 +17,8 @@ const documents = {
     types.GetBalanceSummaryDocument,
   "\n  query GetNotifications($filters: NotificationFiltersInput) {\n    user {\n      id\n      notifications(filters: $filters) {\n        edges {\n          node {\n            id\n            app {\n              id\n              image\n              name\n            }\n            body\n            source\n            timestamp\n            title\n            viewed\n          }\n        }\n      }\n    }\n  }\n":
     types.GetNotificationsDocument,
-  "\n  fragment UserIdFragment on User {\n    id\n  }\n":
-    types.UserIdFragmentFragmentDoc,
+  "\n  mutation SendFriendRequest($otherUserId: String!, $accept: Boolean!) {\n    sendFriendRequest(otherUserId: $otherUserId, accept: $accept)\n  }\n":
+    types.SendFriendRequestDocument,
 };
 
 /**
@@ -51,8 +51,8 @@ export function gql(
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: "\n  fragment UserIdFragment on User {\n    id\n  }\n"
-): (typeof documents)["\n  fragment UserIdFragment on User {\n    id\n  }\n"];
+  source: "\n  mutation SendFriendRequest($otherUserId: String!, $accept: Boolean!) {\n    sendFriendRequest(otherUserId: $otherUserId, accept: $accept)\n  }\n"
+): (typeof documents)["\n  mutation SendFriendRequest($otherUserId: String!, $accept: Boolean!) {\n    sendFriendRequest(otherUserId: $otherUserId, accept: $accept)\n  }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

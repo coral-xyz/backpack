@@ -164,6 +164,8 @@ export type Mutation = {
   deauthenticate: Scalars["String"];
   /** Attempt to add a new wallet public key to the user account. */
   importPublicKey?: Maybe<Scalars["Boolean"]>;
+  /** Allows users to send friend requests to another remote user. */
+  sendFriendRequest?: Maybe<Scalars["Boolean"]>;
 };
 
 /** Root level mutation type. */
@@ -179,6 +181,12 @@ export type MutationImportPublicKeyArgs = {
   address: Scalars["String"];
   chainId: ChainId;
   signature: Scalars["String"];
+};
+
+/** Root level mutation type. */
+export type MutationSendFriendRequestArgs = {
+  accept: Scalars["Boolean"];
+  otherUserId: Scalars["String"];
 };
 
 /** Generic NFT object type definition to provide on-chain and off-chain metadata. */
@@ -602,27 +610,16 @@ export type GetNotificationsQuery = {
   } | null;
 };
 
-export type UserIdFragmentFragment = { __typename?: "User"; id: string } & {
-  " $fragmentName"?: "UserIdFragmentFragment";
+export type SendFriendRequestMutationVariables = Exact<{
+  otherUserId: Scalars["String"];
+  accept: Scalars["Boolean"];
+}>;
+
+export type SendFriendRequestMutation = {
+  __typename?: "Mutation";
+  sendFriendRequest?: boolean | null;
 };
 
-export const UserIdFragmentFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "UserIdFragment" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "User" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [{ kind: "Field", name: { kind: "Name", value: "id" } }],
-      },
-    },
-  ],
-} as unknown as DocumentNode<UserIdFragmentFragment, unknown>;
 export const GetBalanceSummaryDocument = {
   kind: "Document",
   definitions: [
@@ -856,4 +853,74 @@ export const GetNotificationsDocument = {
 } as unknown as DocumentNode<
   GetNotificationsQuery,
   GetNotificationsQueryVariables
+>;
+export const SendFriendRequestDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "SendFriendRequest" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "otherUserId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "accept" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "Boolean" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "sendFriendRequest" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "otherUserId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "otherUserId" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "accept" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "accept" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  SendFriendRequestMutation,
+  SendFriendRequestMutationVariables
 >;
