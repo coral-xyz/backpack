@@ -333,19 +333,11 @@ export type Query = {
    * presence of a valid and verified JWT.
    */
   user?: Maybe<User>;
-  /** Verify that the argued JWT matches, or is associated with, the username. */
-  verify?: Maybe<Scalars["Boolean"]>;
   /**
    * Fetching a wallet and it's assets by the public key address and associated `ChainID`.
    * @deprecated Should use the user entrypoint for authentication identities.
    */
   wallet?: Maybe<Wallet>;
-};
-
-/** Root level query type. */
-export type QueryVerifyArgs = {
-  jwt: Scalars["String"];
-  username: Scalars["String"];
 };
 
 /** Root level query type. */
@@ -1116,12 +1108,6 @@ export type QueryResolvers<
   ParentType extends ResolversParentTypes["Query"] = ResolversParentTypes["Query"]
 > = ResolversObject<{
   user?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
-  verify?: Resolver<
-    Maybe<ResolversTypes["Boolean"]>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryVerifyArgs, "jwt" | "username">
-  >;
   wallet?: Resolver<
     Maybe<ResolversTypes["Wallet"]>,
     ParentType,
