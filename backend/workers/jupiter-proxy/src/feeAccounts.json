@@ -1,302 +1,702 @@
 {
-  "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB": {
-    "address": "D35KwoF4ErnyhZp7yogbmx2w2DhiUX68eU26U16pEJeZ"
-  },
-  "orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE": {
-    "address": "G51SrP1J6yMVrnH6GfH37yq2qepC6bsJhaNnJC1mTocc"
-  },
-  "7dgHoN8wBZCc5wbnQ2C47TDnBMAxG4Q5L3KjP67z8kNi": {
-    "address": "F3b3VKueHE7rtiXyUkmX1NVBEVQXxJjw9Z13vfjCQsu7"
-  },
-  "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263": {
-    "address": "GJ4JyCDuhSt1TBtYK1gKs7uTwo9itNfrf7hB9caKcTLh"
-  },
-  "FoRGERiW7odcCBGU1bztZi16osPBHjxharvDathL5eds": {
-    "address": "CthaWAKhxJde3UW1dRLCKWH1Vr4af3w4iR7fu2yYS3b6"
-  },
-  "7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj": {
-    "address": "2zsaKTWJdzMr7Sbd8riuJiUAHcxYX3eKSgFe6JGWKorQ"
-  },
-  "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs": {
-    "address": "DeiMFVJ5mwaZvb1C6C5mmNjUcVB52SqFYEEHtUSrbi3H"
-  },
-  "bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1": {
-    "address": "FMPRm2uWymwsd13fRzVdQ26ENtCNqYZ6YNqhVSSv6Vns"
-  },
-  "BiDB55p4G3n1fGhwKFpxsokBMqgctL4qnZpDH1bVQxMD": {
-    "address": "BUvtyDgJsdvyX9bZ2vrAkJFv3DJP5D1onLQG4k6ihzGK"
-  },
-  "9LzCMqDgTKYz9Drzqnpgee3SGa89up3a247ypMj2xrqM": {
-    "address": "DV4fBUFtX3i66UjGA1wTPs5TEtXQiZmmJ9iaTGQ8SGgp"
-  },
-  "CQy42wmsshmMSbFtkmYyMsGyhTs8iGu3ZMmvj9AB6Bcn": {
-    "address": "GUeEAzGotXKD3nFxF2mq4uYL9wxKNCfpk7YjEyQzVWgW"
-  },
-  "SLNDpmoWTVADgEdndyvWzroNL7zSi1dF9PC3xHGtPwp": {
-    "address": "D6yJSCWd92WyMWY4Qsp3XrBnr9WVj7wYJi5gNMY9Vn2X"
-  },
-  "SHDWyBxihqiCj6YekG2GUr7wqKLeLAMK1gHZck9pL6y": {
-    "address": "CKJSHWDn6hKwZWDrDYq5dYRDPj4PiXBaiG4U8unyScf3"
-  },
-  "BzjsQpgKjxZedFawUV9GZMExhr7VbvsasQv12v2PVxSt": {
-    "address": "B4xwGfJoKUh8QCNXM9LiJtWNSkquE1mWSv5nyL6RgiQZ"
-  },
-  "SLCLww7nc1PD2gQPQdGayHviVVcpMthnqUz2iWKhNQV": {
-    "address": "3NDVrN5oPWrtijtPbv1L4Q1YHW4sj29yMQuNWhc1Fkns"
-  },
-  "AFbX8oGjGpmVFywbVouvhQSRmiW2aR1mohfahi4Y2AdB": {
-    "address": "Qivczb5iqFY9vSHy4NJEKXauVeeogQtA5UXYUKQ4dsD"
-  },
-  "sRLY3migNrkC1HLgqotpvi66qGkdNedqPZ9TJpAQhyh": {
-    "address": "DhhPXwiLgSqthE4GKKuXY7NDwipa79ZTLN6mfJZdva1f"
-  },
-  "FfpyoV365c7iR8QQg5NHGCXQfahbqzY67B3wpzXkiLXr": {
-    "address": "AVaCFi135Z6qrLtFzB89AQwmHTcTiSMaTg3ot5pTtAa4"
-  },
-  "5yxNbU8DgYJZNi3mPD9rs4XLh9ckXrhPjJ5VCujUWg5H": {
-    "address": "JCA4qBGyc1CrN1swypVjjq18VgnCJASAX7Kqy2HZLGdQ"
-  },
-  "USDH1SM1ojwWUga67PGrgFWUHibbjqMvuMaDkRJTgkX": {
-    "address": "9Tj1zzF42hme38SuAF1bJwMqBfGB2uSqtmydm3xmcefU"
-  },
-  "LFNTYraetVioAPnGJht4yNg2aUZFXR776cMeN9VMjXp": {
-    "address": "5JnVr5h5V5t2z7ZUq1Bjro1ERSa96m9FZVn2BgWv7REN"
-  },
-  "4vMsoUT2BWatFweudnQM1xedRLfJgJ7hswhcpz4xgBTy": {
-    "address": "2TihsTDdRy4hRbBg2sek15J8nLZvHJnfnHwMRBkWxupF"
-  },
-  "FM8ai6JTyf6HWAgPbnsdonqCeWfjomPMFfnBgPSf23W2": {
-    "address": "3VMfoFYAYSWhheeS7gE5yQQD9BSekhbTP7fSF7oPWf3a"
-  },
-  "C98A4nkJXhpVZNAZdHUA95RpTF3T4whtQubL3YobiUX9": {
-    "address": "82i3W4hsQRGW82AaZNeLKnoibJ1enCV1vR9K3kx2yGX9"
-  },
-  "Saber2gLauYim4Mvftnrasomsv6NvAuncvMEZwcLpD1": {
-    "address": "5Yq7GwwsdzE2irVVDL3qHUNnDv2DRrDKDUXpqqxatxnp"
-  },
-  "HZRCwxP2Vq9PCpPXooayhJ2bxTpo5xfpQrwB1svh332p": {
-    "address": "98gF6vYhKaDtMJQDP7yUGG61jDNK8ti1bjHSjyQSfHyh"
-  },
-  "SCYfrGCw8aDiqdgcpdGjV6jp4UVVQLuphxTDLNWu36f": {
-    "address": "7Z7rPjkoW2ECFiepaomAcqyGNAv65HJwauRUwZgXSRgM"
-  },
-  "9WMwGcY6TcbSfy9XPpQymY3qNEsvEaYL3wivdwPG2fpp": {
-    "address": "4dZZVqTb5mGaE9QQ1QGC7SPdoiN4ii7v2sMAAgwxvekn"
-  },
-  "Doggoyb1uHFJGFdHhJf8FKEBUMv58qo98CisWgeD7Ftk": {
-    "address": "EnhHpcPMzyxJnTA1wqKPWpyYGDg8qWmyNoewbNRf294C"
-  },
-  "HBB111SCo9jkCejsZfz8Ec8nH7T6THF8KEKSnvwT6XK6": {
-    "address": "AVADwpDBPKsk3H1DddvLoWHuiDF8hQq8DLaSvaa4ytA3"
-  },
-  "2jQGYyj79wR7tLrpyxw2bEtpCgrkK3QMpy6HD9npjXcU": {
-    "address": "9b2Qg7VALiZFRQVRJReJGujkf5tBvv1xH9A1SGu4d6uP"
-  },
-  "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt": {
-    "address": "2TkJkiunBnxcDnvQ2DfxZhrcyeamrakTq9UuLjTS1etg"
-  },
-  "CiKu4eHsVrc1eueVQeHn7qhXTcVu95gSQmBpX4utjL9z": {
-    "address": "A8YXmxVzbr6P82b12aqnoZS8KcLGjuRo94dsSnH5vJ5u"
-  },
-  "E77cpQ4VncGmcAXX16LHFFzNBEBb2U7Ar7LBmZNfCgwL": {
-    "address": "7DT4uhQnzPBxeAceXes2duPfufL9z5C833T9cJAgdbwZ"
-  },
-  "8Yv9Jz4z7BUHP68dz8E8m3tMe6NKgpMUKn8KVqrPA6Fr": {
-    "address": "12tgYaZNvDAKwtzSfXpAcjmURq5XLaVnjwPHSrq9fJiD"
-  },
-  "4SZjjNABoqhbd4hnapbvoEPEqT8mnNkfbEoAwALf1V8t": {
-    "address": "9PLe1jJAt7cipjf6DCXHaMwGB88qkkX86agtYHbCnboq"
-  },
-  "E2VmbootbVCBkMNNxKQgCLMS1X3NoGMaYAsufaAsf7M": {
-    "address": "BJhSNN8Lv77HpAxSQ9SmiDu5VDR45r9d6vfWvH2biMaA"
+  "kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6": {
+    "token": {
+      "name": "KIN",
+      "symbol": "KIN"
+    },
+    "address": "HpN7mu4MWbWhtyaibq552YNTQYwQpCDzMH7whfUPikx8"
   },
   "So11111111111111111111111111111111111111112": {
-    "address": "AU4EekS2AdUQNYzm6tBsb49vivMxsY2MBLUMDngcdoQV"
-  },
-  "Basis9oJw9j8cw53oMV7iqsgo6ihi9ALw4QR31rcjUJa": {
-    "address": "7hVdn2WuaPj7HQBdrfUwVG74xTfkQoWiKnVgQAA9Nrjb"
-  },
-  "zebeczgi5fSEtbpfQKVZKCJ3WgYXxjkMUkNNx7fLKAF": {
-    "address": "2xp9EvsXHmGQbCZD5Qu7ndEhvEgSWpFNS1bB7nwXdKEe"
-  },
-  "MNDEFzGvMt87ueuHvVU9VcTqsAP5b3fTGPsHuuPA5ey": {
-    "address": "5prJJSa1sFdb5ZwwNFD8d5epDaQ6KpMjLBXYDATzZ1iU"
-  },
-  "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So": {
-    "address": "9YqPXBhcGhDN1HBdPdjukjNa9GnZSxPK2YCt2NHdrBUY"
-  },
-  "AURYydfxJib1ZkTir1Jn1J9ECYUtjb6rKQVmtYaixWPP": {
-    "address": "8AoFAEQpM5zgQnRmMkRtUPfPQo1gXNB8HG2jvjczAspu"
-  },
-  "8FktFPUvi73Ywf7ZivsbuQFyQCqZUwvqSQ51hNvRhR26": {
-    "address": "789ngEcaTAKhjcR5r1Qr7iuaEANw1iauLhFtgh8HdZju"
-  },
-  "3bRTivrVsitbmCTGtqwp7hxXPsybkjn4XLNtPsHqa3zR": {
-    "address": "AV3LnEakrph1xgex69TghNdr3kCSjFvDMDxwCoCMpgmo"
-  },
-  "GENEtH5amGSi8kHAtQoezp1XEXwZJ8vcuePYnXdKrMYz": {
-    "address": "BWasiTLM5dtZpinDcwrCWLGuWeYZSMoF4mP3pfaAThw1"
-  },
-  "poLisWXnNRwC6oBu1vHiuKQzFjGL4XDSu4g9qjz9qVk": {
-    "address": "rS9gkuqQ7d3G3PHBH5Ew8dBJPUT9MJHRPfMM6e5RSPf"
-  },
-  "4Hx6Bj56eGyw8EJrrheM6LBQAvVYRikYCWsALeTrwyRU": {
-    "address": "F2dphfbmaXiycp3YGVECLjxDqvKBnrqGpNrbTYJ2pDpX"
-  },
-  "4dmKkXNHdgYsXqBHCuMikNQWwVomZURhYvkkX5c4pQ7y": {
-    "address": "73E4QkGfZFaxTysn86h4B6jTumNu4GPTbXinzKHWUUb3"
-  },
-  "A9mUU4qviSctJVPJdBJWkb28deg915LYJKrzQ19ji3FM": {
-    "address": "BkrAUDJbV5Uy6172b6xRQJm5RE11SmJRudtuLbbYC7mH"
-  },
-  "GPyzPHuFFGvN4yWWixt6TYUtDG49gfMdFFi2iniTmCkh": {
-    "address": "BzgnJvtE67XscxkVPQPrHHuGLXxKzmTxoYXFZrksjHAT"
-  },
-  "Baj2ueGuSwdKhdCsJrf7xvGBbUSpmpySYewQLbsiNs2Y": {
-    "address": "2o4u1HkMA4RmcpVvocFCmPZPoNFj7H8vGrhU5sZVtkEe"
-  },
-  "xLfNTYy76B8Tiix3hA51Jyvc1kMSFV4sPdR7szTZsRu": {
-    "address": "8WuxT3TcF8eycTsM3KQUyZvLeFEeiZwDz4YbNHWENQES"
-  },
-  "StepAscQoEioFxxWGnh2sLBDFp9d8rvKz2Yp39iDpyT": {
-    "address": "7L936UqVhvheoNrYTM3G9qWSBPhYZ7vWvFaJHbTEpA7J"
-  },
-  "ETAtLmCmsoiEEKfNrHKJ2kYy3MoABhU6NQvpSfij5tDs": {
-    "address": "GveGk4ekBDHRyxGGCnVSLjpXY3UVdAzcRr5JMVJGTLom"
-  },
-  "ATLASXmbPQxBUYbxPsV97usA3fPQYEqzQBUHgiFCUsXx": {
-    "address": "FDNTdrqhqpMzdJhPqMGKQ3dyWcqrSCJtVayakUgAGkFc"
-  },
-  "HfYFjMKNZygfMC8LsQ8LtpPsPxEJoXJx4M6tqi75Hajo": {
-    "address": "Exo9qHA1PMT6h7x5qbEiDU8THaKNWnDTBXV4S2MgXX2D"
-  },
-  "7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx": {
-    "address": "3Hgd5jZBckVPkoRvTp4tQ5LQKmsuf9W3QhaHKkHQs3bB"
-  },
-  "xxxxa1sKNGwFtw2kFn8XauW9xq8hBZ5kVtcSesTT9fW": {
-    "address": "Cu6ErQeK9rkVLxepR9ytCqzvCnegFp7ZKB5VRvZwEa5y"
-  },
-  "9gP2kCy3wA1ctvYWQk75guqXuHfrEomqydHLtcTCqiLa": {
-    "address": "2Vq2mmiSVu8Wv9LbneWJuH6JRVNhFvmW1Rk12XfatfbG"
-  },
-  "9nEqaUcb16sQ3Tn1psbkWqyhPdLmfHWjKGymREjsAgTE": {
-    "address": "7Ei6LUQ1xtqKQDFkMtw24Nao859n2RXbobr568woAgzL"
-  },
-  "H1G6sZ1WDoMmMCFqBKAbg9gkQPCo1sKQtaJWz9dHmqZr": {
-    "address": "Cfj4R6gQb8i3w6KnZCPrThy61V3rXppYBCwTW2judrk5"
-  },
-  "Taki7fi3Zicv7Du1xNAWLaf6mRK7ikdn77HeGzgwvo4": {
-    "address": "6jW3gNf7kkbmSevVaPbUhSdUXCwsGr7TG5as2CNcTuKP"
-  },
-  "BWXrrYFhT7bMHmNBFoQFWdsSgA3yXoAnMhDK6Fn1eSEn": {
-    "address": "BaKyNDGGQfGQ1vr6Qp331iCcBwsJqtaFrqiukLi8Ru1D"
-  },
-  "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v": {
-    "address": "9dEBp8xsyR6M2cHH3NdS7fmSCqvSKW3QXQmDyWzQZWwG"
-  },
-  "F9CpWoyeBJfoRB8f2pBe2ZNPbPsEE76mWZWme3StsvHK": {
-    "address": "EFVYtA6GX2frgjJHREnV5v557sVoNJj8scCJgGdbRDcx"
-  },
-  "EPeUFDgHRxs9xxEPVaL6kfGQvCon7jmAWKVUHuux1Tpz": {
-    "address": "Cj34KngBHgB6tCgSJWhMbRV6YMJHXntvCAQgXsKSvRnH"
-  },
-  "kiGenopAScF8VF31Zbtx2Hg8qA5ArGqvnVtXb83sotc": {
-    "address": "BJw4KE7TFaCM46YD43Q9YxFv7KzRYtDFexo1XYn6gBrY"
-  },
-  "BLwTnYKqf7u4qjgZrrsKeNs2EzWkMLqVCu6j8iHyrNA3": {
-    "address": "GkJtBkRaLMQBBn68ukhM1XoRDZgBM9rZk3V8CWWC1qM2"
+    "token": {
+      "name": "Wrapped SOL",
+      "symbol": "SOL"
+    },
+    "address": "HTkdj8KkfYYkqNavbq47MQ7xqwXvCPQ2zCb9apR9fZnK"
   },
   "DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ": {
-    "address": "FwWg2JwTeJraoTavtVCYuYFh9zkCMc93Q6DNYzvh7Hef"
+    "token": {
+      "name": "DUST Protocol",
+      "symbol": "DUST"
+    },
+    "address": "6CEvFsPj6dR4GpUt35VN6TvRwBTVZ6roRhVdXa2Lv3wM"
   },
-  "DubwWZNWiNGMMeeQHPnMATNj77YZPZSAz2WVR5WjLJqz": {
-    "address": "74mLMuguaNrMBFpFRgBnXnBV9Np6BATLBh5TAvTgouRu"
+  "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263": {
+    "token": {
+      "name": "BonkCoin",
+      "symbol": "Bonk"
+    },
+    "address": "9zYaEaprqEUqbdTxAqtY8GMdyTdhWPmCfZZnyn9w4gHt"
   },
-  "HezGWsxSVMqEZy7HJf7TtXzQRLiDruYsheYWqoUVnWQo": {
-    "address": "6CJJ72q7qugCwn1Vj76SG4wJqiWYTtFyQMcTryF5SwhS"
+  "HBB111SCo9jkCejsZfz8Ec8nH7T6THF8KEKSnvwT6XK6": {
+    "token": {
+      "name": "Hubble Protocol Token",
+      "symbol": "HBB"
+    },
+    "address": "BRTkiUcidn3v9dv5Hm2o9WeDuFf2qvAgsYyNafH8W1JM"
   },
-  "6nuaX3ogrr2CaoAPjtaKHAoBNWok32BMcRozuf32s2QF": {
-    "address": "5XNENPKZg2vvqLXcEPRGAuHJZmCp8AC3JaM8sDYNBYmJ"
+  "3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh": {
+    "token": {
+      "name": "Wrapped BTC (Portal)",
+      "symbol": "WBTC"
+    },
+    "address": "7HPNFWVMPuYBdziPFAvUNQck2UuANae9zr4KjPtoArxX"
   },
-  "ErGB9xa24Szxbk1M28u2Tx8rKPqzL6BroNkkzk5rG4zj": {
-    "address": "HCKwmdWe6JMj4q2cdXQ2iDYES7xXHMK39jXUvLeXhtxx"
+  "AURYydfxJib1ZkTir1Jn1J9ECYUtjb6rKQVmtYaixWPP": {
+    "token": {
+      "name": "Aurory",
+      "symbol": "AURY"
+    },
+    "address": "D1LCEZAatnJ3HZeZRmtr3WnaPrCVpA5W7r5A3mY9Fwcs"
   },
-  "EjmyN6qEC1Tf1JxiG1ae7UTJhUxSwk1TCWNWqxWV4J6o": {
-    "address": "F5x2L3aNkrmp4Qh9cdZjGtojTbupzTa8efEJXUJxWPfN"
-  },
-  "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU": {
-    "address": "4T3J4LVWeYtevg8j15oX6oGAqWzWM6GM27nJV7Js1AUp"
-  },
-  "6naWDMGNWwqffJnnXFLBCLaYu1y5U9Rohe5wwJPHvf1p": {
-    "address": "3933Re4AnT1HBTpcLKfBnfexGAV9GcQVAX67Qw96Zi77"
-  },
-  "9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E": {
-    "address": "9EnHrSMq8yFeUxqagQ7eYG2esF4VS7dGQMA2rzmxKMtg"
-  },
-  "Dn4noZ5jgGfkntzcQSUZ8czkreiZ1ForXYoV2H8Dm7S1": {
-    "address": "Cv1XPvDZ6UshWH94UNvrYTevkGaMTGtKaxk5dyHhtVef"
-  },
-  "TuLipcqtGVXP9XR62wM8WWCm6a9vhLs7T1uoWBk6FDs": {
-    "address": "BGjyVKcYdyaZsVfkY8b389b5dpJPBfuwzjdKwghWVnkD"
-  },
-  "MangoCzJ36AjZyKwVj3VnYU4GTonjfVEnJmvvWaxLac": {
-    "address": "GmEMBay1yuJwvNZ3v25Rv7AtADSYbULRKveHZtGh4dNG"
-  },
-  "5goWRao6a3yNC4d6UjMdQxonkCMvKBwdpubU3qhfcdf1": {
-    "address": "5yHPxmNU3efpp6BZ32Rstv3j6Fq83Bqzo3XPdhtaq6dH"
-  },
-  "o1Mw5Y3n68o8TakZFuGKLZMGjm72qv4JeoZvGiCLEvK": {
-    "address": "3Uo9DwNEwzHuUP3MDGuM9PK9sAtvSvULVroAYr9zAkgC"
-  },
-  "q4bpaRKw3fJB1AJBeeBaKv3TjYzWsmntLgnSB275YUb": {
-    "address": "EmXZxfixWN7eWKynvDmhDbHXsvnv1cppkHAoUypRK1NR"
-  },
-  "NFTUkR4u7wKxy9QLaX2TGvd9oZSWoMo4jqSJqdMb7Nk": {
-    "address": "JBBSufv828CsHhADeESpcJiJoNKPuz4gFmEEQNwnjiZN"
-  },
-  "DdFPRnccQqLD4zCHrBqdY95D6hvw6PLWp9DEXj1fLCL9": {
-    "address": "GQxySfUV39evr6Dtxt8iWDp8yNJvoMsV9jMhxURV3Qhp"
-  },
-  "DeoP2swMNa9d4SGcQkR82j4RYYeNhDjcTCwyzEhKwfAf": {
-    "address": "8UFj9495ddRibgW5FLGwVBAwaDLuWFbwNpLufgLQbrgc"
-  },
-  "8c71AvjQeKKeWRe8jtTGG1bJ2WiYXQdbjqFbUfhHgSVk": {
-    "address": "5HHaLnc1kwkNv9z7AoEubcANzxB7VTE71xn6B2hQSc2j"
-  },
-  "Uuc6hiKT9Y6ASoqs2phonGGw2LAtecfJu9yEohppzWH": {
-    "address": "HsqcaoRDuxstiAmWaNwsQ5aC3pSRrtV9gJSz1WxCuS37"
-  },
-  "G9tt98aYSznRk7jWsfuz9FnTdokxS6Brohdo9hSmjTRB": {
-    "address": "ApiHHHYTQJNZj7s3xwf3degADCmvZNP3ifnYwLjjQPYw"
-  },
-  "Ceqwd4CSGBZnW8PHEexBQCAV2NDPkBoSqheiKR7gzELV": {
-    "address": "BuWSVvenJwPLr82rzym7UF11Vsvr7HJMUcG3nHujxFKr"
-  },
-  "ChVzxWRmrTeSgwd3Ui3UumcN8KX7VK3WaD4KGeSKpypj": {
-    "address": "Bvv99DGwfFM65mvyowmtWeXa9nkqAMsiQbbgGRFFZMS2"
-  },
-  "5Wsd311hY8NXQhkt9cWHwTnqafk7BGEbLu8Py3DSnPAr": {
-    "address": "9bfd2Y249GA7xAQuSerpF8B3cDqKP4hb9ad3yFRuFxwy"
+  "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn": {
+    "token": {
+      "name": "Jito Staked SOL",
+      "symbol": "JitoSOL"
+    },
+    "address": "HcKgkiU5Z15EGHsCemG9eJNi3rVASqmk3oYHRDibhoPD"
   },
   "RLBxxFkseAZ4RgJH3Sqn8jXxhmGoz9jWxDNJMh8pL7a": {
-    "address": "DY6KmTwTRt5nNTf3hWAqHWZRmRdRU8Lj1CdWfwhYumbW"
+    "token": {
+      "name": "Rollbit Coin",
+      "symbol": "RLB"
+    },
+    "address": "6P6SeGHT12KgCrvWQNSavnNdtTaH53yXviz1VYTXPpqy"
   },
-  "EsPKhGTMf3bGoy4Qm7pCv3UCcWqAmbC1UGHBTDxRjjD4": {
-    "address": "3EgBDVSYX3JZY71S1Gvvkzo4a9kWzktgB6mfrfz8RGRf"
+  "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt": {
+    "token": {
+      "name": "Serum",
+      "symbol": "SRM"
+    },
+    "address": "Av6BeVVgzXsm8SH2sX1z37Q4WPUJDrHSzpLn1K9kiDs"
   },
-  "FLTHudk5B5zag7JmGXqrYrFfey6otevLQA6jm1UHHLEE": {
-    "address": "779n9BLjCdXYT5qAFZwqRgbkLocMpu5DtrXGbz7sQiKP"
+  "METAmTMXwdb8gYzyCPfXXFmZZw4rUsXX58PNsDg7zjL": {
+    "token": {
+      "name": "Solice",
+      "symbol": "SLC"
+    },
+    "address": "8ytJKPcfp5e4rYgBWgncqGQegDFnEVghGLTefHBcojmX"
+  },
+  "eqKJTf1Do4MDPyKisMYqVaUFpkEFAs3riGF3ceDH2Ca": {
+    "token": {
+      "name": "Wrapped USDC (Allbridge from Polygon)",
+      "symbol": "apUSDC"
+    },
+    "address": "6hFqpyhaKfXGW32iZEqqZotGDTuMRrhBebP5LbAoWMy1"
+  },
+  "SCSuPPNUSypLBsV4darsrYNg4ANPgaGhKhsA3GmMyjz": {
+    "token": {
+      "name": "Solcasino Token",
+      "symbol": "SCS"
+    },
+    "address": "CkTMf8Pcoz2dnUBC3ciiZL1184cXDQ4jhAyxrovfkK9G"
+  },
+  "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v": {
+    "token": {
+      "name": "USD Coin",
+      "symbol": "USDC"
+    },
+    "address": "2G4SqPCqgvfMzZXdwVeeL5H29Y5o4UWZZXkT3z5aC1fe"
+  },
+  "LTXH7nCGXz5TBZ57H8oZu7YwmDSVfSqWViW4B28yg8X": {
+    "token": {
+      "name": "Tanox",
+      "symbol": "LTX"
+    },
+    "address": "7vMeacpuiybUKa4m2r5485MpULJfxprDsqsw7po8FspS"
+  },
+  "Taki7fi3Zicv7Du1xNAWLaf6mRK7ikdn77HeGzgwvo4": {
+    "token": {
+      "name": "Taki",
+      "symbol": "TAKI"
+    },
+    "address": "GHstSuBffMnS7ckZ3gWai6tBU9WYbRm48RJEDjJHrrr2"
+  },
+  "Dn4noZ5jgGfkntzcQSUZ8czkreiZ1ForXYoV2H8Dm7S1": {
+    "token": {
+      "name": "Tether USD (Portal from Ethereum)",
+      "symbol": "USDTet"
+    },
+    "address": "5nj86YaoRwSuPavCYCDSVNqj75ZqZgTRq5BG8opQo6vt"
+  },
+  "31k88G5Mq7ptbRDf3AM13HAq6wRQHXHikR8hik7wPygk": {
+    "token": {
+      "name": "Graphite",
+      "symbol": "GP"
+    },
+    "address": "68QQ5dJUFHBfhNuFm7rTtqeJDXRPLZmp6BYFko8ELs25"
+  },
+  "BWXrrYFhT7bMHmNBFoQFWdsSgA3yXoAnMhDK6Fn1eSEn": {
+    "token": {
+      "name": "Hades",
+      "symbol": "HADES"
+    },
+    "address": "2PeMVF3rnQVNhA6cx18UDPB8b91LBhaJMkW7DvPUju2T"
+  },
+  "BLwTnYKqf7u4qjgZrrsKeNs2EzWkMLqVCu6j8iHyrNA3": {
+    "token": {
+      "name": "Boring Protocol",
+      "symbol": "BOP"
+    },
+    "address": "tm6Cm2nRDqt3azK4FJNR4iaf3gg9kqLu8hfGVTdsrhX"
+  },
+  "poLisWXnNRwC6oBu1vHiuKQzFjGL4XDSu4g9qjz9qVk": {
+    "token": {
+      "name": "Star Atlas DAO",
+      "symbol": "POLIS"
+    },
+    "address": "vz4YhA82RCFJgcyE1u6tbAwAih4mfUR3eA7B8B9xnLZ"
+  },
+  "Fm9rHUTF5v3hwMLbStjZXqNBBoZyGriQaFM6sTFz3K8A": {
+    "token": {
+      "name": "MonkeyBucks",
+      "symbol": "MBS"
+    },
+    "address": "YFtBK5wdGREUNRLcXS3nc1bXX9JxrnZM4GxioqkmdBJ"
+  },
+  "sRLY3migNrkC1HLgqotpvi66qGkdNedqPZ9TJpAQhyh": {
+    "token": {
+      "name": "sRLY (Rally Solana)",
+      "symbol": "sRLY"
+    },
+    "address": "BDUQFriCeTF7gC1aMfr4YZUJnaPsAnAeBE9bqkV9tTVF"
+  },
+  "7jYm8SXbUwnhAyjccasTxzx3Kxz6zHeYusnt8frGXCAH": {
+    "token": {
+      "name": "Jarvis",
+      "symbol": "$JARVIS"
+    },
+    "address": "8QohdbistuQUH41KjKtBTTeXdzVzHWRG7n6yR6mLmvig"
+  },
+  "AFbX8oGjGpmVFywbVouvhQSRmiW2aR1mohfahi4Y2AdB": {
+    "token": {
+      "name": "GST",
+      "symbol": "GST"
+    },
+    "address": "3vzMvG5YULcSV32nddDzKJKeD9GvRdPcZeNZAq9kakiD"
+  },
+  "CKaKtYvz6dKPyMvYq9Rh3UBrnNqYZAyd7iF4hJtjUvks": {
+    "token": {
+      "name": "Gari",
+      "symbol": "GARI"
+    },
+    "address": "9N3nvfmtpgvpLtE9YNLMTkVejuPj2DLnLfpQKXU8ERPD"
+  },
+  "8Yv9Jz4z7BUHP68dz8E8m3tMe6NKgpMUKn8KVqrPA6Fr": {
+    "token": {
+      "name": "Wrapped USDC (Allbridge from Avalanche)",
+      "symbol": "aaUSDC"
+    },
+    "address": "DEXTP8bKrj9cxN4JZX6d38FwULr4BDzhYwSHJ4kdTMs9"
+  },
+  "A9mUU4qviSctJVPJdBJWkb28deg915LYJKrzQ19ji3FM": {
+    "token": {
+      "name": "USD Coin (Portal from Ethereum)",
+      "symbol": "USDCet"
+    },
+    "address": "9YGFQpW1fsvr5ddkbZULFnU8H8NyTsf9AEfzR8FdBvL5"
+  },
+  "HG6XizXmkPMcviw3tKcXTNPdTGAcpxQXwEjV6tuPR6nr": {
+    "token": {
+      "name": "Baka",
+      "symbol": "BAKA"
+    },
+    "address": "BkknuEP9fs6e9Zjh7fpAZAB325ubr5ArVTxUoFZwxeWr"
+  },
+  "9nEqaUcb16sQ3Tn1psbkWqyhPdLmfHWjKGymREjsAgTE": {
+    "token": {
+      "name": "WOOF",
+      "symbol": "WOOF"
+    },
+    "address": "7DU92NRthxERvBpfyM4zmfN1hLGCgyB1KRTchrXGY1kx"
+  },
+  "HZRCwxP2Vq9PCpPXooayhJ2bxTpo5xfpQrwB1svh332p": {
+    "token": {
+      "name": "Lido DAO (Portal)",
+      "symbol": "LDO"
+    },
+    "address": "Cha79Bh3hAjy9DrLghEQhfjeVkGs9FcKgU3UhVD827Ge"
+  },
+  "BiDB55p4G3n1fGhwKFpxsokBMqgctL4qnZpDH1bVQxMD": {
+    "token": {
+      "name": "Decimated",
+      "symbol": "DIO"
+    },
+    "address": "8Fx28krvgwr7uXPygwAxozHtZtYyP891mYt6EWmYjFKr"
+  },
+  "EFiXEci95DTW6AqCmRHViBn2RNNzGxYHcKzmvJ6gj3X5": {
+    "token": {
+      "name": "SEGA",
+      "symbol": "SEGA"
+    },
+    "address": "2LP7nDD22XwwcPuhqKnwPoi8znkxfAobhA8xADGW2F9v"
   },
   "EcQCUYv57C4V6RoPxkVUiDwtX1SP8y8FP5AEToYL8Az": {
-    "address": "92tsxHnGdoHPaLX1ZwnRyNnboaLGf64iE7vDn7pLt56o"
+    "token": {
+      "name": "Walken",
+      "symbol": "WLKN"
+    },
+    "address": "D3NRwWpiib9DtoWYhYirzork2Kq1qmnqDwFDqUG7tLgY"
   },
-  "9iLH8T7zoWhY7sBmj1WK9ENbWdS1nL8n9wAxaeRitTa6": {
-    "address": "6hd9cSWhUD5E9c9Ch314H2VAC7wUrhhwFxvq5sAP1oA6"
+  "hntyVP6YFm1Hg25TN9WGLqM12b8TQmcknKrdu1oxWux": {
+    "token": {
+      "name": "Helium Network Token",
+      "symbol": "HNT"
+    },
+    "address": "DjJDfQGdnDGwES63AdPZSNZ6KVsJv3hhiTdMVbqeXnya"
   },
-  "GNCjk3FmPPgZTkbQRSxr6nCvLtYMbXKMnRxg8BgJs62e": {
-    "address": "GL7UXxWJQQk4dKF8tWycb7FLUw3j2zoZ8SSqrRqy6bsd"
+  "SLNDpmoWTVADgEdndyvWzroNL7zSi1dF9PC3xHGtPwp": {
+    "token": {
+      "name": "Solend",
+      "symbol": "SLND"
+    },
+    "address": "Cf4VGga1tiWEPUYjVyDYUJbN4KwjrxqQSxFvWwMqe9Vz"
+  },
+  "3bRTivrVsitbmCTGtqwp7hxXPsybkjn4XLNtPsHqa3zR": {
+    "token": {
+      "name": "Only1 (LIKE)",
+      "symbol": "LIKE"
+    },
+    "address": "E1W6EEKC2eeqGRVpEBHEeyhJ4YyD3Kr6Z4hhQjagcahP"
+  },
+  "ATLASXmbPQxBUYbxPsV97usA3fPQYEqzQBUHgiFCUsXx": {
+    "token": {
+      "name": "Star Atlas",
+      "symbol": "ATLAS"
+    },
+    "address": "G6aBZLJ9AFyQurrWKneNmkUyqXbkai8czK3x7wWKLZCK"
+  },
+  "9WMwGcY6TcbSfy9XPpQymY3qNEsvEaYL3wivdwPG2fpp": {
+    "token": {
+      "name": "Jelly",
+      "symbol": "JELLY"
+    },
+    "address": "8dqJsd8TAZbsweVjPMPfP6rRoVfftLybbrvLiK63yjQ3"
+  },
+  "42KmnheUHt3UaQFoAKnipLgBJ1Zm427heJdQcHGPtnjc": {
+    "token": {
+      "name": "TURBO on Solana",
+      "symbol": "$TURBO"
+    },
+    "address": "jVkShmdL5GyEZLAgczhqpA9xnXvVZ5eCRpefeQiuW9b"
+  },
+  "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB": {
+    "token": {
+      "name": "USDT",
+      "symbol": "USDT"
+    },
+    "address": "BfMXKNcn8iu9ZNAfgTaUchxNBfcTgipQrsNatSzixxk1"
+  },
+  "F3nefJBcejYbtdREjui1T9DPh5dBgpkKq7u2GAAMXs5B": {
+    "token": {
+      "name": "ALL ART",
+      "symbol": "AART"
+    },
+    "address": "CDKfms2dSxqqNNiRmtPXXNUw9zLLsqkyP7YvbLywZTRy"
+  },
+  "F9CpWoyeBJfoRB8f2pBe2ZNPbPsEE76mWZWme3StsvHK": {
+    "token": {
+      "name": "Pepe",
+      "symbol": "PEPE"
+    },
+    "address": "2ES8jCz6ZFTJ2hE7bFVXXVYTR7e11chNA6KwTasttQb2"
+  },
+  "8HfNu2EfwFQz2srSNDvPsjaWV3G65ZWP3pDC67mcNv6J": {
+    "token": {
+      "name": "Neural Octopus",
+      "symbol": "NOCT"
+    },
+    "address": "F15SAx1HCQ7FWgYJxGxhcgFJR5rbHwUEmzyfa5dr94U1"
+  },
+  "4PEMPJXiYd4THpNuaFTf2zB8jKYJJPoEN86vdvKnjv9R": {
+    "token": {
+      "name": "ANON",
+      "symbol": "$ANON"
+    },
+    "address": "HjHBJd3RD2Pj7BU2cuaPMEBvKKRk8z3f4SRwFgxweH9r"
+  },
+  "mb1eu7TzEc71KxDpsmsKoucSSuuoGLv1drys1oP2jh6": {
+    "token": {
+      "name": "Helium Mobile",
+      "symbol": "MOBILE"
+    },
+    "address": "794iEb3QAjQoMJ951zruckYwQKyrJJYcdGr2zVNn45Ut"
+  },
+  "C98A4nkJXhpVZNAZdHUA95RpTF3T4whtQubL3YobiUX9": {
+    "token": {
+      "name": "Coin98",
+      "symbol": "C98"
+    },
+    "address": "9KxVjkF5WMp6A6bYAE61gbWdQxMjjU15WARfHvrikGoE"
+  },
+  "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU": {
+    "token": {
+      "name": "Samoyed Coin",
+      "symbol": "SAMO"
+    },
+    "address": "7RNPAMs33NcQfvX7c1EmZoZk7aHn1AUobxRP6CB9Rs6M"
+  },
+  "NFTUkR4u7wKxy9QLaX2TGvd9oZSWoMo4jqSJqdMb7Nk": {
+    "token": {
+      "name": "Blockasset",
+      "symbol": "BLOCK"
+    },
+    "address": "3DFMjgf1mXLYMThX1k9rE4bn6BBG1i4qrrm6wGK1uGz7"
+  },
+  "AZsHEMXd36Bj1EMNXhowJajpUXzrKcK57wW4ZGXVa7yR": {
+    "token": {
+      "name": "Guacamole",
+      "symbol": "GUAC"
+    },
+    "address": "74GbfzNwhsndYwhtvAZNKeji7zDRXbnKqeTx1SHj1UXY"
+  },
+  "USDH1SM1ojwWUga67PGrgFWUHibbjqMvuMaDkRJTgkX": {
+    "token": {
+      "name": "USDH Hubble Stablecoin",
+      "symbol": "USDH"
+    },
+    "address": "H6dicd7Ud7aWm64iaw8xEcTxAMfmRZsPgHrRrgdidSzd"
+  },
+  "iotEVVZLEywoTn1QdwNPddxPWszn3zFhEot3MfL9fns": {
+    "token": {
+      "name": "Helium IOT",
+      "symbol": "IOT"
+    },
+    "address": "9edBQDraBgAHe7sfB8GzbxRxetm6ASYbFgRpVhCLR51t"
+  },
+  "ChVzxWRmrTeSgwd3Ui3UumcN8KX7VK3WaD4KGeSKpypj": {
+    "token": {
+      "name": "SushiToken (Portal)",
+      "symbol": "SUSHI"
+    },
+    "address": "4VW9ogNy6Gy1VN2BtunBzQ2rxw5YY4AGskmPjbwUAuz5"
+  },
+  "3FoUAsGDbvTD6YZ4wVKJgTB76onJUKz7GPEBNiR5b8wc": {
+    "token": {
+      "name": "Cheems",
+      "symbol": "CHEEMS"
+    },
+    "address": "37JLECnEJkpyvYz8fmBDMsmyALqyJZ8kdhQojeNGQfLT"
+  },
+  "9noXzpXnkyEcKF3AeXqUHTdR59V5uvrRBUZ9bwfQwxeq": {
+    "token": {
+      "name": "KING",
+      "symbol": "KING"
+    },
+    "address": "AWGszverGxPWoFbhwTXnxNCuGe4QtCxNMtM88dxMiiZ8"
+  },
+  "BKipkearSqAUdNKa1WDstvcMjoPsSKBuNyvKDQDDu9WE": {
+    "token": {
+      "name": "Hawksight",
+      "symbol": "HAWK"
+    },
+    "address": "EJZd29wARTGMJKR4rywkbRFapP6MxbXE4xQG1wGa24AS"
+  },
+  "Basis9oJw9j8cw53oMV7iqsgo6ihi9ALw4QR31rcjUJa": {
+    "token": {
+      "name": "basis",
+      "symbol": "BASIS"
+    },
+    "address": "5kDvDR15Y8MVpcdZqFg6iYYA9XHLGcGikmAtLv55Xjpi"
+  },
+  "2aqGynDZd3J7ceDNTRx7V895d7zP4YBFG92qkKT3aPGK": {
+    "token": {
+      "name": "VINI COIN ",
+      "symbol": "VINI "
+    },
+    "address": "Gn698wrrbt8CmXvYg66iYVu8UaxDNMUENUrreE36RDjW"
+  },
+  "5yxNbU8DgYJZNi3mPD9rs4XLh9ckXrhPjJ5VCujUWg5H": {
+    "token": {
+      "name": "Fronk",
+      "symbol": "FRONK"
+    },
+    "address": "74BitKwQjKGBnB1aZ12UPf9DqCq3GDMFLinu8F6P8pwP"
+  },
+  "9LzCMqDgTKYz9Drzqnpgee3SGa89up3a247ypMj2xrqM": {
+    "token": {
+      "name": "Audius (Portal)",
+      "symbol": "AUDIO"
+    },
+    "address": "2hpvmS6vokZWRHMKiYwr4tSqfGgQN7pZPUVL65jBdRmT"
+  },
+  "Lrxqnh6ZHKbGy3dcrCED43nsoLkM1LTzU2jRfWe8qUC": {
+    "token": {
+      "name": "Larix",
+      "symbol": "LARIX"
+    },
+    "address": "GL3EVwyNXDHvYjk5NBzJPYtaDhjQVd3ZNALZg4iTa4Sm"
+  },
+  "MNDEFzGvMt87ueuHvVU9VcTqsAP5b3fTGPsHuuPA5ey": {
+    "token": {
+      "name": "Marinade",
+      "symbol": "MNDE"
+    },
+    "address": "2txc5hUVJmKSjS6y4YFpWuPJDcbUTQLFahgMpYoK1ChJ"
+  },
+  "SHDWyBxihqiCj6YekG2GUr7wqKLeLAMK1gHZck9pL6y": {
+    "token": {
+      "name": "Shadow Token",
+      "symbol": "SHDW"
+    },
+    "address": "33nrdiqgMmWiRGgtpi3ADwT5xQnDbVeTTketDdcRvNxZ"
+  },
+  "4vMsoUT2BWatFweudnQM1xedRLfJgJ7hswhcpz4xgBTy": {
+    "token": {
+      "name": "HONEY",
+      "symbol": "HONEY"
+    },
+    "address": "Bam2oLrota48Pzy2vMKC7qhPBVvcRmPus49VhSjgNvMF"
+  },
+  "E77cpQ4VncGmcAXX16LHFFzNBEBb2U7Ar7LBmZNfCgwL": {
+    "token": {
+      "name": "Wrapped USDT (Allbridge from BSC)",
+      "symbol": "abUSDT"
+    },
+    "address": "2J8hgJasvXCDspqaopHwXdyAMXxyeq2CjN6m7CN9Q5ET"
+  },
+  "Fishy64jCaa3ooqXw7BHtKvYD8BTkSyAPh6RNE3xZpcN": {
+    "token": {
+      "name": "FISHY by sharky.fi",
+      "symbol": "FISHY"
+    },
+    "address": "BUZrZEPqYH4cC38SEZD6YzGXiGk1ieezKC9ZGUK34Nb"
+  },
+  "HxRELUQfvvjToVbacjr9YECdfQMUqGgPYB68jVDYxkbr": {
+    "token": {
+      "name": "NANA Token",
+      "symbol": "NANA"
+    },
+    "address": "5N8tjXfHKRmfGDmvh8p4QKwKMneJoib9AhFVWpxJoKS3"
+  },
+  "boooCKXQn9YTK2aqN5pWftQeb9TH7cj7iUKuVCShWQx": {
+    "token": {
+      "name": "Boo Network",
+      "symbol": "BOO"
+    },
+    "address": "73692i5rcsktrzySohtXDnH2hT1t3ya1MMSwmvCrJBiZ"
+  },
+  "HfYFjMKNZygfMC8LsQ8LtpPsPxEJoXJx4M6tqi75Hajo": {
+    "token": {
+      "name": "Cryowar Token",
+      "symbol": "CWAR"
+    },
+    "address": "CZbfQB2ShkikfLwQV9CYVDbsrcKBbMqU1RDkcpSbzirg"
+  },
+  "3acxNNmfdKKZj9i35P4VDBFm74Ufdt8ojKWceVGynwC5": {
+    "token": {
+      "name": "GM",
+      "symbol": "GM"
+    },
+    "address": "71ugyeHAj2umW5XiYWXrgvZzBiUCJrwUTUFxoAeVyrxm"
+  },
+  "3dgCCb15HMQSA4Pn3Tfii5vRk7aRqTH95LJjxzsG2Mug": {
+    "token": {
+      "name": "Honeyland",
+      "symbol": "HXD"
+    },
+    "address": "fD9zov6uRU4bXsvkhcXneeiPTXiAu63P9dyQNrxD3zF"
+  },
+  "7kbnvuGBxxj8AG9qp8Scn56muWGaRaFqxg1FsRp3PaFT": {
+    "token": {
+      "name": "UXD Stablecoin",
+      "symbol": "UXD"
+    },
+    "address": "FKPmjZFTcpsiXt9tzVurVDRUdxfzxUksJx9q8jjYGu6m"
+  },
+  "E2VmbootbVCBkMNNxKQgCLMS1X3NoGMaYAsufaAsf7M": {
+    "token": {
+      "name": "USD Coin (PoS) (Portal from Polygon)",
+      "symbol": "USDCpo"
+    },
+    "address": "7Y4eZB5MSM2w9F8XioseHPEqupD91CSg1tmWgPH2LT7A"
+  },
+  "HEbeKTqDknkyLDB4aAZNZtJVuNoCtwH3spoLqzWbSTYb": {
+    "token": {
+      "name": "SIGMA ",
+      "symbol": "SIGMA"
+    },
+    "address": "3eyWCk7bu3qvygNiaDm4TBCpYhaxkd3G3w39A38xQtTn"
+  },
+  "HHjoYwUp5aU6pnrvN4s2pwEErwXNZKhxKGYjRJMoBjLw": {
+    "token": {
+      "name": "PIP",
+      "symbol": "PIP"
+    },
+    "address": "8Pkz9xPNnrQVt2Eh1zENgxY7cs9ns6QBHtMNvz3vcpYF"
+  },
+  "GDfnEsia2WLAW5t8yx2X5j2mkfA74i5kwGdDuZHt7XmG": {
+    "token": {
+      "name": "CROWN Token",
+      "symbol": "CROWN"
+    },
+    "address": "3a4d6YHP1gYqVxkT86k9nyrd6xJWkKGgiaKuz7cL6red"
+  },
+  "5SwxhEunuUUcWe4ojybdDwky6dpLxAehNmF4AA71STNh": {
+    "token": {
+      "name": "SWEETS",
+      "symbol": "$SWTS"
+    },
+    "address": "9kYJ6i6FM5K7PHCZCBfndptHGT457Y4padNutJDa5Ws6"
+  },
+  "PugAiDuaQ5hzicBHAW9qrQQ8qi4B6sh3n7PknKhyjeX": {
+    "token": {
+      "name": "PUGAI",
+      "symbol": "PUGAI"
+    },
+    "address": "J3YY3UPqpL5G3AXD7DE5LXTWN93f6zXSjB6Yt13Ck6aV"
   },
   "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R": {
-    "address": "8GypfLqmqonfbKacF7BH63v8tT7vLM9CEXUb4keu5RwA"
+    "token": {
+      "name": "Raydium",
+      "symbol": "RAY"
+    },
+    "address": "GPUPnNnwjX4m9Pg7woeVoYUaSv6hQ9RT8HmPzFxADgf9"
+  },
+  "7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj": {
+    "token": {
+      "name": "Lido Staked SOL",
+      "symbol": "stSOL"
+    },
+    "address": "96CRYiutUgNJzojRs6wzpcDHD5yUHDESEKqTYg1zTDNb"
+  },
+  "qNFppJhhmKX53zxUJoCYWKRZGi4egpRDBKzt3HXD2Js": {
+    "token": {
+      "name": "Super Pepe",
+      "symbol": "$SP"
+    },
+    "address": "4kXpNfCBbq1jncFJpjsdX1zshT8w8jnTQ9izNEcPYNeW"
+  },
+  "o1Mw5Y3n68o8TakZFuGKLZMGjm72qv4JeoZvGiCLEvK": {
+    "token": {
+      "name": "Cope",
+      "symbol": "Cope"
+    },
+    "address": "HAu9f787NQ4Q1ACttVqdqpZ1enyaC1RCneMCXkjsL9vj"
+  },
+  "kiGenopAScF8VF31Zbtx2Hg8qA5ArGqvnVtXb83sotc": {
+    "token": {
+      "name": "Genopets Ki",
+      "symbol": "KI"
+    },
+    "address": "5AoTfyCvqrKGWZND3gLu4vs1nhb1S67H5do2iKNp3o8j"
+  },
+  "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs": {
+    "token": {
+      "name": "Ether (Portal)",
+      "symbol": "ETH"
+    },
+    "address": "FLZUev1rC6Z7Gch59LDUrKDZd9wb7eQy3txkv9Jf3pVP"
+  },
+  "FoRGERiW7odcCBGU1bztZi16osPBHjxharvDathL5eds": {
+    "token": {
+      "name": "FORGE",
+      "symbol": "FORGE"
+    },
+    "address": "HzRK6F8awj8A1eU9B9ArNM7PheCTuKVkc134jfcia4Sc"
+  },
+  "E5ndSkaB17Dm7CsD22dvcjfrYSDLCxFcMd6z8ddCk5wp": {
+    "token": {
+      "name": "Aldrin",
+      "symbol": "RIN"
+    },
+    "address": "7vNUHR3NM2YPjs8vKuCkkTMPjXifXN4yRQzrEMRqLjWZ"
+  },
+  "4TUNzcgp2fPD48fcW4seRjyqyDZMrPj4ZubnXFEsKeYk": {
+    "token": {
+      "name": "PRNT",
+      "symbol": "PRNT"
+    },
+    "address": "CY1qfaGSanJBPqmRLiQmMsaVRLoeTfZwMQdeXjGvkhu4"
+  },
+  "orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE": {
+    "token": {
+      "name": "Orca",
+      "symbol": "ORCA"
+    },
+    "address": "Fmso66c1m82YQyECYgW2VgUurNWfnijaSk68a5WzeP9w"
+  },
+  "6nuaX3ogrr2CaoAPjtaKHAoBNWok32BMcRozuf32s2QF": {
+    "token": {
+      "name": "Wrapped BUSD (Allbridge from BSC)",
+      "symbol": "abBUSD"
+    },
+    "address": "BE7CDknuEbxhGcrVn9GfVym1zJ5gvJT8qReSRefDyepa"
+  },
+  "BRUV9DjBeDZRamtWjhzQEH5roosnBApPhfqS1HQ23Xgy": {
+    "token": {
+      "name": "BRUV",
+      "symbol": "BRUV"
+    },
+    "address": "EoytSvHtRTXhzjXpNCTBLjR7wsv4xUkoxZ63eS7xERcS"
+  },
+  "zebeczgi5fSEtbpfQKVZKCJ3WgYXxjkMUkNNx7fLKAF": {
+    "token": {
+      "name": "ZEBEC",
+      "symbol": "ZBC"
+    },
+    "address": "EiuHBDC2djvSmpxQqWZsxEsZruR9M84dey2582qJnp4T"
+  },
+  "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So": {
+    "token": {
+      "name": "Marinade staked SOL (mSOL)",
+      "symbol": "mSOL"
+    },
+    "address": "BaTWjAhuxvXy9KrnJpyZnGufydSh6zMjkJchRccjoBWP"
+  },
+  "7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx": {
+    "token": {
+      "name": "GMT",
+      "symbol": "GMT"
+    },
+    "address": "BCncpgFCYZ7JxU6kP3oRQFTisD5Ez78kCtTE9pkhFegu"
+  },
+  "chodeDSo8UYzBebGysm3djM6b2Cu54x5PwDXW8Tda2v": {
+    "token": {
+      "name": "Chode",
+      "symbol": "CHODE"
+    },
+    "address": "48B2S2j9oMiDJrxpFn4Hbih23gBTyBKSP1rjtQKSbPsz"
+  },
+  "bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1": {
+    "token": {
+      "name": "BlazeStake Staked SOL (bSOL)",
+      "symbol": "bSOL"
+    },
+    "address": "2EM7Jf2PCeyo2Z2VffJtqAn2vBumZoZxPgZYNp3pdHq3"
+  },
+  "5MAYDfq5yxtudAhtfyuMBuHZjgAbaS9tbEyEQYAhDS5y": {
+    "token": {
+      "name": "Access Protocol",
+      "symbol": "ACS"
+    },
+    "address": "CGzkqTvSF7mRhQo7XxApFNgrypwqTYsKgAnZtwL6NA3N"
+  },
+  "xxxxa1sKNGwFtw2kFn8XauW9xq8hBZ5kVtcSesTT9fW": {
+    "token": {
+      "name": "Solanium",
+      "symbol": "SLIM"
+    },
+    "address": "CSYhnnm1NHLWLBPsYjgrk7vhei5i4U1VaBfwbpBpqZvb"
+  },
+  "ETAtLmCmsoiEEKfNrHKJ2kYy3MoABhU6NQvpSfij5tDs": {
+    "token": {
+      "name": "Media Network",
+      "symbol": "MEDIA"
+    },
+    "address": "E5Hs3JYDRZLNugikS9ZPd9WXKSzDaZaq7dp1wA7umwux"
+  },
+  "4dmKkXNHdgYsXqBHCuMikNQWwVomZURhYvkkX5c4pQ7y": {
+    "token": {
+      "name": "Synthetify",
+      "symbol": "SNY"
+    },
+    "address": "9WR4UhZmcspCX3sNzJ35W1xsTADxy3CQZGahYs1UbD5r"
+  },
+  "YAWtS7vWCSRPckx1agB6sKidVXiXiDUfehXdEUSRGKE": {
+    "token": {
+      "name": "Yawww",
+      "symbol": "YAW"
+    },
+    "address": "CHWv2WoiwCL9Z8Gh9uQ7DuJysWCuVarvkymHwqGFo7SE"
   }
 }

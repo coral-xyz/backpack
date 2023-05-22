@@ -2,16 +2,23 @@ import type { V4SwapPostRequest } from "@jup-ag/api";
 import { Connection } from "@solana/web3.js";
 import { createClient } from "@supabase/supabase-js";
 import { Hono } from "hono";
-import { cors } from "hono/cors";
 import { importSPKI, jwtVerify } from "jose";
 
 import ACCOUNTS from "./feeAccounts.json";
 
 type MintAddress = keyof typeof ACCOUNTS | undefined;
 
-const app = new Hono();
+type Env = {
+  AUTH_JWT_PUBLIC_KEY: string;
+  DEFAULT_FEE_BPS: number;
+  FEE_AUTHORITY_ADDRESS: string;
+  RPC: string;
+  SUPABASE_KEY: string;
+  SUPABASE_URL: string;
+  TOKEN_PROGRAM_ADDRESS: string;
+};
 
-app.use("*", cors());
+const app = new Hono<{ Bindings: Env }>();
 
 // start routes ----------------------------------------
 
@@ -51,16 +58,16 @@ app.post("/swap-webhook", async (c) => {
     const conn = new Connection(c.env.RPC, "confirmed");
     const tx = await conn.getParsedTransaction(json.record.signature);
 
-    const result = tx.meta
-      .postTokenBalances!.filter(
+    const result = tx!
+      .meta!.postTokenBalances!.filter(
         (t) =>
           t.owner === c.env.FEE_AUTHORITY_ADDRESS &&
           t.programId === c.env.TOKEN_PROGRAM_ADDRESS
       )
       ?.map((post) => {
-        const pre = tx?.meta?.preTokenBalances?.find(
+        const pre = tx!.meta!.preTokenBalances!.find(
           (t) => t.accountIndex === post.accountIndex
-        );
+        )!;
         return {
           ...post,
           fees:
@@ -68,7 +75,7 @@ app.post("/swap-webhook", async (c) => {
             Number(pre.uiTokenAmount.amount),
         };
       });
-    const [{ mint, fees }] = result;
+    const [{ mint, fees }] = result!;
 
     const { data, error } = await supabase
       .from("swaps")
@@ -94,7 +101,7 @@ app.use("/v4/quote", async (c) => {
       : _url;
   })();
 
-  const response = await fetch(new Request(url, c.req));
+  const response = await fetch(url, c.req);
   return response;
 });
 
@@ -132,27 +139,13 @@ app.use("/v4/*", async (c) => {
   return response;
 });
 
-//  TODO: add later and store in KV, not adding now due to node deps
-// app.get("/accounts", async (c) => {
-//   (async function () {
-//     const fees: Record<string, { address: string }> = {};
-//     (
-//       await getPlatformFeeAccounts(
-//         new Connection(c.env.RPC),
-//         new PublicKey(c.env.FEE_AUTHORITY_ADDRESS)
-//       )
-//     ).forEach((account, mint) => {
-//       fees[mint] = { address: account.toBase58() };
-//     });
-//     c.json(fees);
-//   })();
-// });
-
 // end routes ----------------------------------------
 
 const changeOriginToJupiter = (url: string) => {
   const ob = new URL(url);
+  ob.protocol = "https:";
   ob.host = "quote-api.jup.ag";
+  ob.port = "";
   return ob.href;
 };
 
