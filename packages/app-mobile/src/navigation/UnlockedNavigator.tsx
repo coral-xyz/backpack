@@ -22,10 +22,7 @@ import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 import { ChatNavigator } from "~navigation/ChatNavigator";
 import { WalletsNavigator } from "~navigation/WalletsNavigator";
 import { NotificationsScreen } from "~screens/NotificationsScreen";
-import {
-  DepositListScreen,
-  DepositSingleScreen,
-} from "~screens/Unlocked/DepositScreen";
+import { ReceiveTokenScreen } from "~screens/ReceiveTokenScreen";
 import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollectibleSelectRecipientScreen";
 import {
   SendTokenSelectRecipientScreen,
@@ -145,13 +142,8 @@ export function UnlockedNavigator(): JSX.Element {
       >
         <Stack.Screen
           options={{ title: "Deposit" }}
-          name="DepositList"
-          component={DepositListScreen}
-        />
-        <Stack.Screen
-          options={{ title: "Deposit" }}
           name="DepositSingle"
-          component={DepositSingleScreen}
+          component={ReceiveTokenScreen}
         />
         <Stack.Group
           screenOptions={{ presentation: "modal", headerShown: false }}

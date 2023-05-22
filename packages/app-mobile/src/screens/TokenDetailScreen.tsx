@@ -1,23 +1,24 @@
-import type { StackScreenProps } from "@react-navigation/stack";
-
+import { Suspense, useState } from "react";
 import { View, StyleSheet } from "react-native";
 
 import { Blockchain } from "@coral-xyz/common";
 import { UsdBalanceAndPercentChange } from "@coral-xyz/tamagui";
+import { ErrorBoundary } from "react-error-boundary";
 
 import { RecentActivityList } from "~components/RecentActivityList";
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import {
   Screen,
   TokenAmountHeader,
-  FullScreenLoading,
+  ScreenLoading,
+  ScreenError,
 } from "~components/index";
 import {
   useActiveEthereumWallet,
   useBlockchainTokenData,
   useBlockchainActiveWallet,
 } from "~hooks/recoil";
-import type { WalletStackParamList } from "~navigation/WalletsNavigator";
+import type { TokenDetailScreenParams } from "~navigation/WalletsNavigator";
 
 import { NavTokenAction, NavTokenOptions } from "~types/types";
 
@@ -38,7 +39,7 @@ function TokenHeader({
   });
 
   if (!token || loading) {
-    return <FullScreenLoading />;
+    return <ScreenLoading />;
   }
 
   return (
@@ -70,10 +71,10 @@ function TokenHeader({
   );
 }
 
-export function TokenDetailScreen({
+function Container({
   route,
   navigation,
-}: StackScreenProps<WalletStackParamList, "TokenDetail">): JSX.Element | null {
+}: TokenDetailScreenParams): JSX.Element | null {
   const { blockchain, tokenAddress } = route.params;
 
   // We only use ethereumWallet here, even though its shared on the Solana side too.
@@ -91,21 +92,21 @@ export function TokenDetailScreen({
 
   return (
     <Screen>
-      <View>
-        <TokenHeader
-          blockchain={blockchain}
-          address={tokenAddress}
-          onPressOption={(route: string, options: NavTokenOptions) => {
-            navigation.push(route, options);
-          }}
-        />
-      </View>
       <RecentActivityList
         blockchain={blockchain}
         address={activityAddress}
         contractAddresses={contractAddresses}
         minimize
         style={{ marginTop: 18 }}
+        ListHeaderComponent={
+          <TokenHeader
+            blockchain={blockchain}
+            address={tokenAddress}
+            onPressOption={(route: string, options: NavTokenOptions) => {
+              navigation.push(route, options);
+            }}
+          />
+        }
       />
     </Screen>
   );
@@ -117,3 +118,18 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
 });
+
+export function TokenDetailScreen({
+  route,
+  navigation,
+}: TokenDetailScreenParams): JSX.Element | null {
+  return (
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ScreenError error={error} />}
+    >
+      <Suspense fallback={<ScreenLoading />}>
+        <Container navigation={navigation} route={route} />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}

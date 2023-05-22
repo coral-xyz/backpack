@@ -1,4 +1,4 @@
-import { StyleSheet, Text,View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import { useCustomTheme as useTheme } from "../hooks";
 
@@ -51,9 +51,8 @@ const styles = StyleSheet.create({
   },
   usdBalanceLabel: {
     fontWeight: "500",
-    fontSize: 14,
+    fontSize: 18,
     textAlign: "center",
-    marginTop: 4,
-    lineHeight: 24,
+    marginTop: 2,
   },
 });

@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
 import { formatUSD } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
-import { XStack } from "@coral-xyz/tamagui";
+import { Stack, XStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { StyledText } from "~components/index";
@@ -100,6 +100,23 @@ const GET_BALANCE_SUMMARY = gql`
   }
 `;
 
+function LoadingSkeleton() {
+  return (
+    <View style={{ height: 72, opacity: 0.2 }}>
+      <ActivityIndicator size="small" />
+    </View>
+  );
+}
+
+function ErrorFallback({ error }: { error: Error }) {
+  return (
+    <View style={{ height: 72, opacity: 0.2 }}>
+      <StyledText>Something went wrong</StyledText>
+      <StyledText>{error.message}</StyledText>
+    </View>
+  );
+}
+
 function Container() {
   const activeWallet = useActiveWallet();
   const { data } = useSuspenseQuery_experimental(GET_BALANCE_SUMMARY, {
@@ -115,7 +132,7 @@ function Container() {
   const percentChange = aggregate.percentChange ?? 0.0;
 
   return (
-    <View style={styles.container}>
+    <Stack ai="center">
       <StyledText fontWeight="700" fontSize="$4xl" color="$fontColor">
         {formatUSD(totalBalance)}
       </StyledText>
@@ -127,14 +144,16 @@ function Container() {
           percentChange={percentChange as number}
         />
       </XStack>
-    </View>
+    </Stack>
   );
 }
 
 export function BalanceSummaryWidget() {
   return (
-    <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
-      <Suspense fallback={<ActivityIndicator size="large" />}>
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ErrorFallback error={error} />}
+    >
+      <Suspense fallback={<LoadingSkeleton />}>
         <Container />
       </Suspense>
     </ErrorBoundary>

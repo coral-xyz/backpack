@@ -1,11 +1,5 @@
 import { Suspense, useMemo, useCallback } from "react";
-import {
-  View,
-  Pressable,
-  Text,
-  ActivityIndicator,
-  FlatList,
-} from "react-native";
+import { View, Pressable, Text, FlatList } from "react-native";
 
 import { Image } from "expo-image";
 import * as Linking from "expo-linking";
@@ -17,7 +11,12 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { ItemSeparator } from "~components/ListItem";
-import { EmptyState, Screen, RoundedContainerGroup } from "~components/index";
+import {
+  EmptyState,
+  Screen,
+  RoundedContainerGroup,
+  FullScreenLoading,
+} from "~components/index";
 import {
   convertNftDataToFlatlist,
   type ListItemProps,
@@ -176,11 +175,11 @@ const GET_NFT_COLLECTIONS = gql`
 `;
 
 function Container({ navigation }: any): JSX.Element {
-  const activeWallet = useActiveWallet();
+  const { blockchain, publicKey } = useActiveWallet();
   const { data } = useSuspenseQuery_experimental(GET_NFT_COLLECTIONS, {
     variables: {
-      chainId: activeWallet.blockchain.toUpperCase(),
-      address: activeWallet.publicKey,
+      chainId: blockchain.toUpperCase(),
+      address: publicKey,
     },
   });
 
@@ -200,11 +199,11 @@ function Container({ navigation }: any): JSX.Element {
         navigation.push("CollectionItemDetail", {
           id: nft.id,
           title: nft.name,
-          blockchain: activeWallet.blockchain,
+          blockchain,
         });
       }
     },
-    [navigation, activeWallet.blockchain]
+    [navigation, blockchain]
   );
 
   const rows = useMemo(() => convertNftDataToFlatlist(data), [data]);
@@ -237,10 +236,10 @@ function Container({ navigation }: any): JSX.Element {
   );
 }
 
-export function CollectionListScreen({ navigation }: any): JSX.Element {
+export function CollectionListScreen({ navigation, route }: any): JSX.Element {
   return (
     <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
-      <Suspense fallback={<ActivityIndicator size="large" />}>
+      <Suspense fallback={<FullScreenLoading />}>
         <Container navigation={navigation} />
       </Suspense>
     </ErrorBoundary>

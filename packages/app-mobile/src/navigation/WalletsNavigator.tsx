@@ -2,7 +2,10 @@ import { Blockchain, toTitleCase } from "@coral-xyz/common";
 import { Box } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { createStackNavigator } from "@react-navigation/stack";
+import {
+  StackScreenProps,
+  createStackNavigator,
+} from "@react-navigation/stack";
 
 import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
 import { useTheme } from "~hooks/useTheme";
@@ -15,7 +18,10 @@ import { TokenDetailScreen } from "~screens/TokenDetailScreen";
 import { TokenListScreen } from "~screens/TokenListScreen";
 
 type TopTabsParamList = {
-  TokenList: undefined;
+  TokenList: {
+    blockchain: Blockchain;
+    publicKey: string;
+  };
   Collectibles: undefined;
   Activity: undefined;
 };
@@ -58,12 +64,11 @@ function TopTabsNavigator(): JSX.Element {
 
 export type WalletStackParamList = {
   HomeWalletList: undefined;
-  TopTabsWalletDetail: undefined;
-  TokenDetail: {
+  TopTabsWalletDetail: {
     blockchain: Blockchain;
-    tokenAddress: string;
-    tokenTicker: string;
+    publicKey: string;
   };
+  TokenDetail: undefined;
   // List of collectibles/nfts for a collection
   CollectionDetail: {
     id: string;
@@ -76,6 +81,12 @@ export type WalletStackParamList = {
     blockchain: Blockchain;
   };
 };
+
+export type TokenDetailScreenParams = StackScreenProps<
+  WalletStackParamList,
+  "TokenDetail"
+>;
+
 const Stack = createStackNavigator<WalletStackParamList>();
 export function WalletsNavigator(): JSX.Element {
   const theme = useTheme();

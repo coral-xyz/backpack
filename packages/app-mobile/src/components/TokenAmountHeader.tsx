@@ -1,17 +1,14 @@
 import type { BigNumber } from "ethers";
 
 import type { StyleProp, ViewStyle } from "react-native";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
+import { StyledText } from "@coral-xyz/tamagui";
 import { ethers } from "ethers";
 
 import { ProxyImage } from "~components/index";
-import { useTheme } from "~hooks/useTheme";
 
-//
-// Displays token amount header with logo.
-//
-export const TokenAmountHeader: React.FC<{
+type TokenAmountHeaderProps = {
   style?: StyleProp<ViewStyle>;
   token: {
     logo?: string;
@@ -20,11 +17,16 @@ export const TokenAmountHeader: React.FC<{
   };
   amount: BigNumber;
   displayLogo?: boolean;
-}> = ({ style, token, amount, displayLogo = true }) => {
-  const theme = useTheme();
+};
 
+export const TokenAmountHeader = ({
+  style,
+  token,
+  amount,
+  displayLogo = true,
+}: TokenAmountHeaderProps): JSX.Element => {
   const formattedAmount = ethers.utils.formatUnits(amount, token.decimals);
-  const maxChars = displayLogo ? 10 : 12;
+  const maxChars = displayLogo ? 8 : 12;
   const maybeTruncatedAmount =
     formattedAmount.length > maxChars
       ? formattedAmount.slice(0, maxChars) + "..."
@@ -34,21 +36,12 @@ export const TokenAmountHeader: React.FC<{
     <View style={[styles.container, style]}>
       {displayLogo ? <ProxyImage src={token.logo} style={styles.logo} /> : null}
       <View style={styles.container}>
-        <Text
-          style={[
-            styles.amountLabel,
-            {
-              color: theme.custom.colors.fontColor,
-            },
-          ]}
-        >
+        <StyledText fontWeight="600" fontSize="$4xl" color="$fontColor">
           {maybeTruncatedAmount}
-        </Text>
-        <Text
-          style={[styles.tickerLabel, { color: theme.custom.colors.secondary }]}
-        >
-          {token.ticker}
-        </Text>
+        </StyledText>
+        <StyledText fontWeight="500" fontSize="$4xl" color="$secondary">
+          {token.ticker ?? ""}
+        </StyledText>
       </View>
     </View>
   );
@@ -66,14 +59,5 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     aspectRatio: 1,
     marginRight: 8,
-  },
-  amountLabel: {
-    fontWeight: "500",
-    fontSize: 30,
-  },
-  tickerLabel: {
-    marginLeft: 8,
-    fontWeight: "400",
-    fontSize: 30,
   },
 });

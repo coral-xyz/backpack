@@ -2,23 +2,31 @@ import type { Blockchain } from "@coral-xyz/common";
 import type { Token, NavTokenOptions } from "~types/types";
 
 import { Suspense, useCallback } from "react";
-import { FlatList, ActivityIndicator, Text } from "react-native";
+import { FlatList } from "react-native";
 
+import { blockchainBalancesSorted } from "@coral-xyz/recoil";
 import { Box } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
+import { useRecoilValue } from "recoil";
 
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
-import { Screen, RoundedContainerGroup } from "~components/index";
-import { useBlockchainBalancesSorted, useActiveWallet } from "~hooks/recoil";
+import {
+  Screen,
+  RoundedContainerGroup,
+  ScreenLoading,
+  ScreenError,
+} from "~components/index";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 import { TokenRow } from "~screens/Unlocked/components/Balances";
 
-function Container({ navigation }): JSX.Element {
-  const { data: wallet } = useActiveWallet();
-  const { data: balances } = useBlockchainBalancesSorted({
-    publicKey: wallet.publicKey.toString(),
-    blockchain: wallet.blockchain,
-  });
+function Container({ navigation, route }): JSX.Element {
+  const { blockchain, publicKey } = route.params;
+  const balances = useRecoilValue(
+    blockchainBalancesSorted({
+      publicKey,
+      blockchain,
+    })
+  );
 
   const onPressToken = useCallback(
     (blockchain: Blockchain, token: Token) => {
@@ -32,7 +40,7 @@ function Container({ navigation }): JSX.Element {
   );
 
   const renderItem = useCallback(
-    ({ item: token, index }) => {
+    ({ item: token, index }: { item: Token; index: number }) => {
       const isFirst = index === 0;
       const isLast = index === balances.length - 1;
 
@@ -43,20 +51,22 @@ function Container({ navigation }): JSX.Element {
         >
           <TokenRow
             onPressRow={onPressToken}
-            blockchain={wallet.blockchain}
+            blockchain={blockchain}
             token={token}
-            walletPublicKey={wallet.publicKey.toString()}
+            walletPublicKey={publicKey}
           />
         </RoundedContainerGroup>
       );
     },
-    [balances.length, onPressToken, wallet.blockchain, wallet.publicKey]
+    [balances.length, onPressToken, blockchain, publicKey]
   );
 
   return (
     <Screen style={{ paddingHorizontal: 0 }}>
       <FlatList
-        contentContainerStyle={{ paddingHorizontal: 16 }}
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+        }}
         data={balances}
         keyExtractor={(item) => item.address}
         renderItem={renderItem}
@@ -79,11 +89,13 @@ function Container({ navigation }): JSX.Element {
   );
 }
 
-export function TokenListScreen({ navigation }: any): JSX.Element {
+export function TokenListScreen({ navigation, route }: any): JSX.Element {
   return (
-    <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
-      <Suspense fallback={<ActivityIndicator size="large" />}>
-        <Container navigation={navigation} />
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ScreenError error={error} />}
+    >
+      <Suspense fallback={<ScreenLoading />}>
+        <Container navigation={navigation} route={route} />
       </Suspense>
     </ErrorBoundary>
   );

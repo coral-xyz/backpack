@@ -138,19 +138,14 @@ export function useAllWallets(): Response<Wallet[]> {
 
 // TODO blockchain balances sorted only needs:
 export function useBlockchainBalancesSorted({ publicKey, blockchain }) {
-  return {
-    data: result__useBlockchainBalancesSorted,
-    loading: false,
-    error: false,
-  };
-  // const data = useRecoilValueLoadable(
-  //   blockchainBalancesSorted({
-  //     publicKey: publicKey.toString(),
-  //     blockchain,
-  //   })
-  // );
-  //
-  // return handleResponse(data, []);
+  const data = useRecoilValueLoadable(
+    blockchainBalancesSorted({
+      publicKey: publicKey.toString(),
+      blockchain,
+    })
+  );
+
+  return handleResponse(data, []);
 }
 
 export function useActiveWalletCollections() {

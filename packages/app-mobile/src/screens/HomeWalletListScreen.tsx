@@ -1,7 +1,7 @@
 import type { Wallet } from "~types/types";
 
 import { Suspense, useCallback } from "react";
-import { FlatList, Text } from "react-native";
+import { FlatList, Text, View } from "react-native";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
 import { Box, StyledText } from "@coral-xyz/tamagui";
@@ -79,32 +79,45 @@ function WalletList() {
   const { allWallets, onSelectWallet } = useWallets();
 
   const handlePressWallet = useCallback(
-    (w: Wallet) => {
-      navigation.push("TopTabsWalletDetail");
+    async (w: Wallet) => {
       onSelectWallet(w, console.log);
+      navigation.navigate("TopTabsWalletDetail", {
+        screen: "TokenList",
+        params: {
+          publicKey: w.publicKey.toString(),
+          blockchain: w.blockchain,
+        },
+      });
     },
     [navigation, onSelectWallet]
   );
 
   const keyExtractor = (wallet: Wallet) => wallet.publicKey.toString();
   const renderItem = useCallback(
-    ({ item: wallet }: { item: Wallet }) => {
-      return <ListItem item={wallet} onPress={handlePressWallet} />;
+    ({ item: wallet, index }: { item: Wallet; index: number }) => {
+      const isFirst = index === 0;
+      const isLast = index === allWallets.length - 1;
+      return (
+        <RoundedContainerGroup
+          disableTopRadius={!isFirst}
+          disableBottomRadius={!isLast}
+        >
+          <ListItem item={wallet} onPress={handlePressWallet} />
+        </RoundedContainerGroup>
+      );
     },
-    [handlePressWallet]
+    [handlePressWallet, allWallets.length]
   );
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <ListHeader title={`${allWallets.length.toString()} Wallets`} />
-      <RoundedContainerGroup>
-        <FlatList
-          data={allWallets}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-        />
-      </RoundedContainerGroup>
-    </>
+      <FlatList
+        data={allWallets}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+      />
+    </View>
   );
 }
 

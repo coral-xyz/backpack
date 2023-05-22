@@ -45,6 +45,7 @@ export function RecentActivityList({
   transactions,
   minimize = false,
   style,
+  ListHeaderComponent,
 }: {
   blockchain: Blockchain;
   address: string;
@@ -52,6 +53,7 @@ export function RecentActivityList({
   transactions?: RecentTransaction[];
   minimize?: boolean;
   style?: StyleProp<ViewStyle>;
+  ListHeaderComponent?: JSX.Element;
 }) {
   return (
     <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
@@ -63,6 +65,7 @@ export function RecentActivityList({
           transactions={transactions}
           minimize={minimize}
           style={style}
+          ListHeaderComponent={ListHeaderComponent}
         />
       </Suspense>
     </ErrorBoundary>
@@ -74,6 +77,7 @@ export function _RecentActivityList({
   address,
   contractAddresses,
   transactions: _transactions,
+  ListHeaderComponent,
 }: {
   blockchain?: Blockchain;
   address?: string;
@@ -81,6 +85,7 @@ export function _RecentActivityList({
   transactions?: RecentTransaction[];
   minimize?: boolean;
   style?: StyleProp<ViewStyle>;
+  ListHeaderComponent?: JSX.Element;
 }): JSX.Element {
   const sections = useRecentTransactionsGroupedByDate({
     blockchain: blockchain!,
@@ -126,6 +131,7 @@ export function _RecentActivityList({
       SectionSeparatorComponent={SectionSeparator}
       stickySectionHeadersEnabled={false}
       showsVerticalScrollIndicator={false}
+      ListHeaderComponent={ListHeaderComponent}
     />
   );
 }
