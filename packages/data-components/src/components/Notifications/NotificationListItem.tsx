@@ -1,10 +1,8 @@
 import { useCallback } from "react";
 import { useUserMetadata } from "@coral-xyz/chat-xplat";
-import { proxyImageUrl } from "@coral-xyz/common";
 import {
-  Avatar,
   ListItemCore,
-  Skeleton,
+  ListItemIconCore,
   StyledText,
   useCustomTheme,
   XStack,
@@ -17,15 +15,11 @@ import { NotificationListItemFriendRequestAction } from "./NotificationListItemA
 import { getTimeStr } from "./utils";
 
 export type NotificationListItemProps = {
-  first?: boolean;
-  last?: boolean;
   notification: Notification;
   onClick?: (n: Notification) => void;
 };
 
 export function NotificationListItem({
-  first,
-  last,
   notification,
   onClick,
 }: NotificationListItemProps) {
@@ -35,8 +29,6 @@ export function NotificationListItem({
   ) {
     return (
       <NotificationListItemFriendRequest
-        first={first}
-        last={last}
         notification={notification}
         onClick={onClick}
       />
@@ -44,8 +36,6 @@ export function NotificationListItem({
   } else if (notification.app) {
     return (
       <NotificationListItemApplication
-        first={first}
-        last={last}
         notification={notification}
         onClick={onClick}
       />
@@ -54,25 +44,7 @@ export function NotificationListItem({
   return null;
 }
 
-export type NotificationListItemIconProps = {
-  image: string;
-};
-
-function NotificationListItemIcon({ image }: NotificationListItemIconProps) {
-  const proxySrc = proxyImageUrl(image);
-  return (
-    <Avatar circular size={44}>
-      <Avatar.Image src={proxySrc} />
-      <Avatar.Fallback delayMs={250}>
-        <Skeleton height={44} width={44} radius={22} />
-      </Avatar.Fallback>
-    </Avatar>
-  );
-}
-
 function NotificationListItemApplication({
-  first,
-  last,
   notification,
   onClick,
 }: NotificationListItemProps) {
@@ -86,17 +58,21 @@ function NotificationListItemApplication({
     <ListItemCore
       style={{
         backgroundColor: notification.viewed
-          ? theme.custom.colors.nav
+          ? "$nav"
           : theme.custom.colors.unreadBackground,
       }}
-      first={first}
-      last={last}
-      icon={<NotificationListItemIcon image={notification.app!.image} />}
+      icon={<ListItemIconCore image={notification.app!.image} size={44} />}
       onClick={handleClick}
       title={
-        <XStack display="flex" alignItems="center">
-          <StyledText flex={1}>{notification.app!.name}</StyledText>
-          <StyledText color={theme.custom.colors.smallTextColor} fontSize={14}>
+        <XStack
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <StyledText color="$fontColor" fontSize="$base">
+            {notification.app!.name}
+          </StyledText>
+          <StyledText color="$secondary" fontSize="$sm">
             {getTimeStr(notification.timestamp)}
           </StyledText>
         </XStack>
@@ -106,8 +82,6 @@ function NotificationListItemApplication({
 }
 
 function NotificationListItemFriendRequest({
-  first,
-  last,
   notification,
   onClick,
 }: NotificationListItemProps) {
@@ -125,27 +99,35 @@ function NotificationListItemFriendRequest({
     <ListItemCore
       style={{
         backgroundColor: notification.viewed
-          ? theme.custom.colors.nav
+          ? "$nav"
           : theme.custom.colors.unreadBackground,
         cursor: "pointer",
       }}
-      first={first}
-      last={last}
-      icon={<NotificationListItemIcon image={user?.image} />}
+      icon={<ListItemIconCore image={user?.image} size={44} />}
       onClick={handleClick}
       title={
-        <XStack display="flex" alignItems="center">
-          <StyledText flex={1}>
+        <XStack
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <StyledText color="$fontColor" fontSize="$base">
             {notification.title.replace("Accepted", "accepted")}
           </StyledText>
-          <StyledText color={theme.custom.colors.smallTextColor} fontSize={14}>
+          <StyledText color="$secondary" fontSize="$sm">
             {getTimeStr(notification.timestamp)}
           </StyledText>
         </XStack>
       }
       subtitle={
         <YStack>
-          <StyledText color={theme.custom.colors.smallTextColor} fontSize={14}>
+          <StyledText
+            color="$secondary"
+            fontSize="$sm"
+            maxWidth="90%"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
             @{user.username}
           </StyledText>
           <NotificationListItemFriendRequestAction
