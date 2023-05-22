@@ -1,7 +1,8 @@
 // TODO: remove the line below
 /* eslint-disable react-hooks/rules-of-hooks */
-import { Suspense, useEffect, useState } from "react";
-import { NotificationList } from "@coral-xyz/data-components";
+import { useEffect, useState } from "react";
+import { Notifications as _Notifications } from "@coral-xyz/data-components";
+import { updateFriendshipIfExists } from "@coral-xyz/db";
 import { Loading, useBreakpoints } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import IconButton from "@mui/material/IconButton";
@@ -100,9 +101,23 @@ export function Notifications() {
 
   return (
     <>
-      <Suspense fallback={<NotificationsLoader />}>
-        <NotificationList onItemClick={(_n) => setOpenDrawer(true)} />
-      </Suspense>
+      <_Notifications
+        loaderComponent={<NotificationsLoader />}
+        onItemClick={(_n) => setOpenDrawer(true)}
+        onAcceptFriendRequest={(activeUser, otherUser) =>
+          updateFriendshipIfExists(activeUser, otherUser, {
+            requested: 0,
+            areFriends: 1,
+          })
+        }
+        onDeclineFriendRequest={(activeUser, otherUser) =>
+          updateFriendshipIfExists(activeUser, otherUser, {
+            areFriends: 0,
+            remoteRequested: 0,
+            requested: 0,
+          })
+        }
+      />
       {!isXs ? (
         <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
           <div style={{ height: "100%" }}>

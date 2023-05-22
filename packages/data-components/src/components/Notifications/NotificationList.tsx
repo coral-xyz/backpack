@@ -1,10 +1,9 @@
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import {
   SectionList,
   type SectionListData,
   type SectionListRenderItem,
 } from "react-native";
-import { useSuspenseQuery_experimental } from "@apollo/client";
 import {
   ListHeaderCore,
   ListSectionSeparatorCore,
@@ -12,67 +11,30 @@ import {
   Separator,
 } from "@coral-xyz/tamagui";
 
-import { gql } from "../../apollo";
-import { type Notification, SortDirection } from "../../apollo/graphql";
+import type { Notification } from "../../apollo/graphql";
 
 import { NotificationListItem } from "./NotificationListItem";
-import { getGroupedNotifications, type NotificationGroup } from "./utils";
-
-const GET_NOTIFICATIONS = gql(`
-  query GetNotifications($filters: NotificationFiltersInput) {
-    user {
-      id
-      notifications(filters: $filters) {
-        edges {
-          node {
-            id
-            app {
-              id
-              image
-              name
-            }
-            body
-            source
-            timestamp
-            title
-            viewed
-          }
-        }
-      }
-    }
-  }
-`);
+import type { NotificationGroup } from "./utils";
 
 export type NotificationListProps = {
+  notificationGroups: NotificationGroup[];
+  onAcceptFriendRequest?: (
+    activeUserId: string,
+    otherUserId: string
+  ) => void | Promise<void>;
+  onDeclineFriendRequest?: (
+    activeUserId: string,
+    otherUserId: string
+  ) => void | Promise<void>;
   onItemClick?: (n: Notification) => void;
 };
 
-export function NotificationList({ onItemClick }: NotificationListProps) {
-  const { data } = useSuspenseQuery_experimental(GET_NOTIFICATIONS, {
-    variables: {
-      filters: {
-        limit: 50,
-        sortDirection: SortDirection.Desc,
-      },
-    },
-  });
-
-  /**
-   * Memoized value for the extracted notifications list from the GraphQL response.
-   */
-  const notifications = useMemo(
-    () => data.user?.notifications?.edges.map((e) => e.node) ?? [],
-    [data.user]
-  );
-
-  /**
-   * Memoized notifications list that are grouped by the date they were sent.
-   */
-  const groupedNotifications = useMemo(
-    () => getGroupedNotifications(notifications),
-    [notifications]
-  );
-
+export function NotificationList({
+  notificationGroups,
+  onAcceptFriendRequest,
+  onDeclineFriendRequest,
+  onItemClick,
+}: NotificationListProps) {
   /**
    * Returns the child component key for an item.
    * @param {Notification} item
@@ -91,11 +53,16 @@ export function NotificationList({ onItemClick }: NotificationListProps) {
       const last = index === section.data.length - 1;
       return (
         <RoundedContainerGroup
-          style={{ marginBottom: last ? 24 : undefined }}
           disableBottomRadius={!last}
           disableTopRadius={!first}
+          style={{ marginBottom: last ? 24 : undefined }}
         >
-          <NotificationListItem onClick={onItemClick} notification={item} />
+          <NotificationListItem
+            notification={item}
+            onClick={onItemClick}
+            onAcceptFriendRequest={onAcceptFriendRequest}
+            onDeclineFriendRequest={onDeclineFriendRequest}
+          />
         </RoundedContainerGroup>
       );
     }, []);
@@ -119,7 +86,7 @@ export function NotificationList({ onItemClick }: NotificationListProps) {
       style={{ marginHorizontal: 16, marginTop: 16 }}
       stickySectionHeadersEnabled={false}
       showsVerticalScrollIndicator={false}
-      sections={groupedNotifications}
+      sections={notificationGroups}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
       renderSectionHeader={renderSectionHeader}

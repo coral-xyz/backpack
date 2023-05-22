@@ -3,7 +3,7 @@ import { useMutation } from "@apollo/client";
 import {
   useFriendship,
   useUpdateFriendships,
-  // useUser,
+  useUser,
 } from "@coral-xyz/recoil";
 import { ListItemActionCore, useCustomTheme, XStack } from "@coral-xyz/tamagui";
 
@@ -16,62 +16,71 @@ const SEND_FRIEND_REQUEST = gql(`
 `);
 
 export type NotificationListItemFriendRequestActionProps = {
-  userId: string;
+  onAccept?: (
+    activeUserId: string,
+    otherUserId: string
+  ) => void | Promise<void>;
+  onDecline?: (
+    activeUserId: string,
+    otherUserId: string
+  ) => void | Promise<void>;
+  remoteUserId: string;
 };
 
 export function NotificationListItemFriendRequestAction({
-  userId,
+  onAccept,
+  onDecline,
+  remoteUserId,
 }: NotificationListItemFriendRequestActionProps) {
   const theme = useCustomTheme();
-  // const { uuid } = useUser();
-  const [sendFriendRequest] = useMutation(SEND_FRIEND_REQUEST);
-  const friendship = useFriendship({ userId });
+  const { uuid } = useUser();
+  const friendship = useFriendship({ userId: remoteUserId });
   const setFriendshipValue = useUpdateFriendships();
+  const [sendFriendRequest] = useMutation(SEND_FRIEND_REQUEST);
 
   /**
    * Memoized function handler for accepting an inbound friend request.
    */
   const handleAccept = useCallback(async () => {
     await sendFriendRequest({
-      variables: { accept: true, otherUserId: userId },
+      variables: { accept: true, otherUserId: remoteUserId },
     });
-    // FIXME: not xplat?
-    // await updateFriendshipIfExists(uuid, userId, {
-    //   requested: 0,
-    //   areFriends: 1,
-    // });
+
+    if (onAccept) {
+      await onAccept(uuid, remoteUserId);
+    }
+
     await setFriendshipValue({
-      userId,
+      userId: remoteUserId,
       friendshipValue: {
         requested: false,
         areFriends: true,
         remoteRequested: false,
       },
     });
-  }, [sendFriendRequest, setFriendshipValue, userId]);
+  }, [onAccept, remoteUserId, sendFriendRequest, setFriendshipValue]);
 
   /**
    * Memoized function handler for rejecting an inbound friend request.
    */
   const handleDecline = useCallback(async () => {
     await sendFriendRequest({
-      variables: { accept: false, otherUserId: userId },
+      variables: { accept: false, otherUserId: remoteUserId },
     });
-    // FIXME: not xplat?
-    // await updateFriendshipIfExists(uuid, userId, {
-    //   requested: 0,
-    //   areFriends: 0,
-    //   remoteRequested: 0,
-    // });
+
+    if (onDecline) {
+      await onDecline(uuid, remoteUserId);
+    }
+
     await setFriendshipValue({
-      userId: userId,
+      userId: remoteUserId,
       friendshipValue: {
         requested: false,
         areFriends: false,
         remoteRequested: false,
       },
     });
-  }, [sendFriendRequest, setFriendshipValue, userId]);
+  }, [onDecline, remoteUserId, sendFriendRequest, setFriendshipValue]);
 
   return friendship?.remoteRequested && !friendship?.areFriends ? (
     <XStack alignItems="center" gap={10} marginTop={5}>

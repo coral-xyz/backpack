@@ -577,6 +577,16 @@ export type GetBalanceSummaryQuery = {
   } | null;
 };
 
+export type SendFriendRequestMutationVariables = Exact<{
+  otherUserId: Scalars["String"];
+  accept: Scalars["Boolean"];
+}>;
+
+export type SendFriendRequestMutation = {
+  __typename?: "Mutation";
+  sendFriendRequest?: boolean | null;
+};
+
 export type GetNotificationsQueryVariables = Exact<{
   filters?: InputMaybe<NotificationFiltersInput>;
 }>;
@@ -608,16 +618,6 @@ export type GetNotificationsQuery = {
       }>;
     } | null;
   } | null;
-};
-
-export type SendFriendRequestMutationVariables = Exact<{
-  otherUserId: Scalars["String"];
-  accept: Scalars["Boolean"];
-}>;
-
-export type SendFriendRequestMutation = {
-  __typename?: "Mutation";
-  sendFriendRequest?: boolean | null;
 };
 
 export const GetBalanceSummaryDocument = {
@@ -727,6 +727,76 @@ export const GetBalanceSummaryDocument = {
 } as unknown as DocumentNode<
   GetBalanceSummaryQuery,
   GetBalanceSummaryQueryVariables
+>;
+export const SendFriendRequestDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "SendFriendRequest" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "otherUserId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "accept" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "Boolean" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "sendFriendRequest" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "otherUserId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "otherUserId" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "accept" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "accept" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  SendFriendRequestMutation,
+  SendFriendRequestMutationVariables
 >;
 export const GetNotificationsDocument = {
   kind: "Document",
@@ -853,74 +923,4 @@ export const GetNotificationsDocument = {
 } as unknown as DocumentNode<
   GetNotificationsQuery,
   GetNotificationsQueryVariables
->;
-export const SendFriendRequestDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "SendFriendRequest" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "otherUserId" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "String" },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "accept" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "Boolean" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "sendFriendRequest" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "otherUserId" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "otherUserId" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "accept" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "accept" },
-                },
-              },
-            ],
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  SendFriendRequestMutation,
-  SendFriendRequestMutationVariables
 >;

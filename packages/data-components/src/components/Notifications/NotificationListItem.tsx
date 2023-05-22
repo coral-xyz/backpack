@@ -16,12 +16,22 @@ import { getTimeStr } from "./utils";
 
 export type NotificationListItemProps = {
   notification: Notification;
+  onAcceptFriendRequest?: (
+    activeUserId: string,
+    otherUserId: string
+  ) => void | Promise<void>;
   onClick?: (n: Notification) => void;
+  onDeclineFriendRequest?: (
+    activeUserId: string,
+    otherUserId: string
+  ) => void | Promise<void>;
 };
 
 export function NotificationListItem({
   notification,
+  onAcceptFriendRequest,
   onClick,
+  onDeclineFriendRequest,
 }: NotificationListItemProps) {
   if (
     notification.source === "friend_requests" ||
@@ -31,6 +41,8 @@ export function NotificationListItem({
       <NotificationListItemFriendRequest
         notification={notification}
         onClick={onClick}
+        onAcceptFriendRequest={onAcceptFriendRequest}
+        onDeclineFriendRequest={onDeclineFriendRequest}
       />
     );
   } else if (notification.app) {
@@ -47,7 +59,7 @@ export function NotificationListItem({
 function NotificationListItemApplication({
   notification,
   onClick,
-}: NotificationListItemProps) {
+}: Pick<NotificationListItemProps, "notification" | "onClick">) {
   const theme = useCustomTheme();
   const handleClick = useCallback(
     () => (onClick ? onClick(notification) : {}),
@@ -83,7 +95,9 @@ function NotificationListItemApplication({
 
 function NotificationListItemFriendRequest({
   notification,
+  onAcceptFriendRequest,
   onClick,
+  onDeclineFriendRequest,
 }: NotificationListItemProps) {
   const theme = useCustomTheme();
   const user = useUserMetadata({
@@ -131,7 +145,9 @@ function NotificationListItemFriendRequest({
             @{user.username}
           </StyledText>
           <NotificationListItemFriendRequestAction
-            userId={(notification.body as Record<string, any>).from}
+            onAccept={onAcceptFriendRequest}
+            onDecline={onDeclineFriendRequest}
+            remoteUserId={(notification.body as Record<string, any>).from}
           />
         </YStack>
       }
