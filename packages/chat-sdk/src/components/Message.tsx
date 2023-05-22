@@ -40,6 +40,7 @@ import { Skeleton, Tooltip } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
+import { openWindow } from "../utils/open";
 import {
   cancel,
   getSecureTransferState,
@@ -891,7 +892,7 @@ function SecureTransferElement({
                 marginLeft: 10,
               }}
               onClick={() =>
-                window.open(
+                openWindow(
                   `https://explorer.solana.com/tx/${finalTxIdLocal}`,
                   "mywindow"
                 )

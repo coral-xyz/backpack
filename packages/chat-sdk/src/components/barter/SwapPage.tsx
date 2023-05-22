@@ -12,6 +12,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import CallMadeIcon from "@mui/icons-material/CallMade";
 import { v4 as uuidv4 } from "uuid";
 
+import { openWindow } from "../../utils/open";
 import { useChatContext } from "../ChatContext";
 
 import { AbsolutelyNothingCard } from "./AbsolutelyNothingCard";
@@ -187,7 +188,7 @@ export function ExplorerLink({ mint }: { mint: string }) {
         justifyContent: "center",
       }}
       onClick={() => {
-        window.open(`https://explorer.solana.com/address/${mint}`, "_blank");
+        openWindow(`https://explorer.solana.com/address/${mint}`, "_blank");
       }}
     >
       <div style={{ display: "flex" }}>
