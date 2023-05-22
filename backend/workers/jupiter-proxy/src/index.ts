@@ -4,6 +4,48 @@ import { Connection } from "@solana/web3.js";
 import { Hono } from "hono";
 import { importSPKI, jwtVerify } from "jose";
 
+type HasuraWebhook = {
+  created_at: string;
+  delivery_info: {
+    current_retry: number;
+    max_retries: number;
+  };
+  event: {
+    data: {
+      new: {
+        created_at: string;
+        distributor_id: any;
+        fee_account_address: any;
+        fee_amount: any;
+        fee_mint_address: any;
+        fee_payer_id: any;
+        fee_payer_public_key: any;
+        id: string;
+        transaction_at: any;
+        transaction_signature: string;
+      };
+      old: null;
+    };
+    op: string;
+    session_variables: {
+      "x-hasura-role": string;
+    };
+    trace_context: {
+      sampling_state: string;
+      span_id: string;
+      trace_id: string;
+    };
+  };
+  id: string;
+  table: {
+    name: string;
+    schema: string;
+  };
+  trigger: {
+    name: string;
+  };
+};
+
 import ACCOUNTS from "./feeAccounts.json";
 
 type MintAddress = keyof typeof ACCOUNTS | undefined;
@@ -68,24 +110,22 @@ app.post("/swap", async (c) => {
 });
 
 app.post("/swap-webhook", async (c) => {
-  if (
-    c.env.WEBHOOK_PASSWORD &&
-    c.req.header("x-password") !== c.env.WEBHOOK_PASSWORD
-  ) {
+  // do nothing for dev env
+  if (c.env.WEBHOOK_PASSWORD !== "PLACEHOLDER") {
+    return c.json({ ok: true });
+  } else if (c.req.header("x-password") !== c.env.WEBHOOK_PASSWORD) {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
   try {
-    const json = (await c.req.json()) as any;
+    const json = (await c.req.json()) as HasuraWebhook;
+    const signature = json.event.data.new.transaction_signature;
 
     const conn = new Connection(c.env.RPC);
-    const tx = await conn.getParsedTransaction(
-      json.record.transaction_signature,
-      {
-        maxSupportedTransactionVersion: 0,
-        commitment: "confirmed",
-      }
-    );
+    const tx = await conn.getParsedTransaction(signature, {
+      maxSupportedTransactionVersion: 0,
+      commitment: "confirmed",
+    });
     const result = tx!
       .meta!.postTokenBalances!.filter((t) => {
         return t.owner === c.env.FEE_AUTHORITY_ADDRESS;
@@ -117,7 +157,7 @@ app.post("/swap-webhook", async (c) => {
         update_auth_swaps: [
           {
             where: {
-              transaction_signature: { _eq: json.record.signature },
+              transaction_signature: { _eq: signature },
             },
             _set: {
               fee_mint_address: mint,

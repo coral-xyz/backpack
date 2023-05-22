@@ -49,3 +49,17 @@ update_permissions:
         - transaction_at
       filter: {}
       check: {}
+event_triggers:
+  - name: track_swap
+    definition:
+      enable_manual: true
+      insert:
+        columns: "*"
+    retry_conf:
+      interval_sec: 20
+      num_retries: 3
+      timeout_sec: 60
+    webhook: https://jupiter.xnfts.dev/swap-webhook
+    headers:
+      - name: x-password
+        value_from_env: SWAP_WEBHOOK_PASSWORD
