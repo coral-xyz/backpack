@@ -1,6 +1,5 @@
 import { Pressable, Text, View } from "react-native";
 
-import { Token, NavTokenAction, NavTokenOptions } from "@@types/types";
 import { Blockchain } from "@coral-xyz/common";
 // import // SwapProvider, // TODO(peter): turn back on when app store approved
 // enabledBlockchains as enabledBlockchainsAtom,
@@ -11,6 +10,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 
 import { Margin } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
+
+import { Token, NavTokenAction, NavTokenOptions } from "~types/types";
 
 const getRouteFromAction = (
   action: NavTokenAction

@@ -1,5 +1,5 @@
-import type { Token } from "@@types/types";
 import type { RemoteUserData } from "@coral-xyz/common";
+import type { Token } from "~types/types";
 
 import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";

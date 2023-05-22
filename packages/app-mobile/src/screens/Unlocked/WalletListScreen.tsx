@@ -1,4 +1,4 @@
-import type { Wallet, PublicKey } from "@@types/types";
+import type { Wallet, PublicKey } from "~types/types";
 
 import { useCallback } from "react";
 import {

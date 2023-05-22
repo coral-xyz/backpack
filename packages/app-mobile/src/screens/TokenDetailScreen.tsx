@@ -2,7 +2,6 @@ import type { StackScreenProps } from "@react-navigation/stack";
 
 import { View, StyleSheet } from "react-native";
 
-import { NavTokenAction, NavTokenOptions } from "@@types/types";
 import { Blockchain } from "@coral-xyz/common";
 import { UsdBalanceAndPercentChange } from "@coral-xyz/tamagui";
 
@@ -19,6 +18,8 @@ import {
   useBlockchainActiveWallet,
 } from "~hooks/recoil";
 import type { WalletStackParamList } from "~navigation/WalletsNavigator";
+
+import { NavTokenAction, NavTokenOptions } from "~types/types";
 
 function TokenHeader({
   blockchain,

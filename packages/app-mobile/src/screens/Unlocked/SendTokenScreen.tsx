@@ -12,7 +12,6 @@ import {
   Text,
 } from "react-native";
 
-import { Token } from "@@types/types";
 import {
   Blockchain,
   ETH_NATIVE_MINT,
@@ -50,6 +49,8 @@ import type { UnlockedNavigatorStackParamList } from "~navigation/UnlockedNaviga
 
 import { SendTokenSelectUserScreen } from "./SendTokenScreen2";
 import { SearchableTokenTables } from "./components/Balances";
+
+import { Token } from "~types/types";
 
 export function SendTokenSelectRecipientScreen({
   route,

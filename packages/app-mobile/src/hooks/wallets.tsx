@@ -1,10 +1,11 @@
 import { useCallback } from "react";
 
-import { Wallet } from "@@types/types";
 import { UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE } from "@coral-xyz/common";
 import { useBackgroundClient, useDehydratedWallets } from "@coral-xyz/recoil";
 
 import { useActiveWallet, useAllWallets } from "./recoil";
+
+import { Wallet } from "~types/types";
 
 // TODO something about useAllWallets breaks when its inside react-navigation
 // This issue only takes place on the first screen of a navigator

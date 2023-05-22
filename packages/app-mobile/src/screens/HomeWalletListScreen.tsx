@@ -1,4 +1,4 @@
-import type { Wallet } from "@@types/types";
+import type { Wallet } from "~types/types";
 
 import { Suspense, useCallback } from "react";
 import { FlatList, Text } from "react-native";
@@ -89,9 +89,6 @@ function WalletList() {
   const keyExtractor = (wallet: Wallet) => wallet.publicKey.toString();
   const renderItem = useCallback(
     ({ item: wallet }: { item: Wallet }) => {
-      if (wallet.name !== "Wallet 1") {
-        return null;
-      }
       return <ListItem item={wallet} onPress={handlePressWallet} />;
     },
     [handlePressWallet]

@@ -1,5 +1,5 @@
-import type { Token, NavTokenOptions } from "@@types/types";
 import type { Blockchain } from "@coral-xyz/common";
+import type { Token, NavTokenOptions } from "~types/types";
 
 import { Suspense, useCallback } from "react";
 import { FlatList, ActivityIndicator, Text } from "react-native";

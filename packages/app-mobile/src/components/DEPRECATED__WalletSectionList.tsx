@@ -1,5 +1,5 @@
-import type { Wallet } from "@@types/types";
 import type { Blockchain } from "@coral-xyz/common";
+import type { Wallet } from "~types/types";
 
 import { useState } from "react";
 import { SectionList } from "react-native";
