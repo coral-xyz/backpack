@@ -775,11 +775,6 @@ type User implements Node {
   id: ID!
 
   """
-  The balance aggregate for a user's entire portfolio of wallets.
-  """
-  aggregate: BalanceAggregate
-
-  """
   The image link for the avatar of the user.
   """
   avatar: String!

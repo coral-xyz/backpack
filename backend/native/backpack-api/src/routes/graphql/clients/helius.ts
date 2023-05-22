@@ -4,6 +4,8 @@ import type { AccountInfo } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import type { EnrichedTransaction } from "helius-sdk";
 
+import { ASSET_ID_MAP } from "./coingecko";
+
 type HeliusOptions = {
   apiKey: string;
   devnet?: boolean;
@@ -50,6 +52,25 @@ export class Helius extends RESTDataSource {
    * @memberof Helius
    */
   async getTokenMarketIds(mints: string[]): Promise<Map<string, string>> {
+    const mappings: Map<string, string> = new Map();
+    for (const m of mints) {
+      if (ASSET_ID_MAP.has(m)) {
+        mappings.set(m, ASSET_ID_MAP.get(m)!);
+      }
+    }
+
+    // Check to see if all argued mint addresses were found in the known asset ID map
+    const mintCacheMisses = mints.filter((m) => !mappings.has(m));
+    if (mintCacheMisses.length === 0) {
+      // Remove all `null` entries from the copied over asset IDs
+      for (const entry of mappings.entries()) {
+        if (!entry[1]) {
+          mappings.delete(entry[0]);
+        }
+      }
+      return mappings;
+    }
+
     const resp = await this.post<HeliusGetTokenMetadataResponse>(
       "/v0/token-metadata",
       {
@@ -58,16 +79,17 @@ export class Helius extends RESTDataSource {
           "api-key": this.#apiKey,
         },
         body: JSON.stringify({
-          mintAccounts: mints,
+          mintAccounts: mintCacheMisses,
           includeOffChain: false,
           disableCache: false,
         }),
       }
     );
 
-    const mappings: Map<string, string> = new Map();
     for (const entry of resp) {
       const id = entry.legacyMetadata?.extensions?.coingeckoId ?? null;
+      ASSET_ID_MAP.set(entry.account, id);
+
       if (id) {
         mappings.set(entry.account, id);
       }

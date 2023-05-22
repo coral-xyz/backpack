@@ -459,8 +459,6 @@ export type TransactionTransfer = {
  */
 export type User = Node & {
   __typename?: "User";
-  /** The balance aggregate for a user's entire portfolio of wallets. */
-  aggregate?: Maybe<BalanceAggregate>;
   /** The image link for the avatar of the user. */
   avatar: Scalars["String"];
   /** The timestamp of the creation of the user. */
@@ -1233,11 +1231,6 @@ export type UserResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["User"] = ResolversParentTypes["User"]
 > = ResolversObject<{
-  aggregate?: Resolver<
-    Maybe<ResolversTypes["BalanceAggregate"]>,
-    ParentType,
-    ContextType
-  >;
   avatar?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   friendship?: Resolver<
