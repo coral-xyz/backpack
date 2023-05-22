@@ -69,6 +69,11 @@ type Query {
       reason: "Should use the user entrypoint for authentication identities."
     )
     @cacheControl(maxAge: 60)
+
+  """
+  Verify that the argued JWT matches, or is associated with, the username.
+  """
+  verify(username: String!, jwt: String!): Boolean @cacheControl(maxAge: 120)
 }
 
 """

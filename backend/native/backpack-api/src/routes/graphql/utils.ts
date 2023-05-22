@@ -1,5 +1,15 @@
-import type { BalanceAggregate, Node, PageInfo, TokenBalance } from "./types";
-import { ChainId } from "./types";
+import type { Request } from "express";
+import { importSPKI, jwtVerify } from "jose";
+
+import { AUTH_JWT_PUBLIC_KEY } from "../../config";
+
+import {
+  type BalanceAggregate,
+  ChainId,
+  type Node,
+  type PageInfo,
+  type TokenBalance,
+} from "./types";
 
 export type Edge<T extends Node> = {
   cursor: string;
@@ -72,6 +82,50 @@ export function createConnection<T extends Node>(
       hasPreviousPage,
     },
   };
+}
+
+/**
+ * Attempt to find and extract a JWT from the argued request.
+ * @export
+ * @param {Request} req
+ * @returns {(string | undefined)}
+ */
+export function extractJwt(req: Request): string | undefined {
+  let jwt: string | undefined = undefined;
+  const authHeader = req.headers.authorization ?? "";
+  if (authHeader.startsWith("Bearer")) {
+    jwt = authHeader.split(" ")[1];
+  } else if (req.cookies.jwt) {
+    jwt = req.cookies.jwt;
+  } else if (req.query.jwt) {
+    jwt = req.query.jwt as string;
+  }
+  return jwt;
+}
+
+/**
+ * Verify and return the subject of the argued JWT.
+ * @export
+ * @param {string} jwt
+ * @param {boolean} [isXnft]
+ * @returns {Promise<string | undefined>}
+ */
+export async function getSubjectFromVerifiedJwt(
+  jwt: string,
+  isXnft?: boolean
+): Promise<string | undefined> {
+  try {
+    const publicKey = await importSPKI(AUTH_JWT_PUBLIC_KEY, "RS256");
+
+    const resp = await jwtVerify(jwt, publicKey, {
+      issuer: "auth.xnfts.dev",
+      audience: "backpack",
+    });
+    return resp.payload.sub;
+  } catch {
+    // NOOP
+    return undefined;
+  }
 }
 
 /**

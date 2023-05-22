@@ -4,6 +4,8 @@ import type { ApiContext } from "../../context";
 import type {
   Friendship,
   NotificationConnection,
+  QueryResolvers,
+  QueryVerifyArgs,
   User,
   UserNotificationsArgs,
   UserResolvers,
@@ -12,6 +14,7 @@ import type {
   Wallet,
   WalletConnection,
 } from "../../types";
+import { getSubjectFromVerifiedJwt } from "../../utils";
 
 /**
  * Handler for the `user` query.
@@ -22,14 +25,14 @@ import type {
  * @param {GraphQLResolveInfo} _info
  * @returns {(Promise<User | null>)}
  */
-export async function userQueryResolver(
+export const userQueryResolver: QueryResolvers["user"] = async (
   _parent: {},
   _args: {},
   ctx: ApiContext,
   _info: GraphQLResolveInfo
-): Promise<User | null> {
+): Promise<User | null> => {
   return ctx.dataSources.hasura.getUser(ctx.authorization.userId!);
-}
+};
 
 /**
  * Type-level query resolver for the `User` schema object.
@@ -111,4 +114,31 @@ export const userTypeResolvers: UserResolvers = {
       filters
     );
   },
+};
+
+/**
+ * Handler for the `verify` query.
+ * @param {{}} _parent
+ * @param {QueryVerifyArgs} args
+ * @param {ApiContext} ctx
+ * @param {GraphQLResolveInfo} _info
+ * @returns {Promise<boolean>}
+ */
+export const verifyQueryResolver: QueryResolvers["verify"] = async (
+  _parent: {},
+  { jwt, username }: QueryVerifyArgs,
+  ctx: ApiContext,
+  _info: GraphQLResolveInfo
+): Promise<boolean> => {
+  const userId = await getSubjectFromVerifiedJwt(jwt);
+  if (!userId) {
+    return false;
+  }
+
+  const user = await ctx.dataSources.hasura.getUser(userId);
+  if (!user) {
+    return false;
+  }
+
+  return user.username === username;
 };

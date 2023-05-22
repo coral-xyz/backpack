@@ -22,7 +22,7 @@ import type {
  * @returns {Promise<boolean | null>}
  * FIXME:TODO: move to new hasura client abstraction
  */
-export const importPublicKeyMutation: MutationResolvers["importPublicKey"] =
+export const importPublicKeyMutationResolver: MutationResolvers["importPublicKey"] =
   async (
     _parent: {},
     args: MutationImportPublicKeyArgs,
