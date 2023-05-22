@@ -28,35 +28,6 @@ import { getBlockchainLogo } from "~hooks/index";
 import { useTheme } from "~hooks/useTheme";
 import { useWallets } from "~hooks/wallets";
 
-// function MainWalletListItem({
-//   publicKey,
-//   type,
-//   name,
-//   blockchain,
-//   onPress,
-//   balance,
-// }) {
-//   return (
-//     <ListItem2
-//       list
-//       singleLine
-//       hoverTheme
-//       pressTheme
-//       icon={<NetworkIcon size={18} blockchain={blockchain} />}
-//       onPress={() => onPress({ blockchain, name, publicKey, type })}
-//     >
-//       <XStack flex={1} justifyContent="space-between">
-//         <StyledText fontSize="$base" fontWeight="600">
-//           {name}
-//         </StyledText>
-//         <StyledText fontSize="$base" fontWeight="600">
-//           {balance}
-//         </StyledText>
-//       </XStack>
-//     </ListItem2>
-//   );
-// }
-
 export function MainWalletList({
   onPressWallet,
 }: {
@@ -77,17 +48,6 @@ export function MainWalletList({
           onPress={onPressWallet}
         />
       );
-
-      // return (
-      //   <MainWalletListItem
-      //     name={wallet.name}
-      //     type={wallet.type}
-      //     publicKey={wallet.publicKey}
-      //     blockchain={wallet.blockchain}
-      //     onPress={onPressWallet}
-      //     balance="$4,197.67"
-      //   />
-      // );
     },
     [onPressWallet]
   );

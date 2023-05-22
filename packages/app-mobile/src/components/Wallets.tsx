@@ -1,16 +1,10 @@
-import { FlatList, Text } from "react-native";
+import { FlatList } from "react-native";
 
-import {
-  blockchainBalancesSorted,
-  useActiveWallet,
-  activeWallet,
-} from "@coral-xyz/recoil";
-import { ListItem2 } from "@coral-xyz/tamagui";
+import { blockchainBalancesSorted, activeWallet } from "@coral-xyz/recoil";
+import { RoundedContainerGroup } from "@coral-xyz/tamagui";
 import { useRecoilValueLoadable } from "recoil";
 
 import { TokenRow } from "~screens/Unlocked/components/Balances";
-
-import { RoundedContainerGroup } from ".";
 
 export function WalletTokenList({ onPressToken }) {
   const _wallet = useRecoilValueLoadable(activeWallet);
