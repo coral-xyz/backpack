@@ -4,7 +4,6 @@ export * from "./Container";
 export * from "./Icon";
 export * from "./Images";
 export * from "./ListItem";
-export * from "./ListItem2";
 export * from "./ProxyImage";
 export * from "./RoundedContainerGroup";
 export { SearchBox } from "./SearchBox";
