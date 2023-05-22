@@ -19,6 +19,8 @@
 - "!include auth_waolist_tokens.yaml"
 - "!include auth_xnft_preferences.yaml"
 - "!include auth_xnft_secrets.yaml"
+- "!include dropzone_claims.yaml"
+- "!include dropzone_distributor_categories.yaml"
 - "!include dropzone_distributors.yaml"
 - "!include public_images.yaml"
 - "!include public_invitations.yaml"
