@@ -1,0 +1,36 @@
+table:
+  name: distributor_categories
+  schema: dropzone
+array_relationships:
+  - name: distributors
+    using:
+      foreign_key_constraint_on:
+        column: category_id
+        table:
+          name: distributors
+          schema: dropzone
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - id
+        - name
+        - data
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - data
+        - name
+        - id
+      filter: {}
+update_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - data
+        - name
+        - id
+      filter: {}
+      check: {}
