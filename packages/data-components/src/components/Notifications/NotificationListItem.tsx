@@ -75,21 +75,21 @@ function NotificationListItemApplication({
       }}
       icon={<ListItemIconCore image={notification.app!.image} size={44} />}
       onClick={handleClick}
-      title={
-        <XStack
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <StyledText color="$fontColor" fontSize="$base">
-            {notification.app!.name}
-          </StyledText>
-          <StyledText color="$secondary" fontSize="$sm">
-            {getTimeStr(notification.timestamp)}
-          </StyledText>
-        </XStack>
-      }
-    />
+    >
+      <XStack
+        flex={1}
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <StyledText color="$fontColor" fontSize="$base">
+          {notification.app!.name}
+        </StyledText>
+        <StyledText color="$secondary" fontSize="$sm">
+          {getTimeStr(notification.timestamp)}
+        </StyledText>
+      </XStack>
+    </ListItemCore>
   );
 }
 
@@ -119,11 +119,13 @@ function NotificationListItemFriendRequest({
       }}
       icon={<ListItemIconCore image={user?.image} size={44} />}
       onClick={handleClick}
-      title={
+    >
+      <YStack flex={1}>
         <XStack
           display="flex"
           alignItems="center"
           justifyContent="space-between"
+          marginBottom={4}
         >
           <StyledText color="$fontColor" fontSize="$base">
             {notification.title.replace("Accepted", "accepted")}
@@ -132,8 +134,6 @@ function NotificationListItemFriendRequest({
             {getTimeStr(notification.timestamp)}
           </StyledText>
         </XStack>
-      }
-      subtitle={
         <YStack>
           <StyledText
             color="$secondary"
@@ -150,7 +150,7 @@ function NotificationListItemFriendRequest({
             remoteUserId={(notification.body as Record<string, any>).from}
           />
         </YStack>
-      }
-    />
+      </YStack>
+    </ListItemCore>
   );
 }

@@ -1,19 +1,18 @@
+import type { ReactNode } from "react";
 import type { ViewStyleWithPseudos } from "@tamagui/core";
 import { ListItem, type ListItemProps } from "tamagui";
 
 export type ListItemCoreProps = {
+  children: ReactNode;
   icon?: ListItemProps["icon"];
   onClick?: () => void;
-  title: ListItemProps["title"];
   style?: ViewStyleWithPseudos;
-  subtitle?: ListItemProps["subTitle"];
 };
 
 export function ListItemCore({
+  children,
   icon,
   onClick,
-  title,
-  subtitle,
   style,
 }: ListItemCoreProps) {
   return (
@@ -24,9 +23,9 @@ export function ListItemCore({
       paddingHorizontal={12}
       paddingVertical={10}
       pointerEvents="box-only"
-      subTitle={subtitle}
-      title={title}
       {...style}
-    />
+    >
+      {children}
+    </ListItem>
   );
 }
