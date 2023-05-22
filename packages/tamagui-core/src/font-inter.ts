@@ -2,6 +2,8 @@
 // copied over from here but doing our own thing because we're not using their system
 import { createFont, isWeb } from "@tamagui/core";
 
+// true is required for the default font size
+
 // the following keys are meant to match:
 // - fontSize
 // - lineHeight
@@ -11,7 +13,7 @@ const size = {
   xs: 12,
   sm: 14,
   base: 16,
-  // true: 16,
+  true: 16,
   lg: 18,
   xl: 20,
   "2xl": 24,
@@ -25,7 +27,7 @@ const lineHeight = {
   xs: 16,
   sm: 20,
   base: 24,
-  // true: 24,
+  true: 24,
   lg: 28,
   xl: 28,
   "2xl": 32,
@@ -65,6 +67,7 @@ const face = {
 
 const letterSpacing = {
   base: 0,
+  true: 0,
 } as const;
 
 export const interFont = createFont({
