@@ -6,8 +6,9 @@ import type {
 import { Suspense, useCallback } from "react";
 import { Text, SectionList, ActivityIndicator } from "react-native";
 
+import { useUserMetadata } from "@coral-xyz/chat-xplat";
 import { NotificationsData } from "@coral-xyz/recoil";
-import { Separator, useUserMetadata } from "@coral-xyz/tamagui";
+import { Separator } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import {
