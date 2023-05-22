@@ -302,7 +302,6 @@ export class Hasura {
         auth_users_by_pk: [
           { id },
           {
-            id: true,
             created_at: true,
             username: true,
           },
@@ -316,15 +315,15 @@ export class Hasura {
     }
 
     const user = resp.auth_users_by_pk as {
-      id: string;
       created_at: string;
       username: string;
     };
 
     return {
-      id: `user:${user.id}`,
+      id: `user:${id}`,
       avatar: `https://swr.xnfts.dev/avatars/${user.username}`,
       createdAt: new Date(user.created_at).toISOString(),
+      userId: id,
       username: user.username,
     };
   }

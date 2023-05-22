@@ -459,6 +459,8 @@ export type TransactionTransfer = {
  */
 export type User = Node & {
   __typename?: "User";
+  /** The balance aggregate for a user's entire portfolio of wallets. */
+  aggregate?: Maybe<BalanceAggregate>;
   /** The image link for the avatar of the user. */
   avatar: Scalars["String"];
   /** The timestamp of the creation of the user. */
@@ -469,6 +471,8 @@ export type User = Node & {
   id: Scalars["ID"];
   /** The Relay connection for the notifications received by the user. */
   notifications?: Maybe<NotificationConnection>;
+  /** The user's unique UUID from the database. */
+  userId: Scalars["String"];
   /** The user's Backpack username. */
   username: Scalars["String"];
   /** Get a single wallet object for the argued public key address. */
@@ -1229,6 +1233,11 @@ export type UserResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["User"] = ResolversParentTypes["User"]
 > = ResolversObject<{
+  aggregate?: Resolver<
+    Maybe<ResolversTypes["BalanceAggregate"]>,
+    ParentType,
+    ContextType
+  >;
   avatar?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   friendship?: Resolver<
@@ -1243,6 +1252,7 @@ export type UserResolvers<
     ContextType,
     Partial<UserNotificationsArgs>
   >;
+  userId?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   username?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   wallet?: Resolver<
     Maybe<ResolversTypes["Wallet"]>,
