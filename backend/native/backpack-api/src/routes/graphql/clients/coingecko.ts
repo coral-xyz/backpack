@@ -1,5 +1,9 @@
 import { RESTDataSource } from "@apollo/datasource-rest";
 
+type CoinGeckoOptions = {
+  apiKey: string;
+};
+
 /**
  * Custom GraphQL REST data source class abstraction for CoinGecko.
  * @export
@@ -7,10 +11,13 @@ import { RESTDataSource } from "@apollo/datasource-rest";
  * @extends {RESTDataSource}
  */
 export class CoinGecko extends RESTDataSource {
-  override baseURL = "https://api.coingecko.com";
+  readonly #apiKey: string;
 
-  constructor() {
+  override baseURL = "https://pro-api.coingecko.com";
+
+  constructor(opts: CoinGeckoOptions) {
     super();
+    this.#apiKey = opts.apiKey;
   }
 
   /**
@@ -22,6 +29,9 @@ export class CoinGecko extends RESTDataSource {
    */
   async getPrices(ids: string[]): Promise<CoinGeckoGetPricesResponse> {
     const resp: CoinGeckoPriceData[] = await this.get("/api/v3/coins/markets", {
+      headers: {
+        "x-cg-pro-api-key": this.#apiKey,
+      },
       params: {
         ids: ids.join(","),
         page: "1",

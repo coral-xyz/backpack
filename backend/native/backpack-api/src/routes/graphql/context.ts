@@ -6,6 +6,7 @@ import { LRUCache } from "lru-cache";
 
 import {
   ALCHEMY_API_KEY,
+  COINGECKO_API_KEY,
   HASURA_URL,
   HELIUS_API_KEY,
   JWT as HASURA_JWT,
@@ -85,7 +86,7 @@ export const createContext: ContextFunction<
         apiKey: ALCHEMY_API_KEY,
         network: devnet ? Network.ETH_SEPOLIA : Network.ETH_MAINNET,
       }),
-      coinGecko: new CoinGecko(),
+      coinGecko: new CoinGecko({ apiKey: COINGECKO_API_KEY }),
       hasura: new Hasura({ secret: HASURA_JWT, url: HASURA_URL }),
       helius: new Helius({ apiKey: HELIUS_API_KEY, devnet }),
       swr: new Swr(),
