@@ -18,9 +18,6 @@ export function ListItemCore({
 }: ListItemCoreProps) {
   return (
     <ListItem
-      borderColor="$borderFull"
-      borderRadius="$container"
-      borderWidth={2}
       display="flex"
       icon={icon}
       onPress={onClick}

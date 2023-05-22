@@ -91,6 +91,7 @@ export function NotificationList({ onItemClick }: NotificationListProps) {
       const last = index === section.data.length - 1;
       return (
         <RoundedContainerGroup
+          style={{ marginBottom: last ? 24 : undefined }}
           disableBottomRadius={!last}
           disableTopRadius={!first}
         >
@@ -109,7 +110,7 @@ export function NotificationList({ onItemClick }: NotificationListProps) {
       section,
     }: {
       section: SectionListData<Notification, NotificationGroup>;
-    }) => <ListHeaderCore title={section.date} />,
+    }) => <ListHeaderCore style={{ marginBottom: 0 }} title={section.date} />,
     []
   );
 
