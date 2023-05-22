@@ -17,6 +17,8 @@ enum PasswordError {
   NO_MATCH,
 }
 
+const MIN_PASSWORD_LENGTH = 8;
+
 export function ChangePassword() {
   const theme = useCustomTheme();
   const { close } = useDrawerContext();
@@ -51,15 +53,15 @@ export function ChangePassword() {
               params: [currentPassword],
             });
             const mismatchError = newPw1.trim() === "" || newPw1 !== newPw2;
-            const passwordLengthError = newPw1.length >= 8;
+            const passwordLengthError = newPw1.length < MIN_PASSWORD_LENGTH;
 
             setCurrentPasswordError(!isCurrentCorrect);
             setPasswordMismatchError(mismatchError);
-            setPasswordLengthError(!passwordLengthError);
+            setPasswordLengthError(passwordLengthError);
 
-            if (!isCurrentCorrect || mismatchError || !passwordLengthError) {
+            if (!isCurrentCorrect || mismatchError || passwordLengthError) {
               if (mismatchError) setError(PasswordError.NO_MATCH);
-              else if (!passwordLengthError) setError(PasswordError.TOO_SHORT);
+              else if (passwordLengthError) setError(PasswordError.TOO_SHORT);
               return;
             }
 
@@ -139,9 +141,9 @@ export function ChangePassword() {
             >
               {
                 {
-                  [PasswordError.TOO_SHORT]:
-                    "Your password must be at least 8 characters.",
-                  [PasswordError.NO_MATCH]: "Your passwords do not match.",
+                  [PasswordError.TOO_SHORT]: `Must be at least ${MIN_PASSWORD_LENGTH} characters.`,
+                  [PasswordError.NO_MATCH]:
+                    "Password and confirmation do not match.",
                 }[error]
               }
             </Typography>
@@ -156,8 +158,8 @@ export function ChangePassword() {
               marginTop: "10px",
             }}
           >
-            Your password must be at least 8 characters long and contain letters
-            and numbers.
+            Your password must be at least {MIN_PASSWORD_LENGTH} characters
+            long.
           </SubtextParagraph>
         </div>
         <div style={{ padding: 16 }}>
