@@ -2,7 +2,7 @@ import type { Blockchain } from "@coral-xyz/common";
 import type { Token, NavTokenOptions } from "~types/types";
 
 import { Suspense, useCallback } from "react";
-import { FlatList, Text } from "react-native";
+import { FlatList } from "react-native";
 
 import { blockchainBalancesSorted } from "@coral-xyz/recoil";
 import { Box } from "@coral-xyz/tamagui";
@@ -13,7 +13,8 @@ import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import {
   Screen,
   RoundedContainerGroup,
-  FullScreenLoading,
+  ScreenLoading,
+  ScreenError,
 } from "~components/index";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 import { TokenRow } from "~screens/Unlocked/components/Balances";
@@ -89,11 +90,11 @@ function Container({ navigation, route }): JSX.Element {
 }
 
 export function TokenListScreen({ navigation, route }: any): JSX.Element {
-  console.log("debug3:navigation", navigation);
-  console.log("debug3:route", route);
   return (
-    <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
-      <Suspense fallback={<FullScreenLoading />}>
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ScreenError error={error} />}
+    >
+      <Suspense fallback={<ScreenLoading />}>
         <Container navigation={navigation} route={route} />
       </Suspense>
     </ErrorBoundary>

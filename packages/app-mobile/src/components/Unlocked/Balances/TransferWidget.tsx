@@ -15,16 +15,16 @@ import { Token, NavTokenAction, NavTokenOptions } from "~types/types";
 
 const getRouteFromAction = (
   action: NavTokenAction
-): "DepositList" | "SendSelectTokenModal" | "SwapModal" => {
+): "DepositSingle" | "SendSelectTokenModal" | "SwapModal" => {
   switch (action) {
     case NavTokenAction.Receive:
-      return "DepositList";
+      return "DepositSingle";
     case NavTokenAction.Send:
       return "SendSelectTokenModal";
     case NavTokenAction.Swap:
       return "SwapModal";
     default:
-      return "DepositList";
+      return "DepositSingle";
   }
 };
 

@@ -2,7 +2,10 @@ import { Blockchain, toTitleCase } from "@coral-xyz/common";
 import { Box } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { createStackNavigator } from "@react-navigation/stack";
+import {
+  StackScreenProps,
+  createStackNavigator,
+} from "@react-navigation/stack";
 
 import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
 import { useTheme } from "~hooks/useTheme";
@@ -78,6 +81,12 @@ export type WalletStackParamList = {
     blockchain: Blockchain;
   };
 };
+
+export type TokenDetailScreenParams = StackScreenProps<
+  WalletStackParamList,
+  "TokenDetail"
+>;
+
 const Stack = createStackNavigator<WalletStackParamList>();
 export function WalletsNavigator(): JSX.Element {
   const theme = useTheme();

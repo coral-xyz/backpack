@@ -391,6 +391,16 @@ export function FullScreenLoading({ label }: { label?: string }): JSX.Element {
   );
 }
 
+export const ScreenLoading = FullScreenLoading;
+export function ScreenError({ error }: { error: any }): JSX.Element {
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Text>Something went wrong:</Text>
+      <Text>{error.message}</Text>
+    </View>
+  );
+}
+
 export function WelcomeLogoHeader() {
   const theme = useTheme();
   const [showDebug, setShowDebug] = useState(false);
