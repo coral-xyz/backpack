@@ -1,13 +1,10 @@
 import type { GraphQLResolveInfo } from "graphql";
 
-import { getBlockchainForId } from "../../blockchain";
 import type { ApiContext } from "../../context";
 import type {
-  BalanceAggregate,
   Friendship,
   NotificationConnection,
   QueryResolvers,
-  TokenBalance,
   User,
   UserNotificationsArgs,
   UserResolvers,
@@ -16,7 +13,6 @@ import type {
   Wallet,
   WalletConnection,
 } from "../../types";
-import { calculateBalanceAggregate } from "../../utils";
 
 /**
  * Handler for the `user` query.
@@ -41,48 +37,6 @@ export const userQueryResolver: QueryResolvers["user"] = async (
  * @export
  */
 export const userTypeResolvers: UserResolvers = {
-  /**
-   * Field-level resolver for the `aggregate` field.
-   * @param {User} parent
-   * @param {{}} _args
-   * @param {ApiContext} ctx
-   * @param {GraphQLResolveInfo} _info
-   * @returns {Promise<BalanceAggregate | null>}
-   */
-  async aggregate(
-    parent: User,
-    _args: {},
-    ctx: ApiContext,
-    _info: GraphQLResolveInfo
-  ): Promise<BalanceAggregate | null> {
-    const walletsConnection =
-      parent.wallets ??
-      (await ctx.dataSources.hasura.getWallets(ctx.authorization.userId!));
-
-    if (!walletsConnection) {
-      return null;
-    }
-
-    const walletNodes = walletsConnection.edges.map((e) => e.node);
-    const balances = await Promise.all(
-      walletNodes.map((n) => {
-        if (n.balances) {
-          return Promise.resolve(n.balances);
-        }
-        return getBlockchainForId(n.chainId, ctx).getBalancesForAddress(
-          n.address
-        );
-      })
-    );
-
-    const flatBalances = balances.reduce<TokenBalance[]>((acc, curr) => {
-      const tokens = curr.tokens?.edges.map((e) => e.node) ?? [];
-      return [curr.native, ...tokens, ...acc];
-    }, []);
-
-    return calculateBalanceAggregate(ctx.authorization.userId!, flatBalances);
-  },
-
   /**
    * Field-level resolver handler for the `friendship` field.
    * @param {User} _parent
