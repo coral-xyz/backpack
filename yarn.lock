@@ -11768,67 +11768,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/functions-js@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "@supabase/functions-js@npm:2.1.0"
-  dependencies:
-    cross-fetch: ^3.1.5
-  checksum: 231addfa49c1b109ddcc219dd8ed6b83e87cf2516cf7cf2742330176baa794d99a78694ff7f748fffa920f37a8078352822611d84ff43c8bc293c4d4486134fd
-  languageName: node
-  linkType: hard
-
-"@supabase/gotrue-js@npm:^2.12.0":
-  version: 2.16.0
-  resolution: "@supabase/gotrue-js@npm:2.16.0"
-  dependencies:
-    cross-fetch: ^3.1.5
-  checksum: c0c322dc8becaa77fa5a7093288a3227a5f092ec396347de360210970e8970f94dd50a9cb16e3b49aa66053c2b8a5ca5f5afb9b4be44426eac23342f48096bbb
-  languageName: node
-  linkType: hard
-
-"@supabase/postgrest-js@npm:^1.1.1":
-  version: 1.4.1
-  resolution: "@supabase/postgrest-js@npm:1.4.1"
-  dependencies:
-    cross-fetch: ^3.1.5
-  checksum: 0a4ad721a5985b92bd7d3703dc6a97c9c57200ff7bdc13c75134d235f7d795e700a421c7bdb1298190ec0b24fb6923c182d5ec7d34d091e9c179813ed8091546
-  languageName: node
-  linkType: hard
-
-"@supabase/realtime-js@npm:^2.7.1":
-  version: 2.7.1
-  resolution: "@supabase/realtime-js@npm:2.7.1"
-  dependencies:
-    "@types/phoenix": ^1.5.4
-    "@types/websocket": ^1.0.3
-    websocket: ^1.0.34
-  checksum: 6a68d00752e54066c8add86524455d669d0db6a411b3ade9781c774f049ca966900b57870859896868c7a54a66aaac9520cf44592b5b59927b70a667c510df8e
-  languageName: node
-  linkType: hard
-
-"@supabase/storage-js@npm:^2.3.1":
-  version: 2.3.1
-  resolution: "@supabase/storage-js@npm:2.3.1"
-  dependencies:
-    cross-fetch: ^3.1.5
-  checksum: b502bc0735f06df091b40839e37f7a795563c1a6be918bbd7a2dab45299d625bde825dd24e396c8dca08eaa3bf247c5159dd5018277cc9fb90310c62cc88148c
-  languageName: node
-  linkType: hard
-
-"@supabase/supabase-js@npm:^2.4.1":
-  version: 2.12.0
-  resolution: "@supabase/supabase-js@npm:2.12.0"
-  dependencies:
-    "@supabase/functions-js": ^2.1.0
-    "@supabase/gotrue-js": ^2.12.0
-    "@supabase/postgrest-js": ^1.1.1
-    "@supabase/realtime-js": ^2.7.1
-    "@supabase/storage-js": ^2.3.1
-    cross-fetch: ^3.1.5
-  checksum: eedfbe407372bbce8a492d1b5c576b74cddaa9ca116993b5e97de1da032e41bc8f3ceea0dfcb6e92532903090e45338d807446537b81e5e6c67d3a59bc1df06b
-  languageName: node
-  linkType: hard
-
 "@supercharge/promise-pool@npm:^2.1.0":
   version: 2.4.0
   resolution: "@supercharge/promise-pool@npm:2.4.0"
@@ -14243,13 +14182,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/phoenix@npm:^1.5.4":
-  version: 1.5.5
-  resolution: "@types/phoenix@npm:1.5.5"
-  checksum: 2dfb59c51c3f4b79ba9422f4f778695adc45a5ed55450b59e882da86835d4489483b3cb5a372bab1506b98a46c7830b1dda4bbdbb83c6787b619065d7eb99816
-  languageName: node
-  linkType: hard
-
 "@types/prettier@npm:^2.1.5":
   version: 2.7.2
   resolution: "@types/prettier@npm:2.7.2"
@@ -14569,15 +14501,6 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: 0b635e63779b1b03af536373ea7a43cfadc993d941be45a7bccd6b891b5e361ecb0f10e5375a58c0f9d355697281bc366c6a5908110afd57361fef6f2a5017d7
-  languageName: node
-  linkType: hard
-
-"@types/websocket@npm:^1.0.3":
-  version: 1.0.5
-  resolution: "@types/websocket@npm:1.0.5"
-  dependencies:
-    "@types/node": "*"
-  checksum: 41c7a620f877a0165ff36e713455d888b7f5df9c51e71b5d0f47994f98cf22ccd339b8c6cfdc6bb417e950d40f405693974d393bd916971490553cc5e9e67a9d
   languageName: node
   linkType: hard
 
@@ -29677,9 +29600,9 @@ __metadata:
   resolution: "jupiter-proxy@workspace:backend/workers/jupiter-proxy"
   dependencies:
     "@cloudflare/workers-types": ^4.20221111.1
+    "@coral-xyz/zeus": "*"
     "@jup-ag/api": ^4.0.1-alpha.0
     "@solana/web3.js": ^1.73.0
-    "@supabase/supabase-js": ^2.4.1
     eslint-config-custom: "*"
     hono: ^3.1.5
     jose: ^4.11.2

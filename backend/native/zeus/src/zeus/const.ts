@@ -541,6 +541,145 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_stripe_onramp_set_input",
     where: "auth_stripe_onramp_bool_exp",
   },
+  auth_swaps_aggregate_order_by: {
+    avg: "auth_swaps_avg_order_by",
+    count: "order_by",
+    max: "auth_swaps_max_order_by",
+    min: "auth_swaps_min_order_by",
+    stddev: "auth_swaps_stddev_order_by",
+    stddev_pop: "auth_swaps_stddev_pop_order_by",
+    stddev_samp: "auth_swaps_stddev_samp_order_by",
+    sum: "auth_swaps_sum_order_by",
+    var_pop: "auth_swaps_var_pop_order_by",
+    var_samp: "auth_swaps_var_samp_order_by",
+    variance: "auth_swaps_variance_order_by",
+  },
+  auth_swaps_arr_rel_insert_input: {
+    data: "auth_swaps_insert_input",
+    on_conflict: "auth_swaps_on_conflict",
+  },
+  auth_swaps_avg_order_by: {
+    fee_amount: "order_by",
+  },
+  auth_swaps_bool_exp: {
+    _and: "auth_swaps_bool_exp",
+    _not: "auth_swaps_bool_exp",
+    _or: "auth_swaps_bool_exp",
+    created_at: "timestamptz_comparison_exp",
+    distributor: "dropzone_distributors_bool_exp",
+    distributor_id: "uuid_comparison_exp",
+    fee_account_address: "String_comparison_exp",
+    fee_amount: "bigint_comparison_exp",
+    fee_mint_address: "String_comparison_exp",
+    fee_payer_id: "uuid_comparison_exp",
+    fee_payer_public_key: "String_comparison_exp",
+    id: "uuid_comparison_exp",
+    transaction_at: "time_comparison_exp",
+    transaction_signature: "String_comparison_exp",
+    user: "auth_users_bool_exp",
+  },
+  auth_swaps_constraint: "enum" as const,
+  auth_swaps_inc_input: {
+    fee_amount: "bigint",
+  },
+  auth_swaps_insert_input: {
+    distributor: "dropzone_distributors_obj_rel_insert_input",
+    distributor_id: "uuid",
+    fee_amount: "bigint",
+    fee_payer_id: "uuid",
+    transaction_at: "time",
+    user: "auth_users_obj_rel_insert_input",
+  },
+  auth_swaps_max_order_by: {
+    created_at: "order_by",
+    distributor_id: "order_by",
+    fee_account_address: "order_by",
+    fee_amount: "order_by",
+    fee_mint_address: "order_by",
+    fee_payer_id: "order_by",
+    fee_payer_public_key: "order_by",
+    id: "order_by",
+    transaction_signature: "order_by",
+  },
+  auth_swaps_min_order_by: {
+    created_at: "order_by",
+    distributor_id: "order_by",
+    fee_account_address: "order_by",
+    fee_amount: "order_by",
+    fee_mint_address: "order_by",
+    fee_payer_id: "order_by",
+    fee_payer_public_key: "order_by",
+    id: "order_by",
+    transaction_signature: "order_by",
+  },
+  auth_swaps_on_conflict: {
+    constraint: "auth_swaps_constraint",
+    update_columns: "auth_swaps_update_column",
+    where: "auth_swaps_bool_exp",
+  },
+  auth_swaps_order_by: {
+    created_at: "order_by",
+    distributor: "dropzone_distributors_order_by",
+    distributor_id: "order_by",
+    fee_account_address: "order_by",
+    fee_amount: "order_by",
+    fee_mint_address: "order_by",
+    fee_payer_id: "order_by",
+    fee_payer_public_key: "order_by",
+    id: "order_by",
+    transaction_at: "order_by",
+    transaction_signature: "order_by",
+    user: "auth_users_order_by",
+  },
+  auth_swaps_pk_columns_input: {
+    id: "uuid",
+  },
+  auth_swaps_select_column: "enum" as const,
+  auth_swaps_set_input: {
+    distributor_id: "uuid",
+    fee_amount: "bigint",
+    fee_payer_id: "uuid",
+    transaction_at: "time",
+  },
+  auth_swaps_stddev_order_by: {
+    fee_amount: "order_by",
+  },
+  auth_swaps_stddev_pop_order_by: {
+    fee_amount: "order_by",
+  },
+  auth_swaps_stddev_samp_order_by: {
+    fee_amount: "order_by",
+  },
+  auth_swaps_stream_cursor_input: {
+    initial_value: "auth_swaps_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  auth_swaps_stream_cursor_value_input: {
+    created_at: "timestamptz",
+    distributor_id: "uuid",
+    fee_amount: "bigint",
+    fee_payer_id: "uuid",
+    id: "uuid",
+    transaction_at: "time",
+  },
+  auth_swaps_sum_order_by: {
+    fee_amount: "order_by",
+  },
+  auth_swaps_update_column: "enum" as const,
+  auth_swaps_updates: {
+    _inc: "auth_swaps_inc_input",
+    _set: "auth_swaps_set_input",
+    where: "auth_swaps_bool_exp",
+  },
+  auth_swaps_var_pop_order_by: {
+    fee_amount: "order_by",
+  },
+  auth_swaps_var_samp_order_by: {
+    fee_amount: "order_by",
+  },
+  auth_swaps_variance_order_by: {
+    fee_amount: "order_by",
+  },
   auth_user_active_publickey_mapping_aggregate_order_by: {
     avg: "auth_user_active_publickey_mapping_avg_order_by",
     count: "order_by",
@@ -736,6 +875,11 @@ export const AllTypesProps: Record<string, any> = {
       order_by: "auth_users_order_by",
       where: "auth_users_bool_exp",
     },
+    swaps: {
+      distinct_on: "auth_swaps_select_column",
+      order_by: "auth_swaps_order_by",
+      where: "auth_swaps_bool_exp",
+    },
   },
   auth_users_aggregate_bool_exp: {
     count: "auth_users_aggregate_bool_exp_count",
@@ -772,6 +916,7 @@ export const AllTypesProps: Record<string, any> = {
     referred_users: "auth_users_bool_exp",
     referred_users_aggregate: "auth_users_aggregate_bool_exp",
     referrer: "auth_users_bool_exp",
+    swaps: "auth_swaps_bool_exp",
     username: "citext_comparison_exp",
   },
   auth_users_constraint: "enum" as const,
@@ -784,6 +929,7 @@ export const AllTypesProps: Record<string, any> = {
     referred_users: "auth_users_arr_rel_insert_input",
     referrer: "auth_users_obj_rel_insert_input",
     referrer_id: "uuid",
+    swaps: "auth_swaps_arr_rel_insert_input",
     username: "citext",
   },
   auth_users_max_order_by: {
@@ -813,6 +959,7 @@ export const AllTypesProps: Record<string, any> = {
     public_keys_aggregate: "auth_public_keys_aggregate_order_by",
     referred_users_aggregate: "auth_users_aggregate_order_by",
     referrer: "auth_users_order_by",
+    swaps_aggregate: "auth_swaps_aggregate_order_by",
     username: "order_by",
   },
   auth_users_pk_columns_input: {
@@ -1179,6 +1326,11 @@ export const AllTypesProps: Record<string, any> = {
       where: "dropzone_claims_bool_exp",
     },
     data: {},
+    swaps: {
+      distinct_on: "auth_swaps_select_column",
+      order_by: "auth_swaps_order_by",
+      where: "auth_swaps_bool_exp",
+    },
   },
   dropzone_distributors_aggregate_order_by: {
     count: "order_by",
@@ -1206,6 +1358,7 @@ export const AllTypesProps: Record<string, any> = {
     mint_public_key: "String_comparison_exp",
     public_key: "String_comparison_exp",
     published_at: "timestamptz_comparison_exp",
+    swaps: "auth_swaps_bool_exp",
     transaction_signature: "String_comparison_exp",
   },
   dropzone_distributors_constraint: "enum" as const,
@@ -1220,6 +1373,7 @@ export const AllTypesProps: Record<string, any> = {
     data: "jsonb",
     id: "uuid",
     published_at: "timestamptz",
+    swaps: "auth_swaps_arr_rel_insert_input",
   },
   dropzone_distributors_max_order_by: {
     category_id: "order_by",
@@ -1261,6 +1415,7 @@ export const AllTypesProps: Record<string, any> = {
     mint_public_key: "order_by",
     public_key: "order_by",
     published_at: "order_by",
+    swaps_aggregate: "auth_swaps_aggregate_order_by",
     transaction_signature: "order_by",
   },
   dropzone_distributors_pk_columns_input: {
@@ -1453,6 +1608,14 @@ export const AllTypesProps: Record<string, any> = {
       object: "auth_stripe_onramp_insert_input",
       on_conflict: "auth_stripe_onramp_on_conflict",
     },
+    insert_auth_swaps: {
+      objects: "auth_swaps_insert_input",
+      on_conflict: "auth_swaps_on_conflict",
+    },
+    insert_auth_swaps_one: {
+      object: "auth_swaps_insert_input",
+      on_conflict: "auth_swaps_on_conflict",
+    },
     insert_auth_user_active_publickey_mapping: {
       objects: "auth_user_active_publickey_mapping_insert_input",
       on_conflict: "auth_user_active_publickey_mapping_on_conflict",
@@ -1605,6 +1768,19 @@ export const AllTypesProps: Record<string, any> = {
     },
     update_auth_stripe_onramp_many: {
       updates: "auth_stripe_onramp_updates",
+    },
+    update_auth_swaps: {
+      _inc: "auth_swaps_inc_input",
+      _set: "auth_swaps_set_input",
+      where: "auth_swaps_bool_exp",
+    },
+    update_auth_swaps_by_pk: {
+      _inc: "auth_swaps_inc_input",
+      _set: "auth_swaps_set_input",
+      pk_columns: "auth_swaps_pk_columns_input",
+    },
+    update_auth_swaps_many: {
+      updates: "auth_swaps_updates",
     },
     update_auth_user_active_publickey_mapping: {
       _inc: "auth_user_active_publickey_mapping_inc_input",
@@ -1791,6 +1967,14 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_stripe_onramp_bool_exp",
     },
     auth_stripe_onramp_by_pk: {},
+    auth_swaps: {
+      distinct_on: "auth_swaps_select_column",
+      order_by: "auth_swaps_order_by",
+      where: "auth_swaps_bool_exp",
+    },
+    auth_swaps_by_pk: {
+      id: "uuid",
+    },
     auth_user_active_publickey_mapping: {
       distinct_on: "auth_user_active_publickey_mapping_select_column",
       order_by: "auth_user_active_publickey_mapping_order_by",
@@ -2001,6 +2185,18 @@ export const AllTypesProps: Record<string, any> = {
       cursor: "auth_stripe_onramp_stream_cursor_input",
       where: "auth_stripe_onramp_bool_exp",
     },
+    auth_swaps: {
+      distinct_on: "auth_swaps_select_column",
+      order_by: "auth_swaps_order_by",
+      where: "auth_swaps_bool_exp",
+    },
+    auth_swaps_by_pk: {
+      id: "uuid",
+    },
+    auth_swaps_stream: {
+      cursor: "auth_swaps_stream_cursor_input",
+      where: "auth_swaps_bool_exp",
+    },
     auth_user_active_publickey_mapping: {
       distinct_on: "auth_user_active_publickey_mapping_select_column",
       order_by: "auth_user_active_publickey_mapping_order_by",
@@ -2128,6 +2324,17 @@ export const AllTypesProps: Record<string, any> = {
       cursor: "invitations_stream_cursor_input",
       where: "invitations_bool_exp",
     },
+  },
+  time: `scalar.time` as const,
+  time_comparison_exp: {
+    _eq: "time",
+    _gt: "time",
+    _gte: "time",
+    _in: "time",
+    _lt: "time",
+    _lte: "time",
+    _neq: "time",
+    _nin: "time",
   },
   timestamp: `scalar.timestamp` as const,
   timestamp_comparison_exp: {
@@ -2474,6 +2681,24 @@ export const ReturnTypes: Record<string, any> = {
     affected_rows: "Int",
     returning: "auth_stripe_onramp",
   },
+  auth_swaps: {
+    created_at: "timestamptz",
+    distributor: "dropzone_distributors",
+    distributor_id: "uuid",
+    fee_account_address: "String",
+    fee_amount: "bigint",
+    fee_mint_address: "String",
+    fee_payer_id: "uuid",
+    fee_payer_public_key: "String",
+    id: "uuid",
+    transaction_at: "time",
+    transaction_signature: "String",
+    user: "auth_users",
+  },
+  auth_swaps_mutation_response: {
+    affected_rows: "Int",
+    returning: "auth_swaps",
+  },
   auth_user_active_publickey_mapping: {
     blockchain: "String",
     public_key: "auth_public_keys",
@@ -2529,6 +2754,7 @@ export const ReturnTypes: Record<string, any> = {
     referred_users: "auth_users",
     referred_users_aggregate: "auth_users_aggregate",
     referrer: "auth_users",
+    swaps: "auth_swaps",
     username: "citext",
   },
   auth_users_aggregate: {
@@ -2616,6 +2842,7 @@ export const ReturnTypes: Record<string, any> = {
     mint_public_key: "String",
     public_key: "String",
     published_at: "timestamptz",
+    swaps: "auth_swaps",
     transaction_signature: "String",
   },
   dropzone_distributors_mutation_response: {
@@ -2688,6 +2915,8 @@ export const ReturnTypes: Record<string, any> = {
     insert_auth_public_keys_one: "auth_public_keys",
     insert_auth_stripe_onramp: "auth_stripe_onramp_mutation_response",
     insert_auth_stripe_onramp_one: "auth_stripe_onramp",
+    insert_auth_swaps: "auth_swaps_mutation_response",
+    insert_auth_swaps_one: "auth_swaps",
     insert_auth_user_active_publickey_mapping:
       "auth_user_active_publickey_mapping_mutation_response",
     insert_auth_user_active_publickey_mapping_one:
@@ -2736,6 +2965,9 @@ export const ReturnTypes: Record<string, any> = {
     update_auth_stripe_onramp: "auth_stripe_onramp_mutation_response",
     update_auth_stripe_onramp_by_pk: "auth_stripe_onramp",
     update_auth_stripe_onramp_many: "auth_stripe_onramp_mutation_response",
+    update_auth_swaps: "auth_swaps_mutation_response",
+    update_auth_swaps_by_pk: "auth_swaps",
+    update_auth_swaps_many: "auth_swaps_mutation_response",
     update_auth_user_active_publickey_mapping:
       "auth_user_active_publickey_mapping_mutation_response",
     update_auth_user_active_publickey_mapping_by_pk:
@@ -2790,6 +3022,8 @@ export const ReturnTypes: Record<string, any> = {
     auth_public_keys_by_pk: "auth_public_keys",
     auth_stripe_onramp: "auth_stripe_onramp",
     auth_stripe_onramp_by_pk: "auth_stripe_onramp",
+    auth_swaps: "auth_swaps",
+    auth_swaps_by_pk: "auth_swaps",
     auth_user_active_publickey_mapping: "auth_user_active_publickey_mapping",
     auth_user_active_publickey_mapping_by_pk:
       "auth_user_active_publickey_mapping",
@@ -2848,6 +3082,9 @@ export const ReturnTypes: Record<string, any> = {
     auth_stripe_onramp: "auth_stripe_onramp",
     auth_stripe_onramp_by_pk: "auth_stripe_onramp",
     auth_stripe_onramp_stream: "auth_stripe_onramp",
+    auth_swaps: "auth_swaps",
+    auth_swaps_by_pk: "auth_swaps",
+    auth_swaps_stream: "auth_swaps",
     auth_user_active_publickey_mapping: "auth_user_active_publickey_mapping",
     auth_user_active_publickey_mapping_by_pk:
       "auth_user_active_publickey_mapping",
@@ -2882,6 +3119,7 @@ export const ReturnTypes: Record<string, any> = {
     invitations_aggregate: "invitations_aggregate",
     invitations_stream: "invitations",
   },
+  time: `scalar.time` as const,
   timestamp: `scalar.timestamp` as const,
   timestamptz: `scalar.timestamptz` as const,
   uuid: `scalar.uuid` as const,
