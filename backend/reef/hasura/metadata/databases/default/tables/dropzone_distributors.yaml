@@ -13,6 +13,13 @@ array_relationships:
         table:
           name: claims
           schema: dropzone
+  - name: swaps
+    using:
+      foreign_key_constraint_on:
+        column: distributor_id
+        table:
+          name: swaps
+          schema: auth
 insert_permissions:
   - role: auth_worker
     permission:
