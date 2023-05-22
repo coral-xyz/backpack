@@ -14,7 +14,6 @@ import {
   sendFriendRequestMutationResolver,
   userQueryResolver,
   userTypeResolvers,
-  verifyQueryResolver,
   walletQueryResolver,
   walletTypeResolvers,
 } from "./resolvers";
@@ -37,7 +36,6 @@ const mutationResolvers: MutationResolvers = {
 const queryResolvers: QueryResolvers = {
   user: userQueryResolver,
   wallet: walletQueryResolver,
-  verify: verifyQueryResolver,
 };
 
 /**
