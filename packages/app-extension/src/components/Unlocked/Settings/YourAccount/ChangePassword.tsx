@@ -58,8 +58,8 @@ export function ChangePassword() {
             setPasswordLengthError(!passwordLengthError);
 
             if (!isCurrentCorrect || mismatchError || !passwordLengthError) {
-              if(mismatchError) setError(PasswordError.NO_MATCH);
-              else if(!passwordLengthError) setError(PasswordError.TOO_SHORT);
+              if (mismatchError) setError(PasswordError.NO_MATCH);
+              else if (!passwordLengthError) setError(PasswordError.TOO_SHORT);
               return;
             }
 
@@ -129,8 +129,14 @@ export function ChangePassword() {
               title="Verify"
             />
           </Inputs>
-           {error !== null ? (
-            <Typography sx={{ color: theme.custom.colors.negative, textAlign: "center", fontSize: "14px" }}>
+          {error !== null ? (
+            <Typography
+              sx={{
+                color: theme.custom.colors.negative,
+                textAlign: "center",
+                fontSize: "14px",
+              }}
+            >
               {
                 {
                   [PasswordError.TOO_SHORT]:
