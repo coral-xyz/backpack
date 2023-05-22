@@ -3,7 +3,7 @@ import type {
   GroupedNotification,
 } from "@coral-xyz/common";
 
-import { Suspense, useCallback } from "react";
+import { Suspense, useCallback, useMemo } from "react";
 import { Text, SectionList, ActivityIndicator } from "react-native";
 
 import { useUserMetadata } from "@coral-xyz/chat-xplat";
@@ -107,10 +107,12 @@ export function NotificationList({
 }: {
   groupedNotifications: GroupedNotification[];
 }) {
-  const sections = groupedNotifications.map((groupedNotification) => ({
-    title: groupedNotification.date,
-    data: groupedNotification.notifications,
-  }));
+  const sections = useMemo(() => {
+    return groupedNotifications.map((groupedNotification) => ({
+      title: groupedNotification.date,
+      data: groupedNotification.notifications,
+    }));
+  }, [groupedNotifications]);
 
   const keyExtractor = (item, index) => item.id.toString() + index.toString();
   const renderItem = useCallback(({ item, section, index }: any) => {

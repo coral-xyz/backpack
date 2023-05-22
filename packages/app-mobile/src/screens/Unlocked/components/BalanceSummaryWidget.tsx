@@ -100,6 +100,14 @@ const GET_BALANCE_SUMMARY = gql`
   }
 `;
 
+function LoadingSkeleton() {
+  return (
+    <View style={{ height: 72, opacity: 0.2 }}>
+      <ActivityIndicator size="small" />
+    </View>
+  );
+}
+
 function Container() {
   const activeWallet = useActiveWallet();
   const { data } = useSuspenseQuery_experimental(GET_BALANCE_SUMMARY, {
@@ -134,7 +142,7 @@ function Container() {
 export function BalanceSummaryWidget() {
   return (
     <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
-      <Suspense fallback={<ActivityIndicator size="large" />}>
+      <Suspense fallback={<LoadingSkeleton />}>
         <Container />
       </Suspense>
     </ErrorBoundary>

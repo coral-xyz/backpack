@@ -15,7 +15,10 @@ import { TokenDetailScreen } from "~screens/TokenDetailScreen";
 import { TokenListScreen } from "~screens/TokenListScreen";
 
 type TopTabsParamList = {
-  TokenList: undefined;
+  TokenList: {
+    blockchain: Blockchain;
+    publicKey: string;
+  };
   Collectibles: undefined;
   Activity: undefined;
 };
@@ -58,12 +61,11 @@ function TopTabsNavigator(): JSX.Element {
 
 export type WalletStackParamList = {
   HomeWalletList: undefined;
-  TopTabsWalletDetail: undefined;
-  TokenDetail: {
+  TopTabsWalletDetail: {
     blockchain: Blockchain;
-    tokenAddress: string;
-    tokenTicker: string;
+    publicKey: string;
   };
+  TokenDetail: undefined;
   // List of collectibles/nfts for a collection
   CollectionDetail: {
     id: string;
