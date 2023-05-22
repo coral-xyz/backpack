@@ -1,12 +1,12 @@
+import type { NftCollection } from "@coral-xyz/common";
+import type { StackScreenProps } from "@react-navigation/stack";
+import type { UnwrapRecoilValue } from "recoil";
 import type {
   NftCollectionsWithId,
   SingleNftData,
   CollectionNftData,
   PublicKey,
-} from "@@types/types";
-import type { NftCollection } from "@coral-xyz/common";
-import type { StackScreenProps } from "@react-navigation/stack";
-import type { UnwrapRecoilValue } from "recoil";
+} from "~types/types";
 
 import { FlatList, View, ActivityIndicator } from "react-native";
 

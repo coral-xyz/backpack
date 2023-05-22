@@ -1,5 +1,5 @@
-import type { Token } from "@@types/types";
 import type { Blockchain, Nft } from "@coral-xyz/common";
+import type { Token } from "~types/types";
 
 import { useCallback } from "react";
 

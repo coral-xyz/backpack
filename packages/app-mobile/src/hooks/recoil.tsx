@@ -1,5 +1,4 @@
 // This file is for cases where Suspense is acting up in React Native and we use useRecoilValueLoadable directly instead
-import { Wallet } from "@@types/types";
 import { Blockchain } from "@coral-xyz/common";
 import {
   blockchainBalancesSorted,
@@ -19,6 +18,8 @@ import {
   result__useBlockchainBalancesSorted,
   result__useWalletBalance,
 } from "./recoil__FAKE_DATA";
+
+import { Wallet } from "~types/types";
 
 type Response<T> = {
   loading: boolean;
