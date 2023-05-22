@@ -2,12 +2,10 @@ import type { ContextFunction } from "@apollo/server";
 import type { ExpressContextFunctionArgument } from "@apollo/server/express4";
 import { Alchemy, Network } from "alchemy-sdk";
 import type { Request, Response } from "express";
-import { importSPKI, jwtVerify } from "jose";
 import { LRUCache } from "lru-cache";
 
 import {
   ALCHEMY_API_KEY,
-  AUTH_JWT_PUBLIC_KEY,
   HASURA_URL,
   HELIUS_API_KEY,
   JWT as HASURA_JWT,
@@ -15,6 +13,7 @@ import {
 } from "../../config";
 
 import { CoinGecko, Hasura, Helius, Swr, Tensor } from "./clients";
+import { extractJwt, getSubjectFromVerifiedJwt } from "./utils";
 
 const IN_MEM_JWT_CACHE = new LRUCache<string, string>({
   allowStale: false,
@@ -63,20 +62,10 @@ export const createContext: ContextFunction<
       userId = IN_MEM_JWT_CACHE.get(jwt);
       valid = true;
     } else {
-      const publicKey = await importSPKI(AUTH_JWT_PUBLIC_KEY, "RS256");
-
-      try {
-        const resp = await jwtVerify(jwt, publicKey, {
-          issuer: "auth.xnfts.dev",
-          audience: "backpack",
-        });
-
-        userId = resp.payload.sub;
+      userId = await getSubjectFromVerifiedJwt(jwt);
+      if (userId) {
         valid = true;
-
         IN_MEM_JWT_CACHE.set(jwt, userId);
-      } catch {
-        // NOOP
       }
     }
   }
@@ -99,7 +88,7 @@ export const createContext: ContextFunction<
       coinGecko: new CoinGecko(),
       hasura: new Hasura({ secret: HASURA_JWT, url: HASURA_URL }),
       helius: new Helius({ apiKey: HELIUS_API_KEY, devnet }),
-      swr: new Swr({}),
+      swr: new Swr(),
       tensor: new Tensor({ apiKey: TENSOR_API_KEY }),
     },
     devnet,
@@ -109,21 +98,3 @@ export const createContext: ContextFunction<
     },
   };
 };
-
-/**
- * Attempt to find and extract a JWT from the argued request.
- * @param {Request} req
- * @returns {(string | undefined)}
- */
-function extractJwt(req: Request): string | undefined {
-  let jwt: string | undefined = undefined;
-  const authHeader = req.headers.authorization ?? "";
-  if (authHeader.startsWith("Bearer")) {
-    jwt = authHeader.split(" ")[1];
-  } else if (req.cookies.jwt) {
-    jwt = req.cookies.jwt;
-  } else if (req.query.jwt) {
-    jwt = req.query.jwt as string;
-  }
-  return jwt;
-}

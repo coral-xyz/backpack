@@ -18,7 +18,7 @@ import type {
  * @param {GraphQLResolveInfo} _info
  * FIXME:TODO: move to new hasura client abstraction
  */
-export const sendFriendRequestMutation: MutationResolvers["sendFriendRequest"] =
+export const sendFriendRequestMutationResolver: MutationResolvers["sendFriendRequest"] =
   async (
     _parent: {},
     { accept, otherUserId }: MutationSendFriendRequestArgs,

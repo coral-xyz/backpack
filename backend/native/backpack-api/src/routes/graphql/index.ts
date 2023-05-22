@@ -5,15 +5,16 @@ import { allow, shield } from "graphql-shield";
 import { join } from "path";
 
 import {
-  authenticateMutation,
-  deauthenticateMutation,
+  authenticateMutationResolver,
+  deauthenticateMutationResolver,
   friendshipTypeResolvers,
-  importPublicKeyMutation,
+  importPublicKeyMutationResolver,
   jsonObjectScalar,
   notificationTypeResolvers,
-  sendFriendRequestMutation,
+  sendFriendRequestMutationResolver,
   userQueryResolver,
   userTypeResolvers,
+  verifyQueryResolver,
   walletQueryResolver,
   walletTypeResolvers,
 } from "./resolvers";
@@ -24,10 +25,10 @@ import type { MutationResolvers, QueryResolvers, Resolvers } from "./types";
  * Root `Mutation` object resolver.
  */
 const mutationResolvers: MutationResolvers = {
-  authenticate: authenticateMutation,
-  deauthenticate: deauthenticateMutation,
-  importPublicKey: importPublicKeyMutation,
-  sendFriendRequest: sendFriendRequestMutation,
+  authenticate: authenticateMutationResolver,
+  deauthenticate: deauthenticateMutationResolver,
+  importPublicKey: importPublicKeyMutationResolver,
+  sendFriendRequest: sendFriendRequestMutationResolver,
 };
 
 /**
@@ -36,6 +37,7 @@ const mutationResolvers: MutationResolvers = {
 const queryResolvers: QueryResolvers = {
   user: userQueryResolver,
   wallet: walletQueryResolver,
+  verify: verifyQueryResolver,
 };
 
 /**
