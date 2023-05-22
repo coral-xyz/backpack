@@ -1,6 +1,6 @@
+import { Chain } from "@coral-xyz/zeus";
 import type { V4SwapPostRequest } from "@jup-ag/api";
 import { Connection } from "@solana/web3.js";
-import { createClient } from "@supabase/supabase-js";
 import { Hono } from "hono";
 import { importSPKI, jwtVerify } from "jose";
 
@@ -9,13 +9,15 @@ import ACCOUNTS from "./feeAccounts.json";
 type MintAddress = keyof typeof ACCOUNTS | undefined;
 
 type Env = {
-  AUTH_JWT_PUBLIC_KEY: string;
   DEFAULT_FEE_BPS: number;
   FEE_AUTHORITY_ADDRESS: string;
   RPC: string;
-  SUPABASE_KEY: string;
-  SUPABASE_URL: string;
   TOKEN_PROGRAM_ADDRESS: string;
+  // secrets
+  AUTH_JWT_PUBLIC_KEY: string;
+  HASURA_JWT: string;
+  HASURA_URL: string;
+  WEBHOOK_PASSWORD: string;
 };
 
 const app = new Hono<{ Bindings: Env }>();
@@ -35,35 +37,60 @@ app.post("/swap", async (c) => {
     const userId = jwt.payload.sub;
 
     const json = (await c.req.json()) as any;
-    const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_KEY);
 
-    const { data } = await supabase
-      .from("swaps")
-      .insert({ signature: json.signature, user_id: userId })
-      .select();
+    const chain = Chain(c.env.HASURA_URL, {
+      headers: { Authorization: `Bearer ${c.env.HASURA_JWT}` },
+    });
 
-    // fail silently
-    // if (error) throw new Error(error.message);
-    return c.json(data);
+    try {
+      await chain("mutation")(
+        {
+          insert_auth_swaps_one: [
+            {
+              object: {
+                fee_payer_id: userId,
+                transaction_signature: json.signature,
+              },
+            },
+            { id: true },
+          ],
+        },
+        { operationName: "trackSwap" }
+      );
+    } catch (err) {
+      // fail silently
+      console.error(err);
+    }
+    return c.json({ ok: true });
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
   }
 });
 
 app.post("/swap-webhook", async (c) => {
+  if (
+    c.env.WEBHOOK_PASSWORD &&
+    c.req.header("x-password") !== c.env.WEBHOOK_PASSWORD
+  ) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
   try {
     const json = (await c.req.json()) as any;
-    const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_KEY);
 
-    const conn = new Connection(c.env.RPC, "confirmed");
-    const tx = await conn.getParsedTransaction(json.record.signature);
-
+    const conn = new Connection(c.env.RPC);
+    const tx = await conn.getParsedTransaction(
+      json.record.transaction_signature,
+      {
+        maxSupportedTransactionVersion: 0,
+        commitment: "confirmed",
+      }
+    );
     const result = tx!
-      .meta!.postTokenBalances!.filter(
-        (t) =>
-          t.owner === c.env.FEE_AUTHORITY_ADDRESS &&
-          t.programId === c.env.TOKEN_PROGRAM_ADDRESS
-      )
+      .meta!.postTokenBalances!.filter((t) => {
+        return t.owner === c.env.FEE_AUTHORITY_ADDRESS;
+        // && t.programId === c.env.TOKEN_PROGRAM_ADDRESS
+      })
       ?.map((post) => {
         const pre = tx!.meta!.preTokenBalances!.find(
           (t) => t.accountIndex === post.accountIndex
@@ -72,18 +99,46 @@ app.post("/swap-webhook", async (c) => {
           ...post,
           fees:
             Number(post.uiTokenAmount.amount) -
-            Number(pre.uiTokenAmount.amount),
+            Number(pre!.uiTokenAmount.amount),
         };
       });
-    const [{ mint, fees }] = result!;
+    const [{ mint, fees }] = result;
 
-    const { data, error } = await supabase
-      .from("swaps")
-      .update({ mint, fees, checked_at: new Date().toISOString() })
-      .eq("signature", json.record.signature)
-      .select();
+    if (Number(fees) <= 0) {
+      throw new Error("fees must be greater than 0");
+    }
 
-    if (error) throw new Error(error.message);
+    const chain = Chain(c.env.HASURA_URL, {
+      headers: { Authorization: `Bearer ${c.env.HASURA_JWT}` },
+    });
+
+    const data = await chain("mutation")(
+      {
+        update_auth_swaps: [
+          {
+            where: {
+              transaction_signature: { _eq: json.record.signature },
+            },
+            _set: {
+              fee_mint_address: mint,
+              fee_amount: fees,
+              fee_account_address:
+                ACCOUNTS[mint as keyof typeof ACCOUNTS]?.address,
+              transaction_at: tx?.blockTime
+                ? new Date(tx?.blockTime * 1000).toISOString()
+                : undefined,
+            },
+          },
+          { affected_rows: true },
+        ],
+      },
+      { operationName: "updateSwap" }
+    );
+
+    if (data.update_auth_swaps?.affected_rows !== 1) {
+      throw new Error("unable to update transaction");
+    }
+
     return c.json(data);
   } catch (error: any) {
     return c.json({ error: error.message }, 500);

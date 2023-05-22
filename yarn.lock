@@ -29677,6 +29677,7 @@ __metadata:
   resolution: "jupiter-proxy@workspace:backend/workers/jupiter-proxy"
   dependencies:
     "@cloudflare/workers-types": ^4.20221111.1
+    "@coral-xyz/zeus": "*"
     "@jup-ag/api": ^4.0.1-alpha.0
     "@solana/web3.js": ^1.73.0
     "@supabase/supabase-js": ^2.4.1
