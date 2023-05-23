@@ -1,5 +1,6 @@
 import type { ApiContext } from "../context";
 import {
+  type BalanceFiltersInput,
   type Balances,
   ChainId,
   type NftConnection,
@@ -12,10 +13,13 @@ import { Ethereum } from "./ethereum";
 import { Solana } from "./solana";
 
 export interface Blockchain {
-  getBalancesForAddress(address: string): Promise<Balances>;
+  getBalancesForAddress(
+    address: string,
+    filters?: BalanceFiltersInput
+  ): Promise<Balances>;
   getNftsForAddress(
     address: string,
-    filters?: Partial<NftFiltersInput>
+    filters?: NftFiltersInput
   ): Promise<NftConnection>;
   getTransactionsForAddress(
     address: string,

@@ -8,6 +8,7 @@ import type { HeliusGetTokenMetadataResponse } from "../clients/helius";
 import type { TensorActingListingsResponse } from "../clients/tensor";
 import type { ApiContext } from "../context";
 import {
+  type BalanceFiltersInput,
   type Balances,
   ChainId,
   type Collection,
@@ -46,10 +47,14 @@ export class Solana implements Blockchain {
    * Fetch and aggregate the native and token balances and
    * prices for the argued wallet address.
    * @param {string} address
+   * @param {BalanceFiltersInput} [filters]
    * @returns {Promise<Balances>}
    * @memberof Solana
    */
-  async getBalancesForAddress(address: string): Promise<Balances> {
+  async getBalancesForAddress(
+    address: string,
+    filters?: BalanceFiltersInput
+  ): Promise<Balances> {
     // Get the address balances and filter out the NFTs and empty ATAs
     const balances = await this.#ctx.dataSources.helius.getBalances(address);
     const nonEmptyOrNftTokens = balances.tokens.filter(
@@ -108,43 +113,54 @@ export class Solana implements Blockchain {
     };
 
     // Map each SPL token into their `TokenBalance` return type object
-    const splTokenNodes: TokenBalance[] = nonEmptyOrNftTokens.map((t) => {
-      const id = meta.get(t.mint);
-      const p: CoinGeckoPriceData | null = prices[id ?? ""] ?? null;
-      const marketData: MarketData | null = p
-        ? {
-            id: this.#ctx.dataSources.coinGecko.id(p.id),
-            lastUpdatedAt: p.last_updated,
-            logo: p.image,
-            name: p.name,
-            percentChange: p.price_change_percentage_24h,
-            price: p.current_price,
-            sparkline: p.sparkline_in_7d.price,
-            symbol: p.symbol,
-            usdChange: p.price_change_24h,
-            value:
-              parseFloat(ethers.utils.formatUnits(t.amount, t.decimals)) *
-              p.current_price,
-            valueChange:
-              parseFloat(
-                ethers.utils.formatUnits(
-                  balances.nativeBalance,
-                  this.nativeDecimals()
-                )
-              ) * p.price_change_24h,
-          }
-        : null;
+    const splTokenNodes = nonEmptyOrNftTokens.reduce<TokenBalance[]>(
+      (acc, curr) => {
+        const id = meta.get(curr.mint);
+        const p: CoinGeckoPriceData | null = prices[id ?? ""] ?? null;
+        const marketData: MarketData | null = p
+          ? {
+              id: this.#ctx.dataSources.coinGecko.id(p.id),
+              lastUpdatedAt: p.last_updated,
+              logo: p.image,
+              name: p.name,
+              percentChange: p.price_change_percentage_24h,
+              price: p.current_price,
+              sparkline: p.sparkline_in_7d.price,
+              symbol: p.symbol,
+              usdChange: p.price_change_24h,
+              value:
+                parseFloat(
+                  ethers.utils.formatUnits(curr.amount, curr.decimals)
+                ) * p.current_price,
+              valueChange:
+                parseFloat(
+                  ethers.utils.formatUnits(
+                    balances.nativeBalance,
+                    this.nativeDecimals()
+                  )
+                ) * p.price_change_24h,
+            }
+          : null;
 
-      return {
-        id: `${this.id()}_token_address:${t.tokenAccount}`,
-        address: t.tokenAccount,
-        amount: t.amount.toString(),
-        decimals: t.decimals,
-        displayAmount: ethers.utils.formatUnits(t.amount, t.decimals),
-        marketData,
-        token: t.mint,
-      };
-    });
+        if (filters?.marketListedTokensOnly && !marketData) {
+          return acc;
+        }
+
+        return [
+          ...acc,
+          {
+            id: `${this.id()}_token_address:${curr.tokenAccount}`,
+            address: curr.tokenAccount,
+            amount: curr.amount.toString(),
+            decimals: curr.decimals,
+            displayAmount: ethers.utils.formatUnits(curr.amount, curr.decimals),
+            marketData,
+            token: curr.mint,
+          },
+        ];
+      },
+      []
+    );
 
     return {
       id: `${this.id()}_balances:${address}`,
@@ -160,13 +176,13 @@ export class Solana implements Blockchain {
   /**
    * Get a list of NFT data for tokens owned by the argued address.
    * @param {string} address
-   * @param {Partial<NftFiltersInput>} [filters]
+   * @param {NftFiltersInput} [filters]
    * @returns {Promise<NftConnection>}
    * @memberof Solana
    */
   async getNftsForAddress(
     address: string,
-    filters?: Partial<NftFiltersInput>
+    filters?: NftFiltersInput
   ): Promise<NftConnection> {
     // Get the held SPL tokens for the address and reduce to only NFT mint addresses
     const assets = await this.#ctx.dataSources.helius.getBalances(address);

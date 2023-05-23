@@ -104,6 +104,16 @@ enum SortDirection {
 }
 
 """
+Input filter type for fetching wallet balances.
+"""
+input BalanceFiltersInput {
+  """
+  If requested, only provide balances for non-native tokens that are listed on CoinGecko.
+  """
+  marketListedTokensOnly: Boolean
+}
+
+"""
 Input filter type for fetching user wallet NFTs.
 """
 input NftFiltersInput {
@@ -844,7 +854,7 @@ type Wallet implements Node {
   """
   The detailed and aggregate balance data for the wallet.
   """
-  balances: Balances @cacheControl(maxAge: 60)
+  balances(filters: BalanceFiltersInput): Balances @cacheControl(maxAge: 60)
 
   """
   Flag to indicate whether it is the user's primary wallet for the designated blockchain.

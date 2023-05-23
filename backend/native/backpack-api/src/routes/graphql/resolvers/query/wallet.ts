@@ -8,6 +8,7 @@ import type {
   QueryWalletArgs,
   TransactionConnection,
   Wallet,
+  WalletBalancesArgs,
   WalletNftsArgs,
   WalletResolvers,
   WalletTransactionsArgs,
@@ -45,19 +46,20 @@ export const walletTypeResolvers: WalletResolvers = {
   /**
    * Field-level resolver handler for the `balances` field.
    * @param {Wallet} parent
-   * @param {{}} _args
+   * @param {WalletBalancesArgs} args
    * @param {ApiContext} ctx
    * @param {GraphQLResolveInfo} _info
    * @returns {(Promise<Balances | null>)}
    */
   async balances(
     parent: Wallet,
-    _args: {},
+    { filters }: WalletBalancesArgs,
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<Balances | null> {
     return getBlockchainForId(parent.chainId, ctx).getBalancesForAddress(
-      parent.address
+      parent.address,
+      filters ?? undefined
     );
   },
 
