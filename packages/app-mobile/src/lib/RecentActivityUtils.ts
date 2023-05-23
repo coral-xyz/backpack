@@ -73,13 +73,11 @@ export function parseSwap(str: string) {
 }
 
 export function parseTransfer(str: string) {
-  console.log("debug4:str", str);
   // "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz transferred 0.1 SOL to 47iecF4gWQYrGMLh9gM3iuQFgb1581gThgfRw69S55T8."
   try {
     const _to = str.split("to ");
     const to = _to[1]; // remove period at the end
     const amount = _to[0].split("transferred ")[1].trim();
-    console.log("debug4:amount", amount);
     const action = "Sent"; // TODO sent/received, pass down publickey
     return { to: walletAddressDisplay(to), amount, action };
   } catch (_err) {
