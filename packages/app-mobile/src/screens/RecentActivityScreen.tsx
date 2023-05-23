@@ -1,5 +1,5 @@
 import { Suspense, useCallback } from "react";
-import { Text, SectionList } from "react-native";
+import { SectionList } from "react-native";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
@@ -12,9 +12,10 @@ import {
   type ListItemProps,
 } from "~components/RecentActivityListItem";
 import {
-  Screen,
   RoundedContainerGroup,
-  FullScreenLoading,
+  Screen,
+  ScreenError,
+  ScreenLoading,
 } from "~components/index";
 import { convertTransactionDataToSectionList } from "~lib/RecentActivityUtils";
 
@@ -103,8 +104,10 @@ function Container({ navigation }: any): JSX.Element {
 
 export function RecentActivityScreen({ navigation }: any): JSX.Element {
   return (
-    <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
-      <Suspense fallback={<FullScreenLoading />}>
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ScreenError error={error} />}
+    >
+      <Suspense fallback={<ScreenLoading />}>
         <Container navigation={navigation} />
       </Suspense>
     </ErrorBoundary>

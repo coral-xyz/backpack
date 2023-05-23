@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { Button, FlatList, Pressable, FlatListProps } from "react-native";
+import { Button, FlatList, FlatListProps, Pressable } from "react-native";
 
 import {
   formatAMPM,
@@ -7,15 +7,15 @@ import {
   markSpam,
   sendFriendRequest,
 } from "@coral-xyz/common";
-import { XStack, YStack, ListItem, Text, Circle } from "@coral-xyz/tamagui";
+import { Circle, ListItem, Text, XStack, YStack } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Verified } from "@tamagui/lucide-icons";
 
 import { UserAvatar } from "~components/UserAvatar";
 import { useTheme } from "~hooks/useTheme";
 import type {
-  ChatRowData,
   ChatListItemProps,
+  ChatRowData,
 } from "~screens/Unlocked/Chat/ChatHelpers";
 import { useMessagePreview } from "~screens/Unlocked/Chat/ChatHelpers";
 
@@ -98,6 +98,15 @@ function UserListItem({
   remoteRequested,
   onPressRow,
   onPressAction,
+}: {
+  id: string;
+  imageUrl: string;
+  username: string;
+  areFriends: boolean;
+  requested: boolean;
+  remoteRequested: boolean;
+  onPressRow: any;
+  onPressAction: any;
 }) {
   const theme = useTheme();
   const showBadge = useMemo(() => isBackpackTeam(id), [id]);
@@ -174,14 +183,11 @@ export function ChatListItem({
 
   return (
     <ListItem
-      id={id}
       backgroundColor={
         isUnread
           ? theme.custom.colors.unreadBackground
           : theme.custom.colors.nav
       }
-      hoverTheme
-      pressTheme
       height={ROW_HEIGHT}
       justifyContent="flex-start"
       icon={<UserAvatar size={AVATAR_SIZE} uri={image} />}
@@ -294,7 +300,6 @@ export function MessageList({
         ) : null
       }
       keyExtractor={({ id }: { id: string }) => id}
-      // If using ItemSeparatorComponent make sure to include the height of that here
       getItemLayout={(_data, index) => ({
         length: ROW_HEIGHT,
         offset: ROW_HEIGHT * index,
@@ -339,7 +344,7 @@ function ChatListItemMessageRequest({
   );
 }
 
-export function List({
+function List({
   data,
   renderItem,
   keyExtractor,
@@ -353,10 +358,6 @@ export function List({
       keyExtractor={keyExtractor}
       style={{
         flex: 1,
-        // borderRadius: 14,
-        // overflow: "hidden",
-        // borderWidth: 2,
-        // borderColor: theme.custom.colors.borderFull,
         backgroundColor: theme.custom.colors.nav,
       }}
       {...props}
@@ -364,11 +365,7 @@ export function List({
   );
 }
 
-export function SpamButton({
-  remoteUserId,
-}: {
-  remoteUserId: string;
-}): JSX.Element {
+function SpamButton({ remoteUserId }: { remoteUserId: string }): JSX.Element {
   const [loading, setLoading] = useState(false);
   return (
     <Button
@@ -382,7 +379,7 @@ export function SpamButton({
   );
 }
 
-export function FriendRequestButton({
+function FriendRequestButton({
   remoteUserId,
 }: {
   remoteUserId: string;
