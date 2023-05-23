@@ -55,7 +55,7 @@ export class Helius extends RESTDataSource {
     const mappings: Map<string, string> = new Map();
     for (const m of mints) {
       if (ASSET_ID_MAP.has(m)) {
-        mappings.set(m, ASSET_ID_MAP.get(m)!);
+        mappings.set(m, ASSET_ID_MAP.get(m)!.id);
       }
     }
 
@@ -88,7 +88,8 @@ export class Helius extends RESTDataSource {
 
     for (const entry of resp) {
       const id = entry.legacyMetadata?.extensions?.coingeckoId ?? null;
-      ASSET_ID_MAP.set(entry.account, id);
+      const name = entry.onChainMetadata?.metadata?.data?.name ?? null;
+      ASSET_ID_MAP.set(entry.account, id && name ? { id, name } : null);
 
       if (id) {
         mappings.set(entry.account, id);
