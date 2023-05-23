@@ -3,7 +3,7 @@ import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { ethers } from "ethers";
 import type { EnrichedTransaction } from "helius-sdk";
 
-import type { CoinGeckoPriceData } from "../clients/coingecko";
+import { ASSET_ID_MAP, type CoinGeckoPriceData } from "../clients/coingecko";
 import type { HeliusGetTokenMetadataResponse } from "../clients/helius";
 import type { TensorActingListingsResponse } from "../clients/tensor";
 import type { ApiContext } from "../context";
@@ -59,12 +59,12 @@ export class Solana implements Blockchain {
     // Get the list of SPL mints and fetch their Coingecko IDs from the
     // Helius legacy token metadata
     const nonNftMints = nonEmptyOrNftTokens.map((t) => t.mint);
-    const legacy = await this.#ctx.dataSources.helius.getTokenMarketIds(
+    const meta = await this.#ctx.dataSources.helius.getTokenMarketIds(
       nonNftMints
     );
 
     // Query market data for SOL and each of the found SPL token IDs
-    const ids = [...legacy.values()];
+    const ids = [...meta.values()];
     const prices = await this.#ctx.dataSources.coinGecko.getPrices([
       "solana",
       ...ids,
@@ -109,7 +109,7 @@ export class Solana implements Blockchain {
 
     // Map each SPL token into their `TokenBalance` return type object
     const splTokenNodes: TokenBalance[] = nonEmptyOrNftTokens.map((t) => {
-      const id = legacy.get(t.mint);
+      const id = meta.get(t.mint);
       const p: CoinGeckoPriceData | null = prices[id ?? ""] ?? null;
       const marketData: MarketData | null = p
         ? {
@@ -423,7 +423,7 @@ function generateTokenTransfers(
           from: t.fromUserAccount ?? SOLANA_DEFAULT_ADDRESS,
           to: t.toUserAccount ?? SOLANA_DEFAULT_ADDRESS,
           token: t.mint,
-          tokenName: undefined, // FIXME: TODO:
+          tokenName: ASSET_ID_MAP.get(t.mint)?.name,
         })
       )
     );

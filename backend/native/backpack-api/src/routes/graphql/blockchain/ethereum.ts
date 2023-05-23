@@ -7,11 +7,14 @@ import {
 } from "alchemy-sdk";
 import { ethers } from "ethers";
 
+import type { CoinGeckoPriceData } from "../clients/coingecko";
+import { UniswapTokenList } from "../clients/uniswap";
 import type { ApiContext } from "../context";
 import {
   type Balances,
   ChainId,
   type Collection,
+  type MarketData,
   type Nft,
   type NftAttribute,
   type NftConnection,
@@ -59,9 +62,19 @@ export class Ethereum implements Blockchain {
       (t) => (t.rawBalance ?? "0") !== "0"
     );
 
+    const meta = nonEmptyTokens.reduce<Map<string, string>>((acc, curr) => {
+      const id: string | undefined = UniswapTokenList[curr.contractAddress];
+      if (id) {
+        acc.set(curr.contractAddress, id);
+      }
+      return acc;
+    }, new Map());
+
     // Get price data from Coingecko for the discovered tokens
+    const ids = [...meta.values()];
     const prices = await this.#ctx.dataSources.coinGecko.getPrices([
       "ethereum",
+      ...ids,
     ]);
 
     // Native token balance data
@@ -94,13 +107,35 @@ export class Ethereum implements Blockchain {
     // Map the non-empty token balances to their schema type
     const nodes: TokenBalance[] = nonEmptyTokens.map((t) => {
       const amt = BigNumber.from(t.rawBalance ?? "0");
+      const id = meta.get(t.contractAddress);
+      const p: CoinGeckoPriceData | null = prices[id ?? ""] ?? null;
+      const marketData: MarketData | null = p
+        ? {
+            id: this.#ctx.dataSources.coinGecko.id(p.id),
+            lastUpdatedAt: p.last_updated,
+            logo: p.image,
+            name: p.name,
+            percentChange: p.price_change_percentage_24h,
+            price: p.current_price,
+            sparkline: p.sparkline_in_7d.price,
+            symbol: p.symbol,
+            usdChange: p.price_change_24h,
+            value:
+              parseFloat(ethers.utils.formatUnits(amt, t.decimals ?? 0)) *
+              p.current_price,
+            valueChange:
+              parseFloat(ethers.utils.formatUnits(amt, t.decimals ?? 0)) *
+              p.price_change_24h,
+          }
+        : null;
+
       return {
         id: `${this.id()}_token_address:${address}/${t.contractAddress}`,
         address: `${address}/${t.contractAddress}`,
         amount: amt.toString(),
         decimals: t.decimals ?? 0,
         displayAmount: t.balance ?? "0",
-        marketData: null, // FIXME:TODO:
+        marketData,
         token: t.contractAddress,
       };
     });
