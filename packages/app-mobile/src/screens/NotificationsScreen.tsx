@@ -3,8 +3,8 @@ import type {
   GroupedNotification,
 } from "@coral-xyz/common";
 
-import { Suspense, useCallback, useMemo } from "react";
-import { Text, SectionList, ActivityIndicator } from "react-native";
+import { memo, Suspense, useCallback, useMemo } from "react";
+import { SectionList } from "react-native";
 
 import { useUserMetadata } from "@coral-xyz/chat-xplat";
 import { NotificationsData } from "@coral-xyz/recoil";
@@ -12,12 +12,17 @@ import { Separator } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import {
+  ListItemFriendRequest,
+  ListItemNotification,
   SectionHeader,
   SectionSeparator,
-  ListItemNotification,
-  ListItemFriendRequest,
 } from "~components/ListItem";
-import { Screen, RoundedContainerGroup } from "~components/index";
+import {
+  RoundedContainerGroup,
+  Screen,
+  ScreenError,
+  ScreenLoading,
+} from "~components/index";
 
 function parseJson(body: string) {
   try {
@@ -56,38 +61,35 @@ const getTimeStr = (timestamp: number) => {
   return `${days} days`;
 };
 
-const FriendRequestListItem = ({ notification, title }) => {
-  const user = useUserMetadata({
-    remoteUserId: parseJson(notification.body).from,
-  });
+const FriendRequestListItem = memo(
+  ({ notification }: { notification: EnrichedNotification }) => {
+    const user = useUserMetadata({
+      remoteUserId: parseJson(notification.body).from,
+    });
 
-  if (user.username === "" && user.loading === false) {
-    return null;
+    if (user.username === "" && user.loading === false) {
+      return null;
+    }
+
+    return (
+      <ListItemFriendRequest
+        grouped
+        text={notification.title}
+        username={`@${user.username}`}
+        time={getTimeStr(notification.timestamp)}
+        avatarUrl={user.image}
+      />
+    );
   }
-
-  return (
-    <ListItemFriendRequest
-      grouped
-      text={notification.title}
-      username={`@${user.username}`}
-      time={getTimeStr(notification.timestamp)}
-      avatarUrl={user.image}
-    />
-  );
-};
+);
 
 const ListItem = ({ item }: { item: EnrichedNotification }) => {
   if (item.xnft_id === "friend_requests") {
-    return <FriendRequestListItem title="Friend request" notification={item} />;
+    return <FriendRequestListItem notification={item} />;
   }
 
   if (item.xnft_id === "friend_requests_accept") {
-    return (
-      <FriendRequestListItem
-        title="Friend request accepted"
-        notification={item}
-      />
-    );
+    return <FriendRequestListItem notification={item} />;
   }
 
   return (
@@ -102,7 +104,7 @@ const ListItem = ({ item }: { item: EnrichedNotification }) => {
   );
 };
 
-export function NotificationList({
+function NotificationList({
   groupedNotifications,
 }: {
   groupedNotifications: GroupedNotification[];
@@ -114,10 +116,13 @@ export function NotificationList({
     }));
   }, [groupedNotifications]);
 
-  const keyExtractor = (item, index) => item.id.toString() + index.toString();
+  const keyExtractor = (item: EnrichedNotification, index: number) =>
+    item.id.toString() + index.toString();
+
   const renderItem = useCallback(({ item, section, index }: any) => {
     const isFirst = index === 0;
     const isLast = index === section.data.length - 1;
+
     return (
       <RoundedContainerGroup
         disableTopRadius={!isFirst}
@@ -166,8 +171,10 @@ function Container(): JSX.Element {
 
 export function NotificationsScreen(): JSX.Element {
   return (
-    <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
-      <Suspense fallback={<ActivityIndicator size="large" />}>
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ScreenError error={error} />}
+    >
+      <Suspense fallback={<ScreenLoading />}>
         <Container />
       </Suspense>
     </ErrorBoundary>

@@ -37,3 +37,9 @@ export const config = createTamagui({
     },
   },
 });
+
+export type Conf = typeof config;
+
+declare module "tamagui" {
+  type TamaguiCustomConfig = Conf
+}

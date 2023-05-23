@@ -10,7 +10,6 @@ import { walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import {
   PaddedListItemSeparator,
-  Stack,
   StyledText,
   XStack,
 } from "@coral-xyz/tamagui";
@@ -18,7 +17,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 // import { useNavigation } from "@react-navigation/native";
 
 import { BetterBottomSheet } from "~components/BottomSheetModal";
-import { ArrowRightIcon, ContentCopyIcon } from "~components/Icon";
+import { ContentCopyIcon, VerticalDotsIcon } from "~components/Icon";
 import { getBlockchainLogo } from "~hooks/index";
 import { useTheme } from "~hooks/useTheme";
 import { useWallets } from "~hooks/wallets";
@@ -77,7 +76,7 @@ const ListItem = ({ name, publicKey, blockchain, selected }: any) => {
             Alert.alert("edit wallet", name);
           }}
         >
-          <ArrowRightIcon />
+          <VerticalDotsIcon />
         </Pressable>
       </XStack>
     </XStack>
@@ -132,7 +131,6 @@ export function WalletSwitcherButton(): JSX.Element {
 
   const handlePress = () => {
     setIsVisible(true);
-    // navigation.navigate("wallet-picker");
   };
 
   return (

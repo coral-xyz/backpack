@@ -1,9 +1,9 @@
 import { walletAddressDisplay } from "@coral-xyz/common";
 
 import {
+  ListItemActivity,
   ListItemSentReceived,
   ListItemTokenSwap,
-  ListItemActivity,
 } from "~components/ListItem";
 import { parseTransactionDescription } from "~lib/RecentActivityUtils";
 export type ListItemProps = any;

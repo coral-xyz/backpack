@@ -395,7 +395,9 @@ export const ScreenLoading = FullScreenLoading;
 export function ScreenError({ error }: { error: any }): JSX.Element {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Something went wrong:</Text>
+      <StyledText fontSize="$lg" color="$negative">
+        Something went wrong:
+      </StyledText>
       <Text>{error.message}</Text>
     </View>
   );
