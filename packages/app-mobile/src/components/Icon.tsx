@@ -4,13 +4,21 @@ import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import Svg, { Path, Rect, Stop } from "react-native-svg";
 
 import { useTheme } from "~hooks/useTheme";
+
+export const ArrowRightIcon = ({
+  size = 24,
+  color = "gray",
+}: {
+  size?: number;
+  color?: string;
+}) => <MaterialIcons name="keyboard-arrow-right" size={size} color={color} />;
 export {
-  EthereumIcon,
-  SolanaIcon,
   AvalancheIcon,
-  PolygonIcon,
   BscIcon,
   CosmosIcon,
+  EthereumIcon,
+  PolygonIcon,
+  SolanaIcon,
 } from "@coral-xyz/tamagui";
 
 export const CheckBadge = (props: SvgProps) => (
