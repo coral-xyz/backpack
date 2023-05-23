@@ -403,6 +403,32 @@ export function ScreenError({ error }: { error: any }): JSX.Element {
   );
 }
 
+export const ScreenEmptyList = ({
+  iconName,
+  title,
+  subtitle,
+  buttonText,
+  onPress,
+}: {
+  iconName: string;
+  title: string;
+  subtitle: string;
+  buttonText?: string;
+  onPress?: () => void;
+}) => {
+  return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <EmptyState
+        icon={(props: any) => <MaterialIcons name={iconName} {...props} />}
+        title={title}
+        subtitle={subtitle}
+        buttonText={buttonText}
+        onPress={onPress}
+      />
+    </View>
+  );
+};
+
 export function WelcomeLogoHeader() {
   const theme = useTheme();
   const [showDebug, setShowDebug] = useState(false);

@@ -1,42 +1,31 @@
 import { Suspense, useCallback } from "react";
-import { StyleProp, Text, ViewStyle, SectionList } from "react-native";
+import { SectionList, StyleProp, Text, ViewStyle } from "react-native";
 
 import * as Linking from "expo-linking";
 
 import { Blockchain, RecentTransaction, XNFT_GG_LINK } from "@coral-xyz/common";
 import { useRecentTransactionsGroupedByDate } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { SectionHeader, SectionSeparator } from "~components/ListItem";
 import { ListItem, ListItemProps } from "~components/RecentActivityListItem";
 import {
-  EmptyState,
-  RoundedContainerGroup,
   FullScreenLoading,
+  RoundedContainerGroup,
+  ScreenEmptyList,
 } from "~components/index";
 
-export function NoRecentActivity({
-  title,
-  subtitle,
-  buttonText,
-}: {
-  title?: string;
-  subtitle?: string;
-  buttonText?: string;
-}): JSX.Element {
-  return (
-    <EmptyState
-      icon={(props: any) => <MaterialIcons name="bolt" {...props} />}
-      title={title || "No Recent Activity"}
-      subtitle={subtitle || "Get started by adding your first xNFT"}
-      buttonText={buttonText || "Browse the xNFT Library"}
-      onPress={() => {
-        Linking.openURL(XNFT_GG_LINK);
-      }}
-    />
-  );
-}
+export const NoRecentActivity = () => (
+  <ScreenEmptyList
+    title="No Recent Activity"
+    subtitle="Get started by doing something!"
+    iconName="bolt"
+    buttonText="Browser the xNFT Library"
+    onPress={() => {
+      Linking.openURL(XNFT_GG_LINK);
+    }}
+  />
+);
 
 export function RecentActivityList({
   blockchain,
@@ -124,14 +113,26 @@ export function _RecentActivityList({
   return (
     <SectionList
       sections={sections}
-      ListEmptyComponent={NoRecentActivity}
       keyExtractor={keyExtractor}
+      contentContainerStyle={{ flex: 1 }}
       renderItem={renderItem}
+      scrollEnabled={sections.length > 0}
       renderSectionHeader={renderSectionHeader}
       SectionSeparatorComponent={SectionSeparator}
       stickySectionHeadersEnabled={false}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={ListHeaderComponent}
+      ListEmptyComponent={
+        <ScreenEmptyList
+          title="No Recent Activity"
+          subtitle="Get started by doing something!"
+          iconName="bolt"
+          buttonText="Browser the xNFT Library"
+          onPress={() => {
+            Linking.openURL(XNFT_GG_LINK);
+          }}
+        />
+      }
     />
   );
 }
