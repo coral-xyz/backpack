@@ -20,6 +20,7 @@ import {
 import {
   RoundedContainerGroup,
   Screen,
+  ScreenEmptyList,
   ScreenError,
   ScreenLoading,
 } from "~components/index";
@@ -140,13 +141,22 @@ function NotificationList({
   return (
     <SectionList
       sections={sections}
+      contentContainerStyle={{ flex: 1 }}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
       renderSectionHeader={renderSectionHeader}
+      scrollEnabled={sections.length > 0}
       ItemSeparatorComponent={Separator}
       SectionSeparatorComponent={SectionSeparator}
       stickySectionHeadersEnabled={false}
       showsVerticalScrollIndicator={false}
+      ListEmptyComponent={
+        <ScreenEmptyList
+          title="No notifications"
+          subtitle="Make some friends!"
+          iconName="image"
+        />
+      }
     />
   );
 }
