@@ -1,13 +1,13 @@
 import { memo, useState } from "react";
 import {
   Alert,
-  ScrollView,
   Button,
-  SectionList,
+  FlatList,
   Image,
+  ScrollView,
+  SectionList,
   StyleSheet,
   View,
-  FlatList,
 } from "react-native";
 
 import Constants from "expo-constants";
@@ -15,23 +15,23 @@ import Constants from "expo-constants";
 import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import {
-  Box,
-  YGroup,
-  Separator,
-  ListItem,
-  XStack,
-  StyledText,
-  RoundedContainerGroup,
   _ListItemOneLine,
-  ListItemSettings,
-  ListItemLabelValue,
-  ListItemSentReceived,
-  ListItemTokenSwap,
-  ListItemNotification,
+  Box,
+  ListItem,
   ListItemActivity,
-  ListItemToken,
-  ListItemWalletOverview,
   ListItemFriendRequest,
+  ListItemLabelValue,
+  ListItemNotification,
+  ListItemSentReceived,
+  ListItemSettings,
+  ListItemToken,
+  ListItemTokenSwap,
+  ListItemWalletOverview,
+  RoundedContainerGroup,
+  Separator,
+  StyledText,
+  XStack,
+  YGroup,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -456,7 +456,7 @@ export function UtilsDesignScreen(): JSX.Element {
               <ListItemTokenSwap
                 grouped
                 title="Token Swap"
-                caption="USDC -> SOL"
+                caption="orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE USDC -> orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE"
                 sent="-5.00 USDC"
                 received="+0.2423 SOL"
               />

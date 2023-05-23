@@ -1,10 +1,12 @@
+import { Dimensions } from "react-native";
+
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
 import { Box } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import {
-  StackScreenProps,
   createStackNavigator,
+  StackScreenProps,
 } from "@react-navigation/stack";
 
 import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
@@ -30,6 +32,9 @@ function TopTabsNavigator(): JSX.Element {
   const theme = useTheme();
   return (
     <TopTabs.Navigator
+      initialLayout={{
+        width: Dimensions.get("window").width,
+      }}
       screenOptions={{
         tabBarIndicatorStyle: {
           backgroundColor: theme.custom.colors.fontColor,

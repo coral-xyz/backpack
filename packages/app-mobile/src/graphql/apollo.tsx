@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import Constants from "expo-constants";
 
@@ -11,9 +11,9 @@ import { InMemoryCache } from "@apollo/client/core";
 import { setContext } from "@apollo/client/link/context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // https://github.com/apollographql/apollo-cache-persist/tree/master/examples/react-native/src/hooks
-import { persistCache, AsyncStorageWrapper } from "apollo3-cache-persist";
+import { AsyncStorageWrapper, persistCache } from "apollo3-cache-persist";
 
-import { useSession, getTokenAsync } from "~lib/SessionProvider";
+import { getTokenAsync, useSession } from "~lib/SessionProvider";
 
 const cache = new InMemoryCache();
 const API_URL = Constants.expoConfig?.extra?.graphqlApiUrl;
@@ -24,7 +24,6 @@ const makeApolloClient = (token: string | null) => {
   });
 
   const authLink = setContext((_, { headers }) => {
-    console.log("debug1:authLink:token", token);
     return {
       headers: {
         ...headers,

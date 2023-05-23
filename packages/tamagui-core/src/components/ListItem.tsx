@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
   FlatList,
   Image,
@@ -10,34 +9,22 @@ import {
 import type { Blockchain } from "@coral-xyz/common";
 import { formatUSD } from "@coral-xyz/common";
 
-import { useCustomTheme as useTheme } from "../hooks";
+import { useCustomTheme as useTheme } from "../hooks/index";
 import { ListItem, Separator, XStack, YGroup, YStack } from "../";
 
+import { getIcon, IconCheckmark, IconKeyboardArrowRight } from "./Icon";
 import {
   BlockchainLogo,
   ProxyImage,
   RoundedContainerGroup,
   StyledText,
   TextPercentChanged,
-  // @ts-expect-error
   UserAvatar,
 } from "./";
 
 type Token = any;
 type PublicKey = any;
 type Wallet = any;
-
-function IconCheckmark() {
-  return null;
-}
-
-const KeyboardArrowRight = () => null;
-// <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
-// );
-
-const getIcon = (name: string) => null;
-//   <MaterialIcons name={name} size={28} color="gray" />
-// );
 
 export const ListHeader = ({ title }: { title: string }): JSX.Element => (
   <StyledText fontSize="$base" color="$fontColor" mb={8} ml={18}>
@@ -81,8 +68,8 @@ function Sep() {
 
 const styles = StyleSheet.create({
   rowLogo: {
-    width: 44,
-    height: 44,
+    width: 32,
+    height: 32,
     aspectRatio: 1,
     borderRadius: 4,
   },
@@ -168,7 +155,7 @@ export function ListItemSentReceived({
       borderWidth={grouped ? 0 : 2}
       paddingHorizontal={16}
       paddingVertical={12}
-      icon={<Image style={styles.rowLogo} src={iconUrl} />}
+      icon={<Image style={styles.rowLogo} source={{ uri: iconUrl }} />}
     >
       <XStack flex={1} justifyContent="space-between">
         <YStack>
@@ -217,22 +204,42 @@ export function ListItemTokenSwap({
       borderWidth={!grouped ? 2 : undefined}
       paddingHorizontal={16}
       paddingVertical={12}
-      icon={<View style={{ width: 40, height: 40 }} />}
+      icon={<View style={styles.rowLogo} />}
     >
       <XStack flex={1} justifyContent="space-between">
         <YStack>
-          <StyledText fontSize="$lg" color="$fontColor">
+          <StyledText
+            fontSize="$lg"
+            color="$fontColor"
+            ellipsizeMode="tail"
+            numberOfLines={1}
+          >
             {title}
           </StyledText>
-          <StyledText fontSize="$sm" color="$secondary">
+          <StyledText
+            fontSize="$sm"
+            color="$secondary"
+            ellipsizeMode="tail"
+            numberOfLines={1}
+          >
             {caption}
           </StyledText>
         </YStack>
-        <YStack alignItems="flex-end">
-          <StyledText fontSize="$sm" color="$positive">
+        <YStack flex={0} maxWidth={100} alignItems="flex-end">
+          <StyledText
+            fontSize="$sm"
+            color="$positive"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
             {received}
           </StyledText>
-          <StyledText fontSize="$sm" color="$negative">
+          <StyledText
+            fontSize="$sm"
+            color="$negative"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
             {sent}
           </StyledText>
         </YStack>
@@ -528,7 +535,7 @@ export function _ListItemOneLine({
   iconAfter,
   onPress,
 }: {
-  icon: JSX.Element;
+  icon: JSX.Element | null;
   title: string;
   rightText?: string;
   iconAfter: JSX.Element;
@@ -572,7 +579,7 @@ export function ListItemSettings({
       onPress={onPress}
       title={title}
       icon={Icon}
-      iconAfter={<KeyboardArrowRight />}
+      iconAfter={<IconKeyboardArrowRight />}
     />
   );
 }
@@ -608,7 +615,7 @@ export function UserList() {
                   }}
                 />
               }
-              iconAfter={<KeyboardArrowRight />}
+              iconAfter={<IconKeyboardArrowRight />}
             />
           );
         }}
@@ -698,6 +705,8 @@ export function SectionedList() {
         const isFirst = index === 0;
         const isLast = index === section.data.length - 1;
 
+        const action = item.action as "Sent" | "Received";
+
         return (
           <RoundedContainerGroup
             disableTopRadius={!isFirst}
@@ -706,7 +715,7 @@ export function SectionedList() {
             <ListItemSentReceived
               grouped
               address={item.address}
-              action={item.action}
+              action={action}
               amount={item.amount}
               iconUrl={item.iconUrl}
             />

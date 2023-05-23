@@ -5,10 +5,10 @@ import { Pressable, StyleSheet } from "react-native";
 
 import { MaterialIcons } from "@expo/vector-icons";
 import {
-  BottomSheetModal as _BottomSheetModal,
-  BottomSheetView,
   // BottomSheetFooter,
   BottomSheetBackdrop,
+  BottomSheetModal as _BottomSheetModal,
+  BottomSheetView,
   useBottomSheetDynamicSnapPoints,
 } from "@gorhom/bottom-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

@@ -19,6 +19,7 @@
     "downlevelIteration": true,
     "jsx": "react-jsx",
     "paths": {
+      "@coral-xyz/tamagui": ["../tamagui-core"],
       "@coral-xyz/background": ["../background"],
       "@coral-xyz/chat-sdk": ["../chat-sdk"],
       "@coral-xyz/common": ["../common"],
@@ -30,6 +31,7 @@
     }
   },
   "references": [
+    { "path": "../tamagui-core" },
     { "path": "../background" },
     { "path": "../chat-sdk" },
     { "path": "../common" },

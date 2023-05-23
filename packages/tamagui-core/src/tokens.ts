@@ -21,6 +21,7 @@ export const tokens = createTokens({
     "6xl": 40,
     borderWidth: 2,
     container: 56,
+    input: 56,
   },
   zIndex,
   radius: {

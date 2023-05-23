@@ -3,12 +3,12 @@ import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import {
   ActivityIndicator,
   Alert,
+  Button,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
-  ScrollView,
-  Button,
 } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
@@ -17,18 +17,18 @@ import Constants from "expo-constants";
 import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import {
-  XStack,
-  Margin,
   BaseButton,
-  LinkButton,
-  PrimaryButton,
-  SecondaryButton,
-  NegativeButton,
   DangerButton,
-  StyledText,
-  RoundedContainerGroup,
+  LinkButton,
+  Margin,
+  NegativeButton,
+  PrimaryButton,
   ProxyImage,
+  RoundedContainerGroup,
+  SecondaryButton,
+  StyledText,
   UserAvatar,
+  XStack,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -47,16 +47,16 @@ export { TokenAmountHeader } from "./TokenAmountHeader";
 export { StyledTokenTextInput } from "./TokenInputField";
 export { Avatar, CurrentUserAvatar } from "./UserAvatar";
 export {
-  Margin,
   BaseButton,
-  LinkButton,
-  PrimaryButton,
-  SecondaryButton,
-  NegativeButton,
   DangerButton,
-  StyledText,
-  RoundedContainerGroup,
+  LinkButton,
+  Margin,
+  NegativeButton,
+  PrimaryButton,
   ProxyImage,
+  RoundedContainerGroup,
+  SecondaryButton,
+  StyledText,
   UserAvatar,
 };
 
@@ -395,7 +395,9 @@ export const ScreenLoading = FullScreenLoading;
 export function ScreenError({ error }: { error: any }): JSX.Element {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Something went wrong:</Text>
+      <StyledText fontSize="$lg" color="$negative">
+        Something went wrong:
+      </StyledText>
       <Text>{error.message}</Text>
     </View>
   );

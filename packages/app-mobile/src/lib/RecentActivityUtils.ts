@@ -44,12 +44,20 @@ export function removeLastPeriod(str: string) {
   return str;
 }
 
+function parseTokenName(name: string) {
+  if (name.length < 6) {
+    return name;
+  }
+
+  return walletAddressDisplay(name);
+}
+
 export function parseSwap(str: string) {
   // "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz swapped 0.001 SOL for 0.022 USDC"
   try {
     const [sent, received] = str.split("swapped ")[1].split(" for ");
-    const sentToken = sent.split(" ")[1];
-    const receivedToken = received.split(" ")[1];
+    const sentToken = parseTokenName(sent.split(" ")[1]);
+    const receivedToken = parseTokenName(received.split(" ")[1]);
     return {
       sent: `-${sent}`,
       received: `+${received}`,

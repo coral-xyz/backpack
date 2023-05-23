@@ -37,3 +37,12 @@ export const config = createTamagui({
     },
   },
 });
+
+export type Conf = typeof config;
+
+// DO NOT CHANGE THS DECLARATION, THIS MUST LOOK LIKE THIS:
+// interface TamaguiCustomConfig extends Conf {}
+declare module "tamagui" {
+  // eslint-disable-next-line
+  interface TamaguiCustomConfig extends Conf {}
+}
