@@ -28,8 +28,6 @@ import {
   PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION,
   PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE,
   PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION,
-  PLUGIN_RPC_METHOD_CHAT_OPEN,
-  PLUGIN_RPC_METHOD_CLOSE_TO,
   PLUGIN_RPC_METHOD_PLUGIN_OPEN,
   PLUGIN_RPC_METHOD_POP_OUT,
   PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW,
@@ -38,7 +36,6 @@ import {
   SOLANA_RPC_METHOD_SIGN_MESSAGE as PLUGIN_SOLANA_RPC_METHOD_SIGN_MESSAGE,
   SOLANA_RPC_METHOD_SIGN_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_TX,
   SOLANA_RPC_METHOD_SIMULATE as PLUGIN_SOLANA_RPC_METHOD_SIMULATE_TX,
-  UI_RPC_METHOD_NAVIGATION_PUSH,
 } from "./constants";
 import { getLogger } from "./logging";
 import type { Event, RpcResponse, XnftMetadata, XnftPreference } from "./types";
@@ -419,10 +416,6 @@ export class Plugin {
     switch (method) {
       case PLUGIN_RPC_METHOD_PLUGIN_OPEN:
         return await this._handlePluginOpen(params[0]);
-      case PLUGIN_RPC_METHOD_CHAT_OPEN:
-        return await this._handleChatOpen(params[0], params[1]);
-      case PLUGIN_RPC_METHOD_CLOSE_TO:
-        return await this._handleCloseTo(params[0], params[1]);
       case PLUGIN_RPC_METHOD_POP_OUT:
         return await this._handlePopout(params[0]);
       case PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW:
@@ -607,37 +600,6 @@ export class Plugin {
     return ["success"];
   }
 
-  private async _handleChatOpen(
-    chatId: string,
-    mintAddress: string
-  ): Promise<RpcResponse> {
-    throw "Not implemented yet";
-    await this._backgroundClient?.request({
-      method: UI_RPC_METHOD_NAVIGATION_PUSH,
-      params: [chatId, mintAddress],
-    });
-    return ["success"];
-  }
-
-  private async _handleCloseTo(url: string, tab: string): Promise<RpcResponse> {
-    await this._backgroundClient?.request({
-      method: UI_RPC_METHOD_NAVIGATION_PUSH,
-      params: [url, tab],
-    });
-    return ["success"];
-  }
-
-  private clickHandlerError(): RpcResponse | null {
-    if (!this._lastClickTsMs) {
-      return ["error"];
-    }
-    const timeLapsed = Date.now() - this._lastClickTsMs;
-    if (timeLapsed >= 1000) {
-      return ["error"];
-    }
-    return null;
-  }
-
   //
   // Asks the extension UI to sign the transaction.
   //
@@ -661,17 +623,5 @@ export class Plugin {
         options,
       });
     });
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Solana Connection Bridge.
-  //////////////////////////////////////////////////////////////////////////////
-
-  //
-  // Relay all requests to the background service worker.
-  //
-  private async _handleConnectionBridge(event: Event): Promise<RpcResponse> {
-    logger.debug(`handle connection bridge`, event);
-    return await this._connectionBackgroundClient?.request(event.data.detail);
   }
 }
