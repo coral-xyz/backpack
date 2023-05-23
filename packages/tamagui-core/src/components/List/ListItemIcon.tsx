@@ -1,20 +1,28 @@
 import { proxyImageUrl } from "@coral-xyz/common";
-import { Avatar } from "tamagui";
+import type { RadiusTokens, SizeTokens } from "@tamagui/core";
+import { Avatar, type AvatarProps } from "tamagui";
 
 import { Skeleton } from "../Skeleton";
 
 export type ListItemIconCoreProps = {
   image: string;
-  size: number;
+  radius?: RadiusTokens;
+  size: SizeTokens;
+  style?: Omit<AvatarProps, "children">;
 };
 
-export function ListItemIconCore({ image, size }: ListItemIconCoreProps) {
+export function ListItemIconCore({
+  image,
+  radius,
+  size,
+  style,
+}: ListItemIconCoreProps) {
   const proxySrc = proxyImageUrl(image);
   return (
-    <Avatar circular size={size}>
+    <Avatar borderRadius={radius} size={size} {...style}>
       <Avatar.Image src={proxySrc} />
       <Avatar.Fallback delayMs={250}>
-        <Skeleton height={size} width={size} radius={size / 2} />
+        <Skeleton height={size} width={size} />
       </Avatar.Fallback>
     </Avatar>
   );

@@ -1,5 +1,5 @@
 export type SkeletonProps = {
   height?: number | string;
-  radius?: number;
+  radius?: number | string;
   width?: number | string;
 };

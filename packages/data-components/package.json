@@ -17,6 +17,7 @@
     "@coral-xyz/recoil": "*",
     "@coral-xyz/tamagui": "*",
     "@coral-xyz/themes": "*",
+    "helius-sdk": "^1.0.6",
     "react": "^18.2.0"
   },
   "devDependencies": {

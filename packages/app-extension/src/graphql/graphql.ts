@@ -463,6 +463,8 @@ export type User = Node & {
   id: Scalars["ID"];
   /** The Relay connection for the notifications received by the user. */
   notifications?: Maybe<NotificationConnection>;
+  /** The user's unique UUID from the database. */
+  userId: Scalars["String"];
   /** The user's Backpack username. */
   username: Scalars["String"];
   /** Get a single wallet object for the argued public key address. */

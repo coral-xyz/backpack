@@ -117,7 +117,7 @@ function NotificationListItemFriendRequest({
           : theme.custom.colors.unreadBackground,
         cursor: "pointer",
       }}
-      icon={<ListItemIconCore image={user?.image} size={44} />}
+      icon={<ListItemIconCore image={user?.image} radius={22} size={44} />}
       onClick={handleClick}
     >
       <YStack flex={1}>

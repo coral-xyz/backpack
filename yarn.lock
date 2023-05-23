@@ -4125,6 +4125,7 @@ __metadata:
     "@graphql-codegen/client-preset": ^3.0.1
     "@types/react": ^18.2.6
     eslint-config-custom: "*"
+    helius-sdk: ^1.0.6
     react: ^18.2.0
     tsc-alias: ^1.8.6
     typescript: ^5.0.4
@@ -26021,6 +26022,15 @@ __metadata:
   dependencies:
     axios: ^1.2.3
   checksum: 9a12fd9a998de8da1515b2bcb909cd0875e1d978b7a5d4cbf0e8bd173295a4324931a1a2db35d39d6684646afb54bf09997ff5615efc98caed84cfa4581ee046
+  languageName: node
+  linkType: hard
+
+"helius-sdk@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "helius-sdk@npm:1.0.6"
+  dependencies:
+    axios: ^1.2.3
+  checksum: d27738031b5fd271e5941efd86de053502a70ecf8633560ca10629532ea7b0f096876fb966ea3ccf27f404ecebeff3c13ee34522237a59e5b820d1db76525eb1
   languageName: node
   linkType: hard
 

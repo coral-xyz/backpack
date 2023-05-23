@@ -58,7 +58,7 @@ export function NotificationListItemFriendRequestAction({
         remoteRequested: false,
       },
     });
-  }, [onAccept, remoteUserId, sendFriendRequest, setFriendshipValue]);
+  }, [onAccept, remoteUserId, sendFriendRequest, setFriendshipValue, uuid]);
 
   /**
    * Memoized function handler for rejecting an inbound friend request.
@@ -80,7 +80,7 @@ export function NotificationListItemFriendRequestAction({
         remoteRequested: false,
       },
     });
-  }, [onDecline, remoteUserId, sendFriendRequest, setFriendshipValue]);
+  }, [onDecline, remoteUserId, sendFriendRequest, setFriendshipValue, uuid]);
 
   return friendship?.remoteRequested && !friendship?.areFriends ? (
     <XStack alignItems="center" gap={10} marginTop={5}>

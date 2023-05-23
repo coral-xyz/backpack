@@ -1,4 +1,5 @@
-import { Suspense, useState } from "react";
+import { useState } from "react";
+import { TransactionHistory } from "@coral-xyz/data-components";
 import { Loading } from "@coral-xyz/react-common";
 import { styles } from "@coral-xyz/themes";
 import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
@@ -10,7 +11,7 @@ import {
   NavStackScreen,
 } from "../../common/Layout/NavStack";
 
-import { TransactionList } from "./TransactionList";
+// import { TransactionList } from "./TransactionList";
 
 const useStyles = styles((theme) => ({
   networkSettingsButtonContainer: {
@@ -66,13 +67,9 @@ export function TransactionsButton() {
   );
 }
 
-export function Transactions() {
-  return (
-    <Suspense fallback={<TransactionsLoader />}>
-      <TransactionList />
-    </Suspense>
-  );
-}
+export const Transactions = () => (
+  <TransactionHistory loaderComponent={<TransactionsLoader />} />
+);
 
 function TransactionsLoader() {
   return (

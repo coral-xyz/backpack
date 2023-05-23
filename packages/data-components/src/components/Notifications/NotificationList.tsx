@@ -48,24 +48,27 @@ export function NotificationList({
    * @returns {ReactElement}
    */
   const renderItem: SectionListRenderItem<Notification, NotificationGroup> =
-    useCallback(({ item, section, index }) => {
-      const first = index === 0;
-      const last = index === section.data.length - 1;
-      return (
-        <RoundedContainerGroup
-          disableBottomRadius={!last}
-          disableTopRadius={!first}
-          style={{ marginBottom: last ? 24 : undefined }}
-        >
-          <NotificationListItem
-            notification={item}
-            onClick={onItemClick}
-            onAcceptFriendRequest={onAcceptFriendRequest}
-            onDeclineFriendRequest={onDeclineFriendRequest}
-          />
-        </RoundedContainerGroup>
-      );
-    }, []);
+    useCallback(
+      ({ item, section, index }) => {
+        const first = index === 0;
+        const last = index === section.data.length - 1;
+        return (
+          <RoundedContainerGroup
+            disableBottomRadius={!last}
+            disableTopRadius={!first}
+            style={{ marginBottom: last ? 24 : undefined }}
+          >
+            <NotificationListItem
+              notification={item}
+              onClick={onItemClick}
+              onAcceptFriendRequest={onAcceptFriendRequest}
+              onDeclineFriendRequest={onDeclineFriendRequest}
+            />
+          </RoundedContainerGroup>
+        );
+      },
+      [onAcceptFriendRequest, onDeclineFriendRequest, onItemClick]
+    );
 
   /**
    * Returns a renderable component for the header of the each section.
