@@ -41,6 +41,12 @@ export type BalanceAggregate = Node & {
   valueChange: Scalars["Float"];
 };
 
+/** Input filter type for fetching wallet balances. */
+export type BalanceFiltersInput = {
+  /** If requested, only provide balances for non-native tokens that are listed on CoinGecko. */
+  marketListedTokensOnly?: InputMaybe<Scalars["Boolean"]>;
+};
+
 /**
  * Top-level type for providing wallet balance information.
  * Should provide details about native and non-native token balances with aggregation details.
@@ -525,6 +531,11 @@ export type Wallet = Node & {
 };
 
 /** Wallet definition to provide data about all assets owned by an address. */
+export type WalletBalancesArgs = {
+  filters?: InputMaybe<BalanceFiltersInput>;
+};
+
+/** Wallet definition to provide data about all assets owned by an address. */
 export type WalletNftsArgs = {
   filters?: InputMaybe<NftFiltersInput>;
 };
@@ -669,6 +680,7 @@ export type DirectiveResolverFn<
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   BalanceAggregate: ResolverTypeWrapper<BalanceAggregate>;
+  BalanceFiltersInput: BalanceFiltersInput;
   Balances: ResolverTypeWrapper<Balances>;
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]>;
   CacheControlScope: CacheControlScope;
@@ -732,6 +744,7 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   BalanceAggregate: BalanceAggregate;
+  BalanceFiltersInput: BalanceFiltersInput;
   Balances: Balances;
   Boolean: Scalars["Boolean"];
   Collection: Collection;
@@ -1270,7 +1283,8 @@ export type WalletResolvers<
   balances?: Resolver<
     Maybe<ResolversTypes["Balances"]>,
     ParentType,
-    ContextType
+    ContextType,
+    Partial<WalletBalancesArgs>
   >;
   chainId?: Resolver<ResolversTypes["ChainID"], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;

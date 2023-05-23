@@ -11,6 +11,7 @@ import type { CoinGeckoPriceData } from "../clients/coingecko";
 import { UniswapTokenList } from "../clients/uniswap";
 import type { ApiContext } from "../context";
 import {
+  type BalanceFiltersInput,
   type Balances,
   ChainId,
   type Collection,
@@ -48,10 +49,14 @@ export class Ethereum implements Blockchain {
    * Fetch and aggregate the native and token balances and
    * prices for the argued wallet address.
    * @param {string} address
+   * @param {Partial<BalanceFiltersInput>} [filters]
    * @returns {Promise<Balances>}
    * @memberof Ethereum
    */
-  async getBalancesForAddress(address: string): Promise<Balances> {
+  async getBalancesForAddress(
+    address: string,
+    filters?: Partial<BalanceFiltersInput>
+  ): Promise<Balances> {
     // Fetch the native and all token balances of the address and filter out the empty balances
     const [native, tokenBalances] = await Promise.all([
       this.#ctx.dataSources.alchemy.core.getBalance(address),
@@ -105,9 +110,9 @@ export class Ethereum implements Blockchain {
     };
 
     // Map the non-empty token balances to their schema type
-    const nodes: TokenBalance[] = nonEmptyTokens.map((t) => {
-      const amt = BigNumber.from(t.rawBalance ?? "0");
-      const id = meta.get(t.contractAddress);
+    const nodes = nonEmptyTokens.reduce<TokenBalance[]>((acc, curr) => {
+      const amt = BigNumber.from(curr.rawBalance ?? "0");
+      const id = meta.get(curr.contractAddress);
       const p: CoinGeckoPriceData | null = prices[id ?? ""] ?? null;
       const marketData: MarketData | null = p
         ? {
@@ -121,24 +126,31 @@ export class Ethereum implements Blockchain {
             symbol: p.symbol,
             usdChange: p.price_change_24h,
             value:
-              parseFloat(ethers.utils.formatUnits(amt, t.decimals ?? 0)) *
+              parseFloat(ethers.utils.formatUnits(amt, curr.decimals ?? 0)) *
               p.current_price,
             valueChange:
-              parseFloat(ethers.utils.formatUnits(amt, t.decimals ?? 0)) *
+              parseFloat(ethers.utils.formatUnits(amt, curr.decimals ?? 0)) *
               p.price_change_24h,
           }
         : null;
 
-      return {
-        id: `${this.id()}_token_address:${address}/${t.contractAddress}`,
-        address: `${address}/${t.contractAddress}`,
-        amount: amt.toString(),
-        decimals: t.decimals ?? 0,
-        displayAmount: t.balance ?? "0",
-        marketData,
-        token: t.contractAddress,
-      };
-    });
+      if (filters?.marketListedTokensOnly && !marketData) {
+        return acc;
+      }
+
+      return [
+        ...acc,
+        {
+          id: `${this.id()}_token_address:${address}/${curr.contractAddress}`,
+          address: `${address}/${curr.contractAddress}`,
+          amount: amt.toString(),
+          decimals: curr.decimals ?? 0,
+          displayAmount: curr.balance ?? "0",
+          marketData,
+          token: curr.contractAddress,
+        },
+      ];
+    }, []);
 
     return {
       id: `${this.id()}_balances:${address}`,
@@ -151,13 +163,13 @@ export class Ethereum implements Blockchain {
   /**
    * Get a list of NFT data for tokens owned by the argued address.
    * @param {string} address
-   * @param {Partial<NftFiltersInput>} [filters]
+   * @param {NftFiltersInput} [filters]
    * @returns {Promise<NftConnection>}
    * @memberof Ethereum
    */
   async getNftsForAddress(
     address: string,
-    filters?: Partial<NftFiltersInput>
+    filters?: NftFiltersInput
   ): Promise<NftConnection> {
     // Get all NFTs held by the address from Alchemy
     const nfts = await this.#ctx.dataSources.alchemy.nft.getNftsForOwner(
