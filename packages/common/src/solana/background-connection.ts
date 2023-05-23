@@ -108,8 +108,8 @@ import type {
 } from "./programs/token";
 import { addressLookupTableAccountParser } from "./rpc-helpers";
 import type {
-  SolanaTokenAccountWithKey,
-  SolanaTokenAccountWithKeyString,
+  SolanaTokenAccountWithKeyAndProgramId,
+  SolanaTokenAccountWithKeyAndProgramIdString,
   SplNftMetadataString,
   TokenMetadata,
   TokenMetadataString,
@@ -133,7 +133,7 @@ export class BackgroundSolanaConnection extends Connection {
   }
 
   async customSplMetadataUri(
-    tokens: Array<SolanaTokenAccountWithKeyString>,
+    tokens: Array<SolanaTokenAccountWithKeyAndProgramIdString>,
     tokenMetadata: Array<TokenMetadataString | null>
   ): Promise<Array<[string, SplNftMetadataString]>> {
     return await this._backgroundClient.request({
@@ -223,12 +223,13 @@ export class BackgroundSolanaConnection extends Connection {
   }
 
   static solanaTokenAccountWithKeyToJson(
-    t: SolanaTokenAccountWithKey
-  ) /* : SolanaTokenAccountWithKeyString */ {
+    t: SolanaTokenAccountWithKeyAndProgramId
+  ) /* : SolanaTokenAccountWithKeyAndProgramIdString */ {
     return {
       ...t,
       mint: t.mint.toString(),
       key: t.key.toString(),
+      programId: t.programId.toString(),
       amount: t.amount.toString(),
       delegate: t.delegate?.toString(),
       delegatedAmount: t.delegatedAmount.toString(),

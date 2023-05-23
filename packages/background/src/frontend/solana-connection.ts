@@ -5,7 +5,7 @@ import type {
   RpcRequest,
   RpcResponse,
   SerializedTokenAccountsFilter,
-  SolanaTokenAccountWithKeyString,
+  SolanaTokenAccountWithKeyAndProgramIdString,
   TokenMetadataString,
 } from "@coral-xyz/common";
 import {
@@ -339,7 +339,7 @@ async function handleCustomSplTokenAccounts(
 
 async function handleCustomSplMetadataUri(
   ctx: Context<SolanaConnectionBackend>,
-  nftTokens: Array<SolanaTokenAccountWithKeyString>,
+  nftTokens: Array<SolanaTokenAccountWithKeyAndProgramIdString>,
   nftTokenMetadata: Array<TokenMetadataString | null>
 ) {
   const resp = await ctx.backend.customSplMetadataUri(
