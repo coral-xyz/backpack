@@ -35,6 +35,27 @@ export const tokens = createTokens({
 
 // the colors are tokenized so they can be utilized by the theme
 export const lightThemeColors = {
+  // old theme colors
+  fontColor: tokens.color.lightBaseTextHighEmphasis,
+  icon: tokens.color.lightBaseIcon,
+  background: tokens.color.lightBaseBackgroundL0,
+  negative: tokens.color.lightRedText,
+  positive: tokens.color.lightGreenText,
+  smallTextColor: tokens.color.lightBaseTextMedEmphasis,
+  // nav,
+  // secondary,
+  // bg2,
+  // bg3,
+  textPlaceholder: tokens.color.lightBaseTextMedEmphasis,
+  primaryButtonTextColor: tokens.color.lightButtonPrimaryText,
+  secondaryButtonTextColor: tokens.color.lightButtonSecondaryText,
+  primaryButton: tokens.color.lightButtonPrimaryBackground,
+  secondaryButton: tokens.color.lightButtonSecondaryBackground,
+  textInputBorderFull: tokens.color.lightBaseBorderLight,
+  borderFull: tokens.color.lightBaseBorderLight,
+  borderColor: tokens.color.lightBaseBorderLight,
+
+  // new theme colors
   baseBackgroundL1: tokens.color.lightBaseBackgroundL1,
   baseTextHighEmphasis: tokens.color.lightBaseTextHighEmphasis,
   baseTextMedEmphasis: tokens.color.lightBaseTextMedEmphasis,
@@ -64,6 +85,27 @@ export const lightThemeColors = {
 };
 
 export const darkThemeColors = {
+  // old theme colors
+  fontColor: tokens.color.darkBaseTextHighEmphasis,
+  icon: tokens.color.darkBaseIcon,
+  background: tokens.color.darkBaseBackgroundL0,
+  negative: tokens.color.darkRedText,
+  positive: tokens.color.darkGreenText,
+  smallTextColor: tokens.color.darkBaseTextMedEmphasis,
+  // nav,
+  // secondary,
+  // bg2,
+  // bg3,
+  textPlaceholder: tokens.color.darkBaseTextMedEmphasis,
+  primaryButtonTextColor: tokens.color.darkButtonPrimaryText,
+  secondaryButtonTextColor: tokens.color.darkButtonSecondaryText,
+  primaryButton: tokens.color.darkButtonPrimaryBackground,
+  secondaryButton: tokens.color.darkButtonSecondaryBackground,
+  textInputBorderFull: tokens.color.darkBaseBorderLight,
+  borderFull: tokens.color.darkBaseBorderLight,
+  borderColor: tokens.color.darkBaseBorderLight,
+
+  // new theme colors
   baseBackgroundL1: tokens.color.darkBaseBackgroundL1,
   baseTextHighEmphasis: tokens.color.darkBaseTextHighEmphasis,
   baseTextMedEmphasis: tokens.color.darkBaseTextMedEmphasis,

@@ -61,7 +61,7 @@ export const color = {
 
   darkBaseBackgroundL0: darkColors.darkBaseBackgroundL0,
   darkBaseBackgroundL1: darkColors.darkBaseBackgroundL1,
-  // darkBaseBorderLight: darkColors.darkBaseBorderLight,
+  darkBaseBorderLight: darkColors.darkBaseBorderLight,
   darkBaseIcon: darkColors.darkBaseIcon,
   darkBaseIconHover: darkColors.darkBaseIconHover,
   darkBaseIconPress: darkColors.darkBaseIconPress,

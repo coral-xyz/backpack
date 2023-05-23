@@ -94,7 +94,6 @@ export type TokenDetailScreenParams = StackScreenProps<
 
 const Stack = createStackNavigator<WalletStackParamList>();
 export function WalletsNavigator(): JSX.Element {
-  const theme = useTheme();
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -105,26 +104,12 @@ export function WalletsNavigator(): JSX.Element {
       <Stack.Screen
         name="TopTabsWalletDetail"
         component={TopTabsNavigator}
-        options={({ navigation }) => {
-          return {
-            headerShadowVisible: false,
-            headerBackTitleVisible: false,
-            headerTitle: () => {
-              return <WalletSwitcherButton />;
-            },
-            headerRight: () => {
-              return (
-                <Box m={8} mr={16}>
-                  <MaterialIcons
-                    name="search"
-                    color={theme.custom.colors.fontColor}
-                    size={28}
-                    onPress={() => navigation.push("Notifications")}
-                  />
-                </Box>
-              );
-            },
-          };
+        options={{
+          headerShadowVisible: false,
+          headerBackTitleVisible: false,
+          headerTitle: () => {
+            return <WalletSwitcherButton />;
+          },
         }}
       />
       <Stack.Screen
