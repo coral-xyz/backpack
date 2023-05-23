@@ -1,5 +1,5 @@
 import { Suspense, useCallback } from "react";
-import { Text, ActivityIndicator, SectionList } from "react-native";
+import { Text, SectionList } from "react-native";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";

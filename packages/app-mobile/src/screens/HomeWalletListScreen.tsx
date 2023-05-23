@@ -12,7 +12,8 @@ import { ListItemWalletOverview, ListHeader } from "~components/ListItem";
 import {
   RoundedContainerGroup,
   Screen,
-  FullScreenLoading,
+  ScreenLoading,
+  ScreenError,
 } from "~components/index";
 import { useWallets } from "~hooks/wallets";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
@@ -45,6 +46,7 @@ function ListItemData({ wallet, onPress }: { wallet: Wallet }): JSX.Element {
   });
 
   const balance = data.wallet.balances?.aggregate.value?.toFixed(2) ?? "0.00";
+  console.log("debug2:wallet", wallet);
 
   return (
     <ListItemWalletOverview
@@ -137,8 +139,10 @@ function Container() {
 
 export function HomeWalletListScreen(): JSX.Element {
   return (
-    <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
-      <Suspense fallback={<FullScreenLoading />}>
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ScreenError error={error.message} />}
+    >
+      <Suspense fallback={<ScreenLoading />}>
         <Container />
       </Suspense>
     </ErrorBoundary>
