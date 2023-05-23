@@ -56,6 +56,10 @@ export function TransactionListItem({
     [connection, explorer, onClick, transaction]
   );
 
+  /**
+   * The parsed transaction type and description to provide the list item
+   * display details and the list item icon component.
+   */
   const details = parseTransactionDescription(
     transaction.description ?? "",
     transaction.type ?? ""
@@ -83,6 +87,18 @@ function _TransactionListItemEnriched({
 }: Omit<TransactionListItemProps, "onClick"> & {
   details?: ParseTransactionDetails | null;
 }) {
+  const brColor = details?.br?.startsWith("+")
+    ? "$positive"
+    : details?.br?.startsWith("-")
+    ? "$negative"
+    : "$secondary";
+
+  const trColor = details?.tr.startsWith("+")
+    ? "$positive"
+    : details?.tr.startsWith("-")
+    ? "$negative"
+    : undefined;
+
   return details ? (
     <YStack display="flex" flex={1}>
       <XStack
@@ -92,16 +108,7 @@ function _TransactionListItemEnriched({
         justifyContent="space-between"
       >
         <StyledText>{details.tl}</StyledText>
-        <StyledText
-          fontSize="$sm"
-          color={
-            details.tr.startsWith("+")
-              ? "$positive"
-              : details.tr.startsWith("-")
-              ? "$negative"
-              : undefined
-          }
-        >
+        <StyledText fontSize="$sm" color={trColor}>
           {details.tr}
         </StyledText>
       </XStack>
@@ -115,16 +122,7 @@ function _TransactionListItemEnriched({
           <StyledText color="$secondary" fontSize="$xs">
             {details.bl ?? ""}
           </StyledText>
-          <StyledText
-            color={
-              details.br?.startsWith("+")
-                ? "$positive"
-                : details.br?.startsWith("-")
-                ? "$negative"
-                : "$secondary"
-            }
-            fontSize="$xs"
-          >
+          <StyledText color={brColor} fontSize="$xs">
             {details.br ?? ""}
           </StyledText>
         </XStack>

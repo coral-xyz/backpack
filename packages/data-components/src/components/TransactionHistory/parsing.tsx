@@ -1,6 +1,8 @@
 import { walletAddressDisplay } from "@coral-xyz/common";
 import { TransactionType } from "helius-sdk";
 
+import { snakeToTitleCase } from "../../utils";
+
 import {
   TransactionListItemIconDefault,
   TransactionListItemIconSwap,
@@ -49,25 +51,6 @@ export function parseTransactionDescription(
       return null;
     }
   }
-}
-
-/**
- * Convert a snake case string into normalized title case.
- * @export
- * @param {string} input
- * @returns {string}
- */
-export function snakeToTitleCase(input: string): string {
-  const parts = input.split("_").map((t) => t.toLowerCase());
-  const titleCasesParts = parts.map((p) =>
-    p.length === 1 ? p : `${p[0].toUpperCase()}${p.slice(1)}`
-  );
-
-  if (titleCasesParts[0] === "Nft") {
-    titleCasesParts[0] = titleCasesParts[0].toUpperCase();
-  }
-
-  return titleCasesParts.join(" ");
 }
 
 /**
@@ -129,7 +112,11 @@ function _parseSwapDescription(
   description: string
 ): ParseTransactionDetails | null {
   try {
-    const items = description.split("swapped ")[1].split(" for ");
+    const items = description
+      .replace("USD Coin", "USDC")
+      .split("swapped ")[1]
+      .split(" for ");
+
     const entries = items.map((i) => i.split(" ")) as [string, string][];
     return {
       br: `-${items[0]}`,
@@ -157,7 +144,10 @@ function _parseTransferDescription(
   description: string
 ): ParseTransactionDetails | null {
   try {
-    const base = description.split("transferred ")[1];
+    const base = description
+      .replace("USD Coin", "USDC")
+      .split("transferred ")[1];
+
     const [amount, to] = base.split(" to ");
     const action = "Sent"; // FIXME: sent or received?
     return {

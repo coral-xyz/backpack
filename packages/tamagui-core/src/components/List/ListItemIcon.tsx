@@ -5,7 +5,7 @@ import { Avatar, type AvatarProps } from "tamagui";
 import { Skeleton } from "../Skeleton";
 
 export type ListItemIconCoreProps = {
-  image: string;
+  image?: string;
   radius?: RadiusTokens;
   size: SizeTokens;
   style?: Omit<AvatarProps, "children">;
@@ -17,7 +17,7 @@ export function ListItemIconCore({
   size,
   style,
 }: ListItemIconCoreProps) {
-  const proxySrc = proxyImageUrl(image);
+  const proxySrc = image ? proxyImageUrl(image) : undefined;
   return (
     <Avatar borderRadius={radius} size={size} {...style}>
       <Avatar.Image src={proxySrc} />
