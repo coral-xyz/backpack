@@ -42,7 +42,6 @@ const CopyPublicKey = ({ publicKey }: { publicKey: string }) => {
 
 const ListItem = ({ name, publicKey, blockchain, selected }: any) => {
   const logo = getBlockchainLogo(blockchain);
-  console.log("debug3:selected", selected);
   return (
     <XStack
       ai="center"
@@ -85,7 +84,6 @@ const ListItem = ({ name, publicKey, blockchain, selected }: any) => {
 
 function WalletListPicker() {
   const { allWallets, activeWallet } = useWallets();
-  console.log("debug3:allWallets", allWallets, activeWallet);
 
   const renderItem = useCallback(({ item }) => {
     return (
