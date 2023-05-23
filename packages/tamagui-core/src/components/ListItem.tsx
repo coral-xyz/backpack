@@ -9,13 +9,10 @@ import {
 import type { Blockchain } from "@coral-xyz/common";
 import { formatUSD } from "@coral-xyz/common";
 
+import { useCustomTheme as useTheme } from "../hooks/index";
 import { ListItem, Separator, XStack, YGroup, YStack } from "../";
 
-import {
-  getIcon,
-  IconCheckmark,
-  IconKeyboardArrowRight,
-} from "~components/Icon";
+import { getIcon, IconCheckmark, IconKeyboardArrowRight } from "./Icon";
 import {
   BlockchainLogo,
   ProxyImage,
@@ -23,8 +20,7 @@ import {
   StyledText,
   TextPercentChanged,
   UserAvatar,
-} from "~components/index";
-import { useCustomTheme as useTheme } from "~hooks/index";
+} from "./";
 
 type Token = any;
 type PublicKey = any;
