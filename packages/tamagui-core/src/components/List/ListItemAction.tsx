@@ -1,5 +1,4 @@
-import type { ViewStyleWithPseudos } from "@tamagui/core";
-import { Stack } from "tamagui";
+import { Stack, type StackProps } from "tamagui";
 
 import { useCustomTheme } from "../../hooks";
 import { StyledText, type StyledTextProps } from "../StyledText";
@@ -8,7 +7,7 @@ export type ListItemActionCoreProps = {
   content: string;
   contentStyle?: Omit<StyledTextProps, "children">;
   onClick: (event: any) => void;
-  style?: ViewStyleWithPseudos;
+  style?: Omit<StackProps, "children">;
 };
 
 export function ListItemActionCore({

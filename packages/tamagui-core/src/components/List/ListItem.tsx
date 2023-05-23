@@ -1,12 +1,11 @@
 import type { ReactNode } from "react";
-import type { ViewStyleWithPseudos } from "@tamagui/core";
 import { ListItem, type ListItemProps } from "tamagui";
 
 export type ListItemCoreProps = {
   children: ReactNode;
   icon?: ListItemProps["icon"];
   onClick?: () => void;
-  style?: ViewStyleWithPseudos;
+  style?: Omit<ListItemProps, "children">;
 };
 
 export function ListItemCore({

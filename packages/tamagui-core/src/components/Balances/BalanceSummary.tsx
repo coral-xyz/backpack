@@ -1,7 +1,6 @@
 import { formatUSD } from "@coral-xyz/common";
 import type { MOBILE_LIGHT_THEME } from "@coral-xyz/themes";
-import type { ViewStyleWithPseudos } from "@tamagui/core";
-import { XStack, YStack } from "tamagui";
+import { type StackProps,XStack, YStack } from "tamagui";
 
 import { useCustomTheme } from "../../hooks";
 import { Skeleton } from "../Skeleton";
@@ -11,7 +10,7 @@ export type BalanceSummaryCoreProps = {
   percentChange: number;
   value: number;
   valueChange: number;
-  style?: ViewStyleWithPseudos;
+  style?: Omit<StackProps, "children">;
 };
 
 export function BalanceSummaryCore({

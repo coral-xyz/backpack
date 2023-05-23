@@ -1,6 +1,10 @@
 import { useCallback } from "react";
-import type { Blockchain } from "@coral-xyz/common";
-import { getBlockchainLogo } from "@coral-xyz/recoil";
+import { type Blockchain, explorerUrl } from "@coral-xyz/common";
+import {
+  getBlockchainLogo,
+  useBlockchainConnectionUrl,
+  useBlockchainExplorer,
+} from "@coral-xyz/recoil";
 import {
   ListItemCore,
   ListItemIconCore,
@@ -12,12 +16,15 @@ import {
 
 import type { ChainId, Transaction } from "../../apollo/graphql";
 
-import { TransactionListItemIcon } from "./TransactionListItemIcon";
-import { parseTransactionDescription } from "./utils";
+import {
+  parseTransactionDescription,
+  type ParseTransactionDetails,
+} from "./parsing";
+import { TransactionListItemIconDefault } from "./TransactionListItemIcon";
 
 export type TransactionListItemProps = {
   blockchain: ChainId;
-  onClick?: (transaction: Partial<Transaction>) => void;
+  onClick?: (transaction: Partial<Transaction>, explorerUrl: string) => void;
   transaction: Partial<Transaction>;
 };
 
@@ -26,19 +33,43 @@ export function TransactionListItem({
   onClick,
   transaction,
 }: TransactionListItemProps) {
+  const connection = useBlockchainConnectionUrl(
+    blockchain.toLowerCase() as Blockchain
+  );
+
+  const explorer = useBlockchainExplorer(
+    blockchain.toLowerCase() as Blockchain
+  );
+
+  /**
+   * Memoized click handler to pass in the transaction object explorer URL
+   * to the remote prop function declaration.
+   */
   const handleClick = useCallback(
-    () => (onClick ? onClick(transaction) : {}),
-    [onClick, transaction]
+    () =>
+      onClick
+        ? onClick(
+            transaction,
+            explorerUrl(explorer, transaction.hash ?? "", connection)
+          )
+        : {},
+    [connection, explorer, onClick, transaction]
+  );
+
+  const details = parseTransactionDescription(
+    transaction.description ?? "",
+    transaction.type ?? ""
   );
 
   return (
     <ListItemCore
-      style={{ backgroundColor: "$nav", cursor: "pointer" }}
-      icon={<TransactionListItemIcon size={44} transaction={transaction} />}
+      style={{ backgroundColor: "$nav", cursor: "pointer", hoverTheme: true }}
+      icon={details?.icon ?? <TransactionListItemIconDefault size={44} />}
       onClick={handleClick}
     >
       <_TransactionListItemEnriched
         blockchain={blockchain}
+        details={details}
         transaction={transaction}
       />
     </ListItemCore>
@@ -47,18 +78,22 @@ export function TransactionListItem({
 
 function _TransactionListItemEnriched({
   blockchain,
+  details,
   transaction,
-}: Omit<TransactionListItemProps, "onClick">) {
-  const details = parseTransactionDescription(
-    transaction.description ?? "",
-    transaction.type ?? ""
-  );
-
+}: Omit<TransactionListItemProps, "onClick"> & {
+  details?: ParseTransactionDetails | null;
+}) {
   return details ? (
-    <YStack>
-      <XStack flex={1} alignItems="center" justifyContent="space-between">
+    <YStack display="flex" flex={1}>
+      <XStack
+        display="flex"
+        flex={1}
+        alignItems="center"
+        justifyContent="space-between"
+      >
         <StyledText>{details.tl}</StyledText>
         <StyledText
+          fontSize="$sm"
           color={
             details.tr.startsWith("+")
               ? "$positive"
@@ -70,14 +105,30 @@ function _TransactionListItemEnriched({
           {details.tr}
         </StyledText>
       </XStack>
-      {(details.bl || details.br) ? <XStack flex={1} alignItems="center" justifyContent="space-between">
-        <StyledText color="$secondary" fontSize="$xs">
-          {details.bl ?? ""}
-        </StyledText>
-        <StyledText color="$secondary" fontSize="$xs">
-          {details.br ?? ""}
-        </StyledText>
-      </XStack> : null}
+      {details.bl || details.br ? (
+        <XStack
+          display="flex"
+          flex={1}
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <StyledText color="$secondary" fontSize="$xs">
+            {details.bl ?? ""}
+          </StyledText>
+          <StyledText
+            color={
+              details.br?.startsWith("+")
+                ? "$positive"
+                : details.br?.startsWith("-")
+                ? "$negative"
+                : "$secondary"
+            }
+            fontSize="$xs"
+          >
+            {details.br ?? ""}
+          </StyledText>
+        </XStack>
+      ) : null}
     </YStack>
   ) : (
     <_TransactionListItemBasic

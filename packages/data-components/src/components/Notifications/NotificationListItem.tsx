@@ -72,6 +72,7 @@ function NotificationListItemApplication({
         backgroundColor: notification.viewed
           ? "$nav"
           : theme.custom.colors.unreadBackground,
+        hoverTheme: true,
       }}
       icon={<ListItemIconCore image={notification.app!.image} size={44} />}
       onClick={handleClick}
@@ -116,6 +117,7 @@ function NotificationListItemFriendRequest({
           ? "$nav"
           : theme.custom.colors.unreadBackground,
         cursor: "pointer",
+        hoverTheme: true,
       }}
       icon={<ListItemIconCore image={user?.image} radius={22} size={44} />}
       onClick={handleClick}

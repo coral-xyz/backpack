@@ -18,7 +18,10 @@ import type { TransactionGroup } from "./utils";
 
 export type TransactionListProps = {
   blockchain: ChainId;
-  onItemClick?: (transaction: Partial<Transaction>) => void;
+  onItemClick?: (
+    transaction: Partial<Transaction>,
+    explorerUrl: string
+  ) => void;
   transactions: TransactionGroup[];
 };
 
@@ -27,8 +30,6 @@ export function TransactionList({
   onItemClick,
   transactions,
 }: TransactionListProps) {
-  console.log(transactions); // FIXME: remove
-
   /**
    * Returns the child component key for an item.
    * @param {Partial<Transaction>} item

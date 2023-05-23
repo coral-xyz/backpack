@@ -11,8 +11,6 @@ import {
   NavStackScreen,
 } from "../../common/Layout/NavStack";
 
-// import { TransactionList } from "./TransactionList";
-
 const useStyles = styles((theme) => ({
   networkSettingsButtonContainer: {
     display: "flex",

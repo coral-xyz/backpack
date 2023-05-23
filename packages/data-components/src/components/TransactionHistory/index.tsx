@@ -38,7 +38,10 @@ const GET_TRANSACTIONS = gql(`
 export type TransactionHistoryProps = {
   contractOrMint?: string;
   loaderComponent?: ReactNode;
-  onItemClick?: (transaction: Partial<Transaction>) => void;
+  onItemClick?: (
+    transaction: Partial<Transaction>,
+    explorerUrl: string
+  ) => void;
 };
 
 export function TransactionHistory({

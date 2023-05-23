@@ -35,6 +35,12 @@ export type BalanceAggregate = Node & {
   valueChange: Scalars["Float"];
 };
 
+/** Input filter type for fetching wallet balances. */
+export type BalanceFiltersInput = {
+  /** If requested, only provide balances for non-native tokens that are listed on CoinGecko. */
+  marketListedTokensOnly?: InputMaybe<Scalars["Boolean"]>;
+};
+
 /**
  * Top-level type for providing wallet balance information.
  * Should provide details about native and non-native token balances with aggregation details.
@@ -516,6 +522,11 @@ export type Wallet = Node & {
   nfts?: Maybe<NftConnection>;
   /** The Relay connection for all transactions initiated or associated with the wallet. */
   transactions?: Maybe<TransactionConnection>;
+};
+
+/** Wallet definition to provide data about all assets owned by an address. */
+export type WalletBalancesArgs = {
+  filters?: InputMaybe<BalanceFiltersInput>;
 };
 
 /** Wallet definition to provide data about all assets owned by an address. */
