@@ -1,21 +1,24 @@
 import type { StackScreenProps } from "@react-navigation/stack";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
 import { Blockchain } from "@coral-xyz/common";
 import { Box } from "@coral-xyz/tamagui";
+import { ErrorBoundary } from "react-error-boundary";
 
 import { MessageList } from "~components/Messages";
 import { SearchInput } from "~components/StyledTextInput";
-import { Screen } from "~components/index";
+import { Screen, ScreenError, ScreenLoading } from "~components/index";
 import { ChatStackNavigatorParamList } from "~screens/Unlocked/Chat/ChatHelpers";
 
-import { useChatHelper, type ChatRowData } from "./ChatHelpers";
+import { type ChatRowData, useChatHelper } from "./ChatHelpers";
 
-export function ChatListScreen({
-  navigation,
-}: StackScreenProps<ChatStackNavigatorParamList, "ChatList">): JSX.Element {
-  console.log("hello from chatlist");
+type ChatListScreenProps = StackScreenProps<
+  ChatStackNavigatorParamList,
+  "ChatList"
+>;
+
+function Container({ navigation }: ChatListScreenProps): JSX.Element {
   const [searchResults, setSearchResults] = useState([]); // TODO(types) user search type
   const {
     allChats,
@@ -60,5 +63,20 @@ export function ChatListScreen({
         isRefreshing={isRefreshingChats}
       />
     </Screen>
+  );
+}
+
+export function ChatListScreen({
+  navigation,
+  route,
+}: ChatListScreenProps): JSX.Element {
+  return (
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ScreenError error={error} />}
+    >
+      <Suspense fallback={<ScreenLoading />}>
+        <Container navigation={navigation} route={route} />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
