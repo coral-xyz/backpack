@@ -40,9 +40,9 @@ export const config = createTamagui({
 
 export type Conf = typeof config;
 
-// THIS MUST BE `interface TamaguiCustomConfig extends Conf {}`
-// DO NOT CHANGE THIS
+// DO NOT CHANGE THS DECLARATION, THIS MUST LOOK LIKE THIS:
+// interface TamaguiCustomConfig extends Conf {}
 declare module "tamagui" {
-  // @ts-ignore
-  type TamaguiCustomConfig = Conf
+  // eslint-disable-next-line
+  interface TamaguiCustomConfig extends Conf {}
 }
