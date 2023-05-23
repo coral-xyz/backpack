@@ -40,6 +40,7 @@ export const config = createTamagui({
 
 export type Conf = typeof config;
 
+// DO NOT CHANGE THIS DO NOT LET THE EDITOR REPLACE THIS LINE WITH SOMETHING ELSE
 declare module "tamagui" {
   type TamaguiCustomConfig = Conf
 }
