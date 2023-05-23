@@ -5,6 +5,7 @@ import {
   MOBILE_LIGHT_OVERRIDES,
 } from "@coral-xyz/themes";
 import { config as defaultConfig } from "@tamagui/config";
+import { themes as _themes } from "@tamagui/themes";
 import { createTamagui, createTheme } from "tamagui";
 
 import { interFont } from "./font-inter";
@@ -28,10 +29,12 @@ export const config = createTamagui({
   },
   themes: {
     light: {
+      ..._themes.light, // NOTE remove when all colors are correct
       ...createTheme(lightThemeColors),
       ...lightTheme,
     },
     dark: {
+      ..._themes.dark, // NOTE remove when all colors are correct
       ...createTheme(darkThemeColors),
       ...darkTheme,
     },
