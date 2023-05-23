@@ -41,7 +41,7 @@ export default function Downloads() {
       <div className="mb-16 mt-[-25px] text-center">
         <h1 className="text-6xl font-extrabold text-white">Downloads</h1>
       </div>
-      <div className="flex w-full justify-center gap-14">
+      <div className="flex w-full flex-col items-center justify-center gap-14 md:flex-row md:items-start">
         <div className="flex flex-col gap-6">
           <h2 className="text-[30px] font-bold tracking-wide">Desktop</h2>
           <Panel
