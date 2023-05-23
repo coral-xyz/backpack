@@ -17,7 +17,7 @@
           .split("/service-worker-loader.html")[0]
           .split("background-scripts/")[1];
         const urlDiv = document.createElement("div");
-        urlDiv.innerHTML = currentUrl;
+        urlDiv.innerText = currentUrl;
         const bodyElement = document.getElementsByTagName("body")[0];
         bodyElement.appendChild(urlDiv);
 
