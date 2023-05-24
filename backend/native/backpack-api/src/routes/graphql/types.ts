@@ -422,7 +422,7 @@ export type TokenListEntryFiltersInput = {
   /** The market listing name of the token. */
   name?: InputMaybe<Scalars["String"]>;
   /** The market listing symbol of the token. */
-  symbol?: InputMaybe<Scalars["String"]>;
+  symbols?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 /** Generic on-chain transaction details structure. */
@@ -442,6 +442,8 @@ export type Transaction = Node & {
   hash: Scalars["String"];
   /** Globally unique identifier for a single transaction. */
   id: Scalars["ID"];
+  /** A list of NFT mints or contract + token IDs associated with the transaction. */
+  nfts?: Maybe<Array<Maybe<Scalars["String"]>>>;
   /** The raw JSON data received from the index API response for the item. */
   raw: Scalars["JSONObject"];
   /** The source or program that is associated with the transaction. */
@@ -1227,6 +1229,11 @@ export type TransactionResolvers<
   feePayer?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   hash?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  nfts?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["String"]>>>,
+    ParentType,
+    ContextType
+  >;
   raw?: Resolver<ResolversTypes["JSONObject"], ParentType, ContextType>;
   source?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   timestamp?: Resolver<
