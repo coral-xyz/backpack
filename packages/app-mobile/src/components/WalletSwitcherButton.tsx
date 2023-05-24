@@ -85,17 +85,20 @@ const ListItem = ({ name, publicKey, blockchain, selected }: any) => {
 function WalletListPicker() {
   const { allWallets, activeWallet } = useWallets();
 
-  const renderItem = useCallback(({ item }) => {
-    return (
-      <ListItem
-        name={item.name}
-        publicKey={item.publicKey}
-        type={item.type}
-        blockchain={item.blockchain}
-        selected={item.publicKey === activeWallet.publicKey}
-      />
-    );
-  }, []);
+  const renderItem = useCallback(
+    ({ item }) => {
+      return (
+        <ListItem
+          name={item.name}
+          publicKey={item.publicKey}
+          type={item.type}
+          blockchain={item.blockchain}
+          selected={item.publicKey === activeWallet.publicKey}
+        />
+      );
+    },
+    [activeWallet.publicKey]
+  );
 
   return (
     <View style={{ height: 400 }}>
