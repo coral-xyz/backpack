@@ -574,7 +574,7 @@ export const AllTypesProps: Record<string, any> = {
     fee_payer_id: "uuid_comparison_exp",
     fee_payer_public_key: "String_comparison_exp",
     id: "uuid_comparison_exp",
-    transaction_at: "time_comparison_exp",
+    transaction_at: "timestamptz_comparison_exp",
     transaction_signature: "String_comparison_exp",
     user: "auth_users_bool_exp",
   },
@@ -587,7 +587,7 @@ export const AllTypesProps: Record<string, any> = {
     distributor_id: "uuid",
     fee_amount: "bigint",
     fee_payer_id: "uuid",
-    transaction_at: "time",
+    transaction_at: "timestamptz",
     user: "auth_users_obj_rel_insert_input",
   },
   auth_swaps_max_order_by: {
@@ -599,6 +599,7 @@ export const AllTypesProps: Record<string, any> = {
     fee_payer_id: "order_by",
     fee_payer_public_key: "order_by",
     id: "order_by",
+    transaction_at: "order_by",
     transaction_signature: "order_by",
   },
   auth_swaps_min_order_by: {
@@ -610,6 +611,7 @@ export const AllTypesProps: Record<string, any> = {
     fee_payer_id: "order_by",
     fee_payer_public_key: "order_by",
     id: "order_by",
+    transaction_at: "order_by",
     transaction_signature: "order_by",
   },
   auth_swaps_on_conflict: {
@@ -639,7 +641,7 @@ export const AllTypesProps: Record<string, any> = {
     distributor_id: "uuid",
     fee_amount: "bigint",
     fee_payer_id: "uuid",
-    transaction_at: "time",
+    transaction_at: "timestamptz",
   },
   auth_swaps_stddev_order_by: {
     fee_amount: "order_by",
@@ -660,7 +662,7 @@ export const AllTypesProps: Record<string, any> = {
     fee_amount: "bigint",
     fee_payer_id: "uuid",
     id: "uuid",
-    transaction_at: "time",
+    transaction_at: "timestamptz",
   },
   auth_swaps_sum_order_by: {
     fee_amount: "order_by",
@@ -1131,7 +1133,7 @@ export const AllTypesProps: Record<string, any> = {
     distributor_id: "uuid_comparison_exp",
     ordinal: "Int_comparison_exp",
     transaction_signature: "String_comparison_exp",
-    viewed_at: "timestamp_comparison_exp",
+    viewed_at: "timestamptz_comparison_exp",
   },
   dropzone_claims_constraint: "enum" as const,
   dropzone_claims_inc_input: {
@@ -1145,7 +1147,7 @@ export const AllTypesProps: Record<string, any> = {
     created_at: "timestamptz",
     distributor: "dropzone_distributors_obj_rel_insert_input",
     distributor_id: "uuid",
-    viewed_at: "timestamp",
+    viewed_at: "timestamptz",
   },
   dropzone_claims_max_order_by: {
     amount: "order_by",
@@ -1198,7 +1200,7 @@ export const AllTypesProps: Record<string, any> = {
     claimed_at: "timestamptz",
     created_at: "timestamptz",
     distributor_id: "uuid",
-    viewed_at: "timestamp",
+    viewed_at: "timestamptz",
   },
   dropzone_claims_stddev_order_by: {
     amount: "order_by",
@@ -1222,7 +1224,7 @@ export const AllTypesProps: Record<string, any> = {
     claimed_at: "timestamptz",
     created_at: "timestamptz",
     distributor_id: "uuid",
-    viewed_at: "timestamp",
+    viewed_at: "timestamptz",
   },
   dropzone_claims_sum_order_by: {
     amount: "order_by",
@@ -2330,28 +2332,6 @@ export const AllTypesProps: Record<string, any> = {
       where: "invitations_bool_exp",
     },
   },
-  time: `scalar.time` as const,
-  time_comparison_exp: {
-    _eq: "time",
-    _gt: "time",
-    _gte: "time",
-    _in: "time",
-    _lt: "time",
-    _lte: "time",
-    _neq: "time",
-    _nin: "time",
-  },
-  timestamp: `scalar.timestamp` as const,
-  timestamp_comparison_exp: {
-    _eq: "timestamp",
-    _gt: "timestamp",
-    _gte: "timestamp",
-    _in: "timestamp",
-    _lt: "timestamp",
-    _lte: "timestamp",
-    _neq: "timestamp",
-    _nin: "timestamp",
-  },
   timestamptz: `scalar.timestamptz` as const,
   timestamptz_comparison_exp: {
     _eq: "timestamptz",
@@ -2696,7 +2676,7 @@ export const ReturnTypes: Record<string, any> = {
     fee_payer_id: "uuid",
     fee_payer_public_key: "String",
     id: "uuid",
-    transaction_at: "time",
+    transaction_at: "timestamptz",
     transaction_signature: "String",
     user: "auth_users",
   },
@@ -2820,7 +2800,7 @@ export const ReturnTypes: Record<string, any> = {
     distributor_id: "uuid",
     ordinal: "Int",
     transaction_signature: "String",
-    viewed_at: "timestamp",
+    viewed_at: "timestamptz",
   },
   dropzone_claims_mutation_response: {
     affected_rows: "Int",
@@ -3125,8 +3105,6 @@ export const ReturnTypes: Record<string, any> = {
     invitations_aggregate: "invitations_aggregate",
     invitations_stream: "invitations",
   },
-  time: `scalar.time` as const,
-  timestamp: `scalar.timestamp` as const,
   timestamptz: `scalar.timestamptz` as const,
   uuid: `scalar.uuid` as const,
 };

@@ -1001,8 +1001,6 @@ export type ScalarCoders = {
   bigint?: ScalarResolver;
   citext?: ScalarResolver;
   jsonb?: ScalarResolver;
-  time?: ScalarResolver;
-  timestamp?: ScalarResolver;
   timestamptz?: ScalarResolver;
   uuid?: ScalarResolver;
 };
@@ -3573,7 +3571,7 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     transaction_at?:
-      | ValueTypes["time_comparison_exp"]
+      | ValueTypes["timestamptz_comparison_exp"]
       | undefined
       | null
       | Variable<any, string>;
@@ -3624,7 +3622,7 @@ export type ValueTypes = {
       | Variable<any, string>;
     fee_payer_public_key?: string | undefined | null | Variable<any, string>;
     transaction_at?:
-      | ValueTypes["time"]
+      | ValueTypes["timestamptz"]
       | undefined
       | null
       | Variable<any, string>;
@@ -3673,6 +3671,11 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    transaction_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     transaction_signature?:
       | ValueTypes["order_by"]
       | undefined
@@ -3717,6 +3720,11 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    transaction_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     transaction_signature?:
       | ValueTypes["order_by"]
       | undefined
@@ -3829,7 +3837,7 @@ export type ValueTypes = {
       | Variable<any, string>;
     fee_payer_public_key?: string | undefined | null | Variable<any, string>;
     transaction_at?:
-      | ValueTypes["time"]
+      | ValueTypes["timestamptz"]
       | undefined
       | null
       | Variable<any, string>;
@@ -3898,7 +3906,7 @@ export type ValueTypes = {
     fee_payer_public_key?: string | undefined | null | Variable<any, string>;
     id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
     transaction_at?:
-      | ValueTypes["time"]
+      | ValueTypes["timestamptz"]
       | undefined
       | null
       | Variable<any, string>;
@@ -5656,7 +5664,7 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     viewed_at?:
-      | ValueTypes["timestamp_comparison_exp"]
+      | ValueTypes["timestamptz_comparison_exp"]
       | undefined
       | null
       | Variable<any, string>;
@@ -5701,7 +5709,7 @@ export type ValueTypes = {
     ordinal?: number | undefined | null | Variable<any, string>;
     transaction_signature?: string | undefined | null | Variable<any, string>;
     viewed_at?:
-      | ValueTypes["timestamp"]
+      | ValueTypes["timestamptz"]
       | undefined
       | null
       | Variable<any, string>;
@@ -5888,7 +5896,7 @@ export type ValueTypes = {
     ordinal?: number | undefined | null | Variable<any, string>;
     transaction_signature?: string | undefined | null | Variable<any, string>;
     viewed_at?:
-      | ValueTypes["timestamp"]
+      | ValueTypes["timestamptz"]
       | undefined
       | null
       | Variable<any, string>;
@@ -5944,7 +5952,7 @@ export type ValueTypes = {
     ordinal?: number | undefined | null | Variable<any, string>;
     transaction_signature?: string | undefined | null | Variable<any, string>;
     viewed_at?:
-      | ValueTypes["timestamp"]
+      | ValueTypes["timestamptz"]
       | undefined
       | null
       | Variable<any, string>;
@@ -11056,40 +11064,6 @@ export type ValueTypes = {
     ];
     __typename?: boolean | `@${string}`;
   }>;
-  ["time"]: unknown;
-  /** Boolean expression to compare columns of type "time". All fields are combined with logical 'AND'. */
-  ["time_comparison_exp"]: {
-    _eq?: ValueTypes["time"] | undefined | null | Variable<any, string>;
-    _gt?: ValueTypes["time"] | undefined | null | Variable<any, string>;
-    _gte?: ValueTypes["time"] | undefined | null | Variable<any, string>;
-    _in?: Array<ValueTypes["time"]> | undefined | null | Variable<any, string>;
-    _is_null?: boolean | undefined | null | Variable<any, string>;
-    _lt?: ValueTypes["time"] | undefined | null | Variable<any, string>;
-    _lte?: ValueTypes["time"] | undefined | null | Variable<any, string>;
-    _neq?: ValueTypes["time"] | undefined | null | Variable<any, string>;
-    _nin?: Array<ValueTypes["time"]> | undefined | null | Variable<any, string>;
-  };
-  ["timestamp"]: unknown;
-  /** Boolean expression to compare columns of type "timestamp". All fields are combined with logical 'AND'. */
-  ["timestamp_comparison_exp"]: {
-    _eq?: ValueTypes["timestamp"] | undefined | null | Variable<any, string>;
-    _gt?: ValueTypes["timestamp"] | undefined | null | Variable<any, string>;
-    _gte?: ValueTypes["timestamp"] | undefined | null | Variable<any, string>;
-    _in?:
-      | Array<ValueTypes["timestamp"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-    _is_null?: boolean | undefined | null | Variable<any, string>;
-    _lt?: ValueTypes["timestamp"] | undefined | null | Variable<any, string>;
-    _lte?: ValueTypes["timestamp"] | undefined | null | Variable<any, string>;
-    _neq?: ValueTypes["timestamp"] | undefined | null | Variable<any, string>;
-    _nin?:
-      | Array<ValueTypes["timestamp"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
   ["timestamptz"]: unknown;
   /** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
   ["timestamptz_comparison_exp"]: {
@@ -12997,7 +12971,7 @@ export type ResolverInputTypes = {
       | null;
     id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
     transaction_at?:
-      | ResolverInputTypes["time_comparison_exp"]
+      | ResolverInputTypes["timestamptz_comparison_exp"]
       | undefined
       | null;
     transaction_signature?:
@@ -13024,7 +12998,7 @@ export type ResolverInputTypes = {
     fee_mint_address?: string | undefined | null;
     fee_payer_id?: ResolverInputTypes["uuid"] | undefined | null;
     fee_payer_public_key?: string | undefined | null;
-    transaction_at?: ResolverInputTypes["time"] | undefined | null;
+    transaction_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     transaction_signature?: string | undefined | null;
     user?:
       | ResolverInputTypes["auth_users_obj_rel_insert_input"]
@@ -13041,6 +13015,7 @@ export type ResolverInputTypes = {
     fee_payer_id?: ResolverInputTypes["order_by"] | undefined | null;
     fee_payer_public_key?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
+    transaction_at?: ResolverInputTypes["order_by"] | undefined | null;
     transaction_signature?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** order by min() on columns of table "auth.swaps" */
@@ -13053,6 +13028,7 @@ export type ResolverInputTypes = {
     fee_payer_id?: ResolverInputTypes["order_by"] | undefined | null;
     fee_payer_public_key?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
+    transaction_at?: ResolverInputTypes["order_by"] | undefined | null;
     transaction_signature?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** response of any mutation on the table "auth.swaps" */
@@ -13101,7 +13077,7 @@ export type ResolverInputTypes = {
     fee_mint_address?: string | undefined | null;
     fee_payer_id?: ResolverInputTypes["uuid"] | undefined | null;
     fee_payer_public_key?: string | undefined | null;
-    transaction_at?: ResolverInputTypes["time"] | undefined | null;
+    transaction_at?: ResolverInputTypes["timestamptz"] | undefined | null;
   };
   /** order by stddev() on columns of table "auth.swaps" */
   ["auth_swaps_stddev_order_by"]: {
@@ -13132,7 +13108,7 @@ export type ResolverInputTypes = {
     fee_payer_id?: ResolverInputTypes["uuid"] | undefined | null;
     fee_payer_public_key?: string | undefined | null;
     id?: ResolverInputTypes["uuid"] | undefined | null;
-    transaction_at?: ResolverInputTypes["time"] | undefined | null;
+    transaction_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     transaction_signature?: string | undefined | null;
   };
   /** order by sum() on columns of table "auth.swaps" */
@@ -14326,7 +14302,7 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     viewed_at?:
-      | ResolverInputTypes["timestamp_comparison_exp"]
+      | ResolverInputTypes["timestamptz_comparison_exp"]
       | undefined
       | null;
   };
@@ -14355,7 +14331,7 @@ export type ResolverInputTypes = {
     distributor_id?: ResolverInputTypes["uuid"] | undefined | null;
     ordinal?: number | undefined | null;
     transaction_signature?: string | undefined | null;
-    viewed_at?: ResolverInputTypes["timestamp"] | undefined | null;
+    viewed_at?: ResolverInputTypes["timestamptz"] | undefined | null;
   };
   /** order by max() on columns of table "dropzone.claims" */
   ["dropzone_claims_max_order_by"]: {
@@ -14429,7 +14405,7 @@ export type ResolverInputTypes = {
     distributor_id?: ResolverInputTypes["uuid"] | undefined | null;
     ordinal?: number | undefined | null;
     transaction_signature?: string | undefined | null;
-    viewed_at?: ResolverInputTypes["timestamp"] | undefined | null;
+    viewed_at?: ResolverInputTypes["timestamptz"] | undefined | null;
   };
   /** order by stddev() on columns of table "dropzone.claims" */
   ["dropzone_claims_stddev_order_by"]: {
@@ -14463,7 +14439,7 @@ export type ResolverInputTypes = {
     distributor_id?: ResolverInputTypes["uuid"] | undefined | null;
     ordinal?: number | undefined | null;
     transaction_signature?: string | undefined | null;
-    viewed_at?: ResolverInputTypes["timestamp"] | undefined | null;
+    viewed_at?: ResolverInputTypes["timestamptz"] | undefined | null;
   };
   /** order by sum() on columns of table "dropzone.claims" */
   ["dropzone_claims_sum_order_by"]: {
@@ -18187,32 +18163,6 @@ export type ResolverInputTypes = {
     ];
     __typename?: boolean | `@${string}`;
   }>;
-  ["time"]: unknown;
-  /** Boolean expression to compare columns of type "time". All fields are combined with logical 'AND'. */
-  ["time_comparison_exp"]: {
-    _eq?: ResolverInputTypes["time"] | undefined | null;
-    _gt?: ResolverInputTypes["time"] | undefined | null;
-    _gte?: ResolverInputTypes["time"] | undefined | null;
-    _in?: Array<ResolverInputTypes["time"]> | undefined | null;
-    _is_null?: boolean | undefined | null;
-    _lt?: ResolverInputTypes["time"] | undefined | null;
-    _lte?: ResolverInputTypes["time"] | undefined | null;
-    _neq?: ResolverInputTypes["time"] | undefined | null;
-    _nin?: Array<ResolverInputTypes["time"]> | undefined | null;
-  };
-  ["timestamp"]: unknown;
-  /** Boolean expression to compare columns of type "timestamp". All fields are combined with logical 'AND'. */
-  ["timestamp_comparison_exp"]: {
-    _eq?: ResolverInputTypes["timestamp"] | undefined | null;
-    _gt?: ResolverInputTypes["timestamp"] | undefined | null;
-    _gte?: ResolverInputTypes["timestamp"] | undefined | null;
-    _in?: Array<ResolverInputTypes["timestamp"]> | undefined | null;
-    _is_null?: boolean | undefined | null;
-    _lt?: ResolverInputTypes["timestamp"] | undefined | null;
-    _lte?: ResolverInputTypes["timestamp"] | undefined | null;
-    _neq?: ResolverInputTypes["timestamp"] | undefined | null;
-    _nin?: Array<ResolverInputTypes["timestamp"]> | undefined | null;
-  };
   ["timestamptz"]: unknown;
   /** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
   ["timestamptz_comparison_exp"]: {
@@ -19555,7 +19505,7 @@ export type ModelTypes = {
     fee_payer_id?: ModelTypes["uuid"] | undefined;
     fee_payer_public_key?: string | undefined;
     id: ModelTypes["uuid"];
-    transaction_at?: ModelTypes["time"] | undefined;
+    transaction_at?: ModelTypes["timestamptz"] | undefined;
     transaction_signature: string;
     /** An object relationship */
     user?: ModelTypes["auth_users"] | undefined;
@@ -19598,7 +19548,7 @@ export type ModelTypes = {
     fee_payer_id?: ModelTypes["uuid_comparison_exp"] | undefined;
     fee_payer_public_key?: ModelTypes["String_comparison_exp"] | undefined;
     id?: ModelTypes["uuid_comparison_exp"] | undefined;
-    transaction_at?: ModelTypes["time_comparison_exp"] | undefined;
+    transaction_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
     transaction_signature?: ModelTypes["String_comparison_exp"] | undefined;
     user?: ModelTypes["auth_users_bool_exp"] | undefined;
   };
@@ -19618,7 +19568,7 @@ export type ModelTypes = {
     fee_mint_address?: string | undefined;
     fee_payer_id?: ModelTypes["uuid"] | undefined;
     fee_payer_public_key?: string | undefined;
-    transaction_at?: ModelTypes["time"] | undefined;
+    transaction_at?: ModelTypes["timestamptz"] | undefined;
     transaction_signature?: string | undefined;
     user?: ModelTypes["auth_users_obj_rel_insert_input"] | undefined;
   };
@@ -19632,6 +19582,7 @@ export type ModelTypes = {
     fee_payer_id?: ModelTypes["order_by"] | undefined;
     fee_payer_public_key?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
+    transaction_at?: ModelTypes["order_by"] | undefined;
     transaction_signature?: ModelTypes["order_by"] | undefined;
   };
   /** order by min() on columns of table "auth.swaps" */
@@ -19644,6 +19595,7 @@ export type ModelTypes = {
     fee_payer_id?: ModelTypes["order_by"] | undefined;
     fee_payer_public_key?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
+    transaction_at?: ModelTypes["order_by"] | undefined;
     transaction_signature?: ModelTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "auth.swaps" */
@@ -19687,7 +19639,7 @@ export type ModelTypes = {
     fee_mint_address?: string | undefined;
     fee_payer_id?: ModelTypes["uuid"] | undefined;
     fee_payer_public_key?: string | undefined;
-    transaction_at?: ModelTypes["time"] | undefined;
+    transaction_at?: ModelTypes["timestamptz"] | undefined;
   };
   /** order by stddev() on columns of table "auth.swaps" */
   ["auth_swaps_stddev_order_by"]: {
@@ -19718,7 +19670,7 @@ export type ModelTypes = {
     fee_payer_id?: ModelTypes["uuid"] | undefined;
     fee_payer_public_key?: string | undefined;
     id?: ModelTypes["uuid"] | undefined;
-    transaction_at?: ModelTypes["time"] | undefined;
+    transaction_at?: ModelTypes["timestamptz"] | undefined;
     transaction_signature?: string | undefined;
   };
   /** order by sum() on columns of table "auth.swaps" */
@@ -20504,7 +20456,7 @@ export type ModelTypes = {
     distributor_id: ModelTypes["uuid"];
     ordinal: number;
     transaction_signature?: string | undefined;
-    viewed_at?: ModelTypes["timestamp"] | undefined;
+    viewed_at?: ModelTypes["timestamptz"] | undefined;
   };
   /** order by aggregate values of table "dropzone.claims" */
   ["dropzone_claims_aggregate_order_by"]: {
@@ -20548,7 +20500,7 @@ export type ModelTypes = {
     distributor_id?: ModelTypes["uuid_comparison_exp"] | undefined;
     ordinal?: ModelTypes["Int_comparison_exp"] | undefined;
     transaction_signature?: ModelTypes["String_comparison_exp"] | undefined;
-    viewed_at?: ModelTypes["timestamp_comparison_exp"] | undefined;
+    viewed_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
   };
   ["dropzone_claims_constraint"]: dropzone_claims_constraint;
   /** input type for incrementing numeric columns in table "dropzone.claims" */
@@ -20570,7 +20522,7 @@ export type ModelTypes = {
     distributor_id?: ModelTypes["uuid"] | undefined;
     ordinal?: number | undefined;
     transaction_signature?: string | undefined;
-    viewed_at?: ModelTypes["timestamp"] | undefined;
+    viewed_at?: ModelTypes["timestamptz"] | undefined;
   };
   /** order by max() on columns of table "dropzone.claims" */
   ["dropzone_claims_max_order_by"]: {
@@ -20639,7 +20591,7 @@ export type ModelTypes = {
     distributor_id?: ModelTypes["uuid"] | undefined;
     ordinal?: number | undefined;
     transaction_signature?: string | undefined;
-    viewed_at?: ModelTypes["timestamp"] | undefined;
+    viewed_at?: ModelTypes["timestamptz"] | undefined;
   };
   /** order by stddev() on columns of table "dropzone.claims" */
   ["dropzone_claims_stddev_order_by"]: {
@@ -20673,7 +20625,7 @@ export type ModelTypes = {
     distributor_id?: ModelTypes["uuid"] | undefined;
     ordinal?: number | undefined;
     transaction_signature?: string | undefined;
-    viewed_at?: ModelTypes["timestamp"] | undefined;
+    viewed_at?: ModelTypes["timestamptz"] | undefined;
   };
   /** order by sum() on columns of table "dropzone.claims" */
   ["dropzone_claims_sum_order_by"]: {
@@ -21781,32 +21733,6 @@ export type ModelTypes = {
     invitations_aggregate: ModelTypes["invitations_aggregate"];
     /** fetch data from the table in a streaming manner: "invitations" */
     invitations_stream: Array<ModelTypes["invitations"]>;
-  };
-  ["time"]: any;
-  /** Boolean expression to compare columns of type "time". All fields are combined with logical 'AND'. */
-  ["time_comparison_exp"]: {
-    _eq?: ModelTypes["time"] | undefined;
-    _gt?: ModelTypes["time"] | undefined;
-    _gte?: ModelTypes["time"] | undefined;
-    _in?: Array<ModelTypes["time"]> | undefined;
-    _is_null?: boolean | undefined;
-    _lt?: ModelTypes["time"] | undefined;
-    _lte?: ModelTypes["time"] | undefined;
-    _neq?: ModelTypes["time"] | undefined;
-    _nin?: Array<ModelTypes["time"]> | undefined;
-  };
-  ["timestamp"]: any;
-  /** Boolean expression to compare columns of type "timestamp". All fields are combined with logical 'AND'. */
-  ["timestamp_comparison_exp"]: {
-    _eq?: ModelTypes["timestamp"] | undefined;
-    _gt?: ModelTypes["timestamp"] | undefined;
-    _gte?: ModelTypes["timestamp"] | undefined;
-    _in?: Array<ModelTypes["timestamp"]> | undefined;
-    _is_null?: boolean | undefined;
-    _lt?: ModelTypes["timestamp"] | undefined;
-    _lte?: ModelTypes["timestamp"] | undefined;
-    _neq?: ModelTypes["timestamp"] | undefined;
-    _nin?: Array<ModelTypes["timestamp"]> | undefined;
   };
   ["timestamptz"]: any;
   /** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
@@ -23261,7 +23187,7 @@ export type GraphQLTypes = {
     fee_payer_id?: GraphQLTypes["uuid"] | undefined;
     fee_payer_public_key?: string | undefined;
     id: GraphQLTypes["uuid"];
-    transaction_at?: GraphQLTypes["time"] | undefined;
+    transaction_at?: GraphQLTypes["timestamptz"] | undefined;
     transaction_signature: string;
     /** An object relationship */
     user?: GraphQLTypes["auth_users"] | undefined;
@@ -23304,7 +23230,7 @@ export type GraphQLTypes = {
     fee_payer_id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
     fee_payer_public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
     id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
-    transaction_at?: GraphQLTypes["time_comparison_exp"] | undefined;
+    transaction_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
     transaction_signature?: GraphQLTypes["String_comparison_exp"] | undefined;
     user?: GraphQLTypes["auth_users_bool_exp"] | undefined;
   };
@@ -23325,7 +23251,7 @@ export type GraphQLTypes = {
     fee_mint_address?: string | undefined;
     fee_payer_id?: GraphQLTypes["uuid"] | undefined;
     fee_payer_public_key?: string | undefined;
-    transaction_at?: GraphQLTypes["time"] | undefined;
+    transaction_at?: GraphQLTypes["timestamptz"] | undefined;
     transaction_signature?: string | undefined;
     user?: GraphQLTypes["auth_users_obj_rel_insert_input"] | undefined;
   };
@@ -23339,6 +23265,7 @@ export type GraphQLTypes = {
     fee_payer_id?: GraphQLTypes["order_by"] | undefined;
     fee_payer_public_key?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
+    transaction_at?: GraphQLTypes["order_by"] | undefined;
     transaction_signature?: GraphQLTypes["order_by"] | undefined;
   };
   /** order by min() on columns of table "auth.swaps" */
@@ -23351,6 +23278,7 @@ export type GraphQLTypes = {
     fee_payer_id?: GraphQLTypes["order_by"] | undefined;
     fee_payer_public_key?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
+    transaction_at?: GraphQLTypes["order_by"] | undefined;
     transaction_signature?: GraphQLTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "auth.swaps" */
@@ -23396,7 +23324,7 @@ export type GraphQLTypes = {
     fee_mint_address?: string | undefined;
     fee_payer_id?: GraphQLTypes["uuid"] | undefined;
     fee_payer_public_key?: string | undefined;
-    transaction_at?: GraphQLTypes["time"] | undefined;
+    transaction_at?: GraphQLTypes["timestamptz"] | undefined;
   };
   /** order by stddev() on columns of table "auth.swaps" */
   ["auth_swaps_stddev_order_by"]: {
@@ -23427,7 +23355,7 @@ export type GraphQLTypes = {
     fee_payer_id?: GraphQLTypes["uuid"] | undefined;
     fee_payer_public_key?: string | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
-    transaction_at?: GraphQLTypes["time"] | undefined;
+    transaction_at?: GraphQLTypes["timestamptz"] | undefined;
     transaction_signature?: string | undefined;
   };
   /** order by sum() on columns of table "auth.swaps" */
@@ -24255,7 +24183,7 @@ export type GraphQLTypes = {
     distributor_id: GraphQLTypes["uuid"];
     ordinal: number;
     transaction_signature?: string | undefined;
-    viewed_at?: GraphQLTypes["timestamp"] | undefined;
+    viewed_at?: GraphQLTypes["timestamptz"] | undefined;
   };
   /** order by aggregate values of table "dropzone.claims" */
   ["dropzone_claims_aggregate_order_by"]: {
@@ -24301,7 +24229,7 @@ export type GraphQLTypes = {
     distributor_id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
     ordinal?: GraphQLTypes["Int_comparison_exp"] | undefined;
     transaction_signature?: GraphQLTypes["String_comparison_exp"] | undefined;
-    viewed_at?: GraphQLTypes["timestamp_comparison_exp"] | undefined;
+    viewed_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
   };
   /** unique or primary key constraints on table "dropzone.claims" */
   ["dropzone_claims_constraint"]: dropzone_claims_constraint;
@@ -24324,7 +24252,7 @@ export type GraphQLTypes = {
     distributor_id?: GraphQLTypes["uuid"] | undefined;
     ordinal?: number | undefined;
     transaction_signature?: string | undefined;
-    viewed_at?: GraphQLTypes["timestamp"] | undefined;
+    viewed_at?: GraphQLTypes["timestamptz"] | undefined;
   };
   /** order by max() on columns of table "dropzone.claims" */
   ["dropzone_claims_max_order_by"]: {
@@ -24395,7 +24323,7 @@ export type GraphQLTypes = {
     distributor_id?: GraphQLTypes["uuid"] | undefined;
     ordinal?: number | undefined;
     transaction_signature?: string | undefined;
-    viewed_at?: GraphQLTypes["timestamp"] | undefined;
+    viewed_at?: GraphQLTypes["timestamptz"] | undefined;
   };
   /** order by stddev() on columns of table "dropzone.claims" */
   ["dropzone_claims_stddev_order_by"]: {
@@ -24429,7 +24357,7 @@ export type GraphQLTypes = {
     distributor_id?: GraphQLTypes["uuid"] | undefined;
     ordinal?: number | undefined;
     transaction_signature?: string | undefined;
-    viewed_at?: GraphQLTypes["timestamp"] | undefined;
+    viewed_at?: GraphQLTypes["timestamptz"] | undefined;
   };
   /** order by sum() on columns of table "dropzone.claims" */
   ["dropzone_claims_sum_order_by"]: {
@@ -25591,32 +25519,6 @@ export type GraphQLTypes = {
     /** fetch data from the table in a streaming manner: "invitations" */
     invitations_stream: Array<GraphQLTypes["invitations"]>;
   };
-  ["time"]: "scalar" & { name: "time" };
-  /** Boolean expression to compare columns of type "time". All fields are combined with logical 'AND'. */
-  ["time_comparison_exp"]: {
-    _eq?: GraphQLTypes["time"] | undefined;
-    _gt?: GraphQLTypes["time"] | undefined;
-    _gte?: GraphQLTypes["time"] | undefined;
-    _in?: Array<GraphQLTypes["time"]> | undefined;
-    _is_null?: boolean | undefined;
-    _lt?: GraphQLTypes["time"] | undefined;
-    _lte?: GraphQLTypes["time"] | undefined;
-    _neq?: GraphQLTypes["time"] | undefined;
-    _nin?: Array<GraphQLTypes["time"]> | undefined;
-  };
-  ["timestamp"]: "scalar" & { name: "timestamp" };
-  /** Boolean expression to compare columns of type "timestamp". All fields are combined with logical 'AND'. */
-  ["timestamp_comparison_exp"]: {
-    _eq?: GraphQLTypes["timestamp"] | undefined;
-    _gt?: GraphQLTypes["timestamp"] | undefined;
-    _gte?: GraphQLTypes["timestamp"] | undefined;
-    _in?: Array<GraphQLTypes["timestamp"]> | undefined;
-    _is_null?: boolean | undefined;
-    _lt?: GraphQLTypes["timestamp"] | undefined;
-    _lte?: GraphQLTypes["timestamp"] | undefined;
-    _neq?: GraphQLTypes["timestamp"] | undefined;
-    _nin?: Array<GraphQLTypes["timestamp"]> | undefined;
-  };
   ["timestamptz"]: "scalar" & { name: "timestamptz" };
   /** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
   ["timestamptz_comparison_exp"]: {
@@ -26394,10 +26296,6 @@ type ZEUS_VARIABLES = {
   ["jsonb_cast_exp"]: ValueTypes["jsonb_cast_exp"];
   ["jsonb_comparison_exp"]: ValueTypes["jsonb_comparison_exp"];
   ["order_by"]: ValueTypes["order_by"];
-  ["time"]: ValueTypes["time"];
-  ["time_comparison_exp"]: ValueTypes["time_comparison_exp"];
-  ["timestamp"]: ValueTypes["timestamp"];
-  ["timestamp_comparison_exp"]: ValueTypes["timestamp_comparison_exp"];
   ["timestamptz"]: ValueTypes["timestamptz"];
   ["timestamptz_comparison_exp"]: ValueTypes["timestamptz_comparison_exp"];
   ["uuid"]: ValueTypes["uuid"];
