@@ -328,6 +328,8 @@ export type PageInfo = {
 /** Root level query type. */
 export type Query = {
   __typename?: "Query";
+  /** Get the entire or a specific entry of a token list. */
+  tokenList: Array<Maybe<TokenListEntry>>;
   /**
    * Fetch a user by their Backpack account username. The username is inferred by the
    * presence of a valid and verified JWT.
@@ -338,6 +340,12 @@ export type Query = {
    * @deprecated Should use the user entrypoint for authentication identities.
    */
   wallet?: Maybe<Wallet>;
+};
+
+/** Root level query type. */
+export type QueryTokenListArgs = {
+  chainId: ChainId;
+  filters?: InputMaybe<TokenListEntryFiltersInput>;
 };
 
 /** Root level query type. */
@@ -385,6 +393,32 @@ export type TokenBalanceEdge = {
   node: TokenBalance;
 };
 
+export type TokenListEntry = Node & {
+  __typename?: "TokenListEntry";
+  /** The mint or contract address of the token. */
+  address: Scalars["String"];
+  /** The Coingecko market listing ID. */
+  coingeckoId: Scalars["String"];
+  /** Globally unique identifier for the list entry. */
+  id: Scalars["ID"];
+  /** The logo associated with the token. */
+  logo?: Maybe<Scalars["String"]>;
+  /** The registered name of the token. */
+  name: Scalars["String"];
+  /** The registered symbol of the token. */
+  symbol: Scalars["String"];
+};
+
+/** Input filter type for fetching a specific entry from a token list. */
+export type TokenListEntryFiltersInput = {
+  /** The mint or contract address of the token. */
+  address?: InputMaybe<Scalars["String"]>;
+  /** The market listing name of the token. */
+  name?: InputMaybe<Scalars["String"]>;
+  /** The market listing symbol of the token. */
+  symbol?: InputMaybe<Scalars["String"]>;
+};
+
 /** Generic on-chain transaction details structure. */
 export type Transaction = Node & {
   __typename?: "Transaction";
@@ -408,8 +442,6 @@ export type Transaction = Node & {
   source?: Maybe<Scalars["String"]>;
   /** The timestamp of the execution or commitment of the transaction. */
   timestamp?: Maybe<Scalars["String"]>;
-  /** A list of all token transfers that occured during the transaction. */
-  transfers: Array<TransactionTransfer>;
   /** The category or type of transaction. */
   type: Scalars["String"];
 };
@@ -436,21 +468,6 @@ export type TransactionFiltersInput = {
   before?: InputMaybe<Scalars["String"]>;
   /** A token mint or contract address to filter for. */
   token?: InputMaybe<Scalars["String"]>;
-};
-
-/** Describes a single token transfer from a transaction. */
-export type TransactionTransfer = {
-  __typename?: "TransactionTransfer";
-  /** The numerical amount of the token that was transferred. */
-  amount: Scalars["Float"];
-  /** The address that the transfer was initiated from. */
-  from: Scalars["String"];
-  /** The address that the transfer was sent to. */
-  to: Scalars["String"];
-  /** The token mint or contract address of the token type. */
-  token: Scalars["String"];
-  /** The token mint or contract address symbol. */
-  tokenName?: Maybe<Scalars["String"]>;
 };
 
 /**
@@ -631,6 +648,20 @@ export type GetNotificationsQuery = {
       }>;
     } | null;
   } | null;
+};
+
+export type GetTokenListEntryLogoQueryVariables = Exact<{
+  chainId: ChainId;
+  filters?: InputMaybe<TokenListEntryFiltersInput>;
+}>;
+
+export type GetTokenListEntryLogoQuery = {
+  __typename?: "Query";
+  tokenList: Array<{
+    __typename?: "TokenListEntry";
+    id: string;
+    logo?: string | null;
+  } | null>;
 };
 
 export type GetTransactionsQueryVariables = Exact<{
@@ -972,6 +1003,80 @@ export const GetNotificationsDocument = {
 } as unknown as DocumentNode<
   GetNotificationsQuery,
   GetNotificationsQueryVariables
+>;
+export const GetTokenListEntryLogoDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "GetTokenListEntryLogo" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "chainId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "ChainID" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "filters" },
+          },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "TokenListEntryFiltersInput" },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "tokenList" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "chainId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "chainId" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "filters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "filters" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "logo" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetTokenListEntryLogoQuery,
+  GetTokenListEntryLogoQueryVariables
 >;
 export const GetTransactionsDocument = {
   kind: "Document",

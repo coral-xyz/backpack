@@ -1,7 +1,11 @@
 import { View, type ViewStyle } from "react-native";
-import { UNKNOWN_ICON_SRC, useJupiterTokenList } from "@coral-xyz/recoil";
+import { useSuspenseQuery_experimental } from "@apollo/client";
+import { UNKNOWN_ICON_SRC, useActiveWallet } from "@coral-xyz/recoil";
 import type { SizeTokens } from "@coral-xyz/tamagui";
 import { ListItemIconCore, TamaguiIcons } from "@coral-xyz/tamagui";
+
+import { gql } from "../../apollo";
+import type { ChainId } from "../../apollo/graphql";
 
 const wrapperStyles = (size: SizeTokens): ViewStyle => ({
   height: size,
@@ -10,6 +14,15 @@ const wrapperStyles = (size: SizeTokens): ViewStyle => ({
   justifyContent: "center",
   alignItems: "center",
 });
+
+const GET_TOKEN_LOGO = gql(`
+  query GetTokenListEntryLogo($chainId: ChainID!, $filters: TokenListEntryFiltersInput) {
+    tokenList(chainId: $chainId, filters: $filters) {
+      id
+      logo
+    }
+  }
+`);
 
 export type TransactionListItemIconTypeProps = {
   size: SizeTokens;
@@ -52,10 +65,15 @@ export const TransactionListItemIconSwap = ({
 }: TransactionListItemIconTypeProps & {
   symbols: [string, string];
 }) => {
-  const jupiter = useJupiterTokenList();
-  const logos = symbols.map(
-    (s) => jupiter.find((j) => j.symbol === s)?.logoURI ?? UNKNOWN_ICON_SRC
-  );
+  const activeWallet = useActiveWallet();
+  const { data } = useSuspenseQuery_experimental(GET_TOKEN_LOGO, {
+    variables: {
+      chainId: activeWallet.blockchain.toUpperCase() as ChainId,
+      filters: {
+        symbols,
+      },
+    },
+  });
 
   return (
     <View
@@ -65,13 +83,13 @@ export const TransactionListItemIconSwap = ({
         style={{ marginRight: 10, marginBottom: 15 }}
         radius={12}
         size={24}
-        image={logos[0]}
+        image={data.tokenList[0]?.logo ?? UNKNOWN_ICON_SRC}
       />
       <ListItemIconCore
         style={{ marginLeft: -15, zIndex: 10 }}
         radius={12}
         size={24}
-        image={logos[1]}
+        image={data.tokenList[1]?.logo ?? UNKNOWN_ICON_SRC}
       />
     </View>
   );
@@ -81,13 +99,23 @@ export const TransactionListItemIconTransfer = ({
   size,
   symbol,
 }: TransactionListItemIconTypeProps & { symbol: string }) => {
-  const jupiter = useJupiterTokenList();
-  const logo =
-    jupiter.find((j) => j.symbol === symbol)?.logoURI ?? UNKNOWN_ICON_SRC;
+  const activeWallet = useActiveWallet();
+  const { data } = useSuspenseQuery_experimental(GET_TOKEN_LOGO, {
+    variables: {
+      chainId: activeWallet.blockchain.toUpperCase() as ChainId,
+      filters: {
+        symbols: [symbol],
+      },
+    },
+  });
 
   return (
     <View style={wrapperStyles(size)}>
-      <ListItemIconCore size={size} radius={22} image={logo} />
+      <ListItemIconCore
+        size={size}
+        radius={22}
+        image={data.tokenList[0]?.logo ?? UNKNOWN_ICON_SRC}
+      />
     </View>
   );
 };

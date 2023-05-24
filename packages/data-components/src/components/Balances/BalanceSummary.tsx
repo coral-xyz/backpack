@@ -1,10 +1,12 @@
 import { Suspense, useMemo } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { useSuspenseQuery_experimental } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import {
   BalanceSummaryCore,
   BalanceSummaryCoreLoader,
   type BalanceSummaryCoreProps,
+  StyledText,
 } from "@coral-xyz/tamagui";
 
 import { gql } from "../../apollo";
@@ -35,9 +37,13 @@ export type BalanceSummaryWidgetProps = {
 
 export function BalanceSummaryWidget({ style }: BalanceSummaryWidgetProps) {
   return (
-    <Suspense fallback={<BalanceSummaryCoreLoader />}>
-      <_BalanceSummaryWidget style={style} />
-    </Suspense>
+    <ErrorBoundary
+      fallbackRender={(x) => <StyledText>{JSON.stringify(x.error)}</StyledText>}
+    >
+      <Suspense fallback={<BalanceSummaryCoreLoader />}>
+        <_BalanceSummaryWidget style={style} />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 
