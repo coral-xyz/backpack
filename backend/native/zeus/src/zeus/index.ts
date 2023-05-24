@@ -6277,6 +6277,7 @@ export type ValueTypes = {
     mint_public_key?: boolean | `@${string}`;
     public_key?: boolean | `@${string}`;
     published_at?: boolean | `@${string}`;
+    secret?: boolean | `@${string}`;
     swaps?: [
       {
         /** distinct select on columns */
@@ -6411,6 +6412,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    secret?:
+      | ValueTypes["uuid_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     swaps?:
       | ValueTypes["auth_swaps_bool_exp"]
       | undefined
@@ -6504,6 +6510,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    secret?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     transaction_signature?:
       | ValueTypes["order_by"]
       | undefined
@@ -6543,6 +6550,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    secret?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     transaction_signature?:
       | ValueTypes["order_by"]
       | undefined
@@ -6627,6 +6635,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    secret?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     swaps_aggregate?:
       | ValueTypes["auth_swaps_aggregate_order_by"]
       | undefined
@@ -6699,6 +6708,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    secret?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
     transaction_signature?: string | undefined | null | Variable<any, string>;
   };
   /** update columns of table "dropzone.distributors" */
@@ -14719,6 +14729,7 @@ export type ResolverInputTypes = {
     mint_public_key?: boolean | `@${string}`;
     public_key?: boolean | `@${string}`;
     published_at?: boolean | `@${string}`;
+    secret?: boolean | `@${string}`;
     swaps?: [
       {
         /** distinct select on columns */
@@ -14809,6 +14820,7 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["timestamptz_comparison_exp"]
       | undefined
       | null;
+    secret?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
     swaps?: ResolverInputTypes["auth_swaps_bool_exp"] | undefined | null;
     transaction_signature?:
       | ResolverInputTypes["String_comparison_exp"]
@@ -14862,6 +14874,7 @@ export type ResolverInputTypes = {
     mint_public_key?: ResolverInputTypes["order_by"] | undefined | null;
     public_key?: ResolverInputTypes["order_by"] | undefined | null;
     published_at?: ResolverInputTypes["order_by"] | undefined | null;
+    secret?: ResolverInputTypes["order_by"] | undefined | null;
     transaction_signature?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** order by min() on columns of table "dropzone.distributors" */
@@ -14873,6 +14886,7 @@ export type ResolverInputTypes = {
     mint_public_key?: ResolverInputTypes["order_by"] | undefined | null;
     public_key?: ResolverInputTypes["order_by"] | undefined | null;
     published_at?: ResolverInputTypes["order_by"] | undefined | null;
+    secret?: ResolverInputTypes["order_by"] | undefined | null;
     transaction_signature?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** response of any mutation on the table "dropzone.distributors" */
@@ -14921,6 +14935,7 @@ export type ResolverInputTypes = {
     mint_public_key?: ResolverInputTypes["order_by"] | undefined | null;
     public_key?: ResolverInputTypes["order_by"] | undefined | null;
     published_at?: ResolverInputTypes["order_by"] | undefined | null;
+    secret?: ResolverInputTypes["order_by"] | undefined | null;
     swaps_aggregate?:
       | ResolverInputTypes["auth_swaps_aggregate_order_by"]
       | undefined
@@ -14966,6 +14981,7 @@ export type ResolverInputTypes = {
     mint_public_key?: string | undefined | null;
     public_key?: string | undefined | null;
     published_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    secret?: ResolverInputTypes["uuid"] | undefined | null;
     transaction_signature?: string | undefined | null;
   };
   /** update columns of table "dropzone.distributors" */
@@ -20837,6 +20853,7 @@ export type ModelTypes = {
     mint_public_key: string;
     public_key: string;
     published_at?: ModelTypes["timestamptz"] | undefined;
+    secret: ModelTypes["uuid"];
     /** An array relationship */
     swaps: Array<ModelTypes["auth_swaps"]>;
     transaction_signature?: string | undefined;
@@ -20874,6 +20891,7 @@ export type ModelTypes = {
     mint_public_key?: ModelTypes["String_comparison_exp"] | undefined;
     public_key?: ModelTypes["String_comparison_exp"] | undefined;
     published_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
+    secret?: ModelTypes["uuid_comparison_exp"] | undefined;
     swaps?: ModelTypes["auth_swaps_bool_exp"] | undefined;
     transaction_signature?: ModelTypes["String_comparison_exp"] | undefined;
   };
@@ -20916,6 +20934,7 @@ export type ModelTypes = {
     mint_public_key?: ModelTypes["order_by"] | undefined;
     public_key?: ModelTypes["order_by"] | undefined;
     published_at?: ModelTypes["order_by"] | undefined;
+    secret?: ModelTypes["order_by"] | undefined;
     transaction_signature?: ModelTypes["order_by"] | undefined;
   };
   /** order by min() on columns of table "dropzone.distributors" */
@@ -20927,6 +20946,7 @@ export type ModelTypes = {
     mint_public_key?: ModelTypes["order_by"] | undefined;
     public_key?: ModelTypes["order_by"] | undefined;
     published_at?: ModelTypes["order_by"] | undefined;
+    secret?: ModelTypes["order_by"] | undefined;
     transaction_signature?: ModelTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "dropzone.distributors" */
@@ -20964,6 +20984,7 @@ export type ModelTypes = {
     mint_public_key?: ModelTypes["order_by"] | undefined;
     public_key?: ModelTypes["order_by"] | undefined;
     published_at?: ModelTypes["order_by"] | undefined;
+    secret?: ModelTypes["order_by"] | undefined;
     swaps_aggregate?: ModelTypes["auth_swaps_aggregate_order_by"] | undefined;
     transaction_signature?: ModelTypes["order_by"] | undefined;
   };
@@ -21005,6 +21026,7 @@ export type ModelTypes = {
     mint_public_key?: string | undefined;
     public_key?: string | undefined;
     published_at?: ModelTypes["timestamptz"] | undefined;
+    secret?: ModelTypes["uuid"] | undefined;
     transaction_signature?: string | undefined;
   };
   ["dropzone_distributors_update_column"]: dropzone_distributors_update_column;
@@ -24598,6 +24620,7 @@ export type GraphQLTypes = {
     mint_public_key: string;
     public_key: string;
     published_at?: GraphQLTypes["timestamptz"] | undefined;
+    secret: GraphQLTypes["uuid"];
     /** An array relationship */
     swaps: Array<GraphQLTypes["auth_swaps"]>;
     transaction_signature?: string | undefined;
@@ -24635,6 +24658,7 @@ export type GraphQLTypes = {
     mint_public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
     public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
     published_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
+    secret?: GraphQLTypes["uuid_comparison_exp"] | undefined;
     swaps?: GraphQLTypes["auth_swaps_bool_exp"] | undefined;
     transaction_signature?: GraphQLTypes["String_comparison_exp"] | undefined;
   };
@@ -24678,6 +24702,7 @@ export type GraphQLTypes = {
     mint_public_key?: GraphQLTypes["order_by"] | undefined;
     public_key?: GraphQLTypes["order_by"] | undefined;
     published_at?: GraphQLTypes["order_by"] | undefined;
+    secret?: GraphQLTypes["order_by"] | undefined;
     transaction_signature?: GraphQLTypes["order_by"] | undefined;
   };
   /** order by min() on columns of table "dropzone.distributors" */
@@ -24689,6 +24714,7 @@ export type GraphQLTypes = {
     mint_public_key?: GraphQLTypes["order_by"] | undefined;
     public_key?: GraphQLTypes["order_by"] | undefined;
     published_at?: GraphQLTypes["order_by"] | undefined;
+    secret?: GraphQLTypes["order_by"] | undefined;
     transaction_signature?: GraphQLTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "dropzone.distributors" */
@@ -24727,6 +24753,7 @@ export type GraphQLTypes = {
     mint_public_key?: GraphQLTypes["order_by"] | undefined;
     public_key?: GraphQLTypes["order_by"] | undefined;
     published_at?: GraphQLTypes["order_by"] | undefined;
+    secret?: GraphQLTypes["order_by"] | undefined;
     swaps_aggregate?: GraphQLTypes["auth_swaps_aggregate_order_by"] | undefined;
     transaction_signature?: GraphQLTypes["order_by"] | undefined;
   };
@@ -24769,6 +24796,7 @@ export type GraphQLTypes = {
     mint_public_key?: string | undefined;
     public_key?: string | undefined;
     published_at?: GraphQLTypes["timestamptz"] | undefined;
+    secret?: GraphQLTypes["uuid"] | undefined;
     transaction_signature?: string | undefined;
   };
   /** update columns of table "dropzone.distributors" */
@@ -26009,6 +26037,7 @@ export const enum dropzone_distributors_select_column {
   mint_public_key = "mint_public_key",
   public_key = "public_key",
   published_at = "published_at",
+  secret = "secret",
   transaction_signature = "transaction_signature",
 }
 /** update columns of table "dropzone.distributors" */

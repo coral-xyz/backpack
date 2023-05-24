@@ -39,6 +39,10 @@ program
     "-f, --fund",
     "fund the distributor account with SUM(balances) of the mint"
   )
+  .option(
+    "-p, --publish",
+    "publish the distributor so it's immediately visible in the UI"
+  )
   .action(async (options) => {
     const url = [
       options.local
@@ -48,7 +52,7 @@ program
     ].join("/");
 
     const {
-      data: { msg, distributor, ata },
+      data: { msg, distributor, ata, secret },
     } = await axios.post(url, {
       creator: anchorProvider.publicKey.toBase58(),
       mint: options.mint,
@@ -57,10 +61,14 @@ program
 
     const lookupTable = await createLookupTable(ata, distributor, wallet);
 
-    const r = await axios.patch(`${url}/${distributor}`, {
-      lookup_table_public_key: lookupTable,
-    });
-    console.log({ res: r.data, lookup_table_public_key: lookupTable });
+    const r = await axios.patch(
+      `${url}/${distributor}`,
+      {
+        lookup_table_public_key: lookupTable,
+      },
+      { headers: { Authorization: `Bearer ${secret}` } }
+    );
+    console.log({ res: r.data, lookup_table_public_key: lookupTable, secret });
 
     const tx = Transaction.from(decode(msg));
 
@@ -116,6 +124,17 @@ program
           transaction: `https://explorer.solana.com/tx/${signature}`,
         },
       });
+    }
+
+    if (options.publish) {
+      await axios.patch(
+        `${url}/${distributor}`,
+        {
+          published_at: new Date().toISOString(),
+        },
+        { headers: { Authorization: `Bearer ${secret}` } }
+      );
+      console.log("published!");
     }
   });
 
