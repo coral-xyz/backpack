@@ -1,3 +1,4 @@
+import type { GestureResponderEvent } from "react-native";
 import { Stack, type StackProps } from "tamagui";
 
 import { useCustomTheme } from "../../hooks";
@@ -6,7 +7,7 @@ import { StyledText, type StyledTextProps } from "../StyledText";
 export type ListItemActionCoreProps = {
   content: string;
   contentStyle?: Omit<StyledTextProps, "children">;
-  onClick: (event: any) => void;
+  onClick: (event: GestureResponderEvent) => void;
   style?: Omit<StackProps, "children">;
 };
 
@@ -23,6 +24,7 @@ export function ListItemActionCore({
         color={theme.custom.colors.textPlaceholder}
         fontSize={14}
         onPress={onClick}
+        pointerEvents="box-only"
         {...contentStyle}
       >
         {content}

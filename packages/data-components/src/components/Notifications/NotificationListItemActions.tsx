@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import type { GestureResponderEvent } from "react-native";
 import { useMutation } from "@apollo/client";
 import {
   useFriendship,
@@ -41,46 +42,54 @@ export function NotificationListItemFriendRequestAction({
   /**
    * Memoized function handler for accepting an inbound friend request.
    */
-  const handleAccept = useCallback(async () => {
-    await sendFriendRequest({
-      variables: { accept: true, otherUserId: remoteUserId },
-    });
+  const handleAccept = useCallback(
+    async (ev: GestureResponderEvent) => {
+      ev.stopPropagation();
+      await sendFriendRequest({
+        variables: { accept: true, otherUserId: remoteUserId },
+      });
 
-    if (onAccept) {
-      await onAccept(uuid, remoteUserId);
-    }
+      if (onAccept) {
+        await onAccept(uuid, remoteUserId);
+      }
 
-    await setFriendshipValue({
-      userId: remoteUserId,
-      friendshipValue: {
-        requested: false,
-        areFriends: true,
-        remoteRequested: false,
-      },
-    });
-  }, [onAccept, remoteUserId, sendFriendRequest, setFriendshipValue, uuid]);
+      await setFriendshipValue({
+        userId: remoteUserId,
+        friendshipValue: {
+          requested: false,
+          areFriends: true,
+          remoteRequested: false,
+        },
+      });
+    },
+    [onAccept, remoteUserId, sendFriendRequest, setFriendshipValue, uuid]
+  );
 
   /**
    * Memoized function handler for rejecting an inbound friend request.
    */
-  const handleDecline = useCallback(async () => {
-    await sendFriendRequest({
-      variables: { accept: false, otherUserId: remoteUserId },
-    });
+  const handleDecline = useCallback(
+    async (ev: GestureResponderEvent) => {
+      ev.stopPropagation();
+      await sendFriendRequest({
+        variables: { accept: false, otherUserId: remoteUserId },
+      });
 
-    if (onDecline) {
-      await onDecline(uuid, remoteUserId);
-    }
+      if (onDecline) {
+        await onDecline(uuid, remoteUserId);
+      }
 
-    await setFriendshipValue({
-      userId: remoteUserId,
-      friendshipValue: {
-        requested: false,
-        areFriends: false,
-        remoteRequested: false,
-      },
-    });
-  }, [onDecline, remoteUserId, sendFriendRequest, setFriendshipValue, uuid]);
+      await setFriendshipValue({
+        userId: remoteUserId,
+        friendshipValue: {
+          requested: false,
+          areFriends: false,
+          remoteRequested: false,
+        },
+      });
+    },
+    [onDecline, remoteUserId, sendFriendRequest, setFriendshipValue, uuid]
+  );
 
   return friendship?.remoteRequested && !friendship?.areFriends ? (
     <XStack alignItems="center" gap={10} marginTop={5}>
