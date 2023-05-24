@@ -1,103 +1,94 @@
+import type { Blockchain } from "@coral-xyz/common";
+import type { PublicKey } from "~types/types";
+
 import { useCallback, useState } from "react";
-import { Alert, FlatList, Pressable, View } from "react-native";
+import { FlatList, Pressable, View } from "react-native";
 
-import * as Clipboard from "expo-clipboard";
-import { Image } from "expo-image";
-
-// import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
-
-import { walletAddressDisplay } from "@coral-xyz/common";
-import { useActiveWallet } from "@coral-xyz/recoil";
 import {
-  PaddedListItemSeparator,
-  StyledText,
-  XStack,
-} from "@coral-xyz/tamagui";
+  // toTitleCase,
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+  // walletAddressDisplay,
+} from "@coral-xyz/common";
+import {
+  useActiveWallet,
+  useBackgroundClient,
+  usePrimaryWallets,
+} from "@coral-xyz/recoil";
+import { PaddedListItemSeparator, StyledText } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
-// import { useNavigation } from "@react-navigation/native";
+import { useBottomSheetModal } from "@gorhom/bottom-sheet";
+import { useNavigation } from "@react-navigation/native";
 
 import { BetterBottomSheet } from "~components/BottomSheetModal";
-import { ContentCopyIcon, VerticalDotsIcon } from "~components/Icon";
-import { getBlockchainLogo } from "~hooks/index";
+import { ListItemWallet, type Wallet } from "~components/ListItem";
 import { useTheme } from "~hooks/useTheme";
 import { useWallets } from "~hooks/wallets";
 
-const CopyPublicKey = ({ publicKey }: { publicKey: string }) => {
-  return (
-    <Pressable
-      onPress={async () => {
-        await Clipboard.setStringAsync(publicKey);
-        Alert.alert("Copied to clipboard", publicKey);
-      }}
-    >
-      <XStack ai="center" backgroundColor="#eee" padding={4} borderRadius={4}>
-        <StyledText fontSize="$sm" mr={4}>
-          {walletAddressDisplay(publicKey)}
-        </StyledText>
-        <ContentCopyIcon size={18} />
-      </XStack>
-    </Pressable>
-  );
-};
+function WalletListPicker({ navigation }) {
+  const { dismiss } = useBottomSheetModal();
+  const background = useBackgroundClient();
+  const { allWallets } = useWallets();
+  const primaryWallets = usePrimaryWallets();
+  const activeWallet = useActiveWallet();
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
-const ListItem = ({ name, publicKey, blockchain, selected }: any) => {
-  const logo = getBlockchainLogo(blockchain);
-  return (
-    <XStack
-      ai="center"
-      jc="space-between"
-      height="$container"
-      paddingHorizontal={16}
-    >
-      <Pressable
-        style={{ flexDirection: "row", alignItems: "center" }}
-        onPress={() => {
-          Alert.alert("pressed", name);
-        }}
-      >
-        <Image
-          source={logo}
-          style={{
-            aspectRatio: 1,
-            width: 24,
-            height: 24,
-            marginRight: 12,
-          }}
-        />
-        <StyledText fontSize="$base" fontWeight={selected ? "$800" : undefined}>
-          {name}
-        </StyledText>
-      </Pressable>
-      <XStack ai="center">
-        <CopyPublicKey publicKey={publicKey} />
-        <Pressable
-          onPress={() => {
-            Alert.alert("edit wallet", name);
-          }}
-        >
-          <VerticalDotsIcon />
-        </Pressable>
-      </XStack>
-    </XStack>
+  const handlePressSelect = useCallback(
+    async (b: Blockchain, pk: PublicKey) => {
+      setLoadingId(pk);
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+        params: [pk, b],
+      });
+      setLoadingId(null);
+    },
+    [background],
   );
-};
 
-function WalletListPicker() {
-  const { allWallets, activeWallet } = useWallets();
+  const handlePressEdit = (
+    blockchain: Blockchain,
+    { name, publicKey, type }: Wallet,
+  ) => {
+    dismiss();
+    navigation.push("AccountSettings", {
+      screen: "edit-wallets-wallet-detail",
+      params: {
+        blockchain,
+        publicKey,
+        name,
+        type,
+      },
+    });
+  };
 
   const renderItem = useCallback(
     ({ item }) => {
+      const isPrimary = !!primaryWallets.find(
+        (x) => x.publicKey === item.publicKey,
+      );
+
       return (
-        <ListItem
+        <ListItemWallet
           name={item.name}
           publicKey={item.publicKey}
           type={item.type}
           blockchain={item.blockchain}
           selected={item.publicKey === activeWallet.publicKey}
+          loading={loadingId === item.publicKey}
+          primary={isPrimary}
+          isCold={false}
+          balance={5555.34}
+          onPressEdit={handlePressEdit}
+          onSelect={handlePressSelect}
         />
       );
     },
-    [activeWallet.publicKey]
+    [
+      loadingId,
+      activeWallet.publicKey,
+      primaryWallets,
+      handlePressSelect,
+      handlePressEdit,
+    ],
   );
 
   return (
@@ -106,9 +97,8 @@ function WalletListPicker() {
         Wallets
       </StyledText>
       <FlatList
-        style={{ backgroundColor: "white" }}
         data={allWallets}
-        keyExtractor={(item) => item.publicKey.toString()}
+        keyExtractor={(item) => item.publicKey}
         renderItem={renderItem}
         ItemSeparatorComponent={PaddedListItemSeparator}
       />
@@ -119,25 +109,24 @@ function WalletListPicker() {
 
 const BlueLinkButton = ({ onPress, label }): JSX.Element => (
   <Pressable style={{ padding: 8 }} onPress={onPress}>
-    <StyledText alignSelf="center" fontSize="$lg" color="blue">
+    <StyledText alignSelf="center" fontSize="$lg" color="$accentBlue">
       {label}
     </StyledText>
   </Pressable>
 );
 
 export function WalletSwitcherButton(): JSX.Element {
+  const navigation = useNavigation();
   const theme = useTheme();
   const activeWallet = useActiveWallet();
   const [isVisible, setIsVisible] = useState(false);
 
-  const handlePress = () => {
-    setIsVisible(true);
-  };
-
   return (
     <>
       <Pressable
-        onPress={handlePress}
+        onPress={() => {
+          setIsVisible(true);
+        }}
         style={{
           flexDirection: "row",
           paddingVertical: 8,
@@ -165,7 +154,7 @@ export function WalletSwitcherButton(): JSX.Element {
           setIsVisible(false);
         }}
       >
-        <WalletListPicker />
+        <WalletListPicker navigation={navigation} />
       </BetterBottomSheet>
     </>
   );

@@ -3,16 +3,17 @@ import type { Token } from "~types/types";
 
 import { useCallback } from "react";
 
+import { walletAddressDisplay } from "@coral-xyz/common";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import {
   IconCloseModal,
-  TabIconBalances,
   TabIconApps,
-  TabIconNfts,
+  TabIconBalances,
   TabIconMessages,
+  TabIconNfts,
 } from "~components/Icon";
 import { Avatar } from "~components/index";
 // import { NavHeader } from "~components/NavHeader";
@@ -23,17 +24,19 @@ import { ChatNavigator } from "~navigation/ChatNavigator";
 import { WalletsNavigator } from "~navigation/WalletsNavigator";
 import { NotificationsScreen } from "~screens/NotificationsScreen";
 import { ReceiveTokenScreen } from "~screens/ReceiveTokenScreen";
+import { EditWalletDetailScreen } from "~screens/Unlocked/EditWalletDetailScreen";
 import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollectibleSelectRecipientScreen";
 import {
-  SendTokenSelectRecipientScreen,
-  SendTokenListScreen,
   SendTokenConfirmScreen,
+  SendTokenListScreen,
+  SendTokenSelectRecipientScreen,
 } from "~screens/Unlocked/SendTokenScreen";
 import { SwapTokenScreen } from "~screens/Unlocked/SwapTokenScreen";
 import { WalletListScreen } from "~screens/Unlocked/WalletListScreen";
 import { UtilsDesignScreen } from "~screens/Utils/UtilsDesignScreen";
 
 export type UnlockedNavigatorStackParamList = {
+  "edit-wallets-wallet-detail": { name: string; publicKey: string };
   Tabs: undefined;
   AccountSettings: undefined;
   RecentActivity: undefined;
@@ -194,6 +197,16 @@ export function UnlockedNavigator(): JSX.Element {
           component={WalletListScreen}
         />
       </Stack.Group>
+      <Stack.Screen
+        name="edit-wallets-wallet-detail"
+        component={EditWalletDetailScreen}
+        options={({ route }) => {
+          const { name, publicKey } = route.params;
+          return {
+            title: `${name} (${walletAddressDisplay(publicKey)})`,
+          };
+        }}
+      />
     </Stack.Navigator>
   );
 }

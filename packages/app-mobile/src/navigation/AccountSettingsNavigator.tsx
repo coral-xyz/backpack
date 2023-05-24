@@ -2,7 +2,7 @@ import type { ChannelAppUiClient } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
 
 import { useEffect, useState } from "react";
-import { Text, View, Pressable } from "react-native";
+import { Text, View } from "react-native";
 
 import {
   EthereumConnectionUrl,
@@ -22,12 +22,10 @@ import {
   useSolanaConnectionUrl,
   useSolanaExplorer,
 } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ethers } from "ethers";
 
 import { AccountSettingsBottomSheet } from "~components/AccountSettingsBottomSheet";
-import { BetterBottomSheet } from "~components/BottomSheetModal";
 import { IconCheckmark } from "~components/Icon";
 import {
   AccountDropdownHeader,
@@ -66,12 +64,42 @@ import { YourAccountScreen } from "~screens/Unlocked/YourAccountScreen";
 
 const { hexlify } = ethers.utils;
 
-const Stack = createStackNavigator();
-
 function DummyScreen() {
   return <View style={{ flex: 1, backgroundColor: "red" }} />;
 }
 
+type AccountSettingsParamList = {
+  Profile: undefined;
+  YourAccount: undefined;
+  "change-password": undefined;
+  Preferences: undefined;
+  PreferencesEthereum: undefined;
+  PreferencesEthereumConnection: undefined;
+  PreferencesEthereumCustomRpcUrl: undefined;
+  PreferencesSolana: undefined;
+  PreferencesSolanaConnection: undefined;
+  PreferencesSolanaCommitment: undefined;
+  PreferencesSolanaExplorer: undefined;
+  PreferencesSolanaCustomRpcUrl: undefined;
+  PreferencesTrustedSites: undefined;
+  xNFTSettings: undefined;
+  WaitingRoom: undefined;
+  "import-private-key": undefined;
+  "reset-warning": undefined;
+  "show-secret-phrase-warning": undefined;
+  "show-secret-phrase": undefined;
+  "show-private-key-warning": undefined;
+  "show-private-key": undefined;
+  "edit-wallets": undefined;
+  "edit-wallets-rename": undefined;
+  "edit-wallets-wallet-detail": { name: string; publicKey: string };
+  "add-wallet": undefined;
+  "forgot-password": undefined;
+  "logout-warning": undefined;
+  UserAccountMenu: undefined;
+};
+
+const Stack = createStackNavigator<AccountSettingsParamList>();
 export function AccountSettingsNavigator(): JSX.Element {
   const theme = useTheme();
   return (
@@ -331,17 +359,16 @@ function PreferencesSolanaConnection({ navigation }) {
       onPress: () => {
         navigation.push("PreferencesSolanaCustomRpcUrl");
       },
-      detail:
-        currentUrl !== SolanaCluster.MAINNET &&
-        currentUrl !== SolanaCluster.DEVNET &&
-        currentUrl !== SolanaCluster.LOCALNET ? (
+      detail: currentUrl !== SolanaCluster.MAINNET &&
+          currentUrl !== SolanaCluster.DEVNET &&
+          currentUrl !== SolanaCluster.LOCALNET
+        ? (
           <>
             <IconCheckmark />
             <IconPushDetail />
           </>
-        ) : (
-          <IconPushDetail />
-        ),
+        )
+        : <IconPushDetail />,
     },
   };
 
@@ -400,13 +427,15 @@ export function PreferencesSolanaExplorer({ navigation }) {
   const menuItems = {
     "Solana Beach": {
       onPress: () => changeExplorer(SolanaExplorer.SOLANA_BEACH),
-      detail:
-        explorer === SolanaExplorer.SOLANA_BEACH ? <IconCheckmark /> : <></>,
+      detail: explorer === SolanaExplorer.SOLANA_BEACH
+        ? <IconCheckmark />
+        : <></>,
     },
     "Solana Explorer": {
       onPress: () => changeExplorer(SolanaExplorer.SOLANA_EXPLORER),
-      detail:
-        explorer === SolanaExplorer.SOLANA_EXPLORER ? <IconCheckmark /> : <></>,
+      detail: explorer === SolanaExplorer.SOLANA_EXPLORER
+        ? <IconCheckmark />
+        : <></>,
     },
     "Solana FM": {
       onPress: () => changeExplorer(SolanaExplorer.SOLANA_FM),
@@ -457,7 +486,7 @@ function PreferencesSolana({ route, navigation }) {
 export const changeNetwork = async (
   background: ChannelAppUiClient,
   url: string,
-  chainId?: string
+  chainId?: string,
 ) => {
   await background.request({
     method: UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
@@ -559,45 +588,39 @@ function PreferencesEthereumConnection({ navigation }) {
         await changeNetwork(background, EthereumConnectionUrl.MAINNET, "0x1");
         close();
       },
-      detail:
-        currentUrl === EthereumConnectionUrl.MAINNET ? (
-          <IconCheckmark />
-        ) : (
-          <></>
-        ),
+      detail: currentUrl === EthereumConnectionUrl.MAINNET
+        ? <IconCheckmark />
+        : <></>,
     },
     "Görli Testnet": {
       onPress: async () => {
         await changeNetwork(background, EthereumConnectionUrl.GOERLI, "0x5");
         close();
       },
-      detail:
-        currentUrl === EthereumConnectionUrl.GOERLI ? <IconCheckmark /> : <></>,
+      detail: currentUrl === EthereumConnectionUrl.GOERLI
+        ? <IconCheckmark />
+        : <></>,
     },
     Localnet: {
       onPress: async () => {
         await changeNetwork(background, EthereumConnectionUrl.LOCALNET);
         close();
       },
-      detail:
-        currentUrl === EthereumConnectionUrl.LOCALNET ? (
-          <IconCheckmark />
-        ) : (
-          <></>
-        ),
+      detail: currentUrl === EthereumConnectionUrl.LOCALNET
+        ? <IconCheckmark />
+        : <></>,
     },
     Custom: {
       onPress: () => navigation.push("PreferencesEthereumCustomRpcUrl"),
-      detail:
-        currentUrl !== EthereumConnectionUrl.MAINNET &&
-        currentUrl !== EthereumConnectionUrl.GOERLI &&
-        currentUrl !== EthereumConnectionUrl.LOCALNET ? (
+      detail: currentUrl !== EthereumConnectionUrl.MAINNET &&
+          currentUrl !== EthereumConnectionUrl.GOERLI &&
+          currentUrl !== EthereumConnectionUrl.LOCALNET
+        ? (
           <>
             <IconCheckmark /> <IconPushDetail />
           </>
-        ) : (
-          <IconPushDetail />
-        ),
+        )
+        : <IconPushDetail />,
     },
   };
 

@@ -152,6 +152,23 @@ export function IconCheckmark({
   return <MaterialIcons name="check" size={size} color={color} />;
 }
 
+export function IconCheckmarkBold({
+  size,
+  color,
+}: {
+  size: number;
+  color: string;
+}): JSX.Element {
+  return (
+    <MaterialCommunityIcons
+      name="check-bold"
+      size={size}
+      color={color}
+      style={{ marginBottom: 4 }}
+    />
+  );
+}
+
 export function QuestionIcon({
   fill = "#A1A1AA",
   ...props

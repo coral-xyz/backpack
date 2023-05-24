@@ -1,10 +1,10 @@
 import { useState } from "react";
 import {
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
   View,
-  Keyboard,
 } from "react-native";
 
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
@@ -94,9 +94,9 @@ export function LockedScreen(): JSX.Element {
                   required: "You must enter a password",
                 }}
               />
-              {formState.errors.password ? (
-                <ErrorMessage for={formState.errors.password} />
-              ) : null}
+              {formState.errors.password
+                ? <ErrorMessage for={formState.errors.password} />
+                : null}
             </Margin>
             <PrimaryButton label="Unlock" onPress={handleSubmit(onSubmit)} />
           </View>

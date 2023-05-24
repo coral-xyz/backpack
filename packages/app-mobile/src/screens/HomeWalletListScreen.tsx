@@ -8,12 +8,12 @@ import { Box, StyledText } from "@coral-xyz/tamagui";
 import { useNavigation } from "@react-navigation/native";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { ListItemWalletOverview, ListHeader } from "~components/ListItem";
+import { ListHeader, ListItemWalletOverview } from "~components/ListItem";
 import {
   RoundedContainerGroup,
   Screen,
-  ScreenLoading,
   ScreenError,
+  ScreenLoading,
 } from "~components/index";
 import { useWallets } from "~hooks/wallets";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
@@ -46,7 +46,6 @@ function ListItemData({ wallet, onPress }: { wallet: Wallet }): JSX.Element {
   });
 
   const balance = data.wallet.balances?.aggregate.value?.toFixed(2) ?? "0.00";
-  console.log("debug2:wallet", wallet);
 
   return (
     <ListItemWalletOverview
@@ -83,7 +82,7 @@ function WalletList() {
   const handlePressWallet = useCallback(
     async (w: Wallet) => {
       onSelectWallet(w, console.log);
-      navigation.navigate("TopTabsWalletDetail", {
+      navigation.push("TopTabsWalletDetail", {
         screen: "TokenList",
         params: {
           publicKey: w.publicKey.toString(),
@@ -91,7 +90,7 @@ function WalletList() {
         },
       });
     },
-    [navigation, onSelectWallet]
+    [navigation, onSelectWallet],
   );
 
   const keyExtractor = (wallet: Wallet) => wallet.publicKey.toString();
@@ -108,7 +107,7 @@ function WalletList() {
         </RoundedContainerGroup>
       );
     },
-    [handlePressWallet, allWallets.length]
+    [handlePressWallet, allWallets.length],
   );
 
   return (
