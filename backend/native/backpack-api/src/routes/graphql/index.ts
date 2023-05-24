@@ -12,6 +12,7 @@ import {
   jsonObjectScalar,
   notificationTypeResolvers,
   sendFriendRequestMutationResolver,
+  tokenListQueryResolver,
   userQueryResolver,
   userTypeResolvers,
   walletQueryResolver,
@@ -34,6 +35,7 @@ const mutationResolvers: MutationResolvers = {
  * Root `Query` object resolver.
  */
 const queryResolvers: QueryResolvers = {
+  tokenList: tokenListQueryResolver,
   user: userQueryResolver,
   wallet: walletQueryResolver,
 };
