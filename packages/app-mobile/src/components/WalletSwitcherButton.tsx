@@ -40,13 +40,14 @@ function WalletListPicker({ navigation }) {
         params: [pk, b],
       });
       setLoadingId(null);
+      dismiss();
     },
-    [background],
+    [background, dismiss]
   );
 
   const handlePressEdit = (
     blockchain: Blockchain,
-    { name, publicKey, type }: Wallet,
+    { name, publicKey, type }: Wallet
   ) => {
     dismiss();
     navigation.push("AccountSettings", {
@@ -63,7 +64,7 @@ function WalletListPicker({ navigation }) {
   const renderItem = useCallback(
     ({ item }) => {
       const isPrimary = !!primaryWallets.find(
-        (x) => x.publicKey === item.publicKey,
+        (x) => x.publicKey === item.publicKey
       );
 
       return (
@@ -88,7 +89,7 @@ function WalletListPicker({ navigation }) {
       primaryWallets,
       handlePressSelect,
       handlePressEdit,
-    ],
+    ]
   );
 
   return (
@@ -108,7 +109,7 @@ function WalletListPicker({ navigation }) {
 }
 
 const BlueLinkButton = ({ onPress, label }): JSX.Element => (
-  <Pressable style={{ padding: 8 }} onPress={onPress}>
+  <Pressable style={{ padding: 12 }} onPress={onPress}>
     <StyledText alignSelf="center" fontSize="$lg" color="$accentBlue">
       {label}
     </StyledText>

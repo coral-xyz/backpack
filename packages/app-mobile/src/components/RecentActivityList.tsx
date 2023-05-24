@@ -114,7 +114,7 @@ export function _RecentActivityList({
     <SectionList
       sections={sections}
       keyExtractor={keyExtractor}
-      contentContainerStyle={{ flex: 1 }}
+      contentContainerStyle={{ flex: sections.length > 0 ? undefined : 1 }}
       renderItem={renderItem}
       scrollEnabled={sections.length > 0}
       renderSectionHeader={renderSectionHeader}

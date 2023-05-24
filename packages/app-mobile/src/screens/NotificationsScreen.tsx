@@ -141,7 +141,7 @@ function NotificationList({
   return (
     <SectionList
       sections={sections}
-      contentContainerStyle={{ flex: 1 }}
+      contentContainerStyle={{ flex: sections.length > 0 ? undefined : 1 }}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
       renderSectionHeader={renderSectionHeader}
