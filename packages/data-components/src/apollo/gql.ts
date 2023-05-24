@@ -21,7 +21,7 @@ const documents = {
     types.GetNotificationsDocument,
   "\n  query GetTokenListEntryLogo($chainId: ChainID!, $filters: TokenListEntryFiltersInput) {\n    tokenList(chainId: $chainId, filters: $filters) {\n      id\n      logo\n    }\n  }\n":
     types.GetTokenListEntryLogoDocument,
-  "\n  query GetTransactions($address: String!, $filters: TransactionFiltersInput) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        chainId\n        transactions(filters: $filters) {\n          edges {\n            node {\n              id\n              description\n              fee\n              feePayer\n              error\n              hash\n              source\n              timestamp\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n":
+  "\n  query GetTransactions($address: String!, $filters: TransactionFiltersInput) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        chainId\n        transactions(filters: $filters) {\n          edges {\n            node {\n              id\n              description\n              fee\n              feePayer\n              error\n              hash\n              nfts\n              source\n              timestamp\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n":
     types.GetTransactionsDocument,
 };
 
@@ -67,8 +67,8 @@ export function gql(
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: "\n  query GetTransactions($address: String!, $filters: TransactionFiltersInput) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        chainId\n        transactions(filters: $filters) {\n          edges {\n            node {\n              id\n              description\n              fee\n              feePayer\n              error\n              hash\n              source\n              timestamp\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n"
-): (typeof documents)["\n  query GetTransactions($address: String!, $filters: TransactionFiltersInput) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        chainId\n        transactions(filters: $filters) {\n          edges {\n            node {\n              id\n              description\n              fee\n              feePayer\n              error\n              hash\n              source\n              timestamp\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n"];
+  source: "\n  query GetTransactions($address: String!, $filters: TransactionFiltersInput) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        chainId\n        transactions(filters: $filters) {\n          edges {\n            node {\n              id\n              description\n              fee\n              feePayer\n              error\n              hash\n              nfts\n              source\n              timestamp\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n"
+): (typeof documents)["\n  query GetTransactions($address: String!, $filters: TransactionFiltersInput) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        chainId\n        transactions(filters: $filters) {\n          edges {\n            node {\n              id\n              description\n              fee\n              feePayer\n              error\n              hash\n              nfts\n              source\n              timestamp\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

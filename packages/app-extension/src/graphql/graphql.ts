@@ -416,7 +416,7 @@ export type TokenListEntryFiltersInput = {
   /** The market listing name of the token. */
   name?: InputMaybe<Scalars["String"]>;
   /** The market listing symbol of the token. */
-  symbol?: InputMaybe<Scalars["String"]>;
+  symbols?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 /** Generic on-chain transaction details structure. */
@@ -436,6 +436,8 @@ export type Transaction = Node & {
   hash: Scalars["String"];
   /** Globally unique identifier for a single transaction. */
   id: Scalars["ID"];
+  /** A list of NFT mints or contract + token IDs associated with the transaction. */
+  nfts?: Maybe<Array<Maybe<Scalars["String"]>>>;
   /** The raw JSON data received from the index API response for the item. */
   raw: Scalars["JSONObject"];
   /** The source or program that is associated with the transaction. */

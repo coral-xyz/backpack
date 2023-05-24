@@ -24,6 +24,7 @@ const GET_TRANSACTIONS = gql(`
               feePayer
               error
               hash
+              nfts
               source
               timestamp
               type

@@ -6,6 +6,7 @@ import { snakeToTitleCase } from "../../utils";
 
 import {
   TransactionListItemIconBurn,
+  TransactionListItemIconNft,
   TransactionListItemIconSwap,
   TransactionListItemIconTransfer,
 } from "./TransactionListItemIcon";
@@ -38,19 +39,19 @@ export function parseTransaction(
     }
 
     case TransactionType.NFT_LISTING: {
-      return _parseNftListingDescription(desc);
+      return _parseNftListingDescription(transaction, desc);
     }
 
     case TransactionType.NFT_CANCEL_LISTING: {
-      return _parseNftListingCanceledDescription(desc);
+      return _parseNftListingCanceledDescription(transaction, desc);
     }
 
     case TransactionType.NFT_MINT: {
-      return _parseNftMintDescription(desc);
+      return _parseNftMintDescription(transaction, desc);
     }
 
     case TransactionType.NFT_SALE: {
-      return _parseNftSaleDescription(activeWallet, desc);
+      return _parseNftSaleDescription(activeWallet, transaction, desc);
     }
 
     case TransactionType.SWAP: {
@@ -94,11 +95,13 @@ function _parseNftBurnDescription(
 
 /**
  * Parses the description string for an NFT listing cancellation transaction.
+ * @param {Partial<Transaction>} transaction
  * @param {string} description
  * @returns {(ParseTransactionDetails | null)}
  * @example "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz cancelled 80 SOL listing for Mad Lads #2699 on TENSOR"
  */
 function _parseNftListingCanceledDescription(
+  transaction: Partial<Transaction>,
   description: string
 ): ParseTransactionDetails | null {
   try {
@@ -107,9 +110,15 @@ function _parseNftListingCanceledDescription(
     const [item, source] = itemOther.split(" on ");
     return {
       tl: item,
-      tr: amount,
+      tr: _truncateAmount(amount),
       bl: `Canceled listing on ${snakeToTitleCase(source)}`,
-    }; // TODO: add image icon
+      icon: (
+        <TransactionListItemIconNft
+          mint={transaction.nfts?.[0] ?? undefined}
+          size={44}
+        />
+      ),
+    };
   } catch {
     return null;
   }
@@ -117,11 +126,13 @@ function _parseNftListingCanceledDescription(
 
 /**
  * Parses the description string for an NFT listing transaction.
+ * @param {Partial<Transaction>} transaction
  * @param {string} description
  * @returns {(ParseTransactionDetails | null)}
  * @example "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz listed Mad Lad #8811 for 131 SOL on MAGIC_EDEN."
  */
 function _parseNftListingDescription(
+  transaction: Partial<Transaction>,
   description: string
 ): ParseTransactionDetails | null {
   try {
@@ -130,9 +141,15 @@ function _parseNftListingDescription(
     const [amount, source] = other.split(" on ");
     return {
       tl: item,
-      tr: amount,
+      tr: _truncateAmount(amount),
       bl: `Listed on ${snakeToTitleCase(source)}`,
-    }; // TODO: add image icon
+      icon: (
+        <TransactionListItemIconNft
+          mint={transaction.nfts?.[0] ?? undefined}
+          size={44}
+        />
+      ),
+    };
   } catch {
     return null;
   }
@@ -140,11 +157,13 @@ function _parseNftListingDescription(
 
 /**
  * Parses the description string for an NFT mint transaction.
+ * @param {Partial<Transaction>} transaction
  * @param {string} description
  * @returns {(ParseTransactionDetails | null)}
  * @example "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz minted Mad Lads #6477 for 6.9114946 SOL on CANDY_MACHINE_V3"
  */
 function _parseNftMintDescription(
+  transaction: Partial<Transaction>,
   description: string
 ): ParseTransactionDetails | null {
   try {
@@ -153,9 +172,15 @@ function _parseNftMintDescription(
     const [amount, source] = amountOther.split(" on ");
     return {
       tl: item,
-      tr: `-${amount}`,
+      tr: `-${_truncateAmount(amount)}`,
       bl: `Minted on ${snakeToTitleCase(source)}`,
-    }; // TODO: add image icon
+      icon: (
+        <TransactionListItemIconNft
+          mint={transaction.nfts?.[0] ?? undefined}
+          size={44}
+        />
+      ),
+    };
   } catch {
     return null;
   }
@@ -164,12 +189,14 @@ function _parseNftMintDescription(
 /**
  * Parses the description string for an NFT sale transaction.
  * @param {string} activeWallet
+ * @param {Partial<Transaction>} transaction
  * @param {string} description
  * @returns {(ParseTransactionDetails | null)}
  * @example "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz sold Mad Lad #3150 to 69X4Un6qqC8QBeBKk6zrqUVKGccnWqgUkwdLcC7wiLFB for 131 SOL on MAGIC_EDEN"
  */
 function _parseNftSaleDescription(
   activeWallet: string,
+  transaction: Partial<Transaction>,
   description: string
 ): ParseTransactionDetails | null {
   try {
@@ -179,11 +206,17 @@ function _parseNftSaleDescription(
     const [amount, source] = amountOther.split(" on ");
     return {
       tl: item,
-      tr: amount,
+      tr: _truncateAmount(amount),
       bl: `${activeWallet === seller ? "Sold" : "Bought"} on ${snakeToTitleCase(
         source
       )}`,
-    }; // TODO: add image icon
+      icon: (
+        <TransactionListItemIconNft
+          mint={transaction.nfts?.[0] ?? undefined}
+          size={44}
+        />
+      ),
+    };
   } catch (err) {
     return null;
   }
@@ -200,12 +233,11 @@ function _parseSwapDescription(
 ): ParseTransactionDetails | null {
   try {
     const items = description.split("swapped ")[1].split(" for ");
-
     const entries = items.map((i) => i.split(" ")) as [string, string][];
     return {
       tl: `${entries[0][1]} -> ${entries[1][1]}`,
-      tr: `+${items[1]}`,
-      br: `-${items[0]}`,
+      tr: `+${_truncateAmount(items[1])}`,
+      br: `-${_truncateAmount(items[0])}`,
       icon: (
         <TransactionListItemIconSwap
           size={44}
@@ -235,7 +267,7 @@ function _parseTransferDescription(
     const action = sender === activeWallet ? "Sent" : "Received";
     return {
       tl: action,
-      tr: `${action === "Sent" ? "-" : "+"}${amount}`,
+      tr: `${action === "Sent" ? "-" : "+"}${_truncateAmount(amount)}`,
       bl:
         action === "Sent"
           ? `To: ${walletAddressDisplay(to)}`
@@ -265,4 +297,26 @@ function _parseUpgradeProgramTransaction(
     tr: "",
     bl: transaction.source ? snakeToTitleCase(transaction.source) : undefined,
   };
+}
+
+/**
+ * Parse out the float amount of tokens and truncate to the argued decimals.
+ * @param {string} val
+ * @param {number} [decimals]
+ * @returns {string}
+ */
+function _truncateAmount(val: string, decimals?: number): string {
+  try {
+    const [numStr, ...others] = val.split(" ");
+    if (!numStr.includes(".")) {
+      return val;
+    }
+
+    const num = parseFloat(numStr);
+    return `${num.toFixed(decimals ?? 5).replace(/0+$/, "")} ${others.join(
+      " "
+    )}`;
+  } catch {
+    return val;
+  }
 }

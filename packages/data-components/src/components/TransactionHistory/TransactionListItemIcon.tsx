@@ -1,19 +1,12 @@
-import { View, type ViewStyle } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useSuspenseQuery_experimental } from "@apollo/client";
+import { UNKNOWN_NFT_ICON_SRC } from "@coral-xyz/common";
 import { UNKNOWN_ICON_SRC, useActiveWallet } from "@coral-xyz/recoil";
 import type { SizeTokens } from "@coral-xyz/tamagui";
 import { ListItemIconCore, TamaguiIcons } from "@coral-xyz/tamagui";
 
 import { gql } from "../../apollo";
 import type { ChainId } from "../../apollo/graphql";
-
-const wrapperStyles = (size: SizeTokens): ViewStyle => ({
-  height: size,
-  width: size,
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-});
 
 const GET_TOKEN_LOGO = gql(`
   query GetTokenListEntryLogo($chainId: ChainID!, $filters: TokenListEntryFiltersInput) {
@@ -24,6 +17,19 @@ const GET_TOKEN_LOGO = gql(`
   }
 `);
 
+const styles = StyleSheet.create({
+  lucideContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  swapContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+});
+
 export type TransactionListItemIconTypeProps = {
   size: SizeTokens;
 };
@@ -31,7 +37,7 @@ export type TransactionListItemIconTypeProps = {
 export const TransactionListItemIconBurn = ({
   size,
 }: TransactionListItemIconTypeProps) => (
-  <View style={wrapperStyles(size)}>
+  <View style={[styles.lucideContainer, { height: size, width: size }]}>
     <TamaguiIcons.Flame color="$negative" />
   </View>
 );
@@ -39,7 +45,7 @@ export const TransactionListItemIconBurn = ({
 export const TransactionListItemIconDefault = ({
   size,
 }: TransactionListItemIconTypeProps) => (
-  <View style={wrapperStyles(size)}>
+  <View style={[styles.lucideContainer, { height: size, width: size }]}>
     <TamaguiIcons.Check color="$positive" />
   </View>
 );
@@ -47,17 +53,24 @@ export const TransactionListItemIconDefault = ({
 export const TransactionListItemIconError = ({
   size,
 }: TransactionListItemIconTypeProps) => (
-  <View style={wrapperStyles(size)}>
+  <View style={[styles.lucideContainer, { height: size, width: size }]}>
     <TamaguiIcons.X color="$negative" />
   </View>
 );
 
-export const TransactionListItemIconReceived = ({
+export const TransactionListItemIconNft = ({
+  mint,
   size,
-}: TransactionListItemIconTypeProps) => (
-  <View style={wrapperStyles(size)}>
-    <TamaguiIcons.ArrowDown color="$secondary" />
-  </View>
+}: TransactionListItemIconTypeProps & { mint?: string }) => (
+  <ListItemIconCore
+    image={
+      mint
+        ? `https://swr.xnfts.dev/nft-data/metaplex-nft/${mint}/image`
+        : UNKNOWN_NFT_ICON_SRC
+    }
+    radius={8}
+    size={size}
+  />
 );
 
 export const TransactionListItemIconSwap = ({
@@ -76,9 +89,7 @@ export const TransactionListItemIconSwap = ({
   });
 
   return (
-    <View
-      style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
-    >
+    <View style={styles.swapContainer}>
       <ListItemIconCore
         style={{ marginRight: 10, marginBottom: 15 }}
         radius={12}
@@ -110,12 +121,10 @@ export const TransactionListItemIconTransfer = ({
   });
 
   return (
-    <View style={wrapperStyles(size)}>
-      <ListItemIconCore
-        size={size}
-        radius={22}
-        image={data.tokenList[0]?.logo ?? UNKNOWN_ICON_SRC}
-      />
-    </View>
+    <ListItemIconCore
+      size={size}
+      radius={22}
+      image={data.tokenList[0]?.logo ?? UNKNOWN_ICON_SRC}
+    />
   );
 };

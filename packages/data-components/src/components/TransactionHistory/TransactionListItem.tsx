@@ -106,14 +106,9 @@ function _TransactionListItemEnriched({
 
   return details ? (
     <YStack display="flex" flex={1}>
-      <XStack
-        display="flex"
-        flex={1}
-        alignItems="center"
-        justifyContent="space-between"
-      >
+      <XStack display="flex" flex={1} justifyContent="space-between">
         <StyledText>{details.tl}</StyledText>
-        <StyledText fontSize="$sm" color={trColor}>
+        <StyledText flex={0} fontSize="$sm" color={trColor} textAlign="right">
           {details.tr}
         </StyledText>
       </XStack>
@@ -127,7 +122,7 @@ function _TransactionListItemEnriched({
           <StyledText color="$secondary" fontSize="$xs">
             {details.bl ?? ""}
           </StyledText>
-          <StyledText color={brColor} fontSize="$xs">
+          <StyledText flex={0} color={brColor} fontSize="$xs">
             {details.br ?? ""}
           </StyledText>
         </XStack>
