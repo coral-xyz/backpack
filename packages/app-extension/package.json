@@ -1,6 +1,6 @@
 {
   "name": "@coral-xyz/app-extension",
-  "version": "0.6.7",
+  "version": "0.6.8",
   "description": "A next level crypto wallet for Solana and Ethereum",
   "private": true,
   "dependencies": {
