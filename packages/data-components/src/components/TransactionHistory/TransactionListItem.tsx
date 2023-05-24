@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { type Blockchain, explorerUrl } from "@coral-xyz/common";
 import {
   getBlockchainLogo,
+  useActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
 } from "@coral-xyz/recoil";
@@ -33,6 +34,7 @@ export function TransactionListItem({
   onClick,
   transaction,
 }: TransactionListItemProps) {
+  const wallet = useActiveWallet();
   const connection = useBlockchainConnectionUrl(
     blockchain.toLowerCase() as Blockchain
   );
@@ -61,6 +63,7 @@ export function TransactionListItem({
    * display details and the list item icon component.
    */
   const details = parseTransactionDescription(
+    wallet.publicKey,
     transaction.description ?? "",
     transaction.type ?? ""
   );

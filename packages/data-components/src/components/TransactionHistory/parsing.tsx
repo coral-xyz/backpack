@@ -21,11 +21,13 @@ export type ParseTransactionDetails = {
  * Natural language/semantic parsing of a transaction description string
  * to pull out and aggregate key details that can be displayed to users.
  * @export
+ * @param {string} activeWallet
  * @param {string} description
  * @param {string} type
  * @returns {(ParseTransactionDetails | null)}
  */
 export function parseTransactionDescription(
+  activeWallet: string,
   description: string,
   type: string
 ): ParseTransactionDetails | null {
@@ -36,7 +38,7 @@ export function parseTransactionDescription(
     }
 
     case TransactionType.TRANSFER: {
-      return _parseTransferDescription(desc);
+      return _parseTransferDescription(activeWallet, desc);
     }
 
     case TransactionType.NFT_LISTING: {
@@ -112,10 +114,7 @@ function _parseSwapDescription(
   description: string
 ): ParseTransactionDetails | null {
   try {
-    const items = description
-      .replace("USD Coin", "USDC")
-      .split("swapped ")[1]
-      .split(" for ");
+    const items = description.split("swapped ")[1].split(" for ");
 
     const entries = items.map((i) => i.split(" ")) as [string, string][];
     return {
@@ -136,22 +135,26 @@ function _parseSwapDescription(
 
 /**
  * Parses the description string for a transfer transaction.
+ * @param {string} activeWallet
  * @param {string} description
  * @returns {(ParseTransactionDetails | null)}
  * @example "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz transferred 0.1 SOL to 47iecF4gWQYrGMLh9gM3iuQFgb1581gThgfRw69S55T8"
  */
 function _parseTransferDescription(
+  activeWallet: string,
   description: string
 ): ParseTransactionDetails | null {
+  console.log(description);
   try {
-    const base = description
-      .replace("USD Coin", "USDC")
-      .split("transferred ")[1];
+    const [sender, base] = description.split(" transferred ");
 
     const [amount, to] = base.split(" to ");
-    const action = "Sent"; // FIXME: sent or received?
+    const action = sender === activeWallet ? "Sent" : "Received";
     return {
-      bl: `To: ${walletAddressDisplay(to)}`, // FIXME: to or from?
+      bl:
+        action === "Sent"
+          ? `To: ${walletAddressDisplay(to)}`
+          : `From: ${walletAddressDisplay(sender)}`,
       tl: action,
       tr: `${action === "Sent" ? "-" : "+"}${amount}`,
       icon: (

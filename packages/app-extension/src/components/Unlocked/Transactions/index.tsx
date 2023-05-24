@@ -66,7 +66,12 @@ export function TransactionsButton() {
 }
 
 export const Transactions = () => (
-  <TransactionHistory loaderComponent={<TransactionsLoader />} />
+  <TransactionHistory
+    loaderComponent={<TransactionsLoader />}
+    onItemClick={(_tx, explorer) => {
+      window.open(explorer);
+    }}
+  />
 );
 
 function TransactionsLoader() {
