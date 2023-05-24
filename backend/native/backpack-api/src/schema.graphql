@@ -168,7 +168,7 @@ input TokenListEntryFiltersInput {
   """
   The market listing symbol of the token.
   """
-  symbol: String
+  symbols: [String!]
 }
 
 """
@@ -761,6 +761,11 @@ type Transaction implements Node {
   The transaction hash or signature.
   """
   hash: String!
+
+  """
+  A list of NFT mints or contract + token IDs associated with the transaction.
+  """
+  nfts: [String]
 
   """
   The raw JSON data received from the index API response for the item.

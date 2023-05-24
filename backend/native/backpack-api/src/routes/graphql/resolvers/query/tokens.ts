@@ -33,21 +33,24 @@ export const tokenListQueryResolver: QueryResolvers["tokenList"] = async (
     }));
   }
 
-  let item: Omit<TokenListEntry, "id"> | undefined = undefined;
+  let items: Omit<TokenListEntry, "id">[] = [];
   if (filters.address) {
-    item = list[filters.address];
+    items = [list[filters.address]];
   } else if (filters.name) {
-    item = Object.values(list).find((entry) => entry.name === filters.name);
-  } else if (filters.symbol) {
-    item = Object.values(list).find((entry) => entry.symbol === filters.symbol);
+    const finds = Object.values(list).find(
+      (entry) => entry.name === filters.name
+    );
+    if (finds) {
+      items = [finds];
+    }
+  } else if (filters.symbols) {
+    items = Object.values(list).filter((entry) =>
+      filters.symbols!.includes(entry.symbol)
+    );
   }
 
-  return item
-    ? [
-        {
-          id: `token_list_entry:${item.address}`,
-          ...item,
-        },
-      ]
-    : [];
+  return items.map((i) => ({
+    id: `token_list_entry:${i.address}`,
+    ...i,
+  }));
 };
