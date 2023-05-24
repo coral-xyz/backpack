@@ -36,8 +36,10 @@ export function snakeToTitleCase(input: string): string {
     p.length === 1 ? p : `${p[0].toUpperCase()}${p.slice(1)}`
   );
 
-  if (titleCasesParts[0] === "Nft") {
-    titleCasesParts[0] = titleCasesParts[0].toUpperCase();
+  for (let i = 0; i < titleCasesParts.length; i++) {
+    if (["Bpf", "Nft"].includes(titleCasesParts[i])) {
+      titleCasesParts[i] = titleCasesParts[i].toUpperCase();
+    }
   }
 
   return titleCasesParts.join(" ");

@@ -1,10 +1,11 @@
 import { walletAddressDisplay } from "@coral-xyz/common";
 import { TransactionType } from "helius-sdk";
 
+import type { Transaction } from "../../apollo/graphql";
 import { snakeToTitleCase } from "../../utils";
 
 import {
-  TransactionListItemIconDefault,
+  TransactionListItemIconBurn,
   TransactionListItemIconSwap,
   TransactionListItemIconTransfer,
 } from "./TransactionListItemIcon";
@@ -14,7 +15,7 @@ export type ParseTransactionDetails = {
   bl?: string;
   tl: string;
   tr: string;
-  icon: JSX.Element;
+  icon?: JSX.Element;
 };
 
 /**
@@ -22,17 +23,36 @@ export type ParseTransactionDetails = {
  * to pull out and aggregate key details that can be displayed to users.
  * @export
  * @param {string} activeWallet
- * @param {string} description
- * @param {string} type
+ * @param {Partial<Transaction>} transaction
  * @returns {(ParseTransactionDetails | null)}
  */
-export function parseTransactionDescription(
+export function parseTransaction(
   activeWallet: string,
-  description: string,
-  type: string
+  transaction: Partial<Transaction>
 ): ParseTransactionDetails | null {
-  const desc = description.replace(/\.$/, "");
-  switch (type) {
+  const desc = transaction.description?.replace(/\.$/, "") ?? "";
+  switch (transaction.type) {
+    case TransactionType.BURN:
+    case TransactionType.BURN_NFT: {
+      return _parseNftBurnDescription(desc);
+    }
+
+    case TransactionType.NFT_LISTING: {
+      return _parseNftListingDescription(desc);
+    }
+
+    case TransactionType.NFT_CANCEL_LISTING: {
+      return _parseNftListingCanceledDescription(desc);
+    }
+
+    case TransactionType.NFT_MINT: {
+      return _parseNftMintDescription(desc);
+    }
+
+    case TransactionType.NFT_SALE: {
+      return _parseNftSaleDescription(activeWallet, desc);
+    }
+
     case TransactionType.SWAP: {
       return _parseSwapDescription(desc);
     }
@@ -41,17 +61,57 @@ export function parseTransactionDescription(
       return _parseTransferDescription(activeWallet, desc);
     }
 
-    case TransactionType.NFT_LISTING: {
-      return _parseNftListingDescription(desc);
-    }
-
-    case TransactionType.NFT_SALE: {
-      return _parseNftSoldDescription(desc);
+    case TransactionType.UPGRADE_PROGRAM_INSTRUCTION: {
+      return _parseUpgradeProgramTransaction(transaction);
     }
 
     default: {
       return null;
     }
+  }
+}
+
+/**
+ * Parses the description string for an NFT burn transaction.
+ * @param {string} description
+ * @returns {(ParseTransactionDetails | null)}
+ * @example "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz burned 1 Mad Lads Coin"
+ */
+function _parseNftBurnDescription(
+  description: string
+): ParseTransactionDetails | null {
+  try {
+    const item = description.split("burned ")[1];
+    return {
+      tl: "Burned",
+      tr: `-${item}`,
+      icon: <TransactionListItemIconBurn size={44} />,
+    }; // TODO: add image icon (maybe?)
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Parses the description string for an NFT listing cancellation transaction.
+ * @param {string} description
+ * @returns {(ParseTransactionDetails | null)}
+ * @example "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz cancelled 80 SOL listing for Mad Lads #2699 on TENSOR"
+ */
+function _parseNftListingCanceledDescription(
+  description: string
+): ParseTransactionDetails | null {
+  try {
+    const base = description.split("cancelled ")[1];
+    const [amount, itemOther] = base.split(" listing for ");
+    const [item, source] = itemOther.split(" on ");
+    return {
+      tl: item,
+      tr: amount,
+      bl: `Canceled listing on ${snakeToTitleCase(source)}`,
+    }; // TODO: add image icon
+  } catch {
+    return null;
   }
 }
 
@@ -69,11 +129,33 @@ function _parseNftListingDescription(
     const [item, other] = base.split(" for ");
     const [amount, source] = other.split(" on ");
     return {
-      bl: `Listed on ${snakeToTitleCase(source)}`,
       tl: item,
       tr: amount,
-      icon: <TransactionListItemIconDefault size={44} />,
-    };
+      bl: `Listed on ${snakeToTitleCase(source)}`,
+    }; // TODO: add image icon
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Parses the description string for an NFT mint transaction.
+ * @param {string} description
+ * @returns {(ParseTransactionDetails | null)}
+ * @example "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz minted Mad Lads #6477 for 6.9114946 SOL on CANDY_MACHINE_V3"
+ */
+function _parseNftMintDescription(
+  description: string
+): ParseTransactionDetails | null {
+  try {
+    const base = description.split("minted ")[1];
+    const [item, amountOther] = base.split(" for ");
+    const [amount, source] = amountOther.split(" on ");
+    return {
+      tl: item,
+      tr: `-${amount}`,
+      bl: `Minted on ${snakeToTitleCase(source)}`,
+    }; // TODO: add image icon
   } catch {
     return null;
   }
@@ -81,25 +163,28 @@ function _parseNftListingDescription(
 
 /**
  * Parses the description string for an NFT sale transaction.
+ * @param {string} activeWallet
  * @param {string} description
  * @returns {(ParseTransactionDetails | null)}
  * @example "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz sold Mad Lad #3150 to 69X4Un6qqC8QBeBKk6zrqUVKGccnWqgUkwdLcC7wiLFB for 131 SOL on MAGIC_EDEN"
  */
-function _parseNftSoldDescription(
+function _parseNftSaleDescription(
+  activeWallet: string,
   description: string
 ): ParseTransactionDetails | null {
   try {
-    const base = description.split("sold ")[1];
+    const [seller, base] = description.split(" sold ");
     const [item, recipientOther] = base.split(" to ");
-    const [_, amountOther] = recipientOther.split(" for "); // FIXME: use recipient address
+    const [_, amountOther] = recipientOther.split(" for ");
     const [amount, source] = amountOther.split(" on ");
     return {
-      bl: `Sold on ${snakeToTitleCase(source)}`,
       tl: item,
       tr: amount,
-      icon: <TransactionListItemIconDefault size={44} />,
-    };
-  } catch {
+      bl: `${activeWallet === seller ? "Sold" : "Bought"} on ${snakeToTitleCase(
+        source
+      )}`,
+    }; // TODO: add image icon
+  } catch (err) {
     return null;
   }
 }
@@ -118,9 +203,9 @@ function _parseSwapDescription(
 
     const entries = items.map((i) => i.split(" ")) as [string, string][];
     return {
-      br: `-${items[0]}`,
       tl: `${entries[0][1]} -> ${entries[1][1]}`,
       tr: `+${items[1]}`,
+      br: `-${items[0]}`,
       icon: (
         <TransactionListItemIconSwap
           size={44}
@@ -144,19 +229,17 @@ function _parseTransferDescription(
   activeWallet: string,
   description: string
 ): ParseTransactionDetails | null {
-  console.log(description);
   try {
     const [sender, base] = description.split(" transferred ");
-
     const [amount, to] = base.split(" to ");
     const action = sender === activeWallet ? "Sent" : "Received";
     return {
+      tl: action,
+      tr: `${action === "Sent" ? "-" : "+"}${amount}`,
       bl:
         action === "Sent"
           ? `To: ${walletAddressDisplay(to)}`
           : `From: ${walletAddressDisplay(sender)}`,
-      tl: action,
-      tr: `${action === "Sent" ? "-" : "+"}${amount}`,
       icon: (
         <TransactionListItemIconTransfer
           size={44}
@@ -167,4 +250,19 @@ function _parseTransferDescription(
   } catch {
     return null;
   }
+}
+
+/**
+ * Parses a transaction object for details about a program upgrade.
+ * @param {Partial<Transaction>} transaction
+ * @returns {ParseTransactionDetails}
+ */
+function _parseUpgradeProgramTransaction(
+  transaction: Partial<Transaction>
+): ParseTransactionDetails {
+  return {
+    tl: "Program Upgrade",
+    tr: "",
+    bl: transaction.source ? snakeToTitleCase(transaction.source) : undefined,
+  };
 }

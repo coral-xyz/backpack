@@ -17,11 +17,11 @@ import {
 
 import type { ChainId, Transaction } from "../../apollo/graphql";
 
+import { parseTransaction, type ParseTransactionDetails } from "./parsing";
 import {
-  parseTransactionDescription,
-  type ParseTransactionDetails,
-} from "./parsing";
-import { TransactionListItemIconDefault } from "./TransactionListItemIcon";
+  TransactionListItemIconDefault,
+  TransactionListItemIconError,
+} from "./TransactionListItemIcon";
 
 export type TransactionListItemProps = {
   blockchain: ChainId;
@@ -62,16 +62,18 @@ export function TransactionListItem({
    * The parsed transaction type and description to provide the list item
    * display details and the list item icon component.
    */
-  const details = parseTransactionDescription(
-    wallet.publicKey,
-    transaction.description ?? "",
-    transaction.type ?? ""
+  const details = parseTransaction(wallet.publicKey, transaction);
+
+  const icon = transaction.error ? (
+    <TransactionListItemIconError size={44} />
+  ) : (
+    details?.icon ?? <TransactionListItemIconDefault size={44} />
   );
 
   return (
     <ListItemCore
       style={{ backgroundColor: "$nav", cursor: "pointer", hoverTheme: true }}
-      icon={details?.icon ?? <TransactionListItemIconDefault size={44} />}
+      icon={icon}
       onClick={handleClick}
     >
       <_TransactionListItemEnriched
