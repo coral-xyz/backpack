@@ -38,15 +38,16 @@ select_permissions:
   - role: auth_worker
     permission:
       columns:
+        - category_id
+        - created_at
         - data
+        - id
         - lookup_table_public_key
         - mint_public_key
         - public_key
-        - transaction_signature
-        - created_at
         - published_at
-        - category_id
-        - id
+        - secret
+        - transaction_signature
       filter: {}
 update_permissions:
   - role: auth_worker

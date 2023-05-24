@@ -1358,6 +1358,7 @@ export const AllTypesProps: Record<string, any> = {
     mint_public_key: "String_comparison_exp",
     public_key: "String_comparison_exp",
     published_at: "timestamptz_comparison_exp",
+    secret: "uuid_comparison_exp",
     swaps: "auth_swaps_bool_exp",
     transaction_signature: "String_comparison_exp",
   },
@@ -1383,6 +1384,7 @@ export const AllTypesProps: Record<string, any> = {
     mint_public_key: "order_by",
     public_key: "order_by",
     published_at: "order_by",
+    secret: "order_by",
     transaction_signature: "order_by",
   },
   dropzone_distributors_min_order_by: {
@@ -1393,6 +1395,7 @@ export const AllTypesProps: Record<string, any> = {
     mint_public_key: "order_by",
     public_key: "order_by",
     published_at: "order_by",
+    secret: "order_by",
     transaction_signature: "order_by",
   },
   dropzone_distributors_obj_rel_insert_input: {
@@ -1415,6 +1418,7 @@ export const AllTypesProps: Record<string, any> = {
     mint_public_key: "order_by",
     public_key: "order_by",
     published_at: "order_by",
+    secret: "order_by",
     swaps_aggregate: "auth_swaps_aggregate_order_by",
     transaction_signature: "order_by",
   },
@@ -1442,6 +1446,7 @@ export const AllTypesProps: Record<string, any> = {
     data: "jsonb",
     id: "uuid",
     published_at: "timestamptz",
+    secret: "uuid",
   },
   dropzone_distributors_update_column: "enum" as const,
   dropzone_distributors_updates: {
@@ -2842,6 +2847,7 @@ export const ReturnTypes: Record<string, any> = {
     mint_public_key: "String",
     public_key: "String",
     published_at: "timestamptz",
+    secret: "uuid",
     swaps: "auth_swaps",
     transaction_signature: "String",
   },

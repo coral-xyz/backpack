@@ -10,10 +10,15 @@ import { encode } from "bs58";
 import cors from "cors";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
+import { jwtVerify } from "jose";
 
 import { DROPZONE_PERMITTED_AUTHORITIES, HASURA_URL, JWT } from "../../config";
 
 const RPC_URL = "https://solana-rpc.xnfts.dev";
+const XNFT_PUBLIC_KEY =
+  process.env.NODE_ENV === "production"
+    ? "CVkbt7dscJdjAJFF2uKrtin6ve9M8DA4gsUccAjePUHH"
+    : "11111111111111111111111111111111";
 
 const router = express.Router();
 router.use(cors({ origin: "*" }));
@@ -287,13 +292,11 @@ router.post("/drops", async (req, res, next) => {
     // https://gist.github.com/wentokay/fc0f6891bab6404ad0bcea7761696dd7
     const r = await fetch(HASURA_URL, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${JWT}`,
-      },
+      headers: { Authorization: `Bearer ${JWT}` },
       body: JSON.stringify({
         query: `
           mutation createDropzoneDistributor($object:dropzone_distributors_insert_input!) {
-            insert_dropzone_distributors_one(object: $object) { id }
+            insert_dropzone_distributors_one(object: $object) { id secret }
           }`,
         variables: {
           object: {
@@ -333,6 +336,7 @@ router.post("/drops", async (req, res, next) => {
       msg: encode(tx.serialize({ requireAllSignatures: false })),
       ata: pendingDistributor.distributorATA.toBase58(),
       distributor: pendingDistributor.distributor.toBase58(),
+      secret: insert_dropzone_distributors_one.secret,
     };
 
     res.status(201).json(responseObject);
@@ -341,7 +345,42 @@ router.post("/drops", async (req, res, next) => {
   }
 });
 
-// TODO: 64399c3f285b5d1bbd769c158ba25379 & ee576fdf577c8ba8574788790edb11ac
+/**
+ * PATCH /drops/:id
+ * update drop
+ */
+router.patch("/drops/:id", async (req, res, next) => {
+  try {
+    await chain("mutation")(
+      {
+        update_dropzone_distributors: [
+          {
+            where: {
+              public_key: { _eq: req.params.id },
+              secret: { _eq: getBearerToken(req) },
+            },
+            _set: {
+              lookup_table_public_key: req.body.lookup_table_public_key,
+              published_at:
+                req.body.published_at || req.body.published_at === null
+                  ? req.body.published_at
+                  : undefined,
+            },
+          },
+          { affected_rows: true },
+        ],
+      },
+      {
+        operationName: "updateDropzoneDistributor",
+      }
+    );
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// TODO: ee576fdf577c8ba8574788790edb11ac
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 router.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
@@ -358,11 +397,11 @@ const chain = Chain(HASURA_URL, {
   },
 });
 
-const getDropzoneClaimsByClaimant = async (
+const getDropzoneClaimsByClaimant = (
   public_key: PublicKeyString,
   ids = undefined
-) => {
-  return await chain("query")(
+) =>
+  chain("query")(
     {
       auth_users: [
         {
@@ -415,7 +454,6 @@ const getDropzoneClaimsByClaimant = async (
       operationName: "getDropzoneClaimsByClaimant",
     }
   );
-};
 
 const createProvider = (publicKey = PublicKey.unique()) =>
   SolanaProvider.init({
@@ -499,7 +537,51 @@ async function extractClaimantPublicKey(
       req.query.public_key as PublicKeyString
     ).toString();
 
-    // TODO: b66809e7a708d43f751a75bcdbb55b77
+    const {
+      auth_xnft_secrets: [{ secret }],
+    } = await chain("query")(
+      {
+        auth_xnft_secrets: [
+          {
+            where: { xnft_id: { _eq: XNFT_PUBLIC_KEY } },
+            limit: 1,
+          },
+          { secret: true },
+        ],
+      },
+      { operationName: "getXnftSecret" }
+    );
+
+    const userId = await (async () => {
+      try {
+        const jwt = getBearerToken(req);
+        const {
+          payload: { uuid },
+        } = await jwtVerify(jwt, new TextEncoder().encode(secret));
+        return uuid;
+      } catch (err) {
+        throw new Error("Invalid or missing JWT");
+      }
+    })();
+
+    const { auth_public_keys } = await chain("query")(
+      {
+        auth_public_keys: [
+          {
+            where: {
+              user_id: { _eq: userId },
+              blockchain: { _eq: "solana" },
+              is_primary: { _eq: true },
+              public_key: { _eq: publicKey },
+            },
+            limit: 1,
+          },
+          { user_id: true },
+        ],
+      },
+      { operationName: "getPrimaryPublicKeyForUser" }
+    );
+    if (auth_public_keys.length !== 1) throw new Error("Invalid public key");
 
     res.locals.claimantPublicKey = publicKey;
   } catch (err) {
@@ -512,3 +594,6 @@ const chunk = <T>(arr: T[], size: number): T[][] =>
   [...Array(Math.ceil(arr.length / size))].map((_, i) =>
     arr.slice(size * i, size + size * i)
   );
+
+const getBearerToken = (req: Request) =>
+  String(req.headers.authorization?.replace("Bearer ", ""));
