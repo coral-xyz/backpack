@@ -61,7 +61,7 @@ type Query {
   tokenList(
     chainId: ChainID!
     filters: TokenListEntryFiltersInput
-  ): [TokenListEntry]!
+  ): [TokenListEntry]! @cacheControl(maxAge: 600)
 
   """
   Fetch a user by their Backpack account username. The username is inferred by the
@@ -776,11 +776,6 @@ type Transaction implements Node {
   The timestamp of the execution or commitment of the transaction.
   """
   timestamp: String
-
-  """
-  Token metadata for any tokens involved in the transaction.
-  """
-  tokens: [TokenListEntry!]
 
   """
   The category or type of transaction.

@@ -448,8 +448,6 @@ export type Transaction = Node & {
   source?: Maybe<Scalars["String"]>;
   /** The timestamp of the execution or commitment of the transaction. */
   timestamp?: Maybe<Scalars["String"]>;
-  /** Token metadata for any tokens involved in the transaction. */
-  tokens?: Maybe<Array<TokenListEntry>>;
   /** The category or type of transaction. */
   type: Scalars["String"];
 };
@@ -1233,11 +1231,6 @@ export type TransactionResolvers<
   source?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   timestamp?: Resolver<
     Maybe<ResolversTypes["String"]>,
-    ParentType,
-    ContextType
-  >;
-  tokens?: Resolver<
-    Maybe<Array<ResolversTypes["TokenListEntry"]>>,
     ParentType,
     ContextType
   >;
