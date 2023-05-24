@@ -259,12 +259,21 @@ export class Ethereum implements Blockchain {
       .sort((a, b) => Number(b.blockNum) - Number(a.blockNum));
 
     const nodes: Transaction[] = combined.map((tx) => {
+      const nfts = tx.erc721TokenId
+        ? [`${tx.rawContract.address}/${tx.erc721TokenId}`]
+        : tx.erc1155Metadata && tx.erc1155Metadata.length > 0
+        ? tx.erc1155Metadata.map(
+            (t) => `${tx.rawContract.address}/${t.tokenId}`
+          )
+        : undefined;
+
       return {
         id: `${this.id()}_transaction:${tx.uniqueId}`,
         block: Number(tx.blockNum),
         fee: undefined, // FIXME: find gas amount paid for processing
         feePayer: tx.from,
         hash: tx.hash,
+        nfts,
         raw: tx,
         timestamp: (tx as any).metadata?.blockTimestamp || undefined,
         type: tx.category,

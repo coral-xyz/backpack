@@ -341,6 +341,11 @@ export class Solana implements Blockchain {
           : (r.transactionError as any).error
         : undefined;
 
+      const nfts =
+        r.events?.nft?.nfts && r.events.nft?.nfts.length > 0
+          ? r.events.nft.nfts.map((n) => n.mint)
+          : undefined;
+
       return {
         id: `${this.id()}_transaction:${r.signature}`,
         description: r.description,
@@ -349,6 +354,7 @@ export class Solana implements Blockchain {
         fee: r.fee,
         feePayer: r.feePayer,
         hash: r.signature,
+        nfts,
         raw: r,
         source: r.source,
         timestamp: new Date(r.timestamp * 1000).toISOString(),
