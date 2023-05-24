@@ -39,7 +39,7 @@ export default function Downloads() {
   return (
     <div className="text-[#F0F0F2]">
       <div className="mb-16 mt-[-25px] text-center">
-        <h1 className="text-6xl font-extrabold text-white">Downloads</h1>
+        <h1 className="text-6xl font-extrabold text-white">Download</h1>
       </div>
       <div className="flex w-full flex-col items-center justify-center gap-14 md:flex-row md:items-start">
         <div className="flex flex-col gap-6">
