@@ -134,8 +134,8 @@ function BackgroundHiddenWebView(): JSX.Element {
     <View style={styles.webview}>
       <WebView
         ref={ref}
-        cacheMode="LOAD_CACHE_ELSE_NETWORK"
-        cacheEnabled
+        // cacheMode="LOAD_CACHE_ELSE_NETWORK"
+        // cacheEnabled
         limitsNavigationsToAppBoundDomains
         source={{ uri: webviewUrl }}
         onError={(error) => console.log("WebView error:", error)}
