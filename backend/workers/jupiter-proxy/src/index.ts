@@ -111,7 +111,7 @@ app.post("/swap", async (c) => {
 
 app.post("/swap-webhook", async (c) => {
   // do nothing for dev env
-  if (c.env.WEBHOOK_PASSWORD !== "PLACEHOLDER") {
+  if (c.env.WEBHOOK_PASSWORD === "PLACEHOLDER") {
     return c.json({ ok: true });
   } else if (c.req.header("x-password") !== c.env.WEBHOOK_PASSWORD) {
     return c.json({ error: "Unauthorized" }, 401);
