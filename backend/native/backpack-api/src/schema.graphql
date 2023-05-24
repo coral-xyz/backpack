@@ -56,6 +56,14 @@ Root level query type.
 """
 type Query {
   """
+  Get the entire or a specific entry of a token list.
+  """
+  tokenList(
+    chainId: ChainID!
+    filters: TokenListEntryFiltersInput
+  ): [TokenListEntry]!
+
+  """
   Fetch a user by their Backpack account username. The username is inferred by the
   presence of a valid and verified JWT.
   """
@@ -141,6 +149,26 @@ input NotificationFiltersInput {
   Flag to filter for only unread notifications of the user.
   """
   unreadOnly: Boolean
+}
+
+"""
+Input filter type for fetching a specific entry from a token list.
+"""
+input TokenListEntryFiltersInput {
+  """
+  The mint or contract address of the token.
+  """
+  address: String
+
+  """
+  The market listing name of the token.
+  """
+  name: String
+
+  """
+  The market listing symbol of the token.
+  """
+  symbol: String
 }
 
 """
@@ -663,6 +691,38 @@ type TokenBalanceEdge {
   node: TokenBalance!
 }
 
+type TokenListEntry implements Node {
+  """
+  Globally unique identifier for the list entry.
+  """
+  id: ID!
+
+  """
+  The mint or contract address of the token.
+  """
+  address: String!
+
+  """
+  The Coingecko market listing ID.
+  """
+  coingeckoId: String!
+
+  """
+  The logo associated with the token.
+  """
+  logo: String
+
+  """
+  The registered name of the token.
+  """
+  name: String!
+
+  """
+  The registered symbol of the token.
+  """
+  symbol: String!
+}
+
 """
 Generic on-chain transaction details structure.
 """
@@ -718,9 +778,9 @@ type Transaction implements Node {
   timestamp: String
 
   """
-  A list of all token transfers that occured during the transaction.
+  Token metadata for any tokens involved in the transaction.
   """
-  transfers: [TransactionTransfer!]!
+  tokens: [TokenListEntry!]
 
   """
   The category or type of transaction.
@@ -742,36 +802,6 @@ Relay edge specification for `Transaction` nodes.
 type TransactionEdge {
   cursor: String!
   node: Transaction!
-}
-
-"""
-Describes a single token transfer from a transaction.
-"""
-type TransactionTransfer {
-  """
-  The numerical amount of the token that was transferred.
-  """
-  amount: Float!
-
-  """
-  The address that the transfer was initiated from.
-  """
-  from: String!
-
-  """
-  The address that the transfer was sent to.
-  """
-  to: String!
-
-  """
-  The token mint or contract address of the token type.
-  """
-  token: String!
-
-  """
-  The token mint or contract address symbol.
-  """
-  tokenName: String
 }
 
 """
