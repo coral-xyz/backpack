@@ -1,14 +1,7 @@
-import type { Wallet, PublicKey } from "~types/types";
+import type { PublicKey, Wallet } from "~types/types";
 
 import { useCallback } from "react";
-import {
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,6 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HardwareIcon, ImportedIcon, MnemonicIcon } from "~components/Icon";
 import { ListItemWalletOverview } from "~components/ListItem";
 import {
+  BlockchainLogo,
   CopyButtonIcon,
   ListRowSeparator,
   Margin,
@@ -24,7 +18,6 @@ import {
   Screen,
   StyledText,
 } from "~components/index";
-import { getBlockchainLogo } from "~hooks/index";
 import { useTheme } from "~hooks/useTheme";
 import { useWallets } from "~hooks/wallets";
 
@@ -137,7 +130,7 @@ function WalletListItem({
       >
         <View style={styles.listItemLeft}>
           <Margin right={12}>
-            <NetworkIcon blockchain={blockchain} />
+            <BlockchainLogo blockchain={blockchain} />
           </Margin>
           <View>
             <StyledText
@@ -162,22 +155,6 @@ function WalletListItem({
         {icon ? icon : null}
       </Pressable>
     </RoundedContainerGroup>
-  );
-}
-
-function NetworkIcon({
-  size,
-  blockchain,
-}: {
-  size?: number;
-  blockchain: Blockchain;
-}) {
-  const logo = getBlockchainLogo(blockchain);
-  return (
-    <Image
-      style={[styles.logoContainer, { width: size, height: size }]}
-      source={logo}
-    />
   );
 }
 

@@ -10,7 +10,7 @@ import type { Blockchain } from "@coral-xyz/common";
 import { formatUSD } from "@coral-xyz/common";
 
 import { useCustomTheme as useTheme } from "../hooks/index";
-import { ListItem, Separator, XStack, YGroup, YStack } from "../";
+import { ListItem, Separator, Stack, XStack, YGroup, YStack } from "../";
 
 import { getIcon, IconCheckmark, IconKeyboardArrowRight } from "./Icon";
 import {
@@ -43,16 +43,10 @@ export const SectionSeparator = () => <View style={{ height: 12 }} />;
 
 // TODO(peter) something about padding looks weird
 export function PaddedListItemSeparator() {
-  const theme = useTheme();
   return (
-    <View style={{ paddingLeft: 60, backgroundColor: theme.custom.colors.nav }}>
-      <View
-        style={{
-          borderColor: theme.custom.colors.fontColor,
-          // borderWidth: 2,
-        }}
-      />
-    </View>
+    <Stack bg="$nav" pl={60}>
+      <Stack borderColor="$borderColor" borderWidth={1} />
+    </Stack>
   );
 }
 
@@ -458,18 +452,26 @@ export function ListItemWalletOverview({
   publicKey,
   balance,
   onPress,
+  type,
 }: {
   grouped?: boolean;
   name: string;
+  type: string;
   blockchain: Blockchain;
   publicKey: PublicKey;
   balance: string;
   onPress: (wallet: Wallet) => void;
 }): JSX.Element {
+  const dehydrated = type === "dehydrated";
   return (
     <ListItem
+      opacity={dehydrated ? 0.5 : undefined}
       backgroundColor="$nav"
-      onPress={() => onPress?.({ blockchain, publicKey })}
+      onPress={() => {
+        if (!dehydrated) {
+          onPress?.({ blockchain, publicKey });
+        }
+      }}
       borderRadius={!grouped ? "$container" : undefined}
       borderColor={!grouped ? "$borderFull" : undefined}
       borderWidth={!grouped ? 2 : undefined}
@@ -478,9 +480,9 @@ export function ListItemWalletOverview({
       // TODO fix logo spacing potentially
       icon={<BlockchainLogo blockchain={blockchain} size={18} />}
     >
-      <XStack flex={1} justifyContent="space-between">
+      <XStack flex={1} jc="space-between">
         <StyledText fontSize="$lg" color="$fontColor">
-          {name}
+          {dehydrated ? "Not recovered" : name}
         </StyledText>
         <StyledText fontSize="$lg" color="$fontColor">
           {balance}

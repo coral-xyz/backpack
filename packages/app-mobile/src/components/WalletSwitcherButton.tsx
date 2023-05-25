@@ -45,21 +45,21 @@ function WalletListPicker({ navigation }) {
     [background, dismiss]
   );
 
-  const handlePressEdit = (
-    blockchain: Blockchain,
-    { name, publicKey, type }: Wallet
-  ) => {
-    dismiss();
-    navigation.push("AccountSettings", {
-      screen: "edit-wallets-wallet-detail",
-      params: {
-        blockchain,
-        publicKey,
-        name,
-        type,
-      },
-    });
-  };
+  const handlePressEdit = useCallback(
+    (blockchain: Blockchain, { name, publicKey, type }: Wallet) => {
+      dismiss();
+      navigation.push("AccountSettings", {
+        screen: "edit-wallets-wallet-detail",
+        params: {
+          blockchain,
+          publicKey,
+          name,
+          type,
+        },
+      });
+    },
+    []
+  );
 
   const renderItem = useCallback(
     ({ item }) => {

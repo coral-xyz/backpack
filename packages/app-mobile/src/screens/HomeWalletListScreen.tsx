@@ -4,6 +4,7 @@ import { Suspense, useCallback } from "react";
 import { FlatList, Text, View } from "react-native";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
+import { formatUSD } from "@coral-xyz/common";
 import { Box, StyledText } from "@coral-xyz/tamagui";
 import { useNavigation } from "@react-navigation/native";
 import { ErrorBoundary } from "react-error-boundary";
@@ -53,7 +54,8 @@ function ListItemData({ wallet, onPress }: { wallet: Wallet }): JSX.Element {
       name={wallet.name}
       blockchain={wallet.blockchain}
       publicKey={wallet.publicKey}
-      balance={`$${balance}`}
+      type={wallet.type}
+      balance={formatUSD(balance)}
       onPress={onPress}
     />
   );
@@ -90,7 +92,7 @@ function WalletList() {
         },
       });
     },
-    [navigation, onSelectWallet],
+    [navigation, onSelectWallet]
   );
 
   const keyExtractor = (wallet: Wallet) => wallet.publicKey.toString();
@@ -107,7 +109,7 @@ function WalletList() {
         </RoundedContainerGroup>
       );
     },
-    [handlePressWallet, allWallets.length],
+    [handlePressWallet, allWallets.length]
   );
 
   return (

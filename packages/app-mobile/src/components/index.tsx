@@ -13,6 +13,7 @@ import {
 
 import * as Clipboard from "expo-clipboard";
 import Constants from "expo-constants";
+import { Image } from "expo-image";
 
 import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
@@ -35,6 +36,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ContentCopyIcon, RedBackpack } from "~components/Icon";
 import { CurrentUserAvatar } from "~components/UserAvatar";
+import { getBlockchainLogo } from "~hooks/index";
 import { useTheme } from "~hooks/useTheme";
 
 export { ActionCard } from "./ActionCard";
@@ -792,5 +794,23 @@ export function AvatarUserNameAddress({
       </Box>
       <NameAddressLabel publicKey={publicKey} name={username} />
     </XStack>
+  );
+}
+
+export function BlockchainLogo({
+  size,
+  blockchain,
+  style,
+}: {
+  size?: number;
+  blockchain: Blockchain;
+  style?: StyleProp<any>;
+}) {
+  const logo = getBlockchainLogo(blockchain);
+  return (
+    <Image
+      style={[{ width: size, height: size, aspectRatio: 1 }, style]}
+      source={logo}
+    />
   );
 }

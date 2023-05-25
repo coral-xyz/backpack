@@ -63,7 +63,7 @@ export function ShowRecoveryPhraseWarningScreen({ navigation }): JSX.Element {
     >
       <View>
         <HeaderIconSubtitle
-          icon={<WarningIcon fill="#E95050" />}
+          icon={<WarningIcon color="#E95050" />}
           title="Warning"
         />
         {warnings.map(({ icon, text }) => (

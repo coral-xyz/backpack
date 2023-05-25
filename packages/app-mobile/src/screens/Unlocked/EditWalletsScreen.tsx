@@ -28,7 +28,7 @@ import {
   usePrimaryWallets,
   useWalletPublicKeys,
 } from "@coral-xyz/recoil";
-import { StyledText, XStack } from "@coral-xyz/tamagui";
+import { PaddedListItemSeparator } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { ContentCopyIcon, VerticalDotsIcon } from "~components/Icon";
@@ -75,13 +75,13 @@ function WalletList2({ onPressItem }) {
         params: [pk, b],
       });
     },
-    [background],
+    [background]
   );
 
   const renderItem = useCallback(
     ({ item, index }) => {
       const isPrimary = !!primaryWallets.find(
-        (x) => x.publicKey === item.publicKey,
+        (x) => x.publicKey === item.publicKey
       );
 
       const isFirst = index === 0;
@@ -107,17 +107,15 @@ function WalletList2({ onPressItem }) {
         </RoundedContainerGroup>
       );
     },
-    [selectedWalletPublicKey, onPressItem, data.length],
+    [selectedWalletPublicKey, onPressItem, data.length]
   );
-
-  const ItemSeparator = () => <View style={{ height: 12 }} />;
 
   return (
     <FlatList
       data={data}
       renderItem={renderItem}
       keyExtractor={(item) => item.publicKey}
-      ItemSeparatorComponent={ItemSeparator}
+      ItemSeparatorComponent={PaddedListItemSeparator}
     />
   );
 }
@@ -125,7 +123,7 @@ function WalletList2({ onPressItem }) {
 function Container({ navigation }): JSX.Element {
   const handlePressItem = (
     blockchain: Blockchain,
-    { name, publicKey, type }: Wallet,
+    { name, publicKey, type }: Wallet
   ) => {
     navigation.navigate("edit-wallets-wallet-detail", {
       blockchain,
