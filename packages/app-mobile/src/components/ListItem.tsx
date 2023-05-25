@@ -5,7 +5,13 @@ import { ActivityIndicator, Alert, Pressable } from "react-native";
 import * as Clipboard from "expo-clipboard";
 
 import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
-import { ListItem, StyledText, XStack, YStack } from "@coral-xyz/tamagui";
+import {
+  ListItem,
+  StyledText,
+  XStack,
+  YStack,
+  useTheme as useTamaguiTheme,
+} from "@coral-xyz/tamagui";
 
 import {
   ArrowRightIcon,
@@ -62,12 +68,22 @@ type ListItemWalletProps = Wallet & {
   grouped?: boolean;
 };
 
-const renderState = (selected: boolean, loading: boolean) => {
+const WalletState = ({
+  selected,
+  loading,
+}: {
+  selected: boolean;
+  loading: boolean;
+}): JSX.Element | null => {
+  const theme = useTamaguiTheme();
+  const color = theme.baseTextHighEmphasis.val;
+
   if (loading) {
-    return <ActivityIndicator size="small" />;
+    return <ActivityIndicator size="small" color={color} />;
   }
+
   if (selected) {
-    return <IconCheckmarkBold size={18} color="black" />;
+    return <IconCheckmarkBold size={18} color={color} />;
   }
 
   return null;
@@ -104,14 +120,10 @@ export const ListItemWallet = ({
       borderRadius={!grouped ? "$container" : undefined}
       borderColor={!grouped ? "$borderFull" : undefined}
       borderWidth={!grouped ? 2 : undefined}
-      paddingHorizontal={16}
+      paddingHorizontal={12}
       paddingVertical={12}
       icon={
-        <BlockchainLogo
-          blockchain={blockchain}
-          size={24}
-          style={{ marginRight: 12, opacity }}
-        />
+        <BlockchainLogo blockchain={blockchain} size={24} style={{ opacity }} />
       }
     >
       <XStack f={1} ai="center" jc="space-between">
@@ -134,7 +146,7 @@ export const ListItemWallet = ({
               >
                 {dehydrated ? "Not recovered" : name}
               </StyledText>
-              {renderState(selected, loading)}
+              <WalletState selected={selected} loading={loading} />
             </XStack>
             <StyledText color="$baseTextMedEmphasis" fontSize="$sm">
               {walletAddressDisplay(publicKey)} {primary ? "(Primary)" : ""}
@@ -151,20 +163,26 @@ export const ListItemWallet = ({
                 </StyledText>
               </XStack>
             ) : (
-              <StyledText mb={2} fontWeight="$medium">
+              <StyledText
+                mb={2}
+                fontWeight="$medium"
+                color="$baseTextMedEmphasis"
+              >
                 ${balance}
               </StyledText>
             )}
 
             <XStack ai="center" columnGap={8}>
-              <Pressable
-                onPress={handlePressRecover}
-                hitSlop={{ top: 12, bottom: 12 }}
-              >
-                <StyledText fontSize="$xs" color="$accentBlue">
-                  Recover
-                </StyledText>
-              </Pressable>
+              {dehydrated ? (
+                <Pressable
+                  onPress={handlePressRecover}
+                  hitSlop={{ top: 12, bottom: 12 }}
+                >
+                  <StyledText fontSize="$xs" color="$accentBlue">
+                    Recover
+                  </StyledText>
+                </Pressable>
+              ) : null}
               <CopyPublicKey publicKey={publicKey} />
             </XStack>
           </YStack>

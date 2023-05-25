@@ -9,14 +9,13 @@ import {
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
 } from "@coral-xyz/common";
 import {
+  useActiveWallet,
   useBackgroundClient,
-  useKeyringHasMnemonic,
-  useWalletName,
+  useKeyringHasMnemonic, useWalletName,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
-import { WalletListItem } from "~screens/Unlocked/EditWalletsScreen";
 
 import { CheckIcon } from "~components/Icon";
 import {
@@ -28,9 +27,10 @@ import {
   RoundedContainerGroup,
 } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
+import { WalletListItem } from "~screens/Unlocked/EditWalletsScreen";
 
-export function AddConnectWalletScreen({ route }) {
-  const { blockchain } = route.params;
+export function AddConnectWalletScreen() {
+  const { blockchain } = useActiveWallet();
   const navigation = useNavigation();
   const background = useBackgroundClient();
   const hasMnemonic = useKeyringHasMnemonic();

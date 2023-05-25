@@ -187,6 +187,7 @@ const darkUsernameColors = {
 };
 
 export const lightColors = {
+  baseWhite,
   ...lightUsernameColors,
   lightAccentBlue,
   lightAccentPurple,
@@ -220,6 +221,7 @@ export const lightColors = {
 };
 
 export const darkColors = {
+  baseWhite,
   ...darkUsernameColors,
   darkAccentBlue,
   darkAccentPurple,

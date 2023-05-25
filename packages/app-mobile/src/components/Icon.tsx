@@ -1,10 +1,23 @@
 import type { SvgProps } from "react-native-svg";
 
+import { useTheme as useTamaguiTheme } from "@coral-xyz/tamagui";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { themed as withThemedIcon } from "@tamagui/lucide-icons/src/themed";
 import Svg, { Path, Rect } from "react-native-svg";
 
 import { useTheme } from "~hooks/useTheme";
+
+type TamaguiIconProp = {
+  color?: string;
+  size?: number;
+};
+
+export const IconMenu = withThemedIcon(({ color, size }: TamaguiIconProp) => {
+  const baseIconColor = useTamaguiTheme().fontColor.val;
+  return (
+    <MaterialIcons name="menu" size={size} color={color ?? baseIconColor} />
+  );
+});
 
 export const VerticalDotsIcon = ({
   size = 24,
@@ -90,17 +103,6 @@ export function WidgetIcon({
   size = 24,
 }: IconProps): JSX.Element {
   return <MaterialCommunityIcons name="widgets" color={color} size={size} />;
-}
-
-export function MenuIcon({ color, size = 24 }: IconProps): JSX.Element {
-  const theme = useTheme();
-  return (
-    <MaterialIcons
-      name="menu"
-      color={color ? color : theme.custom.colors.fontColor}
-      size={size}
-    />
-  );
 }
 
 export function ContentCopyIcon({ color, size = 24 }: IconProps): JSX.Element {

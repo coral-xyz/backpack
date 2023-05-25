@@ -912,7 +912,7 @@ function CreateAccountLoadingScreen(
         setError(true);
       }
 
-      console.log("debug1:jwt", res.jwt);
+      console.log("debug1:jwt", res.jwt, res);
 
       setAuthToken(res.jwt);
     })();

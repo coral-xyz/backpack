@@ -2,6 +2,7 @@ import { darkColors, lightColors } from "@coral-xyz/themes";
 // tamagui requires a specific format
 
 export const color = {
+  baseWhite: lightColors.baseWhite,
   lightAccentBlue: lightColors.lightAccentBlue,
   lightAccentPurple: lightColors.lightAccentPurple,
 
@@ -46,6 +47,7 @@ export const color = {
   // lightYellowBorder: lightColors.lightYellowBorder,
   lightYellowIcon: lightColors.lightYellowIcon,
   lightYellowText: lightColors.lightYellowText,
+
 
   darkAccentBlue: darkColors.darkAccentBlue,
   darkAccentPurple: darkColors.darkAccentPurple,

@@ -47,6 +47,7 @@ export const SessionProvider = ({
   children: JSX.Element;
 }): JSX.Element => {
   const [token, setToken] = useState<TokenType>(null);
+  console.log("debug1:token:SessionProvider", token);
   const background = useBackgroundClient();
 
   // on app load

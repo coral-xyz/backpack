@@ -42,6 +42,7 @@ const makeApolloClient = (token: string | null) => {
 
 export const useApolloClient = () => {
   const { token } = useSession();
+  console.log("debug1:token:useApolloClient", token);
   const [client, setClient] = useState<ApolloClient<NormalizedCacheObject>>();
 
   useEffect(() => {

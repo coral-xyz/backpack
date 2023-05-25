@@ -2,7 +2,7 @@ import type { ChannelAppUiClient } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
 
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Text, View, Pressable } from "react-native";
 
 import {
   EthereumConnectionUrl,
@@ -22,6 +22,7 @@ import {
   useSolanaConnectionUrl,
   useSolanaExplorer,
 } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ethers } from "ethers";
 
@@ -224,7 +225,23 @@ export function AccountSettingsNavigator(): JSX.Element {
         <Stack.Screen
           name="edit-wallets"
           component={EditWalletsScreen}
-          options={{ title: "Edit Wallets" }}
+          options={({ navigation }) => ({
+            title: "Edit Wallets",
+            headerRight: () => (
+              <Pressable
+                onPress={() => {
+                  navigation.push("add-wallet");
+                }}
+              >
+                <MaterialIcons
+                  name="add"
+                  size={24}
+                  color="black"
+                  style={{ paddingRight: 16 }}
+                />
+              </Pressable>
+            ),
+          })}
         />
         <Stack.Screen
           name="edit-wallets-rename"
@@ -359,16 +376,17 @@ function PreferencesSolanaConnection({ navigation }) {
       onPress: () => {
         navigation.push("PreferencesSolanaCustomRpcUrl");
       },
-      detail: currentUrl !== SolanaCluster.MAINNET &&
-          currentUrl !== SolanaCluster.DEVNET &&
-          currentUrl !== SolanaCluster.LOCALNET
-        ? (
+      detail:
+        currentUrl !== SolanaCluster.MAINNET &&
+        currentUrl !== SolanaCluster.DEVNET &&
+        currentUrl !== SolanaCluster.LOCALNET ? (
           <>
             <IconCheckmark />
             <IconPushDetail />
           </>
-        )
-        : <IconPushDetail />,
+        ) : (
+          <IconPushDetail />
+        ),
     },
   };
 
@@ -427,15 +445,13 @@ export function PreferencesSolanaExplorer({ navigation }) {
   const menuItems = {
     "Solana Beach": {
       onPress: () => changeExplorer(SolanaExplorer.SOLANA_BEACH),
-      detail: explorer === SolanaExplorer.SOLANA_BEACH
-        ? <IconCheckmark />
-        : <></>,
+      detail:
+        explorer === SolanaExplorer.SOLANA_BEACH ? <IconCheckmark /> : <></>,
     },
     "Solana Explorer": {
       onPress: () => changeExplorer(SolanaExplorer.SOLANA_EXPLORER),
-      detail: explorer === SolanaExplorer.SOLANA_EXPLORER
-        ? <IconCheckmark />
-        : <></>,
+      detail:
+        explorer === SolanaExplorer.SOLANA_EXPLORER ? <IconCheckmark /> : <></>,
     },
     "Solana FM": {
       onPress: () => changeExplorer(SolanaExplorer.SOLANA_FM),
@@ -486,7 +502,7 @@ function PreferencesSolana({ route, navigation }) {
 export const changeNetwork = async (
   background: ChannelAppUiClient,
   url: string,
-  chainId?: string,
+  chainId?: string
 ) => {
   await background.request({
     method: UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
@@ -588,39 +604,45 @@ function PreferencesEthereumConnection({ navigation }) {
         await changeNetwork(background, EthereumConnectionUrl.MAINNET, "0x1");
         close();
       },
-      detail: currentUrl === EthereumConnectionUrl.MAINNET
-        ? <IconCheckmark />
-        : <></>,
+      detail:
+        currentUrl === EthereumConnectionUrl.MAINNET ? (
+          <IconCheckmark />
+        ) : (
+          <></>
+        ),
     },
     "Görli Testnet": {
       onPress: async () => {
         await changeNetwork(background, EthereumConnectionUrl.GOERLI, "0x5");
         close();
       },
-      detail: currentUrl === EthereumConnectionUrl.GOERLI
-        ? <IconCheckmark />
-        : <></>,
+      detail:
+        currentUrl === EthereumConnectionUrl.GOERLI ? <IconCheckmark /> : <></>,
     },
     Localnet: {
       onPress: async () => {
         await changeNetwork(background, EthereumConnectionUrl.LOCALNET);
         close();
       },
-      detail: currentUrl === EthereumConnectionUrl.LOCALNET
-        ? <IconCheckmark />
-        : <></>,
+      detail:
+        currentUrl === EthereumConnectionUrl.LOCALNET ? (
+          <IconCheckmark />
+        ) : (
+          <></>
+        ),
     },
     Custom: {
       onPress: () => navigation.push("PreferencesEthereumCustomRpcUrl"),
-      detail: currentUrl !== EthereumConnectionUrl.MAINNET &&
-          currentUrl !== EthereumConnectionUrl.GOERLI &&
-          currentUrl !== EthereumConnectionUrl.LOCALNET
-        ? (
+      detail:
+        currentUrl !== EthereumConnectionUrl.MAINNET &&
+        currentUrl !== EthereumConnectionUrl.GOERLI &&
+        currentUrl !== EthereumConnectionUrl.LOCALNET ? (
           <>
             <IconCheckmark /> <IconPushDetail />
           </>
-        )
-        : <IconPushDetail />,
+        ) : (
+          <IconPushDetail />
+        ),
     },
   };
 

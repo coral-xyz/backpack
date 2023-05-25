@@ -68,8 +68,17 @@ function ListItem({
   item: Wallet;
   onPress: any;
 }): JSX.Element {
+  const ErrorMessage = ({ error }) => {
+    return (
+      <StyledText color="$redText" size="$sm" textAlign="center">
+        {error.message}
+      </StyledText>
+    );
+  };
   return (
-    <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ErrorMessage error={error} />}
+    >
       <Suspense>
         <ListItemData wallet={wallet} onPress={onPress} />
       </Suspense>

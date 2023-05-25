@@ -110,9 +110,11 @@ function LoadingSkeleton() {
 
 function ErrorFallback({ error }: { error: Error }) {
   return (
-    <View style={{ height: 72, opacity: 0.2 }}>
-      <StyledText>Something went wrong</StyledText>
-      <StyledText>{error.message}</StyledText>
+    <View style={{ height: 72, opacity: 0.5 }}>
+      <StyledText color="$redText" textAlign="center">
+        Something went wrong:
+      </StyledText>
+      <StyledText textAlign="center">{error.message}</StyledText>
     </View>
   );
 }

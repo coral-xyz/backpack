@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -9,6 +9,7 @@ import {
 
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
+import { ErrorBoundary } from "react-error-boundary";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -23,15 +24,17 @@ import {
   PrimaryButton,
   Screen,
   WelcomeLogoHeader,
+  ScreenError,
+  ScreenLoading,
 } from "~components/index";
 
 interface FormData {
   password: string;
 }
 
-export function LockedScreen(): JSX.Element {
+function Container(): JSX.Element {
   const background = useBackgroundClient();
-  const user = useUser(); // TODO look into why this breaks
+  const user = useUser();
   const insets = useSafeAreaInsets();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
@@ -94,9 +97,9 @@ export function LockedScreen(): JSX.Element {
                   required: "You must enter a password",
                 }}
               />
-              {formState.errors.password
-                ? <ErrorMessage for={formState.errors.password} />
-                : null}
+              {formState.errors.password ? (
+                <ErrorMessage for={formState.errors.password} />
+              ) : null}
             </Margin>
             <PrimaryButton label="Unlock" onPress={handleSubmit(onSubmit)} />
           </View>
@@ -118,3 +121,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 });
+
+export function LockedScreen(): JSX.Element {
+  return (
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ScreenError error={error} />}
+    >
+      <Suspense fallback={<ScreenLoading />}>
+        <Container />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
