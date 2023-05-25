@@ -1,5 +1,6 @@
 import { RESTDataSource } from "@apollo/datasource-rest";
 
+import { NodeBuilder } from "../nodes";
 import type { NotificationApplicationData } from "../types";
 
 /**
@@ -23,10 +24,9 @@ export class Swr extends RESTDataSource {
    */
   async getXnftData(address: string): Promise<NotificationApplicationData> {
     const resp = await this.get(`/nft-data/xnft/${address}`);
-    return {
-      id: `notification_app:${address}`,
+    return NodeBuilder.notificationAppData(address, {
       image: resp.metadata.image,
       name: resp.metadata.name,
-    };
+    });
   }
 }

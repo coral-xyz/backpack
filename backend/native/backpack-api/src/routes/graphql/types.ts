@@ -147,6 +147,8 @@ export type MarketData = Node & {
   id: Scalars["ID"];
   /** A timestamp of the last date of when the market data was updated. */
   lastUpdatedAt: Scalars["String"];
+  /** The CoinGecko market listing ID. */
+  listingId: Scalars["String"];
   /** The image link to the logo of the token's market listing. */
   logo: Scalars["String"];
   /** The name of the token on the market. */
@@ -435,7 +437,7 @@ export type Transaction = Node & {
   /** The error message for the transaction if it failed. */
   error?: Maybe<Scalars["String"]>;
   /** The amount in fees that were paid for processing the transaction. */
-  fee?: Maybe<Scalars["Int"]>;
+  fee?: Maybe<Scalars["Float"]>;
   /** The address of the wallet that paid the processing fees. */
   feePayer?: Maybe<Scalars["String"]>;
   /** The transaction hash or signature. */
@@ -449,7 +451,7 @@ export type Transaction = Node & {
   /** The source or program that is associated with the transaction. */
   source?: Maybe<Scalars["String"]>;
   /** The timestamp of the execution or commitment of the transaction. */
-  timestamp?: Maybe<Scalars["String"]>;
+  timestamp: Scalars["String"];
   /** The category or type of transaction. */
   type: Scalars["String"];
 };
@@ -938,6 +940,7 @@ export type MarketDataResolvers<
 > = ResolversObject<{
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   lastUpdatedAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  listingId?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   logo?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   percentChange?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
@@ -1225,7 +1228,7 @@ export type TransactionResolvers<
     ContextType
   >;
   error?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  fee?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
+  fee?: Resolver<Maybe<ResolversTypes["Float"]>, ParentType, ContextType>;
   feePayer?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   hash?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
@@ -1236,11 +1239,7 @@ export type TransactionResolvers<
   >;
   raw?: Resolver<ResolversTypes["JSONObject"], ParentType, ContextType>;
   source?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  timestamp?: Resolver<
-    Maybe<ResolversTypes["String"]>,
-    ParentType,
-    ContextType
-  >;
+  timestamp?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   type?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

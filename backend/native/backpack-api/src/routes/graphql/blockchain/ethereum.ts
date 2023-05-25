@@ -1,6 +1,7 @@
 import {
   AssetTransfersCategory,
   type AssetTransfersParams,
+  type AssetTransfersWithMetadataResponse,
   BigNumber,
   SortingOrder,
 } from "alchemy-sdk";
@@ -8,19 +9,17 @@ import { ethers } from "ethers";
 
 import type { CoinGeckoPriceData } from "../clients/coingecko";
 import type { ApiContext } from "../context";
+import { NodeBuilder } from "../nodes";
 import { UniswapTokenList } from "../tokens/uniswap";
 import {
   type BalanceFiltersInput,
   type Balances,
   ChainId,
-  type Collection,
-  type MarketData,
   type Nft,
   type NftAttribute,
   type NftConnection,
   type NftFiltersInput,
   type TokenBalance,
-  type Transaction,
   type TransactionConnection,
   type TransactionFiltersInput,
 } from "../types";
@@ -28,7 +27,7 @@ import { calculateBalanceAggregate, createConnection } from "../utils";
 
 import type { Blockchain } from ".";
 
-const ETH_DEFAULT_ADDRESS = "0x0000000000000000000000000000000000000000";
+export const ETH_DEFAULT_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 /**
  * Ethereum blockchain implementation for the common API.
@@ -81,41 +80,46 @@ export class Ethereum implements Blockchain {
     ]);
 
     // Native token balance data
-    const nativeData: TokenBalance = {
-      id: `${this.id()}_native_address:${address}`,
-      address,
-      amount: native.toString(),
-      decimals: this.nativeDecimals(),
-      displayAmount: ethers.utils.formatUnits(native, this.nativeDecimals()),
-      marketData: {
-        id: this.#ctx.dataSources.coinGecko.id("ethereum"),
-        lastUpdatedAt: prices.ethereum.last_updated,
-        logo: prices.ethereum.image,
-        name: prices.ethereum.name,
-        percentChange: prices.ethereum.price_change_percentage_24h,
-        price: prices.ethereum.current_price,
-        sparkline: prices.ethereum.sparkline_in_7d.price,
-        symbol: prices.ethereum.symbol,
-        usdChange: prices.ethereum.price_change_24h,
-        value:
-          parseFloat(ethers.utils.formatUnits(native, this.nativeDecimals())) *
-          prices.ethereum.current_price,
-        valueChange:
-          parseFloat(ethers.utils.formatUnits(native, this.nativeDecimals())) *
-          prices.ethereum.price_change_24h,
+    const nativeData = NodeBuilder.tokenBalance(
+      this.id(),
+      {
+        address,
+        amount: native.toString(),
+        decimals: this.nativeDecimals(),
+        displayAmount: ethers.utils.formatUnits(native, this.nativeDecimals()),
+        marketData: NodeBuilder.marketData({
+          lastUpdatedAt: prices.ethereum.last_updated,
+          listingId: "ethereum",
+          logo: prices.ethereum.image,
+          name: prices.ethereum.name,
+          percentChange: prices.ethereum.price_change_percentage_24h,
+          price: prices.ethereum.current_price,
+          sparkline: prices.ethereum.sparkline_in_7d.price,
+          symbol: prices.ethereum.symbol,
+          usdChange: prices.ethereum.price_change_24h,
+          value:
+            parseFloat(
+              ethers.utils.formatUnits(native, this.nativeDecimals())
+            ) * prices.ethereum.current_price,
+          valueChange:
+            parseFloat(
+              ethers.utils.formatUnits(native, this.nativeDecimals())
+            ) * prices.ethereum.price_change_24h,
+        }),
+        token: ETH_DEFAULT_ADDRESS,
       },
-      token: ETH_DEFAULT_ADDRESS,
-    };
+      true
+    );
 
     // Map the non-empty token balances to their schema type
     const nodes = nonEmptyTokens.reduce<TokenBalance[]>((acc, curr) => {
       const amt = BigNumber.from(curr.rawBalance ?? "0");
       const id = meta.get(curr.contractAddress);
       const p: CoinGeckoPriceData | null = prices[id ?? ""] ?? null;
-      const marketData: MarketData | null = p
-        ? {
-            id: this.#ctx.dataSources.coinGecko.id(p.id),
+      const marketData = p
+        ? NodeBuilder.marketData({
             lastUpdatedAt: p.last_updated,
+            listingId: p.id,
             logo: p.image,
             name: p.name,
             percentChange: p.price_change_percentage_24h,
@@ -129,8 +133,8 @@ export class Ethereum implements Blockchain {
             valueChange:
               parseFloat(ethers.utils.formatUnits(amt, curr.decimals ?? 0)) *
               p.price_change_24h,
-          }
-        : null;
+          })
+        : undefined;
 
       if (filters?.marketListedTokensOnly && !marketData) {
         return acc;
@@ -138,24 +142,27 @@ export class Ethereum implements Blockchain {
 
       return [
         ...acc,
-        {
-          id: `${this.id()}_token_address:${address}/${curr.contractAddress}`,
-          address: `${address}/${curr.contractAddress}`,
-          amount: amt.toString(),
-          decimals: curr.decimals ?? 0,
-          displayAmount: curr.balance ?? "0",
-          marketData,
-          token: curr.contractAddress,
-        },
+        NodeBuilder.tokenBalance(
+          this.id(),
+          {
+            address: `${address}/${curr.contractAddress}`,
+            amount: amt.toString(),
+            decimals: curr.decimals ?? 0,
+            displayAmount: curr.balance ?? "0",
+            marketData,
+            token: curr.contractAddress,
+          },
+          false,
+          `${address}/${curr.contractAddress}`
+        ),
       ];
     }, []);
 
-    return {
-      id: `${this.id()}_balances:${address}`,
+    return NodeBuilder.balances(this.id(), {
       aggregate: calculateBalanceAggregate(address, [nativeData, ...nodes]),
       native: nativeData,
       tokens: createConnection(nodes, false, false),
-    };
+    });
   }
 
   /**
@@ -180,15 +187,14 @@ export class Ethereum implements Blockchain {
     const nodes = nfts.ownedNfts.reduce<Nft[]>((acc, curr) => {
       if (curr.spamInfo?.isSpam ?? false) return acc;
 
-      const collection: Collection | undefined = curr.contract.openSea
-        ? {
-            id: `${this.id()}_nft_collection:${curr.contract.address}`,
+      const collection = curr.contract.openSea
+        ? NodeBuilder.nftCollection(this.id(), {
             address: curr.contract.address,
             name: curr.contract.openSea.collectionName,
             image: curr.contract.openSea.imageUrl,
             verified:
               curr.contract.openSea.safelistRequestStatus === "verified",
-          }
+          })
         : undefined;
 
       const attributes: NftAttribute[] | undefined =
@@ -197,18 +203,21 @@ export class Ethereum implements Blockchain {
           value: a.value,
         }));
 
-      const n: Nft = {
-        id: `${this.id()}_nft:${curr.contract.address}/${curr.tokenId}`,
-        address: `${curr.contract.address}/${curr.tokenId}`,
-        attributes,
-        collection,
-        description: curr.description || undefined,
-        image: curr.rawMetadata?.image || undefined,
-        metadataUri: curr.tokenUri?.raw || undefined,
-        name: curr.title || undefined,
-        owner: address,
-        token: curr.tokenId,
-      };
+      const n = NodeBuilder.nft(
+        this.id(),
+        {
+          address: `${curr.contract.address}/${curr.tokenId}`,
+          attributes,
+          collection,
+          description: curr.description || undefined,
+          image: curr.rawMetadata?.image || undefined,
+          metadataUri: curr.tokenUri?.raw || undefined,
+          name: curr.title || undefined,
+          owner: address,
+          token: curr.tokenId,
+        },
+        `${curr.contract.address}/${curr.tokenId}`
+      );
       return [...acc, n];
     }, []);
 
@@ -245,20 +254,20 @@ export class Ethereum implements Blockchain {
       this.#ctx.dataSources.alchemy.core.getAssetTransfers({
         fromAddress: address,
         ...params,
-      }),
+      }) as Promise<AssetTransfersWithMetadataResponse>,
       this.#ctx.dataSources.alchemy.core.getAssetTransfers({
         toAddress: address,
         ...params,
-      }),
+      }) as Promise<AssetTransfersWithMetadataResponse>,
     ]);
 
     const combined = txs
-      .filter(isFulfilled)
+      .filter(_isFulfilled)
       .map((t) => t.value.transfers)
       .flat()
       .sort((a, b) => Number(b.blockNum) - Number(a.blockNum));
 
-    const nodes: Transaction[] = combined.map((tx) => {
+    const nodes = combined.map((tx) => {
       const nfts = tx.erc721TokenId
         ? [`${tx.rawContract.address}/${tx.erc721TokenId}`]
         : tx.erc1155Metadata && tx.erc1155Metadata.length > 0
@@ -267,17 +276,20 @@ export class Ethereum implements Blockchain {
           )
         : undefined;
 
-      return {
-        id: `${this.id()}_transaction:${tx.uniqueId}`,
-        block: Number(tx.blockNum),
-        fee: undefined, // FIXME: find gas amount paid for processing
-        feePayer: tx.from,
-        hash: tx.hash,
-        nfts,
-        raw: tx,
-        timestamp: (tx as any).metadata?.blockTimestamp || undefined,
-        type: tx.category,
-      };
+      return NodeBuilder.transaction(
+        this.id(),
+        {
+          block: Number(tx.blockNum),
+          fee: undefined, // FIXME: find gas amount paid for processing
+          feePayer: tx.from,
+          hash: tx.hash,
+          nfts,
+          raw: tx,
+          timestamp: new Date(tx.metadata.blockTimestamp).toISOString(),
+          type: tx.category,
+        },
+        tx.uniqueId
+      );
     });
 
     return createConnection(nodes, false, false); // FIXME: next and previous page
@@ -308,6 +320,6 @@ export class Ethereum implements Blockchain {
  * @param {PromiseSettledResult<T>} input
  * @returns {input is PromiseFulfilledResult<T>}
  */
-const isFulfilled = <T>(
+const _isFulfilled = <T>(
   input: PromiseSettledResult<T>
 ): input is PromiseFulfilledResult<T> => input.status === "fulfilled";

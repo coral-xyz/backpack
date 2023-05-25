@@ -65,16 +65,6 @@ export class Tensor extends RESTDataSource {
   getListingUrl(mint: string): string {
     return `https://tensor.trade/item/${mint}`;
   }
-
-  /**
-   * Return the node ID for a Tensor active listing.
-   * @param {string} mint
-   * @returns {string}
-   * @memberof Tensor
-   */
-  id(mint: string): string {
-    return `tensor_active_listing:${mint}`;
-  }
 }
 
 ////////////////////////////////////////////

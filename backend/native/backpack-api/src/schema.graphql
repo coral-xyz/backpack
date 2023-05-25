@@ -422,6 +422,11 @@ type MarketData implements Node {
   lastUpdatedAt: String!
 
   """
+  The CoinGecko market listing ID.
+  """
+  listingId: String!
+
+  """
   The image link to the logo of the token's market listing.
   """
   logo: String!
@@ -750,7 +755,7 @@ type Transaction implements Node {
   """
   The amount in fees that were paid for processing the transaction.
   """
-  fee: Int
+  fee: Float
 
   """
   The address of the wallet that paid the processing fees.
@@ -780,7 +785,7 @@ type Transaction implements Node {
   """
   The timestamp of the execution or commitment of the transaction.
   """
-  timestamp: String
+  timestamp: String!
 
   """
   The category or type of transaction.
