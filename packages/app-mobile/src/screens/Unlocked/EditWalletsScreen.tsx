@@ -2,46 +2,25 @@ import type { Blockchain } from "@coral-xyz/common";
 import type { PublicKey } from "~types/types";
 
 import { Suspense, useCallback } from "react";
-import {
-  Alert,
-  FlatList,
-  Pressable,
-  SectionList,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { FlatList } from "react-native";
 
-import * as Clipboard from "expo-clipboard";
-import { Image } from "expo-image";
-
-import {
-  toTitleCase,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  walletAddressDisplay,
-} from "@coral-xyz/common";
+import { UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE } from "@coral-xyz/common";
 import {
   useActiveWallet,
   useAllWallets,
   useBackgroundClient,
   useDehydratedWallets,
   usePrimaryWallets,
-  useWalletPublicKeys,
 } from "@coral-xyz/recoil";
 import { PaddedListItemSeparator } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { ContentCopyIcon, VerticalDotsIcon } from "~components/Icon";
 import { ListItemWallet, type Wallet } from "~components/ListItem";
 import {
-  AddConnectWalletButton,
-  ImportTypeBadge,
-  Margin,
   RoundedContainerGroup,
   Screen,
   ScreenError,
   ScreenLoading,
-  WalletAddressLabel,
 } from "~components/index";
 
 function WalletList2({ onPressItem }) {
@@ -65,7 +44,6 @@ function WalletList2({ onPressItem }) {
   // activeWallets={activeWallets.concat(dehydratedWallets)}
   // coldWallets={coldWallets}
 
-  const selectedWalletPublicKey = activeWallet.publicKey;
   const data = [...activeWallets, ...dehydratedWallets];
 
   const handleSelectWallet = useCallback(
@@ -93,6 +71,7 @@ function WalletList2({ onPressItem }) {
           disableBottomRadius={!isLast}
         >
           <ListItemWallet
+            loading={false}
             name={item.name}
             publicKey={item.publicKey}
             type={item.type}
@@ -107,7 +86,13 @@ function WalletList2({ onPressItem }) {
         </RoundedContainerGroup>
       );
     },
-    [selectedWalletPublicKey, onPressItem, data.length]
+    [
+      onPressItem,
+      data.length,
+      activeWallet.publicKey,
+      handleSelectWallet,
+      primaryWallets,
+    ]
   );
 
   return (
@@ -143,24 +128,6 @@ function Container({ navigation }): JSX.Element {
     </Screen>
   );
 }
-
-// const styles = StyleSheet.create({
-//   sectionHeaderTitle: {
-//     fontWeight: "500",
-//     marginBottom: 8,
-//   },
-//   listItem: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     paddingVertical: 10,
-//     paddingHorizontal: 12,
-//   },
-//   listItemLeft: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//   },
-// });
 
 export function EditWalletsScreen({ navigation }): JSX.Element {
   return (

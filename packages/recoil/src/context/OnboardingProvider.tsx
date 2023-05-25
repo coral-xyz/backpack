@@ -19,7 +19,6 @@ import {
   Blockchain,
   getAuthMessage,
   getCreateMessage,
-  getLogger,
   UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
@@ -28,8 +27,6 @@ import {
 import { useBackgroundClient } from "../hooks/client";
 import { useAuthentication } from "../hooks/useAuthentication";
 import { useRpcRequests } from "../hooks/useRpcRequests";
-
-const logger = getLogger("debug:OnboardingProvider");
 
 export const getWaitlistId = () => {
   if (window?.localStorage) {
@@ -173,6 +170,7 @@ export function OnboardingProvider({
     async ({ blockchain, onStatus }: SelectBlockchainType) => {
       const handleStatus = (status: string) => {
         if (onStatus) {
+          console.log("mobile:status", status);
           onStatus(status);
         }
       };
@@ -244,7 +242,7 @@ export function OnboardingProvider({
         }
       }
     },
-    [background, data, setOnboardingData, signMessageForWallet]
+    [data]
   );
 
   const handlePrivateKeyInput = useCallback(
@@ -275,7 +273,7 @@ export function OnboardingProvider({
         },
       });
     },
-    [setOnboardingData, data.userId, signMessageForWallet]
+    [data]
   );
 
   const getKeyringInit = useCallback(
@@ -295,7 +293,7 @@ export function OnboardingProvider({
         };
       }
     },
-    []
+    [data]
   );
 
   //
@@ -323,7 +321,6 @@ export function OnboardingProvider({
         };
 
         const { jwt } = await authenticate(authData!);
-        logger.debug("createUser:authenticate:jwt", jwt);
         return { id: userId, jwt };
       }
 
@@ -361,7 +358,7 @@ export function OnboardingProvider({
         throw new Error(`error creating user`);
       }
     },
-    [authenticate]
+    [data]
   );
 
   //
@@ -393,15 +390,13 @@ export function OnboardingProvider({
         throw new Error(`error creating account`);
       }
     },
-    [background, getKeyringInit]
+    [data]
   );
 
   const maybeCreateUser = useCallback(
     async (data: Partial<OnboardingData>) => {
       try {
         const { id, jwt } = await createUser(data);
-        logger.debug("createUserResult:id", id);
-        logger.debug("createUserResult:jwt", jwt);
         await createStore(id, jwt, data);
         return { ok: true, jwt };
       } catch (err) {
@@ -409,7 +404,7 @@ export function OnboardingProvider({
         return { ok: false, jwt: "" };
       }
     },
-    [createStore, createUser]
+    [data]
   );
 
   const contextValue = useMemo(

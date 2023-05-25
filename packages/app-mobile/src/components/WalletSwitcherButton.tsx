@@ -8,7 +8,6 @@ import { useNavigation } from "@react-navigation/native";
 
 import { BetterBottomSheet } from "~components/BottomSheetModal";
 import { BottomSheetWalletPicker } from "~components/BottomSheetWalletPicker";
-import { useTheme } from "~hooks/useTheme";
 
 export function WalletSwitcherButton(): JSX.Element {
   const navigation = useNavigation();
