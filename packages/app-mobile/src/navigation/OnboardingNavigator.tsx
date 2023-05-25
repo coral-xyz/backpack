@@ -912,8 +912,6 @@ function CreateAccountLoadingScreen(
         setError(true);
       }
 
-      console.log("debug1:jwt", res.jwt, res);
-
       setAuthToken(res.jwt);
     })();
   }, [onboardingData, background, maybeCreateUser, setAuthToken]);

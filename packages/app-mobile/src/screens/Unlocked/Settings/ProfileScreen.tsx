@@ -1,37 +1,24 @@
 import { Suspense } from "react";
 import { View } from "react-native";
 
-import { Image } from "expo-image";
-
 import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallets } from "@coral-xyz/recoil";
 import { StyledText, XStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { Avatar, Screen, ScreenError, ScreenLoading } from "~components/index";
-import { getBlockchainLogo } from "~hooks/index";
+import {
+  Avatar,
+  Screen,
+  ScreenError,
+  ScreenLoading,
+  BlockchainLogo,
+} from "~components/index";
 
 function AvatarHeader(): JSX.Element {
   return (
     <View style={{ alignItems: "center", marginBottom: 24 }}>
       <Avatar size={140} />
     </View>
-  );
-}
-
-function NetworkIcon({
-  size,
-  blockchain,
-}: {
-  size?: number;
-  blockchain: Blockchain;
-}) {
-  const logo = getBlockchainLogo(blockchain);
-  return (
-    <Image
-      style={{ width: size, height: size, marginRight: 8 }}
-      source={logo}
-    />
   );
 }
 
@@ -49,7 +36,7 @@ function Pill({
       borderRadius={16}
       padding={8}
     >
-      <NetworkIcon blockchain={blockchain} size={16} />
+      <BlockchainLogo blockchain={blockchain} size={16} />
       <StyledText color="$secondary" fontSize="$base">
         {walletAddressDisplay(publicKey)}
       </StyledText>
