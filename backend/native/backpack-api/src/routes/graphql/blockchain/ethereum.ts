@@ -1,15 +1,14 @@
 import {
   AssetTransfersCategory,
   type AssetTransfersParams,
-  type AssetTransfersResult,
   BigNumber,
   SortingOrder,
 } from "alchemy-sdk";
 import { ethers } from "ethers";
 
 import type { CoinGeckoPriceData } from "../clients/coingecko";
-import { UniswapTokenList } from "../clients/uniswap";
 import type { ApiContext } from "../context";
+import { UniswapTokenList } from "../tokens/uniswap";
 import {
   type BalanceFiltersInput,
   type Balances,
@@ -24,7 +23,6 @@ import {
   type Transaction,
   type TransactionConnection,
   type TransactionFiltersInput,
-  type TransactionTransfer,
 } from "../types";
 import { calculateBalanceAggregate, createConnection } from "../utils";
 
@@ -68,9 +66,9 @@ export class Ethereum implements Blockchain {
     );
 
     const meta = nonEmptyTokens.reduce<Map<string, string>>((acc, curr) => {
-      const id: string | undefined = UniswapTokenList[curr.contractAddress];
+      const id = UniswapTokenList[curr.contractAddress];
       if (id) {
-        acc.set(curr.contractAddress, id);
+        acc.set(curr.contractAddress, id.coingeckoId);
       }
       return acc;
     }, new Map());
@@ -261,15 +259,23 @@ export class Ethereum implements Blockchain {
       .sort((a, b) => Number(b.blockNum) - Number(a.blockNum));
 
     const nodes: Transaction[] = combined.map((tx) => {
+      const nfts = tx.erc721TokenId
+        ? [`${tx.rawContract.address}/${tx.erc721TokenId}`]
+        : tx.erc1155Metadata && tx.erc1155Metadata.length > 0
+        ? tx.erc1155Metadata.map(
+            (t) => `${tx.rawContract.address}/${t.tokenId}`
+          )
+        : undefined;
+
       return {
         id: `${this.id()}_transaction:${tx.uniqueId}`,
         block: Number(tx.blockNum),
         fee: undefined, // FIXME: find gas amount paid for processing
         feePayer: tx.from,
         hash: tx.hash,
+        nfts,
         raw: tx,
         timestamp: (tx as any).metadata?.blockTimestamp || undefined,
-        transfers: generateTokenTransfers(tx),
         type: tx.category,
       };
     });
@@ -294,53 +300,6 @@ export class Ethereum implements Blockchain {
   nativeDecimals(): number {
     return 18;
   }
-}
-
-/**
- * Infers and generates the list of token transfers that occured
- * in the argued transaction object.
- * @param {AssetTransfersResult} tx
- * @returns {TransactionTransfer[]}
- */
-function generateTokenTransfers(
-  tx: AssetTransfersResult
-): TransactionTransfer[] {
-  const transfers: TransactionTransfer[] = [];
-
-  if (tx.value) {
-    transfers.push({
-      amount: tx.value,
-      from: tx.from,
-      to: tx.to ?? ETH_DEFAULT_ADDRESS,
-      token: tx.rawContract.address ?? ETH_DEFAULT_ADDRESS,
-      tokenName: tx.asset,
-    });
-  }
-
-  if (tx.erc1155Metadata && tx.erc1155Metadata.length > 0) {
-    transfers.push(
-      ...tx.erc1155Metadata.map(
-        (m): TransactionTransfer => ({
-          amount: ethers.BigNumber.from(m.value).toNumber(),
-          from: tx.from,
-          to: tx.to ?? ETH_DEFAULT_ADDRESS,
-          token: `${tx.rawContract.address}/${m.tokenId}`,
-        })
-      )
-    );
-  }
-
-  if (tx.erc721TokenId) {
-    transfers.push({
-      amount: 1,
-      from: tx.from,
-      to: tx.to ?? ETH_DEFAULT_ADDRESS,
-      token: `${tx.rawContract.address}/${tx.erc721TokenId}`,
-      tokenName: tx.asset,
-    });
-  }
-
-  return transfers;
 }
 
 /**

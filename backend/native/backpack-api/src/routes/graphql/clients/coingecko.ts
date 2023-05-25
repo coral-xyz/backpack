@@ -1,10 +1,5 @@
 import { RESTDataSource } from "@apollo/datasource-rest";
 
-export const ASSET_ID_MAP = new Map<
-  string,
-  { id: string; name: string } | null
->();
-
 type CoinGeckoOptions = {
   apiKey: string;
 };

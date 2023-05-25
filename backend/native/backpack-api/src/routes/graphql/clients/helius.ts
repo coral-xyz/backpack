@@ -4,8 +4,6 @@ import type { AccountInfo } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import type { EnrichedTransaction } from "helius-sdk";
 
-import { ASSET_ID_MAP } from "./coingecko";
-
 type HeliusOptions = {
   apiKey: string;
   devnet?: boolean;
@@ -42,61 +40,6 @@ export class Helius extends RESTDataSource {
         "api-key": this.#apiKey,
       },
     });
-  }
-
-  /**
-   * Fetch and create a mapping between token mint address and discoverable
-   * CoinGecko token ID through the legacy token metadata extensions.
-   * @param {string[]} mints
-   * @returns {Promise<Map<string, string>>}
-   * @memberof Helius
-   */
-  async getTokenMarketIds(mints: string[]): Promise<Map<string, string>> {
-    const mappings: Map<string, string> = new Map();
-    for (const m of mints) {
-      if (ASSET_ID_MAP.has(m)) {
-        mappings.set(m, ASSET_ID_MAP.get(m)!.id);
-      }
-    }
-
-    // Check to see if all argued mint addresses were found in the known asset ID map
-    const mintCacheMisses = mints.filter((m) => !mappings.has(m));
-    if (mintCacheMisses.length === 0) {
-      // Remove all `null` entries from the copied over asset IDs
-      for (const entry of mappings.entries()) {
-        if (!entry[1]) {
-          mappings.delete(entry[0]);
-        }
-      }
-      return mappings;
-    }
-
-    const resp = await this.post<HeliusGetTokenMetadataResponse>(
-      "/v0/token-metadata",
-      {
-        headers: { "Content-Type": "application/json" },
-        params: {
-          "api-key": this.#apiKey,
-        },
-        body: JSON.stringify({
-          mintAccounts: mintCacheMisses,
-          includeOffChain: false,
-          disableCache: false,
-        }),
-      }
-    );
-
-    for (const entry of resp) {
-      const id = entry.legacyMetadata?.extensions?.coingeckoId ?? null;
-      const name = entry.onChainMetadata?.metadata?.data?.name ?? null;
-      ASSET_ID_MAP.set(entry.account, id && name ? { id, name } : null);
-
-      if (id) {
-        mappings.set(entry.account, id);
-      }
-    }
-
-    return mappings;
   }
 
   /**

@@ -1,12 +1,12 @@
 import { getATAAddressesSync } from "@saberhq/token-utils";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { ethers } from "ethers";
-import type { EnrichedTransaction } from "helius-sdk";
 
-import { ASSET_ID_MAP, type CoinGeckoPriceData } from "../clients/coingecko";
+import type { CoinGeckoPriceData } from "../clients/coingecko";
 import type { HeliusGetTokenMetadataResponse } from "../clients/helius";
 import type { TensorActingListingsResponse } from "../clients/tensor";
 import type { ApiContext } from "../context";
+import { JupiterTokenList } from "../tokens";
 import {
   type BalanceFiltersInput,
   type Balances,
@@ -22,7 +22,6 @@ import {
   type Transaction,
   type TransactionConnection,
   type TransactionFiltersInput,
-  type TransactionTransfer,
 } from "../types";
 import { calculateBalanceAggregate, createConnection } from "../utils";
 
@@ -62,11 +61,16 @@ export class Solana implements Blockchain {
     );
 
     // Get the list of SPL mints and fetch their Coingecko IDs from the
-    // Helius legacy token metadata
+    // in-memory Jupiter token list
     const nonNftMints = nonEmptyOrNftTokens.map((t) => t.mint);
-    const meta = await this.#ctx.dataSources.helius.getTokenMarketIds(
-      nonNftMints
-    );
+    const meta = nonNftMints.reduce<Map<string, string>>((acc, curr) => {
+      const entry = JupiterTokenList[curr];
+      if (!entry) {
+        return acc;
+      }
+      acc.set(curr, entry.coingeckoId);
+      return acc;
+    }, new Map());
 
     // Query market data for SOL and each of the found SPL token IDs
     const ids = [...meta.values()];
@@ -337,6 +341,11 @@ export class Solana implements Blockchain {
           : (r.transactionError as any).error
         : undefined;
 
+      const nfts =
+        r.events?.nft?.nfts && r.events.nft?.nfts.length > 0
+          ? r.events.nft.nfts.map((n) => n.mint)
+          : undefined;
+
       return {
         id: `${this.id()}_transaction:${r.signature}`,
         description: r.description,
@@ -345,10 +354,10 @@ export class Solana implements Blockchain {
         fee: r.fee,
         feePayer: r.feePayer,
         hash: r.signature,
+        nfts,
         raw: r,
         source: r.source,
         timestamp: new Date(r.timestamp * 1000).toISOString(),
-        transfers: generateTokenTransfers(r),
         type: r.type,
       };
     });
@@ -405,45 +414,4 @@ export class Solana implements Blockchain {
         }
       : undefined;
   }
-}
-
-/**
- * Generate a semantic list of token transfers from the argued transaction.
- * @param {EnrichedTransaction} tx
- * @returns {TransactionTransfer[]}
- */
-function generateTokenTransfers(
-  tx: EnrichedTransaction
-): TransactionTransfer[] {
-  const transfers: TransactionTransfer[] = [];
-
-  if (tx.nativeTransfers && tx.nativeTransfers.length > 0) {
-    transfers.push(
-      ...tx.nativeTransfers.map(
-        (t): TransactionTransfer => ({
-          amount: t.amount,
-          from: t.fromUserAccount ?? SOLANA_DEFAULT_ADDRESS,
-          to: t.toUserAccount ?? SOLANA_DEFAULT_ADDRESS,
-          token: SOLANA_DEFAULT_ADDRESS,
-          tokenName: "SOL",
-        })
-      )
-    );
-  }
-
-  if (tx.tokenTransfers && tx.tokenTransfers.length > 0) {
-    transfers.push(
-      ...tx.tokenTransfers.map(
-        (t): TransactionTransfer => ({
-          amount: t.tokenAmount,
-          from: t.fromUserAccount ?? SOLANA_DEFAULT_ADDRESS,
-          to: t.toUserAccount ?? SOLANA_DEFAULT_ADDRESS,
-          token: t.mint,
-          tokenName: ASSET_ID_MAP.get(t.mint)?.name,
-        })
-      )
-    );
-  }
-
-  return transfers;
 }

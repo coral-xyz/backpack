@@ -334,6 +334,8 @@ export type PageInfo = {
 /** Root level query type. */
 export type Query = {
   __typename?: "Query";
+  /** Get the entire or a specific entry of a token list. */
+  tokenList: Array<Maybe<TokenListEntry>>;
   /**
    * Fetch a user by their Backpack account username. The username is inferred by the
    * presence of a valid and verified JWT.
@@ -344,6 +346,12 @@ export type Query = {
    * @deprecated Should use the user entrypoint for authentication identities.
    */
   wallet?: Maybe<Wallet>;
+};
+
+/** Root level query type. */
+export type QueryTokenListArgs = {
+  chainId: ChainId;
+  filters?: InputMaybe<TokenListEntryFiltersInput>;
 };
 
 /** Root level query type. */
@@ -391,6 +399,32 @@ export type TokenBalanceEdge = {
   node: TokenBalance;
 };
 
+export type TokenListEntry = Node & {
+  __typename?: "TokenListEntry";
+  /** The mint or contract address of the token. */
+  address: Scalars["String"];
+  /** The Coingecko market listing ID. */
+  coingeckoId: Scalars["String"];
+  /** Globally unique identifier for the list entry. */
+  id: Scalars["ID"];
+  /** The logo associated with the token. */
+  logo?: Maybe<Scalars["String"]>;
+  /** The registered name of the token. */
+  name: Scalars["String"];
+  /** The registered symbol of the token. */
+  symbol: Scalars["String"];
+};
+
+/** Input filter type for fetching a specific entry from a token list. */
+export type TokenListEntryFiltersInput = {
+  /** The mint or contract address of the token. */
+  address?: InputMaybe<Scalars["String"]>;
+  /** The market listing name of the token. */
+  name?: InputMaybe<Scalars["String"]>;
+  /** The market listing symbol of the token. */
+  symbols?: InputMaybe<Array<Scalars["String"]>>;
+};
+
 /** Generic on-chain transaction details structure. */
 export type Transaction = Node & {
   __typename?: "Transaction";
@@ -408,14 +442,14 @@ export type Transaction = Node & {
   hash: Scalars["String"];
   /** Globally unique identifier for a single transaction. */
   id: Scalars["ID"];
+  /** A list of NFT mints or contract + token IDs associated with the transaction. */
+  nfts?: Maybe<Array<Maybe<Scalars["String"]>>>;
   /** The raw JSON data received from the index API response for the item. */
   raw: Scalars["JSONObject"];
   /** The source or program that is associated with the transaction. */
   source?: Maybe<Scalars["String"]>;
   /** The timestamp of the execution or commitment of the transaction. */
   timestamp?: Maybe<Scalars["String"]>;
-  /** A list of all token transfers that occured during the transaction. */
-  transfers: Array<TransactionTransfer>;
   /** The category or type of transaction. */
   type: Scalars["String"];
 };
@@ -442,21 +476,6 @@ export type TransactionFiltersInput = {
   before?: InputMaybe<Scalars["String"]>;
   /** A token mint or contract address to filter for. */
   token?: InputMaybe<Scalars["String"]>;
-};
-
-/** Describes a single token transfer from a transaction. */
-export type TransactionTransfer = {
-  __typename?: "TransactionTransfer";
-  /** The numerical amount of the token that was transferred. */
-  amount: Scalars["Float"];
-  /** The address that the transfer was initiated from. */
-  from: Scalars["String"];
-  /** The address that the transfer was sent to. */
-  to: Scalars["String"];
-  /** The token mint or contract address of the token type. */
-  token: Scalars["String"];
-  /** The token mint or contract address symbol. */
-  tokenName?: Maybe<Scalars["String"]>;
 };
 
 /**
@@ -714,6 +733,7 @@ export type ResolversTypes = ResolversObject<{
     | ResolversTypes["Notification"]
     | ResolversTypes["NotificationApplicationData"]
     | ResolversTypes["TokenBalance"]
+    | ResolversTypes["TokenListEntry"]
     | ResolversTypes["Transaction"]
     | ResolversTypes["User"]
     | ResolversTypes["Wallet"];
@@ -729,11 +749,12 @@ export type ResolversTypes = ResolversObject<{
   TokenBalance: ResolverTypeWrapper<TokenBalance>;
   TokenBalanceConnection: ResolverTypeWrapper<TokenBalanceConnection>;
   TokenBalanceEdge: ResolverTypeWrapper<TokenBalanceEdge>;
+  TokenListEntry: ResolverTypeWrapper<TokenListEntry>;
+  TokenListEntryFiltersInput: TokenListEntryFiltersInput;
   Transaction: ResolverTypeWrapper<Transaction>;
   TransactionConnection: ResolverTypeWrapper<TransactionConnection>;
   TransactionEdge: ResolverTypeWrapper<TransactionEdge>;
   TransactionFiltersInput: TransactionFiltersInput;
-  TransactionTransfer: ResolverTypeWrapper<TransactionTransfer>;
   User: ResolverTypeWrapper<User>;
   Wallet: ResolverTypeWrapper<Wallet>;
   WalletConnection: ResolverTypeWrapper<WalletConnection>;
@@ -775,6 +796,7 @@ export type ResolversParentTypes = ResolversObject<{
     | ResolversParentTypes["Notification"]
     | ResolversParentTypes["NotificationApplicationData"]
     | ResolversParentTypes["TokenBalance"]
+    | ResolversParentTypes["TokenListEntry"]
     | ResolversParentTypes["Transaction"]
     | ResolversParentTypes["User"]
     | ResolversParentTypes["Wallet"];
@@ -789,11 +811,12 @@ export type ResolversParentTypes = ResolversObject<{
   TokenBalance: TokenBalance;
   TokenBalanceConnection: TokenBalanceConnection;
   TokenBalanceEdge: TokenBalanceEdge;
+  TokenListEntry: TokenListEntry;
+  TokenListEntryFiltersInput: TokenListEntryFiltersInput;
   Transaction: Transaction;
   TransactionConnection: TransactionConnection;
   TransactionEdge: TransactionEdge;
   TransactionFiltersInput: TransactionFiltersInput;
-  TransactionTransfer: TransactionTransfer;
   User: User;
   Wallet: Wallet;
   WalletConnection: WalletConnection;
@@ -1035,6 +1058,7 @@ export type NodeResolvers<
     | "Notification"
     | "NotificationApplicationData"
     | "TokenBalance"
+    | "TokenListEntry"
     | "Transaction"
     | "User"
     | "Wallet",
@@ -1122,6 +1146,12 @@ export type QueryResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Query"] = ResolversParentTypes["Query"]
 > = ResolversObject<{
+  tokenList?: Resolver<
+    Array<Maybe<ResolversTypes["TokenListEntry"]>>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryTokenListArgs, "chainId">
+  >;
   user?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
   wallet?: Resolver<
     Maybe<ResolversTypes["Wallet"]>,
@@ -1171,6 +1201,19 @@ export type TokenBalanceEdgeResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type TokenListEntryResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["TokenListEntry"] = ResolversParentTypes["TokenListEntry"]
+> = ResolversObject<{
+  address?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  coingeckoId?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  logo?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  symbol?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type TransactionResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Transaction"] = ResolversParentTypes["Transaction"]
@@ -1186,15 +1229,15 @@ export type TransactionResolvers<
   feePayer?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   hash?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  nfts?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["String"]>>>,
+    ParentType,
+    ContextType
+  >;
   raw?: Resolver<ResolversTypes["JSONObject"], ParentType, ContextType>;
   source?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   timestamp?: Resolver<
     Maybe<ResolversTypes["String"]>,
-    ParentType,
-    ContextType
-  >;
-  transfers?: Resolver<
-    Array<ResolversTypes["TransactionTransfer"]>,
     ParentType,
     ContextType
   >;
@@ -1221,22 +1264,6 @@ export type TransactionEdgeResolvers<
 > = ResolversObject<{
   cursor?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   node?: Resolver<ResolversTypes["Transaction"], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type TransactionTransferResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes["TransactionTransfer"] = ResolversParentTypes["TransactionTransfer"]
-> = ResolversObject<{
-  amount?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
-  from?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  to?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  token?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  tokenName?: Resolver<
-    Maybe<ResolversTypes["String"]>,
-    ParentType,
-    ContextType
-  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1352,10 +1379,10 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   TokenBalance?: TokenBalanceResolvers<ContextType>;
   TokenBalanceConnection?: TokenBalanceConnectionResolvers<ContextType>;
   TokenBalanceEdge?: TokenBalanceEdgeResolvers<ContextType>;
+  TokenListEntry?: TokenListEntryResolvers<ContextType>;
   Transaction?: TransactionResolvers<ContextType>;
   TransactionConnection?: TransactionConnectionResolvers<ContextType>;
   TransactionEdge?: TransactionEdgeResolvers<ContextType>;
-  TransactionTransfer?: TransactionTransferResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   Wallet?: WalletResolvers<ContextType>;
   WalletConnection?: WalletConnectionResolvers<ContextType>;
