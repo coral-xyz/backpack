@@ -1,4 +1,5 @@
-import React, { Loading, View } from "react-xnft";
+import React from "react";
+import { Loading, View } from "react-xnft";
 
 function CenteredLoader() {
   return (

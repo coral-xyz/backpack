@@ -1,8 +1,8 @@
 {
   "kind": "app",
-  "storage": "ipfs",
+  "storage": "aws",
   "name": "Prices",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Easily track prices of all major crypto assets. Look up the latest stats and charts for Bitcoin, Ethereum, Solana and other currencies directly in your wallet.",
   "website": "https://www.xnft.gg",
   "contact": "https://github.com/coral-xyz/backpack",
