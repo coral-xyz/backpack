@@ -13,11 +13,11 @@ import { useApolloClient } from "./graphql/apollo";
 
 const suspenseCache = new SuspenseCache();
 
-export function Providers({
+function InnerProvider({
   children,
 }: {
-  children: JSX.Element;
-}): JSX.Element | null {
+  children: React.ReactNode;
+}): JSX.Element {
   const theme = useTheme();
   const { client } = useApolloClient();
 
@@ -27,21 +27,29 @@ export function Providers({
   }
 
   return (
+    <ApolloProvider client={client} suspenseCache={suspenseCache}>
+      <TamaguiProvider config={config} defaultTheme={theme.colorScheme}>
+        <SafeAreaProvider>
+          <NotificationsProvider>
+            <ActionSheetProvider>
+              <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
+            </ActionSheetProvider>
+          </NotificationsProvider>
+        </SafeAreaProvider>
+      </TamaguiProvider>
+    </ApolloProvider>
+  );
+}
+
+export function Providers({
+  children,
+}: {
+  children: React.ReactNode;
+}): JSX.Element {
+  return (
     <SessionProvider>
       <RelayEnvironment>
-        <ApolloProvider client={client} suspenseCache={suspenseCache}>
-          <TamaguiProvider config={config} defaultTheme={theme.colorScheme}>
-            <SafeAreaProvider>
-              <NotificationsProvider>
-                <ActionSheetProvider>
-                  <BottomSheetModalProvider>
-                    {children}
-                  </BottomSheetModalProvider>
-                </ActionSheetProvider>
-              </NotificationsProvider>
-            </SafeAreaProvider>
-          </TamaguiProvider>
-        </ApolloProvider>
+        <InnerProvider>{children}</InnerProvider>
       </RelayEnvironment>
     </SessionProvider>
   );

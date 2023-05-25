@@ -1,19 +1,20 @@
 import type { Wallet } from "~types/types";
 
 import { Suspense, useCallback } from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, View } from "react-native";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
+import { formatUSD } from "@coral-xyz/common";
 import { Box, StyledText } from "@coral-xyz/tamagui";
 import { useNavigation } from "@react-navigation/native";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { ListItemWalletOverview, ListHeader } from "~components/ListItem";
+import { ListHeader, ListItemWalletOverview } from "~components/ListItem";
 import {
   RoundedContainerGroup,
   Screen,
-  ScreenLoading,
   ScreenError,
+  ScreenLoading,
 } from "~components/index";
 import { useWallets } from "~hooks/wallets";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
@@ -46,7 +47,6 @@ function ListItemData({ wallet, onPress }: { wallet: Wallet }): JSX.Element {
   });
 
   const balance = data.wallet.balances?.aggregate.value?.toFixed(2) ?? "0.00";
-  console.log("debug2:wallet", wallet);
 
   return (
     <ListItemWalletOverview
@@ -54,7 +54,8 @@ function ListItemData({ wallet, onPress }: { wallet: Wallet }): JSX.Element {
       name={wallet.name}
       blockchain={wallet.blockchain}
       publicKey={wallet.publicKey}
-      balance={`$${balance}`}
+      type={wallet.type}
+      balance={formatUSD(balance)}
       onPress={onPress}
     />
   );
@@ -67,8 +68,17 @@ function ListItem({
   item: Wallet;
   onPress: any;
 }): JSX.Element {
+  const ErrorMessage = ({ error }) => {
+    return (
+      <StyledText color="$redText" size="$sm" textAlign="center">
+        {error.message}
+      </StyledText>
+    );
+  };
   return (
-    <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ErrorMessage error={error} />}
+    >
       <Suspense>
         <ListItemData wallet={wallet} onPress={onPress} />
       </Suspense>
@@ -78,12 +88,12 @@ function ListItem({
 
 function WalletList() {
   const navigation = useNavigation();
-  const { allWallets, onSelectWallet } = useWallets();
+  const { allWallets, selectActiveWallet } = useWallets();
 
   const handlePressWallet = useCallback(
     async (w: Wallet) => {
-      onSelectWallet(w, console.log);
-      navigation.navigate("TopTabsWalletDetail", {
+      selectActiveWallet({ blockchain: w.blockchain, publicKey: w.publicKey });
+      navigation.push("TopTabsWalletDetail", {
         screen: "TokenList",
         params: {
           publicKey: w.publicKey.toString(),
@@ -91,7 +101,7 @@ function WalletList() {
         },
       });
     },
-    [navigation, onSelectWallet]
+    [navigation, selectActiveWallet]
   );
 
   const keyExtractor = (wallet: Wallet) => wallet.publicKey.toString();

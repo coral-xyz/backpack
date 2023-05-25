@@ -20,7 +20,7 @@ export const NoRecentActivity = () => (
     title="No Recent Activity"
     subtitle="Get started by doing something!"
     iconName="bolt"
-    buttonText="Browser the xNFT Library"
+    buttonText="Browse the xNFT Library"
     onPress={() => {
       Linking.openURL(XNFT_GG_LINK);
     }}
@@ -114,7 +114,7 @@ export function _RecentActivityList({
     <SectionList
       sections={sections}
       keyExtractor={keyExtractor}
-      contentContainerStyle={{ flex: 1 }}
+      contentContainerStyle={{ flex: sections.length > 0 ? undefined : 1 }}
       renderItem={renderItem}
       scrollEnabled={sections.length > 0}
       renderSectionHeader={renderSectionHeader}
@@ -122,17 +122,7 @@ export function _RecentActivityList({
       stickySectionHeadersEnabled={false}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={ListHeaderComponent}
-      ListEmptyComponent={
-        <ScreenEmptyList
-          title="No Recent Activity"
-          subtitle="Get started by doing something!"
-          iconName="bolt"
-          buttonText="Browser the xNFT Library"
-          onPress={() => {
-            Linking.openURL(XNFT_GG_LINK);
-          }}
-        />
-      }
+      ListEmptyComponent={<NoRecentActivity />}
     />
   );
 }

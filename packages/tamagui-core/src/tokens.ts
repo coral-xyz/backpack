@@ -35,6 +35,9 @@ export const tokens = createTokens({
 
 // the colors are tokenized so they can be utilized by the theme
 export const lightThemeColors = {
+  modal: tokens.color.baseWhite,
+  accentBlue: tokens.color.lightAccentBlue,
+  accentPurple: tokens.color.lightAccentPurple,
   // old theme colors
   fontColor: tokens.color.lightBaseTextHighEmphasis,
   icon: tokens.color.lightBaseIcon,
@@ -85,6 +88,9 @@ export const lightThemeColors = {
 };
 
 export const darkThemeColors = {
+  modal: tokens.color.darkBaseBackgroundL0,
+  accentBlue: tokens.color.darkAccentBlue,
+  accentPurple: tokens.color.darkAccentPurple,
   // old theme colors
   fontColor: tokens.color.darkBaseTextHighEmphasis,
   icon: tokens.color.darkBaseIcon,

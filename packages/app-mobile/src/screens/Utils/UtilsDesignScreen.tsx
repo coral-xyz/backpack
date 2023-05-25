@@ -36,6 +36,7 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { ArrowRightIcon } from "~components/Icon";
 import { CurrentUserAvatar, UserAvatar } from "~components/UserAvatar";
 import { Screen } from "~components/index";
 
@@ -127,10 +128,6 @@ function TableWrapper({ children }) {
   );
 }
 
-const KeyboardArrowRight = () => (
-  <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
-);
-
 function Sep() {
   return (
     <View style={{ paddingLeft: 60, backgroundColor: "white" }}>
@@ -162,7 +159,8 @@ function UserList() {
               icon={
                 <Image
                   source={{
-                    uri: "https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681404388701?size=120",
+                    uri:
+                      "https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681404388701?size=120",
                   }}
                   style={{
                     width: 32,
@@ -172,7 +170,7 @@ function UserList() {
                   }}
                 />
               }
-              iconAfter={<KeyboardArrowRight />}
+              iconAfter={<ArrowRightIcon />}
             />
           );
         }}
@@ -361,11 +359,13 @@ function ExpoConfigSettings() {
         title={show ? "hide" : "show config variables"}
         onPress={() => setShow(!show)}
       />
-      {show ? (
-        <StyledText fontSize="$xs">
-          {JSON.stringify(Constants.expoConfig?.extra, null, 2)}
-        </StyledText>
-      ) : null}
+      {show
+        ? (
+          <StyledText fontSize="$xs">
+            {JSON.stringify(Constants.expoConfig?.extra, null, 2)}
+          </StyledText>
+        )
+        : null}
     </View>
   );
 }
@@ -564,7 +564,8 @@ export function UtilsDesignScreen(): JSX.Element {
               usdBalance: 100,
               displayBalance: 100,
               recentUsdBalanceChange: 1.24,
-              logo: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
+              logo:
+                "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
             }}
             blockchain={Blockchain.SOLANA}
             walletPublicKey="xyz"
@@ -589,7 +590,8 @@ export function UtilsDesignScreen(): JSX.Element {
                   usdBalance: 3578.04,
                   displayBalance: 43.45983943,
                   recentUsdBalanceChange: -75.65,
-                  logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
+                  logo:
+                    "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
                 }}
                 blockchain={Blockchain.SOLANA}
                 walletPublicKey="xyz"
@@ -605,7 +607,8 @@ export function UtilsDesignScreen(): JSX.Element {
                   usdBalance: 847.39,
                   displayBalance: 847.39,
                   recentUsdBalanceChange: -0.04,
-                  logo: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
+                  logo:
+                    "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
                 }}
                 blockchain={Blockchain.SOLANA}
                 walletPublicKey="xyz"

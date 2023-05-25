@@ -10,7 +10,7 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 
 import { BetterBottomSheet } from "~components/BottomSheetModal";
-import { DiscordIcon, TwitterIcon } from "~components/Icon";
+import { DiscordIcon, TwitterIcon, IconMenu } from "~components/Icon";
 import { RoundedContainerGroup } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { useSession } from "~lib/SessionProvider";
@@ -25,14 +25,9 @@ export function HelpModalMenuButton({
 }: {
   onPress: () => void;
 }): JSX.Element {
-  const theme = useTheme();
   return (
     <Pressable onPress={onPress} style={styles.button}>
-      <MaterialIcons
-        name="menu"
-        size={32}
-        color={theme.custom.colors.fontColor}
-      />
+      <IconMenu size={32} />
     </Pressable>
   );
 }

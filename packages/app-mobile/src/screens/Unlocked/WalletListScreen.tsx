@@ -1,14 +1,7 @@
-import type { Wallet, PublicKey } from "~types/types";
+import type { PublicKey, Wallet } from "~types/types";
 
 import { useCallback } from "react";
-import {
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,6 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HardwareIcon, ImportedIcon, MnemonicIcon } from "~components/Icon";
 import { ListItemWalletOverview } from "~components/ListItem";
 import {
+  BlockchainLogo,
   CopyButtonIcon,
   ListRowSeparator,
   Margin,
@@ -24,62 +18,23 @@ import {
   Screen,
   StyledText,
 } from "~components/index";
-import { getBlockchainLogo } from "~hooks/index";
 import { useTheme } from "~hooks/useTheme";
 import { useWallets } from "~hooks/wallets";
 
-export function MainWalletList({
-  onPressWallet,
-}: {
-  onPressWallet: (b: Blockchain, p: PublicKey) => void;
-}): JSX.Element {
-  const { allWallets } = useWallets();
-
-  const keyExtractor = (wallet: Wallet) => wallet.publicKey.toString();
-  const renderItem = useCallback(
-    ({ item: wallet }: { item: Wallet }) => {
-      return (
-        <ListItemWalletOverview
-          grouped
-          name={wallet.name}
-          blockchain={wallet.blockchain}
-          publicKey={wallet.publicKey}
-          balance="$4,197.69 TODO"
-          onPress={onPressWallet}
-        />
-      );
-    },
-    [onPressWallet]
-  );
-
-  return (
-    <>
-      <StyledText fontSize="$base" mb={8}>
-        {allWallets.length} Wallets
-      </StyledText>
-      <RoundedContainerGroup>
-        <FlatList
-          data={allWallets}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-        />
-      </RoundedContainerGroup>
-    </>
-  );
-}
-
-// NOTE(peter): copied from app-extension/src/components/common/WalletList.tsx
 export function WalletListScreen({ navigation, route }): JSX.Element {
   const insets = useSafeAreaInsets();
-  const { activeWallet, onSelectWallet, allWallets } = useWallets();
+  const { activeWallet, selectActiveWallet, allWallets } = useWallets();
 
   const handlePressWallet = useCallback(
-    (wallet: Wallet) => {
-      onSelectWallet(wallet, () => {
-        navigation.goBack();
-      });
+    (w: Wallet) => {
+      selectActiveWallet(
+        { blockchain: w.blockchain, publicKey: w.publicKey },
+        () => {
+          navigation.goBack();
+        }
+      );
     },
-    [onSelectWallet, navigation]
+    [selectActiveWallet, navigation]
   );
 
   return (
@@ -137,7 +92,7 @@ function WalletListItem({
       >
         <View style={styles.listItemLeft}>
           <Margin right={12}>
-            <NetworkIcon blockchain={blockchain} />
+            <BlockchainLogo blockchain={blockchain} />
           </Margin>
           <View>
             <StyledText
@@ -165,22 +120,6 @@ function WalletListItem({
   );
 }
 
-function NetworkIcon({
-  size,
-  blockchain,
-}: {
-  size?: number;
-  blockchain: Blockchain;
-}) {
-  const logo = getBlockchainLogo(blockchain);
-  return (
-    <Image
-      style={[styles.logoContainer, { width: size, height: size }]}
-      source={logo}
-    />
-  );
-}
-
 function WalletTypeIcon({ type, fill }: { type: string; fill?: string }) {
   switch (type) {
     case "imported":
@@ -202,10 +141,5 @@ const styles = StyleSheet.create({
   listItemLeft: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  logoContainer: {
-    width: 24,
-    height: 24,
-    marginRight: 8,
   },
 });
