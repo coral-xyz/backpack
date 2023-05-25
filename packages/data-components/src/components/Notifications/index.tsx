@@ -1,9 +1,12 @@
-import type { ReactNode} from "react";
+import type { ReactNode } from "react";
 import { Suspense, useMemo } from "react";
 import { useSuspenseQuery_experimental } from "@apollo/client";
 
 import { gql } from "../../apollo";
-import { SortDirection } from "../../apollo/graphql";
+import {
+  type GetNotificationsQuery,
+  SortDirection,
+} from "../../apollo/graphql";
 
 import {
   NotificationList,
@@ -35,6 +38,10 @@ const GET_NOTIFICATIONS = gql(`
     }
   }
 `);
+
+export type ResponseNotification = NonNullable<
+  NonNullable<GetNotificationsQuery["user"]>["notifications"]
+>["edges"][number]["node"];
 
 export type NotificationsProps = Omit<
   NotificationListProps,

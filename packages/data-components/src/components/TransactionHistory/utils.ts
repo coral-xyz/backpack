@@ -1,19 +1,20 @@
-import type { Transaction } from "../../apollo/graphql";
 import { formatDate } from "../../utils";
+
+import type { ResponseTransaction } from ".";
 
 export type TransactionGroup = {
   date: string;
-  data: Partial<Transaction>[];
+  data: ResponseTransaction[];
 };
 
 /**
  * Group the argued list of transactions by date.
  * @export
- * @param {Transaction[]} transactions
+ * @param {ResponseTransaction[]} transactions
  * @returns {TransactionGroup[]}
  */
 export function getGroupedTransactions(
-  transactions: Partial<Transaction>[]
+  transactions: ResponseTransaction[]
 ): TransactionGroup[] {
   const groupedTxs: TransactionGroup[] = [];
   const filteredTxs = transactions.filter((t) => t.timestamp);

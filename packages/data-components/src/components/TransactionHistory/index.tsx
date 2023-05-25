@@ -3,10 +3,16 @@ import { useSuspenseQuery_experimental } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
 
 import { gql } from "../../apollo";
-import { ChainId, type Transaction } from "../../apollo/graphql";
+import {
+  ChainId,
+  type GetTransactionsQuery,
+  type Transaction,
+} from "../../apollo/graphql";
 
 import { TransactionList } from "./TransactionList";
 import { getGroupedTransactions } from "./utils";
+
+export * from "./TransactionDetailsTable";
 
 const GET_TRANSACTIONS = gql(`
   query GetTransactions($address: String!, $filters: TransactionFiltersInput) {
@@ -35,6 +41,12 @@ const GET_TRANSACTIONS = gql(`
     }
   }
 `);
+
+export type ResponseTransaction = NonNullable<
+  NonNullable<
+    NonNullable<GetTransactionsQuery["user"]>["wallet"]
+  >["transactions"]
+>["edges"][number]["node"];
 
 export type TransactionHistoryProps = {
   contractOrMint?: string;

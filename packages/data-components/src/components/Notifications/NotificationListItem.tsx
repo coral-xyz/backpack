@@ -9,18 +9,17 @@ import {
   YStack,
 } from "@coral-xyz/tamagui";
 
-import type { Notification } from "../../apollo/graphql";
-
+import type { ResponseNotification } from ".";
 import { NotificationListItemFriendRequestAction } from "./NotificationListItemActions";
 import { getTimeStr } from "./utils";
 
 export type NotificationListItemProps = {
-  notification: Notification;
+  notification: ResponseNotification;
   onAcceptFriendRequest?: (
     activeUserId: string,
     otherUserId: string
   ) => void | Promise<void>;
-  onClick?: (n: Notification) => void;
+  onClick?: (n: ResponseNotification) => void;
   onDeclineFriendRequest?: (
     activeUserId: string,
     otherUserId: string

@@ -1,19 +1,20 @@
-import type { Notification } from "../../apollo/graphql";
 import { formatDate } from "../../utils";
+
+import type { ResponseNotification } from ".";
 
 export type NotificationGroup = {
   date: string;
-  data: Notification[];
+  data: ResponseNotification[];
 };
 
 /**
  * Group the argued list of notifications by date.
  * @export
- * @param {Notification[]} notifications
+ * @param {ResponseNotification[]} notifications
  * @returns {NotificationGroup[]}
  */
 export function getGroupedNotifications(
-  notifications: Notification[]
+  notifications: ResponseNotification[]
 ): NotificationGroup[] {
   const groupedNotifications: NotificationGroup[] = [];
   const bodies = notifications.map((n) => JSON.stringify(n.body));

@@ -13,6 +13,7 @@ export * from "./RoundedContainerGroup";
 export { SearchBox } from "./SearchBox";
 export * from "./Skeleton";
 export { StyledText } from "./StyledText";
+export * from "./Table";
 export * from "./TextPercentChanged";
 export * from "./TwoButtonFooter";
 export * from "./UsdBalanceAndPercentChange";

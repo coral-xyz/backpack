@@ -1,9 +1,10 @@
 /**
  * Format a string for the argued `Date` instance.
  * @param {Date} date
+ * @param {boolean} [includeTime]
  * @returns {string}
  */
-export function formatDate(date: Date): string {
+export function formatDate(date: Date, includeTime?: boolean): string {
   const months = [
     "Jan",
     "Feb",
@@ -21,7 +22,8 @@ export function formatDate(date: Date): string {
   const mm = months[date.getMonth()];
   const dd = date.getDate();
   const yyyy = date.getFullYear();
-  return `${mm} ${dd}, ${yyyy}`;
+  const time = includeTime ? ` at ${date.toLocaleTimeString()}` : "";
+  return `${mm} ${dd}, ${yyyy}${time}`;
 }
 
 /**

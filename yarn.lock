@@ -4125,6 +4125,8 @@ __metadata:
     "@graphql-codegen/client-preset": ^3.0.1
     "@types/react": ^18.2.6
     eslint-config-custom: "*"
+    expo-linking: ^4.0.1
+    expo-modules-core: ^1.2.7
     helius-sdk: ^1.0.6
     react: ^18.2.0
     react-error-boundary: ^4.0.4
@@ -23598,6 +23600,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-constants@npm:~14.3.0":
+  version: 14.3.0
+  resolution: "expo-constants@npm:14.3.0"
+  dependencies:
+    "@expo/config": ~8.0.0
+    uuid: ^3.3.2
+  peerDependencies:
+    expo: "*"
+  checksum: 647fda433b302780eae453a6dc58ea6da4aed42753729b04fd3ecaca277cc1979a67cfeaea2c6a60b82ca5d79f139b08b94576986264a1f13b0ef1bfc2911d01
+  languageName: node
+  linkType: hard
+
 "expo-crypto@npm:~12.2.1":
   version: 12.2.1
   resolution: "expo-crypto@npm:12.2.1"
@@ -23732,6 +23746,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-linking@npm:^4.0.1":
+  version: 4.1.0
+  resolution: "expo-linking@npm:4.1.0"
+  dependencies:
+    "@types/qs": ^6.9.7
+    expo-constants: ~14.3.0
+    invariant: ^2.2.4
+    qs: ^6.11.0
+    url-parse: ^1.5.9
+  checksum: fe1552c8636dcb3776204849c0023dd9567f335d147f264d3f290f1fe68e1b235debb8b213030e23054f37234623884e4585fa8e628377e92463369480a45bd9
+  languageName: node
+  linkType: hard
+
 "expo-linking@npm:~4.0.1":
   version: 4.0.1
   resolution: "expo-linking@npm:4.0.1"
@@ -23812,6 +23839,16 @@ __metadata:
     compare-versions: ^3.4.0
     invariant: ^2.2.4
   checksum: e3f69a62ef3c8dd357e7e3c90d0009d0dd0cfeae93d86c5043580bd78d35c0be5fcd345bd9dfa7b6e58d0a945b823cb6cb8666ad00c86a06bb31fe409eaed7d5
+  languageName: node
+  linkType: hard
+
+"expo-modules-core@npm:^1.2.7":
+  version: 1.3.2
+  resolution: "expo-modules-core@npm:1.3.2"
+  dependencies:
+    compare-versions: ^3.4.0
+    invariant: ^2.2.4
+  checksum: 9f8a4430377a23a6ecc89e07bc08e0bfef9d6410971be49433b93301e9b9f04597ce867293d0d2c049d4ae4b657b13d2b992b70ba7bd897c21dc92d42bb2b2ff
   languageName: node
   linkType: hard
 

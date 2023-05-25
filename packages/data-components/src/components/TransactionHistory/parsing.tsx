@@ -1,9 +1,9 @@
 import { walletAddressDisplay } from "@coral-xyz/common";
 import { TransactionType } from "helius-sdk";
 
-import type { Transaction } from "../../apollo/graphql";
 import { snakeToTitleCase } from "../../utils";
 
+import type { ResponseTransaction } from ".";
 import {
   TransactionListItemIconBurn,
   TransactionListItemIconNft,
@@ -24,12 +24,12 @@ export type ParseTransactionDetails = {
  * to pull out and aggregate key details that can be displayed to users.
  * @export
  * @param {string} activeWallet
- * @param {Partial<Transaction>} transaction
+ * @param {ResponseTransaction} transaction
  * @returns {(ParseTransactionDetails | null)}
  */
 export function parseTransaction(
   activeWallet: string,
-  transaction: Partial<Transaction>
+  transaction: ResponseTransaction
 ): ParseTransactionDetails | null {
   const desc = transaction.description?.replace(/\.$/, "") ?? "";
   switch (transaction.type) {
@@ -95,13 +95,13 @@ function _parseNftBurnDescription(
 
 /**
  * Parses the description string for an NFT listing cancellation transaction.
- * @param {Partial<Transaction>} transaction
+ * @param {ResponseTransaction} transaction
  * @param {string} description
  * @returns {(ParseTransactionDetails | null)}
  * @example "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz cancelled 80 SOL listing for Mad Lads #2699 on TENSOR"
  */
 function _parseNftListingCanceledDescription(
-  transaction: Partial<Transaction>,
+  transaction: ResponseTransaction,
   description: string
 ): ParseTransactionDetails | null {
   try {
@@ -126,13 +126,13 @@ function _parseNftListingCanceledDescription(
 
 /**
  * Parses the description string for an NFT listing transaction.
- * @param {Partial<Transaction>} transaction
+ * @param {ResponseTransaction} transaction
  * @param {string} description
  * @returns {(ParseTransactionDetails | null)}
  * @example "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz listed Mad Lad #8811 for 131 SOL on MAGIC_EDEN."
  */
 function _parseNftListingDescription(
-  transaction: Partial<Transaction>,
+  transaction: ResponseTransaction,
   description: string
 ): ParseTransactionDetails | null {
   try {
@@ -157,13 +157,13 @@ function _parseNftListingDescription(
 
 /**
  * Parses the description string for an NFT mint transaction.
- * @param {Partial<Transaction>} transaction
+ * @param {ResponseTransaction} transaction
  * @param {string} description
  * @returns {(ParseTransactionDetails | null)}
  * @example "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz minted Mad Lads #6477 for 6.9114946 SOL on CANDY_MACHINE_V3"
  */
 function _parseNftMintDescription(
-  transaction: Partial<Transaction>,
+  transaction: ResponseTransaction,
   description: string
 ): ParseTransactionDetails | null {
   try {
@@ -189,14 +189,14 @@ function _parseNftMintDescription(
 /**
  * Parses the description string for an NFT sale transaction.
  * @param {string} activeWallet
- * @param {Partial<Transaction>} transaction
+ * @param {ResponseTransaction} transaction
  * @param {string} description
  * @returns {(ParseTransactionDetails | null)}
  * @example "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz sold Mad Lad #3150 to 69X4Un6qqC8QBeBKk6zrqUVKGccnWqgUkwdLcC7wiLFB for 131 SOL on MAGIC_EDEN"
  */
 function _parseNftSaleDescription(
   activeWallet: string,
-  transaction: Partial<Transaction>,
+  transaction: ResponseTransaction,
   description: string
 ): ParseTransactionDetails | null {
   try {
@@ -286,11 +286,11 @@ function _parseTransferDescription(
 
 /**
  * Parses a transaction object for details about a program upgrade.
- * @param {Partial<Transaction>} transaction
+ * @param {ResponseTransaction} transaction
  * @returns {ParseTransactionDetails}
  */
 function _parseUpgradeProgramTransaction(
-  transaction: Partial<Transaction>
+  transaction: ResponseTransaction
 ): ParseTransactionDetails {
   return {
     tl: "Program Upgrade",

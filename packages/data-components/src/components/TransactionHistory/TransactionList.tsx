@@ -11,17 +11,15 @@ import {
   Separator,
 } from "@coral-xyz/tamagui";
 
-import type { ChainId, Transaction } from "../../apollo/graphql";
+import type { ChainId } from "../../apollo/graphql";
 
 import { TransactionListItem } from "./TransactionListItem";
 import type { TransactionGroup } from "./utils";
+import { type ResponseTransaction, TransactionDetailsTable } from ".";
 
 export type TransactionListProps = {
   blockchain: ChainId;
-  onItemClick?: (
-    transaction: Partial<Transaction>,
-    explorerUrl: string
-  ) => void;
+  onItemClick?: (transaction: ResponseTransaction, explorerUrl: string) => void;
   transactions: TransactionGroup[];
 };
 
@@ -32,21 +30,18 @@ export function TransactionList({
 }: TransactionListProps) {
   /**
    * Returns the child component key for an item.
-   * @param {Partial<Transaction>} item
+   * @param {ResponseTransaction} item
    * @returns {string}
    */
-  const keyExtractor = useCallback(
-    (item: Partial<Transaction>) => item.id!,
-    []
-  );
+  const keyExtractor = useCallback((item: ResponseTransaction) => item.id!, []);
 
   /**
    * Returns a renderable component for an individual item in a list.
-   * @param {{ item: Partial<Transaction>, section: SectionListData<Partial<Transaction>, TransactionGroup>, index: number }} args
+   * @param {{ item: ResponseTransaction, section: SectionListData<ResponseTransaction, TransactionGroup>, index: number }} args
    * @returns {ReactElement}
    */
   const renderItem: SectionListRenderItem<
-    Partial<Transaction>,
+    ResponseTransaction,
     TransactionGroup
   > = useCallback(
     ({ item, section, index }) => {
@@ -71,29 +66,35 @@ export function TransactionList({
 
   /**
    * Returns a renderable component for the header of the each section.
-   * @param {{ section: SectionListData<Partial<Transaction>, TransactionGroup> }} info
+   * @param {{ section: SectionListData<ResponseTransaction, TransactionGroup> }} info
    * @returns {ReactElement}
    */
   const renderSectionHeader = useCallback(
     ({
       section,
     }: {
-      section: SectionListData<Partial<Transaction>, TransactionGroup>;
+      section: SectionListData<ResponseTransaction, TransactionGroup>;
     }) => <ListHeaderCore style={{ marginBottom: 0 }} title={section.date} />,
     []
   );
 
   return (
-    <SectionList
-      style={{ marginHorizontal: 16, marginTop: 16 }}
-      stickySectionHeadersEnabled={false}
-      showsVerticalScrollIndicator={false}
-      sections={transactions}
-      keyExtractor={keyExtractor}
-      renderItem={renderItem}
-      renderSectionHeader={renderSectionHeader}
-      SectionSeparatorComponent={ListSectionSeparatorCore}
-      ItemSeparatorComponent={Separator}
-    />
+    <>
+      <TransactionDetailsTable
+        style={{ marginHorizontal: 16 }}
+        transaction={transactions[0].data[0]}
+      />
+      <SectionList
+        style={{ marginHorizontal: 16, marginTop: 16 }}
+        stickySectionHeadersEnabled={false}
+        showsVerticalScrollIndicator={false}
+        sections={transactions}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        renderSectionHeader={renderSectionHeader}
+        SectionSeparatorComponent={ListSectionSeparatorCore}
+        ItemSeparatorComponent={Separator}
+      />
+    </>
   );
 }
