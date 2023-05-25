@@ -21,58 +21,20 @@ import {
 import { useTheme } from "~hooks/useTheme";
 import { useWallets } from "~hooks/wallets";
 
-export function MainWalletList({
-  onPressWallet,
-}: {
-  onPressWallet: (b: Blockchain, p: PublicKey) => void;
-}): JSX.Element {
-  const { allWallets } = useWallets();
-
-  const keyExtractor = (wallet: Wallet) => wallet.publicKey.toString();
-  const renderItem = useCallback(
-    ({ item: wallet }: { item: Wallet }) => {
-      return (
-        <ListItemWalletOverview
-          grouped
-          name={wallet.name}
-          blockchain={wallet.blockchain}
-          publicKey={wallet.publicKey}
-          balance="$4,197.69 TODO"
-          onPress={onPressWallet}
-        />
-      );
-    },
-    [onPressWallet]
-  );
-
-  return (
-    <>
-      <StyledText fontSize="$base" mb={8}>
-        {allWallets.length} Wallets
-      </StyledText>
-      <RoundedContainerGroup>
-        <FlatList
-          data={allWallets}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-        />
-      </RoundedContainerGroup>
-    </>
-  );
-}
-
-// NOTE(peter): copied from app-extension/src/components/common/WalletList.tsx
 export function WalletListScreen({ navigation, route }): JSX.Element {
   const insets = useSafeAreaInsets();
-  const { activeWallet, onSelectWallet, allWallets } = useWallets();
+  const { activeWallet, selectActiveWallet, allWallets } = useWallets();
 
   const handlePressWallet = useCallback(
-    (wallet: Wallet) => {
-      onSelectWallet(wallet, () => {
-        navigation.goBack();
-      });
+    (w: Wallet) => {
+      selectActiveWallet(
+        { blockchain: w.blockchain, publicKey: w.publicKey },
+        () => {
+          navigation.goBack();
+        }
+      );
     },
-    [onSelectWallet, navigation]
+    [selectActiveWallet, navigation]
   );
 
   return (
@@ -179,10 +141,5 @@ const styles = StyleSheet.create({
   listItemLeft: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  logoContainer: {
-    width: 24,
-    height: 24,
-    marginRight: 8,
   },
 });

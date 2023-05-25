@@ -4,13 +4,8 @@ import type { PublicKey, Wallet } from "~types/types";
 import { useCallback, useState } from "react";
 import { FlatList, Pressable, View } from "react-native";
 
-import { UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE } from "@coral-xyz/common";
-import {
-  useActiveWallet,
-  useBackgroundClient,
-  usePrimaryWallets,
-} from "@coral-xyz/recoil";
-import { PaddedListItemSeparator, StyledText, Theme } from "@coral-xyz/tamagui";
+import { usePrimaryWallets } from "@coral-xyz/recoil";
+import { PaddedListItemSeparator, StyledText } from "@coral-xyz/tamagui";
 import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 
 import { ListItemWallet } from "~components/ListItem";
@@ -26,23 +21,19 @@ const BlueLinkButton = ({ onPress, label }): JSX.Element => (
 
 export function BottomSheetWalletPicker({ navigation }) {
   const { dismiss } = useBottomSheetModal();
-  const background = useBackgroundClient();
-  const { allWallets } = useWallets();
+  const { allWallets, activeWallet, selectActiveWallet } = useWallets();
   const primaryWallets = usePrimaryWallets();
-  const activeWallet = useActiveWallet();
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const handlePressSelect = useCallback(
-    async (b: Blockchain, pk: PublicKey) => {
-      setLoadingId(pk);
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-        params: [pk, b],
+    async (blockchain: Blockchain, publicKey: PublicKey) => {
+      setLoadingId(publicKey);
+      selectActiveWallet({ blockchain, publicKey }, () => {
+        setLoadingId(null);
+        dismiss();
       });
-      setLoadingId(null);
-      dismiss();
     },
-    [background, dismiss]
+    [dismiss, selectActiveWallet]
   );
 
   const handlePressEdit = useCallback(

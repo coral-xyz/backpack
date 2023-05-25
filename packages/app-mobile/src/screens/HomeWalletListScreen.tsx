@@ -1,7 +1,7 @@
 import type { Wallet } from "~types/types";
 
 import { Suspense, useCallback } from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, View } from "react-native";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
 import { formatUSD } from "@coral-xyz/common";
@@ -88,11 +88,11 @@ function ListItem({
 
 function WalletList() {
   const navigation = useNavigation();
-  const { allWallets, onSelectWallet } = useWallets();
+  const { allWallets, selectActiveWallet } = useWallets();
 
   const handlePressWallet = useCallback(
     async (w: Wallet) => {
-      onSelectWallet(w, console.log);
+      selectActiveWallet({ blockchain: w.blockchain, publicKey: w.publicKey });
       navigation.push("TopTabsWalletDetail", {
         screen: "TokenList",
         params: {
@@ -101,7 +101,7 @@ function WalletList() {
         },
       });
     },
-    [navigation, onSelectWallet]
+    [navigation, selectActiveWallet]
   );
 
   const keyExtractor = (wallet: Wallet) => wallet.publicKey.toString();
