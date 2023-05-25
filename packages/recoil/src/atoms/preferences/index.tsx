@@ -1,8 +1,4 @@
-import type {
-  AutolockSettings,
-  Blockchain,
-  Preferences,
-} from "@coral-xyz/common";
+import type { AutolockSettings, Preferences } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   DEFAULT_AUTO_LOCK_INTERVAL_SECS,
@@ -132,8 +128,12 @@ export const xnftJwt = atomFamily({
     key: "xnftJwtDefault",
     get:
       ({ xnftAddress }: { xnftAddress: string }) =>
-      async (): Promise<string> => {
+      async ({ get }): Promise<string> => {
         try {
+          // If a different user opens the same xNFT we want to force a new
+          // HTTP request that includes their authentication JWT.
+          get(authenticatedUser);
+          // get(activeWallet); // Uncomment if including the pubkey in the jwt
           const response = await fetch(
             `${BACKEND_API_URL}/users/jwt/xnft?xnftAddress=${xnftAddress}`
           );
