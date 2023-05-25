@@ -28,17 +28,16 @@ export function ConnectHardwareSearching({
   // When devices get connected or disconnected, we need to refresh.
   //
   useEffect(() => {
-    // @ts-ignore
-    const connectListener = navigator.hid.addEventListener("connect", () => {
+    const connectListener = () => {
       setNavigatorStateChange((prev) => prev + 1);
-    });
+    };
     // @ts-ignore
-    const disconnectListener = navigator.hid.addEventListener(
-      "disconnect",
-      async () => {
-        setNavigatorStateChange((prev) => prev + 1);
-      }
-    );
+    navigator.hid.addEventListener("connect", connectListener);
+    const disconnectListener = async () => {
+      setNavigatorStateChange((prev) => prev + 1);
+    };
+    // @ts-ignore
+    navigator.hid.addEventListener("disconnect", disconnectListener);
     return () => {
       // @ts-ignore
       navigator.hid.removeEventListener("connect", connectListener);
