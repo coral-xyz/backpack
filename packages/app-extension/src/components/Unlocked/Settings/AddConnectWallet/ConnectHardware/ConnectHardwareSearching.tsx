@@ -33,7 +33,7 @@ export function ConnectHardwareSearching({
     };
     // @ts-ignore
     navigator.hid.addEventListener("connect", connectListener);
-    const disconnectListener = async () => {
+    const disconnectListener = () => {
       setNavigatorStateChange((prev) => prev + 1);
     };
     // @ts-ignore
