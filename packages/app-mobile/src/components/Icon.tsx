@@ -14,13 +14,13 @@ type TamaguiIconProp = {
   size?: number;
 };
 
-export const IconButton = ({ onPress, name, color, size }) => {
+export const IconButton = withThemedIcon(({ onPress, name, color, size }) => {
   return (
     <Pressable onPress={onPress}>
       <MaterialIcons name={name} color={color} size={size} />
     </Pressable>
   );
-};
+});
 
 export const IconMenu = withThemedIcon(({ color, size }: TamaguiIconProp) => {
   const baseIconColor = useTamaguiTheme().fontColor.val;
