@@ -1,4 +1,3 @@
-import type { Nft } from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useCallback, useEffect, useState } from "react";
@@ -19,16 +18,13 @@ import {
   walletAddressDisplay,
   toDisplayBalance,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
-  isMadLads,
 } from "@coral-xyz/common";
 import {
-  useActiveWallet,
   useAnchorContext,
   useEthereumCtx,
   useIsValidAddress,
 } from "@coral-xyz/recoil";
 import {
-  SecondaryButton,
   PrimaryButton,
   DangerButton,
   Box,
@@ -43,9 +39,9 @@ import { SendSolanaConfirmationCard } from "~components/BottomDrawerSolanaConfir
 import { BetterBottomSheet } from "~components/BottomSheetModal";
 import { UnstyledTokenTextInput } from "~components/TokenInputField";
 import { UserAvatar } from "~components/UserAvatar";
-import { Screen, TwoButtonFooter } from "~components/index";
+import { Screen } from "~components/index";
 import { useTheme as useCustomTheme } from "~hooks/useTheme";
-import type { UnlockedNavigatorStackParamList } from "~navigation/UnlockedNavigator";
+import type { UnlockedNavigatorStackParamList } from "~navigation/types";
 
 import { SendTokenSelectUserScreen } from "./SendTokenScreen2";
 import { SearchableTokenTables } from "./components/Balances";

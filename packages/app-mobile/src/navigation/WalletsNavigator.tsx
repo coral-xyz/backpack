@@ -1,8 +1,13 @@
-import { Dimensions } from "react-native";
+import { Alert, Dimensions, Platform } from "react-native";
 
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
-import { Box } from "@coral-xyz/tamagui";
+import { StyledText } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
+import {
+  PlatformPressable,
+  HeaderBackButton,
+  HeaderBackButtonProps,
+} from "@react-navigation/elements";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import {
   createStackNavigator,
@@ -10,6 +15,7 @@ import {
 } from "@react-navigation/stack";
 
 import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
+import { Header } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { CollectionDetailScreen } from "~screens/CollectionDetailScreen";
 import { CollectionItemDetailScreen } from "~screens/CollectionItemDetailScreen";
@@ -18,6 +24,7 @@ import { HomeWalletListScreen } from "~screens/HomeWalletListScreen";
 import { RecentActivityScreen } from "~screens/RecentActivityScreen";
 import { TokenDetailScreen } from "~screens/TokenDetailScreen";
 import { TokenListScreen } from "~screens/TokenListScreen";
+import { WalletDisplayStarterScreen } from "~screens/WalletDisplayStarterScreen";
 
 type TopTabsParamList = {
   TokenList: {
@@ -68,6 +75,7 @@ function TopTabsNavigator(): JSX.Element {
 }
 
 export type WalletStackParamList = {
+  WalletDisplayStarter: undefined;
   HomeWalletList: undefined;
   TopTabsWalletDetail: {
     blockchain: Blockchain;
@@ -92,10 +100,45 @@ export type TokenDetailScreenParams = StackScreenProps<
   "TokenDetail"
 >;
 
+type HeaderButtonProps = HeaderBackButtonProps & {
+  name: string;
+};
+
+function HeaderButton({ name, tintColor, ...rest }: HeaderButtonProps) {
+  return (
+    <PlatformPressable style={{ marginHorizontal: 12 }} {...rest}>
+      <MaterialIcons name={name} size={24} color={tintColor} />
+    </PlatformPressable>
+  );
+}
+
 const Stack = createStackNavigator<WalletStackParamList>();
 export function WalletsNavigator(): JSX.Element {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="WalletDisplayStarter">
+      <Stack.Screen
+        name="WalletDisplayStarter"
+        component={WalletDisplayStarterScreen}
+        options={({ navigation }) => {
+          return {
+            headerShown: true,
+            title: "Balances",
+            headerLeft: (props) => (
+              <HeaderButton
+                name="settings"
+                {...props}
+                onPress={() => {
+                  navigation.openDrawer();
+                  // navigation.navigate("HomeWalletList");
+                }}
+              />
+            ),
+            headerRight: (props) => (
+              <HeaderButton name="notifications" {...props} />
+            ),
+          };
+        }}
+      />
       <Stack.Screen
         name="HomeWalletList"
         component={HomeWalletListScreen}
