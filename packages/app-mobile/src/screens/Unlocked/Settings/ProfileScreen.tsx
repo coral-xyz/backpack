@@ -37,7 +37,7 @@ function Pill({
       padding={8}
     >
       <BlockchainLogo blockchain={blockchain} size={16} />
-      <StyledText color="$secondary" fontSize="$base">
+      <StyledText ml={8} color="$secondary" fontSize="$base">
         {walletAddressDisplay(publicKey)}
       </StyledText>
     </XStack>

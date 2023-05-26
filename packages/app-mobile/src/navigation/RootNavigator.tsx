@@ -6,18 +6,17 @@ import {
   useKeyringStoreState,
   WithAuth,
 } from "@coral-xyz/recoil";
-import { ListItem } from "@coral-xyz/tamagui";
-import {
-  createDrawerNavigator,
-  DrawerContentScrollView,
-  DrawerItemList,
-  DrawerItem,
-} from "@react-navigation/drawer";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 import {
   DarkTheme,
   DefaultTheme,
   NavigationContainer,
 } from "@react-navigation/native";
+
+import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
+import { GlobalDrawerContent } from "~navigation/GlobalDrawerContent";
+import { FriendListScreen } from "~screens/FriendListScreen";
+import { ProfileScreen } from "~screens/Unlocked/Settings/ProfileScreen";
 
 import { LockedScreen } from "./LockedNavigator";
 import {
@@ -26,16 +25,6 @@ import {
 } from "./OnboardingNavigator";
 import { UnlockedNavigator } from "./UnlockedNavigator";
 import { NotFoundScreen } from "../screens/NotFoundScreen";
-
-function CustomDrawerContent(props) {
-  return (
-    <DrawerContentScrollView {...props}>
-      <DrawerItem label="Profile" />
-      <DrawerItem label="Friends" />
-      <DrawerItem label="Accounts" />
-    </DrawerContentScrollView>
-  );
-}
 
 export function RootNavigation({
   colorScheme,
@@ -58,10 +47,33 @@ const DrawerNav = () => {
     <Drawer.Navigator
       initialRouteName="DrawerHome"
       screenOptions={{ headerShown: false }}
-      drawerContent={CustomDrawerContent}
+      drawerContent={GlobalDrawerContent}
       // drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
-      <Drawer.Screen name="DrawerHome" component={UnlockedNavigator} />
+      <Drawer.Screen
+        name="DrawerHome"
+        component={UnlockedNavigator}
+        options={{ title: "Your Wallets" }}
+      />
+      <Drawer.Screen
+        name="AccountSettings"
+        component={AccountSettingsNavigator}
+        options={{ title: "Settings" }}
+      />
+      <Drawer.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Drawer.Screen
+        name="Friends"
+        component={FriendListScreen}
+        options={{
+          headerShown: true,
+        }}
+      />
     </Drawer.Navigator>
   );
 };

@@ -34,6 +34,8 @@ import {
 } from "~components/UserAccountsMenu";
 import { Screen } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
+import { HeaderButton } from "~navigation/components";
+import { AccountSettingsScreen } from "~screens/AccountSettingsScreen";
 import { ImportPrivateKeyScreen } from "~screens/ImportPrivateKeyScreen";
 import {
   LogoutWarningScreen,
@@ -70,6 +72,7 @@ function DummyScreen() {
 }
 
 type AccountSettingsParamList = {
+  Settings: undefined;
   Profile: undefined;
   YourAccount: undefined;
   "change-password": undefined;
@@ -104,18 +107,37 @@ const Stack = createStackNavigator<AccountSettingsParamList>();
 export function AccountSettingsNavigator(): JSX.Element {
   const theme = useTheme();
   return (
-    <Stack.Navigator initialRouteName="Profile">
+    <Stack.Navigator initialRouteName="Settings">
+      <Stack.Screen
+        name="Settings"
+        component={AccountSettingsScreen}
+        options={({ navigation }) => {
+          return {
+            title: "Settings",
+            headerLeft: () => (
+              <HeaderButton name="menu" onPress={navigation.openDrawer} />
+            ),
+            headerTintColor: theme.custom.colors.fontColor,
+            headerBackTitle: "Back",
+          };
+        }}
+      />
       <Stack.Screen
         name="Profile"
         component={ProfileScreen}
         options={({ navigation }) => {
           return {
+            headerShown: true,
+            title: "Settings",
             headerLeft: () => (
-              <AccountSettingsBottomSheet navigation={navigation} />
+              <HeaderButton name="menu" onPress={navigation.openDrawer} />
             ),
-            headerTitle: ({ options }) => (
-              <AccountDropdownHeader options={options} />
-            ),
+            // headerLeft: () => (
+            //   <AccountSettingsBottomSheet navigation={navigation} />
+            // ),
+            // headerTitle: ({ options }) => (
+            //   <AccountDropdownHeader options={options} />
+            // ),
             headerTintColor: theme.custom.colors.fontColor,
             headerBackTitle: "Back",
           };

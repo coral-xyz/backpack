@@ -3,12 +3,16 @@ import { Pressable, Alert } from "react-native";
 
 import { UI_RPC_METHOD_KEYRING_STORE_LOCK } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { YGroup, Separator, StyledText } from "@coral-xyz/tamagui";
+import {
+  YGroup,
+  Separator,
+  StyledText,
+  ListItemSettings,
+} from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 
 import { BetterBottomSheet } from "~components/BottomSheetModal";
-import { ListItemSettings } from "~components/ListItem";
 import { useTheme } from "~hooks/useTheme";
 
 function ListItemSettingsLockWallet(): JSX.Element {
@@ -31,11 +35,8 @@ function ListItemSettingsLockWallet(): JSX.Element {
   );
 }
 
-function SettingsList({ navigation }): JSX.Element {
-  const { dismiss } = useBottomSheetModal();
-
+export function SettingsList({ navigation }): JSX.Element {
   const handlePress = (route: string) => {
-    dismiss();
     navigation.push(route);
   };
 

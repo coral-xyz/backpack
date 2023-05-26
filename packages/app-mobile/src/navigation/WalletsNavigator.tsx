@@ -1,13 +1,6 @@
-import { Alert, Dimensions, Platform } from "react-native";
+import { Dimensions } from "react-native";
 
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
-import { StyledText } from "@coral-xyz/tamagui";
-import { MaterialIcons } from "@expo/vector-icons";
-import {
-  PlatformPressable,
-  HeaderBackButton,
-  HeaderBackButtonProps,
-} from "@react-navigation/elements";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import {
   createStackNavigator,
@@ -15,12 +8,13 @@ import {
 } from "@react-navigation/stack";
 
 import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
-import { Header } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
+import { HeaderButton } from "~navigation/components";
 import { CollectionDetailScreen } from "~screens/CollectionDetailScreen";
 import { CollectionItemDetailScreen } from "~screens/CollectionItemDetailScreen";
 import { CollectionListScreen } from "~screens/CollectionListScreen";
 import { HomeWalletListScreen } from "~screens/HomeWalletListScreen";
+import { NotificationsScreen } from "~screens/NotificationsScreen";
 import { RecentActivityScreen } from "~screens/RecentActivityScreen";
 import { TokenDetailScreen } from "~screens/TokenDetailScreen";
 import { TokenListScreen } from "~screens/TokenListScreen";
@@ -100,18 +94,6 @@ export type TokenDetailScreenParams = StackScreenProps<
   "TokenDetail"
 >;
 
-type HeaderButtonProps = HeaderBackButtonProps & {
-  name: string;
-};
-
-function HeaderButton({ name, tintColor, ...rest }: HeaderButtonProps) {
-  return (
-    <PlatformPressable style={{ marginHorizontal: 12 }} {...rest}>
-      <MaterialIcons name={name} size={24} color={tintColor} />
-    </PlatformPressable>
-  );
-}
-
 const Stack = createStackNavigator<WalletStackParamList>();
 export function WalletsNavigator(): JSX.Element {
   return (
@@ -125,7 +107,7 @@ export function WalletsNavigator(): JSX.Element {
             title: "Balances",
             headerLeft: (props) => (
               <HeaderButton
-                name="settings"
+                name="menu"
                 {...props}
                 onPress={() => {
                   navigation.openDrawer();
@@ -134,7 +116,13 @@ export function WalletsNavigator(): JSX.Element {
               />
             ),
             headerRight: (props) => (
-              <HeaderButton name="notifications" {...props} />
+              <HeaderButton
+                name="notifications"
+                {...props}
+                onPress={() => {
+                  navigation.navigate("Notifications");
+                }}
+              />
             ),
           };
         }}
@@ -144,6 +132,7 @@ export function WalletsNavigator(): JSX.Element {
         component={HomeWalletListScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen
         name="TopTabsWalletDetail"
         component={TopTabsNavigator}

@@ -14,14 +14,12 @@ import {
 } from "~components/Icon";
 import { Avatar } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
-import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 import { ChatNavigator } from "~navigation/ChatNavigator";
 import { WalletsNavigator } from "~navigation/WalletsNavigator";
 import {
   UnlockedNavigatorStackParamList,
   UnlockedTabNavigatorParamList,
 } from "~navigation/types";
-import { NotificationsScreen } from "~screens/NotificationsScreen";
 import { ReceiveTokenScreen } from "~screens/ReceiveTokenScreen";
 import { EditWalletDetailScreen } from "~screens/Unlocked/EditWalletDetailScreen";
 import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollectibleSelectRecipientScreen";
@@ -80,10 +78,6 @@ export function UnlockedNavigator(): JSX.Element {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Group>
         <Stack.Screen name="Tabs" component={UnlockedBottomTabNavigator} />
-        <Stack.Screen
-          name="AccountSettings"
-          component={AccountSettingsNavigator}
-        />
       </Stack.Group>
       <Stack.Group
         screenOptions={{
@@ -215,16 +209,10 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         options={{ title: "Assets" }}
       />
       <Tab.Screen
-        name="Notifications"
-        component={NotificationsScreen}
-        options={{ headerShown: true }}
-      />
-      <Tab.Screen
         name="Chat"
         component={ChatNavigator}
         options={{ title: "Chats" }}
       />
-      <Tab.Screen name="AccountSettings" component={AccountSettingsNavigator} />
       <Tab.Screen name="Utils" component={UtilsDesignScreen} />
     </Tab.Navigator>
   );

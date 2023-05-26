@@ -548,7 +548,7 @@ export function _ListItemOneLine({
     <Pressable
       disabled={!onPress}
       onPress={onPress}
-      style={{ backgroundColor: theme.custom.colors.nav }}
+      style={{ height: 48, backgroundColor: theme.custom.colors.nav }}
     >
       <XStack py={8} px={16} f={1} bg="$nav" jc="space-between" ai="center">
         <XStack ai="center">
