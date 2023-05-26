@@ -437,7 +437,7 @@ export type Transaction = Node & {
   /** The error message for the transaction if it failed. */
   error?: Maybe<Scalars["String"]>;
   /** The amount in fees that were paid for processing the transaction. */
-  fee?: Maybe<Scalars["Float"]>;
+  fee?: Maybe<Scalars["String"]>;
   /** The address of the wallet that paid the processing fees. */
   feePayer?: Maybe<Scalars["String"]>;
   /** The transaction hash or signature. */
@@ -1228,7 +1228,7 @@ export type TransactionResolvers<
     ContextType
   >;
   error?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  fee?: Resolver<Maybe<ResolversTypes["Float"]>, ParentType, ContextType>;
+  fee?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   feePayer?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   hash?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;

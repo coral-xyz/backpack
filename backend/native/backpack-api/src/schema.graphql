@@ -755,7 +755,7 @@ type Transaction implements Node {
   """
   The amount in fees that were paid for processing the transaction.
   """
-  fee: Float
+  fee: String
 
   """
   The address of the wallet that paid the processing fees.

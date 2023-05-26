@@ -356,7 +356,7 @@ export class Solana implements Blockchain {
         description: r.description,
         block: r.slot,
         error: transactionError,
-        fee: parseFloat(ethers.utils.formatUnits(r.fee, this.nativeDecimals())),
+        fee: `${ethers.utils.formatUnits(r.fee, this.nativeDecimals())} SOL`,
         feePayer: r.feePayer,
         hash: r.signature,
         nfts,

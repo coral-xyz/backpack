@@ -267,7 +267,13 @@ export class Ethereum implements Blockchain {
       .flat()
       .sort((a, b) => Number(b.blockNum) - Number(a.blockNum));
 
-    const nodes = combined.map((tx) => {
+    const receipts = await Promise.all(
+      combined.map((tx) =>
+        this.#ctx.dataSources.alchemy.core.getTransactionReceipt(tx.hash)
+      )
+    );
+
+    const nodes = combined.map((tx, i) => {
       const nfts = tx.erc721TokenId
         ? [`${tx.rawContract.address}/${tx.erc721TokenId}`]
         : tx.erc1155Metadata && tx.erc1155Metadata.length > 0
@@ -280,7 +286,13 @@ export class Ethereum implements Blockchain {
         this.id(),
         {
           block: Number(tx.blockNum),
-          fee: undefined, // FIXME: find gas amount paid for processing
+          fee:
+            receipts[i]?.gasUsed && receipts[i]?.effectiveGasPrice
+              ? `${ethers.utils.formatUnits(
+                  receipts[i]!.gasUsed.mul(receipts[i]!.effectiveGasPrice),
+                  this.nativeDecimals()
+                )} ETH`
+              : undefined,
           feePayer: tx.from,
           hash: tx.hash,
           nfts,
