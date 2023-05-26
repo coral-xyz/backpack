@@ -20,8 +20,8 @@ export const darkAccentPurple = "#e17aff";
 
 // Neutral Colors
 export const base50 = "rgba(244, 244, 246, 1)"; // formerly #f8f8f9
-export const base100 = "rgba(238, 239, 241)"; // formerly #f0f0f2
-export const base200 = "rgba(227, 228, 232)"; // formerly #dfe0e5
+export const base100 = "rgba(238, 239, 241, 1)"; // formerly #f0f0f2
+export const base200 = "rgba(227, 228, 232, 1)"; // formerly #dfe0e5
 export const base300 = "rgba(200, 201, 208, 1)"; // formerly #c2c4cc
 export const base400 = "rgba(142, 145, 159, 1)"; // formerly #8f929e
 export const base500 = "rgba(117, 121, 138, 1)"; // formerly #787c89
@@ -130,7 +130,9 @@ export const darkButtonSecondaryText = base50;
 export const darkGreenText = green500;
 export const darkGreenIcon = green600;
 export const darkGreenBorder = color(green500).alpha(0.4).string(); // green500 at 40%
-export const darkGreenBackgroundOpacity = color(green500).alpha(0.08).string(); // green500 at 8%
+export const darkGreenBackgroundTransparent = color(green500)
+  .alpha(0.08)
+  .string(); // green500 at 8%
 export const darkGreenBackgroundSolid = "rgba(18, 35, 34, 1)"; // derived from putting green500 at 8% opacity on base900
 
 // Dark Mode Warning
@@ -238,7 +240,7 @@ export const darkColors = {
   darkButtonPrimaryText,
   darkButtonSecondaryBackground,
   darkButtonSecondaryText,
-  darkGreenBackgroundOpacity,
+  darkGreenBackgroundTransparent,
   darkGreenBackgroundSolid,
   darkGreenBorder,
   darkGreenIcon,

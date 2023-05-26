@@ -1,11 +1,19 @@
-import type { Wallet } from "~types/types";
+import type { Blockchain } from "@coral-xyz/common";
+import type { Wallet, PublicKey } from "~types/types";
 
 import { Suspense, useCallback } from "react";
-import { FlatList, View } from "react-native";
+import { FlatList, Pressable, View } from "react-native";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
 import { formatUSD } from "@coral-xyz/common";
-import { Box, StyledText } from "@coral-xyz/tamagui";
+import {
+  useTheme as useTamaguiTheme,
+  Box,
+  StyledText,
+  Stack,
+  XStack,
+  BlockchainLogo,
+} from "@coral-xyz/tamagui";
 import { useNavigation } from "@react-navigation/native";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -37,7 +45,62 @@ const GET_WALLET_DATA = gql`
   }
 `;
 
-function ListItemData({ wallet, onPress }: { wallet: Wallet }): JSX.Element {
+function ListItemWalletCard({
+  isFirst,
+  name,
+  balance,
+  publicKey,
+  type,
+  blockchain,
+  onPress,
+}: {
+  isFirst: boolean;
+  name: string;
+  type: string;
+  blockchain: Blockchain;
+  publicKey: PublicKey;
+  balance: string;
+  onPress: (w: { blockchain: Blockchain; publicKey: PublicKey }) => void;
+}) {
+  const dehydrated = type === "dehydrated";
+  return (
+    <Pressable
+      onPress={() => {
+        if (!dehydrated) {
+          onPress?.({ blockchain, publicKey });
+        }
+      }}
+    >
+      <XStack
+        mt={isFirst ? 0 : -12}
+        jc="space-between"
+        p={16}
+        borderTopEndRadius={12}
+        borderTopStartRadius={12}
+        borderWidth={1}
+        borderColor="$baseBorderLight"
+        backgroundColor="$baseWhite"
+        height={70}
+      >
+        <XStack ai="center" space={8}>
+          <BlockchainLogo blockchain={blockchain} size={18} />
+          <StyledText size="$lg" fontWeight="600">
+            {name}
+          </StyledText>
+        </XStack>
+        <StyledText size="$lg">{balance}</StyledText>
+      </XStack>
+    </Pressable>
+  );
+}
+
+function ListItemData({
+  isFirst,
+  wallet,
+  onPress,
+}: {
+  wallet: Wallet;
+}): JSX.Element {
   // TODO(peter/graphql): this request needs to fetch all of the balances
   const { data } = useSuspenseQuery_experimental(GET_WALLET_DATA, {
     variables: {
@@ -49,8 +112,8 @@ function ListItemData({ wallet, onPress }: { wallet: Wallet }): JSX.Element {
   const balance = data.wallet.balances?.aggregate.value?.toFixed(2) ?? "0.00";
 
   return (
-    <ListItemWalletOverview
-      grouped
+    <ListItemWalletCard
+      isFirst={isFirst}
       name={wallet.name}
       blockchain={wallet.blockchain}
       publicKey={wallet.publicKey}
@@ -62,9 +125,11 @@ function ListItemData({ wallet, onPress }: { wallet: Wallet }): JSX.Element {
 }
 
 function ListItem({
+  isFirst,
   item: wallet,
   onPress,
 }: {
+  isFirst: boolean;
   item: Wallet;
   onPress: any;
 }): JSX.Element {
@@ -80,7 +145,7 @@ function ListItem({
       fallbackRender={({ error }) => <ErrorMessage error={error} />}
     >
       <Suspense>
-        <ListItemData wallet={wallet} onPress={onPress} />
+        <ListItemData isFirst={isFirst} wallet={wallet} onPress={onPress} />
       </Suspense>
     </ErrorBoundary>
   );
@@ -110,35 +175,26 @@ function WalletList() {
       const isFirst = index === 0;
       const isLast = index === allWallets.length - 1;
       return (
-        <RoundedContainerGroup
-          disableTopRadius={!isFirst}
-          disableBottomRadius={!isLast}
-        >
-          <ListItem item={wallet} onPress={handlePressWallet} />
-        </RoundedContainerGroup>
+        <ListItem isFirst={isFirst} item={wallet} onPress={handlePressWallet} />
       );
     },
     [handlePressWallet, allWallets.length]
   );
 
   return (
-    <View style={{ flex: 1 }}>
-      <ListHeader title={`${allWallets.length.toString()} Wallets`} />
-      <FlatList
-        data={allWallets}
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-      />
-    </View>
+    <FlatList
+      style={{ flex: 1 }}
+      data={allWallets}
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+      showsVerticalScrollIndicator={false}
+    />
   );
 }
 
 function Container() {
   return (
-    <Screen headerPadding>
-      <StyledText fontSize="$xl" textAlign="center">
-        All balances
-      </StyledText>
+    <Screen>
       <Box my={12}>
         <BalanceSummaryWidget />
       </Box>

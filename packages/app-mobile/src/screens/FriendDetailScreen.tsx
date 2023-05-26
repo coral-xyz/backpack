@@ -55,7 +55,7 @@ function Container({ route }: any): JSX.Element {
 
   return (
     <Screen>
-      <StyledText ta="center">Todo {userId}</StyledText>
+      <StyledText>Todo {userId}</StyledText>
       <CurrentUserAvatar />
       <ActiveWalletList />
     </Screen>

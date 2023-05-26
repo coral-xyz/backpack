@@ -97,10 +97,10 @@ export type TokenDetailScreenParams = StackScreenProps<
 const Stack = createStackNavigator<WalletStackParamList>();
 export function WalletsNavigator(): JSX.Element {
   return (
-    <Stack.Navigator initialRouteName="WalletDisplayStarter">
+    <Stack.Navigator initialRouteName="HomeWalletList">
       <Stack.Screen
-        name="WalletDisplayStarter"
-        component={WalletDisplayStarterScreen}
+        name="HomeWalletList"
+        component={HomeWalletListScreen}
         options={({ navigation }) => {
           return {
             headerShown: true,
@@ -126,11 +126,6 @@ export function WalletsNavigator(): JSX.Element {
             ),
           };
         }}
-      />
-      <Stack.Screen
-        name="HomeWalletList"
-        component={HomeWalletListScreen}
-        options={{ headerShown: false }}
       />
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen
