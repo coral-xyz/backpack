@@ -12,9 +12,12 @@ import {
   DefaultTheme,
   NavigationContainer,
 } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
 import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 import { GlobalDrawerContent } from "~navigation/GlobalDrawerContent";
+import { HeaderButton } from "~navigation/components";
+import { FriendDetailScreen } from "~screens/FriendDetailScreen";
 import { FriendListScreen } from "~screens/FriendListScreen";
 import { ProfileScreen } from "~screens/Unlocked/Settings/ProfileScreen";
 
@@ -40,6 +43,53 @@ export function RootNavigation({
   );
 }
 
+type FriendNavigatorStackParamList = {
+  FriendList: undefined;
+  FriendDetail: {
+    userId: string;
+    username: string;
+  };
+};
+
+const FriendStack = createStackNavigator<FriendNavigatorStackParamList>();
+
+const FriendNavigator = () => {
+  return (
+    <FriendStack.Navigator>
+      <Drawer.Screen
+        name="FriendList"
+        component={FriendListScreen}
+        options={({ navigation }) => {
+          return {
+            title: "Friends",
+            headerShown: true,
+            headerLeft: (props) => (
+              <HeaderButton
+                name="menu"
+                {...props}
+                onPress={() => {
+                  navigation.openDrawer();
+                  // navigation.navigate("HomeWalletList");
+                }}
+              />
+            ),
+          };
+        }}
+      />
+      <Drawer.Screen
+        name="FriendDetail"
+        component={FriendDetailScreen}
+        options={({ route }) => {
+          return {
+            headerShown: true,
+            title: route.params?.username,
+          };
+        }}
+      />
+    </FriendStack.Navigator>
+  );
+};
+
 const Drawer = createDrawerNavigator();
 
 const DrawerNav = () => {
@@ -53,7 +103,7 @@ const DrawerNav = () => {
       <Drawer.Screen
         name="DrawerHome"
         component={UnlockedNavigator}
-        options={{ title: "Your Wallets" }}
+        options={{ title: "Balances" }}
       />
       <Drawer.Screen
         name="AccountSettings"
@@ -67,13 +117,7 @@ const DrawerNav = () => {
           headerShown: true,
         }}
       />
-      <Drawer.Screen
-        name="Friends"
-        component={FriendListScreen}
-        options={{
-          headerShown: true,
-        }}
-      />
+      <Drawer.Screen name="Friends" component={FriendNavigator} />
     </Drawer.Navigator>
   );
 };

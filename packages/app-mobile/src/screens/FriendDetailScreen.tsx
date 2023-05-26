@@ -1,8 +1,6 @@
 import { Suspense } from "react";
-import { View } from "react-native";
 
 import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
-import { useActiveWallets } from "@coral-xyz/recoil";
 import { StyledText, XStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -13,14 +11,6 @@ import {
   ScreenLoading,
   BlockchainLogo,
 } from "~components/index";
-
-function AvatarHeader(): JSX.Element {
-  return (
-    <View style={{ alignItems: "center", marginBottom: 24 }}>
-      <CurrentUserAvatar size={140} />
-    </View>
-  );
-}
 
 function Pill({
   blockchain,
@@ -45,7 +35,7 @@ function Pill({
 }
 
 function ActiveWalletList() {
-  const activeWallets = useActiveWallets();
+  const activeWallets = [];
 
   return (
     <XStack ai="center" jc="center" gap={8} flexWrap="wrap">
@@ -60,22 +50,25 @@ function ActiveWalletList() {
   );
 }
 
-function Container(): JSX.Element {
+function Container({ route }: any): JSX.Element {
+  const { userId } = route.params;
+
   return (
     <Screen>
-      <AvatarHeader />
+      <StyledText ta="center">Todo {userId}</StyledText>
+      <CurrentUserAvatar />
       <ActiveWalletList />
     </Screen>
   );
 }
 
-export function ProfileScreen(): JSX.Element {
+export function FriendDetailScreen({ navigation, route }): JSX.Element {
   return (
     <ErrorBoundary
       fallbackRender={({ error }) => <ScreenError error={error} />}
     >
       <Suspense fallback={<ScreenLoading />}>
-        <Container />
+        <Container navigation={navigation} route={route} />
       </Suspense>
     </ErrorBoundary>
   );

@@ -50,16 +50,16 @@ function Container(): JSX.Element {
     }
   };
 
-  useEffect(() => {
-    async function f() {
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-        params: ["backpack", user.uuid],
-      });
-    }
-
-    f();
-  });
+  // useEffect(() => {
+  //   async function f() {
+  //     await background.request({
+  //       method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+  //       params: ["backpack", user.uuid],
+  //     });
+  //   }
+  //
+  //   f();
+  // });
 
   return (
     <>
