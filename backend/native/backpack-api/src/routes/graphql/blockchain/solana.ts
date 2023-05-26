@@ -6,6 +6,7 @@ import type { CoinGeckoPriceData } from "../clients/coingecko";
 import type { HeliusGetTokenMetadataResponse } from "../clients/helius";
 import type { TensorActingListingsResponse } from "../clients/tensor";
 import type { ApiContext } from "../context";
+import { NodeBuilder } from "../nodes";
 import { JupiterTokenList } from "../tokens";
 import {
   type BalanceFiltersInput,
@@ -13,7 +14,6 @@ import {
   ChainId,
   type Collection,
   type Listing,
-  type MarketData,
   type Nft,
   type NftAttribute,
   type NftConnection,
@@ -27,7 +27,7 @@ import { calculateBalanceAggregate, createConnection } from "../utils";
 
 import type { Blockchain } from ".";
 
-const SOLANA_DEFAULT_ADDRESS = SystemProgram.programId.toBase58();
+export const SOLANA_DEFAULT_ADDRESS = SystemProgram.programId.toBase58();
 
 /**
  * Solana blockchain implementation for the common API.
@@ -79,52 +79,55 @@ export class Solana implements Blockchain {
       ...ids,
     ]);
 
-    const nativeData: TokenBalance = {
-      id: `${this.id()}_native_address:${address}`,
-      address,
-      amount: balances.nativeBalance.toString(),
-      decimals: this.nativeDecimals(),
-      displayAmount: ethers.utils.formatUnits(
-        balances.nativeBalance,
-        this.nativeDecimals()
-      ),
-      marketData: {
-        id: this.#ctx.dataSources.coinGecko.id("solana"),
-        lastUpdatedAt: prices.solana.last_updated,
-        logo: prices.solana.image,
-        name: prices.solana.name,
-        percentChange: prices.solana.price_change_percentage_24h,
-        price: prices.solana.current_price,
-        sparkline: prices.solana.sparkline_in_7d.price,
-        symbol: prices.solana.symbol,
-        usdChange: prices.solana.price_change_24h,
-        value:
-          parseFloat(
-            ethers.utils.formatUnits(
-              balances.nativeBalance,
-              this.nativeDecimals()
-            )
-          ) * prices.solana.current_price,
-        valueChange:
-          parseFloat(
-            ethers.utils.formatUnits(
-              balances.nativeBalance,
-              this.nativeDecimals()
-            )
-          ) * prices.solana.price_change_24h,
+    const nativeData = NodeBuilder.tokenBalance(
+      this.id(),
+      {
+        address,
+        amount: balances.nativeBalance.toString(),
+        decimals: this.nativeDecimals(),
+        displayAmount: ethers.utils.formatUnits(
+          balances.nativeBalance,
+          this.nativeDecimals()
+        ),
+        marketData: NodeBuilder.marketData({
+          lastUpdatedAt: prices.solana.last_updated,
+          listingId: "solana",
+          logo: prices.solana.image,
+          name: prices.solana.name,
+          percentChange: prices.solana.price_change_percentage_24h,
+          price: prices.solana.current_price,
+          sparkline: prices.solana.sparkline_in_7d.price,
+          symbol: prices.solana.symbol,
+          usdChange: prices.solana.price_change_24h,
+          value:
+            parseFloat(
+              ethers.utils.formatUnits(
+                balances.nativeBalance,
+                this.nativeDecimals()
+              )
+            ) * prices.solana.current_price,
+          valueChange:
+            parseFloat(
+              ethers.utils.formatUnits(
+                balances.nativeBalance,
+                this.nativeDecimals()
+              )
+            ) * prices.solana.price_change_24h,
+        }),
+        token: SOLANA_DEFAULT_ADDRESS,
       },
-      token: SOLANA_DEFAULT_ADDRESS,
-    };
+      true
+    );
 
     // Map each SPL token into their `TokenBalance` return type object
     const splTokenNodes = nonEmptyOrNftTokens.reduce<TokenBalance[]>(
       (acc, curr) => {
         const id = meta.get(curr.mint);
         const p: CoinGeckoPriceData | null = prices[id ?? ""] ?? null;
-        const marketData: MarketData | null = p
-          ? {
-              id: this.#ctx.dataSources.coinGecko.id(p.id),
+        const marketData = p
+          ? NodeBuilder.marketData({
               lastUpdatedAt: p.last_updated,
+              listingId: p.id,
               logo: p.image,
               name: p.name,
               percentChange: p.price_change_percentage_24h,
@@ -143,8 +146,8 @@ export class Solana implements Blockchain {
                     this.nativeDecimals()
                   )
                 ) * p.price_change_24h,
-            }
-          : null;
+            })
+          : undefined;
 
         if (filters?.marketListedTokensOnly && !marketData) {
           return acc;
@@ -152,29 +155,34 @@ export class Solana implements Blockchain {
 
         return [
           ...acc,
-          {
-            id: `${this.id()}_token_address:${curr.tokenAccount}`,
-            address: curr.tokenAccount,
-            amount: curr.amount.toString(),
-            decimals: curr.decimals,
-            displayAmount: ethers.utils.formatUnits(curr.amount, curr.decimals),
-            marketData,
-            token: curr.mint,
-          },
+          NodeBuilder.tokenBalance(
+            this.id(),
+            {
+              address: curr.tokenAccount,
+              amount: curr.amount.toString(),
+              decimals: curr.decimals,
+              displayAmount: ethers.utils.formatUnits(
+                curr.amount,
+                curr.decimals
+              ),
+              marketData,
+              token: curr.mint,
+            },
+            false
+          ),
         ];
       },
       []
     );
 
-    return {
-      id: `${this.id()}_balances:${address}`,
+    return NodeBuilder.balances(this.id(), {
       aggregate: calculateBalanceAggregate(address, [
         nativeData,
         ...splTokenNodes,
       ]),
       native: nativeData,
       tokens: createConnection(splTokenNodes, false, false),
-    };
+    });
   }
 
   /**
@@ -281,19 +289,17 @@ export class Solana implements Blockchain {
       );
 
       if (tensorListing) {
-        listing = {
-          id: this.#ctx.dataSources.tensor.id(m.account),
+        listing = NodeBuilder.tensorListing(m.account, {
           amount: ethers.utils.formatUnits(
             tensorListing.tx.grossAmount,
             this.nativeDecimals()
           ),
           source: tensorListing.tx.source,
           url: this.#ctx.dataSources.tensor.getListingUrl(m.account),
-        };
+        });
       }
 
-      return {
-        id: `${this.id()}_nft:${m.account}`,
+      return NodeBuilder.nft(this.id(), {
         address: m.account,
         attributes,
         collection,
@@ -310,7 +316,7 @@ export class Solana implements Blockchain {
           undefined,
         owner: address,
         token: atas.accounts[m.account].address.toBase58(),
-      };
+      });
     });
 
     return createConnection(nodes, false, false);
@@ -346,12 +352,11 @@ export class Solana implements Blockchain {
           ? r.events.nft.nfts.map((n) => n.mint)
           : undefined;
 
-      return {
-        id: `${this.id()}_transaction:${r.signature}`,
+      return NodeBuilder.transaction(this.id(), {
         description: r.description,
         block: r.slot,
         error: transactionError,
-        fee: r.fee,
+        fee: `${ethers.utils.formatUnits(r.fee, this.nativeDecimals())} SOL`,
         feePayer: r.feePayer,
         hash: r.signature,
         nfts,
@@ -359,10 +364,10 @@ export class Solana implements Blockchain {
         source: r.source,
         timestamp: new Date(r.timestamp * 1000).toISOString(),
         type: r.type,
-      };
+      });
     });
 
-    return createConnection(nodes, false, false);
+    return createConnection(nodes, false, false); // FIXME: next and previous page
   }
 
   /**
@@ -403,15 +408,12 @@ export class Solana implements Blockchain {
       : undefined;
 
     return hasCollection
-      ? {
-          id: `${this.id()}_nft_collection:${
-            onChainMetadata!.metadata.collection!.key
-          }`,
+      ? NodeBuilder.nftCollection(this.id(), {
           address: onChainMetadata!.metadata.collection!.key,
           image: mapValue?.image,
           name: mapValue?.name,
           verified: onChainMetadata!.metadata.collection!.verified,
-        }
+        })
       : undefined;
   }
 }

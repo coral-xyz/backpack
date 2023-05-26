@@ -46,16 +46,6 @@ export class CoinGecko extends RESTDataSource {
       return acc;
     }, {});
   }
-
-  /**
-   * Return the node ID for Coingecko market data.
-   * @param {string} currency
-   * @returns {string}
-   * @memberof CoinGecko
-   */
-  id(currency: string): string {
-    return `coingecko_market_data:${currency}`;
-  }
 }
 
 ////////////////////////////////////////////

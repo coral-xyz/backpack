@@ -1,6 +1,7 @@
 import { Chain } from "@coral-xyz/zeus";
 import { GraphQLError } from "graphql";
 
+import { NodeBuilder } from "../nodes";
 import {
   type Friend,
   type FriendRequest,
@@ -80,14 +81,13 @@ export class Hasura {
       throw new GraphQLError("Failed to create new notification");
     }
 
-    return {
-      id: `notification:${resp.insert_auth_notifications_one.id}`,
+    return NodeBuilder.notification(resp.insert_auth_notifications_one.id, {
       body: b,
       source,
       title,
       timestamp: timestamp.toISOString(),
       viewed: false,
-    };
+    });
   }
 
   /**
@@ -163,11 +163,12 @@ export class Hasura {
       { operationName: "GetFriendDetailsFromIds" }
     );
 
-    return detailsResp.auth_users.map((u) => ({
-      id: `friend:${u.id}`,
-      avatar: `https://swr.xnfts.dev/avatars/${u.username}`,
-      username: u.username as string,
-    }));
+    return detailsResp.auth_users.map((u) =>
+      NodeBuilder.friend(u.id, {
+        avatar: `https://swr.xnfts.dev/avatars/${u.username}`,
+        username: u.username as string,
+      })
+    );
   }
 
   /**
@@ -198,11 +199,13 @@ export class Hasura {
       { operationName: "GetFriendRequestsForUser" }
     );
 
-    return resp.auth_friend_requests.map((r) => ({
-      id: `friend_request:${r.id}`,
-      type: id === r.from ? FriendRequestType.Sent : FriendRequestType.Received,
-      userId: id === r.from ? r.to : r.from,
-    }));
+    return resp.auth_friend_requests.map((r) =>
+      NodeBuilder.friendRequest(r.id, {
+        type:
+          id === r.from ? FriendRequestType.Sent : FriendRequestType.Received,
+        userId: id === r.from ? r.to : r.from,
+      })
+    );
   }
 
   /**
@@ -263,14 +266,15 @@ export class Hasura {
     }
 
     // Create the list of notification type nodes for the connection
-    const nodes: Notification[] = resp.auth_notifications.map((n) => ({
-      id: `notification:${n.id}`,
-      body: n.body,
-      source: n.xnft_id,
-      timestamp: new Date(n.timestamp as string).toISOString(),
-      title: n.title,
-      viewed: n.viewed ?? false,
-    }));
+    const nodes = resp.auth_notifications.map((n) =>
+      NodeBuilder.notification(n.id, {
+        body: n.body,
+        source: n.xnft_id,
+        timestamp: new Date(n.timestamp as string).toISOString(),
+        title: n.title,
+        viewed: n.viewed ?? false,
+      })
+    );
 
     const conn = createConnection(
       nodes,
@@ -319,13 +323,12 @@ export class Hasura {
       username: string;
     };
 
-    return {
-      id: `user:${id}`,
+    return NodeBuilder.user({
       avatar: `https://swr.xnfts.dev/avatars/${user.username}`,
       createdAt: new Date(user.created_at).toISOString(),
       userId: id,
       username: user.username,
-    };
+    });
   }
 
   /**
@@ -366,13 +369,12 @@ export class Hasura {
     const { blockchain, created_at, is_primary } = resp.auth_public_keys[0];
     const chain = inferChainIdFromString(blockchain);
 
-    return {
-      id: `${chain}_wallet:${address}`,
+    return NodeBuilder.wallet(chain, {
       address,
       chainId: chain,
       createdAt: new Date(created_at as string).toISOString(),
       isPrimary: is_primary ?? false,
-    };
+    });
   }
 
   /**
@@ -419,15 +421,14 @@ export class Hasura {
       return null;
     }
 
-    const nodes: Wallet[] = resp.auth_public_keys.map((pk) => {
+    const nodes = resp.auth_public_keys.map((pk) => {
       const chain = inferChainIdFromString(pk.blockchain);
-      return {
-        id: `${chain}_wallet:${pk.public_key}`,
+      return NodeBuilder.wallet(chain, {
         address: pk.public_key,
         chainId: chain,
         createdAt: new Date(pk.created_at as string).toISOString(),
         isPrimary: pk.is_primary ?? false,
-      };
+      });
     });
 
     return createConnection(nodes, false, false);

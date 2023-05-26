@@ -2,6 +2,7 @@ import type { GraphQLResolveInfo } from "graphql";
 
 import { getBlockchainForId } from "../../blockchain";
 import type { ApiContext } from "../../context";
+import { NodeBuilder } from "../../nodes";
 import type {
   Balances,
   NftConnection,
@@ -29,13 +30,12 @@ export async function walletQueryResolver(
   _ctx: ApiContext,
   _info: GraphQLResolveInfo
 ): Promise<Wallet | null> {
-  return {
-    id: `${chainId}_wallet:${address}`,
+  return NodeBuilder.wallet(chainId, {
     address: address,
     chainId: chainId,
     createdAt: new Date().toISOString(),
     isPrimary: false,
-  };
+  });
 }
 
 /**

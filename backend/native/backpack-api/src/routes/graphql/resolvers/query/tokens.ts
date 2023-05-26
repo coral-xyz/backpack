@@ -1,6 +1,7 @@
 import type { GraphQLResolveInfo } from "graphql";
 
 import type { ApiContext } from "../../context";
+import { NodeBuilder } from "../../nodes";
 import { JupiterTokenList, UniswapTokenList } from "../../tokens";
 import {
   ChainId,
@@ -27,10 +28,9 @@ export const tokenListQueryResolver: QueryResolvers["tokenList"] = async (
     chainId === ChainId.Ethereum ? UniswapTokenList : JupiterTokenList;
 
   if (!filters) {
-    return Object.values(list).map((entry) => ({
-      id: `token_list_entry:${entry.address}`,
-      ...entry,
-    }));
+    return Object.values(list).map((entry) =>
+      NodeBuilder.tokenListEntry(entry)
+    );
   }
 
   let items: Omit<TokenListEntry, "id">[] = [];
@@ -49,8 +49,5 @@ export const tokenListQueryResolver: QueryResolvers["tokenList"] = async (
     );
   }
 
-  return items.map((i) => ({
-    id: `token_list_entry:${i.address}`,
-    ...i,
-  }));
+  return items.map((i) => NodeBuilder.tokenListEntry(i));
 };
