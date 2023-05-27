@@ -1,11 +1,9 @@
 import { Suspense, useCallback } from "react";
 import { FlatList, Pressable, Text } from "react-native";
 
-import { Image } from "expo-image";
-
 import { useFragment_experimental } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
-import { XStack, StyledText } from "@coral-xyz/tamagui";
+import { ProxyImage, XStack, StyledText } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import {
@@ -13,7 +11,11 @@ import {
   Screen,
   RoundedContainerGroup,
 } from "~components/index";
+import { WINDOW_WIDTH } from "~lib/index";
 import { NftNodeFragment } from "~screens/CollectionListScreen";
+
+const blurhash =
+  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
 function ListItem({ id, onPress }: { id: string; onPress: any }): JSX.Element {
   const { data: item } = useFragment_experimental({
@@ -30,9 +32,12 @@ function ListItem({ id, onPress }: { id: string; onPress: any }): JSX.Element {
       style={{ flex: 1, marginBottom: 12, borderRadius: 16 }}
       onPress={() => onPress(item)}
     >
-      <Image
-        source={{ uri: item.image }}
+      <ProxyImage
+        // placeholder={blurhash}
+        src={item.image}
+        size={WINDOW_WIDTH}
         style={{ borderRadius: 12, width: "100%", aspectRatio: 1 }}
+        // transition={1000}
       />
       <XStack mt={8}>
         <StyledText

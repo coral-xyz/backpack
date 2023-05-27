@@ -4371,6 +4371,7 @@ __metadata:
     "@tamagui/themes": ^1.28.1
     "@types/react-native": ~0.71.6
     eslint-config-custom: "*"
+    expo-image: ~1.2.3
     tamagui: ^1.28.1
   languageName: unknown
   linkType: soft

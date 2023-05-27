@@ -9,6 +9,7 @@ import {
 
 import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
 import { useTheme } from "~hooks/useTheme";
+import { WINDOW_WIDTH } from "~lib/index";
 import { HeaderButton } from "~navigation/components";
 import { CollectionDetailScreen } from "~screens/CollectionDetailScreen";
 import { CollectionItemDetailScreen } from "~screens/CollectionItemDetailScreen";
@@ -34,7 +35,7 @@ function TopTabsNavigator(): JSX.Element {
   return (
     <TopTabs.Navigator
       initialLayout={{
-        width: Dimensions.get("window").width,
+        width: WINDOW_WIDTH,
       }}
       screenOptions={{
         tabBarIndicatorStyle: {

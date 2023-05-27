@@ -423,7 +423,7 @@ export function ListItemToken({
       borderWidth={!grouped ? 2 : undefined}
       paddingHorizontal={16}
       paddingVertical={12}
-      icon={<ProxyImage style={styles.rowLogo} src={iconUrl} />}
+      icon={<ProxyImage size={32} style={styles.rowLogo} src={iconUrl} />}
     >
       <XStack flex={1} justifyContent="space-between">
         <YStack>

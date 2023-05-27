@@ -11,6 +11,7 @@ export function UserAvatar({
   return (
     <ProxyImage
       src={uri}
+      size={size}
       style={{
         width: size,
         height: size,
