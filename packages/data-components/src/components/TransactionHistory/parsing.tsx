@@ -12,11 +12,20 @@ import {
 } from "./TransactionListItemIcon";
 
 export type ParseTransactionDetails = {
-  br?: string;
-  bl?: string;
-  tl: string;
-  tr: string;
-  icon?: JSX.Element;
+  details: {
+    amount?: string;
+    icon?: JSX.Element;
+    item?: string;
+    nft?: string;
+    title: string;
+  };
+  card: {
+    br?: string;
+    bl?: string;
+    tl: string;
+    tr: string;
+    icon?: JSX.Element;
+  };
 };
 
 /**
@@ -35,7 +44,7 @@ export function parseTransaction(
   switch (transaction.type) {
     case TransactionType.BURN:
     case TransactionType.BURN_NFT: {
-      return _parseNftBurnDescription(desc);
+      return _parseNftBurnDescription(transaction, desc);
     }
 
     case TransactionType.NFT_LISTING: {
@@ -74,19 +83,30 @@ export function parseTransaction(
 
 /**
  * Parses the description string for an NFT burn transaction.
+ * @param {ResponseTransaction} transaction
  * @param {string} description
  * @returns {(ParseTransactionDetails | null)}
  * @example "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz burned 1 Mad Lads Coin"
  */
 function _parseNftBurnDescription(
+  transaction: ResponseTransaction,
   description: string
 ): ParseTransactionDetails | null {
   try {
     const item = description.split("burned ")[1];
+    const [amount, ...name] = item.split(" ");
     return {
-      tl: "Burned",
-      tr: `-${item}`,
-      icon: <TransactionListItemIconBurn size={44} />,
+      card: {
+        tl: "Burned",
+        tr: `-${item}`,
+        icon: <TransactionListItemIconBurn size={44} />,
+      },
+      details: {
+        amount,
+        item: name.join(" "),
+        nft: transaction.nfts?.[0] ?? undefined,
+        title: "Burned NFT",
+      },
     }; // TODO: add image icon (maybe?)
   } catch {
     return null;
@@ -109,15 +129,23 @@ function _parseNftListingCanceledDescription(
     const [amount, itemOther] = base.split(" listing for ");
     const [item, source] = itemOther.split(" on ");
     return {
-      tl: item,
-      tr: _truncateAmount(amount),
-      bl: `Canceled listing on ${snakeToTitleCase(source)}`,
-      icon: (
-        <TransactionListItemIconNft
-          mint={transaction.nfts?.[0] ?? undefined}
-          size={44}
-        />
-      ),
+      card: {
+        tl: item,
+        tr: _truncateAmount(amount),
+        bl: `Canceled listing on ${snakeToTitleCase(source)}`,
+        icon: (
+          <TransactionListItemIconNft
+            mint={transaction.nfts?.[0] ?? undefined}
+            size={44}
+          />
+        ),
+      },
+      details: {
+        amount,
+        item,
+        nft: transaction.nfts?.[0] ?? undefined,
+        title: "Canceled NFT Listing",
+      },
     };
   } catch {
     return null;
@@ -140,15 +168,23 @@ function _parseNftListingDescription(
     const [item, other] = base.split(" for ");
     const [amount, source] = other.split(" on ");
     return {
-      tl: item,
-      tr: _truncateAmount(amount),
-      bl: `Listed on ${snakeToTitleCase(source)}`,
-      icon: (
-        <TransactionListItemIconNft
-          mint={transaction.nfts?.[0] ?? undefined}
-          size={44}
-        />
-      ),
+      card: {
+        tl: item,
+        tr: _truncateAmount(amount),
+        bl: `Listed on ${snakeToTitleCase(source)}`,
+        icon: (
+          <TransactionListItemIconNft
+            mint={transaction.nfts?.[0] ?? undefined}
+            size={44}
+          />
+        ),
+      },
+      details: {
+        amount,
+        item,
+        nft: transaction.nfts?.[0] ?? undefined,
+        title: "Listed NFT",
+      },
     };
   } catch {
     return null;
@@ -171,15 +207,23 @@ function _parseNftMintDescription(
     const [item, amountOther] = base.split(" for ");
     const [amount, source] = amountOther.split(" on ");
     return {
-      tl: item,
-      tr: `-${_truncateAmount(amount)}`,
-      bl: `Minted on ${snakeToTitleCase(source)}`,
-      icon: (
-        <TransactionListItemIconNft
-          mint={transaction.nfts?.[0] ?? undefined}
-          size={44}
-        />
-      ),
+      card: {
+        tl: item,
+        tr: `-${_truncateAmount(amount)}`,
+        bl: `Minted on ${snakeToTitleCase(source)}`,
+        icon: (
+          <TransactionListItemIconNft
+            mint={transaction.nfts?.[0] ?? undefined}
+            size={44}
+          />
+        ),
+      },
+      details: {
+        amount,
+        item,
+        nft: transaction.nfts?.[0] ?? undefined,
+        title: "Minted NFT",
+      },
     };
   } catch {
     return null;
@@ -205,17 +249,25 @@ function _parseNftSaleDescription(
     const [_, amountOther] = recipientOther.split(" for ");
     const [amount, source] = amountOther.split(" on ");
     return {
-      tl: item,
-      tr: _truncateAmount(amount),
-      bl: `${activeWallet === seller ? "Sold" : "Bought"} on ${snakeToTitleCase(
-        source
-      )}`,
-      icon: (
-        <TransactionListItemIconNft
-          mint={transaction.nfts?.[0] ?? undefined}
-          size={44}
-        />
-      ),
+      card: {
+        tl: item,
+        tr: _truncateAmount(amount),
+        bl: `${
+          activeWallet === seller ? "Sold" : "Bought"
+        } on ${snakeToTitleCase(source)}`,
+        icon: (
+          <TransactionListItemIconNft
+            mint={transaction.nfts?.[0] ?? undefined}
+            size={44}
+          />
+        ),
+      },
+      details: {
+        amount,
+        item,
+        nft: transaction.nfts?.[0] ?? undefined,
+        title: `${activeWallet === seller ? "Sold" : "Bought"} NFT`,
+      },
     };
   } catch (err) {
     return null;
@@ -235,15 +287,21 @@ function _parseSwapDescription(
     const items = description.split("swapped ")[1].split(" for ");
     const entries = items.map((i) => i.split(" ")) as [string, string][];
     return {
-      tl: `${entries[0][1]} -> ${entries[1][1]}`,
-      tr: `+${_truncateAmount(items[1])}`,
-      br: `-${_truncateAmount(items[0])}`,
-      icon: (
-        <TransactionListItemIconSwap
-          size={44}
-          symbols={[entries[0][1], entries[1][1]]}
-        />
-      ),
+      card: {
+        tl: `${entries[0][1]} -> ${entries[1][1]}`,
+        tr: `+${_truncateAmount(items[1])}`,
+        br: `-${_truncateAmount(items[0])}`,
+        icon: (
+          <TransactionListItemIconSwap
+            size={44}
+            symbols={[entries[0][1], entries[1][1]]}
+          />
+        ),
+      },
+      details: {
+        // FIXME:
+        title: `Swapped ${entries[0][1]} for ${entries[1][1]}`,
+      },
     };
   } catch {
     return null;
@@ -266,18 +324,25 @@ function _parseTransferDescription(
     const [amount, to] = base.split(" to ");
     const action = sender === activeWallet ? "Sent" : "Received";
     return {
-      tl: action,
-      tr: `${action === "Sent" ? "-" : "+"}${_truncateAmount(amount)}`,
-      bl:
-        action === "Sent"
-          ? `To: ${walletAddressDisplay(to)}`
-          : `From: ${walletAddressDisplay(sender)}`,
-      icon: (
-        <TransactionListItemIconTransfer
-          size={44}
-          symbol={amount.split(" ")[1]}
-        />
-      ),
+      card: {
+        tl: action,
+        tr: `${action === "Sent" ? "-" : "+"}${_truncateAmount(amount)}`,
+        bl:
+          action === "Sent"
+            ? `To: ${walletAddressDisplay(to)}`
+            : `From: ${walletAddressDisplay(sender)}`,
+        icon: (
+          <TransactionListItemIconTransfer
+            size={44}
+            symbol={amount.split(" ")[1]}
+          />
+        ),
+      },
+      details: {
+        // FIXME:
+        amount,
+        title: "Transfer",
+      },
     };
   } catch {
     return null;
@@ -293,9 +358,15 @@ function _parseUpgradeProgramTransaction(
   transaction: ResponseTransaction
 ): ParseTransactionDetails {
   return {
-    tl: "Program Upgrade",
-    tr: "",
-    bl: transaction.source ? snakeToTitleCase(transaction.source) : undefined,
+    card: {
+      tl: "Program Upgrade",
+      tr: "",
+      bl: transaction.source ? snakeToTitleCase(transaction.source) : undefined,
+    },
+    details: {
+      // FIXME:
+      title: "Program Upgraded",
+    },
   };
 }
 

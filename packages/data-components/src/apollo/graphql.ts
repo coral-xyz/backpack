@@ -141,6 +141,8 @@ export type MarketData = Node & {
   id: Scalars["ID"];
   /** A timestamp of the last date of when the market data was updated. */
   lastUpdatedAt: Scalars["String"];
+  /** The CoinGecko market listing ID. */
+  listingId: Scalars["String"];
   /** The image link to the logo of the token's market listing. */
   logo: Scalars["String"];
   /** The name of the token on the market. */
@@ -429,7 +431,7 @@ export type Transaction = Node & {
   /** The error message for the transaction if it failed. */
   error?: Maybe<Scalars["String"]>;
   /** The amount in fees that were paid for processing the transaction. */
-  fee?: Maybe<Scalars["Int"]>;
+  fee?: Maybe<Scalars["String"]>;
   /** The address of the wallet that paid the processing fees. */
   feePayer?: Maybe<Scalars["String"]>;
   /** The transaction hash or signature. */
@@ -443,7 +445,7 @@ export type Transaction = Node & {
   /** The source or program that is associated with the transaction. */
   source?: Maybe<Scalars["String"]>;
   /** The timestamp of the execution or commitment of the transaction. */
-  timestamp?: Maybe<Scalars["String"]>;
+  timestamp: Scalars["String"];
   /** The category or type of transaction. */
   type: Scalars["String"];
 };
@@ -688,13 +690,13 @@ export type GetTransactionsQuery = {
             __typename?: "Transaction";
             id: string;
             description?: string | null;
-            fee?: number | null;
+            fee?: string | null;
             feePayer?: string | null;
             error?: string | null;
             hash: string;
             nfts?: Array<string | null> | null;
             source?: string | null;
-            timestamp?: string | null;
+            timestamp: string;
             type: string;
           };
         }>;

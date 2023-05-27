@@ -68,7 +68,7 @@ export function TransactionListItem({
   const icon = transaction.error ? (
     <TransactionListItemIconError size={44} />
   ) : (
-    details?.icon ?? <TransactionListItemIconDefault size={44} />
+    details?.card.icon ?? <TransactionListItemIconDefault size={44} />
   );
 
   return (
@@ -93,27 +93,27 @@ function _TransactionListItemEnriched({
 }: Omit<TransactionListItemProps, "onClick"> & {
   details?: ParseTransactionDetails | null;
 }) {
-  const brColor = details?.br?.startsWith("+")
+  const brColor = details?.card.br?.startsWith("+")
     ? "$positive"
-    : details?.br?.startsWith("-")
+    : details?.card.br?.startsWith("-")
     ? "$negative"
     : "$secondary";
 
-  const trColor = details?.tr.startsWith("+")
+  const trColor = details?.card.tr.startsWith("+")
     ? "$positive"
-    : details?.tr.startsWith("-")
+    : details?.card.tr.startsWith("-")
     ? "$negative"
     : undefined;
 
   return details ? (
     <YStack display="flex" flex={1}>
       <XStack display="flex" flex={1} justifyContent="space-between">
-        <StyledText>{details.tl}</StyledText>
+        <StyledText>{details.card.tl}</StyledText>
         <StyledText flex={0} fontSize="$sm" color={trColor} textAlign="right">
-          {details.tr}
+          {details.card.tr}
         </StyledText>
       </XStack>
-      {details.bl || details.br ? (
+      {details.card.bl || details.card.br ? (
         <XStack
           display="flex"
           flex={1}
@@ -121,10 +121,10 @@ function _TransactionListItemEnriched({
           justifyContent="space-between"
         >
           <StyledText color="$secondary" fontSize="$xs">
-            {details.bl ?? ""}
+            {details.card.bl ?? ""}
           </StyledText>
           <StyledText flex={0} color={brColor} fontSize="$xs">
-            {details.br ?? ""}
+            {details.card.br ?? ""}
           </StyledText>
         </XStack>
       ) : null}

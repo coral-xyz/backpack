@@ -1,5 +1,5 @@
 import { Platform, type ViewStyle } from "react-native";
-import { explorerUrl } from "@coral-xyz/common";
+import { explorerUrl, walletAddressDisplay } from "@coral-xyz/common";
 import {
   useActiveWallet,
   useBlockchainConnectionUrl,
@@ -41,49 +41,55 @@ export function TransactionDetailsTable({
 
   return (
     <TableCore style={style}>
-      {transaction.timestamp ? (
-        <TableRowCore
-          label="Date"
-          value={formatDate(new Date(transaction.timestamp), true)}
-        />
-      ) : null}
+      {transaction.timestamp ? <TableRowCore
+        label="Date"
+        value={formatDate(new Date(transaction.timestamp), true)}
+        /> : null}
       <TableRowCore label="Type" value={snakeToTitleCase(transaction.type)} />
       <TableRowCore
         label="Source"
         value={snakeToTitleCase(transaction.source ?? "Unknown")}
       />
-      {transaction.fee ? (
-        <TableRowCore label="Network Fee" value={transaction.fee} />
-      ) : null}
+      {transaction.fee ? <TableRowCore label="Network Fee" value={transaction.fee} /> : null}
+      {transaction.feePayer && transaction.feePayer !== active.publicKey ? <TableRowCore
+        label="Network Fee Payer"
+        value={walletAddressDisplay(transaction.feePayer!)}
+        /> : null}
       <TableRowCore
         label="Status"
-        value={
-          transaction.error ? (
-            <StyledText color="$negative" fontSize="$sm">
-              Failed
-            </StyledText>
-          ) : (
-            <StyledText color="$positive" fontSize="$sm">
-              Confirmed
-            </StyledText>
-          )
-        }
+        value={<_TransactionStatusRowValue error={!!transaction.error} />}
       />
       <TableRowCore
+        label="Signature"
+        value={<_TransactionSignatureRowValue hash={transaction.hash} />}
         onClick={() =>
           openUrl(explorerUrl(explorer, transaction.hash, connection))
         }
-        label="Signature"
-        value={
-          <XStack alignItems="center" gap={4}>
-            <StyledText color="$blue" fontSize="$sm">
-              {_truncateSignature(transaction.hash)}
-            </StyledText>
-            <TamaguiIcons.ArrowUpRight color="$blue" size={14} />
-          </XStack>
-        }
       />
     </TableCore>
+  );
+}
+
+function _TransactionSignatureRowValue({ hash }: { hash: string }) {
+  return (
+    <XStack alignItems="center" gap={4}>
+      <StyledText color="$blue" fontSize="$sm">
+        {_truncateSignature(hash)}
+      </StyledText>
+      <TamaguiIcons.ArrowUpRight color="$blue" size={14} />
+    </XStack>
+  );
+}
+
+function _TransactionStatusRowValue({ error }: { error: boolean }) {
+  return error ? (
+    <StyledText color="$negative" fontSize="$sm">
+      Failed
+    </StyledText>
+  ) : (
+    <StyledText color="$positive" fontSize="$sm">
+      Confirmed
+    </StyledText>
   );
 }
 
