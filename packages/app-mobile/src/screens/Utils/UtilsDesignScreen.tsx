@@ -15,6 +15,7 @@ import Constants from "expo-constants";
 import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import {
+  Stack,
   _ListItemOneLine,
   Box,
   ListItem,
@@ -37,6 +38,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ArrowRightIcon } from "~components/Icon";
+import { ListItemTokenPrice } from "~components/ListItem";
 import { CurrentUserAvatar, UserAvatar } from "~components/UserAvatar";
 import { Screen } from "~components/index";
 
@@ -159,8 +161,7 @@ function UserList() {
               icon={
                 <Image
                   source={{
-                    uri:
-                      "https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681404388701?size=120",
+                    uri: "https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681404388701?size=120",
                   }}
                   style={{
                     width: 32,
@@ -359,30 +360,57 @@ function ExpoConfigSettings() {
         title={show ? "hide" : "show config variables"}
         onPress={() => setShow(!show)}
       />
-      {show
-        ? (
-          <StyledText fontSize="$xs">
-            {JSON.stringify(Constants.expoConfig?.extra, null, 2)}
-          </StyledText>
-        )
-        : null}
+      {show ? (
+        <StyledText fontSize="$xs">
+          {JSON.stringify(Constants.expoConfig?.extra, null, 2)}
+        </StyledText>
+      ) : null}
     </View>
   );
 }
+
+const Section = ({
+  title,
+  children,
+  single,
+  grouped,
+}: {
+  title: string;
+  children?: React.ReactNode;
+  single?: React.ReactNode;
+  grouped?: React.ReactNode;
+}) => {
+  return (
+    <Stack py={8} mb={16}>
+      <StyledText size="$lg">{title}</StyledText>
+      <Stack mt={4}>{children}</Stack>
+
+      {single ? (
+        <Stack mb={12}>
+          <StyledText>Single</StyledText>
+          <Stack mt={4}>{single}</Stack>
+        </Stack>
+      ) : null}
+      {grouped ? (
+        <Stack>
+          <StyledText>Grouped</StyledText>
+          <Stack mt={4}>{grouped}</Stack>
+        </Stack>
+      ) : null}
+    </Stack>
+  );
+};
 
 export function UtilsDesignScreen(): JSX.Element {
   const insets = useSafeAreaInsets();
   return (
     <ScrollView>
       <Screen style={{ marginTop: insets.top }}>
-        <StyledText fontSize="$xl" fontWeight={800}>
+        <StyledText fontSize="$xl" fontWeight="800">
           Design System & Diagnostics
         </StyledText>
         <ExpoConfigSettings />
-        <Box marginBottom={12}>
-          <StyledText fontSize="$sm" mb={8}>
-            AvatarUserNameAddress
-          </StyledText>
+        <Section title="AvatarUserNameAddress">
           <ListItem backgroundColor="$nav">
             <AvatarUserNameAddress
               username="peter"
@@ -390,60 +418,61 @@ export function UtilsDesignScreen(): JSX.Element {
               publicKey="6XxTYK4sKYU8G71emxkeCCLpHQx7xmgwy2mDhUTPD5Xm"
             />
           </ListItem>
-        </Box>
-        <Box marginBottom={12}>
-          <StyledText fontSize="$sm" mb={8}>
-            CurrentUserAvatarWalletNameAddress
-          </StyledText>
+        </Section>
+        <Section title="CurrentUserAvatarWalletNameAddress">
           <ListItem backgroundColor="$nav">
             <CurrentUserAvatarWalletNameAddress />
           </ListItem>
-        </Box>
-        <Box marginBottom={12}>
-          <StyledText fontSize="$sm" mb={8}>
-            NameAddressLabel
-          </StyledText>
+        </Section>
+        <Section title="NameAddressLabel">
           <ListItem backgroundColor="$nav">
             <NameAddressLabel
               name="Wallet 1"
               publicKey="6XxTYK4sKYU8G71emxkeCCLpHQx7xmgwy2mDhUTPD5Xm"
             />
           </ListItem>
-        </Box>
-        <Box marginBottom={12}>
+        </Section>
+
+        <Section title="SendDetail">
           <SendDetail
             username="peter"
             image="https://swr.xnfts.dev/avatars/backpack_dev/1683979620504"
             address="6XxTYK4sKYU8G71emxkeCCLpHQx7xmgwy2mDhUTPD5Xm"
           />
-        </Box>
-        <Box marginBottom={12}>
+        </Section>
+        <Section title="ActivityDetail">
           <ActivityDetail />
-        </Box>
-        <Box marginBottom={12}>
+        </Section>
+        <Section title="SectionedList">
           <SectionedList />
-        </Box>
-        <Box marginBottom={12}>
+        </Section>
+        <Section title="UserList">
           <UserList />
-        </Box>
-        <Box marginBottom={12}>
+        </Section>
+        <Section title="SettingsList">
           <SettingsList />
-        </Box>
-        <Box marginBottom={12}>
-          <ListItemSentReceived
-            address="5iM4...F5To"
-            action="Sent"
-            amount="4 USDC"
-            iconUrl="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
-          />
-          <ListItemSentReceived
-            address="5iM4...F5To"
-            action="Received"
-            amount="4 USDC"
-            iconUrl="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
-          />
-        </Box>
-        <Box marginBottom={12}>
+        </Section>
+        <Section
+          title="ListItemSentReceived"
+          single={
+            <>
+              <ListItemSentReceived
+                address="5iM4...F5To"
+                action="Sent"
+                amount="4 USDC"
+                iconUrl="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+              />
+              <ListItemSentReceived
+                address="5iM4...F5To"
+                action="Received"
+                amount="4 USDC"
+                iconUrl="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+              />
+            </>
+          }
+        />
+
+        <Section title="ListItemTokenSwap">
           <YGroup
             overflow="hidden"
             borderWidth={2}
@@ -471,19 +500,68 @@ export function UtilsDesignScreen(): JSX.Element {
               />
             </YGroup.Item>
           </YGroup>
-        </Box>
-        <Box marginBottom={12}>
-          <ListItemActivity
-            grouped={false}
-            onPress={console.log}
-            topLeftText="Mad Lads #452"
-            bottomLeftText="Minted"
-            topRightText="-24.50 SOL"
-            bottomRightText="-$2,719.08"
-            iconUrl="https://swr.xnfts.dev/1min/https://madlist-images.s3.us-west-2.amazonaws.com/backpack_dev.png"
-          />
-        </Box>
-        <Box marginBottom={12}>
+        </Section>
+
+        <Section
+          title="ListItemActivity"
+          single={
+            <>
+              <ListItemActivity
+                grouped={false}
+                onPress={console.log}
+                topLeftText="Mad Lads #452"
+                bottomLeftText="Minted"
+                topRightText="-24.50 SOL"
+                bottomRightText="-$2,719.08"
+                iconUrl="https://swr.xnfts.dev/1min/https://madlist-images.s3.us-west-2.amazonaws.com/backpack_dev.png"
+              />
+
+              <ListItemActivity
+                grouped={false}
+                onPress={console.log}
+                topLeftText="Mad Lads #452"
+                bottomLeftText="Minted"
+                topRightText="-24.50 SOL"
+                bottomRightText="-$2,719.08"
+                iconUrl="https://swr.xnfts.dev/1min/https://madlist-images.s3.us-west-2.amazonaws.com/backpack_dev.png"
+              />
+            </>
+          }
+          grouped={
+            <YGroup
+              overflow="hidden"
+              borderWidth={2}
+              borderColor="$borderFull"
+              borderRadius="$container"
+              separator={<Separator />}
+            >
+              <YGroup.Item>
+                <ListItemActivity
+                  grouped
+                  onPress={console.log}
+                  topLeftText="Nokiamon"
+                  bottomLeftText="Minted"
+                  topRightText="-5.50 SOL"
+                  bottomRightText="-$719.08"
+                  iconUrl="https://swr.xnfts.dev/1min/https://shdw-drive.genesysgo.net/CbWGfYfTJvBfBXCsQPj3Hvvxvfgm3bVkxMSBHJGgdQp1/095.gif"
+                />
+              </YGroup.Item>
+              <YGroup.Item>
+                <ListItemActivity
+                  grouped
+                  onPress={console.log}
+                  topLeftText="Moongame"
+                  bottomLeftText="Installed"
+                  topRightText="FREE"
+                  bottomRightText="$0.00"
+                  iconUrl="https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=400,height=400,quality=85/https://cloudflare-ipfs.com/ipfs/bafybeiehsmfy53jnypnadxhyg3wbk43gui7gzl57uykcnw2ed5fcniqwaa/assets/icon.png"
+                />
+              </YGroup.Item>
+            </YGroup>
+          }
+        />
+
+        <Section title="ListItemNotification">
           <YGroup
             overflow="hidden"
             borderWidth={2}
@@ -511,175 +589,151 @@ export function UtilsDesignScreen(): JSX.Element {
               />
             </YGroup.Item>
           </YGroup>
-        </Box>
-        <Box marginBottom={12}>
-          <ListItemActivity
-            grouped={false}
-            onPress={console.log}
-            topLeftText="Mad Lads #452"
-            bottomLeftText="Minted"
-            topRightText="-24.50 SOL"
-            bottomRightText="-$2,719.08"
-            iconUrl="https://swr.xnfts.dev/1min/https://madlist-images.s3.us-west-2.amazonaws.com/backpack_dev.png"
-          />
-        </Box>
-        <Box marginBottom={12}>
-          <YGroup
-            overflow="hidden"
-            borderWidth={2}
-            borderColor="$borderFull"
-            borderRadius="$container"
-            separator={<Separator />}
-          >
-            <YGroup.Item>
-              <ListItemActivity
-                grouped
-                onPress={console.log}
-                topLeftText="Nokiamon"
-                bottomLeftText="Minted"
-                topRightText="-5.50 SOL"
-                bottomRightText="-$719.08"
-                iconUrl="https://swr.xnfts.dev/1min/https://shdw-drive.genesysgo.net/CbWGfYfTJvBfBXCsQPj3Hvvxvfgm3bVkxMSBHJGgdQp1/095.gif"
-              />
-            </YGroup.Item>
-            <YGroup.Item>
-              <ListItemActivity
-                grouped
-                onPress={console.log}
-                topLeftText="Moongame"
-                bottomLeftText="Installed"
-                topRightText="FREE"
-                bottomRightText="$0.00"
-                iconUrl="https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=400,height=400,quality=85/https://cloudflare-ipfs.com/ipfs/bafybeiehsmfy53jnypnadxhyg3wbk43gui7gzl57uykcnw2ed5fcniqwaa/assets/icon.png"
-              />
-            </YGroup.Item>
-          </YGroup>
-        </Box>
-        <Box marginBottom={12}>
-          <ListItemToken
-            onPressRow={console.log}
-            token={{
-              name: "Coral",
-              ticker: "CORAL",
-              usdBalance: 100,
-              displayBalance: 100,
-              recentUsdBalanceChange: 1.24,
-              logo:
-                "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
-            }}
-            blockchain={Blockchain.SOLANA}
-            walletPublicKey="xyz"
-          />
-        </Box>
+        </Section>
 
-        <Box marginBottom={12}>
-          <YGroup
-            overflow="hidden"
-            borderWidth={2}
-            borderColor="$borderFull"
-            borderRadius="$container"
-            separator={<Separator />}
-          >
-            <YGroup.Item>
-              <ListItemToken
-                grouped
-                onPressRow={console.log}
-                token={{
-                  name: "SOL",
-                  ticker: "SOL",
-                  usdBalance: 3578.04,
-                  displayBalance: 43.45983943,
-                  recentUsdBalanceChange: -75.65,
-                  logo:
-                    "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
-                }}
-                blockchain={Blockchain.SOLANA}
-                walletPublicKey="xyz"
-              />
-            </YGroup.Item>
-            <YGroup.Item>
-              <ListItemToken
-                grouped
-                onPressRow={console.log}
-                token={{
-                  name: "USDC",
-                  ticker: "USDC",
-                  usdBalance: 847.39,
-                  displayBalance: 847.39,
-                  recentUsdBalanceChange: -0.04,
-                  logo:
-                    "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
-                }}
-                blockchain={Blockchain.SOLANA}
-                walletPublicKey="xyz"
-              />
-            </YGroup.Item>
-          </YGroup>
-        </Box>
-        <Box marginBottom={12}>
-          <ListItemWalletOverview
-            name="Wallet 1"
-            balance="$4,197.57"
-            blockchain={Blockchain.ETHEREUM}
-          />
-        </Box>
-        <Box marginBottom={12}>
-          <YGroup
-            overflow="hidden"
-            borderWidth={2}
-            borderColor="$borderFull"
-            borderRadius="$container"
-          >
-            <YGroup.Item>
-              <ListItemWalletOverview
-                grouped
-                name="Wallet 1"
-                blockchain={Blockchain.SOLANA}
-                balance="$4,197.57"
-              />
-            </YGroup.Item>
-            <YGroup.Item>
-              <ListItemWalletOverview
-                grouped
-                name="Wallet 1"
-                blockchain={Blockchain.ETHEREUM}
-                balance="$4,197.57"
-              />
-            </YGroup.Item>
-          </YGroup>
-        </Box>
-        <Box marginBottom={12}>
-          <YGroup
-            overflow="hidden"
-            borderWidth={2}
-            borderColor="$borderFull"
-            borderRadius="$container"
-          >
-            <YGroup.Item>
-              <ListItemFriendRequest
-                grouped
-                text="Friend request accepted"
-                username="@peterp"
-                time="7d"
-                avatarUrl="https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681311728112?size=120"
-              />
-            </YGroup.Item>
-            <YGroup.Item>
-              <ListItemFriendRequest
-                grouped
-                text="Friend request"
-                username="@peterp"
-                time="14d"
-                avatarUrl="https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681311728112?size=120"
-              />
-            </YGroup.Item>
-          </YGroup>
-        </Box>
-        <ListItemFriendRequest
-          text="Friend request accepted"
-          username="@peterp"
-          time="7d"
-          avatarUrl="https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681311728112?size=120"
+        <Section
+          title="ListItemToken"
+          single={
+            <ListItemToken
+              onPressRow={console.log}
+              token={{
+                name: "Coral",
+                ticker: "CORAL",
+                usdBalance: 100,
+                displayBalance: 100,
+                recentUsdBalanceChange: 1.24,
+                logo: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
+              }}
+              blockchain={Blockchain.SOLANA}
+              walletPublicKey="xyz"
+            />
+          }
+          grouped={
+            <YGroup
+              overflow="hidden"
+              borderWidth={2}
+              borderColor="$borderFull"
+              borderRadius="$container"
+              separator={<Separator />}
+            >
+              <YGroup.Item>
+                <ListItemToken
+                  grouped
+                  onPressRow={console.log}
+                  token={{
+                    name: "SOL",
+                    ticker: "SOL",
+                    usdBalance: 3578.04,
+                    displayBalance: 43.45983943,
+                    recentUsdBalanceChange: -75.65,
+                    logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
+                  }}
+                  blockchain={Blockchain.SOLANA}
+                  walletPublicKey="xyz"
+                />
+              </YGroup.Item>
+              <YGroup.Item>
+                <ListItemToken
+                  grouped
+                  onPressRow={console.log}
+                  token={{
+                    name: "USDC",
+                    ticker: "USDC",
+                    usdBalance: 847.39,
+                    displayBalance: 847.39,
+                    recentUsdBalanceChange: -0.04,
+                    logo: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
+                  }}
+                  blockchain={Blockchain.SOLANA}
+                  walletPublicKey="xyz"
+                />
+              </YGroup.Item>
+            </YGroup>
+          }
+        />
+
+        <Section
+          title="ListItemWalletOverview"
+          single={
+            <ListItemWalletOverview
+              name="Wallet 1"
+              balance="$4,197.57"
+              blockchain={Blockchain.ETHEREUM}
+              publicKey="abcxyz"
+              type="derived"
+              onPress={console.log}
+            />
+          }
+          grouped={
+            <YGroup
+              overflow="hidden"
+              borderWidth={2}
+              borderColor="$borderFull"
+              borderRadius="$container"
+            >
+              <YGroup.Item>
+                <ListItemWalletOverview
+                  grouped
+                  name="Wallet 1"
+                  blockchain={Blockchain.SOLANA}
+                  balance="$4,197.57"
+                  publicKey="abcxyz"
+                  type="derived"
+                  onPress={console.log}
+                />
+              </YGroup.Item>
+              <YGroup.Item>
+                <ListItemWalletOverview
+                  grouped
+                  name="Wallet 1"
+                  blockchain={Blockchain.ETHEREUM}
+                  balance="$4,197.57"
+                  publicKey="abcxyz"
+                  type="dehydrated"
+                  onPress={console.log}
+                />
+              </YGroup.Item>
+            </YGroup>
+          }
+        />
+
+        <Section
+          title="ListItemFriendRequest"
+          single={
+            <ListItemFriendRequest
+              text="Friend request accepted"
+              username="@peterp"
+              time="7d"
+              avatarUrl="https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681311728112?size=120"
+            />
+          }
+          grouped={
+            <YGroup
+              overflow="hidden"
+              borderWidth={2}
+              borderColor="$borderFull"
+              borderRadius="$container"
+            >
+              <YGroup.Item>
+                <ListItemFriendRequest
+                  grouped
+                  text="Friend request accepted"
+                  username="@peterp"
+                  time="7d"
+                  avatarUrl="https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681311728112?size=120"
+                />
+              </YGroup.Item>
+              <YGroup.Item>
+                <ListItemFriendRequest
+                  grouped
+                  text="Friend request"
+                  username="@peterp"
+                  time="14d"
+                  avatarUrl="https://images.xnfts.dev/cdn-cgi/image/fit=contain,width=120,height=120,quality=85/https://swr.xnfts.dev/avatars/backpack_dev/1681311728112?size=120"
+                />
+              </YGroup.Item>
+            </YGroup>
+          }
         />
       </Screen>
     </ScrollView>
