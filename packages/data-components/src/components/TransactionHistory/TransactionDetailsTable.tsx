@@ -1,5 +1,5 @@
 import { Platform, type ViewStyle } from "react-native";
-import { Blockchain, explorerUrl } from "@coral-xyz/common";
+import { explorerUrl } from "@coral-xyz/common";
 import {
   useActiveWallet,
   useBlockchainConnectionUrl,
@@ -41,19 +41,20 @@ export function TransactionDetailsTable({
 
   return (
     <TableCore style={style}>
-      {transaction.timestamp ? <TableRowCore
-        label="Date"
-        value={formatDate(new Date(transaction.timestamp), true)}
-        /> : null}
+      {transaction.timestamp ? (
+        <TableRowCore
+          label="Date"
+          value={formatDate(new Date(transaction.timestamp), true)}
+        />
+      ) : null}
       <TableRowCore label="Type" value={snakeToTitleCase(transaction.type)} />
       <TableRowCore
         label="Source"
         value={snakeToTitleCase(transaction.source ?? "Unknown")}
       />
-      {transaction.fee ? <TableRowCore
-        label="Network Fee"
-        value={_calculateNetworkFee(active.blockchain, transaction.fee)}
-        /> : null}
+      {transaction.fee ? (
+        <TableRowCore label="Network Fee" value={transaction.fee} />
+      ) : null}
       <TableRowCore
         label="Status"
         value={
@@ -84,19 +85,6 @@ export function TransactionDetailsTable({
       />
     </TableCore>
   );
-}
-
-/**
- * Caluates the network fee string to display based on the unformatted
- * amount and the blockchain argued to the function.
- * @param {Blockchain} chain
- * @param {number} fee
- * @returns {string}
- */
-function _calculateNetworkFee(chain: Blockchain, fee: number): string {
-  const suffix = chain === Blockchain.SOLANA ? "SOL" : "ETH";
-  const decimals = chain === Blockchain.SOLANA ? 9 : 18; // FIXME: TODO: abstract to api response
-  return `${fee / 10 ** decimals} ${suffix}`;
 }
 
 /**
