@@ -3,6 +3,7 @@ import type {
   HdKeyringFactory,
   HdKeyringJson,
   Keyring,
+  KeyringBase,
   KeyringFactory,
   KeyringJson,
   LedgerKeyring,
@@ -39,7 +40,7 @@ export class EthereumKeyringFactory implements KeyringFactory {
   }
 }
 
-export class EthereumKeyring implements Keyring {
+class EthereumKeyringBase implements KeyringBase {
   constructor(public wallets: Array<Wallet>) {}
 
   public publicKeys(): Array<string> {
@@ -87,8 +88,10 @@ export class EthereumKeyring implements Keyring {
     }
     return await wallet.signMessage(message.toString());
   }
+}
 
-  public toJson(): any {
+export class EthereumKeyring extends EthereumKeyringBase {
+  public toJson(): KeyringJson {
     return {
       // Private keys, just using the Solana secret key nomenclature
       secretKeys: this.wallets.map((w) =>
@@ -111,7 +114,6 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
     });
   }
 
-  // @ts-ignore
   public fromJson({
     mnemonic,
     seed,
@@ -129,7 +131,10 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
   }
 }
 
-export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
+export class EthereumHdKeyring
+  extends EthereumKeyringBase
+  implements HdKeyring
+{
   readonly mnemonic: string;
   private derivationPaths: Array<string>;
   private seed: Buffer;
@@ -220,7 +225,6 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     }
   }
 
-  // @ts-ignore
   public toJson(): HdKeyringJson {
     return {
       mnemonic: this.mnemonic,
@@ -245,10 +249,7 @@ export class EthereumLedgerKeyringFactory {
   }
 }
 
-export class EthereumLedgerKeyring
-  extends LedgerKeyringBase
-  implements LedgerKeyring
-{
+class EthereumLedgerKeyring extends LedgerKeyringBase implements LedgerKeyring {
   public async signTransaction(
     serializedTx: Buffer,
     publicKey: string
