@@ -5,8 +5,6 @@ import type {
   WalletDescriptor,
 } from "@coral-xyz/common";
 
-import type { LedgerKeyringBase } from "./ledger";
-
 export type {
   HdKeyringJson,
   KeyringJson,
@@ -18,14 +16,17 @@ export interface KeyringFactory {
   fromJson(payload: KeyringJson): Keyring;
 }
 
-export interface Keyring {
+export interface KeyringBase {
   publicKeys(): Array<string>;
   deletePublicKey(publicKey: string): void;
   signTransaction(tx: Buffer, address: string): Promise<string>;
   signMessage(tx: Buffer, address: string): Promise<string>;
   exportSecretKey(address: string): string | null;
   importSecretKey(secretKey: string): string;
-  toJson(): any;
+}
+
+export interface Keyring extends KeyringBase {
+  toJson(): KeyringJson;
 }
 
 //
@@ -36,7 +37,7 @@ export interface HdKeyringFactory {
   fromJson(obj: HdKeyringJson): HdKeyring;
 }
 
-export interface HdKeyring extends Keyring {
+export interface HdKeyring extends KeyringBase {
   readonly mnemonic: string;
   addDerivationPath(derivationPath: string): string;
   nextDerivationPath(): string;
@@ -44,6 +45,7 @@ export interface HdKeyring extends Keyring {
     publicKey: string;
     derivationPath: string;
   };
+  toJson(): HdKeyringJson;
 }
 
 //
@@ -54,9 +56,12 @@ export interface LedgerKeyringFactory {
   fromJson(obj: LedgerKeyringJson): LedgerKeyring;
 }
 
-export interface LedgerKeyring extends LedgerKeyringBase {
+export interface LedgerKeyring extends KeyringBase {
   nextDerivationPath(): string;
   signTransaction(tx: Buffer, address: string): Promise<string>;
   signMessage(tx: Buffer, address: string): Promise<string>;
   add(walletDescriptor: WalletDescriptor): Promise<void>;
+  toJson(): LedgerKeyringJson;
 }
+
+export type AnyKeyring = Keyring | HdKeyring | LedgerKeyring;

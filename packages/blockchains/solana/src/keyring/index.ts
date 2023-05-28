@@ -3,6 +3,7 @@ import type {
   HdKeyringFactory,
   HdKeyringJson,
   Keyring,
+  KeyringBase,
   KeyringFactory,
   KeyringJson,
   LedgerKeyring,
@@ -42,7 +43,7 @@ export class SolanaKeyringFactory implements KeyringFactory {
   }
 }
 
-class SolanaKeyring implements Keyring {
+class SolanaKeyringBase implements KeyringBase {
   constructor(public keypairs: Array<Keypair>) {}
 
   public publicKeys(): Array<string> {
@@ -86,8 +87,10 @@ class SolanaKeyring implements Keyring {
     this.keypairs.push(kp);
     return kp.publicKey.toString();
   }
+}
 
-  public toJson(): any {
+class SolanaKeyring extends SolanaKeyringBase implements Keyring {
+  public toJson(): KeyringJson {
     return {
       secretKeys: this.keypairs.map((kp) =>
         Buffer.from(kp.secretKey).toString("hex")
@@ -132,7 +135,7 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
   }
 }
 
-class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
+class SolanaHdKeyring extends SolanaKeyringBase implements HdKeyring {
   readonly mnemonic: string;
   private seed: Buffer;
   private derivationPaths: Array<string>;
