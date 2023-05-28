@@ -1,11 +1,17 @@
 import { useState } from "react";
-import { TransactionHistory } from "@coral-xyz/data-components";
+import {
+  type ParseTransactionDetails,
+  type ResponseTransaction,
+  TransactionDetails,
+  TransactionHistory,
+} from "@coral-xyz/data-components";
 import { Loading } from "@coral-xyz/react-common";
 import { styles } from "@coral-xyz/themes";
 import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
 import IconButton from "@mui/material/IconButton";
 
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
+import { NavBackButton } from "../../common/Layout/Nav";
 import {
   NavStackEphemeral,
   NavStackScreen,
@@ -65,14 +71,57 @@ export function TransactionsButton() {
   );
 }
 
-export const Transactions = () => (
-  <TransactionHistory
-    loaderComponent={<TransactionsLoader />}
-    onItemClick={(_tx, explorer) => {
-      window.open(explorer);
-    }}
-  />
-);
+export function Transactions() {
+  const [openDrawer, setOpenDrawer] = useState(true);
+  const [selected, setSelected] = useState<{
+    details: ParseTransactionDetails;
+    transaction: ResponseTransaction;
+  } | null>(null);
+
+  if (selected) {
+    return (
+      <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+        <NavStackEphemeral
+          initialRoute={{ name: "transactionDetails" }}
+          options={() => {
+            return {
+              title: selected.details?.details.title ?? "App Interaction",
+            };
+          }}
+          navButtonLeft={<NavBackButton onClick={() => setSelected(null)} />}
+        >
+          <NavStackScreen
+            name="transactionDetails"
+            component={(props) => (
+              <TransactionDetails
+                containerStyle={{
+                  paddingBottom: 16,
+                  paddingHorizontal: 16,
+                  paddingTop: 24,
+                }}
+                details={selected.details!}
+                transaction={selected.transaction}
+                {...props}
+              />
+            )}
+          />
+        </NavStackEphemeral>
+      </WithDrawer>
+    );
+  }
+
+  return (
+    <TransactionHistory
+      loaderComponent={<TransactionsLoader />}
+      onItemClick={(transaction, explorer, details) => {
+        if (!details) {
+          window.open(explorer);
+        }
+        setSelected({ details: details!, transaction });
+      }}
+    />
+  );
+}
 
 function TransactionsLoader() {
   return (

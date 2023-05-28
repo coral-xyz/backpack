@@ -14555,13 +14555,13 @@ __metadata:
   linkType: hard
 
 "@types/react@npm:^18.2.6":
-  version: 18.2.6
-  resolution: "@types/react@npm:18.2.6"
+  version: 18.2.7
+  resolution: "@types/react@npm:18.2.7"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: dea9d232d8df7ac357367a69dcb557711ab3d5501807ffa77cebeee73d49ee94d095f298e36853c63ed47cce097eee4c7eae2aaa8c02fac3f0171ec1b523a819
+  checksum: caa5da4cf929766738ec789301dc6fb6624bd48dd317d851c4c9b84b1f47cd8ebe17fe01398cadaa0bc938cd4d502d67f4b9de9ff771dc132096bdc86228efba
   languageName: node
   linkType: hard
 
@@ -26054,16 +26054,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"helius-sdk@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "helius-sdk@npm:1.0.5"
-  dependencies:
-    axios: ^1.2.3
-  checksum: 9a12fd9a998de8da1515b2bcb909cd0875e1d978b7a5d4cbf0e8bd173295a4324931a1a2db35d39d6684646afb54bf09997ff5615efc98caed84cfa4581ee046
-  languageName: node
-  linkType: hard
-
-"helius-sdk@npm:^1.0.6":
+"helius-sdk@npm:^1.0.5, helius-sdk@npm:^1.0.6":
   version: 1.0.6
   resolution: "helius-sdk@npm:1.0.6"
   dependencies:

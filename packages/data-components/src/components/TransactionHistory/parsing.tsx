@@ -99,15 +99,16 @@ function _parseNftBurnDescription(
       card: {
         tl: "Burned",
         tr: `-${item}`,
-        icon: <TransactionListItemIconBurn size={44} />,
+        icon: <TransactionListItemIconBurn size={30} containerSize={44} />,
       },
       details: {
         amount,
+        icon: <TransactionListItemIconBurn size={100} />,
         item: name.join(" "),
         nft: transaction.nfts?.[0] ?? undefined,
         title: "Burned NFT",
       },
-    }; // TODO: add image icon (maybe?)
+    };
   } catch {
     return null;
   }
@@ -293,13 +294,20 @@ function _parseSwapDescription(
         br: `-${_truncateAmount(items[0])}`,
         icon: (
           <TransactionListItemIconSwap
-            size={44}
+            containerSize={44}
+            size={24}
             symbols={[entries[0][1], entries[1][1]]}
           />
         ),
       },
       details: {
-        // FIXME:
+        icon: (
+          <TransactionListItemIconSwap
+            containerSize={100}
+            size={75}
+            symbols={[entries[0][1], entries[1][1]]}
+          />
+        ),
         title: `Swapped ${entries[0][1]} for ${entries[1][1]}`,
       },
     };
@@ -339,8 +347,13 @@ function _parseTransferDescription(
         ),
       },
       details: {
-        // FIXME:
         amount,
+        icon: (
+          <TransactionListItemIconTransfer
+            size={100}
+            symbol={amount.split(" ")[1]}
+          />
+        ),
         title: "Transfer",
       },
     };

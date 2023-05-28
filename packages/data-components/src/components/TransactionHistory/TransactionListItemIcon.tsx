@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
   },
 });
 
@@ -34,27 +35,49 @@ export type TransactionListItemIconTypeProps = {
   size: SizeTokens;
 };
 
+export type TransactionListItemLucideIconProps = {
+  containerSize?: SizeTokens;
+};
+
 export const TransactionListItemIconBurn = ({
+  containerSize,
   size,
-}: TransactionListItemIconTypeProps) => (
-  <View style={[styles.lucideContainer, { height: size, width: size }]}>
-    <TamaguiIcons.Flame color="$negative" />
+}: TransactionListItemIconTypeProps & TransactionListItemLucideIconProps) => (
+  <View
+    style={[
+      styles.lucideContainer,
+      { height: containerSize ?? size, width: containerSize ?? size },
+    ]}
+  >
+    <TamaguiIcons.Flame color="$negative" size={size} />
   </View>
 );
 
 export const TransactionListItemIconDefault = ({
+  containerSize,
   size,
-}: TransactionListItemIconTypeProps) => (
-  <View style={[styles.lucideContainer, { height: size, width: size }]}>
-    <TamaguiIcons.Check color="$positive" />
+}: TransactionListItemIconTypeProps & TransactionListItemLucideIconProps) => (
+  <View
+    style={[
+      styles.lucideContainer,
+      { height: containerSize ?? size, width: containerSize ?? size },
+    ]}
+  >
+    <TamaguiIcons.Check color="$positive" size={size} />
   </View>
 );
 
 export const TransactionListItemIconError = ({
+  containerSize,
   size,
-}: TransactionListItemIconTypeProps) => (
-  <View style={[styles.lucideContainer, { height: size, width: size }]}>
-    <TamaguiIcons.X color="$negative" />
+}: TransactionListItemIconTypeProps & TransactionListItemLucideIconProps) => (
+  <View
+    style={[
+      styles.lucideContainer,
+      { height: containerSize ?? size, width: containerSize ?? size },
+    ]}
+  >
+    <TamaguiIcons.X color="$negative" size={size} />
   </View>
 );
 
@@ -74,8 +97,11 @@ export const TransactionListItemIconNft = ({
 );
 
 export const TransactionListItemIconSwap = ({
+  containerSize,
+  size,
   symbols,
 }: TransactionListItemIconTypeProps & {
+  containerSize?: SizeTokens;
   symbols: [string, string];
 }) => {
   const activeWallet = useActiveWallet();
@@ -89,17 +115,22 @@ export const TransactionListItemIconSwap = ({
   });
 
   return (
-    <View style={styles.swapContainer}>
+    <View
+      style={[
+        styles.swapContainer,
+        { width: containerSize, height: containerSize },
+      ]}
+    >
       <ListItemIconCore
         style={{ marginRight: 10, marginBottom: 15 }}
-        radius={12}
-        size={24}
+        radius="$circular"
+        size={size}
         image={data.tokenList[0]?.logo ?? UNKNOWN_ICON_SRC}
       />
       <ListItemIconCore
         style={{ marginLeft: -15, zIndex: 10 }}
-        radius={12}
-        size={24}
+        radius="$circular"
+        size={size}
         image={data.tokenList[1]?.logo ?? UNKNOWN_ICON_SRC}
       />
     </View>

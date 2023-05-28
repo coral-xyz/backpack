@@ -14,9 +14,9 @@ import {
 } from "@coral-xyz/tamagui";
 import * as Linking from "expo-linking";
 
-import { formatDate, snakeToTitleCase } from "../../utils";
-
-import type { ResponseTransaction } from ".";
+import { formatDate, snakeToTitleCase } from "../../../utils";
+import type { ResponseTransaction } from "..";
+import type { ParseTransactionDetails } from "../parsing";
 
 const openUrl = Platform.select({
   native: Linking.openURL,
@@ -27,11 +27,13 @@ const openUrl = Platform.select({
 })!;
 
 export type TransactionDetailsTableProps = {
+  details: ParseTransactionDetails;
   style?: ViewStyle;
   transaction: ResponseTransaction;
 };
 
 export function TransactionDetailsTable({
+  details,
   style,
   transaction,
 }: TransactionDetailsTableProps) {
@@ -40,21 +42,32 @@ export function TransactionDetailsTable({
   const explorer = useBlockchainExplorer(active.blockchain);
 
   return (
-    <TableCore style={style}>
-      {transaction.timestamp ? <TableRowCore
-        label="Date"
-        value={formatDate(new Date(transaction.timestamp), true)}
+    <TableCore style={{ width: "100%", ...style }}>
+      {transaction.timestamp ? (
+        <TableRowCore
+          label="Date"
+          value={formatDate(new Date(transaction.timestamp), true)}
+        />
+      ) : null}
+      {details.details.item ? <TableRowCore label="Item" value={details.details.item} /> : null}
+      {/* <TableRowCore label="Type" value={snakeToTitleCase(transaction.type)} /> */}
+      {details.details.amount ? <TableRowCore
+        label="Amount"
+        value={<_TransactionAmountRowValue amount={details.details.amount} />}
         /> : null}
-      <TableRowCore label="Type" value={snakeToTitleCase(transaction.type)} />
       <TableRowCore
         label="Source"
         value={snakeToTitleCase(transaction.source ?? "Unknown")}
       />
-      {transaction.fee ? <TableRowCore label="Network Fee" value={transaction.fee} /> : null}
-      {transaction.feePayer && transaction.feePayer !== active.publicKey ? <TableRowCore
-        label="Network Fee Payer"
-        value={walletAddressDisplay(transaction.feePayer!)}
-        /> : null}
+      {transaction.fee ? (
+        <TableRowCore label="Network Fee" value={transaction.fee} />
+      ) : null}
+      {transaction.feePayer && transaction.feePayer !== active.publicKey ? (
+        <TableRowCore
+          label="Network Fee Payer"
+          value={walletAddressDisplay(transaction.feePayer!)}
+        />
+      ) : null}
       <TableRowCore
         label="Status"
         value={<_TransactionStatusRowValue error={!!transaction.error} />}
@@ -67,6 +80,19 @@ export function TransactionDetailsTable({
         }
       />
     </TableCore>
+  );
+}
+
+function _TransactionAmountRowValue({ amount }: { amount: string }) {
+  const color = amount.startsWith("-")
+    ? "$negative"
+    : amount.startsWith("+")
+    ? "$positive"
+    : "$fontColor";
+  return (
+    <StyledText color={color} fontSize="$sm">
+      {amount}
+    </StyledText>
   );
 }
 

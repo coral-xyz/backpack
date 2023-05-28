@@ -206,6 +206,8 @@ export type Nft = Node & {
   attributes?: Maybe<Array<NftAttribute>>;
   /** The collection or contract parental entity of the item. */
   collection?: Maybe<Collection>;
+  /** Whether or not the NFT is using on-chain compression. */
+  compressed: Scalars["Boolean"];
   /** The description of the NFT found in the metadata. */
   description?: Maybe<Scalars["String"]>;
   /** Globally unique identifier for an NFT. */

@@ -26,7 +26,11 @@ import {
 
 export type TransactionListItemProps = {
   blockchain: ChainId;
-  onClick?: (transaction: ResponseTransaction, explorerUrl: string) => void;
+  onClick?: (
+    transaction: ResponseTransaction,
+    explorerUrl: string,
+    parsedDetails: ParseTransactionDetails | null
+  ) => void;
   transaction: ResponseTransaction;
 };
 
@@ -45,6 +49,12 @@ export function TransactionListItem({
   );
 
   /**
+   * The parsed transaction type and description to provide the list item
+   * display details and the list item icon component.
+   */
+  const details = parseTransaction(wallet.publicKey, transaction);
+
+  /**
    * Memoized click handler to pass in the transaction object explorer URL
    * to the remote prop function declaration.
    */
@@ -53,22 +63,19 @@ export function TransactionListItem({
       onClick
         ? onClick(
             transaction,
-            explorerUrl(explorer, transaction.hash ?? "", connection)
+            explorerUrl(explorer, transaction.hash ?? "", connection),
+            details
           )
         : {},
-    [connection, explorer, onClick, transaction]
+    [connection, details, explorer, onClick, transaction]
   );
 
-  /**
-   * The parsed transaction type and description to provide the list item
-   * display details and the list item icon component.
-   */
-  const details = parseTransaction(wallet.publicKey, transaction);
-
   const icon = transaction.error ? (
-    <TransactionListItemIconError size={44} />
+    <TransactionListItemIconError size={30} containerSize={44} />
   ) : (
-    details?.card.icon ?? <TransactionListItemIconDefault size={44} />
+    details?.card.icon ?? (
+      <TransactionListItemIconDefault size={30} containerSize={44} />
+    )
   );
 
   return (

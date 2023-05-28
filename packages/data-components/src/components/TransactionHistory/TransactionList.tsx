@@ -13,13 +13,18 @@ import {
 
 import type { ChainId } from "../../apollo/graphql";
 
+import type { ResponseTransaction } from ".";
+import type { ParseTransactionDetails } from "./parsing";
 import { TransactionListItem } from "./TransactionListItem";
 import type { TransactionGroup } from "./utils";
-import { type ResponseTransaction, TransactionDetailsTable } from ".";
 
 export type TransactionListProps = {
   blockchain: ChainId;
-  onItemClick?: (transaction: ResponseTransaction, explorerUrl: string) => void;
+  onItemClick?: (
+    transaction: ResponseTransaction,
+    explorerUrl: string,
+    parsedDetails: ParseTransactionDetails | null
+  ) => void;
   transactions: TransactionGroup[];
 };
 
@@ -79,22 +84,16 @@ export function TransactionList({
   );
 
   return (
-    <>
-      <TransactionDetailsTable
-        style={{ marginHorizontal: 16 }}
-        transaction={transactions[0].data[0]}
-      />
-      <SectionList
-        style={{ marginHorizontal: 16, marginTop: 16 }}
-        stickySectionHeadersEnabled={false}
-        showsVerticalScrollIndicator={false}
-        sections={transactions}
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-        renderSectionHeader={renderSectionHeader}
-        SectionSeparatorComponent={ListSectionSeparatorCore}
-        ItemSeparatorComponent={Separator}
-      />
-    </>
+    <SectionList
+      style={{ marginHorizontal: 16, marginTop: 16 }}
+      stickySectionHeadersEnabled={false}
+      showsVerticalScrollIndicator={false}
+      sections={transactions}
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+      renderSectionHeader={renderSectionHeader}
+      SectionSeparatorComponent={ListSectionSeparatorCore}
+      ItemSeparatorComponent={Separator}
+    />
   );
 }

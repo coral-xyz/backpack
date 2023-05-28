@@ -38,7 +38,7 @@ export type BalanceSummaryWidgetProps = {
 export function BalanceSummaryWidget({ style }: BalanceSummaryWidgetProps) {
   return (
     <ErrorBoundary
-      fallbackRender={(x) => <StyledText>{JSON.stringify(x.error)}</StyledText>}
+      fallbackRender={(x) => <StyledText>{JSON.stringify(x.error)}</StyledText>} // FIXME:
     >
       <Suspense fallback={<BalanceSummaryCoreLoader />}>
         <_BalanceSummaryWidget style={style} />
