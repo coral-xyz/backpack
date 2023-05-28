@@ -4131,7 +4131,8 @@ __metadata:
     "@solana/wallet-adapter-base": ^0.9.18
     "@solana/web3.js": ^1.63.1
     "@types/bn.js": ^5.1.1
-    "@types/chrome": ^0.0.203
+    "@types/chrome": ^0.0.236
+    "@types/eventemitter3": ^2.0.2
     "@types/firefox-webext-browser": ^94.0.1
     "@types/jest": ^29.4.0
     "@types/uuid": ^8.3.4
@@ -13482,13 +13483,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chrome@npm:^0.0.203":
-  version: 0.0.203
-  resolution: "@types/chrome@npm:0.0.203"
+"@types/chrome@npm:^0.0.236":
+  version: 0.0.236
+  resolution: "@types/chrome@npm:0.0.236"
   dependencies:
     "@types/filesystem": "*"
     "@types/har-format": "*"
-  checksum: 74939fa3cf84397b7b261336e783a1941b32a70cfcff89c65bdb386e76e2587887952615883a25e989ca840fbbc2facb25108a0bb77b167be7008172013ea988
+  checksum: 64cc6f8ac5c23f5dc6a3e1137721dda52e6401b1e1a8f9d16bfca7236bd5a118be6746324fd9e33630d98863370137ff0749b9949ededb9f46accb187f333896
   languageName: node
   linkType: hard
 
@@ -13848,6 +13849,15 @@ __metadata:
   version: 0.0.51
   resolution: "@types/estree@npm:0.0.51"
   checksum: e56a3bcf759fd9185e992e7fdb3c6a5f81e8ff120e871641607581fb3728d16c811702a7d40fa5f869b7f7b4437ab6a87eb8d98ffafeee51e85bbe955932a189
+  languageName: node
+  linkType: hard
+
+"@types/eventemitter3@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "@types/eventemitter3@npm:2.0.2"
+  dependencies:
+    eventemitter3: "*"
+  checksum: 8fb5031eab566ac7689092eaebfbd76a043154ed2b7bc806730c6c543de4fa2b25b73a69574b8bdbfdb4e238de1144061ae482d1bda540540ca9479f7efc7bb7
   languageName: node
   linkType: hard
 
