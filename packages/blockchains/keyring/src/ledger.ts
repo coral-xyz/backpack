@@ -8,9 +8,11 @@ import {
   nextIndicesFromPaths,
 } from "@coral-xyz/common";
 
-import type { LedgerKeyringJson } from "./types";
+import type { LedgerKeyring, LedgerKeyringJson } from "./types";
 
-export class LedgerKeyringBase {
+export class LedgerKeyringBase
+  implements Omit<Omit<LedgerKeyring, "signTransaction">, "signMessage">
+{
   protected walletDescriptors: Array<WalletDescriptor>;
   protected blockchain: Blockchain;
 
@@ -42,11 +44,10 @@ export class LedgerKeyringBase {
     return this.walletDescriptors.map((x) => x.publicKey);
   }
 
-  exportSecretKey(): string | null {
+  public exportSecretKey(address: string): string | null {
     throw new Error("ledger keyring cannot export secret keys");
   }
-
-  importSecretKey(): string {
+  public importSecretKey(secretKey: string): string {
     throw new Error("ledger keyring cannot import secret keys");
   }
 

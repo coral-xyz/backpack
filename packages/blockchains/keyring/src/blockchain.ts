@@ -10,6 +10,7 @@ import { getLogger } from "@coral-xyz/common";
 import * as bs58 from "bs58";
 
 import type {
+  AnyKeyring,
   HdKeyring,
   HdKeyringFactory,
   Keyring,
@@ -282,7 +283,7 @@ export class BlockchainKeyring {
     return keyring.signMessage(msgBuffer, walletAddress);
   }
 
-  private getKeyring(publicKey: string): Keyring {
+  private getKeyring(publicKey: string): AnyKeyring {
     for (const keyring of [
       this.hdKeyring,
       this.importedKeyring,
