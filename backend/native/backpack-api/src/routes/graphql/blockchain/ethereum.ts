@@ -209,6 +209,7 @@ export class Ethereum implements Blockchain {
           address: `${curr.contract.address}/${curr.tokenId}`,
           attributes,
           collection,
+          compressed: false,
           description: curr.description || undefined,
           image: curr.rawMetadata?.image || undefined,
           metadataUri: curr.tokenUri?.raw || undefined,

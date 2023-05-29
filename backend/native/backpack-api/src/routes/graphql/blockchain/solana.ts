@@ -3,7 +3,7 @@ import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { ethers } from "ethers";
 
 import type { CoinGeckoPriceData } from "../clients/coingecko";
-import type { HeliusGetTokenMetadataResponse } from "../clients/helius";
+import { IN_MEM_COLLECTION_DATA_CACHE } from "../clients/helius";
 import type { TensorActingListingsResponse } from "../clients/tensor";
 import type { ApiContext } from "../context";
 import { NodeBuilder } from "../nodes";
@@ -196,20 +196,18 @@ export class Solana implements Blockchain {
     address: string,
     filters?: NftFiltersInput
   ): Promise<NftConnection> {
-    // Get the held SPL tokens for the address and reduce to only NFT mint addresses
-    const assets = await this.#ctx.dataSources.helius.getBalances(address);
-    let nftMints = assets.tokens.reduce<string[]>(
-      (acc, curr) =>
-        curr.amount === 1 && curr.decimals === 0 ? [...acc, curr.mint] : acc,
-      []
+    // Get the list of digital assets (NFTs) owned by the argued address from Helius DAS API.
+    const response = await this.#ctx.dataSources.helius.rpc.getAssetsByOwner(
+      address
     );
 
     // Optionally filter for only argued NFT mints if provided
+    let { items } = response.result;
     if (filters?.addresses) {
-      nftMints = nftMints.filter((n) => filters.addresses!.includes(n));
+      items = items.filter((i) => filters.addresses?.includes(i.id));
     }
 
-    if (nftMints.length === 0) {
+    if (items.length === 0) {
       return createConnection([], false, false);
     }
 
@@ -225,97 +223,103 @@ export class Solana implements Blockchain {
       listings = { data: { userActiveListings: { txs: [] } } };
     }
 
-    // Fetch the token metadata for each NFT mint address from Helius
-    const metadatas = await this.#ctx.dataSources.helius.getTokenMetadata(
-      nftMints,
-      true
-    );
-
     // Create a set of unique NFT collection addresses and fetch
     // their metadata from Helius
     const uniqueCollections = new Set<string>();
-    for (const m of metadatas) {
-      const c = m.onChainMetadata?.metadata.collection ?? undefined;
-      if (c && !uniqueCollections.has(c.key)) {
-        uniqueCollections.add(c.key);
+    for (const item of items) {
+      const c = item.grouping.find(
+        (x) => x.group_key === "collection"
+      )?.group_value;
+
+      if (c && !uniqueCollections.has(c)) {
+        uniqueCollections.add(c);
       }
     }
 
-    const collectionMetadatas =
-      await this.#ctx.dataSources.helius.getTokenMetadata(
-        [...uniqueCollections.values()],
-        true
-      );
-
     // Create a map of collection address to name and image for reference
     const collectionMap = new Map<string, { name?: string; image?: string }>();
-    for (const c of collectionMetadatas) {
-      const onChain = c.onChainMetadata?.metadata.data ?? undefined;
-      const offChain = c.offChainMetadata?.metadata ?? undefined;
 
-      if (onChain || offChain) {
-        collectionMap.set(c.account, {
-          name: onChain?.name,
-          image: offChain?.image,
-        });
+    // Populate values from the in-memory collection data cache first...
+    // Iterate through in the set and add to the data map if the cache contains
+    // the collection key and then remove from the set if found
+    for (const c of uniqueCollections) {
+      if (IN_MEM_COLLECTION_DATA_CACHE.has(c)) {
+        collectionMap.set(c, IN_MEM_COLLECTION_DATA_CACHE.get(c)!);
+        uniqueCollections.delete(c);
+      }
+    }
+
+    const remaining = [...uniqueCollections.values()];
+    if (remaining.length > 0) {
+      const collectionMetadatas =
+        await this.#ctx.dataSources.helius.getTokenMetadata(remaining, true);
+
+      for (const c of collectionMetadatas) {
+        const onChain = c.onChainMetadata?.metadata.data ?? undefined;
+        const offChain = c.offChainMetadata?.metadata ?? undefined;
+
+        if (onChain || offChain) {
+          const data = {
+            name: onChain?.name,
+            image: offChain?.image,
+          };
+
+          collectionMap.set(c.account, data);
+          IN_MEM_COLLECTION_DATA_CACHE.set(c.account, data);
+        }
       }
     }
 
     // Create a map of associated token account addresses
     const atas = getATAAddressesSync({
-      mints: metadatas.reduce<Record<string, PublicKey>>((acc, curr) => {
-        acc[curr.account] = new PublicKey(curr.account);
+      mints: items.reduce<Record<string, PublicKey>>((acc, curr) => {
+        acc[curr.id] = new PublicKey(curr.id);
         return acc;
       }, {}),
       owner: new PublicKey(address),
     });
 
     // Map all NFT metadatas into their return type with possible collection data
-    const nodes: Nft[] = metadatas.map((m) => {
+    const nodes: Nft[] = items.map((item) => {
       const collection = this._parseCollectionMetadata(
         collectionMap,
-        m.onChainMetadata
+        item.grouping.find((g) => g.group_key === "collection")?.group_value
       );
 
       const attributes: NftAttribute[] | undefined =
-        m.offChainMetadata?.metadata?.attributes?.map((a) => ({
-          trait: a.trait_type || (a as any).traitType,
-          value: a.value,
+        item.content.metadata?.attributes?.map((x) => ({
+          trait: x.trait_type,
+          value: x.value,
         }));
 
       let listing: Listing | undefined = undefined;
       const tensorListing = listings.data.userActiveListings.txs.find(
-        (t) => t.tx.mintOnchainId === m.account
+        (t) => t.tx.mintOnchainId === item.id
       );
 
       if (tensorListing) {
-        listing = NodeBuilder.tensorListing(m.account, {
+        listing = NodeBuilder.tensorListing(item.id, {
           amount: ethers.utils.formatUnits(
             tensorListing.tx.grossAmount,
             this.nativeDecimals()
           ),
           source: tensorListing.tx.source,
-          url: this.#ctx.dataSources.tensor.getListingUrl(m.account),
+          url: this.#ctx.dataSources.tensor.getListingUrl(item.id),
         });
       }
 
       return NodeBuilder.nft(this.id(), {
-        address: m.account,
+        address: item.id,
         attributes,
         collection,
-        description: m.offChainMetadata?.metadata.description || undefined,
-        image: m.offChainMetadata?.metadata.image || undefined,
+        compressed: item.compression?.compressed ?? false,
+        description: item.content?.metadata?.description || undefined,
+        image: item.content?.files?.at(0)?.uri || undefined,
         listing,
-        metadataUri:
-          m.onChainMetadata?.metadata.data.uri ||
-          m.offChainMetadata?.uri ||
-          undefined,
-        name:
-          m.onChainMetadata?.metadata.data.name ||
-          m.offChainMetadata?.metadata.name ||
-          undefined,
+        metadataUri: item.content?.json_uri || undefined,
+        name: item.content?.metadata?.name || undefined,
         owner: address,
-        token: atas.accounts[m.account].address.toBase58(),
+        token: atas.accounts[item.id].address.toBase58(),
       });
     });
 
@@ -392,27 +396,21 @@ export class Solana implements Blockchain {
    * Parse a potential collection data object from the on-chain metadata for an NFT.
    * @private
    * @param {Map<string, { name?: string; image?: string }>} collectionMap
-   * @param {HeliusGetTokenMetadataResponse[number]["onChainMetadata"]} [onChainMetadata]
+   * @param {string} [groupingKey]
    * @returns {(Collection | undefined)}
    * @memberof Solana
    */
   private _parseCollectionMetadata(
     collectionMap: Map<string, { name?: string; image?: string }>,
-    onChainMetadata?: HeliusGetTokenMetadataResponse[number]["onChainMetadata"]
+    groupingKey?: string
   ): Collection | undefined {
-    const hasCollection =
-      (onChainMetadata?.metadata.collection ?? undefined) !== undefined;
-
-    const mapValue = hasCollection
-      ? collectionMap.get(onChainMetadata!.metadata.collection!.key)
-      : undefined;
-
-    return hasCollection
+    const mapValue = groupingKey ? collectionMap.get(groupingKey) : undefined;
+    return mapValue
       ? NodeBuilder.nftCollection(this.id(), {
-          address: onChainMetadata!.metadata.collection!.key,
+          address: groupingKey!,
           image: mapValue?.image,
           name: mapValue?.name,
-          verified: onChainMetadata!.metadata.collection!.verified,
+          verified: true,
         })
       : undefined;
   }

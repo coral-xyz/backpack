@@ -3,6 +3,16 @@ import { getATAAddressSync } from "@saberhq/token-utils";
 import type { AccountInfo } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import type { EnrichedTransaction } from "helius-sdk";
+import { LRUCache } from "lru-cache";
+
+export const IN_MEM_COLLECTION_DATA_CACHE = new LRUCache<
+  string,
+  { name?: string; image?: string }
+>({
+  allowStale: false,
+  max: 1000,
+  ttl: 1000 * 60 * 30, // 30 minute TTL
+});
 
 type HeliusOptions = {
   apiKey: string;
@@ -17,6 +27,7 @@ type HeliusOptions = {
  */
 export class Helius extends RESTDataSource {
   readonly #apiKey: string;
+  readonly #rpcClient: HeliusRpc;
 
   override baseURL = "https://api.helius.xyz";
 
@@ -26,6 +37,17 @@ export class Helius extends RESTDataSource {
     if (opts.devnet) {
       this.baseURL = "https://api-devnet.helius.xyz";
     }
+    this.#rpcClient = new HeliusRpc(opts);
+  }
+
+  /**
+   * Helius RPC API client.
+   * @readonly
+   * @type {HeliusRpc}
+   * @memberof Helius
+   */
+  get rpc(): HeliusRpc {
+    return this.#rpcClient;
   }
 
   /**
@@ -96,6 +118,55 @@ export class Helius extends RESTDataSource {
         before,
         until,
       },
+    });
+  }
+}
+
+/**
+ * Custom GraphQL REST data source class abstraction for Helius RPC.
+ * @export
+ * @class HeliusRpc
+ * @extends {RESTDataSource}
+ */
+export class HeliusRpc extends RESTDataSource {
+  readonly #apiKey: string;
+
+  override baseURL = "https://rpc.helius.xyz";
+
+  constructor(opts: HeliusOptions) {
+    super();
+    this.#apiKey = opts.apiKey;
+    if (opts.devnet) {
+      this.baseURL = "https://rpc-devnet.helius.xyz";
+    }
+  }
+
+  /**
+   * Get the NFTs for a specific owner using the DAS API.
+   * @param {string} address
+   * @returns {Promise<HeliusGetAssetsByOwnerResponse>}
+   * @memberof HeliusRpc
+   */
+  async getAssetsByOwner(
+    address: string
+  ): Promise<HeliusGetAssetsByOwnerResponse> {
+    return this.post("/", {
+      params: {
+        "api-key": this.#apiKey,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: "1",
+        method: "getAssetsByOwner",
+        params: {
+          ownerAddress: address,
+          page: 1,
+          limit: 200,
+        },
+      }),
     });
   }
 }
@@ -190,3 +261,77 @@ export type HeliusGetTokenMetadataResponse = Array<{
     }>;
   };
 }>;
+
+export type HeliusGetAssetsByOwnerResponse = {
+  jsonrpc: string;
+  result: {
+    total: number;
+    limit: number;
+    page: number;
+    items: Array<{
+      id: string;
+      interface: string;
+      content: {
+        $schema: string;
+        json_uri: string;
+        files: Array<{
+          uri: string;
+          cdn_uri?: string;
+          mime: string;
+        }>;
+        metadata: {
+          attributes: Array<{
+            trait_type: string;
+            value: string;
+          }>;
+          description: string;
+          name: string;
+          symbol: string;
+        };
+        links: {
+          external_url?: string | null;
+        };
+      };
+      authorities: Array<{
+        address: string;
+        scopes: string[];
+      }>;
+      compression: {
+        eligible: boolean;
+        compressed: boolean;
+        data_hash?: string | null;
+        creator_hash?: string | null;
+        asset_hash?: string | null;
+        tree?: string | null;
+        seq: number;
+        leaf_id: number;
+      };
+      grouping: Array<{
+        group_key: string;
+        group_value: string;
+      }>;
+      royalty: {
+        royalty_model: string;
+        target?: any | null;
+        percent: number;
+        basis_points: number;
+        primary_sale_happened: boolean;
+        lcoked: boolean;
+      };
+      creators: Array<{
+        address: string;
+        share: number;
+        verified: boolean;
+      }>;
+      ownership: {
+        frozen: boolean;
+        delegated: boolean;
+        delegate?: string | null;
+        ownership_module: string;
+        owner: string;
+      };
+      supply?: any | null;
+      mutable: boolean;
+    }>;
+  };
+};
