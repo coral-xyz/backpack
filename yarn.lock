@@ -4372,6 +4372,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@coral-xyz/secure-background@workspace:packages/secure-background":
+  version: 0.0.0-use.local
+  resolution: "@coral-xyz/secure-background@workspace:packages/secure-background"
+  dependencies:
+    "@coral-xyz/blockchain-evm": "*"
+    "@coral-xyz/blockchain-keyring": "*"
+    "@coral-xyz/blockchain-solana": "*"
+    "@coral-xyz/common": "*"
+    "@types/eventemitter3": ^2.0.2
+    eslint-config-custom: "*"
+    eventemitter3: ^5.0.1
+    typescript: ~4.9.3
+  languageName: unknown
+  linkType: soft
+
 "@coral-xyz/tamagui@*, @coral-xyz/tamagui@workspace:packages/tamagui-core":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/tamagui@workspace:packages/tamagui-core"
@@ -23138,7 +23153,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eventemitter3@npm:*":
+"eventemitter3@npm:*, eventemitter3@npm:^5.0.1":
   version: 5.0.1
   resolution: "eventemitter3@npm:5.0.1"
   checksum: 543d6c858ab699303c3c32e0f0f47fc64d360bf73c3daf0ac0b5079710e340d6fe9f15487f94e66c629f5f82cd1a8678d692f3dbb6f6fcd1190e1b97fcad36f8
