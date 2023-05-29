@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import type { SearchParamsFor } from "@coral-xyz/common";
 import { Blockchain } from "@coral-xyz/common";
 import {
@@ -16,7 +16,7 @@ import {
   NavStackScreen,
 } from "../../../common/Layout/NavStack";
 import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
-import { RecentActivityList } from "../RecentActivity";
+import { RecentActivityList, RecentActivityLoading } from "../RecentActivity";
 import { TransferWidget } from "../TransferWidget";
 
 const useStyles = styles((theme) => ({
@@ -80,13 +80,15 @@ export function Token({
         tokenAddress={tokenAddress}
         publicKey={publicKey}
       />
-      <RecentActivityList
-        blockchain={blockchain}
-        address={activityAddress}
-        contractAddresses={contractAddresses}
-        minimize
-        style={{ marginTop: 0 }}
-      />
+      <Suspense fallback={RecentActivityLoading}>
+        <RecentActivityList
+          blockchain={blockchain}
+          address={activityAddress}
+          contractAddresses={contractAddresses}
+          minimize
+          style={{ marginTop: 0 }}
+        />
+      </Suspense>
     </div>
   );
 }
