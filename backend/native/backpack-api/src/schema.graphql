@@ -497,6 +497,11 @@ type Nft implements Node {
   collection: Collection @cacheControl(inheritMaxAge: true)
 
   """
+  Whether or not the NFT is using on-chain compression.
+  """
+  compressed: Boolean!
+
+  """
   The description of the NFT found in the metadata.
   """
   description: String
