@@ -119,5 +119,5 @@ export function useBlockchainActiveWallet(blockchain: Blockchain) {
         throw new Error(`invalid blockchain ${blockchain}`);
     }
   })();
-  return useRecoilValue(value);
+  return useRecoilValue(value)!;
 }
