@@ -90,7 +90,7 @@ class EthereumKeyringBase implements KeyringBase {
   }
 }
 
-export class EthereumKeyring extends EthereumKeyringBase {
+class EthereumKeyring extends EthereumKeyringBase {
   public toJson(): KeyringJson {
     return {
       // Private keys, just using the Solana secret key nomenclature
@@ -131,10 +131,7 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
   }
 }
 
-export class EthereumHdKeyring
-  extends EthereumKeyringBase
-  implements HdKeyring
-{
+class EthereumHdKeyring extends EthereumKeyringBase implements HdKeyring {
   readonly mnemonic: string;
   private derivationPaths: Array<string>;
   private seed: Buffer;

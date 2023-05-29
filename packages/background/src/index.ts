@@ -3,6 +3,7 @@ import { EventEmitter } from "eventemitter3";
 
 import * as coreBackend from "./backend/core";
 import * as ethereumConnectionBackend from "./backend/ethereum-connection";
+import { KeyringStore } from "./backend/keyring";
 import { initPushNotificationHandlers } from "./backend/push-notifications";
 import * as solanaConnectionBackend from "./backend/solana-connection";
 import * as ethereumConnection from "./frontend/ethereum-connection";
@@ -21,7 +22,8 @@ export function start(cfg: Config): Background {
   // Backends.
   const solanaB = solanaConnectionBackend.start(events);
   const ethereumB = ethereumConnectionBackend.start(events);
-  const coreB = coreBackend.start(events, solanaB, ethereumB);
+  const keyringStore = new KeyringStore(events);
+  const coreB = coreBackend.start(events, keyringStore, solanaB, ethereumB);
 
   // Frontend.
   const _serverInjected = serverInjected.start(cfg, events, coreB);
