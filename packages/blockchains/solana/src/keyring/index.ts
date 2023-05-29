@@ -250,10 +250,7 @@ export class SolanaLedgerKeyringFactory {
   }
 }
 
-export class SolanaLedgerKeyring
-  extends LedgerKeyringBase
-  implements LedgerKeyring
-{
+class SolanaLedgerKeyring extends LedgerKeyringBase implements LedgerKeyring {
   public async signTransaction(tx: Buffer, publicKey: string): Promise<string> {
     const walletDescriptor = this.walletDescriptors.find(
       (p) => p.publicKey === publicKey
