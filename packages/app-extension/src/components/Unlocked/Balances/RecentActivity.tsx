@@ -147,7 +147,7 @@ function RecentTransactions({
   );
 
   return (
-    <Suspense fallback={<RecentActivityLoading />}>
+    <Suspense fallback={null}>
       <BlockchainActivityList transactions={sortedTransactions} />
     </Suspense>
   );
