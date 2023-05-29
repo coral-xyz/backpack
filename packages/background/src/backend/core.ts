@@ -85,7 +85,7 @@ import { ethers } from "ethers";
 import type { PublicKeyData, PublicKeyType } from "../types";
 
 import type { EthereumConnectionBackend } from "./ethereum-connection";
-import { KeyringStore } from "./keyring";
+import type { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { Nav, User } from "./store";
 import { getWalletDataForUser, setUser, setWalletDataForUser } from "./store";
@@ -95,10 +95,11 @@ const { base58: bs58 } = ethers.utils;
 
 export function start(
   events: EventEmitter,
+  keyringStore: KeyringStore,
   solanaB: SolanaConnectionBackend,
   ethereumB: EthereumConnectionBackend
 ) {
-  return new Backend(events, solanaB, ethereumB);
+  return new Backend(events, keyringStore, solanaB, ethereumB);
 }
 
 export class Backend {
@@ -112,10 +113,11 @@ export class Backend {
 
   constructor(
     events: EventEmitter,
+    keyringStore: KeyringStore,
     solanaB: SolanaConnectionBackend,
     ethereumB: EthereumConnectionBackend
   ) {
-    this.keyringStore = new KeyringStore(events);
+    this.keyringStore = keyringStore;
     this.solanaConnectionBackend = solanaB;
     this.ethereumConnectionBackend = ethereumB;
     this.events = events;
