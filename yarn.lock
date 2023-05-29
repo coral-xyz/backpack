@@ -4345,6 +4345,7 @@ __metadata:
     react-router-dom: ^6.3.0
     recoil: ^0.7.5
     typescript: ~4.9.3
+    use-async-effect: ^2.2.7
   peerDependencies:
     "@solana/web3.js": ^1.63.1
   languageName: unknown
@@ -40400,6 +40401,15 @@ __metadata:
   version: 1.0.0
   resolution: "urlsafe-base64@npm:1.0.0"
   checksum: 41d28a337044e5ad287174e928227b025d03424c5cd316956fdcbd916fccdc70981fa9a67e77325c5250c8150ba90bca0de65e783aa6235567b7f820e1146cb6
+  languageName: node
+  linkType: hard
+
+"use-async-effect@npm:^2.2.7":
+  version: 2.2.7
+  resolution: "use-async-effect@npm:2.2.7"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 81fe96df0e9db68fcf5b63a88307ba09896ddbdb6ea952fb00340d5f9d1393d06f2af4d8aa547b062cac2edaaf4bc383fc30f039054ce93bc9e61298ee52e938
   languageName: node
   linkType: hard
 

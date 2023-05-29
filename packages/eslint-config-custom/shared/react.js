@@ -60,7 +60,7 @@ module.exports = {
     "react-hooks/exhaustive-deps": [
       "warn",
       {
-        additionalHooks: "(useRecoilCallback|useRecoilTransaction_UNSTABLE)",
+        additionalHooks: "(useAsyncEffect|useRecoilCallback|useRecoilTransaction_UNSTABLE)",
       },
     ],
   },
