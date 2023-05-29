@@ -30,7 +30,6 @@ import {
   TWITTER_LINK,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
-  UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
 import {
@@ -41,7 +40,6 @@ import {
 } from "@coral-xyz/recoil";
 import { Stack as Box } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -67,7 +65,7 @@ import {
   TwitterIcon,
   WidgetIcon,
 } from "~components/Icon";
-import { StyledTextInput } from "~components/StyledTextInput";
+import { UsernameInput } from "~components/StyledTextInput";
 import {
   ActionCard,
   // Box,
@@ -88,6 +86,7 @@ import {
   CallToAction,
 } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
+import { useSession } from "~lib/SessionProvider";
 import { maybeRender } from "~lib/index";
 
 function Network({
@@ -405,16 +404,7 @@ function CreateOrRecoverUsernameScreen({
         {text}
         <View>
           <Box marginBottom={18}>
-            <StyledTextInput
-              autoFocus
-              placeholder="@Username"
-              returnKeyType="next"
-              value={username}
-              onChangeText={(text) => {
-                const username = text.toLowerCase().replace(/[^a-z0-9_]/g, "");
-                setUsername(username);
-              }}
-            />
+            <UsernameInput username={username} onChange={setUsername} />
           </Box>
           {maybeRender(error !== "", () => (
             <ErrorMessage for={{ message: error }} />
@@ -906,37 +896,25 @@ function OnboardingImportAccountsScreen({
 function CreateAccountLoadingScreen(
   _p: StackScreenProps<OnboardingStackParamList, "CreateAccountLoading">
 ): JSX.Element {
+  const { setAuthToken } = useSession();
   const background = useBackgroundClient();
   const { onboardingData, maybeCreateUser } = useOnboarding();
   const [error, setError] = useState(false);
 
   useEffect(() => {
     (async () => {
-      // This is a mitigation to ensure the keyring store doesn't lock before
-      // creating the user on the server.
-      //
-      // Would be better (though probably not a priority atm) to ensure atomicity.
-      // E.g. we could generate the UUID here on the client, create the keyring store,
-      // and only then create the user on the server. If the server fails, then
-      // rollback on the client.
-      //
-      // An improvement for the future!
-      if (onboardingData.isAddingAccount) {
-        await background.request({
-          method: UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
-          params: [],
-        });
-      }
       const res = await maybeCreateUser({
         ...onboardingData,
         keyringType: "mnemonic",
       });
-      await AsyncStorage.setItem("@bk-jwt", res.jwt);
+
       if (!res.ok) {
         setError(true);
       }
+
+      setAuthToken(res.jwt);
     })();
-  }, [onboardingData, background, maybeCreateUser]);
+  }, [onboardingData, background, maybeCreateUser, setAuthToken]);
 
   if (error) {
     return (

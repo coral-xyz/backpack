@@ -1,8 +1,8 @@
 // TODO(peter) one thing we might need to make sure is that when we wrap these FlatLists in a ScrollView, we can't nest virtualized lists.
 // This means we might just use the scrollview directly from within a flatlist by using ListHeaderComponent and ListFooterComponent
-import type { Token } from "@@types/types";
 import type { Blockchain } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
+import type { Token } from "~types/types";
 
 import React, { useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
@@ -12,6 +12,7 @@ import {
   blockchainBalancesSorted,
   allWalletsDisplayed,
 } from "@coral-xyz/recoil";
+import { TextPercentChanged } from "@coral-xyz/tamagui";
 import { useNavigation } from "@react-navigation/native";
 import { useRecoilValueLoadable } from "recoil";
 
@@ -212,92 +213,8 @@ export function WalletPickerButton({
   );
 }
 
-// Used for each individual row  of Balances
-function TextPercentChanged({ percentChange }: { percentChange: number }) {
-  const theme = useTheme();
-  const positive = !!(percentChange && percentChange > 0);
-  const negative = !!(percentChange && percentChange < 0);
-  const neutral = !!(percentChange && percentChange === 0);
-
-  return (
-    <>
-      {percentChange !== undefined && positive ? (
-        <Text
-          style={[
-            styles.tokenBalanceChangePositive,
-            { color: theme.custom.colors.positive },
-          ]}
-        >
-          +{formatUSD(percentChange.toLocaleString())}
-        </Text>
-      ) : null}
-      {percentChange !== undefined && negative ? (
-        <Text
-          style={[
-            styles.tokenBalanceChangeNegative,
-            { color: theme.custom.colors.negative },
-          ]}
-        >
-          {formatUSD(percentChange.toLocaleString())}
-        </Text>
-      ) : null}
-      {percentChange !== undefined && neutral ? (
-        <Text
-          style={[
-            styles.tokenBalanceChangeNeutral,
-            { color: theme.custom.colors.secondary },
-          ]}
-        >
-          {formatUSD(percentChange.toLocaleString())}
-        </Text>
-      ) : null}
-    </>
-  );
-}
-
-// Used in BalanceDetail TokenHeader, slightly diff than the other one
-function RecentPercentChange({
-  recentPercentChange,
-}: {
-  recentPercentChange: number | undefined;
-}): JSX.Element {
-  const theme = useTheme();
-  const color =
-    recentPercentChange === undefined
-      ? ""
-      : recentPercentChange > 0
-      ? theme.custom.colors.positive
-      : theme.custom.colors.negative;
-
-  return <Text style={{ color }}>{recentPercentChange}%</Text>;
-}
-
-// Used in BalanceDetail TokenHeader, slightly diff than other recent percent changes
-export function UsdBalanceAndPercentChange({
-  usdBalance,
-  recentPercentChange,
-}: {
-  usdBalance: number;
-  recentPercentChange: number | undefined;
-}): JSX.Element {
-  const theme = useTheme();
-  return (
-    <View style={usdBalanceAndPercentChangeStyles.container}>
-      <Text
-        style={[
-          usdBalanceAndPercentChangeStyles.usdBalanceLabel,
-          { color: theme.custom.colors.secondary },
-        ]}
-      >
-        ${parseFloat(usdBalance.toFixed(2)).toLocaleString()}{" "}
-        <RecentPercentChange recentPercentChange={recentPercentChange} />
-      </Text>
-    </View>
-  );
-}
-
 // Renders the individual token row
-function TokenRow({
+export function TokenRow({
   onPressRow,
   token,
   blockchain,
@@ -390,35 +307,6 @@ const styles = StyleSheet.create({
   tokenBalance: {
     fontWeight: "500",
     fontSize: 16,
-    lineHeight: 24,
-  },
-  tokenBalanceChangeNeutral: {
-    fontWeight: "500",
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  tokenBalanceChangePositive: {
-    fontWeight: "500",
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  tokenBalanceChangeNegative: {
-    fontWeight: "500",
-    fontSize: 12,
-  },
-});
-
-const usdBalanceAndPercentChangeStyles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "center",
-  },
-  usdBalanceLabel: {
-    fontWeight: "500",
-    fontSize: 14,
-    textAlign: "center",
-    marginTop: 4,
     lineHeight: 24,
   },
 });

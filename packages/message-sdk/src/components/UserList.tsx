@@ -1,5 +1,6 @@
 import type { CSSProperties, MouseEvent} from "react";
 import { useState } from "react";
+import { SignalingManager } from "@coral-xyz/chat-xplat";
 import type { RemoteUserData } from "@coral-xyz/common";
 import {
   BACKPACK_TEAM,
@@ -21,7 +22,6 @@ import {
   useUpdateFriendships,
   useUser,
 } from "@coral-xyz/recoil";
-import { SignalingManager } from "@coral-xyz/tamagui";
 import { useCustomTheme } from "@coral-xyz/themes";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { List, ListItem } from "@mui/material";

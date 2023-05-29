@@ -17,7 +17,7 @@
           .split("/service-worker-loader.html")[0]
           .split("background-scripts/")[1];
         const urlDiv = document.createElement("div");
-        urlDiv.innerHTML = currentUrl;
+        urlDiv.innerText = currentUrl;
         const bodyElement = document.getElementsByTagName("body")[0];
         bodyElement.appendChild(urlDiv);
 
@@ -26,24 +26,6 @@
         // check to see if an old service worker needs to be unregistered
         const registrations = await navigator.serviceWorker.getRegistrations();
         console.log("# SERVICE WORKERS", registrations.length);
-
-        for (let registration of registrations) {
-          console.log("SERVICE WORKER: exists", registration.scope);
-          try {
-            const hash = registration.scope
-              .split("background-scripts/")[1]
-              .split("/")[0];
-
-            console.log("hash", hash);
-
-            if (currentUrlHash !== hash) {
-              console.log("SERVICE WORKER: unregistering", registration);
-              await registration.unregister();
-            }
-          } catch (error) {
-            console.error("SERVICE WORKER error unregistering", error);
-          }
-        }
 
         //
         // Kickoff the service worker registration
@@ -60,6 +42,8 @@
 
           document.querySelector("body").style.background = "yellow";
           console.log("SERVICE WORKER: registered", registration);
+
+          await registration.active.postMessage({ type: "READY" });
         } catch (error) {
           console.log("SERVICE WORKER: registration failed", error);
         }

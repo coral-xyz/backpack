@@ -1,12 +1,15 @@
 {
   "extends": "../../tsconfig.base",
-  "include": [
-    "src"
-  ],
+  "include": ["src"],
   "compilerOptions": {
     "composite": true,
     "esModuleInterop": true,
-    "jsx": "preserve"
-  },
-  "references": []
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "~components/*": ["./src/components/*"],
+      "~hooks/*": ["./src/hooks/*"],
+      "~screens/*": ["./src/screens/*"]
+    }
+  }
 }

@@ -277,8 +277,8 @@ function LibraryLink({ isXs }: { isXs: boolean }) {
           padding: 14,
           background: theme.custom.colorsInverted.nav,
         }}
-        iconUrl="https://xnft.gg/logo.svg"
-        onClick={() => window.open("https://xnft.gg", "_blank")}
+        iconUrl={`${XNFT_GG_LINK}/logo.svg`}
+        onClick={() => window.open(XNFT_GG_LINK, "_blank")}
       />
     </Grid>
   );

@@ -18,7 +18,8 @@ import { useRecoilValue } from "recoil";
 import { Scrollbar } from "../../common/Layout/Scrollbar";
 import { _BalancesTableHead } from "../Balances/Balances";
 
-import { CollectionCard, NFTCard } from "./Cards";
+import { CollectionCard } from "./CollectionEntry";
+import { NFTCard } from "./NftEntry";
 
 export type AllWalletCollections = Array<{
   publicKey: string;

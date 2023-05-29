@@ -1,6 +1,6 @@
 import type {
-  RawMintString,
-  SolanaTokenAccountWithKeyString,
+  RawMintWithProgramIdString,
+  SolanaTokenAccountWithKeyAndProgramIdString,
   SplNftMetadataString,
   TokenMetadataString,
 } from "@coral-xyz/common";
@@ -41,13 +41,13 @@ export const customSplTokenAccounts = atomFamily({
         get,
       }): Promise<{
         publicKey: string;
-        splTokenMints: Map<string, RawMintString | null>;
+        splTokenMints: Map<string, RawMintWithProgramIdString | null>;
         nfts: {
-          nftTokens: Array<SolanaTokenAccountWithKeyString>;
+          nftTokens: Array<SolanaTokenAccountWithKeyAndProgramIdString>;
           nftTokenMetadata: Array<TokenMetadataString | null>;
         };
         fts: {
-          fungibleTokens: Array<SolanaTokenAccountWithKeyString>;
+          fungibleTokens: Array<SolanaTokenAccountWithKeyAndProgramIdString>;
           fungibleTokenMetadata: Array<TokenMetadataString | null>;
         };
       }> => {
@@ -87,7 +87,7 @@ export const customSplTokenAccounts = atomFamily({
  * Loads all the token accounts for fungible tokens for the given public key.
  */
 export const solanaFungibleTokenAccounts = selectorFamily<
-  Map<string, SolanaTokenAccountWithKeyString>,
+  Map<string, SolanaTokenAccountWithKeyAndProgramIdString>,
   {
     connectionUrl: string;
     publicKey: string;
@@ -107,7 +107,7 @@ export const solanaFungibleTokenAccounts = selectorFamily<
  * key.
  */
 export const solanaNftTokenAccounts = selectorFamily<
-  Map<string, SolanaTokenAccountWithKeyString>,
+  Map<string, SolanaTokenAccountWithKeyAndProgramIdString>,
   {
     connectionUrl: string;
     publicKey: string;
@@ -194,7 +194,7 @@ export const solanaFungibleTokenUriData = selectorFamily<
  * Store the info from the SPL Token Account owned by the connected wallet.
  */
 export const solanaTokenAccountsMap = selectorFamily<
-  SolanaTokenAccountWithKeyString | undefined,
+  SolanaTokenAccountWithKeyAndProgramIdString | undefined,
   {
     tokenAddress: string;
     publicKey: string;
@@ -327,7 +327,7 @@ export const solanaFungibleTokenNativeBalance = selectorFamily<
  * Returns all mints--fungible and non-fungible.
  */
 export const solanaTokenMint = selectorFamily<
-  /*RawMintString | null*/ any,
+  /*RawMintWithProgramIdString | null*/ any,
   { tokenAddress: string; publicKey: string }
 >({
   key: "solanaTokenMint",

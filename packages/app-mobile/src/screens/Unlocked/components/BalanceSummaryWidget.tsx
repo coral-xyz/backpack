@@ -1,9 +1,13 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Suspense } from "react";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 
+import { gql, useSuspenseQuery_experimental } from "@apollo/client";
 import { formatUSD } from "@coral-xyz/common";
+import { useActiveWallet } from "@coral-xyz/recoil";
+import { Stack, XStack } from "@coral-xyz/tamagui";
+import { ErrorBoundary } from "react-error-boundary";
 
-import { Margin } from "~components/index";
-import { useTotalBalance } from "~hooks/recoil";
+import { StyledText } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 
 function TextTotalChange({
@@ -63,32 +67,98 @@ function TextPercentChange({
   );
 }
 
-export function BalanceSummaryWidget() {
-  const theme = useTheme();
-  const { totalBalance, totalChange, percentChange, isLoading } =
-    useTotalBalance();
+const GET_BALANCE_SUMMARY = gql`
+  query WalletBalanceSummary($chainId: ChainID!, $address: String!) {
+    wallet(chainId: $chainId, address: $address) {
+      id
+      balances {
+        id
+        aggregate {
+          id
+          percentChange
+          value
+          valueChange
+        }
+        native {
+          id
+          address
+          amount
+          decimals
+          displayAmount
+          marketData {
+            id
+            usdChange
+            percentChange
+            lastUpdatedAt
+            logo
+            price
+            value
+          }
+        }
+      }
+    }
+  }
+`;
+
+function LoadingSkeleton() {
+  return (
+    <View style={{ height: 72, opacity: 0.2 }}>
+      <ActivityIndicator size="small" />
+    </View>
+  );
+}
+
+function ErrorFallback({ error }: { error: Error }) {
+  return (
+    <View style={{ height: 72, opacity: 0.5 }}>
+      <StyledText color="$redText" textAlign="center">
+        Something went wrong:
+      </StyledText>
+      <StyledText textAlign="center">{error.message}</StyledText>
+    </View>
+  );
+}
+
+function Container() {
+  const activeWallet = useActiveWallet();
+  const { data } = useSuspenseQuery_experimental(GET_BALANCE_SUMMARY, {
+    variables: {
+      chainId: activeWallet.blockchain.toUpperCase(),
+      address: activeWallet.publicKey,
+    },
+  });
+
+  const { aggregate } = data.wallet.balances;
+  const totalBalance = aggregate.value ?? 0.0;
+  const totalChange = aggregate.valueChange ?? 0.0;
+  const percentChange = aggregate.percentChange ?? 0.0;
 
   return (
-    <View style={styles.container}>
-      <Text
-        style={[
-          styles.totalBalanceText,
-          { color: theme.custom.colors.fontColor },
-        ]}
-      >
+    <Stack ai="center">
+      <StyledText fontWeight="700" fontSize="$4xl" color="$fontColor">
         {formatUSD(totalBalance)}
-      </Text>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Margin right={12}>
-          <TextTotalChange totalChange={totalChange} />
-        </Margin>
+      </StyledText>
+      <XStack alignItems="center">
+        <TextTotalChange totalChange={totalChange} />
         <TextPercentChange
-          isLoading={isLoading}
+          isLoading={false}
           totalChange={totalChange}
-          percentChange={percentChange}
+          percentChange={percentChange as number}
         />
-      </View>
-    </View>
+      </XStack>
+    </Stack>
+  );
+}
+
+export function BalanceSummaryWidget() {
+  return (
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ErrorFallback error={error} />}
+    >
+      <Suspense fallback={<LoadingSkeleton />}>
+        <Container />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 
@@ -97,17 +167,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  totalBalanceText: {
-    fontWeight: "600",
-    fontSize: 40,
-  },
   totalChangeText: {
-    fontSize: 12,
-    lineHeight: 24,
-    paddingVertical: 12,
+    fontSize: 16,
   },
   percentChangeText: {
-    fontSize: 12,
+    fontSize: 16,
     lineHeight: 24,
     borderRadius: 28,
     paddingHorizontal: 8,

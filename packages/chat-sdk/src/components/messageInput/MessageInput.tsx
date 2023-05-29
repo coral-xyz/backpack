@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo } from "react";
 import { RichMentionsContext, RichMentionsInput } from "react-rich-mentions";
 import { BACKPACK_TEAM } from "@coral-xyz/common";
 import { BackpackStaffIcon } from "@coral-xyz/react-common";
-import { useUsersMetadata } from "@coral-xyz/tamagui";
+import { useUsersMetadata } from "@coral-xyz/chat-xplat";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CircularProgress } from "@mui/material";
 

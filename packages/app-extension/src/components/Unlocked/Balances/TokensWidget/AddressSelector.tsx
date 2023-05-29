@@ -195,12 +195,13 @@ export const AddressSelector = ({
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
-  const { isValidAddress, normalizedAddress } = useIsValidAddress(
-    blockchain,
-    inputContent,
-    solanaProvider.connection,
-    ethereumCtx.provider
-  );
+  const { isValidAddress, isErrorAddress, normalizedAddress } =
+    useIsValidAddress(
+      blockchain,
+      inputContent,
+      solanaProvider.connection,
+      ethereumCtx.provider
+    );
 
   useEffect(() => {
     const prev = nav.title;
@@ -241,7 +242,7 @@ export const AddressSelector = ({
           />
         </div>
         <div className={classes.buttonContainer}>
-          {!isValidAddress && inputContent.length > 15 ? (
+          {isErrorAddress || (!isValidAddress && inputContent.length > 15) ? (
             <DangerButton label="Invalid address" disabled />
           ) : (
             <PrimaryButton

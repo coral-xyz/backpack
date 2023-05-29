@@ -1,0 +1,53 @@
+table:
+  name: claims
+  schema: dropzone
+object_relationships:
+  - name: claimant
+    using:
+      foreign_key_constraint_on: claimant_id
+  - name: distributor
+    using:
+      foreign_key_constraint_on: distributor_id
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - amount
+        - claimant_id
+        - claimant_public_key
+        - claimed_at
+        - created_at
+        - distributor_id
+        - ordinal
+        - transaction_signature
+        - viewed_at
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - amount
+        - claimant_id
+        - claimant_public_key
+        - claimed_at
+        - created_at
+        - distributor_id
+        - ordinal
+        - transaction_signature
+        - viewed_at
+      filter: {}
+update_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - amount
+        - claimant_id
+        - claimant_public_key
+        - claimed_at
+        - created_at
+        - distributor_id
+        - ordinal
+        - transaction_signature
+        - viewed_at
+      filter: {}
+      check: {}

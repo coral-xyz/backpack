@@ -1,59 +1,42 @@
 {
   "cli": {
     "appVersionSource": "remote",
-    "version": ">= 3.8.0"
+    "version": "^3.12.0"
   },
   "build": {
     "monorepo": {
       "node": "18.15.0",
+      "resourceClass": "large",
       "ios": {
-        "resourceClass": "m-medium"
+        "image": "latest"
+      },
+      "android": {
+        "image": "latest"
+      },
+      "env": {
+        "APP_ENV": "production"
       },
       "channel": "monorepo"
     },
-    "production": {
+    "development-simulator": {
       "extends": "monorepo",
-      "autoIncrement": true,
-      "channel": "production"
-    },
-    "simulator": {
-      "extends": "monorepo",
-      "channel": "simulator",
+      "developmentClient": true,
       "distribution": "internal",
-      "env": {
-        "APP_ENV": "production"
-      },
       "ios": {
-        "simulator": true,
-        "resourceClass": "m-medium"
-      }
+        "simulator": true
+      },
+      "channel": "development-simulator"
     },
     "preview": {
       "extends": "monorepo",
-      "channel": "preview",
       "distribution": "internal",
-      "env": {
-        "APP_ENV": "production"
-      },
-      "ios": {
-        "resourceClass": "m-medium"
-      }
+      "channel": "preview"
     },
-    "development": {
+    "production": {
       "extends": "monorepo",
-      "channel": "internal",
-      "developmentClient": true,
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      },
-      "ios": {
-        "simulator": true,
-        "resourceClass": "m-medium"
-      },
-      "env": {
-        "APP_ENV": "development"
-      }
+      "channel": "production",
+      "distribution": "store",
+      "autoIncrement": true
     }
   },
   "submit": {

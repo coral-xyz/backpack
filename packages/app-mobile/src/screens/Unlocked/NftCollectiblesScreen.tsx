@@ -2,15 +2,15 @@ import type { Nft, NftCollection } from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 import type { UnwrapRecoilValue } from "recoil";
 
-import { FlatList, View, ActivityIndicator } from "react-native";
+import { ActivityIndicator, FlatList, View } from "react-native";
 
 import * as Linking from "expo-linking";
 
 import { parseNftName } from "@coral-xyz/common";
 import {
+  nftById,
   nftCollectionsWithIds,
   useActiveWallet,
-  nftById,
   useAllWallets,
   useBlockchainConnectionUrl,
 } from "@coral-xyz/recoil";
@@ -19,9 +19,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
 import { NftErrorBoundary } from "~components/ErrorBoundary";
-import { NFTCard, BaseCard } from "~components/NFTCard";
+import { BaseCard, NFTCard } from "~components/NFTCard";
 import { NavHeader } from "~components/NavHeader";
-import { Screen, EmptyState, CopyButtonIcon } from "~components/index";
+import { CopyButtonIcon, Screen, ScreenEmptyState } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { WalletPickerButton } from "~screens/Unlocked/components/Balances";
 import { TableHeader } from "~screens/Unlocked/components/index";
@@ -109,22 +109,6 @@ function NftCollectionCard({
   );
 }
 
-function NoNFTsEmptyState() {
-  return (
-    <View style={{ flex: 1, margin: 18 }}>
-      <EmptyState
-        icon={(props: any) => <MaterialIcons name="image" {...props} />}
-        title="No NFTs"
-        subtitle="Get started with your first NFT"
-        buttonText="Browse Magic Eden"
-        onPress={() => {
-          Linking.openURL("https://magiceden.io");
-        }}
-      />
-    </View>
-  );
-}
-
 export function NftCollectionListScreen({
   navigation,
 }: StackScreenProps<NftStackParamList, "NftCollectionList">): JSX.Element {
@@ -180,7 +164,17 @@ export function NftCollectionListScreen({
         <FlatList
           data={data}
           numColumns={2}
-          ListEmptyComponent={NoNFTsEmptyState}
+          ListEmptyComponent={
+            <ScreenEmptyState
+              iconName="image"
+              title="No NFTs"
+              subtitle="Get started with your first NFT"
+              buttonText="Browse Magic Eden"
+              onPress={() => {
+                Linking.openURL("https://magiceden.io");
+              }}
+            />
+          }
           keyExtractor={(collection) => collection.id}
           renderItem={({ item: collection }) => {
             return (

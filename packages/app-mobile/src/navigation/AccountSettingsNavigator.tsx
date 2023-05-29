@@ -2,7 +2,7 @@ import type { ChannelAppUiClient } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
 
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Text, View, Pressable } from "react-native";
 
 import {
   EthereumConnectionUrl,
@@ -22,9 +22,11 @@ import {
   useSolanaConnectionUrl,
   useSolanaExplorer,
 } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ethers } from "ethers";
 
+import { AccountSettingsBottomSheet } from "~components/AccountSettingsBottomSheet";
 import { IconCheckmark } from "~components/Icon";
 import {
   AccountDropdownHeader,
@@ -63,12 +65,42 @@ import { YourAccountScreen } from "~screens/Unlocked/YourAccountScreen";
 
 const { hexlify } = ethers.utils;
 
-const Stack = createStackNavigator();
-
 function DummyScreen() {
   return <View style={{ flex: 1, backgroundColor: "red" }} />;
 }
 
+type AccountSettingsParamList = {
+  Profile: undefined;
+  YourAccount: undefined;
+  "change-password": undefined;
+  Preferences: undefined;
+  PreferencesEthereum: undefined;
+  PreferencesEthereumConnection: undefined;
+  PreferencesEthereumCustomRpcUrl: undefined;
+  PreferencesSolana: undefined;
+  PreferencesSolanaConnection: undefined;
+  PreferencesSolanaCommitment: undefined;
+  PreferencesSolanaExplorer: undefined;
+  PreferencesSolanaCustomRpcUrl: undefined;
+  PreferencesTrustedSites: undefined;
+  xNFTSettings: undefined;
+  WaitingRoom: undefined;
+  "import-private-key": undefined;
+  "reset-warning": undefined;
+  "show-secret-phrase-warning": undefined;
+  "show-secret-phrase": undefined;
+  "show-private-key-warning": undefined;
+  "show-private-key": undefined;
+  "edit-wallets": undefined;
+  "edit-wallets-rename": undefined;
+  "edit-wallets-wallet-detail": { name: string; publicKey: string };
+  "add-wallet": undefined;
+  "forgot-password": undefined;
+  "logout-warning": undefined;
+  UserAccountMenu: undefined;
+};
+
+const Stack = createStackNavigator<AccountSettingsParamList>();
 export function AccountSettingsNavigator(): JSX.Element {
   const theme = useTheme();
   return (
@@ -76,12 +108,17 @@ export function AccountSettingsNavigator(): JSX.Element {
       <Stack.Screen
         name="Profile"
         component={ProfileScreen}
-        options={{
-          headerTitle: ({ navigation, options }) => (
-            <AccountDropdownHeader navigation={navigation} options={options} />
-          ),
-          headerTintColor: theme.custom.colors.fontColor,
-          headerBackTitle: "Back",
+        options={({ navigation }) => {
+          return {
+            headerLeft: () => (
+              <AccountSettingsBottomSheet navigation={navigation} />
+            ),
+            headerTitle: ({ options }) => (
+              <AccountDropdownHeader options={options} />
+            ),
+            headerTintColor: theme.custom.colors.fontColor,
+            headerBackTitle: "Back",
+          };
         }}
       />
       <Stack.Group
@@ -188,7 +225,23 @@ export function AccountSettingsNavigator(): JSX.Element {
         <Stack.Screen
           name="edit-wallets"
           component={EditWalletsScreen}
-          options={{ title: "Edit Wallets" }}
+          options={({ navigation }) => ({
+            title: "Edit Wallets",
+            headerRight: () => (
+              <Pressable
+                onPress={() => {
+                  navigation.push("add-wallet");
+                }}
+              >
+                <MaterialIcons
+                  name="add"
+                  size={24}
+                  color="black"
+                  style={{ paddingRight: 16 }}
+                />
+              </Pressable>
+            ),
+          })}
         />
         <Stack.Screen
           name="edit-wallets-rename"

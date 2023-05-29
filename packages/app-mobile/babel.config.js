@@ -5,6 +5,7 @@ module.exports = function (api) {
   return {
     presets: ["babel-preset-expo"],
     plugins: [
+      "relay",
       [
         "@tamagui/babel-plugin",
         {

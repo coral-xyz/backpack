@@ -32,6 +32,13 @@ object_relationships:
           name: waolist_tokens
           schema: auth
 array_relationships:
+  - name: dropzone_claims
+    using:
+      foreign_key_constraint_on:
+        column: claimant_id
+        table:
+          name: claims
+          schema: dropzone
   - name: mad_feed_votes
     using:
       foreign_key_constraint_on:
@@ -52,6 +59,13 @@ array_relationships:
         column: referrer_id
         table:
           name: users
+          schema: auth
+  - name: swaps
+    using:
+      foreign_key_constraint_on:
+        column: fee_payer_id
+        table:
+          name: swaps
           schema: auth
 insert_permissions:
   - role: auth_worker

@@ -16,13 +16,6 @@ import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, Check } from "@mui/icons-material";
 import { Button, IconButton, Popover, Typography } from "@mui/material";
 
-import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
-import {
-  NavStackEphemeral,
-  NavStackScreen,
-} from "../../common/Layout/NavStack";
-import { Logout } from "../../Locked/Reset/ResetWarning";
-
 import { SettingsNavStackDrawer } from "./SettingsNavStackDrawer";
 
 const useStyles = styles((theme) => ({

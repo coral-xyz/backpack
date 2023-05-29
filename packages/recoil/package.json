@@ -29,7 +29,8 @@
     "ethers": "^5.7.0",
     "react": "18.2.0",
     "react-router-dom": "^6.3.0",
-    "recoil": "^0.7.5"
+    "recoil": "^0.7.5",
+    "use-async-effect": "^2.2.7"
   },
   "devDependencies": {
     "eslint-config-custom": "*",

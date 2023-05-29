@@ -18,11 +18,13 @@ jobs:
         run: |
           cd backend/native/backpack-api
           touch .env
+          printf 'NODE_ENV=production\n' >> .env
           printf 'AUTH_JWT=%s\n' '${{secrets.AUTH_JWT}}' >> .env
           printf 'AUTH_JWT_PRIVATE_KEY=%s\n' '${{secrets.AUTH_JWT_PRIVATE_KEY}}' >> .env
           printf 'AUTH_JWT_PUBLIC_KEY=%s\n' '${{secrets.AUTH_JWT_PUBLIC_KEY}}' >> .env
           printf 'AWS_S3_KEY_ID=%s\n' '${{secrets.AWS_S3_KEY_ID}}' >> .env
           printf 'AWS_S3_KEY_SECRET=%s\n' '${{secrets.AWS_S3_KEY_SECRET}}' >> .env
+          printf 'COINGECKO_API_KEY=%s\n' '${{secrets.COINGECKO_API_KEY}}' >> .env
           printf 'HASURA_URL=%s\n' '${{secrets.HASURA_URL}}' >> .env
           printf 'CHAT_HASURA_URL=%s\n' '${{secrets.CHAT_HASURA_URL}}' >> .env
           printf 'REDIS_URL=%s\n' '${{secrets.REDIS_URL}}' >> .env
@@ -33,6 +35,8 @@ jobs:
           printf 'SENTRY_DSN=%s\n' '${{secrets.SENTRY_DSN}}' >> .env
           printf 'TWITTER_CONSUMER_KEY=%s\n' '${{secrets.TWITTER_CONSUMER_KEY}}' >> .env
           printf 'TWITTER_CONSUMER_SECRET=%s\n' '${{secrets.TWITTER_CONSUMER_SECRET}}' >> .env
+          printf 'OVERRIDE_RPC_URL=%s\n' '${{secrets.OVERRIDE_RPC_URL}}' >> .env
+          printf 'TENSOR_API_KEY=%s\n' '${{secrets.TENSOR_API_KEY}}' >> .env
           cd ../../..
 
       - name: docker login

@@ -496,15 +496,11 @@ export const LEDGER_METHOD_ETHEREUM_SIGN_EIP712_MESSAGE =
 export const LEDGER_METHOD_ETHEREUM_SIGN_EIP712_HASHED_MESSAGE =
   "ledger-method-ethereum-sign-eip712-hashed-message";
 
-export const PLUGIN_RPC_METHOD_WINDOW_OPEN = "rpc-method-window-open";
-
 export const PLUGIN_RPC_METHOD_PLUGIN_OPEN = "rpc-method-plugin-open";
-
-export const PLUGIN_RPC_METHOD_CHAT_OPEN = "rpc-method-plugin-close-to";
-
-export const PLUGIN_RPC_METHOD_CLOSE_TO = "rpc-method-chat-open";
-
 export const PLUGIN_RPC_METHOD_POP_OUT = "rpc-method-pop-out";
+
+export const PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW =
+  "rpc-method-resize-extension-window";
 
 export const BACKGROUND_SERVICE_WORKER_READY = "service-worker-ready";
 
@@ -574,9 +570,6 @@ export const BACKPACK_LINK = "https://backpack.app";
 export const BACKPACK_TERMS_OF_SERVICE = "https://backpack.app/terms";
 export const BACKPACK_GITHUB_LINK = "https://github.com/coral-xyz/backpack";
 
-export const ALCHEMY_ETHEREUM_MAINNET_API_KEY =
-  "DlJr6QuBC2EaE-L60-iqQQGq9hi9-XSZ";
-
 export const AVATAR_BASE_URL = "https://swr.xnfts.dev/avatars";
 export const BACKEND_API_URL = "https://backpack-api.xnfts.dev";
 export const REALTIME_API_URL = "https://backend-ws.xnfts.dev";
@@ -641,16 +634,10 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     collectionId: "ajM4QBHtZBBRcMqqq9gawdHK28GXcb2yeRs6WBnqhay",
   },
   {
-    id: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
+    id: "J1S9H3QjnRtBbbuD4HjPV6RpRhwuk4zKbxsnCHuTgh9w",
     name: "Mad Lads",
     image: "https://www.madlads.com/mad_lads_logo.svg",
-    collectionId: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
-  },
-  {
-    id: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
-    name: "The Madlist",
-    image: "https://www.madlads.com/mad_lads_logo.svg",
-    collectionId: "FCk24cq1pYhQo5MQYKHf5N9VnY8tdrToF7u6gvvsnGrn",
+    collectionId: "J1S9H3QjnRtBbbuD4HjPV6RpRhwuk4zKbxsnCHuTgh9w",
   },
   {
     id: "Et9ckpQCXFN5PsiYN781AczSVuQYyGEdDEPDJ7jrxz4c",
@@ -658,6 +645,13 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     image:
       "https://arweave.net/Dh3FfZurEtmQD52mmq-axte9M6IMKmNSGzzdTpN9sJc?ext=png",
     collectionId: "Et9ckpQCXFN5PsiYN781AczSVuQYyGEdDEPDJ7jrxz4c",
+  },
+  {
+    id: "4wUE3tH2MTjNnxKQPYyx3owgL95ZYbYAtW1EsQPz9hfV",
+    name: "ROGUE SHARKS",
+    image:
+      "https://www.arweave.net/1f5b49zDrkC9Lot6jKFMCzyeZ57DSK8x_KkFvCFNtek?ext=png",
+    collectionId: "4wUE3tH2MTjNnxKQPYyx3owgL95ZYbYAtW1EsQPz9hfV",
   },
 ];
 

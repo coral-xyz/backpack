@@ -21,6 +21,7 @@ import {
 import {
   useAuthenticatedUser,
   useBackgroundClient,
+  useFeatureGates,
   useTab,
 } from "@coral-xyz/recoil";
 import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
@@ -125,6 +126,7 @@ function TabBar() {
   const tab = useTab();
   const background = useBackgroundClient();
   const { isXs } = useBreakpoints();
+  const featureGates = useFeatureGates();
 
   const onTabClick = async (tabValue: string) => {
     if (tabValue === tab) {
@@ -236,15 +238,17 @@ function TabBar() {
               />
             }
           />
-          <Tab
-            onClick={() => onTabClick(TAB_MESSAGES)}
-            value={TAB_MESSAGES}
-            disableRipple
-            className={`${isXs ? classes.tabXs : classes.tab} ${
-              tab === TAB_MESSAGES ? classes.activeTab : ""
-            }`}
-            icon={<LocalMessageIcon />}
-          />
+          {featureGates["MESSAGING_ENABLED"] ? (
+            <Tab
+              onClick={() => onTabClick(TAB_MESSAGES)}
+              value={TAB_MESSAGES}
+              disableRipple
+              className={`${isXs ? classes.tabXs : classes.tab} ${
+                tab === TAB_MESSAGES ? classes.activeTab : ""
+              }`}
+              icon={<LocalMessageIcon />}
+            />
+          ) : null}
           {!isXs ? (
             <>
               <Tab

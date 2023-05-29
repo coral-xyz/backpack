@@ -2,7 +2,7 @@ import type {
   CustomSplTokenAccountsResponse,
   EventEmitter,
   Notification,
-  SolanaTokenAccountWithKeyString,
+  SolanaTokenAccountWithKeyAndProgramIdString,
   SplNftMetadataString,
   TokenMetadataString,
 } from "@coral-xyz/common";
@@ -369,7 +369,7 @@ export class SolanaConnectionBackend {
   }
 
   async customSplMetadataUri(
-    tokens: Array<SolanaTokenAccountWithKeyString>,
+    tokens: Array<SolanaTokenAccountWithKeyAndProgramIdString>,
     tokenMetadata: Array<TokenMetadataString | null>
   ): Promise<Array<[string, SplNftMetadataString]>> {
     const key = JSON.stringify({

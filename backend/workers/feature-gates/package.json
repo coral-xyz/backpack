@@ -9,10 +9,11 @@
   },
   "private": true,
   "scripts": {
-    "dev": "wrangler dev --local",
+    "dev": "wrangler dev --local -e development",
     "deploy": "wrangler publish"
   },
   "dependencies": {
-    "hono": "^3.1.5"
+    "hono": "^3.1.5",
+    "jose": "^4.14.4"
   }
 }

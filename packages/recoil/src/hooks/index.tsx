@@ -4,6 +4,7 @@ export * from "./client";
 export * from "./ethereum";
 export * from "./keyring";
 export * from "./navigation";
+export * from "./notifications";
 export * from "./preferences";
 export * from "./solana";
 export * from "./transaction-request";

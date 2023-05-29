@@ -4,7 +4,7 @@ import {
   UI_RPC_METHOD_SET_FEATURE_GATES,
 } from "@coral-xyz/common";
 
-const FEATURE_GATE_URL = "https://feature-gates.backpack.workers.dev";
+const FEATURE_GATE_URL = "https://feature-gates.xnfts.dev";
 
 export const refreshFeatureGates = async (background: ChannelAppUiClient) => {
   try {

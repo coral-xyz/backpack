@@ -5,5 +5,5 @@
     "allowJs": true
   },
   "extends": "./tsconfig.json",
-  "include": ["src"]
+  "include": ["src", "./.eslintrc.js"]
 }

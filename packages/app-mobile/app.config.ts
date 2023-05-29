@@ -2,18 +2,21 @@ import { ExpoConfig, ConfigContext } from "expo/config";
 
 type ExpoExtras = {
   extra: {
-    FEATURE_MOBILE_CHAT: boolean;
     localWebViewUrl: string;
     remoteWebViewUrl: string;
+    graphqlApiUrl: string;
   };
 };
+
+const localGraphQLApi = "http://localhost:8080/v2/graphql";
+const remoteGraphQLApi = "https://backpack-api.xnfts.dev/v2/graphql";
+
+const getUrl = (hash: string = "df0987c") =>
+  `https://mobile-service-worker.xnfts.dev/background-scripts/${hash}/service-worker-loader.html`;
 
 export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
   const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
   const packageName = "app.backpack.mobile";
-
-  const getUrl = (hash: string = "8b0f1ba") =>
-    `https://mobile-service-worker.xnfts.dev/background-scripts/${hash}/service-worker-loader.html`;
 
   const remoteWebViewUrl = getUrl();
 
@@ -31,6 +34,19 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
       resizeMode: "cover",
       backgroundColor: "#000",
     },
+    plugins: [
+      [
+        "expo-build-properties",
+        {
+          android: {
+            unstable_networkInspector: true,
+          },
+          ios: {
+            unstable_networkInspector: true,
+          },
+        },
+      ],
+    ],
     updates: {
       fallbackToCacheTimeout: 0,
       url: "https://u.expo.dev/" + projectID,
@@ -40,6 +56,9 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
     },
     assetBundlePatterns: ["**/*"],
     ios: {
+      config: {
+        usesNonExemptEncryption: false,
+      },
       supportsTablet: false,
       bundleIdentifier: packageName,
       infoPlist: {
@@ -70,7 +89,10 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
       favicon: "./assets/favicon.png",
     },
     extra: {
-      FEATURE_MOBILE_CHAT: true,
+      graphqlApiUrl:
+        process.env.APP_ENV === "production"
+          ? remoteGraphQLApi
+          : localGraphQLApi,
       localWebViewUrl: "http://localhost:9333",
       remoteWebViewUrl,
       eas: {

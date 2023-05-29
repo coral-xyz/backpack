@@ -17,23 +17,27 @@
     "@coral-xyz/common": "*",
     "@coral-xyz/recoil": "*",
     "@coral-xyz/themes": "*",
-    "@tamagui/animations-react-native": "^1.14.3",
-    "@tamagui/babel-plugin": "^1.14.3",
-    "@tamagui/config": "^1.14.3",
-    "@tamagui/core": "^1.14.3",
-    "@tamagui/font-inter": "^1.14.3",
-    "@tamagui/lucide-icons": "^1.14.3",
-    "@tamagui/shorthands": "^1.14.3",
-    "@tamagui/theme-base": "^1.14.3",
-    "@tamagui/themes": "^1.14.3",
-    "tamagui": "^1.14.3"
+    "@expo/vector-icons": "^13.0.0",
+    "@tamagui/animations-react-native": "^1.28.1",
+    "@tamagui/babel-plugin": "^1.28.1",
+    "@tamagui/config": "^1.28.1",
+    "@tamagui/core": "^1.28.1",
+    "@tamagui/font-inter": "^1.28.1",
+    "@tamagui/lucide-icons": "^1.28.1",
+    "@tamagui/shorthands": "^1.28.1",
+    "@tamagui/theme-base": "^1.28.1",
+    "@tamagui/themes": "^1.28.1",
+    "tamagui": "^1.28.1"
   },
   "scripts": {
     "build": "tamagui-build",
-    "start": "tamagui-build --watch"
+    "start": "tamagui-build --watch",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix"
   },
   "devDependencies": {
-    "@tamagui/build": "^1.14.3",
-    "@types/react-native": "^0.71.3"
+    "@tamagui/build": "^1.28.1",
+    "@types/react-native": "~0.71.6",
+    "eslint-config-custom": "*"
   }
 }

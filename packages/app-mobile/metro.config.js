@@ -48,6 +48,7 @@ config.cacheStores = [
 const monorepoPackages = {
   "@coral-xyz/common": path.resolve(workspaceRoot, "packages/common"),
   "@coral-xyz/recoil": path.resolve(workspaceRoot, "packages/recoil"),
+  "@coral-xyz/tamagui": path.resolve(workspaceRoot, "packages/tamagui-core"),
 };
 
 // Add the monorepo workspaces as `extraNodeModules` to Metro.

@@ -1,16 +1,47 @@
 import type { SvgProps } from "react-native-svg";
 
+import { useTheme as useTamaguiTheme } from "@coral-xyz/tamagui";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import Svg, { Path, Rect, Stop } from "react-native-svg";
+import { themed as withThemedIcon } from "@tamagui/lucide-icons/src/themed";
+import Svg, { Path, Rect } from "react-native-svg";
 
 import { useTheme } from "~hooks/useTheme";
+
+type TamaguiIconProp = {
+  color?: string;
+  size?: number;
+};
+
+export const IconMenu = withThemedIcon(({ color, size }: TamaguiIconProp) => {
+  const baseIconColor = useTamaguiTheme().fontColor.val;
+  return (
+    <MaterialIcons name="menu" size={size} color={color ?? baseIconColor} />
+  );
+});
+
+export const VerticalDotsIcon = ({
+  size = 24,
+  color = "gray",
+}: {
+  size?: number;
+  color?: string;
+}) => <MaterialCommunityIcons name="dots-vertical" size={size} color={color} />;
+
+export const ArrowRightIcon = ({
+  size = 24,
+  color = "gray",
+}: {
+  size?: number;
+  color?: string;
+}) => <MaterialIcons name="keyboard-arrow-right" size={size} color={color} />;
+
 export {
-  EthereumIcon,
-  SolanaIcon,
   AvalancheIcon,
-  PolygonIcon,
   BscIcon,
   CosmosIcon,
+  EthereumIcon,
+  PolygonIcon,
+  SolanaIcon,
 } from "@coral-xyz/tamagui";
 
 export const CheckBadge = (props: SvgProps) => (
@@ -74,17 +105,6 @@ export function WidgetIcon({
   return <MaterialCommunityIcons name="widgets" color={color} size={size} />;
 }
 
-export function MenuIcon({ color, size = 24 }: IconProps): JSX.Element {
-  const theme = useTheme();
-  return (
-    <MaterialIcons
-      name="menu"
-      color={color ? color : theme.custom.colors.fontColor}
-      size={size}
-    />
-  );
-}
-
 export function ContentCopyIcon({ color, size = 24 }: IconProps): JSX.Element {
   const theme = useTheme();
   return (
@@ -135,6 +155,23 @@ export function IconCheckmark({
   return <MaterialIcons name="check" size={size} color={color} />;
 }
 
+export function IconCheckmarkBold({
+  size,
+  color,
+}: {
+  size: number;
+  color: string;
+}): JSX.Element {
+  return (
+    <MaterialCommunityIcons
+      name="check-bold"
+      size={size}
+      color={color}
+      style={{ marginBottom: 4 }}
+    />
+  );
+}
+
 export function QuestionIcon({
   fill = "#A1A1AA",
   ...props
@@ -159,30 +196,21 @@ export function QuestionIcon({
   );
 }
 
-export function WarningIcon({
-  fill = "#A1A1AA",
-  ...props
-}: {
-  fill?: string;
-  props?: SvgProps;
-}) {
-  return (
-    <Svg
-      width={56}
-      height={56}
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 56 56"
-      style={{ alignSelf: "center" }}
-      {...props}
-    >
-      <Path
-        d="M10.43 47.842h35.14c3.593 0 5.833-3.897 4.037-7l-17.57-30.357c-1.797-3.103-6.277-3.103-8.074 0L6.393 40.842c-1.796 3.103.444 7 4.037 7ZM28 31.51a2.34 2.34 0 0 1-2.333-2.334V24.51A2.34 2.34 0 0 1 28 22.175a2.34 2.34 0 0 1 2.333 2.334v4.666A2.34 2.34 0 0 1 28 31.51Zm2.333 9.333h-4.666v-4.667h4.666v4.667Z"
-        fill={fill}
-      />
-    </Svg>
-  );
-}
+export const WarningIcon = withThemedIcon(({ color, size = 56 }) => (
+  <Svg
+    width={size}
+    height={size}
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 56 56"
+    style={{ alignSelf: "center" }}
+  >
+    <Path
+      d="M10.43 47.842h35.14c3.593 0 5.833-3.897 4.037-7l-17.57-30.357c-1.797-3.103-6.277-3.103-8.074 0L6.393 40.842c-1.796 3.103.444 7 4.037 7ZM28 31.51a2.34 2.34 0 0 1-2.333-2.334V24.51A2.34 2.34 0 0 1 28 22.175a2.34 2.34 0 0 1 2.333 2.334v4.666A2.34 2.34 0 0 1 28 31.51Zm2.333 9.333h-4.666v-4.667h4.666v4.667Z"
+      fill={color}
+    />
+  </Svg>
+));
 
 export function EyeIcon({
   fill = "#A1A1AA",

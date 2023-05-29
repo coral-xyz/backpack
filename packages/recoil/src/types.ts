@@ -1,4 +1,5 @@
 import {
+  type Blockchain,
   makeUrl,
   TAB_APPS,
   TAB_BALANCES,
@@ -10,6 +11,14 @@ import {
 } from "@coral-xyz/common";
 import type { BigNumber } from "ethers";
 import type { RecoilValueReadOnly } from "recoil";
+
+export type Wallet = {
+  name: string;
+  type: string;
+  publicKey: string;
+  blockchain: Blockchain;
+  isCold: boolean;
+};
 
 //
 // Client side public keys

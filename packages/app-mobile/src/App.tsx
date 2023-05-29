@@ -11,48 +11,39 @@ import {
   useStore,
   WEB_VIEW_EVENTS,
 } from "@coral-xyz/common";
-import { NotificationsProvider } from "@coral-xyz/recoil";
-import { TamaguiProvider, config } from "@coral-xyz/tamagui";
-import { ActionSheetProvider } from "@expo/react-native-action-sheet";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { ErrorBoundary } from "react-error-boundary";
 import { WebView } from "react-native-webview";
 import { RecoilRoot } from "recoil";
 
-import { ErrorBoundary } from "~components/ErrorBoundary";
 import { useTheme } from "~hooks/useTheme";
 import { maybeParseLog } from "~lib/helpers";
 
+import { Providers } from "./Providers";
+import { FullScreenLoading } from "./components";
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import { RootNavigation } from "./navigation/RootNavigator";
 
 SplashScreen.preventAutoHideAsync();
 
 export function App(): JSX.Element {
+  const renderError = useCallback(
+    ({ error }: { error: { message: string } }) => (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>{error.message}</Text>
+      </View>
+    ),
+    []
+  );
+
   return (
-    <ErrorBoundary>
-      <Suspense fallback={null}>
+    <ErrorBoundary fallbackRender={renderError}>
+      <Suspense fallback={<FullScreenLoading />}>
         <RecoilRoot>
           <BackgroundHiddenWebView />
           <Main />
         </RecoilRoot>
       </Suspense>
     </ErrorBoundary>
-  );
-}
-
-function Providers({ children }: { children: JSX.Element }): JSX.Element {
-  const theme = useTheme();
-  return (
-    <TamaguiProvider config={config} defaultTheme={theme.colorScheme}>
-      <SafeAreaProvider>
-        <NotificationsProvider>
-          <ActionSheetProvider>
-            <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
-          </ActionSheetProvider>
-        </NotificationsProvider>
-      </SafeAreaProvider>
-    </TamaguiProvider>
   );
 }
 
@@ -123,7 +114,7 @@ function Main(): JSX.Element | null {
 
 const getWebviewUrl = () => {
   const { localWebViewUrl, remoteWebViewUrl } =
-    Constants?.expoConfig?.extra || {};
+    Constants.expoConfig?.extra || {};
 
   if (process.env.NODE_ENV === "development" && Platform.OS === "android") {
     return remoteWebViewUrl;
@@ -143,14 +134,10 @@ function BackgroundHiddenWebView(): JSX.Element {
     <View style={styles.webview}>
       <WebView
         ref={ref}
-        // useWebView2
-        // originWhitelist={["*", "https://*", "https://backpack-api.xnfts.dev/*"]}
-        cacheMode="LOAD_CACHE_ELSE_NETWORK"
-        cacheEnabled
+        // cacheMode="LOAD_CACHE_ELSE_NETWORK"
+        // cacheEnabled
         limitsNavigationsToAppBoundDomains
-        source={{
-          uri: webviewUrl,
-        }}
+        source={{ uri: webviewUrl }}
         onError={(error) => console.log("WebView error:", error)}
         onHttpError={(error) => console.log("WebView HTTP error:", error)}
         onMessage={(event) => {

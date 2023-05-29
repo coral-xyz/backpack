@@ -1,5 +1,5 @@
-import { BackgroundSolanaConnection } from "@coral-xyz/common";
-import { AnchorProvider, Spl } from "@project-serum/anchor";
+import { BackgroundSolanaConnection, TokenInterface } from "@coral-xyz/common";
+import { AnchorProvider } from "@project-serum/anchor";
 import { Keypair } from "@solana/web3.js";
 import { selector } from "recoil";
 
@@ -27,12 +27,12 @@ export const anchorContext = selector({
       commitment: _commitment,
       preflightCommitment: _commitment,
     });
-    const tokenClient = Spl.token(provider);
+    const tokenInterface = new TokenInterface(provider);
     return {
       connection,
       connectionUrl: _connectionUrl,
       provider,
-      tokenClient,
+      tokenInterface,
     };
   },
 });
