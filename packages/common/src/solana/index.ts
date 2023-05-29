@@ -49,7 +49,7 @@ import {
 } from "@solana/web3.js";
 import BN from "bn.js";
 
-import type { BackgroundClient } from "../";
+import type { BackgroundClient } from "..";
 import { TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS } from "../constants";
 
 import * as assertOwner from "./programs/assert-owner";
