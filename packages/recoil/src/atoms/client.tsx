@@ -34,7 +34,7 @@ export const backgroundResponder = atom<ChannelAppUiResponder>({
  * Channel for proxying Solana Connection requests to be fulfilled by
  * the background.
  */
-export const connectionBackgroundClient = selector({
+export const connectionBackgroundClient = selector<ChannelAppUiClient>({
   key: "connectionBackgroundClient",
   get: () => {
     return ChannelAppUi.client(CHANNEL_SOLANA_CONNECTION_RPC_UI);
@@ -45,7 +45,7 @@ export const connectionBackgroundClient = selector({
  * Channel for proxying Ethereum provider requests to be fulfilled by
  * the background.
  */
-export const providerBackgroundClient = selector({
+export const providerBackgroundClient = selector<ChannelAppUiClient>({
   key: "providerBackgroundClient",
   get: () => {
     return ChannelAppUi.client(CHANNEL_ETHEREUM_CONNECTION_RPC_UI);
