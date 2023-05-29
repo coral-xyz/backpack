@@ -28,7 +28,7 @@ import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 import * as anchor from "@project-serum/anchor";
 import * as web3 from "@solana/web3.js";
-import { TensorSwapSDK } from "@tensor-hq/tensorswap-sdk";
+import { TensorSwapSDK } from "@tensor-oss/tensorswap-sdk";
 import { BigNumber } from "ethers";
 
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
