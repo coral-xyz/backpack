@@ -71,6 +71,7 @@ const whitelistedOrigins = [
   /^https:\/\/one-nft\.vercel\.app$/,
   /^https:\/\/xnft\.wao\.gg$/,
   /^https:\/\/one\.xnfts\.dev$/,
+  /^https:\/\/madlads\.com$/,
   /^https:\/\/rafffle\.famousfoxes\.com$/,
 ];
 
