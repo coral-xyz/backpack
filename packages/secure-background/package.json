@@ -1,0 +1,31 @@
+{
+  "name": "@coral-xyz/secure-background",
+  "version": "0.1.0",
+  "description": "",
+  "license": "ISC",
+  "module": "dist/esm/index.js",
+  "source": "src/index.ts",
+  "react-native": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix"
+  },
+  "dependencies": {
+    "@coral-xyz/blockchain-evm": "*",
+    "@coral-xyz/blockchain-solana": "*",
+    "@coral-xyz/blockchain-keyring": "*",
+    "@coral-xyz/common": "*",
+    "eventemitter3": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/eventemitter3": "^2.0.2",
+    "eslint-config-custom": "*",
+    "typescript": "~4.9.3"
+  }
+}
