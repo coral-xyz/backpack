@@ -1,42 +1,38 @@
-import type { StackScreenProps } from "@react-navigation/stack";
-
-import { Suspense, useState } from "react";
+import { Suspense, useState, useLayoutEffect, useTransition } from "react";
 
 import { Blockchain } from "@coral-xyz/common";
-import { Box } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { MessageList } from "~components/Messages";
-import { SearchInput } from "~components/StyledTextInput";
 import { Screen, ScreenError, ScreenLoading } from "~components/index";
-import { ChatStackNavigatorParamList } from "~screens/Unlocked/Chat/ChatHelpers";
+import { ChatListScreenProps } from "~navigation/types";
 
 import { type ChatRowData, useChatHelper } from "./ChatHelpers";
 
-type ChatListScreenProps = StackScreenProps<
-  ChatStackNavigatorParamList,
-  "ChatList"
->;
-
 function Container({ navigation }: ChatListScreenProps): JSX.Element {
+  const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]); // TODO(types) user search type
-  const {
-    allChats,
-    requestCount,
-    onRefreshChats,
-    isRefreshingChats,
-    searchUsersByBlockchain,
-  } = useChatHelper();
+  const [isPending, startTransition] = useTransition();
 
-  const handleSearch = async (address: string) => {
-    const results = await searchUsersByBlockchain({
-      address,
-      // TODO pass in blockchain
-      blockchain: Blockchain.SOLANA,
+  const { allChats, requestCount, onRefreshChats, isRefreshingChats } =
+    useChatHelper();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerSearchBarOptions: {
+        onChangeText: (event) => {
+          setSearch(event.nativeEvent.text);
+          // startTransition(() => {
+          //   handleSearch(event.nativeEvent.text);
+          // });
+        },
+      },
     });
+  }, [navigation]);
 
-    setSearchResults(results);
-  };
+  console.log("debug4:search", search);
+  console.log("debug4:searchResults", searchResults);
+  console.log("debug4:isPending", isPending);
 
   const handlePressMessage = (metadata: ChatRowData) => {
     navigation.push("ChatDetail", metadata);
@@ -47,13 +43,7 @@ function Container({ navigation }: ChatListScreenProps): JSX.Element {
   };
 
   return (
-    <Screen style={{ paddingTop: 8 }}>
-      <Box marginBottom={8}>
-        <SearchInput
-          placeholder="Enter a username or address"
-          onChangeText={handleSearch}
-        />
-      </Box>
+    <Screen style={{ paddingTop: 0, paddingHorizontal: 0 }}>
       <MessageList
         requestCount={requestCount}
         allChats={allChats}

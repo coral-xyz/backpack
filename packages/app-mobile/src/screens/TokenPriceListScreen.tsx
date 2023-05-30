@@ -5,6 +5,7 @@ import {
   useState,
   useCallback,
   useTransition,
+  Profiler,
 } from "react";
 import { SectionList } from "react-native";
 
@@ -116,7 +117,7 @@ const FilteredSectionList = memo(function FilteredSectionList({
 function Container(): JSX.Element {
   const [filter, setFilter] = useState("");
   const [inputText, setInputText] = useState("");
-  const [isPending, startTransition] = useTransition();
+  const [_isPending, startTransition] = useTransition();
 
   const handleChangeText = (text: string) => {
     const lowercase = text.toLowerCase();
