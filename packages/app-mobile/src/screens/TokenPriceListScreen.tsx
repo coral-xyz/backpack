@@ -4,18 +4,12 @@ import {
   useMemo,
   useState,
   useCallback,
-  useEffect,
   useTransition,
 } from "react";
-import { SectionList, StyleSheet, View } from "react-native";
+import { SectionList } from "react-native";
 
 import { formatUSD } from "@coral-xyz/common";
-import {
-  Stack,
-  RoundedContainerGroup,
-  Separator,
-  StyledText,
-} from "@coral-xyz/tamagui";
+import { RoundedContainerGroup, StyledText } from "@coral-xyz/tamagui";
 import { useNavigation } from "@react-navigation/native";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -30,12 +24,22 @@ import {
 
 import data from "./TokenPriceListData.json";
 
-const FilteredSectionList = memo(function FilteredSectionList({ filter }) {
+const FilteredSectionList = memo(function FilteredSectionList({
+  filter,
+}: {
+  filter: string;
+}): JSX.Element {
   const navigation = useNavigation();
 
-  const handlePressRow = (item) => {
-    navigation.push("TokenPriceDetail", { tokenId: item.id, title: item.name });
-  };
+  const handlePressRow = useCallback(
+    (item) => {
+      navigation.push("TokenPriceDetail", {
+        tokenId: item.id,
+        title: item.name,
+      });
+    },
+    [navigation]
+  );
 
   const filteredSections = useMemo(() => {
     const sections = [
@@ -127,7 +131,7 @@ function Container(): JSX.Element {
       <StyledTextInput
         placeholder="Search"
         onChangeText={handleChangeText}
-        value={filter}
+        value={inputText}
         style={{ marginBottom: 12 }}
       />
       <FilteredSectionList filter={filter} />

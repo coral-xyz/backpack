@@ -10,7 +10,6 @@ import {
   StyledText,
   XStack,
   YStack,
-  Stack,
   useTheme as useTamaguiTheme,
 } from "@coral-xyz/tamagui";
 
@@ -19,6 +18,7 @@ import {
   IconCheckmarkBold,
   WarningIcon,
 } from "~components/Icon";
+import { PriceChangePill } from "~components/Pill";
 import { BlockchainLogo } from "~components/index";
 
 export {
@@ -207,11 +207,9 @@ export function ListItemTokenPrice({
   price,
   percentChange,
 }: any) {
-  const bgColor =
-    percentChange > 0 ? "$greenBackgroundSolid" : "$redBackgroundSolid";
-  const textColor = percentChange > 0 ? "$greenText" : "$redText";
   return (
     <ListItem
+      onPress={onPress}
       overflow="hidden"
       borderRadius={grouped ? 0 : "$container"}
       borderColor={grouped ? undefined : "$borderFull"}
@@ -222,18 +220,13 @@ export function ListItemTokenPrice({
       icon={
         <Image source={{ uri: imageUrl }} style={{ width: 24, height: 24 }} />
       }
-      onPress={onPress}
     >
       <XStack f={1} jc="space-between" ai="center">
         <YStack>
           <StyledText>{name}</StyledText>
           <StyledText>{symbol}</StyledText>
         </YStack>
-        <Stack borderRadius={8} bg={bgColor} p={8}>
-          <StyledText size="$lg" color={textColor}>
-            {price}
-          </StyledText>
-        </Stack>
+        <PriceChangePill percentChange={percentChange} price={price} />
       </XStack>
     </ListItem>
   );
