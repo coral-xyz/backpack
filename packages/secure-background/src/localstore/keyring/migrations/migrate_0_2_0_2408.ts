@@ -12,7 +12,7 @@ import {
   nextIndicesFromPaths,
 } from "@coral-xyz/common";
 
-import { getKeyringStore_NO_MIGRATION, setKeyringStore } from "../keyring";
+import { getKeyringStore_NO_MIGRATION, setKeyringStore } from "../store";
 
 export async function migrate_0_2_0_2408(userInfo: {
   uuid: string;

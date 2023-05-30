@@ -107,10 +107,10 @@ import {
   withContextPort,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
+import type { User } from "@coral-xyz/secure-background/src/legacyExport";
 import type { Commitment } from "@solana/web3.js";
 
 import type { Backend } from "../backend/core";
-import type { User } from "../backend/store";
 import type { Config, Handle, PublicKeyData } from "../types";
 
 const logger = getLogger("background-server-ui");

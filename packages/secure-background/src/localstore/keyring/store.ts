@@ -1,9 +1,9 @@
 import type { Blockchain, BlockchainKeyringJson } from "@coral-xyz/common";
 
-import type { SecretPayload } from "../keyring/crypto";
-import * as crypto from "../keyring/crypto";
+import { LocalStorageDb } from "../db";
 
-import { LocalStorageDb } from "./db";
+import type { SecretPayload } from "./crypto";
+import { decrypt, encrypt } from "./crypto";
 import { runMigrationsIfNeeded } from "./migrations";
 
 const KEY_KEYRING_STORE = "keyring-store";
@@ -49,7 +49,7 @@ export async function getKeyringStore_NO_MIGRATION(password: string) {
   if (ciphertextPayload === undefined || ciphertextPayload === null) {
     throw new Error("keyring store not found on disk");
   }
-  const plaintext = await crypto.decrypt(ciphertextPayload, password);
+  const plaintext = await decrypt(ciphertextPayload, password);
   const json = JSON.parse(plaintext);
   return json;
 }
@@ -59,7 +59,7 @@ export async function setKeyringStore(
   password: string
 ): Promise<void> {
   const plaintext = JSON.stringify(json);
-  const ciphertext = await crypto.encrypt(plaintext, password!);
+  const ciphertext = await encrypt(plaintext, password!);
   await setKeyringCiphertext(ciphertext);
 }
 
