@@ -3916,6 +3916,7 @@ __metadata:
     "@coral-xyz/blockchain-keyring": "*"
     "@coral-xyz/common": "*"
     "@coral-xyz/recoil": "*"
+    "@coral-xyz/secure-background": "*"
     "@solana/web3.js": ^1.63.1
     "@types/serviceworker": ^0.0.47
     bip32: ^2.0.6
@@ -4351,7 +4352,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/secure-background@workspace:packages/secure-background":
+"@coral-xyz/secure-background@*, @coral-xyz/secure-background@workspace:packages/secure-background":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/secure-background@workspace:packages/secure-background"
   dependencies:

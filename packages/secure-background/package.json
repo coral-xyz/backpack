@@ -18,8 +18,8 @@
   },
   "dependencies": {
     "@coral-xyz/blockchain-evm": "*",
-    "@coral-xyz/blockchain-solana": "*",
     "@coral-xyz/blockchain-keyring": "*",
+    "@coral-xyz/blockchain-solana": "*",
     "@coral-xyz/common": "*",
     "eventemitter3": "^5.0.1"
   },
