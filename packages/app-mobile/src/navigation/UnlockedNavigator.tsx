@@ -32,6 +32,8 @@ import { SwapTokenScreen } from "~screens/Unlocked/SwapTokenScreen";
 import { WalletListScreen } from "~screens/Unlocked/WalletListScreen";
 import { UtilsDesignScreen } from "~screens/Utils/UtilsDesignScreen";
 
+import { TokenPriceNavigator } from "./TokenPriceNavigator";
+
 const ModalStack = createStackNavigator();
 function SendModalStackNavigator(): JSX.Element {
   const theme = useTheme();
@@ -208,6 +210,7 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         component={WalletsNavigator}
         options={{ title: "Assets" }}
       />
+      <Tab.Screen name="TokenPrices" component={TokenPriceNavigator} />
       <Tab.Screen
         name="Chat"
         component={ChatNavigator}

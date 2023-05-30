@@ -1,4 +1,12 @@
-import { memo, useState } from "react";
+import {
+  memo,
+  useMemo,
+  useCallback,
+  useState,
+  useEffect,
+  useTransition,
+  useDeferredValue,
+} from "react";
 import {
   Alert,
   Button,
@@ -12,7 +20,7 @@ import {
 
 import Constants from "expo-constants";
 
-import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
+import { formatUSD, Blockchain, walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import {
   Stack,
@@ -39,8 +47,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ArrowRightIcon } from "~components/Icon";
 import { ListItemTokenPrice } from "~components/ListItem";
+import { StyledTextInput } from "~components/StyledTextInput";
 import { CurrentUserAvatar, UserAvatar } from "~components/UserAvatar";
-import { Screen } from "~components/index";
+import { Screen, ScreenEmptyList } from "~components/index";
+import DATA from "~screens/TokenPriceListData.json";
 
 // original component we use in a bunch of places, wrapped
 export const WalletAddressLabel = memo(function WalletAddressLabel({
@@ -369,6 +379,96 @@ function ExpoConfigSettings() {
   );
 }
 
+function TokenPriceListSearch() {
+  const [filter, setFilter] = useState("");
+  const [inputText, setInputText] = useState("");
+  const [isPending, startTransition] = useTransition();
+
+  const handleChangeText = (text: string) => {
+    const lowercase = text.toLowerCase();
+    setFilter(lowercase);
+    startTransition(() => {
+      setInputText(lowercase);
+    });
+  };
+
+  const handlePressRow = (id) => {
+    console.log("row", id);
+  };
+
+  const filteredSections = useMemo(() => {
+    const sections = [
+      {
+        title: "Favorites",
+        data: DATA.slice(0, 1),
+      },
+      {
+        title: "Results",
+        data: DATA,
+      },
+    ];
+
+    return sections.map((section) => {
+      return {
+        title: section.title,
+        data: section.data.filter((item) => {
+          return item.name.toLowerCase().includes(inputText);
+        }),
+      };
+    });
+  }, [inputText]);
+
+  return (
+    <Stack>
+      <Stack>
+        <StyledTextInput
+          placeholder="Search"
+          onChangeText={handleChangeText}
+          value={filter}
+        />
+      </Stack>
+      <SectionList
+        sections={filteredSections}
+        ListEmptyComponent={
+          <ScreenEmptyList
+            iconName="settings"
+            title="No results"
+            subtitle="Try a dfiferent option"
+          />
+        }
+        renderSectionHeader={({ section }) => {
+          return (
+            <StyledText mb={8} mt={24}>
+              {section.title}
+            </StyledText>
+          );
+        }}
+        renderItem={({ item, section, index }) => {
+          const isFirst = index === 0;
+          const isLast = index === section.data.length - 1;
+          return (
+            <RoundedContainerGroup
+              disableTopRadius={!isFirst}
+              disableBottomRadius={!isLast}
+            >
+              <ListItemTokenPrice
+                grouped
+                id={item.id}
+                symbol={item.symbol}
+                name={item.name}
+                imageUrl={item.image}
+                percentChange={item.price_change_percentage_24h}
+                onPress={handlePressRow}
+                price={formatUSD(item.current_price)}
+              />
+            </RoundedContainerGroup>
+          );
+        }}
+      />
+    </Stack>
+  );
+}
+
 const Section = ({
   title,
   children,
@@ -410,6 +510,20 @@ export function UtilsDesignScreen(): JSX.Element {
           Design System & Diagnostics
         </StyledText>
         <ExpoConfigSettings />
+        <Section title="ListItemTokenPrice">
+          <ListItemTokenPrice
+            id="1"
+            name="Bitcoin"
+            symbol="BTC"
+            price="$62,099"
+            imageUrl=""
+            percentChange="-0.1"
+            onPress={console.log}
+          />
+        </Section>
+        <Section title="TokenPriceListSearch">
+          <TokenPriceListSearch />
+        </Section>
         <Section title="AvatarUserNameAddress">
           <ListItem backgroundColor="$nav">
             <AvatarUserNameAddress

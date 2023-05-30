@@ -1,6 +1,8 @@
 import type { Blockchain, Nft } from "@coral-xyz/common";
 import type { Token } from "~types/types";
 
+import { StackScreenProps } from "@react-navigation/stack";
+
 export type UnlockedNavigatorStackParamList = {
   "edit-wallets-wallet-detail": { name: string; publicKey: string };
   Tabs: undefined;
@@ -51,8 +53,24 @@ export type UnlockedNavigatorStackParamList = {
 
 export type UnlockedTabNavigatorParamList = {
   Wallets: undefined;
+  TokenPrices: undefined;
   Chat: undefined;
   AccountSettings: undefined;
   Notifications: undefined;
   Utils: undefined;
 };
+
+export type TokenPriceStackParamList = {
+  TokenPriceList: undefined;
+  TokenPriceDetail: { title: string; tokenId: string };
+};
+
+export type TokenPriceListScreenParams = StackScreenProps<
+  TokenPriceStackParamList,
+  "TokenPriceList"
+>;
+
+export type TokenPriceDetailScreenParams = StackScreenProps<
+  TokenPriceStackParamList,
+  "TokenPriceDetail"
+>;
