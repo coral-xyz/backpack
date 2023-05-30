@@ -1,5 +1,7 @@
 import { Suspense, useTransition, useState } from "react";
-import { Image, Button } from "react-native";
+import { View, Button, ScrollView } from "react-native";
+
+import { Image } from "expo-image";
 
 import { formatUSD } from "@coral-xyz/common";
 import {
@@ -11,6 +13,7 @@ import {
   YGroup,
   ListItemLabelValue,
   ProxyImage,
+  RoundedContainerGroup,
 } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -40,6 +43,10 @@ interface TokenOverviewHeaderStripProps {
   percentChange: number;
 }
 
+function formatDecimals(value: number, decimals: number) {
+  return value.toFixed(decimals);
+}
+
 function TokenOverviewHeaderStrip({
   imageUrl,
   symbol,
@@ -47,22 +54,19 @@ function TokenOverviewHeaderStrip({
   percentChange,
 }: TokenOverviewHeaderStripProps) {
   // get chart data here somewhere
+  const textColor = percentChange > 0 ? "$greenText" : "$redText";
   return (
-    <XStack
-      ai="center"
-      jc="space-between"
-      bg="white"
-      borderWidth={2}
-      borderColor="$borderFull"
-    >
-      <XStack ai="center">
+    <XStack ai="center" bg="white" borderWidth={2} borderColor="$borderFull">
+      <XStack ai="center" px={24} py={12}>
         <Image source={{ uri: imageUrl }} style={{ width: 20, height: 20 }} />
-        <StyledText>{symbol}</StyledText>
+        <StyledText ml={8}>{symbol}</StyledText>
       </XStack>
-      <Separator alignSelf="stretch" vertical />
+      <Separator alignSelf="stretch" vertical my={12} mx={12} />
       <XStack ai="center">
-        <StyledText>{price}</StyledText>
-        <StyledText>{percentChange}</StyledText>
+        <StyledText>{formatUSD(price)}</StyledText>
+        <StyledText color={textColor} ml={8}>
+          {formatDecimals(percentChange, 2)}%
+        </StyledText>
       </XStack>
     </XStack>
   );
@@ -72,11 +76,16 @@ function BalanceSummaryWidget() {
   const percentChange = -0.23;
   const totalBalance = "$5,765,838.40";
   const totalBalanceChange = "-$1,237.86";
+
+  const textColor = percentChange > 0 ? "$greenText" : "$redText";
+
   return (
     <YStack ai="center">
       <StyledText fontSize="$3xl">{totalBalance}</StyledText>
       <XStack ai="center">
-        <StyledText fontSize="$lg">{totalBalanceChange}</StyledText>
+        <StyledText mr={8} fontSize="$lg" color={textColor}>
+          {totalBalanceChange}
+        </StyledText>
         <PercentChangePill percentChange={percentChange} />
       </XStack>
     </YStack>
@@ -134,27 +143,38 @@ function TokenSummaryTable({
   );
 }
 
+function TabViewHoldings() {
+  return <View style={{ height: 200 }} />;
+}
+
+function TabViewActivity() {
+  return <View style={{ height: 200 }} />;
+}
+
 function TabContainer() {
   const [isPending, startTransition] = useTransition();
   const [tab, setTab] = useState("holdings");
 
-  function selectTab(nextTab) {
+  function selectTab(nextTab: string) {
     startTransition(() => {
       setTab(nextTab);
     });
   }
 
   return (
-    <Stack>
-      <XStack ai="center">
-        <Button title="Holdings" onPress={() => selectTab("holdings")} />
-        <Button title="Activity" onPress={() => selectTab("activity")} />
-      </XStack>
-      <Stack>
-        {tab === "holdings" ? <StyledText>Holdings</StyledText> : null}
-        {tab === "activity" ? <StyledText>Activity</StyledText> : null}
+    <RoundedContainerGroup>
+      <Stack bg="white">
+        <XStack ai="center">
+          <Button title="Holdings" onPress={() => selectTab("holdings")} />
+          <Button title="Activity" onPress={() => selectTab("activity")} />
+        </XStack>
+        <Separator />
+        <Stack>
+          {tab === "holdings" ? <TabViewHoldings /> : null}
+          {tab === "activity" ? <TabViewActivity /> : null}
+        </Stack>
       </Stack>
-    </Stack>
+    </RoundedContainerGroup>
   );
 }
 
@@ -172,34 +192,36 @@ function Container({ route }: TokenPriceDetailScreenParams): JSX.Element {
   }
 
   return (
-    <Screen>
-      <TokenOverviewHeaderStrip
-        imageUrl={token.image}
-        symbol={token.symbol}
-        price={token.current_price}
-        percentChange={token?.price_change_percentage_24h}
-      />
-      <ProxyImage
-        size={64}
-        src={token.image}
-        style={{
-          marginVertical: 16,
-          alignSelf: "center",
-          width: 64,
-          height: 64,
-          aspectRatio: 1,
-        }}
-      />
-      <BalanceSummaryWidget />
-      <TransferWidget />
-      <TokenSummaryTable
-        marketCap={token.market_cap}
-        volume={token.total_volume}
-        circulatingSupply={token.circulating_supply}
-        ath={token.ath}
-      />
-      <TabContainer />
-    </Screen>
+    <ScrollView>
+      <Screen style={{ paddingTop: 0, paddingHorizontal: 0 }}>
+        <TokenOverviewHeaderStrip
+          imageUrl={token.image}
+          symbol={token.symbol}
+          price={token.current_price}
+          percentChange={token?.price_change_percentage_24h}
+        />
+        <ProxyImage
+          size={64}
+          src={token.image}
+          style={{
+            marginVertical: 16,
+            alignSelf: "center",
+            width: 64,
+            height: 64,
+            aspectRatio: 1,
+          }}
+        />
+        <BalanceSummaryWidget />
+        <TransferWidget />
+        <TokenSummaryTable
+          marketCap={token.market_cap}
+          volume={token.total_volume}
+          circulatingSupply={token.circulating_supply}
+          ath={token.ath}
+        />
+        <TabContainer />
+      </Screen>
+    </ScrollView>
   );
 }
 
