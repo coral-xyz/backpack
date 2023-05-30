@@ -3,7 +3,10 @@ import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { ethers } from "ethers";
 
 import type { CoinGeckoPriceData } from "../clients/coingecko";
-import { IN_MEM_COLLECTION_DATA_CACHE } from "../clients/helius";
+import {
+  type HeliusGetAssetsByOwnerResponse,
+  IN_MEM_COLLECTION_DATA_CACHE,
+} from "../clients/helius";
 import type { TensorActingListingsResponse } from "../clients/tensor";
 import type { ApiContext } from "../context";
 import { NodeBuilder } from "../nodes";
@@ -223,52 +226,8 @@ export class Solana implements Blockchain {
       listings = { data: { userActiveListings: { txs: [] } } };
     }
 
-    // Create a set of unique NFT collection addresses and fetch
-    // their metadata from Helius
-    const uniqueCollections = new Set<string>();
-    for (const item of items) {
-      const c = item.grouping.find(
-        (x) => x.group_key === "collection"
-      )?.group_value;
-
-      if (c && !uniqueCollections.has(c)) {
-        uniqueCollections.add(c);
-      }
-    }
-
     // Create a map of collection address to name and image for reference
-    const collectionMap = new Map<string, { name?: string; image?: string }>();
-
-    // Populate values from the in-memory collection data cache first...
-    // Iterate through in the set and add to the data map if the cache contains
-    // the collection key and then remove from the set if found
-    for (const c of uniqueCollections) {
-      if (IN_MEM_COLLECTION_DATA_CACHE.has(c)) {
-        collectionMap.set(c, IN_MEM_COLLECTION_DATA_CACHE.get(c)!);
-        uniqueCollections.delete(c);
-      }
-    }
-
-    const remaining = [...uniqueCollections.values()];
-    if (remaining.length > 0) {
-      const collectionMetadatas =
-        await this.#ctx.dataSources.helius.getTokenMetadata(remaining, true);
-
-      for (const c of collectionMetadatas) {
-        const onChain = c.onChainMetadata?.metadata.data ?? undefined;
-        const offChain = c.offChainMetadata?.metadata ?? undefined;
-
-        if (onChain || offChain) {
-          const data = {
-            name: onChain?.name,
-            image: offChain?.image,
-          };
-
-          collectionMap.set(c.account, data);
-          IN_MEM_COLLECTION_DATA_CACHE.set(c.account, data);
-        }
-      }
-    }
+    const collectionMap = await _getCollectionMetadatas(this.#ctx, items);
 
     // Create a map of associated token account addresses
     const atas = getATAAddressesSync({
@@ -414,4 +373,68 @@ export class Solana implements Blockchain {
         })
       : undefined;
   }
+}
+
+/**
+ * Build a map of collection addresses to their name and images if discovered.
+ * @param {ApiContext} ctx
+ * @param {Set<string>} items
+ * @returns {Promise<Map<string, { name?: string; image?: string }>>}
+ */
+async function _getCollectionMetadatas(
+  ctx: ApiContext,
+  items: HeliusGetAssetsByOwnerResponse["result"]["items"]
+): Promise<Map<string, { name?: string; image?: string }>> {
+  // Create a set of unique NFT collection addresses and fetch
+  // their metadata from Helius
+  const uniqueCollections = new Set<string>();
+  for (const item of items) {
+    const c = item.grouping.find(
+      (x) => x.group_key === "collection"
+    )?.group_value;
+
+    if (c && !uniqueCollections.has(c)) {
+      uniqueCollections.add(c);
+    }
+  }
+
+  // Map of collection addresses to details
+  const collectionMap = new Map<string, { name?: string; image?: string }>();
+
+  // Populate values from the in-memory collection data cache first...
+  // Iterate through in the set and add to the data map if the cache contains
+  // the collection key and then remove from the set if found
+  for (const c of uniqueCollections) {
+    if (IN_MEM_COLLECTION_DATA_CACHE.has(c)) {
+      collectionMap.set(c, IN_MEM_COLLECTION_DATA_CACHE.get(c)!);
+      uniqueCollections.delete(c);
+    }
+  }
+
+  // Fetch metadata from API for any remaining un-cached addresses
+  const remaining = [...uniqueCollections.values()];
+  if (remaining.length > 0) {
+    const collectionMetadatas = await ctx.dataSources.helius.getTokenMetadata(
+      remaining,
+      true
+    );
+
+    for (const c of collectionMetadatas) {
+      const onChain = c.onChainMetadata?.metadata.data ?? undefined;
+      const offChain = c.offChainMetadata?.metadata ?? undefined;
+
+      // If discovered add to the local returned map and global cache
+      if (onChain || offChain) {
+        const data = {
+          name: onChain?.name,
+          image: offChain?.image,
+        };
+
+        collectionMap.set(c.account, data);
+        IN_MEM_COLLECTION_DATA_CACHE.set(c.account, data);
+      }
+    }
+  }
+
+  return collectionMap;
 }
