@@ -95,3 +95,8 @@ export type ChatListScreenProps = NativeStackScreenProps<
   ChatStackNavigatorParamList,
   "ChatList"
 >;
+
+export type ChatDetailScreenProps = NativeStackScreenProps<
+  ChatStackNavigatorParamList,
+  "ChatDetail"
+>;
