@@ -8,8 +8,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import {
   IconCloseModal,
   TabIconApps,
-  TabIconBalances,
-  TabIconMessages,
+  // TabIconBalances,
+  // TabIconMessages,
   TabIconNfts,
 } from "~components/Icon";
 import { Avatar } from "~components/index";
@@ -20,6 +20,7 @@ import {
   UnlockedNavigatorStackParamList,
   UnlockedTabNavigatorParamList,
 } from "~navigation/types";
+import { BrowserScreen } from "~screens/BrowserScreen";
 import { ReceiveTokenScreen } from "~screens/ReceiveTokenScreen";
 import { EditWalletDetailScreen } from "~screens/Unlocked/EditWalletDetailScreen";
 import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollectibleSelectRecipientScreen";
@@ -158,12 +159,28 @@ export function UnlockedNavigator(): JSX.Element {
   );
 }
 
+const TabIconBalances = ({ size, fill }) => (
+  <MaterialIcons name="account-balance-wallet" size={size} color={fill} />
+);
+
+const TabIconPrices = ({ size, fill }) => (
+  <MaterialIcons name="stacked-line-chart" size={size} color={fill} />
+);
+
+const TabIconMessages = ({ size, fill }) => (
+  <MaterialIcons name="mark-chat-unread" size={size} color={fill} />
+);
+
 const TabIconNotifications = ({ size, fill }) => (
   <MaterialIcons name="notifications" size={size} color={fill} />
 );
 
 const TabIconUtils = ({ size, fill }) => (
   <MaterialIcons name="design-services" size={size} color={fill} />
+);
+
+const TabIconBrowser = ({ size, fill }) => (
+  <MaterialIcons name="open-in-browser" size={size} color={fill} />
 );
 
 const Tab = createBottomTabNavigator<UnlockedTabNavigatorParamList>();
@@ -173,6 +190,8 @@ function UnlockedBottomTabNavigator(): JSX.Element {
     switch (routeName) {
       case "Balances":
         return TabIconBalances;
+      case "TokenPrices":
+        return TabIconPrices;
       case "Applications":
         return TabIconApps;
       case "Collectibles":
@@ -185,6 +204,8 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         return Avatar;
       case "Utils":
         return TabIconUtils;
+      case "Browser":
+        return TabIconBrowser;
       default:
         return TabIconBalances;
     }
@@ -217,6 +238,7 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         options={{ title: "Chats" }}
       />
       <Tab.Screen name="Utils" component={UtilsDesignScreen} />
+      <Tab.Screen name="Browser" component={BrowserScreen} />
     </Tab.Navigator>
   );
 }

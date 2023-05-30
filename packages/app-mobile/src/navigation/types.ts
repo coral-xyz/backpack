@@ -59,6 +59,7 @@ export type UnlockedTabNavigatorParamList = {
   AccountSettings: undefined;
   Notifications: undefined;
   Utils: undefined;
+  Browser: undefined;
 };
 
 export type TokenPriceStackParamList = {
