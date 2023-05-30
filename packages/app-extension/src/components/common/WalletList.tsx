@@ -545,7 +545,7 @@ function _WalletList({
   );
 }
 
-export function WalletList({
+function WalletList({
   wallets,
   clickWallet,
   style,
@@ -606,7 +606,7 @@ export function WalletList({
   );
 }
 
-export function WalletListItem({
+function WalletListItem({
   wallet,
   isSelected,
   isFirst,
@@ -882,7 +882,7 @@ function RecoverButton({
   );
 }
 
-export function StackedWalletAddress({
+function StackedWalletAddress({
   publicKey,
   name,
   type,
@@ -1050,7 +1050,7 @@ export function WalletDrawerProvider({ children }: any) {
   );
 }
 
-export function useWalletDrawerContext(): WalletDrawerContext {
+function useWalletDrawerContext(): WalletDrawerContext {
   const ctx = useContext(_WalletDrawerContext);
   if (ctx === null) {
     throw new Error("Context not available");

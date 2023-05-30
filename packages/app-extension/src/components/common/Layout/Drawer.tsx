@@ -9,22 +9,11 @@ import React, {
 import { EXTENSION_HEIGHT } from "@coral-xyz/common";
 import { styles as makeStyles } from "@coral-xyz/themes";
 import { Close } from "@mui/icons-material";
-import { Button, Drawer, IconButton } from "@mui/material";
+import { Drawer, IconButton } from "@mui/material";
 
 import { NAV_BAR_HEIGHT, NAV_BUTTON_WIDTH } from "./Nav";
 
 const useStyles = makeStyles((theme) => ({
-  withDrawerNoHeader: {
-    height: EXTENSION_HEIGHT - NAV_BAR_HEIGHT,
-    padding: "20px",
-    display: "flex",
-    flexDirection: "column",
-  },
-  withDrawerContent: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-  },
   drawerRoot: {
     top: `${NAV_BAR_HEIGHT}px !important`,
     zIndex: "2 !important" as any,
@@ -47,10 +36,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "transparent",
     borderTopLeftRadius: "12px",
     borderTopRightRadius: "12px",
-  },
-  closeDrawerButton: {
-    backgroundColor: theme.custom.colors.background,
-    width: "100%",
   },
   rightButtonIcon: {
     color: theme.custom.colors.icon,
@@ -168,41 +153,6 @@ export function CloseButton({ onClick, buttonStyle }: any) {
         <Close className={classes.rightButtonIcon} />
       </IconButton>
     </div>
-  );
-}
-
-export function WithDrawerNoHeader(props: any) {
-  const { children, openDrawer, setOpenDrawer } = props;
-  const classes = useStyles();
-  return (
-    <Drawer
-      BackdropProps={{
-        style: {
-          position: "absolute",
-          top: NAV_BAR_HEIGHT,
-          height: EXTENSION_HEIGHT - NAV_BAR_HEIGHT,
-        },
-      }}
-      anchor="bottom"
-      open={openDrawer}
-      onClose={() => setOpenDrawer(false)}
-      classes={{
-        root: classes.drawerRoot,
-      }}
-    >
-      <div className={classes.withDrawerNoHeader}>
-        <div className={classes.withDrawerContent}>{children}</div>
-        {!props.skipFooter ? (
-          <Button
-            onClick={() => setOpenDrawer(false)}
-            variant="contained"
-            className={classes.closeDrawerButton}
-          >
-            Close
-          </Button>
-        ) : null}
-      </div>
-    </Drawer>
   );
 }
 

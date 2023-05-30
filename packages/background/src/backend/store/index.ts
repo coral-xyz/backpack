@@ -3,13 +3,19 @@
 
 import { LocalStorageDb } from "./db";
 
-export * from "./db";
 export * from "./feature-gates";
-export * from "./isCold";
-export * from "./keyname";
-export * from "./keyring";
-export * from "./navigation";
-export * from "./preferences";
+export { getIsCold, setIsCold } from "./isCold";
+export { DefaultKeyname, getKeyname, setKeyname } from "./keyname";
+export {
+  doesCiphertextExist,
+  getKeyringStore,
+  getKeyringStore_NO_MIGRATION,
+  type KeyringStoreJson,
+  setKeyringStore,
+  type UserKeyringJson,
+} from "./keyring";
+export { getNav, type Nav, setNav } from "./navigation";
+export { getWalletDataForUser, setWalletDataForUser } from "./preferences";
 export * from "./usernames";
 export * from "./xnft-preferences";
 

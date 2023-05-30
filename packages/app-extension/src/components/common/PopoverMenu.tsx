@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const PopoverMenu: FunctionComponent<PopoverProps> = ({
+const PopoverMenu: FunctionComponent<PopoverProps> = ({
   children,
   ...rest
 }) => {
@@ -40,9 +40,7 @@ type GroupProps = {
   children?: React.ReactNode;
 };
 
-export const PopoverMenuItemGroup: FunctionComponent<GroupProps> = ({
-  children,
-}) => {
+const PopoverMenuItemGroup: FunctionComponent<GroupProps> = ({ children }) => {
   const theme = useCustomTheme();
   return (
     <div
@@ -59,7 +57,7 @@ export const PopoverMenuItemGroup: FunctionComponent<GroupProps> = ({
   );
 };
 
-export const PopoverMenuItem: FunctionComponent<ButtonProps> = ({
+const PopoverMenuItem: FunctionComponent<ButtonProps> = ({
   children,
   style,
   ...rest

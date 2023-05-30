@@ -32,7 +32,7 @@ export const SpotlightContacts = ({
   );
 };
 
-export function SpotlightContact({
+function SpotlightContact({
   contact,
   selected,
   setSelectedContact,

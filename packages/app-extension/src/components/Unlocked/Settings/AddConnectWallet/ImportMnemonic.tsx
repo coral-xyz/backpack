@@ -91,7 +91,7 @@ export function ImportMnemonicAutomatic() {
   );
 }
 
-export const ConfirmWalletSync = ({ onClose }: { onClose: () => void }) => {
+const ConfirmWalletSync = ({ onClose }: { onClose: () => void }) => {
   const theme = useCustomTheme();
   return (
     <div
@@ -332,7 +332,7 @@ export function ImportMnemonic({
   );
 }
 
-export function InputName({ onNext }: { onNext: (name: string) => void }) {
+function InputName({ onNext }: { onNext: (name: string) => void }) {
   const [name, setName] = useState("");
   return (
     <Box

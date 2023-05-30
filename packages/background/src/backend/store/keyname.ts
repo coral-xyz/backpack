@@ -2,13 +2,6 @@ import { LocalStorageDb } from "./db";
 
 const KEY_KEYNAME_STORE = "keyname-store";
 
-/**
- * Persistent model for the naming of wallet keys.
- */
-export type Keyname = {
-  [publicKeyStr: string]: string;
-};
-
 export async function setKeyname(publicKey: string, name: string) {
   let keynames = await LocalStorageDb.get(key());
   if (!keynames) {
