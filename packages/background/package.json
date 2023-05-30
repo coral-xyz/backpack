@@ -16,6 +16,7 @@
   "dependencies": {
     "@coral-xyz/blockchain-common": "*",
     "@coral-xyz/blockchain-keyring": "*",
+    "@coral-xyz/secure-background": "*",
     "@coral-xyz/common": "*",
     "@coral-xyz/recoil": "*",
     "@solana/web3.js": "^1.63.1",

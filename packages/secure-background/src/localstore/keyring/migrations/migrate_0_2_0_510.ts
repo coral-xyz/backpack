@@ -5,15 +5,15 @@ import {
   getLogger,
 } from "@coral-xyz/common";
 
-import * as crypto from "../../keyring/crypto";
-import type { KeyringStoreJson } from "../keyring";
-import { getKeyringCiphertext, setKeyringStore } from "../keyring";
 import {
   getWalletData_DEPRECATED,
   setWalletData_DEPRECATED,
   setWalletDataForUser,
-} from "../preferences";
-import { getUserData, setUserData } from "../usernames";
+} from "../../preferences";
+import { getUserData, setUserData } from "../../usernames";
+import { decrypt } from "../crypto";
+import type { KeyringStoreJson } from "../store";
+import { getKeyringCiphertext, setKeyringStore } from "../store";
 
 const logger = getLogger("migrations/0_2_0_510");
 
@@ -119,7 +119,7 @@ async function migrateKeyringStore_0_2_0_510(
     return;
   }
 
-  const plaintext = await crypto.decrypt(ciphertextPayload, password);
+  const plaintext = await decrypt(ciphertextPayload, password);
   const oldJson = JSON.parse(plaintext);
 
   if (oldJson.username) {
