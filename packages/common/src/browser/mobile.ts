@@ -136,14 +136,6 @@ export function startMobileIfNeeded() {
     return handler;
   };
 
-  BrowserRuntimeCommon.sendMessageToAnywhere = (_msg, _cb) => {
-    throw new Error("sendMessageToAnywhere not implemented on mobile");
-  };
-
-  BrowserRuntimeCommon.addEventListenerFromAnywhere = (_cb) => {
-    throw new Error("addEventListenerFromAnywhere not implemented on mobile");
-  };
-
   //
   // Assumes this is only called from the background service worker.
   //

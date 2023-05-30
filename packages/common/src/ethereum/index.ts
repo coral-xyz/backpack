@@ -2,7 +2,7 @@ import type { FeeData } from "@ethersproject/abstract-provider";
 import type { UnsignedTransaction } from "@ethersproject/transactions";
 import { BigNumber, ethers } from "ethers";
 
-import type { BackgroundClient } from "../";
+import type { BackgroundClient } from "..";
 
 import { EthereumProvider } from "./provider";
 

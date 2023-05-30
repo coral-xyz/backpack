@@ -15,6 +15,7 @@
     "@coral-xyz/message-sdk": "*",
     "@coral-xyz/react-common": "*",
     "@coral-xyz/recoil": "*",
+    "@coral-xyz/secure-background": "*",
     "@coral-xyz/tamagui": "*",
     "@coral-xyz/themes": "*",
     "@emotion/react": "^11.10.6",
