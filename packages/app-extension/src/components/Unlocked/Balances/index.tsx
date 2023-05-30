@@ -13,7 +13,7 @@ import { TokenTables } from "../../common/TokenTable";
 import { BalanceSummaryWidget } from "./BalanceSummaryWidget";
 import { TransferWidget } from "./TransferWidget";
 
-export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
+type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
 export function Balances() {
   const { push } = useNavigation();
@@ -66,6 +66,6 @@ export function Balances() {
 export { BalancesTableRow } from "./Balances";
 export { BalancesTableContent } from "./Balances";
 export { BalancesTableHead } from "./Balances";
-export { useBalancesContext } from "./Balances";
+// export { useBalancesContext } from "./Balances";
 export { BalancesTable } from "./Balances";
 export { BalancesTableCell } from "./Balances";

@@ -86,15 +86,15 @@ export function Router() {
   );
 }
 
-export function NotificationsPage() {
+function NotificationsPage() {
   return <NavScreen component={<Notifications />} />;
 }
 
-export function RecentActivityPage() {
+function RecentActivityPage() {
   return <NavScreen component={<RecentActivity />} />;
 }
 
-export function Redirect() {
+function Redirect() {
   let url = useRedirectUrl();
   return <Navigate to={url} replace />;
 }
@@ -102,7 +102,7 @@ export function Redirect() {
 // We use a separate redirect for the xs size because some routes, e.g., /notifications
 // and /recent-activity don't exist on the xs size--for xs, they are ephemeral drawers,
 // for larger screens they are normal routes.
-export function RedirectXs() {
+function RedirectXs() {
   let url = useRedirectUrl();
   if (url.startsWith("/notifications") || url.startsWith("/recent-activity")) {
     return <Navigate to="/balances" replace />;

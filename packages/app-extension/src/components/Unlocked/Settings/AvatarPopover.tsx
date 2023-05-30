@@ -460,7 +460,7 @@ function PopoverProvider({ children, close, openSettings }: any) {
   );
 }
 
-export function usePopoverContext(): PopoverContext {
+function usePopoverContext(): PopoverContext {
   const ctx = useContext(_PopoverContext);
   if (ctx === null) {
     throw new Error("Context not available");

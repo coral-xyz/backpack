@@ -31,7 +31,7 @@ export function PreferencesEthereumConnection() {
         close();
       },
       detail:
-        currentUrl === EthereumConnectionUrl.MAINNET ? <Checkmark /> : <></>,
+        currentUrl === EthereumConnectionUrl.MAINNET ? <Checkmark /> : null,
     },
     "Görli Testnet": {
       onClick: async () => {
@@ -39,7 +39,7 @@ export function PreferencesEthereumConnection() {
         close();
       },
       detail:
-        currentUrl === EthereumConnectionUrl.GOERLI ? <Checkmark /> : <></>,
+        currentUrl === EthereumConnectionUrl.GOERLI ? <Checkmark /> : null,
     },
     Localnet: {
       onClick: async () => {
@@ -47,7 +47,7 @@ export function PreferencesEthereumConnection() {
         close();
       },
       detail:
-        currentUrl === EthereumConnectionUrl.LOCALNET ? <Checkmark /> : <></>,
+        currentUrl === EthereumConnectionUrl.LOCALNET ? <Checkmark /> : null,
     },
     Custom: {
       onClick: () => nav.push("preferences-ethereum-edit-rpc-connection"),
@@ -66,7 +66,7 @@ export function PreferencesEthereumConnection() {
   return <SettingsList menuItems={menuItems} />;
 }
 
-export function Checkmark() {
+function Checkmark() {
   const theme = useCustomTheme();
   return (
     <Check

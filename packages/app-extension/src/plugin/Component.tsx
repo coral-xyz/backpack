@@ -60,45 +60,6 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function TextArea({
-  maxRows,
-  minRows,
-  value,
-  setValue,
-  placeholder,
-  style,
-  className = "",
-}: any) {
-  const classes = useStyles();
-  const theme = useCustomTheme();
-  className =
-    className +
-    `${classes.textAreaInput} ${
-      value ? classes.textFieldInputColor : classes.textFieldInputColorEmpty
-    }
-    `;
-
-  const textColor = value
-    ? theme.custom.colors.textPlaceholder
-    : theme.custom.colors.fontColor2;
-
-  return (
-    <MuiTextArea
-      maxRows={maxRows}
-      minRows={minRows}
-      onChange={(e) => setValue(e.target.value)}
-      placeholder={placeholder}
-      style={{
-        width: "100%",
-        color: textColor,
-        ...style,
-      }}
-      value={value}
-      className={className}
-    />
-  );
-}
-
 export function TextField({
   placeholder,
   type,
@@ -171,18 +132,6 @@ export function TextField({
   );
 }
 
-export function _Button({ id, props, style, childrenRenderer }: any) {
-  return (
-    <__Button
-      id={id}
-      props={props}
-      style={style}
-      childrenRenderer={childrenRenderer}
-      onClick={props.onClick}
-    />
-  );
-}
-
 export function Button({ id, props, style, onClick, children }: any) {
   return (
     <__Button
@@ -195,7 +144,7 @@ export function Button({ id, props, style, onClick, children }: any) {
   );
 }
 
-export function __Button({ onClick, style, children }: any) {
+function __Button({ onClick, style, children }: any) {
   const theme = useCustomTheme();
   return (
     <MuiButton

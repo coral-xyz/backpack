@@ -169,7 +169,7 @@ export function SendEthereumConfirmationCard({
   );
 }
 
-export function ConfirmSendEthereum({
+function ConfirmSendEthereum({
   token,
   destinationAddress,
   amount,

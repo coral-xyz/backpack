@@ -81,7 +81,7 @@ type AddressSelectorContext = {
 const AddressSelectorContext =
   React.createContext<AddressSelectorContext | null>(null);
 
-export function AddressSelectorProvider(props: {
+function AddressSelectorProvider(props: {
   blockchain: Blockchain;
   name: string;
   onSelect: (sendData: SendData) => void;
@@ -147,23 +147,6 @@ export const AddressSelectorLoader = ({
 };
 
 export const TokenAddressSelector = (props: any) => {
-  const { push } = useNavigation();
-
-  return (
-    <AddressSelector
-      {...props}
-      onSelect={(sendData) => {
-        push("send", {
-          blockchain: props.blockchain,
-          token: props.token,
-          to: sendData,
-        });
-      }}
-    />
-  );
-};
-
-export const NftAddressSelector = (props: any) => {
   const { push } = useNavigation();
 
   return (

@@ -203,7 +203,7 @@ export function RecentActivityLoading() {
   );
 }
 
-export function _RecentActivityList({
+function _RecentActivityList({
   blockchain,
   address,
   contractAddresses,

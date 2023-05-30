@@ -22,8 +22,8 @@ import type { CachedValue } from "../types";
 
 const logger = getLogger("ethereum-connection-backend");
 
-export const ETHEREUM_TOKENS_REFRESH_INTERVAL = 10 * 1000;
-export const ETHEREUM_FEE_DATA_REFRESH_INTERVAL = 20 * 1000;
+const ETHEREUM_TOKENS_REFRESH_INTERVAL = 10 * 1000;
+const ETHEREUM_FEE_DATA_REFRESH_INTERVAL = 20 * 1000;
 
 export function start(events: EventEmitter): EthereumConnectionBackend {
   const b = new EthereumConnectionBackend(events);

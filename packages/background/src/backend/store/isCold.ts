@@ -2,13 +2,6 @@ import { LocalStorageDb } from "./db";
 
 const KEY_IS_COLD_STORE = "is-cold-store";
 
-/**
- * Persistent model for the naming of wallet keys.
- */
-export type IsColdKeys = {
-  [publicKeyStr: string]: boolean;
-};
-
 export async function setIsCold(publicKey: string, isCold?: boolean) {
   let keynames = await LocalStorageDb.get(key());
   if (!keynames) {

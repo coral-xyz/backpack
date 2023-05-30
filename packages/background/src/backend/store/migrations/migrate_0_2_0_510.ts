@@ -105,7 +105,7 @@ async function migrateUserData_0_2_0_510(
 //
 //   - moves the keyring store from the older single user format to the new
 //     multi user format.
-export async function migrateKeyringStore_0_2_0_510(
+async function migrateKeyringStore_0_2_0_510(
   userInfo: {
     uuid: string;
     password: string;

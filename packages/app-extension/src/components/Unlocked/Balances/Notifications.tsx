@@ -326,20 +326,20 @@ export function Notifications() {
   );
 }
 
-export function RecentActivityList({
-  groupedNotifications,
-}: {
-  groupedNotifications: {
-    date: string;
-    notifications: EnrichedNotification[];
-  }[];
-}) {
-  return (
-    <Suspense fallback={<NotificationsLoader />}>
-      <NotificationList groupedNotifications={groupedNotifications} />
-    </Suspense>
-  );
-}
+// export function RecentActivityList({
+//   groupedNotifications,
+// }: {
+//   groupedNotifications: {
+//     date: string;
+//     notifications: EnrichedNotification[];
+//   }[];
+// }) {
+//   return (
+//     <Suspense fallback={<NotificationsLoader />}>
+//       <NotificationList groupedNotifications={groupedNotifications} />
+//     </Suspense>
+//   );
+// }
 
 function NotificationsLoader() {
   return (
@@ -364,7 +364,7 @@ function NotificationsLoader() {
   );
 }
 
-export function NotificationList({
+function NotificationList({
   groupedNotifications,
   onOpenDrawer,
 }: {

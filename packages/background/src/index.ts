@@ -11,8 +11,6 @@ import * as serverUi from "./frontend/server-ui";
 import * as solanaConnection from "./frontend/solana-connection";
 import type { Background, Config } from "./types";
 
-export * from "./backend/keyring";
-
 //
 // Entry: Starts the background service.
 //
