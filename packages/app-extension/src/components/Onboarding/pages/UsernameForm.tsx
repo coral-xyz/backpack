@@ -1,5 +1,5 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
-import { PrimaryButton,TextInput } from "@coral-xyz/react-common";
+import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { AlternateEmail } from "@mui/icons-material";
 import { Box, InputAdornment } from "@mui/material";
@@ -55,15 +55,17 @@ export const UsernameForm = ({
     >
       <Box style={{ margin: "24px" }}>
         <Header text="Claim your username" />
+        <SubtextParagraph style={{ margin: "16px 0", fontWeight: "bold" }}>
+          Please save your username. You’ll need it to recover your account.
+        </SubtextParagraph>
         <SubtextParagraph style={{ margin: "16px 0" }}>
           Others can see and find you by this username, and it will be
           associated with your primary wallet address.
           <br />
           <br />
-          Choose wisely if you'd like to remain anonymous.
+          Choose wisely if you'd like to remain anonymous. Have fun!
           <br />
           <br />
-          Have fun!
         </SubtextParagraph>
       </Box>
       <Box
