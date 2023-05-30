@@ -1,38 +1,29 @@
-import { Suspense, useState, useLayoutEffect, useTransition } from "react";
+import { Suspense, useState, useLayoutEffect } from "react";
+import { View } from "react-native";
 
-import { Blockchain } from "@coral-xyz/common";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { MessageList } from "~components/Messages";
-import { Screen, ScreenError, ScreenLoading } from "~components/index";
+import { ScreenError, ScreenLoading } from "~components/index";
 import { ChatListScreenProps } from "~navigation/types";
 
 import { type ChatRowData, useChatHelper } from "./ChatHelpers";
 
 function Container({ navigation }: ChatListScreenProps): JSX.Element {
-  const [search, setSearch] = useState("");
-  const [searchResults, setSearchResults] = useState([]); // TODO(types) user search type
-  const [isPending, startTransition] = useTransition();
-
   const { allChats, requestCount, onRefreshChats, isRefreshingChats } =
     useChatHelper();
+  const [searchFilter, setSearchFilter] = useState("");
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerSearchBarOptions: {
+        placeholder: "Search your messages",
         onChangeText: (event) => {
-          setSearch(event.nativeEvent.text);
-          // startTransition(() => {
-          //   handleSearch(event.nativeEvent.text);
-          // });
+          setSearchFilter(event.nativeEvent.text.toLowerCase());
         },
       },
     });
   }, [navigation]);
-
-  console.log("debug4:search", search);
-  console.log("debug4:searchResults", searchResults);
-  console.log("debug4:isPending", isPending);
 
   const handlePressMessage = (metadata: ChatRowData) => {
     navigation.push("ChatDetail", metadata);
@@ -42,17 +33,19 @@ function Container({ navigation }: ChatListScreenProps): JSX.Element {
     navigation.push("ChatRequest");
   };
 
+  const messages = allChats.filter((chat) => {
+    return chat.name.toLowerCase().includes(searchFilter);
+  });
+
   return (
-    <Screen style={{ paddingTop: 0, paddingHorizontal: 0 }}>
-      <MessageList
-        requestCount={requestCount}
-        allChats={allChats}
-        onPressRow={handlePressMessage}
-        onPressRequest={handlePressRequest}
-        onRefreshChats={onRefreshChats}
-        isRefreshing={isRefreshingChats}
-      />
-    </Screen>
+    <MessageList
+      requestCount={requestCount}
+      allChats={messages}
+      onPressRow={handlePressMessage}
+      onPressRequest={handlePressRequest}
+      onRefreshChats={onRefreshChats}
+      isRefreshing={isRefreshingChats}
+    />
   );
 }
 
