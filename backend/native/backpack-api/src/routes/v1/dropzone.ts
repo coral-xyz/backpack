@@ -1,8 +1,8 @@
 import { emptyWallet } from "@cardinal/common";
+import { MerkleDistributorSDK, utils } from "@coral-xyz/merkle-distributor";
 import type { order_by } from "@coral-xyz/zeus";
 import { Chain } from "@coral-xyz/zeus";
 import type { PublicKeyString } from "@metaplex-foundation/js";
-import { MerkleDistributorSDK, utils } from "@saberhq/merkle-distributor";
 import { SignerWallet, SolanaProvider } from "@saberhq/solana-contrib";
 import { u64 } from "@saberhq/token-utils";
 import { Connection, PublicKey, TransactionMessage } from "@solana/web3.js";

@@ -87,7 +87,7 @@ export function WithNav({
   );
 }
 
-export function NavBar({
+function NavBar({
   title,
   navButtonLeft,
   navButtonRight,
@@ -184,7 +184,7 @@ export function NavBackButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-export function NavContent({
+function NavContent({
   renderComponent,
   style,
   noScrollbars,
@@ -308,7 +308,7 @@ function CenterDisplay({
   );
 }
 
-export function NavTitleLabel({ title }: any) {
+function NavTitleLabel({ title }: any) {
   const classes = useStyles();
   if (typeof title !== "string") {
     return title;
@@ -334,7 +334,7 @@ export function NavTitleLabel({ title }: any) {
   );
 }
 
-export function DummyButton() {
+function DummyButton() {
   const classes = useStyles();
   return <div className={classes.menuButtonContainer} />;
 }

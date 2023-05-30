@@ -7,11 +7,11 @@ import { BackpackHeader } from "../../Locked";
 
 const WAITLIST_RES_ID_KEY = "waitlist-form-res-id";
 
-export const setWaitlistId = (responseId: string) =>
-  window.localStorage.setItem(WAITLIST_RES_ID_KEY, responseId);
+// export const setWaitlistId = (responseId: string) =>
+//   window.localStorage.setItem(WAITLIST_RES_ID_KEY, responseId);
 
-export const getWaitlistId = () =>
-  window.localStorage.getItem(WAITLIST_RES_ID_KEY) ?? undefined;
+// export const getWaitlistId = () =>
+//   window.localStorage.getItem(WAITLIST_RES_ID_KEY) ?? undefined;
 
 export const InviteCodeForm = ({
   onClickRecover,

@@ -1,4 +1,4 @@
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BACKPACK_LINK,
   DISCORD_INVITE_LINK,
@@ -103,7 +103,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
   );
 }
 
-export function LockedMenuList() {
+function LockedMenuList() {
   const theme = useCustomTheme();
   const nav = useNavigation();
   const classes = useStyles();

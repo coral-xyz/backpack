@@ -12,7 +12,7 @@ export type Nav = {
   data: { [navId: string]: NavData };
 };
 
-export type NavData = {
+type NavData = {
   id: string;
   urls: Array<any>;
 };

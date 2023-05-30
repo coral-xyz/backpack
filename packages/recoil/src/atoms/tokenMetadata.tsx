@@ -30,7 +30,7 @@ export const tokenMetadata = selectorFamily<
     },
 });
 
-export const solanaTokenMetadata = selectorFamily<
+const solanaTokenMetadata = selectorFamily<
   TokenMetadata | null,
   { mintAddress }
 >({

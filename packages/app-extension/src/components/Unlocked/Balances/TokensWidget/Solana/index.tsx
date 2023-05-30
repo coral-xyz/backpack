@@ -97,7 +97,7 @@ export function SendSolanaConfirmationCard({
   );
 }
 
-export function ConfirmSendSolana({
+function ConfirmSendSolana({
   token,
   destinationAddress,
   amount,

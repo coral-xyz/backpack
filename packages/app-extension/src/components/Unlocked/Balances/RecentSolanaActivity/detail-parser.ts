@@ -79,7 +79,7 @@ export const groupTxnsByDate = (
   return result;
 };
 
-export const getSourceOrTypeFormatted = (sourceOrType: string): string => {
+const getSourceOrTypeFormatted = (sourceOrType: string): string => {
   return sourceOrType
     .replaceAll("_", " ")
     .split(" ")

@@ -4237,6 +4237,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@coral-xyz/merkle-distributor@npm:^0.3.5-beta.1":
+  version: 0.3.5-beta.1
+  resolution: "@coral-xyz/merkle-distributor@npm:0.3.5-beta.1"
+  dependencies:
+    js-sha3: ^0.8.0
+    superstruct: ^0.16.0
+    tiny-invariant: ^1.2.0
+    tslib: ^2.4.0
+  peerDependencies:
+    "@project-serum/anchor": ">=0.24"
+    "@saberhq/anchor-contrib": ^1.13
+    "@saberhq/solana-contrib": ^1.13
+    "@saberhq/token-utils": ^1.13
+    "@solana/web3.js": ^1.44
+    bn.js: ^5.2.0
+    jsbi: "*"
+  checksum: 2e80b5a5d356f1532cd72d56d2aaf726dbb9019613f96a5f74258e02ccfba4458fa17d077e56e7cd61f4171d2687972967949e35f46770bc77e229148536683a
+  languageName: node
+  linkType: hard
+
 "@coral-xyz/message-sdk@*, @coral-xyz/message-sdk@workspace:packages/message-sdk":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/message-sdk@workspace:packages/message-sdk"
@@ -11343,26 +11363,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@saberhq/merkle-distributor@npm:^0.3.5":
-  version: 0.3.5
-  resolution: "@saberhq/merkle-distributor@npm:0.3.5"
-  dependencies:
-    js-sha3: ^0.8.0
-    superstruct: ^0.16.0
-    tiny-invariant: ^1.2.0
-    tslib: ^2.4.0
-  peerDependencies:
-    "@project-serum/anchor": ">=0.24"
-    "@saberhq/anchor-contrib": ^1.13
-    "@saberhq/solana-contrib": ^1.13
-    "@saberhq/token-utils": ^1.13
-    "@solana/web3.js": ^1.44
-    bn.js: ^5.2.0
-    jsbi: "*"
-  checksum: 743a91c4e4e07facc9e953e68ddf4a82ceedad2be4c7584d1ad1d571b5ae3562a0df24c3e90c8c5ed5846b76c671f90b08f767d367a27466ec355edbf64d67ef
-  languageName: node
-  linkType: hard
-
 "@saberhq/option-utils@npm:^1.14.11":
   version: 1.14.11
   resolution: "@saberhq/option-utils@npm:1.14.11"
@@ -17122,6 +17122,7 @@ __metadata:
     "@coral-xyz/backend-common": "*"
     "@coral-xyz/chat-zeus": "*"
     "@coral-xyz/common": "*"
+    "@coral-xyz/merkle-distributor": ^0.3.5-beta.1
     "@coral-xyz/xnft": ^0.2.52
     "@coral-xyz/zeus": "*"
     "@graphql-codegen/cli": ^3.3.0
@@ -17131,7 +17132,6 @@ __metadata:
     "@metaplex-foundation/js": 0.16.1
     "@metaplex-foundation/mpl-token-metadata": ^2.8.1
     "@saberhq/anchor-contrib": ^1.14.11
-    "@saberhq/merkle-distributor": ^0.3.5
     "@saberhq/solana-contrib": ^1.14.11
     "@saberhq/token-utils": ^1.14.11
     "@solana/spl-token": ^0.3.7
