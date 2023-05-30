@@ -1,19 +1,21 @@
-export interface ISecureEvent {
+export interface SecureEvent {
   name: string;
-  params: { [key: string]: string | number | null };
+  request: { [key: string]: string | number | null };
   response?: { [key: string]: string | number | null };
 }
-export type SecureEvent<T extends ISecureEvent> = Omit<T, "response">;
-export type SecureResponse<T extends ISecureEvent> = Omit<T, "params">;
+export type SecureRequest<T extends SecureEvent> = Omit<T, "response">;
+export type SecureResponse<T extends SecureEvent> = Omit<T, "request">;
 
-export type TransportHandler<E extends ISecureEvent> = (
-  event: SecureEvent<E>,
-  respond: (response: SecureResponse<E>) => void
-) => void;
+export type TransportHandler<E extends SecureEvent> = (
+  request: SecureRequest<E>
+) => Promise<SecureResponse<E>> | void;
 
-export type TransportDestroy = () => void;
+export type TransportRemoveListener = () => void;
 
-export interface Transport<T extends ISecureEvent> {
-  addListener: (handler: TransportHandler<T>) => TransportDestroy;
-  sendRequest: (event: SecureEvent<T>) => Promise<SecureResponse<T>>;
+export interface TransportClient<T extends SecureEvent> {
+  request: (request: SecureRequest<T>) => Promise<SecureResponse<T>>;
+}
+
+export interface TransportServer<T extends SecureEvent> {
+  setListener: (handler: TransportHandler<T>) => TransportRemoveListener;
 }
