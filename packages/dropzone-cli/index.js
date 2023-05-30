@@ -18,7 +18,7 @@ const { join } = require("path");
 
 process.env.ANCHOR_PROVIDER_URL ||= "https://solana-rpc.xnfts.dev";
 process.env.ANCHOR_WALLET ||= join(homedir(), "wallet.json");
-process.env.PROGRAM ||= "MRKGLMizK9XSTaD1d1jbVkdHZbQVCSnPpYiTw9aKQv8";
+process.env.PROGRAM ||= "DRoPZqPL5hjVsDyjokqKqMrW6DLzhGimjowQ9XSZHvrF";
 
 const anchorProvider = AnchorProvider.env();
 setProvider(anchorProvider);
