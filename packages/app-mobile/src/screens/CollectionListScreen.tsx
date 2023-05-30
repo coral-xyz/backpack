@@ -1,12 +1,11 @@
 import { Suspense, useMemo, useCallback } from "react";
 import { View, Pressable, Text, FlatList } from "react-native";
 
-import { Image } from "expo-image";
 import * as Linking from "expo-linking";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
-import { XStack, StyledText } from "@coral-xyz/tamagui";
+import { XStack, StyledText, ProxyImage } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -54,9 +53,10 @@ function ImageBox({ images }: { images: string[] }): JSX.Element {
     >
       {images.map((uri: string) => {
         return (
-          <Image
+          <ProxyImage
             key={uri}
-            source={uri}
+            src={uri}
+            size={64}
             style={{
               borderRadius: 8,
               width: 64,
@@ -72,8 +72,9 @@ function ImageBox({ images }: { images: string[] }): JSX.Element {
 function CollectionImage({ images }: { images: string[] }): JSX.Element {
   if (images.length === 1) {
     return (
-      <Image
-        source={images[0]}
+      <ProxyImage
+        size={164}
+        src={images[0]}
         style={{ borderRadius: 12, aspectRatio: 1, height: 164, padding: 12 }}
       />
     );

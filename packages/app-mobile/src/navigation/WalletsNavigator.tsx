@@ -1,8 +1,6 @@
 import { Dimensions } from "react-native";
 
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
-import { Box } from "@coral-xyz/tamagui";
-import { MaterialIcons } from "@expo/vector-icons";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import {
   createStackNavigator,
@@ -11,13 +9,17 @@ import {
 
 import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
 import { useTheme } from "~hooks/useTheme";
+import { WINDOW_WIDTH } from "~lib/index";
+import { HeaderButton } from "~navigation/components";
 import { CollectionDetailScreen } from "~screens/CollectionDetailScreen";
 import { CollectionItemDetailScreen } from "~screens/CollectionItemDetailScreen";
 import { CollectionListScreen } from "~screens/CollectionListScreen";
 import { HomeWalletListScreen } from "~screens/HomeWalletListScreen";
+import { NotificationsScreen } from "~screens/NotificationsScreen";
 import { RecentActivityScreen } from "~screens/RecentActivityScreen";
 import { TokenDetailScreen } from "~screens/TokenDetailScreen";
 import { TokenListScreen } from "~screens/TokenListScreen";
+import { WalletDisplayStarterScreen } from "~screens/WalletDisplayStarterScreen";
 
 type TopTabsParamList = {
   TokenList: {
@@ -33,7 +35,7 @@ function TopTabsNavigator(): JSX.Element {
   return (
     <TopTabs.Navigator
       initialLayout={{
-        width: Dimensions.get("window").width,
+        width: WINDOW_WIDTH,
       }}
       screenOptions={{
         tabBarIndicatorStyle: {
@@ -68,6 +70,7 @@ function TopTabsNavigator(): JSX.Element {
 }
 
 export type WalletStackParamList = {
+  WalletDisplayStarter: undefined;
   HomeWalletList: undefined;
   TopTabsWalletDetail: {
     blockchain: Blockchain;
@@ -95,12 +98,37 @@ export type TokenDetailScreenParams = StackScreenProps<
 const Stack = createStackNavigator<WalletStackParamList>();
 export function WalletsNavigator(): JSX.Element {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="HomeWalletList">
       <Stack.Screen
         name="HomeWalletList"
         component={HomeWalletListScreen}
-        options={{ headerShown: false }}
+        options={({ navigation }) => {
+          return {
+            headerShown: true,
+            title: "Balances",
+            headerLeft: (props) => (
+              <HeaderButton
+                name="menu"
+                {...props}
+                onPress={() => {
+                  navigation.openDrawer();
+                  // navigation.navigate("HomeWalletList");
+                }}
+              />
+            ),
+            headerRight: (props) => (
+              <HeaderButton
+                name="notifications"
+                {...props}
+                onPress={() => {
+                  navigation.navigate("Notifications");
+                }}
+              />
+            ),
+          };
+        }}
       />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen
         name="TopTabsWalletDetail"
         component={TopTabsNavigator}

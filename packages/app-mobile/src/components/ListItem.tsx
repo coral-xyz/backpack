@@ -1,6 +1,6 @@
 import type { PublicKey, Wallet } from "~types/types";
 
-import { ActivityIndicator, Alert, Pressable } from "react-native";
+import { ActivityIndicator, Alert, Pressable, Image } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
 
@@ -10,6 +10,7 @@ import {
   StyledText,
   XStack,
   YStack,
+  Stack,
   useTheme as useTamaguiTheme,
 } from "@coral-xyz/tamagui";
 
@@ -196,3 +197,44 @@ export const ListItemWallet = ({
     </ListItem>
   );
 };
+
+export function ListItemTokenPrice({
+  grouped,
+  imageUrl,
+  onPress,
+  name,
+  symbol,
+  price,
+  percentChange,
+}: any) {
+  const bgColor =
+    percentChange > 0 ? "$greenBackgroundSolid" : "$redBackgroundSolid";
+  const textColor = percentChange > 0 ? "$greenText" : "$redText";
+  return (
+    <ListItem
+      overflow="hidden"
+      borderRadius={grouped ? 0 : "$container"}
+      borderColor={grouped ? undefined : "$borderFull"}
+      borderWidth={grouped ? 0 : 2}
+      px={16}
+      py={12}
+      backgroundColor="$nav"
+      icon={
+        <Image source={{ uri: imageUrl }} style={{ width: 24, height: 24 }} />
+      }
+      onPress={onPress}
+    >
+      <XStack f={1} jc="space-between" ai="center">
+        <YStack>
+          <StyledText>{name}</StyledText>
+          <StyledText>{symbol}</StyledText>
+        </YStack>
+        <Stack borderRadius={8} bg={bgColor} p={8}>
+          <StyledText size="$lg" color={textColor}>
+            {price}
+          </StyledText>
+        </Stack>
+      </XStack>
+    </ListItem>
+  );
+}

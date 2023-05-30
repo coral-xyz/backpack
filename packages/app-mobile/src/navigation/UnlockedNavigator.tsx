@@ -1,6 +1,3 @@
-import type { Blockchain, Nft } from "@coral-xyz/common";
-import type { Token } from "~types/types";
-
 import { useCallback } from "react";
 
 import { walletAddressDisplay } from "@coral-xyz/common";
@@ -16,13 +13,13 @@ import {
   TabIconNfts,
 } from "~components/Icon";
 import { Avatar } from "~components/index";
-// import { NavHeader } from "~components/NavHeader";
 import { useTheme } from "~hooks/useTheme";
-import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
-// import AppListScreen from "~screens/Unlocked/AppListScreen"; // TURNED off bc of app store restrictions (temporarily)
 import { ChatNavigator } from "~navigation/ChatNavigator";
 import { WalletsNavigator } from "~navigation/WalletsNavigator";
-import { NotificationsScreen } from "~screens/NotificationsScreen";
+import {
+  UnlockedNavigatorStackParamList,
+  UnlockedTabNavigatorParamList,
+} from "~navigation/types";
 import { ReceiveTokenScreen } from "~screens/ReceiveTokenScreen";
 import { EditWalletDetailScreen } from "~screens/Unlocked/EditWalletDetailScreen";
 import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollectibleSelectRecipientScreen";
@@ -35,53 +32,7 @@ import { SwapTokenScreen } from "~screens/Unlocked/SwapTokenScreen";
 import { WalletListScreen } from "~screens/Unlocked/WalletListScreen";
 import { UtilsDesignScreen } from "~screens/Utils/UtilsDesignScreen";
 
-export type UnlockedNavigatorStackParamList = {
-  "edit-wallets-wallet-detail": { name: string; publicKey: string };
-  Tabs: undefined;
-  AccountSettings: undefined;
-  RecentActivity: undefined;
-  DepositList: undefined;
-  DepositSingle: undefined;
-  SendSelectTokenModal: undefined;
-  "wallet-picker": undefined;
-  SendTokenModal: {
-    title: string;
-    blockchain: Blockchain;
-    token: Token;
-  };
-  SwapModal: undefined;
-  SendTokenConfirm: {
-    blockchain: Blockchain;
-    token: Token;
-    to: {
-      walletName?: string | undefined; // TBD
-      address: string;
-      username: string;
-      image: string;
-      uuid: string;
-    };
-  };
-  SendCollectibleSelectRecipient: {
-    nft: Nft;
-    to: {
-      walletName?: string | undefined; // TBD
-      address: string;
-      username: string;
-      image: string;
-      uuid: string;
-    };
-  };
-  // SendNFTConfirm: {
-  //   nft: Nft;
-  //   to: {
-  //     walletName?: string | undefined; // TBD
-  //     address: string;
-  //     username: string;
-  //     image: string;
-  //     uuid: string;
-  //   };
-  // };
-};
+import { TokenPriceNavigator } from "./TokenPriceNavigator";
 
 const ModalStack = createStackNavigator();
 function SendModalStackNavigator(): JSX.Element {
@@ -129,10 +80,6 @@ export function UnlockedNavigator(): JSX.Element {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Group>
         <Stack.Screen name="Tabs" component={UnlockedBottomTabNavigator} />
-        <Stack.Screen
-          name="AccountSettings"
-          component={AccountSettingsNavigator}
-        />
       </Stack.Group>
       <Stack.Group
         screenOptions={{
@@ -211,14 +158,6 @@ export function UnlockedNavigator(): JSX.Element {
   );
 }
 
-type UnlockedTabNavigatorParamList = {
-  Wallets: undefined;
-  Chat: undefined;
-  AccountSettings: undefined;
-  Notifications: undefined;
-  Utils: undefined;
-};
-
 const TabIconNotifications = ({ size, fill }) => (
   <MaterialIcons name="notifications" size={size} color={fill} />
 );
@@ -254,7 +193,7 @@ function UnlockedBottomTabNavigator(): JSX.Element {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarShowLabel: false,
+        // tabBarShowLabel: true,
         headerShown: false,
         tabBarIcon: ({ color, size }) => {
           const Component = getIcon(route.name);
@@ -266,14 +205,17 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         tabBarInactiveTintColor: theme.custom.colors.icon,
       })}
     >
-      <Tab.Screen name="Wallets" component={WalletsNavigator} />
       <Tab.Screen
-        name="Notifications"
-        component={NotificationsScreen}
-        options={{ headerShown: true }}
+        name="Wallets"
+        component={WalletsNavigator}
+        options={{ title: "Assets" }}
       />
-      <Tab.Screen name="Chat" component={ChatNavigator} />
-      <Tab.Screen name="AccountSettings" component={AccountSettingsNavigator} />
+      <Tab.Screen name="TokenPrices" component={TokenPriceNavigator} />
+      <Tab.Screen
+        name="Chat"
+        component={ChatNavigator}
+        options={{ title: "Chats" }}
+      />
       <Tab.Screen name="Utils" component={UtilsDesignScreen} />
     </Tab.Navigator>
   );

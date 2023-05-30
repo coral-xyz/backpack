@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Alert, View, Text, ScrollView } from "react-native";
+import { Alert, View, Text, ScrollView, Dimensions } from "react-native";
 
 import * as Linking from "expo-linking";
 
@@ -27,6 +27,7 @@ import {
   FullScreenLoading,
 } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
+import { WINDOW_WIDTH } from "~lib/index";
 import { NftNodeFragment } from "~screens/CollectionListScreen";
 
 function ActionMenu({ blockchain, nft }: { blockchain: Blockchain; nft: any }) {
@@ -128,6 +129,7 @@ function Container({ navigation, route }): JSX.Element {
       <Screen>
         <ProxyImage
           src={nft.image ?? UNKNOWN_NFT_ICON_SRC}
+          size={WINDOW_WIDTH}
           style={{
             width: "100%",
             borderRadius: 8,

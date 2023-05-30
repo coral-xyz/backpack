@@ -27,6 +27,7 @@
     "@tamagui/shorthands": "^1.28.1",
     "@tamagui/theme-base": "^1.28.1",
     "@tamagui/themes": "^1.28.1",
+    "expo-image": "~1.2.3",
     "tamagui": "^1.28.1"
   },
   "scripts": {

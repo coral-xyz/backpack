@@ -423,7 +423,7 @@ export function ListItemToken({
       borderWidth={!grouped ? 2 : undefined}
       paddingHorizontal={16}
       paddingVertical={12}
-      icon={<ProxyImage style={styles.rowLogo} src={iconUrl} />}
+      icon={<ProxyImage size={32} style={styles.rowLogo} src={iconUrl} />}
     >
       <XStack flex={1} justifyContent="space-between">
         <YStack>
@@ -548,7 +548,7 @@ export function _ListItemOneLine({
     <Pressable
       disabled={!onPress}
       onPress={onPress}
-      style={{ backgroundColor: theme.custom.colors.nav }}
+      style={{ height: 48, backgroundColor: theme.custom.colors.nav }}
     >
       <XStack py={8} px={16} f={1} bg="$nav" jc="space-between" ai="center">
         <XStack ai="center">
