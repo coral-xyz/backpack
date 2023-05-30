@@ -1,17 +1,26 @@
+import { Suspense, useState } from "react";
+
 import {
   BACKPACK_CONFIG_VERSION,
   Blockchain,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
   UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
+  toTitleCase,
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
-  // getBlockchainLogo,
   useDarkMode,
   useDeveloperMode,
 } from "@coral-xyz/recoil";
+import { ErrorBoundary } from "react-error-boundary";
 
-import { Margin, RoundedContainerGroup, Screen } from "~components/index";
+import {
+  ScreenError,
+  ScreenLoading,
+  Margin,
+  RoundedContainerGroup,
+  Screen,
+} from "~components/index";
 
 import {
   IconPushDetail,
@@ -20,56 +29,72 @@ import {
   SettingsRowText,
 } from "./components/SettingsRow";
 
-export function PreferencesScreen({ navigation }) {
-  // const theme = useTheme();
+function SettingsDarkMode() {
+  const [loading, setLoading] = useState(false);
   const background = useBackgroundClient();
   const isDarkMode = useDarkMode();
-  const isDeveloperMode = useDeveloperMode();
 
   const onDarkModeSwitch = async (isDarkMode: boolean) => {
+    setLoading(true);
     await background.request({
       method: UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
       params: [isDarkMode],
     });
+    setLoading(false);
   };
 
+  return (
+    <SettingsRowSwitch
+      loading={loading}
+      value={isDarkMode}
+      label="Dark Mode"
+      onPress={(value) => onDarkModeSwitch(value)}
+    />
+  );
+}
+
+function SettingsDeveloperMode() {
+  const [loading, setLoading] = useState(false);
+  const background = useBackgroundClient();
+  const isDeveloperMode = useDeveloperMode();
+
   const onDeveloperModeSwitch = async (isDeveloperMode: boolean) => {
+    setLoading(true);
     await background.request({
       method: UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
       params: [isDeveloperMode],
     });
+    setLoading(false);
   };
 
+  return (
+    <SettingsRowSwitch
+      loading={loading}
+      value={isDeveloperMode}
+      label="Developer Mode"
+      onPress={(value) => onDeveloperModeSwitch(value)}
+    />
+  );
+}
+
+function Container({ navigation }) {
   return (
     <Screen>
       <Margin vertical={12}>
         <RoundedContainerGroup>
           <SettingsRow
-            label="Auto-lock Timer"
-            onPress={() => navigation.push("Preferences")}
-            detailIcon={<IconPushDetail />}
-          />
-          <SettingsRow
             label="Trusted Sites"
             onPress={() => navigation.push("PreferencesTrustedSites")}
             detailIcon={<IconPushDetail />}
           />
-          <SettingsRowSwitch
-            value={isDarkMode}
-            label="Dark Mode"
-            onPress={(value) => onDarkModeSwitch(value)}
-          />
-          <SettingsRowSwitch
-            value={isDeveloperMode}
-            label="Developer Mode"
-            onPress={(value) => onDeveloperModeSwitch(value)}
-          />
+          <SettingsDarkMode />
+          <SettingsDeveloperMode />
         </RoundedContainerGroup>
       </Margin>
       <Margin bottom={12}>
         <RoundedContainerGroup>
           <SettingsRow
-            label={Blockchain.SOLANA}
+            label={toTitleCase(Blockchain.SOLANA)}
             detailIcon={<IconPushDetail />}
             onPress={() =>
               navigation.push("PreferencesSolana", {
@@ -78,7 +103,7 @@ export function PreferencesScreen({ navigation }) {
             }
           />
           <SettingsRow
-            label={Blockchain.ETHEREUM}
+            label={toTitleCase(Blockchain.ETHEREUM)}
             detailIcon={<IconPushDetail />}
             onPress={() =>
               navigation.push("PreferencesEthereum", {
@@ -97,5 +122,17 @@ export function PreferencesScreen({ navigation }) {
         </RoundedContainerGroup>
       </Margin>
     </Screen>
+  );
+}
+
+export function PreferencesScreen({ navigation }): JSX.Element {
+  return (
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ScreenError error={error} />}
+    >
+      <Suspense fallback={<ScreenLoading />}>
+        <Container navigation={navigation} />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

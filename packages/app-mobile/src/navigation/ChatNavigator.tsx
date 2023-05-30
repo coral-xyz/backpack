@@ -1,21 +1,25 @@
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+import type { ChatStackNavigatorParamList } from "~navigation/types";
 import { ChatDetailScreen } from "~screens/Unlocked/Chat/ChatDetailScreen";
-import type { ChatStackNavigatorParamList } from "~screens/Unlocked/Chat/ChatHelpers";
 import { ChatListScreen } from "~screens/Unlocked/Chat/ChatListScreen";
 import {
   ChatRequestScreen,
   ChatRequestDetailScreen,
 } from "~screens/Unlocked/Chat/ChatRequestScreen";
 
-const Stack = createStackNavigator<ChatStackNavigatorParamList>();
+const Stack = createNativeStackNavigator<ChatStackNavigatorParamList>();
 export function ChatNavigator(): JSX.Element {
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="ChatList"
         component={ChatListScreen}
-        options={{ title: "Messages" }}
+        options={{
+          headerLargeTitle: true,
+          title: "Messages",
+          headerSearchBarOptions: { placeholder: "Search" },
+        }}
       />
       <Stack.Screen
         name="ChatDetail"

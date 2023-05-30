@@ -68,13 +68,13 @@ export function SettingsList({ navigation }): JSX.Element {
         />
       </YGroup.Item>
       <YGroup.Item>
-        <ListItemSettings title="Preferences" iconName="settings" />
-      </YGroup.Item>
-      <YGroup.Item>
-        <ListItemSettings title="xNFTs" iconName="apps" />
-      </YGroup.Item>
-      <YGroup.Item>
-        <ListItemSettings title="Authenticated Apps" iconName="vpn-key" />
+        <ListItemSettings
+          title="Preferences"
+          iconName="settings"
+          onPress={() => {
+            handlePress("Preferences");
+          }}
+        />
       </YGroup.Item>
       <YGroup.Item>
         <ListItemSettingsLockWallet />

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { Button, FlatList, FlatListProps, Pressable } from "react-native";
+import { View, Button, FlatList, FlatListProps, Pressable } from "react-native";
 
 import {
   formatAMPM,
@@ -286,26 +286,29 @@ export function MessageList({
   );
 
   return (
-    <List
-      data={allChats}
-      renderItem={renderItem}
-      onRefresh={onRefreshChats}
-      refreshing={isRefreshing}
-      ListHeaderComponent={
-        requestCount > 0 ? (
-          <ChatListItemMessageRequest
-            requestCount={requestCount}
-            onPress={onPressRequest}
-          />
-        ) : null
-      }
-      keyExtractor={({ id }: { id: string }) => id}
-      getItemLayout={(_data, index) => ({
-        length: ROW_HEIGHT,
-        offset: ROW_HEIGHT * index,
-        index,
-      })}
-    />
+    <View style={{ flex: 1 }}>
+      <List
+        data={allChats}
+        renderItem={renderItem}
+        onRefresh={onRefreshChats}
+        refreshing={isRefreshing}
+        contentInsetAdjustmentBehavior="automatic"
+        ListHeaderComponent={
+          requestCount > 0 ? (
+            <ChatListItemMessageRequest
+              requestCount={requestCount}
+              onPress={onPressRequest}
+            />
+          ) : null
+        }
+        keyExtractor={({ id }: { id: string }) => id}
+        getItemLayout={(_data, index) => ({
+          length: ROW_HEIGHT,
+          offset: ROW_HEIGHT * index,
+          index,
+        })}
+      />
+    </View>
   );
 }
 

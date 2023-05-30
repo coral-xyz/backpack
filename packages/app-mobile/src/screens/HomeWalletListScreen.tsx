@@ -79,10 +79,10 @@ function ListItemWalletCard({
         borderTopStartRadius={12}
         borderWidth={1}
         borderColor="$baseBorderLight"
-        backgroundColor="$baseWhite"
+        backgroundColor="$card"
         height={70}
       >
-        <XStack ai="center" space={8}>
+        <XStack ai="center" space={4}>
           <BlockchainLogo blockchain={blockchain} size={18} />
           <StyledText size="$lg" fontWeight="600">
             {name}

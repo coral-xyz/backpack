@@ -1,42 +1,29 @@
-import type { StackScreenProps } from "@react-navigation/stack";
+import { Suspense, useState, useLayoutEffect } from "react";
+import { View } from "react-native";
 
-import { Suspense, useState } from "react";
-
-import { Blockchain } from "@coral-xyz/common";
-import { Box } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { MessageList } from "~components/Messages";
-import { SearchInput } from "~components/StyledTextInput";
-import { Screen, ScreenError, ScreenLoading } from "~components/index";
-import { ChatStackNavigatorParamList } from "~screens/Unlocked/Chat/ChatHelpers";
+import { ScreenError, ScreenLoading } from "~components/index";
+import { ChatListScreenProps } from "~navigation/types";
 
 import { type ChatRowData, useChatHelper } from "./ChatHelpers";
 
-type ChatListScreenProps = StackScreenProps<
-  ChatStackNavigatorParamList,
-  "ChatList"
->;
-
 function Container({ navigation }: ChatListScreenProps): JSX.Element {
-  const [searchResults, setSearchResults] = useState([]); // TODO(types) user search type
-  const {
-    allChats,
-    requestCount,
-    onRefreshChats,
-    isRefreshingChats,
-    searchUsersByBlockchain,
-  } = useChatHelper();
+  const { allChats, requestCount, onRefreshChats, isRefreshingChats } =
+    useChatHelper();
+  const [searchFilter, setSearchFilter] = useState("");
 
-  const handleSearch = async (address: string) => {
-    const results = await searchUsersByBlockchain({
-      address,
-      // TODO pass in blockchain
-      blockchain: Blockchain.SOLANA,
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerSearchBarOptions: {
+        placeholder: "Search your messages",
+        onChangeText: (event) => {
+          setSearchFilter(event.nativeEvent.text.toLowerCase());
+        },
+      },
     });
-
-    setSearchResults(results);
-  };
+  }, [navigation]);
 
   const handlePressMessage = (metadata: ChatRowData) => {
     navigation.push("ChatDetail", metadata);
@@ -46,23 +33,19 @@ function Container({ navigation }: ChatListScreenProps): JSX.Element {
     navigation.push("ChatRequest");
   };
 
+  const messages = allChats.filter((chat) => {
+    return chat.name.toLowerCase().includes(searchFilter);
+  });
+
   return (
-    <Screen style={{ paddingTop: 8 }}>
-      <Box marginBottom={8}>
-        <SearchInput
-          placeholder="Enter a username or address"
-          onChangeText={handleSearch}
-        />
-      </Box>
-      <MessageList
-        requestCount={requestCount}
-        allChats={allChats}
-        onPressRow={handlePressMessage}
-        onPressRequest={handlePressRequest}
-        onRefreshChats={onRefreshChats}
-        isRefreshing={isRefreshingChats}
-      />
-    </Screen>
+    <MessageList
+      requestCount={requestCount}
+      allChats={messages}
+      onPressRow={handlePressMessage}
+      onPressRequest={handlePressRequest}
+      onRefreshChats={onRefreshChats}
+      isRefreshing={isRefreshingChats}
+    />
   );
 }
 
