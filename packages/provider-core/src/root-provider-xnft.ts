@@ -68,16 +68,6 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
     this.#setupChannels();
   }
 
-  public async openWindow(_url: string) {
-    const url = new URL(_url);
-
-    if (!url.protocol.startsWith("http")) {
-      throw "Invalid url.";
-    }
-
-    window.open(url, "_blank");
-  }
-
   public async openPlugin(xnftAddress: string) {
     await this.#requestManager.request({
       method: PLUGIN_RPC_METHOD_PLUGIN_OPEN,

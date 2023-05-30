@@ -181,6 +181,7 @@ export class Plugin {
     this.iframeRoot.sandbox.add("allow-same-origin");
     this.iframeRoot.sandbox.add("allow-scripts");
     this.iframeRoot.sandbox.add("allow-forms");
+    this.iframeRoot.sandbox.add("allow-popups");
 
     this.iframeRoot.onload = () => this.handleRootIframeOnLoad();
   }
