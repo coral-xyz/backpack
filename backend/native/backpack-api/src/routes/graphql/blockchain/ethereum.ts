@@ -27,8 +27,6 @@ import { calculateBalanceAggregate, createConnection } from "../utils";
 
 import type { Blockchain } from ".";
 
-export const ETH_DEFAULT_ADDRESS = "0x0000000000000000000000000000000000000000";
-
 /**
  * Ethereum blockchain implementation for the common API.
  * @export
@@ -40,6 +38,51 @@ export class Ethereum implements Blockchain {
 
   constructor(ctx: ApiContext) {
     this.#ctx = ctx;
+  }
+
+  /**
+   * Chain ID enum variant.
+   * @returns {ChainId}
+   * @memberof Ethereum
+   */
+  id(): ChainId {
+    return ChainId.Ethereum;
+  }
+
+  /**
+   * Native coin decimals.
+   * @returns {number}
+   * @memberof Ethereum
+   */
+  decimals(): number {
+    return 18;
+  }
+
+  /**
+   * Default native address.
+   * @returns {string}
+   * @memberof Ethereum
+   */
+  defaultAddress(): string {
+    return "0x0000000000000000000000000000000000000000";
+  }
+
+  /**
+   * Logo of the native coin.
+   * @returns {string}
+   * @memberof Ethereum
+   */
+  logo(): string {
+    return "https://assets.coingecko.com/coins/images/279/large/ethereum.png";
+  }
+
+  /**
+   * Symbol of the native coin.
+   * @returns {string}
+   * @memberof Ethereum
+   */
+  symbol(): string {
+    return "ETH";
   }
 
   /**
@@ -85,8 +128,8 @@ export class Ethereum implements Blockchain {
       {
         address,
         amount: native.toString(),
-        decimals: this.nativeDecimals(),
-        displayAmount: ethers.utils.formatUnits(native, this.nativeDecimals()),
+        decimals: this.decimals(),
+        displayAmount: ethers.utils.formatUnits(native, this.decimals()),
         marketData: NodeBuilder.marketData({
           lastUpdatedAt: prices.ethereum.last_updated,
           listingId: "ethereum",
@@ -98,15 +141,13 @@ export class Ethereum implements Blockchain {
           symbol: prices.ethereum.symbol,
           usdChange: prices.ethereum.price_change_24h,
           value:
-            parseFloat(
-              ethers.utils.formatUnits(native, this.nativeDecimals())
-            ) * prices.ethereum.current_price,
+            parseFloat(ethers.utils.formatUnits(native, this.decimals())) *
+            prices.ethereum.current_price,
           valueChange:
-            parseFloat(
-              ethers.utils.formatUnits(native, this.nativeDecimals())
-            ) * prices.ethereum.price_change_24h,
+            parseFloat(ethers.utils.formatUnits(native, this.decimals())) *
+            prices.ethereum.price_change_24h,
         }),
-        token: ETH_DEFAULT_ADDRESS,
+        token: this.defaultAddress(),
       },
       true
     );
@@ -291,8 +332,8 @@ export class Ethereum implements Blockchain {
             receipts[i]?.gasUsed && receipts[i]?.effectiveGasPrice
               ? `${ethers.utils.formatUnits(
                   receipts[i]!.gasUsed.mul(receipts[i]!.effectiveGasPrice),
-                  this.nativeDecimals()
-                )} ETH`
+                  this.decimals()
+                )} ${this.symbol()}`
               : undefined,
           feePayer: tx.from,
           hash: tx.hash,
@@ -306,24 +347,6 @@ export class Ethereum implements Blockchain {
     });
 
     return createConnection(nodes, false, false); // FIXME: next and previous page
-  }
-
-  /**
-   * Chain ID enum variant.
-   * @returns {ChainId}
-   * @memberof Ethereum
-   */
-  id(): ChainId {
-    return ChainId.Ethereum;
-  }
-
-  /**
-   * Native coin decimals.
-   * @returns {number}
-   * @memberof Ethereum
-   */
-  nativeDecimals(): number {
-    return 18;
   }
 }
 

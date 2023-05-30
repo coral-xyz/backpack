@@ -13,6 +13,12 @@ import { Ethereum } from "./ethereum";
 import { Solana } from "./solana";
 
 export interface Blockchain {
+  id(): ChainId;
+  decimals(): number;
+  defaultAddress(): string;
+  logo(): string;
+  symbol(): string;
+
   getBalancesForAddress(
     address: string,
     filters?: BalanceFiltersInput
@@ -25,8 +31,6 @@ export interface Blockchain {
     address: string,
     filters?: TransactionFiltersInput
   ): Promise<TransactionConnection>;
-  id(): ChainId;
-  nativeDecimals(): number;
 }
 
 /**
