@@ -1,5 +1,3 @@
-import { keyringForBlockchain } from "@coral-xyz/blockchain-common";
-import type { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import type {
   AutolockSettingsOption,
   EventEmitter,
@@ -69,6 +67,8 @@ import {
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum, makeDefaultNav } from "@coral-xyz/recoil";
+import type { BlockchainKeyring } from "@coral-xyz/secure-background";
+import { keyringForBlockchain } from "@coral-xyz/secure-background";
 import type {
   KeyringStore,
   User,

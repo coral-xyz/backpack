@@ -1,15 +1,3 @@
-import type {
-  HdKeyring,
-  HdKeyringFactory,
-  HdKeyringJson,
-  Keyring,
-  KeyringBase,
-  KeyringFactory,
-  KeyringJson,
-  LedgerKeyring,
-  LedgerKeyringJson,
-} from "@coral-xyz/blockchain-keyring";
-import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
 import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
@@ -23,7 +11,20 @@ import { mnemonicToSeedSync, validateMnemonic } from "bip39";
 import { ethers } from "ethers";
 import nacl from "tweetnacl";
 
-import { deriveSolanaKeypair } from "../util";
+import type {
+  HdKeyring,
+  HdKeyringFactory,
+  HdKeyringJson,
+  Keyring,
+  KeyringBase,
+  KeyringFactory,
+  KeyringJson,
+  LedgerKeyring,
+  LedgerKeyringJson,
+} from "../keyring";
+import { LedgerKeyringBase } from "../keyring";
+
+import { deriveSolanaKeypair } from "./util";
 
 const { base58 } = ethers.utils;
 

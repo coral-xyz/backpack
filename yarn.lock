@@ -3700,6 +3700,7 @@ __metadata:
     "@coral-xyz/message-sdk": "*"
     "@coral-xyz/react-common": "*"
     "@coral-xyz/recoil": "*"
+    "@coral-xyz/secure-background": "*"
     "@coral-xyz/tamagui": "*"
     "@coral-xyz/themes": "*"
     "@emotion/react": ^11.10.6
@@ -3913,8 +3914,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/background@workspace:packages/background"
   dependencies:
-    "@coral-xyz/blockchain-common": "*"
-    "@coral-xyz/blockchain-keyring": "*"
     "@coral-xyz/common": "*"
     "@coral-xyz/recoil": "*"
     "@coral-xyz/secure-background": "*"
@@ -3958,54 +3957,6 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     tailwindcss: ^3.1.4
-    typescript: ~4.9.3
-  languageName: unknown
-  linkType: soft
-
-"@coral-xyz/blockchain-common@*, @coral-xyz/blockchain-common@workspace:packages/blockchains/common":
-  version: 0.0.0-use.local
-  resolution: "@coral-xyz/blockchain-common@workspace:packages/blockchains/common"
-  dependencies:
-    "@coral-xyz/blockchain-evm": "*"
-    "@coral-xyz/blockchain-keyring": "*"
-    "@coral-xyz/blockchain-solana": "*"
-    "@coral-xyz/common": "*"
-    eslint-config-custom: "*"
-    typescript: ~4.9.3
-  languageName: unknown
-  linkType: soft
-
-"@coral-xyz/blockchain-evm@*, @coral-xyz/blockchain-evm@workspace:packages/blockchains/evm":
-  version: 0.0.0-use.local
-  resolution: "@coral-xyz/blockchain-evm@workspace:packages/blockchains/evm"
-  dependencies:
-    "@coral-xyz/blockchain-keyring": "*"
-    "@coral-xyz/common": "*"
-    eslint-config-custom: "*"
-    ethers: ^5.7.2
-    typescript: ~4.9.3
-  languageName: unknown
-  linkType: soft
-
-"@coral-xyz/blockchain-keyring@*, @coral-xyz/blockchain-keyring@workspace:packages/blockchains/keyring":
-  version: 0.0.0-use.local
-  resolution: "@coral-xyz/blockchain-keyring@workspace:packages/blockchains/keyring"
-  dependencies:
-    "@coral-xyz/common": "*"
-    "@types/node": ^18.14.6
-    bs58: ^5.0.0
-    eslint-config-custom: "*"
-    typescript: ~4.9.3
-  languageName: unknown
-  linkType: soft
-
-"@coral-xyz/blockchain-solana@*, @coral-xyz/blockchain-solana@workspace:packages/blockchains/solana":
-  version: 0.0.0-use.local
-  resolution: "@coral-xyz/blockchain-solana@workspace:packages/blockchains/solana"
-  dependencies:
-    "@coral-xyz/blockchain-keyring": "*"
-    "@coral-xyz/common": "*"
-    eslint-config-custom: "*"
     typescript: ~4.9.3
   languageName: unknown
   linkType: soft
@@ -4378,13 +4329,18 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/secure-background@workspace:packages/secure-background"
   dependencies:
-    "@coral-xyz/blockchain-evm": "*"
-    "@coral-xyz/blockchain-keyring": "*"
-    "@coral-xyz/blockchain-solana": "*"
     "@coral-xyz/common": "*"
+    "@coral-xyz/recoil": "*"
+    "@solana/web3.js": ^1.63.1
     "@types/eventemitter3": ^2.0.2
+    bip32: ^2.0.6
+    bip39: ^3.0.4
+    bs58: ^5.0.0
+    ed25519-hd-key: ^1.2.0
     eslint-config-custom: "*"
+    ethers: ^5.7.2
     eventemitter3: ^5.0.1
+    tweetnacl: ^1.0.3
     typescript: ~4.9.3
   languageName: unknown
   linkType: soft
@@ -14153,7 +14109,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=8.1.0, @types/node@npm:^18.0.0, @types/node@npm:^18.14.6, @types/node@npm:^18.6.4":
+"@types/node@npm:*, @types/node@npm:>=8.1.0, @types/node@npm:^18.0.0, @types/node@npm:^18.6.4":
   version: 18.15.5
   resolution: "@types/node@npm:18.15.5"
   checksum: 5fbf3453bd5ce1402bb2964e55d928fc8a8a7de5451b1b0fe66587fecb8a3eb86854ca9cefa5076a5971e2cff00e1773ceeb5d872a54f6c6ddfbbc1064b4e91a
