@@ -1,8 +1,3 @@
-import {
-  hdFactoryForBlockchain,
-  keyringForBlockchain,
-} from "@coral-xyz/blockchain-common";
-import type { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import type {
   AutolockSettingsOption,
   Blockchain,
@@ -23,6 +18,11 @@ import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import { generateMnemonic } from "bip39";
 
+import {
+  hdFactoryForBlockchain,
+  keyringForBlockchain,
+} from "../../blockchains/common";
+import type { BlockchainKeyring } from "../../blockchains/keyring";
 import { LocalStorageDb } from "../db";
 import { setIsCold } from "../isCold";
 import { DefaultKeyname, setKeyname } from "../keyname";

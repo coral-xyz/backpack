@@ -27,12 +27,14 @@
       "@coral-xyz/message-sdk": ["../message-sdk"],
       "@coral-xyz/react-common": ["../react-common"],
       "@coral-xyz/recoil": ["../recoil"],
-      "@coral-xyz/themes": ["../themes"]
+      "@coral-xyz/themes": ["../themes"],
+      "@coral-xyz/secure-background": ["../secure-background"]
     }
   },
   "references": [
     { "path": "../tamagui-core" },
     { "path": "../background" },
+    { "path": "../secure-background" },
     { "path": "../chat-sdk" },
     { "path": "../common" },
     { "path": "../db" },

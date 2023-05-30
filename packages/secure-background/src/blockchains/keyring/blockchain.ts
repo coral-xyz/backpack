@@ -1,5 +1,3 @@
-import * as store from "@coral-xyz/background/src/backend/store";
-import { DefaultKeyname } from "@coral-xyz/background/src/backend/store";
 import type {
   BlockchainKeyringJson,
   LedgerKeyringInit,
@@ -7,7 +5,10 @@ import type {
   PrivateKeyKeyringInit,
 } from "@coral-xyz/common";
 import { getLogger } from "@coral-xyz/common";
-import * as bs58 from "bs58";
+import { decode } from "bs58";
+
+import { setIsCold } from "../../localstore/isCold";
+import { DefaultKeyname, setKeyname } from "../../localstore/keyname";
 
 import type {
   AnyKeyring,
@@ -87,7 +88,7 @@ export class BlockchainKeyring {
       this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
       this.importedKeyring = this.keyringFactory.init([keyringInit.privateKey]);
       const name = DefaultKeyname.defaultImported(1);
-      await store.setKeyname(keyringInit.publicKey, name);
+      await setKeyname(keyringInit.publicKey, name);
       newAccounts = [[name, keyringInit.publicKey]];
     } else {
       // Init using ledger
@@ -100,8 +101,8 @@ export class BlockchainKeyring {
         walletDescriptor,
       ] of keyringInit.signedWalletDescriptors.entries()) {
         const name = DefaultKeyname.defaultLedger(index + 1);
-        await store.setKeyname(walletDescriptor.publicKey, name);
-        await store.setIsCold(walletDescriptor.publicKey, true);
+        await setKeyname(walletDescriptor.publicKey, name);
+        await setIsCold(walletDescriptor.publicKey, true);
         newAccounts.push([walletDescriptor.publicKey, name]);
       }
     }
@@ -127,7 +128,7 @@ export class BlockchainKeyring {
     const newAccounts: Array<[string, string]> = [];
     for (const [index, publicKey] of this.hdKeyring.publicKeys().entries()) {
       const name = DefaultKeyname.defaultDerived(index + 1);
-      await store.setKeyname(publicKey, name);
+      await setKeyname(publicKey, name);
       newAccounts.push([publicKey, name]);
     }
     return newAccounts;
@@ -172,7 +173,7 @@ export class BlockchainKeyring {
     const name = DefaultKeyname.defaultDerived(
       this.hdKeyring!.publicKeys().length
     );
-    await store.setKeyname(publicKey, name);
+    await setKeyname(publicKey, name);
     return { publicKey, derivationPath, name };
   }
 
@@ -189,7 +190,7 @@ export class BlockchainKeyring {
     const name = DefaultKeyname.defaultDerived(
       this.hdKeyring.publicKeys().length
     );
-    await store.setKeyname(publicKey, name);
+    await setKeyname(publicKey, name);
 
     return {
       publicKey,
@@ -207,7 +208,7 @@ export class BlockchainKeyring {
         this.importedKeyring!.publicKeys().length
       );
     }
-    await store.setKeyname(pubkey, name);
+    await setKeyname(pubkey, name);
     return [pubkey, name];
   }
 
@@ -270,7 +271,7 @@ export class BlockchainKeyring {
     walletAddress: string
   ): Promise<string> {
     const keyring = this.getKeyring(walletAddress);
-    const msg = Buffer.from(bs58.decode(txMsg));
+    const msg = Buffer.from(decode(txMsg));
     return keyring.signTransaction(msg, walletAddress);
   }
 
@@ -279,7 +280,7 @@ export class BlockchainKeyring {
     walletAddress: string
   ): Promise<string> {
     const keyring = this.getKeyring(walletAddress);
-    const msgBuffer = Buffer.from(bs58.decode(msg));
+    const msgBuffer = Buffer.from(decode(msg));
     return keyring.signMessage(msgBuffer, walletAddress);
   }
 

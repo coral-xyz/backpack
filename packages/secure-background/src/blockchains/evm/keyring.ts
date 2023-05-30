@@ -1,15 +1,3 @@
-import type {
-  HdKeyring,
-  HdKeyringFactory,
-  HdKeyringJson,
-  Keyring,
-  KeyringBase,
-  KeyringFactory,
-  KeyringJson,
-  LedgerKeyring,
-  LedgerKeyringJson,
-} from "@coral-xyz/blockchain-keyring";
-import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
 import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
@@ -22,7 +10,20 @@ import { mnemonicToSeedSync, validateMnemonic } from "bip39";
 import type { Wallet } from "ethers";
 import { ethers } from "ethers";
 
-import { deriveEthereumWallet } from "../util";
+import type {
+  HdKeyring,
+  HdKeyringFactory,
+  HdKeyringJson,
+  Keyring,
+  KeyringBase,
+  KeyringFactory,
+  KeyringJson,
+  LedgerKeyring,
+  LedgerKeyringJson,
+} from "../keyring";
+import { LedgerKeyringBase } from "../keyring";
+
+import { deriveEthereumWallet } from "./util";
 
 export class EthereumKeyringFactory implements KeyringFactory {
   init(secretKeys: Array<string>): Keyring {
