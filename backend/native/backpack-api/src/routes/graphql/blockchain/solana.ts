@@ -30,8 +30,6 @@ import { calculateBalanceAggregate, createConnection } from "../utils";
 
 import type { Blockchain } from ".";
 
-export const SOLANA_DEFAULT_ADDRESS = SystemProgram.programId.toBase58();
-
 /**
  * Solana blockchain implementation for the common API.
  * @export
@@ -43,6 +41,51 @@ export class Solana implements Blockchain {
 
   constructor(ctx: ApiContext) {
     this.#ctx = ctx;
+  }
+
+  /**
+   * Chain ID enum variant.
+   * @returns {ChainId}
+   * @memberof Solana
+   */
+  id(): ChainId {
+    return ChainId.Solana;
+  }
+
+  /**
+   * Native coin decimals.
+   * @returns {number}
+   * @memberof Solana
+   */
+  decimals(): number {
+    return 9;
+  }
+
+  /**
+   * Default native address.
+   * @returns {string}
+   * @memberof Solana
+   */
+  defaultAddress(): string {
+    return SystemProgram.programId.toBase58();
+  }
+
+  /**
+   * Logo URL of the native coin.
+   * @returns {string}
+   * @memberof Solana
+   */
+  logo(): string {
+    return "https://assets.coingecko.com/coins/images/4128/large/solana.png";
+  }
+
+  /**
+   * Symbol of the native token.
+   * @returns {string}
+   * @memberof Solana
+   */
+  symbol(): string {
+    return "SOL";
   }
 
   /**
@@ -87,10 +130,10 @@ export class Solana implements Blockchain {
       {
         address,
         amount: balances.nativeBalance.toString(),
-        decimals: this.nativeDecimals(),
+        decimals: this.decimals(),
         displayAmount: ethers.utils.formatUnits(
           balances.nativeBalance,
-          this.nativeDecimals()
+          this.decimals()
         ),
         marketData: NodeBuilder.marketData({
           lastUpdatedAt: prices.solana.last_updated,
@@ -104,20 +147,14 @@ export class Solana implements Blockchain {
           usdChange: prices.solana.price_change_24h,
           value:
             parseFloat(
-              ethers.utils.formatUnits(
-                balances.nativeBalance,
-                this.nativeDecimals()
-              )
+              ethers.utils.formatUnits(balances.nativeBalance, this.decimals())
             ) * prices.solana.current_price,
           valueChange:
             parseFloat(
-              ethers.utils.formatUnits(
-                balances.nativeBalance,
-                this.nativeDecimals()
-              )
+              ethers.utils.formatUnits(balances.nativeBalance, this.decimals())
             ) * prices.solana.price_change_24h,
         }),
-        token: SOLANA_DEFAULT_ADDRESS,
+        token: this.defaultAddress(),
       },
       true
     );
@@ -146,7 +183,7 @@ export class Solana implements Blockchain {
                 parseFloat(
                   ethers.utils.formatUnits(
                     balances.nativeBalance,
-                    this.nativeDecimals()
+                    this.decimals()
                   )
                 ) * p.price_change_24h,
             })
@@ -260,7 +297,7 @@ export class Solana implements Blockchain {
         listing = NodeBuilder.tensorListing(item.id, {
           amount: ethers.utils.formatUnits(
             tensorListing.tx.grossAmount,
-            this.nativeDecimals()
+            this.decimals()
           ),
           source: tensorListing.tx.source,
           url: this.#ctx.dataSources.tensor.getListingUrl(item.id),
@@ -319,7 +356,10 @@ export class Solana implements Blockchain {
         description: r.description,
         block: r.slot,
         error: transactionError,
-        fee: `${ethers.utils.formatUnits(r.fee, this.nativeDecimals())} SOL`,
+        fee: `${ethers.utils.formatUnits(
+          r.fee,
+          this.decimals()
+        )} ${this.symbol()}`,
         feePayer: r.feePayer,
         hash: r.signature,
         nfts,
@@ -331,24 +371,6 @@ export class Solana implements Blockchain {
     });
 
     return createConnection(nodes, false, false); // FIXME: next and previous page
-  }
-
-  /**
-   * Chain ID enum variant.
-   * @returns {ChainId}
-   * @memberof Solana
-   */
-  id(): ChainId {
-    return ChainId.Solana;
-  }
-
-  /**
-   * Native coin decimals.
-   * @returns {number}
-   * @memberof Solana
-   */
-  nativeDecimals(): number {
-    return 9;
   }
 
   /**
