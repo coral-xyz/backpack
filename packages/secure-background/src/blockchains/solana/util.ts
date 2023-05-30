@@ -1,5 +1,5 @@
 import { Keypair } from "@solana/web3.js";
-import * as bip32 from "bip32";
+import { fromSeed } from "bip32";
 import { derivePath } from "ed25519-hd-key";
 import nacl from "tweetnacl";
 
@@ -19,7 +19,7 @@ export function deriveSolanaPrivateKey(
   let derivedSeed: Buffer;
   if (derivationPath.startsWith("501'")) {
     // Sollet deprecated path
-    derivedSeed = bip32.fromSeed(seed).derivePath(derivationPath).privateKey!;
+    derivedSeed = fromSeed(seed).derivePath(derivationPath).privateKey!;
   } else {
     derivedSeed = derivePath(derivationPath, seed.toString("hex")).key;
   }

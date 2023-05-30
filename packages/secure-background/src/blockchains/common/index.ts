@@ -1,18 +1,19 @@
+import { Blockchain } from "@coral-xyz/common";
+import { mnemonicToSeedSync } from "bip39";
+
 import {
-  deriveEthereumPrivateKey,
   EthereumHdKeyringFactory,
   EthereumKeyringFactory,
   EthereumLedgerKeyringFactory,
-} from "@coral-xyz/blockchain-evm";
-import { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
+} from "../evm/keyring";
+import { deriveEthereumPrivateKey } from "../evm/util";
+import { BlockchainKeyring } from "../keyring";
 import {
-  deriveSolanaPrivateKey,
   SolanaHdKeyringFactory,
   SolanaKeyringFactory,
   SolanaLedgerKeyringFactory,
-} from "@coral-xyz/blockchain-solana";
-import { Blockchain } from "@coral-xyz/common";
-import { mnemonicToSeedSync } from "bip39";
+} from "../solana/keyring";
+import { deriveSolanaPrivateKey } from "../solana/util";
 
 export function hdFactoryForBlockchain(blockchain: Blockchain) {
   return {
