@@ -1,5 +1,4 @@
-import type { KeyringStore } from "@coral-xyz/background";
-
+import type { KeyringStore } from "./localstore/keyring";
 import type { SECURE_SVM_EVENTS } from "./VMs/svm/events";
 import { SVMService } from "./VMs/svm/service";
 import type {
@@ -27,6 +26,13 @@ export const clients = {
 type Config = {
   isMobile: boolean;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+// LEGACY EXPORTS
+// These exports need to be removed in future but are required for now
+// to enable /background/* (mostly /backend/core) to continue to work.
+export * from "./legacyExport";
+///////////////////////////////////////////////////////////////////////////////
 
 export function startSecureService(config: Config, keyringStore: KeyringStore) {
   if (config.isMobile) {

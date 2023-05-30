@@ -5,4 +5,12 @@ module.exports = {
     tsconfigRootDir: __dirname,
     project: ["./tsconfig.json"],
   },
+  rules: {
+    "import/default": "off",
+    "import/export": "off",
+    "import/named": "off",
+    "import/no-namespace": "error",
+    "import/no-cycle": "warn",
+    "import/no-unresolved": "off",
+  },
 };

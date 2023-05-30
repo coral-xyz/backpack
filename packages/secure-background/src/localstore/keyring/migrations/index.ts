@@ -1,9 +1,10 @@
 import { BACKPACK_CONFIG_VERSION, getLogger } from "@coral-xyz/common";
 
-import { LocalStorageDb } from "../db";
-import { migrate_0_2_0_510 } from "../migrations/migrate_0_2_0_510";
-import { migrate_0_2_0_2408 } from "../migrations/migrate_0_2_0_2408";
-import { getWalletData_DEPRECATED } from "../preferences";
+import { LocalStorageDb } from "../../db";
+import { getWalletData_DEPRECATED } from "../../preferences";
+
+import { migrate_0_2_0_510 } from "./migrate_0_2_0_510";
+import { migrate_0_2_0_2408 } from "./migrate_0_2_0_2408";
 
 const logger = getLogger("background/migrations");
 

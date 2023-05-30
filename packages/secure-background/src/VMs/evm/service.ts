@@ -1,5 +1,4 @@
-import type { KeyringStore } from "@coral-xyz/background";
-
+import type { KeyringStore } from "../../localstore/keyring";
 import type {
   SecureRequest,
   TransportClient,

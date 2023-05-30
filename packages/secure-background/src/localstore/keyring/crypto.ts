@@ -1,4 +1,4 @@
-import * as bs58 from "bs58";
+import { decode,encode } from "bs58";
 import { pbkdf2 } from "crypto";
 import { randomBytes, secretbox } from "tweetnacl";
 
@@ -24,10 +24,10 @@ export async function encrypt(
   const nonce = randomBytes(secretbox.nonceLength);
   const ciphertext = secretbox(Buffer.from(plaintext), nonce, key);
   return {
-    ciphertext: bs58.encode(ciphertext),
-    nonce: bs58.encode(nonce),
+    ciphertext: encode(ciphertext),
+    nonce: encode(nonce),
     kdf,
-    salt: bs58.encode(salt),
+    salt: encode(salt),
     iterations,
     digest,
   };
@@ -44,9 +44,9 @@ export async function decrypt(
     iterations,
     digest,
   } = cipherObj;
-  const ciphertext = bs58.decode(encodedCiphertext);
-  const nonce = bs58.decode(encodedNonce);
-  const salt = bs58.decode(encodedSalt);
+  const ciphertext = decode(encodedCiphertext);
+  const nonce = decode(encodedNonce);
+  const salt = decode(encodedSalt);
   const key = await deriveEncryptionKey(password, salt, iterations, digest);
   const plaintext = secretbox.open(ciphertext, nonce, key);
   if (!plaintext) {
