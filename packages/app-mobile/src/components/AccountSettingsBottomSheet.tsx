@@ -3,12 +3,16 @@ import { Pressable, Alert } from "react-native";
 
 import { UI_RPC_METHOD_KEYRING_STORE_LOCK } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { YGroup, Separator, StyledText } from "@coral-xyz/tamagui";
+import {
+  YGroup,
+  Separator,
+  StyledText,
+  ListItemSettings,
+} from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 
 import { BetterBottomSheet } from "~components/BottomSheetModal";
-import { ListItemSettings } from "~components/ListItem";
 import { useTheme } from "~hooks/useTheme";
 
 function ListItemSettingsLockWallet(): JSX.Element {
@@ -19,8 +23,7 @@ function ListItemSettingsLockWallet(): JSX.Element {
       iconName="lock"
       onPress={async () => {
         try {
-          // TODO(peter) make sure this is the right way
-          background.request({
+          await background.request({
             method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
             params: [],
           });
@@ -32,11 +35,8 @@ function ListItemSettingsLockWallet(): JSX.Element {
   );
 }
 
-function SettingsList({ navigation }): JSX.Element {
-  const { dismiss } = useBottomSheetModal();
-
+export function SettingsList({ navigation }): JSX.Element {
   const handlePress = (route: string) => {
-    dismiss();
     navigation.push(route);
   };
 
@@ -68,13 +68,13 @@ function SettingsList({ navigation }): JSX.Element {
         />
       </YGroup.Item>
       <YGroup.Item>
-        <ListItemSettings title="Preferences" iconName="settings" />
-      </YGroup.Item>
-      <YGroup.Item>
-        <ListItemSettings title="xNFTs" iconName="apps" />
-      </YGroup.Item>
-      <YGroup.Item>
-        <ListItemSettings title="Authenticated Apps" iconName="vpn-key" />
+        <ListItemSettings
+          title="Preferences"
+          iconName="settings"
+          onPress={() => {
+            handlePress("Preferences");
+          }}
+        />
       </YGroup.Item>
       <YGroup.Item>
         <ListItemSettingsLockWallet />

@@ -162,7 +162,7 @@ export function AddConnectWalletMenu({
   }
 }
 
-export function AddWalletMenu({ blockchain }: { blockchain: Blockchain }) {
+function AddWalletMenu({ blockchain }: { blockchain: Blockchain }) {
   const navigation = useNavigation();
   const user = useUser();
 
@@ -310,7 +310,7 @@ export function AddWalletMenu({ blockchain }: { blockchain: Blockchain }) {
   );
 }
 
-export function RecoverWalletMenu({
+function RecoverWalletMenu({
   blockchain,
   publicKey,
 }: {

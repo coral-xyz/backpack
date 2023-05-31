@@ -115,7 +115,7 @@ export function WithApprovalButtons({
   );
 }
 
-export function OriginWalletConnectIcons({
+function OriginWalletConnectIcons({
   origin,
   originTitle,
   wallet,
@@ -170,7 +170,7 @@ export function OriginConnectable({
   );
 }
 
-export function Connectable({
+function Connectable({
   title,
   description,
   icon,

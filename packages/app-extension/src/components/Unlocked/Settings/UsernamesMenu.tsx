@@ -28,45 +28,6 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function UserAccountsMenuButton() {
-  const user = useUser();
-  const theme = useCustomTheme();
-  const [openDrawer, setOpenDrawer] = useState(false);
-  return (
-    <>
-      <Button
-        disableRipple
-        style={{
-          padding: 0,
-          textTransform: "none",
-          color: theme.custom.colors.fontColor,
-          fontSize: "18px",
-        }}
-        onClick={() => setOpenDrawer(!openDrawer)}
-      >
-        @{user.username}
-        <ExpandMore
-          style={{
-            color: theme.custom.colors.icon,
-          }}
-        />
-      </Button>
-      <WithMiniDrawer
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-        backdropProps={{
-          style: {
-            opacity: 0.8,
-            background: "#18181b",
-          },
-        }}
-      >
-        <UserAccountMenu />
-      </WithMiniDrawer>
-    </>
-  );
-}
-
 function UserAccountMenu() {
   const theme = useCustomTheme();
   return (
@@ -186,20 +147,22 @@ function UserAccountListItem({
             @{username}
           </Typography>
         </div>
-        {isActive ? <div
-          style={{
+        {isActive ? (
+          <div
+            style={{
               display: "flex",
               justifyContent: "center",
               flexDirection: "column",
             }}
           >
-          <Check
-            style={{
+            <Check
+              style={{
                 opacity: 0.8,
                 color: theme.custom.colors.fontColor,
               }}
             />
-        </div> : null}
+          </div>
+        ) : null}
       </div>
     </ListItem>
   );

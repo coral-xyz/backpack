@@ -135,7 +135,7 @@ export function OptionsContainer({
   );
 }
 
-export function OnboardingMenu({
+function OnboardingMenu({
   containerRef,
   menuOpen,
   setMenuOpen,

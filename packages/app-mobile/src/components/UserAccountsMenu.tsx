@@ -89,23 +89,6 @@ export function AccountDropdownHeader(): JSX.Element {
   );
 }
 
-// function AddMoreButton({ onPress }: { onPress: () => void }): JSX.Element {
-//   const theme = useTheme();
-//   return (
-//     <PrimaryButton
-//       label="Add another account"
-//       onPress={onPress}
-//       icon={
-//         <MaterialIcons
-//           color={theme.custom.colors.primaryButtonTextColor}
-//           name="add"
-//           size={24}
-//         />
-//       }
-//     />
-//   );
-// }
-
 export function UserAccountMenu({ navigation }): JSX.Element {
   const insets = useSafeAreaInsets();
 
@@ -173,7 +156,7 @@ function UsersList({ onDismiss }: { onDismiss: () => void }): JSX.Element {
   );
 }
 
-function UserAccountListItem({
+export function UserAccountListItem({
   uuid,
   username,
   isActive,

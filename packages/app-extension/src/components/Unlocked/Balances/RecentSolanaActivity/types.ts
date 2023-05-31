@@ -1,11 +1,11 @@
-export type Instruction = {
+type Instruction = {
   accounts: Array<any>;
   data: string;
   programId: string;
   innerInstructions: Array<any>;
 };
 
-export type TokenTransfer = {
+type TokenTransfer = {
   fromTokenAccount: string;
   fromUserAccount: string;
   mint: string;
@@ -15,7 +15,7 @@ export type TokenTransfer = {
   tokenStandard: string;
 };
 
-export type AccountData = {
+type AccountData = {
   accounts: string;
   nativeBalanceChange: number;
   tokenBalanceChanges: Array<any>;

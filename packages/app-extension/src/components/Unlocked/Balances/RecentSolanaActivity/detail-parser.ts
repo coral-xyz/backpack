@@ -3,6 +3,7 @@ import {
   walletAddressDisplay,
   WSOL_MINT,
 } from "@coral-xyz/common";
+import { SOL_LOGO_URI } from "@coral-xyz/recoil";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { NftEventTypes, Source, TransactionType } from "helius-sdk/dist/types";
@@ -78,7 +79,7 @@ export const groupTxnsByDate = (
   return result;
 };
 
-export const getSourceOrTypeFormatted = (sourceOrType: string): string => {
+const getSourceOrTypeFormatted = (sourceOrType: string): string => {
   return sourceOrType
     .replaceAll("_", " ")
     .split(" ")
@@ -231,14 +232,10 @@ export const getTransactionCaption = (
         : "";
 
     case TransactionType.SWAP:
-      // fallback to truncated mint address if token metadata was not found
-      return `${
-        tokenData?.[0]?.symbol ||
-        walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint)
-      } -> ${
-        tokenData?.[1]?.symbol ||
-        walletAddressDisplay(transaction?.tokenTransfers?.[1]?.mint)
-      }`;
+      const [input, output] = parseSwapTransaction(transaction, tokenData);
+      return input.symbolOrAddress && output.symbolOrAddress
+        ? [input.symbolOrAddress, output.symbolOrAddress].join(" -> ")
+        : "";
 
     case TransactionType.NFT_LISTING:
       return `Listed on ${getSourceOrTypeFormatted(transaction.source)}`;
@@ -318,10 +315,18 @@ export const getTokenData = (
   return tokenData;
 };
 
+// NOTE: this function code has been duplicated in recoil
 export const parseSwapTransaction = (
   transaction: HeliusParsedTransaction,
   tokenData: ReturnType<typeof getTokenData>
 ) => {
+  // should only be returned if parsing fails
+  const fallbackObject = {
+    tokenIcon: UNKNOWN_ICON_SRC,
+    amountWithSymbol: "",
+    symbolOrAddress: "",
+  };
+
   try {
     const {
       nativeInput,
@@ -333,38 +338,44 @@ export const parseSwapTransaction = (
     return [
       [nativeInput, tokenInput],
       [nativeOutput, tokenOutput],
-    ].map(([n, t], i) => {
-      const { mint, amount } = n
-        ? {
-            mint: SOL_NATIVE_MINT,
-            amount: (Number(n.amount) / LAMPORTS_PER_SOL).toFixed(5),
-          }
-        : {
-            mint: t.mint,
-            amount: (
-              Number(t.rawTokenAmount.tokenAmount) /
-              10 ** t.rawTokenAmount.decimals
-            ).toFixed(5),
-          };
+    ].map(([n, t]) => {
+      try {
+        const { mint, amount } = n
+          ? {
+              mint: SOL_NATIVE_MINT,
+              amount: (Number(n.amount) / LAMPORTS_PER_SOL).toFixed(5),
+            }
+          : {
+              mint: t.mint,
+              amount: (
+                Number(t.rawTokenAmount.tokenAmount) /
+                10 ** t.rawTokenAmount.decimals
+              ).toFixed(5),
+            };
 
-      return {
-        tokenIcon: tokenData[i]?.logoURI || UNKNOWN_ICON_SRC,
-        amountWithSymbol: `${amount} ${
-          tokenData?.[i]?.symbol || walletAddressDisplay(mint)
-        }`,
-      };
+        const token = tokenData
+          .concat({
+            address: SOL_NATIVE_MINT,
+            symbol: "SOL",
+            logoURI: SOL_LOGO_URI,
+          } as any)
+          .find((t) => t?.address === mint);
+
+        const symbolOrAddress = token?.symbol || walletAddressDisplay(mint);
+
+        return {
+          tokenIcon: token?.logoURI || UNKNOWN_ICON_SRC,
+          symbolOrAddress,
+          amountWithSymbol: [amount, symbolOrAddress].join(" "),
+        };
+      } catch (err) {
+        console.error(err);
+        return fallbackObject;
+      }
     });
   } catch (err) {
     console.error(err);
-    // TODO: remove this previous behavior after some testing
-    return Array(2).map((_, i) => ({
-      tokenIcon: tokenData[i]?.logoURI || UNKNOWN_ICON_SRC,
-      amountWithSymbol: [
-        transaction?.tokenTransfers?.[i]?.tokenAmount.toFixed(5),
-        tokenData[i]?.symbol ||
-          walletAddressDisplay(transaction?.tokenTransfers?.[i]?.mint),
-      ].join(" "),
-    }));
+    return [fallbackObject, fallbackObject];
   }
 };
 

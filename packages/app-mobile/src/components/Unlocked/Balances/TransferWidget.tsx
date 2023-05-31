@@ -1,6 +1,5 @@
 import { Pressable, Text, View } from "react-native";
 
-import { Token, NavTokenAction, NavTokenOptions } from "@@types/types";
 import { Blockchain } from "@coral-xyz/common";
 // import // SwapProvider, // TODO(peter): turn back on when app store approved
 // enabledBlockchains as enabledBlockchainsAtom,
@@ -12,18 +11,20 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Margin } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 
+import { Token, NavTokenAction, NavTokenOptions } from "~types/types";
+
 const getRouteFromAction = (
   action: NavTokenAction
-): "DepositList" | "SendSelectTokenModal" | "SwapModal" => {
+): "DepositSingle" | "SendSelectTokenModal" | "SwapModal" => {
   switch (action) {
     case NavTokenAction.Receive:
-      return "DepositList";
+      return "DepositSingle";
     case NavTokenAction.Send:
       return "SendSelectTokenModal";
     case NavTokenAction.Swap:
       return "SwapModal";
     default:
-      return "DepositList";
+      return "DepositSingle";
   }
 };
 
@@ -42,12 +43,6 @@ export function TransferWidget({
   swapEnabled: boolean;
   token?: Token;
 }): JSX.Element {
-  // const eb = useRecoilValueLoadable(enabledBlockchainsAtom);
-  // const enabledBlockchains = eb.state === "hasValue" ? eb.contents : [];
-  // const renderSwap =
-  //   blockchain !== Blockchain.ETHEREUM &&
-  //   enabledBlockchains.includes(Blockchain.SOLANA);
-
   const onPress = (action: NavTokenAction, options: NavTokenOptions) => {
     const route = getRouteFromAction(action);
     onPressOption(route, options);

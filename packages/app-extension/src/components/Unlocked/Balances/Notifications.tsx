@@ -1,6 +1,7 @@
 // TODO: remove the line below
 /* eslint-disable react-hooks/rules-of-hooks */
 import { Suspense, useEffect, useState } from "react";
+import { useUserMetadata } from "@coral-xyz/chat-xplat";
 import type { EnrichedNotification } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
@@ -25,7 +26,6 @@ import {
   useUpdateFriendships,
   useUser,
 } from "@coral-xyz/recoil";
-import { useUserMetadata } from "@coral-xyz/tamagui";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { IconButton, List, ListItem, Typography } from "@mui/material";
@@ -326,20 +326,20 @@ export function Notifications() {
   );
 }
 
-export function RecentActivityList({
-  groupedNotifications,
-}: {
-  groupedNotifications: {
-    date: string;
-    notifications: EnrichedNotification[];
-  }[];
-}) {
-  return (
-    <Suspense fallback={<NotificationsLoader />}>
-      <NotificationList groupedNotifications={groupedNotifications} />
-    </Suspense>
-  );
-}
+// export function RecentActivityList({
+//   groupedNotifications,
+// }: {
+//   groupedNotifications: {
+//     date: string;
+//     notifications: EnrichedNotification[];
+//   }[];
+// }) {
+//   return (
+//     <Suspense fallback={<NotificationsLoader />}>
+//       <NotificationList groupedNotifications={groupedNotifications} />
+//     </Suspense>
+//   );
+// }
 
 function NotificationsLoader() {
   return (
@@ -364,7 +364,7 @@ function NotificationsLoader() {
   );
 }
 
-export function NotificationList({
+function NotificationList({
   groupedNotifications,
   onOpenDrawer,
 }: {
@@ -384,6 +384,7 @@ export function NotificationList({
     >
       {groupedNotifications.map(({ date, notifications }) => (
         <div
+          key={date}
           style={{
             marginLeft: "16px",
             marginRight: "16px",

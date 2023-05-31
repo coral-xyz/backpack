@@ -81,7 +81,7 @@ type AddressSelectorContext = {
 const AddressSelectorContext =
   React.createContext<AddressSelectorContext | null>(null);
 
-export function AddressSelectorProvider(props: {
+function AddressSelectorProvider(props: {
   blockchain: Blockchain;
   name: string;
   onSelect: (sendData: SendData) => void;
@@ -163,23 +163,6 @@ export const TokenAddressSelector = (props: any) => {
   );
 };
 
-export const NftAddressSelector = (props: any) => {
-  const { push } = useNavigation();
-
-  return (
-    <AddressSelector
-      {...props}
-      onSelect={(sendData) => {
-        push("send", {
-          blockchain: props.blockchain,
-          token: props.token,
-          to: sendData,
-        });
-      }}
-    />
-  );
-};
-
 export const AddressSelector = ({
   blockchain,
   name,
@@ -195,12 +178,13 @@ export const AddressSelector = ({
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
-  const { isValidAddress, normalizedAddress } = useIsValidAddress(
-    blockchain,
-    inputContent,
-    solanaProvider.connection,
-    ethereumCtx.provider
-  );
+  const { isValidAddress, isErrorAddress, normalizedAddress } =
+    useIsValidAddress(
+      blockchain,
+      inputContent,
+      solanaProvider.connection,
+      ethereumCtx.provider
+    );
 
   useEffect(() => {
     const prev = nav.title;
@@ -241,7 +225,7 @@ export const AddressSelector = ({
           />
         </div>
         <div className={classes.buttonContainer}>
-          {!isValidAddress && inputContent.length > 15 ? (
+          {isErrorAddress || (!isValidAddress && inputContent.length > 15) ? (
             <DangerButton label="Invalid address" disabled />
           ) : (
             <PrimaryButton

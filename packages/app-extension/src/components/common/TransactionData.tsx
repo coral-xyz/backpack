@@ -284,7 +284,7 @@ export function TransactionData({
   );
 }
 
-export function EthereumSettingsDrawer({
+function EthereumSettingsDrawer({
   mode,
   setMode,
   transactionOverrides,
@@ -674,7 +674,7 @@ function ModeChip({
   );
 }
 
-export function ValueWithUnit({
+function ValueWithUnit({
   value,
   unit,
   containerProps,
