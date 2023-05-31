@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { mnemonicPathToPrivateKey } from "@coral-xyz/blockchain-common";
 import type {
   Blockchain,
   SignedWalletDescriptor,
@@ -18,7 +19,6 @@ import {
   useDehydratedWallets,
   useRpcRequests,
 } from "@coral-xyz/recoil";
-import { mnemonicPathToPrivateKey } from "@coral-xyz/secure-background";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box, Typography } from "@mui/material";
 

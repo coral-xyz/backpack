@@ -34,7 +34,6 @@
     "@solana/spl-token-registry": "^0.2.3225",
     "@solana/wallet-adapter-base": "^0.9.18",
     "@solana/web3.js": "^1.63.1",
-    "@types/eventemitter3": "^2.0.2",
     "@types/jest": "^29.4.0",
     "apollo3-cache-persist": "^0.14.1",
     "base32-encode": "^2.0.0",
@@ -54,7 +53,7 @@
   "devDependencies": {
     "@metaplex-foundation/beet": "^0.7.1",
     "@types/bn.js": "^5.1.1",
-    "@types/chrome": "^0.0.236",
+    "@types/chrome": "^0.0.203",
     "@types/firefox-webext-browser": "^94.0.1",
     "@types/uuid": "^8.3.4",
     "eslint-config-custom": "*",
