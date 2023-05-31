@@ -14,6 +14,8 @@ import {
 } from "./NotificationList";
 import { getGroupedNotifications } from "./utils";
 
+const DEFAULT_POLLING_INTERVAL = 60000;
+
 const GET_NOTIFICATIONS = gql(`
   query GetNotifications($filters: NotificationFiltersInput) {
     user {
@@ -48,6 +50,7 @@ export type NotificationsProps = Omit<
   "notificationGroups"
 > & {
   loaderComponent?: ReactNode;
+  pollingInterval?: number;
 };
 
 export const Notifications = ({
@@ -63,15 +66,20 @@ function _Notifications({
   onAcceptFriendRequest,
   onDeclineFriendRequest,
   onItemClick,
+  pollingInterval,
 }: Omit<NotificationsProps, "loaderComponent">) {
-  const { data } = usePolledSuspenseQuery(60000, GET_NOTIFICATIONS, {
-    variables: {
-      filters: {
-        limit: 50,
-        sortDirection: SortDirection.Desc,
+  const { data } = usePolledSuspenseQuery(
+    pollingInterval ?? DEFAULT_POLLING_INTERVAL,
+    GET_NOTIFICATIONS,
+    {
+      variables: {
+        filters: {
+          limit: 50,
+          sortDirection: SortDirection.Desc,
+        },
       },
-    },
-  });
+    }
+  );
 
   /**
    * Memoized value for the extracted notifications list from the GraphQL response.

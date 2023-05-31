@@ -12,6 +12,8 @@ import { getGroupedTransactions } from "./utils";
 export type { ParseTransactionDetails } from "./parsing";
 export * from "./TransactionDetails";
 
+const DEFAULT_POLLING_INTERVAL = 60000;
+
 const GET_TRANSACTIONS = gql(`
   query GetTransactions($address: String!, $filters: TransactionFiltersInput) {
     user {
@@ -54,6 +56,7 @@ export type TransactionHistoryProps = {
     explorerUrl: string,
     parsedDetails: ParseTransactionDetails | null
   ) => void;
+  pollingInterval?: number;
 };
 
 export const TransactionHistory = ({
@@ -68,16 +71,21 @@ export const TransactionHistory = ({
 function _TransactionHistory({
   contractOrMint,
   onItemClick,
+  pollingInterval,
 }: Omit<TransactionHistoryProps, "loaderComponent">) {
   const activeWallet = useActiveWallet();
-  const { data } = usePolledSuspenseQuery(30000, GET_TRANSACTIONS, {
-    variables: {
-      address: activeWallet.publicKey,
-      filters: {
-        token: contractOrMint,
+  const { data } = usePolledSuspenseQuery(
+    pollingInterval ?? DEFAULT_POLLING_INTERVAL,
+    GET_TRANSACTIONS,
+    {
+      variables: {
+        address: activeWallet.publicKey,
+        filters: {
+          token: contractOrMint,
+        },
       },
-    },
-  });
+    }
+  );
 
   /**
    * Memoized value for the data received wallet object.

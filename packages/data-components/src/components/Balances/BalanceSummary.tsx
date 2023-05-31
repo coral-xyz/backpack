@@ -11,6 +11,8 @@ import {
 import { gql } from "../../apollo";
 import { usePolledSuspenseQuery } from "../../hooks";
 
+const DEFAULT_POLLING_INTERVAL = 30000;
+
 const GET_BALANCE_SUMMARY = gql(`
   query GetBalanceSummary($address: String!) {
     user {
@@ -32,26 +34,34 @@ const GET_BALANCE_SUMMARY = gql(`
 `);
 
 export type BalanceSummaryWidgetProps = {
+  pollingInterval?: number;
   style?: BalanceSummaryCoreProps["style"];
 };
 
-export const BalanceSummaryWidget = ({ style }: BalanceSummaryWidgetProps) => (
+export const BalanceSummaryWidget = (props: BalanceSummaryWidgetProps) => (
   <ErrorBoundary
     fallbackRender={(x) => <StyledText>{JSON.stringify(x.error)}</StyledText>} // FIXME:
   >
     <Suspense fallback={<BalanceSummaryCoreLoader />}>
-      <_BalanceSummaryWidget style={style} />
+      <_BalanceSummaryWidget {...props} />
     </Suspense>
   </ErrorBoundary>
 );
 
-function _BalanceSummaryWidget({ style }: BalanceSummaryWidgetProps) {
+function _BalanceSummaryWidget({
+  pollingInterval,
+  style,
+}: BalanceSummaryWidgetProps) {
   const activeWallet = useActiveWallet();
-  const { data } = usePolledSuspenseQuery(20000, GET_BALANCE_SUMMARY, {
-    variables: {
-      address: activeWallet.publicKey,
-    },
-  });
+  const { data } = usePolledSuspenseQuery(
+    pollingInterval ?? DEFAULT_POLLING_INTERVAL,
+    GET_BALANCE_SUMMARY,
+    {
+      variables: {
+        address: activeWallet.publicKey,
+      },
+    }
+  );
 
   const aggregate = useMemo(
     () =>

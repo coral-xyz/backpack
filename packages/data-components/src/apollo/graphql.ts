@@ -51,9 +51,7 @@ export type Balances = Node & {
   aggregate: BalanceAggregate;
   /** Globally unique identifier for a wallet's balances data. */
   id: Scalars["ID"];
-  /** Token account balance and market data for the blockchain's native currency. */
-  native: TokenBalance;
-  /** The Relay connection of token account balances and market data for non-native token types owned by the wallet. */
+  /** The Relay connection of token account balances and market data for tokens owned by the wallet. */
   tokens?: Maybe<TokenBalanceConnection>;
 };
 
@@ -141,20 +139,12 @@ export type MarketData = Node & {
   id: Scalars["ID"];
   /** A timestamp of the last date of when the market data was updated. */
   lastUpdatedAt: Scalars["String"];
-  /** The CoinGecko market listing ID. */
-  listingId: Scalars["String"];
-  /** The image link to the logo of the token's market listing. */
-  logo: Scalars["String"];
-  /** The name of the token on the market. */
-  name: Scalars["String"];
   /** The percentage of change since the latest market data update. */
   percentChange: Scalars["Float"];
   /** The current USD price of the token according to the market data. */
   price: Scalars["Float"];
   /** Time series price data for the token to be used for creating a sparkline. */
   sparkline: Array<Scalars["Float"]>;
-  /** The symbol of the token on the market. */
-  symbol: Scalars["String"];
   /** The numerical amount change in USD since the latest market data update. */
   usdChange: Scalars["Float"];
   /** The value of the wallet's currently holdings of the token in USD. */
@@ -381,6 +371,8 @@ export type TokenBalance = Node & {
   marketData?: Maybe<MarketData>;
   /** The address of the token mint or contract. */
   token: Scalars["String"];
+  /** The possible entry in the token registry list for the mint or contract address. */
+  tokenListEntry?: Maybe<TokenListEntry>;
 };
 
 /** Relay connection specification for `TokenBalance` edges. */
@@ -402,7 +394,7 @@ export type TokenListEntry = Node & {
   /** The mint or contract address of the token. */
   address: Scalars["String"];
   /** The Coingecko market listing ID. */
-  coingeckoId: Scalars["String"];
+  coingeckoId?: Maybe<Scalars["String"]>;
   /** Globally unique identifier for the list entry. */
   id: Scalars["ID"];
   /** The logo associated with the token. */
@@ -416,7 +408,7 @@ export type TokenListEntry = Node & {
 /** Input filter type for fetching a specific entry from a token list. */
 export type TokenListEntryFiltersInput = {
   /** The mint or contract address of the token. */
-  address?: InputMaybe<Scalars["String"]>;
+  addresses?: InputMaybe<Array<Scalars["String"]>>;
   /** The market listing name of the token. */
   name?: InputMaybe<Scalars["String"]>;
   /** The market listing symbol of the token. */
