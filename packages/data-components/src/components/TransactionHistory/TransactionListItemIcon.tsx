@@ -154,7 +154,7 @@ export const TransactionListItemIconTransfer = ({
   return (
     <ListItemIconCore
       size={size}
-      radius={22}
+      radius="$circular"
       image={data.tokenList[0]?.logo ?? UNKNOWN_ICON_SRC}
     />
   );

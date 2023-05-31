@@ -21,7 +21,7 @@ export function ListItemIconCore({
   return (
     <Avatar borderRadius={radius} size={size} {...style}>
       <Avatar.Image src={proxySrc} />
-      <Avatar.Fallback delayMs={250}>
+      <Avatar.Fallback>
         <Skeleton height={size} width={size} />
       </Avatar.Fallback>
     </Avatar>

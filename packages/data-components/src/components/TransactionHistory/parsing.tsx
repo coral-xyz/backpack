@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { walletAddressDisplay } from "@coral-xyz/common";
 import { TransactionType } from "helius-sdk";
 
@@ -293,20 +294,24 @@ function _parseSwapDescription(
         tr: `+${_truncateAmount(items[1])}`,
         br: `-${_truncateAmount(items[0])}`,
         icon: (
-          <TransactionListItemIconSwap
-            containerSize={44}
-            size={24}
-            symbols={[entries[0][1], entries[1][1]]}
-          />
+          <Suspense>
+            <TransactionListItemIconSwap
+              containerSize={44}
+              size={24}
+              symbols={[entries[0][1], entries[1][1]]}
+            />
+          </Suspense>
         ),
       },
       details: {
         icon: (
-          <TransactionListItemIconSwap
-            containerSize={100}
-            size={75}
-            symbols={[entries[0][1], entries[1][1]]}
-          />
+          <Suspense>
+            <TransactionListItemIconSwap
+              containerSize={100}
+              size={75}
+              symbols={[entries[0][1], entries[1][1]]}
+            />
+          </Suspense>
         ),
         title: `Swapped ${entries[0][1]} for ${entries[1][1]}`,
       },
@@ -340,19 +345,23 @@ function _parseTransferDescription(
             ? `To: ${walletAddressDisplay(to)}`
             : `From: ${walletAddressDisplay(sender)}`,
         icon: (
-          <TransactionListItemIconTransfer
-            size={44}
-            symbol={amount.split(" ")[1]}
-          />
+          <Suspense>
+            <TransactionListItemIconTransfer
+              size={44}
+              symbol={amount.split(" ")[1]}
+            />
+          </Suspense>
         ),
       },
       details: {
         amount,
         icon: (
-          <TransactionListItemIconTransfer
-            size={100}
-            symbol={amount.split(" ")[1]}
-          />
+          <Suspense>
+            <TransactionListItemIconTransfer
+              size={100}
+              symbol={amount.split(" ")[1]}
+            />
+          </Suspense>
         ),
         title: "Transfer",
       },
