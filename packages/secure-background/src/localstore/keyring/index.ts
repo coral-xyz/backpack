@@ -18,11 +18,8 @@ import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import { generateMnemonic } from "bip39";
 
-import {
-  hdFactoryForBlockchain,
-  keyringForBlockchain,
-} from "../../blockchains/common";
-import type { BlockchainKeyring } from "../../blockchains/keyring";
+import { hdFactoryForBlockchain, keyringForBlockchain } from "../../keyring";
+import type { BlockchainKeyring } from "../../keyring/blockchain";
 import { LocalStorageDb } from "../db";
 import { setIsCold } from "../isCold";
 import { DefaultKeyname, setKeyname } from "../keyname";
@@ -212,7 +209,7 @@ export class KeyringStore {
     });
   }
 
-  public async _usernameKeyringCreate(
+  private async _usernameKeyringCreate(
     username: string,
     keyringInit:
       | MnemonicKeyringInit

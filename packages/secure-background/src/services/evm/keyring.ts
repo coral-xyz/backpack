@@ -2,15 +2,15 @@ import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
   getIndexedPath,
-  LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
-  LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
+  LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
+  LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
   nextIndicesFromPaths,
 } from "@coral-xyz/common";
-import { Keypair, PublicKey } from "@solana/web3.js";
 import { mnemonicToSeedSync, validateMnemonic } from "bip39";
+import type { Wallet } from "ethers";
 import { ethers } from "ethers";
-import nacl from "tweetnacl";
 
+import { LedgerKeyringBase } from "../../keyring/ledger";
 import type {
   HdKeyring,
   HdKeyringFactory,
@@ -21,101 +21,97 @@ import type {
   KeyringJson,
   LedgerKeyring,
   LedgerKeyringJson,
-} from "../keyring";
-import { LedgerKeyringBase } from "../keyring";
+} from "../../keyring/types";
 
-import { deriveSolanaKeypair } from "./util";
+import { deriveEthereumWallet } from "./util";
 
-const { base58 } = ethers.utils;
-
-export class SolanaKeyringFactory implements KeyringFactory {
-  public init(secretKeys: Array<string>): SolanaKeyring {
-    const keypairs = secretKeys.map((secret: string) =>
-      Keypair.fromSecretKey(Buffer.from(secret, "hex"))
-    );
-    return new SolanaKeyring(keypairs);
+export class EthereumKeyringFactory implements KeyringFactory {
+  init(secretKeys: Array<string>): Keyring {
+    const wallets = secretKeys.map((secretKey) => {
+      return new ethers.Wallet(secretKey);
+    });
+    return new EthereumKeyring(wallets);
   }
 
-  public fromJson(payload: KeyringJson): SolanaKeyring {
-    const keypairs = payload.secretKeys.map((secret: string) =>
-      Keypair.fromSecretKey(Buffer.from(secret, "hex"))
-    );
-    return new SolanaKeyring(keypairs);
+  fromJson(payload: KeyringJson): Keyring {
+    const wallets = payload.secretKeys.map((secret: string) => {
+      return new ethers.Wallet(Buffer.from(secret, "hex").toString());
+    });
+    return new EthereumKeyring(wallets);
   }
 }
 
-class SolanaKeyringBase implements KeyringBase {
-  constructor(public keypairs: Array<Keypair>) {}
+class EthereumKeyringBase implements KeyringBase {
+  constructor(public wallets: Array<Wallet>) {}
 
   public publicKeys(): Array<string> {
-    return this.keypairs.map((kp) => kp.publicKey.toString());
+    return this.wallets.map((w) => w.address);
   }
 
   public deletePublicKey(publicKey: string) {
-    this.keypairs = this.keypairs.filter(
-      (kp) => kp.publicKey.toString() !== publicKey
-    );
-  }
-
-  // `address` is the key on the keyring to use for signing.
-  public async signTransaction(tx: Buffer, address: string): Promise<string> {
-    const pubkey = new PublicKey(address);
-    const kp = this.keypairs.find((kp) => kp.publicKey.equals(pubkey));
-    if (!kp) {
-      throw new Error(`unable to find ${address.toString()}`);
-    }
-    return base58.encode(nacl.sign.detached(new Uint8Array(tx), kp.secretKey));
-  }
-
-  public async signMessage(tx: Buffer, address: string): Promise<string> {
-    // TODO: this shouldn't blindly sign. We should check some
-    //       type of unique prefix that asserts this isn't a
-    //       real transaction.
-    return this.signTransaction(tx, address);
-  }
-
-  public exportSecretKey(address: string): string | null {
-    const pubkey = new PublicKey(address);
-    const kp = this.keypairs.find((kp) => kp.publicKey.equals(pubkey));
-    if (!kp) {
-      return null;
-    }
-    return base58.encode(kp.secretKey);
+    this.wallets = this.wallets.filter((w) => w.address !== publicKey);
   }
 
   public importSecretKey(secretKey: string): string {
-    const kp = Keypair.fromSecretKey(Buffer.from(secretKey, "hex"));
-    this.keypairs.push(kp);
-    return kp.publicKey.toString();
+    const wallet = new ethers.Wallet(secretKey);
+    this.wallets.push(wallet);
+    return wallet.address;
+  }
+
+  public exportSecretKey(address: string): string | null {
+    const wallet = this.wallets.find((w) => w.address === address);
+    return wallet ? wallet.privateKey : null;
+  }
+
+  public async signTransaction(
+    serializedTx: Buffer,
+    signerAddress: string
+  ): Promise<string> {
+    const wallet = this.wallets.find((w) => w.address === signerAddress);
+    if (!wallet) {
+      throw new Error(`unable to find ${signerAddress.toString()}`);
+    }
+    const tx = ethers.utils.parseTransaction(
+      ethers.utils.hexlify(serializedTx)
+    );
+    return await wallet.signTransaction(
+      tx as ethers.providers.TransactionRequest
+    );
+  }
+
+  public async signMessage(
+    message: Buffer,
+    signerAddress: string
+  ): Promise<string> {
+    const wallet = this.wallets.find((w) => w.address === signerAddress);
+    if (!wallet) {
+      throw new Error(`unable to find ${signerAddress.toString()}`);
+    }
+    return await wallet.signMessage(message.toString());
   }
 }
 
-class SolanaKeyring extends SolanaKeyringBase implements Keyring {
+class EthereumKeyring extends EthereumKeyringBase {
   public toJson(): KeyringJson {
     return {
-      secretKeys: this.keypairs.map((kp) =>
-        Buffer.from(kp.secretKey).toString("hex")
+      // Private keys, just using the Solana secret key nomenclature
+      secretKeys: this.wallets.map((w) =>
+        Buffer.from(w.privateKey).toString("hex")
       ),
     };
   }
 }
 
-export class SolanaHdKeyringFactory implements HdKeyringFactory {
-  public init(
-    mnemonic: string,
-    derivationPaths: Array<string>,
-    accountIndex?: number,
-    walletIndex?: number
-  ): HdKeyring {
+export class EthereumHdKeyringFactory implements HdKeyringFactory {
+  public init(mnemonic: string, derivationPaths: Array<string>): HdKeyring {
     if (!validateMnemonic(mnemonic)) {
       throw new Error("Invalid seed words");
     }
-    return new SolanaHdKeyring({
+    const seed = mnemonicToSeedSync(mnemonic);
+    return new EthereumHdKeyring({
       mnemonic,
-      seed: mnemonicToSeedSync(mnemonic),
+      seed,
       derivationPaths,
-      accountIndex,
-      walletIndex,
     });
   }
 
@@ -126,7 +122,7 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
     accountIndex,
     walletIndex,
   }: HdKeyringJson): HdKeyring {
-    return new SolanaHdKeyring({
+    return new EthereumHdKeyring({
       mnemonic,
       seed: Buffer.from(seed, "hex"),
       derivationPaths,
@@ -136,10 +132,10 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
   }
 }
 
-class SolanaHdKeyring extends SolanaKeyringBase implements HdKeyring {
+class EthereumHdKeyring extends EthereumKeyringBase implements HdKeyring {
   readonly mnemonic: string;
-  private seed: Buffer;
   private derivationPaths: Array<string>;
+  private seed: Buffer;
   private accountIndex?: number;
   private walletIndex?: number;
 
@@ -156,8 +152,8 @@ class SolanaHdKeyring extends SolanaKeyringBase implements HdKeyring {
     accountIndex?: number;
     walletIndex?: number;
   }) {
-    const keypairs = derivationPaths.map((d) => deriveSolanaKeypair(seed, d));
-    super(keypairs);
+    const wallets = derivationPaths.map((d) => deriveEthereumWallet(seed, d));
+    super(wallets);
     this.mnemonic = mnemonic;
     this.seed = seed;
     this.derivationPaths = derivationPaths;
@@ -166,9 +162,7 @@ class SolanaHdKeyring extends SolanaKeyringBase implements HdKeyring {
   }
 
   public deletePublicKey(publicKey: string) {
-    const index = this.keypairs.findIndex(
-      (kp) => kp.publicKey.toString() === publicKey
-    );
+    const index = this.wallets.findIndex((w) => w.address === publicKey);
     if (index < 0) {
       return;
     }
@@ -181,7 +175,7 @@ class SolanaHdKeyring extends SolanaKeyringBase implements HdKeyring {
   public nextDerivationPath(offset = 1) {
     this.ensureIndices();
     const derivationPath = getIndexedPath(
-      Blockchain.SOLANA,
+      Blockchain.ETHEREUM,
       this.accountIndex,
       this.walletIndex! + offset
     );
@@ -193,7 +187,7 @@ class SolanaHdKeyring extends SolanaKeyringBase implements HdKeyring {
     return { derivationPath, offset };
   }
 
-  public deriveNextKey(): {
+  deriveNextKey(): {
     publicKey: string;
     derivationPath: string;
   } {
@@ -207,17 +201,16 @@ class SolanaHdKeyring extends SolanaKeyringBase implements HdKeyring {
     };
   }
 
-  public addDerivationPath(derivationPath: string): string {
-    const keypair = deriveSolanaKeypair(this.seed, derivationPath);
+  addDerivationPath(derivationPath: string): string {
+    const wallet = ethers.Wallet.fromMnemonic(this.mnemonic, derivationPath);
     if (!this.derivationPaths.includes(derivationPath)) {
       // Don't persist duplicate public keys
-      this.keypairs.push(keypair);
       this.derivationPaths.push(derivationPath);
+      this.wallets.push(wallet);
     }
-    return keypair.publicKey.toString();
+    return wallet.address;
   }
 
-  // TODO duplicated in the evm keyring
   ensureIndices() {
     // If account index and wallet index don't exist, make a best guess based
     // on the existing derivation paths for the keyring
@@ -241,30 +234,36 @@ class SolanaHdKeyring extends SolanaKeyringBase implements HdKeyring {
   }
 }
 
-export class SolanaLedgerKeyringFactory {
+export class EthereumLedgerKeyringFactory {
   public init(walletDescriptors: Array<WalletDescriptor>): LedgerKeyring {
-    return new SolanaLedgerKeyring(walletDescriptors, Blockchain.SOLANA);
+    return new EthereumLedgerKeyring(walletDescriptors, Blockchain.ETHEREUM);
   }
 
   public fromJson(obj: LedgerKeyringJson): LedgerKeyring {
-    return new SolanaLedgerKeyring(obj.walletDescriptors, Blockchain.SOLANA);
+    return new EthereumLedgerKeyring(
+      obj.walletDescriptors,
+      Blockchain.ETHEREUM
+    );
   }
 }
 
-class SolanaLedgerKeyring extends LedgerKeyringBase implements LedgerKeyring {
-  public async signTransaction(tx: Buffer, publicKey: string): Promise<string> {
+class EthereumLedgerKeyring extends LedgerKeyringBase implements LedgerKeyring {
+  public async signTransaction(
+    serializedTx: Buffer,
+    publicKey: string
+  ): Promise<string> {
     const walletDescriptor = this.walletDescriptors.find(
       (p) => p.publicKey === publicKey
     );
     if (!walletDescriptor) {
-      throw new Error("ledger address not found");
+      throw new Error("ledger public key not found");
     }
+    const tx = ethers.utils.parseTransaction(
+      ethers.utils.hexlify(serializedTx)
+    );
     return await this.request({
-      method: LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
-      params: [
-        base58.encode(tx),
-        walletDescriptor.derivationPath.replace("m/", ""),
-      ],
+      method: LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
+      params: [tx, walletDescriptor.derivationPath],
     });
   }
 
@@ -276,11 +275,8 @@ class SolanaLedgerKeyring extends LedgerKeyringBase implements LedgerKeyring {
       throw new Error("ledger public key not found");
     }
     return await this.request({
-      method: LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
-      params: [
-        base58.encode(msg),
-        walletDescriptor.derivationPath.replace("m/", ""),
-      ],
+      method: LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
+      params: [msg, walletDescriptor.derivationPath],
     });
   }
 }

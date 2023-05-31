@@ -1,5 +1,6 @@
 import type { KeyringStore } from "../../localstore/keyring";
 import type {
+  SecureEvent,
   SecureRequest,
   TransportClient,
   TransportHandler,
@@ -15,13 +16,17 @@ import type {
 
 export class SVMService {
   public destroy: TransportRemoveListener;
+  private secureUIClient: TransportClient<SecureEvent>;
+  private keystoreClient: TransportClient<SecureEvent>;
 
-  constructor(
-    server: TransportServer<SECURE_SVM_EVENTS>,
-    private uiClient: TransportClient<SECURE_SVM_EVENTS>,
-    private keystore: KeyringStore
-  ) {
-    this.destroy = server.setListener(this.eventHandler);
+  constructor(interfaces: {
+    secureServer: TransportServer<SECURE_SVM_EVENTS>;
+    keystoreClient: TransportClient<SecureEvent>;
+    secureUIClient: TransportClient<SecureEvent>;
+  }) {
+    this.keystoreClient = interfaces.keystoreClient;
+    this.secureUIClient = interfaces.secureUIClient;
+    this.destroy = interfaces.secureServer.setListener(this.eventHandler);
   }
 
   private eventHandler: TransportHandler<SECURE_SVM_EVENTS> = (request) => {

@@ -5,15 +5,16 @@ import {
   EthereumHdKeyringFactory,
   EthereumKeyringFactory,
   EthereumLedgerKeyringFactory,
-} from "../evm/keyring";
-import { deriveEthereumPrivateKey } from "../evm/util";
-import { BlockchainKeyring } from "../keyring";
+} from "../services/evm/keyring";
+import { deriveEthereumPrivateKey } from "../services/evm/util";
 import {
   SolanaHdKeyringFactory,
   SolanaKeyringFactory,
   SolanaLedgerKeyringFactory,
-} from "../solana/keyring";
-import { deriveSolanaPrivateKey } from "../solana/util";
+} from "../services/svm/keyring";
+import { deriveSolanaPrivateKey } from "../services/svm/util";
+
+import { BlockchainKeyring } from "./blockchain";
 
 export function hdFactoryForBlockchain(blockchain: Blockchain) {
   return {
@@ -43,7 +44,7 @@ export function mnemonicPathToPrivateKey(
   blockchain: Blockchain,
   mnemonic: string,
   derivationPath: string
-) {
+): string {
   const seed = mnemonicToSeedSync(mnemonic);
   if (blockchain === Blockchain.ETHEREUM) {
     return deriveEthereumPrivateKey(seed, derivationPath);

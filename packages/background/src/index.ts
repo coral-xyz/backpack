@@ -1,9 +1,15 @@
 import { IS_MOBILE } from "@coral-xyz/common";
-import { KeyringStore, startSecureService } from "@coral-xyz/secure-background";
+import {
+  KeyringStore,
+  mockTransportClient,
+  mockTransportServer,
+  startSecureService,
+} from "@coral-xyz/secure-background";
 import { EventEmitter } from "eventemitter3";
 
 import * as coreBackend from "./backend/core";
 import * as ethereumConnectionBackend from "./backend/ethereum-connection";
+import { LocalStorageDb } from "./backend/legacy-store/db";
 import { initPushNotificationHandlers } from "./backend/push-notifications";
 import * as solanaConnectionBackend from "./backend/solana-connection";
 import * as ethereumConnection from "./frontend/ethereum-connection";
@@ -32,7 +38,15 @@ export function start(cfg: Config): Background {
   const _ethereumConnection = ethereumConnection.start(cfg, events, ethereumB);
 
   // New secure service
-  startSecureService(cfg, keyringStore);
+  startSecureService(
+    {
+      backendNotificationClient: mockTransportClient,
+      secureUIClient: mockTransportClient,
+      secureServer: mockTransportServer,
+      secureStorage: LocalStorageDb,
+    },
+    keyringStore
+  );
 
   initPushNotificationHandlers();
 

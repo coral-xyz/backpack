@@ -19,6 +19,10 @@ export async function setWalletDataForUser(uuid: string, data?: Preferences) {
   await LocalStorageDb.set(key(uuid), data);
 }
 
+function key(uuid: string): string {
+  return `${STORE_KEY_WALLET_DATA}_${uuid}`;
+}
+
 export async function getWalletData_DEPRECATED(): Promise<
   DeprecatedWalletDataDoNotUse | undefined
 > {
@@ -30,8 +34,4 @@ export async function setWalletData_DEPRECATED(
   data: undefined | DeprecatedWalletDataDoNotUse
 ) {
   await LocalStorageDb.set(STORE_KEY_WALLET_DATA, data);
-}
-
-function key(uuid: string): string {
-  return `${STORE_KEY_WALLET_DATA}_${uuid}`;
 }
