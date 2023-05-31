@@ -13823,6 +13823,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/eventemitter3@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "@types/eventemitter3@npm:2.0.2"
+  dependencies:
+    eventemitter3: "*"
+  checksum: 8fb5031eab566ac7689092eaebfbd76a043154ed2b7bc806730c6c543de4fa2b25b73a69574b8bdbfdb4e238de1144061ae482d1bda540540ca9479f7efc7bb7
+  languageName: node
+  linkType: hard
+
 "@types/express-serve-static-core@npm:*, @types/express-serve-static-core@npm:^4.17.30, @types/express-serve-static-core@npm:^4.17.33":
   version: 4.17.33
   resolution: "@types/express-serve-static-core@npm:4.17.33"
