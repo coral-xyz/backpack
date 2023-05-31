@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
 import { formatUSD } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
-import { XStack } from "@coral-xyz/tamagui";
+import { Stack, XStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { StyledText } from "~components/index";
@@ -72,13 +72,19 @@ const GET_BALANCE_SUMMARY = gql`
     wallet(chainId: $chainId, address: $address) {
       id
       balances {
-        aggregateValue
+        id
+        aggregate {
+          id
+          percentChange
+          value
+          valueChange
+        }
         native {
+          id
           address
           amount
           decimals
           displayAmount
-          id
           marketData {
             id
             usdChange
@@ -94,6 +100,25 @@ const GET_BALANCE_SUMMARY = gql`
   }
 `;
 
+function LoadingSkeleton() {
+  return (
+    <View style={{ height: 72, opacity: 0.2 }}>
+      <ActivityIndicator size="small" />
+    </View>
+  );
+}
+
+function ErrorFallback({ error }: { error: Error }) {
+  return (
+    <View style={{ height: 72, opacity: 0.5 }}>
+      <StyledText color="$redText" textAlign="center">
+        Something went wrong:
+      </StyledText>
+      <StyledText textAlign="center">{error.message}</StyledText>
+    </View>
+  );
+}
+
 function Container() {
   const activeWallet = useActiveWallet();
   const { data } = useSuspenseQuery_experimental(GET_BALANCE_SUMMARY, {
@@ -103,12 +128,13 @@ function Container() {
     },
   });
 
-  const totalBalance = data.wallet.balances.aggregateValue;
-  const totalChange = data.wallet.balances.native.marketData.usdChange;
-  const percentChange = data.wallet.balances.native.marketData.percentChange;
+  const { aggregate } = data.wallet.balances;
+  const totalBalance = aggregate.value ?? 0.0;
+  const totalChange = aggregate.valueChange ?? 0.0;
+  const percentChange = aggregate.percentChange ?? 0.0;
 
   return (
-    <View style={styles.container}>
+    <Stack ai="center">
       <StyledText fontWeight="700" fontSize="$4xl" color="$fontColor">
         {formatUSD(totalBalance)}
       </StyledText>
@@ -120,14 +146,16 @@ function Container() {
           percentChange={percentChange as number}
         />
       </XStack>
-    </View>
+    </Stack>
   );
 }
 
 export function BalanceSummaryWidget() {
   return (
-    <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
-      <Suspense fallback={<ActivityIndicator size="large" />}>
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ErrorFallback error={error} />}
+    >
+      <Suspense fallback={<LoadingSkeleton />}>
         <Container />
       </Suspense>
     </ErrorBoundary>

@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+import { UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY } from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
+
+import { EyeIcon, WarningIcon } from "~components/Icon";
 import {
   CopyButton,
   DangerButton,
@@ -11,12 +16,7 @@ import {
   SecondaryButton,
   StyledTextInput,
 } from "~components/index";
-import { UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "~hooks/useTheme";
-
-import { EyeIcon, WarningIcon } from "~components/Icon";
 
 export function ShowPrivateKeyWarningScreen({
   route,
@@ -64,7 +64,7 @@ export function ShowPrivateKeyWarningScreen({
       <View>
         <View style={styles.header}>
           <Margin bottom={16}>
-            <WarningIcon fill="#E95050" />
+            <WarningIcon color="#E95050" />
           </Margin>
           <Header text="Warning" />
         </View>

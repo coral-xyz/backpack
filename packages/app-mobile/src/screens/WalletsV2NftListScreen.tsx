@@ -1,58 +1,39 @@
-import type { Nft, NftCollection } from "@coral-xyz/common";
+import type { NftCollection } from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 import type { UnwrapRecoilValue } from "recoil";
+import type {
+  NftCollectionsWithId,
+  SingleNftData,
+  CollectionNftData,
+  PublicKey,
+} from "~types/types";
 
-import { ActivityIndicator, FlatList, View } from "react-native";
+import { FlatList, View, ActivityIndicator } from "react-native";
 
 import * as Linking from "expo-linking";
 
-import { parseNftName } from "@coral-xyz/common";
 import {
-  nftById,
   nftCollectionsWithIds,
   useActiveWallet,
+  nftById,
   useAllWallets,
   useBlockchainConnectionUrl,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
-import { createStackNavigator } from "@react-navigation/stack";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
 import { NftErrorBoundary } from "~components/ErrorBoundary";
-import { BaseCard, NFTCard } from "~components/NFTCard";
-import { NavHeader } from "~components/NavHeader";
-import { CopyButtonIcon, Screen, ScreenEmptyState } from "~components/index";
+import { NFTCard, BaseCard } from "~components/NFTCard";
+import { Screen, EmptyState, RoundedContainerGroup } from "~components/index";
+import { useActiveWalletCollections } from "~hooks/recoil";
 import { useTheme } from "~hooks/useTheme";
-import { WalletPickerButton } from "~screens/Unlocked/components/Balances";
-import { TableHeader } from "~screens/Unlocked/components/index";
-
-import { NftDetailScreen, NftDetailSendScreen } from "./NftDetailScreen";
-
-type NftCollectionsWithId = {
-  publicKey: string;
-  collections: NftCollection[];
-};
-
-type SingleNftData = {
-  title: string;
-  nftId: string;
-  publicKey: string;
-  connectionUrl: string;
-};
-
-type CollectionNftData = {
-  title: string;
-  collectionId: string;
-  publicKey: string;
-  connectionUrl: string;
-};
 
 function NftCollectionCard({
   publicKey,
   collection,
   onPress,
 }: {
-  publicKey: string;
+  publicKey: PublicKey;
   collection: NftCollection;
   onPress: (route: string, data: SingleNftData | CollectionNftData) => void;
 }): JSX.Element | null {
@@ -109,72 +90,35 @@ function NftCollectionCard({
   );
 }
 
+function NoNFTsEmptyState() {
+  return (
+    <View style={{ flex: 1, margin: 18 }}>
+      <EmptyState
+        icon={(props: any) => <MaterialIcons name="image" {...props} />}
+        title="No NFTs"
+        subtitle="Get started with your first NFT"
+        buttonText="Browse Magic Eden"
+        onPress={() => {
+          Linking.openURL("https://magiceden.io");
+        }}
+      />
+    </View>
+  );
+}
+
 export function NftCollectionListScreen({
   navigation,
 }: StackScreenProps<NftStackParamList, "NftCollectionList">): JSX.Element {
-  const theme = useTheme();
   const activeWallet = useActiveWallet();
-  const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
-  const allWalletCollections: NftCollectionsWithId[] =
-    (state === "hasValue" && contents) || [];
-  const isLoading = state === "loading";
-
-  if (isLoading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
-  const data =
-    allWalletCollections.find((c) => c.publicKey === activeWallet.publicKey)
-      ?.collections || [];
+  const collections = useActiveWalletCollections();
 
   return (
     <Screen>
-      <View
-        style={{
-          backgroundColor: theme.custom.colors.nav,
-          borderRadius: 12,
-          flex: 1,
-          padding: 4,
-        }}
-      >
-        <TableHeader
-          blockchain={activeWallet.blockchain}
-          onPress={console.log}
-          visible
-          rightSide={<CopyButtonIcon text={activeWallet.publicKey} />}
-          subtitle={
-            <WalletPickerButton
-              name={activeWallet.name}
-              onPress={() => {
-                navigation.navigate("wallet-picker");
-              }}
-            />
-          }
-        />
+      <RoundedContainerGroup style={{ padding: 12 }}>
         <FlatList
-          data={data}
+          data={collections}
           numColumns={2}
-          ListEmptyComponent={
-            <ScreenEmptyState
-              iconName="image"
-              title="No NFTs"
-              subtitle="Get started with your first NFT"
-              buttonText="Browse Magic Eden"
-              onPress={() => {
-                Linking.openURL("https://magiceden.io");
-              }}
-            />
-          }
+          ListEmptyComponent={NoNFTsEmptyState}
           keyExtractor={(collection) => collection.id}
           renderItem={({ item: collection }) => {
             return (
@@ -186,7 +130,7 @@ export function NftCollectionListScreen({
             );
           }}
         />
-      </View>
+      </RoundedContainerGroup>
     </Screen>
   );
 }
@@ -242,71 +186,5 @@ function NftCollectionDetailScreen({
         );
       }}
     />
-  );
-}
-
-type NftStackParamList = {
-  NftCollectionList: undefined;
-  NftCollectionDetail: {
-    title: string;
-    collectionId: string;
-    publicKey: string;
-    connectionUrl: string;
-  };
-  NftDetail: {
-    title: string;
-    nftId: string;
-    publicKey: string;
-    connectionUrl: string;
-  };
-  SendNFT: {
-    nft: Nft;
-  };
-};
-
-const Stack = createStackNavigator<NftStackParamList>();
-export function NftCollectiblesNavigator(): JSX.Element {
-  const theme = useTheme();
-  return (
-    <Stack.Navigator
-      initialRouteName="NftCollectionList"
-      screenOptions={{ header: NavHeader }}
-    >
-      <Stack.Screen
-        name="NftCollectionList"
-        component={NftCollectionListScreen}
-        options={{
-          title: "Collectibles",
-          headerTintColor: theme.custom.colors.fontColor,
-        }}
-      />
-      <Stack.Screen
-        name="NftCollectionDetail"
-        component={NftCollectionDetailScreen}
-        options={({ route }) => ({
-          title: route.params.title,
-          headerTintColor: theme.custom.colors.fontColor,
-        })}
-      />
-      <Stack.Screen
-        name="NftDetail"
-        component={NftDetailScreen}
-        options={({ route }) => ({
-          title: route.params.title,
-          headerTintColor: theme.custom.colors.fontColor,
-        })}
-      />
-      <Stack.Screen
-        name="SendNFT"
-        component={NftDetailSendScreen}
-        options={({ route }) => {
-          const name = parseNftName(route.params.nft);
-          return {
-            title: `Send ${name}`,
-            headerTintColor: theme.custom.colors.fontColor,
-          };
-        }}
-      />
-    </Stack.Navigator>
   );
 }

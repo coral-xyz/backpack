@@ -1,153 +1,111 @@
 import type { Blockchain } from "@coral-xyz/common";
+import type { PublicKey } from "~types/types";
 
-import { Pressable, SectionList, StyleSheet, Text, View } from "react-native";
+import { Suspense, useCallback } from "react";
+import { FlatList } from "react-native";
 
+import { UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE } from "@coral-xyz/common";
 import {
-  AddConnectWalletButton,
-  ImportTypeBadge,
-  Margin,
+  useActiveWallet,
+  useAllWallets,
+  useBackgroundClient,
+  useDehydratedWallets,
+  usePrimaryWallets,
+} from "@coral-xyz/recoil";
+import { PaddedListItemSeparator } from "@coral-xyz/tamagui";
+import { ErrorBoundary } from "react-error-boundary";
+
+import { ListItemWallet, type Wallet } from "~components/ListItem";
+import {
   RoundedContainerGroup,
   Screen,
-  WalletAddressLabel,
+  ScreenError,
+  ScreenLoading,
 } from "~components/index";
-import { toTitleCase } from "@coral-xyz/common";
-import { useWalletPublicKeys } from "@coral-xyz/recoil";
-import { useTheme } from "~hooks/useTheme";
-import { IconPushDetail } from "~screens/Unlocked/Settings/components/SettingsRow"; // TODO(peter) move this icon to icons
 
-function buildSectionList(blockchainKeyrings: any) {
-  return Object.entries(blockchainKeyrings).map(([blockchain, keyring]) => ({
-    blockchain,
-    title: toTitleCase(blockchain),
-    data: [
-      ...keyring.hdPublicKeys.map((k: any) => ({ ...k, type: "derived" })),
-      ...keyring.importedPublicKeys.map((k: any) => ({
-        ...k,
-        type: "imported",
-      })),
-      ...keyring.ledgerPublicKeys.map((k: any) => ({
-        ...k,
-        type: "hardware",
-      })),
-    ],
+function WalletList2({ onPressItem }) {
+  const background = useBackgroundClient();
+  const activeWallet = useActiveWallet();
+  const wallets = useAllWallets();
+  const activeWallets = wallets.filter((w) => !w.isCold);
+  const coldWallets = wallets.filter((w) => w.isCold);
+  const primaryWallets = usePrimaryWallets();
+
+  // Dehydrated public keys are keys that exist on the server but cannot be
+  // used on the client as we don't have signing data, e.g. mnemonic, private
+  // key or ledger derivation path
+  const dehydratedWallets = useDehydratedWallets().map((w: any) => ({
+    ...w,
+    name: "", // TODO server side does not sync wallet names
+    type: "dehydrated",
   }));
-}
 
-function SectionHeader({ title }: { title: string }): JSX.Element {
-  const theme = useTheme();
-  return (
-    <Text
-      style={[
-        styles.sectionHeaderTitle,
-        {
-          color: theme.custom.colors.fontColor,
-        },
-      ]}
-    >
-      {title}
-    </Text>
+  // activeWallet={activeWallet}
+  // activeWallets={activeWallets.concat(dehydratedWallets)}
+  // coldWallets={coldWallets}
+
+  const data = [...activeWallets, ...dehydratedWallets];
+
+  const handleSelectWallet = useCallback(
+    async (b: Blockchain, pk: PublicKey) => {
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+        params: [pk, b],
+      });
+    },
+    [background]
   );
-}
 
-type Wallet = {
-  name: string;
-  publicKey: string;
-  type: string;
-};
+  const renderItem = useCallback(
+    ({ item, index }) => {
+      const isPrimary = !!primaryWallets.find(
+        (x) => x.publicKey === item.publicKey
+      );
 
-export function WalletListItem({
-  blockchain,
-  name,
-  publicKey,
-  type,
-  icon,
-  onPress,
-}: {
-  blockchain: Blockchain;
-  name: string;
-  publicKey: string;
-  type?: string;
-  icon?: JSX.Element | null;
-  onPress?: (blockchain: Blockchain, wallet: Wallet) => void;
-}): JSX.Element {
-  const theme = useTheme();
-  return (
-    <Pressable
-      onPress={() => {
-        if (onPress && type) {
-          onPress(blockchain, { name, publicKey, type });
-        }
-      }}
-      style={[
-        styles.listItem,
-        {
-          backgroundColor: theme.custom.colors.nav,
-        },
-      ]}
-    >
-      <View style={styles.listItemLeft}>
-        <WalletAddressLabel name={name} publicKey={publicKey} />
-        {type ? (
-          <Margin left={8}>
-            <ImportTypeBadge type={type} />
-          </Margin>
-        ) : null}
-      </View>
-      {icon ? icon : null}
-    </Pressable>
-  );
-}
+      const isFirst = index === 0;
+      const isLast = index === data.length - 1;
 
-function WalletList({
-  onPressItem,
-  onPressAddWallet,
-}: {
-  onPressItem: (blockchain: Blockchain, wallet: Wallet) => void;
-  onPressAddWallet: (blockchain: Blockchain) => void;
-}): JSX.Element {
-  const blockchainKeyrings = useWalletPublicKeys();
-  const sections = buildSectionList(blockchainKeyrings);
-
-  return (
-    <SectionList
-      sections={sections}
-      keyExtractor={(item, index) => item + index}
-      renderItem={({ section, item: wallet, index }) => {
-        const blockchain = section.blockchain as Blockchain;
-        const isFirst = index === 0;
-        const isLast = index === section.data.length - 1;
-        return (
-          <RoundedContainerGroup
-            disableTopRadius={!isFirst}
-            disableBottomRadius={!isLast}
-          >
-            <WalletListItem
-              name={wallet.name}
-              publicKey={wallet.publicKey}
-              type={wallet.type}
-              blockchain={blockchain}
-              onPress={onPressItem}
-              icon={<IconPushDetail />}
-            />
-          </RoundedContainerGroup>
-        );
-      }}
-      renderSectionHeader={({ section: { title } }) => (
-        <SectionHeader title={title} />
-      )}
-      renderSectionFooter={({ section }) => (
-        <Margin bottom={24} top={8}>
-          <AddConnectWalletButton
-            blockchain={section.blockchain}
-            onPress={onPressAddWallet}
+      return (
+        <RoundedContainerGroup
+          disableTopRadius={!isFirst}
+          disableBottomRadius={!isLast}
+        >
+          <ListItemWallet
+            loading={false}
+            name={item.name}
+            publicKey={item.publicKey}
+            type={item.type}
+            blockchain={item.blockchain}
+            selected={item.publicKey === activeWallet.publicKey}
+            primary={isPrimary}
+            onPressEdit={onPressItem}
+            onSelect={handleSelectWallet}
+            isCold={false}
+            balance={5555.34}
           />
-        </Margin>
-      )}
+        </RoundedContainerGroup>
+      );
+    },
+    [
+      onPressItem,
+      data.length,
+      activeWallet.publicKey,
+      handleSelectWallet,
+      primaryWallets,
+    ]
+  );
+
+  return (
+    <FlatList
+      data={data}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.publicKey}
+      ItemSeparatorComponent={PaddedListItemSeparator}
     />
   );
 }
 
-export function EditWalletsScreen({ navigation }): JSX.Element {
+function Container({ navigation }): JSX.Element {
   const handlePressItem = (
     blockchain: Blockchain,
     { name, publicKey, type }: Wallet
@@ -166,28 +124,19 @@ export function EditWalletsScreen({ navigation }): JSX.Element {
 
   return (
     <Screen>
-      <WalletList
-        onPressItem={handlePressItem}
-        onPressAddWallet={handlePressAddWallet}
-      />
+      <WalletList2 onPressItem={handlePressItem} />
     </Screen>
   );
 }
 
-const styles = StyleSheet.create({
-  sectionHeaderTitle: {
-    fontWeight: "500",
-    marginBottom: 8,
-  },
-  listItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-  },
-  listItemLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-});
+export function EditWalletsScreen({ navigation }): JSX.Element {
+  return (
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ScreenError error={error} />}
+    >
+      <Suspense fallback={<ScreenLoading />}>
+        <Container navigation={navigation} />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}

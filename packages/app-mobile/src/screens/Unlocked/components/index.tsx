@@ -6,7 +6,8 @@ import { toTitleCase } from "@coral-xyz/common";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import { Row } from "~components/index";
-import { getBlockchainLogo, useTheme } from "~hooks/index";
+import { getBlockchainLogo } from "~hooks/index";
+import { useTheme } from "~hooks/useTheme";
 
 export function TableHeader({
   onPress,

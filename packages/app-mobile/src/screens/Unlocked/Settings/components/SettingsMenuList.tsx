@@ -34,13 +34,14 @@ export function SettingsList({
   };
 }) {
   return (
-    <YGroup als="center" bordered>
+    <YGroup als="center" bordered backgroundColor="$nav">
       {Object.entries(menuItems).map(
         ([key, { onPress, detail, icon, label }]) => (
           <YGroup.Item key={key}>
             <ListItem
               hoverTheme
               pressTheme
+              backgroundColor="$nav"
               icon={icon}
               iconAfter={detail ?? IconPushDetail}
               onPress={() => onPress && onPress()}
@@ -63,7 +64,7 @@ const CustomListItemFrame = styled(ListItemFrame, {
 });
 
 const CustomListItemText = styled(ListItemText, {
-  fontFamily: "Inter_500Medium",
+  fontFamily: "InterMedium",
   fontSize: 16,
   lineHeight: 24,
 });

@@ -4,14 +4,16 @@ import type {
   EnrichedInboxDb,
 } from "@coral-xyz/common";
 
-import { parseMessage, searchUsersByBlockchain } from "@coral-xyz/common";
+import { useMemo } from "react";
+
+import { useUsersMetadata } from "@coral-xyz/chat-xplat";
+import { parseMessage } from "@coral-xyz/common";
 import {
   useFriendships,
   useGroupCollections,
   useRequestsCount,
   useUser,
 } from "@coral-xyz/recoil";
-import { useUsersMetadata } from "@coral-xyz/tamagui";
 
 type ChatType =
   | { chatType: "individual"; chatProps: EnrichedInboxDb }
@@ -26,21 +28,6 @@ type ParsedChatType = {
   message: string;
   timestamp: string;
   isUnread: boolean;
-};
-
-export type ChatStackNavigatorParamList = {
-  ChatList: undefined;
-  ChatDetail: {
-    roomName: string;
-    roomId: string;
-    roomType: SubscriptionType;
-    remoteUserId?: string;
-    remoteUsername?: string;
-  };
-  ChatRequest: undefined;
-  ChatRequestDetail: {
-    roomName: string;
-  };
 };
 
 export type ChatRowData = {
@@ -140,14 +127,16 @@ export function useChatHelper() {
   const activeChats = useFriendships({ uuid: user.uuid });
   const requestCount = useRequestsCount({ uuid: user.uuid });
   const groupCollections = useGroupCollections({ uuid: user.uuid });
-  const allChats = getAllChatStuff({ activeChats, groupCollections });
+
+  const allChats = useMemo(() => {
+    return getAllChatStuff({ activeChats, groupCollections });
+  }, [activeChats, groupCollections]);
 
   return {
     allChats,
     requestCount,
-    onRefreshChats: () => {}, // TODO(kirat)
-    isRefreshingChats: false, // TODO(kirat)
-    searchUsersByBlockchain,
+    onRefreshChats: () => {},
+    isRefreshingChats: false,
   };
 }
 
