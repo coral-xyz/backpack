@@ -159,7 +159,7 @@ export async function customSplTokenAccounts(
     programId: TOKEN_PROGRAM_ID,
     mint: PublicKey.default,
     authority: publicKey,
-    amount: accountInfo ? new BN(accountInfo.lamports) : new BN(0),
+    amount: accountInfo ? new BN(accountInfo.lamports.toString()) : new BN(0),
     delegate: null,
     state: 1,
     isNative: null,
