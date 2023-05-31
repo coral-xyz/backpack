@@ -1,4 +1,6 @@
-import React, { Stack, Text, Image, View } from "react-xnft";
+import React from "react";
+import { Image, Stack, Text, View } from "react-xnft";
+
 import TokenDetails from "./TokenDetails";
 import TokenList from "./TokenList";
 
@@ -33,9 +35,9 @@ function Navigation() {
         height: "56px",
       }}
     >
-      <Stack.Screen name={"list"} component={(props) => <TokenList />} />
+      <Stack.Screen name="list" component={(props) => <TokenList />} />
       <Stack.Screen
-        name={"details"}
+        name="details"
         component={(props) => <TokenDetails {...props} />}
       />
     </Stack.Navigator>

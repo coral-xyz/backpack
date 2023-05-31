@@ -1,6 +1,9 @@
 name = "feature-gates"
 main = "src/index.ts"
-compatibility_date = "2022-09-22"
+compatibility_date = "2023-05-16"
 
 [env.development.vars]
+AUTH_JWT_PUBLIC_KEY = ""
+# user ids, separated by commas
+DROPZONE_USERS = ""
 STRIPE_SECRET = ""

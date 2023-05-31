@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const fs = require("fs");
+const { browserslist, description, version } = require("./package.json");
 
 const NODE_ENV = process.env.NODE_ENV || "development";
 const EXTENSION_NAME =
@@ -47,7 +48,7 @@ const swcLoaderConfiguration = {
     options: {
       // parseMap: true, // required when using with babel-loader
       env: {
-        targets: require("./package.json").browserslist,
+        targets: browserslist,
       },
       sourceMap: isDevelopment,
       jsc: {
@@ -206,6 +207,10 @@ const options = {
     },
     // Add support for web-based extensions so we can share code between mobile/extension
     extensions: [
+      "!.native.tsx",
+      "!.native.ts",
+      "!.native.js",
+      "!.native.jsx",
       ".web.js",
       ".web.jsx",
       ".web.ts",
@@ -251,8 +256,8 @@ const options = {
             return Buffer.from(
               JSON.stringify(
                 {
-                  description: process.env.npm_package_description,
-                  version: process.env.npm_package_version,
+                  description,
+                  version,
                   name: EXTENSION_NAME,
                   ...JSON.parse(content.toString()),
                 },

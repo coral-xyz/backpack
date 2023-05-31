@@ -1,5 +1,5 @@
 {
-  "include": ["src", "webpack.config.js"],
+  "include": ["src", "webpack.config.js", "tamagui.config.ts"],
   "exclude": ["**/node_modules", "**/.*/"],
   "compilerOptions": {
     "strict": true,
@@ -19,6 +19,7 @@
     "downlevelIteration": true,
     "jsx": "react-jsx",
     "paths": {
+      "@coral-xyz/tamagui": ["../tamagui-core"],
       "@coral-xyz/background": ["../background"],
       "@coral-xyz/chat-sdk": ["../chat-sdk"],
       "@coral-xyz/common": ["../common"],
@@ -26,11 +27,14 @@
       "@coral-xyz/message-sdk": ["../message-sdk"],
       "@coral-xyz/react-common": ["../react-common"],
       "@coral-xyz/recoil": ["../recoil"],
-      "@coral-xyz/themes": ["../themes"]
+      "@coral-xyz/themes": ["../themes"],
+      "@coral-xyz/secure-background": ["../secure-background"]
     }
   },
   "references": [
+    { "path": "../tamagui-core" },
     { "path": "../background" },
+    { "path": "../secure-background" },
     { "path": "../chat-sdk" },
     { "path": "../common" },
     { "path": "../db" },
