@@ -1,9 +1,12 @@
+/// <reference types="w3c-web-hid" />
+
 import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import { HardwareWalletIcon, PrimaryButton } from "@coral-xyz/react-common";
 import type Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
 import { Box } from "@mui/material";
+import { useAsyncEffect } from "use-async-effect";
 
 import { Header, HeaderIcon, SubtextParagraph } from "../../../../common";
 
@@ -31,17 +34,13 @@ export function ConnectHardwareSearching({
     const connectListener = () => {
       setNavigatorStateChange((prev) => prev + 1);
     };
-    // @ts-ignore
     navigator.hid.addEventListener("connect", connectListener);
     const disconnectListener = () => {
       setNavigatorStateChange((prev) => prev + 1);
     };
-    // @ts-ignore
     navigator.hid.addEventListener("disconnect", disconnectListener);
     return () => {
-      // @ts-ignore
       navigator.hid.removeEventListener("connect", connectListener);
-      // @ts-ignore
       navigator.hid.removeEventListener("disconnect", disconnectListener);
     };
   }, []);
@@ -49,30 +48,38 @@ export function ConnectHardwareSearching({
   //
   // Check how many connected devices we actually have.
   //
-  useEffect(() => {
-    (async () => {
+  useAsyncEffect(
+    async (isMounted) => {
       if (transport === null && !connectFailure) {
         try {
-          setTransport(await TransportWebHid.create());
+          const newTransport = await TransportWebHid.create();
+          if (!isMounted()) return;
+          setTransport(newTransport);
         } catch (error: any) {
           if (error.message === "The device is already open.") {
             const devices = await TransportWebHid.list();
+            if (!isMounted()) return;
             // Close all open devices
             await Promise.all(devices.map((d) => d.close()));
+            if (!isMounted()) return;
             // Reload to retry
             setNavigatorStateChange(() => navigatorStateChange + 1);
-          } else if (error.message === "Access denied to use Ledger device") {
-            // User cancelled the permissions screen, or no device available in screen
-            console.debug("access denied to ledger device");
-            setTimeout(() => setConnectFailure(true), 2000);
           } else {
-            console.debug("ledger error", error);
-            setTimeout(() => setConnectFailure(true), 2000);
+            if (error.message === "Access denied to use Ledger device") {
+              // User cancelled the permissions screen, or no device available in screen
+              console.debug("access denied to ledger device");
+            } else {
+              console.debug("ledger error", error);
+            }
+            setTimeout(() => {
+              if (isMounted()) setConnectFailure(true);
+            }, 2000);
           }
         }
       }
-    })();
-  }, [connectFailure, navigatorStateChange]);
+    },
+    [connectFailure, navigatorStateChange]
+  );
 
   useEffect(() => {
     // Auto advance if transport set

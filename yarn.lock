@@ -3732,6 +3732,7 @@ __metadata:
     "@types/react-native": ~0.71.6
     "@types/react-virtualized-auto-sizer": ^1.0.1
     "@types/react-window": ^1.8.5
+    "@types/w3c-web-hid": ^1.0.3
     babel-loader: ^9.1.2
     babel-plugin-react-native-web: ^0.18.12
     bip39: ^3.0.4
@@ -3779,6 +3780,7 @@ __metadata:
     tamagui: ^1.28.1
     tamagui-loader: ^1.28.1
     typescript: ~4.9.3
+    use-async-effect: ^2.2.7
     web-push: ^3.5.0
     webpack: ^5.75.0
     webpack-bundle-analyzer: ^4.7.0
@@ -14496,6 +14498,13 @@ __metadata:
   version: 8.3.4
   resolution: "@types/uuid@npm:8.3.4"
   checksum: 6f11f3ff70f30210edaa8071422d405e9c1d4e53abbe50fdce365150d3c698fe7bbff65c1e71ae080cbfb8fded860dbb5e174da96fdbbdfcaa3fb3daa474d20f
+  languageName: node
+  linkType: hard
+
+"@types/w3c-web-hid@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@types/w3c-web-hid@npm:1.0.3"
+  checksum: 90ee1eeb2acf5d5ddf0b7acefd4f8aaa7d0175d991c3606a9ad62bdfa7a8de93665f5f6218dc4ecb34ea1d2f3e357813b315f46c1ea6b8aa1693e217e436c9b2
   languageName: node
   linkType: hard
 

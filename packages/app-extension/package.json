@@ -54,6 +54,7 @@
     "react-window": "^1.8.8",
     "recoil": "^0.7.6",
     "tamagui": "^1.28.1",
+    "use-async-effect": "^2.2.7",
     "web-push": "^3.5.0"
   },
   "scripts": {
@@ -87,6 +88,7 @@
     "@types/react-native": "~0.71.6",
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
+    "@types/w3c-web-hid": "^1.0.3",
     "babel-loader": "^9.1.2",
     "babel-plugin-react-native-web": "^0.18.12",
     "browserify-zlib": "^0.2.0",
