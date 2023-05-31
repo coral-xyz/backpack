@@ -32,7 +32,7 @@ module.exports = {
       "error",
       { allowLeadingUnderscore: true, ignore: ["__*"] },
     ],
-    "react/jsx-no-useless-fragment": ["warn", { allowExpressions: true }],
+    "react/jsx-no-useless-fragment": ["error", { allowExpressions: true }],
     "react/jsx-no-leaked-render": ["error", { validStrategies: ["ternary"] }],
     "react/jsx-no-duplicate-props": "error",
     "react/jsx-no-undef": "error",

@@ -9,9 +9,6 @@ import type { RpcResponse, Sender } from "../types";
 import { isMobile } from "../utils";
 import { isValidEventOrigin } from "..";
 
-export type ChannelContentScriptClient = ChannelClient;
-export type ChannelContentScriptServer = ChannelServer;
-
 // Channel is a class that establishes communication channel from a
 // content/injected script to a background script.
 export class ChannelContentScript {
@@ -22,7 +19,8 @@ export class ChannelContentScript {
         return;
       }
       if (event.data.type !== reqChannel) return;
-      BrowserRuntimeCommon.sendMessageToBackground(
+      // @ts-ignore
+      BrowserRuntimeCommon.sendMessageToAnywhere(
         {
           channel: reqChannel,
           data: event.data.detail,
@@ -42,7 +40,7 @@ export class ChannelContentScript {
 
   // Forwards all messages from the background script to the client.
   public static proxyReverse(reqChannel: string) {
-    BrowserRuntimeCommon.addEventListenerFromBackground(
+    BrowserRuntimeCommon.addEventListenerFromAnywhere(
       (message: any, sender: Sender, sendResponse: any) => {
         if (!isMobile()) {
           //
@@ -75,8 +73,8 @@ export class ChannelContentScript {
   }
 }
 
-class ChannelClient {
-  constructor(public readonly name: string) {}
+export class ChannelClient {
+  constructor(private name: string) {}
 
   // Sends a message to the active tab, ignoring any response.
   public sendMessageActiveTab(data: any) {
@@ -96,13 +94,13 @@ class ChannelClient {
   }
 }
 
-class ChannelServer {
-  constructor(public readonly name: string) {}
+export class ChannelServer {
+  constructor(private name: string) {}
 
   public handler(
     handlerFn: (message: any, sender: Sender) => Promise<RpcResponse>
   ) {
-    BrowserRuntimeCommon.addEventListenerFromAppUi(
+    BrowserRuntimeCommon.addEventListenerFromAnywhere(
       // @ts-ignore
       (msg: any, sender: Sender, sendResponse: any) => {
         if (!isMobile()) {

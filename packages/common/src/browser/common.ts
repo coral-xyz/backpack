@@ -2,14 +2,6 @@
 // Browser apis that can be used in a mobile web view as well as the extension.
 //
 export class BrowserRuntimeCommon {
-  private static sendMessageToAnywhere(msg: any, cb?: any) {
-    chrome.runtime.sendMessage(msg, cb);
-  }
-
-  private static addEventListenerFromAnywhere(listener: any): void {
-    return chrome.runtime.onMessage.addListener(listener);
-  }
-
   public static sendMessageToBackground(msg: any, cb?: any) {
     return BrowserRuntimeCommon.sendMessageToAnywhere(msg, cb);
   }
@@ -18,12 +10,20 @@ export class BrowserRuntimeCommon {
     return BrowserRuntimeCommon.sendMessageToAnywhere(msg, cb);
   }
 
+  public static sendMessageToAnywhere(msg: any, cb?: any) {
+    chrome.runtime.sendMessage(msg, cb);
+  }
+
   public static addEventListenerFromBackground(listener: any): void {
     return BrowserRuntimeCommon.addEventListenerFromAnywhere(listener);
   }
 
   public static addEventListenerFromAppUi(listener: any): void {
     return BrowserRuntimeCommon.addEventListenerFromAnywhere(listener);
+  }
+
+  public static addEventListenerFromAnywhere(listener: any): void {
+    return chrome.runtime.onMessage.addListener(listener);
   }
 
   public static async getLocalStorage(key: string): Promise<any> {

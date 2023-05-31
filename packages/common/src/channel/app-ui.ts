@@ -16,36 +16,32 @@ import { generateUniqueId, isMobile } from "../utils";
 export interface BackgroundClient {
   request<T = any>({ method, params }: RpcRequest): Promise<RpcResponse<T>>;
 }
-export type ChannelAppUiClient = ChannelClient;
-export type ChannelAppUiServer = ChannelServer;
-export type ChannelAppUiNotifications = ChannelNotifications;
-export type ChannelAppUiResponder = ChannelResponder;
 
 export class ChannelAppUi {
   public static client(name: string): ChannelAppUiClient {
-    return new ChannelClient(name);
+    return new ChannelAppUiClient(name);
   }
 
   public static responder(name: string): ChannelAppUiResponder {
-    return new ChannelResponder(name);
+    return new ChannelAppUiResponder(name);
   }
 
   public static server(name: string): ChannelAppUiServer {
-    return new ChannelServer(name);
+    return new ChannelAppUiServer(name);
   }
 
   public static notifications(name: string): ChannelAppUiNotifications {
-    return new ChannelNotifications(name);
+    return new ChannelAppUiNotifications(name);
   }
 }
 
-class ChannelServer {
+export class ChannelAppUiServer {
   constructor(private name: string) {}
 
   public handler(
     handlerFn: (req: RpcRequest, sender: Sender) => Promise<RpcResponse>
   ) {
-    BrowserRuntimeCommon.addEventListenerFromAppUi(
+    BrowserRuntimeCommon.addEventListenerFromBackground(
       (msg: any, sender: Sender, sendResponse: any) => {
         if (msg.channel !== this.name) {
           return;
@@ -76,8 +72,8 @@ class ChannelServer {
   }
 }
 
-class ChannelNotifications {
-  constructor(public readonly name: string) {}
+export class ChannelAppUiNotifications {
+  constructor(private name: string) {}
 
   public onNotification(handlerFn: (notif: Notification) => void) {
     BrowserRuntimeCommon.addEventListenerFromAppUi(
@@ -111,8 +107,8 @@ class ChannelNotifications {
   }
 }
 
-class ChannelClient implements BackgroundClient {
-  constructor(public readonly name: string) {}
+export class ChannelAppUiClient implements BackgroundClient {
+  constructor(private name: string) {}
 
   public async request<T = any>({
     method,
@@ -137,8 +133,8 @@ class ChannelClient implements BackgroundClient {
 }
 
 // Must be used from the frontend app code.
-class ChannelResponder {
-  constructor(public readonly name: string) {}
+export class ChannelAppUiResponder {
+  constructor(private name: string) {}
 
   public async response<T = any>({
     id,

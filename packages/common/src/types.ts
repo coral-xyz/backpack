@@ -1,7 +1,4 @@
 import type { Commitment } from "@solana/web3.js";
-import type EventEmitterType from "eventemitter3";
-
-export type EventEmitter = EventEmitterType;
 
 export type Context<Backend> = {
   sender: Sender;
@@ -18,6 +15,7 @@ export type Notification = {
 };
 
 export type EventHandler = (notif: any) => void;
+export type EventEmitter = any;
 export type ResponseHandler = [any, any];
 export type Event = any;
 
@@ -182,7 +180,7 @@ export type XnftPreferenceStore = { [key: string]: XnftPreference };
 /////////////////////////////////////////////////////////////////////////////////
 
 export type BlockchainKeyringJson = {
-  hdKeyring?: HdKeyringJson;
+  hdKeyring: HdKeyringJson;
   importedKeyring: KeyringJson;
   ledgerKeyring: LedgerKeyringJson;
   activeWallet: string;
