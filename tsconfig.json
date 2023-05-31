@@ -5,7 +5,9 @@
   "references": [
     { "path": "packages/background" },
     { "path": "packages/blockchains" },
+    { "path": "packages/blockchain-service" },
     { "path": "packages/chat-sdk" },
+    { "path": "packages/chat-xplat" },
     { "path": "packages/common" },
     { "path": "packages/db" },
     { "path": "packages/ledger-injection" },

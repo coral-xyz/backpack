@@ -120,7 +120,7 @@ router.post("/request", extractUserId, async (req, res) => {
         "friend_requests_accept",
         to,
         {
-          title: "Friend request Accepted",
+          title: "Friend request accepted",
           body: JSON.stringify({
             from: uuid,
           }),

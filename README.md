@@ -10,7 +10,7 @@
 
   <p>
     <a href="https://github.com/coral-xyz/backpack/actions"><img alt="Build Status" src="https://github.com/coral-xyz/backpack/actions/workflows/pull_requests_and_merges.yml/badge.svg" /></a>
-    <a href="https://docs.xnft.gg"><img alt="Tutorials" src="https://img.shields.io/badge/docs-tutorials-blueviolet" /></a>
+    <a href="https://docs.xnfts.dev"><img alt="Tutorials" src="https://img.shields.io/badge/docs-tutorials-blueviolet" /></a>
     <a href="https://discord.gg/RhKxgS8SaD"><img alt="Discord Chat" src="https://img.shields.io/badge/chat-discord-blueviolet" /></a>
   </p>
 </div>
@@ -23,16 +23,21 @@
 
 # Table of contents:
 
-- [Installing the Latest Release](#installing-the-latest-release)
-- [Developing Locally](#developing-locally)
-  - [Pull the code](#pull-the-code)
-  - [Temporary preliminary steps](#temporary-preliminary-steps)
-  - [Install dependencies](#install-dependencies)
-  - [Build all packages for production](#build-all-packages-for-production)
-  - [Start packages for development](#start-everything-inside-packages-for-development)
-  - [Install the development version of the extension](#install-the-development-version-of-the-extension)
-  - [Optionally install the built extension](#optionally-install-the-built-extension)
-- [License](#license)
+- [Table of contents:](#table-of-contents)
+  - [Installing the Latest Release](#installing-the-latest-release)
+  - [Developing Locally](#developing-locally)
+    - [Pull the code](#pull-the-code)
+    - [Temporary preliminary steps](#temporary-preliminary-steps)
+      - [Enable self-signed local SSL certs](#enable-self-signed-local-ssl-certs)
+      - [Environment variables](#environment-variables)
+    - [Install dependencies](#install-dependencies)
+    - [Build all packages for production](#build-all-packages-for-production)
+    - [Start everything inside `./packages` for development](#start-everything-inside-packages-for-development)
+      - [Troubleshooting](#troubleshooting)
+    - [Install the development version of the extension](#install-the-development-version-of-the-extension)
+      - [Not seeing the dev folder?](#not-seeing-the-dev-folder)
+    - [Optionally install the built extension](#optionally-install-the-built-extension)
+  - [License](#license)
 
 ## Installing the Latest Release
 

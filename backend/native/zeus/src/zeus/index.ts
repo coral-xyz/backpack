@@ -998,6 +998,7 @@ export const $ = <Type extends GraphQLVariableType, Name extends string>(
 };
 type ZEUS_INTERFACES = never;
 export type ScalarCoders = {
+  bigint?: ScalarResolver;
   citext?: ScalarResolver;
   jsonb?: ScalarResolver;
   timestamptz?: ScalarResolver;
@@ -3417,6 +3418,550 @@ export type ValueTypes = {
     /** filter the rows which have to be updated */
     where: ValueTypes["auth_stripe_onramp_bool_exp"] | Variable<any, string>;
   };
+  /** indexes swaps for calculating fee referral payments */
+  ["auth_swaps"]: AliasType<{
+    created_at?: boolean | `@${string}`;
+    /** An object relationship */
+    distributor?: ValueTypes["dropzone_distributors"];
+    distributor_id?: boolean | `@${string}`;
+    fee_account_address?: boolean | `@${string}`;
+    fee_amount?: boolean | `@${string}`;
+    fee_mint_address?: boolean | `@${string}`;
+    fee_payer_id?: boolean | `@${string}`;
+    fee_payer_public_key?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    transaction_at?: boolean | `@${string}`;
+    transaction_signature?: boolean | `@${string}`;
+    /** An object relationship */
+    user?: ValueTypes["auth_users"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "auth.swaps" */
+  ["auth_swaps_aggregate_order_by"]: {
+    avg?:
+      | ValueTypes["auth_swaps_avg_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    count?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    max?:
+      | ValueTypes["auth_swaps_max_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    min?:
+      | ValueTypes["auth_swaps_min_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev?:
+      | ValueTypes["auth_swaps_stddev_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_pop?:
+      | ValueTypes["auth_swaps_stddev_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_samp?:
+      | ValueTypes["auth_swaps_stddev_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    sum?:
+      | ValueTypes["auth_swaps_sum_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_pop?:
+      | ValueTypes["auth_swaps_var_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_samp?:
+      | ValueTypes["auth_swaps_var_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    variance?:
+      | ValueTypes["auth_swaps_variance_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** input type for inserting array relation for remote table "auth.swaps" */
+  ["auth_swaps_arr_rel_insert_input"]: {
+    data: Array<ValueTypes["auth_swaps_insert_input"]> | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["auth_swaps_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by avg() on columns of table "auth.swaps" */
+  ["auth_swaps_avg_order_by"]: {
+    fee_amount?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Boolean expression to filter rows from the table "auth.swaps". All fields are combined with a logical 'AND'. */
+  ["auth_swaps_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["auth_swaps_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["auth_swaps_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["auth_swaps_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    created_at?:
+      | ValueTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor?:
+      | ValueTypes["dropzone_distributors_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor_id?:
+      | ValueTypes["uuid_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_account_address?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_amount?:
+      | ValueTypes["bigint_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_mint_address?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_payer_id?:
+      | ValueTypes["uuid_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_payer_public_key?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["uuid_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    transaction_at?:
+      | ValueTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    transaction_signature?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user?:
+      | ValueTypes["auth_users_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "auth.swaps" */
+  ["auth_swaps_constraint"]: auth_swaps_constraint;
+  /** input type for incrementing numeric columns in table "auth.swaps" */
+  ["auth_swaps_inc_input"]: {
+    fee_amount?:
+      | ValueTypes["bigint"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** input type for inserting data into table "auth.swaps" */
+  ["auth_swaps_insert_input"]: {
+    distributor?:
+      | ValueTypes["dropzone_distributors_obj_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor_id?:
+      | ValueTypes["uuid"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_account_address?: string | undefined | null | Variable<any, string>;
+    fee_amount?:
+      | ValueTypes["bigint"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_mint_address?: string | undefined | null | Variable<any, string>;
+    fee_payer_id?:
+      | ValueTypes["uuid"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_payer_public_key?: string | undefined | null | Variable<any, string>;
+    transaction_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    transaction_signature?: string | undefined | null | Variable<any, string>;
+    user?:
+      | ValueTypes["auth_users_obj_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by max() on columns of table "auth.swaps" */
+  ["auth_swaps_max_order_by"]: {
+    created_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_account_address?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_amount?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_mint_address?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_payer_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_payer_public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    transaction_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    transaction_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by min() on columns of table "auth.swaps" */
+  ["auth_swaps_min_order_by"]: {
+    created_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_account_address?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_amount?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_mint_address?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_payer_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_payer_public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    transaction_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    transaction_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** response of any mutation on the table "auth.swaps" */
+  ["auth_swaps_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["auth_swaps"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "auth.swaps" */
+  ["auth_swaps_on_conflict"]: {
+    constraint: ValueTypes["auth_swaps_constraint"] | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["auth_swaps_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["auth_swaps_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "auth.swaps". */
+  ["auth_swaps_order_by"]: {
+    created_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor?:
+      | ValueTypes["dropzone_distributors_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_account_address?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_amount?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_mint_address?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_payer_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_payer_public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    transaction_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    transaction_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user?:
+      | ValueTypes["auth_users_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** primary key columns input for table: auth.swaps */
+  ["auth_swaps_pk_columns_input"]: {
+    id: ValueTypes["uuid"] | Variable<any, string>;
+  };
+  /** select columns of table "auth.swaps" */
+  ["auth_swaps_select_column"]: auth_swaps_select_column;
+  /** input type for updating data in table "auth.swaps" */
+  ["auth_swaps_set_input"]: {
+    distributor_id?:
+      | ValueTypes["uuid"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_account_address?: string | undefined | null | Variable<any, string>;
+    fee_amount?:
+      | ValueTypes["bigint"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_mint_address?: string | undefined | null | Variable<any, string>;
+    fee_payer_id?:
+      | ValueTypes["uuid"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_payer_public_key?: string | undefined | null | Variable<any, string>;
+    transaction_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by stddev() on columns of table "auth.swaps" */
+  ["auth_swaps_stddev_order_by"]: {
+    fee_amount?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by stddev_pop() on columns of table "auth.swaps" */
+  ["auth_swaps_stddev_pop_order_by"]: {
+    fee_amount?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by stddev_samp() on columns of table "auth.swaps" */
+  ["auth_swaps_stddev_samp_order_by"]: {
+    fee_amount?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "auth_swaps" */
+  ["auth_swaps_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["auth_swaps_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_swaps_stream_cursor_value_input"]: {
+    created_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor_id?:
+      | ValueTypes["uuid"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_account_address?: string | undefined | null | Variable<any, string>;
+    fee_amount?:
+      | ValueTypes["bigint"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_mint_address?: string | undefined | null | Variable<any, string>;
+    fee_payer_id?:
+      | ValueTypes["uuid"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    fee_payer_public_key?: string | undefined | null | Variable<any, string>;
+    id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+    transaction_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    transaction_signature?: string | undefined | null | Variable<any, string>;
+  };
+  /** order by sum() on columns of table "auth.swaps" */
+  ["auth_swaps_sum_order_by"]: {
+    fee_amount?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** update columns of table "auth.swaps" */
+  ["auth_swaps_update_column"]: auth_swaps_update_column;
+  ["auth_swaps_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ValueTypes["auth_swaps_inc_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["auth_swaps_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** filter the rows which have to be updated */
+    where: ValueTypes["auth_swaps_bool_exp"] | Variable<any, string>;
+  };
+  /** order by var_pop() on columns of table "auth.swaps" */
+  ["auth_swaps_var_pop_order_by"]: {
+    fee_amount?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by var_samp() on columns of table "auth.swaps" */
+  ["auth_swaps_var_samp_order_by"]: {
+    fee_amount?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by variance() on columns of table "auth.swaps" */
+  ["auth_swaps_variance_order_by"]: {
+    fee_amount?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
   /** columns and relationships of "auth.user_active_publickey_mapping" */
   ["auth_user_active_publickey_mapping"]: AliasType<{
     blockchain?: boolean | `@${string}`;
@@ -4019,6 +4564,40 @@ export type ValueTypes = {
   /** columns and relationships of "auth.users" */
   ["auth_users"]: AliasType<{
     created_at?: boolean | `@${string}`;
+    dropzone_claims?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["dropzone_claims_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["dropzone_claims_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["dropzone_claims_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_claims"]
+    ];
     id?: boolean | `@${string}`;
     /** An object relationship */
     invitation?: ValueTypes["auth_invitations"];
@@ -4160,6 +4739,40 @@ export type ValueTypes = {
     ];
     /** An object relationship */
     referrer?: ValueTypes["auth_users"];
+    swaps?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_swaps_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_swaps_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_swaps_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_swaps"]
+    ];
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
@@ -4253,6 +4866,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    dropzone_claims?:
+      | ValueTypes["dropzone_claims_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     id?:
       | ValueTypes["uuid_comparison_exp"]
       | undefined
@@ -4288,6 +4906,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    swaps?:
+      | ValueTypes["auth_swaps_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     username?:
       | ValueTypes["citext_comparison_exp"]
       | undefined
@@ -4298,6 +4921,11 @@ export type ValueTypes = {
   ["auth_users_constraint"]: auth_users_constraint;
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
+    dropzone_claims?:
+      | ValueTypes["dropzone_claims_arr_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
     id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
     invitation?:
       | ValueTypes["auth_invitations_obj_rel_insert_input"]
@@ -4325,6 +4953,11 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     referrer_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+    swaps?:
+      | ValueTypes["auth_swaps_arr_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
     username?: ValueTypes["citext"] | undefined | null | Variable<any, string>;
     waitlist_id?: string | undefined | null | Variable<any, string>;
   };
@@ -4407,6 +5040,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    dropzone_claims_aggregate?:
+      | ValueTypes["dropzone_claims_aggregate_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     invitation?:
       | ValueTypes["auth_invitations_order_by"]
@@ -4425,6 +5063,11 @@ export type ValueTypes = {
       | Variable<any, string>;
     referrer?:
       | ValueTypes["auth_users_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    swaps_aggregate?:
+      | ValueTypes["auth_swaps_aggregate_order_by"]
       | undefined
       | null
       | Variable<any, string>;
@@ -4801,6 +5444,27 @@ export type ValueTypes = {
     /** filter the rows which have to be updated */
     where: ValueTypes["auth_xnft_secrets_bool_exp"] | Variable<any, string>;
   };
+  ["bigint"]: unknown;
+  /** Boolean expression to compare columns of type "bigint". All fields are combined with logical 'AND'. */
+  ["bigint_comparison_exp"]: {
+    _eq?: ValueTypes["bigint"] | undefined | null | Variable<any, string>;
+    _gt?: ValueTypes["bigint"] | undefined | null | Variable<any, string>;
+    _gte?: ValueTypes["bigint"] | undefined | null | Variable<any, string>;
+    _in?:
+      | Array<ValueTypes["bigint"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _is_null?: boolean | undefined | null | Variable<any, string>;
+    _lt?: ValueTypes["bigint"] | undefined | null | Variable<any, string>;
+    _lte?: ValueTypes["bigint"] | undefined | null | Variable<any, string>;
+    _neq?: ValueTypes["bigint"] | undefined | null | Variable<any, string>;
+    _nin?:
+      | Array<ValueTypes["bigint"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
   ["citext"]: unknown;
   /** Boolean expression to compare columns of type "citext". All fields are combined with logical 'AND'. */
   ["citext_comparison_exp"]: {
@@ -4844,8 +5508,770 @@ export type ValueTypes = {
   };
   /** ordering argument of a cursor */
   ["cursor_ordering"]: cursor_ordering;
-  /** data used by merkle distributors */
+  /** columns and relationships of "dropzone.claims" */
+  ["dropzone_claims"]: AliasType<{
+    amount?: boolean | `@${string}`;
+    /** An object relationship */
+    claimant?: ValueTypes["auth_users"];
+    claimant_id?: boolean | `@${string}`;
+    claimant_public_key?: boolean | `@${string}`;
+    claimed_at?: boolean | `@${string}`;
+    created_at?: boolean | `@${string}`;
+    /** An object relationship */
+    distributor?: ValueTypes["dropzone_distributors"];
+    distributor_id?: boolean | `@${string}`;
+    ordinal?: boolean | `@${string}`;
+    transaction_signature?: boolean | `@${string}`;
+    viewed_at?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "dropzone.claims" */
+  ["dropzone_claims_aggregate_order_by"]: {
+    avg?:
+      | ValueTypes["dropzone_claims_avg_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    count?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    max?:
+      | ValueTypes["dropzone_claims_max_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    min?:
+      | ValueTypes["dropzone_claims_min_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev?:
+      | ValueTypes["dropzone_claims_stddev_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_pop?:
+      | ValueTypes["dropzone_claims_stddev_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_samp?:
+      | ValueTypes["dropzone_claims_stddev_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    sum?:
+      | ValueTypes["dropzone_claims_sum_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_pop?:
+      | ValueTypes["dropzone_claims_var_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_samp?:
+      | ValueTypes["dropzone_claims_var_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    variance?:
+      | ValueTypes["dropzone_claims_variance_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** input type for inserting array relation for remote table "dropzone.claims" */
+  ["dropzone_claims_arr_rel_insert_input"]: {
+    data:
+      | Array<ValueTypes["dropzone_claims_insert_input"]>
+      | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["dropzone_claims_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by avg() on columns of table "dropzone.claims" */
+  ["dropzone_claims_avg_order_by"]: {
+    amount?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    ordinal?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** Boolean expression to filter rows from the table "dropzone.claims". All fields are combined with a logical 'AND'. */
+  ["dropzone_claims_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["dropzone_claims_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["dropzone_claims_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["dropzone_claims_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    amount?:
+      | ValueTypes["bigint_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    claimant?:
+      | ValueTypes["auth_users_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    claimant_id?:
+      | ValueTypes["uuid_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    claimant_public_key?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    claimed_at?:
+      | ValueTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    created_at?:
+      | ValueTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor?:
+      | ValueTypes["dropzone_distributors_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor_id?:
+      | ValueTypes["uuid_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    ordinal?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    transaction_signature?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    viewed_at?:
+      | ValueTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "dropzone.claims" */
+  ["dropzone_claims_constraint"]: dropzone_claims_constraint;
+  /** input type for incrementing numeric columns in table "dropzone.claims" */
+  ["dropzone_claims_inc_input"]: {
+    amount?: ValueTypes["bigint"] | undefined | null | Variable<any, string>;
+    ordinal?: number | undefined | null | Variable<any, string>;
+  };
+  /** input type for inserting data into table "dropzone.claims" */
+  ["dropzone_claims_insert_input"]: {
+    amount?: ValueTypes["bigint"] | undefined | null | Variable<any, string>;
+    claimant?:
+      | ValueTypes["auth_users_obj_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    claimant_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+    claimant_public_key?: string | undefined | null | Variable<any, string>;
+    claimed_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    created_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor?:
+      | ValueTypes["dropzone_distributors_obj_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor_id?:
+      | ValueTypes["uuid"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    ordinal?: number | undefined | null | Variable<any, string>;
+    transaction_signature?: string | undefined | null | Variable<any, string>;
+    viewed_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by max() on columns of table "dropzone.claims" */
+  ["dropzone_claims_max_order_by"]: {
+    amount?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    claimant_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    claimant_public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    claimed_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    created_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    ordinal?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    transaction_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    viewed_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by min() on columns of table "dropzone.claims" */
+  ["dropzone_claims_min_order_by"]: {
+    amount?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    claimant_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    claimant_public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    claimed_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    created_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    ordinal?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    transaction_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    viewed_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** response of any mutation on the table "dropzone.claims" */
+  ["dropzone_claims_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["dropzone_claims"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "dropzone.claims" */
+  ["dropzone_claims_on_conflict"]: {
+    constraint:
+      | ValueTypes["dropzone_claims_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["dropzone_claims_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["dropzone_claims_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "dropzone.claims". */
+  ["dropzone_claims_order_by"]: {
+    amount?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    claimant?:
+      | ValueTypes["auth_users_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    claimant_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    claimant_public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    claimed_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    created_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor?:
+      | ValueTypes["dropzone_distributors_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    ordinal?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    transaction_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    viewed_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** primary key columns input for table: dropzone.claims */
+  ["dropzone_claims_pk_columns_input"]: {
+    claimant_id: ValueTypes["uuid"] | Variable<any, string>;
+    distributor_id: ValueTypes["uuid"] | Variable<any, string>;
+  };
+  /** select columns of table "dropzone.claims" */
+  ["dropzone_claims_select_column"]: dropzone_claims_select_column;
+  /** input type for updating data in table "dropzone.claims" */
+  ["dropzone_claims_set_input"]: {
+    amount?: ValueTypes["bigint"] | undefined | null | Variable<any, string>;
+    claimant_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+    claimant_public_key?: string | undefined | null | Variable<any, string>;
+    claimed_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    created_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor_id?:
+      | ValueTypes["uuid"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    ordinal?: number | undefined | null | Variable<any, string>;
+    transaction_signature?: string | undefined | null | Variable<any, string>;
+    viewed_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by stddev() on columns of table "dropzone.claims" */
+  ["dropzone_claims_stddev_order_by"]: {
+    amount?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    ordinal?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev_pop() on columns of table "dropzone.claims" */
+  ["dropzone_claims_stddev_pop_order_by"]: {
+    amount?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    ordinal?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev_samp() on columns of table "dropzone.claims" */
+  ["dropzone_claims_stddev_samp_order_by"]: {
+    amount?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    ordinal?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "dropzone_claims" */
+  ["dropzone_claims_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["dropzone_claims_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["dropzone_claims_stream_cursor_value_input"]: {
+    amount?: ValueTypes["bigint"] | undefined | null | Variable<any, string>;
+    claimant_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+    claimant_public_key?: string | undefined | null | Variable<any, string>;
+    claimed_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    created_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributor_id?:
+      | ValueTypes["uuid"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    ordinal?: number | undefined | null | Variable<any, string>;
+    transaction_signature?: string | undefined | null | Variable<any, string>;
+    viewed_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by sum() on columns of table "dropzone.claims" */
+  ["dropzone_claims_sum_order_by"]: {
+    amount?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    ordinal?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** update columns of table "dropzone.claims" */
+  ["dropzone_claims_update_column"]: dropzone_claims_update_column;
+  ["dropzone_claims_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ValueTypes["dropzone_claims_inc_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["dropzone_claims_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** filter the rows which have to be updated */
+    where: ValueTypes["dropzone_claims_bool_exp"] | Variable<any, string>;
+  };
+  /** order by var_pop() on columns of table "dropzone.claims" */
+  ["dropzone_claims_var_pop_order_by"]: {
+    amount?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    ordinal?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by var_samp() on columns of table "dropzone.claims" */
+  ["dropzone_claims_var_samp_order_by"]: {
+    amount?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    ordinal?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by variance() on columns of table "dropzone.claims" */
+  ["dropzone_claims_variance_order_by"]: {
+    amount?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    ordinal?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** columns and relationships of "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories"]: AliasType<{
+    data?: [
+      {
+        /** JSON select path */
+        path?: string | undefined | null | Variable<any, string>;
+      },
+      boolean | `@${string}`
+    ];
+    distributors?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["dropzone_distributors_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["dropzone_distributors_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["dropzone_distributors_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributors"]
+    ];
+    id?: boolean | `@${string}`;
+    name?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  ["dropzone_distributor_categories_append_input"]: {
+    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
+  };
+  /** Boolean expression to filter rows from the table "dropzone.distributor_categories". All fields are combined with a logical 'AND'. */
+  ["dropzone_distributor_categories_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["dropzone_distributor_categories_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["dropzone_distributor_categories_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["dropzone_distributor_categories_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    data?:
+      | ValueTypes["jsonb_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    distributors?:
+      | ValueTypes["dropzone_distributors_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["uuid_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    name?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_constraint"]: dropzone_distributor_categories_constraint;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  ["dropzone_distributor_categories_delete_at_path_input"]: {
+    data?: Array<string> | undefined | null | Variable<any, string>;
+  };
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  ["dropzone_distributor_categories_delete_elem_input"]: {
+    data?: number | undefined | null | Variable<any, string>;
+  };
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  ["dropzone_distributor_categories_delete_key_input"]: {
+    data?: string | undefined | null | Variable<any, string>;
+  };
+  /** input type for inserting data into table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_insert_input"]: {
+    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
+    distributors?:
+      | ValueTypes["dropzone_distributors_arr_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+    name?: string | undefined | null | Variable<any, string>;
+  };
+  /** response of any mutation on the table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["dropzone_distributor_categories"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** input type for inserting object relation for remote table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_obj_rel_insert_input"]: {
+    data:
+      | ValueTypes["dropzone_distributor_categories_insert_input"]
+      | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["dropzone_distributor_categories_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** on_conflict condition type for table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_on_conflict"]: {
+    constraint:
+      | ValueTypes["dropzone_distributor_categories_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["dropzone_distributor_categories_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["dropzone_distributor_categories_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "dropzone.distributor_categories". */
+  ["dropzone_distributor_categories_order_by"]: {
+    data?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    distributors_aggregate?:
+      | ValueTypes["dropzone_distributors_aggregate_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    name?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** primary key columns input for table: dropzone.distributor_categories */
+  ["dropzone_distributor_categories_pk_columns_input"]: {
+    id: ValueTypes["uuid"] | Variable<any, string>;
+  };
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  ["dropzone_distributor_categories_prepend_input"]: {
+    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
+  };
+  /** select columns of table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_select_column"]: dropzone_distributor_categories_select_column;
+  /** input type for updating data in table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_set_input"]: {
+    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
+    id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+    name?: string | undefined | null | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "dropzone_distributor_categories" */
+  ["dropzone_distributor_categories_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["dropzone_distributor_categories_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["dropzone_distributor_categories_stream_cursor_value_input"]: {
+    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
+    id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+    name?: string | undefined | null | Variable<any, string>;
+  };
+  /** update columns of table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_update_column"]: dropzone_distributor_categories_update_column;
+  ["dropzone_distributor_categories_updates"]: {
+    /** append existing jsonb value of filtered columns with new jsonb value */
+    _append?:
+      | ValueTypes["dropzone_distributor_categories_append_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+    _delete_at_path?:
+      | ValueTypes["dropzone_distributor_categories_delete_at_path_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+    _delete_elem?:
+      | ValueTypes["dropzone_distributor_categories_delete_elem_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+    _delete_key?:
+      | ValueTypes["dropzone_distributor_categories_delete_key_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** prepend existing jsonb value of filtered columns with new jsonb value */
+    _prepend?:
+      | ValueTypes["dropzone_distributor_categories_prepend_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["dropzone_distributor_categories_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** filter the rows which have to be updated */
+    where:
+      | ValueTypes["dropzone_distributor_categories_bool_exp"]
+      | Variable<any, string>;
+  };
+  /** columns and relationships of "dropzone.distributors" */
   ["dropzone_distributors"]: AliasType<{
+    /** An object relationship */
+    category?: ValueTypes["dropzone_distributor_categories"];
+    category_id?: boolean | `@${string}`;
+    claims?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["dropzone_claims_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["dropzone_claims_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["dropzone_claims_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_claims"]
+    ];
     created_at?: boolean | `@${string}`;
     data?: [
       {
@@ -4855,32 +6281,78 @@ export type ValueTypes = {
       boolean | `@${string}`
     ];
     id?: boolean | `@${string}`;
-    mint?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregated selection of "dropzone.distributors" */
-  ["dropzone_distributors_aggregate"]: AliasType<{
-    aggregate?: ValueTypes["dropzone_distributors_aggregate_fields"];
-    nodes?: ValueTypes["dropzone_distributors"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate fields of "dropzone.distributors" */
-  ["dropzone_distributors_aggregate_fields"]: AliasType<{
-    count?: [
+    lookup_table_public_key?: boolean | `@${string}`;
+    mint_public_key?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    published_at?: boolean | `@${string}`;
+    secret?: boolean | `@${string}`;
+    swaps?: [
       {
-        columns?:
-          | Array<ValueTypes["dropzone_distributors_select_column"]>
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_swaps_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_swaps_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_swaps_bool_exp"]
           | undefined
           | null
           | Variable<any, string>;
-        distinct?: boolean | undefined | null | Variable<any, string>;
       },
-      boolean | `@${string}`
+      ValueTypes["auth_swaps"]
     ];
-    max?: ValueTypes["dropzone_distributors_max_fields"];
-    min?: ValueTypes["dropzone_distributors_min_fields"];
+    transaction_signature?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** order by aggregate values of table "dropzone.distributors" */
+  ["dropzone_distributors_aggregate_order_by"]: {
+    count?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    max?:
+      | ValueTypes["dropzone_distributors_max_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    min?:
+      | ValueTypes["dropzone_distributors_min_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  ["dropzone_distributors_append_input"]: {
+    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
+  };
+  /** input type for inserting array relation for remote table "dropzone.distributors" */
+  ["dropzone_distributors_arr_rel_insert_input"]: {
+    data:
+      | Array<ValueTypes["dropzone_distributors_insert_input"]>
+      | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["dropzone_distributors_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
   /** Boolean expression to filter rows from the table "dropzone.distributors". All fields are combined with a logical 'AND'. */
   ["dropzone_distributors_bool_exp"]: {
     _and?:
@@ -4898,6 +6370,21 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    category?:
+      | ValueTypes["dropzone_distributor_categories_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    category_id?:
+      | ValueTypes["uuid_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    claims?:
+      | ValueTypes["dropzone_claims_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     created_at?:
       | ValueTypes["timestamptz_comparison_exp"]
       | undefined
@@ -4909,11 +6396,41 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     id?:
+      | ValueTypes["uuid_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    lookup_table_public_key?:
       | ValueTypes["String_comparison_exp"]
       | undefined
       | null
       | Variable<any, string>;
-    mint?:
+    mint_public_key?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    public_key?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    published_at?:
+      | ValueTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    secret?:
+      | ValueTypes["uuid_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    swaps?:
+      | ValueTypes["auth_swaps_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    transaction_signature?:
       | ValueTypes["String_comparison_exp"]
       | undefined
       | null
@@ -4921,26 +6438,133 @@ export type ValueTypes = {
   };
   /** unique or primary key constraints on table "dropzone.distributors" */
   ["dropzone_distributors_constraint"]: dropzone_distributors_constraint;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  ["dropzone_distributors_delete_at_path_input"]: {
+    data?: Array<string> | undefined | null | Variable<any, string>;
+  };
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  ["dropzone_distributors_delete_elem_input"]: {
+    data?: number | undefined | null | Variable<any, string>;
+  };
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  ["dropzone_distributors_delete_key_input"]: {
+    data?: string | undefined | null | Variable<any, string>;
+  };
   /** input type for inserting data into table "dropzone.distributors" */
   ["dropzone_distributors_insert_input"]: {
+    category?:
+      | ValueTypes["dropzone_distributor_categories_obj_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    category_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+    claims?:
+      | ValueTypes["dropzone_claims_arr_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    created_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
     data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    id?: string | undefined | null | Variable<any, string>;
-    mint?: string | undefined | null | Variable<any, string>;
+    id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+    lookup_table_public_key?: string | undefined | null | Variable<any, string>;
+    mint_public_key?: string | undefined | null | Variable<any, string>;
+    public_key?: string | undefined | null | Variable<any, string>;
+    published_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    swaps?:
+      | ValueTypes["auth_swaps_arr_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    transaction_signature?: string | undefined | null | Variable<any, string>;
   };
-  /** aggregate max on columns */
-  ["dropzone_distributors_max_fields"]: AliasType<{
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    mint?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate min on columns */
-  ["dropzone_distributors_min_fields"]: AliasType<{
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    mint?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
+  /** order by max() on columns of table "dropzone.distributors" */
+  ["dropzone_distributors_max_order_by"]: {
+    category_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    created_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    lookup_table_public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    mint_public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    published_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    secret?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    transaction_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by min() on columns of table "dropzone.distributors" */
+  ["dropzone_distributors_min_order_by"]: {
+    category_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    created_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    lookup_table_public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    mint_public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    published_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    secret?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    transaction_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
   /** response of any mutation on the table "dropzone.distributors" */
   ["dropzone_distributors_mutation_response"]: AliasType<{
     /** number of rows affected by the mutation */
@@ -4949,6 +6573,18 @@ export type ValueTypes = {
     returning?: ValueTypes["dropzone_distributors"];
     __typename?: boolean | `@${string}`;
   }>;
+  /** input type for inserting object relation for remote table "dropzone.distributors" */
+  ["dropzone_distributors_obj_rel_insert_input"]: {
+    data:
+      | ValueTypes["dropzone_distributors_insert_input"]
+      | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["dropzone_distributors_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
   /** on_conflict condition type for table "dropzone.distributors" */
   ["dropzone_distributors_on_conflict"]: {
     constraint:
@@ -4965,6 +6601,21 @@ export type ValueTypes = {
   };
   /** Ordering options when selecting data from "dropzone.distributors". */
   ["dropzone_distributors_order_by"]: {
+    category?:
+      | ValueTypes["dropzone_distributor_categories_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    category_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    claims_aggregate?:
+      | ValueTypes["dropzone_claims_aggregate_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     created_at?:
       | ValueTypes["order_by"]
       | undefined
@@ -4972,10 +6623,68 @@ export type ValueTypes = {
       | Variable<any, string>;
     data?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    mint?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    lookup_table_public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    mint_public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    published_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    secret?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    swaps_aggregate?:
+      | ValueTypes["auth_swaps_aggregate_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    transaction_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** primary key columns input for table: dropzone.distributors */
+  ["dropzone_distributors_pk_columns_input"]: {
+    id: ValueTypes["uuid"] | Variable<any, string>;
+  };
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  ["dropzone_distributors_prepend_input"]: {
+    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
   };
   /** select columns of table "dropzone.distributors" */
   ["dropzone_distributors_select_column"]: dropzone_distributors_select_column;
+  /** input type for updating data in table "dropzone.distributors" */
+  ["dropzone_distributors_set_input"]: {
+    category_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+    created_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
+    id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+    lookup_table_public_key?: string | undefined | null | Variable<any, string>;
+    mint_public_key?: string | undefined | null | Variable<any, string>;
+    public_key?: string | undefined | null | Variable<any, string>;
+    published_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    transaction_signature?: string | undefined | null | Variable<any, string>;
+  };
   /** Streaming cursor of the table "dropzone_distributors" */
   ["dropzone_distributors_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -4991,17 +6700,67 @@ export type ValueTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["dropzone_distributors_stream_cursor_value_input"]: {
+    category_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
     created_at?:
       | ValueTypes["timestamptz"]
       | undefined
       | null
       | Variable<any, string>;
     data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    id?: string | undefined | null | Variable<any, string>;
-    mint?: string | undefined | null | Variable<any, string>;
+    id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+    lookup_table_public_key?: string | undefined | null | Variable<any, string>;
+    mint_public_key?: string | undefined | null | Variable<any, string>;
+    public_key?: string | undefined | null | Variable<any, string>;
+    published_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    secret?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+    transaction_signature?: string | undefined | null | Variable<any, string>;
   };
-  /** placeholder for update columns of table "dropzone.distributors" (current role has no relevant permissions) */
+  /** update columns of table "dropzone.distributors" */
   ["dropzone_distributors_update_column"]: dropzone_distributors_update_column;
+  ["dropzone_distributors_updates"]: {
+    /** append existing jsonb value of filtered columns with new jsonb value */
+    _append?:
+      | ValueTypes["dropzone_distributors_append_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+    _delete_at_path?:
+      | ValueTypes["dropzone_distributors_delete_at_path_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+    _delete_elem?:
+      | ValueTypes["dropzone_distributors_delete_elem_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+    _delete_key?:
+      | ValueTypes["dropzone_distributors_delete_key_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** prepend existing jsonb value of filtered columns with new jsonb value */
+    _prepend?:
+      | ValueTypes["dropzone_distributors_prepend_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["dropzone_distributors_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** filter the rows which have to be updated */
+    where: ValueTypes["dropzone_distributors_bool_exp"] | Variable<any, string>;
+  };
   /** columns and relationships of "invitations" */
   ["invitations"]: AliasType<{
     claimed_at?: boolean | `@${string}`;
@@ -5537,6 +7296,34 @@ export type ValueTypes = {
       },
       ValueTypes["auth_stripe_onramp"]
     ];
+    insert_auth_swaps?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["auth_swaps_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["auth_swaps_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_swaps_mutation_response"]
+    ];
+    insert_auth_swaps_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["auth_swaps_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["auth_swaps_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_swaps"]
+    ];
     insert_auth_user_active_publickey_mapping?: [
       {
         /** the rows to be inserted */
@@ -5676,6 +7463,62 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_xnft_secrets"]
+    ];
+    insert_dropzone_claims?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["dropzone_claims_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["dropzone_claims_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_claims_mutation_response"]
+    ];
+    insert_dropzone_claims_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["dropzone_claims_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["dropzone_claims_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_claims"]
+    ];
+    insert_dropzone_distributor_categories?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["dropzone_distributor_categories_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["dropzone_distributor_categories_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributor_categories_mutation_response"]
+    ];
+    insert_dropzone_distributor_categories_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["dropzone_distributor_categories_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["dropzone_distributor_categories_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributor_categories"]
     ];
     insert_dropzone_distributors?: [
       {
@@ -6077,6 +7920,60 @@ export type ValueTypes = {
       },
       ValueTypes["auth_stripe_onramp_mutation_response"]
     ];
+    update_auth_swaps?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["auth_swaps_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["auth_swaps_set_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** filter the rows which have to be updated */;
+        where: ValueTypes["auth_swaps_bool_exp"] | Variable<any, string>;
+      },
+      ValueTypes["auth_swaps_mutation_response"]
+    ];
+    update_auth_swaps_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["auth_swaps_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["auth_swaps_set_input"]
+          | undefined
+          | null
+          | Variable<any, string>;
+        pk_columns:
+          | ValueTypes["auth_swaps_pk_columns_input"]
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_swaps"]
+    ];
+    update_auth_swaps_many?: [
+      {
+        /** updates to execute, in order */
+        updates:
+          | Array<ValueTypes["auth_swaps_updates"]>
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_swaps_mutation_response"]
+    ];
     update_auth_user_active_publickey_mapping?: [
       {
         /** increments the numeric columns with given value of the filtered values */
@@ -6280,6 +8177,300 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_xnft_secrets_mutation_response"]
+    ];
+    update_dropzone_claims?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["dropzone_claims_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["dropzone_claims_set_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** filter the rows which have to be updated */;
+        where: ValueTypes["dropzone_claims_bool_exp"] | Variable<any, string>;
+      },
+      ValueTypes["dropzone_claims_mutation_response"]
+    ];
+    update_dropzone_claims_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["dropzone_claims_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["dropzone_claims_set_input"]
+          | undefined
+          | null
+          | Variable<any, string>;
+        pk_columns:
+          | ValueTypes["dropzone_claims_pk_columns_input"]
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_claims"]
+    ];
+    update_dropzone_claims_many?: [
+      {
+        /** updates to execute, in order */
+        updates:
+          | Array<ValueTypes["dropzone_claims_updates"]>
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_claims_mutation_response"]
+    ];
+    update_dropzone_distributor_categories?: [
+      {
+        /** append existing jsonb value of filtered columns with new jsonb value */
+        _append?:
+          | ValueTypes["dropzone_distributor_categories_append_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */;
+        _delete_at_path?:
+          | ValueTypes["dropzone_distributor_categories_delete_at_path_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */;
+        _delete_elem?:
+          | ValueTypes["dropzone_distributor_categories_delete_elem_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** delete key/value pair or string element. key/value pairs are matched based on their key value */;
+        _delete_key?:
+          | ValueTypes["dropzone_distributor_categories_delete_key_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** prepend existing jsonb value of filtered columns with new jsonb value */;
+        _prepend?:
+          | ValueTypes["dropzone_distributor_categories_prepend_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["dropzone_distributor_categories_set_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** filter the rows which have to be updated */;
+        where:
+          | ValueTypes["dropzone_distributor_categories_bool_exp"]
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributor_categories_mutation_response"]
+    ];
+    update_dropzone_distributor_categories_by_pk?: [
+      {
+        /** append existing jsonb value of filtered columns with new jsonb value */
+        _append?:
+          | ValueTypes["dropzone_distributor_categories_append_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */;
+        _delete_at_path?:
+          | ValueTypes["dropzone_distributor_categories_delete_at_path_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */;
+        _delete_elem?:
+          | ValueTypes["dropzone_distributor_categories_delete_elem_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** delete key/value pair or string element. key/value pairs are matched based on their key value */;
+        _delete_key?:
+          | ValueTypes["dropzone_distributor_categories_delete_key_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** prepend existing jsonb value of filtered columns with new jsonb value */;
+        _prepend?:
+          | ValueTypes["dropzone_distributor_categories_prepend_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["dropzone_distributor_categories_set_input"]
+          | undefined
+          | null
+          | Variable<any, string>;
+        pk_columns:
+          | ValueTypes["dropzone_distributor_categories_pk_columns_input"]
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributor_categories"]
+    ];
+    update_dropzone_distributor_categories_many?: [
+      {
+        /** updates to execute, in order */
+        updates:
+          | Array<ValueTypes["dropzone_distributor_categories_updates"]>
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributor_categories_mutation_response"]
+    ];
+    update_dropzone_distributors?: [
+      {
+        /** append existing jsonb value of filtered columns with new jsonb value */
+        _append?:
+          | ValueTypes["dropzone_distributors_append_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */;
+        _delete_at_path?:
+          | ValueTypes["dropzone_distributors_delete_at_path_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */;
+        _delete_elem?:
+          | ValueTypes["dropzone_distributors_delete_elem_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** delete key/value pair or string element. key/value pairs are matched based on their key value */;
+        _delete_key?:
+          | ValueTypes["dropzone_distributors_delete_key_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** prepend existing jsonb value of filtered columns with new jsonb value */;
+        _prepend?:
+          | ValueTypes["dropzone_distributors_prepend_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["dropzone_distributors_set_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** filter the rows which have to be updated */;
+        where:
+          | ValueTypes["dropzone_distributors_bool_exp"]
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributors_mutation_response"]
+    ];
+    update_dropzone_distributors_by_pk?: [
+      {
+        /** append existing jsonb value of filtered columns with new jsonb value */
+        _append?:
+          | ValueTypes["dropzone_distributors_append_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */;
+        _delete_at_path?:
+          | ValueTypes["dropzone_distributors_delete_at_path_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */;
+        _delete_elem?:
+          | ValueTypes["dropzone_distributors_delete_elem_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** delete key/value pair or string element. key/value pairs are matched based on their key value */;
+        _delete_key?:
+          | ValueTypes["dropzone_distributors_delete_key_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** prepend existing jsonb value of filtered columns with new jsonb value */;
+        _prepend?:
+          | ValueTypes["dropzone_distributors_prepend_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["dropzone_distributors_set_input"]
+          | undefined
+          | null
+          | Variable<any, string>;
+        pk_columns:
+          | ValueTypes["dropzone_distributors_pk_columns_input"]
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributors"]
+    ];
+    update_dropzone_distributors_many?: [
+      {
+        /** updates to execute, in order */
+        updates:
+          | Array<ValueTypes["dropzone_distributors_updates"]>
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributors_mutation_response"]
     ];
     __typename?: boolean | `@${string}`;
   }>;
@@ -6777,6 +8968,44 @@ export type ValueTypes = {
       { client_secret: string | Variable<any, string> },
       ValueTypes["auth_stripe_onramp"]
     ];
+    auth_swaps?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_swaps_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_swaps_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_swaps_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_swaps"]
+    ];
+    auth_swaps_by_pk?: [
+      { id: ValueTypes["uuid"] | Variable<any, string> },
+      ValueTypes["auth_swaps"]
+    ];
     auth_user_active_publickey_mapping?: [
       {
         /** distinct select on columns */
@@ -7117,6 +9346,85 @@ export type ValueTypes = {
       { id: number | Variable<any, string> },
       ValueTypes["auth_xnft_secrets"]
     ];
+    dropzone_claims?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["dropzone_claims_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["dropzone_claims_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["dropzone_claims_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_claims"]
+    ];
+    dropzone_claims_by_pk?: [
+      {
+        claimant_id: ValueTypes["uuid"] | Variable<any, string>;
+        distributor_id: ValueTypes["uuid"] | Variable<any, string>;
+      },
+      ValueTypes["dropzone_claims"]
+    ];
+    dropzone_distributor_categories?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["dropzone_distributor_categories_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["dropzone_distributor_categories_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["dropzone_distributor_categories_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributor_categories"]
+    ];
+    dropzone_distributor_categories_by_pk?: [
+      { id: ValueTypes["uuid"] | Variable<any, string> },
+      ValueTypes["dropzone_distributor_categories"]
+    ];
     dropzone_distributors?: [
       {
         /** distinct select on columns */
@@ -7151,42 +9459,8 @@ export type ValueTypes = {
       },
       ValueTypes["dropzone_distributors"]
     ];
-    dropzone_distributors_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["dropzone_distributors_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["dropzone_distributors_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["dropzone_distributors_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["dropzone_distributors_aggregate"]
-    ];
     dropzone_distributors_by_pk?: [
-      { id: string | Variable<any, string> },
+      { id: ValueTypes["uuid"] | Variable<any, string> },
       ValueTypes["dropzone_distributors"]
     ];
     invitations?: [
@@ -7991,6 +10265,66 @@ export type ValueTypes = {
       },
       ValueTypes["auth_stripe_onramp"]
     ];
+    auth_swaps?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_swaps_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_swaps_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_swaps_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_swaps"]
+    ];
+    auth_swaps_by_pk?: [
+      { id: ValueTypes["uuid"] | Variable<any, string> },
+      ValueTypes["auth_swaps"]
+    ];
+    auth_swaps_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              ValueTypes["auth_swaps_stream_cursor_input"] | undefined | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_swaps_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_swaps"]
+    ];
     auth_user_active_publickey_mapping?: [
       {
         /** distinct select on columns */
@@ -8449,6 +10783,133 @@ export type ValueTypes = {
       },
       ValueTypes["auth_xnft_secrets"]
     ];
+    dropzone_claims?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["dropzone_claims_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["dropzone_claims_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["dropzone_claims_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_claims"]
+    ];
+    dropzone_claims_by_pk?: [
+      {
+        claimant_id: ValueTypes["uuid"] | Variable<any, string>;
+        distributor_id: ValueTypes["uuid"] | Variable<any, string>;
+      },
+      ValueTypes["dropzone_claims"]
+    ];
+    dropzone_claims_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["dropzone_claims_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["dropzone_claims_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_claims"]
+    ];
+    dropzone_distributor_categories?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["dropzone_distributor_categories_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["dropzone_distributor_categories_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["dropzone_distributor_categories_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributor_categories"]
+    ];
+    dropzone_distributor_categories_by_pk?: [
+      { id: ValueTypes["uuid"] | Variable<any, string> },
+      ValueTypes["dropzone_distributor_categories"]
+    ];
+    dropzone_distributor_categories_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["dropzone_distributor_categories_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["dropzone_distributor_categories_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributor_categories"]
+    ];
     dropzone_distributors?: [
       {
         /** distinct select on columns */
@@ -8483,42 +10944,8 @@ export type ValueTypes = {
       },
       ValueTypes["dropzone_distributors"]
     ];
-    dropzone_distributors_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["dropzone_distributors_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["dropzone_distributors_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["dropzone_distributors_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["dropzone_distributors_aggregate"]
-    ];
     dropzone_distributors_by_pk?: [
-      { id: string | Variable<any, string> },
+      { id: ValueTypes["uuid"] | Variable<any, string> },
       ValueTypes["dropzone_distributors"]
     ];
     dropzone_distributors_stream?: [
@@ -10448,6 +12875,268 @@ export type ResolverInputTypes = {
     /** filter the rows which have to be updated */
     where: ResolverInputTypes["auth_stripe_onramp_bool_exp"];
   };
+  /** indexes swaps for calculating fee referral payments */
+  ["auth_swaps"]: AliasType<{
+    created_at?: boolean | `@${string}`;
+    /** An object relationship */
+    distributor?: ResolverInputTypes["dropzone_distributors"];
+    distributor_id?: boolean | `@${string}`;
+    fee_account_address?: boolean | `@${string}`;
+    fee_amount?: boolean | `@${string}`;
+    fee_mint_address?: boolean | `@${string}`;
+    fee_payer_id?: boolean | `@${string}`;
+    fee_payer_public_key?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    transaction_at?: boolean | `@${string}`;
+    transaction_signature?: boolean | `@${string}`;
+    /** An object relationship */
+    user?: ResolverInputTypes["auth_users"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "auth.swaps" */
+  ["auth_swaps_aggregate_order_by"]: {
+    avg?: ResolverInputTypes["auth_swaps_avg_order_by"] | undefined | null;
+    count?: ResolverInputTypes["order_by"] | undefined | null;
+    max?: ResolverInputTypes["auth_swaps_max_order_by"] | undefined | null;
+    min?: ResolverInputTypes["auth_swaps_min_order_by"] | undefined | null;
+    stddev?:
+      | ResolverInputTypes["auth_swaps_stddev_order_by"]
+      | undefined
+      | null;
+    stddev_pop?:
+      | ResolverInputTypes["auth_swaps_stddev_pop_order_by"]
+      | undefined
+      | null;
+    stddev_samp?:
+      | ResolverInputTypes["auth_swaps_stddev_samp_order_by"]
+      | undefined
+      | null;
+    sum?: ResolverInputTypes["auth_swaps_sum_order_by"] | undefined | null;
+    var_pop?:
+      | ResolverInputTypes["auth_swaps_var_pop_order_by"]
+      | undefined
+      | null;
+    var_samp?:
+      | ResolverInputTypes["auth_swaps_var_samp_order_by"]
+      | undefined
+      | null;
+    variance?:
+      | ResolverInputTypes["auth_swaps_variance_order_by"]
+      | undefined
+      | null;
+  };
+  /** input type for inserting array relation for remote table "auth.swaps" */
+  ["auth_swaps_arr_rel_insert_input"]: {
+    data: Array<ResolverInputTypes["auth_swaps_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["auth_swaps_on_conflict"]
+      | undefined
+      | null;
+  };
+  /** order by avg() on columns of table "auth.swaps" */
+  ["auth_swaps_avg_order_by"]: {
+    fee_amount?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Boolean expression to filter rows from the table "auth.swaps". All fields are combined with a logical 'AND'. */
+  ["auth_swaps_bool_exp"]: {
+    _and?: Array<ResolverInputTypes["auth_swaps_bool_exp"]> | undefined | null;
+    _not?: ResolverInputTypes["auth_swaps_bool_exp"] | undefined | null;
+    _or?: Array<ResolverInputTypes["auth_swaps_bool_exp"]> | undefined | null;
+    created_at?:
+      | ResolverInputTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null;
+    distributor?:
+      | ResolverInputTypes["dropzone_distributors_bool_exp"]
+      | undefined
+      | null;
+    distributor_id?:
+      | ResolverInputTypes["uuid_comparison_exp"]
+      | undefined
+      | null;
+    fee_account_address?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    fee_amount?: ResolverInputTypes["bigint_comparison_exp"] | undefined | null;
+    fee_mint_address?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    fee_payer_id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
+    fee_payer_public_key?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
+    transaction_at?:
+      | ResolverInputTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null;
+    transaction_signature?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    user?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
+  };
+  /** unique or primary key constraints on table "auth.swaps" */
+  ["auth_swaps_constraint"]: auth_swaps_constraint;
+  /** input type for incrementing numeric columns in table "auth.swaps" */
+  ["auth_swaps_inc_input"]: {
+    fee_amount?: ResolverInputTypes["bigint"] | undefined | null;
+  };
+  /** input type for inserting data into table "auth.swaps" */
+  ["auth_swaps_insert_input"]: {
+    distributor?:
+      | ResolverInputTypes["dropzone_distributors_obj_rel_insert_input"]
+      | undefined
+      | null;
+    distributor_id?: ResolverInputTypes["uuid"] | undefined | null;
+    fee_account_address?: string | undefined | null;
+    fee_amount?: ResolverInputTypes["bigint"] | undefined | null;
+    fee_mint_address?: string | undefined | null;
+    fee_payer_id?: ResolverInputTypes["uuid"] | undefined | null;
+    fee_payer_public_key?: string | undefined | null;
+    transaction_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    transaction_signature?: string | undefined | null;
+    user?:
+      | ResolverInputTypes["auth_users_obj_rel_insert_input"]
+      | undefined
+      | null;
+  };
+  /** order by max() on columns of table "auth.swaps" */
+  ["auth_swaps_max_order_by"]: {
+    created_at?: ResolverInputTypes["order_by"] | undefined | null;
+    distributor_id?: ResolverInputTypes["order_by"] | undefined | null;
+    fee_account_address?: ResolverInputTypes["order_by"] | undefined | null;
+    fee_amount?: ResolverInputTypes["order_by"] | undefined | null;
+    fee_mint_address?: ResolverInputTypes["order_by"] | undefined | null;
+    fee_payer_id?: ResolverInputTypes["order_by"] | undefined | null;
+    fee_payer_public_key?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    transaction_at?: ResolverInputTypes["order_by"] | undefined | null;
+    transaction_signature?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by min() on columns of table "auth.swaps" */
+  ["auth_swaps_min_order_by"]: {
+    created_at?: ResolverInputTypes["order_by"] | undefined | null;
+    distributor_id?: ResolverInputTypes["order_by"] | undefined | null;
+    fee_account_address?: ResolverInputTypes["order_by"] | undefined | null;
+    fee_amount?: ResolverInputTypes["order_by"] | undefined | null;
+    fee_mint_address?: ResolverInputTypes["order_by"] | undefined | null;
+    fee_payer_id?: ResolverInputTypes["order_by"] | undefined | null;
+    fee_payer_public_key?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    transaction_at?: ResolverInputTypes["order_by"] | undefined | null;
+    transaction_signature?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** response of any mutation on the table "auth.swaps" */
+  ["auth_swaps_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["auth_swaps"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "auth.swaps" */
+  ["auth_swaps_on_conflict"]: {
+    constraint: ResolverInputTypes["auth_swaps_constraint"];
+    update_columns: Array<ResolverInputTypes["auth_swaps_update_column"]>;
+    where?: ResolverInputTypes["auth_swaps_bool_exp"] | undefined | null;
+  };
+  /** Ordering options when selecting data from "auth.swaps". */
+  ["auth_swaps_order_by"]: {
+    created_at?: ResolverInputTypes["order_by"] | undefined | null;
+    distributor?:
+      | ResolverInputTypes["dropzone_distributors_order_by"]
+      | undefined
+      | null;
+    distributor_id?: ResolverInputTypes["order_by"] | undefined | null;
+    fee_account_address?: ResolverInputTypes["order_by"] | undefined | null;
+    fee_amount?: ResolverInputTypes["order_by"] | undefined | null;
+    fee_mint_address?: ResolverInputTypes["order_by"] | undefined | null;
+    fee_payer_id?: ResolverInputTypes["order_by"] | undefined | null;
+    fee_payer_public_key?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    transaction_at?: ResolverInputTypes["order_by"] | undefined | null;
+    transaction_signature?: ResolverInputTypes["order_by"] | undefined | null;
+    user?: ResolverInputTypes["auth_users_order_by"] | undefined | null;
+  };
+  /** primary key columns input for table: auth.swaps */
+  ["auth_swaps_pk_columns_input"]: {
+    id: ResolverInputTypes["uuid"];
+  };
+  /** select columns of table "auth.swaps" */
+  ["auth_swaps_select_column"]: auth_swaps_select_column;
+  /** input type for updating data in table "auth.swaps" */
+  ["auth_swaps_set_input"]: {
+    distributor_id?: ResolverInputTypes["uuid"] | undefined | null;
+    fee_account_address?: string | undefined | null;
+    fee_amount?: ResolverInputTypes["bigint"] | undefined | null;
+    fee_mint_address?: string | undefined | null;
+    fee_payer_id?: ResolverInputTypes["uuid"] | undefined | null;
+    fee_payer_public_key?: string | undefined | null;
+    transaction_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+  };
+  /** order by stddev() on columns of table "auth.swaps" */
+  ["auth_swaps_stddev_order_by"]: {
+    fee_amount?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_pop() on columns of table "auth.swaps" */
+  ["auth_swaps_stddev_pop_order_by"]: {
+    fee_amount?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_samp() on columns of table "auth.swaps" */
+  ["auth_swaps_stddev_samp_order_by"]: {
+    fee_amount?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Streaming cursor of the table "auth_swaps" */
+  ["auth_swaps_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["auth_swaps_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_swaps_stream_cursor_value_input"]: {
+    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    distributor_id?: ResolverInputTypes["uuid"] | undefined | null;
+    fee_account_address?: string | undefined | null;
+    fee_amount?: ResolverInputTypes["bigint"] | undefined | null;
+    fee_mint_address?: string | undefined | null;
+    fee_payer_id?: ResolverInputTypes["uuid"] | undefined | null;
+    fee_payer_public_key?: string | undefined | null;
+    id?: ResolverInputTypes["uuid"] | undefined | null;
+    transaction_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    transaction_signature?: string | undefined | null;
+  };
+  /** order by sum() on columns of table "auth.swaps" */
+  ["auth_swaps_sum_order_by"]: {
+    fee_amount?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** update columns of table "auth.swaps" */
+  ["auth_swaps_update_column"]: auth_swaps_update_column;
+  ["auth_swaps_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ResolverInputTypes["auth_swaps_inc_input"] | undefined | null;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ResolverInputTypes["auth_swaps_set_input"] | undefined | null;
+    /** filter the rows which have to be updated */
+    where: ResolverInputTypes["auth_swaps_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "auth.swaps" */
+  ["auth_swaps_var_pop_order_by"]: {
+    fee_amount?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by var_samp() on columns of table "auth.swaps" */
+  ["auth_swaps_var_samp_order_by"]: {
+    fee_amount?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by variance() on columns of table "auth.swaps" */
+  ["auth_swaps_variance_order_by"]: {
+    fee_amount?: ResolverInputTypes["order_by"] | undefined | null;
+  };
   /** columns and relationships of "auth.user_active_publickey_mapping" */
   ["auth_user_active_publickey_mapping"]: AliasType<{
     blockchain?: boolean | `@${string}`;
@@ -10851,6 +13540,32 @@ export type ResolverInputTypes = {
   /** columns and relationships of "auth.users" */
   ["auth_users"]: AliasType<{
     created_at?: boolean | `@${string}`;
+    dropzone_claims?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["dropzone_claims_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["dropzone_claims_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["dropzone_claims_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_claims"]
+    ];
     id?: boolean | `@${string}`;
     /** An object relationship */
     invitation?: ResolverInputTypes["auth_invitations"];
@@ -10954,6 +13669,29 @@ export type ResolverInputTypes = {
     ];
     /** An object relationship */
     referrer?: ResolverInputTypes["auth_users"];
+    swaps?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_swaps_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_swaps_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?: ResolverInputTypes["auth_swaps_bool_exp"] | undefined | null;
+      },
+      ResolverInputTypes["auth_swaps"]
+    ];
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
@@ -11018,6 +13756,10 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["timestamptz_comparison_exp"]
       | undefined
       | null;
+    dropzone_claims?:
+      | ResolverInputTypes["dropzone_claims_bool_exp"]
+      | undefined
+      | null;
     id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
     invitation?:
       | ResolverInputTypes["auth_invitations_bool_exp"]
@@ -11040,12 +13782,17 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     referrer?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
+    swaps?: ResolverInputTypes["auth_swaps_bool_exp"] | undefined | null;
     username?: ResolverInputTypes["citext_comparison_exp"] | undefined | null;
   };
   /** unique or primary key constraints on table "auth.users" */
   ["auth_users_constraint"]: auth_users_constraint;
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
+    dropzone_claims?:
+      | ResolverInputTypes["dropzone_claims_arr_rel_insert_input"]
+      | undefined
+      | null;
     id?: ResolverInputTypes["uuid"] | undefined | null;
     invitation?:
       | ResolverInputTypes["auth_invitations_obj_rel_insert_input"]
@@ -11065,6 +13812,10 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     referrer_id?: ResolverInputTypes["uuid"] | undefined | null;
+    swaps?:
+      | ResolverInputTypes["auth_swaps_arr_rel_insert_input"]
+      | undefined
+      | null;
     username?: ResolverInputTypes["citext"] | undefined | null;
     waitlist_id?: string | undefined | null;
   };
@@ -11120,6 +13871,10 @@ export type ResolverInputTypes = {
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
     created_at?: ResolverInputTypes["order_by"] | undefined | null;
+    dropzone_claims_aggregate?:
+      | ResolverInputTypes["dropzone_claims_aggregate_order_by"]
+      | undefined
+      | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     invitation?:
       | ResolverInputTypes["auth_invitations_order_by"]
@@ -11134,6 +13889,10 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     referrer?: ResolverInputTypes["auth_users_order_by"] | undefined | null;
+    swaps_aggregate?:
+      | ResolverInputTypes["auth_swaps_aggregate_order_by"]
+      | undefined
+      | null;
     username?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** primary key columns input for table: auth.users */
@@ -11392,6 +14151,19 @@ export type ResolverInputTypes = {
     /** filter the rows which have to be updated */
     where: ResolverInputTypes["auth_xnft_secrets_bool_exp"];
   };
+  ["bigint"]: unknown;
+  /** Boolean expression to compare columns of type "bigint". All fields are combined with logical 'AND'. */
+  ["bigint_comparison_exp"]: {
+    _eq?: ResolverInputTypes["bigint"] | undefined | null;
+    _gt?: ResolverInputTypes["bigint"] | undefined | null;
+    _gte?: ResolverInputTypes["bigint"] | undefined | null;
+    _in?: Array<ResolverInputTypes["bigint"]> | undefined | null;
+    _is_null?: boolean | undefined | null;
+    _lt?: ResolverInputTypes["bigint"] | undefined | null;
+    _lte?: ResolverInputTypes["bigint"] | undefined | null;
+    _neq?: ResolverInputTypes["bigint"] | undefined | null;
+    _nin?: Array<ResolverInputTypes["bigint"]> | undefined | null;
+  };
   ["citext"]: unknown;
   /** Boolean expression to compare columns of type "citext". All fields are combined with logical 'AND'. */
   ["citext_comparison_exp"]: {
@@ -11427,8 +14199,500 @@ export type ResolverInputTypes = {
   };
   /** ordering argument of a cursor */
   ["cursor_ordering"]: cursor_ordering;
-  /** data used by merkle distributors */
+  /** columns and relationships of "dropzone.claims" */
+  ["dropzone_claims"]: AliasType<{
+    amount?: boolean | `@${string}`;
+    /** An object relationship */
+    claimant?: ResolverInputTypes["auth_users"];
+    claimant_id?: boolean | `@${string}`;
+    claimant_public_key?: boolean | `@${string}`;
+    claimed_at?: boolean | `@${string}`;
+    created_at?: boolean | `@${string}`;
+    /** An object relationship */
+    distributor?: ResolverInputTypes["dropzone_distributors"];
+    distributor_id?: boolean | `@${string}`;
+    ordinal?: boolean | `@${string}`;
+    transaction_signature?: boolean | `@${string}`;
+    viewed_at?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "dropzone.claims" */
+  ["dropzone_claims_aggregate_order_by"]: {
+    avg?: ResolverInputTypes["dropzone_claims_avg_order_by"] | undefined | null;
+    count?: ResolverInputTypes["order_by"] | undefined | null;
+    max?: ResolverInputTypes["dropzone_claims_max_order_by"] | undefined | null;
+    min?: ResolverInputTypes["dropzone_claims_min_order_by"] | undefined | null;
+    stddev?:
+      | ResolverInputTypes["dropzone_claims_stddev_order_by"]
+      | undefined
+      | null;
+    stddev_pop?:
+      | ResolverInputTypes["dropzone_claims_stddev_pop_order_by"]
+      | undefined
+      | null;
+    stddev_samp?:
+      | ResolverInputTypes["dropzone_claims_stddev_samp_order_by"]
+      | undefined
+      | null;
+    sum?: ResolverInputTypes["dropzone_claims_sum_order_by"] | undefined | null;
+    var_pop?:
+      | ResolverInputTypes["dropzone_claims_var_pop_order_by"]
+      | undefined
+      | null;
+    var_samp?:
+      | ResolverInputTypes["dropzone_claims_var_samp_order_by"]
+      | undefined
+      | null;
+    variance?:
+      | ResolverInputTypes["dropzone_claims_variance_order_by"]
+      | undefined
+      | null;
+  };
+  /** input type for inserting array relation for remote table "dropzone.claims" */
+  ["dropzone_claims_arr_rel_insert_input"]: {
+    data: Array<ResolverInputTypes["dropzone_claims_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["dropzone_claims_on_conflict"]
+      | undefined
+      | null;
+  };
+  /** order by avg() on columns of table "dropzone.claims" */
+  ["dropzone_claims_avg_order_by"]: {
+    amount?: ResolverInputTypes["order_by"] | undefined | null;
+    ordinal?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Boolean expression to filter rows from the table "dropzone.claims". All fields are combined with a logical 'AND'. */
+  ["dropzone_claims_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["dropzone_claims_bool_exp"]>
+      | undefined
+      | null;
+    _not?: ResolverInputTypes["dropzone_claims_bool_exp"] | undefined | null;
+    _or?:
+      | Array<ResolverInputTypes["dropzone_claims_bool_exp"]>
+      | undefined
+      | null;
+    amount?: ResolverInputTypes["bigint_comparison_exp"] | undefined | null;
+    claimant?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
+    claimant_id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
+    claimant_public_key?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    claimed_at?:
+      | ResolverInputTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null;
+    created_at?:
+      | ResolverInputTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null;
+    distributor?:
+      | ResolverInputTypes["dropzone_distributors_bool_exp"]
+      | undefined
+      | null;
+    distributor_id?:
+      | ResolverInputTypes["uuid_comparison_exp"]
+      | undefined
+      | null;
+    ordinal?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    transaction_signature?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    viewed_at?:
+      | ResolverInputTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null;
+  };
+  /** unique or primary key constraints on table "dropzone.claims" */
+  ["dropzone_claims_constraint"]: dropzone_claims_constraint;
+  /** input type for incrementing numeric columns in table "dropzone.claims" */
+  ["dropzone_claims_inc_input"]: {
+    amount?: ResolverInputTypes["bigint"] | undefined | null;
+    ordinal?: number | undefined | null;
+  };
+  /** input type for inserting data into table "dropzone.claims" */
+  ["dropzone_claims_insert_input"]: {
+    amount?: ResolverInputTypes["bigint"] | undefined | null;
+    claimant?:
+      | ResolverInputTypes["auth_users_obj_rel_insert_input"]
+      | undefined
+      | null;
+    claimant_id?: ResolverInputTypes["uuid"] | undefined | null;
+    claimant_public_key?: string | undefined | null;
+    claimed_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    distributor?:
+      | ResolverInputTypes["dropzone_distributors_obj_rel_insert_input"]
+      | undefined
+      | null;
+    distributor_id?: ResolverInputTypes["uuid"] | undefined | null;
+    ordinal?: number | undefined | null;
+    transaction_signature?: string | undefined | null;
+    viewed_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+  };
+  /** order by max() on columns of table "dropzone.claims" */
+  ["dropzone_claims_max_order_by"]: {
+    amount?: ResolverInputTypes["order_by"] | undefined | null;
+    claimant_id?: ResolverInputTypes["order_by"] | undefined | null;
+    claimant_public_key?: ResolverInputTypes["order_by"] | undefined | null;
+    claimed_at?: ResolverInputTypes["order_by"] | undefined | null;
+    created_at?: ResolverInputTypes["order_by"] | undefined | null;
+    distributor_id?: ResolverInputTypes["order_by"] | undefined | null;
+    ordinal?: ResolverInputTypes["order_by"] | undefined | null;
+    transaction_signature?: ResolverInputTypes["order_by"] | undefined | null;
+    viewed_at?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by min() on columns of table "dropzone.claims" */
+  ["dropzone_claims_min_order_by"]: {
+    amount?: ResolverInputTypes["order_by"] | undefined | null;
+    claimant_id?: ResolverInputTypes["order_by"] | undefined | null;
+    claimant_public_key?: ResolverInputTypes["order_by"] | undefined | null;
+    claimed_at?: ResolverInputTypes["order_by"] | undefined | null;
+    created_at?: ResolverInputTypes["order_by"] | undefined | null;
+    distributor_id?: ResolverInputTypes["order_by"] | undefined | null;
+    ordinal?: ResolverInputTypes["order_by"] | undefined | null;
+    transaction_signature?: ResolverInputTypes["order_by"] | undefined | null;
+    viewed_at?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** response of any mutation on the table "dropzone.claims" */
+  ["dropzone_claims_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["dropzone_claims"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "dropzone.claims" */
+  ["dropzone_claims_on_conflict"]: {
+    constraint: ResolverInputTypes["dropzone_claims_constraint"];
+    update_columns: Array<ResolverInputTypes["dropzone_claims_update_column"]>;
+    where?: ResolverInputTypes["dropzone_claims_bool_exp"] | undefined | null;
+  };
+  /** Ordering options when selecting data from "dropzone.claims". */
+  ["dropzone_claims_order_by"]: {
+    amount?: ResolverInputTypes["order_by"] | undefined | null;
+    claimant?: ResolverInputTypes["auth_users_order_by"] | undefined | null;
+    claimant_id?: ResolverInputTypes["order_by"] | undefined | null;
+    claimant_public_key?: ResolverInputTypes["order_by"] | undefined | null;
+    claimed_at?: ResolverInputTypes["order_by"] | undefined | null;
+    created_at?: ResolverInputTypes["order_by"] | undefined | null;
+    distributor?:
+      | ResolverInputTypes["dropzone_distributors_order_by"]
+      | undefined
+      | null;
+    distributor_id?: ResolverInputTypes["order_by"] | undefined | null;
+    ordinal?: ResolverInputTypes["order_by"] | undefined | null;
+    transaction_signature?: ResolverInputTypes["order_by"] | undefined | null;
+    viewed_at?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** primary key columns input for table: dropzone.claims */
+  ["dropzone_claims_pk_columns_input"]: {
+    claimant_id: ResolverInputTypes["uuid"];
+    distributor_id: ResolverInputTypes["uuid"];
+  };
+  /** select columns of table "dropzone.claims" */
+  ["dropzone_claims_select_column"]: dropzone_claims_select_column;
+  /** input type for updating data in table "dropzone.claims" */
+  ["dropzone_claims_set_input"]: {
+    amount?: ResolverInputTypes["bigint"] | undefined | null;
+    claimant_id?: ResolverInputTypes["uuid"] | undefined | null;
+    claimant_public_key?: string | undefined | null;
+    claimed_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    distributor_id?: ResolverInputTypes["uuid"] | undefined | null;
+    ordinal?: number | undefined | null;
+    transaction_signature?: string | undefined | null;
+    viewed_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+  };
+  /** order by stddev() on columns of table "dropzone.claims" */
+  ["dropzone_claims_stddev_order_by"]: {
+    amount?: ResolverInputTypes["order_by"] | undefined | null;
+    ordinal?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_pop() on columns of table "dropzone.claims" */
+  ["dropzone_claims_stddev_pop_order_by"]: {
+    amount?: ResolverInputTypes["order_by"] | undefined | null;
+    ordinal?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_samp() on columns of table "dropzone.claims" */
+  ["dropzone_claims_stddev_samp_order_by"]: {
+    amount?: ResolverInputTypes["order_by"] | undefined | null;
+    ordinal?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Streaming cursor of the table "dropzone_claims" */
+  ["dropzone_claims_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["dropzone_claims_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["dropzone_claims_stream_cursor_value_input"]: {
+    amount?: ResolverInputTypes["bigint"] | undefined | null;
+    claimant_id?: ResolverInputTypes["uuid"] | undefined | null;
+    claimant_public_key?: string | undefined | null;
+    claimed_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    distributor_id?: ResolverInputTypes["uuid"] | undefined | null;
+    ordinal?: number | undefined | null;
+    transaction_signature?: string | undefined | null;
+    viewed_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+  };
+  /** order by sum() on columns of table "dropzone.claims" */
+  ["dropzone_claims_sum_order_by"]: {
+    amount?: ResolverInputTypes["order_by"] | undefined | null;
+    ordinal?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** update columns of table "dropzone.claims" */
+  ["dropzone_claims_update_column"]: dropzone_claims_update_column;
+  ["dropzone_claims_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ResolverInputTypes["dropzone_claims_inc_input"] | undefined | null;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ResolverInputTypes["dropzone_claims_set_input"] | undefined | null;
+    /** filter the rows which have to be updated */
+    where: ResolverInputTypes["dropzone_claims_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "dropzone.claims" */
+  ["dropzone_claims_var_pop_order_by"]: {
+    amount?: ResolverInputTypes["order_by"] | undefined | null;
+    ordinal?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by var_samp() on columns of table "dropzone.claims" */
+  ["dropzone_claims_var_samp_order_by"]: {
+    amount?: ResolverInputTypes["order_by"] | undefined | null;
+    ordinal?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by variance() on columns of table "dropzone.claims" */
+  ["dropzone_claims_variance_order_by"]: {
+    amount?: ResolverInputTypes["order_by"] | undefined | null;
+    ordinal?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** columns and relationships of "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories"]: AliasType<{
+    data?: [
+      {
+        /** JSON select path */ path?: string | undefined | null;
+      },
+      boolean | `@${string}`
+    ];
+    distributors?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["dropzone_distributors_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["dropzone_distributors_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["dropzone_distributors_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_distributors"]
+    ];
+    id?: boolean | `@${string}`;
+    name?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  ["dropzone_distributor_categories_append_input"]: {
+    data?: ResolverInputTypes["jsonb"] | undefined | null;
+  };
+  /** Boolean expression to filter rows from the table "dropzone.distributor_categories". All fields are combined with a logical 'AND'. */
+  ["dropzone_distributor_categories_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["dropzone_distributor_categories_bool_exp"]>
+      | undefined
+      | null;
+    _not?:
+      | ResolverInputTypes["dropzone_distributor_categories_bool_exp"]
+      | undefined
+      | null;
+    _or?:
+      | Array<ResolverInputTypes["dropzone_distributor_categories_bool_exp"]>
+      | undefined
+      | null;
+    data?: ResolverInputTypes["jsonb_comparison_exp"] | undefined | null;
+    distributors?:
+      | ResolverInputTypes["dropzone_distributors_bool_exp"]
+      | undefined
+      | null;
+    id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
+    name?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+  };
+  /** unique or primary key constraints on table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_constraint"]: dropzone_distributor_categories_constraint;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  ["dropzone_distributor_categories_delete_at_path_input"]: {
+    data?: Array<string> | undefined | null;
+  };
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  ["dropzone_distributor_categories_delete_elem_input"]: {
+    data?: number | undefined | null;
+  };
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  ["dropzone_distributor_categories_delete_key_input"]: {
+    data?: string | undefined | null;
+  };
+  /** input type for inserting data into table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_insert_input"]: {
+    data?: ResolverInputTypes["jsonb"] | undefined | null;
+    distributors?:
+      | ResolverInputTypes["dropzone_distributors_arr_rel_insert_input"]
+      | undefined
+      | null;
+    id?: ResolverInputTypes["uuid"] | undefined | null;
+    name?: string | undefined | null;
+  };
+  /** response of any mutation on the table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["dropzone_distributor_categories"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** input type for inserting object relation for remote table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_obj_rel_insert_input"]: {
+    data: ResolverInputTypes["dropzone_distributor_categories_insert_input"];
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["dropzone_distributor_categories_on_conflict"]
+      | undefined
+      | null;
+  };
+  /** on_conflict condition type for table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_on_conflict"]: {
+    constraint: ResolverInputTypes["dropzone_distributor_categories_constraint"];
+    update_columns: Array<
+      ResolverInputTypes["dropzone_distributor_categories_update_column"]
+    >;
+    where?:
+      | ResolverInputTypes["dropzone_distributor_categories_bool_exp"]
+      | undefined
+      | null;
+  };
+  /** Ordering options when selecting data from "dropzone.distributor_categories". */
+  ["dropzone_distributor_categories_order_by"]: {
+    data?: ResolverInputTypes["order_by"] | undefined | null;
+    distributors_aggregate?:
+      | ResolverInputTypes["dropzone_distributors_aggregate_order_by"]
+      | undefined
+      | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    name?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** primary key columns input for table: dropzone.distributor_categories */
+  ["dropzone_distributor_categories_pk_columns_input"]: {
+    id: ResolverInputTypes["uuid"];
+  };
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  ["dropzone_distributor_categories_prepend_input"]: {
+    data?: ResolverInputTypes["jsonb"] | undefined | null;
+  };
+  /** select columns of table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_select_column"]: dropzone_distributor_categories_select_column;
+  /** input type for updating data in table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_set_input"]: {
+    data?: ResolverInputTypes["jsonb"] | undefined | null;
+    id?: ResolverInputTypes["uuid"] | undefined | null;
+    name?: string | undefined | null;
+  };
+  /** Streaming cursor of the table "dropzone_distributor_categories" */
+  ["dropzone_distributor_categories_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["dropzone_distributor_categories_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["dropzone_distributor_categories_stream_cursor_value_input"]: {
+    data?: ResolverInputTypes["jsonb"] | undefined | null;
+    id?: ResolverInputTypes["uuid"] | undefined | null;
+    name?: string | undefined | null;
+  };
+  /** update columns of table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_update_column"]: dropzone_distributor_categories_update_column;
+  ["dropzone_distributor_categories_updates"]: {
+    /** append existing jsonb value of filtered columns with new jsonb value */
+    _append?:
+      | ResolverInputTypes["dropzone_distributor_categories_append_input"]
+      | undefined
+      | null;
+    /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+    _delete_at_path?:
+      | ResolverInputTypes["dropzone_distributor_categories_delete_at_path_input"]
+      | undefined
+      | null;
+    /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+    _delete_elem?:
+      | ResolverInputTypes["dropzone_distributor_categories_delete_elem_input"]
+      | undefined
+      | null;
+    /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+    _delete_key?:
+      | ResolverInputTypes["dropzone_distributor_categories_delete_key_input"]
+      | undefined
+      | null;
+    /** prepend existing jsonb value of filtered columns with new jsonb value */
+    _prepend?:
+      | ResolverInputTypes["dropzone_distributor_categories_prepend_input"]
+      | undefined
+      | null;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ResolverInputTypes["dropzone_distributor_categories_set_input"]
+      | undefined
+      | null;
+    /** filter the rows which have to be updated */
+    where: ResolverInputTypes["dropzone_distributor_categories_bool_exp"];
+  };
+  /** columns and relationships of "dropzone.distributors" */
   ["dropzone_distributors"]: AliasType<{
+    /** An object relationship */
+    category?: ResolverInputTypes["dropzone_distributor_categories"];
+    category_id?: boolean | `@${string}`;
+    claims?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["dropzone_claims_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["dropzone_claims_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["dropzone_claims_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_claims"]
+    ];
     created_at?: boolean | `@${string}`;
     data?: [
       {
@@ -11437,31 +14701,62 @@ export type ResolverInputTypes = {
       boolean | `@${string}`
     ];
     id?: boolean | `@${string}`;
-    mint?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregated selection of "dropzone.distributors" */
-  ["dropzone_distributors_aggregate"]: AliasType<{
-    aggregate?: ResolverInputTypes["dropzone_distributors_aggregate_fields"];
-    nodes?: ResolverInputTypes["dropzone_distributors"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate fields of "dropzone.distributors" */
-  ["dropzone_distributors_aggregate_fields"]: AliasType<{
-    count?: [
+    lookup_table_public_key?: boolean | `@${string}`;
+    mint_public_key?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    published_at?: boolean | `@${string}`;
+    secret?: boolean | `@${string}`;
+    swaps?: [
       {
-        columns?:
-          | Array<ResolverInputTypes["dropzone_distributors_select_column"]>
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_swaps_select_column"]>
           | undefined
-          | null;
-        distinct?: boolean | undefined | null;
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_swaps_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?: ResolverInputTypes["auth_swaps_bool_exp"] | undefined | null;
       },
-      boolean | `@${string}`
+      ResolverInputTypes["auth_swaps"]
     ];
-    max?: ResolverInputTypes["dropzone_distributors_max_fields"];
-    min?: ResolverInputTypes["dropzone_distributors_min_fields"];
+    transaction_signature?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** order by aggregate values of table "dropzone.distributors" */
+  ["dropzone_distributors_aggregate_order_by"]: {
+    count?: ResolverInputTypes["order_by"] | undefined | null;
+    max?:
+      | ResolverInputTypes["dropzone_distributors_max_order_by"]
+      | undefined
+      | null;
+    min?:
+      | ResolverInputTypes["dropzone_distributors_min_order_by"]
+      | undefined
+      | null;
+  };
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  ["dropzone_distributors_append_input"]: {
+    data?: ResolverInputTypes["jsonb"] | undefined | null;
+  };
+  /** input type for inserting array relation for remote table "dropzone.distributors" */
+  ["dropzone_distributors_arr_rel_insert_input"]: {
+    data: Array<ResolverInputTypes["dropzone_distributors_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["dropzone_distributors_on_conflict"]
+      | undefined
+      | null;
+  };
   /** Boolean expression to filter rows from the table "dropzone.distributors". All fields are combined with a logical 'AND'. */
   ["dropzone_distributors_bool_exp"]: {
     _and?:
@@ -11476,36 +14771,100 @@ export type ResolverInputTypes = {
       | Array<ResolverInputTypes["dropzone_distributors_bool_exp"]>
       | undefined
       | null;
+    category?:
+      | ResolverInputTypes["dropzone_distributor_categories_bool_exp"]
+      | undefined
+      | null;
+    category_id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
+    claims?: ResolverInputTypes["dropzone_claims_bool_exp"] | undefined | null;
     created_at?:
       | ResolverInputTypes["timestamptz_comparison_exp"]
       | undefined
       | null;
     data?: ResolverInputTypes["jsonb_comparison_exp"] | undefined | null;
-    id?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    mint?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
+    lookup_table_public_key?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    mint_public_key?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    public_key?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    published_at?:
+      | ResolverInputTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null;
+    secret?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
+    swaps?: ResolverInputTypes["auth_swaps_bool_exp"] | undefined | null;
+    transaction_signature?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
   };
   /** unique or primary key constraints on table "dropzone.distributors" */
   ["dropzone_distributors_constraint"]: dropzone_distributors_constraint;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  ["dropzone_distributors_delete_at_path_input"]: {
+    data?: Array<string> | undefined | null;
+  };
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  ["dropzone_distributors_delete_elem_input"]: {
+    data?: number | undefined | null;
+  };
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  ["dropzone_distributors_delete_key_input"]: {
+    data?: string | undefined | null;
+  };
   /** input type for inserting data into table "dropzone.distributors" */
   ["dropzone_distributors_insert_input"]: {
+    category?:
+      | ResolverInputTypes["dropzone_distributor_categories_obj_rel_insert_input"]
+      | undefined
+      | null;
+    category_id?: ResolverInputTypes["uuid"] | undefined | null;
+    claims?:
+      | ResolverInputTypes["dropzone_claims_arr_rel_insert_input"]
+      | undefined
+      | null;
+    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     data?: ResolverInputTypes["jsonb"] | undefined | null;
-    id?: string | undefined | null;
-    mint?: string | undefined | null;
+    id?: ResolverInputTypes["uuid"] | undefined | null;
+    lookup_table_public_key?: string | undefined | null;
+    mint_public_key?: string | undefined | null;
+    public_key?: string | undefined | null;
+    published_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    swaps?:
+      | ResolverInputTypes["auth_swaps_arr_rel_insert_input"]
+      | undefined
+      | null;
+    transaction_signature?: string | undefined | null;
   };
-  /** aggregate max on columns */
-  ["dropzone_distributors_max_fields"]: AliasType<{
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    mint?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate min on columns */
-  ["dropzone_distributors_min_fields"]: AliasType<{
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    mint?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
+  /** order by max() on columns of table "dropzone.distributors" */
+  ["dropzone_distributors_max_order_by"]: {
+    category_id?: ResolverInputTypes["order_by"] | undefined | null;
+    created_at?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    lookup_table_public_key?: ResolverInputTypes["order_by"] | undefined | null;
+    mint_public_key?: ResolverInputTypes["order_by"] | undefined | null;
+    public_key?: ResolverInputTypes["order_by"] | undefined | null;
+    published_at?: ResolverInputTypes["order_by"] | undefined | null;
+    secret?: ResolverInputTypes["order_by"] | undefined | null;
+    transaction_signature?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by min() on columns of table "dropzone.distributors" */
+  ["dropzone_distributors_min_order_by"]: {
+    category_id?: ResolverInputTypes["order_by"] | undefined | null;
+    created_at?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    lookup_table_public_key?: ResolverInputTypes["order_by"] | undefined | null;
+    mint_public_key?: ResolverInputTypes["order_by"] | undefined | null;
+    public_key?: ResolverInputTypes["order_by"] | undefined | null;
+    published_at?: ResolverInputTypes["order_by"] | undefined | null;
+    secret?: ResolverInputTypes["order_by"] | undefined | null;
+    transaction_signature?: ResolverInputTypes["order_by"] | undefined | null;
+  };
   /** response of any mutation on the table "dropzone.distributors" */
   ["dropzone_distributors_mutation_response"]: AliasType<{
     /** number of rows affected by the mutation */
@@ -11514,6 +14873,15 @@ export type ResolverInputTypes = {
     returning?: ResolverInputTypes["dropzone_distributors"];
     __typename?: boolean | `@${string}`;
   }>;
+  /** input type for inserting object relation for remote table "dropzone.distributors" */
+  ["dropzone_distributors_obj_rel_insert_input"]: {
+    data: ResolverInputTypes["dropzone_distributors_insert_input"];
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["dropzone_distributors_on_conflict"]
+      | undefined
+      | null;
+  };
   /** on_conflict condition type for table "dropzone.distributors" */
   ["dropzone_distributors_on_conflict"]: {
     constraint: ResolverInputTypes["dropzone_distributors_constraint"];
@@ -11527,13 +14895,51 @@ export type ResolverInputTypes = {
   };
   /** Ordering options when selecting data from "dropzone.distributors". */
   ["dropzone_distributors_order_by"]: {
+    category?:
+      | ResolverInputTypes["dropzone_distributor_categories_order_by"]
+      | undefined
+      | null;
+    category_id?: ResolverInputTypes["order_by"] | undefined | null;
+    claims_aggregate?:
+      | ResolverInputTypes["dropzone_claims_aggregate_order_by"]
+      | undefined
+      | null;
     created_at?: ResolverInputTypes["order_by"] | undefined | null;
     data?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
-    mint?: ResolverInputTypes["order_by"] | undefined | null;
+    lookup_table_public_key?: ResolverInputTypes["order_by"] | undefined | null;
+    mint_public_key?: ResolverInputTypes["order_by"] | undefined | null;
+    public_key?: ResolverInputTypes["order_by"] | undefined | null;
+    published_at?: ResolverInputTypes["order_by"] | undefined | null;
+    secret?: ResolverInputTypes["order_by"] | undefined | null;
+    swaps_aggregate?:
+      | ResolverInputTypes["auth_swaps_aggregate_order_by"]
+      | undefined
+      | null;
+    transaction_signature?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** primary key columns input for table: dropzone.distributors */
+  ["dropzone_distributors_pk_columns_input"]: {
+    id: ResolverInputTypes["uuid"];
+  };
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  ["dropzone_distributors_prepend_input"]: {
+    data?: ResolverInputTypes["jsonb"] | undefined | null;
   };
   /** select columns of table "dropzone.distributors" */
   ["dropzone_distributors_select_column"]: dropzone_distributors_select_column;
+  /** input type for updating data in table "dropzone.distributors" */
+  ["dropzone_distributors_set_input"]: {
+    category_id?: ResolverInputTypes["uuid"] | undefined | null;
+    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    data?: ResolverInputTypes["jsonb"] | undefined | null;
+    id?: ResolverInputTypes["uuid"] | undefined | null;
+    lookup_table_public_key?: string | undefined | null;
+    mint_public_key?: string | undefined | null;
+    public_key?: string | undefined | null;
+    published_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    transaction_signature?: string | undefined | null;
+  };
   /** Streaming cursor of the table "dropzone_distributors" */
   ["dropzone_distributors_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -11543,13 +14949,53 @@ export type ResolverInputTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["dropzone_distributors_stream_cursor_value_input"]: {
+    category_id?: ResolverInputTypes["uuid"] | undefined | null;
     created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     data?: ResolverInputTypes["jsonb"] | undefined | null;
-    id?: string | undefined | null;
-    mint?: string | undefined | null;
+    id?: ResolverInputTypes["uuid"] | undefined | null;
+    lookup_table_public_key?: string | undefined | null;
+    mint_public_key?: string | undefined | null;
+    public_key?: string | undefined | null;
+    published_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    secret?: ResolverInputTypes["uuid"] | undefined | null;
+    transaction_signature?: string | undefined | null;
   };
-  /** placeholder for update columns of table "dropzone.distributors" (current role has no relevant permissions) */
+  /** update columns of table "dropzone.distributors" */
   ["dropzone_distributors_update_column"]: dropzone_distributors_update_column;
+  ["dropzone_distributors_updates"]: {
+    /** append existing jsonb value of filtered columns with new jsonb value */
+    _append?:
+      | ResolverInputTypes["dropzone_distributors_append_input"]
+      | undefined
+      | null;
+    /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+    _delete_at_path?:
+      | ResolverInputTypes["dropzone_distributors_delete_at_path_input"]
+      | undefined
+      | null;
+    /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+    _delete_elem?:
+      | ResolverInputTypes["dropzone_distributors_delete_elem_input"]
+      | undefined
+      | null;
+    /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+    _delete_key?:
+      | ResolverInputTypes["dropzone_distributors_delete_key_input"]
+      | undefined
+      | null;
+    /** prepend existing jsonb value of filtered columns with new jsonb value */
+    _prepend?:
+      | ResolverInputTypes["dropzone_distributors_prepend_input"]
+      | undefined
+      | null;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ResolverInputTypes["dropzone_distributors_set_input"]
+      | undefined
+      | null;
+    /** filter the rows which have to be updated */
+    where: ResolverInputTypes["dropzone_distributors_bool_exp"];
+  };
   /** columns and relationships of "invitations" */
   ["invitations"]: AliasType<{
     claimed_at?: boolean | `@${string}`;
@@ -11977,6 +15423,30 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_stripe_onramp"]
     ];
+    insert_auth_swaps?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["auth_swaps_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["auth_swaps_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_swaps_mutation_response"]
+    ];
+    insert_auth_swaps_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["auth_swaps_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["auth_swaps_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_swaps"]
+    ];
     insert_auth_user_active_publickey_mapping?: [
       {
         /** the rows to be inserted */
@@ -12096,6 +15566,54 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_xnft_secrets"]
+    ];
+    insert_dropzone_claims?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["dropzone_claims_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["dropzone_claims_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_claims_mutation_response"]
+    ];
+    insert_dropzone_claims_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["dropzone_claims_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["dropzone_claims_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_claims"]
+    ];
+    insert_dropzone_distributor_categories?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["dropzone_distributor_categories_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["dropzone_distributor_categories_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_distributor_categories_mutation_response"]
+    ];
+    insert_dropzone_distributor_categories_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["dropzone_distributor_categories_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["dropzone_distributor_categories_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_distributor_categories"]
     ];
     insert_dropzone_distributors?: [
       {
@@ -12374,6 +15892,40 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_stripe_onramp_mutation_response"]
     ];
+    update_auth_swaps?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["auth_swaps_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["auth_swaps_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
+        where: ResolverInputTypes["auth_swaps_bool_exp"];
+      },
+      ResolverInputTypes["auth_swaps_mutation_response"]
+    ];
+    update_auth_swaps_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["auth_swaps_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?: ResolverInputTypes["auth_swaps_set_input"] | undefined | null;
+        pk_columns: ResolverInputTypes["auth_swaps_pk_columns_input"];
+      },
+      ResolverInputTypes["auth_swaps"]
+    ];
+    update_auth_swaps_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ResolverInputTypes["auth_swaps_updates"]>;
+      },
+      ResolverInputTypes["auth_swaps_mutation_response"]
+    ];
     update_auth_user_active_publickey_mapping?: [
       {
         /** increments the numeric columns with given value of the filtered values */
@@ -12512,6 +16064,183 @@ export type ResolverInputTypes = {
         updates: Array<ResolverInputTypes["auth_xnft_secrets_updates"]>;
       },
       ResolverInputTypes["auth_xnft_secrets_mutation_response"]
+    ];
+    update_dropzone_claims?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["dropzone_claims_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["dropzone_claims_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
+        where: ResolverInputTypes["dropzone_claims_bool_exp"];
+      },
+      ResolverInputTypes["dropzone_claims_mutation_response"]
+    ];
+    update_dropzone_claims_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["dropzone_claims_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["dropzone_claims_set_input"]
+          | undefined
+          | null;
+        pk_columns: ResolverInputTypes["dropzone_claims_pk_columns_input"];
+      },
+      ResolverInputTypes["dropzone_claims"]
+    ];
+    update_dropzone_claims_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ResolverInputTypes["dropzone_claims_updates"]>;
+      },
+      ResolverInputTypes["dropzone_claims_mutation_response"]
+    ];
+    update_dropzone_distributor_categories?: [
+      {
+        /** append existing jsonb value of filtered columns with new jsonb value */
+        _append?:
+          | ResolverInputTypes["dropzone_distributor_categories_append_input"]
+          | undefined
+          | null /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */;
+        _delete_at_path?:
+          | ResolverInputTypes["dropzone_distributor_categories_delete_at_path_input"]
+          | undefined
+          | null /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */;
+        _delete_elem?:
+          | ResolverInputTypes["dropzone_distributor_categories_delete_elem_input"]
+          | undefined
+          | null /** delete key/value pair or string element. key/value pairs are matched based on their key value */;
+        _delete_key?:
+          | ResolverInputTypes["dropzone_distributor_categories_delete_key_input"]
+          | undefined
+          | null /** prepend existing jsonb value of filtered columns with new jsonb value */;
+        _prepend?:
+          | ResolverInputTypes["dropzone_distributor_categories_prepend_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["dropzone_distributor_categories_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
+        where: ResolverInputTypes["dropzone_distributor_categories_bool_exp"];
+      },
+      ResolverInputTypes["dropzone_distributor_categories_mutation_response"]
+    ];
+    update_dropzone_distributor_categories_by_pk?: [
+      {
+        /** append existing jsonb value of filtered columns with new jsonb value */
+        _append?:
+          | ResolverInputTypes["dropzone_distributor_categories_append_input"]
+          | undefined
+          | null /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */;
+        _delete_at_path?:
+          | ResolverInputTypes["dropzone_distributor_categories_delete_at_path_input"]
+          | undefined
+          | null /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */;
+        _delete_elem?:
+          | ResolverInputTypes["dropzone_distributor_categories_delete_elem_input"]
+          | undefined
+          | null /** delete key/value pair or string element. key/value pairs are matched based on their key value */;
+        _delete_key?:
+          | ResolverInputTypes["dropzone_distributor_categories_delete_key_input"]
+          | undefined
+          | null /** prepend existing jsonb value of filtered columns with new jsonb value */;
+        _prepend?:
+          | ResolverInputTypes["dropzone_distributor_categories_prepend_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["dropzone_distributor_categories_set_input"]
+          | undefined
+          | null;
+        pk_columns: ResolverInputTypes["dropzone_distributor_categories_pk_columns_input"];
+      },
+      ResolverInputTypes["dropzone_distributor_categories"]
+    ];
+    update_dropzone_distributor_categories_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<
+          ResolverInputTypes["dropzone_distributor_categories_updates"]
+        >;
+      },
+      ResolverInputTypes["dropzone_distributor_categories_mutation_response"]
+    ];
+    update_dropzone_distributors?: [
+      {
+        /** append existing jsonb value of filtered columns with new jsonb value */
+        _append?:
+          | ResolverInputTypes["dropzone_distributors_append_input"]
+          | undefined
+          | null /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */;
+        _delete_at_path?:
+          | ResolverInputTypes["dropzone_distributors_delete_at_path_input"]
+          | undefined
+          | null /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */;
+        _delete_elem?:
+          | ResolverInputTypes["dropzone_distributors_delete_elem_input"]
+          | undefined
+          | null /** delete key/value pair or string element. key/value pairs are matched based on their key value */;
+        _delete_key?:
+          | ResolverInputTypes["dropzone_distributors_delete_key_input"]
+          | undefined
+          | null /** prepend existing jsonb value of filtered columns with new jsonb value */;
+        _prepend?:
+          | ResolverInputTypes["dropzone_distributors_prepend_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["dropzone_distributors_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
+        where: ResolverInputTypes["dropzone_distributors_bool_exp"];
+      },
+      ResolverInputTypes["dropzone_distributors_mutation_response"]
+    ];
+    update_dropzone_distributors_by_pk?: [
+      {
+        /** append existing jsonb value of filtered columns with new jsonb value */
+        _append?:
+          | ResolverInputTypes["dropzone_distributors_append_input"]
+          | undefined
+          | null /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */;
+        _delete_at_path?:
+          | ResolverInputTypes["dropzone_distributors_delete_at_path_input"]
+          | undefined
+          | null /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */;
+        _delete_elem?:
+          | ResolverInputTypes["dropzone_distributors_delete_elem_input"]
+          | undefined
+          | null /** delete key/value pair or string element. key/value pairs are matched based on their key value */;
+        _delete_key?:
+          | ResolverInputTypes["dropzone_distributors_delete_key_input"]
+          | undefined
+          | null /** prepend existing jsonb value of filtered columns with new jsonb value */;
+        _prepend?:
+          | ResolverInputTypes["dropzone_distributors_prepend_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["dropzone_distributors_set_input"]
+          | undefined
+          | null;
+        pk_columns: ResolverInputTypes["dropzone_distributors_pk_columns_input"];
+      },
+      ResolverInputTypes["dropzone_distributors"]
+    ];
+    update_dropzone_distributors_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ResolverInputTypes["dropzone_distributors_updates"]>;
+      },
+      ResolverInputTypes["dropzone_distributors_mutation_response"]
     ];
     __typename?: boolean | `@${string}`;
   }>;
@@ -12900,6 +16629,33 @@ export type ResolverInputTypes = {
       { client_secret: string },
       ResolverInputTypes["auth_stripe_onramp"]
     ];
+    auth_swaps?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_swaps_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_swaps_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?: ResolverInputTypes["auth_swaps_bool_exp"] | undefined | null;
+      },
+      ResolverInputTypes["auth_swaps"]
+    ];
+    auth_swaps_by_pk?: [
+      { id: ResolverInputTypes["uuid"] },
+      ResolverInputTypes["auth_swaps"]
+    ];
     auth_user_active_publickey_mapping?: [
       {
         /** distinct select on columns */
@@ -13148,6 +16904,73 @@ export type ResolverInputTypes = {
       { id: number },
       ResolverInputTypes["auth_xnft_secrets"]
     ];
+    dropzone_claims?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["dropzone_claims_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["dropzone_claims_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["dropzone_claims_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_claims"]
+    ];
+    dropzone_claims_by_pk?: [
+      {
+        claimant_id: ResolverInputTypes["uuid"];
+        distributor_id: ResolverInputTypes["uuid"];
+      },
+      ResolverInputTypes["dropzone_claims"]
+    ];
+    dropzone_distributor_categories?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<
+              ResolverInputTypes["dropzone_distributor_categories_select_column"]
+            >
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<
+              ResolverInputTypes["dropzone_distributor_categories_order_by"]
+            >
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["dropzone_distributor_categories_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_distributor_categories"]
+    ];
+    dropzone_distributor_categories_by_pk?: [
+      { id: ResolverInputTypes["uuid"] },
+      ResolverInputTypes["dropzone_distributor_categories"]
+    ];
     dropzone_distributors?: [
       {
         /** distinct select on columns */
@@ -13174,34 +16997,8 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["dropzone_distributors"]
     ];
-    dropzone_distributors_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["dropzone_distributors_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["dropzone_distributors_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["dropzone_distributors_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["dropzone_distributors_aggregate"]
-    ];
     dropzone_distributors_by_pk?: [
-      { id: string },
+      { id: ResolverInputTypes["uuid"] },
       ResolverInputTypes["dropzone_distributors"]
     ];
     invitations?: [
@@ -13795,6 +17592,46 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_stripe_onramp"]
     ];
+    auth_swaps?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_swaps_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_swaps_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?: ResolverInputTypes["auth_swaps_bool_exp"] | undefined | null;
+      },
+      ResolverInputTypes["auth_swaps"]
+    ];
+    auth_swaps_by_pk?: [
+      { id: ResolverInputTypes["uuid"] },
+      ResolverInputTypes["auth_swaps"]
+    ];
+    auth_swaps_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["auth_swaps_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?: ResolverInputTypes["auth_swaps_bool_exp"] | undefined | null;
+      },
+      ResolverInputTypes["auth_swaps"]
+    ];
     auth_user_active_publickey_mapping?: [
       {
         /** distinct select on columns */
@@ -14120,6 +17957,105 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_xnft_secrets"]
     ];
+    dropzone_claims?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["dropzone_claims_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["dropzone_claims_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["dropzone_claims_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_claims"]
+    ];
+    dropzone_claims_by_pk?: [
+      {
+        claimant_id: ResolverInputTypes["uuid"];
+        distributor_id: ResolverInputTypes["uuid"];
+      },
+      ResolverInputTypes["dropzone_claims"]
+    ];
+    dropzone_claims_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["dropzone_claims_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["dropzone_claims_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_claims"]
+    ];
+    dropzone_distributor_categories?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<
+              ResolverInputTypes["dropzone_distributor_categories_select_column"]
+            >
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<
+              ResolverInputTypes["dropzone_distributor_categories_order_by"]
+            >
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["dropzone_distributor_categories_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_distributor_categories"]
+    ];
+    dropzone_distributor_categories_by_pk?: [
+      { id: ResolverInputTypes["uuid"] },
+      ResolverInputTypes["dropzone_distributor_categories"]
+    ];
+    dropzone_distributor_categories_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["dropzone_distributor_categories_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["dropzone_distributor_categories_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_distributor_categories"]
+    ];
     dropzone_distributors?: [
       {
         /** distinct select on columns */
@@ -14146,34 +18082,8 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["dropzone_distributors"]
     ];
-    dropzone_distributors_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["dropzone_distributors_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["dropzone_distributors_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["dropzone_distributors_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["dropzone_distributors_aggregate"]
-    ];
     dropzone_distributors_by_pk?: [
-      { id: string },
+      { id: ResolverInputTypes["uuid"] },
       ResolverInputTypes["dropzone_distributors"]
     ];
     dropzone_distributors_stream?: [
@@ -15583,6 +19493,211 @@ export type ModelTypes = {
     /** filter the rows which have to be updated */
     where: ModelTypes["auth_stripe_onramp_bool_exp"];
   };
+  /** indexes swaps for calculating fee referral payments */
+  ["auth_swaps"]: {
+    created_at: ModelTypes["timestamptz"];
+    /** An object relationship */
+    distributor?: ModelTypes["dropzone_distributors"] | undefined;
+    distributor_id?: ModelTypes["uuid"] | undefined;
+    fee_account_address?: string | undefined;
+    fee_amount?: ModelTypes["bigint"] | undefined;
+    fee_mint_address?: string | undefined;
+    fee_payer_id?: ModelTypes["uuid"] | undefined;
+    fee_payer_public_key?: string | undefined;
+    id: ModelTypes["uuid"];
+    transaction_at?: ModelTypes["timestamptz"] | undefined;
+    transaction_signature: string;
+    /** An object relationship */
+    user?: ModelTypes["auth_users"] | undefined;
+  };
+  /** order by aggregate values of table "auth.swaps" */
+  ["auth_swaps_aggregate_order_by"]: {
+    avg?: ModelTypes["auth_swaps_avg_order_by"] | undefined;
+    count?: ModelTypes["order_by"] | undefined;
+    max?: ModelTypes["auth_swaps_max_order_by"] | undefined;
+    min?: ModelTypes["auth_swaps_min_order_by"] | undefined;
+    stddev?: ModelTypes["auth_swaps_stddev_order_by"] | undefined;
+    stddev_pop?: ModelTypes["auth_swaps_stddev_pop_order_by"] | undefined;
+    stddev_samp?: ModelTypes["auth_swaps_stddev_samp_order_by"] | undefined;
+    sum?: ModelTypes["auth_swaps_sum_order_by"] | undefined;
+    var_pop?: ModelTypes["auth_swaps_var_pop_order_by"] | undefined;
+    var_samp?: ModelTypes["auth_swaps_var_samp_order_by"] | undefined;
+    variance?: ModelTypes["auth_swaps_variance_order_by"] | undefined;
+  };
+  /** input type for inserting array relation for remote table "auth.swaps" */
+  ["auth_swaps_arr_rel_insert_input"]: {
+    data: Array<ModelTypes["auth_swaps_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: ModelTypes["auth_swaps_on_conflict"] | undefined;
+  };
+  /** order by avg() on columns of table "auth.swaps" */
+  ["auth_swaps_avg_order_by"]: {
+    fee_amount?: ModelTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "auth.swaps". All fields are combined with a logical 'AND'. */
+  ["auth_swaps_bool_exp"]: {
+    _and?: Array<ModelTypes["auth_swaps_bool_exp"]> | undefined;
+    _not?: ModelTypes["auth_swaps_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["auth_swaps_bool_exp"]> | undefined;
+    created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
+    distributor?: ModelTypes["dropzone_distributors_bool_exp"] | undefined;
+    distributor_id?: ModelTypes["uuid_comparison_exp"] | undefined;
+    fee_account_address?: ModelTypes["String_comparison_exp"] | undefined;
+    fee_amount?: ModelTypes["bigint_comparison_exp"] | undefined;
+    fee_mint_address?: ModelTypes["String_comparison_exp"] | undefined;
+    fee_payer_id?: ModelTypes["uuid_comparison_exp"] | undefined;
+    fee_payer_public_key?: ModelTypes["String_comparison_exp"] | undefined;
+    id?: ModelTypes["uuid_comparison_exp"] | undefined;
+    transaction_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
+    transaction_signature?: ModelTypes["String_comparison_exp"] | undefined;
+    user?: ModelTypes["auth_users_bool_exp"] | undefined;
+  };
+  ["auth_swaps_constraint"]: auth_swaps_constraint;
+  /** input type for incrementing numeric columns in table "auth.swaps" */
+  ["auth_swaps_inc_input"]: {
+    fee_amount?: ModelTypes["bigint"] | undefined;
+  };
+  /** input type for inserting data into table "auth.swaps" */
+  ["auth_swaps_insert_input"]: {
+    distributor?:
+      | ModelTypes["dropzone_distributors_obj_rel_insert_input"]
+      | undefined;
+    distributor_id?: ModelTypes["uuid"] | undefined;
+    fee_account_address?: string | undefined;
+    fee_amount?: ModelTypes["bigint"] | undefined;
+    fee_mint_address?: string | undefined;
+    fee_payer_id?: ModelTypes["uuid"] | undefined;
+    fee_payer_public_key?: string | undefined;
+    transaction_at?: ModelTypes["timestamptz"] | undefined;
+    transaction_signature?: string | undefined;
+    user?: ModelTypes["auth_users_obj_rel_insert_input"] | undefined;
+  };
+  /** order by max() on columns of table "auth.swaps" */
+  ["auth_swaps_max_order_by"]: {
+    created_at?: ModelTypes["order_by"] | undefined;
+    distributor_id?: ModelTypes["order_by"] | undefined;
+    fee_account_address?: ModelTypes["order_by"] | undefined;
+    fee_amount?: ModelTypes["order_by"] | undefined;
+    fee_mint_address?: ModelTypes["order_by"] | undefined;
+    fee_payer_id?: ModelTypes["order_by"] | undefined;
+    fee_payer_public_key?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    transaction_at?: ModelTypes["order_by"] | undefined;
+    transaction_signature?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "auth.swaps" */
+  ["auth_swaps_min_order_by"]: {
+    created_at?: ModelTypes["order_by"] | undefined;
+    distributor_id?: ModelTypes["order_by"] | undefined;
+    fee_account_address?: ModelTypes["order_by"] | undefined;
+    fee_amount?: ModelTypes["order_by"] | undefined;
+    fee_mint_address?: ModelTypes["order_by"] | undefined;
+    fee_payer_id?: ModelTypes["order_by"] | undefined;
+    fee_payer_public_key?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    transaction_at?: ModelTypes["order_by"] | undefined;
+    transaction_signature?: ModelTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "auth.swaps" */
+  ["auth_swaps_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["auth_swaps"]>;
+  };
+  /** on_conflict condition type for table "auth.swaps" */
+  ["auth_swaps_on_conflict"]: {
+    constraint: ModelTypes["auth_swaps_constraint"];
+    update_columns: Array<ModelTypes["auth_swaps_update_column"]>;
+    where?: ModelTypes["auth_swaps_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.swaps". */
+  ["auth_swaps_order_by"]: {
+    created_at?: ModelTypes["order_by"] | undefined;
+    distributor?: ModelTypes["dropzone_distributors_order_by"] | undefined;
+    distributor_id?: ModelTypes["order_by"] | undefined;
+    fee_account_address?: ModelTypes["order_by"] | undefined;
+    fee_amount?: ModelTypes["order_by"] | undefined;
+    fee_mint_address?: ModelTypes["order_by"] | undefined;
+    fee_payer_id?: ModelTypes["order_by"] | undefined;
+    fee_payer_public_key?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    transaction_at?: ModelTypes["order_by"] | undefined;
+    transaction_signature?: ModelTypes["order_by"] | undefined;
+    user?: ModelTypes["auth_users_order_by"] | undefined;
+  };
+  /** primary key columns input for table: auth.swaps */
+  ["auth_swaps_pk_columns_input"]: {
+    id: ModelTypes["uuid"];
+  };
+  ["auth_swaps_select_column"]: auth_swaps_select_column;
+  /** input type for updating data in table "auth.swaps" */
+  ["auth_swaps_set_input"]: {
+    distributor_id?: ModelTypes["uuid"] | undefined;
+    fee_account_address?: string | undefined;
+    fee_amount?: ModelTypes["bigint"] | undefined;
+    fee_mint_address?: string | undefined;
+    fee_payer_id?: ModelTypes["uuid"] | undefined;
+    fee_payer_public_key?: string | undefined;
+    transaction_at?: ModelTypes["timestamptz"] | undefined;
+  };
+  /** order by stddev() on columns of table "auth.swaps" */
+  ["auth_swaps_stddev_order_by"]: {
+    fee_amount?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "auth.swaps" */
+  ["auth_swaps_stddev_pop_order_by"]: {
+    fee_amount?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "auth.swaps" */
+  ["auth_swaps_stddev_samp_order_by"]: {
+    fee_amount?: ModelTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "auth_swaps" */
+  ["auth_swaps_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["auth_swaps_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_swaps_stream_cursor_value_input"]: {
+    created_at?: ModelTypes["timestamptz"] | undefined;
+    distributor_id?: ModelTypes["uuid"] | undefined;
+    fee_account_address?: string | undefined;
+    fee_amount?: ModelTypes["bigint"] | undefined;
+    fee_mint_address?: string | undefined;
+    fee_payer_id?: ModelTypes["uuid"] | undefined;
+    fee_payer_public_key?: string | undefined;
+    id?: ModelTypes["uuid"] | undefined;
+    transaction_at?: ModelTypes["timestamptz"] | undefined;
+    transaction_signature?: string | undefined;
+  };
+  /** order by sum() on columns of table "auth.swaps" */
+  ["auth_swaps_sum_order_by"]: {
+    fee_amount?: ModelTypes["order_by"] | undefined;
+  };
+  ["auth_swaps_update_column"]: auth_swaps_update_column;
+  ["auth_swaps_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ModelTypes["auth_swaps_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["auth_swaps_set_input"] | undefined;
+    /** filter the rows which have to be updated */
+    where: ModelTypes["auth_swaps_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "auth.swaps" */
+  ["auth_swaps_var_pop_order_by"]: {
+    fee_amount?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "auth.swaps" */
+  ["auth_swaps_var_samp_order_by"]: {
+    fee_amount?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "auth.swaps" */
+  ["auth_swaps_variance_order_by"]: {
+    fee_amount?: ModelTypes["order_by"] | undefined;
+  };
   /** columns and relationships of "auth.user_active_publickey_mapping" */
   ["auth_user_active_publickey_mapping"]: {
     blockchain: string;
@@ -15913,6 +20028,8 @@ export type ModelTypes = {
   /** columns and relationships of "auth.users" */
   ["auth_users"]: {
     created_at: ModelTypes["timestamptz"];
+    /** An array relationship */
+    dropzone_claims: Array<ModelTypes["dropzone_claims"]>;
     id: ModelTypes["uuid"];
     /** An object relationship */
     invitation: ModelTypes["auth_invitations"];
@@ -15926,6 +20043,8 @@ export type ModelTypes = {
     referred_users_aggregate: ModelTypes["auth_users_aggregate"];
     /** An object relationship */
     referrer?: ModelTypes["auth_users"] | undefined;
+    /** An array relationship */
+    swaps: Array<ModelTypes["auth_swaps"]>;
     username: ModelTypes["citext"];
   };
   /** aggregated selection of "auth.users" */
@@ -15966,6 +20085,7 @@ export type ModelTypes = {
     _not?: ModelTypes["auth_users_bool_exp"] | undefined;
     _or?: Array<ModelTypes["auth_users_bool_exp"]> | undefined;
     created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
+    dropzone_claims?: ModelTypes["dropzone_claims_bool_exp"] | undefined;
     id?: ModelTypes["uuid_comparison_exp"] | undefined;
     invitation?: ModelTypes["auth_invitations_bool_exp"] | undefined;
     public_keys?: ModelTypes["auth_public_keys_bool_exp"] | undefined;
@@ -15977,11 +20097,15 @@ export type ModelTypes = {
       | ModelTypes["auth_users_aggregate_bool_exp"]
       | undefined;
     referrer?: ModelTypes["auth_users_bool_exp"] | undefined;
+    swaps?: ModelTypes["auth_swaps_bool_exp"] | undefined;
     username?: ModelTypes["citext_comparison_exp"] | undefined;
   };
   ["auth_users_constraint"]: auth_users_constraint;
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
+    dropzone_claims?:
+      | ModelTypes["dropzone_claims_arr_rel_insert_input"]
+      | undefined;
     id?: ModelTypes["uuid"] | undefined;
     invitation?:
       | ModelTypes["auth_invitations_obj_rel_insert_input"]
@@ -15993,6 +20117,7 @@ export type ModelTypes = {
     referred_users?: ModelTypes["auth_users_arr_rel_insert_input"] | undefined;
     referrer?: ModelTypes["auth_users_obj_rel_insert_input"] | undefined;
     referrer_id?: ModelTypes["uuid"] | undefined;
+    swaps?: ModelTypes["auth_swaps_arr_rel_insert_input"] | undefined;
     username?: ModelTypes["citext"] | undefined;
     waitlist_id?: string | undefined;
   };
@@ -16042,6 +20167,9 @@ export type ModelTypes = {
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
     created_at?: ModelTypes["order_by"] | undefined;
+    dropzone_claims_aggregate?:
+      | ModelTypes["dropzone_claims_aggregate_order_by"]
+      | undefined;
     id?: ModelTypes["order_by"] | undefined;
     invitation?: ModelTypes["auth_invitations_order_by"] | undefined;
     public_keys_aggregate?:
@@ -16051,6 +20179,7 @@ export type ModelTypes = {
       | ModelTypes["auth_users_aggregate_order_by"]
       | undefined;
     referrer?: ModelTypes["auth_users_order_by"] | undefined;
+    swaps_aggregate?: ModelTypes["auth_swaps_aggregate_order_by"] | undefined;
     username?: ModelTypes["order_by"] | undefined;
   };
   /** primary key columns input for table: auth.users */
@@ -16266,6 +20395,19 @@ export type ModelTypes = {
     /** filter the rows which have to be updated */
     where: ModelTypes["auth_xnft_secrets_bool_exp"];
   };
+  ["bigint"]: any;
+  /** Boolean expression to compare columns of type "bigint". All fields are combined with logical 'AND'. */
+  ["bigint_comparison_exp"]: {
+    _eq?: ModelTypes["bigint"] | undefined;
+    _gt?: ModelTypes["bigint"] | undefined;
+    _gte?: ModelTypes["bigint"] | undefined;
+    _in?: Array<ModelTypes["bigint"]> | undefined;
+    _is_null?: boolean | undefined;
+    _lt?: ModelTypes["bigint"] | undefined;
+    _lte?: ModelTypes["bigint"] | undefined;
+    _neq?: ModelTypes["bigint"] | undefined;
+    _nin?: Array<ModelTypes["bigint"]> | undefined;
+  };
   ["citext"]: any;
   /** Boolean expression to compare columns of type "citext". All fields are combined with logical 'AND'. */
   ["citext_comparison_exp"]: {
@@ -16300,54 +20442,464 @@ export type ModelTypes = {
     _similar?: ModelTypes["citext"] | undefined;
   };
   ["cursor_ordering"]: cursor_ordering;
-  /** data used by merkle distributors */
-  ["dropzone_distributors"]: {
+  /** columns and relationships of "dropzone.claims" */
+  ["dropzone_claims"]: {
+    amount: ModelTypes["bigint"];
+    /** An object relationship */
+    claimant: ModelTypes["auth_users"];
+    claimant_id: ModelTypes["uuid"];
+    claimant_public_key: string;
+    claimed_at?: ModelTypes["timestamptz"] | undefined;
     created_at: ModelTypes["timestamptz"];
-    data: ModelTypes["jsonb"];
-    id: string;
-    mint: string;
+    /** An object relationship */
+    distributor: ModelTypes["dropzone_distributors"];
+    distributor_id: ModelTypes["uuid"];
+    ordinal: number;
+    transaction_signature?: string | undefined;
+    viewed_at?: ModelTypes["timestamptz"] | undefined;
   };
-  /** aggregated selection of "dropzone.distributors" */
-  ["dropzone_distributors_aggregate"]: {
-    aggregate?:
-      | ModelTypes["dropzone_distributors_aggregate_fields"]
+  /** order by aggregate values of table "dropzone.claims" */
+  ["dropzone_claims_aggregate_order_by"]: {
+    avg?: ModelTypes["dropzone_claims_avg_order_by"] | undefined;
+    count?: ModelTypes["order_by"] | undefined;
+    max?: ModelTypes["dropzone_claims_max_order_by"] | undefined;
+    min?: ModelTypes["dropzone_claims_min_order_by"] | undefined;
+    stddev?: ModelTypes["dropzone_claims_stddev_order_by"] | undefined;
+    stddev_pop?: ModelTypes["dropzone_claims_stddev_pop_order_by"] | undefined;
+    stddev_samp?:
+      | ModelTypes["dropzone_claims_stddev_samp_order_by"]
       | undefined;
-    nodes: Array<ModelTypes["dropzone_distributors"]>;
+    sum?: ModelTypes["dropzone_claims_sum_order_by"] | undefined;
+    var_pop?: ModelTypes["dropzone_claims_var_pop_order_by"] | undefined;
+    var_samp?: ModelTypes["dropzone_claims_var_samp_order_by"] | undefined;
+    variance?: ModelTypes["dropzone_claims_variance_order_by"] | undefined;
   };
-  /** aggregate fields of "dropzone.distributors" */
-  ["dropzone_distributors_aggregate_fields"]: {
-    count: number;
-    max?: ModelTypes["dropzone_distributors_max_fields"] | undefined;
-    min?: ModelTypes["dropzone_distributors_min_fields"] | undefined;
+  /** input type for inserting array relation for remote table "dropzone.claims" */
+  ["dropzone_claims_arr_rel_insert_input"]: {
+    data: Array<ModelTypes["dropzone_claims_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: ModelTypes["dropzone_claims_on_conflict"] | undefined;
+  };
+  /** order by avg() on columns of table "dropzone.claims" */
+  ["dropzone_claims_avg_order_by"]: {
+    amount?: ModelTypes["order_by"] | undefined;
+    ordinal?: ModelTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "dropzone.claims". All fields are combined with a logical 'AND'. */
+  ["dropzone_claims_bool_exp"]: {
+    _and?: Array<ModelTypes["dropzone_claims_bool_exp"]> | undefined;
+    _not?: ModelTypes["dropzone_claims_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["dropzone_claims_bool_exp"]> | undefined;
+    amount?: ModelTypes["bigint_comparison_exp"] | undefined;
+    claimant?: ModelTypes["auth_users_bool_exp"] | undefined;
+    claimant_id?: ModelTypes["uuid_comparison_exp"] | undefined;
+    claimant_public_key?: ModelTypes["String_comparison_exp"] | undefined;
+    claimed_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
+    created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
+    distributor?: ModelTypes["dropzone_distributors_bool_exp"] | undefined;
+    distributor_id?: ModelTypes["uuid_comparison_exp"] | undefined;
+    ordinal?: ModelTypes["Int_comparison_exp"] | undefined;
+    transaction_signature?: ModelTypes["String_comparison_exp"] | undefined;
+    viewed_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
+  };
+  ["dropzone_claims_constraint"]: dropzone_claims_constraint;
+  /** input type for incrementing numeric columns in table "dropzone.claims" */
+  ["dropzone_claims_inc_input"]: {
+    amount?: ModelTypes["bigint"] | undefined;
+    ordinal?: number | undefined;
+  };
+  /** input type for inserting data into table "dropzone.claims" */
+  ["dropzone_claims_insert_input"]: {
+    amount?: ModelTypes["bigint"] | undefined;
+    claimant?: ModelTypes["auth_users_obj_rel_insert_input"] | undefined;
+    claimant_id?: ModelTypes["uuid"] | undefined;
+    claimant_public_key?: string | undefined;
+    claimed_at?: ModelTypes["timestamptz"] | undefined;
+    created_at?: ModelTypes["timestamptz"] | undefined;
+    distributor?:
+      | ModelTypes["dropzone_distributors_obj_rel_insert_input"]
+      | undefined;
+    distributor_id?: ModelTypes["uuid"] | undefined;
+    ordinal?: number | undefined;
+    transaction_signature?: string | undefined;
+    viewed_at?: ModelTypes["timestamptz"] | undefined;
+  };
+  /** order by max() on columns of table "dropzone.claims" */
+  ["dropzone_claims_max_order_by"]: {
+    amount?: ModelTypes["order_by"] | undefined;
+    claimant_id?: ModelTypes["order_by"] | undefined;
+    claimant_public_key?: ModelTypes["order_by"] | undefined;
+    claimed_at?: ModelTypes["order_by"] | undefined;
+    created_at?: ModelTypes["order_by"] | undefined;
+    distributor_id?: ModelTypes["order_by"] | undefined;
+    ordinal?: ModelTypes["order_by"] | undefined;
+    transaction_signature?: ModelTypes["order_by"] | undefined;
+    viewed_at?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "dropzone.claims" */
+  ["dropzone_claims_min_order_by"]: {
+    amount?: ModelTypes["order_by"] | undefined;
+    claimant_id?: ModelTypes["order_by"] | undefined;
+    claimant_public_key?: ModelTypes["order_by"] | undefined;
+    claimed_at?: ModelTypes["order_by"] | undefined;
+    created_at?: ModelTypes["order_by"] | undefined;
+    distributor_id?: ModelTypes["order_by"] | undefined;
+    ordinal?: ModelTypes["order_by"] | undefined;
+    transaction_signature?: ModelTypes["order_by"] | undefined;
+    viewed_at?: ModelTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "dropzone.claims" */
+  ["dropzone_claims_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["dropzone_claims"]>;
+  };
+  /** on_conflict condition type for table "dropzone.claims" */
+  ["dropzone_claims_on_conflict"]: {
+    constraint: ModelTypes["dropzone_claims_constraint"];
+    update_columns: Array<ModelTypes["dropzone_claims_update_column"]>;
+    where?: ModelTypes["dropzone_claims_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "dropzone.claims". */
+  ["dropzone_claims_order_by"]: {
+    amount?: ModelTypes["order_by"] | undefined;
+    claimant?: ModelTypes["auth_users_order_by"] | undefined;
+    claimant_id?: ModelTypes["order_by"] | undefined;
+    claimant_public_key?: ModelTypes["order_by"] | undefined;
+    claimed_at?: ModelTypes["order_by"] | undefined;
+    created_at?: ModelTypes["order_by"] | undefined;
+    distributor?: ModelTypes["dropzone_distributors_order_by"] | undefined;
+    distributor_id?: ModelTypes["order_by"] | undefined;
+    ordinal?: ModelTypes["order_by"] | undefined;
+    transaction_signature?: ModelTypes["order_by"] | undefined;
+    viewed_at?: ModelTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: dropzone.claims */
+  ["dropzone_claims_pk_columns_input"]: {
+    claimant_id: ModelTypes["uuid"];
+    distributor_id: ModelTypes["uuid"];
+  };
+  ["dropzone_claims_select_column"]: dropzone_claims_select_column;
+  /** input type for updating data in table "dropzone.claims" */
+  ["dropzone_claims_set_input"]: {
+    amount?: ModelTypes["bigint"] | undefined;
+    claimant_id?: ModelTypes["uuid"] | undefined;
+    claimant_public_key?: string | undefined;
+    claimed_at?: ModelTypes["timestamptz"] | undefined;
+    created_at?: ModelTypes["timestamptz"] | undefined;
+    distributor_id?: ModelTypes["uuid"] | undefined;
+    ordinal?: number | undefined;
+    transaction_signature?: string | undefined;
+    viewed_at?: ModelTypes["timestamptz"] | undefined;
+  };
+  /** order by stddev() on columns of table "dropzone.claims" */
+  ["dropzone_claims_stddev_order_by"]: {
+    amount?: ModelTypes["order_by"] | undefined;
+    ordinal?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "dropzone.claims" */
+  ["dropzone_claims_stddev_pop_order_by"]: {
+    amount?: ModelTypes["order_by"] | undefined;
+    ordinal?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "dropzone.claims" */
+  ["dropzone_claims_stddev_samp_order_by"]: {
+    amount?: ModelTypes["order_by"] | undefined;
+    ordinal?: ModelTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "dropzone_claims" */
+  ["dropzone_claims_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["dropzone_claims_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["dropzone_claims_stream_cursor_value_input"]: {
+    amount?: ModelTypes["bigint"] | undefined;
+    claimant_id?: ModelTypes["uuid"] | undefined;
+    claimant_public_key?: string | undefined;
+    claimed_at?: ModelTypes["timestamptz"] | undefined;
+    created_at?: ModelTypes["timestamptz"] | undefined;
+    distributor_id?: ModelTypes["uuid"] | undefined;
+    ordinal?: number | undefined;
+    transaction_signature?: string | undefined;
+    viewed_at?: ModelTypes["timestamptz"] | undefined;
+  };
+  /** order by sum() on columns of table "dropzone.claims" */
+  ["dropzone_claims_sum_order_by"]: {
+    amount?: ModelTypes["order_by"] | undefined;
+    ordinal?: ModelTypes["order_by"] | undefined;
+  };
+  ["dropzone_claims_update_column"]: dropzone_claims_update_column;
+  ["dropzone_claims_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ModelTypes["dropzone_claims_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["dropzone_claims_set_input"] | undefined;
+    /** filter the rows which have to be updated */
+    where: ModelTypes["dropzone_claims_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "dropzone.claims" */
+  ["dropzone_claims_var_pop_order_by"]: {
+    amount?: ModelTypes["order_by"] | undefined;
+    ordinal?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "dropzone.claims" */
+  ["dropzone_claims_var_samp_order_by"]: {
+    amount?: ModelTypes["order_by"] | undefined;
+    ordinal?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "dropzone.claims" */
+  ["dropzone_claims_variance_order_by"]: {
+    amount?: ModelTypes["order_by"] | undefined;
+    ordinal?: ModelTypes["order_by"] | undefined;
+  };
+  /** columns and relationships of "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories"]: {
+    data?: ModelTypes["jsonb"] | undefined;
+    /** An array relationship */
+    distributors: Array<ModelTypes["dropzone_distributors"]>;
+    id: ModelTypes["uuid"];
+    name: string;
+  };
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  ["dropzone_distributor_categories_append_input"]: {
+    data?: ModelTypes["jsonb"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "dropzone.distributor_categories". All fields are combined with a logical 'AND'. */
+  ["dropzone_distributor_categories_bool_exp"]: {
+    _and?:
+      | Array<ModelTypes["dropzone_distributor_categories_bool_exp"]>
+      | undefined;
+    _not?: ModelTypes["dropzone_distributor_categories_bool_exp"] | undefined;
+    _or?:
+      | Array<ModelTypes["dropzone_distributor_categories_bool_exp"]>
+      | undefined;
+    data?: ModelTypes["jsonb_comparison_exp"] | undefined;
+    distributors?: ModelTypes["dropzone_distributors_bool_exp"] | undefined;
+    id?: ModelTypes["uuid_comparison_exp"] | undefined;
+    name?: ModelTypes["String_comparison_exp"] | undefined;
+  };
+  ["dropzone_distributor_categories_constraint"]: dropzone_distributor_categories_constraint;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  ["dropzone_distributor_categories_delete_at_path_input"]: {
+    data?: Array<string> | undefined;
+  };
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  ["dropzone_distributor_categories_delete_elem_input"]: {
+    data?: number | undefined;
+  };
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  ["dropzone_distributor_categories_delete_key_input"]: {
+    data?: string | undefined;
+  };
+  /** input type for inserting data into table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_insert_input"]: {
+    data?: ModelTypes["jsonb"] | undefined;
+    distributors?:
+      | ModelTypes["dropzone_distributors_arr_rel_insert_input"]
+      | undefined;
+    id?: ModelTypes["uuid"] | undefined;
+    name?: string | undefined;
+  };
+  /** response of any mutation on the table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["dropzone_distributor_categories"]>;
+  };
+  /** input type for inserting object relation for remote table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_obj_rel_insert_input"]: {
+    data: ModelTypes["dropzone_distributor_categories_insert_input"];
+    /** upsert condition */
+    on_conflict?:
+      | ModelTypes["dropzone_distributor_categories_on_conflict"]
+      | undefined;
+  };
+  /** on_conflict condition type for table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_on_conflict"]: {
+    constraint: ModelTypes["dropzone_distributor_categories_constraint"];
+    update_columns: Array<
+      ModelTypes["dropzone_distributor_categories_update_column"]
+    >;
+    where?: ModelTypes["dropzone_distributor_categories_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "dropzone.distributor_categories". */
+  ["dropzone_distributor_categories_order_by"]: {
+    data?: ModelTypes["order_by"] | undefined;
+    distributors_aggregate?:
+      | ModelTypes["dropzone_distributors_aggregate_order_by"]
+      | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    name?: ModelTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: dropzone.distributor_categories */
+  ["dropzone_distributor_categories_pk_columns_input"]: {
+    id: ModelTypes["uuid"];
+  };
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  ["dropzone_distributor_categories_prepend_input"]: {
+    data?: ModelTypes["jsonb"] | undefined;
+  };
+  ["dropzone_distributor_categories_select_column"]: dropzone_distributor_categories_select_column;
+  /** input type for updating data in table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_set_input"]: {
+    data?: ModelTypes["jsonb"] | undefined;
+    id?: ModelTypes["uuid"] | undefined;
+    name?: string | undefined;
+  };
+  /** Streaming cursor of the table "dropzone_distributor_categories" */
+  ["dropzone_distributor_categories_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["dropzone_distributor_categories_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["dropzone_distributor_categories_stream_cursor_value_input"]: {
+    data?: ModelTypes["jsonb"] | undefined;
+    id?: ModelTypes["uuid"] | undefined;
+    name?: string | undefined;
+  };
+  ["dropzone_distributor_categories_update_column"]: dropzone_distributor_categories_update_column;
+  ["dropzone_distributor_categories_updates"]: {
+    /** append existing jsonb value of filtered columns with new jsonb value */
+    _append?:
+      | ModelTypes["dropzone_distributor_categories_append_input"]
+      | undefined;
+    /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+    _delete_at_path?:
+      | ModelTypes["dropzone_distributor_categories_delete_at_path_input"]
+      | undefined;
+    /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+    _delete_elem?:
+      | ModelTypes["dropzone_distributor_categories_delete_elem_input"]
+      | undefined;
+    /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+    _delete_key?:
+      | ModelTypes["dropzone_distributor_categories_delete_key_input"]
+      | undefined;
+    /** prepend existing jsonb value of filtered columns with new jsonb value */
+    _prepend?:
+      | ModelTypes["dropzone_distributor_categories_prepend_input"]
+      | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["dropzone_distributor_categories_set_input"] | undefined;
+    /** filter the rows which have to be updated */
+    where: ModelTypes["dropzone_distributor_categories_bool_exp"];
+  };
+  /** columns and relationships of "dropzone.distributors" */
+  ["dropzone_distributors"]: {
+    /** An object relationship */
+    category?: ModelTypes["dropzone_distributor_categories"] | undefined;
+    category_id?: ModelTypes["uuid"] | undefined;
+    /** An array relationship */
+    claims: Array<ModelTypes["dropzone_claims"]>;
+    created_at: ModelTypes["timestamptz"];
+    data?: ModelTypes["jsonb"] | undefined;
+    id: ModelTypes["uuid"];
+    lookup_table_public_key?: string | undefined;
+    mint_public_key: string;
+    public_key: string;
+    published_at?: ModelTypes["timestamptz"] | undefined;
+    secret: ModelTypes["uuid"];
+    /** An array relationship */
+    swaps: Array<ModelTypes["auth_swaps"]>;
+    transaction_signature?: string | undefined;
+  };
+  /** order by aggregate values of table "dropzone.distributors" */
+  ["dropzone_distributors_aggregate_order_by"]: {
+    count?: ModelTypes["order_by"] | undefined;
+    max?: ModelTypes["dropzone_distributors_max_order_by"] | undefined;
+    min?: ModelTypes["dropzone_distributors_min_order_by"] | undefined;
+  };
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  ["dropzone_distributors_append_input"]: {
+    data?: ModelTypes["jsonb"] | undefined;
+  };
+  /** input type for inserting array relation for remote table "dropzone.distributors" */
+  ["dropzone_distributors_arr_rel_insert_input"]: {
+    data: Array<ModelTypes["dropzone_distributors_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: ModelTypes["dropzone_distributors_on_conflict"] | undefined;
   };
   /** Boolean expression to filter rows from the table "dropzone.distributors". All fields are combined with a logical 'AND'. */
   ["dropzone_distributors_bool_exp"]: {
     _and?: Array<ModelTypes["dropzone_distributors_bool_exp"]> | undefined;
     _not?: ModelTypes["dropzone_distributors_bool_exp"] | undefined;
     _or?: Array<ModelTypes["dropzone_distributors_bool_exp"]> | undefined;
+    category?:
+      | ModelTypes["dropzone_distributor_categories_bool_exp"]
+      | undefined;
+    category_id?: ModelTypes["uuid_comparison_exp"] | undefined;
+    claims?: ModelTypes["dropzone_claims_bool_exp"] | undefined;
     created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
     data?: ModelTypes["jsonb_comparison_exp"] | undefined;
-    id?: ModelTypes["String_comparison_exp"] | undefined;
-    mint?: ModelTypes["String_comparison_exp"] | undefined;
+    id?: ModelTypes["uuid_comparison_exp"] | undefined;
+    lookup_table_public_key?: ModelTypes["String_comparison_exp"] | undefined;
+    mint_public_key?: ModelTypes["String_comparison_exp"] | undefined;
+    public_key?: ModelTypes["String_comparison_exp"] | undefined;
+    published_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
+    secret?: ModelTypes["uuid_comparison_exp"] | undefined;
+    swaps?: ModelTypes["auth_swaps_bool_exp"] | undefined;
+    transaction_signature?: ModelTypes["String_comparison_exp"] | undefined;
   };
   ["dropzone_distributors_constraint"]: dropzone_distributors_constraint;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  ["dropzone_distributors_delete_at_path_input"]: {
+    data?: Array<string> | undefined;
+  };
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  ["dropzone_distributors_delete_elem_input"]: {
+    data?: number | undefined;
+  };
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  ["dropzone_distributors_delete_key_input"]: {
+    data?: string | undefined;
+  };
   /** input type for inserting data into table "dropzone.distributors" */
   ["dropzone_distributors_insert_input"]: {
+    category?:
+      | ModelTypes["dropzone_distributor_categories_obj_rel_insert_input"]
+      | undefined;
+    category_id?: ModelTypes["uuid"] | undefined;
+    claims?: ModelTypes["dropzone_claims_arr_rel_insert_input"] | undefined;
+    created_at?: ModelTypes["timestamptz"] | undefined;
     data?: ModelTypes["jsonb"] | undefined;
-    id?: string | undefined;
-    mint?: string | undefined;
+    id?: ModelTypes["uuid"] | undefined;
+    lookup_table_public_key?: string | undefined;
+    mint_public_key?: string | undefined;
+    public_key?: string | undefined;
+    published_at?: ModelTypes["timestamptz"] | undefined;
+    swaps?: ModelTypes["auth_swaps_arr_rel_insert_input"] | undefined;
+    transaction_signature?: string | undefined;
   };
-  /** aggregate max on columns */
-  ["dropzone_distributors_max_fields"]: {
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: string | undefined;
-    mint?: string | undefined;
+  /** order by max() on columns of table "dropzone.distributors" */
+  ["dropzone_distributors_max_order_by"]: {
+    category_id?: ModelTypes["order_by"] | undefined;
+    created_at?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    lookup_table_public_key?: ModelTypes["order_by"] | undefined;
+    mint_public_key?: ModelTypes["order_by"] | undefined;
+    public_key?: ModelTypes["order_by"] | undefined;
+    published_at?: ModelTypes["order_by"] | undefined;
+    secret?: ModelTypes["order_by"] | undefined;
+    transaction_signature?: ModelTypes["order_by"] | undefined;
   };
-  /** aggregate min on columns */
-  ["dropzone_distributors_min_fields"]: {
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: string | undefined;
-    mint?: string | undefined;
+  /** order by min() on columns of table "dropzone.distributors" */
+  ["dropzone_distributors_min_order_by"]: {
+    category_id?: ModelTypes["order_by"] | undefined;
+    created_at?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    lookup_table_public_key?: ModelTypes["order_by"] | undefined;
+    mint_public_key?: ModelTypes["order_by"] | undefined;
+    public_key?: ModelTypes["order_by"] | undefined;
+    published_at?: ModelTypes["order_by"] | undefined;
+    secret?: ModelTypes["order_by"] | undefined;
+    transaction_signature?: ModelTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "dropzone.distributors" */
   ["dropzone_distributors_mutation_response"]: {
@@ -16355,6 +20907,12 @@ export type ModelTypes = {
     affected_rows: number;
     /** data from the rows affected by the mutation */
     returning: Array<ModelTypes["dropzone_distributors"]>;
+  };
+  /** input type for inserting object relation for remote table "dropzone.distributors" */
+  ["dropzone_distributors_obj_rel_insert_input"]: {
+    data: ModelTypes["dropzone_distributors_insert_input"];
+    /** upsert condition */
+    on_conflict?: ModelTypes["dropzone_distributors_on_conflict"] | undefined;
   };
   /** on_conflict condition type for table "dropzone.distributors" */
   ["dropzone_distributors_on_conflict"]: {
@@ -16364,12 +20922,45 @@ export type ModelTypes = {
   };
   /** Ordering options when selecting data from "dropzone.distributors". */
   ["dropzone_distributors_order_by"]: {
+    category?:
+      | ModelTypes["dropzone_distributor_categories_order_by"]
+      | undefined;
+    category_id?: ModelTypes["order_by"] | undefined;
+    claims_aggregate?:
+      | ModelTypes["dropzone_claims_aggregate_order_by"]
+      | undefined;
     created_at?: ModelTypes["order_by"] | undefined;
     data?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
-    mint?: ModelTypes["order_by"] | undefined;
+    lookup_table_public_key?: ModelTypes["order_by"] | undefined;
+    mint_public_key?: ModelTypes["order_by"] | undefined;
+    public_key?: ModelTypes["order_by"] | undefined;
+    published_at?: ModelTypes["order_by"] | undefined;
+    secret?: ModelTypes["order_by"] | undefined;
+    swaps_aggregate?: ModelTypes["auth_swaps_aggregate_order_by"] | undefined;
+    transaction_signature?: ModelTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: dropzone.distributors */
+  ["dropzone_distributors_pk_columns_input"]: {
+    id: ModelTypes["uuid"];
+  };
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  ["dropzone_distributors_prepend_input"]: {
+    data?: ModelTypes["jsonb"] | undefined;
   };
   ["dropzone_distributors_select_column"]: dropzone_distributors_select_column;
+  /** input type for updating data in table "dropzone.distributors" */
+  ["dropzone_distributors_set_input"]: {
+    category_id?: ModelTypes["uuid"] | undefined;
+    created_at?: ModelTypes["timestamptz"] | undefined;
+    data?: ModelTypes["jsonb"] | undefined;
+    id?: ModelTypes["uuid"] | undefined;
+    lookup_table_public_key?: string | undefined;
+    mint_public_key?: string | undefined;
+    public_key?: string | undefined;
+    published_at?: ModelTypes["timestamptz"] | undefined;
+    transaction_signature?: string | undefined;
+  };
   /** Streaming cursor of the table "dropzone_distributors" */
   ["dropzone_distributors_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -16379,12 +20970,40 @@ export type ModelTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["dropzone_distributors_stream_cursor_value_input"]: {
+    category_id?: ModelTypes["uuid"] | undefined;
     created_at?: ModelTypes["timestamptz"] | undefined;
     data?: ModelTypes["jsonb"] | undefined;
-    id?: string | undefined;
-    mint?: string | undefined;
+    id?: ModelTypes["uuid"] | undefined;
+    lookup_table_public_key?: string | undefined;
+    mint_public_key?: string | undefined;
+    public_key?: string | undefined;
+    published_at?: ModelTypes["timestamptz"] | undefined;
+    secret?: ModelTypes["uuid"] | undefined;
+    transaction_signature?: string | undefined;
   };
   ["dropzone_distributors_update_column"]: dropzone_distributors_update_column;
+  ["dropzone_distributors_updates"]: {
+    /** append existing jsonb value of filtered columns with new jsonb value */
+    _append?: ModelTypes["dropzone_distributors_append_input"] | undefined;
+    /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+    _delete_at_path?:
+      | ModelTypes["dropzone_distributors_delete_at_path_input"]
+      | undefined;
+    /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+    _delete_elem?:
+      | ModelTypes["dropzone_distributors_delete_elem_input"]
+      | undefined;
+    /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+    _delete_key?:
+      | ModelTypes["dropzone_distributors_delete_key_input"]
+      | undefined;
+    /** prepend existing jsonb value of filtered columns with new jsonb value */
+    _prepend?: ModelTypes["dropzone_distributors_prepend_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["dropzone_distributors_set_input"] | undefined;
+    /** filter the rows which have to be updated */
+    where: ModelTypes["dropzone_distributors_bool_exp"];
+  };
   /** columns and relationships of "invitations" */
   ["invitations"]: {
     claimed_at?: ModelTypes["timestamptz"] | undefined;
@@ -16594,6 +21213,10 @@ export type ModelTypes = {
     insert_auth_stripe_onramp_one?:
       | ModelTypes["auth_stripe_onramp"]
       | undefined;
+    /** insert data into the table: "auth.swaps" */
+    insert_auth_swaps?: ModelTypes["auth_swaps_mutation_response"] | undefined;
+    /** insert a single row into the table: "auth.swaps" */
+    insert_auth_swaps_one?: ModelTypes["auth_swaps"] | undefined;
     /** insert data into the table: "auth.user_active_publickey_mapping" */
     insert_auth_user_active_publickey_mapping?:
       | ModelTypes["auth_user_active_publickey_mapping_mutation_response"]
@@ -16626,6 +21249,20 @@ export type ModelTypes = {
       | undefined;
     /** insert a single row into the table: "auth.xnft_secrets" */
     insert_auth_xnft_secrets_one?: ModelTypes["auth_xnft_secrets"] | undefined;
+    /** insert data into the table: "dropzone.claims" */
+    insert_dropzone_claims?:
+      | ModelTypes["dropzone_claims_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "dropzone.claims" */
+    insert_dropzone_claims_one?: ModelTypes["dropzone_claims"] | undefined;
+    /** insert data into the table: "dropzone.distributor_categories" */
+    insert_dropzone_distributor_categories?:
+      | ModelTypes["dropzone_distributor_categories_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "dropzone.distributor_categories" */
+    insert_dropzone_distributor_categories_one?:
+      | ModelTypes["dropzone_distributor_categories"]
+      | undefined;
     /** insert data into the table: "dropzone.distributors" */
     insert_dropzone_distributors?:
       | ModelTypes["dropzone_distributors_mutation_response"]
@@ -16721,6 +21358,14 @@ export type ModelTypes = {
     update_auth_stripe_onramp_many?:
       | Array<ModelTypes["auth_stripe_onramp_mutation_response"] | undefined>
       | undefined;
+    /** update data of the table: "auth.swaps" */
+    update_auth_swaps?: ModelTypes["auth_swaps_mutation_response"] | undefined;
+    /** update single row of the table: "auth.swaps" */
+    update_auth_swaps_by_pk?: ModelTypes["auth_swaps"] | undefined;
+    /** update multiples rows of table: "auth.swaps" */
+    update_auth_swaps_many?:
+      | Array<ModelTypes["auth_swaps_mutation_response"] | undefined>
+      | undefined;
     /** update data of the table: "auth.user_active_publickey_mapping" */
     update_auth_user_active_publickey_mapping?:
       | ModelTypes["auth_user_active_publickey_mapping_mutation_response"]
@@ -16767,6 +21412,43 @@ export type ModelTypes = {
     /** update multiples rows of table: "auth.xnft_secrets" */
     update_auth_xnft_secrets_many?:
       | Array<ModelTypes["auth_xnft_secrets_mutation_response"] | undefined>
+      | undefined;
+    /** update data of the table: "dropzone.claims" */
+    update_dropzone_claims?:
+      | ModelTypes["dropzone_claims_mutation_response"]
+      | undefined;
+    /** update single row of the table: "dropzone.claims" */
+    update_dropzone_claims_by_pk?: ModelTypes["dropzone_claims"] | undefined;
+    /** update multiples rows of table: "dropzone.claims" */
+    update_dropzone_claims_many?:
+      | Array<ModelTypes["dropzone_claims_mutation_response"] | undefined>
+      | undefined;
+    /** update data of the table: "dropzone.distributor_categories" */
+    update_dropzone_distributor_categories?:
+      | ModelTypes["dropzone_distributor_categories_mutation_response"]
+      | undefined;
+    /** update single row of the table: "dropzone.distributor_categories" */
+    update_dropzone_distributor_categories_by_pk?:
+      | ModelTypes["dropzone_distributor_categories"]
+      | undefined;
+    /** update multiples rows of table: "dropzone.distributor_categories" */
+    update_dropzone_distributor_categories_many?:
+      | Array<
+          | ModelTypes["dropzone_distributor_categories_mutation_response"]
+          | undefined
+        >
+      | undefined;
+    /** update data of the table: "dropzone.distributors" */
+    update_dropzone_distributors?:
+      | ModelTypes["dropzone_distributors_mutation_response"]
+      | undefined;
+    /** update single row of the table: "dropzone.distributors" */
+    update_dropzone_distributors_by_pk?:
+      | ModelTypes["dropzone_distributors"]
+      | undefined;
+    /** update multiples rows of table: "dropzone.distributors" */
+    update_dropzone_distributors_many?:
+      | Array<ModelTypes["dropzone_distributors_mutation_response"] | undefined>
       | undefined;
   };
   ["order_by"]: order_by;
@@ -16825,6 +21507,10 @@ export type ModelTypes = {
     auth_stripe_onramp: Array<ModelTypes["auth_stripe_onramp"]>;
     /** fetch data from the table: "auth.stripe_onramp" using primary key columns */
     auth_stripe_onramp_by_pk?: ModelTypes["auth_stripe_onramp"] | undefined;
+    /** fetch data from the table: "auth.swaps" */
+    auth_swaps: Array<ModelTypes["auth_swaps"]>;
+    /** fetch data from the table: "auth.swaps" using primary key columns */
+    auth_swaps_by_pk?: ModelTypes["auth_swaps"] | undefined;
     /** fetch data from the table: "auth.user_active_publickey_mapping" */
     auth_user_active_publickey_mapping: Array<
       ModelTypes["auth_user_active_publickey_mapping"]
@@ -16859,10 +21545,20 @@ export type ModelTypes = {
     auth_xnft_secrets: Array<ModelTypes["auth_xnft_secrets"]>;
     /** fetch data from the table: "auth.xnft_secrets" using primary key columns */
     auth_xnft_secrets_by_pk?: ModelTypes["auth_xnft_secrets"] | undefined;
+    /** An array relationship */
+    dropzone_claims: Array<ModelTypes["dropzone_claims"]>;
+    /** fetch data from the table: "dropzone.claims" using primary key columns */
+    dropzone_claims_by_pk?: ModelTypes["dropzone_claims"] | undefined;
+    /** fetch data from the table: "dropzone.distributor_categories" */
+    dropzone_distributor_categories: Array<
+      ModelTypes["dropzone_distributor_categories"]
+    >;
+    /** fetch data from the table: "dropzone.distributor_categories" using primary key columns */
+    dropzone_distributor_categories_by_pk?:
+      | ModelTypes["dropzone_distributor_categories"]
+      | undefined;
     /** fetch data from the table: "dropzone.distributors" */
     dropzone_distributors: Array<ModelTypes["dropzone_distributors"]>;
-    /** fetch aggregated fields from the table: "dropzone.distributors" */
-    dropzone_distributors_aggregate: ModelTypes["dropzone_distributors_aggregate"];
     /** fetch data from the table: "dropzone.distributors" using primary key columns */
     dropzone_distributors_by_pk?:
       | ModelTypes["dropzone_distributors"]
@@ -16953,6 +21649,12 @@ export type ModelTypes = {
     auth_stripe_onramp_by_pk?: ModelTypes["auth_stripe_onramp"] | undefined;
     /** fetch data from the table in a streaming manner: "auth.stripe_onramp" */
     auth_stripe_onramp_stream: Array<ModelTypes["auth_stripe_onramp"]>;
+    /** fetch data from the table: "auth.swaps" */
+    auth_swaps: Array<ModelTypes["auth_swaps"]>;
+    /** fetch data from the table: "auth.swaps" using primary key columns */
+    auth_swaps_by_pk?: ModelTypes["auth_swaps"] | undefined;
+    /** fetch data from the table in a streaming manner: "auth.swaps" */
+    auth_swaps_stream: Array<ModelTypes["auth_swaps"]>;
     /** fetch data from the table: "auth.user_active_publickey_mapping" */
     auth_user_active_publickey_mapping: Array<
       ModelTypes["auth_user_active_publickey_mapping"]
@@ -16999,10 +21701,26 @@ export type ModelTypes = {
     auth_xnft_secrets_by_pk?: ModelTypes["auth_xnft_secrets"] | undefined;
     /** fetch data from the table in a streaming manner: "auth.xnft_secrets" */
     auth_xnft_secrets_stream: Array<ModelTypes["auth_xnft_secrets"]>;
+    /** An array relationship */
+    dropzone_claims: Array<ModelTypes["dropzone_claims"]>;
+    /** fetch data from the table: "dropzone.claims" using primary key columns */
+    dropzone_claims_by_pk?: ModelTypes["dropzone_claims"] | undefined;
+    /** fetch data from the table in a streaming manner: "dropzone.claims" */
+    dropzone_claims_stream: Array<ModelTypes["dropzone_claims"]>;
+    /** fetch data from the table: "dropzone.distributor_categories" */
+    dropzone_distributor_categories: Array<
+      ModelTypes["dropzone_distributor_categories"]
+    >;
+    /** fetch data from the table: "dropzone.distributor_categories" using primary key columns */
+    dropzone_distributor_categories_by_pk?:
+      | ModelTypes["dropzone_distributor_categories"]
+      | undefined;
+    /** fetch data from the table in a streaming manner: "dropzone.distributor_categories" */
+    dropzone_distributor_categories_stream: Array<
+      ModelTypes["dropzone_distributor_categories"]
+    >;
     /** fetch data from the table: "dropzone.distributors" */
     dropzone_distributors: Array<ModelTypes["dropzone_distributors"]>;
-    /** fetch aggregated fields from the table: "dropzone.distributors" */
-    dropzone_distributors_aggregate: ModelTypes["dropzone_distributors_aggregate"];
     /** fetch data from the table: "dropzone.distributors" using primary key columns */
     dropzone_distributors_by_pk?:
       | ModelTypes["dropzone_distributors"]
@@ -18456,6 +23174,216 @@ export type GraphQLTypes = {
     /** filter the rows which have to be updated */
     where: GraphQLTypes["auth_stripe_onramp_bool_exp"];
   };
+  /** indexes swaps for calculating fee referral payments */
+  ["auth_swaps"]: {
+    __typename: "auth_swaps";
+    created_at: GraphQLTypes["timestamptz"];
+    /** An object relationship */
+    distributor?: GraphQLTypes["dropzone_distributors"] | undefined;
+    distributor_id?: GraphQLTypes["uuid"] | undefined;
+    fee_account_address?: string | undefined;
+    fee_amount?: GraphQLTypes["bigint"] | undefined;
+    fee_mint_address?: string | undefined;
+    fee_payer_id?: GraphQLTypes["uuid"] | undefined;
+    fee_payer_public_key?: string | undefined;
+    id: GraphQLTypes["uuid"];
+    transaction_at?: GraphQLTypes["timestamptz"] | undefined;
+    transaction_signature: string;
+    /** An object relationship */
+    user?: GraphQLTypes["auth_users"] | undefined;
+  };
+  /** order by aggregate values of table "auth.swaps" */
+  ["auth_swaps_aggregate_order_by"]: {
+    avg?: GraphQLTypes["auth_swaps_avg_order_by"] | undefined;
+    count?: GraphQLTypes["order_by"] | undefined;
+    max?: GraphQLTypes["auth_swaps_max_order_by"] | undefined;
+    min?: GraphQLTypes["auth_swaps_min_order_by"] | undefined;
+    stddev?: GraphQLTypes["auth_swaps_stddev_order_by"] | undefined;
+    stddev_pop?: GraphQLTypes["auth_swaps_stddev_pop_order_by"] | undefined;
+    stddev_samp?: GraphQLTypes["auth_swaps_stddev_samp_order_by"] | undefined;
+    sum?: GraphQLTypes["auth_swaps_sum_order_by"] | undefined;
+    var_pop?: GraphQLTypes["auth_swaps_var_pop_order_by"] | undefined;
+    var_samp?: GraphQLTypes["auth_swaps_var_samp_order_by"] | undefined;
+    variance?: GraphQLTypes["auth_swaps_variance_order_by"] | undefined;
+  };
+  /** input type for inserting array relation for remote table "auth.swaps" */
+  ["auth_swaps_arr_rel_insert_input"]: {
+    data: Array<GraphQLTypes["auth_swaps_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["auth_swaps_on_conflict"] | undefined;
+  };
+  /** order by avg() on columns of table "auth.swaps" */
+  ["auth_swaps_avg_order_by"]: {
+    fee_amount?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "auth.swaps". All fields are combined with a logical 'AND'. */
+  ["auth_swaps_bool_exp"]: {
+    _and?: Array<GraphQLTypes["auth_swaps_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["auth_swaps_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["auth_swaps_bool_exp"]> | undefined;
+    created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
+    distributor?: GraphQLTypes["dropzone_distributors_bool_exp"] | undefined;
+    distributor_id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
+    fee_account_address?: GraphQLTypes["String_comparison_exp"] | undefined;
+    fee_amount?: GraphQLTypes["bigint_comparison_exp"] | undefined;
+    fee_mint_address?: GraphQLTypes["String_comparison_exp"] | undefined;
+    fee_payer_id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
+    fee_payer_public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
+    id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
+    transaction_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
+    transaction_signature?: GraphQLTypes["String_comparison_exp"] | undefined;
+    user?: GraphQLTypes["auth_users_bool_exp"] | undefined;
+  };
+  /** unique or primary key constraints on table "auth.swaps" */
+  ["auth_swaps_constraint"]: auth_swaps_constraint;
+  /** input type for incrementing numeric columns in table "auth.swaps" */
+  ["auth_swaps_inc_input"]: {
+    fee_amount?: GraphQLTypes["bigint"] | undefined;
+  };
+  /** input type for inserting data into table "auth.swaps" */
+  ["auth_swaps_insert_input"]: {
+    distributor?:
+      | GraphQLTypes["dropzone_distributors_obj_rel_insert_input"]
+      | undefined;
+    distributor_id?: GraphQLTypes["uuid"] | undefined;
+    fee_account_address?: string | undefined;
+    fee_amount?: GraphQLTypes["bigint"] | undefined;
+    fee_mint_address?: string | undefined;
+    fee_payer_id?: GraphQLTypes["uuid"] | undefined;
+    fee_payer_public_key?: string | undefined;
+    transaction_at?: GraphQLTypes["timestamptz"] | undefined;
+    transaction_signature?: string | undefined;
+    user?: GraphQLTypes["auth_users_obj_rel_insert_input"] | undefined;
+  };
+  /** order by max() on columns of table "auth.swaps" */
+  ["auth_swaps_max_order_by"]: {
+    created_at?: GraphQLTypes["order_by"] | undefined;
+    distributor_id?: GraphQLTypes["order_by"] | undefined;
+    fee_account_address?: GraphQLTypes["order_by"] | undefined;
+    fee_amount?: GraphQLTypes["order_by"] | undefined;
+    fee_mint_address?: GraphQLTypes["order_by"] | undefined;
+    fee_payer_id?: GraphQLTypes["order_by"] | undefined;
+    fee_payer_public_key?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    transaction_at?: GraphQLTypes["order_by"] | undefined;
+    transaction_signature?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "auth.swaps" */
+  ["auth_swaps_min_order_by"]: {
+    created_at?: GraphQLTypes["order_by"] | undefined;
+    distributor_id?: GraphQLTypes["order_by"] | undefined;
+    fee_account_address?: GraphQLTypes["order_by"] | undefined;
+    fee_amount?: GraphQLTypes["order_by"] | undefined;
+    fee_mint_address?: GraphQLTypes["order_by"] | undefined;
+    fee_payer_id?: GraphQLTypes["order_by"] | undefined;
+    fee_payer_public_key?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    transaction_at?: GraphQLTypes["order_by"] | undefined;
+    transaction_signature?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "auth.swaps" */
+  ["auth_swaps_mutation_response"]: {
+    __typename: "auth_swaps_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["auth_swaps"]>;
+  };
+  /** on_conflict condition type for table "auth.swaps" */
+  ["auth_swaps_on_conflict"]: {
+    constraint: GraphQLTypes["auth_swaps_constraint"];
+    update_columns: Array<GraphQLTypes["auth_swaps_update_column"]>;
+    where?: GraphQLTypes["auth_swaps_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.swaps". */
+  ["auth_swaps_order_by"]: {
+    created_at?: GraphQLTypes["order_by"] | undefined;
+    distributor?: GraphQLTypes["dropzone_distributors_order_by"] | undefined;
+    distributor_id?: GraphQLTypes["order_by"] | undefined;
+    fee_account_address?: GraphQLTypes["order_by"] | undefined;
+    fee_amount?: GraphQLTypes["order_by"] | undefined;
+    fee_mint_address?: GraphQLTypes["order_by"] | undefined;
+    fee_payer_id?: GraphQLTypes["order_by"] | undefined;
+    fee_payer_public_key?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    transaction_at?: GraphQLTypes["order_by"] | undefined;
+    transaction_signature?: GraphQLTypes["order_by"] | undefined;
+    user?: GraphQLTypes["auth_users_order_by"] | undefined;
+  };
+  /** primary key columns input for table: auth.swaps */
+  ["auth_swaps_pk_columns_input"]: {
+    id: GraphQLTypes["uuid"];
+  };
+  /** select columns of table "auth.swaps" */
+  ["auth_swaps_select_column"]: auth_swaps_select_column;
+  /** input type for updating data in table "auth.swaps" */
+  ["auth_swaps_set_input"]: {
+    distributor_id?: GraphQLTypes["uuid"] | undefined;
+    fee_account_address?: string | undefined;
+    fee_amount?: GraphQLTypes["bigint"] | undefined;
+    fee_mint_address?: string | undefined;
+    fee_payer_id?: GraphQLTypes["uuid"] | undefined;
+    fee_payer_public_key?: string | undefined;
+    transaction_at?: GraphQLTypes["timestamptz"] | undefined;
+  };
+  /** order by stddev() on columns of table "auth.swaps" */
+  ["auth_swaps_stddev_order_by"]: {
+    fee_amount?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "auth.swaps" */
+  ["auth_swaps_stddev_pop_order_by"]: {
+    fee_amount?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "auth.swaps" */
+  ["auth_swaps_stddev_samp_order_by"]: {
+    fee_amount?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "auth_swaps" */
+  ["auth_swaps_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["auth_swaps_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_swaps_stream_cursor_value_input"]: {
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
+    distributor_id?: GraphQLTypes["uuid"] | undefined;
+    fee_account_address?: string | undefined;
+    fee_amount?: GraphQLTypes["bigint"] | undefined;
+    fee_mint_address?: string | undefined;
+    fee_payer_id?: GraphQLTypes["uuid"] | undefined;
+    fee_payer_public_key?: string | undefined;
+    id?: GraphQLTypes["uuid"] | undefined;
+    transaction_at?: GraphQLTypes["timestamptz"] | undefined;
+    transaction_signature?: string | undefined;
+  };
+  /** order by sum() on columns of table "auth.swaps" */
+  ["auth_swaps_sum_order_by"]: {
+    fee_amount?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** update columns of table "auth.swaps" */
+  ["auth_swaps_update_column"]: auth_swaps_update_column;
+  ["auth_swaps_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: GraphQLTypes["auth_swaps_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: GraphQLTypes["auth_swaps_set_input"] | undefined;
+    /** filter the rows which have to be updated */
+    where: GraphQLTypes["auth_swaps_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "auth.swaps" */
+  ["auth_swaps_var_pop_order_by"]: {
+    fee_amount?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "auth.swaps" */
+  ["auth_swaps_var_samp_order_by"]: {
+    fee_amount?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "auth.swaps" */
+  ["auth_swaps_variance_order_by"]: {
+    fee_amount?: GraphQLTypes["order_by"] | undefined;
+  };
   /** columns and relationships of "auth.user_active_publickey_mapping" */
   ["auth_user_active_publickey_mapping"]: {
     __typename: "auth_user_active_publickey_mapping";
@@ -18805,6 +23733,8 @@ export type GraphQLTypes = {
   ["auth_users"]: {
     __typename: "auth_users";
     created_at: GraphQLTypes["timestamptz"];
+    /** An array relationship */
+    dropzone_claims: Array<GraphQLTypes["dropzone_claims"]>;
     id: GraphQLTypes["uuid"];
     /** An object relationship */
     invitation: GraphQLTypes["auth_invitations"];
@@ -18818,6 +23748,8 @@ export type GraphQLTypes = {
     referred_users_aggregate: GraphQLTypes["auth_users_aggregate"];
     /** An object relationship */
     referrer?: GraphQLTypes["auth_users"] | undefined;
+    /** An array relationship */
+    swaps: Array<GraphQLTypes["auth_swaps"]>;
     username: GraphQLTypes["citext"];
   };
   /** aggregated selection of "auth.users" */
@@ -18860,6 +23792,7 @@ export type GraphQLTypes = {
     _not?: GraphQLTypes["auth_users_bool_exp"] | undefined;
     _or?: Array<GraphQLTypes["auth_users_bool_exp"]> | undefined;
     created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
+    dropzone_claims?: GraphQLTypes["dropzone_claims_bool_exp"] | undefined;
     id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
     invitation?: GraphQLTypes["auth_invitations_bool_exp"] | undefined;
     public_keys?: GraphQLTypes["auth_public_keys_bool_exp"] | undefined;
@@ -18871,12 +23804,16 @@ export type GraphQLTypes = {
       | GraphQLTypes["auth_users_aggregate_bool_exp"]
       | undefined;
     referrer?: GraphQLTypes["auth_users_bool_exp"] | undefined;
+    swaps?: GraphQLTypes["auth_swaps_bool_exp"] | undefined;
     username?: GraphQLTypes["citext_comparison_exp"] | undefined;
   };
   /** unique or primary key constraints on table "auth.users" */
   ["auth_users_constraint"]: auth_users_constraint;
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
+    dropzone_claims?:
+      | GraphQLTypes["dropzone_claims_arr_rel_insert_input"]
+      | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
     invitation?:
       | GraphQLTypes["auth_invitations_obj_rel_insert_input"]
@@ -18890,6 +23827,7 @@ export type GraphQLTypes = {
       | undefined;
     referrer?: GraphQLTypes["auth_users_obj_rel_insert_input"] | undefined;
     referrer_id?: GraphQLTypes["uuid"] | undefined;
+    swaps?: GraphQLTypes["auth_swaps_arr_rel_insert_input"] | undefined;
     username?: GraphQLTypes["citext"] | undefined;
     waitlist_id?: string | undefined;
   };
@@ -18942,6 +23880,9 @@ export type GraphQLTypes = {
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
     created_at?: GraphQLTypes["order_by"] | undefined;
+    dropzone_claims_aggregate?:
+      | GraphQLTypes["dropzone_claims_aggregate_order_by"]
+      | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     invitation?: GraphQLTypes["auth_invitations_order_by"] | undefined;
     public_keys_aggregate?:
@@ -18951,6 +23892,7 @@ export type GraphQLTypes = {
       | GraphQLTypes["auth_users_aggregate_order_by"]
       | undefined;
     referrer?: GraphQLTypes["auth_users_order_by"] | undefined;
+    swaps_aggregate?: GraphQLTypes["auth_swaps_aggregate_order_by"] | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
   };
   /** primary key columns input for table: auth.users */
@@ -19178,6 +24120,19 @@ export type GraphQLTypes = {
     /** filter the rows which have to be updated */
     where: GraphQLTypes["auth_xnft_secrets_bool_exp"];
   };
+  ["bigint"]: "scalar" & { name: "bigint" };
+  /** Boolean expression to compare columns of type "bigint". All fields are combined with logical 'AND'. */
+  ["bigint_comparison_exp"]: {
+    _eq?: GraphQLTypes["bigint"] | undefined;
+    _gt?: GraphQLTypes["bigint"] | undefined;
+    _gte?: GraphQLTypes["bigint"] | undefined;
+    _in?: Array<GraphQLTypes["bigint"]> | undefined;
+    _is_null?: boolean | undefined;
+    _lt?: GraphQLTypes["bigint"] | undefined;
+    _lte?: GraphQLTypes["bigint"] | undefined;
+    _neq?: GraphQLTypes["bigint"] | undefined;
+    _nin?: Array<GraphQLTypes["bigint"]> | undefined;
+  };
   ["citext"]: "scalar" & { name: "citext" };
   /** Boolean expression to compare columns of type "citext". All fields are combined with logical 'AND'. */
   ["citext_comparison_exp"]: {
@@ -19213,60 +24168,482 @@ export type GraphQLTypes = {
   };
   /** ordering argument of a cursor */
   ["cursor_ordering"]: cursor_ordering;
-  /** data used by merkle distributors */
+  /** columns and relationships of "dropzone.claims" */
+  ["dropzone_claims"]: {
+    __typename: "dropzone_claims";
+    amount: GraphQLTypes["bigint"];
+    /** An object relationship */
+    claimant: GraphQLTypes["auth_users"];
+    claimant_id: GraphQLTypes["uuid"];
+    claimant_public_key: string;
+    claimed_at?: GraphQLTypes["timestamptz"] | undefined;
+    created_at: GraphQLTypes["timestamptz"];
+    /** An object relationship */
+    distributor: GraphQLTypes["dropzone_distributors"];
+    distributor_id: GraphQLTypes["uuid"];
+    ordinal: number;
+    transaction_signature?: string | undefined;
+    viewed_at?: GraphQLTypes["timestamptz"] | undefined;
+  };
+  /** order by aggregate values of table "dropzone.claims" */
+  ["dropzone_claims_aggregate_order_by"]: {
+    avg?: GraphQLTypes["dropzone_claims_avg_order_by"] | undefined;
+    count?: GraphQLTypes["order_by"] | undefined;
+    max?: GraphQLTypes["dropzone_claims_max_order_by"] | undefined;
+    min?: GraphQLTypes["dropzone_claims_min_order_by"] | undefined;
+    stddev?: GraphQLTypes["dropzone_claims_stddev_order_by"] | undefined;
+    stddev_pop?:
+      | GraphQLTypes["dropzone_claims_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | GraphQLTypes["dropzone_claims_stddev_samp_order_by"]
+      | undefined;
+    sum?: GraphQLTypes["dropzone_claims_sum_order_by"] | undefined;
+    var_pop?: GraphQLTypes["dropzone_claims_var_pop_order_by"] | undefined;
+    var_samp?: GraphQLTypes["dropzone_claims_var_samp_order_by"] | undefined;
+    variance?: GraphQLTypes["dropzone_claims_variance_order_by"] | undefined;
+  };
+  /** input type for inserting array relation for remote table "dropzone.claims" */
+  ["dropzone_claims_arr_rel_insert_input"]: {
+    data: Array<GraphQLTypes["dropzone_claims_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["dropzone_claims_on_conflict"] | undefined;
+  };
+  /** order by avg() on columns of table "dropzone.claims" */
+  ["dropzone_claims_avg_order_by"]: {
+    amount?: GraphQLTypes["order_by"] | undefined;
+    ordinal?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "dropzone.claims". All fields are combined with a logical 'AND'. */
+  ["dropzone_claims_bool_exp"]: {
+    _and?: Array<GraphQLTypes["dropzone_claims_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["dropzone_claims_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["dropzone_claims_bool_exp"]> | undefined;
+    amount?: GraphQLTypes["bigint_comparison_exp"] | undefined;
+    claimant?: GraphQLTypes["auth_users_bool_exp"] | undefined;
+    claimant_id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
+    claimant_public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
+    claimed_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
+    created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
+    distributor?: GraphQLTypes["dropzone_distributors_bool_exp"] | undefined;
+    distributor_id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
+    ordinal?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    transaction_signature?: GraphQLTypes["String_comparison_exp"] | undefined;
+    viewed_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
+  };
+  /** unique or primary key constraints on table "dropzone.claims" */
+  ["dropzone_claims_constraint"]: dropzone_claims_constraint;
+  /** input type for incrementing numeric columns in table "dropzone.claims" */
+  ["dropzone_claims_inc_input"]: {
+    amount?: GraphQLTypes["bigint"] | undefined;
+    ordinal?: number | undefined;
+  };
+  /** input type for inserting data into table "dropzone.claims" */
+  ["dropzone_claims_insert_input"]: {
+    amount?: GraphQLTypes["bigint"] | undefined;
+    claimant?: GraphQLTypes["auth_users_obj_rel_insert_input"] | undefined;
+    claimant_id?: GraphQLTypes["uuid"] | undefined;
+    claimant_public_key?: string | undefined;
+    claimed_at?: GraphQLTypes["timestamptz"] | undefined;
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
+    distributor?:
+      | GraphQLTypes["dropzone_distributors_obj_rel_insert_input"]
+      | undefined;
+    distributor_id?: GraphQLTypes["uuid"] | undefined;
+    ordinal?: number | undefined;
+    transaction_signature?: string | undefined;
+    viewed_at?: GraphQLTypes["timestamptz"] | undefined;
+  };
+  /** order by max() on columns of table "dropzone.claims" */
+  ["dropzone_claims_max_order_by"]: {
+    amount?: GraphQLTypes["order_by"] | undefined;
+    claimant_id?: GraphQLTypes["order_by"] | undefined;
+    claimant_public_key?: GraphQLTypes["order_by"] | undefined;
+    claimed_at?: GraphQLTypes["order_by"] | undefined;
+    created_at?: GraphQLTypes["order_by"] | undefined;
+    distributor_id?: GraphQLTypes["order_by"] | undefined;
+    ordinal?: GraphQLTypes["order_by"] | undefined;
+    transaction_signature?: GraphQLTypes["order_by"] | undefined;
+    viewed_at?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "dropzone.claims" */
+  ["dropzone_claims_min_order_by"]: {
+    amount?: GraphQLTypes["order_by"] | undefined;
+    claimant_id?: GraphQLTypes["order_by"] | undefined;
+    claimant_public_key?: GraphQLTypes["order_by"] | undefined;
+    claimed_at?: GraphQLTypes["order_by"] | undefined;
+    created_at?: GraphQLTypes["order_by"] | undefined;
+    distributor_id?: GraphQLTypes["order_by"] | undefined;
+    ordinal?: GraphQLTypes["order_by"] | undefined;
+    transaction_signature?: GraphQLTypes["order_by"] | undefined;
+    viewed_at?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "dropzone.claims" */
+  ["dropzone_claims_mutation_response"]: {
+    __typename: "dropzone_claims_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["dropzone_claims"]>;
+  };
+  /** on_conflict condition type for table "dropzone.claims" */
+  ["dropzone_claims_on_conflict"]: {
+    constraint: GraphQLTypes["dropzone_claims_constraint"];
+    update_columns: Array<GraphQLTypes["dropzone_claims_update_column"]>;
+    where?: GraphQLTypes["dropzone_claims_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "dropzone.claims". */
+  ["dropzone_claims_order_by"]: {
+    amount?: GraphQLTypes["order_by"] | undefined;
+    claimant?: GraphQLTypes["auth_users_order_by"] | undefined;
+    claimant_id?: GraphQLTypes["order_by"] | undefined;
+    claimant_public_key?: GraphQLTypes["order_by"] | undefined;
+    claimed_at?: GraphQLTypes["order_by"] | undefined;
+    created_at?: GraphQLTypes["order_by"] | undefined;
+    distributor?: GraphQLTypes["dropzone_distributors_order_by"] | undefined;
+    distributor_id?: GraphQLTypes["order_by"] | undefined;
+    ordinal?: GraphQLTypes["order_by"] | undefined;
+    transaction_signature?: GraphQLTypes["order_by"] | undefined;
+    viewed_at?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: dropzone.claims */
+  ["dropzone_claims_pk_columns_input"]: {
+    claimant_id: GraphQLTypes["uuid"];
+    distributor_id: GraphQLTypes["uuid"];
+  };
+  /** select columns of table "dropzone.claims" */
+  ["dropzone_claims_select_column"]: dropzone_claims_select_column;
+  /** input type for updating data in table "dropzone.claims" */
+  ["dropzone_claims_set_input"]: {
+    amount?: GraphQLTypes["bigint"] | undefined;
+    claimant_id?: GraphQLTypes["uuid"] | undefined;
+    claimant_public_key?: string | undefined;
+    claimed_at?: GraphQLTypes["timestamptz"] | undefined;
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
+    distributor_id?: GraphQLTypes["uuid"] | undefined;
+    ordinal?: number | undefined;
+    transaction_signature?: string | undefined;
+    viewed_at?: GraphQLTypes["timestamptz"] | undefined;
+  };
+  /** order by stddev() on columns of table "dropzone.claims" */
+  ["dropzone_claims_stddev_order_by"]: {
+    amount?: GraphQLTypes["order_by"] | undefined;
+    ordinal?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "dropzone.claims" */
+  ["dropzone_claims_stddev_pop_order_by"]: {
+    amount?: GraphQLTypes["order_by"] | undefined;
+    ordinal?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "dropzone.claims" */
+  ["dropzone_claims_stddev_samp_order_by"]: {
+    amount?: GraphQLTypes["order_by"] | undefined;
+    ordinal?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "dropzone_claims" */
+  ["dropzone_claims_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["dropzone_claims_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["dropzone_claims_stream_cursor_value_input"]: {
+    amount?: GraphQLTypes["bigint"] | undefined;
+    claimant_id?: GraphQLTypes["uuid"] | undefined;
+    claimant_public_key?: string | undefined;
+    claimed_at?: GraphQLTypes["timestamptz"] | undefined;
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
+    distributor_id?: GraphQLTypes["uuid"] | undefined;
+    ordinal?: number | undefined;
+    transaction_signature?: string | undefined;
+    viewed_at?: GraphQLTypes["timestamptz"] | undefined;
+  };
+  /** order by sum() on columns of table "dropzone.claims" */
+  ["dropzone_claims_sum_order_by"]: {
+    amount?: GraphQLTypes["order_by"] | undefined;
+    ordinal?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** update columns of table "dropzone.claims" */
+  ["dropzone_claims_update_column"]: dropzone_claims_update_column;
+  ["dropzone_claims_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: GraphQLTypes["dropzone_claims_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: GraphQLTypes["dropzone_claims_set_input"] | undefined;
+    /** filter the rows which have to be updated */
+    where: GraphQLTypes["dropzone_claims_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "dropzone.claims" */
+  ["dropzone_claims_var_pop_order_by"]: {
+    amount?: GraphQLTypes["order_by"] | undefined;
+    ordinal?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "dropzone.claims" */
+  ["dropzone_claims_var_samp_order_by"]: {
+    amount?: GraphQLTypes["order_by"] | undefined;
+    ordinal?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "dropzone.claims" */
+  ["dropzone_claims_variance_order_by"]: {
+    amount?: GraphQLTypes["order_by"] | undefined;
+    ordinal?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** columns and relationships of "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories"]: {
+    __typename: "dropzone_distributor_categories";
+    data?: GraphQLTypes["jsonb"] | undefined;
+    /** An array relationship */
+    distributors: Array<GraphQLTypes["dropzone_distributors"]>;
+    id: GraphQLTypes["uuid"];
+    name: string;
+  };
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  ["dropzone_distributor_categories_append_input"]: {
+    data?: GraphQLTypes["jsonb"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "dropzone.distributor_categories". All fields are combined with a logical 'AND'. */
+  ["dropzone_distributor_categories_bool_exp"]: {
+    _and?:
+      | Array<GraphQLTypes["dropzone_distributor_categories_bool_exp"]>
+      | undefined;
+    _not?: GraphQLTypes["dropzone_distributor_categories_bool_exp"] | undefined;
+    _or?:
+      | Array<GraphQLTypes["dropzone_distributor_categories_bool_exp"]>
+      | undefined;
+    data?: GraphQLTypes["jsonb_comparison_exp"] | undefined;
+    distributors?: GraphQLTypes["dropzone_distributors_bool_exp"] | undefined;
+    id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
+    name?: GraphQLTypes["String_comparison_exp"] | undefined;
+  };
+  /** unique or primary key constraints on table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_constraint"]: dropzone_distributor_categories_constraint;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  ["dropzone_distributor_categories_delete_at_path_input"]: {
+    data?: Array<string> | undefined;
+  };
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  ["dropzone_distributor_categories_delete_elem_input"]: {
+    data?: number | undefined;
+  };
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  ["dropzone_distributor_categories_delete_key_input"]: {
+    data?: string | undefined;
+  };
+  /** input type for inserting data into table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_insert_input"]: {
+    data?: GraphQLTypes["jsonb"] | undefined;
+    distributors?:
+      | GraphQLTypes["dropzone_distributors_arr_rel_insert_input"]
+      | undefined;
+    id?: GraphQLTypes["uuid"] | undefined;
+    name?: string | undefined;
+  };
+  /** response of any mutation on the table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_mutation_response"]: {
+    __typename: "dropzone_distributor_categories_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["dropzone_distributor_categories"]>;
+  };
+  /** input type for inserting object relation for remote table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_obj_rel_insert_input"]: {
+    data: GraphQLTypes["dropzone_distributor_categories_insert_input"];
+    /** upsert condition */
+    on_conflict?:
+      | GraphQLTypes["dropzone_distributor_categories_on_conflict"]
+      | undefined;
+  };
+  /** on_conflict condition type for table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_on_conflict"]: {
+    constraint: GraphQLTypes["dropzone_distributor_categories_constraint"];
+    update_columns: Array<
+      GraphQLTypes["dropzone_distributor_categories_update_column"]
+    >;
+    where?:
+      | GraphQLTypes["dropzone_distributor_categories_bool_exp"]
+      | undefined;
+  };
+  /** Ordering options when selecting data from "dropzone.distributor_categories". */
+  ["dropzone_distributor_categories_order_by"]: {
+    data?: GraphQLTypes["order_by"] | undefined;
+    distributors_aggregate?:
+      | GraphQLTypes["dropzone_distributors_aggregate_order_by"]
+      | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    name?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: dropzone.distributor_categories */
+  ["dropzone_distributor_categories_pk_columns_input"]: {
+    id: GraphQLTypes["uuid"];
+  };
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  ["dropzone_distributor_categories_prepend_input"]: {
+    data?: GraphQLTypes["jsonb"] | undefined;
+  };
+  /** select columns of table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_select_column"]: dropzone_distributor_categories_select_column;
+  /** input type for updating data in table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_set_input"]: {
+    data?: GraphQLTypes["jsonb"] | undefined;
+    id?: GraphQLTypes["uuid"] | undefined;
+    name?: string | undefined;
+  };
+  /** Streaming cursor of the table "dropzone_distributor_categories" */
+  ["dropzone_distributor_categories_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["dropzone_distributor_categories_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["dropzone_distributor_categories_stream_cursor_value_input"]: {
+    data?: GraphQLTypes["jsonb"] | undefined;
+    id?: GraphQLTypes["uuid"] | undefined;
+    name?: string | undefined;
+  };
+  /** update columns of table "dropzone.distributor_categories" */
+  ["dropzone_distributor_categories_update_column"]: dropzone_distributor_categories_update_column;
+  ["dropzone_distributor_categories_updates"]: {
+    /** append existing jsonb value of filtered columns with new jsonb value */
+    _append?:
+      | GraphQLTypes["dropzone_distributor_categories_append_input"]
+      | undefined;
+    /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+    _delete_at_path?:
+      | GraphQLTypes["dropzone_distributor_categories_delete_at_path_input"]
+      | undefined;
+    /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+    _delete_elem?:
+      | GraphQLTypes["dropzone_distributor_categories_delete_elem_input"]
+      | undefined;
+    /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+    _delete_key?:
+      | GraphQLTypes["dropzone_distributor_categories_delete_key_input"]
+      | undefined;
+    /** prepend existing jsonb value of filtered columns with new jsonb value */
+    _prepend?:
+      | GraphQLTypes["dropzone_distributor_categories_prepend_input"]
+      | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | GraphQLTypes["dropzone_distributor_categories_set_input"]
+      | undefined;
+    /** filter the rows which have to be updated */
+    where: GraphQLTypes["dropzone_distributor_categories_bool_exp"];
+  };
+  /** columns and relationships of "dropzone.distributors" */
   ["dropzone_distributors"]: {
     __typename: "dropzone_distributors";
+    /** An object relationship */
+    category?: GraphQLTypes["dropzone_distributor_categories"] | undefined;
+    category_id?: GraphQLTypes["uuid"] | undefined;
+    /** An array relationship */
+    claims: Array<GraphQLTypes["dropzone_claims"]>;
     created_at: GraphQLTypes["timestamptz"];
-    data: GraphQLTypes["jsonb"];
-    id: string;
-    mint: string;
+    data?: GraphQLTypes["jsonb"] | undefined;
+    id: GraphQLTypes["uuid"];
+    lookup_table_public_key?: string | undefined;
+    mint_public_key: string;
+    public_key: string;
+    published_at?: GraphQLTypes["timestamptz"] | undefined;
+    secret: GraphQLTypes["uuid"];
+    /** An array relationship */
+    swaps: Array<GraphQLTypes["auth_swaps"]>;
+    transaction_signature?: string | undefined;
   };
-  /** aggregated selection of "dropzone.distributors" */
-  ["dropzone_distributors_aggregate"]: {
-    __typename: "dropzone_distributors_aggregate";
-    aggregate?:
-      | GraphQLTypes["dropzone_distributors_aggregate_fields"]
-      | undefined;
-    nodes: Array<GraphQLTypes["dropzone_distributors"]>;
+  /** order by aggregate values of table "dropzone.distributors" */
+  ["dropzone_distributors_aggregate_order_by"]: {
+    count?: GraphQLTypes["order_by"] | undefined;
+    max?: GraphQLTypes["dropzone_distributors_max_order_by"] | undefined;
+    min?: GraphQLTypes["dropzone_distributors_min_order_by"] | undefined;
   };
-  /** aggregate fields of "dropzone.distributors" */
-  ["dropzone_distributors_aggregate_fields"]: {
-    __typename: "dropzone_distributors_aggregate_fields";
-    count: number;
-    max?: GraphQLTypes["dropzone_distributors_max_fields"] | undefined;
-    min?: GraphQLTypes["dropzone_distributors_min_fields"] | undefined;
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  ["dropzone_distributors_append_input"]: {
+    data?: GraphQLTypes["jsonb"] | undefined;
+  };
+  /** input type for inserting array relation for remote table "dropzone.distributors" */
+  ["dropzone_distributors_arr_rel_insert_input"]: {
+    data: Array<GraphQLTypes["dropzone_distributors_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["dropzone_distributors_on_conflict"] | undefined;
   };
   /** Boolean expression to filter rows from the table "dropzone.distributors". All fields are combined with a logical 'AND'. */
   ["dropzone_distributors_bool_exp"]: {
     _and?: Array<GraphQLTypes["dropzone_distributors_bool_exp"]> | undefined;
     _not?: GraphQLTypes["dropzone_distributors_bool_exp"] | undefined;
     _or?: Array<GraphQLTypes["dropzone_distributors_bool_exp"]> | undefined;
+    category?:
+      | GraphQLTypes["dropzone_distributor_categories_bool_exp"]
+      | undefined;
+    category_id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
+    claims?: GraphQLTypes["dropzone_claims_bool_exp"] | undefined;
     created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
     data?: GraphQLTypes["jsonb_comparison_exp"] | undefined;
-    id?: GraphQLTypes["String_comparison_exp"] | undefined;
-    mint?: GraphQLTypes["String_comparison_exp"] | undefined;
+    id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
+    lookup_table_public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
+    mint_public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
+    public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
+    published_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
+    secret?: GraphQLTypes["uuid_comparison_exp"] | undefined;
+    swaps?: GraphQLTypes["auth_swaps_bool_exp"] | undefined;
+    transaction_signature?: GraphQLTypes["String_comparison_exp"] | undefined;
   };
   /** unique or primary key constraints on table "dropzone.distributors" */
   ["dropzone_distributors_constraint"]: dropzone_distributors_constraint;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  ["dropzone_distributors_delete_at_path_input"]: {
+    data?: Array<string> | undefined;
+  };
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  ["dropzone_distributors_delete_elem_input"]: {
+    data?: number | undefined;
+  };
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  ["dropzone_distributors_delete_key_input"]: {
+    data?: string | undefined;
+  };
   /** input type for inserting data into table "dropzone.distributors" */
   ["dropzone_distributors_insert_input"]: {
+    category?:
+      | GraphQLTypes["dropzone_distributor_categories_obj_rel_insert_input"]
+      | undefined;
+    category_id?: GraphQLTypes["uuid"] | undefined;
+    claims?: GraphQLTypes["dropzone_claims_arr_rel_insert_input"] | undefined;
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
     data?: GraphQLTypes["jsonb"] | undefined;
-    id?: string | undefined;
-    mint?: string | undefined;
+    id?: GraphQLTypes["uuid"] | undefined;
+    lookup_table_public_key?: string | undefined;
+    mint_public_key?: string | undefined;
+    public_key?: string | undefined;
+    published_at?: GraphQLTypes["timestamptz"] | undefined;
+    swaps?: GraphQLTypes["auth_swaps_arr_rel_insert_input"] | undefined;
+    transaction_signature?: string | undefined;
   };
-  /** aggregate max on columns */
-  ["dropzone_distributors_max_fields"]: {
-    __typename: "dropzone_distributors_max_fields";
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: string | undefined;
-    mint?: string | undefined;
+  /** order by max() on columns of table "dropzone.distributors" */
+  ["dropzone_distributors_max_order_by"]: {
+    category_id?: GraphQLTypes["order_by"] | undefined;
+    created_at?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    lookup_table_public_key?: GraphQLTypes["order_by"] | undefined;
+    mint_public_key?: GraphQLTypes["order_by"] | undefined;
+    public_key?: GraphQLTypes["order_by"] | undefined;
+    published_at?: GraphQLTypes["order_by"] | undefined;
+    secret?: GraphQLTypes["order_by"] | undefined;
+    transaction_signature?: GraphQLTypes["order_by"] | undefined;
   };
-  /** aggregate min on columns */
-  ["dropzone_distributors_min_fields"]: {
-    __typename: "dropzone_distributors_min_fields";
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: string | undefined;
-    mint?: string | undefined;
+  /** order by min() on columns of table "dropzone.distributors" */
+  ["dropzone_distributors_min_order_by"]: {
+    category_id?: GraphQLTypes["order_by"] | undefined;
+    created_at?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    lookup_table_public_key?: GraphQLTypes["order_by"] | undefined;
+    mint_public_key?: GraphQLTypes["order_by"] | undefined;
+    public_key?: GraphQLTypes["order_by"] | undefined;
+    published_at?: GraphQLTypes["order_by"] | undefined;
+    secret?: GraphQLTypes["order_by"] | undefined;
+    transaction_signature?: GraphQLTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "dropzone.distributors" */
   ["dropzone_distributors_mutation_response"]: {
@@ -19276,6 +24653,12 @@ export type GraphQLTypes = {
     /** data from the rows affected by the mutation */
     returning: Array<GraphQLTypes["dropzone_distributors"]>;
   };
+  /** input type for inserting object relation for remote table "dropzone.distributors" */
+  ["dropzone_distributors_obj_rel_insert_input"]: {
+    data: GraphQLTypes["dropzone_distributors_insert_input"];
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["dropzone_distributors_on_conflict"] | undefined;
+  };
   /** on_conflict condition type for table "dropzone.distributors" */
   ["dropzone_distributors_on_conflict"]: {
     constraint: GraphQLTypes["dropzone_distributors_constraint"];
@@ -19284,13 +24667,46 @@ export type GraphQLTypes = {
   };
   /** Ordering options when selecting data from "dropzone.distributors". */
   ["dropzone_distributors_order_by"]: {
+    category?:
+      | GraphQLTypes["dropzone_distributor_categories_order_by"]
+      | undefined;
+    category_id?: GraphQLTypes["order_by"] | undefined;
+    claims_aggregate?:
+      | GraphQLTypes["dropzone_claims_aggregate_order_by"]
+      | undefined;
     created_at?: GraphQLTypes["order_by"] | undefined;
     data?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
-    mint?: GraphQLTypes["order_by"] | undefined;
+    lookup_table_public_key?: GraphQLTypes["order_by"] | undefined;
+    mint_public_key?: GraphQLTypes["order_by"] | undefined;
+    public_key?: GraphQLTypes["order_by"] | undefined;
+    published_at?: GraphQLTypes["order_by"] | undefined;
+    secret?: GraphQLTypes["order_by"] | undefined;
+    swaps_aggregate?: GraphQLTypes["auth_swaps_aggregate_order_by"] | undefined;
+    transaction_signature?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: dropzone.distributors */
+  ["dropzone_distributors_pk_columns_input"]: {
+    id: GraphQLTypes["uuid"];
+  };
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  ["dropzone_distributors_prepend_input"]: {
+    data?: GraphQLTypes["jsonb"] | undefined;
   };
   /** select columns of table "dropzone.distributors" */
   ["dropzone_distributors_select_column"]: dropzone_distributors_select_column;
+  /** input type for updating data in table "dropzone.distributors" */
+  ["dropzone_distributors_set_input"]: {
+    category_id?: GraphQLTypes["uuid"] | undefined;
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
+    data?: GraphQLTypes["jsonb"] | undefined;
+    id?: GraphQLTypes["uuid"] | undefined;
+    lookup_table_public_key?: string | undefined;
+    mint_public_key?: string | undefined;
+    public_key?: string | undefined;
+    published_at?: GraphQLTypes["timestamptz"] | undefined;
+    transaction_signature?: string | undefined;
+  };
   /** Streaming cursor of the table "dropzone_distributors" */
   ["dropzone_distributors_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -19300,13 +24716,41 @@ export type GraphQLTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["dropzone_distributors_stream_cursor_value_input"]: {
+    category_id?: GraphQLTypes["uuid"] | undefined;
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     data?: GraphQLTypes["jsonb"] | undefined;
-    id?: string | undefined;
-    mint?: string | undefined;
+    id?: GraphQLTypes["uuid"] | undefined;
+    lookup_table_public_key?: string | undefined;
+    mint_public_key?: string | undefined;
+    public_key?: string | undefined;
+    published_at?: GraphQLTypes["timestamptz"] | undefined;
+    secret?: GraphQLTypes["uuid"] | undefined;
+    transaction_signature?: string | undefined;
   };
-  /** placeholder for update columns of table "dropzone.distributors" (current role has no relevant permissions) */
+  /** update columns of table "dropzone.distributors" */
   ["dropzone_distributors_update_column"]: dropzone_distributors_update_column;
+  ["dropzone_distributors_updates"]: {
+    /** append existing jsonb value of filtered columns with new jsonb value */
+    _append?: GraphQLTypes["dropzone_distributors_append_input"] | undefined;
+    /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+    _delete_at_path?:
+      | GraphQLTypes["dropzone_distributors_delete_at_path_input"]
+      | undefined;
+    /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+    _delete_elem?:
+      | GraphQLTypes["dropzone_distributors_delete_elem_input"]
+      | undefined;
+    /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+    _delete_key?:
+      | GraphQLTypes["dropzone_distributors_delete_key_input"]
+      | undefined;
+    /** prepend existing jsonb value of filtered columns with new jsonb value */
+    _prepend?: GraphQLTypes["dropzone_distributors_prepend_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: GraphQLTypes["dropzone_distributors_set_input"] | undefined;
+    /** filter the rows which have to be updated */
+    where: GraphQLTypes["dropzone_distributors_bool_exp"];
+  };
   /** columns and relationships of "invitations" */
   ["invitations"]: {
     __typename: "invitations";
@@ -19529,6 +24973,12 @@ export type GraphQLTypes = {
     insert_auth_stripe_onramp_one?:
       | GraphQLTypes["auth_stripe_onramp"]
       | undefined;
+    /** insert data into the table: "auth.swaps" */
+    insert_auth_swaps?:
+      | GraphQLTypes["auth_swaps_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "auth.swaps" */
+    insert_auth_swaps_one?: GraphQLTypes["auth_swaps"] | undefined;
     /** insert data into the table: "auth.user_active_publickey_mapping" */
     insert_auth_user_active_publickey_mapping?:
       | GraphQLTypes["auth_user_active_publickey_mapping_mutation_response"]
@@ -19564,6 +25014,20 @@ export type GraphQLTypes = {
     /** insert a single row into the table: "auth.xnft_secrets" */
     insert_auth_xnft_secrets_one?:
       | GraphQLTypes["auth_xnft_secrets"]
+      | undefined;
+    /** insert data into the table: "dropzone.claims" */
+    insert_dropzone_claims?:
+      | GraphQLTypes["dropzone_claims_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "dropzone.claims" */
+    insert_dropzone_claims_one?: GraphQLTypes["dropzone_claims"] | undefined;
+    /** insert data into the table: "dropzone.distributor_categories" */
+    insert_dropzone_distributor_categories?:
+      | GraphQLTypes["dropzone_distributor_categories_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "dropzone.distributor_categories" */
+    insert_dropzone_distributor_categories_one?:
+      | GraphQLTypes["dropzone_distributor_categories"]
       | undefined;
     /** insert data into the table: "dropzone.distributors" */
     insert_dropzone_distributors?:
@@ -19664,6 +25128,16 @@ export type GraphQLTypes = {
     update_auth_stripe_onramp_many?:
       | Array<GraphQLTypes["auth_stripe_onramp_mutation_response"] | undefined>
       | undefined;
+    /** update data of the table: "auth.swaps" */
+    update_auth_swaps?:
+      | GraphQLTypes["auth_swaps_mutation_response"]
+      | undefined;
+    /** update single row of the table: "auth.swaps" */
+    update_auth_swaps_by_pk?: GraphQLTypes["auth_swaps"] | undefined;
+    /** update multiples rows of table: "auth.swaps" */
+    update_auth_swaps_many?:
+      | Array<GraphQLTypes["auth_swaps_mutation_response"] | undefined>
+      | undefined;
     /** update data of the table: "auth.user_active_publickey_mapping" */
     update_auth_user_active_publickey_mapping?:
       | GraphQLTypes["auth_user_active_publickey_mapping_mutation_response"]
@@ -19714,6 +25188,45 @@ export type GraphQLTypes = {
     /** update multiples rows of table: "auth.xnft_secrets" */
     update_auth_xnft_secrets_many?:
       | Array<GraphQLTypes["auth_xnft_secrets_mutation_response"] | undefined>
+      | undefined;
+    /** update data of the table: "dropzone.claims" */
+    update_dropzone_claims?:
+      | GraphQLTypes["dropzone_claims_mutation_response"]
+      | undefined;
+    /** update single row of the table: "dropzone.claims" */
+    update_dropzone_claims_by_pk?: GraphQLTypes["dropzone_claims"] | undefined;
+    /** update multiples rows of table: "dropzone.claims" */
+    update_dropzone_claims_many?:
+      | Array<GraphQLTypes["dropzone_claims_mutation_response"] | undefined>
+      | undefined;
+    /** update data of the table: "dropzone.distributor_categories" */
+    update_dropzone_distributor_categories?:
+      | GraphQLTypes["dropzone_distributor_categories_mutation_response"]
+      | undefined;
+    /** update single row of the table: "dropzone.distributor_categories" */
+    update_dropzone_distributor_categories_by_pk?:
+      | GraphQLTypes["dropzone_distributor_categories"]
+      | undefined;
+    /** update multiples rows of table: "dropzone.distributor_categories" */
+    update_dropzone_distributor_categories_many?:
+      | Array<
+          | GraphQLTypes["dropzone_distributor_categories_mutation_response"]
+          | undefined
+        >
+      | undefined;
+    /** update data of the table: "dropzone.distributors" */
+    update_dropzone_distributors?:
+      | GraphQLTypes["dropzone_distributors_mutation_response"]
+      | undefined;
+    /** update single row of the table: "dropzone.distributors" */
+    update_dropzone_distributors_by_pk?:
+      | GraphQLTypes["dropzone_distributors"]
+      | undefined;
+    /** update multiples rows of table: "dropzone.distributors" */
+    update_dropzone_distributors_many?:
+      | Array<
+          GraphQLTypes["dropzone_distributors_mutation_response"] | undefined
+        >
       | undefined;
   };
   /** column ordering options */
@@ -19776,6 +25289,10 @@ export type GraphQLTypes = {
     auth_stripe_onramp: Array<GraphQLTypes["auth_stripe_onramp"]>;
     /** fetch data from the table: "auth.stripe_onramp" using primary key columns */
     auth_stripe_onramp_by_pk?: GraphQLTypes["auth_stripe_onramp"] | undefined;
+    /** fetch data from the table: "auth.swaps" */
+    auth_swaps: Array<GraphQLTypes["auth_swaps"]>;
+    /** fetch data from the table: "auth.swaps" using primary key columns */
+    auth_swaps_by_pk?: GraphQLTypes["auth_swaps"] | undefined;
     /** fetch data from the table: "auth.user_active_publickey_mapping" */
     auth_user_active_publickey_mapping: Array<
       GraphQLTypes["auth_user_active_publickey_mapping"]
@@ -19810,10 +25327,20 @@ export type GraphQLTypes = {
     auth_xnft_secrets: Array<GraphQLTypes["auth_xnft_secrets"]>;
     /** fetch data from the table: "auth.xnft_secrets" using primary key columns */
     auth_xnft_secrets_by_pk?: GraphQLTypes["auth_xnft_secrets"] | undefined;
+    /** An array relationship */
+    dropzone_claims: Array<GraphQLTypes["dropzone_claims"]>;
+    /** fetch data from the table: "dropzone.claims" using primary key columns */
+    dropzone_claims_by_pk?: GraphQLTypes["dropzone_claims"] | undefined;
+    /** fetch data from the table: "dropzone.distributor_categories" */
+    dropzone_distributor_categories: Array<
+      GraphQLTypes["dropzone_distributor_categories"]
+    >;
+    /** fetch data from the table: "dropzone.distributor_categories" using primary key columns */
+    dropzone_distributor_categories_by_pk?:
+      | GraphQLTypes["dropzone_distributor_categories"]
+      | undefined;
     /** fetch data from the table: "dropzone.distributors" */
     dropzone_distributors: Array<GraphQLTypes["dropzone_distributors"]>;
-    /** fetch aggregated fields from the table: "dropzone.distributors" */
-    dropzone_distributors_aggregate: GraphQLTypes["dropzone_distributors_aggregate"];
     /** fetch data from the table: "dropzone.distributors" using primary key columns */
     dropzone_distributors_by_pk?:
       | GraphQLTypes["dropzone_distributors"]
@@ -19907,6 +25434,12 @@ export type GraphQLTypes = {
     auth_stripe_onramp_by_pk?: GraphQLTypes["auth_stripe_onramp"] | undefined;
     /** fetch data from the table in a streaming manner: "auth.stripe_onramp" */
     auth_stripe_onramp_stream: Array<GraphQLTypes["auth_stripe_onramp"]>;
+    /** fetch data from the table: "auth.swaps" */
+    auth_swaps: Array<GraphQLTypes["auth_swaps"]>;
+    /** fetch data from the table: "auth.swaps" using primary key columns */
+    auth_swaps_by_pk?: GraphQLTypes["auth_swaps"] | undefined;
+    /** fetch data from the table in a streaming manner: "auth.swaps" */
+    auth_swaps_stream: Array<GraphQLTypes["auth_swaps"]>;
     /** fetch data from the table: "auth.user_active_publickey_mapping" */
     auth_user_active_publickey_mapping: Array<
       GraphQLTypes["auth_user_active_publickey_mapping"]
@@ -19953,10 +25486,26 @@ export type GraphQLTypes = {
     auth_xnft_secrets_by_pk?: GraphQLTypes["auth_xnft_secrets"] | undefined;
     /** fetch data from the table in a streaming manner: "auth.xnft_secrets" */
     auth_xnft_secrets_stream: Array<GraphQLTypes["auth_xnft_secrets"]>;
+    /** An array relationship */
+    dropzone_claims: Array<GraphQLTypes["dropzone_claims"]>;
+    /** fetch data from the table: "dropzone.claims" using primary key columns */
+    dropzone_claims_by_pk?: GraphQLTypes["dropzone_claims"] | undefined;
+    /** fetch data from the table in a streaming manner: "dropzone.claims" */
+    dropzone_claims_stream: Array<GraphQLTypes["dropzone_claims"]>;
+    /** fetch data from the table: "dropzone.distributor_categories" */
+    dropzone_distributor_categories: Array<
+      GraphQLTypes["dropzone_distributor_categories"]
+    >;
+    /** fetch data from the table: "dropzone.distributor_categories" using primary key columns */
+    dropzone_distributor_categories_by_pk?:
+      | GraphQLTypes["dropzone_distributor_categories"]
+      | undefined;
+    /** fetch data from the table in a streaming manner: "dropzone.distributor_categories" */
+    dropzone_distributor_categories_stream: Array<
+      GraphQLTypes["dropzone_distributor_categories"]
+    >;
     /** fetch data from the table: "dropzone.distributors" */
     dropzone_distributors: Array<GraphQLTypes["dropzone_distributors"]>;
-    /** fetch aggregated fields from the table: "dropzone.distributors" */
-    dropzone_distributors_aggregate: GraphQLTypes["dropzone_distributors_aggregate"];
     /** fetch data from the table: "dropzone.distributors" using primary key columns */
     dropzone_distributors_by_pk?:
       | GraphQLTypes["dropzone_distributors"]
@@ -20210,6 +25759,33 @@ export const enum auth_stripe_onramp_update_column {
   status = "status",
   webhook_dump = "webhook_dump",
 }
+/** unique or primary key constraints on table "auth.swaps" */
+export const enum auth_swaps_constraint {
+  swaps_pkey = "swaps_pkey",
+}
+/** select columns of table "auth.swaps" */
+export const enum auth_swaps_select_column {
+  created_at = "created_at",
+  distributor_id = "distributor_id",
+  fee_account_address = "fee_account_address",
+  fee_amount = "fee_amount",
+  fee_mint_address = "fee_mint_address",
+  fee_payer_id = "fee_payer_id",
+  fee_payer_public_key = "fee_payer_public_key",
+  id = "id",
+  transaction_at = "transaction_at",
+  transaction_signature = "transaction_signature",
+}
+/** update columns of table "auth.swaps" */
+export const enum auth_swaps_update_column {
+  distributor_id = "distributor_id",
+  fee_account_address = "fee_account_address",
+  fee_amount = "fee_amount",
+  fee_mint_address = "fee_mint_address",
+  fee_payer_id = "fee_payer_id",
+  fee_payer_public_key = "fee_payer_public_key",
+  transaction_at = "transaction_at",
+}
 /** unique or primary key constraints on table "auth.user_active_publickey_mapping" */
 export const enum auth_user_active_publickey_mapping_constraint {
   user_active_publickey_mapping_pkey = "user_active_publickey_mapping_pkey",
@@ -20304,20 +25880,79 @@ export const enum cursor_ordering {
   ASC = "ASC",
   DESC = "DESC",
 }
+/** unique or primary key constraints on table "dropzone.claims" */
+export const enum dropzone_claims_constraint {
+  claims_pkey = "claims_pkey",
+}
+/** select columns of table "dropzone.claims" */
+export const enum dropzone_claims_select_column {
+  amount = "amount",
+  claimant_id = "claimant_id",
+  claimant_public_key = "claimant_public_key",
+  claimed_at = "claimed_at",
+  created_at = "created_at",
+  distributor_id = "distributor_id",
+  ordinal = "ordinal",
+  transaction_signature = "transaction_signature",
+  viewed_at = "viewed_at",
+}
+/** update columns of table "dropzone.claims" */
+export const enum dropzone_claims_update_column {
+  amount = "amount",
+  claimant_id = "claimant_id",
+  claimant_public_key = "claimant_public_key",
+  claimed_at = "claimed_at",
+  created_at = "created_at",
+  distributor_id = "distributor_id",
+  ordinal = "ordinal",
+  transaction_signature = "transaction_signature",
+  viewed_at = "viewed_at",
+}
+/** unique or primary key constraints on table "dropzone.distributor_categories" */
+export const enum dropzone_distributor_categories_constraint {
+  distributor_categories_pkey = "distributor_categories_pkey",
+}
+/** select columns of table "dropzone.distributor_categories" */
+export const enum dropzone_distributor_categories_select_column {
+  data = "data",
+  id = "id",
+  name = "name",
+}
+/** update columns of table "dropzone.distributor_categories" */
+export const enum dropzone_distributor_categories_update_column {
+  data = "data",
+  id = "id",
+  name = "name",
+}
 /** unique or primary key constraints on table "dropzone.distributors" */
 export const enum dropzone_distributors_constraint {
   distributors_pkey = "distributors_pkey",
+  distributors_public_key_key = "distributors_public_key_key",
 }
 /** select columns of table "dropzone.distributors" */
 export const enum dropzone_distributors_select_column {
+  category_id = "category_id",
   created_at = "created_at",
   data = "data",
   id = "id",
-  mint = "mint",
+  lookup_table_public_key = "lookup_table_public_key",
+  mint_public_key = "mint_public_key",
+  public_key = "public_key",
+  published_at = "published_at",
+  secret = "secret",
+  transaction_signature = "transaction_signature",
 }
-/** placeholder for update columns of table "dropzone.distributors" (current role has no relevant permissions) */
+/** update columns of table "dropzone.distributors" */
 export const enum dropzone_distributors_update_column {
-  _PLACEHOLDER = "_PLACEHOLDER",
+  category_id = "category_id",
+  created_at = "created_at",
+  data = "data",
+  id = "id",
+  lookup_table_public_key = "lookup_table_public_key",
+  mint_public_key = "mint_public_key",
+  public_key = "public_key",
+  published_at = "published_at",
+  transaction_signature = "transaction_signature",
 }
 /** select columns of table "invitations" */
 export const enum invitations_select_column {
@@ -20471,6 +26106,31 @@ type ZEUS_VARIABLES = {
   ["auth_stripe_onramp_stream_cursor_value_input"]: ValueTypes["auth_stripe_onramp_stream_cursor_value_input"];
   ["auth_stripe_onramp_update_column"]: ValueTypes["auth_stripe_onramp_update_column"];
   ["auth_stripe_onramp_updates"]: ValueTypes["auth_stripe_onramp_updates"];
+  ["auth_swaps_aggregate_order_by"]: ValueTypes["auth_swaps_aggregate_order_by"];
+  ["auth_swaps_arr_rel_insert_input"]: ValueTypes["auth_swaps_arr_rel_insert_input"];
+  ["auth_swaps_avg_order_by"]: ValueTypes["auth_swaps_avg_order_by"];
+  ["auth_swaps_bool_exp"]: ValueTypes["auth_swaps_bool_exp"];
+  ["auth_swaps_constraint"]: ValueTypes["auth_swaps_constraint"];
+  ["auth_swaps_inc_input"]: ValueTypes["auth_swaps_inc_input"];
+  ["auth_swaps_insert_input"]: ValueTypes["auth_swaps_insert_input"];
+  ["auth_swaps_max_order_by"]: ValueTypes["auth_swaps_max_order_by"];
+  ["auth_swaps_min_order_by"]: ValueTypes["auth_swaps_min_order_by"];
+  ["auth_swaps_on_conflict"]: ValueTypes["auth_swaps_on_conflict"];
+  ["auth_swaps_order_by"]: ValueTypes["auth_swaps_order_by"];
+  ["auth_swaps_pk_columns_input"]: ValueTypes["auth_swaps_pk_columns_input"];
+  ["auth_swaps_select_column"]: ValueTypes["auth_swaps_select_column"];
+  ["auth_swaps_set_input"]: ValueTypes["auth_swaps_set_input"];
+  ["auth_swaps_stddev_order_by"]: ValueTypes["auth_swaps_stddev_order_by"];
+  ["auth_swaps_stddev_pop_order_by"]: ValueTypes["auth_swaps_stddev_pop_order_by"];
+  ["auth_swaps_stddev_samp_order_by"]: ValueTypes["auth_swaps_stddev_samp_order_by"];
+  ["auth_swaps_stream_cursor_input"]: ValueTypes["auth_swaps_stream_cursor_input"];
+  ["auth_swaps_stream_cursor_value_input"]: ValueTypes["auth_swaps_stream_cursor_value_input"];
+  ["auth_swaps_sum_order_by"]: ValueTypes["auth_swaps_sum_order_by"];
+  ["auth_swaps_update_column"]: ValueTypes["auth_swaps_update_column"];
+  ["auth_swaps_updates"]: ValueTypes["auth_swaps_updates"];
+  ["auth_swaps_var_pop_order_by"]: ValueTypes["auth_swaps_var_pop_order_by"];
+  ["auth_swaps_var_samp_order_by"]: ValueTypes["auth_swaps_var_samp_order_by"];
+  ["auth_swaps_variance_order_by"]: ValueTypes["auth_swaps_variance_order_by"];
   ["auth_user_active_publickey_mapping_aggregate_order_by"]: ValueTypes["auth_user_active_publickey_mapping_aggregate_order_by"];
   ["auth_user_active_publickey_mapping_arr_rel_insert_input"]: ValueTypes["auth_user_active_publickey_mapping_arr_rel_insert_input"];
   ["auth_user_active_publickey_mapping_avg_order_by"]: ValueTypes["auth_user_active_publickey_mapping_avg_order_by"];
@@ -20557,18 +26217,76 @@ type ZEUS_VARIABLES = {
   ["auth_xnft_secrets_stream_cursor_value_input"]: ValueTypes["auth_xnft_secrets_stream_cursor_value_input"];
   ["auth_xnft_secrets_update_column"]: ValueTypes["auth_xnft_secrets_update_column"];
   ["auth_xnft_secrets_updates"]: ValueTypes["auth_xnft_secrets_updates"];
+  ["bigint"]: ValueTypes["bigint"];
+  ["bigint_comparison_exp"]: ValueTypes["bigint_comparison_exp"];
   ["citext"]: ValueTypes["citext"];
   ["citext_comparison_exp"]: ValueTypes["citext_comparison_exp"];
   ["cursor_ordering"]: ValueTypes["cursor_ordering"];
+  ["dropzone_claims_aggregate_order_by"]: ValueTypes["dropzone_claims_aggregate_order_by"];
+  ["dropzone_claims_arr_rel_insert_input"]: ValueTypes["dropzone_claims_arr_rel_insert_input"];
+  ["dropzone_claims_avg_order_by"]: ValueTypes["dropzone_claims_avg_order_by"];
+  ["dropzone_claims_bool_exp"]: ValueTypes["dropzone_claims_bool_exp"];
+  ["dropzone_claims_constraint"]: ValueTypes["dropzone_claims_constraint"];
+  ["dropzone_claims_inc_input"]: ValueTypes["dropzone_claims_inc_input"];
+  ["dropzone_claims_insert_input"]: ValueTypes["dropzone_claims_insert_input"];
+  ["dropzone_claims_max_order_by"]: ValueTypes["dropzone_claims_max_order_by"];
+  ["dropzone_claims_min_order_by"]: ValueTypes["dropzone_claims_min_order_by"];
+  ["dropzone_claims_on_conflict"]: ValueTypes["dropzone_claims_on_conflict"];
+  ["dropzone_claims_order_by"]: ValueTypes["dropzone_claims_order_by"];
+  ["dropzone_claims_pk_columns_input"]: ValueTypes["dropzone_claims_pk_columns_input"];
+  ["dropzone_claims_select_column"]: ValueTypes["dropzone_claims_select_column"];
+  ["dropzone_claims_set_input"]: ValueTypes["dropzone_claims_set_input"];
+  ["dropzone_claims_stddev_order_by"]: ValueTypes["dropzone_claims_stddev_order_by"];
+  ["dropzone_claims_stddev_pop_order_by"]: ValueTypes["dropzone_claims_stddev_pop_order_by"];
+  ["dropzone_claims_stddev_samp_order_by"]: ValueTypes["dropzone_claims_stddev_samp_order_by"];
+  ["dropzone_claims_stream_cursor_input"]: ValueTypes["dropzone_claims_stream_cursor_input"];
+  ["dropzone_claims_stream_cursor_value_input"]: ValueTypes["dropzone_claims_stream_cursor_value_input"];
+  ["dropzone_claims_sum_order_by"]: ValueTypes["dropzone_claims_sum_order_by"];
+  ["dropzone_claims_update_column"]: ValueTypes["dropzone_claims_update_column"];
+  ["dropzone_claims_updates"]: ValueTypes["dropzone_claims_updates"];
+  ["dropzone_claims_var_pop_order_by"]: ValueTypes["dropzone_claims_var_pop_order_by"];
+  ["dropzone_claims_var_samp_order_by"]: ValueTypes["dropzone_claims_var_samp_order_by"];
+  ["dropzone_claims_variance_order_by"]: ValueTypes["dropzone_claims_variance_order_by"];
+  ["dropzone_distributor_categories_append_input"]: ValueTypes["dropzone_distributor_categories_append_input"];
+  ["dropzone_distributor_categories_bool_exp"]: ValueTypes["dropzone_distributor_categories_bool_exp"];
+  ["dropzone_distributor_categories_constraint"]: ValueTypes["dropzone_distributor_categories_constraint"];
+  ["dropzone_distributor_categories_delete_at_path_input"]: ValueTypes["dropzone_distributor_categories_delete_at_path_input"];
+  ["dropzone_distributor_categories_delete_elem_input"]: ValueTypes["dropzone_distributor_categories_delete_elem_input"];
+  ["dropzone_distributor_categories_delete_key_input"]: ValueTypes["dropzone_distributor_categories_delete_key_input"];
+  ["dropzone_distributor_categories_insert_input"]: ValueTypes["dropzone_distributor_categories_insert_input"];
+  ["dropzone_distributor_categories_obj_rel_insert_input"]: ValueTypes["dropzone_distributor_categories_obj_rel_insert_input"];
+  ["dropzone_distributor_categories_on_conflict"]: ValueTypes["dropzone_distributor_categories_on_conflict"];
+  ["dropzone_distributor_categories_order_by"]: ValueTypes["dropzone_distributor_categories_order_by"];
+  ["dropzone_distributor_categories_pk_columns_input"]: ValueTypes["dropzone_distributor_categories_pk_columns_input"];
+  ["dropzone_distributor_categories_prepend_input"]: ValueTypes["dropzone_distributor_categories_prepend_input"];
+  ["dropzone_distributor_categories_select_column"]: ValueTypes["dropzone_distributor_categories_select_column"];
+  ["dropzone_distributor_categories_set_input"]: ValueTypes["dropzone_distributor_categories_set_input"];
+  ["dropzone_distributor_categories_stream_cursor_input"]: ValueTypes["dropzone_distributor_categories_stream_cursor_input"];
+  ["dropzone_distributor_categories_stream_cursor_value_input"]: ValueTypes["dropzone_distributor_categories_stream_cursor_value_input"];
+  ["dropzone_distributor_categories_update_column"]: ValueTypes["dropzone_distributor_categories_update_column"];
+  ["dropzone_distributor_categories_updates"]: ValueTypes["dropzone_distributor_categories_updates"];
+  ["dropzone_distributors_aggregate_order_by"]: ValueTypes["dropzone_distributors_aggregate_order_by"];
+  ["dropzone_distributors_append_input"]: ValueTypes["dropzone_distributors_append_input"];
+  ["dropzone_distributors_arr_rel_insert_input"]: ValueTypes["dropzone_distributors_arr_rel_insert_input"];
   ["dropzone_distributors_bool_exp"]: ValueTypes["dropzone_distributors_bool_exp"];
   ["dropzone_distributors_constraint"]: ValueTypes["dropzone_distributors_constraint"];
+  ["dropzone_distributors_delete_at_path_input"]: ValueTypes["dropzone_distributors_delete_at_path_input"];
+  ["dropzone_distributors_delete_elem_input"]: ValueTypes["dropzone_distributors_delete_elem_input"];
+  ["dropzone_distributors_delete_key_input"]: ValueTypes["dropzone_distributors_delete_key_input"];
   ["dropzone_distributors_insert_input"]: ValueTypes["dropzone_distributors_insert_input"];
+  ["dropzone_distributors_max_order_by"]: ValueTypes["dropzone_distributors_max_order_by"];
+  ["dropzone_distributors_min_order_by"]: ValueTypes["dropzone_distributors_min_order_by"];
+  ["dropzone_distributors_obj_rel_insert_input"]: ValueTypes["dropzone_distributors_obj_rel_insert_input"];
   ["dropzone_distributors_on_conflict"]: ValueTypes["dropzone_distributors_on_conflict"];
   ["dropzone_distributors_order_by"]: ValueTypes["dropzone_distributors_order_by"];
+  ["dropzone_distributors_pk_columns_input"]: ValueTypes["dropzone_distributors_pk_columns_input"];
+  ["dropzone_distributors_prepend_input"]: ValueTypes["dropzone_distributors_prepend_input"];
   ["dropzone_distributors_select_column"]: ValueTypes["dropzone_distributors_select_column"];
+  ["dropzone_distributors_set_input"]: ValueTypes["dropzone_distributors_set_input"];
   ["dropzone_distributors_stream_cursor_input"]: ValueTypes["dropzone_distributors_stream_cursor_input"];
   ["dropzone_distributors_stream_cursor_value_input"]: ValueTypes["dropzone_distributors_stream_cursor_value_input"];
   ["dropzone_distributors_update_column"]: ValueTypes["dropzone_distributors_update_column"];
+  ["dropzone_distributors_updates"]: ValueTypes["dropzone_distributors_updates"];
   ["invitations_bool_exp"]: ValueTypes["invitations_bool_exp"];
   ["invitations_order_by"]: ValueTypes["invitations_order_by"];
   ["invitations_select_column"]: ValueTypes["invitations_select_column"];
