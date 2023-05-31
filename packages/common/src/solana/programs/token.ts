@@ -5,7 +5,6 @@ import {
 import type { Program, Provider, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { AnchorProvider, BN, Spl } from "@project-serum/anchor";
-import type { RawMint } from "@solana/spl-token";
 import { MintLayout } from "@solana/spl-token";
 import type { Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
@@ -13,10 +12,11 @@ import { PublicKey } from "@solana/web3.js";
 import { getLogger } from "../../logging";
 import { externalResourceUri } from "../../utils";
 import type {
+  RawMintWithProgramId,
   ReplaceTypes,
   SolanaTokenAccount,
-  SolanaTokenAccountWithKey,
-  SolanaTokenAccountWithKeyString,
+  SolanaTokenAccountWithKeyAndProgramId,
+  SolanaTokenAccountWithKeyAndProgramIdString,
   SplNftMetadataString,
   TokenMetadata,
   TokenMetadataString,
@@ -24,6 +24,9 @@ import type {
 
 export const TOKEN_PROGRAM_ID = new PublicKey(
   "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+);
+export const TOKEN_2022_PROGRAM_ID = new PublicKey(
+  "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
 );
 export const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
   "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
@@ -44,12 +47,57 @@ export const SOL_NATIVE_MINT = PublicKey.default.toString();
 
 const logger = getLogger("common/solana/programs/token");
 
+export class TokenInterface {
+  /**
+   * Wallet and network provider.
+   */
+  public get provider(): Provider {
+    return this._provider;
+  }
+  private _provider: Provider;
+
+  /**
+   * Utility function that must be used to access any inner token program. Creates
+   * new clients on the fly as needed, so that new token programs can be easily
+   * added without impacting performance.
+   */
+  public withProgramId(programId: PublicKey): Program<SplToken> {
+    const maybeFound = this._clients.get(programId);
+    if (maybeFound !== undefined) {
+      return maybeFound;
+    } else {
+      const newClient = new anchor.Program<SplToken>(
+        this._fallbackClient.idl,
+        programId,
+        this.provider,
+        this._fallbackClient.coder
+      );
+      this._clients.set(programId, newClient);
+      return newClient;
+    }
+  }
+  private _clients: Map<PublicKey, Program<SplToken>>;
+  private _fallbackClient: Program<SplToken>;
+
+  /**
+   * The constructor looks just like the normal `Spl.token` constructor for ease
+   * of use.
+   */
+  public constructor(provider: Provider) {
+    this._provider = provider;
+    const fallbackClient = Spl.token(provider);
+    this._clients = new Map([[TOKEN_PROGRAM_ID, fallbackClient]]);
+    this._fallbackClient = fallbackClient;
+  }
+}
+
 export function associatedTokenAddress(
   mint: PublicKey,
-  wallet: PublicKey
+  wallet: PublicKey,
+  programId: PublicKey
 ): PublicKey {
   return anchor.utils.publicKey.findProgramAddressSync(
-    [wallet.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
+    [wallet.toBuffer(), programId.toBuffer(), mint.toBuffer()],
     ASSOCIATED_TOKEN_PROGRAM_ID
   )[0];
 }
@@ -60,12 +108,12 @@ export async function customSplTokenAccounts(
 ): Promise<CustomSplTokenAccountsResponse> {
   // @ts-ignore
   const provider = new AnchorProvider(connection, { publicKey });
-  const tokenClient = Spl.token(provider);
+  const tokenInterface = new TokenInterface(provider);
 
   //
   // Fetch all tokenAccounts.
   //
-  const [accountInfo, tokenAccounts] = await Promise.all([
+  const [accountInfo, tokenAccounts, token2022Accounts] = await Promise.all([
     //
     // Fetch native sol data.
     //
@@ -73,9 +121,15 @@ export async function customSplTokenAccounts(
     //
     // Fetch tokens.
     //
-    fetchTokens(publicKey, tokenClient),
+    fetchTokens(publicKey, tokenInterface.withProgramId(TOKEN_PROGRAM_ID)),
+    fetchTokens(publicKey, tokenInterface.withProgramId(TOKEN_2022_PROGRAM_ID)),
   ]);
-  const tokenAccountsArray = Array.from(tokenAccounts.values());
+  const chainIter = function* (...iters) {
+    for (let it of iters) yield* it;
+  };
+  const tokenAccountsArray = Array.from(
+    chainIter(tokenAccounts.values(), token2022Accounts.values())
+  );
 
   //
   // Fetch all mints.
@@ -84,7 +138,7 @@ export async function customSplTokenAccounts(
     fetchMints(provider, tokenAccountsArray).then((mint) =>
       mint.filter((m) => m[1] !== null)
     ),
-    fetchSplMetadata(tokenClient.provider, tokenAccountsArray),
+    fetchSplMetadata(tokenInterface.provider, tokenAccountsArray),
   ]);
 
   //
@@ -94,17 +148,18 @@ export async function customSplTokenAccounts(
     splitOutNfts(
       tokenAccountsArray,
       tokenMetadata,
-      new Map(mintsMap) as Map<string, RawMint>
+      new Map(mintsMap) as Map<string, RawMintWithProgramId>
     );
 
   //
   // Add native SOL to the token and metadata list.
   //
-  const nativeSol: SolanaTokenAccountWithKey = {
+  const nativeSol: SolanaTokenAccountWithKeyAndProgramId = {
     key: publicKey,
+    programId: TOKEN_PROGRAM_ID,
     mint: PublicKey.default,
     authority: publicKey,
-    amount: accountInfo ? new BN(accountInfo.lamports) : new BN(0),
+    amount: accountInfo ? new BN(accountInfo.lamports.toString()) : new BN(0),
     delegate: null,
     state: 1,
     isNative: null,
@@ -127,13 +182,13 @@ export async function customSplTokenAccounts(
 }
 
 export type CustomSplTokenAccountsResponse = {
-  mintsMap: Array<[string, RawMint | null]>;
+  mintsMap: Array<[string, RawMintWithProgramId | null]>;
   nfts: {
-    nftTokens: Array<SolanaTokenAccountWithKey>;
+    nftTokens: Array<SolanaTokenAccountWithKeyAndProgramId>;
     nftTokenMetadata: Array<TokenMetadata | null>;
   };
   fts: {
-    fungibleTokens: Array<SolanaTokenAccountWithKey>;
+    fungibleTokens: Array<SolanaTokenAccountWithKeyAndProgramId>;
     fungibleTokenMetadata: Array<TokenMetadata | null>;
   };
 };
@@ -146,9 +201,9 @@ export type CustomSplTokenAccountsResponseString = ReplaceTypes<
 
 export async function fetchMints(
   provider: Provider,
-  tokenAccounts: SolanaTokenAccountWithKey[]
-): Promise<Array<[string, RawMint | null]>> {
-  const mints: [string, RawMint | null][] = (
+  tokenAccounts: SolanaTokenAccountWithKeyAndProgramId[]
+): Promise<Array<[string, RawMintWithProgramId | null]>> {
+  const mints: [string, RawMintWithProgramId | null][] = (
     await anchor.utils.rpc.getMultipleAccounts(
       provider.connection,
       tokenAccounts.map((t) => t.mint)
@@ -156,7 +211,12 @@ export async function fetchMints(
   ).map((m, idx) => {
     return [
       tokenAccounts[idx].mint.toString(),
-      m ? MintLayout.decode(m.account.data) : null,
+      m
+        ? {
+            ...MintLayout.decode(m.account.data),
+            programId: tokenAccounts[idx].programId,
+          }
+        : null,
     ];
   });
   return mints;
@@ -164,7 +224,7 @@ export async function fetchMints(
 
 export async function fetchSplMetadata(
   provider: Provider,
-  tokens: SolanaTokenAccountWithKey[]
+  tokens: SolanaTokenAccountWithKeyAndProgramId[]
 ): Promise<(TokenMetadata | null)[]> {
   //
   // Fetch metadata for each token.
@@ -199,19 +259,19 @@ export async function fetchSplMetadata(
  * Splits out all the tokens into fungible and non fungible tokens.
  */
 function splitOutNfts(
-  tokens: Array<SolanaTokenAccountWithKey>,
+  tokens: Array<SolanaTokenAccountWithKeyAndProgramId>,
   tokensMetadata: Array<TokenMetadata | null>,
-  mintsMap: Map<string, RawMint>
+  mintsMap: Map<string, RawMintWithProgramId>
 ): {
-  nftTokens: Array<SolanaTokenAccountWithKey>;
+  nftTokens: Array<SolanaTokenAccountWithKeyAndProgramId>;
   nftTokenMetadata: Array<TokenMetadata | null>;
-  fungibleTokens: Array<SolanaTokenAccountWithKey>;
+  fungibleTokens: Array<SolanaTokenAccountWithKeyAndProgramId>;
   fungibleTokenMetadata: Array<TokenMetadata | null>;
 } {
-  let nftTokens: Array<SolanaTokenAccountWithKey> = [];
+  let nftTokens: Array<SolanaTokenAccountWithKeyAndProgramId> = [];
   let nftTokenMetadata: Array<TokenMetadata | null> = [];
 
-  let fungibleTokens: Array<SolanaTokenAccountWithKey> = [];
+  let fungibleTokens: Array<SolanaTokenAccountWithKeyAndProgramId> = [];
   let fungibleTokenMetadata: Array<TokenMetadata | null> = [];
 
   tokens.forEach((token, idx) => {
@@ -257,7 +317,7 @@ function splitOutNfts(
 }
 
 export async function fetchSplMetadataUri(
-  tokens: Array<SolanaTokenAccountWithKeyString>,
+  tokens: Array<SolanaTokenAccountWithKeyAndProgramIdString>,
   tokenMetadata: Array<TokenMetadataString | null>
 ): Promise<Array<[string, SplNftMetadataString]>> {
   // Fetch the URI for each token.
@@ -369,7 +429,7 @@ export async function tokenRecordAddress(
 export async function fetchTokens(
   walletPublicKey: PublicKey,
   tokenClient: Program<SplToken>
-): Promise<Map<string, SolanaTokenAccountWithKey>> {
+): Promise<Map<string, SolanaTokenAccountWithKeyAndProgramId>> {
   //
   // Fetch the accounts.
   //
@@ -382,8 +442,8 @@ export async function fetchTokens(
   //
   // Decode the data.
   //
-  const tokens: Array<[string, SolanaTokenAccountWithKey]> = resp.value.map(
-    ({ account, pubkey }: any) => [
+  const tokens: Array<[string, SolanaTokenAccountWithKeyAndProgramId]> =
+    resp.value.map(({ account, pubkey }: any) => [
       pubkey.toString(),
       {
         ...(tokenClient.coder.accounts.decode(
@@ -391,9 +451,9 @@ export async function fetchTokens(
           account.data
         ) as SolanaTokenAccount),
         key: pubkey,
+        programId: tokenClient.programId,
       },
-    ]
-  );
+    ]);
   //
   // Filter out any invalid tokens.
   //

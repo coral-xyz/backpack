@@ -17,9 +17,11 @@
     "@mui/material": "^5.8.4",
     "@mui/styles": "^5.8.4",
     "@mui/system": "^5.8.4",
+    "color": "^4.2.3",
     "react": "18.2.0"
   },
   "devDependencies": {
+    "@types/color": "^3.0.3",
     "eslint-config-custom": "*",
     "typescript": "~4.9.3"
   }

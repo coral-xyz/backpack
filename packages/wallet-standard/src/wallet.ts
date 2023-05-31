@@ -13,14 +13,14 @@ import type {
 import { Connection, PublicKey, VersionedTransaction } from '@solana/web3.js';
 import type { Wallet, WalletAccount } from '@wallet-standard/base';
 import type {
-    ConnectFeature,
-    ConnectMethod,
-    DisconnectFeature,
-    DisconnectMethod,
-    EventsFeature,
-    EventsListeners,
-    EventsNames,
-    EventsOnMethod,
+    StandardConnectFeature,
+    StandardConnectMethod,
+    StandardDisconnectFeature,
+    StandardDisconnectMethod,
+    StandardEventsFeature,
+    StandardEventsListeners,
+    StandardEventsNames,
+    StandardEventsOnMethod,
 } from '@wallet-standard/features';
 import bs58 from 'bs58';
 import { BackpackWalletAccount } from './account.js';
@@ -36,7 +36,7 @@ export type BackpackFeature = {
 };
 
 export class BackpackWallet implements Wallet {
-    readonly #listeners: { [E in EventsNames]?: EventsListeners[E][] } = {};
+    readonly #listeners: { [E in StandardEventsNames]?: StandardEventsListeners[E][] } = {};
     readonly #version = '1.0.0' as const;
     readonly #name = 'Backpack' as const;
     readonly #icon = icon;
@@ -59,9 +59,9 @@ export class BackpackWallet implements Wallet {
         return SOLANA_CHAINS.slice();
     }
 
-    get features(): ConnectFeature &
-        DisconnectFeature &
-        EventsFeature &
+    get features(): StandardConnectFeature &
+        StandardDisconnectFeature &
+        StandardEventsFeature &
         SolanaSignAndSendTransactionFeature &
         SolanaSignTransactionFeature &
         SolanaSignMessageFeature &
@@ -146,7 +146,7 @@ export class BackpackWallet implements Wallet {
         }
     };
 
-    #connect: ConnectMethod = async ({ silent } = {}) => {
+    #connect: StandardConnectMethod = async ({ silent } = {}) => {
         if (!silent && !this.#backpack.publicKey) {
             await this.#backpack.connect();
         }
@@ -156,21 +156,21 @@ export class BackpackWallet implements Wallet {
         return { accounts: this.accounts };
     };
 
-    #disconnect: DisconnectMethod = async () => {
+    #disconnect: StandardDisconnectMethod = async () => {
         await this.#backpack.disconnect();
     };
 
-    #on: EventsOnMethod = (event, listener) => {
+    #on: StandardEventsOnMethod = (event, listener) => {
         this.#listeners[event]?.push(listener) || (this.#listeners[event] = [listener]);
         return (): void => this.#off(event, listener);
     };
 
-    #emit<E extends EventsNames>(event: E, ...args: Parameters<EventsListeners[E]>): void {
+    #emit<E extends StandardEventsNames>(event: E, ...args: Parameters<StandardEventsListeners[E]>): void {
         // eslint-disable-next-line prefer-spread
         this.#listeners[event]?.forEach((listener) => listener.apply(null, args));
     }
 
-    #off<E extends EventsNames>(event: E, listener: EventsListeners[E]): void {
+    #off<E extends StandardEventsNames>(event: E, listener: StandardEventsListeners[E]): void {
         this.#listeners[event] = this.#listeners[event]?.filter((existingListener) => listener !== existingListener);
     }
 

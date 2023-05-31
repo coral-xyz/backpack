@@ -25,7 +25,7 @@ import {
 import {
   refreshIndividualChatsFor,
   SignalingManager,
-} from "@coral-xyz/tamagui";
+} from "@coral-xyz/chat-xplat";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Gif as GifComponent } from "@giphy/react-components";
@@ -40,6 +40,7 @@ import { Skeleton, Tooltip } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
+import { openWindow } from "../utils/open";
 import {
   cancel,
   getSecureTransferState,
@@ -891,7 +892,7 @@ function SecureTransferElement({
                 marginLeft: 10,
               }}
               onClick={() =>
-                window.open(
+                openWindow(
                   `https://explorer.solana.com/tx/${finalTxIdLocal}`,
                   "mywindow"
                 )

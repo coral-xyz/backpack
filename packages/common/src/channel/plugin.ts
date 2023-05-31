@@ -38,9 +38,13 @@ export class PluginServer {
     const handle = async (event: Event) => {
       const url = new URL(this.url);
       const eventUrl = new URL(event.data.href);
+      const isLocalhost =
+        url.protocol === "http:" &&
+        url.hostname === "localhost" &&
+        url.port === "9933";
       if (
         // TODO: hardcode allowed origin(s)
-        (!url.origin.startsWith("http://localhost:9933") &&
+        (!isLocalhost &&
           (eventUrl.origin !== url.origin ||
             eventUrl.pathname !== url.pathname)) ||
         event.data.type !== this.requestChannel

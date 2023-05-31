@@ -5,7 +5,7 @@ import {
 } from "@coral-xyz/common";
 import { atom, selector, selectorFamily } from "recoil";
 
-import type { WalletPublicKeys } from "../types";
+import type { PublicKeyMetadata, Wallet, WalletPublicKeys } from "../types";
 
 import { backgroundClient } from "./client";
 import { isAggregateWallets } from "./preferences";
@@ -72,15 +72,7 @@ export const isKeyCold = selectorFamily<boolean, string>({
 // All wallets enabled in the wallet. The assets for each wallet may or may
 // not be displayed in the balance view depending on the aggregate wallets
 // setting.
-export const allWallets = selector<
-  Array<{
-    name: string;
-    type: string;
-    publicKey: string;
-    blockchain: Blockchain;
-    isCold?: boolean;
-  }>
->({
+export const allWallets = selector<Wallet[]>({
   key: "allWallets",
   get: ({ get }) => {
     return get(enabledBlockchains)
@@ -90,15 +82,7 @@ export const allWallets = selector<
 });
 
 // All wallets displayed in the balance view.
-export const allWalletsDisplayed = selector<
-  Array<{
-    name: string;
-    type: string;
-    publicKey: string;
-    blockchain: Blockchain;
-    isCold?: boolean;
-  }>
->({
+export const allWalletsDisplayed = selector<Wallet[]>({
   key: "allWalletsDisplayed",
   get: ({ get }) => {
     const _isAggregateWallets = get(isAggregateWallets);
@@ -110,48 +94,42 @@ export const allWalletsDisplayed = selector<
   },
 });
 
-export const allWalletsPerBlockchain = selectorFamily<
-  Array<{
-    name: string;
-    type: string;
-    publicKey: string;
-    blockchain: Blockchain;
-    isCold?: boolean;
-  }>,
-  Blockchain
->({
+export const allWalletsPerBlockchain = selectorFamily<Wallet[], Blockchain>({
   key: "allWalletsPerBlockchain",
   get:
     (blockchain) =>
     ({ get }) => {
       const keyrings = get(walletPublicKeys);
       const keyring = keyrings[blockchain]!;
-      return keyring.hdPublicKeys
-        .map((k: any) => ({ ...k, blockchain, type: "derived" }))
+      const result = keyring.hdPublicKeys
+        .map((k: PublicKeyMetadata) => ({
+          ...k,
+          blockchain,
+          type: "derived",
+          isCold: k.isCold ?? false,
+        }))
         .concat(
-          keyring.importedPublicKeys.map((k: any) => ({
+          keyring.importedPublicKeys.map((k: PublicKeyMetadata) => ({
             ...k,
-            type: "imported",
             blockchain,
+            type: "imported",
+            isCold: k.isCold ?? false,
           }))
         )
         .concat(
-          keyring.ledgerPublicKeys.map((k: any) => ({
+          keyring.ledgerPublicKeys.map((k: PublicKeyMetadata) => ({
             ...k,
             blockchain,
             type: "hardware",
+            isCold: k.isCold ?? true,
           }))
         );
+
+      return result;
     },
 });
 
-export const activeWallet = selector<{
-  publicKey: string;
-  name: string;
-  blockchain: Blockchain;
-  type: string;
-  isCold?: boolean;
-}>({
+export const activeWallet = selector<Wallet>({
   key: "activeWallet",
   get: ({ get }) => {
     const data = get(walletPublicKeyData);

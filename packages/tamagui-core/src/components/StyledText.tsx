@@ -13,14 +13,17 @@ export function StyledText({
   color,
   style,
   ...props
-}: {
-  fontSize?: number | string;
-  fontWeight?: string;
-  children: string | string[];
-  textAlign?: SizableTextProps["textAlign"];
-  color?: string;
-  style?: StyleProp<TextStyle>;
-} & TextProps) {
+}:
+  & {
+    fontSize?: number | string;
+    fontWeight?: string;
+    children: React.ReactNode;
+    textAlign?: SizableTextProps["textAlign"];
+    color?: string;
+    style?: StyleProp<TextStyle>;
+  }
+  & TextProps
+  & SizableTextProps) {
   const theme = useCustomTheme();
   const _color = color || theme.custom.colors.fontColor;
   return (

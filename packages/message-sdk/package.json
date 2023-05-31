@@ -6,6 +6,7 @@
   "types": "dist/esm/index.d.ts",
   "dependencies": {
     "@coral-xyz/chat-sdk": "*",
+    "@coral-xyz/chat-xplat": "*",
     "@coral-xyz/common": "*",
     "@coral-xyz/db": "*",
     "@coral-xyz/react-common": "*",

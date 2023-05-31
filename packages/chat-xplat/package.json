@@ -1,0 +1,36 @@
+{
+  "name": "@coral-xyz/chat-xplat",
+  "version": "1.0.0",
+  "description": "all the cross platform chat stuff that used to live in tamagui",
+  "license": "ISC",
+  "source": "src/index.ts",
+  "react-native": "src/index.ts",
+  "main": "dist/main.js",
+  "module": "dist/module.js",
+  "types": "dist/types.d.ts",
+  "alias": {
+    "~src": "./src/"
+  },
+  "scripts": {
+    "build": "parcel build",
+    "watch": "parcel watch",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "check": "tsc --noEmit",
+    "lint:fix": "yarn run lint --fix",
+    "ci": "yarn build && yarn lint && yarn check"
+  },
+  "dependencies": {
+    "@coral-xyz/common": "*",
+    "@coral-xyz/db": "*",
+    "@coral-xyz/recoil": "*",
+    "eventemitter3": "*",
+    "react": "*",
+    "recoil": "*"
+  },
+  "devDependencies": {
+    "@parcel/transformer-typescript-tsc": "^2.8.3",
+    "eslint-config-custom": "*",
+    "parcel": "latest",
+    "typescript": "~4.9.3"
+  }
+}

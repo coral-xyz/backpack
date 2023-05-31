@@ -4,6 +4,8 @@ import { useBreakpoints } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import CheckIcon from "@mui/icons-material/Check";
 
+import { openWindow } from "../utils/open";
+
 import { RemoteNftWithSuspense } from "./barter/SwapPage";
 import { useChatContext } from "./ChatContext";
 
@@ -72,8 +74,9 @@ export const NftStickerRender = ({
         className={classes.hoverParent}
       >
         <RemoteNftWithSuspense
+          dimension={getDimensions()}
           onClick={() => {
-            window.open(`https://magiceden.io/item-details/${mint}`, "_blank");
+            openWindow(`https://magiceden.io/item-details/${mint}`, "_blank");
           }}
           mint={mint}
           rounded

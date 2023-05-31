@@ -6,12 +6,14 @@ import { PublicKey } from "@solana/web3.js";
 
 export type SolanaTokenAccount = IdlAccounts<SplToken>["token"];
 
-export interface SolanaTokenAccountWithKey extends SolanaTokenAccount {
+export interface SolanaTokenAccountWithKeyAndProgramId
+  extends SolanaTokenAccount {
   key: PublicKey;
+  programId: PublicKey;
 }
 
-export type SolanaTokenAccountWithKeySerializable = Omit<
-  SolanaTokenAccountWithKey,
+export type SolanaTokenAccountWithKeyandProgramIdSerializable = Omit<
+  SolanaTokenAccountWithKeyAndProgramId,
   "amount"
 > & {
   amount: string;
@@ -40,10 +42,18 @@ export type ReplaceTypes<ObjType extends object, FromType, ToType> = {
   [KeyType in keyof ObjType]: ReplaceType<ObjType[KeyType], FromType, ToType>;
 };
 
-export type RawMintString = ReplaceTypes<RawMint, PublicKey, string>;
+export interface RawMintWithProgramId extends RawMint {
+  programId: PublicKey;
+}
 
-export type SolanaTokenAccountWithKeyString = ReplaceTypes<
-  SolanaTokenAccountWithKey,
+export type RawMintWithProgramIdString = ReplaceTypes<
+  RawMintWithProgramId,
+  PublicKey,
+  string
+>;
+
+export type SolanaTokenAccountWithKeyAndProgramIdString = ReplaceTypes<
+  SolanaTokenAccountWithKeyAndProgramId,
   PublicKey,
   string
 >;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   getHashedName,
   getNameAccountKey,
@@ -8,6 +8,7 @@ import { Blockchain } from "@coral-xyz/common";
 import type { Connection } from "@solana/web3.js";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { ethers } from "ethers";
+import { useAsyncEffect } from "use-async-effect";
 
 export function useIsValidAddress(
   blockchain: Blockchain,
@@ -21,16 +22,17 @@ export function useIsValidAddress(
   const [normalizedAddress, setNormalizedAddress] = useState<string>(address);
 
   // This effect validates the account address given.
-  useEffect(() => {
-    if (accountValidated) {
-      setAccountValidated(false);
-    }
-    if (address === "") {
-      setAccountValidated(false);
-      setAddressError(false);
-      return;
-    }
-    (async () => {
+  useAsyncEffect(
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    async (isRelevant) => {
+      if (accountValidated) {
+        setAccountValidated(false);
+      }
+      if (address === "") {
+        setAccountValidated(false);
+        setAddressError(false);
+        return;
+      }
       if (blockchain === Blockchain.SOLANA) {
         let pubkey;
 
@@ -42,17 +44,24 @@ export function useIsValidAddress(
         if (address.endsWith(".sol")) {
           try {
             const hashedName = await getHashedName(address.replace(".sol", ""));
+            if (!isRelevant()) {
+              return;
+            }
             const nameAccountKey = await getNameAccountKey(
               hashedName,
               undefined,
               new PublicKey("58PwtjSDuFHuUkYjH9BYnnQKHfwo9reZhC2zMJv9JPkx") // SOL TLD Authority
             );
-
+            if (!isRelevant()) {
+              return;
+            }
             const owner = await NameRegistryState.retrieve(
               solanaConnection,
               nameAccountKey
             );
-
+            if (!isRelevant()) {
+              return;
+            }
             pubkey = owner.registry.owner;
           } catch (e) {
             setAddressError(true);
@@ -82,7 +91,9 @@ export function useIsValidAddress(
         }
 
         const account = await solanaConnection?.getAccountInfo(pubkey);
-
+        if (!isRelevant()) {
+          return;
+        }
         // Null data means the account has no lamports. This is valid.
         if (!account) {
           setIsFreshAccount(true);
@@ -112,6 +123,9 @@ export function useIsValidAddress(
         if (address.includes(".eth")) {
           try {
             checksumAddress = await ethereumProvider?.resolveName(address);
+            if (!isRelevant()) {
+              return;
+            }
           } catch (e) {
             setAddressError(true);
             return;
@@ -131,8 +145,9 @@ export function useIsValidAddress(
         setAccountValidated(true);
         setNormalizedAddress(checksumAddress);
       }
-    })();
-  }, [address]);
+    },
+    [address]
+  );
 
   return {
     isValidAddress: accountValidated,

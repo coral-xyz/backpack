@@ -9,7 +9,7 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ');
 }
 
-const mainMenu = [
+export const mainMenu = [
   { title: 'Backpack', path: '/' },
   {
     title: 'Blog',
@@ -20,8 +20,8 @@ const mainMenu = [
     path: '/about'
   },
   {
-    title: 'Download',
-    path: 'https://chrome.google.com/webstore/detail/backpack/aflkmfhebedbjioipglgcbcmnbpgliof'
+    title: 'Downloads',
+    path: '/downloads'
   }
 ];
 

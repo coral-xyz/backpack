@@ -3,7 +3,7 @@ import { PublicKey } from "@solana/web3.js";
 import base32Encode from "base32-encode";
 import base58 from "bs58";
 
-import { openPopupWindow } from "./browser/extension";
+import { openPopupWindow, resizeExtensionWindow } from "./browser/extension";
 import type { BackgroundClient } from "./channel/app-ui";
 import { PluginServer } from "./channel/plugin";
 import {
@@ -28,17 +28,14 @@ import {
   PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION,
   PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE,
   PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION,
-  PLUGIN_RPC_METHOD_CHAT_OPEN,
-  PLUGIN_RPC_METHOD_CLOSE_TO,
   PLUGIN_RPC_METHOD_PLUGIN_OPEN,
   PLUGIN_RPC_METHOD_POP_OUT,
-  PLUGIN_RPC_METHOD_WINDOW_OPEN,
+  PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW,
   SOLANA_RPC_METHOD_SIGN_ALL_TXS as PLUGIN_SOLANA_RPC_METHOD_SIGN_ALL_TXS,
   SOLANA_RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
   SOLANA_RPC_METHOD_SIGN_MESSAGE as PLUGIN_SOLANA_RPC_METHOD_SIGN_MESSAGE,
   SOLANA_RPC_METHOD_SIGN_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_TX,
   SOLANA_RPC_METHOD_SIMULATE as PLUGIN_SOLANA_RPC_METHOD_SIMULATE_TX,
-  UI_RPC_METHOD_NAVIGATION_PUSH,
 } from "./constants";
 import { getLogger } from "./logging";
 import type { Event, RpcResponse, XnftMetadata, XnftPreference } from "./types";
@@ -184,6 +181,7 @@ export class Plugin {
     this.iframeRoot.sandbox.add("allow-same-origin");
     this.iframeRoot.sandbox.add("allow-scripts");
     this.iframeRoot.sandbox.add("allow-forms");
+    this.iframeRoot.sandbox.add("allow-popups");
 
     this.iframeRoot.onload = () => this.handleRootIframeOnLoad();
   }
@@ -417,16 +415,12 @@ export class Plugin {
 
     const { method, params } = req;
     switch (method) {
-      case PLUGIN_RPC_METHOD_WINDOW_OPEN:
-        return await this._handleWindowOpen(params[0]);
       case PLUGIN_RPC_METHOD_PLUGIN_OPEN:
         return await this._handlePluginOpen(params[0]);
-      case PLUGIN_RPC_METHOD_CHAT_OPEN:
-        return await this._handleChatOpen(params[0], params[1]);
-      case PLUGIN_RPC_METHOD_CLOSE_TO:
-        return await this._handleCloseTo(params[0], params[1]);
       case PLUGIN_RPC_METHOD_POP_OUT:
         return await this._handlePopout(params[0]);
+      case PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW:
+        return await this._handleResizeExtensionWindow(params[0]);
       case PLUGIN_ETHEREUM_RPC_METHOD_SIGN_TX:
         return await this._handleEthereumSignTransaction(params[0], params[1]);
       case PLUGIN_ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX:
@@ -594,51 +588,17 @@ export class Plugin {
     return ["success"];
   }
 
-  private async _handleWindowOpen(_url: string): Promise<RpcResponse> {
-    const url = new URL(_url);
-
-    if (!url.protocol.startsWith("http")) {
-      throw "Invalid url.";
-    }
-
-    window.open(url, "_blank");
+  private async _handleResizeExtensionWindow(options?: {
+    width: number;
+    height: number;
+  }): Promise<RpcResponse> {
+    resizeExtensionWindow(options);
     return ["success"];
   }
 
   private async _handlePluginOpen(nftAddress: string): Promise<RpcResponse> {
     this._openPlugin?.(nftAddress);
     return ["success"];
-  }
-
-  private async _handleChatOpen(
-    chatId: string,
-    mintAddress: string
-  ): Promise<RpcResponse> {
-    throw "Not implemented yet";
-    await this._backgroundClient?.request({
-      method: UI_RPC_METHOD_NAVIGATION_PUSH,
-      params: [chatId, mintAddress],
-    });
-    return ["success"];
-  }
-
-  private async _handleCloseTo(url: string, tab: string): Promise<RpcResponse> {
-    await this._backgroundClient?.request({
-      method: UI_RPC_METHOD_NAVIGATION_PUSH,
-      params: [url, tab],
-    });
-    return ["success"];
-  }
-
-  private clickHandlerError(): RpcResponse | null {
-    if (!this._lastClickTsMs) {
-      return ["error"];
-    }
-    const timeLapsed = Date.now() - this._lastClickTsMs;
-    if (timeLapsed >= 1000) {
-      return ["error"];
-    }
-    return null;
   }
 
   //
@@ -664,17 +624,5 @@ export class Plugin {
         options,
       });
     });
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Solana Connection Bridge.
-  //////////////////////////////////////////////////////////////////////////////
-
-  //
-  // Relay all requests to the background service worker.
-  //
-  private async _handleConnectionBridge(event: Event): Promise<RpcResponse> {
-    logger.debug(`handle connection bridge`, event);
-    return await this._connectionBackgroundClient?.request(event.data.detail);
   }
 }

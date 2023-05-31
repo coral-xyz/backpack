@@ -16,12 +16,12 @@ import type { AccountInfo, Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 
 import { metadataAddress } from "./programs/token";
-import type { RawMintString } from "./types";
+import type { RawMintWithProgramIdString } from "./types";
 
 export const isCardinalWrappedToken = async (
   connection: Connection,
   mintId: PublicKey,
-  mintInfo: RawMintString
+  mintInfo: RawMintWithProgramIdString
 ) => {
   const mintManagerId = (
     await programs.tokenManager.pda.findMintManagerId(mintId)
@@ -58,7 +58,7 @@ export const isCardinalWrappedToken = async (
 
 export const isCreatorStandardToken = (
   mintId: PublicKey,
-  mintInfo: RawMintString
+  mintInfo: RawMintWithProgramIdString
 ) => {
   const mintManagerId = findMintManagerId(mintId);
   // not network calls involved we can assume this token was created properly if the mint and freeze authority match
@@ -73,7 +73,7 @@ export const isCreatorStandardToken = (
 export async function isOpenCreatorProtocol(
   connection: Connection,
   mintId: PublicKey,
-  mintInfo: RawMintString
+  mintInfo: RawMintWithProgramIdString
 ): Promise<MintState | null> {
   const mintStatePk = findMintStatePk(mintId);
   const accountInfo = (await connection.getAccountInfo(
