@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 import { Suspense, useMemo } from "react";
-import { useSuspenseQuery_experimental } from "@apollo/client";
 
 import { gql } from "../../apollo";
 import {
   type GetNotificationsQuery,
   SortDirection,
 } from "../../apollo/graphql";
+import { usePolledSuspenseQuery } from "../../hooks";
 
 import {
   NotificationList,
@@ -50,13 +50,21 @@ export type NotificationsProps = Omit<
   loaderComponent?: ReactNode;
 };
 
-export function Notifications({
+export const Notifications = ({
   loaderComponent,
+  ...rest
+}: NotificationsProps) => (
+  <Suspense fallback={loaderComponent}>
+    <_Notifications {...rest} />
+  </Suspense>
+);
+
+function _Notifications({
   onAcceptFriendRequest,
   onDeclineFriendRequest,
   onItemClick,
-}: NotificationsProps) {
-  const { data } = useSuspenseQuery_experimental(GET_NOTIFICATIONS, {
+}: Omit<NotificationsProps, "loaderComponent">) {
+  const { data } = usePolledSuspenseQuery(60000, GET_NOTIFICATIONS, {
     variables: {
       filters: {
         limit: 50,
@@ -82,13 +90,11 @@ export function Notifications({
   );
 
   return (
-    <Suspense fallback={loaderComponent}>
-      <NotificationList
-        notificationGroups={groupedNotifications}
-        onItemClick={onItemClick}
-        onAcceptFriendRequest={onAcceptFriendRequest}
-        onDeclineFriendRequest={onDeclineFriendRequest}
-      />
-    </Suspense>
+    <NotificationList
+      notificationGroups={groupedNotifications}
+      onItemClick={onItemClick}
+      onAcceptFriendRequest={onAcceptFriendRequest}
+      onDeclineFriendRequest={onDeclineFriendRequest}
+    />
   );
 }

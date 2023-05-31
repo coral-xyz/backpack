@@ -11,7 +11,7 @@
     "gql:generate": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
-    "@apollo/client": "3.8.0-alpha.12",
+    "@apollo/client": "3.8.0-alpha.13",
     "@coral-xyz/chat-xplat": "*",
     "@coral-xyz/common": "*",
     "@coral-xyz/recoil": "*",

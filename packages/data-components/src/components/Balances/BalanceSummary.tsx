@@ -1,6 +1,5 @@
 import { Suspense, useMemo } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { useSuspenseQuery_experimental } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import {
   BalanceSummaryCore,
@@ -10,6 +9,7 @@ import {
 } from "@coral-xyz/tamagui";
 
 import { gql } from "../../apollo";
+import { usePolledSuspenseQuery } from "../../hooks";
 
 const GET_BALANCE_SUMMARY = gql(`
   query GetBalanceSummary($address: String!) {
@@ -35,21 +35,19 @@ export type BalanceSummaryWidgetProps = {
   style?: BalanceSummaryCoreProps["style"];
 };
 
-export function BalanceSummaryWidget({ style }: BalanceSummaryWidgetProps) {
-  return (
-    <ErrorBoundary
-      fallbackRender={(x) => <StyledText>{JSON.stringify(x.error)}</StyledText>} // FIXME:
-    >
-      <Suspense fallback={<BalanceSummaryCoreLoader />}>
-        <_BalanceSummaryWidget style={style} />
-      </Suspense>
-    </ErrorBoundary>
-  );
-}
+export const BalanceSummaryWidget = ({ style }: BalanceSummaryWidgetProps) => (
+  <ErrorBoundary
+    fallbackRender={(x) => <StyledText>{JSON.stringify(x.error)}</StyledText>} // FIXME:
+  >
+    <Suspense fallback={<BalanceSummaryCoreLoader />}>
+      <_BalanceSummaryWidget style={style} />
+    </Suspense>
+  </ErrorBoundary>
+);
 
 function _BalanceSummaryWidget({ style }: BalanceSummaryWidgetProps) {
   const activeWallet = useActiveWallet();
-  const { data } = useSuspenseQuery_experimental(GET_BALANCE_SUMMARY, {
+  const { data } = usePolledSuspenseQuery(20000, GET_BALANCE_SUMMARY, {
     variables: {
       address: activeWallet.publicKey,
     },

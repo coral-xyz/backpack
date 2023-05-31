@@ -1,9 +1,9 @@
 import { type ReactNode, Suspense, useMemo } from "react";
-import { useSuspenseQuery_experimental } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
 
 import { gql } from "../../apollo";
 import { ChainId, type GetTransactionsQuery } from "../../apollo/graphql";
+import { usePolledSuspenseQuery } from "../../hooks";
 
 import type { ParseTransactionDetails } from "./parsing";
 import { TransactionList } from "./TransactionList";
@@ -56,13 +56,21 @@ export type TransactionHistoryProps = {
   ) => void;
 };
 
-export function TransactionHistory({
-  contractOrMint,
+export const TransactionHistory = ({
   loaderComponent,
+  ...rest
+}: TransactionHistoryProps) => (
+  <Suspense fallback={loaderComponent}>
+    <_TransactionHistory {...rest} />
+  </Suspense>
+);
+
+function _TransactionHistory({
+  contractOrMint,
   onItemClick,
-}: TransactionHistoryProps) {
+}: Omit<TransactionHistoryProps, "loaderComponent">) {
   const activeWallet = useActiveWallet();
-  const { data } = useSuspenseQuery_experimental(GET_TRANSACTIONS, {
+  const { data } = usePolledSuspenseQuery(30000, GET_TRANSACTIONS, {
     variables: {
       address: activeWallet.publicKey,
       filters: {
@@ -88,12 +96,10 @@ export function TransactionHistory({
   );
 
   return (
-    <Suspense fallback={loaderComponent}>
-      <TransactionList
-        blockchain={wallet?.chainId ?? ChainId.Solana}
-        onItemClick={onItemClick}
-        transactions={groupedTransactions}
-      />
-    </Suspense>
+    <TransactionList
+      blockchain={wallet?.chainId ?? ChainId.Solana}
+      onItemClick={onItemClick}
+      transactions={groupedTransactions}
+    />
   );
 }

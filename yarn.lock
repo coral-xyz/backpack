@@ -77,6 +77,42 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@apollo/client@npm:^3.8.0-alpha.12":
+  version: 3.8.0-beta.0
+  resolution: "@apollo/client@npm:3.8.0-beta.0"
+  dependencies:
+    "@graphql-typed-document-node/core": ^3.1.1
+    "@wry/context": ^0.7.3
+    "@wry/equality": ^0.5.6
+    "@wry/trie": ^0.4.3
+    graphql-tag: ^2.12.6
+    hoist-non-react-statics: ^3.3.2
+    optimism: ^0.17.4
+    prop-types: ^15.7.2
+    response-iterator: ^0.2.6
+    symbol-observable: ^4.0.0
+    ts-invariant: ^0.10.3
+    tslib: ^2.3.0
+    zen-observable-ts: ^1.2.5
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+    graphql-ws: ^5.5.5
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    subscriptions-transport-ws: ^0.9.0 || ^0.11.0
+  peerDependenciesMeta:
+    graphql-ws:
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+    subscriptions-transport-ws:
+      optional: true
+  checksum: 39184fee4e7c752dfae9136791683ec790de1111fff1285246c54a75d29b812d015d413cc744187bda68e3b72eddc9be760b644f4ba5c356f29bb25f8f6dd37a
+  languageName: node
+  linkType: hard
+
 "@apollo/datasource-rest@npm:^5.1.0":
   version: 5.1.0
   resolution: "@apollo/datasource-rest@npm:5.1.0"
@@ -4115,7 +4151,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/data-components@workspace:packages/data-components"
   dependencies:
-    "@apollo/client": 3.8.0-alpha.12
+    "@apollo/client": 3.8.0-alpha.13
     "@coral-xyz/chat-xplat": "*"
     "@coral-xyz/common": "*"
     "@coral-xyz/recoil": "*"
@@ -15640,12 +15676,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wry/equality@npm:^0.5.0":
-  version: 0.5.3
-  resolution: "@wry/equality@npm:0.5.3"
+"@wry/context@npm:^0.7.3":
+  version: 0.7.3
+  resolution: "@wry/context@npm:0.7.3"
   dependencies:
     tslib: ^2.3.0
-  checksum: 7ea8ded51462911217183b93cc3ffbb4d18dc02a62d4a79e0d9983463739bf54106aaeb25649bf33168120bd044b61d135018bfcf4fefad8099c13eac9238aa6
+  checksum: 91c1e9eee9046c48ff857d60dcbb59f22246ce0f9bb2d9b190e0555227e7ba3f86024032cc057f3f5141d3bee93fc6b2a15ce2c79fa512569d3432eb8e1af02b
+  languageName: node
+  linkType: hard
+
+"@wry/equality@npm:^0.5.0, @wry/equality@npm:^0.5.6":
+  version: 0.5.6
+  resolution: "@wry/equality@npm:0.5.6"
+  dependencies:
+    tslib: ^2.3.0
+  checksum: 9addf8891bdff5e23eecff03641846e7a56c1de3c9362c25e69c0b2ee3303e74b22e9a0376920283cd9d3bdd1bada12df54be5eaa29c2d801d33d94992672e14
   languageName: node
   linkType: hard
 
@@ -15655,6 +15700,15 @@ __metadata:
   dependencies:
     tslib: ^2.3.0
   checksum: 151d06b519e1ff1c3acf6ee6846161b1d7d50bbecd4c48e5cd1b05f9e37c30602aff02e88f20105f6e6c54ae4123f9c4eb7715044d7fd927d4ba4ec3e755cd36
+  languageName: node
+  linkType: hard
+
+"@wry/trie@npm:^0.4.3":
+  version: 0.4.3
+  resolution: "@wry/trie@npm:0.4.3"
+  dependencies:
+    tslib: ^2.3.0
+  checksum: 106e021125cfafd22250a6631a0438a6a3debae7bd73f6db87fe42aa0757fe67693db0dfbe200ae1f60ba608c3e09ddb8a4e2b3527d56ed0a7e02aa0ee4c94e1
   languageName: node
   linkType: hard
 
@@ -33438,14 +33492,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"optimism@npm:^0.17.0":
-  version: 0.17.1
-  resolution: "optimism@npm:0.17.1"
+"optimism@npm:^0.17.0, optimism@npm:^0.17.4":
+  version: 0.17.4
+  resolution: "optimism@npm:0.17.4"
   dependencies:
     "@wry/context": ^0.7.0
     "@wry/trie": ^0.3.0
     tslib: ^2.3.0
-  checksum: 15e34e9b1ffef876cdc403cceb3e3dec6728dfd61ebc4538ef4ba92019f756030c433738c4d294a8ccb3b3d5a7a08c7de836d494e9d87876050b96e01ec9b72f
+  checksum: 465c3f6d12dfb39b47e1a8437472b0cdf37d1135094265c54446d991f1c70360814e2a435ceb7d09cf529b98c07283c30ef8869305fabec51b3376208b1f75a2
   languageName: node
   linkType: hard
 
