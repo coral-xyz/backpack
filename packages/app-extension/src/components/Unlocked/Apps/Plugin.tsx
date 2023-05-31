@@ -40,7 +40,7 @@ export function PluginApp({
   );
 }
 
-export function LoadPlugin({
+function LoadPlugin({
   xnftAddress,
   deepXnftPath,
 }: {
@@ -109,17 +109,19 @@ export function PluginDisplay({
     <>
       <PluginControl plugin={plugin} />
       <Suspense fallback={<Loading />}>
-        {plugin ? <PluginRenderer
-          key={plugin?.iframeRootUrl}
-          plugin={plugin}
-          deepXnftPath={deepXnftPath}
-          /> : null}
+        {plugin ? (
+          <PluginRenderer
+            key={plugin?.iframeRootUrl}
+            plugin={plugin}
+            deepXnftPath={deepXnftPath}
+          />
+        ) : null}
       </Suspense>
     </>
   );
 }
 
-export function PluginControl({ plugin }: { plugin: any | null }) {
+function PluginControl({ plugin }: { plugin: any | null }) {
   const closePlugin = useClosePlugin();
   const [isLoading, setIsLoading] = useState(true);
 

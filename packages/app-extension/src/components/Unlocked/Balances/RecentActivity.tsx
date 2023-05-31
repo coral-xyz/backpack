@@ -1,5 +1,3 @@
-// TODO: remove the line below
-/* eslint-disable react-hooks/rules-of-hooks */
 import { Suspense, useState } from "react";
 import { Blockchain, explorerUrl, XNFT_GG_LINK } from "@coral-xyz/common";
 import {
@@ -114,38 +112,43 @@ export function RecentActivityButton() {
 }
 
 export function RecentActivity() {
-  const activeWallet = useActiveWallet();
+  const { blockchain, publicKey } = useActiveWallet();
+  const opts =
+    blockchain === Blockchain.SOLANA
+      ? {
+          component: _RecentSolanaActivityList,
+          hook: useRecentSolanaTransactions,
+        }
+      : {
+          component: _RecentActivityList,
+          hook: useRecentEthereumTransactions,
+        };
+  return <RecentTransactions address={publicKey} {...opts} />;
+}
 
-  const recentTransactions =
-    (activeWallet.blockchain === Blockchain.SOLANA
-      ? useRecentSolanaTransactions({
-          address: activeWallet.publicKey,
-        })
-      : useRecentEthereumTransactions({
-          address: activeWallet.publicKey,
-        })) ?? [];
+function RecentTransactions({
+  address,
+  component: BlockchainActivityList,
+  hook: useBlockchainTransactions,
+}: {
+  address: ReturnType<typeof useActiveWallet>["publicKey"];
+  component: any;
+  hook:
+    | typeof useRecentSolanaTransactions
+    | typeof useRecentEthereumTransactions;
+}) {
+  const recentTransactions = useBlockchainTransactions({ address }) ?? [];
 
   // Used since Solana transactions have a timestamp and Ethereum transactions have a date.
-  const extractTime = (tx: any) => {
-    if (tx?.timestamp) {
-      return tx.timestamp;
-    } else if (tx?.date) {
-      return tx.date.getTime();
-    }
-    return 0;
-  };
+  const extractTime = (tx: any) => tx?.timestamp || tx?.date?.getTime() || 0;
 
-  const mergedTransactions = [...recentTransactions].sort((a, b) =>
+  const sortedTransactions = [...recentTransactions].sort((a, b) =>
     extractTime(a) > extractTime(b) ? -1 : 1
   );
 
   return (
-    <Suspense fallback={<RecentActivityLoading />}>
-      {activeWallet.blockchain === Blockchain.SOLANA ? (
-        <_RecentSolanaActivityList transactions={mergedTransactions} />
-      ) : (
-        <_RecentActivityList transactions={mergedTransactions} />
-      )}
+    <Suspense fallback={null}>
+      <BlockchainActivityList transactions={sortedTransactions} />
     </Suspense>
   );
 }
@@ -166,20 +169,18 @@ export function RecentActivityList({
   minimize?: boolean;
 }) {
   return (
-    <Suspense fallback={<RecentActivityLoading />}>
-      <_RecentActivityList
-        blockchain={blockchain}
-        address={address}
-        contractAddresses={contractAddresses}
-        transactions={transactions}
-        style={style}
-        minimize={minimize}
-      />
-    </Suspense>
+    <_RecentActivityList
+      blockchain={blockchain}
+      address={address}
+      contractAddresses={contractAddresses}
+      transactions={transactions}
+      style={style}
+      minimize={minimize}
+    />
   );
 }
 
-function RecentActivityLoading() {
+export function RecentActivityLoading() {
   return (
     <div
       style={{
@@ -202,7 +203,7 @@ function RecentActivityLoading() {
   );
 }
 
-export function _RecentActivityList({
+function _RecentActivityList({
   blockchain,
   address,
   contractAddresses,

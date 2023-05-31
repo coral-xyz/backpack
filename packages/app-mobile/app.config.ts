@@ -61,21 +61,22 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
       },
       supportsTablet: false,
       bundleIdentifier: packageName,
-      infoPlist: {
-        NSAllowsArbitraryLoads: true,
-        NSExceptionDomains: {
-          localhost: {
-            NSExceptionAllowsInsecureHTTPLoads: true,
-            NSIncludesSubdomains: true,
-          },
-        },
-        WKAppBoundDomains: [
-          "coral-xyz.github.io",
-          "ngrok.io",
-          "backpack-api.xnfts.dev",
-          "mobile-service-worker.xnfts.dev",
-        ],
-      },
+      // infoPlist: {
+      //   NSAllowsArbitraryLoads: true,
+      //   NSExceptionDomains: {
+      //     localhost: {
+      //       NSExceptionAllowsInsecureHTTPLoads: true,
+      //       NSIncludesSubdomains: true,
+      //     },
+      //   },
+      //   WKAppBoundDomains: [
+      //     "coral-xyz.github.io",
+      //     "ngrok.io",
+      //     "backpack-api.xnfts.dev",
+      //     "mobile-service-worker.xnfts.dev",
+      //     "uniswap.io",
+      //   ],
+      // },
     },
     android: {
       package: packageName,

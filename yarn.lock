@@ -3700,6 +3700,7 @@ __metadata:
     "@coral-xyz/message-sdk": "*"
     "@coral-xyz/react-common": "*"
     "@coral-xyz/recoil": "*"
+    "@coral-xyz/secure-background": "*"
     "@coral-xyz/tamagui": "*"
     "@coral-xyz/themes": "*"
     "@emotion/react": ^11.10.6
@@ -3862,7 +3863,7 @@ __metadata:
     react-hook-form: ^7.40.0
     react-native: 0.71.7
     react-native-gesture-handler: ~2.9.0
-    react-native-gifted-chat: ^2.0.1
+    react-native-gifted-chat: ^2.1.0
     react-native-pager-view: 6.1.2
     react-native-reanimated: ~2.14.4
     react-native-safe-area-context: 4.5.0
@@ -3913,10 +3914,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/background@workspace:packages/background"
   dependencies:
-    "@coral-xyz/blockchain-common": "*"
-    "@coral-xyz/blockchain-keyring": "*"
     "@coral-xyz/common": "*"
     "@coral-xyz/recoil": "*"
+    "@coral-xyz/secure-background": "*"
     "@solana/web3.js": ^1.63.1
     "@types/serviceworker": ^0.0.47
     bip32: ^2.0.6
@@ -3957,54 +3957,6 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     tailwindcss: ^3.1.4
-    typescript: ~4.9.3
-  languageName: unknown
-  linkType: soft
-
-"@coral-xyz/blockchain-common@*, @coral-xyz/blockchain-common@workspace:packages/blockchains/common":
-  version: 0.0.0-use.local
-  resolution: "@coral-xyz/blockchain-common@workspace:packages/blockchains/common"
-  dependencies:
-    "@coral-xyz/blockchain-evm": "*"
-    "@coral-xyz/blockchain-keyring": "*"
-    "@coral-xyz/blockchain-solana": "*"
-    "@coral-xyz/common": "*"
-    eslint-config-custom: "*"
-    typescript: ~4.9.3
-  languageName: unknown
-  linkType: soft
-
-"@coral-xyz/blockchain-evm@*, @coral-xyz/blockchain-evm@workspace:packages/blockchains/evm":
-  version: 0.0.0-use.local
-  resolution: "@coral-xyz/blockchain-evm@workspace:packages/blockchains/evm"
-  dependencies:
-    "@coral-xyz/blockchain-keyring": "*"
-    "@coral-xyz/common": "*"
-    eslint-config-custom: "*"
-    ethers: ^5.7.2
-    typescript: ~4.9.3
-  languageName: unknown
-  linkType: soft
-
-"@coral-xyz/blockchain-keyring@*, @coral-xyz/blockchain-keyring@workspace:packages/blockchains/keyring":
-  version: 0.0.0-use.local
-  resolution: "@coral-xyz/blockchain-keyring@workspace:packages/blockchains/keyring"
-  dependencies:
-    "@coral-xyz/common": "*"
-    "@types/node": ^18.14.6
-    bs58: ^5.0.0
-    eslint-config-custom: "*"
-    typescript: ~4.9.3
-  languageName: unknown
-  linkType: soft
-
-"@coral-xyz/blockchain-solana@*, @coral-xyz/blockchain-solana@workspace:packages/blockchains/solana":
-  version: 0.0.0-use.local
-  resolution: "@coral-xyz/blockchain-solana@workspace:packages/blockchains/solana"
-  dependencies:
-    "@coral-xyz/blockchain-keyring": "*"
-    "@coral-xyz/common": "*"
-    eslint-config-custom: "*"
     typescript: ~4.9.3
   languageName: unknown
   linkType: soft
@@ -4131,7 +4083,8 @@ __metadata:
     "@solana/wallet-adapter-base": ^0.9.18
     "@solana/web3.js": ^1.63.1
     "@types/bn.js": ^5.1.1
-    "@types/chrome": ^0.0.203
+    "@types/chrome": ^0.0.236
+    "@types/eventemitter3": ^2.0.2
     "@types/firefox-webext-browser": ^94.0.1
     "@types/jest": ^29.4.0
     "@types/uuid": ^8.3.4
@@ -4236,6 +4189,26 @@ __metadata:
     typescript: ~4.9.3
   languageName: unknown
   linkType: soft
+
+"@coral-xyz/merkle-distributor@npm:^0.3.5-beta.1":
+  version: 0.3.5-beta.1
+  resolution: "@coral-xyz/merkle-distributor@npm:0.3.5-beta.1"
+  dependencies:
+    js-sha3: ^0.8.0
+    superstruct: ^0.16.0
+    tiny-invariant: ^1.2.0
+    tslib: ^2.4.0
+  peerDependencies:
+    "@project-serum/anchor": ">=0.24"
+    "@saberhq/anchor-contrib": ^1.13
+    "@saberhq/solana-contrib": ^1.13
+    "@saberhq/token-utils": ^1.13
+    "@solana/web3.js": ^1.44
+    bn.js: ^5.2.0
+    jsbi: "*"
+  checksum: 2e80b5a5d356f1532cd72d56d2aaf726dbb9019613f96a5f74258e02ccfba4458fa17d077e56e7cd61f4171d2687972967949e35f46770bc77e229148536683a
+  languageName: node
+  linkType: hard
 
 "@coral-xyz/message-sdk@*, @coral-xyz/message-sdk@workspace:packages/message-sdk":
   version: 0.0.0-use.local
@@ -4349,6 +4322,26 @@ __metadata:
     use-async-effect: ^2.2.7
   peerDependencies:
     "@solana/web3.js": ^1.63.1
+  languageName: unknown
+  linkType: soft
+
+"@coral-xyz/secure-background@*, @coral-xyz/secure-background@workspace:packages/secure-background":
+  version: 0.0.0-use.local
+  resolution: "@coral-xyz/secure-background@workspace:packages/secure-background"
+  dependencies:
+    "@coral-xyz/common": "*"
+    "@coral-xyz/recoil": "*"
+    "@solana/web3.js": ^1.63.1
+    "@types/eventemitter3": ^2.0.2
+    bip32: ^2.0.6
+    bip39: ^3.0.4
+    bs58: ^5.0.0
+    ed25519-hd-key: ^1.2.0
+    eslint-config-custom: "*"
+    ethers: ^5.7.2
+    eventemitter3: ^5.0.1
+    tweetnacl: ^1.0.3
+    typescript: ~4.9.3
   languageName: unknown
   linkType: soft
 
@@ -11343,26 +11336,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@saberhq/merkle-distributor@npm:^0.3.5":
-  version: 0.3.5
-  resolution: "@saberhq/merkle-distributor@npm:0.3.5"
-  dependencies:
-    js-sha3: ^0.8.0
-    superstruct: ^0.16.0
-    tiny-invariant: ^1.2.0
-    tslib: ^2.4.0
-  peerDependencies:
-    "@project-serum/anchor": ">=0.24"
-    "@saberhq/anchor-contrib": ^1.13
-    "@saberhq/solana-contrib": ^1.13
-    "@saberhq/token-utils": ^1.13
-    "@solana/web3.js": ^1.44
-    bn.js: ^5.2.0
-    jsbi: "*"
-  checksum: 743a91c4e4e07facc9e953e68ddf4a82ceedad2be4c7584d1ad1d571b5ae3562a0df24c3e90c8c5ed5846b76c671f90b08f767d367a27466ec355edbf64d67ef
-  languageName: node
-  linkType: hard
-
 "@saberhq/option-utils@npm:^1.14.11":
   version: 1.14.11
   resolution: "@saberhq/option-utils@npm:1.14.11"
@@ -13482,13 +13455,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chrome@npm:^0.0.203":
-  version: 0.0.203
-  resolution: "@types/chrome@npm:0.0.203"
+"@types/chrome@npm:^0.0.236":
+  version: 0.0.236
+  resolution: "@types/chrome@npm:0.0.236"
   dependencies:
     "@types/filesystem": "*"
     "@types/har-format": "*"
-  checksum: 74939fa3cf84397b7b261336e783a1941b32a70cfcff89c65bdb386e76e2587887952615883a25e989ca840fbbc2facb25108a0bb77b167be7008172013ea988
+  checksum: 64cc6f8ac5c23f5dc6a3e1137721dda52e6401b1e1a8f9d16bfca7236bd5a118be6746324fd9e33630d98863370137ff0749b9949ededb9f46accb187f333896
   languageName: node
   linkType: hard
 
@@ -13851,6 +13824,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/eventemitter3@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "@types/eventemitter3@npm:2.0.2"
+  dependencies:
+    eventemitter3: "*"
+  checksum: 8fb5031eab566ac7689092eaebfbd76a043154ed2b7bc806730c6c543de4fa2b25b73a69574b8bdbfdb4e238de1144061ae482d1bda540540ca9479f7efc7bb7
+  languageName: node
+  linkType: hard
+
 "@types/express-serve-static-core@npm:*, @types/express-serve-static-core@npm:^4.17.30, @types/express-serve-static-core@npm:^4.17.33":
   version: 4.17.33
   resolution: "@types/express-serve-static-core@npm:4.17.33"
@@ -14127,7 +14109,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=8.1.0, @types/node@npm:^18.0.0, @types/node@npm:^18.14.6, @types/node@npm:^18.6.4":
+"@types/node@npm:*, @types/node@npm:>=8.1.0, @types/node@npm:^18.0.0, @types/node@npm:^18.6.4":
   version: 18.15.5
   resolution: "@types/node@npm:18.15.5"
   checksum: 5fbf3453bd5ce1402bb2964e55d928fc8a8a7de5451b1b0fe66587fecb8a3eb86854ca9cefa5076a5971e2cff00e1773ceeb5d872a54f6c6ddfbbc1064b4e91a
@@ -17122,6 +17104,7 @@ __metadata:
     "@coral-xyz/backend-common": "*"
     "@coral-xyz/chat-zeus": "*"
     "@coral-xyz/common": "*"
+    "@coral-xyz/merkle-distributor": ^0.3.5-beta.1
     "@coral-xyz/xnft": ^0.2.52
     "@coral-xyz/zeus": "*"
     "@graphql-codegen/cli": ^3.3.0
@@ -17131,7 +17114,6 @@ __metadata:
     "@metaplex-foundation/js": 0.16.1
     "@metaplex-foundation/mpl-token-metadata": ^2.8.1
     "@saberhq/anchor-contrib": ^1.14.11
-    "@saberhq/merkle-distributor": ^0.3.5
     "@saberhq/solana-contrib": ^1.14.11
     "@saberhq/token-utils": ^1.14.11
     "@solana/spl-token": ^0.3.7
@@ -23138,7 +23120,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eventemitter3@npm:*":
+"eventemitter3@npm:*, eventemitter3@npm:^5.0.1":
   version: 5.0.1
   resolution: "eventemitter3@npm:5.0.1"
   checksum: 543d6c858ab699303c3c32e0f0f47fc64d360bf73c3daf0ac0b5079710e340d6fe9f15487f94e66c629f5f82cd1a8678d692f3dbb6f6fcd1190e1b97fcad36f8
@@ -35331,9 +35313,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gifted-chat@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "react-native-gifted-chat@npm:2.0.1"
+"react-native-gifted-chat@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "react-native-gifted-chat@npm:2.1.0"
   dependencies:
     "@expo/react-native-action-sheet": 4.0.1
     dayjs: 1.8.26
@@ -35354,7 +35336,7 @@ __metadata:
     react-native-lightbox: "*"
     react-native-parsed-text: "*"
     react-native-typing-animation: "*"
-  checksum: 2ad604f64b7c68b06c5bf2343bb7d098f691f2be4192932d883918bef9b73bc237fdc2810002c7b8152b068db8efea69934c8cfc83df8fb761089653bcb147c3
+  checksum: 7666f97297b43c75079391127af4cf91659dc3a1ea7323dfbce02643ceaf6b42b90494542c37ebaedc40084467536de2512574aa5bc625b3a97515161591024c
   languageName: node
   linkType: hard
 

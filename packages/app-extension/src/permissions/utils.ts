@@ -3,7 +3,7 @@ import { BACKEND_API_URL } from "@coral-xyz/common";
 const BACKPACK_NOTIFICATION_PUBKEY =
   "BJ6je9D4-ZJUH1yxTCRT01ILw07-YZcpAEk5hxpnPnEXJJ8WjE9BYf_fTPXNGRM1yw5C1CZQaCFmUX0gujpf67E";
 
-export const urlB64ToUint8Array = (base64String: any) => {
+const urlB64ToUint8Array = (base64String: any) => {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
   const rawData = atob(base64);

@@ -18,7 +18,7 @@ export type CachedValue<T> = {
   value: T;
 };
 
-export type NamedPublicKeys = Array<{
+type NamedPublicKeys = Array<{
   name: string;
   publicKey: string;
   isCold?: boolean;

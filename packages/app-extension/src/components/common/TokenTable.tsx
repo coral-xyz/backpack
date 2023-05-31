@@ -144,7 +144,7 @@ export function TokenTables({
   );
 }
 
-export function WalletTokenTable({
+function WalletTokenTable({
   onClickRow,
   tokenAccounts,
   wallet,
@@ -320,7 +320,7 @@ const WindowedTokenRowRenderer = ({
 //
 // Displays an individual token row in the table
 //
-export function TokenRow({
+function TokenRow({
   onClick,
   token,
   style,

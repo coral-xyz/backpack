@@ -721,39 +721,39 @@ function BurnConfirmation({ onConfirm }: { onConfirm: () => void }) {
   );
 }
 
-export async function updateLocalNftPfp(
-  uuid: string,
-  username: string,
-  nft: Nft
-) {
-  //
-  // Only show mad lads on the lock screen in full screen view.
-  //
-  let lockScreenImageUrl;
-  if (isMadLads(nft.creators)) {
-    window.localStorage.setItem(
-      lockScreenKey(uuid),
-      JSON.stringify({
-        uuid,
-        nft,
-      })
-    );
-    lockScreenImageUrl = nft.lockScreenImageUrl!;
-  } else {
-    window.localStorage.removeItem(lockScreenKey(uuid));
-    lockScreenImageUrl = nft.imageUrl;
-  }
-  await LocalImageManager.getInstance().storeImageInLocalStorage(
-    lockScreenKeyImage(username),
-    true,
-    lockScreenImageUrl
-  );
-}
+// export async function updateLocalNftPfp(
+//   uuid: string,
+//   username: string,
+//   nft: Nft
+// ) {
+//   //
+//   // Only show mad lads on the lock screen in full screen view.
+//   //
+//   let lockScreenImageUrl;
+//   if (isMadLads(nft.creators)) {
+//     window.localStorage.setItem(
+//       lockScreenKey(uuid),
+//       JSON.stringify({
+//         uuid,
+//         nft,
+//       })
+//     );
+//     lockScreenImageUrl = nft.lockScreenImageUrl!;
+//   } else {
+//     window.localStorage.removeItem(lockScreenKey(uuid));
+//     lockScreenImageUrl = nft.imageUrl;
+//   }
+//   await LocalImageManager.getInstance().storeImageInLocalStorage(
+//     lockScreenKeyImage(username),
+//     true,
+//     lockScreenImageUrl
+//   );
+// }
 
 export function lockScreenKey(uuid: string) {
   return `${uuid}:lock-screen-nft:1`;
 }
 
-export function lockScreenKeyImage(username: string) {
-  return `https://swr.xnfts.dev/avatars/${username}`;
-}
+// export function lockScreenKeyImage(username: string) {
+//   return `https://swr.xnfts.dev/avatars/${username}`;
+// }

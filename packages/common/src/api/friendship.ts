@@ -53,6 +53,7 @@ export const markSpam = async ({
   });
 };
 
+// DEPRECATED NOT USED ANYWHERE PROBABLY CAN DELETE
 export const searchUsersByBlockchain = async ({
   blockchain,
   address,

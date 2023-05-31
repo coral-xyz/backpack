@@ -1,6 +1,7 @@
-import type { Blockchain, Nft } from "@coral-xyz/common";
+import type { SubscriptionType, Blockchain, Nft } from "@coral-xyz/common";
 import type { Token } from "~types/types";
 
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { StackScreenProps } from "@react-navigation/stack";
 
 export type UnlockedNavigatorStackParamList = {
@@ -58,6 +59,7 @@ export type UnlockedTabNavigatorParamList = {
   AccountSettings: undefined;
   Notifications: undefined;
   Utils: undefined;
+  Browser: undefined;
 };
 
 export type TokenPriceStackParamList = {
@@ -73,4 +75,29 @@ export type TokenPriceListScreenParams = StackScreenProps<
 export type TokenPriceDetailScreenParams = StackScreenProps<
   TokenPriceStackParamList,
   "TokenPriceDetail"
+>;
+
+export type ChatStackNavigatorParamList = {
+  ChatList: undefined;
+  ChatDetail: {
+    roomName: string;
+    roomId: string;
+    roomType: SubscriptionType;
+    remoteUserId?: string;
+    remoteUsername?: string;
+  };
+  ChatRequest: undefined;
+  ChatRequestDetail: {
+    roomName: string;
+  };
+};
+
+export type ChatListScreenProps = NativeStackScreenProps<
+  ChatStackNavigatorParamList,
+  "ChatList"
+>;
+
+export type ChatDetailScreenProps = NativeStackScreenProps<
+  ChatStackNavigatorParamList,
+  "ChatDetail"
 >;

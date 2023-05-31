@@ -352,7 +352,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function _Deposit({
+function _Deposit({
   blockchain,
   publicKey,
 }: {
@@ -457,7 +457,7 @@ export function _Deposit({
   );
 }
 
-export function QrCode({
+function QrCode({
   data,
   style,
 }: {
