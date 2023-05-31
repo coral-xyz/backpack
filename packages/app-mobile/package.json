@@ -18,7 +18,7 @@
     "postinstall": "npx patch-package"
   },
   "dependencies": {
-    "@apollo/client": "^3.8.0-alpha.12",
+    "@apollo/client": "3.8.0-alpha.13",
     "@cardinal/payment-manager": "^1.7.9",
     "@cardinal/token-manager": "^1.7.9",
     "@coral-xyz/chat-xplat": "*",

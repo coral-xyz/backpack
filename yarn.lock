@@ -41,9 +41,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:3.8.0-alpha.12, @apollo/client@npm:^3.8.0-alpha.12":
-  version: 3.8.0-alpha.12
-  resolution: "@apollo/client@npm:3.8.0-alpha.12"
+"@apollo/client@npm:3.8.0-alpha.13":
+  version: 3.8.0-alpha.13
+  resolution: "@apollo/client@npm:3.8.0-alpha.13"
   dependencies:
     "@graphql-typed-document-node/core": ^3.1.1
     "@wry/context": ^0.7.0
@@ -73,7 +73,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: 01becb414da2652b49c2b04b9eec209949db5262025957a851adfd30959b4bbf5bfe682b73ca7edc54edfe0bcb9227378bc3fe8c42a8c5f5c8ac335fb1867413
+  checksum: c451551240affd272482db54a6566bfd78d66f0fdc8b3085dd332f5761bc8fd113b3f39093fb2ab8aa9feb05b821e1410ccded4898d8e627a9f5dc9d5a893cbf
   languageName: node
   linkType: hard
 
@@ -3689,7 +3689,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/app-extension@workspace:packages/app-extension"
   dependencies:
-    "@apollo/client": 3.8.0-alpha.12
+    "@apollo/client": 3.8.0-alpha.13
     "@bonfida/spl-name-service": ^0.1.51
     "@cardinal/token-manager": ^1.7.9
     "@coral-xyz/background": "*"
@@ -3791,7 +3791,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/app-mobile@workspace:packages/app-mobile"
   dependencies:
-    "@apollo/client": ^3.8.0-alpha.12
+    "@apollo/client": 3.8.0-alpha.13
     "@babel/core": ^7.19.3
     "@cardinal/payment-manager": ^1.7.9
     "@cardinal/token-manager": ^1.7.9
@@ -4063,7 +4063,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/common@workspace:packages/common"
   dependencies:
-    "@apollo/client": 3.8.0-alpha.12
+    "@apollo/client": 3.8.0-alpha.13
     "@cardinal/creator-standard": ^2.1.10
     "@cardinal/token-manager": ^1.7.9
     "@ethersproject/abstract-provider": ^5.7.0
