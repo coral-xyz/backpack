@@ -65,16 +65,28 @@ export type UnlockedTabNavigatorParamList = {
 export type TokenPriceStackParamList = {
   TokenPriceList: undefined;
   TokenPriceDetail: { title: string; tokenId: string };
+  TokenPriceBuy: { tokenId: string };
+  TokenPriceSwap: { tokenId: string };
 };
 
-export type TokenPriceListScreenParams = StackScreenProps<
+export type TokenPriceListScreenParams = NativeStackScreenProps<
   TokenPriceStackParamList,
   "TokenPriceList"
 >;
 
-export type TokenPriceDetailScreenParams = StackScreenProps<
+export type TokenPriceDetailScreenParams = NativeStackScreenProps<
   TokenPriceStackParamList,
   "TokenPriceDetail"
+>;
+
+export type TokenPriceBuyScreenParams = NativeStackScreenProps<
+  TokenPriceStackParamList,
+  "TokenPriceBuy"
+>;
+
+export type TokenPriceSwapScreenParams = NativeStackScreenProps<
+  TokenPriceStackParamList,
+  "TokenPriceSwap"
 >;
 
 export type ChatStackNavigatorParamList = {

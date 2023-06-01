@@ -29,6 +29,22 @@ export const IconMenu = withThemedIcon(({ color, size }: TamaguiIconProp) => {
   );
 });
 
+export const IconConvert = withThemedIcon(
+  ({ color, size }: TamaguiIconProp) => {
+    const baseIconColor = useTamaguiTheme().fontColor.val;
+    return (
+      <MaterialIcons
+        name="compare-arrows"
+        size={size}
+        color={color ?? baseIconColor}
+        style={{
+          transform: [{ rotate: "90deg" }],
+        }}
+      />
+    );
+  }
+);
+
 export const VerticalDotsIcon = ({
   size = 24,
   color = "gray",

@@ -1,22 +1,17 @@
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { HeaderButton } from "~navigation/components";
 import { TokenPriceStackParamList } from "~navigation/types";
+import { TokenPriceBuyScreen } from "~screens/TokenPriceBuyScreen";
 import { TokenPriceDetailScreen } from "~screens/TokenPriceDetailScreen";
 import { TokenPriceListScreen } from "~screens/TokenPriceListScreen";
+import { TokenPriceSwapScreen } from "~screens/TokenPriceSwapScreen";
 
-const Stack = createStackNavigator<TokenPriceStackParamList>();
+const Stack = createNativeStackNavigator<TokenPriceStackParamList>();
 export function TokenPriceNavigator(): JSX.Element {
   // const theme = useTheme();
   return (
-    <Stack.Navigator
-    // screenOptions={
-    //   {
-    //     headerTintColor: theme.custom.colors.fontColor,
-    //     headerBackTitleVisible: false,
-    //   }
-    // }
-    >
+    <Stack.Navigator>
       <Stack.Screen
         name="TokenPriceList"
         component={TokenPriceListScreen}
@@ -32,6 +27,8 @@ export function TokenPriceNavigator(): JSX.Element {
           };
         }}
       />
+      <Stack.Screen name="TokenPriceBuy" component={TokenPriceBuyScreen} />
+      <Stack.Screen name="TokenPriceSwap" component={TokenPriceSwapScreen} />
     </Stack.Navigator>
   );
 }

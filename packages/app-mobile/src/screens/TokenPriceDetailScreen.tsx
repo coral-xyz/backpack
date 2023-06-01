@@ -1,8 +1,6 @@
 import { Suspense, useTransition, useState } from "react";
 import { View, Button, ScrollView } from "react-native";
 
-import { Image } from "expo-image";
-
 import { formatUSD } from "@coral-xyz/common";
 import {
   Stack,
@@ -15,14 +13,20 @@ import {
   ProxyImage,
   RoundedContainerGroup,
 } from "@coral-xyz/tamagui";
+import { useNavigation } from "@react-navigation/native";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { PercentChangePill } from "~components/Pill";
-import { Screen, ScreenError, ScreenLoading } from "~components/index";
+import {
+  Screen,
+  ScreenError,
+  ScreenLoading,
+  TokenOverviewHeaderStrip,
+} from "~components/index";
 import { TokenPriceDetailScreenParams } from "~navigation/types";
 
+// TODO(peter) remove
 import data from "./TokenPriceListData.json";
-
 type TokenResult = {
   id: string;
   symbol: string;
@@ -36,41 +40,6 @@ type TokenResult = {
   circulating_supply: number;
   ath: number;
 };
-interface TokenOverviewHeaderStripProps {
-  imageUrl: string;
-  symbol: string;
-  price: number;
-  percentChange: number;
-}
-
-function formatDecimals(value: number, decimals: number) {
-  return value.toFixed(decimals);
-}
-
-function TokenOverviewHeaderStrip({
-  imageUrl,
-  symbol,
-  price,
-  percentChange,
-}: TokenOverviewHeaderStripProps) {
-  // get chart data here somewhere
-  const textColor = percentChange > 0 ? "$greenText" : "$redText";
-  return (
-    <XStack ai="center" bg="white" borderWidth={2} borderColor="$borderFull">
-      <XStack ai="center" px={24} py={12}>
-        <Image source={{ uri: imageUrl }} style={{ width: 20, height: 20 }} />
-        <StyledText ml={8}>{symbol}</StyledText>
-      </XStack>
-      <Separator alignSelf="stretch" vertical my={12} mx={12} />
-      <XStack ai="center">
-        <StyledText>{formatUSD(price)}</StyledText>
-        <StyledText color={textColor} ml={8}>
-          {formatDecimals(percentChange, 2)}%
-        </StyledText>
-      </XStack>
-    </XStack>
-  );
-}
 
 function BalanceSummaryWidget() {
   const percentChange = -0.23;
@@ -92,12 +61,22 @@ function BalanceSummaryWidget() {
   );
 }
 
-const TransferWidget = () => {
+const TransferWidget = ({ tokenId }) => {
+  const navigation = useNavigation();
   return (
     <XStack ai="center" jc="center" space={8}>
-      <Button title="Buy" />
-      <Button title="Sell" />
-      <Button title="Swap" />
+      <Button
+        title="Buy"
+        onPress={() => {
+          navigation.push("TokenPriceBuy", { tokenId });
+        }}
+      />
+      <Button
+        title="Swap"
+        onPress={() => {
+          navigation.push("TokenPriceSwap", { tokenId });
+        }}
+      />
     </XStack>
   );
 };
@@ -212,7 +191,7 @@ function Container({ route }: TokenPriceDetailScreenParams): JSX.Element {
           }}
         />
         <BalanceSummaryWidget />
-        <TransferWidget />
+        <TransferWidget tokenId={tokenId} />
         <TokenSummaryTable
           marketCap={token.market_cap}
           volume={token.total_volume}

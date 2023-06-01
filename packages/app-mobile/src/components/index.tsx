@@ -15,9 +15,10 @@ import * as Clipboard from "expo-clipboard";
 import Constants from "expo-constants";
 import { Image } from "expo-image";
 
-import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
+import { formatUSD, Blockchain, walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import {
+  Separator,
   BaseButton,
   DangerButton,
   LinkButton,
@@ -812,5 +813,41 @@ export function BlockchainLogo({
       style={[{ width: size, height: size, aspectRatio: 1 }, style]}
       source={logo}
     />
+  );
+}
+
+type TokenOverviewHeaderStripProps = {
+  imageUrl: string;
+  symbol: string;
+  price: number;
+  percentChange: number;
+};
+
+function formatDecimals(value: number, decimals: number) {
+  return value.toFixed(decimals);
+}
+
+export function TokenOverviewHeaderStrip({
+  imageUrl,
+  symbol,
+  price,
+  percentChange,
+}: TokenOverviewHeaderStripProps) {
+  // get chart data here somewhere
+  const textColor = percentChange > 0 ? "$greenText" : "$redText";
+  return (
+    <XStack ai="center" bg="white" borderWidth={2} borderColor="$borderFull">
+      <XStack ai="center" px={24} py={12}>
+        <Image source={{ uri: imageUrl }} style={{ width: 20, height: 20 }} />
+        <StyledText ml={8}>{symbol}</StyledText>
+      </XStack>
+      <Separator alignSelf="stretch" vertical my={12} mx={12} />
+      <XStack ai="center">
+        <StyledText>{formatUSD(price)}</StyledText>
+        <StyledText color={textColor} ml={8}>
+          {formatDecimals(percentChange, 2)}%
+        </StyledText>
+      </XStack>
+    </XStack>
   );
 }

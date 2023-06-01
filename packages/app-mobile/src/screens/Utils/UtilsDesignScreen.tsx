@@ -200,7 +200,9 @@ function SettingsList() {
       separator={<Sep />}
     >
       <YGroup.Item>
-        <ListItemSettings title="Wallets" iconName="account-balance-wallet" />
+        <ListItemSettings title="Wallets" iconName="account-balance-wallet">
+          <StyledText>Wallet 1</StyledText>
+        </ListItemSettings>
       </YGroup.Item>
       <YGroup.Item>
         <ListItemSettings title="Account" iconName="account-circle" />
