@@ -124,7 +124,8 @@ export class Solana implements Blockchain {
       ...ids,
     ]);
 
-    const nativeData = NodeBuilder.tokenBalance(
+    // Build the token balance node for the native balance of the wallet
+    const nativeTokenNode = NodeBuilder.tokenBalance(
       this.id(),
       {
         address,
@@ -134,7 +135,7 @@ export class Solana implements Blockchain {
           balances.nativeBalance,
           this.decimals()
         ),
-        marketData: NodeBuilder.marketData({
+        marketData: NodeBuilder.marketData("solana", {
           lastUpdatedAt: prices.solana.last_updated,
           percentChange: prices.solana.price_change_percentage_24h,
           price: prices.solana.current_price,
@@ -162,26 +163,27 @@ export class Solana implements Blockchain {
       (acc, curr) => {
         const id = meta.get(curr.mint);
         const p: CoinGeckoPriceData | null = prices[id ?? ""] ?? null;
-        const marketData = p
-          ? NodeBuilder.marketData({
-              lastUpdatedAt: p.last_updated,
-              percentChange: p.price_change_percentage_24h,
-              price: p.current_price,
-              sparkline: p.sparkline_in_7d.price,
-              usdChange: p.price_change_24h,
-              value:
-                parseFloat(
-                  ethers.utils.formatUnits(curr.amount, curr.decimals)
-                ) * p.current_price,
-              valueChange:
-                parseFloat(
-                  ethers.utils.formatUnits(
-                    balances.nativeBalance,
-                    this.decimals()
-                  )
-                ) * p.price_change_24h,
-            })
-          : undefined;
+        const marketData =
+          p && id
+            ? NodeBuilder.marketData(id, {
+                lastUpdatedAt: p.last_updated,
+                percentChange: p.price_change_percentage_24h,
+                price: p.current_price,
+                sparkline: p.sparkline_in_7d.price,
+                usdChange: p.price_change_24h,
+                value:
+                  parseFloat(
+                    ethers.utils.formatUnits(curr.amount, curr.decimals)
+                  ) * p.current_price,
+                valueChange:
+                  parseFloat(
+                    ethers.utils.formatUnits(
+                      balances.nativeBalance,
+                      this.decimals()
+                    )
+                  ) * p.price_change_24h,
+              })
+            : undefined;
 
         const tokenListEntry = SolanaTokenList[curr.mint]
           ? NodeBuilder.tokenListEntry(SolanaTokenList[curr.mint])
@@ -214,13 +216,14 @@ export class Solana implements Blockchain {
       []
     );
 
-    return NodeBuilder.balances(this.id(), {
-      aggregate: calculateBalanceAggregate(address, [
-        nativeData,
-        ...splTokenNodes,
-      ]),
-      native: nativeData,
-      tokens: createConnection(splTokenNodes, false, false),
+    // Combine and sort the native and SPL token nodes by total market value decreasing
+    const tokenNodes = [nativeTokenNode, ...splTokenNodes].sort(
+      (a, b) => (b.marketData?.value ?? 0) - (a.marketData?.value ?? 0)
+    );
+
+    return NodeBuilder.balances(address, this.id(), {
+      aggregate: calculateBalanceAggregate(address, tokenNodes),
+      tokens: createConnection(tokenNodes, false, false),
     });
   }
 
