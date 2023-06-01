@@ -194,7 +194,8 @@ export class Solana {
           walletPublicKey,
           destinationAta,
           destination,
-          mint
+          mint,
+          programId
         )
       );
     }
@@ -274,7 +275,8 @@ export class Solana {
           walletPublicKey,
           destinationAta,
           destination,
-          mint
+          mint,
+          programId
         )
       );
     }
@@ -632,7 +634,8 @@ export const generateWrapSolTx = async (
         walletPublicKey,
         destinationAta,
         destination,
-        NATIVE_MINT
+        NATIVE_MINT,
+        TOKEN_PROGRAM_ID
       )
     );
   }
