@@ -84,7 +84,7 @@ function _Notifications({
   /**
    * Memoized value for the extracted notifications list from the GraphQL response.
    */
-  const notifications = useMemo(
+  const notifications: ResponseNotification[] = useMemo(
     () => data.user?.notifications?.edges.map((e) => e.node) ?? [],
     [data.user]
   );

@@ -15,6 +15,8 @@ import type { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-
 const documents = {
   "\n  query GetBalanceSummary($address: String!) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        balances {\n          id\n          aggregate {\n            id\n            percentChange\n            value\n            valueChange\n          }\n        }\n      }\n    }\n  }\n":
     types.GetBalanceSummaryDocument,
+  "\n  query GetTokenBalances($address: String!) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        balances {\n          id\n          tokens {\n            edges {\n              node {\n                id\n                displayAmount\n                marketData {\n                  id\n                  value\n                  valueChange\n                }\n                tokenListEntry {\n                  id\n                  logo\n                  name\n                  symbol\n                }        \n              }\n            }\n          }\n        }\n      }\n    }\n  }\n":
+    types.GetTokenBalancesDocument,
   "\n  mutation SendFriendRequest($otherUserId: String!, $accept: Boolean!) {\n    sendFriendRequest(otherUserId: $otherUserId, accept: $accept)\n  }\n":
     types.SendFriendRequestDocument,
   "\n  query GetNotifications($filters: NotificationFiltersInput) {\n    user {\n      id\n      notifications(filters: $filters) {\n        edges {\n          node {\n            id\n            app {\n              id\n              image\n              name\n            }\n            body\n            source\n            timestamp\n            title\n            viewed\n          }\n        }\n      }\n    }\n  }\n":
@@ -45,6 +47,12 @@ export function gql(source: string): unknown;
 export function gql(
   source: "\n  query GetBalanceSummary($address: String!) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        balances {\n          id\n          aggregate {\n            id\n            percentChange\n            value\n            valueChange\n          }\n        }\n      }\n    }\n  }\n"
 ): (typeof documents)["\n  query GetBalanceSummary($address: String!) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        balances {\n          id\n          aggregate {\n            id\n            percentChange\n            value\n            valueChange\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(
+  source: "\n  query GetTokenBalances($address: String!) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        balances {\n          id\n          tokens {\n            edges {\n              node {\n                id\n                displayAmount\n                marketData {\n                  id\n                  value\n                  valueChange\n                }\n                tokenListEntry {\n                  id\n                  logo\n                  name\n                  symbol\n                }        \n              }\n            }\n          }\n        }\n      }\n    }\n  }\n"
+): (typeof documents)["\n  query GetTokenBalances($address: String!) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        balances {\n          id\n          tokens {\n            edges {\n              node {\n                id\n                displayAmount\n                marketData {\n                  id\n                  value\n                  valueChange\n                }\n                tokenListEntry {\n                  id\n                  logo\n                  name\n                  symbol\n                }        \n              }\n            }\n          }\n        }\n      }\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

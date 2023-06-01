@@ -1,1 +1,4 @@
-export * from "./BalanceSummary";
+export {
+  BalanceSummaryWidget,
+  type BalanceSummaryWidgetProps,
+} from "./BalanceSummary";
