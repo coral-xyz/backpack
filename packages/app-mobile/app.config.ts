@@ -11,8 +11,9 @@ type ExpoExtras = {
 const localGraphQLApi = "http://localhost:8080/v2/graphql";
 const remoteGraphQLApi = "https://backpack-api.xnfts.dev/v2/graphql";
 
-const getUrl = (hash: string = "c0384f0") =>
-  `https://mobile-service-worker.xnfts.dev/background-scripts/${hash}/service-worker-loader.html`;
+const getUrl = () => {
+  return "https://mobile-service-worker.xnfts.dev/background-scripts/735c4c4/service-worker-loader.html";
+};
 
 export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
   const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";

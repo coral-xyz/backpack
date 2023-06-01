@@ -2,8 +2,10 @@
 <html>
   <head>
     <title>service worker loader</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       body {
+        padding-top: 100px;
         background: red;
       }
     </style>
@@ -64,6 +66,8 @@
         navigator.serviceWorker.onmessage = (event) => {
           console.log("SERVICE WORKER: message received", event);
           document.querySelector("body").style.background = "green";
+
+          window.ReactNativeWebView?.postMessage("hello");
 
           window.ReactNativeWebView?.postMessage(JSON.stringify(event.data));
         };
