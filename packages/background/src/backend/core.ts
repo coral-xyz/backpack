@@ -1,3 +1,5 @@
+import { keyringForBlockchain } from "@coral-xyz/blockchain-common";
+import type { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import type {
   AutolockSettingsOption,
   EventEmitter,
@@ -67,13 +69,6 @@ import {
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum, makeDefaultNav } from "@coral-xyz/recoil";
-import type { BlockchainKeyring } from "@coral-xyz/secure-background";
-import { keyringForBlockchain } from "@coral-xyz/secure-background";
-import type {
-  KeyringStore,
-  User,
-} from "@coral-xyz/secure-background/src/legacyExport";
-import { secureStore } from "@coral-xyz/secure-background/src/legacyExport";
 import type {
   Commitment,
   SendOptions,
@@ -90,20 +85,20 @@ import { ethers } from "ethers";
 import type { PublicKeyData, PublicKeyType } from "../types";
 
 import type { EthereumConnectionBackend } from "./ethereum-connection";
-import type { Nav } from "./legacy-store";
-import * as legacyStore from "./legacy-store";
+import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
+import type { Nav, User } from "./store";
+import { getWalletDataForUser, setUser, setWalletDataForUser } from "./store";
+import * as store from "./store";
 
-const { getWalletDataForUser, setUser, setWalletDataForUser } = secureStore;
 const { base58: bs58 } = ethers.utils;
 
 export function start(
   events: EventEmitter,
-  keyringStore: KeyringStore,
   solanaB: SolanaConnectionBackend,
   ethereumB: EthereumConnectionBackend
 ) {
-  return new Backend(events, keyringStore, solanaB, ethereumB);
+  return new Backend(events, solanaB, ethereumB);
 }
 
 export class Backend {
@@ -117,11 +112,10 @@ export class Backend {
 
   constructor(
     events: EventEmitter,
-    keyringStore: KeyringStore,
     solanaB: SolanaConnectionBackend,
     ethereumB: EthereumConnectionBackend
   ) {
-    this.keyringStore = keyringStore;
+    this.keyringStore = new KeyringStore(events);
     this.solanaConnectionBackend = solanaB;
     this.ethereumConnectionBackend = ethereumB;
     this.events = events;
@@ -304,7 +298,7 @@ export class Backend {
   }
 
   async solanaExplorerRead(uuid: string): Promise<string> {
-    const data = await secureStore.getWalletDataForUser(uuid);
+    const data = await store.getWalletDataForUser(uuid);
     return data.solana && data.solana.explorer
       ? data.solana.explorer
       : SolanaExplorer.DEFAULT;
@@ -312,8 +306,8 @@ export class Backend {
 
   async solanaExplorerUpdate(explorer: string): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await secureStore.getWalletDataForUser(uuid);
-    await secureStore.setWalletDataForUser(uuid, {
+    const data = await store.getWalletDataForUser(uuid);
+    await store.setWalletDataForUser(uuid, {
       ...data,
       solana: {
         ...data.solana,
@@ -330,7 +324,7 @@ export class Backend {
   }
 
   async solanaCommitmentRead(uuid: string): Promise<Commitment> {
-    const data = await secureStore.getWalletDataForUser(uuid);
+    const data = await store.getWalletDataForUser(uuid);
     return data.solana && data.solana.commitment
       ? data.solana.commitment
       : "processed";
@@ -338,8 +332,8 @@ export class Backend {
 
   async solanaCommitmentUpdate(commitment: Commitment): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await secureStore.getWalletDataForUser(uuid);
-    await secureStore.setWalletDataForUser(uuid, {
+    const data = await store.getWalletDataForUser(uuid);
+    await store.setWalletDataForUser(uuid, {
       ...data,
       solana: {
         ...data.solana,
@@ -395,7 +389,7 @@ export class Backend {
   ///////////////////////////////////////////////////////////////////////////////
 
   async ethereumExplorerRead(uuid: string): Promise<string> {
-    const data = await secureStore.getWalletDataForUser(uuid);
+    const data = await store.getWalletDataForUser(uuid);
     return data.ethereum && data.ethereum.explorer
       ? data.ethereum.explorer
       : EthereumExplorer.DEFAULT;
@@ -403,8 +397,8 @@ export class Backend {
 
   async ethereumExplorerUpdate(explorer: string): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await secureStore.getWalletDataForUser(uuid);
-    await secureStore.setWalletDataForUser(uuid, {
+    const data = await store.getWalletDataForUser(uuid);
+    await store.setWalletDataForUser(uuid, {
       ...data,
       ethereum: {
         ...(data.ethereum || {}),
@@ -421,7 +415,7 @@ export class Backend {
   }
 
   async ethereumConnectionUrlRead(uuid: string): Promise<string> {
-    const data = await secureStore.getWalletDataForUser(uuid);
+    const data = await store.getWalletDataForUser(uuid);
     return data.ethereum && data.ethereum.connectionUrl
       ? data.ethereum.connectionUrl
       : EthereumConnectionUrl.DEFAULT;
@@ -429,9 +423,9 @@ export class Backend {
 
   async ethereumConnectionUrlUpdate(connectionUrl: string): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await secureStore.getWalletDataForUser(uuid);
+    const data = await store.getWalletDataForUser(uuid);
 
-    await secureStore.setWalletDataForUser(uuid, {
+    await store.setWalletDataForUser(uuid, {
       ...data,
       ethereum: {
         ...(data.ethereum || {}),
@@ -461,7 +455,7 @@ export class Backend {
   }
 
   async ethereumChainIdRead(): Promise<string> {
-    const data = await secureStore.getWalletDataForUser(
+    const data = await store.getWalletDataForUser(
       this.keyringStore.activeUserKeyring.uuid
     );
     return data.ethereum && data.ethereum.chainId
@@ -472,8 +466,8 @@ export class Backend {
 
   async ethereumChainIdUpdate(chainId: string): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await secureStore.getWalletDataForUser(uuid);
-    await secureStore.setWalletDataForUser(uuid, {
+    const data = await store.getWalletDataForUser(uuid);
+    await store.setWalletDataForUser(uuid, {
       ...data,
       ethereum: {
         ...(data.ethereum || {}),
@@ -649,8 +643,8 @@ export class Backend {
 
     // Reset the navigation to the default everytime we switch users
     // but keep the active tab.
-    const { activeTab } = (await legacyStore.getNav())!;
-    await legacyStore.setNav({
+    const { activeTab } = (await store.getNav())!;
+    await store.setNav({
       ...defaultNav,
       activeTab,
     });
@@ -694,7 +688,7 @@ export class Backend {
     //
     const userInfo = { password, uuid };
     await this.keyringStore.tryUnlock(userInfo);
-    const activeUser = (await secureStore.getUserData()).activeUser;
+    const activeUser = (await store.getUserData()).activeUser;
     const blockchainActiveWallets = await this.blockchainActiveWallets();
     const ethereumConnectionUrl = await this.ethereumConnectionUrlRead(
       userInfo.uuid
@@ -774,8 +768,8 @@ export class Backend {
         for (const publicKey of publicKeys) {
           namedPublicKeys[blockchain][keyring].push({
             publicKey,
-            name: await secureStore.getKeyname(publicKey),
-            isCold: await secureStore.getIsCold(publicKey),
+            name: await store.getKeyname(publicKey),
+            isCold: await store.getIsCold(publicKey),
           });
         }
       }
@@ -799,7 +793,7 @@ export class Backend {
     // we return a default set of preferences.
     //
     try {
-      return await secureStore.getWalletDataForUser(uuid);
+      return await store.getWalletDataForUser(uuid);
     } catch (err) {
       return defaultPreferences();
     }
@@ -961,11 +955,11 @@ export class Backend {
   }
 
   async keyIsCold(publicKey: string): Promise<boolean> {
-    return await secureStore.getIsCold(publicKey);
+    return await store.getIsCold(publicKey);
   }
 
   async keyIsColdUpdate(publicKey: string, isCold: boolean): Promise<string> {
-    await secureStore.setIsCold(publicKey, isCold);
+    await store.setIsCold(publicKey, isCold);
     const walletData = await this.keyringStoreReadAllPubkeyData();
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEY_IS_COLD_UPDATE,
@@ -983,7 +977,7 @@ export class Backend {
    * @param publicKey - public key to read the name for
    */
   async keynameRead(publicKey: string): Promise<string> {
-    return await secureStore.getKeyname(publicKey);
+    return await store.getKeyname(publicKey);
   }
 
   /**
@@ -992,7 +986,7 @@ export class Backend {
    * @param newName - new name to associate with the public key
    */
   async keynameUpdate(publicKey: string, newName: string): Promise<string> {
-    await secureStore.setKeyname(publicKey, newName);
+    await store.setKeyname(publicKey, newName);
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYNAME_UPDATE,
       data: {
@@ -1088,7 +1082,7 @@ export class Backend {
   // keyring is locked.
   async userRead(): Promise<User> {
     try {
-      const user = await secureStore.getActiveUser();
+      const user = await store.getActiveUser();
       return user;
     } catch (err) {
       return { username: "", uuid: "", jwt: "" };
@@ -1122,7 +1116,7 @@ export class Backend {
   }
 
   async allUsersRead(): Promise<Array<User>> {
-    const userData = await secureStore.getUserData();
+    const userData = await store.getUserData();
     return userData.users;
   }
 
@@ -1178,7 +1172,7 @@ export class Backend {
   }
 
   async keyringAutoLockSettingsRead(uuid: string) {
-    const data = await secureStore.getWalletDataForUser(uuid);
+    const data = await store.getWalletDataForUser(uuid);
     return data.autoLockSettings;
   }
 
@@ -1490,7 +1484,7 @@ export class Backend {
     //
     // If we're logging out the last user, reset the entire app.
     //
-    const data = await secureStore.getUserData();
+    const data = await store.getUserData();
     if (data.users.length === 1) {
       await this.keyringReset();
       return SUCCESS_RESPONSE;
@@ -1650,14 +1644,14 @@ export class Backend {
     if (state === "needs-onboarding") {
       return DEFAULT_DARK_MODE;
     }
-    const data = await secureStore.getWalletDataForUser(uuid);
+    const data = await store.getWalletDataForUser(uuid);
     return data.darkMode ?? DEFAULT_DARK_MODE;
   }
 
   async darkModeUpdate(darkMode: boolean): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await secureStore.getWalletDataForUser(uuid);
-    await secureStore.setWalletDataForUser(uuid, {
+    const data = await store.getWalletDataForUser(uuid);
+    await store.setWalletDataForUser(uuid, {
       ...data,
       darkMode,
     });
@@ -1671,14 +1665,14 @@ export class Backend {
   }
 
   async developerModeRead(uuid: string): Promise<boolean> {
-    const data = await secureStore.getWalletDataForUser(uuid);
+    const data = await store.getWalletDataForUser(uuid);
     return data.developerMode ?? false;
   }
 
   async developerModeUpdate(developerMode: boolean): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await secureStore.getWalletDataForUser(uuid);
-    await secureStore.setWalletDataForUser(uuid, {
+    const data = await store.getWalletDataForUser(uuid);
+    await store.setWalletDataForUser(uuid, {
       ...data,
       developerMode,
     });
@@ -1693,8 +1687,8 @@ export class Backend {
 
   async aggregateWalletsUpdate(aggregateWallets: boolean): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await secureStore.getWalletDataForUser(uuid);
-    await secureStore.setWalletDataForUser(uuid, {
+    const data = await store.getWalletDataForUser(uuid);
+    await store.setWalletDataForUser(uuid, {
       ...data,
       aggregateWallets,
     });
@@ -1709,7 +1703,7 @@ export class Backend {
 
   async isApprovedOrigin(origin: string): Promise<boolean> {
     const { uuid } = await this.userRead();
-    const data = await secureStore.getWalletDataForUser(uuid);
+    const data = await store.getWalletDataForUser(uuid);
     if (!data.approvedOrigins) {
       return false;
     }
@@ -1718,14 +1712,14 @@ export class Backend {
   }
 
   async approvedOriginsRead(uuid: string): Promise<Array<string>> {
-    const data = await secureStore.getWalletDataForUser(uuid);
+    const data = await store.getWalletDataForUser(uuid);
     return data.approvedOrigins;
   }
 
   async approvedOriginsUpdate(approvedOrigins: Array<string>): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await secureStore.getWalletDataForUser(uuid);
-    await secureStore.setWalletDataForUser(uuid, {
+    const data = await store.getWalletDataForUser(uuid);
+    await store.setWalletDataForUser(uuid, {
       ...data,
       approvedOrigins,
     });
@@ -1741,9 +1735,9 @@ export class Backend {
 
   async approvedOriginsDelete(origin: string): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await secureStore.getWalletDataForUser(uuid);
+    const data = await store.getWalletDataForUser(uuid);
     const approvedOrigins = data.approvedOrigins.filter((o) => o !== origin);
-    await secureStore.setWalletDataForUser(uuid, {
+    await store.setWalletDataForUser(uuid, {
       ...data,
       approvedOrigins,
     });
@@ -1804,7 +1798,7 @@ export class Backend {
   }
 
   async setFeatureGates(gates: FEATURE_GATES_MAP) {
-    await legacyStore.setFeatureGates(gates);
+    await store.setFeatureGates(gates);
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_FEATURE_GATES_UPDATED,
       data: {
@@ -1814,13 +1808,13 @@ export class Backend {
   }
 
   async getFeatureGates() {
-    return await legacyStore.getFeatureGates();
+    return await store.getFeatureGates();
   }
 
   async setXnftPreferences(xnftId: string, preference: XnftPreference) {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
     const currentPreferences =
-      (await legacyStore.getXnftPreferencesForUser(uuid)) || {};
+      (await store.getXnftPreferencesForUser(uuid)) || {};
     const updatedPreferences = {
       ...currentPreferences,
       [xnftId]: {
@@ -1828,7 +1822,7 @@ export class Backend {
         ...preference,
       },
     };
-    await legacyStore.setXnftPreferencesForUser(uuid, updatedPreferences);
+    await store.setXnftPreferencesForUser(uuid, updatedPreferences);
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_XNFT_PREFERENCE_UPDATED,
       data: { updatedPreferences },
@@ -1837,7 +1831,7 @@ export class Backend {
 
   async getXnftPreferences() {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    return await legacyStore.getXnftPreferencesForUser(uuid);
+    return await store.getXnftPreferencesForUser(uuid);
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -1849,7 +1843,7 @@ export class Backend {
     tab?: string,
     pushAboveRoot?: boolean
   ): Promise<string> {
-    let nav = await legacyStore.getNav();
+    let nav = await store.getNav();
     if (!nav) {
       throw new Error("nav not found");
     }
@@ -1896,7 +1890,7 @@ export class Backend {
 
     nav.data[targetTab].urls.push(url);
 
-    await legacyStore.setNav(nav);
+    await store.setNav(nav);
 
     url = setSearchParam(url, "nav", "push");
 
@@ -1911,14 +1905,14 @@ export class Backend {
   }
 
   async navigationPop(tab?: string): Promise<string> {
-    let nav = await legacyStore.getNav();
+    let nav = await store.getNav();
     if (!nav) {
       throw new Error("nav not found");
     }
     const targetTab = tab ?? nav.activeTab;
     nav.data[targetTab] = nav.data[targetTab] ?? { id: targetTab, urls: [] };
     nav.data[targetTab].urls.pop();
-    await legacyStore.setNav(nav);
+    await store.setNav(nav);
 
     const urls =
       nav.data[targetTab].urls.length > 0
@@ -1938,12 +1932,12 @@ export class Backend {
   }
 
   async navigationToDefault(): Promise<string> {
-    await legacyStore.setNav(defaultNav);
+    await store.setNav(defaultNav);
     return SUCCESS_RESPONSE;
   }
 
   async navigationToRoot(): Promise<string> {
-    let nav = await legacyStore.getNav();
+    let nav = await store.getNav();
     if (!nav) {
       throw new Error("nav not found");
     }
@@ -1957,7 +1951,7 @@ export class Backend {
 
     let url = urls[0];
     nav.data[nav.activeTab].urls = [url];
-    await legacyStore.setNav(nav);
+    await store.setNav(nav);
 
     url = setSearchParam(url, "nav", "pop");
     this.events.emit(BACKEND_EVENT, {
@@ -1971,9 +1965,9 @@ export class Backend {
   }
 
   async navRead(): Promise<Nav> {
-    let nav = await legacyStore.getNav();
+    let nav = await store.getNav();
     if (!nav) {
-      await legacyStore.setNav(defaultNav);
+      await store.setNav(defaultNav);
       nav = defaultNav;
     }
     // @ts-ignore
@@ -1990,7 +1984,7 @@ export class Backend {
   }
 
   async navigationActiveTabUpdate(activeTab: string): Promise<string> {
-    const currNav = await legacyStore.getNav();
+    const currNav = await store.getNav();
     if (!currNav) {
       throw new Error("invariant violation");
     }
@@ -2012,7 +2006,7 @@ export class Backend {
         urls: [makeUrl("messages", { title: "Messages", props: {} })],
       };
     }
-    await legacyStore.setNav(nav);
+    await store.setNav(nav);
 
     const navData = nav.data[activeTab];
     let url = navData.urls[navData.urls.length - 1];
@@ -2039,7 +2033,7 @@ export class Backend {
     activeTab?: string
   ): Promise<string> {
     // Get the tab nav.
-    const currNav = await legacyStore.getNav();
+    const currNav = await store.getNav();
     if (!currNav) {
       throw new Error("invariant violation");
     }
@@ -2059,7 +2053,7 @@ export class Backend {
     currNav.data[activeTab ?? currNav.activeTab] = navData;
 
     // Save the change.
-    await legacyStore.setNav(currNav);
+    await store.setNav(currNav);
 
     // Only navigate if the user hasn't already moved away from this tab
     // or if the user didn't explicitly send an activeTab
