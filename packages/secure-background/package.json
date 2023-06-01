@@ -1,39 +1,36 @@
 {
-  "name": "@coral-xyz/background",
+  "name": "@coral-xyz/secure-background",
   "version": "0.1.0",
+  "description": "",
+  "license": "ISC",
   "module": "dist/esm/index.js",
   "source": "src/index.ts",
   "react-native": "dist/esm/index.js",
-  "types": "dist/esm/index.d.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -b",
-    "build:html": "parcel build src/service-worker-loader.html --dist-dir build --no-source-maps",
     "dev": "tsc --watch",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
-    "lint:fix": "yarn run lint --fix",
-    "start": "parcel src/service-worker-loader.html -p 9333"
+    "lint:fix": "yarn run lint --fix"
   },
   "dependencies": {
     "@coral-xyz/common": "*",
     "@coral-xyz/recoil": "*",
-    "@coral-xyz/secure-background": "*",
     "@solana/web3.js": "^1.63.1",
     "bip32": "^2.0.6",
     "bip39": "^3.0.4",
     "bs58": "^5.0.0",
     "ed25519-hd-key": "^1.2.0",
-    "eventemitter3": "^4.0.7",
+    "ethers": "^5.7.2",
+    "eventemitter3": "^5.0.1",
     "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
-    "@types/serviceworker": "^0.0.47",
+    "@types/eventemitter3": "^2.0.2",
     "eslint-config-custom": "*",
-    "parcel": "^2.8.3",
     "typescript": "~4.9.3"
-  },
-  "targets": {
-    "module": false,
-    "main": false,
-    "types": false
   }
 }

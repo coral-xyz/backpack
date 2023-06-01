@@ -38,7 +38,7 @@ module.exports = {
     "import/export": "off",
     "import/named": "off",
     "import/namespace": "off",
-    "import/no-cycle": "off",
+    // "import/no-cycle": "off",
     "import/no-unresolved": "off",
     "no-async-promise-executor": "off",
     "no-undef": "off",
