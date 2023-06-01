@@ -628,6 +628,7 @@ export type GetTokenBalancesQuery = {
               __typename?: "TokenBalance";
               id: string;
               displayAmount: string;
+              token: string;
               marketData?: {
                 __typename?: "MarketData";
                 id: string;
@@ -974,6 +975,13 @@ export const GetTokenBalancesDocument = {
                                                       },
                                                     },
                                                   ],
+                                                },
+                                              },
+                                              {
+                                                kind: "Field",
+                                                name: {
+                                                  kind: "Name",
+                                                  value: "token",
                                                 },
                                               },
                                               {

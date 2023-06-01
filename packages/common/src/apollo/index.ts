@@ -1,6 +1,7 @@
 import {
   ApolloClient,
   createHttpLink,
+  from,
   InMemoryCache,
   type NormalizedCacheObject,
 } from "@apollo/client";
@@ -40,6 +41,6 @@ export function createApolloClient(
 
   return new ApolloClient({
     cache,
-    link: authLink.concat(httpLink),
+    link: from([authLink, httpLink]),
   });
 }

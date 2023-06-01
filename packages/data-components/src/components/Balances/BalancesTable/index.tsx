@@ -25,6 +25,7 @@ const GET_TOKEN_BALANCES = gql(`
                   value
                   valueChange
                 }
+                token
                 tokenListEntry {
                   id
                   logo
