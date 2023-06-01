@@ -90,7 +90,10 @@ const pluginRpcBlockchainMap = {
 
 export function ApproveTransactionRequest() {
   const [request, setRequest] = useTransactionRequest();
-  const { publicKey } = useActiveWallet();
+  // TODO:  remove this hack, backpack will throw an error upon opening unless
+  //        publicKey is set, so it falls back to active wallet as a default
+  const { publicKey: pk } = useActiveWallet();
+  const publicKey = request?.publicKey || pk;
   const [openDrawer, setOpenDrawer] = useState(false);
   const [signature, setSignature] = useState<string | null>(null);
   const _isKeyCold = useRecoilValue(isKeyCold(publicKey));

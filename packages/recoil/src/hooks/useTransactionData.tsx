@@ -271,6 +271,7 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
   const [simulationAccounts, setSimulationAccounts] = useState<Array<string>>(
     []
   );
+  const [from, setFrom] = useState<string>();
 
   useEffect(() => {
     const estimateTxFee = async () => {
@@ -281,6 +282,10 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
           transaction.message as Message
         );
         setEstimatedTxFee(response.value ?? 0);
+
+        // TODO: Replace this hack. It's assuming the fee payer is the active wallet,
+        // that might not always be the case?
+        setFrom(transaction.message.getAccountKeys().get(0)?.toString());
       } catch (e) {
         // ignore
       }
@@ -481,7 +486,7 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
   return {
     loading,
     transaction: serializedTx,
-    from: walletPublicKey.toString(),
+    from: from!,
     simulationError,
     balanceChanges,
     network: "Solana",
