@@ -262,12 +262,7 @@ type Balances implements Node {
   aggregate: BalanceAggregate!
 
   """
-  Token account balance and market data for the blockchain's native currency.
-  """
-  native: TokenBalance! @cacheControl(inheritMaxAge: true)
-
-  """
-  The Relay connection of token account balances and market data for non-native token types owned by the wallet.
+  The Relay connection of token account balances and market data for tokens owned by the wallet.
   """
   tokens: TokenBalanceConnection @cacheControl(inheritMaxAge: true)
 }

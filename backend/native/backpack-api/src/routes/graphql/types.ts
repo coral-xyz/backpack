@@ -57,9 +57,7 @@ export type Balances = Node & {
   aggregate: BalanceAggregate;
   /** Globally unique identifier for a wallet's balances data. */
   id: Scalars["ID"];
-  /** Token account balance and market data for the blockchain's native currency. */
-  native: TokenBalance;
-  /** The Relay connection of token account balances and market data for non-native token types owned by the wallet. */
+  /** The Relay connection of token account balances and market data for tokens owned by the wallet. */
   tokens?: Maybe<TokenBalanceConnection>;
 };
 
@@ -856,7 +854,6 @@ export type BalancesResolvers<
     ContextType
   >;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
-  native?: Resolver<ResolversTypes["TokenBalance"], ParentType, ContextType>;
   tokens?: Resolver<
     Maybe<ResolversTypes["TokenBalanceConnection"]>,
     ParentType,
