@@ -1,6 +1,6 @@
 import type { TokenListEntry } from "../types";
 
-export const UniswapTokenList: Record<string, Omit<TokenListEntry, "id">> = {
+export const EthereumTokenList: Record<string, Omit<TokenListEntry, "id">> = {
   "0x6c862f803ff42a97d4a483ab761256ad8c90f4f8": {
     address: "0x6c862f803ff42a97d4a483ab761256ad8c90f4f8",
     coingeckoId: "elis",

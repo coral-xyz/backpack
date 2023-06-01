@@ -10,7 +10,7 @@ import { ethers } from "ethers";
 import type { CoinGeckoPriceData } from "../clients/coingecko";
 import type { ApiContext } from "../context";
 import { NodeBuilder } from "../nodes";
-import { UniswapTokenList } from "../tokens/uniswap";
+import { EthereumTokenList } from "../tokens";
 import {
   type BalanceFiltersInput,
   type Balances,
@@ -108,8 +108,8 @@ export class Ethereum implements Blockchain {
     );
 
     const meta = nonEmptyTokens.reduce<Map<string, string>>((acc, curr) => {
-      const id = UniswapTokenList[curr.contractAddress];
-      if (id) {
+      const id = EthereumTokenList[curr.contractAddress];
+      if (id && id.coingeckoId) {
         acc.set(curr.contractAddress, id.coingeckoId);
       }
       return acc;
