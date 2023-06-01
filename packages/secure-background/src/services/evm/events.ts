@@ -1,9 +1,11 @@
-import type { SecureEvent } from "../../types";
+import type { SecureEventBase } from "../../types";
 
-export type SECURE_EVM_EVENTS = SECURE_EVM_SIGN_MESSAGE | SECURE_EVM_SIGN_TX;
+export type SECURE_EVM_EVENTS =
+  | "SECURE_EVM_SIGN_MESSAGE"
+  | "SECURE_EVM_SIGN_TX";
 
-export interface SECURE_EVM_SIGN_MESSAGE extends SecureEvent {
-  name: "SECURE_EVM_SIGN_MESSAGE";
+export interface SECURE_EVM_SIGN_MESSAGE
+  extends SecureEventBase<"SECURE_EVM_SIGN_MESSAGE"> {
   request: {
     message: string;
     publicKey: string;
@@ -13,8 +15,8 @@ export interface SECURE_EVM_SIGN_MESSAGE extends SecureEvent {
   };
 }
 
-export interface SECURE_EVM_SIGN_TX extends SecureEvent {
-  name: "SECURE_EVM_SIGN_TX";
+export interface SECURE_EVM_SIGN_TX
+  extends SecureEventBase<"SECURE_EVM_SIGN_TX"> {
   request: {
     publicKey: string;
     tx: string;

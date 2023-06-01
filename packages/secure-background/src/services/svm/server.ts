@@ -1,6 +1,5 @@
 import type { KeyringStore } from "../../localstore/keyring";
 import type {
-  SecureEvent,
   SecureRequest,
   TransportClient,
   TransportHandler,
@@ -16,13 +15,13 @@ import type {
 
 export class SVMService {
   public destroy: TransportRemoveListener;
-  private secureUIClient: TransportClient<SecureEvent>;
-  private keystoreClient: TransportClient<SecureEvent>;
+  private secureUIClient: TransportClient<any>;
+  private keystoreClient: TransportClient<any>;
 
   constructor(interfaces: {
     secureServer: TransportServer<SECURE_SVM_EVENTS>;
-    keystoreClient: TransportClient<SecureEvent>;
-    secureUIClient: TransportClient<SecureEvent>;
+    keystoreClient: TransportClient<any>;
+    secureUIClient: TransportClient<any>;
   }) {
     this.keystoreClient = interfaces.keystoreClient;
     this.secureUIClient = interfaces.secureUIClient;
@@ -32,29 +31,31 @@ export class SVMService {
   private eventHandler: TransportHandler<SECURE_SVM_EVENTS> = (request) => {
     switch (request.name) {
       case "SECURE_SVM_SIGN_MESSAGE":
-        return this.handleSignMessage(
-          request as SecureRequest<SECURE_SVM_SIGN_MESSAGE>
-        );
+        return this.handleSignMessage(request);
       case "SECURE_SVM_SIGN_TX":
-        return this.handleSign(request as SecureRequest<SECURE_SVM_SIGN_TX>);
-      default: {
-        // If typescript complains here, an event from SECURE_SVM_EVENTS was not handled.
-        // Do not throw here, it is okay for events from other handlers to fall through here.
-        // Typescript makes sure we handle everything we need.
-        const exhaustiveCheck: never = request.name; // eslint-disable-line @typescript-eslint/no-unused-vars
-      }
+        return this.handleSign(request);
     }
   };
 
   private handleSignMessage: TransportHandler<SECURE_SVM_SIGN_MESSAGE> = async (
     request
   ) => {
-    throw "Not Implemented";
+    return {
+      name: "SECURE_SVM_SIGN_MESSAGE",
+      response: {
+        singedMessage: "Hello",
+      },
+    };
   };
 
   private handleSign: TransportHandler<SECURE_SVM_SIGN_TX> = async (
     request
   ) => {
-    throw "Not Implemented";
+    return {
+      name: "SECURE_SVM_SIGN_TX",
+      response: {
+        signedTx: "string",
+      },
+    };
   };
 }

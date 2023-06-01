@@ -1,16 +1,22 @@
-import type { SecureRequest, TransportClient } from "../../types";
-
-import type { SECURE_SVM_EVENTS, SECURE_SVM_SIGN_MESSAGE } from "./events";
+import type { TransportClient } from "../../types";
+import type { SECURE_SVM_SIGN_MESSAGE } from "../svm/events";
 
 export class SVMClient {
-  constructor(private secureClient: TransportClient<SECURE_SVM_EVENTS>) {}
+  constructor(private client: TransportClient) {}
 
   public async signMessage(
-    request: SecureRequest<SECURE_SVM_SIGN_MESSAGE>["request"]
-  ) {
-    await this.secureClient.request({
+    request: SECURE_SVM_SIGN_MESSAGE["request"]
+  ): Promise<string> {
+    console.log("PCA", "Client: signMessage", {
       name: "SECURE_SVM_SIGN_MESSAGE",
       request,
     });
+    const response = await this.client.request({
+      name: "SECURE_SVM_SIGN_MESSAGE",
+      request,
+    });
+
+    console.log("PCA", "Client REsponse", response);
+    return response.response.singedMessage;
   }
 }
