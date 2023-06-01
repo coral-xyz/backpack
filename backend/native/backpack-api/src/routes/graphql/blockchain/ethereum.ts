@@ -73,7 +73,7 @@ export class Ethereum implements Blockchain {
    * @memberof Ethereum
    */
   logo(): string {
-    return "https://assets.coingecko.com/coins/images/279/large/ethereum.png";
+    return EthereumTokenList[this.defaultAddress()].logo!;
   }
 
   /**
@@ -132,13 +132,9 @@ export class Ethereum implements Blockchain {
         displayAmount: ethers.utils.formatUnits(native, this.decimals()),
         marketData: NodeBuilder.marketData({
           lastUpdatedAt: prices.ethereum.last_updated,
-          listingId: "ethereum",
-          logo: prices.ethereum.image,
-          name: prices.ethereum.name,
           percentChange: prices.ethereum.price_change_percentage_24h,
           price: prices.ethereum.current_price,
           sparkline: prices.ethereum.sparkline_in_7d.price,
-          symbol: prices.ethereum.symbol,
           usdChange: prices.ethereum.price_change_24h,
           value:
             parseFloat(ethers.utils.formatUnits(native, this.decimals())) *
@@ -148,6 +144,9 @@ export class Ethereum implements Blockchain {
             prices.ethereum.price_change_24h,
         }),
         token: this.defaultAddress(),
+        tokenListEntry: NodeBuilder.tokenListEntry(
+          EthereumTokenList[this.defaultAddress()]
+        ),
       },
       true
     );
@@ -160,13 +159,9 @@ export class Ethereum implements Blockchain {
       const marketData = p
         ? NodeBuilder.marketData({
             lastUpdatedAt: p.last_updated,
-            listingId: p.id,
-            logo: p.image,
-            name: p.name,
             percentChange: p.price_change_percentage_24h,
             price: p.current_price,
             sparkline: p.sparkline_in_7d.price,
-            symbol: p.symbol,
             usdChange: p.price_change_24h,
             value:
               parseFloat(ethers.utils.formatUnits(amt, curr.decimals ?? 0)) *
@@ -175,6 +170,10 @@ export class Ethereum implements Blockchain {
               parseFloat(ethers.utils.formatUnits(amt, curr.decimals ?? 0)) *
               p.price_change_24h,
           })
+        : undefined;
+
+      const tokenListEntry = EthereumTokenList[curr.contractAddress]
+        ? NodeBuilder.tokenListEntry(EthereumTokenList[curr.contractAddress])
         : undefined;
 
       if (filters?.marketListedTokensOnly && !marketData) {
@@ -192,6 +191,7 @@ export class Ethereum implements Blockchain {
             displayAmount: curr.balance ?? "0",
             marketData,
             token: curr.contractAddress,
+            tokenListEntry,
           },
           false,
           `${address}/${curr.contractAddress}`
