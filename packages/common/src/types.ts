@@ -180,7 +180,7 @@ export type XnftPreferenceStore = { [key: string]: XnftPreference };
 /////////////////////////////////////////////////////////////////////////////////
 
 export type BlockchainKeyringJson = {
-  hdKeyring?: HdKeyringJson;
+  hdKeyring: HdKeyringJson;
   importedKeyring: KeyringJson;
   ledgerKeyring: LedgerKeyringJson;
   activeWallet: string;
