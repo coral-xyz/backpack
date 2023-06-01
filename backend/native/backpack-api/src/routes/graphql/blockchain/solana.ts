@@ -76,7 +76,7 @@ export class Solana implements Blockchain {
    * @memberof Solana
    */
   logo(): string {
-    return "https://assets.coingecko.com/coins/images/4128/large/solana.png";
+    return SolanaTokenList[this.defaultAddress()].logo!;
   }
 
   /**
@@ -136,13 +136,9 @@ export class Solana implements Blockchain {
         ),
         marketData: NodeBuilder.marketData({
           lastUpdatedAt: prices.solana.last_updated,
-          listingId: "solana",
-          logo: prices.solana.image,
-          name: prices.solana.name,
           percentChange: prices.solana.price_change_percentage_24h,
           price: prices.solana.current_price,
           sparkline: prices.solana.sparkline_in_7d.price,
-          symbol: prices.solana.symbol,
           usdChange: prices.solana.price_change_24h,
           value:
             parseFloat(
@@ -154,6 +150,9 @@ export class Solana implements Blockchain {
             ) * prices.solana.price_change_24h,
         }),
         token: this.defaultAddress(),
+        tokenListEntry: NodeBuilder.tokenListEntry(
+          SolanaTokenList[this.defaultAddress()]
+        ),
       },
       true
     );
@@ -166,13 +165,9 @@ export class Solana implements Blockchain {
         const marketData = p
           ? NodeBuilder.marketData({
               lastUpdatedAt: p.last_updated,
-              listingId: p.id,
-              logo: p.image,
-              name: p.name,
               percentChange: p.price_change_percentage_24h,
               price: p.current_price,
               sparkline: p.sparkline_in_7d.price,
-              symbol: p.symbol,
               usdChange: p.price_change_24h,
               value:
                 parseFloat(
@@ -186,6 +181,10 @@ export class Solana implements Blockchain {
                   )
                 ) * p.price_change_24h,
             })
+          : undefined;
+
+        const tokenListEntry = SolanaTokenList[curr.mint]
+          ? NodeBuilder.tokenListEntry(SolanaTokenList[curr.mint])
           : undefined;
 
         if (filters?.marketListedTokensOnly && !marketData) {
@@ -206,6 +205,7 @@ export class Solana implements Blockchain {
               ),
               marketData,
               token: curr.mint,
+              tokenListEntry,
             },
             false
           ),

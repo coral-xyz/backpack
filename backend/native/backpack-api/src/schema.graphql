@@ -422,21 +422,6 @@ type MarketData implements Node {
   lastUpdatedAt: String!
 
   """
-  The CoinGecko market listing ID.
-  """
-  listingId: String!
-
-  """
-  The image link to the logo of the token's market listing.
-  """
-  logo: String!
-
-  """
-  The name of the token on the market.
-  """
-  name: String!
-
-  """
   The percentage of change since the latest market data update.
   """
   percentChange: Float!
@@ -450,11 +435,6 @@ type MarketData implements Node {
   Time series price data for the token to be used for creating a sparkline.
   """
   sparkline: [Float!]!
-
-  """
-  The symbol of the token on the market.
-  """
-  symbol: String!
 
   """
   The numerical amount change in USD since the latest market data update.
@@ -683,6 +663,11 @@ type TokenBalance implements Node {
   The address of the token mint or contract.
   """
   token: String!
+
+  """
+  The possible entry in the token registry list for the mint or contract address.
+  """
+  tokenListEntry: TokenListEntry
 }
 
 """

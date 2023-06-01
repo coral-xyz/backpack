@@ -147,20 +147,12 @@ export type MarketData = Node & {
   id: Scalars["ID"];
   /** A timestamp of the last date of when the market data was updated. */
   lastUpdatedAt: Scalars["String"];
-  /** The CoinGecko market listing ID. */
-  listingId: Scalars["String"];
-  /** The image link to the logo of the token's market listing. */
-  logo: Scalars["String"];
-  /** The name of the token on the market. */
-  name: Scalars["String"];
   /** The percentage of change since the latest market data update. */
   percentChange: Scalars["Float"];
   /** The current USD price of the token according to the market data. */
   price: Scalars["Float"];
   /** Time series price data for the token to be used for creating a sparkline. */
   sparkline: Array<Scalars["Float"]>;
-  /** The symbol of the token on the market. */
-  symbol: Scalars["String"];
   /** The numerical amount change in USD since the latest market data update. */
   usdChange: Scalars["Float"];
   /** The value of the wallet's currently holdings of the token in USD. */
@@ -387,6 +379,8 @@ export type TokenBalance = Node & {
   marketData?: Maybe<MarketData>;
   /** The address of the token mint or contract. */
   token: Scalars["String"];
+  /** The possible entry in the token registry list for the mint or contract address. */
+  tokenListEntry?: Maybe<TokenListEntry>;
 };
 
 /** Relay connection specification for `TokenBalance` edges. */
@@ -942,13 +936,9 @@ export type MarketDataResolvers<
 > = ResolversObject<{
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   lastUpdatedAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  listingId?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  logo?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   percentChange?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   price?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   sparkline?: Resolver<Array<ResolversTypes["Float"]>, ParentType, ContextType>;
-  symbol?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   usdChange?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   value?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
   valueChange?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
@@ -1182,6 +1172,11 @@ export type TokenBalanceResolvers<
     ContextType
   >;
   token?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  tokenListEntry?: Resolver<
+    Maybe<ResolversTypes["TokenListEntry"]>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
