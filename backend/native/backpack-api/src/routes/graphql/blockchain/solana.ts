@@ -10,7 +10,7 @@ import {
 import type { TensorActingListingsResponse } from "../clients/tensor";
 import type { ApiContext } from "../context";
 import { NodeBuilder } from "../nodes";
-import { JupiterTokenList } from "../tokens";
+import { SolanaTokenList } from "../tokens";
 import {
   type BalanceFiltersInput,
   type Balances,
@@ -110,11 +110,10 @@ export class Solana implements Blockchain {
     // in-memory Jupiter token list
     const nonNftMints = nonEmptyOrNftTokens.map((t) => t.mint);
     const meta = nonNftMints.reduce<Map<string, string>>((acc, curr) => {
-      const entry = JupiterTokenList[curr];
-      if (!entry) {
-        return acc;
+      const entry = SolanaTokenList[curr];
+      if (entry && entry.coingeckoId) {
+        acc.set(curr, entry.coingeckoId);
       }
-      acc.set(curr, entry.coingeckoId);
       return acc;
     }, new Map());
 

@@ -158,7 +158,7 @@ input TokenListEntryFiltersInput {
   """
   The mint or contract address of the token.
   """
-  address: String
+  addresses: [String!]
 
   """
   The market listing name of the token.
@@ -715,7 +715,7 @@ type TokenListEntry implements Node {
   """
   The Coingecko market listing ID.
   """
-  coingeckoId: String!
+  coingeckoId: String
 
   """
   The logo associated with the token.

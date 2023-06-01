@@ -1,2 +1,2 @@
-export { JupiterTokenList } from "./jupiter";
-export { UniswapTokenList } from "./uniswap";
+export { EthereumTokenList } from "./ethereum";
+export { SolanaTokenList } from "./solana";

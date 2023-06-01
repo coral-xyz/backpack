@@ -408,7 +408,7 @@ export type TokenListEntry = Node & {
   /** The mint or contract address of the token. */
   address: Scalars["String"];
   /** The Coingecko market listing ID. */
-  coingeckoId: Scalars["String"];
+  coingeckoId?: Maybe<Scalars["String"]>;
   /** Globally unique identifier for the list entry. */
   id: Scalars["ID"];
   /** The logo associated with the token. */
@@ -422,7 +422,7 @@ export type TokenListEntry = Node & {
 /** Input filter type for fetching a specific entry from a token list. */
 export type TokenListEntryFiltersInput = {
   /** The mint or contract address of the token. */
-  address?: InputMaybe<Scalars["String"]>;
+  addresses?: InputMaybe<Array<Scalars["String"]>>;
   /** The market listing name of the token. */
   name?: InputMaybe<Scalars["String"]>;
   /** The market listing symbol of the token. */
@@ -1212,7 +1212,11 @@ export type TokenListEntryResolvers<
   ParentType extends ResolversParentTypes["TokenListEntry"] = ResolversParentTypes["TokenListEntry"]
 > = ResolversObject<{
   address?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  coingeckoId?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  coingeckoId?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   logo?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
