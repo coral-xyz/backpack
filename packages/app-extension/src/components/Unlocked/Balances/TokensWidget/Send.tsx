@@ -494,6 +494,10 @@ function SendV2({
 
                   setStrAmount(parsedVal);
 
+                  if (value.endsWith(".")) {
+                    throw "trailing ."; // can't throw new Error due to Error function
+                  }
+
                   const num = FixedNumber.fromString(
                     parsedVal === "" || parsedVal === "0." ? "0" : parsedVal
                   );
