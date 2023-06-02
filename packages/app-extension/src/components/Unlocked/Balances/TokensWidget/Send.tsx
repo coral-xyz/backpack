@@ -478,10 +478,17 @@ function SendV2({
                 target: { value },
               }: ChangeEvent<HTMLInputElement>) => {
                 try {
+                  const maxDecimals = token.decimals ?? 9;
+
                   const parsedVal = value
-                    .replace(/[^0-9.]/g, "") // keep only 0-9 and .
-                    .replace(/^0+/, "") // remove leading zeros
-                    .replace(/^\.(.+)?$/, "0.$1"); // add leading 0 if only .
+                    .replace(/[^\d.]/g, "") // keep only 0-9 and .
+                    .replace(/^0+(\d+)/, "$1") // remove leading zeros
+                    .replace(/^\.(\d+)?$/, "0.$1") // use 0.\d if decimal is .\d
+                    .replace(
+                      // trim to the number of decimals allowed for the token
+                      new RegExp(`^(\\d+\\.\\d{${maxDecimals}}).+`),
+                      "$1"
+                    );
 
                   if (!Number.isFinite(Number(parsedVal))) return;
 
@@ -493,7 +500,7 @@ function SendV2({
 
                   const finalAmount = ethers.utils.parseUnits(
                     num.toString(),
-                    token.decimals
+                    maxDecimals
                   );
 
                   setAmount(finalAmount.isZero() ? null : finalAmount);
