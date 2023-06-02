@@ -18,6 +18,9 @@ export const CHANNEL_POPUP_RESPONSE = "channel-popup-response";
 export const CHANNEL_POPUP_NOTIFICATIONS = "channel-popup-notifications";
 export const CHANNEL_SOLANA_RPC_REQUEST = "channel-solana-rpc-request";
 export const CHANNEL_SOLANA_RPC_RESPONSE = "channel-solana-rpc-response";
+export const CHANNEL_SECURE_BACKGROUND_REQUEST = "channel-secure-event-request";
+export const CHANNEL_SECURE_BACKGROUND_RESPONSE =
+  "channel-secure-event-response";
 export const CHANNEL_SOLANA_NOTIFICATION = "channel-solana-notification";
 export const CHANNEL_SOLANA_CONNECTION_RPC_UI =
   "channel-solana-connection-rpc-ui";

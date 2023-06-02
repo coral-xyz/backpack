@@ -1,5 +1,6 @@
 import { IS_MOBILE } from "@coral-xyz/common";
 import {
+  ContentScriptTransportServer,
   KeyringStore,
   mockTransportClient,
   mockTransportServer,
@@ -37,17 +38,20 @@ export function start(cfg: Config): Background {
   const _solanaConnection = solanaConnection.start(cfg, events, solanaB);
   const _ethereumConnection = ethereumConnection.start(cfg, events, ethereumB);
 
-  // New secure service
-  startSecureService(
-    {
-      backendNotificationClient: mockTransportClient,
-      secureUIClient: mockTransportClient,
-      secureServer: mockTransportServer,
-      secureStorage: LocalStorageDb,
-    },
-    keyringStore
-  );
+  if (!cfg.isMobile) {
+    const contentScriptServer = new ContentScriptTransportServer();
 
+    // New secure service
+    startSecureService(
+      {
+        backendNotificationClient: mockTransportClient,
+        secureUIClient: mockTransportClient,
+        secureServer: contentScriptServer,
+        secureStorage: LocalStorageDb,
+      },
+      keyringStore
+    );
+  }
   initPushNotificationHandlers();
 
   if (!IS_MOBILE) {
