@@ -64,3 +64,13 @@ Solutions:
 - 2. Until we have a better way, go into src/App.tsx and replace `localWebViewUrl` with `remoteWebViewUrl`
      located [here](https://github.com/coral-xyz/backpack/blob/master/packages/app-mobile/src/App.tsx#L132)
      That line should look like this: `const webviewUrl = remoteWebViewUrl`
+
+## notes
+
+### service worker stuff
+
+- [limitsNavigationsToAppBoundDomains](https://github.com/react-native-webview/react-native-webview/issues/1956) is required. Otherwise, `onMessage` will not fire, both locally and remotely.
+- [NSAllowsArbitraryLoads](https://developer.apple.com/documentation/bundleresources/information_property_list/nsapptransportsecurity/nsallowsarbitraryloads) setting this true disables App Transport Security which would allow unsecured HTTP connections. By enabling this you must supply a justification during App Store Review
+- [NSExceptionDomains](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW35) if you allow arbitrary loads, NSExceptionDomains will continue to support ATS
+- [WKAppBoundDomains](https://webkit.org/blog/10882/app-bound-domains/) once this is set
+- [WKAppBoundDomains order matters](https://bugs.webkit.org/show_bug.cgi?id=227531) it will only load up to 3 service workers and ignore the rest. If there are 5 sites with service workers listed, only 3 of them will fire the service worker. The other 2 will be ignored

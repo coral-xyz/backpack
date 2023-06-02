@@ -2,8 +2,7 @@ import { ExpoConfig, ConfigContext } from "expo/config";
 
 type ExpoExtras = {
   extra: {
-    localWebViewUrl: string;
-    remoteWebViewUrl: string;
+    serviceWorkerUrl: string;
     graphqlApiUrl: string;
   };
 };
@@ -11,15 +10,24 @@ type ExpoExtras = {
 const localGraphQLApi = "http://localhost:8080/v2/graphql";
 const remoteGraphQLApi = "https://backpack-api.xnfts.dev/v2/graphql";
 
-const getUrl = (hash: string = "c0384f0") =>
-  `https://mobile-service-worker.xnfts.dev/background-scripts/${hash}/service-worker-loader.html`;
+// const getUrl = (hash: string = "c0384f0") =>
+//   `https://mobile-service-worker.xnfts.dev/background-scripts/${hash}/service-worker-loader.html`;
+
+const getServiceWorkerUrl = () => {
+  if (process.env.APP_ENV === "production") {
+    return "https://mobile-service-worker.netlify.app/service-worker-loader.html";
+  } else {
+    return "http://localhost:9333";
+  }
+};
 
 export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
   const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
   const packageName = "app.backpack.mobile";
 
-  const remoteWebViewUrl = getUrl();
+  const serviceWorkerUrl = getServiceWorkerUrl();
 
+  console.log("service", serviceWorkerUrl);
   return {
     ...config,
     name: "Backpack",
@@ -61,22 +69,17 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
       },
       supportsTablet: false,
       bundleIdentifier: packageName,
-      // infoPlist: {
-      //   NSAllowsArbitraryLoads: true,
-      //   NSExceptionDomains: {
-      //     localhost: {
-      //       NSExceptionAllowsInsecureHTTPLoads: true,
-      //       NSIncludesSubdomains: true,
-      //     },
-      //   },
-      //   WKAppBoundDomains: [
-      //     "coral-xyz.github.io",
-      //     "ngrok.io",
-      //     "backpack-api.xnfts.dev",
-      //     "mobile-service-worker.xnfts.dev",
-      //     "uniswap.io",
-      //   ],
-      // },
+      infoPlist: {
+        // Your service worker must live in the top 3 of this list or will not load
+        // Apple considers this a feature
+        // https://bugs.webkit.org/show_bug.cgi?id=227531
+        WKAppBoundDomains: [
+          "mobile-service-worker.netlify.app",
+          "netlify.app",
+          "mobile-service-worker.xnfts.dev",
+          "ngrok.io",
+        ],
+      },
     },
     android: {
       package: packageName,
@@ -94,8 +97,7 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
         process.env.APP_ENV === "production"
           ? remoteGraphQLApi
           : localGraphQLApi,
-      localWebViewUrl: "http://localhost:9333",
-      remoteWebViewUrl,
+      serviceWorkerUrl,
       eas: {
         projectId: projectID,
       },
