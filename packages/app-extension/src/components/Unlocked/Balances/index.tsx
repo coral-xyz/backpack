@@ -1,15 +1,16 @@
 import {
   Blockchain,
-  ETH_NATIVE_MINT,
   NAV_COMPONENT_TOKEN,
-  SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
-import { BalanceSummaryWidget } from "@coral-xyz/data-components";
+import {
+  BalancesTable,
+  BalanceSummaryWidget,
+} from "@coral-xyz/data-components";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import { useAllWalletsDisplayed, useNavigation } from "@coral-xyz/recoil";
 
-import { TokenTables } from "../../common/TokenTable";
+import { SkeletonRows } from "../../common/TokenTable";
 
 import { TransferWidget } from "./TransferWidget";
 
@@ -49,18 +50,7 @@ export function Balances() {
       >
         <TransferWidget rampEnabled swapEnabled={swapEnabled} />
       </div>
-      <TokenTables
-        onClickRow={onClickTokenRow}
-        customFilter={(token) => {
-          if (token.mint && token.mint === SOL_NATIVE_MINT) {
-            return true;
-          }
-          if (token.address && token.address === ETH_NATIVE_MINT) {
-            return true;
-          }
-          return !token.nativeBalance.isZero();
-        }}
-      />
+      <BalancesTable loaderComponent={<SkeletonRows />} />
     </div>
   );
 }

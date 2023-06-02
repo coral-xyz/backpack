@@ -1,9 +1,13 @@
-import { type ReactNode, Suspense, useMemo } from "react";
+import { type ReactNode, Suspense, useCallback,useMemo } from "react";
+import { SectionList,type SectionListRenderItem } from "react-native";
 import { useActiveWallet } from "@coral-xyz/recoil";
+import { RoundedContainerGroup } from "@coral-xyz/tamagui";
 
 import { gql } from "../../../apollo";
 import type { GetTokenBalancesQuery } from "../../../apollo/graphql";
 import { usePolledSuspenseQuery } from "../../../hooks";
+
+import { BalancesTableRow } from "./BalancesTableRow";
 
 const DEFAULT_POLLING_INTERVAL = 30000;
 
@@ -22,8 +26,8 @@ const GET_TOKEN_BALANCES = gql(`
                 displayAmount
                 marketData {
                   id
-                  value
-                  valueChange
+                  percentChange
+                  value                  
                 }
                 token
                 tokenListEntry {
@@ -41,7 +45,7 @@ const GET_TOKEN_BALANCES = gql(`
   }
 `);
 
-export type ResponseTokenBalances = NonNullable<
+export type ResponseTokenBalance = NonNullable<
   NonNullable<
     NonNullable<
       NonNullable<GetTokenBalancesQuery["user"]>["wallet"]
@@ -81,12 +85,48 @@ function _BalancesTable({
    * Memoized value for the extracted list of token balance nodes from
    * the GraphQL query response object.
    */
-  const balances: ResponseTokenBalances[] = useMemo(
+  const balances: ResponseTokenBalance[] = useMemo(
     () => data.user?.wallet?.balances?.tokens?.edges.map((e) => e.node) ?? [],
     [data.user]
   );
 
-  console.log(balances);
+  /**
+   * Returns the child component key for an item.
+   * @param {ResponseTokenBalance} item
+   * @returns {string}
+   */
+  const keyExtractor = useCallback((item: ResponseTokenBalance) => item.id, []);
 
-  return <div />; // TODO:
+  /**
+   * Returns a renderable component for an individual item in a list.
+   * @param {{ item: ResponseTokenBalance, section: SectionListData<ResponseTokenBalance, { data: ResponseTokenBalance[] }>, index: number }} args
+   * @returns {ReactElement}
+   */
+  const renderItem: SectionListRenderItem<
+    ResponseTokenBalance,
+    { data: ResponseTokenBalance[] }
+  > = useCallback(({ item, section, index }) => {
+    const first = index === 0;
+    const last = index === section.data.length - 1;
+    return (
+      <RoundedContainerGroup
+        disableBottomRadius={!last}
+        disableTopRadius={!first}
+        style={{ marginBottom: last ? 24 : undefined }}
+      >
+        <BalancesTableRow balance={item} />
+      </RoundedContainerGroup>
+    );
+  }, []);
+
+  return (
+    <SectionList
+      style={{ marginHorizontal: 16 }}
+      stickySectionHeadersEnabled={false}
+      showsVerticalScrollIndicator={false}
+      sections={[{ data: balances }]}
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+    />
+  );
 }

@@ -632,8 +632,8 @@ export type GetTokenBalancesQuery = {
               marketData?: {
                 __typename?: "MarketData";
                 id: string;
+                percentChange: number;
                 value: number;
-                valueChange: number;
               } | null;
               tokenListEntry?: {
                 __typename?: "TokenListEntry";
@@ -964,14 +964,14 @@ export const GetTokenBalancesDocument = {
                                                       kind: "Field",
                                                       name: {
                                                         kind: "Name",
-                                                        value: "value",
+                                                        value: "percentChange",
                                                       },
                                                     },
                                                     {
                                                       kind: "Field",
                                                       name: {
                                                         kind: "Name",
-                                                        value: "valueChange",
+                                                        value: "value",
                                                       },
                                                     },
                                                   ],

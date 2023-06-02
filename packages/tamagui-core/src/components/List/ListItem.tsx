@@ -16,6 +16,7 @@ export function ListItemCore({
 }: ListItemCoreProps) {
   return (
     <ListItem
+      backgroundColor="$nav"
       display="flex"
       icon={icon}
       onPress={onClick}
