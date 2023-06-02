@@ -25,7 +25,10 @@
       "ios": {
         "simulator": true
       },
-      "channel": "development-simulator"
+      "channel": "development-simulator",
+      "env": {
+        "APP_ENV": "production"
+      }
     },
     "preview": {
       "extends": "monorepo",
