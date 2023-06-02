@@ -4,7 +4,8 @@
   "source": "src/index.ts",
   "scripts": {
     "start": "yarn build",
-    "build": "node build.js"
+    "build": "node build.js",
+    "build:publish": "cd ../provider-core; yarn build; cd ../provider-injection; yarn build; cp ./dist/browser/index.js ../app-extension/build/injected.js"
   },
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "dependencies": {

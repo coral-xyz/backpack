@@ -25,7 +25,9 @@ export class SVMService {
   }) {
     this.keystoreClient = interfaces.keystoreClient;
     this.secureUIClient = interfaces.secureUIClient;
-    this.destroy = interfaces.secureServer.setListener(this.eventHandler);
+    this.destroy = interfaces.secureServer.setListener(
+      this.eventHandler.bind(this)
+    );
   }
 
   private eventHandler: TransportHandler<SECURE_SVM_EVENTS> = (request) => {

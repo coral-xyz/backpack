@@ -9,6 +9,8 @@
     "@cardinal/token-manager": "^1.7.9",
     "@coral-xyz/background": "*",
     "@coral-xyz/chat-sdk": "*",
+    "@coral-xyz/provider-core": "*",
+    "@coral-xyz/provider-injection": "*",
     "@coral-xyz/chat-xplat": "*",
     "@coral-xyz/common": "*",
     "@coral-xyz/db": "*",

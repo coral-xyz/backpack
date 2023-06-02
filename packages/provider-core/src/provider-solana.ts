@@ -26,9 +26,7 @@ import {
   SOLANA_RPC_METHOD_DISCONNECT,
   SOLANA_RPC_METHOD_OPEN_XNFT,
 } from "@coral-xyz/common";
-// import {
-//   SVMClient
-// } from "@coral-xyz/secure-background";
+import { SVMClient } from "@coral-xyz/secure-background/src/clients";
 import type { Provider } from "@project-serum/anchor";
 import type {
   Commitment,
@@ -41,7 +39,9 @@ import type {
   VersionedTransaction,
 } from "@solana/web3.js";
 import { Connection, PublicKey } from "@solana/web3.js";
+import { encode } from "bs58";
 
+import { ContentScriptTransportClient } from "./common/ContentScriptTransportClient";
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 import * as cmn from "./common/solana";
 import { RequestManager } from "./request-manager";
@@ -59,7 +59,7 @@ export class ProviderSolanaInjection
   // Channel to send extension specific RPC requests to the extension.
   //
   #backpackRequestManager: RequestManager;
-  // #secureSVMClient: SVMClient;
+  #secureSVMClient: SVMClient;
   #xnftRequestManager: ChainedRequestManager;
 
   #requestManager: RequestManager | ChainedRequestManager;
@@ -86,7 +86,7 @@ export class ProviderSolanaInjection
       CHANNEL_SOLANA_RPC_RESPONSE
     );
 
-    // this.#secureSVMClient = new SVMClient(new ContentScriptTransportClient());
+    this.#secureSVMClient = new SVMClient(new ContentScriptTransportClient());
 
     this.#requestManager = this.#backpackRequestManager;
     this.#connectionRequestManager = new RequestManager(
@@ -385,13 +385,10 @@ export class ProviderSolanaInjection
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
-    console.log("PCA", {});
-    // const svmResponse = await this.#secureSVMClient.signMessage({
-    //   publicKey: (publicKey ?? this.#publicKey).toString(),
-    //   message: encode(msg),
-    // });
-
-    // console.log("PCA", svmResponse);
+    const svmResponse = await this.#secureSVMClient.signMessage({
+      publicKey: (publicKey ?? this.#publicKey).toString(),
+      message: encode(msg),
+    });
 
     return await cmn.signMessage(
       publicKey ?? this.#publicKey,

@@ -8,5 +8,5 @@ export const mockTransportClient: TransportClient = {
 };
 
 export { SVMClient } from "./services/svm/client";
-export { ContentScriptTransportClient } from "./transports/ContentScriptTransportClient";
+// export { ContentScriptTransportClient } from "./transports/ContentScriptTransportClient";
 export { ContentScriptTransportServer } from "./transports/ContentScriptTransportServer";
