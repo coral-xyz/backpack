@@ -653,6 +653,26 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
       "https://www.arweave.net/1f5b49zDrkC9Lot6jKFMCzyeZ57DSK8x_KkFvCFNtek?ext=png",
     collectionId: "4wUE3tH2MTjNnxKQPYyx3owgL95ZYbYAtW1EsQPz9hfV",
   },
+  {
+    id: "SMBtHCCC6RYRutFEPb4gZqeBLUZbMNhRKaMKZZLHi7W",
+    name: "Solana Monkey Business",
+    image: "https://arweave.net/euenSGbG_RtrKbG_9mGHbhUNqwmqLclt6_ehziByHNw",
+    collectionId: "SMBtHCCC6RYRutFEPb4gZqeBLUZbMNhRKaMKZZLHi7W",
+  },
+  {
+    id: "65oVo8J1MAEbfoEDPzDV6ZdK2pv8He6ofBeZnxH2nUPY",
+    name: "ROGUE SHARKS",
+    image:
+      "https://www.arweave.net/7_eAeMzUfF2oGmktoh5rNdGJgwYZalnzwx3Y7mXxHnE?ext=png",
+    collectionId: "65oVo8J1MAEbfoEDPzDV6ZdK2pv8He6ofBeZnxH2nUPY",
+  },
+  {
+    id: "BnLHVGHi3k3ChAKNKSyKVKMKiovwRdRBzdjs5er44RHS",
+    name: "Lonfo",
+    image:
+      "https://shdw-drive.genesysgo.net/4YRxtrHGRN9rVRnzVRYDEYD8YC9z2woaZcfarMfmU4aJ/1582.png",
+    collectionId: "BnLHVGHi3k3ChAKNKSyKVKMKiovwRdRBzdjs5er44RHS",
+  },
 ];
 
 // Load a fixed amount of public keys for various actions, e.g. import list,
