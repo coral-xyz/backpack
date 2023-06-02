@@ -34,7 +34,7 @@ import {
 } from "@coral-xyz/recoil";
 import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
-import { BigNumber, ethers, FixedNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
 import { CopyablePublicKey } from "../../../common/CopyablePublicKey";
@@ -498,12 +498,8 @@ function SendV2({
                     throw "trailing ."; // can't throw new Error due to Error function
                   }
 
-                  const num = FixedNumber.fromString(
-                    parsedVal === "" || parsedVal === "0." ? "0" : parsedVal
-                  );
-
                   const finalAmount = ethers.utils.parseUnits(
-                    num.toString(),
+                    parsedVal,
                     maxDecimals
                   );
 
