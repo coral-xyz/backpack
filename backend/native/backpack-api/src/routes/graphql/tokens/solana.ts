@@ -1,6 +1,13 @@
 import type { TokenListEntry } from "../types";
 
-export const JupiterTokenList: Record<string, Omit<TokenListEntry, "id">> = {
+export const SolanaTokenList: Record<string, Omit<TokenListEntry, "id">> = {
+  "11111111111111111111111111111111": {
+    address: "11111111111111111111111111111111",
+    coingeckoId: "solana",
+    logo: "https://assets.coingecko.com/coins/images/4128/large/solana.png",
+    name: "Solana",
+    symbol: "SOL",
+  },
   "6nuaX3ogrr2CaoAPjtaKHAoBNWok32BMcRozuf32s2QF": {
     address: "6nuaX3ogrr2CaoAPjtaKHAoBNWok32BMcRozuf32s2QF",
     coingeckoId: "wrapped-busd-allbridge-from-bsc",
@@ -2338,5 +2345,11 @@ export const JupiterTokenList: Record<string, Omit<TokenListEntry, "id">> = {
     logo: "https://arweave.net/uscHuZUd7GsiPIJz2zS_et6_boil-DhtF0zJdrX8hM8?ext=png",
     name: "Gobi",
     symbol: "GOBI",
+  },
+  CKfatsPMUf8SkiURsDXs7eK6GWb4Jsd6UDbs7twMCWxo: {
+    address: "CKfatsPMUf8SkiURsDXs7eK6GWb4Jsd6UDbs7twMCWxo",
+    logo: "https://i.imgur.com/nd9AVZ4.jpeg",
+    name: "Bonk Earn",
+    symbol: "BERN",
   },
 };

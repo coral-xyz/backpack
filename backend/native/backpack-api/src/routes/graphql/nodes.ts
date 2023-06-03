@@ -18,8 +18,12 @@ import type {
 } from "./types";
 
 export abstract class NodeBuilder {
-  static balances(chainId: ChainId, data: Omit<Balances, "id">): Balances {
-    return this._createNode(`${chainId}_balances:${data.native.address}`, data);
+  static balances(
+    owner: string,
+    chainId: ChainId,
+    data: Omit<Balances, "id">
+  ): Balances {
+    return this._createNode(`${chainId}_balances:${owner}`, data);
   }
 
   static friend(dbId: unknown, data: Omit<Friend, "id">): Friend {
@@ -33,8 +37,8 @@ export abstract class NodeBuilder {
     return this._createNode(`friend_request:${dbId}`, data);
   }
 
-  static marketData(data: Omit<MarketData, "id">): MarketData {
-    return this._createNode(`coingecko_market_data:${data.listingId}`, data);
+  static marketData(id: string, data: Omit<MarketData, "id">): MarketData {
+    return this._createNode(`coingecko_market_data:${id}`, data);
   }
 
   static nft(

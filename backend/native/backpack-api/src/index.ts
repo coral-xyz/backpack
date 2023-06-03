@@ -35,6 +35,7 @@ const app = express();
 const httpServer = http.createServer(app);
 
 const apollo = new ApolloServer<ApiContext>({
+  allowBatchedHttpRequests: true,
   schema,
   plugins: [
     ApolloServerPluginDrainHttpServer({ httpServer }),

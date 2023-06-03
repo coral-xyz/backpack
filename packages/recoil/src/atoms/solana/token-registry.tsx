@@ -6,6 +6,8 @@ import { atom, selector } from "recoil";
 export const SOL_LOGO_URI =
   "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png";
 
+const BERN_MINT = "CKfatsPMUf8SkiURsDXs7eK6GWb4Jsd6UDbs7twMCWxo";
+
 export const splTokenRegistry = atom<Map<string, TokenInfo> | null>({
   key: "splTokenRegistry",
   default: selector({
@@ -33,6 +35,14 @@ export const splTokenRegistry = atom<Map<string, TokenInfo> | null>({
         extensions: {
           coingeckoId: "solana",
         },
+      });
+      tokenMap.set(BERN_MINT, {
+        name: "Bonk Earn",
+        address: BERN_MINT,
+        chainId: 101,
+        decimals: 9,
+        symbol: "BERN",
+        logoURI: "https://i.imgur.com/nd9AVZ4.jpeg",
       });
       return tokenMap;
     },

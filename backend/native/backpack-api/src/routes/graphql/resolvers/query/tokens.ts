@@ -2,7 +2,7 @@ import type { GraphQLResolveInfo } from "graphql";
 
 import type { ApiContext } from "../../context";
 import { NodeBuilder } from "../../nodes";
-import { JupiterTokenList, UniswapTokenList } from "../../tokens";
+import { EthereumTokenList, SolanaTokenList } from "../../tokens";
 import {
   ChainId,
   type QueryResolvers,
@@ -25,7 +25,7 @@ export const tokenListQueryResolver: QueryResolvers["tokenList"] = async (
   _info: GraphQLResolveInfo
 ): Promise<TokenListEntry[]> => {
   const list =
-    chainId === ChainId.Ethereum ? UniswapTokenList : JupiterTokenList;
+    chainId === ChainId.Ethereum ? EthereumTokenList : SolanaTokenList;
 
   if (!filters) {
     return Object.values(list).map((entry) =>
@@ -34,8 +34,18 @@ export const tokenListQueryResolver: QueryResolvers["tokenList"] = async (
   }
 
   let items: Omit<TokenListEntry, "id">[] = [];
-  if (filters.address) {
-    items = [list[filters.address]];
+
+  // Filter based on argued list of token addresses
+  if (filters.addresses) {
+    items = filters.addresses.reduce<(typeof list)[string][]>((acc, curr) => {
+      const val = list[curr];
+      if (val) {
+        acc.push(val);
+      }
+      return acc;
+    }, []);
+
+    // Filter based on a single token name
   } else if (filters.name) {
     const finds = Object.values(list).find(
       (entry) => entry.name === filters.name
@@ -43,6 +53,8 @@ export const tokenListQueryResolver: QueryResolvers["tokenList"] = async (
     if (finds) {
       items = [finds];
     }
+
+    // Filter based on argued list token symbols
   } else if (filters.symbols) {
     items = Object.values(list).filter((entry) =>
       filters.symbols!.includes(entry.symbol)
