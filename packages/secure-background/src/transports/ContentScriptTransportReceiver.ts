@@ -4,9 +4,9 @@ import {
   ChannelContentScript,
 } from "@coral-xyz/common";
 
-import type { TransportServer } from "../types";
+import type { TransportReceiver } from "../types";
 
-export class ContentScriptTransportServer implements TransportServer {
+export class ContentScriptTransportReceiver implements TransportReceiver {
   private server: ChannelServer;
 
   constructor() {
@@ -15,7 +15,7 @@ export class ContentScriptTransportServer implements TransportServer {
     );
   }
 
-  public setListener = (handler) => {
+  public setHandler = (handler) => {
     this.server.handler(async (message) => {
       return handler(message.data.params[0])
         .then((result) => [result])

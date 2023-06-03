@@ -5,6 +5,12 @@ import {
   isValidEventOrigin,
   openPopupWindow,
 } from "@coral-xyz/common";
+import {
+  SecureUITransportReceiver,
+  SecureUITransportSender,
+} from "@coral-xyz/secure-background/src/clients";
+import type { SECURE_UI_EVENTS } from "@coral-xyz/secure-background/src/services/secureUI/events";
+import { v4 } from "uuid";
 
 import "./index.css";
 
@@ -25,9 +31,17 @@ chrome.runtime
   })
   .catch(console.error);
 
-// Connect to the background script so it can detect if the popup is closed
-chrome.runtime.connect();
+const secureUITransportReceiver =
+  new SecureUITransportReceiver<SECURE_UI_EVENTS>();
 
+secureUITransportReceiver.setHandler(async (request) => {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  return {
+    ...request,
+    request: undefined,
+    response: { approved: true },
+  };
+});
 //
 // Configure event listeners.
 //
@@ -55,6 +69,9 @@ root.render(
   <>
     <Suspense fallback={null}>
       <App />
+    </Suspense>
+    <Suspense fallback={null}>
+      {/* <SecureUI receiver={secureUITransportReceiver} /> */}
     </Suspense>
     <Suspense fallback={null}>
       <LedgerIframe />

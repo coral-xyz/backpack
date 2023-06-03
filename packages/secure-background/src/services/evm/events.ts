@@ -1,5 +1,7 @@
 import type { SecureEventBase } from "../../types";
 
+// Add new events here and in: ../../events.ts
+
 export type SECURE_EVM_EVENTS =
   | "SECURE_EVM_SIGN_MESSAGE"
   | "SECURE_EVM_SIGN_TX";

@@ -1,10 +1,10 @@
 import type { KeyringStore } from "../../localstore/keyring";
 import type {
   SecureRequest,
-  TransportClient,
   TransportHandler,
+  TransportReceiver,
   TransportRemoveListener,
-  TransportServer,
+  TransportSender,
 } from "../../types";
 
 import type {
@@ -17,11 +17,11 @@ export class EVMService {
   public destroy: TransportRemoveListener;
 
   constructor(
-    server: TransportServer<SECURE_EVM_EVENTS>,
-    private uiClient: TransportClient<SECURE_EVM_EVENTS>,
+    server: TransportReceiver<SECURE_EVM_EVENTS>,
+    private uiClient: TransportSender<SECURE_EVM_EVENTS>,
     private keystore: KeyringStore
   ) {
-    this.destroy = server.setListener(this.eventHandler);
+    this.destroy = server.setHandler(this.eventHandler);
   }
 
   private eventHandler: TransportHandler<SECURE_EVM_EVENTS> = (request) => {

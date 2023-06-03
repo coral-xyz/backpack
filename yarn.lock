@@ -3698,6 +3698,8 @@ __metadata:
     "@coral-xyz/common": "*"
     "@coral-xyz/db": "*"
     "@coral-xyz/message-sdk": "*"
+    "@coral-xyz/provider-core": "*"
+    "@coral-xyz/provider-injection": "*"
     "@coral-xyz/react-common": "*"
     "@coral-xyz/recoil": "*"
     "@coral-xyz/secure-background": "*"
@@ -4258,7 +4260,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@coral-xyz/provider-injection@workspace:packages/provider-injection":
+"@coral-xyz/provider-injection@*, @coral-xyz/provider-injection@workspace:packages/provider-injection":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/provider-injection@workspace:packages/provider-injection"
   dependencies:
@@ -4333,6 +4335,7 @@ __metadata:
     "@coral-xyz/recoil": "*"
     "@solana/web3.js": ^1.63.1
     "@types/eventemitter3": ^2.0.2
+    "@types/uuid": ^9.0.1
     bip32: ^2.0.6
     bip39: ^3.0.4
     bs58: ^5.0.0
@@ -4342,6 +4345,7 @@ __metadata:
     eventemitter3: ^5.0.1
     tweetnacl: ^1.0.3
     typescript: ~4.9.3
+    uuid: ^9.0.0
   languageName: unknown
   linkType: soft
 
@@ -14496,6 +14500,13 @@ __metadata:
   version: 8.3.4
   resolution: "@types/uuid@npm:8.3.4"
   checksum: 6f11f3ff70f30210edaa8071422d405e9c1d4e53abbe50fdce365150d3c698fe7bbff65c1e71ae080cbfb8fded860dbb5e174da96fdbbdfcaa3fb3daa474d20f
+  languageName: node
+  linkType: hard
+
+"@types/uuid@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "@types/uuid@npm:9.0.1"
+  checksum: c472b8a77cbeded4bc529220b8611afa39bd64677f507838f8083d8aac8033b1f88cb9ddaa2f8589e0dcd2317291d0f6e1379f82d5ceebd6f74f3b4825288e00
   languageName: node
   linkType: hard
 

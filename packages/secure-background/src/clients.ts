@@ -1,12 +1,14 @@
-import type { TransportClient, TransportServer } from "./types";
+import type { TransportReceiver, TransportSender } from "./types";
 
-export const mockTransportServer: TransportServer = {
-  setListener: () => () => {},
+export const mockTransportReceiver: TransportReceiver = {
+  setHandler: () => () => {},
 };
-export const mockTransportClient: TransportClient = {
-  request: () => Promise.resolve(null as never),
+export const mockTransportSender: TransportSender = {
+  send: () => Promise.resolve(null as never),
 };
 
 export { SVMClient } from "./services/svm/client";
-// export { ContentScriptTransportClient } from "./transports/ContentScriptTransportClient";
-export { ContentScriptTransportServer } from "./transports/ContentScriptTransportServer";
+export { ContentScriptTransportReceiver } from "./transports/ContentScriptTransportReceiver";
+export { ContentScriptTransportSender } from "./transports/ContentScriptTransportSender";
+export { SecureUITransportReceiver } from "./transports/SecureUITransportReceiver";
+export { SecureUITransportSender } from "./transports/SecureUITransportSender";

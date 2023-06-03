@@ -1,3 +1,4 @@
+import type { InjectedRequestManager } from "@coral-xyz/common";
 import {
   isVersionedTransaction,
   SOLANA_RPC_METHOD_SIGN_ALL_TXS,
@@ -22,13 +23,12 @@ import type {
 import { decode, encode } from "bs58";
 
 import type { ChainedRequestManager } from "../chained-request-manager";
-import type { RequestManager } from "../request-manager";
 
 export async function sendAndConfirm<
   T extends Transaction | VersionedTransaction
 >(
   publicKey: PublicKey,
-  requestManager: RequestManager | ChainedRequestManager,
+  requestManager: InjectedRequestManager | ChainedRequestManager,
   connection: Connection,
   tx: T,
   signers?: Signer[],
@@ -48,7 +48,7 @@ export async function sendAndConfirm<
 
 export async function send<T extends Transaction | VersionedTransaction>(
   publicKey: PublicKey,
-  requestManager: RequestManager | ChainedRequestManager,
+  requestManager: InjectedRequestManager | ChainedRequestManager,
   connection: Connection,
   tx: T,
   signers?: Signer[],
@@ -90,7 +90,7 @@ export async function signTransaction<
   T extends Transaction | VersionedTransaction
 >(
   publicKey: PublicKey,
-  requestManager: RequestManager | ChainedRequestManager,
+  requestManager: InjectedRequestManager | ChainedRequestManager,
   connection: Connection,
   tx: T
 ): Promise<T> {
@@ -118,7 +118,7 @@ export async function signAllTransactions<
   T extends Transaction | VersionedTransaction
 >(
   publicKey: PublicKey,
-  requestManager: RequestManager | ChainedRequestManager,
+  requestManager: InjectedRequestManager | ChainedRequestManager,
   connection: Connection,
   txs: Array<T>
 ): Promise<Array<T>> {
@@ -163,7 +163,7 @@ export async function signAllTransactions<
 
 export async function simulate<T extends Transaction | VersionedTransaction>(
   publicKey: PublicKey,
-  requestManager: RequestManager | ChainedRequestManager,
+  requestManager: InjectedRequestManager | ChainedRequestManager,
   connection: Connection,
   tx: T,
   signers?: Signer[],
@@ -201,7 +201,7 @@ export async function simulate<T extends Transaction | VersionedTransaction>(
 
 export async function signMessage(
   publicKey: PublicKey,
-  requestManager: RequestManager | ChainedRequestManager,
+  requestManager: InjectedRequestManager | ChainedRequestManager,
   msg: Uint8Array
 ): Promise<Uint8Array> {
   const msgStr = encode(msg);

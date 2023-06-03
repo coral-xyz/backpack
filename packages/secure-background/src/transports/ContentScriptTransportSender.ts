@@ -1,28 +1,25 @@
 import {
   CHANNEL_SECURE_BACKGROUND_REQUEST,
   CHANNEL_SECURE_BACKGROUND_RESPONSE,
+  InjectedRequestManager,
 } from "@coral-xyz/common";
-import type {
-  TransportClient,
-  TransportClientRequest,
-} from "@coral-xyz/secure-background/src/types";
 
-import { RequestManager } from "../request-manager";
+import type { TransportSend, TransportSender } from "../types";
 
-export class ContentScriptTransportClient implements TransportClient {
-  private client: RequestManager;
+export class ContentScriptTransportSender implements TransportSender {
+  private client: InjectedRequestManager;
 
   constructor() {
-    this.client = new RequestManager(
+    this.client = new InjectedRequestManager(
       CHANNEL_SECURE_BACKGROUND_REQUEST,
       CHANNEL_SECURE_BACKGROUND_RESPONSE
     );
   }
 
-  public request: TransportClientRequest = async (request) => {
+  public send: TransportSend = async (request) => {
     return this.client
       .request({
-        method: "ContentScriptTransportClientRequest",
+        method: "ContentScriptTransportSenderRequest",
         params: [request],
       })
       .then((response) => {

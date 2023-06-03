@@ -6,6 +6,7 @@ import {
   CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
   getLogger,
+  InjectedRequestManager,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED,
@@ -16,7 +17,6 @@ import type { ethers } from "ethers";
 import * as cmn from "./common/ethereum";
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 import type { ChainedRequestManager } from "./chained-request-manager";
-import { RequestManager } from "./request-manager";
 import { isValidEventOrigin } from ".";
 
 const logger = getLogger("provider-xnft-injection");
@@ -26,7 +26,7 @@ const logger = getLogger("provider-xnft-injection");
 //
 export class ProviderEthereumXnftInjection extends PrivateEventEmitter {
   #requestManager: ChainedRequestManager | ChainedRequestManager;
-  #connectionRequestManager: RequestManager;
+  #connectionRequestManager: InjectedRequestManager;
 
   #publicKey?: string;
   #connectionUrl?: string;
@@ -39,7 +39,7 @@ export class ProviderEthereumXnftInjection extends PrivateEventEmitter {
     }
 
     this.#requestManager = requestManager;
-    this.#connectionRequestManager = new RequestManager(
+    this.#connectionRequestManager = new InjectedRequestManager(
       CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST,
       CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE
     );

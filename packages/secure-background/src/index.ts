@@ -1,20 +1,17 @@
 import type { LocalStorageDb } from "./localstore/db";
 import type { KeyringStore } from "./localstore/keyring";
+import type { SECURE_UI_EVENTS } from "./services/secureUI/events";
 import type { SECURE_SVM_EVENTS } from "./services/svm/events";
 import { SVMService } from "./services/svm/server";
+import { combineTransportReceivers } from "./transports/combineTransportReceivers";
 import type { SECURE_EVENTS } from "./events";
-import type {
-  SecureResponse,
-  TransportClient,
-  TransportHandler,
-  TransportServer,
-} from "./types";
+import type { TransportReceiver, TransportSender } from "./types";
 
-export const mockTransportServer: TransportServer = {
-  setListener: () => () => {},
+export const mockTransportReceiver: TransportReceiver = {
+  setHandler: () => () => {},
 };
-export const mockTransportClient: TransportClient = {
-  request: () => Promise.resolve(null as never),
+export const mockTransportSender: TransportSender = {
+  send: () => Promise.resolve(null as never),
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -26,39 +23,23 @@ export * from "./legacyExport";
 
 export function startSecureService(
   interfaces: {
-    backendNotificationClient: TransportClient;
-    secureUIClient: TransportClient;
-    secureServer: TransportServer;
+    backendNotificationClient: TransportSender;
+    secureUIClient: TransportSender;
+    secureServer: TransportReceiver;
     secureStorage: LocalStorageDb;
   },
   keyringStore: KeyringStore
 ) {
-  const localClient = mockTransportClient;
-  const localServer = mockTransportServer;
-  const combinedServer = combineTransportServers(
+  const localClient = mockTransportSender;
+  const localServer = mockTransportReceiver;
+  const combinedServer = combineTransportReceivers(
     interfaces.secureServer,
     localServer
   );
 
   new SVMService({
-    secureServer: combinedServer as TransportServer<SECURE_SVM_EVENTS>,
-    keystoreClient: localClient,
-    secureUIClient:
-      interfaces.secureUIClient as TransportClient<SECURE_SVM_EVENTS>,
+    secureServer: combinedServer as TransportReceiver<SECURE_SVM_EVENTS>,
+    keyringStore: keyringStore,
+    secureUIClient: interfaces.secureUIClient,
   });
-}
-
-function combineTransportServers<T extends SECURE_EVENTS = SECURE_EVENTS>(
-  ...servers: TransportServer<T>[]
-): TransportServer<T> {
-  return {
-    setListener: (listener) => {
-      const removeListeners = servers.map((server) =>
-        server.setListener(listener)
-      );
-      return () => {
-        removeListeners.forEach((removeListener) => removeListener());
-      };
-    },
-  };
 }

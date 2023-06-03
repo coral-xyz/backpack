@@ -1,22 +1,14 @@
-import type {
-  Event,
-  ResponseHandler,
-  RpcRequest,
-  RpcResponse,
-} from "@coral-xyz/common";
-import { getLogger } from "@coral-xyz/common";
+import type { Event, ResponseHandler, RpcRequest, RpcResponse } from "../";
+import { getLogger, isValidEventOrigin } from "../";
 
-import { isValidEventOrigin } from ".";
-
-const logger = getLogger("common/request-manager");
-
-export class RequestManager {
+export class InjectedRequestManager {
   private _responseResolvers: { [requestId: number]: ResponseHandler } = {};
   private _requestId = 0;
   private _requestChannel: string;
   private _responseChannel: string;
   private _parent?: boolean;
   private _url?: string;
+  private _logger: any;
 
   constructor(
     requestChannel: string,
@@ -28,6 +20,8 @@ export class RequestManager {
     this._requestId = 0;
     this._responseResolvers = {};
     this._parent = parent;
+    this._logger = getLogger("common/request-manager");
+
     if (parent) {
       this._url = window.location.href;
     }
@@ -45,7 +39,7 @@ export class RequestManager {
     const { id, result, error } = event.data.detail;
     const resolver = this._responseResolvers[id];
     if (!resolver) {
-      logger.error("unexpected event", event);
+      this._logger.error("unexpected event", event);
       throw new Error("unexpected event");
     }
     delete this._responseResolvers[id];

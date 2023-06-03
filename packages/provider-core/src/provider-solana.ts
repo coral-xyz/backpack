@@ -12,6 +12,7 @@ import {
   CHANNEL_SOLANA_RPC_RESPONSE,
   DEFAULT_SOLANA_CLUSTER,
   getLogger,
+  InjectedRequestManager,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_CONNECTED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
@@ -26,7 +27,10 @@ import {
   SOLANA_RPC_METHOD_DISCONNECT,
   SOLANA_RPC_METHOD_OPEN_XNFT,
 } from "@coral-xyz/common";
-import { SVMClient } from "@coral-xyz/secure-background/src/clients";
+import {
+  ContentScriptTransportSender,
+  SVMClient,
+} from "@coral-xyz/secure-background/src/clients";
 import type { Provider } from "@project-serum/anchor";
 import type {
   Commitment,
@@ -41,10 +45,8 @@ import type {
 import { Connection, PublicKey } from "@solana/web3.js";
 import { encode } from "bs58";
 
-import { ContentScriptTransportClient } from "./common/ContentScriptTransportClient";
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 import * as cmn from "./common/solana";
-import { RequestManager } from "./request-manager";
 import { ChainedRequestManager, isValidEventOrigin } from ".";
 
 const logger = getLogger("provider-solana-injection");
@@ -58,15 +60,15 @@ export class ProviderSolanaInjection
   //
   // Channel to send extension specific RPC requests to the extension.
   //
-  #backpackRequestManager: RequestManager;
+  #backpackRequestManager: InjectedRequestManager;
   #secureSVMClient: SVMClient;
   #xnftRequestManager: ChainedRequestManager;
 
-  #requestManager: RequestManager | ChainedRequestManager;
+  #requestManager: InjectedRequestManager | ChainedRequestManager;
   //
   // Channel to send Solana Connection API requests to the extension.
   //
-  #connectionRequestManager: RequestManager;
+  #connectionRequestManager: InjectedRequestManager;
 
   #isBackpack: boolean;
   #isConnected: boolean;
@@ -81,15 +83,15 @@ export class ProviderSolanaInjection
       Object.freeze(this);
     }
     this.#options = undefined;
-    this.#backpackRequestManager = new RequestManager(
+    this.#backpackRequestManager = new InjectedRequestManager(
       CHANNEL_SOLANA_RPC_REQUEST,
       CHANNEL_SOLANA_RPC_RESPONSE
     );
 
-    this.#secureSVMClient = new SVMClient(new ContentScriptTransportClient());
+    this.#secureSVMClient = new SVMClient(new ContentScriptTransportSender());
 
     this.#requestManager = this.#backpackRequestManager;
-    this.#connectionRequestManager = new RequestManager(
+    this.#connectionRequestManager = new InjectedRequestManager(
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
       CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
     );
@@ -389,7 +391,7 @@ export class ProviderSolanaInjection
       publicKey: (publicKey ?? this.#publicKey).toString(),
       message: encode(msg),
     });
-
+    console.log("PCA", svmResponse);
     return await cmn.signMessage(
       publicKey ?? this.#publicKey,
       this.#requestManager,
