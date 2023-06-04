@@ -484,6 +484,8 @@ function SendV2({
                     .replace(/[^\d.]/g, "") // keep only 0-9 and .
                     .replace(/^0+(\d+)/, "$1") // remove leading zeros
                     .replace(/^\.(\d+)?$/, "0.$1") // use 0.\d if decimal is .\d
+                    // remove any periods after the first one
+                    .replace(/^(\d+\.\d*?)\./, "$1")
                     .replace(
                       // trim to the number of decimals allowed for the token
                       new RegExp(`^(\\d+\\.\\d{${maxDecimals}}).+`),
@@ -494,7 +496,7 @@ function SendV2({
 
                   setStrAmount(parsedVal);
 
-                  if (value.endsWith(".")) {
+                  if (parsedVal.endsWith(".")) {
                     throw "trailing ."; // can't throw new Error due to Error function
                   }
 
