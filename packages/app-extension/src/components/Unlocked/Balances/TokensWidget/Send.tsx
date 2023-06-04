@@ -481,13 +481,16 @@ function SendV2({
                   const maxDecimals = token.decimals ?? 9;
 
                   const parsedVal = value
-                    .replace(/[^\d.]/g, "") // keep only 0-9 and .
-                    .replace(/^0+(\d+)/, "$1") // remove leading zeros
-                    .replace(/^\.(\d+)?$/, "0.$1") // use 0.\d if decimal is .\d
+                    // remove all characters except for 0-9 and .
+                    .replace(/[^\d.]/g, "")
+                    // remove leading zeros
+                    .replace(/^0+(\d)/, "$1")
+                    // prepend a 0 if . is the first character
+                    .replace(/^\.(\d+)?$/, "0.$1")
                     // remove any periods after the first one
                     .replace(/^(\d+\.\d*?)\./, "$1")
+                    // trim to the number of decimals allowed for the token
                     .replace(
-                      // trim to the number of decimals allowed for the token
                       new RegExp(`^(\\d+\\.\\d{${maxDecimals}}).+`),
                       "$1"
                     );
@@ -497,7 +500,8 @@ function SendV2({
                   setStrAmount(parsedVal);
 
                   if (parsedVal.endsWith(".")) {
-                    throw "trailing ."; // can't throw new Error due to Error function
+                    // can't `throw new Error("trailing")` due to Error function
+                    throw "trailing .";
                   }
 
                   const finalAmount = ethers.utils.parseUnits(
