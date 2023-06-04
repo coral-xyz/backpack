@@ -3546,7 +3546,7 @@ __metadata:
     "@project-serum/anchor": ^0.24.2
     "@solana/web3.js": ^1.63.1
     "@swc/core": ^1.3.22
-    "@tensor-hq/tensorswap-sdk": ^1.9.4
+    "@tensor-oss/tensorswap-sdk": ^1.11.2
     "@testing-library/jest-dom": ^5.11.4
     "@typeform/embed": ^1.38.0
     "@types/bn.js": ^5.1.1
@@ -13151,9 +13151,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tensor-hq/tensorswap-sdk@npm:^1.9.4":
-  version: 1.9.4
-  resolution: "@tensor-hq/tensorswap-sdk@npm:1.9.4"
+"@tensor-oss/tensorswap-sdk@npm:^1.11.2":
+  version: 1.11.2
+  resolution: "@tensor-oss/tensorswap-sdk@npm:1.11.2"
   dependencies:
     "@msgpack/msgpack": ^2.8.0
     "@project-serum/anchor": ^0.26.0
@@ -13168,7 +13168,7 @@ __metadata:
     math-expression-evaluator: ^2.0.2
     merkletreejs: ^0.2.32
     uuid: ^8.3.2
-  checksum: 3c99337541564bbe687c598484db967ce8b2f3d95adfc780b2db9f5f8de8f727b640cf48d311342188b41d10a3ff84652444b1ee4b5913a42f65bf66fa0c5c90
+  checksum: ff113c482e661e86a79c3147f804abec80887cb5091e5096ad9dce3342605182621679d0cef51225c1a167a0deb3b8e3cbe325fb74c3bba043e5004eb5090fae
   languageName: node
   linkType: hard
 
