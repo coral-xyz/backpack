@@ -1,10 +1,10 @@
 import { Suspense, useCallback, useRef } from "react";
-import { StyleSheet, Text, View, Platform } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import Constants from "expo-constants";
-import * as Device from "expo-device";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
+import * as Updates from "expo-updates";
 
 import {
   BACKGROUND_SERVICE_WORKER_READY,
@@ -37,9 +37,9 @@ export function App(): JSX.Element {
 
   return (
     <ErrorBoundary fallbackRender={renderError}>
-      <Suspense fallback={<FullScreenLoading />}>
+      <BackgroundHiddenWebView />
+      <Suspense fallback={<FullScreenLoading label="loading recoil..." />}>
         <RecoilRoot>
-          <BackgroundHiddenWebView />
           <Main />
         </RecoilRoot>
       </Suspense>
@@ -47,100 +47,73 @@ export function App(): JSX.Element {
   );
 }
 
-function ServiceWorkerErrorScreen({ onLayoutRootView }: any): JSX.Element {
-  return (
-    <View
-      onLayout={onLayoutRootView}
-      style={{
-        backgroundColor: "#8b0000",
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Text>The service worker failed to load.</Text>
-      <Text>
-        {JSON.stringify(
-          { uri: Constants?.expoConfig?.extra?.webviewUrl },
-          null,
-          2
-        )}
-      </Text>
-    </View>
-  );
-}
-
 function Main(): JSX.Element | null {
   const theme = useTheme();
   const appLoadingStatus = useLoadedAssets();
+  const webviewLoaded = useStore((state) => state.injectJavaScript);
 
   const onLayoutRootView = useCallback(async () => {
-    // If the service worker isn't running, show an error screen.
-    if (appLoadingStatus === "error" || appLoadingStatus === "ready") {
-      // This tells the splash screen to hide immediately! If we call this after
-      // `setAppIsReady`, then we may see a blank screen while the app is
-      // loading its initial state and rendering its first pixels. So instead,
-      // we hide the splash screen once we know the root view has already
-      // performed layout!
+    if (appLoadingStatus === "ready") {
       await SplashScreen.hideAsync();
     }
   }, [appLoadingStatus]);
-
-  if (appLoadingStatus === "error") {
-    return <ServiceWorkerErrorScreen onLayoutRootView={onLayoutRootView} />;
-  }
 
   if (appLoadingStatus === "loading") {
     return null;
   }
 
+  const serviceWorkerUrl = Constants.expoConfig?.extra?.serviceWorkerUrl;
+  const loadingLabel = `${Updates.channel} ${serviceWorkerUrl}`;
+
   return (
-    <Providers>
-      <View
-        onLayout={onLayoutRootView}
-        style={[
-          styles.container,
-          {
-            backgroundColor: theme.custom.colors.background,
-          },
-        ]}
-      >
-        <StatusBar />
-        <RootNavigation colorScheme={theme.colorScheme as "dark" | "light"} />
-      </View>
-    </Providers>
+    <View
+      onLayout={onLayoutRootView}
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.custom.colors.background,
+        },
+      ]}
+    >
+      {webviewLoaded ? (
+        <Providers>
+          <StatusBar />
+          <RootNavigation colorScheme={theme.colorScheme as "dark" | "light"} />
+        </Providers>
+      ) : (
+        <FullScreenLoading label={loadingLabel} />
+      )}
+    </View>
   );
 }
-
-const getWebviewUrl = () => {
-  const { localWebViewUrl, remoteWebViewUrl } =
-    Constants.expoConfig?.extra || {};
-
-  if (process.env.NODE_ENV === "development" && Platform.OS === "android") {
-    return remoteWebViewUrl;
-  }
-
-  return Device.isDevice ? remoteWebViewUrl : localWebViewUrl;
-};
 
 function BackgroundHiddenWebView(): JSX.Element {
   const setInjectJavaScript = useStore(
     (state: any) => state.setInjectJavaScript
   );
   const ref = useRef(null);
-  const webviewUrl = getWebviewUrl();
+  const serviceWorkerUrl = Constants.expoConfig?.extra?.serviceWorkerUrl;
 
   return (
     <View style={styles.webview}>
       <WebView
         ref={ref}
-        // cacheMode="LOAD_CACHE_ELSE_NETWORK"
-        // cacheEnabled
+        source={{ uri: serviceWorkerUrl }}
+        // NOTE: this MUST be true. Otherwise onMessage will not fire.
+        // https://github.com/react-native-webview/react-native-webview/issues/1956
         limitsNavigationsToAppBoundDomains
-        source={{ uri: webviewUrl }}
         onError={(error) => console.log("WebView error:", error)}
         onHttpError={(error) => console.log("WebView HTTP error:", error)}
+        onLoad={(event) => {
+          console.log("onLoad");
+        }}
+        onLoadEnd={(syntheticEvent) => {
+          // update component to be aware of loading status
+          // const { nativeEvent } = syntheticEvent;
+          console.log("onLoadEnd");
+        }}
         onMessage={(event) => {
+          console.log("onMessage");
           const msg = JSON.parse(event.nativeEvent.data);
           maybeParseLog(msg);
           if (msg.type === BACKGROUND_SERVICE_WORKER_READY) {

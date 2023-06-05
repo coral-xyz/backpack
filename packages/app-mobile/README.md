@@ -6,6 +6,7 @@ Android and iOS apps powered via react-native.
 
 - A phone or Simulator (Download XCode)
 - At least two terminal windows
+- watchman (brew install watchman)
 
 ## Quick Start
 
@@ -33,7 +34,15 @@ This runs our service worker which the mobile app talks to inside src/App.tsx
 - In a separate terminal window, from `packages/app-mobile`, run:
 
 ```sh
-yarn ios -c
+eas build:run -p ios --latest
+```
+
+This will download the latest development build. You might need to be added to our EAS account if it doesn't work. You only need to run this once.
+
+Once installed, run:
+
+```
+yarn ios
 ```
 
 An iPhone simulator should open up and you should be well on your way!
@@ -41,13 +50,13 @@ An iPhone simulator should open up and you should be well on your way!
 If you want to run Android, run:
 
 ```sh
-yarn android -c
+yarn android
 ```
 
 Android emulators don't support running localhost:9333 in your local environment.
 It tries to connect to the local phone's server which doesn't exist.
 
-### TroubleShooting
+### Troubleshooting
 
 #### I'm stuck on a black screen with a white backpack logo
 
@@ -64,3 +73,13 @@ Solutions:
 - 2. Until we have a better way, go into src/App.tsx and replace `localWebViewUrl` with `remoteWebViewUrl`
      located [here](https://github.com/coral-xyz/backpack/blob/master/packages/app-mobile/src/App.tsx#L132)
      That line should look like this: `const webviewUrl = remoteWebViewUrl`
+
+## service worker readme
+
+Notes based on investigating various issues with WebView on ios, android & our service-worker-loader
+
+- [limitsNavigationsToAppBoundDomains](https://github.com/react-native-webview/react-native-webview/issues/1956) is required. Otherwise, `onMessage` will not fire, both locally and remotely.
+- [NSAllowsArbitraryLoads](https://developer.apple.com/documentation/bundleresources/information_property_list/nsapptransportsecurity/nsallowsarbitraryloads) setting this true disables App Transport Security which would allow unsecured HTTP connections. By enabling this you must supply a justification during App Store Review
+- [NSExceptionDomains](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW35) if you allow arbitrary loads, NSExceptionDomains will continue to support ATS
+- [WKAppBoundDomains](https://webkit.org/blog/10882/app-bound-domains/) once this is set
+- [WKAppBoundDomains order matters](https://bugs.webkit.org/show_bug.cgi?id=227531) it will only load up to 3 service workers and ignore the rest. If there are 5 sites with service workers listed, only 3 of them will fire the service worker. The other 2 will be ignored
