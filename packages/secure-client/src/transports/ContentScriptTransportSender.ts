@@ -6,7 +6,7 @@ import {
 import type {
   TransportSend,
   TransportSender,
-} from "@coral-xyz/secure-background";
+} from "@coral-xyz/secure-background/clients";
 
 export class ContentScriptTransportSender implements TransportSender {
   private client: InjectedRequestManager;

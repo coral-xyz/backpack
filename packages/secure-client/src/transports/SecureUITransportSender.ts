@@ -8,7 +8,7 @@ import type {
   SecureRequest,
   SecureResponse,
   TransportSender,
-} from "@coral-xyz/secure-background";
+} from "@coral-xyz/secure-background/clients";
 import { v4 } from "uuid";
 
 type QueuedRequest = {

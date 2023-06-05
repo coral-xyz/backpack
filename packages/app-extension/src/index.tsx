@@ -5,8 +5,11 @@ import {
   isValidEventOrigin,
   openPopupWindow,
 } from "@coral-xyz/common";
-import type { SECURE_UI_EVENTS } from "@coral-xyz/secure-background";
-import { SecureUI, SecureUITransportReceiver } from "@coral-xyz/secure-client";
+import type {
+  SECURE_UI_EVENTS,
+  TransportReceiver,
+} from "@coral-xyz/secure-client";
+import { SecureUITransportReceiver } from "@coral-xyz/secure-client";
 
 import "./index.css";
 
@@ -67,10 +70,19 @@ root.render(
       <App />
     </Suspense>
     <Suspense fallback={null}>
-      {/* <SecureUI receiver={secureUITransportReceiver} /> */}
+      <SecureUI receiver={secureUITransportReceiver} />
     </Suspense>
     <Suspense fallback={null}>
       <LedgerIframe />
     </Suspense>
   </>
 );
+
+function SecureUI({
+  receiver,
+}: {
+  receiver: TransportReceiver<SECURE_UI_EVENTS>;
+}) {
+  receiver;
+  return null;
+}

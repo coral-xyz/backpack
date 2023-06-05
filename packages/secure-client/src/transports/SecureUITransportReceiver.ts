@@ -9,7 +9,7 @@ import type {
   SecureResponse,
   TransportHandler,
   TransportReceiver,
-} from "@coral-xyz/secure-background";
+} from "@coral-xyz/secure-background/clients";
 import { v4 } from "uuid";
 
 export class SecureUITransportReceiver<X extends SECURE_EVENTS>
