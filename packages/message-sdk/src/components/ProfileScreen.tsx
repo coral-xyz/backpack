@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useUsersMetadata } from "@coral-xyz/chat-xplat";
 import {
   BACKEND_API_URL,
+  formatWalletAddress,
   NAV_COMPONENT_MESSAGE_CHAT,
   sendFriendRequest,
-  walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
   Loading,
@@ -286,7 +286,7 @@ function PrimaryNetworkWallet({
           }}
         >
           {icon}
-          {walletAddressDisplay(publicKey)}
+          {formatWalletAddress(publicKey)}
           <ContentCopy sx={{ color: theme.custom.colors.icon, fontSize: 14 }} />
         </div>
       </Button>

@@ -2,17 +2,18 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import {
+  UI_RPC_METHOD_KEYNAME_UPDATE,
+  formatWalletAddress,
+} from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
+
+import {
   PrimaryButton,
   Screen,
   SecondaryButton,
   StyledTextInput,
   TwoButtonFooter,
 } from "~components/index";
-import {
-  UI_RPC_METHOD_KEYNAME_UPDATE,
-  walletAddressDisplay,
-} from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useTheme } from "~hooks/useTheme";
 
 export function RenameWalletScreen({ navigation, route }): JSX.Element {
@@ -39,7 +40,7 @@ export function RenameWalletScreen({ navigation, route }): JSX.Element {
             color: theme.custom.colors.secondary,
           }}
         >
-          ({walletAddressDisplay(publicKey)})
+          ({formatWalletAddress(publicKey)})
         </Text>
       </View>
       <TwoButtonFooter

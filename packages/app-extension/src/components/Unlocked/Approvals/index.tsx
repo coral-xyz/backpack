@@ -6,7 +6,7 @@ import {
 import { useAvatarUrl, useUser, useWalletName } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 
-import { walletAddressDisplay } from "../../../components/common";
+import { formatWalletAddress } from "../../../components/common";
 import { UNKNOWN_ICON_SRC } from "../../common/Icon";
 
 const useStyles = styles((theme) => ({
@@ -139,7 +139,7 @@ function OriginWalletConnectIcons({
       <Connectable
         kind="medium"
         title={username}
-        description={`${walletName} (${walletAddressDisplay(wallet)})`}
+        description={`${walletName} (${formatWalletAddress(wallet)})`}
         icon={avatarUrl}
       />
     </div>

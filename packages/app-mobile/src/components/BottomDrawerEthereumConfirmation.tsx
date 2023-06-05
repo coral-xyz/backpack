@@ -8,7 +8,7 @@ import {
   Blockchain,
   Ethereum,
   getLogger,
-  walletAddressDisplay,
+  formatWalletAddress,
 } from "@coral-xyz/common";
 import { useEthereumCtx, useTransactionData } from "@coral-xyz/recoil";
 import { ethers } from "ethers";
@@ -80,11 +80,11 @@ function Confirmation({
   const menuItems = {
     From: {
       disabled: true,
-      detail: <Text>{walletAddressDisplay(from)}</Text>,
+      detail: <Text>{formatWalletAddress(from)}</Text>,
     },
     To: {
       disabled: true,
-      detail: <Text>{walletAddressDisplay(destination.address)}</Text>,
+      detail: <Text>{formatWalletAddress(destination.address)}</Text>,
     },
   };
 

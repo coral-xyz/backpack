@@ -73,7 +73,7 @@ export class Ethereum implements Blockchain {
    * @memberof Ethereum
    */
   logo(): string {
-    return "https://assets.coingecko.com/coins/images/279/large/ethereum.png";
+    return EthereumTokenList[this.defaultAddress()].logo!;
   }
 
   /**
@@ -122,23 +122,19 @@ export class Ethereum implements Blockchain {
       ...ids,
     ]);
 
-    // Native token balance data
-    const nativeData = NodeBuilder.tokenBalance(
+    // Build the token balance node for the native balance of the wallet
+    const nativeTokenNode = NodeBuilder.tokenBalance(
       this.id(),
       {
         address,
         amount: native.toString(),
         decimals: this.decimals(),
         displayAmount: ethers.utils.formatUnits(native, this.decimals()),
-        marketData: NodeBuilder.marketData({
+        marketData: NodeBuilder.marketData("ethereum", {
           lastUpdatedAt: prices.ethereum.last_updated,
-          listingId: "ethereum",
-          logo: prices.ethereum.image,
-          name: prices.ethereum.name,
           percentChange: prices.ethereum.price_change_percentage_24h,
           price: prices.ethereum.current_price,
           sparkline: prices.ethereum.sparkline_in_7d.price,
-          symbol: prices.ethereum.symbol,
           usdChange: prices.ethereum.price_change_24h,
           value:
             parseFloat(ethers.utils.formatUnits(native, this.decimals())) *
@@ -148,33 +144,37 @@ export class Ethereum implements Blockchain {
             prices.ethereum.price_change_24h,
         }),
         token: this.defaultAddress(),
+        tokenListEntry: NodeBuilder.tokenListEntry(
+          EthereumTokenList[this.defaultAddress()]
+        ),
       },
       true
     );
 
     // Map the non-empty token balances to their schema type
-    const nodes = nonEmptyTokens.reduce<TokenBalance[]>((acc, curr) => {
+    const ercTokenNodes = nonEmptyTokens.reduce<TokenBalance[]>((acc, curr) => {
       const amt = BigNumber.from(curr.rawBalance ?? "0");
       const id = meta.get(curr.contractAddress);
       const p: CoinGeckoPriceData | null = prices[id ?? ""] ?? null;
-      const marketData = p
-        ? NodeBuilder.marketData({
-            lastUpdatedAt: p.last_updated,
-            listingId: p.id,
-            logo: p.image,
-            name: p.name,
-            percentChange: p.price_change_percentage_24h,
-            price: p.current_price,
-            sparkline: p.sparkline_in_7d.price,
-            symbol: p.symbol,
-            usdChange: p.price_change_24h,
-            value:
-              parseFloat(ethers.utils.formatUnits(amt, curr.decimals ?? 0)) *
-              p.current_price,
-            valueChange:
-              parseFloat(ethers.utils.formatUnits(amt, curr.decimals ?? 0)) *
-              p.price_change_24h,
-          })
+      const marketData =
+        p && id
+          ? NodeBuilder.marketData(id, {
+              lastUpdatedAt: p.last_updated,
+              percentChange: p.price_change_percentage_24h,
+              price: p.current_price,
+              sparkline: p.sparkline_in_7d.price,
+              usdChange: p.price_change_24h,
+              value:
+                parseFloat(ethers.utils.formatUnits(amt, curr.decimals ?? 0)) *
+                p.current_price,
+              valueChange:
+                parseFloat(ethers.utils.formatUnits(amt, curr.decimals ?? 0)) *
+                p.price_change_24h,
+            })
+          : undefined;
+
+      const tokenListEntry = EthereumTokenList[curr.contractAddress]
+        ? NodeBuilder.tokenListEntry(EthereumTokenList[curr.contractAddress])
         : undefined;
 
       if (filters?.marketListedTokensOnly && !marketData) {
@@ -192,6 +192,7 @@ export class Ethereum implements Blockchain {
             displayAmount: curr.balance ?? "0",
             marketData,
             token: curr.contractAddress,
+            tokenListEntry,
           },
           false,
           `${address}/${curr.contractAddress}`
@@ -199,10 +200,14 @@ export class Ethereum implements Blockchain {
       ];
     }, []);
 
-    return NodeBuilder.balances(this.id(), {
-      aggregate: calculateBalanceAggregate(address, [nativeData, ...nodes]),
-      native: nativeData,
-      tokens: createConnection(nodes, false, false),
+    // Combine the native and ERC token balance nodes and sort by total market value decreasing
+    const tokenNodes = [nativeTokenNode, ...ercTokenNodes].sort(
+      (a, b) => (b.marketData?.value ?? 0) - (a.marketData?.value ?? 0)
+    );
+
+    return NodeBuilder.balances(address, this.id(), {
+      aggregate: calculateBalanceAggregate(address, tokenNodes),
+      tokens: createConnection(tokenNodes, false, false),
     });
   }
 

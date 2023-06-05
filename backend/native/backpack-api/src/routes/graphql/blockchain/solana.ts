@@ -76,7 +76,7 @@ export class Solana implements Blockchain {
    * @memberof Solana
    */
   logo(): string {
-    return "https://assets.coingecko.com/coins/images/4128/large/solana.png";
+    return SolanaTokenList[this.defaultAddress()].logo!;
   }
 
   /**
@@ -124,7 +124,8 @@ export class Solana implements Blockchain {
       ...ids,
     ]);
 
-    const nativeData = NodeBuilder.tokenBalance(
+    // Build the token balance node for the native balance of the wallet
+    const nativeTokenNode = NodeBuilder.tokenBalance(
       this.id(),
       {
         address,
@@ -134,15 +135,11 @@ export class Solana implements Blockchain {
           balances.nativeBalance,
           this.decimals()
         ),
-        marketData: NodeBuilder.marketData({
+        marketData: NodeBuilder.marketData("solana", {
           lastUpdatedAt: prices.solana.last_updated,
-          listingId: "solana",
-          logo: prices.solana.image,
-          name: prices.solana.name,
           percentChange: prices.solana.price_change_percentage_24h,
           price: prices.solana.current_price,
           sparkline: prices.solana.sparkline_in_7d.price,
-          symbol: prices.solana.symbol,
           usdChange: prices.solana.price_change_24h,
           value:
             parseFloat(
@@ -154,6 +151,9 @@ export class Solana implements Blockchain {
             ) * prices.solana.price_change_24h,
         }),
         token: this.defaultAddress(),
+        tokenListEntry: NodeBuilder.tokenListEntry(
+          SolanaTokenList[this.defaultAddress()]
+        ),
       },
       true
     );
@@ -163,29 +163,30 @@ export class Solana implements Blockchain {
       (acc, curr) => {
         const id = meta.get(curr.mint);
         const p: CoinGeckoPriceData | null = prices[id ?? ""] ?? null;
-        const marketData = p
-          ? NodeBuilder.marketData({
-              lastUpdatedAt: p.last_updated,
-              listingId: p.id,
-              logo: p.image,
-              name: p.name,
-              percentChange: p.price_change_percentage_24h,
-              price: p.current_price,
-              sparkline: p.sparkline_in_7d.price,
-              symbol: p.symbol,
-              usdChange: p.price_change_24h,
-              value:
-                parseFloat(
-                  ethers.utils.formatUnits(curr.amount, curr.decimals)
-                ) * p.current_price,
-              valueChange:
-                parseFloat(
-                  ethers.utils.formatUnits(
-                    balances.nativeBalance,
-                    this.decimals()
-                  )
-                ) * p.price_change_24h,
-            })
+        const marketData =
+          p && id
+            ? NodeBuilder.marketData(id, {
+                lastUpdatedAt: p.last_updated,
+                percentChange: p.price_change_percentage_24h,
+                price: p.current_price,
+                sparkline: p.sparkline_in_7d.price,
+                usdChange: p.price_change_24h,
+                value:
+                  parseFloat(
+                    ethers.utils.formatUnits(curr.amount, curr.decimals)
+                  ) * p.current_price,
+                valueChange:
+                  parseFloat(
+                    ethers.utils.formatUnits(
+                      balances.nativeBalance,
+                      this.decimals()
+                    )
+                  ) * p.price_change_24h,
+              })
+            : undefined;
+
+        const tokenListEntry = SolanaTokenList[curr.mint]
+          ? NodeBuilder.tokenListEntry(SolanaTokenList[curr.mint])
           : undefined;
 
         if (filters?.marketListedTokensOnly && !marketData) {
@@ -206,6 +207,7 @@ export class Solana implements Blockchain {
               ),
               marketData,
               token: curr.mint,
+              tokenListEntry,
             },
             false
           ),
@@ -214,13 +216,14 @@ export class Solana implements Blockchain {
       []
     );
 
-    return NodeBuilder.balances(this.id(), {
-      aggregate: calculateBalanceAggregate(address, [
-        nativeData,
-        ...splTokenNodes,
-      ]),
-      native: nativeData,
-      tokens: createConnection(splTokenNodes, false, false),
+    // Combine and sort the native and SPL token nodes by total market value decreasing
+    const tokenNodes = [nativeTokenNode, ...splTokenNodes].sort(
+      (a, b) => (b.marketData?.value ?? 0) - (a.marketData?.value ?? 0)
+    );
+
+    return NodeBuilder.balances(address, this.id(), {
+      aggregate: calculateBalanceAggregate(address, tokenNodes),
+      tokens: createConnection(tokenNodes, false, false),
     });
   }
 

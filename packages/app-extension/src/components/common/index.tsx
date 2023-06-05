@@ -1,4 +1,4 @@
-import { walletAddressDisplay } from "@coral-xyz/common";
+import { formatWalletAddress } from "@coral-xyz/common";
 import { useDarkMode } from "@coral-xyz/recoil";
 import type { CustomTheme } from "@coral-xyz/themes";
 import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
@@ -6,7 +6,7 @@ import { Box, Button, Checkbox as _Checkbox, Typography } from "@mui/material";
 
 import { TextField } from "../../plugin/Component";
 
-export { walletAddressDisplay } from "@coral-xyz/common";
+export { formatWalletAddress } from "@coral-xyz/common";
 export { TextField };
 
 const useStyles = makeStyles((theme: CustomTheme) => ({
@@ -63,7 +63,7 @@ export function WalletAddress({ publicKey, name, style, nameStyle }: any) {
       </Typography>
       {publicKey ? (
         <Typography style={{ color: theme.custom.colors.secondary }}>
-          ({walletAddressDisplay(publicKey)})
+          ({formatWalletAddress(publicKey)})
         </Typography>
       ) : null}
     </div>

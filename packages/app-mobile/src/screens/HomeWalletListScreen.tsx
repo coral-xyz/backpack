@@ -5,7 +5,7 @@ import { Suspense, useCallback } from "react";
 import { FlatList, Pressable, View } from "react-native";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
-import { formatUSD } from "@coral-xyz/common";
+import { formatUsd } from "@coral-xyz/common";
 import {
   useTheme as useTamaguiTheme,
   Box,
@@ -118,7 +118,7 @@ function ListItemData({
       blockchain={wallet.blockchain}
       publicKey={wallet.publicKey}
       type={wallet.type}
-      balance={formatUSD(balance)}
+      balance={formatUsd(balance)}
       onPress={onPress}
     />
   );

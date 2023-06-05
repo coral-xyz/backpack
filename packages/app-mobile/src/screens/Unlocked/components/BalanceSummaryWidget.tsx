@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
-import { formatUSD } from "@coral-xyz/common";
+import { formatUsd } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import { Stack, XStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
@@ -25,7 +25,7 @@ function TextTotalChange({
 
   return (
     <Text style={[styles.totalChangeText, { color }]}>
-      {formatUSD(totalChange)}
+      {formatUsd(totalChange)}
     </Text>
   );
 }
@@ -136,7 +136,7 @@ function Container() {
   return (
     <Stack ai="center">
       <StyledText fontWeight="700" fontSize="$4xl" color="$fontColor">
-        {formatUSD(totalBalance)}
+        {formatUsd(totalBalance)}
       </StyledText>
       <XStack alignItems="center">
         <TextTotalChange totalChange={totalChange} />
