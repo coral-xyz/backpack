@@ -33,7 +33,7 @@ function ResourceThing({ imageUrl, title, subtitle }) {
   );
 }
 
-export function ApproveMessageScreen() {
+export function ApproveTransactionBottomSheet() {
   const [message, setMessage] = useState("");
   // i have a <Screen> component that handles insets, etc. Might want to make Screen.web.tsx that just handles padding
   return (
