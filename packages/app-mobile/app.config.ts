@@ -12,6 +12,7 @@ type ExpoExtras = {
 
 const localGraphQLApi = "http://localhost:8080/v2/graphql";
 const remoteGraphQLApi = "https://backpack-api.xnfts.dev/v2/graphql";
+const PRODUCTION_SW_HASH = "8869656"; // only update this when deploying to the App Store
 
 const getServiceWorkerUrl = () => {
   const url =
@@ -22,8 +23,7 @@ const getServiceWorkerUrl = () => {
   }
 
   if (process.env.APP_ENV === "production") {
-    const hash = "latest"; // replace me for a real prod build
-    return url.replace(/latest/g, hash);
+    return url.replace(/latest/g, PRODUCTION_SW_HASH);
   } else {
     return "http://localhost:9333";
   }
