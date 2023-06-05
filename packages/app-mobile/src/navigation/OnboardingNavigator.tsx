@@ -21,7 +21,7 @@ import * as Linking from "expo-linking";
 
 import {
   getAuthMessage,
-  walletAddressDisplay,
+  formatWalletAddress,
   getRecoveryPaths,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   BACKEND_API_URL,
@@ -701,7 +701,7 @@ function MnemonicSearchScreen({
         {serverPublicKeys.length === 1 ? (
           <SubtextParagraph>
             We couldn't find the public key
-            {walletAddressDisplay(serverPublicKeys[0].publicKey)} using your
+            {formatWalletAddress(serverPublicKeys[0].publicKey)} using your
             recovery phrase.
           </SubtextParagraph>
         ) : (

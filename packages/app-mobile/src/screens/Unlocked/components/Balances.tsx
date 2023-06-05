@@ -7,7 +7,7 @@ import type { Token } from "~types/types";
 import React, { useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { formatUSD } from "@coral-xyz/common";
+import { formatUsd } from "@coral-xyz/common";
 import {
   blockchainBalancesSorted,
   allWalletsDisplayed,
@@ -271,7 +271,7 @@ export function TokenRow({
             { color: theme.custom.colors.fontColor },
           ]}
         >
-          {formatUSD(token.usdBalance)}
+          {formatUsd(token.usdBalance)}
         </Text>
         <TextPercentChanged percentChange={recentUsdBalanceChange} />
       </View>

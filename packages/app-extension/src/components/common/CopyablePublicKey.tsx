@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { walletAddressDisplay } from "@coral-xyz/common";
+import { formatWalletAddress } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 
 import { TokenBadge } from "../Unlocked/Balances/TokensWidget/TokenBadge";
@@ -14,7 +14,7 @@ export const CopyablePublicKey = ({
   publicKey,
   ...optionalProps
 }: {
-  publicKey: Parameters<typeof walletAddressDisplay>[0];
+  publicKey: Parameters<typeof formatWalletAddress>[0];
 } & Partial<React.ComponentPropsWithoutRef<typeof TokenBadge>>) => {
   const theme = useCustomTheme();
   const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -30,7 +30,7 @@ export const CopyablePublicKey = ({
             setTimeout(() => setTooltipOpen(false), 1000);
             await navigator.clipboard.writeText(publicKeyString);
           }}
-          label={walletAddressDisplay(publicKey)}
+          label={formatWalletAddress(publicKey)}
           {...optionalProps}
         />
       </div>

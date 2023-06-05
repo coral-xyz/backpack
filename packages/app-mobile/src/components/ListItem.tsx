@@ -4,7 +4,7 @@ import { ActivityIndicator, Alert, Pressable, Image } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
 
-import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
+import { Blockchain, formatWalletAddress } from "@coral-xyz/common";
 import {
   ListItem,
   StyledText,
@@ -150,7 +150,7 @@ export const ListItemWallet = ({
               <WalletState selected={selected} loading={loading} />
             </XStack>
             <StyledText color="$baseTextMedEmphasis" fontSize="$sm">
-              {walletAddressDisplay(publicKey)} {primary ? "(Primary)" : ""}
+              {formatWalletAddress(publicKey)} {primary ? "(Primary)" : ""}
             </StyledText>
           </YStack>
         </Pressable>

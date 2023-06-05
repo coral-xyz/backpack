@@ -11,7 +11,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import { IconButton, Modal, Typography } from "@mui/material";
 
-import { TextField, walletAddressDisplay } from "../../../common";
+import { formatWalletAddress,TextField } from "../../../common";
 import { CloseButton, useDrawerContext } from "../../../common/Layout/Drawer";
 import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 
@@ -126,7 +126,7 @@ function BlockchainDepositCard({
                 color: theme.custom.colors.secondary,
               }}
             >
-              {`${name} (${walletAddressDisplay(publicKey)})`}
+              {`${name} (${formatWalletAddress(publicKey)})`}
             </Typography>
             <img
               src={blockchainLogo}
@@ -292,7 +292,7 @@ function BlockchainDepositCard({
                         color: theme.custom.colors.secondary,
                       }}
                     >
-                      ({walletAddressDisplay(publicKey)})
+                      ({formatWalletAddress(publicKey)})
                     </Typography>
                   </IconButton>
                 </div>

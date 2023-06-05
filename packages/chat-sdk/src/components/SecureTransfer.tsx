@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   BACKEND_API_URL,
   Blockchain,
-  walletAddressDisplay,
+  formatWalletAddress,
 } from "@coral-xyz/common";
 import {
   List,

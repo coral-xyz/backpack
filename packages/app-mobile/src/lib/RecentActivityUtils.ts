@@ -1,4 +1,4 @@
-import { walletAddressDisplay } from "@coral-xyz/common";
+import { formatWalletAddress } from "@coral-xyz/common";
 // TODO
 type GraphQLTransaction = any;
 
@@ -49,7 +49,7 @@ function parseTokenName(name: string) {
     return name;
   }
 
-  return walletAddressDisplay(name);
+  return formatWalletAddress(name);
 }
 
 export function parseSwap(str: string) {
@@ -79,7 +79,7 @@ export function parseTransfer(str: string) {
     const to = _to[1]; // remove period at the end
     const amount = _to[0].split("transferred ")[1].trim();
     const action = "Sent"; // TODO sent/received, pass down publickey
-    return { to: walletAddressDisplay(to), amount, action };
+    return { to: formatWalletAddress(to), amount, action };
   } catch (_err) {
     return { to: "", amount: "", action: "Sent" };
   }
