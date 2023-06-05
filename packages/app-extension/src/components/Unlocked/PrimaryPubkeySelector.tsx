@@ -2,8 +2,8 @@ import { useState } from "react";
 import {
   BACKEND_API_URL,
   Blockchain,
+  formatWalletAddress,
   toTitleCase,
-  walletAddressDisplay,
 } from "@coral-xyz/common";
 import { PrimaryButton } from "@coral-xyz/react-common";
 import {
@@ -197,7 +197,7 @@ function MigrationInputs({
                 [blockchain]: wallet.publicKey,
               }));
             }}
-            label={walletAddressDisplay(wallet.publicKey)}
+            label={formatWalletAddress(wallet.publicKey)}
           />
         ))}
     </div>

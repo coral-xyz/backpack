@@ -1,4 +1,4 @@
-import { formatUSD } from "@coral-xyz/common";
+import { formatUsd } from "@coral-xyz/common";
 import {
   totalBalance as totalBalanceSelector,
   useLoader,
@@ -55,7 +55,7 @@ export function BalanceSummaryWidget() {
               sx={{ backgroundColor: theme.custom.colors.balanceSkeleton }}
             />
           ) : (
-            formatUSD(totalBalance)
+            formatUsd(totalBalance)
           )}
         </Typography>
         <div
@@ -89,7 +89,7 @@ export function BalanceSummaryWidget() {
             ) : (
               <>
                 {totalChange > 0 ? "+" : ""}
-                {formatUSD(totalChange)}
+                {formatUsd(totalChange)}
               </>
             )}
           </Typography>

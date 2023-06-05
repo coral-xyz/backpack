@@ -16,7 +16,7 @@ import Constants from "expo-constants";
 import { Image } from "expo-image";
 import * as Updates from "expo-updates";
 
-import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
+import { Blockchain, formatWalletAddress } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import {
   BaseButton,
@@ -510,7 +510,7 @@ export function CopyWalletFieldInput({
   publicKey: string;
 }): JSX.Element {
   const theme = useTheme();
-  const walletDisplay = walletAddressDisplay(publicKey, 12);
+  const walletDisplay = formatWalletAddress(publicKey, 12);
 
   return (
     <View
@@ -558,7 +558,7 @@ export function CopyWalletAddressSubtitle({
       }}
     >
       <Text style={{ color: theme.custom.colors.secondary }}>
-        {walletAddressDisplay(publicKey)}
+        {formatWalletAddress(publicKey)}
       </Text>
     </Pressable>
   );
@@ -749,7 +749,7 @@ export const WalletAddressLabel = memo(function WalletAddressLabel({
   return (
     <Box p={4} backgroundColor="$background" borderRadius="$small">
       <StyledText fontSize="$sm" color="$secondary">
-        ({walletAddressDisplay(publicKey)})
+        ({formatWalletAddress(publicKey)})
       </StyledText>
     </Box>
   );

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
+  formatWalletAddress,
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
   UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_DELETE,
-  walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
   CheckIcon,
@@ -80,7 +80,7 @@ export const RemoveWallet: React.FC<{
               color: theme.custom.colors.fontColor,
             }}
           >
-            {`Are you sure you want to remove ${walletAddressDisplay(
+            {`Are you sure you want to remove ${formatWalletAddress(
               publicKey
             )}?`}
           </Typography>

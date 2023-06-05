@@ -7,28 +7,8 @@ import { v1 } from "uuid";
 
 import { Blockchain } from "./types";
 
-const usd = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
-
 export function toTitleCase(str: string) {
   return str?.slice(0, 1)?.toUpperCase() + str?.toLowerCase()?.slice(1);
-}
-
-/**
- * Formats a number or number string into a pretty USD string
- * @example
- * formatUSD(-1234567.89) // "-$1,234,567.89"
- */
-export function formatUSD(amount: number | string) {
-  let amountNumber: number;
-  if (typeof amount === "string") {
-    amountNumber = Number(amount.replace(",", ""));
-  } else {
-    amountNumber = amount;
-  }
-  return usd.format(amountNumber);
 }
 
 /**

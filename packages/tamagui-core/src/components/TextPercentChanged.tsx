@@ -1,5 +1,5 @@
 import { StyleSheet, Text } from "react-native";
-import { formatUSD } from "@coral-xyz/common";
+import { formatUsd } from "@coral-xyz/common";
 
 import { useCustomTheme as useTheme } from "../hooks";
 
@@ -22,7 +22,7 @@ export function TextPercentChanged({
             { color: theme.custom.colors.positive },
           ]}
         >
-          +{formatUSD(percentChange.toLocaleString())}
+          +{formatUsd(percentChange.toLocaleString())}
         </Text>
       ) : null}
       {percentChange !== undefined && negative ? (
@@ -32,7 +32,7 @@ export function TextPercentChanged({
             { color: theme.custom.colors.negative },
           ]}
         >
-          {formatUSD(percentChange.toLocaleString())}
+          {formatUsd(percentChange.toLocaleString())}
         </Text>
       ) : null}
       {percentChange !== undefined && neutral ? (
@@ -42,7 +42,7 @@ export function TextPercentChanged({
             { color: theme.custom.colors.secondary },
           ]}
         >
-          {formatUSD(percentChange.toLocaleString())}
+          {formatUsd(percentChange.toLocaleString())}
         </Text>
       ) : null}
     </>

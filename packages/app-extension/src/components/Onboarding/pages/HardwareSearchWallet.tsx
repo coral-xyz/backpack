@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
+  formatWalletAddress,
   getRecoveryPaths,
-  walletAddressDisplay,
 } from "@coral-xyz/common";
 import { Loading, PrimaryButton } from "@coral-xyz/react-common";
 import Ethereum from "@ledgerhq/hw-app-eth";
@@ -82,8 +82,8 @@ export const HardwareSearchWallet = ({
       <Box sx={{ margin: "24px" }}>
         <Header text="Unable to recover wallet" />
         <SubtextParagraph>
-          We couldn't find the public key {walletAddressDisplay(publicKey)}{" "}
-          using your hardware wallet.
+          We couldn't find the public key {formatWalletAddress(publicKey)} using
+          your hardware wallet.
         </SubtextParagraph>
       </Box>
       <Box

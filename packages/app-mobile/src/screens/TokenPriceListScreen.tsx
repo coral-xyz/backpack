@@ -9,7 +9,7 @@ import {
 } from "react";
 import { SectionList } from "react-native";
 
-import { formatUSD } from "@coral-xyz/common";
+import { formatUsd } from "@coral-xyz/common";
 import { RoundedContainerGroup, StyledText } from "@coral-xyz/tamagui";
 import { useNavigation } from "@react-navigation/native";
 import { ErrorBoundary } from "react-error-boundary";
@@ -85,7 +85,7 @@ const FilteredSectionList = memo(function FilteredSectionList({
             name={item.name}
             imageUrl={item.image}
             percentChange={item.price_change_percentage_24h}
-            price={formatUSD(item.current_price)}
+            price={formatUsd(item.current_price)}
             onPress={() => {
               handlePressRow(item);
             }}

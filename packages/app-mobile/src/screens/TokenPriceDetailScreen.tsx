@@ -3,7 +3,7 @@ import { View, Button, ScrollView } from "react-native";
 
 import { Image } from "expo-image";
 
-import { formatUSD } from "@coral-xyz/common";
+import { formatUsd } from "@coral-xyz/common";
 import {
   Stack,
   YStack,
@@ -63,7 +63,7 @@ function TokenOverviewHeaderStrip({
       </XStack>
       <Separator alignSelf="stretch" vertical my={12} mx={12} />
       <XStack ai="center">
-        <StyledText>{formatUSD(price)}</StyledText>
+        <StyledText>{formatUsd(price)}</StyledText>
         <StyledText color={textColor} ml={8}>
           {formatDecimals(percentChange, 2)}%
         </StyledText>
@@ -125,10 +125,10 @@ function TokenSummaryTable({
       separator={<Separator />}
     >
       <YGroup.Item>
-        <ListItemLabelValue label="Market cap" value={formatUSD(marketCap)} />
+        <ListItemLabelValue label="Market cap" value={formatUsd(marketCap)} />
       </YGroup.Item>
       <YGroup.Item>
-        <ListItemLabelValue label="Total Volume" value={formatUSD(volume)} />
+        <ListItemLabelValue label="Total Volume" value={formatUsd(volume)} />
       </YGroup.Item>
       <YGroup.Item>
         <ListItemLabelValue
@@ -137,7 +137,7 @@ function TokenSummaryTable({
         />
       </YGroup.Item>
       <YGroup.Item>
-        <ListItemLabelValue label="All Time High" value={formatUSD(ath)} />
+        <ListItemLabelValue label="All Time High" value={formatUsd(ath)} />
       </YGroup.Item>
     </YGroup>
   );

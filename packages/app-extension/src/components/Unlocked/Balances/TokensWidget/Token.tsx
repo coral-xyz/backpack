@@ -1,6 +1,6 @@
 import { Suspense, useState } from "react";
 import type { SearchParamsFor } from "@coral-xyz/common";
-import { Blockchain, formatUSD } from "@coral-xyz/common";
+import { Blockchain, formatUsd } from "@coral-xyz/common";
 import {
   blockchainTokenData,
   useActiveEthereumWallet,
@@ -132,7 +132,7 @@ function TokenHeader({
         />
         {token.priceData ? (
           <Typography className={classes.usdBalanceLabel}>
-            {formatUSD(token.usdBalance)}
+            {formatUsd(token.usdBalance)}
             &nbsp;&nbsp;&nbsp;
             <span className={percentClass}>{token.recentPercentChange}%</span>
           </Typography>

@@ -5,7 +5,7 @@ import {
   Blockchain,
   exploreAddressUrl,
   explorerUrl,
-  walletAddressDisplay,
+  formatWalletAddress,
 } from "@coral-xyz/common";
 import { PrimaryButton, ProxyImage } from "@coral-xyz/react-common";
 import {
@@ -555,7 +555,7 @@ function DetailTable({
             <div className={classes.cell}>
               <div className={classes.label}>To</div>
               <div className={classes.cellValue}>
-                {walletAddressDisplay(
+                {formatWalletAddress(
                   transaction?.tokenTransfers?.[0]?.toUserAccount ||
                     transaction?.nativeTransfers?.[0]?.toUserAccount
                 )}
@@ -578,7 +578,7 @@ function DetailTable({
             <div className={classes.label}>From</div>
 
             <div className={classes.cellValue}>
-              {walletAddressDisplay(
+              {formatWalletAddress(
                 transaction?.tokenTransfers?.[0]?.fromUserAccount ||
                   transaction?.nativeTransfers?.[0]?.fromUserAccount
               )}
@@ -627,7 +627,7 @@ function DetailTable({
             className={classes.cellValue}
             style={{ color: theme.custom.colors.blue }}
           >
-            {walletAddressDisplay(transaction?.signature)}
+            {formatWalletAddress(transaction?.signature)}
             <CallMade
               fontSize="small"
               style={{

@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
+  formatWalletAddress,
   UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
   UI_RPC_METHOD_KEYNAME_READ,
-  walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
   PrimaryButton,
@@ -57,7 +57,7 @@ export const WalletDetail: React.FC<{
         });
       } catch {
         // No wallet name, might be dehydrated
-        keyname = walletAddressDisplay(publicKey);
+        keyname = formatWalletAddress(publicKey);
       }
       setWalletName(keyname);
       nav.setOptions({ headerTitle: keyname });

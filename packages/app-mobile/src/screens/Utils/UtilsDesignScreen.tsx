@@ -20,7 +20,7 @@ import {
 
 import Constants from "expo-constants";
 
-import { formatUSD, Blockchain, walletAddressDisplay } from "@coral-xyz/common";
+import { formatUsd, Blockchain, formatWalletAddress } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import {
   Stack,
@@ -61,7 +61,7 @@ export const WalletAddressLabel = memo(function WalletAddressLabel({
   return (
     <Box p={4} backgroundColor="$background" borderRadius="$small">
       <StyledText fontSize="$sm" color="$secondary">
-        ({walletAddressDisplay(publicKey)})
+        ({formatWalletAddress(publicKey)})
       </StyledText>
     </Box>
   );
@@ -459,7 +459,7 @@ function TokenPriceListSearch() {
                 imageUrl={item.image}
                 percentChange={item.price_change_percentage_24h}
                 onPress={handlePressRow}
-                price={formatUSD(item.current_price)}
+                price={formatUsd(item.current_price)}
               />
             </RoundedContainerGroup>
           );
