@@ -20,6 +20,7 @@ import {
 import * as Linking from "expo-linking";
 
 import {
+  validatePrivateKey,
   getAuthMessage,
   formatWalletAddress,
   getRecoveryPaths,
@@ -31,6 +32,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
   XNFT_GG_LINK,
+  PrivateKeyWalletDescriptor,
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
@@ -38,7 +40,7 @@ import {
   useOnboarding,
   useRpcRequests,
 } from "@coral-xyz/recoil";
-import { Stack as Box } from "@coral-xyz/tamagui";
+import { Stack as Box, YStack, TextArea } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useForm } from "react-hook-form";
@@ -75,6 +77,7 @@ import {
   MnemonicInputFields,
   PasswordInput,
   PrimaryButton,
+  SecondaryButton,
   LinkButton,
   Screen,
   StyledText,
@@ -157,6 +160,7 @@ type OnboardingStackParamList = {
   CreateOrRecoverUsername: undefined;
   CreateOrImportWallet: undefined;
   KeyringTypeSelector: undefined;
+  PrivateKeyInput: undefined;
   MnemonicInput: undefined;
   MnemonicSearch: undefined;
   SelectBlockchain: undefined;
@@ -262,9 +266,14 @@ function CreateOrRecoverAccountScreen({
   );
 }
 
+type OnboardingCreateOrImportWalletScreenProps = StackScreenProps<
+  OnboardingStackParamList,
+  "CreateOrImportWallet"
+>;
+
 function OnboardingCreateOrImportWalletScreen({
   navigation,
-}: StackScreenProps<OnboardingStackParamList, "CreateOrImportWallet">) {
+}: OnboardingCreateOrImportWalletScreenProps) {
   const { setOnboardingData } = useOnboarding();
 
   return (
@@ -292,11 +301,17 @@ function OnboardingCreateOrImportWalletScreen({
   );
 }
 
+type OnboardingKeyringTypeSelectorScreenProps = StackScreenProps<
+  OnboardingStackParamList,
+  "KeyringTypeSelector"
+>;
+
 function OnboardingKeyringTypeSelectorScreen({
   navigation,
-}: StackScreenProps<OnboardingStackParamList, "KeyringTypeSelector">) {
+}: OnboardingKeyringTypeSelectorScreenProps) {
   const { onboardingData, setOnboardingData } = useOnboarding();
   const { action } = onboardingData;
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
 
   return (
     <OnboardingScreen>
@@ -330,26 +345,95 @@ function OnboardingKeyringTypeSelectorScreen({
       ))}
       <Box padding={16} alignItems="center">
         <PrimaryButton
-          label={`${toTitleCase(action as string)} with recovery phrase`}
+          label={`${toTitleCase(action as string)} with secret phrase`}
           onPress={() => {
             setOnboardingData({ keyringType: "mnemonic" });
             navigation.push("MnemonicInput");
           }}
         />
+        {showAdvancedOptions ? (
+          <YStack mt={16} space={16} width="100%">
+            <SecondaryButton
+              label="Recover with private key"
+              onPress={() => {
+                setOnboardingData({ keyringType: "private-key" });
+                navigation.push("PrivateKeyInput");
+              }}
+            />
+          </YStack>
+        ) : null}
         <LinkButton
-          disabled
           label={
-            action === "recover"
-              ? "Recover using a hardware wallet"
-              : "I have a hardware wallet"
+            showAdvancedOptions
+              ? "Hide advanced options"
+              : "Show advanced options"
           }
           onPress={() => {
-            setOnboardingData({ keyringType: "ledger" });
-            navigation.push("SelectBlockchain");
+            setShowAdvancedOptions(!showAdvancedOptions);
           }}
         />
       </Box>
     </OnboardingScreen>
+  );
+}
+
+type OnboardingPrivateKeyInputScreenProps = StackScreenProps<
+  OnboardingStackParamList,
+  "PrivateKeyInput"
+>;
+
+function OnboardingPrivateKeyInputScreen({
+  navigation,
+}: OnboardingPrivateKeyInputScreenProps) {
+  const [loading, setLoading] = useState(false);
+  const { handlePrivateKeyInput } = useOnboarding();
+  const [privateKey, setPrivateKey] = useState("");
+  const blockchain = undefined; // TODO
+
+  return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={64}
+    >
+      <OnboardingScreen>
+        <Box>
+          <Header text="Enter private key" style={{ textAlign: "center" }} />
+          <SubtextParagraph style={{ textAlign: "center" }}>
+            Enter your private key. It will be encrypted and stored on your
+            device.
+          </SubtextParagraph>
+        </Box>
+        <Box>
+          <TextArea
+            autoFocus
+            mb={12}
+            bg="$nav"
+            height={100}
+            value={privateKey}
+            placeholder="Enter private key"
+            onChangeText={setPrivateKey}
+          />
+          <PrimaryButton
+            loading={loading}
+            disabled={loading || privateKey.length === 0}
+            label="Import"
+            onPress={async () => {
+              try {
+                const result: PrivateKeyWalletDescriptor = validatePrivateKey(
+                  privateKey,
+                  blockchain
+                );
+                await handlePrivateKeyInput(result);
+                navigation.push("MnemonicInput");
+              } catch (error) {
+                // show error
+              }
+            }}
+          />
+        </Box>
+      </OnboardingScreen>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -1027,6 +1111,10 @@ export function OnboardingNavigator({
           <Stack.Screen
             name="KeyringTypeSelector"
             component={OnboardingKeyringTypeSelectorScreen}
+          />
+          <Stack.Screen
+            name="PrivateKeyInput"
+            component={OnboardingPrivateKeyInputScreen}
           />
           <Stack.Screen
             name="MnemonicInput"
