@@ -1,5 +1,5 @@
 import { Suspense, useCallback, useRef } from "react";
-import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import Constants from "expo-constants";
 import * as SplashScreen from "expo-splash-screen";
@@ -63,6 +63,7 @@ function Main(): JSX.Element | null {
   }
 
   const serviceWorkerUrl = Constants.expoConfig?.extra?.serviceWorkerUrl;
+  const loadingLabel = `${Updates.channel} ${serviceWorkerUrl}`;
 
   return (
     <View
@@ -80,14 +81,7 @@ function Main(): JSX.Element | null {
           <RootNavigation colorScheme={theme.colorScheme as "dark" | "light"} />
         </Providers>
       ) : (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <ActivityIndicator size="large" />
-          <Text>loading service worker..</Text>
-          <Text>{serviceWorkerUrl}</Text>
-          <Text>{Updates.channel}</Text>
-        </View>
+        <FullScreenLoading label={loadingLabel} />
       )}
     </View>
   );

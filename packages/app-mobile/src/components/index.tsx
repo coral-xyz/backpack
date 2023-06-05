@@ -366,7 +366,13 @@ export function DummyScreen({ route }) {
   );
 }
 
-export function FullScreenLoading({ label }: { label?: string }): JSX.Element {
+export function FullScreenLoading({
+  label,
+  children,
+}: {
+  label?: string;
+  children?: React.ReactNode;
+}): JSX.Element {
   const theme = useTheme();
   return (
     <View
@@ -390,6 +396,7 @@ export function FullScreenLoading({ label }: { label?: string }): JSX.Element {
           {label}
         </Text>
       ) : null}
+      {children}
     </View>
   );
 }

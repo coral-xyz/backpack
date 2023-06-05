@@ -14,6 +14,7 @@ import {
 } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
+import { FullScreenLoading } from "~components/index";
 import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 import { GlobalDrawerContent } from "~navigation/GlobalDrawerContent";
 import { HeaderButton } from "~navigation/components";
@@ -144,6 +145,6 @@ function RootNavigator(): JSX.Element {
         </>
       );
     default:
-      return <NotFoundScreen />;
+      return <FullScreenLoading />;
   }
 }
