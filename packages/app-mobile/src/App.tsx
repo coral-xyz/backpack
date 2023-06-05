@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import Constants from "expo-constants";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
+import * as Updates from "expo-updates";
 
 import {
   BACKGROUND_SERVICE_WORKER_READY,
@@ -85,6 +86,7 @@ function Main(): JSX.Element | null {
           <ActivityIndicator size="large" />
           <Text>loading service worker..</Text>
           <Text>{serviceWorkerUrl}</Text>
+          <Text>{Updates.channel}</Text>
         </View>
       )}
     </View>
