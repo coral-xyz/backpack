@@ -6,6 +6,7 @@ Android and iOS apps powered via react-native.
 
 - A phone or Simulator (Download XCode)
 - At least two terminal windows
+- watchman (brew install watchman)
 
 ## Quick Start
 
@@ -33,7 +34,15 @@ This runs our service worker which the mobile app talks to inside src/App.tsx
 - In a separate terminal window, from `packages/app-mobile`, run:
 
 ```sh
-yarn ios -c
+eas build:run -p ios --latest
+```
+
+This will download the latest development build. You might need to be added to our EAS account if it doesn't work. You only need to run this once.
+
+Once installed, run:
+
+```
+yarn ios
 ```
 
 An iPhone simulator should open up and you should be well on your way!
@@ -41,13 +50,13 @@ An iPhone simulator should open up and you should be well on your way!
 If you want to run Android, run:
 
 ```sh
-yarn android -c
+yarn android
 ```
 
 Android emulators don't support running localhost:9333 in your local environment.
 It tries to connect to the local phone's server which doesn't exist.
 
-### TroubleShooting
+### Troubleshooting
 
 #### I'm stuck on a black screen with a white backpack logo
 
