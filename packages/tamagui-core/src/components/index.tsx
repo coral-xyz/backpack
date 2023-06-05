@@ -1,3 +1,4 @@
+export * from "./ApproveTransactionBottomSheet";
 export * from "./BlockchainLogo";
 export * from "./Button";
 export * from "./Container";
@@ -9,5 +10,6 @@ export * from "./RoundedContainerGroup";
 export { SearchBox } from "./SearchBox";
 export { StyledText } from "./StyledText";
 export * from "./TextPercentChanged";
+export * from "./TwoButtonFooter";
 export * from "./UsdBalanceAndPercentChange";
 export * from "./UserAvatar";
