@@ -3,11 +3,11 @@ import { SignalingManager } from "@coral-xyz/chat-xplat";
 import type { RemoteUserData } from "@coral-xyz/common";
 import {
   BACKPACK_TEAM,
+  formatUsername,
+  formatWalletAddress,
   NAV_COMPONENT_MESSAGE_PROFILE,
   sendFriendRequest,
   unFriend,
-  usernameDisplay,
-  walletAddressDisplay,
 } from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
@@ -302,14 +302,14 @@ function UserListItem({
                   flexDirection: "column",
                 }}
               >
-                {usernameDisplay(user.username, 15)}{" "}
+                {formatUsername(user.username, 15)}{" "}
                 {user.searchedSolPubKey ? (
-                  <> ({walletAddressDisplay(user.searchedSolPubKey, 2)})</>
+                  <> ({formatWalletAddress(user.searchedSolPubKey, 2)})</>
                 ) : (
                   ""
                 )}{" "}
                 {user.searchedEthPubKey ? (
-                  <>({walletAddressDisplay(user.searchedEthPubKey, 2)})</>
+                  <>({formatWalletAddress(user.searchedEthPubKey, 2)})</>
                 ) : (
                   ""
                 )}

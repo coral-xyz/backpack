@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import type { Blockchain, ServerPublicKey } from "@coral-xyz/common";
 import {
+  formatWalletAddress,
   UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
   validatePrivateKey,
-  walletAddressDisplay,
 } from "@coral-xyz/common";
 import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
 import { useAllWallets, useBackgroundClient } from "@coral-xyz/recoil";
@@ -81,13 +81,13 @@ export const PrivateKeyInput = ({
       if (!found) {
         if (serverPublicKeys.length === 1) {
           setError(
-            `Incorrect private key for ${walletAddressDisplay(
+            `Incorrect private key for ${formatWalletAddress(
               serverPublicKeys[0].publicKey
-            )}. The public key was ${walletAddressDisplay(_publicKey)}.`
+            )}. The public key was ${formatWalletAddress(_publicKey)}.`
           );
         } else {
           setError(
-            `Public key ${walletAddressDisplay(
+            `Public key ${formatWalletAddress(
               _publicKey
             )} not found on your Backpack account.`
           );
@@ -133,7 +133,7 @@ export const PrivateKeyInput = ({
             {serverPublicKeys && serverPublicKeys.length === 1 ? (
               <>
                 Enter the private key for{" "}
-                {walletAddressDisplay(serverPublicKeys[0].publicKey)} to recover
+                {formatWalletAddress(serverPublicKeys[0].publicKey)} to recover
                 the wallet.
               </>
             ) : (

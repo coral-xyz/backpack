@@ -35,9 +35,9 @@ import { BigNumber, ethers } from "ethers";
 
 import {
   Checkbox,
+  formatWalletAddress,
   Header,
   SubtextParagraph,
-  walletAddressDisplay,
 } from "../../common";
 import { Scrollbar } from "../Layout/Scrollbar";
 
@@ -500,7 +500,7 @@ export function ImportWallets({
                       </div>
                       <ListItemText
                         id={publicKey.toString()}
-                        primary={walletAddressDisplay(publicKey)}
+                        primary={formatWalletAddress(publicKey)}
                         sx={{
                           marginLeft: "8px",
                           fontSize: "14px",

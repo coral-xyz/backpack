@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { View, Button, FlatList, FlatListProps, Pressable } from "react-native";
 
 import {
-  formatAMPM,
+  formatAmPm,
   isBackpackTeam,
   markSpam,
   sendFriendRequest,
@@ -243,7 +243,7 @@ export function ChatListItem({
             fontWeight={isUnread ? "700" : "400"}
             color={theme.custom.colors.textPlaceholder}
           >
-            {formatAMPM(new Date(timestamp))}
+            {formatAmPm(new Date(timestamp))}
           </Text>
         </YStack>
       </XStack>

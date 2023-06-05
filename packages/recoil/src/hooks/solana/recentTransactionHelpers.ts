@@ -1,7 +1,7 @@
 // Note(peter): copied from extension
 import {
+  formatWalletAddress,
   SOL_NATIVE_MINT,
-  walletAddressDisplay,
   WSOL_MINT,
 } from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
@@ -261,12 +261,12 @@ export const getTransactionCaption = (
     // case TransactionType.UNKNOWN:
     case TransactionType.TRANSFER:
       if (isUserTxnSender(transaction, activeWallet)) {
-        return `To: ${walletAddressDisplay(
+        return `To: ${formatWalletAddress(
           transaction?.tokenTransfers[0]?.toUserAccount ||
             transaction?.nativeTransfers[0]?.toUserAccount
         )}`;
       } else if (isUserTxnSender(transaction, activeWallet) === false) {
-        return `From: ${walletAddressDisplay(
+        return `From: ${formatWalletAddress(
           transaction?.tokenTransfers[0]?.fromUserAccount ||
             transaction?.nativeTransfers[0]?.fromUserAccount
         )}`;
@@ -301,7 +301,7 @@ export const getTransactionCaption = (
     // case TransactionType.BURN:
     //   return transaction?.
     case TransactionType.NFT_MINT:
-      return walletAddressDisplay(
+      return formatWalletAddress(
         metadata?.onChainMetadata?.metadata?.collection?.key
       );
 
@@ -317,7 +317,7 @@ export const getTransactionCaption = (
       //   transaction?.source !== TransactionType.UNKNOWN
       // )
       //   return getSourceOrTypeFormatted(transaction.source);
-      return walletAddressDisplay(transaction?.instructions[0].programId);
+      return formatWalletAddress(transaction?.instructions[0].programId);
   }
 };
 
@@ -407,7 +407,7 @@ export const parseSwapTransaction = (
           } as any)
           .find((t) => t?.address === mint);
 
-        const symbolOrAddress = token?.symbol || walletAddressDisplay(mint);
+        const symbolOrAddress = token?.symbol || formatWalletAddress(mint);
 
         return {
           tokenIcon: token?.logoURI || UNKNOWN_ICON_SRC,

@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import type { Blockchain } from "@coral-xyz/common";
-import { formatUSD } from "@coral-xyz/common";
+import { formatUsd } from "@coral-xyz/common";
 
 import { useCustomTheme as useTheme } from "../hooks/index";
 import { ListItem, Separator, Stack, XStack, YGroup, YStack } from "../";
@@ -436,7 +436,7 @@ export function ListItemToken({
         </YStack>
         <YStack alignItems="flex-end">
           <StyledText fontSize="$lg" color="$fontColor">
-            {formatUSD(token.usdBalance)}
+            {formatUsd(token.usdBalance)}
           </StyledText>
           <TextPercentChanged percentChange={recentUsdBalanceChange} />
         </YStack>

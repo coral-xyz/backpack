@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { View } from "react-native";
 
-import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
+import { Blockchain, formatWalletAddress } from "@coral-xyz/common";
 import { useActiveWallets } from "@coral-xyz/recoil";
 import { StyledText, XStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
@@ -38,7 +38,7 @@ function Pill({
     >
       <BlockchainLogo blockchain={blockchain} size={16} />
       <StyledText ml={8} color="$secondary" fontSize="$base">
-        {walletAddressDisplay(publicKey)}
+        {formatWalletAddress(publicKey)}
       </StyledText>
     </XStack>
   );

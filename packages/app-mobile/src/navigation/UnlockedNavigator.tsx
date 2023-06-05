@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { walletAddressDisplay } from "@coral-xyz/common";
+import { formatWalletAddress } from "@coral-xyz/common";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -151,7 +151,7 @@ export function UnlockedNavigator(): JSX.Element {
         options={({ route }) => {
           const { name, publicKey } = route.params;
           return {
-            title: `${name} (${walletAddressDisplay(publicKey)})`,
+            title: `${name} (${formatWalletAddress(publicKey)})`,
           };
         }}
       />
