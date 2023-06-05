@@ -1,0 +1,34 @@
+name: Production mobile service worker
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build mobile-service-worker
+        run: cd packages/background && yarn build:html
+
+      - if: github.event_name == 'pull_request'
+        name: "set env.commit_sha from latest commit in PR"
+        run: echo "commit_sha=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_ENV"
+
+      - if: github.event_name == 'push'
+        name: "set env.commit_sha from commit or merge commit"
+        run: echo "commit_sha=${{ github.sha }}" >> "$GITHUB_ENV"
+
+      - name: "set env.short_sha"
+        run: echo "short_sha=$(echo "${{ env.commit_sha }}" | cut -c1-7)" >> "$GITHUB_ENV"
+
+      - name: Deploy mobile-service-worker.xnfts.dev
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          cname: mobile-service-worker.xnfts.dev
+          publish_dir: packages/background/build
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          destination_dir: "background-scripts/${{ env.short_sha }}"
