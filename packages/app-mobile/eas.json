@@ -12,11 +12,7 @@
       },
       "android": {
         "image": "latest"
-      },
-      "env": {
-        "APP_ENV": "production"
-      },
-      "channel": "monorepo"
+      }
     },
     "development-simulator": {
       "extends": "monorepo",
@@ -33,7 +29,7 @@
     "preview": {
       "extends": "monorepo",
       "distribution": "internal",
-      "channel": "preview"
+      "channel": "staging"
     },
     "production": {
       "extends": "monorepo",

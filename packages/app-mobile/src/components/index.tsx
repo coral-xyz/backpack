@@ -14,6 +14,7 @@ import {
 import * as Clipboard from "expo-clipboard";
 import Constants from "expo-constants";
 import { Image } from "expo-image";
+import * as Updates from "expo-updates";
 
 import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
@@ -473,7 +474,16 @@ export function WelcomeLogoHeader() {
             backgroundColor: "white",
           }}
         >
-          {JSON.stringify(Constants?.expoConfig?.extra, null, 2)}
+          {JSON.stringify(
+            {
+              graphqlApiUrl: Constants.expoConfig?.extra?.graphqlApiUrl,
+              serviceWorkerUrl: Constants.expoConfig?.extra?.serviceWorkerUrl,
+              channel: Updates.channel === "" ? "none" : Updates.channel,
+              env: process.env.APP_ENV ?? "none",
+            },
+            null,
+            2
+          )}
         </Text>
       ) : null}
     </>
