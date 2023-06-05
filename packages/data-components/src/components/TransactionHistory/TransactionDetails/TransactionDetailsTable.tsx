@@ -1,5 +1,10 @@
 import { Platform, type ViewStyle } from "react-native";
-import { explorerUrl, walletAddressDisplay } from "@coral-xyz/common";
+import {
+  explorerUrl,
+  formatDate,
+  formatSnakeToTitleCase,
+  formatWalletAddress,
+} from "@coral-xyz/common";
 import {
   useActiveWallet,
   useBlockchainConnectionUrl,
@@ -14,7 +19,6 @@ import {
 } from "@coral-xyz/tamagui";
 import * as Linking from "expo-linking";
 
-import { formatDate, snakeToTitleCase } from "../../../utils";
 import type { ResponseTransaction } from "..";
 import type { ParseTransactionDetails } from "../parsing";
 
@@ -49,15 +53,19 @@ export function TransactionDetailsTable({
           value={formatDate(new Date(transaction.timestamp), true)}
         />
       ) : null}
-      {details.details.item ? <TableRowCore label="Item" value={details.details.item} /> : null}
+      {details.details.item ? (
+        <TableRowCore label="Item" value={details.details.item} />
+      ) : null}
       {/* <TableRowCore label="Type" value={snakeToTitleCase(transaction.type)} /> */}
-      {details.details.amount ? <TableRowCore
-        label="Amount"
-        value={<_TransactionAmountRowValue amount={details.details.amount} />}
-        /> : null}
+      {details.details.amount ? (
+        <TableRowCore
+          label="Amount"
+          value={<_TransactionAmountRowValue amount={details.details.amount} />}
+        />
+      ) : null}
       <TableRowCore
         label="Source"
-        value={snakeToTitleCase(transaction.source ?? "Unknown")}
+        value={formatSnakeToTitleCase(transaction.source ?? "Unknown")}
       />
       {transaction.fee ? (
         <TableRowCore label="Network Fee" value={transaction.fee} />
@@ -65,7 +73,7 @@ export function TransactionDetailsTable({
       {transaction.feePayer && transaction.feePayer !== active.publicKey ? (
         <TableRowCore
           label="Network Fee Payer"
-          value={walletAddressDisplay(transaction.feePayer!)}
+          value={formatWalletAddress(transaction.feePayer!)}
         />
       ) : null}
       <TableRowCore

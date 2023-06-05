@@ -1,4 +1,4 @@
-import { formatDate } from "../../utils";
+import { formatDate } from "@coral-xyz/common";
 
 import type { ResponseTransaction } from ".";
 

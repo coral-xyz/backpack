@@ -1,6 +1,6 @@
-import { formatUSD } from "@coral-xyz/common";
+import { formatUsd } from "@coral-xyz/common";
 import type { MOBILE_LIGHT_THEME } from "@coral-xyz/themes";
-import { type StackProps,XStack, YStack } from "tamagui";
+import { type StackProps, XStack, YStack } from "tamagui";
 
 import { useCustomTheme } from "../../hooks";
 import { Skeleton } from "../Skeleton";
@@ -22,7 +22,7 @@ export function BalanceSummaryCore({
   return (
     <YStack alignItems="center" justifyContent="center" {...style}>
       <StyledText color="$fontColor" fontSize="$4xl" fontWeight="700">
-        {formatUSD(value)}
+        {formatUsd(value)}
       </StyledText>
       <XStack alignItems="center" gap={8}>
         <ValueChange value={valueChange} />
@@ -51,7 +51,7 @@ function ValueChange({ value }: { value: number }) {
   const theme = useCustomTheme();
   return (
     <StyledText color={colorByValue(theme, value)}>
-      {formatUSD(value)}
+      {formatUsd(value)}
     </StyledText>
   );
 }

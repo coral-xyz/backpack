@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useUserMetadata } from "@coral-xyz/chat-xplat";
+import { formatSemanticTimeDifference } from "@coral-xyz/common";
 import {
   ListItemCore,
   ListItemIconCore,
@@ -11,7 +12,6 @@ import {
 
 import type { ResponseNotification } from ".";
 import { NotificationListItemFriendRequestAction } from "./NotificationListItemActions";
-import { getTimeStr } from "./utils";
 
 export type NotificationListItemProps = {
   notification: ResponseNotification;
@@ -86,7 +86,7 @@ function NotificationListItemApplication({
           {notification.app!.name}
         </StyledText>
         <StyledText color="$secondary" fontSize="$sm">
-          {getTimeStr(notification.timestamp)}
+          {formatSemanticTimeDifference(notification.timestamp)}
         </StyledText>
       </XStack>
     </ListItemCore>
@@ -132,7 +132,7 @@ function NotificationListItemFriendRequest({
             {notification.title.replace("Accepted", "accepted")}
           </StyledText>
           <StyledText color="$secondary" fontSize="$sm">
-            {getTimeStr(notification.timestamp)}
+            {formatSemanticTimeDifference(notification.timestamp)}
           </StyledText>
         </XStack>
         <YStack>

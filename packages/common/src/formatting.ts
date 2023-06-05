@@ -22,6 +22,91 @@ export function formatAmPm(date: Date): string {
 }
 
 /**
+ * Format a string for the argued `Date` instance.
+ * @param {Date} date
+ * @param {boolean} [includeTime]
+ * @returns {string}
+ */
+export function formatDate(date: Date, includeTime?: boolean): string {
+  const months = [
+    "Jan",
+    "Feb",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "Aug",
+    "Sept",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const mm = months[date.getMonth()];
+  const dd = date.getDate();
+  const yyyy = date.getFullYear();
+  const time = includeTime ? ` at ${date.toLocaleTimeString()}` : "";
+  return `${mm} ${dd}, ${yyyy}${time}`;
+}
+
+/**
+ * Convert the argued timestamp into a semantic period of time string.
+ * @export
+ * @param {string} timestamp
+ * @returns {string}
+ */
+export function formatSemanticTimeDifference(timestamp: string): string {
+  const time = new Date(timestamp).getTime();
+  const elapsedTimeSeconds = (new Date().getTime() - time) / 1000;
+  if (elapsedTimeSeconds < 60) {
+    return "now";
+  }
+  if (elapsedTimeSeconds / 60 < 60) {
+    const min = Math.floor(elapsedTimeSeconds / 60);
+    if (min === 1) {
+      return "1 min";
+    } else {
+      return `${min} mins`;
+    }
+  }
+
+  if (elapsedTimeSeconds / 3600 < 24) {
+    const hours = Math.floor(elapsedTimeSeconds / 3600);
+    if (hours === 1) {
+      return "1 hour";
+    } else {
+      return `${hours} hours`;
+    }
+  }
+  const days = Math.floor(elapsedTimeSeconds / 3600 / 24);
+  if (days === 1) {
+    return `1 day`;
+  }
+  return `${days} days`;
+}
+
+/**
+ * Convert a snake case string into normalized title case.
+ * @export
+ * @param {string} input
+ * @returns {string}
+ */
+export function formatSnakeToTitleCase(input: string): string {
+  const parts = input.split("_").map((t) => t.toLowerCase());
+  const titleCasesParts = parts.map((p) =>
+    p.length === 1 ? p : `${p[0].toUpperCase()}${p.slice(1)}`
+  );
+
+  for (let i = 0; i < titleCasesParts.length; i++) {
+    if (["Bpf", "Nft"].includes(titleCasesParts[i])) {
+      titleCasesParts[i] = titleCasesParts[i].toUpperCase();
+    }
+  }
+
+  return titleCasesParts.join(" ");
+}
+
+/**
  * Formats a number or number string into a pretty USD string
  * @example
  * formatUsd(-1234567.89) // "-$1,234,567.89"

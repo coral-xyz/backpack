@@ -1,14 +1,13 @@
 import {
   formatWalletAddress,
   SOL_NATIVE_MINT,
+  UNKNOWN_ICON_SRC,
   WSOL_MINT,
 } from "@coral-xyz/common";
 import { SOL_LOGO_URI } from "@coral-xyz/recoil";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { NftEventTypes, Source, TransactionType } from "helius-sdk/dist/types";
-
-import { UNKNOWN_ICON_SRC } from "../../../common/Icon";
 
 import type { HeliusParsedTransaction } from "./types";
 

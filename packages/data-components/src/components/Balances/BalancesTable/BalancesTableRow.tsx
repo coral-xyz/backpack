@@ -1,5 +1,8 @@
-import { formatUSD, walletAddressDisplay } from "@coral-xyz/common";
-import { UNKNOWN_ICON_SRC } from "@coral-xyz/recoil";
+import {
+  formatUsd,
+  formatWalletAddress,
+  UNKNOWN_ICON_SRC,
+} from "@coral-xyz/common";
 import {
   ListItemCore,
   ListItemIconCore,
@@ -16,7 +19,7 @@ export type BalancesTableRowProps = {
 
 export function BalancesTableRow({ balance }: BalancesTableRowProps) {
   const name =
-    balance.tokenListEntry?.name ?? walletAddressDisplay(balance.token);
+    balance.tokenListEntry?.name ?? formatWalletAddress(balance.token);
 
   const changeColor = (
     balance.marketData?.percentChange?.toFixed(2) ?? "0.00"
@@ -32,7 +35,7 @@ export function BalancesTableRow({ balance }: BalancesTableRowProps) {
     : "-";
 
   const valueText = balance.marketData?.value
-    ? formatUSD(balance.marketData?.value)
+    ? formatUsd(balance.marketData?.value)
     : "-";
 
   return (

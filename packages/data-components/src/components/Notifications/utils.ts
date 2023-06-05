@@ -1,4 +1,4 @@
-import { formatDate } from "../../utils";
+import { formatDate } from "@coral-xyz/common";
 
 import type { ResponseNotification } from ".";
 
@@ -45,40 +45,4 @@ export function getGroupedNotifications(
   }
 
   return groupedNotifications;
-}
-
-/**
- * Convert the argued timestamp into a semantic period of time string.
- * @export
- * @param {string} timestamp
- * @returns {string}
- */
-export function getTimeStr(timestamp: string): string {
-  const time = new Date(timestamp).getTime();
-  const elapsedTimeSeconds = (new Date().getTime() - time) / 1000;
-  if (elapsedTimeSeconds < 60) {
-    return "now";
-  }
-  if (elapsedTimeSeconds / 60 < 60) {
-    const min = Math.floor(elapsedTimeSeconds / 60);
-    if (min === 1) {
-      return "1 min";
-    } else {
-      return `${min} mins`;
-    }
-  }
-
-  if (elapsedTimeSeconds / 3600 < 24) {
-    const hours = Math.floor(elapsedTimeSeconds / 3600);
-    if (hours === 1) {
-      return "1 hour";
-    } else {
-      return `${hours} hours`;
-    }
-  }
-  const days = Math.floor(elapsedTimeSeconds / 3600 / 24);
-  if (days === 1) {
-    return `1 day`;
-  }
-  return `${days} days`;
 }

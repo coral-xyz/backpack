@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
-import { SOL_LOGO_URI, UNKNOWN_ICON_SRC } from "@coral-xyz/recoil";
+import { UNKNOWN_ICON_SRC } from "@coral-xyz/common";
+import { SOL_LOGO_URI } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownwardRounded";
 import CheckIcon from "@mui/icons-material/CheckRounded";

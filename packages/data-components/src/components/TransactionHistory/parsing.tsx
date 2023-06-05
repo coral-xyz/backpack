@@ -1,8 +1,6 @@
 import { Suspense } from "react";
-import { walletAddressDisplay } from "@coral-xyz/common";
+import { formatSnakeToTitleCase, formatWalletAddress } from "@coral-xyz/common";
 import { TransactionType } from "helius-sdk";
-
-import { snakeToTitleCase } from "../../utils";
 
 import type { ResponseTransaction } from ".";
 import {
@@ -134,7 +132,7 @@ function _parseNftListingCanceledDescription(
       card: {
         tl: item,
         tr: _truncateAmount(amount),
-        bl: `Canceled listing on ${snakeToTitleCase(source)}`,
+        bl: `Canceled listing on ${formatSnakeToTitleCase(source)}`,
         icon: (
           <TransactionListItemIconNft
             mint={transaction.nfts?.[0] ?? undefined}
@@ -173,7 +171,7 @@ function _parseNftListingDescription(
       card: {
         tl: item,
         tr: _truncateAmount(amount),
-        bl: `Listed on ${snakeToTitleCase(source)}`,
+        bl: `Listed on ${formatSnakeToTitleCase(source)}`,
         icon: (
           <TransactionListItemIconNft
             mint={transaction.nfts?.[0] ?? undefined}
@@ -212,7 +210,7 @@ function _parseNftMintDescription(
       card: {
         tl: item,
         tr: `-${_truncateAmount(amount)}`,
-        bl: `Minted on ${snakeToTitleCase(source)}`,
+        bl: `Minted on ${formatSnakeToTitleCase(source)}`,
         icon: (
           <TransactionListItemIconNft
             mint={transaction.nfts?.[0] ?? undefined}
@@ -256,7 +254,7 @@ function _parseNftSaleDescription(
         tr: _truncateAmount(amount),
         bl: `${
           activeWallet === seller ? "Sold" : "Bought"
-        } on ${snakeToTitleCase(source)}`,
+        } on ${formatSnakeToTitleCase(source)}`,
         icon: (
           <TransactionListItemIconNft
             mint={transaction.nfts?.[0] ?? undefined}
@@ -342,8 +340,8 @@ function _parseTransferDescription(
         tr: `${action === "Sent" ? "-" : "+"}${_truncateAmount(amount)}`,
         bl:
           action === "Sent"
-            ? `To: ${walletAddressDisplay(to)}`
-            : `From: ${walletAddressDisplay(sender)}`,
+            ? `To: ${formatWalletAddress(to)}`
+            : `From: ${formatWalletAddress(sender)}`,
         icon: (
           <Suspense>
             <TransactionListItemIconTransfer
@@ -383,7 +381,9 @@ function _parseUpgradeProgramTransaction(
     card: {
       tl: "Program Upgrade",
       tr: "",
-      bl: transaction.source ? snakeToTitleCase(transaction.source) : undefined,
+      bl: transaction.source
+        ? formatSnakeToTitleCase(transaction.source)
+        : undefined,
     },
     details: {
       // FIXME:
