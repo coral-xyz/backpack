@@ -56,7 +56,6 @@ export function TransactionList({
         <RoundedContainerGroup
           disableBottomRadius={!last}
           disableTopRadius={!first}
-          style={{ marginBottom: last ? 24 : undefined }}
         >
           <TransactionListItem
             blockchain={blockchain}
@@ -85,7 +84,7 @@ export function TransactionList({
 
   return (
     <SectionList
-      style={{ marginHorizontal: 16, marginTop: 16 }}
+      style={{ marginHorizontal: 16, marginTop: 16, marginBottom: 24 }}
       stickySectionHeadersEnabled={false}
       showsVerticalScrollIndicator={false}
       sections={transactions}

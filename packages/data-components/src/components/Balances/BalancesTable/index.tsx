@@ -1,5 +1,5 @@
-import { type ReactNode, Suspense, useCallback,useMemo } from "react";
-import { SectionList,type SectionListRenderItem } from "react-native";
+import { type ReactNode, Suspense, useCallback, useMemo } from "react";
+import { SectionList, type SectionListRenderItem } from "react-native";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import { RoundedContainerGroup } from "@coral-xyz/tamagui";
 
@@ -9,7 +9,7 @@ import { usePolledSuspenseQuery } from "../../../hooks";
 
 import { BalancesTableRow } from "./BalancesTableRow";
 
-const DEFAULT_POLLING_INTERVAL = 30000;
+const DEFAULT_POLLING_INTERVAL = 60000;
 
 const GET_TOKEN_BALANCES = gql(`
   query GetTokenBalances($address: String!) {
@@ -27,7 +27,7 @@ const GET_TOKEN_BALANCES = gql(`
                 marketData {
                   id
                   percentChange
-                  value                  
+                  value       
                 }
                 token
                 tokenListEntry {
@@ -55,6 +55,7 @@ export type ResponseTokenBalance = NonNullable<
 
 export type BalancesTableProps = {
   loaderComponent?: ReactNode;
+  onItemClick?: (token: string) => void;
   pollingInterval?: number;
 };
 
@@ -68,6 +69,7 @@ export const BalancesTable = ({
 );
 
 function _BalancesTable({
+  onItemClick,
   pollingInterval,
 }: Omit<BalancesTableProps, "loaderComponent">) {
   const activeWallet = useActiveWallet();
@@ -105,23 +107,29 @@ function _BalancesTable({
   const renderItem: SectionListRenderItem<
     ResponseTokenBalance,
     { data: ResponseTokenBalance[] }
-  > = useCallback(({ item, section, index }) => {
-    const first = index === 0;
-    const last = index === section.data.length - 1;
-    return (
-      <RoundedContainerGroup
-        disableBottomRadius={!last}
-        disableTopRadius={!first}
-        style={{ marginBottom: last ? 24 : undefined }}
-      >
-        <BalancesTableRow balance={item} />
-      </RoundedContainerGroup>
-    );
-  }, []);
+  > = useCallback(
+    ({ item, section, index }) => {
+      const first = index === 0;
+      const last = index === section.data.length - 1;
+      return (
+        <RoundedContainerGroup
+          disableBottomRadius={!last}
+          disableTopRadius={!first}
+          style={{
+            paddingTop: first ? 4 : undefined,
+            paddingBottom: last ? 4 : undefined,
+          }}
+        >
+          <BalancesTableRow balance={item} onClick={onItemClick} />
+        </RoundedContainerGroup>
+      );
+    },
+    [onItemClick]
+  );
 
   return (
     <SectionList
-      style={{ marginHorizontal: 16 }}
+      style={{ marginHorizontal: 16, marginBottom: 24 }}
       stickySectionHeadersEnabled={false}
       showsVerticalScrollIndicator={false}
       sections={[{ data: balances }]}

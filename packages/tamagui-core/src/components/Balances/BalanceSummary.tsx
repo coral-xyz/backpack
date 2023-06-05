@@ -1,8 +1,6 @@
 import { formatUsd } from "@coral-xyz/common";
-import type { MOBILE_LIGHT_THEME } from "@coral-xyz/themes";
-import { type StackProps, XStack, YStack } from "tamagui";
+import { type ColorTokens,type StackProps, XStack, YStack } from "tamagui";
 
-import { useCustomTheme } from "../../hooks";
 import { Skeleton } from "../Skeleton";
 import { StyledText } from "../StyledText";
 
@@ -48,11 +46,8 @@ export function BalanceSummaryCoreLoader() {
 }
 
 function ValueChange({ value }: { value: number }) {
-  const theme = useCustomTheme();
   return (
-    <StyledText color={colorByValue(theme, value)}>
-      {formatUsd(value)}
-    </StyledText>
+    <StyledText color={colorByValue(value)}>{formatUsd(value)}</StyledText>
   );
 }
 
@@ -70,9 +65,5 @@ function PercentChange({ value }: { value: number }) {
   );
 }
 
-const colorByValue = (theme: typeof MOBILE_LIGHT_THEME, value: number) =>
-  value === 0
-    ? theme.custom.colors.neutral
-    : value < 0
-    ? theme.custom.colors.negative
-    : theme.custom.colors.positive;
+const colorByValue = (value: number): ColorTokens =>
+  value === 0 ? "$secondary" : value < 0 ? "$negative" : "$positive";

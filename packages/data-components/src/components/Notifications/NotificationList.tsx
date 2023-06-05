@@ -57,7 +57,6 @@ export function NotificationList({
         <RoundedContainerGroup
           disableBottomRadius={!last}
           disableTopRadius={!first}
-          style={{ marginBottom: last ? 24 : undefined }}
         >
           <NotificationListItem
             notification={item}
@@ -87,7 +86,7 @@ export function NotificationList({
 
   return (
     <SectionList
-      style={{ marginHorizontal: 16, marginTop: 16 }}
+      style={{ marginHorizontal: 16, marginTop: 16, marginBottom: 24 }}
       stickySectionHeadersEnabled={false}
       showsVerticalScrollIndicator={false}
       sections={notificationGroups}

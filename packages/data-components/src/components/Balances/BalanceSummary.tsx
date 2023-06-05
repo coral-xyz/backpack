@@ -11,7 +11,7 @@ import {
 import { gql } from "../../apollo";
 import { usePolledSuspenseQuery } from "../../hooks";
 
-const DEFAULT_POLLING_INTERVAL = 30000;
+const DEFAULT_POLLING_INTERVAL = 60000;
 
 const GET_BALANCE_SUMMARY = gql(`
   query GetBalanceSummary($address: String!) {
