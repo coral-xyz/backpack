@@ -2,6 +2,9 @@ import { ExpoConfig, ConfigContext } from "expo/config";
 
 type ExpoExtras = {
   extra: {
+    eas: {
+      projectId: string;
+    };
     serviceWorkerUrl: string;
     graphqlApiUrl: string;
   };
@@ -10,18 +13,16 @@ type ExpoExtras = {
 const localGraphQLApi = "http://localhost:8080/v2/graphql";
 const remoteGraphQLApi = "https://backpack-api.xnfts.dev/v2/graphql";
 
-// const getUrl = (hash: string = "c0384f0") =>
-//   `https://mobile-service-worker.xnfts.dev/background-scripts/${hash}/service-worker-loader.html`;
-
 const getServiceWorkerUrl = () => {
   const url =
     "https://mobile-service-worker.xnfts.dev/background-scripts/latest/service-worker-loader.html";
+
   if (process.env.APP_ENV === "staging") {
     return url;
   }
 
   if (process.env.APP_ENV === "production") {
-    const hash = "abc";
+    const hash = "REPLACE_ME";
     return url.replace(/latest/g, hash);
   } else {
     return "http://localhost:9333";
