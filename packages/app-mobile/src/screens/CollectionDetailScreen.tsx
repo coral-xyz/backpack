@@ -36,7 +36,7 @@ function ListItem({ id, onPress }: { id: string; onPress: any }): JSX.Element {
         // placeholder={blurhash}
         src={item.image}
         size={WINDOW_WIDTH}
-        style={{ borderRadius: 12, width: "100%", aspectRatio: 1 }}
+        style={{ borderRadius: 12 }}
         // transition={1000}
       />
       <XStack mt={8}>

@@ -206,9 +206,6 @@ function Container({ route }: TokenPriceDetailScreenParams): JSX.Element {
           style={{
             marginVertical: 16,
             alignSelf: "center",
-            width: 64,
-            height: 64,
-            aspectRatio: 1,
           }}
         />
         <BalanceSummaryWidget />
