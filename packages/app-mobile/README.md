@@ -65,9 +65,9 @@ Solutions:
      located [here](https://github.com/coral-xyz/backpack/blob/master/packages/app-mobile/src/App.tsx#L132)
      That line should look like this: `const webviewUrl = remoteWebViewUrl`
 
-## notes
+## service worker readme
 
-### service worker stuff
+Notes based on investigating various issues with WebView on ios, android & our service-worker-loader
 
 - [limitsNavigationsToAppBoundDomains](https://github.com/react-native-webview/react-native-webview/issues/1956) is required. Otherwise, `onMessage` will not fire, both locally and remotely.
 - [NSAllowsArbitraryLoads](https://developer.apple.com/documentation/bundleresources/information_property_list/nsapptransportsecurity/nsallowsarbitraryloads) setting this true disables App Transport Security which would allow unsecured HTTP connections. By enabling this you must supply a justification during App Store Review
