@@ -1,12 +1,10 @@
-import { Blockchain } from "@coral-xyz/common";
-
-import type { KeyringStore } from "../../localstore/keyring";
+import type { KeyringStore } from "../../store/keyring";
 import type {
   TransportHandler,
   TransportReceiver,
   TransportRemoveListener,
   TransportSender,
-} from "../../types";
+} from "../../types/transports";
 
 import type {
   SECURE_UI_APPROVE_SIGN_MESSAGE,

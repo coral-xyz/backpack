@@ -2,17 +2,21 @@ import type {
   SECURE_EVM_EVENTS,
   SECURE_EVM_SIGN_MESSAGE,
   SECURE_EVM_SIGN_TX,
-} from "./services/evm/events";
+} from "../services/evm/events";
 import type {
   SECURE_UI_APPROVE_SIGN_MESSAGE,
   SECURE_UI_EVENTS,
-} from "./services/secureUI/events";
+} from "../services/secureUI/events";
 import type {
   SECURE_SVM_EVENTS,
   SECURE_SVM_SIGN_ALL_TX,
   SECURE_SVM_SIGN_MESSAGE,
   SECURE_SVM_SIGN_TX,
-} from "./services/svm/events";
+} from "../services/svm/events";
+
+export * from "../services/evm/events";
+export * from "../services/secureUI/events";
+export * from "../services/svm/events";
 
 export type SECURE_EVENTS =
   | SECURE_SVM_EVENTS

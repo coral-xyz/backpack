@@ -1,4 +1,4 @@
-import { decode,encode } from "bs58";
+import { decode, encode } from "bs58";
 import { pbkdf2 } from "crypto";
 import { randomBytes, secretbox } from "tweetnacl";
 

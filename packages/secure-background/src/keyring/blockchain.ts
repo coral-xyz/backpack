@@ -7,8 +7,8 @@ import type {
 import { getLogger } from "@coral-xyz/common";
 import { decode } from "bs58";
 
-import { setIsCold } from "../localstore/isCold";
-import { DefaultKeyname, setKeyname } from "../localstore/keyname";
+import { setIsCold } from "../store/isCold";
+import { DefaultKeyname, setKeyname } from "../store/keyname";
 
 import type {
   AnyKeyring,

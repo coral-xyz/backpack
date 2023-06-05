@@ -13,10 +13,13 @@ type SerializableJson = {
     | SerializableJson[];
 };
 
+export type PassThroughToUI = SerializableJson;
+
 export interface SecureEventBase<T extends SECURE_EVENTS = SECURE_EVENTS> {
   name: T;
   id?: string | number;
   request: SerializableJson;
+  displayOptions?: PassThroughToUI;
   response?: SerializableJson;
   error?: string;
 }
@@ -28,12 +31,14 @@ export type SecureRequest<
       name: T["name"];
       id?: T["id"];
       request: T["request"];
+      displayOptions?: T["displayOptions"];
     }
   : T extends SECURE_EVENTS
   ? {
       name: T;
       id?: SecureEvent<T>["id"];
       request: SecureEvent<T>["request"];
+      displayOptions?: SecureEvent<T>["displayOptions"];
     }
   : never;
 

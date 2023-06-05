@@ -1,11 +1,11 @@
-import type { KeyringStore } from "../../localstore/keyring";
+import type { KeyringStore } from "../../store/keyring";
 import type {
   SecureRequest,
   TransportHandler,
   TransportReceiver,
   TransportRemoveListener,
   TransportSender,
-} from "../../types";
+} from "../../types/transports";
 
 import type {
   SECURE_EVM_EVENTS,

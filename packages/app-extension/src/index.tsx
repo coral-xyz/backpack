@@ -1,16 +1,12 @@
-import { lazy, Suspense } from "react";
+import React, { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import {
   BACKPACK_FEATURE_POP_MODE,
   isValidEventOrigin,
   openPopupWindow,
 } from "@coral-xyz/common";
-import {
-  SecureUITransportReceiver,
-  SecureUITransportSender,
-} from "@coral-xyz/secure-background/src/clients";
-import type { SECURE_UI_EVENTS } from "@coral-xyz/secure-background/src/services/secureUI/events";
-import { v4 } from "uuid";
+import type { SECURE_UI_EVENTS } from "@coral-xyz/secure-background";
+import { SecureUI, SecureUITransportReceiver } from "@coral-xyz/secure-client";
 
 import "./index.css";
 

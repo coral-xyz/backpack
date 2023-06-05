@@ -5,7 +5,8 @@
   "references": [
     { "path": "packages/background" },
     { "path": "packages/blockchains" },
-    { "path": "packages/blockchain-service" },
+    { "path": "packages/secure-background" },
+    { "path": "packages/secure-client" },
     { "path": "packages/chat-sdk" },
     { "path": "packages/chat-xplat" },
     { "path": "packages/common" },

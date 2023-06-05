@@ -1,14 +1,12 @@
 import { IS_MOBILE } from "@coral-xyz/common";
-import {
-  KeyringStore,
-  mockTransportSender,
-  startSecureService,
-} from "@coral-xyz/secure-background";
+import { KeyringStore } from "@coral-xyz/secure-background/legacyExport";
+import { startSecureService } from "@coral-xyz/secure-background/service";
 import {
   ContentScriptTransportReceiver,
+  mockTransportSender,
   SecureUITransportReceiver,
   SecureUITransportSender,
-} from "@coral-xyz/secure-background/src/clients";
+} from "@coral-xyz/secure-client";
 import { EventEmitter } from "eventemitter3";
 
 import * as coreBackend from "./backend/core";

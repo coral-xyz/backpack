@@ -3,8 +3,7 @@ import {
   CHANNEL_SECURE_BACKGROUND_REQUEST,
   ChannelContentScript,
 } from "@coral-xyz/common";
-
-import type { TransportReceiver } from "../types";
+import type { TransportReceiver } from "@coral-xyz/secure-background";
 
 export class ContentScriptTransportReceiver implements TransportReceiver {
   private server: ChannelServer;

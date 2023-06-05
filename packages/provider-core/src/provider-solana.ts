@@ -29,8 +29,8 @@ import {
 } from "@coral-xyz/common";
 import {
   ContentScriptTransportSender,
-  SVMClient,
-} from "@coral-xyz/secure-background/src/clients";
+  SolanaClient,
+} from "@coral-xyz/secure-client";
 import type { Provider } from "@project-serum/anchor";
 import type {
   Commitment,
@@ -61,7 +61,7 @@ export class ProviderSolanaInjection
   // Channel to send extension specific RPC requests to the extension.
   //
   #backpackRequestManager: InjectedRequestManager;
-  #secureSVMClient: SVMClient;
+  #secureSolanaClient: SolanaClient;
   #xnftRequestManager: ChainedRequestManager;
 
   #requestManager: InjectedRequestManager | ChainedRequestManager;
@@ -88,7 +88,9 @@ export class ProviderSolanaInjection
       CHANNEL_SOLANA_RPC_RESPONSE
     );
 
-    this.#secureSVMClient = new SVMClient(new ContentScriptTransportSender());
+    this.#secureSolanaClient = new SolanaClient(
+      new ContentScriptTransportSender()
+    );
 
     this.#requestManager = this.#backpackRequestManager;
     this.#connectionRequestManager = new InjectedRequestManager(
@@ -387,11 +389,12 @@ export class ProviderSolanaInjection
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
-    const svmResponse = await this.#secureSVMClient.signMessage({
+    const solanaResponse = await this.#secureSolanaClient.signMessage({
       publicKey: (publicKey ?? this.#publicKey).toString(),
       message: encode(msg),
     });
-    console.log("PCA", svmResponse);
+    console.log("PCA", solanaResponse);
+
     return await cmn.signMessage(
       publicKey ?? this.#publicKey,
       this.#requestManager,

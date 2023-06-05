@@ -1,4 +1,4 @@
-import type { SecureRequest, TransportSender } from "../../types";
+import type { SecureRequest, TransportSender } from "../../types/transports";
 
 import type { SECURE_EVM_EVENTS, SECURE_EVM_SIGN_MESSAGE } from "./events";
 

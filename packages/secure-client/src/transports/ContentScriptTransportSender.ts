@@ -3,8 +3,10 @@ import {
   CHANNEL_SECURE_BACKGROUND_RESPONSE,
   InjectedRequestManager,
 } from "@coral-xyz/common";
-
-import type { TransportSend, TransportSender } from "../types";
+import type {
+  TransportSend,
+  TransportSender,
+} from "@coral-xyz/secure-background";
 
 export class ContentScriptTransportSender implements TransportSender {
   private client: InjectedRequestManager;

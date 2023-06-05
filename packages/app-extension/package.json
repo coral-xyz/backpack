@@ -17,7 +17,7 @@
     "@coral-xyz/provider-injection": "*",
     "@coral-xyz/react-common": "*",
     "@coral-xyz/recoil": "*",
-    "@coral-xyz/secure-background": "*",
+    "@coral-xyz/secure-client": "*",
     "@coral-xyz/tamagui": "*",
     "@coral-xyz/themes": "*",
     "@emotion/react": "^11.10.6",

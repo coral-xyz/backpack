@@ -3,10 +3,13 @@ import {
   CHANNEL_SECURE_UI_RESPONSE,
   openPopupWindow,
 } from "@coral-xyz/common";
+import type {
+  SECURE_EVENTS,
+  SecureRequest,
+  SecureResponse,
+  TransportSender,
+} from "@coral-xyz/secure-background";
 import { v4 } from "uuid";
-
-import type { SECURE_EVENTS } from "../events";
-import type { SecureRequest, SecureResponse, TransportSender } from "../types";
 
 type QueuedRequest = {
   request: SecureRequest;

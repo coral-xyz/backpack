@@ -71,11 +71,11 @@ import type {
   BlockchainKeyring,
   KeyringStore,
   User,
-} from "@coral-xyz/secure-background";
+} from "@coral-xyz/secure-background/legacyExport";
 import {
   keyringForBlockchain,
   secureStore,
-} from "@coral-xyz/secure-background";
+} from "@coral-xyz/secure-background/legacyExport";
 import type {
   Commitment,
   SendOptions,

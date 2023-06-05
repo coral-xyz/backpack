@@ -1,5 +1,5 @@
-import type { SECURE_EVENTS } from "../events";
-import type { TransportReceiver } from "../types";
+import type { SECURE_EVENTS } from "../types/events";
+import type { TransportReceiver } from "../types/transports";
 
 export function combineTransportReceivers<
   T extends SECURE_EVENTS = SECURE_EVENTS

@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist/esm/",
-    "rootDir": "./src"
-  }
+    "rootDir": "./"
+  },
+  "include": ["src/**/*", "index.ts", "legacyExport.ts", "service.ts"]
 }

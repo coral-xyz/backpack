@@ -1,4 +1,4 @@
-import type { SecureEventBase } from "../../types";
+import type { SecureEventBase } from "../../types/transports";
 
 // Add new events here and in: ../../events.ts
 

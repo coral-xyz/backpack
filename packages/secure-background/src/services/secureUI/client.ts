@@ -1,4 +1,4 @@
-import type { TransportSender } from "../../types";
+import type { TransportSender } from "../../types/transports";
 import type {
   SECURE_UI_APPROVE_SIGN_MESSAGE,
   SECURE_UI_EVENTS,

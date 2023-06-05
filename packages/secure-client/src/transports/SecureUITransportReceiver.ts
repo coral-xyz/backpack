@@ -3,15 +3,14 @@ import {
   CHANNEL_SECURE_UI_REQUEST,
   CHANNEL_SECURE_UI_RESPONSE,
 } from "@coral-xyz/common";
-import { v4 } from "uuid";
-
-import type { SECURE_EVENTS } from "../events";
 import type {
+  SECURE_EVENTS,
   SecureRequest,
   SecureResponse,
   TransportHandler,
   TransportReceiver,
-} from "../types";
+} from "@coral-xyz/secure-background";
+import { v4 } from "uuid";
 
 export class SecureUITransportReceiver<X extends SECURE_EVENTS>
   implements TransportReceiver<X>

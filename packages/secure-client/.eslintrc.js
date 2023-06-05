@@ -9,7 +9,7 @@ module.exports = {
     "import/default": "off",
     "import/export": "off",
     "import/named": "off",
-    "import/no-namespace": "off",
+    "import/no-namespace": "error",
     "import/no-cycle": "warn",
     "import/no-unresolved": "off",
   },
