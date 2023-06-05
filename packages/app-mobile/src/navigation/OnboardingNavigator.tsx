@@ -385,6 +385,7 @@ type OnboardingPrivateKeyInputScreenProps = StackScreenProps<
 function OnboardingPrivateKeyInputScreen({
   navigation,
 }: OnboardingPrivateKeyInputScreenProps) {
+  const { serverPublicKeys } = useOnboarding();
   const [loading, setLoading] = useState(false);
   const { handlePrivateKeyInput } = useOnboarding();
   const [privateKey, setPrivateKey] = useState("");
