@@ -1,4 +1,5 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {
   useFonts,
   Inter_400Regular,
@@ -16,6 +17,7 @@ export function useLoadedAssets(): status {
     InterSemiBold: Inter_600SemiBold,
     InterBold: Inter_700Bold,
     ...MaterialCommunityIcons.font,
+    ...MaterialIcons.font,
   });
 
   return fontsLoaded ? "ready" : "loading";
