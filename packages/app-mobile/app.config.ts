@@ -22,7 +22,7 @@ const getServiceWorkerUrl = () => {
   }
 
   if (process.env.APP_ENV === "production") {
-    const hash = "REPLACE_ME";
+    const hash = "latest"; // replace me for a real prod build
     return url.replace(/latest/g, hash);
   } else {
     return "http://localhost:9333";
