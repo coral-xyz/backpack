@@ -57,11 +57,7 @@ function ImageBox({ images }: { images: string[] }): JSX.Element {
             key={uri}
             src={uri}
             size={64}
-            style={{
-              borderRadius: 8,
-              width: 64,
-              height: 64,
-            }}
+            style={{ borderRadius: 8 }}
           />
         );
       })}
@@ -75,7 +71,7 @@ function CollectionImage({ images }: { images: string[] }): JSX.Element {
       <ProxyImage
         size={164}
         src={images[0]}
-        style={{ borderRadius: 12, aspectRatio: 1, height: 164, padding: 12 }}
+        style={{ borderRadius: 12, padding: 12 }}
       />
     );
   }

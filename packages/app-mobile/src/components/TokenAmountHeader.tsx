@@ -34,7 +34,9 @@ export const TokenAmountHeader = ({
 
   return (
     <View style={[styles.container, style]}>
-      {displayLogo ? <ProxyImage src={token.logo} style={styles.logo} /> : null}
+      {displayLogo ? (
+        <ProxyImage size={32} src={token.logo!} style={styles.logo} />
+      ) : null}
       <View style={styles.container}>
         <StyledText fontWeight="600" fontSize="$4xl" color="$fontColor">
           {maybeTruncatedAmount}
@@ -54,10 +56,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   logo: {
-    width: 32,
-    height: 32,
     borderRadius: 16,
-    aspectRatio: 1,
     marginRight: 8,
   },
 });

@@ -130,11 +130,7 @@ function Container({ navigation, route }): JSX.Element {
         <ProxyImage
           src={nft.image ?? UNKNOWN_NFT_ICON_SRC}
           size={WINDOW_WIDTH}
-          style={{
-            width: "100%",
-            borderRadius: 8,
-            aspectRatio: 1,
-          }}
+          style={{ borderRadius: 8 }}
         />
         <Description description={nft.description} />
         <Box marginVertical={12}>
