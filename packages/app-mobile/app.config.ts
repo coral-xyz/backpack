@@ -14,8 +14,15 @@ const remoteGraphQLApi = "https://backpack-api.xnfts.dev/v2/graphql";
 //   `https://mobile-service-worker.xnfts.dev/background-scripts/${hash}/service-worker-loader.html`;
 
 const getServiceWorkerUrl = () => {
+  const url =
+    "https://mobile-service-worker.xnfts.dev/background-scripts/latest/service-worker-loader.html";
+  if (process.env.APP_ENV === "staging") {
+    return url;
+  }
+
   if (process.env.APP_ENV === "production") {
-    return "https://mobile-service-worker.netlify.app/service-worker-loader.html";
+    const hash = "abc";
+    return url.replace(/latest/g, hash);
   } else {
     return "http://localhost:9333";
   }
@@ -26,8 +33,9 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
   const packageName = "app.backpack.mobile";
 
   const serviceWorkerUrl = getServiceWorkerUrl();
+  const graphqlApiUrl =
+    process.env.APP_ENV === "production" ? remoteGraphQLApi : localGraphQLApi;
 
-  console.log("service", serviceWorkerUrl);
   return {
     ...config,
     name: "Backpack",
@@ -70,14 +78,15 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
       supportsTablet: false,
       bundleIdentifier: packageName,
       infoPlist: {
-        // Your service worker must live in the top 3 of this list or will not load
+        // ATTENTION: Your service worker must live in the top 3 or will not load
         // Apple considers this a feature
         // https://bugs.webkit.org/show_bug.cgi?id=227531
         WKAppBoundDomains: [
-          "mobile-service-worker.netlify.app",
-          "netlify.app",
           "mobile-service-worker.xnfts.dev",
-          "ngrok.io",
+          "mobile-service-worker.netlify.app",
+          // "xnfts.dev", // uncomment for testing
+          // "netlify.app",
+          // "ngrok.io",
         ],
       },
     },
@@ -93,10 +102,7 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
       favicon: "./assets/favicon.png",
     },
     extra: {
-      graphqlApiUrl:
-        process.env.APP_ENV === "production"
-          ? remoteGraphQLApi
-          : localGraphQLApi,
+      graphqlApiUrl,
       serviceWorkerUrl,
       eas: {
         projectId: projectID,
