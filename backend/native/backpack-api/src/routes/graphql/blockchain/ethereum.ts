@@ -123,13 +123,18 @@ export class Ethereum implements Blockchain {
     ]);
 
     // Build the token balance node for the native balance of the wallet
+    const nativeDisplayAmount = ethers.utils.formatUnits(
+      native,
+      this.decimals()
+    );
+
     const nativeTokenNode = NodeBuilder.tokenBalance(
       this.id(),
       {
         address,
         amount: native.toString(),
         decimals: this.decimals(),
-        displayAmount: ethers.utils.formatUnits(native, this.decimals()),
+        displayAmount: nativeDisplayAmount,
         marketData: NodeBuilder.marketData("ethereum", {
           lastUpdatedAt: prices.ethereum.last_updated,
           percentChange: prices.ethereum.price_change_percentage_24h,
@@ -137,11 +142,9 @@ export class Ethereum implements Blockchain {
           sparkline: prices.ethereum.sparkline_in_7d.price,
           usdChange: prices.ethereum.price_change_24h,
           value:
-            parseFloat(ethers.utils.formatUnits(native, this.decimals())) *
-            prices.ethereum.current_price,
+            parseFloat(nativeDisplayAmount) * prices.ethereum.current_price,
           valueChange:
-            parseFloat(ethers.utils.formatUnits(native, this.decimals())) *
-            prices.ethereum.price_change_24h,
+            parseFloat(nativeDisplayAmount) * prices.ethereum.price_change_24h,
         }),
         token: this.defaultAddress(),
         tokenListEntry: NodeBuilder.tokenListEntry(
@@ -153,9 +156,12 @@ export class Ethereum implements Blockchain {
 
     // Map the non-empty token balances to their schema type
     const ercTokenNodes = nonEmptyTokens.reduce<TokenBalance[]>((acc, curr) => {
-      const amt = BigNumber.from(curr.rawBalance ?? "0");
       const id = meta.get(curr.contractAddress);
       const p: CoinGeckoPriceData | null = prices[id ?? ""] ?? null;
+
+      const amount = curr.rawBalance ?? "0";
+      const displayAmount = curr.balance ?? "0";
+
       const marketData =
         p && id
           ? NodeBuilder.marketData(id, {
@@ -164,12 +170,8 @@ export class Ethereum implements Blockchain {
               price: p.current_price,
               sparkline: p.sparkline_in_7d.price,
               usdChange: p.price_change_24h,
-              value:
-                parseFloat(ethers.utils.formatUnits(amt, curr.decimals ?? 0)) *
-                p.current_price,
-              valueChange:
-                parseFloat(ethers.utils.formatUnits(amt, curr.decimals ?? 0)) *
-                p.price_change_24h,
+              value: parseFloat(displayAmount) * p.current_price,
+              valueChange: parseFloat(displayAmount) * p.price_change_24h,
             })
           : undefined;
 
@@ -187,9 +189,9 @@ export class Ethereum implements Blockchain {
           this.id(),
           {
             address: `${address}/${curr.contractAddress}`,
-            amount: amt.toString(),
+            amount,
             decimals: curr.decimals ?? 0,
-            displayAmount: curr.balance ?? "0",
+            displayAmount,
             marketData,
             token: curr.contractAddress,
             tokenListEntry,
