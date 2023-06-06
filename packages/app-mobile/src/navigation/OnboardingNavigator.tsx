@@ -35,6 +35,7 @@ import {
   PrivateKeyWalletDescriptor,
 } from "@coral-xyz/common";
 import {
+  useSavePrivateKey,
   useBackgroundClient,
   OnboardingProvider,
   useOnboarding,
@@ -385,11 +386,15 @@ type OnboardingPrivateKeyInputScreenProps = StackScreenProps<
 function OnboardingPrivateKeyInputScreen({
   navigation,
 }: OnboardingPrivateKeyInputScreenProps) {
-  const { serverPublicKeys } = useOnboarding();
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { handlePrivateKeyInput } = useOnboarding();
+  const { handlePrivateKeyInput, onboardingData } = useOnboarding();
+  const { serverPublicKeys } = onboardingData;
   const [privateKey, setPrivateKey] = useState("");
-  const blockchain = undefined; // TODO
+
+  const { handleSavePrivateKey } = useSavePrivateKey({
+    onboarding: true,
+  });
 
   return (
     <KeyboardAvoidingView
@@ -420,16 +425,18 @@ function OnboardingPrivateKeyInputScreen({
             disabled={loading || privateKey.length === 0}
             label="Import"
             onPress={async () => {
-              try {
-                const result: PrivateKeyWalletDescriptor = validatePrivateKey(
-                  privateKey,
-                  blockchain
-                );
-                await handlePrivateKeyInput(result);
-                navigation.push("MnemonicInput");
-              } catch (error) {
-                // show error
-              }
+              await handleSavePrivateKey({
+                name: "",
+                privateKey,
+                serverPublicKeys,
+                setLoading,
+                setError,
+                onNext: async (result) => {
+                  await handlePrivateKeyInput(result);
+                  navigation.push("MnemonicInput");
+                  // navigation
+                },
+              });
             }}
           />
         </Box>
