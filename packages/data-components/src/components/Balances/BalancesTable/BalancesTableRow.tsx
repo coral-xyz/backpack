@@ -19,7 +19,7 @@ const NO_VALUE = "-";
 
 export type BalancesTableRowProps = {
   balance: ResponseTokenBalance;
-  onClick?: (token: string) => void;
+  onClick?: (args: { tokenAccount: string; symbol: string }) => void;
 };
 
 export function BalancesTableRow({ balance, onClick }: BalancesTableRowProps) {
@@ -27,7 +27,15 @@ export function BalancesTableRow({ balance, onClick }: BalancesTableRowProps) {
    * Memoized handler function for the click/press event of the balance table row
    */
   const handleClick = useCallback(
-    () => (onClick ? onClick(balance.token) : {}),
+    () =>
+      onClick
+        ? onClick({
+            symbol:
+              balance.tokenListEntry?.symbol ??
+              formatWalletAddress(balance.token),
+            tokenAccount: balance.address,
+          })
+        : {},
     [onClick]
   );
 
@@ -65,7 +73,13 @@ export function BalancesTableRow({ balance, onClick }: BalancesTableRowProps) {
 
   return (
     <ListItemCore
-      style={{ paddingHorizontal: 16 }}
+      style={{
+        cursor: "pointer",
+        hoverTheme: true,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        pointerEvents: "box-only",
+      }}
       onClick={handleClick}
       icon={
         <ListItemIconCore

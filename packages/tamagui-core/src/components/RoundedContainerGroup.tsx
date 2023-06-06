@@ -28,7 +28,7 @@ export function RoundedContainerGroup({
         style,
       ]}
     >
-      <View style={{ overflow: "hidden", borderRadius: 16 }}>{children}</View>
+      <View style={{ overflow: "hidden" }}>{children}</View>
     </View>
   );
 }

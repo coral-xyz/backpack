@@ -23,6 +23,7 @@ const GET_TOKEN_BALANCES = gql(`
             edges {
               node {
                 id
+                address
                 displayAmount
                 marketData {
                   id
@@ -55,7 +56,7 @@ export type ResponseTokenBalance = NonNullable<
 
 export type BalancesTableProps = {
   loaderComponent?: ReactNode;
-  onItemClick?: (token: string) => void;
+  onItemClick?: (args: { tokenAccount: string; symbol: string }) => void;
   pollingInterval?: number;
 };
 
@@ -115,10 +116,6 @@ function _BalancesTable({
         <RoundedContainerGroup
           disableBottomRadius={!last}
           disableTopRadius={!first}
-          style={{
-            paddingTop: first ? 4 : undefined,
-            paddingBottom: last ? 4 : undefined,
-          }}
         >
           <BalancesTableRow balance={item} onClick={onItemClick} />
         </RoundedContainerGroup>

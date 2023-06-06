@@ -7,34 +7,34 @@ import {
   BalancesTable,
   BalanceSummaryWidget,
 } from "@coral-xyz/data-components";
-import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
-import { useAllWalletsDisplayed, useNavigation } from "@coral-xyz/recoil";
+import { useActiveWallet , useAllWalletsDisplayed, useNavigation } from "@coral-xyz/recoil";
 
 import { SkeletonRows } from "../../common/TokenTable";
 
 import { TransferWidget } from "./TransferWidget";
 
-type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
-
 export function Balances() {
+  const wallet = useActiveWallet();
   const { push } = useNavigation();
 
   const swapEnabled =
     useAllWalletsDisplayed().find((w) => w.blockchain === Blockchain.SOLANA) !==
     undefined;
 
-  const onClickTokenRow = (
-    blockchain: Blockchain,
-    token: Token,
-    publicKey: string
-  ) => {
+  const onClickTokenRow = ({
+    tokenAccount,
+    symbol,
+  }: {
+    tokenAccount: string;
+    symbol: string;
+  }) => {
     push({
-      title: `${toTitleCase(blockchain)} / ${token.ticker}`,
+      title: `${toTitleCase(wallet.blockchain)} / ${symbol}`,
       componentId: NAV_COMPONENT_TOKEN,
       componentProps: {
-        blockchain,
-        tokenAddress: token.address,
-        publicKey,
+        blockchain: wallet.blockchain,
+        tokenAddress: tokenAccount,
+        publicKey: wallet.publicKey,
       },
     });
   };
@@ -50,13 +50,15 @@ export function Balances() {
       >
         <TransferWidget rampEnabled swapEnabled={swapEnabled} />
       </div>
-      <BalancesTable loaderComponent={<SkeletonRows />} />
+      <BalancesTable
+        loaderComponent={<SkeletonRows />}
+        onItemClick={onClickTokenRow}
+      />
     </div>
   );
 }
 export { BalancesTableRow } from "./Balances";
 export { BalancesTableContent } from "./Balances";
 export { BalancesTableHead } from "./Balances";
-// export { useBalancesContext } from "./Balances";
 export { BalancesTable } from "./Balances";
 export { BalancesTableCell } from "./Balances";

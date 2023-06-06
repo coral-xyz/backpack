@@ -1,5 +1,4 @@
-import type { ReactNode } from "react";
-import { Suspense, useMemo } from "react";
+import { type ReactNode, Suspense, useMemo } from "react";
 
 import { gql } from "../../apollo";
 import {
