@@ -13,7 +13,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // https://github.com/apollographql/apollo-cache-persist/tree/master/examples/react-native/src/hooks
 import { AsyncStorageWrapper, persistCache } from "apollo3-cache-persist";
 
-import { getTokenAsync, useSession } from "~lib/SessionProvider";
+import { useSession } from "~lib/SessionProvider";
+// consider using react-native-mmk when the time comes for the persisted cache
+// much faster than AsyncStorage
 
 const cache = new InMemoryCache();
 const API_URL = Constants.expoConfig?.extra?.graphqlApiUrl;
@@ -45,8 +47,7 @@ export const useApolloClient = () => {
   const [client, setClient] = useState<ApolloClient<NormalizedCacheObject>>();
 
   useEffect(() => {
-    async function init() {
-      const token = await getTokenAsync();
+    async function init(token: string | null) {
       await persistCache({
         cache,
         storage: new AsyncStorageWrapper(AsyncStorage),
@@ -56,7 +57,7 @@ export const useApolloClient = () => {
       setClient(apolloClient);
     }
 
-    init();
+    init(token);
   }, [token]);
 
   return {

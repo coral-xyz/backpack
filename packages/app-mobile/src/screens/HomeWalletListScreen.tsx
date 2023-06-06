@@ -2,28 +2,14 @@ import type { Blockchain } from "@coral-xyz/common";
 import type { Wallet, PublicKey } from "~types/types";
 
 import { Suspense, useCallback } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { FlatList, Pressable } from "react-native";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
 import { formatUsd } from "@coral-xyz/common";
-import {
-  useTheme as useTamaguiTheme,
-  Box,
-  StyledText,
-  Stack,
-  XStack,
-  BlockchainLogo,
-} from "@coral-xyz/tamagui";
-import { useNavigation } from "@react-navigation/native";
+import { Box, StyledText, XStack, BlockchainLogo } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { ListHeader, ListItemWalletOverview } from "~components/ListItem";
-import {
-  RoundedContainerGroup,
-  Screen,
-  ScreenError,
-  ScreenLoading,
-} from "~components/index";
+import { Screen, ScreenError, ScreenLoading } from "~components/index";
 import { useWallets } from "~hooks/wallets";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 
@@ -151,8 +137,7 @@ function ListItem({
   );
 }
 
-function WalletList() {
-  const navigation = useNavigation();
+function WalletList({ navigation }) {
   const { allWallets, selectActiveWallet } = useWallets();
 
   const handlePressWallet = useCallback(
@@ -161,7 +146,7 @@ function WalletList() {
       navigation.push("TopTabsWalletDetail", {
         screen: "TokenList",
         params: {
-          publicKey: w.publicKey.toString(),
+          publicKey: w.publicKey,
           blockchain: w.blockchain,
         },
       });
@@ -173,12 +158,12 @@ function WalletList() {
   const renderItem = useCallback(
     ({ item: wallet, index }: { item: Wallet; index: number }) => {
       const isFirst = index === 0;
-      const isLast = index === allWallets.length - 1;
+      // const isLast = index === allWallets.length - 1;
       return (
         <ListItem isFirst={isFirst} item={wallet} onPress={handlePressWallet} />
       );
     },
-    [handlePressWallet, allWallets.length]
+    [handlePressWallet]
   );
 
   return (
@@ -192,24 +177,24 @@ function WalletList() {
   );
 }
 
-function Container() {
+function Container({ navigation }) {
   return (
     <Screen>
       <Box my={12}>
         <BalanceSummaryWidget />
       </Box>
-      <WalletList />
+      <WalletList navigation={navigation} />
     </Screen>
   );
 }
 
-export function HomeWalletListScreen(): JSX.Element {
+export function HomeWalletListScreen({ navigation }): JSX.Element {
   return (
     <ErrorBoundary
       fallbackRender={({ error }) => <ScreenError error={error.message} />}
     >
       <Suspense fallback={<ScreenLoading />}>
-        <Container />
+        <Container navigation={navigation} />
       </Suspense>
     </ErrorBoundary>
   );

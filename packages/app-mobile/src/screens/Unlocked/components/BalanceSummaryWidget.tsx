@@ -67,32 +67,39 @@ function TextPercentChange({
   );
 }
 
-const GET_BALANCE_SUMMARY = gql`
-  query WalletBalanceSummary($chainId: ChainID!, $address: String!) {
-    wallet(chainId: $chainId, address: $address) {
+type QueryUserBalanceSummary = {
+  user: {
+    id: string;
+    wallet: {
+      id: string;
+      isPrimary: boolean;
+      chainId: string;
+      balances: {
+        aggregate: {
+          id: string;
+          percentChange: number;
+          value: number;
+          valueChange: number;
+        };
+      };
+    };
+  };
+};
+
+const GET_USER_BALANCE_SUMMARY = gql`
+  query UserWalletBalanceSummary($address: String!) {
+    user {
       id
-      balances {
+      wallet(address: $address) {
         id
-        aggregate {
-          id
-          percentChange
-          value
-          valueChange
-        }
-        native {
-          id
-          address
-          amount
-          decimals
-          displayAmount
-          marketData {
+        isPrimary
+        chainId
+        balances {
+          aggregate {
             id
-            usdChange
             percentChange
-            lastUpdatedAt
-            logo
-            price
             value
+            valueChange
           }
         }
       }
@@ -121,14 +128,15 @@ function ErrorFallback({ error }: { error: Error }) {
 
 function Container() {
   const activeWallet = useActiveWallet();
-  const { data } = useSuspenseQuery_experimental(GET_BALANCE_SUMMARY, {
+  const { data } = useSuspenseQuery_experimental(GET_USER_BALANCE_SUMMARY, {
     variables: {
-      chainId: activeWallet.blockchain.toUpperCase(),
       address: activeWallet.publicKey,
     },
   });
 
-  const { aggregate } = data.wallet.balances;
+  // TODO fix this, not great lol
+  const gqlData = data as QueryUserBalanceSummary;
+  const aggregate = gqlData.user.wallet.balances.aggregate;
   const totalBalance = aggregate.value ?? 0.0;
   const totalChange = aggregate.valueChange ?? 0.0;
   const percentChange = aggregate.percentChange ?? 0.0;
@@ -163,10 +171,6 @@ export function BalanceSummaryWidget() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
   totalChangeText: {
     fontSize: 16,
   },

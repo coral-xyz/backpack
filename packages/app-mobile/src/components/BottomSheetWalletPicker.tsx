@@ -28,12 +28,19 @@ export function BottomSheetWalletPicker({ navigation }) {
   const handlePressSelect = useCallback(
     async (blockchain: Blockchain, publicKey: PublicKey) => {
       setLoadingId(publicKey);
+      navigation.replace("TopTabsWalletDetail", {
+        screen: "TokenList",
+        params: {
+          publicKey,
+          blockchain,
+        },
+      });
       selectActiveWallet({ blockchain, publicKey }, () => {
         setLoadingId(null);
         dismiss();
       });
     },
-    [dismiss, selectActiveWallet]
+    [dismiss, selectActiveWallet, navigation]
   );
 
   const handlePressEdit = useCallback(

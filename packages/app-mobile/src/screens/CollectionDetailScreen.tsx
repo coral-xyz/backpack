@@ -1,24 +1,16 @@
-import { Suspense, useCallback } from "react";
-import { FlatList, Pressable, Text } from "react-native";
+import { Suspense, useCallback, useMemo } from "react";
+import { FlatList, Text } from "react-native";
 
 import { useFragment_experimental } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
-import { ProxyImage, XStack, StyledText } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
-import {
-  FullScreenLoading,
-  Screen,
-  RoundedContainerGroup,
-} from "~components/index";
-import { WINDOW_WIDTH } from "~lib/index";
+import { BaseListItem } from "~components/CollectionListItem";
+import { FullScreenLoading, Screen } from "~components/index";
 import { NftNodeFragment } from "~screens/CollectionListScreen";
 
-const blurhash =
-  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
-
 function ListItem({ id, onPress }: { id: string; onPress: any }): JSX.Element {
-  const { data: item } = useFragment_experimental({
+  const { data } = useFragment_experimental({
     fragment: NftNodeFragment,
     fragmentName: "NftNodeFragment",
     from: {
@@ -27,30 +19,17 @@ function ListItem({ id, onPress }: { id: string; onPress: any }): JSX.Element {
     },
   });
 
-  return (
-    <Pressable
-      style={{ flex: 1, marginBottom: 12, borderRadius: 16 }}
-      onPress={() => onPress(item)}
-    >
-      <ProxyImage
-        // placeholder={blurhash}
-        src={item.image}
-        size={WINDOW_WIDTH}
-        style={{ borderRadius: 12 }}
-        // transition={1000}
-      />
-      <XStack mt={8}>
-        <StyledText
-          fontSize="$base"
-          numberOfLines={1}
-          ellipsizeMode="tail"
-          maxWidth="90%"
-        >
-          {item.name}
-        </StyledText>
-      </XStack>
-    </Pressable>
+  const item = useMemo(
+    () => ({
+      id: data.id,
+      name: data.name,
+      images: [data.image],
+      type: data.type,
+    }),
+    [data]
   );
+
+  return <BaseListItem onPress={onPress} item={item} />;
 }
 
 function Container({ navigation, route }: any): JSX.Element {
@@ -76,21 +55,19 @@ function Container({ navigation, route }: any): JSX.Element {
     [handlePressItem]
   );
 
-  const numColumns = 2;
   const gap = 12;
 
   return (
     <Screen>
-      <RoundedContainerGroup style={{ padding: 12 }}>
-        <FlatList
-          data={nftIds}
-          numColumns={numColumns}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-          contentContainerStyle={{ gap }}
-          columnWrapperStyle={{ gap }}
-        />
-      </RoundedContainerGroup>
+      <FlatList
+        data={nftIds}
+        numColumns={2}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        contentContainerStyle={{ gap }}
+        columnWrapperStyle={{ gap }}
+        showsVerticalScrollIndicator={false}
+      />
     </Screen>
   );
 }
