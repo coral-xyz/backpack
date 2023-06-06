@@ -993,13 +993,11 @@ function CreateAccountLoadingScreen(
   const { onboardingData, maybeCreateUser } = useOnboarding();
   const [error, setError] = useState(false);
 
-  console.log("debug22:onboardingData", onboardingData);
-
   useEffect(() => {
     (async () => {
       const res = await maybeCreateUser({
         ...onboardingData,
-        keyringType: "mnemonic",
+        keyringType: onboardingData.keyringType || "mnemonic",
       });
 
       if (!res.ok) {
