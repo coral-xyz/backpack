@@ -387,9 +387,9 @@ function OnboardingPrivateKeyInputScreen({
 }: OnboardingPrivateKeyInputScreenProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { handlePrivateKeyInput, onboardingData } = useOnboarding();
-  const { serverPublicKeys, action } = onboardingData;
   const [privateKey, setPrivateKey] = useState("");
+  const { handlePrivateKeyInput, onboardingData } = useOnboarding();
+  const { serverPublicKeys } = onboardingData;
 
   const { handleSavePrivateKey } = useSavePrivateKey({
     onboarding: true,
@@ -432,8 +432,10 @@ function OnboardingPrivateKeyInputScreen({
                 setLoading,
                 setError,
               });
+              console.log("debug22:result", result);
 
               await handlePrivateKeyInput(result as PrivateKeyWalletDescriptor);
+              console.log("debug22:done");
               navigation.push("CreatePassword");
             }}
           />
@@ -990,6 +992,8 @@ function CreateAccountLoadingScreen(
   const background = useBackgroundClient();
   const { onboardingData, maybeCreateUser } = useOnboarding();
   const [error, setError] = useState(false);
+
+  console.log("debug22:onboardingData", onboardingData);
 
   useEffect(() => {
     (async () => {

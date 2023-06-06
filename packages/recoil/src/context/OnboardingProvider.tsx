@@ -272,7 +272,7 @@ export function OnboardingProvider({
         },
       });
     },
-    [data]
+    [data, setOnboardingData, signMessageForWallet]
   );
 
   const getKeyringInit = useCallback(
