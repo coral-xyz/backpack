@@ -432,10 +432,8 @@ function OnboardingPrivateKeyInputScreen({
                 setLoading,
                 setError,
               });
-              console.log("debug22:result", result);
 
               await handlePrivateKeyInput(result as PrivateKeyWalletDescriptor);
-              console.log("debug22:done");
               navigation.push("CreatePassword");
             }}
           />
