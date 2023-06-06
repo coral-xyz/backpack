@@ -125,30 +125,27 @@ export class Solana implements Blockchain {
     ]);
 
     // Build the token balance node for the native balance of the wallet
+    const nativeDisplayAmount = ethers.utils.formatUnits(
+      balances.nativeBalance,
+      this.decimals()
+    );
+
     const nativeTokenNode = NodeBuilder.tokenBalance(
       this.id(),
       {
         address,
         amount: balances.nativeBalance.toString(),
         decimals: this.decimals(),
-        displayAmount: ethers.utils.formatUnits(
-          balances.nativeBalance,
-          this.decimals()
-        ),
+        displayAmount: nativeDisplayAmount,
         marketData: NodeBuilder.marketData("solana", {
           lastUpdatedAt: prices.solana.last_updated,
           percentChange: prices.solana.price_change_percentage_24h,
           price: prices.solana.current_price,
           sparkline: prices.solana.sparkline_in_7d.price,
           usdChange: prices.solana.price_change_24h,
-          value:
-            parseFloat(
-              ethers.utils.formatUnits(balances.nativeBalance, this.decimals())
-            ) * prices.solana.current_price,
+          value: parseFloat(nativeDisplayAmount) * prices.solana.current_price,
           valueChange:
-            parseFloat(
-              ethers.utils.formatUnits(balances.nativeBalance, this.decimals())
-            ) * prices.solana.price_change_24h,
+            parseFloat(nativeDisplayAmount) * prices.solana.price_change_24h,
         }),
         token: this.defaultAddress(),
         tokenListEntry: NodeBuilder.tokenListEntry(
@@ -163,6 +160,12 @@ export class Solana implements Blockchain {
       (acc, curr) => {
         const id = meta.get(curr.mint);
         const p: CoinGeckoPriceData | null = prices[id ?? ""] ?? null;
+
+        const displayAmount = ethers.utils.formatUnits(
+          curr.amount,
+          curr.decimals
+        );
+
         const marketData =
           p && id
             ? NodeBuilder.marketData(id, {
@@ -171,17 +174,8 @@ export class Solana implements Blockchain {
                 price: p.current_price,
                 sparkline: p.sparkline_in_7d.price,
                 usdChange: p.price_change_24h,
-                value:
-                  parseFloat(
-                    ethers.utils.formatUnits(curr.amount, curr.decimals)
-                  ) * p.current_price,
-                valueChange:
-                  parseFloat(
-                    ethers.utils.formatUnits(
-                      balances.nativeBalance,
-                      this.decimals()
-                    )
-                  ) * p.price_change_24h,
+                value: parseFloat(displayAmount) * p.current_price,
+                valueChange: parseFloat(displayAmount) * p.price_change_24h,
               })
             : undefined;
 
@@ -201,10 +195,7 @@ export class Solana implements Blockchain {
               address: curr.tokenAccount,
               amount: curr.amount.toString(),
               decimals: curr.decimals,
-              displayAmount: ethers.utils.formatUnits(
-                curr.amount,
-                curr.decimals
-              ),
+              displayAmount,
               marketData,
               token: curr.mint,
               tokenListEntry,
