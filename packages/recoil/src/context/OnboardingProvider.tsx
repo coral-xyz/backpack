@@ -397,7 +397,7 @@ export function OnboardingProvider({
         await createStore(id, jwt, data);
         return { ok: true, jwt };
       } catch (err) {
-        console.error("debug1:OnboardingProvider:maybeCreateUser", err);
+        console.error("OnboardingProvider:maybeCreateUser", err);
         return { ok: false, jwt: "" };
       }
     },
