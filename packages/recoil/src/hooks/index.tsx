@@ -19,6 +19,7 @@ export * from "./usePriceData";
 export * from "./usePrimaryWallets";
 export * from "./useRecentNotifications";
 export * from "./useRpcRequests";
+export * from "./useSavePrivateKey";
 export * from "./useTokenMetadata";
 export * from "./useTotalBalance";
 export * from "./useTransactionData";
