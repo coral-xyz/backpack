@@ -27,21 +27,24 @@
       "ios": {
         "simulator": true
       },
-      "channel": "development-simulator",
-      "env": {
-        "APP_ENV": "production"
-      }
+      "channel": "development-simulator"
     },
-    "preview": {
+    "staging": {
       "extends": "monorepo",
       "distribution": "internal",
-      "channel": "staging"
+      "channel": "staging",
+      "env": {
+        "APP_ENV": "staging"
+      }
     },
     "production": {
       "extends": "monorepo",
       "channel": "production",
       "distribution": "store",
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "APP_ENV": "staging"
+      }
     }
   },
   "submit": {

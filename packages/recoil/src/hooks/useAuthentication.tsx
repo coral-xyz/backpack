@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
@@ -14,31 +15,35 @@ export const useAuthentication = () => {
   /**
    * Login the user.
    */
-  const authenticate = async ({
-    blockchain,
-    publicKey,
-    message,
-    signature,
-  }: {
-    blockchain: Blockchain;
-    publicKey: string;
-    signature: string;
-    message: string;
-  }) => {
-    try {
-      return await background.request({
-        method: UI_RPC_METHOD_USER_ACCOUNT_AUTH,
-        params: [blockchain, publicKey, message, signature],
-      });
-    } catch (error) {
-      console.error("useAuthentication:authenticate::error", error);
-      // Relock if authentication failed
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-        params: [],
-      });
-    }
-  };
+  const authenticate = useCallback(
+    async ({
+      blockchain,
+      publicKey,
+      message,
+      signature,
+    }: {
+      blockchain: Blockchain;
+      publicKey: string;
+      signature: string;
+      message: string;
+    }) => {
+      try {
+        const res = await background.request({
+          method: UI_RPC_METHOD_USER_ACCOUNT_AUTH,
+          params: [blockchain, publicKey, message, signature],
+        });
+
+        return res;
+      } catch (error) {
+        // Relock if authentication failed
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+          params: [],
+        });
+      }
+    },
+    [background]
+  );
 
   /**
    * Query the server and see if the user has a valid JWT..
@@ -60,7 +65,7 @@ export const useAuthentication = () => {
         // 403
         return null;
       } else {
-        console.error("useAuthentication:checkAuthentication::error", error);
+        console.error("useAuthentication:checkAuthentication", error);
         await background.request({
           method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
           params: [],

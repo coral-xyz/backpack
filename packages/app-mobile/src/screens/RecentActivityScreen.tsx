@@ -18,6 +18,7 @@ import {
   ScreenLoading,
 } from "~components/index";
 import { convertTransactionDataToSectionList } from "~lib/RecentActivityUtils";
+import { RecentActivityScreenProps } from "~navigation/types";
 
 const GET_RECENT_TRANSACTIONS = gql`
   query WalletTransactions($chainId: ChainID!, $address: String!) {
@@ -42,7 +43,7 @@ const GET_RECENT_TRANSACTIONS = gql`
   }
 `;
 
-function Container({ navigation }: any): JSX.Element {
+function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
   const activeWallet = useActiveWallet();
   const { data } = useSuspenseQuery_experimental(GET_RECENT_TRANSACTIONS, {
     variables: {
@@ -102,7 +103,9 @@ function Container({ navigation }: any): JSX.Element {
   );
 }
 
-export function RecentActivityScreen({ navigation }: any): JSX.Element {
+export function RecentActivityScreen({
+  navigation,
+}: RecentActivityScreenProps): JSX.Element {
   return (
     <ErrorBoundary
       fallbackRender={({ error }) => <ScreenError error={error} />}

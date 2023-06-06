@@ -4365,6 +4365,7 @@ __metadata:
     "@types/react-native": ~0.71.6
     eslint-config-custom: "*"
     expo-image: ~1.2.3
+    react-error-boundary: ^4.0.9
     tamagui: ^1.28.1
   languageName: unknown
   linkType: soft
@@ -35228,6 +35229,17 @@ __metadata:
   peerDependencies:
     react: ">=16.13.1"
   checksum: 02f04bdf8526f4b2474cb129ece32e5e32fbe81a72a71fdcf056c440aa9f4308b372383f5e817eea76220dcf0901459be2834d6ab8106cd9c36e8ec230df70f9
+  languageName: node
+  linkType: hard
+
+"react-error-boundary@npm:^4.0.9":
+  version: 4.0.9
+  resolution: "react-error-boundary@npm:4.0.9"
+  dependencies:
+    "@babel/runtime": ^7.12.5
+  peerDependencies:
+    react: ">=16.13.1"
+  checksum: c673c5f13b8647820cde0a219b0e415fd05896513adf176600f231b59d8075993dbbc8b93a9ad3824121fbbe2934d011cbcbbeefc1af300b22c204c73862e0f7
   languageName: node
   linkType: hard
 

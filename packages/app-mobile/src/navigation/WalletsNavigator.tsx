@@ -1,16 +1,14 @@
-import { Dimensions } from "react-native";
-
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
+import { useTheme as useTamaguiTheme } from "@coral-xyz/tamagui";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import {
-  createStackNavigator,
-  StackScreenProps,
-} from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { StackScreenProps } from "@react-navigation/stack";
 
 import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
 import { useTheme } from "~hooks/useTheme";
 import { WINDOW_WIDTH } from "~lib/index";
 import { HeaderButton } from "~navigation/components";
+import { TopTabsParamList } from "~navigation/types";
 import { CollectionDetailScreen } from "~screens/CollectionDetailScreen";
 import { CollectionItemDetailScreen } from "~screens/CollectionItemDetailScreen";
 import { CollectionListScreen } from "~screens/CollectionListScreen";
@@ -19,16 +17,7 @@ import { NotificationsScreen } from "~screens/NotificationsScreen";
 import { RecentActivityScreen } from "~screens/RecentActivityScreen";
 import { TokenDetailScreen } from "~screens/TokenDetailScreen";
 import { TokenListScreen } from "~screens/TokenListScreen";
-import { WalletDisplayStarterScreen } from "~screens/WalletDisplayStarterScreen";
 
-type TopTabsParamList = {
-  TokenList: {
-    blockchain: Blockchain;
-    publicKey: string;
-  };
-  Collectibles: undefined;
-  Activity: undefined;
-};
 const TopTabs = createMaterialTopTabNavigator<TopTabsParamList>();
 function TopTabsNavigator(): JSX.Element {
   const theme = useTheme();
@@ -95,16 +84,23 @@ export type TokenDetailScreenParams = StackScreenProps<
   "TokenDetail"
 >;
 
-const Stack = createStackNavigator<WalletStackParamList>();
+const Stack = createNativeStackNavigator<WalletStackParamList>();
 export function WalletsNavigator(): JSX.Element {
+  const theme = useTamaguiTheme();
   return (
-    <Stack.Navigator initialRouteName="HomeWalletList">
+    <Stack.Navigator
+      initialRouteName="HomeWalletList"
+      screenOptions={{
+        headerTintColor: theme.fontColor.val,
+      }}
+    >
       <Stack.Screen
         name="HomeWalletList"
         component={HomeWalletListScreen}
         options={({ navigation }) => {
           return {
             headerShown: true,
+            headerBackTitleVisible: false,
             title: "Balances",
             headerLeft: (props) => (
               <HeaderButton
@@ -163,6 +159,7 @@ export function WalletsNavigator(): JSX.Element {
           },
         }) => {
           return {
+            headerBackTitleVisible: false,
             title,
           };
         }}
@@ -176,6 +173,7 @@ export function WalletsNavigator(): JSX.Element {
           },
         }) => {
           return {
+            headerBackTitleVisible: false,
             title,
           };
         }}

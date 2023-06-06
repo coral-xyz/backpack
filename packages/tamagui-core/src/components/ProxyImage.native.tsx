@@ -1,6 +1,9 @@
+import { ErrorBoundary } from "react-error-boundary";
 import { proxyImageUrl } from "@coral-xyz/common";
 import type { ImageProps, ImageStyle } from "expo-image";
 import { Image } from "expo-image";
+
+import { StyledText } from "../";
 
 export function ProxyImage({
   transition,
@@ -29,13 +32,19 @@ export function ProxyImage({
   const styles = { width: size, height: size, aspectRatio: 1 };
 
   return (
-    <Image
-      source={uri}
-      transition={transition}
-      contentFit={contentFit}
-      placeholder={placeholder}
-      // React Native apps need to specify a width and height for remote images
-      style={[styles, style as ImageStyle]}
-    />
+    <ErrorBoundary
+      fallbackRender={({ error }) => (
+        <StyledText color="red">{error}</StyledText>
+      )}
+    >
+      <Image
+        source={uri}
+        transition={transition}
+        contentFit={contentFit}
+        placeholder={placeholder}
+        // React Native apps need to specify a width and height for remote images
+        style={[styles, style as ImageStyle]}
+      />
+    </ErrorBoundary>
   );
 }

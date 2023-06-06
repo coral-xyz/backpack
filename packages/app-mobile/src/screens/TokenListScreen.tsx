@@ -16,10 +16,11 @@ import {
   ScreenLoading,
   ScreenError,
 } from "~components/index";
+import { TokenListScreenProps } from "~navigation/types";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 import { TokenRow } from "~screens/Unlocked/components/Balances";
 
-function Container({ navigation, route }): JSX.Element {
+function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
   const { blockchain, publicKey } = route.params;
   const balances = useRecoilValue(
     blockchainBalancesSorted({
@@ -70,6 +71,7 @@ function Container({ navigation, route }): JSX.Element {
         data={balances}
         keyExtractor={(item) => item.address}
         renderItem={renderItem}
+        showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
             <BalanceSummaryWidget />
@@ -89,7 +91,10 @@ function Container({ navigation, route }): JSX.Element {
   );
 }
 
-export function TokenListScreen({ navigation, route }: any): JSX.Element {
+export function TokenListScreen({
+  navigation,
+  route,
+}: TokenListScreenProps): JSX.Element {
   return (
     <ErrorBoundary
       fallbackRender={({ error }) => <ScreenError error={error} />}

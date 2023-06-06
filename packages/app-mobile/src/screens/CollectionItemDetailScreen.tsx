@@ -1,14 +1,10 @@
 import { Suspense } from "react";
-import { Alert, View, Text, ScrollView, Dimensions } from "react-native";
+import { Alert, View, Text, ScrollView } from "react-native";
 
 import * as Linking from "expo-linking";
 
 import { useFragment_experimental } from "@apollo/client";
-import {
-  Blockchain,
-  UNKNOWN_NFT_ICON_SRC,
-  explorerNftUrl,
-} from "@coral-xyz/common";
+import { Blockchain, explorerNftUrl } from "@coral-xyz/common";
 import {
   useEthereumExplorer,
   useSolanaExplorer,
@@ -19,9 +15,9 @@ import { useActionSheet } from "@expo/react-native-action-sheet";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { CollectionAttributes } from "~components/CollectionAttributesList";
+import { ProxyNFTImage } from "~components/CollectionListItem";
 import {
   PrimaryButton,
-  ProxyImage,
   Screen,
   SecondaryButton,
   FullScreenLoading,
@@ -125,12 +121,12 @@ function Container({ navigation, route }): JSX.Element {
   });
 
   return (
-    <ScrollView>
+    <ScrollView showsVerticalScrollIndicator={false}>
       <Screen>
-        <ProxyImage
-          src={nft.image ?? UNKNOWN_NFT_ICON_SRC}
+        <ProxyNFTImage
+          src={nft.image}
           size={WINDOW_WIDTH}
-          style={{ borderRadius: 8 }}
+          style={{ borderRadius: 8, maxWidth: "100%" }}
         />
         <Description description={nft.description} />
         <Box marginVertical={12}>
