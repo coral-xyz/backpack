@@ -170,7 +170,6 @@ export function OnboardingProvider({
     async ({ blockchain, onStatus }: SelectBlockchainType) => {
       const handleStatus = (status: string) => {
         if (onStatus) {
-          console.log("mobile:status", status);
           onStatus(status);
         }
       };

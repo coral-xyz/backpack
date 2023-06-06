@@ -7,10 +7,16 @@ import {
 
 import { useAllWallets, useBackgroundClient } from "../";
 
+type Result = {
+  blockchain: Blockchain;
+  publicKey: string;
+  privateKey: string;
+  name: string;
+};
+
 export function useSavePrivateKey({ onboarding }: { onboarding?: boolean }) {
   const background = useBackgroundClient();
-  const _allWallets = useAllWallets();
-  const wallets = onboarding ? [] : _allWallets;
+  const wallets = onboarding ? [] : useAllWallets(); // eslint-disable-line
 
   const handleSavePrivateKey = async ({
     blockchain,
@@ -19,7 +25,6 @@ export function useSavePrivateKey({ onboarding }: { onboarding?: boolean }) {
     serverPublicKeys,
     setLoading,
     setError,
-    onNext,
   }: {
     blockchain?: Blockchain;
     privateKey: string;
@@ -27,18 +32,7 @@ export function useSavePrivateKey({ onboarding }: { onboarding?: boolean }) {
     serverPublicKeys?: ServerPublicKey[];
     setLoading: (data: boolean) => void;
     setError: (data: string | null) => void;
-    onNext: ({
-      blockchain,
-      publicKey,
-      privateKey,
-      name,
-    }: {
-      blockchain: Blockchain;
-      publicKey: string;
-      privateKey: string;
-      name: string;
-    }) => void;
-  }) => {
+  }): Promise<Result | null> => {
     setLoading(true);
 
     // Do some validation of the private key
@@ -48,22 +42,21 @@ export function useSavePrivateKey({ onboarding }: { onboarding?: boolean }) {
         privateKey: _privateKey,
         publicKey: _publicKey,
         blockchain: _blockchain,
-      } = validatePrivateKey(privateKey, blockchain));
+      } = validatePrivateKey(privateKey.trim(), blockchain));
     } catch (e) {
       setLoading(false);
       setError((e as Error).message);
-      return;
+      return null;
     }
 
     if (wallets.find((w) => w.publicKey === _publicKey)) {
       setError("This wallet is already active and available in your account.");
-      return;
+      return null;
     }
 
     // Check if the public key we have is the public key we wanted (if we were
     // looking for a specific public key)
     if (serverPublicKeys && serverPublicKeys.length > 0) {
-      setLoading(false);
       const found = !!serverPublicKeys.find(
         (s: { publicKey: string; blockchain: Blockchain }) =>
           s.publicKey === _publicKey && s.blockchain === _blockchain
@@ -93,16 +86,18 @@ export function useSavePrivateKey({ onboarding }: { onboarding?: boolean }) {
 
       if (response.length > 0) {
         setError("Wallet address is used by another Backpack account");
-        return;
+        return null;
       }
     }
 
-    onNext({
+    setLoading(false);
+
+    return {
       blockchain: _blockchain,
       publicKey: _publicKey,
       privateKey: _privateKey,
       name,
-    });
+    };
   };
 
   return { handleSavePrivateKey };

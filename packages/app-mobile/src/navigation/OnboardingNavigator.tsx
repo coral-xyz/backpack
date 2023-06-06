@@ -20,7 +20,6 @@ import {
 import * as Linking from "expo-linking";
 
 import {
-  validatePrivateKey,
   getAuthMessage,
   formatWalletAddress,
   getRecoveryPaths,
@@ -389,7 +388,7 @@ function OnboardingPrivateKeyInputScreen({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { handlePrivateKeyInput, onboardingData } = useOnboarding();
-  const { serverPublicKeys } = onboardingData;
+  const { serverPublicKeys, action } = onboardingData;
   const [privateKey, setPrivateKey] = useState("");
 
   const { handleSavePrivateKey } = useSavePrivateKey({
@@ -420,23 +419,22 @@ function OnboardingPrivateKeyInputScreen({
             placeholder="Enter private key"
             onChangeText={setPrivateKey}
           />
+          {error ? <StyledText color="red">{error}</StyledText> : null}
           <PrimaryButton
             loading={loading}
             disabled={loading || privateKey.length === 0}
             label="Import"
             onPress={async () => {
-              await handleSavePrivateKey({
+              const result = await handleSavePrivateKey({
                 name: "",
-                privateKey,
+                privateKey: privateKey.trim(),
                 serverPublicKeys,
                 setLoading,
                 setError,
-                onNext: async (result) => {
-                  await handlePrivateKeyInput(result);
-                  navigation.push("MnemonicInput");
-                  // navigation
-                },
               });
+
+              await handlePrivateKeyInput(result as PrivateKeyWalletDescriptor);
+              navigation.push("CreatePassword");
             }}
           />
         </Box>

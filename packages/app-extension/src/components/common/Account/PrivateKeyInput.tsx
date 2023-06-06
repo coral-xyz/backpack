@@ -46,15 +46,18 @@ export const PrivateKeyInput = ({
 
   const onSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    await handleSavePrivateKey({
+    const result = await handleSavePrivateKey({
       name,
       privateKey,
       blockchain,
       serverPublicKeys,
-      onNext,
       setLoading,
       setError,
     });
+
+    if (result) {
+      onNext(result);
+    }
   };
 
   return (
