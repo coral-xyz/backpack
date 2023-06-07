@@ -3,13 +3,16 @@ export const STRIPE_ENABLED = "STRIPE_ENABLED";
 
 // Used as a fallback if feature gates worker is offline
 export const DEFAULT_FEATURE_GATES = {
-  STRIPE_ENABLED: false,
-  PRIMARY_PUBKEY_ENABLED: true,
-  SWAP_FEES_ENABLED: false,
-  DROPZONE_ENABLED: false,
-  STICKER_ENABLED: false,
   BARTER_ENABLED: false,
+  DROPZONE_ENABLED: false,
+  GQL_BALANCES: false,
+  GQL_NOTIFICATIONS: true,
+  GQL_TRANSACTION_HISTORY: false,
   MESSAGING_ENABLED: true,
+  PRIMARY_PUBKEY_ENABLED: true,
+  STICKER_ENABLED: false,
+  STRIPE_ENABLED: false,
+  SWAP_FEES_ENABLED: false,
 } as const;
 
 export type FEATURE_GATES_MAP = typeof DEFAULT_FEATURE_GATES;
