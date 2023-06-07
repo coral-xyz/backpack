@@ -51,6 +51,8 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
     version: "0.1.0",
     orientation: "portrait",
     icon: "./assets/icon.png",
+    // generate icon dynamically based on STAGING vs. PRODUCTION
+    // icon: "https://icogen.vercel.app/api/icon?icon=fire",
     userInterfaceStyle: "light",
     splash: {
       image: "./assets/splash.png",
