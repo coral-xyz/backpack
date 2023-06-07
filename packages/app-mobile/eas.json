@@ -8,10 +8,7 @@
       "node": "18.15.0",
       "resourceClass": "large",
       "ios": {
-        "image": "latest",
-        "appName": "Backpack Crypto Wallet",
-        "ascAppId": "6445964121",
-        "appleTeamId": "3BZAP22DU6"
+        "image": "latest"
       },
       "android": {
         "image": "latest"
