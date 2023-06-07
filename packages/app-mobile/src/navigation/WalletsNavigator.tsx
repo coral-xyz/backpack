@@ -69,7 +69,10 @@ export type WalletStackParamList = {
     blockchain: Blockchain;
     publicKey: string;
   };
-  TokenDetail: undefined;
+  TokenDetail: {
+    blockchain: Blockchain;
+    tokenTicker: string;
+  };
   // List of collectibles/nfts for a collection
   CollectionDetail: {
     id: string;
@@ -83,6 +86,11 @@ export type WalletStackParamList = {
   };
   Notifications: undefined;
 };
+
+export type HomeWalletListScreenProps = StackScreenProps<
+  WalletStackParamList,
+  "HomeWalletList"
+>;
 
 export type TokenDetailScreenParams = StackScreenProps<
   WalletStackParamList,
@@ -120,7 +128,6 @@ export function WalletsNavigator(): JSX.Element {
                 {...props}
                 onPress={() => {
                   navigation.openDrawer();
-                  // navigation.navigate("HomeWalletList");
                 }}
               />
             ),
@@ -151,11 +158,8 @@ export function WalletsNavigator(): JSX.Element {
       <Stack.Screen
         name="TokenDetail"
         component={TokenDetailScreen}
-        options={({
-          route: {
-            params: { blockchain, tokenTicker },
-          },
-        }) => {
+        options={({ route }) => {
+          const { blockchain, tokenTicker } = route.params;
           const title = `${toTitleCase(blockchain)} / ${tokenTicker}`;
           return {
             title,
@@ -165,28 +169,20 @@ export function WalletsNavigator(): JSX.Element {
       <Stack.Screen
         name="CollectionDetail"
         component={CollectionDetailScreen}
-        options={({
-          route: {
-            params: { title },
-          },
-        }) => {
+        options={({ route }) => {
           return {
             headerBackTitleVisible: false,
-            title,
+            title: route.params.title,
           };
         }}
       />
       <Stack.Screen
         name="CollectionItemDetail"
         component={CollectionItemDetailScreen}
-        options={({
-          route: {
-            params: { title },
-          },
-        }) => {
+        options={({ route }) => {
           return {
             headerBackTitleVisible: false,
-            title,
+            title: route.params.title,
           };
         }}
       />
