@@ -615,7 +615,7 @@ export class Plugin {
       this._requestTxApprovalFn!({
         kind,
         data: transaction,
-        xnftAddress: this.xnftAddress,
+        xnftAddress: this.xnftAddress.toString(),
         pluginUrl: this.iframeRootUrl,
         publicKey,
         resolve,

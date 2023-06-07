@@ -23,17 +23,13 @@ import {
 } from "@coral-xyz/react-common";
 import type { TokenDataWithPrice } from "@coral-xyz/recoil";
 import {
-  blockchainTokenData,
-  useActiveWallet,
   useAnchorContext,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
-  useBlockchainTokenAccount,
   useDarkMode,
   useEthereumCtx,
   useFriendship,
   useIsValidAddress,
-  useLoader,
   useUser,
 } from "@coral-xyz/recoil";
 import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
@@ -49,7 +45,6 @@ import { TokenInputField } from "../../../common/TokenInput";
 
 import { SendEthereumConfirmationCard } from "./Ethereum";
 import { SendSolanaConfirmationCard } from "./Solana";
-import { WithHeaderButton } from "./Token";
 
 export const useStyles = makeStyles((theme) => ({
   topImage: {
@@ -483,23 +478,38 @@ function SendV2({
                 target: { value },
               }: ChangeEvent<HTMLInputElement>) => {
                 try {
-                  const parsedVal =
-                    value.length === 1 && value[0] === "." ? "0." : value;
+                  const maxDecimals = token.decimals ?? 9;
+
+                  const parsedVal = value
+                    // remove all characters except for 0-9 and .
+                    .replace(/[^\d.]/g, "")
+                    // prepend a 0 if . is the first character
+                    .replace(/^\.(\d+)?$/, "0.$1")
+                    // remove any periods after the first one
+                    .replace(/^(\d+\.\d*?)\./, "$1")
+                    // trim to the number of decimals allowed for the token
+                    .replace(
+                      new RegExp(`^(\\d+\\.\\d{${maxDecimals}}).+`),
+                      "$1"
+                    );
+
+                  if (!Number.isFinite(Number(parsedVal))) return;
 
                   setStrAmount(parsedVal);
 
-                  const num =
-                    parsedVal === "" || parsedVal === "0."
-                      ? 0.0
-                      : parseFloat(parsedVal);
-
-                  if (num >= 0) {
-                    setAmount(
-                      ethers.utils.parseUnits(num.toString(), token.decimals)
-                    );
+                  if (parsedVal.endsWith(".")) {
+                    // can't `throw new Error("trailing")` due to Error function
+                    throw "trailing .";
                   }
+
+                  const finalAmount = ethers.utils.parseUnits(
+                    parsedVal,
+                    maxDecimals
+                  );
+
+                  setAmount(finalAmount.isZero() ? null : finalAmount);
                 } catch (err) {
-                  // Do nothing.
+                  setAmount(null);
                 }
               }}
             />

@@ -4,7 +4,7 @@ import type { ApiContext } from "../../context";
 import { NodeBuilder } from "../../nodes";
 import { EthereumTokenList, SolanaTokenList } from "../../tokens";
 import {
-  ChainId,
+  ProviderId,
   type QueryResolvers,
   type QueryTokenListArgs,
   type TokenListEntry,
@@ -20,12 +20,12 @@ import {
  */
 export const tokenListQueryResolver: QueryResolvers["tokenList"] = async (
   _parent: {},
-  { chainId, filters }: QueryTokenListArgs,
+  { providerId, filters }: QueryTokenListArgs,
   _ctx: ApiContext,
   _info: GraphQLResolveInfo
 ): Promise<TokenListEntry[]> => {
   const list =
-    chainId === ChainId.Ethereum ? EthereumTokenList : SolanaTokenList;
+    providerId === ProviderId.Ethereum ? EthereumTokenList : SolanaTokenList;
 
   if (!filters) {
     return Object.values(list).map((entry) =>

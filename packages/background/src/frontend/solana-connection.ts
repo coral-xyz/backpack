@@ -1,6 +1,5 @@
 import type {
   Context,
-  CustomSplTokenAccountsResponse,
   EventEmitter,
   RpcRequest,
   RpcResponse,
@@ -54,12 +53,11 @@ import type {
   GetAccountInfoConfig,
   GetParsedProgramAccountsConfig,
   GetProgramAccountsConfig,
-  MessageArgs,
+  GetVersionedTransactionConfig,
   SendOptions,
   TransactionSignature,
 } from "@solana/web3.js";
-import { Message, PublicKey, VersionedMessage } from "@solana/web3.js";
-import * as bs58 from "bs58";
+import { PublicKey, VersionedMessage } from "@solana/web3.js";
 import { decode } from "bs58";
 
 import type { SolanaConnectionBackend } from "../backend/solana-connection";
@@ -269,7 +267,7 @@ async function handleConfirmTransaction(
   signature:
     | BlockheightBasedTransactionConfirmationStrategy
     | TransactionSignature,
-  commitment?: Commitment
+  commitmentOrConfig?: GetVersionedTransactionConfig | Finality
 ) {
   if (typeof signature === "string") {
     const { blockhash, lastValidBlockHeight } =
@@ -281,7 +279,10 @@ async function handleConfirmTransaction(
     };
   }
 
-  const resp = await ctx.backend.confirmTransaction(signature, commitment);
+  const resp = await ctx.backend.confirmTransaction(
+    signature,
+    commitmentOrConfig
+  );
   return [resp];
 }
 
@@ -314,18 +315,24 @@ async function handleGetConfirmedSignaturesForAddress2(
 async function handleGetParsedTransaction(
   ctx: Context<SolanaConnectionBackend>,
   signature: TransactionSignature,
-  commitment?: Finality
+  commitmentOrConfig?: GetVersionedTransactionConfig | Finality
 ) {
-  const resp = await ctx.backend.getParsedTransaction(signature, commitment);
+  const resp = await ctx.backend.getParsedTransaction(
+    signature,
+    commitmentOrConfig
+  );
   return [resp];
 }
 
 async function handleGetParsedTransactions(
   ctx: Context<SolanaConnectionBackend>,
   signatures: TransactionSignature[],
-  commitment?: Finality
+  commitmentOrConfig?: GetVersionedTransactionConfig | Finality
 ) {
-  const resp = await ctx.backend.getParsedTransactions(signatures, commitment);
+  const resp = await ctx.backend.getParsedTransactions(
+    signatures,
+    commitmentOrConfig
+  );
   return [resp];
 }
 

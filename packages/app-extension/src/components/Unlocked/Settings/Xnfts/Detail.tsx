@@ -187,16 +187,18 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
             marginBottom: "15px",
           }}
         />
-        {xnft.metadata?.xnft ? <Typography
-          sx={{
+        {xnft.metadata?.xnft ? (
+          <Typography
+            sx={{
               color: theme.custom.colors.fontColor,
               fontSize: "12px",
               marginBottom: "15px",
               textAlign: "center",
             }}
           >
-          v{xnft.metadata.xnft.version}
-        </Typography> : null}
+            v{xnft.metadata.xnft.version}
+          </Typography>
+        ) : null}
         <Button
           disabled={isDisabled}
           disableRipple
@@ -304,9 +306,7 @@ const UninstallConfirmationCard = ({ xnft }: { xnft: any }) => {
       await confirmTransaction(
         ctx.connection,
         txSig,
-        ctx.commitment !== "confirmed" && ctx.commitment !== "finalized"
-          ? "confirmed"
-          : ctx.commitment
+        ctx.commitment === "finalized" ? "finalized" : "confirmed"
       );
 
       setCardType("complete");

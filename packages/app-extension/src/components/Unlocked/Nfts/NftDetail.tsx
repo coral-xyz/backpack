@@ -621,10 +621,7 @@ function BurnConfirmationCard({
         await confirmTransaction(
           solanaCtx.connection,
           _signature,
-          solanaCtx.commitment !== "confirmed" &&
-            solanaCtx.commitment !== "finalized"
-            ? "confirmed"
-            : solanaCtx.commitment
+          solanaCtx.commitment === "finalized" ? "finalized" : "confirmed"
         );
         setState("confirmed");
         if (onComplete) onComplete();
