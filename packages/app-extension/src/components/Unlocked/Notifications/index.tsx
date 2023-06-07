@@ -1,12 +1,16 @@
 // TODO: remove the line below
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useEffect, useState } from "react";
-import { Notifications as _Notifications } from "@coral-xyz/data-components";
+import { useCallback, useEffect, useState } from "react";
+import {
+  Notifications as _Notifications,
+  type ResponseNotification,
+} from "@coral-xyz/data-components";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import { Loading, useBreakpoints } from "@coral-xyz/react-common";
-import { useFeatureGates } from "@coral-xyz/recoil";
+import { useFeatureGates, useOpenPlugin } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import IconButton from "@mui/material/IconButton";
+import { PublicKey } from "@solana/web3.js";
 
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
 import {
@@ -88,24 +92,61 @@ export function Notifications() {
   const { isXs } = useBreakpoints();
   const nav = isXs ? useNavigation() : null;
   const gates = useFeatureGates();
+  const openPlugin = useOpenPlugin();
 
   const [openDrawer, setOpenDrawer] = isXs
     ? [false, () => {}]
     : useState(false);
 
+  /**
+   * Component effect hook to set the navigation drawer title.
+   */
   useEffect(() => {
-    if (isXs) {
-      nav!.setOptions({
+    if (isXs && nav) {
+      nav.setOptions({
         headerTitle: "Notifications",
       });
     }
   }, []);
 
+  /**
+   * Handle a click event on a single notification item in the list.
+   * @param {ResponseNotification} notification
+   */
+  const handleItemClick = useCallback(
+    (notification: ResponseNotification) => {
+      // Open contacts navigation path if the source is related to friends
+      if (
+        notification.source === "friend_requests" ||
+        notification.source === "friend_requests_accept"
+      ) {
+        if (isXs && nav) {
+          nav.push("contacts");
+        } else {
+          setOpenDrawer(true);
+        }
+      } else {
+        // Open an xNFT plugin if the source is a valid public key
+        let pk: PublicKey | undefined;
+        try {
+          pk = new PublicKey(notification.source);
+        } catch {
+          // NOOP
+        }
+
+        if (pk !== undefined) {
+          openPlugin(pk.toBase58());
+        }
+      }
+    },
+    [isXs, nav, openPlugin, setOpenDrawer]
+  );
+
   return gates.GQL_NOTIFICATIONS ? (
     <>
       <_Notifications
         loaderComponent={<NotificationsLoader />}
-        onItemClick={(_n) => setOpenDrawer(true)}
+        onItemClick={handleItemClick}
         onAcceptFriendRequest={(activeUser, otherUser) =>
           updateFriendshipIfExists(activeUser, otherUser, {
             requested: 0,
