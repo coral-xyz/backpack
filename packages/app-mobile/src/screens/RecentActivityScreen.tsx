@@ -105,13 +105,14 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
 
 export function RecentActivityScreen({
   navigation,
+  route,
 }: RecentActivityScreenProps): JSX.Element {
   return (
     <ErrorBoundary
       fallbackRender={({ error }) => <ScreenError error={error} />}
     >
       <Suspense fallback={<ScreenLoading />}>
-        <Container navigation={navigation} />
+        <Container navigation={navigation} route={route} />
       </Suspense>
     </ErrorBoundary>
   );

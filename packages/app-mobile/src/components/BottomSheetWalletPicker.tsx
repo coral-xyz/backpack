@@ -1,15 +1,20 @@
 import type { PublicKey, Wallet } from "~types/types";
 
-import { useCallback, useState } from "react";
+import { Suspense, useCallback, useState } from "react";
 import { FlatList, View, Alert } from "react-native";
 
 import { gql, useSuspenseQuery_experimental } from "@apollo/client";
 import { Blockchain, formatUsd } from "@coral-xyz/common";
 import { BottomSheetTitle, PaddedListItemSeparator } from "@coral-xyz/tamagui";
 import { useBottomSheetModal } from "@gorhom/bottom-sheet";
+import { ErrorBoundary } from "react-error-boundary";
 
 import { ListItemWallet } from "~components/ListItem";
-import { LinkButton__ as LinkButton } from "~components/index";
+import {
+  LinkButton__ as LinkButton,
+  ScreenError,
+  ScreenLoading,
+} from "~components/index";
 import { useWallets } from "~hooks/wallets";
 
 const GET_USER_WALLETS = gql`
@@ -40,7 +45,7 @@ const GET_USER_WALLETS = gql`
   }
 `;
 
-export function BottomSheetWalletPicker({ navigation }) {
+function Container({ navigation }) {
   const { data } = useSuspenseQuery_experimental(GET_USER_WALLETS);
   const { dismiss } = useBottomSheetModal();
   const { allWallets, activeWallet, selectActiveWallet } = useWallets();
@@ -137,5 +142,17 @@ export function BottomSheetWalletPicker({ navigation }) {
         }}
       />
     </View>
+  );
+}
+
+export function BottomSheetWalletPicker({ navigation }): JSX.Element {
+  return (
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ScreenError error={error} />}
+    >
+      <Suspense fallback={<ScreenLoading />}>
+        <Container navigation={navigation} />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
