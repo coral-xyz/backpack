@@ -319,6 +319,19 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars["String"]>;
 };
 
+/** Schema exposure of the blockchain data provider used for a `Wallet`. */
+export type Provider = Node & {
+  __typename?: "Provider";
+  /** Globally unique identifier for the node. */
+  id: Scalars["ID"];
+  /** The logo URL of the provider. */
+  logo: Scalars["String"];
+  /** The display name of the provider. */
+  name: Scalars["String"];
+  /** The `ProviderID` enum variant associated with the data provider. */
+  providerId: ProviderId;
+};
+
 /** Provider ID enum variants for the supported blockchains or wallet types in the API. */
 export enum ProviderId {
   Ethereum = "ETHEREUM",
@@ -540,7 +553,7 @@ export type Wallet = Node & {
   /** The Relay connection for all of the NFTs owned by the wallet. */
   nfts?: Maybe<NftConnection>;
   /** The blockchain enum variant that the wallet is associated with. */
-  providerId: ProviderId;
+  provider: Provider;
   /** The Relay connection for all transactions initiated or associated with the wallet. */
   transactions?: Maybe<TransactionConnection>;
 };
@@ -727,6 +740,7 @@ export type ResolversTypes = ResolversObject<{
     | ResolversTypes["Nft"]
     | ResolversTypes["Notification"]
     | ResolversTypes["NotificationApplicationData"]
+    | ResolversTypes["Provider"]
     | ResolversTypes["TokenBalance"]
     | ResolversTypes["TokenListEntry"]
     | ResolversTypes["Transaction"]
@@ -738,6 +752,7 @@ export type ResolversTypes = ResolversObject<{
   NotificationEdge: ResolverTypeWrapper<NotificationEdge>;
   NotificationFiltersInput: NotificationFiltersInput;
   PageInfo: ResolverTypeWrapper<PageInfo>;
+  Provider: ResolverTypeWrapper<Provider>;
   ProviderID: ProviderId;
   Query: ResolverTypeWrapper<{}>;
   SortDirection: SortDirection;
@@ -791,6 +806,7 @@ export type ResolversParentTypes = ResolversObject<{
     | ResolversParentTypes["Nft"]
     | ResolversParentTypes["Notification"]
     | ResolversParentTypes["NotificationApplicationData"]
+    | ResolversParentTypes["Provider"]
     | ResolversParentTypes["TokenBalance"]
     | ResolversParentTypes["TokenListEntry"]
     | ResolversParentTypes["Transaction"]
@@ -802,6 +818,7 @@ export type ResolversParentTypes = ResolversObject<{
   NotificationEdge: NotificationEdge;
   NotificationFiltersInput: NotificationFiltersInput;
   PageInfo: PageInfo;
+  Provider: Provider;
   Query: {};
   String: Scalars["String"];
   TokenBalance: TokenBalance;
@@ -1050,6 +1067,7 @@ export type NodeResolvers<
     | "Nft"
     | "Notification"
     | "NotificationApplicationData"
+    | "Provider"
     | "TokenBalance"
     | "TokenListEntry"
     | "Transaction"
@@ -1132,6 +1150,17 @@ export type PageInfoResolvers<
     ParentType,
     ContextType
   >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ProviderResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["Provider"] = ResolversParentTypes["Provider"]
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  logo?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  providerId?: Resolver<ResolversTypes["ProviderID"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1320,7 +1349,7 @@ export type WalletResolvers<
     ContextType,
     Partial<WalletNftsArgs>
   >;
-  providerId?: Resolver<ResolversTypes["ProviderID"], ParentType, ContextType>;
+  provider?: Resolver<ResolversTypes["Provider"], ParentType, ContextType>;
   transactions?: Resolver<
     Maybe<ResolversTypes["TransactionConnection"]>,
     ParentType,
@@ -1373,6 +1402,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   NotificationConnection?: NotificationConnectionResolvers<ContextType>;
   NotificationEdge?: NotificationEdgeResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
+  Provider?: ProviderResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   TokenBalance?: TokenBalanceResolvers<ContextType>;
   TokenBalanceConnection?: TokenBalanceConnectionResolvers<ContextType>;

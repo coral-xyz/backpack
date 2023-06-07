@@ -17,6 +17,7 @@ export interface BlockchainDataProvider {
   decimals(): number;
   defaultAddress(): string;
   logo(): string;
+  name(): string;
   symbol(): string;
 
   getBalancesForAddress(
@@ -38,11 +39,12 @@ export interface BlockchainDataProvider {
  * based on the enum variant argued.
  * @export
  * @param {ProviderId} id
+ * @param {ApiContext} [ctx]
  * @returns {BlockchainDataProvider}
  */
 export function getProviderForId(
   id: ProviderId,
-  ctx: ApiContext
+  ctx?: ApiContext
 ): BlockchainDataProvider {
   switch (id) {
     case ProviderId.Ethereum: {

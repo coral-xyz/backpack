@@ -196,14 +196,14 @@ Input filter type for fetching user wallets and their data.
 """
 input WalletFiltersInput {
   """
-  A `ProviderID` value to filter for all of the public keys of the user for a given blockchain.
-  """
-  providerId: ProviderID
-
-  """
   Flag to filter for only the primary wallets for each registered blockchain of the user.
   """
   primaryOnly: Boolean
+
+  """
+  A `ProviderID` value to filter for all of the public keys of the user for a given blockchain.
+  """
+  providerId: ProviderID
 
   """
   A list of public keys to filter in the response.
@@ -621,6 +621,31 @@ type NotificationEdge {
 }
 
 """
+Schema exposure of the blockchain data provider used for a `Wallet`.
+"""
+type Provider implements Node {
+  """
+  Globally unique identifier for the node.
+  """
+  id: ID!
+
+  """
+  The logo URL of the provider.
+  """
+  logo: String!
+
+  """
+  The display name of the provider.
+  """
+  name: String!
+
+  """
+  The `ProviderID` enum variant associated with the data provider.
+  """
+  providerId: ProviderID!
+}
+
+"""
 Generic native or non-native token data and balance for a `Wallet`.
 """
 type TokenBalance implements Node {
@@ -862,11 +887,6 @@ type Wallet implements Node {
   address: String!
 
   """
-  The blockchain enum variant that the wallet is associated with.
-  """
-  providerId: ProviderID!
-
-  """
   The timestamp that the wallet was imported or registered to the Backpack user.
   """
   createdAt: String!
@@ -885,6 +905,11 @@ type Wallet implements Node {
   The Relay connection for all of the NFTs owned by the wallet.
   """
   nfts(filters: NftFiltersInput): NftConnection @cacheControl(maxAge: 60)
+
+  """
+  The blockchain enum variant that the wallet is associated with.
+  """
+  provider: Provider!
 
   """
   The Relay connection for all transactions initiated or associated with the wallet.

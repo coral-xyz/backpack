@@ -37,9 +37,9 @@ import type { BlockchainDataProvider } from ".";
  * @implements {BlockchainDataProvider}
  */
 export class Solana implements BlockchainDataProvider {
-  readonly #ctx: ApiContext;
+  readonly #ctx?: ApiContext;
 
-  constructor(ctx: ApiContext) {
+  constructor(ctx?: ApiContext) {
     this.#ctx = ctx;
   }
 
@@ -80,6 +80,15 @@ export class Solana implements BlockchainDataProvider {
   }
 
   /**
+   * The display name of the data provider.
+   * @returns {string}
+   * @memberof Solana
+   */
+  name(): string {
+    return "Solana";
+  }
+
+  /**
    * Symbol of the native token.
    * @returns {string}
    * @memberof Solana
@@ -100,6 +109,10 @@ export class Solana implements BlockchainDataProvider {
     address: string,
     filters?: BalanceFiltersInput
   ): Promise<Balances> {
+    if (!this.#ctx) {
+      throw new Error("API context object not available");
+    }
+
     // Get the address balances and filter out the NFTs and empty ATAs
     const balances = await this.#ctx.dataSources.helius.getBalances(address);
     const nonEmptyOrNftTokens = balances.tokens.filter(
@@ -229,6 +242,10 @@ export class Solana implements BlockchainDataProvider {
     address: string,
     filters?: NftFiltersInput
   ): Promise<NftConnection> {
+    if (!this.#ctx) {
+      throw new Error("API context object not available");
+    }
+
     // Get the list of digital assets (NFTs) owned by the argued address from Helius DAS API.
     const response = await this.#ctx.dataSources.helius.rpc.getAssetsByOwner(
       address
@@ -293,7 +310,7 @@ export class Solana implements BlockchainDataProvider {
             this.decimals()
           ),
           source: tensorListing.tx.source,
-          url: this.#ctx.dataSources.tensor.getListingUrl(item.id),
+          url: this.#ctx!.dataSources.tensor.getListingUrl(item.id),
         });
       }
 
@@ -326,6 +343,10 @@ export class Solana implements BlockchainDataProvider {
     address: string,
     filters?: TransactionFiltersInput
   ): Promise<TransactionConnection> {
+    if (!this.#ctx) {
+      throw new Error("API context object not available");
+    }
+
     const resp = await this.#ctx.dataSources.helius.getTransactionHistory(
       address,
       filters?.before ?? undefined,

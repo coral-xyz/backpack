@@ -2,6 +2,7 @@ import { Chain } from "@coral-xyz/zeus";
 import { GraphQLError } from "graphql";
 
 import { NodeBuilder } from "../nodes";
+import { getProviderForId } from "../providers";
 import {
   type Friend,
   type FriendRequest,
@@ -367,11 +368,15 @@ export class Hasura {
     }
 
     const { blockchain, created_at, is_primary } = resp.auth_public_keys[0];
-    const provider = inferProviderIdFromString(blockchain);
+    const provider = getProviderForId(inferProviderIdFromString(blockchain));
 
-    return NodeBuilder.wallet(provider, {
+    return NodeBuilder.wallet(provider.id(), {
       address,
-      providerId: provider,
+      provider: NodeBuilder.provider({
+        logo: provider.logo(),
+        name: provider.name(),
+        providerId: provider.id(),
+      }),
       createdAt: new Date(created_at as string).toISOString(),
       isPrimary: is_primary ?? false,
     });
@@ -422,10 +427,17 @@ export class Hasura {
     }
 
     const nodes = resp.auth_public_keys.map((pk) => {
-      const provider = inferProviderIdFromString(pk.blockchain);
-      return NodeBuilder.wallet(provider, {
+      const provider = getProviderForId(
+        inferProviderIdFromString(pk.blockchain)
+      );
+
+      return NodeBuilder.wallet(provider.id(), {
         address: pk.public_key,
-        providerId: provider,
+        provider: NodeBuilder.provider({
+          logo: provider.logo(),
+          name: provider.name(),
+          providerId: provider.id(),
+        }),
         createdAt: new Date(pk.created_at as string).toISOString(),
         isPrimary: pk.is_primary ?? false,
       });

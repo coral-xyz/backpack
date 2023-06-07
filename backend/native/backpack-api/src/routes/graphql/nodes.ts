@@ -9,6 +9,7 @@ import type {
   Node,
   Notification,
   NotificationApplicationData,
+  Provider,
   ProviderId,
   TokenBalance,
   TokenListEntry,
@@ -74,6 +75,10 @@ export abstract class NodeBuilder {
     data: Omit<NotificationApplicationData, "id">
   ): NotificationApplicationData {
     return this._createNode(`notification_app:${address}`, data);
+  }
+
+  static provider(data: Omit<Provider, "id">): Provider {
+    return this._createNode(`provider:${data.providerId}`, data);
   }
 
   static tensorListing(mint: string, data: Omit<Listing, "id">): Listing {
