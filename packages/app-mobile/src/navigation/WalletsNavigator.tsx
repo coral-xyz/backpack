@@ -1,13 +1,17 @@
+import { Pressable } from "react-native";
+
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
-import { useTheme as useTamaguiTheme } from "@coral-xyz/tamagui";
+import { StyledText, useTheme as useTamaguiTheme } from "@coral-xyz/tamagui";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StackScreenProps } from "@react-navigation/stack";
 
+import { IconDropdown } from "~components/Icon";
 import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
+import { Header } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { WINDOW_WIDTH } from "~lib/index";
-import { HeaderButton } from "~navigation/components";
+import { HeaderButton, HeaderDropdownButton } from "~navigation/components";
 import { TopTabsParamList } from "~navigation/types";
 import { CollectionDetailScreen } from "~screens/CollectionDetailScreen";
 import { CollectionItemDetailScreen } from "~screens/CollectionItemDetailScreen";
@@ -77,6 +81,7 @@ export type WalletStackParamList = {
     title: string;
     blockchain: Blockchain;
   };
+  Notifications: undefined;
 };
 
 export type TokenDetailScreenParams = StackScreenProps<
@@ -102,6 +107,13 @@ export function WalletsNavigator(): JSX.Element {
             headerShown: true,
             headerBackTitleVisible: false,
             title: "Balances",
+            headerTitle: ({ tintColor, children }) => {
+              return (
+                <HeaderDropdownButton tintColor={tintColor}>
+                  {children}
+                </HeaderDropdownButton>
+              );
+            },
             headerLeft: (props) => (
               <HeaderButton
                 name="menu"

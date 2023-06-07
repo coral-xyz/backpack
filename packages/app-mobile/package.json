@@ -9,6 +9,7 @@
     "eas-build-post-install": "cd ../../ && yarn build:mobile",
     "android": "EXPO_USE_CUSTOM_INSPECTOR_PROXY=true expo start --android --localhost --dev-client",
     "ios": "EXPO_USE_CUSTOM_INSPECTOR_PROXY=true expo start --ios --localhost --dev-client",
+    "deploy:ios": "eas build --profile production --platform ios --auto-submit --non-interactive",
     "web": "expo start --web",
     "add": "expo add",
     "eject": "expo eject",

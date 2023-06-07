@@ -237,8 +237,8 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         component={ChatNavigator}
         options={{ title: "Chats" }}
       />
-      <Tab.Screen name="Utils" component={UtilsDesignScreen} />
       <Tab.Screen name="Browser" component={BrowserScreen} />
+      <Tab.Screen name="Utils" component={UtilsDesignScreen} />
     </Tab.Navigator>
   );
 }

@@ -1,7 +1,7 @@
 import type { SubscriptionType, Blockchain, Nft } from "@coral-xyz/common";
 import type { Token } from "~types/types";
 
-import { MaterialTopTabsScreenProps } from "@react-navigation/material-top-tabs";
+import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { StackScreenProps } from "@react-navigation/stack";
 
@@ -112,17 +112,17 @@ export type TopTabsParamList = {
   Activity: undefined;
 };
 
-export type TokenListScreenProps = MaterialTopTabsScreenProps<
+export type TokenListScreenProps = MaterialTopTabScreenProps<
   TopTabsParamList,
   "TokenList"
 >;
 
-export type CollectionListScreenProps = MaterialTopTabsScreenProps<
+export type CollectionListScreenProps = MaterialTopTabScreenProps<
   TopTabsParamList,
   "Collectibles"
 >;
 
-export type RecentActivityScreenProps = MaterialTopTabsScreenProps<
+export type RecentActivityScreenProps = MaterialTopTabScreenProps<
   TopTabsParamList,
   "Activity"
 >;

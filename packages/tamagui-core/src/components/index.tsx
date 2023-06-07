@@ -1,5 +1,6 @@
 export * from "./ApproveTransactionBottomSheet";
 export * from "./BlockchainLogo";
+export * from "./BottomSheet";
 export * from "./Button";
 export * from "./Container";
 export * from "./Icon";

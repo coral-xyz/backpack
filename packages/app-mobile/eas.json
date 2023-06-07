@@ -8,7 +8,10 @@
       "node": "18.15.0",
       "resourceClass": "large",
       "ios": {
-        "image": "latest"
+        "image": "latest",
+        "appName": "Backpack Crypto Wallet",
+        "ascAppId": "6445964121",
+        "appleTeamId": "3BZAP22DU6"
       },
       "android": {
         "image": "latest"
@@ -29,7 +32,7 @@
       },
       "channel": "development-simulator"
     },
-    "staging": {
+    "preview": {
       "extends": "monorepo",
       "distribution": "internal",
       "channel": "staging",
