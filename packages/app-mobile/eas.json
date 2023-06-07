@@ -29,7 +29,7 @@
       },
       "channel": "development-simulator"
     },
-    "staging": {
+    "preview": {
       "extends": "monorepo",
       "distribution": "internal",
       "channel": "staging",

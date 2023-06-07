@@ -11,6 +11,7 @@ import { ErrorBoundary } from "react-error-boundary";
 
 import { Screen, ScreenError, ScreenLoading } from "~components/index";
 import { useWallets } from "~hooks/wallets";
+import type { HomeWalletListScreenProps } from "~navigation/WalletsNavigator";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 
 // TOOD(peter) GET_WALLET_DATA + ListItemData is a hack until we have aggregate wallets
@@ -86,6 +87,8 @@ function ListItemData({
   onPress,
 }: {
   wallet: Wallet;
+  isFirst: boolean;
+  onPress: () => void;
 }): JSX.Element {
   // TODO(peter/graphql): this request needs to fetch all of the balances
   const { data } = useSuspenseQuery_experimental(GET_WALLET_DATA, {
@@ -137,7 +140,7 @@ function ListItem({
   );
 }
 
-function WalletList({ navigation }) {
+function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
   const { allWallets, selectActiveWallet } = useWallets();
 
   const handlePressWallet = useCallback(
@@ -158,7 +161,6 @@ function WalletList({ navigation }) {
   const renderItem = useCallback(
     ({ item: wallet, index }: { item: Wallet; index: number }) => {
       const isFirst = index === 0;
-      // const isLast = index === allWallets.length - 1;
       return (
         <ListItem isFirst={isFirst} item={wallet} onPress={handlePressWallet} />
       );
@@ -167,34 +169,32 @@ function WalletList({ navigation }) {
   );
 
   return (
-    <FlatList
-      style={{ flex: 1 }}
-      data={allWallets}
-      keyExtractor={keyExtractor}
-      renderItem={renderItem}
-      showsVerticalScrollIndicator={false}
-    />
-  );
-}
-
-function Container({ navigation }) {
-  return (
     <Screen>
-      <Box my={12}>
-        <BalanceSummaryWidget />
-      </Box>
-      <WalletList navigation={navigation} />
+      <FlatList
+        data={allWallets}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <Box my={12}>
+            <BalanceSummaryWidget />
+          </Box>
+        }
+      />
     </Screen>
   );
 }
 
-export function HomeWalletListScreen({ navigation }): JSX.Element {
+export function HomeWalletListScreen({
+  navigation,
+  route,
+}: HomeWalletListScreenProps): JSX.Element {
   return (
     <ErrorBoundary
       fallbackRender={({ error }) => <ScreenError error={error.message} />}
     >
       <Suspense fallback={<ScreenLoading />}>
-        <Container navigation={navigation} />
+        <Container navigation={navigation} route={route} />
       </Suspense>
     </ErrorBoundary>
   );

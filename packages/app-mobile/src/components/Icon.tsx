@@ -29,6 +29,19 @@ export const IconMenu = withThemedIcon(({ color, size }: TamaguiIconProp) => {
   );
 });
 
+export const IconDropdown = withThemedIcon(
+  ({ color, size }: TamaguiIconProp) => {
+    const baseIconColor = useTamaguiTheme().fontColor.val;
+    return (
+      <MaterialIcons
+        name="keyboard-arrow-down"
+        size={size}
+        color={color ?? baseIconColor}
+      />
+    );
+  }
+);
+
 export const VerticalDotsIcon = ({
   size = 24,
   color = "gray",

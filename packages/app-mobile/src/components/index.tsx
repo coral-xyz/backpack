@@ -65,6 +65,23 @@ export {
   TwoButtonFooter,
 };
 
+// TODO(fix LinkButton inside tamagui)
+export const LinkButton__ = ({
+  onPress,
+  label,
+  color,
+}: {
+  onPress: () => void;
+  label: string;
+  color: string; // TODO tamagui color props
+}): JSX.Element => (
+  <Pressable style={{ padding: 12 }} onPress={onPress}>
+    <StyledText alignSelf="center" fontSize="$lg" color={color}>
+      {label}
+    </StyledText>
+  </Pressable>
+);
+
 export function CallToAction({
   icon,
   title,

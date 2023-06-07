@@ -159,11 +159,12 @@ function Container({ navigation }: CollectionListScreenProps): JSX.Element {
 
 export function CollectionListScreen({
   navigation,
+  route,
 }: CollectionListScreenProps): JSX.Element {
   return (
     <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
       <Suspense fallback={<FullScreenLoading />}>
-        <Container navigation={navigation} />
+        <Container navigation={navigation} route={route} />
       </Suspense>
     </ErrorBoundary>
   );

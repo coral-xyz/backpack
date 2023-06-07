@@ -2,12 +2,18 @@ import { useState } from "react";
 import { Pressable } from "react-native";
 
 import { useActiveWallet } from "@coral-xyz/recoil";
-import { StyledText, useTheme as useTamaguiTheme } from "@coral-xyz/tamagui";
-import { MaterialIcons } from "@expo/vector-icons";
+import {
+  StyledText,
+  XStack,
+  useTheme as useTamaguiTheme,
+} from "@coral-xyz/tamagui";
 import { useNavigation } from "@react-navigation/native";
 
 import { BetterBottomSheet } from "~components/BottomSheetModal";
 import { BottomSheetWalletPicker } from "~components/BottomSheetWalletPicker";
+import { IconDropdown } from "~components/Icon";
+
+import { BlockchainLogo } from ".";
 
 export function WalletSwitcherButton(): JSX.Element {
   const navigation = useNavigation();
@@ -22,25 +28,19 @@ export function WalletSwitcherButton(): JSX.Element {
           setIsVisible(true);
         }}
         style={{
-          flexDirection: "row",
-          paddingVertical: 8,
-          paddingHorizontal: 22,
           borderRadius: 32,
           borderWidth: 2,
           backgroundColor: theme.nav.val,
           borderColor: theme.borderFull.val,
-          alignItems: "center",
         }}
       >
-        <StyledText fontSize="$base" color="$fontColor">
-          {activeWallet.name}
-        </StyledText>
-        <MaterialIcons
-          name="keyboard-arrow-down"
-          size={24}
-          color={theme.fontColor.val}
-          style={{ marginLeft: 4 }}
-        />
+        <XStack space={8} ai="center" py={8} px={18}>
+          <BlockchainLogo blockchain={activeWallet.blockchain} size={16} />
+          <StyledText fontSize="$base" color="$fontColor" mr={-6}>
+            {activeWallet.name}
+          </StyledText>
+          <IconDropdown size={22} color="$fontColor" />
+        </XStack>
       </Pressable>
       <BetterBottomSheet
         isVisible={isVisible}

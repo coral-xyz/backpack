@@ -12,6 +12,7 @@ type ExpoExtras = {
 
 const localGraphQLApi = "http://localhost:8080/v2/graphql";
 const remoteGraphQLApi = "https://backpack-api.xnfts.dev/v2/graphql";
+
 // NOTE: this is the hardcoded hash for production builds via App Store
 // deploy your current changes to production via pull request, switch to gh-pages branch and grab the hash from there
 // then fire off a build
@@ -38,7 +39,9 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
 
   const serviceWorkerUrl = getServiceWorkerUrl();
   const graphqlApiUrl =
-    process.env.APP_ENV === "production" ? remoteGraphQLApi : localGraphQLApi;
+    process.env.APP_ENV === "production" || process.env.APP_ENV === "staging"
+      ? remoteGraphQLApi
+      : localGraphQLApi;
 
   return {
     ...config,
@@ -81,6 +84,7 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
       },
       supportsTablet: false,
       bundleIdentifier: packageName,
+      // bundleIdentifier: IS_DEV ? 'com.myapp.dev' : 'com.myapp',
       infoPlist: {
         // ATTENTION: Your service worker must live in the top 3 or will not load
         // Apple considers this a feature
@@ -96,6 +100,7 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
     },
     android: {
       package: packageName,
+      // package: IS_DEV ? 'com.myapp.dev' : 'com.myapp',
       googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
