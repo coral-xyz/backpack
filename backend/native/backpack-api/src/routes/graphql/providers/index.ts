@@ -2,9 +2,9 @@ import type { ApiContext } from "../context";
 import {
   type BalanceFiltersInput,
   type Balances,
-  ChainId,
   type NftConnection,
   type NftFiltersInput,
+  ProviderId,
   type TransactionConnection,
   type TransactionFiltersInput,
 } from "../types";
@@ -12,11 +12,12 @@ import {
 import { Ethereum } from "./ethereum";
 import { Solana } from "./solana";
 
-export interface Blockchain {
-  id(): ChainId;
+export interface BlockchainDataProvider {
+  id(): ProviderId;
   decimals(): number;
   defaultAddress(): string;
   logo(): string;
+  name(): string;
   symbol(): string;
 
   getBalancesForAddress(
@@ -34,18 +35,22 @@ export interface Blockchain {
 }
 
 /**
- * Factory function for returning an instance of `Blockchain` based
- * on the enum variant argued.
+ * Factory function for returning an instance of `BlockchainDataProvider`
+ * based on the enum variant argued.
  * @export
- * @param {ChainId} id
- * @returns {Blockchain}
+ * @param {ProviderId} id
+ * @param {ApiContext} [ctx]
+ * @returns {BlockchainDataProvider}
  */
-export function getBlockchainForId(id: ChainId, ctx: ApiContext): Blockchain {
+export function getProviderForId(
+  id: ProviderId,
+  ctx?: ApiContext
+): BlockchainDataProvider {
   switch (id) {
-    case ChainId.Ethereum: {
+    case ProviderId.Ethereum: {
       return new Ethereum(ctx);
     }
-    case ChainId.Solana: {
+    case ProviderId.Solana: {
       return new Solana(ctx);
     }
   }

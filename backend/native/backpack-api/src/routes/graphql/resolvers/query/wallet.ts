@@ -1,8 +1,8 @@
 import type { GraphQLResolveInfo } from "graphql";
 
-import { getBlockchainForId } from "../../blockchain";
 import type { ApiContext } from "../../context";
 import { NodeBuilder } from "../../nodes";
+import { getProviderForId } from "../../providers";
 import type {
   Balances,
   NftConnection,
@@ -20,19 +20,24 @@ import type {
  * @export
  * @param {{}} _parent
  * @param {QueryWalletArgs} args
- * @param {ApiContext} _ctx
+ * @param {ApiContext} ctx
  * @param {GraphQLResolveInfo} _info
  * @returns {(Promise<Wallet | null>)}
  */
 export async function walletQueryResolver(
   _parent: {},
-  { address, chainId }: QueryWalletArgs,
-  _ctx: ApiContext,
+  { address, providerId }: QueryWalletArgs,
+  ctx: ApiContext,
   _info: GraphQLResolveInfo
 ): Promise<Wallet | null> {
-  return NodeBuilder.wallet(chainId, {
+  const p = getProviderForId(providerId, ctx);
+  return NodeBuilder.wallet(providerId, {
     address: address,
-    chainId: chainId,
+    provider: NodeBuilder.provider({
+      logo: p.logo(),
+      name: p.name(),
+      providerId,
+    }),
     createdAt: new Date().toISOString(),
     isPrimary: false,
   });
@@ -57,10 +62,10 @@ export const walletTypeResolvers: WalletResolvers = {
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<Balances | null> {
-    return getBlockchainForId(parent.chainId, ctx).getBalancesForAddress(
-      parent.address,
-      filters ?? undefined
-    );
+    return getProviderForId(
+      parent.provider.providerId,
+      ctx
+    ).getBalancesForAddress(parent.address, filters ?? undefined);
   },
 
   /**
@@ -77,7 +82,7 @@ export const walletTypeResolvers: WalletResolvers = {
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<NftConnection | null> {
-    return getBlockchainForId(parent.chainId, ctx).getNftsForAddress(
+    return getProviderForId(parent.provider.providerId, ctx).getNftsForAddress(
       parent.address,
       filters ?? undefined
     );
@@ -97,9 +102,9 @@ export const walletTypeResolvers: WalletResolvers = {
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<TransactionConnection | null> {
-    return getBlockchainForId(parent.chainId, ctx).getTransactionsForAddress(
-      parent.address,
-      filters ?? undefined
-    );
+    return getProviderForId(
+      parent.provider.providerId,
+      ctx
+    ).getTransactionsForAddress(parent.address, filters ?? undefined);
   },
 };

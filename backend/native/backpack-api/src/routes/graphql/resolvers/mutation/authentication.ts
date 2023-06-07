@@ -39,13 +39,13 @@ export const authenticateMutationResolver: MutationResolvers["authenticate"] =
     if (
       !validateSignature(
         decoded,
-        args.chainId.toLowerCase() as Blockchain,
+        args.providerId.toLowerCase() as Blockchain,
         args.signature,
         args.publicKey
       )
     ) {
       throw new GraphQLError(
-        `Invalid ${args.chainId.toLowerCase()} signature`,
+        `Invalid ${args.providerId.toLowerCase()} signature`,
         {
           extensions: {
             code: "FORBIDDEN",
@@ -58,7 +58,7 @@ export const authenticateMutationResolver: MutationResolvers["authenticate"] =
     // Parse the user ID and check if the public key is registered to their account
     const uuid = decoded.toString().replace(AUTH_MESSAGE_PREFIX, "");
     const pks = await ctx.dataSources.hasura.getWallets(uuid, {
-      chainId: args.chainId,
+      providerId: args.providerId,
       pubkeys: [args.publicKey],
     });
 

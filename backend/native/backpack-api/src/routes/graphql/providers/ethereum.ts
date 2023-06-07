@@ -2,7 +2,6 @@ import {
   AssetTransfersCategory,
   type AssetTransfersParams,
   type AssetTransfersWithMetadataResponse,
-  BigNumber,
   SortingOrder,
 } from "alchemy-sdk";
 import { ethers } from "ethers";
@@ -14,39 +13,39 @@ import { EthereumTokenList } from "../tokens";
 import {
   type BalanceFiltersInput,
   type Balances,
-  ChainId,
   type Nft,
   type NftAttribute,
   type NftConnection,
   type NftFiltersInput,
+  ProviderId,
   type TokenBalance,
   type TransactionConnection,
   type TransactionFiltersInput,
 } from "../types";
 import { calculateBalanceAggregate, createConnection } from "../utils";
 
-import type { Blockchain } from ".";
+import type { BlockchainDataProvider } from ".";
 
 /**
  * Ethereum blockchain implementation for the common API.
  * @export
  * @class Ethereum
- * @implements {Blockchain}
+ * @implements {BlockchainDataProvider}
  */
-export class Ethereum implements Blockchain {
-  readonly #ctx: ApiContext;
+export class Ethereum implements BlockchainDataProvider {
+  readonly #ctx?: ApiContext;
 
-  constructor(ctx: ApiContext) {
+  constructor(ctx?: ApiContext) {
     this.#ctx = ctx;
   }
 
   /**
    * Chain ID enum variant.
-   * @returns {ChainId}
+   * @returns {ProviderId}
    * @memberof Ethereum
    */
-  id(): ChainId {
-    return ChainId.Ethereum;
+  id(): ProviderId {
+    return ProviderId.Ethereum;
   }
 
   /**
@@ -77,6 +76,15 @@ export class Ethereum implements Blockchain {
   }
 
   /**
+   * The display name of the data provider.
+   * @returns {string}
+   * @memberof Ethereum
+   */
+  name(): string {
+    return "Ethereum";
+  }
+
+  /**
    * Symbol of the native coin.
    * @returns {string}
    * @memberof Ethereum
@@ -97,6 +105,10 @@ export class Ethereum implements Blockchain {
     address: string,
     filters?: Partial<BalanceFiltersInput>
   ): Promise<Balances> {
+    if (!this.#ctx) {
+      throw new Error("API context object not available");
+    }
+
     // Fetch the native and all token balances of the address and filter out the empty balances
     const [native, tokenBalances] = await Promise.all([
       this.#ctx.dataSources.alchemy.core.getBalance(address),
@@ -224,6 +236,10 @@ export class Ethereum implements Blockchain {
     address: string,
     filters?: NftFiltersInput
   ): Promise<NftConnection> {
+    if (!this.#ctx) {
+      throw new Error("API context object not available");
+    }
+
     // Get all NFTs held by the address from Alchemy
     const nfts = await this.#ctx.dataSources.alchemy.nft.getNftsForOwner(
       address,
@@ -284,6 +300,10 @@ export class Ethereum implements Blockchain {
     address: string,
     filters?: TransactionFiltersInput
   ): Promise<TransactionConnection> {
+    if (!this.#ctx) {
+      throw new Error("API context object not available");
+    }
+
     const params: AssetTransfersParams = {
       category: [
         AssetTransfersCategory.ERC1155,
@@ -318,7 +338,7 @@ export class Ethereum implements Blockchain {
 
     const receipts = await Promise.all(
       combined.map((tx) =>
-        this.#ctx.dataSources.alchemy.core.getTransactionReceipt(tx.hash)
+        this.#ctx!.dataSources.alchemy.core.getTransactionReceipt(tx.hash)
       )
     );
 
