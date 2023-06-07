@@ -17,8 +17,6 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-import * as Linking from "expo-linking";
-
 import {
   getAuthMessage,
   formatWalletAddress,
@@ -91,6 +89,16 @@ import {
 import { useTheme } from "~hooks/useTheme";
 import { useSession } from "~lib/SessionProvider";
 import { maybeRender } from "~lib/index";
+
+import {
+  BiometricAuthenticationStatus,
+  tryLocalAuthenticate,
+} from "~src/features/biometrics";
+import {
+  biometricAuthenticationSuccessful,
+  // useDeviceSupportsBiometricAuth,
+} from "~src/features/biometrics/hooks";
+import * as Linking from "~src/lib/linking";
 
 function Network({
   id,
@@ -166,6 +174,7 @@ type OnboardingStackParamList = {
   SelectBlockchain: undefined;
   ImportAccounts: undefined;
   CreatePassword: undefined;
+  Biometrics: undefined;
   CreateAccountLoading: undefined;
 };
 
@@ -244,7 +253,7 @@ function CreateOrRecoverAccountScreen({
                 // dev inviteCode
                 inviteCode: "8b9f708f-df0a-497a-8bc1-f1df42959a84",
               });
-              navigation.push("CreateOrRecoverUsername");
+              navigation.push("Biometrics");
             }}
           />
           <LinkButton
@@ -865,9 +874,89 @@ function OnboardingBlockchainSelectScreen({
         disabled={selectedBlockchains.length === 0}
         label="Next"
         onPress={() => {
-          navigation.push("CreatePassword");
+          navigation.push("Biometrics");
         }}
       />
+    </OnboardingScreen>
+  );
+}
+
+type BiometricsScreenProps = StackScreenProps<
+  OnboardingStackParamList,
+  "Biometrics"
+>;
+
+export function OnboardingBiometricsScreen({
+  navigation,
+  route,
+}: BiometricsScreenProps): JSX.Element {
+  const insets = useSafeAreaInsets();
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  // const { touchId: isTouchIdDevice } = useDeviceSupportsBiometricAuth();
+  // const authenticationTypeName = isTouchIdDevice ? "Touch" : "Face";
+
+  const onPressNext = useCallback(() => {
+    setShowWarningModal(false);
+    navigation.navigate({
+      name: "CreateAccountLoading",
+      params: route.params,
+      merge: true,
+    });
+  }, [navigation, route.params]);
+
+  const onPressEnableBiometrics = useCallback(async () => {
+    const authStatus = await tryLocalAuthenticate({
+      disableDeviceFallback: true,
+    });
+
+    if (
+      authStatus === BiometricAuthenticationStatus.Unsupported ||
+      authStatus === BiometricAuthenticationStatus.MissingEnrollment
+    ) {
+      Alert.alert(
+        "Biometrics are disabled",
+        "To enable biometrics, allow access in system settings",
+        [
+          {
+            text: "Settings",
+            onPress: Linking.openSettings,
+          },
+          { text: "Not now" },
+        ]
+      );
+    }
+
+    if (biometricAuthenticationSuccessful(authStatus)) {
+      onPressNext();
+    }
+  }, [onPressNext]);
+
+  return (
+    <OnboardingScreen
+      title="Enable Face Id"
+      subtitle="Face ID will be used to unlock your device"
+      style={{
+        paddingTop: insets.top + 36,
+        paddingBottom: insets.bottom + 24,
+      }}
+    >
+      {showWarningModal ? (
+        <StyledText>Warning modal should be shown</StyledText>
+      ) : null}
+      <Box space={8}>
+        <LinkButton
+          disabled={false}
+          label="Maybe later"
+          onPress={() => {
+            setShowWarningModal(true);
+          }}
+        />
+        <PrimaryButton
+          disabled={false}
+          label="Turn on Face ID"
+          onPress={onPressEnableBiometrics}
+        />
+      </Box>
     </OnboardingScreen>
   );
 }
@@ -983,8 +1072,13 @@ function OnboardingImportAccountsScreen({
   );
 }
 
+type CreateAccountLoadingScreenProps = StackScreenProps<
+  OnboardingStackParamList,
+  "CreateAccountLoading"
+>;
+
 function CreateAccountLoadingScreen(
-  _p: StackScreenProps<OnboardingStackParamList, "CreateAccountLoading">
+  _p: CreateAccountLoadingScreenProps
 ): JSX.Element {
   const { setAuthToken } = useSession();
   const background = useBackgroundClient();
@@ -1046,20 +1140,20 @@ export function OnboardingCompleteWelcome({
           <CallToAction
             icon={<WidgetIcon />}
             title="Browse the xNFT library"
-            onPress={() => Linking.openURL(XNFT_GG_LINK)}
+            onPress={() => Linking.openUrl(XNFT_GG_LINK)}
           />
         </Margin>
         <Margin bottom={8}>
           <CallToAction
             icon={<TwitterIcon />}
             title="Follow us on Twitter"
-            onPress={() => Linking.openURL(TWITTER_LINK)}
+            onPress={() => Linking.openUrl(TWITTER_LINK)}
           />
         </Margin>
         <CallToAction
           icon={<DiscordIcon />}
           title="Join the Discord"
-          onPress={() => Linking.openURL(DISCORD_INVITE_LINK)}
+          onPress={() => Linking.openUrl(DISCORD_INVITE_LINK)}
         />
       </View>
       <View style={{ flex: 1 }} />
@@ -1093,6 +1187,10 @@ export function OnboardingNavigator({
         <Stack.Screen
           name="CreateOrRecoverAccount"
           component={CreateOrRecoverAccountScreen}
+        />
+        <Stack.Screen
+          name="Biometrics"
+          component={OnboardingBiometricsScreen}
         />
         <Stack.Group
           screenOptions={{

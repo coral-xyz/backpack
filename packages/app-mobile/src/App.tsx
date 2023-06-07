@@ -102,20 +102,19 @@ function BackgroundHiddenWebView(): JSX.Element {
         // NOTE: this MUST be true. Otherwise onMessage will not fire.
         // https://github.com/react-native-webview/react-native-webview/issues/1956
         limitsNavigationsToAppBoundDomains
-        onError={(error) => console.log("WebView error:", error)}
-        onHttpError={(error) => console.log("WebView HTTP error:", error)}
-        onLoad={(event) => {
-          console.log("onLoad");
-        }}
-        onLoadEnd={(syntheticEvent) => {
-          // update component to be aware of loading status
-          // const { nativeEvent } = syntheticEvent;
-          console.log("onLoadEnd");
-        }}
+        // onError={(error) => console.log("WebView error:", error)}
+        // onHttpError={(error) => console.log("WebView HTTP error:", error)}
+        // onLoad={(event) => {
+        //   console.log("onLoad");
+        // }}
+        // onLoadEnd={(syntheticEvent) => {
+        //   // update component to be aware of loading status
+        //   // const { nativeEvent } = syntheticEvent;
+        //   console.log("onLoadEnd");
+        // }}
         onMessage={(event) => {
-          console.log("onMessage");
           const msg = JSON.parse(event.nativeEvent.data);
-          maybeParseLog(msg);
+          // maybeParseLog(msg);
           if (msg.type === BACKGROUND_SERVICE_WORKER_READY) {
             // @ts-expect-error
             setInjectJavaScript(ref.current?.injectJavaScript);
