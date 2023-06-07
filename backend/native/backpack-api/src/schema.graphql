@@ -25,7 +25,7 @@ type Mutation {
   Authenticate a user and set the JWT in their cookies.
   """
   authenticate(
-    chainId: ChainID!
+    providerId: ProviderID!
     message: String!
     publicKey: String!
     signature: String!
@@ -40,7 +40,7 @@ type Mutation {
   Attempt to add a new wallet public key to the user account.
   """
   importPublicKey(
-    chainId: ChainID!
+    providerId: ProviderID!
     address: String!
     signature: String!
   ): Boolean
@@ -59,7 +59,7 @@ type Query {
   Get the entire or a specific entry of a token list.
   """
   tokenList(
-    chainId: ChainID!
+    providerId: ProviderID!
     filters: TokenListEntryFiltersInput
   ): [TokenListEntry]! @cacheControl(maxAge: 600)
 
@@ -70,9 +70,9 @@ type Query {
   user: User @cacheControl(maxAge: 60, scope: PRIVATE)
 
   """
-  Fetching a wallet and it's assets by the public key address and associated `ChainID`.
+  Fetching a wallet and it's assets by the public key address and associated `ProviderID`.
   """
-  wallet(chainId: ChainID!, address: String!): Wallet
+  wallet(providerId: ProviderID!, address: String!): Wallet
     @deprecated(
       reason: "Should use the user entrypoint for authentication identities."
     )
@@ -88,9 +88,9 @@ enum CacheControlScope {
 }
 
 """
-Chain ID enum variants for the supported blockchains in the API.
+Provider ID enum variants for the supported blockchains or wallet types in the API.
 """
-enum ChainID {
+enum ProviderID {
   ETHEREUM
   SOLANA
 }
@@ -196,9 +196,9 @@ Input filter type for fetching user wallets and their data.
 """
 input WalletFiltersInput {
   """
-  A `ChainID` value to filter for all of the public keys of the user for a given blockchain.
+  A `ProviderID` value to filter for all of the public keys of the user for a given blockchain.
   """
-  chainId: ChainID
+  providerId: ProviderID
 
   """
   Flag to filter for only the primary wallets for each registered blockchain of the user.
@@ -864,7 +864,7 @@ type Wallet implements Node {
   """
   The blockchain enum variant that the wallet is associated with.
   """
-  chainId: ChainID!
+  providerId: ProviderID!
 
   """
   The timestamp that the wallet was imported or registered to the Backpack user.

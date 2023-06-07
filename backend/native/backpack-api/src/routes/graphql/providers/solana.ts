@@ -14,13 +14,13 @@ import { SolanaTokenList } from "../tokens";
 import {
   type BalanceFiltersInput,
   type Balances,
-  ChainId,
   type Collection,
   type Listing,
   type Nft,
   type NftAttribute,
   type NftConnection,
   type NftFiltersInput,
+  ProviderId,
   type TokenBalance,
   type Transaction,
   type TransactionConnection,
@@ -28,15 +28,15 @@ import {
 } from "../types";
 import { calculateBalanceAggregate, createConnection } from "../utils";
 
-import type { Blockchain } from ".";
+import type { BlockchainDataProvider } from ".";
 
 /**
  * Solana blockchain implementation for the common API.
  * @export
  * @class Solana
- * @implements {Blockchain}
+ * @implements {BlockchainDataProvider}
  */
-export class Solana implements Blockchain {
+export class Solana implements BlockchainDataProvider {
   readonly #ctx: ApiContext;
 
   constructor(ctx: ApiContext) {
@@ -45,11 +45,11 @@ export class Solana implements Blockchain {
 
   /**
    * Chain ID enum variant.
-   * @returns {ChainId}
+   * @returns {ProviderId}
    * @memberof Solana
    */
-  id(): ChainId {
-    return ChainId.Solana;
+  id(): ProviderId {
+    return ProviderId.Solana;
   }
 
   /**

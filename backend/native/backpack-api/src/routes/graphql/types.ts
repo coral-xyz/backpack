@@ -67,12 +67,6 @@ export enum CacheControlScope {
   Public = "PUBLIC",
 }
 
-/** Chain ID enum variants for the supported blockchains in the API. */
-export enum ChainId {
-  Ethereum = "ETHEREUM",
-  Solana = "SOLANA",
-}
-
 /** `Nft` collection sub-type definition. */
 export type Collection = Node & {
   __typename?: "Collection";
@@ -174,8 +168,8 @@ export type Mutation = {
 
 /** Root level mutation type. */
 export type MutationAuthenticateArgs = {
-  chainId: ChainId;
   message: Scalars["String"];
+  providerId: ProviderId;
   publicKey: Scalars["String"];
   signature: Scalars["String"];
 };
@@ -183,7 +177,7 @@ export type MutationAuthenticateArgs = {
 /** Root level mutation type. */
 export type MutationImportPublicKeyArgs = {
   address: Scalars["String"];
-  chainId: ChainId;
+  providerId: ProviderId;
   signature: Scalars["String"];
 };
 
@@ -325,6 +319,12 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars["String"]>;
 };
 
+/** Provider ID enum variants for the supported blockchains or wallet types in the API. */
+export enum ProviderId {
+  Ethereum = "ETHEREUM",
+  Solana = "SOLANA",
+}
+
 /** Root level query type. */
 export type Query = {
   __typename?: "Query";
@@ -336,7 +336,7 @@ export type Query = {
    */
   user?: Maybe<User>;
   /**
-   * Fetching a wallet and it's assets by the public key address and associated `ChainID`.
+   * Fetching a wallet and it's assets by the public key address and associated `ProviderID`.
    * @deprecated Should use the user entrypoint for authentication identities.
    */
   wallet?: Maybe<Wallet>;
@@ -344,14 +344,14 @@ export type Query = {
 
 /** Root level query type. */
 export type QueryTokenListArgs = {
-  chainId: ChainId;
   filters?: InputMaybe<TokenListEntryFiltersInput>;
+  providerId: ProviderId;
 };
 
 /** Root level query type. */
 export type QueryWalletArgs = {
   address: Scalars["String"];
-  chainId: ChainId;
+  providerId: ProviderId;
 };
 
 /** Enum for specifying the direction of sorting a list of items. */
@@ -531,8 +531,6 @@ export type Wallet = Node & {
   address: Scalars["String"];
   /** The detailed and aggregate balance data for the wallet. */
   balances?: Maybe<Balances>;
-  /** The blockchain enum variant that the wallet is associated with. */
-  chainId: ChainId;
   /** The timestamp that the wallet was imported or registered to the Backpack user. */
   createdAt: Scalars["String"];
   /** Globally unique identifier for a specific wallet on a blockchain. */
@@ -541,6 +539,8 @@ export type Wallet = Node & {
   isPrimary: Scalars["Boolean"];
   /** The Relay connection for all of the NFTs owned by the wallet. */
   nfts?: Maybe<NftConnection>;
+  /** The blockchain enum variant that the wallet is associated with. */
+  providerId: ProviderId;
   /** The Relay connection for all transactions initiated or associated with the wallet. */
   transactions?: Maybe<TransactionConnection>;
 };
@@ -576,10 +576,10 @@ export type WalletEdge = {
 
 /** Input filter type for fetching user wallets and their data. */
 export type WalletFiltersInput = {
-  /** A `ChainID` value to filter for all of the public keys of the user for a given blockchain. */
-  chainId?: InputMaybe<ChainId>;
   /** Flag to filter for only the primary wallets for each registered blockchain of the user. */
   primaryOnly?: InputMaybe<Scalars["Boolean"]>;
+  /** A `ProviderID` value to filter for all of the public keys of the user for a given blockchain. */
+  providerId?: InputMaybe<ProviderId>;
   /** A list of public keys to filter in the response. */
   pubkeys?: InputMaybe<Array<Scalars["String"]>>;
 };
@@ -699,7 +699,6 @@ export type ResolversTypes = ResolversObject<{
   Balances: ResolverTypeWrapper<Balances>;
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]>;
   CacheControlScope: CacheControlScope;
-  ChainID: ChainId;
   Collection: ResolverTypeWrapper<Collection>;
   Float: ResolverTypeWrapper<Scalars["Float"]>;
   Friend: ResolverTypeWrapper<Friend>;
@@ -739,6 +738,7 @@ export type ResolversTypes = ResolversObject<{
   NotificationEdge: ResolverTypeWrapper<NotificationEdge>;
   NotificationFiltersInput: NotificationFiltersInput;
   PageInfo: ResolverTypeWrapper<PageInfo>;
+  ProviderID: ProviderId;
   Query: ResolverTypeWrapper<{}>;
   SortDirection: SortDirection;
   String: ResolverTypeWrapper<Scalars["String"]>;
@@ -952,7 +952,7 @@ export type MutationResolvers<
     ContextType,
     RequireFields<
       MutationAuthenticateArgs,
-      "chainId" | "message" | "publicKey" | "signature"
+      "message" | "providerId" | "publicKey" | "signature"
     >
   >;
   deauthenticate?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
@@ -962,7 +962,7 @@ export type MutationResolvers<
     ContextType,
     RequireFields<
       MutationImportPublicKeyArgs,
-      "address" | "chainId" | "signature"
+      "address" | "providerId" | "signature"
     >
   >;
   sendFriendRequest?: Resolver<
@@ -1143,14 +1143,14 @@ export type QueryResolvers<
     Array<Maybe<ResolversTypes["TokenListEntry"]>>,
     ParentType,
     ContextType,
-    RequireFields<QueryTokenListArgs, "chainId">
+    RequireFields<QueryTokenListArgs, "providerId">
   >;
   user?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
   wallet?: Resolver<
     Maybe<ResolversTypes["Wallet"]>,
     ParentType,
     ContextType,
-    RequireFields<QueryWalletArgs, "address" | "chainId">
+    RequireFields<QueryWalletArgs, "address" | "providerId">
   >;
 }>;
 
@@ -1311,7 +1311,6 @@ export type WalletResolvers<
     ContextType,
     Partial<WalletBalancesArgs>
   >;
-  chainId?: Resolver<ResolversTypes["ChainID"], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   isPrimary?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
@@ -1321,6 +1320,7 @@ export type WalletResolvers<
     ContextType,
     Partial<WalletNftsArgs>
   >;
+  providerId?: Resolver<ResolversTypes["ProviderID"], ParentType, ContextType>;
   transactions?: Resolver<
     Maybe<ResolversTypes["TransactionConnection"]>,
     ParentType,

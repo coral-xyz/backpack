@@ -2,7 +2,6 @@ import {
   AssetTransfersCategory,
   type AssetTransfersParams,
   type AssetTransfersWithMetadataResponse,
-  BigNumber,
   SortingOrder,
 } from "alchemy-sdk";
 import { ethers } from "ethers";
@@ -14,26 +13,26 @@ import { EthereumTokenList } from "../tokens";
 import {
   type BalanceFiltersInput,
   type Balances,
-  ChainId,
   type Nft,
   type NftAttribute,
   type NftConnection,
   type NftFiltersInput,
+  ProviderId,
   type TokenBalance,
   type TransactionConnection,
   type TransactionFiltersInput,
 } from "../types";
 import { calculateBalanceAggregate, createConnection } from "../utils";
 
-import type { Blockchain } from ".";
+import type { BlockchainDataProvider } from ".";
 
 /**
  * Ethereum blockchain implementation for the common API.
  * @export
  * @class Ethereum
- * @implements {Blockchain}
+ * @implements {BlockchainDataProvider}
  */
-export class Ethereum implements Blockchain {
+export class Ethereum implements BlockchainDataProvider {
   readonly #ctx: ApiContext;
 
   constructor(ctx: ApiContext) {
@@ -42,11 +41,11 @@ export class Ethereum implements Blockchain {
 
   /**
    * Chain ID enum variant.
-   * @returns {ChainId}
+   * @returns {ProviderId}
    * @memberof Ethereum
    */
-  id(): ChainId {
-    return ChainId.Ethereum;
+  id(): ProviderId {
+    return ProviderId.Ethereum;
   }
 
   /**

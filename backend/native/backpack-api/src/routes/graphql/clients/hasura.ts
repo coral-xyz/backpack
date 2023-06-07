@@ -14,7 +14,7 @@ import {
   type WalletConnection,
   type WalletFiltersInput,
 } from "../types";
-import { createConnection, inferChainIdFromString } from "../utils";
+import { createConnection, inferProviderIdFromString } from "../utils";
 
 type HasuraOptions = {
   secret: string;
@@ -367,11 +367,11 @@ export class Hasura {
     }
 
     const { blockchain, created_at, is_primary } = resp.auth_public_keys[0];
-    const chain = inferChainIdFromString(blockchain);
+    const provider = inferProviderIdFromString(blockchain);
 
-    return NodeBuilder.wallet(chain, {
+    return NodeBuilder.wallet(provider, {
       address,
-      chainId: chain,
+      providerId: provider,
       createdAt: new Date(created_at as string).toISOString(),
       isPrimary: is_primary ?? false,
     });
@@ -396,8 +396,8 @@ export class Hasura {
         auth_public_keys: [
           {
             where: {
-              blockchain: filters?.chainId
-                ? { _eq: filters.chainId.toLowerCase() }
+              blockchain: filters?.providerId
+                ? { _eq: filters.providerId.toLowerCase() }
                 : undefined,
               is_primary: filters?.primaryOnly ? { _eq: true } : undefined,
               public_key: filters?.pubkeys
@@ -422,10 +422,10 @@ export class Hasura {
     }
 
     const nodes = resp.auth_public_keys.map((pk) => {
-      const chain = inferChainIdFromString(pk.blockchain);
-      return NodeBuilder.wallet(chain, {
+      const provider = inferProviderIdFromString(pk.blockchain);
+      return NodeBuilder.wallet(provider, {
         address: pk.public_key,
-        chainId: chain,
+        providerId: provider,
         createdAt: new Date(pk.created_at as string).toISOString(),
         isPrimary: pk.is_primary ?? false,
       });

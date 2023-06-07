@@ -1,6 +1,5 @@
 import type {
   Balances,
-  ChainId,
   Collection,
   Friend,
   FriendRequest,
@@ -10,6 +9,7 @@ import type {
   Node,
   Notification,
   NotificationApplicationData,
+  ProviderId,
   TokenBalance,
   TokenListEntry,
   Transaction,
@@ -20,10 +20,10 @@ import type {
 export abstract class NodeBuilder {
   static balances(
     owner: string,
-    chainId: ChainId,
+    providerId: ProviderId,
     data: Omit<Balances, "id">
   ): Balances {
-    return this._createNode(`${chainId}_balances:${owner}`, data);
+    return this._createNode(`${providerId}_balances:${owner}`, data);
   }
 
   static friend(dbId: unknown, data: Omit<Friend, "id">): Friend {
@@ -42,21 +42,24 @@ export abstract class NodeBuilder {
   }
 
   static nft(
-    chainId: ChainId,
+    providerId: ProviderId,
     data: Omit<Nft, "id">,
     uniqueIdOverride?: string
   ): Nft {
     return this._createNode(
-      `${chainId}_nft:${uniqueIdOverride ?? data.address}`,
+      `${providerId}_nft:${uniqueIdOverride ?? data.address}`,
       data
     );
   }
 
   static nftCollection(
-    chainId: ChainId,
+    providerId: ProviderId,
     data: Omit<Collection, "id">
   ): Collection {
-    return this._createNode(`${chainId}_nft_collection:${data.address}`, data);
+    return this._createNode(
+      `${providerId}_nft_collection:${data.address}`,
+      data
+    );
   }
 
   static notification(
@@ -78,13 +81,13 @@ export abstract class NodeBuilder {
   }
 
   static tokenBalance(
-    chainId: ChainId,
+    providerId: ProviderId,
     data: Omit<TokenBalance, "id">,
     native: boolean,
     uniqueIdOverride?: string
   ): TokenBalance {
     return this._createNode(
-      `${chainId}_${native ? "native" : "token"}_address:${
+      `${providerId}_${native ? "native" : "token"}_address:${
         uniqueIdOverride ?? data.address
       }`,
       data
@@ -96,12 +99,12 @@ export abstract class NodeBuilder {
   }
 
   static transaction(
-    chainId: ChainId,
+    providerId: ProviderId,
     data: Omit<Transaction, "id">,
     uniqueIdOverride?: string
   ): Transaction {
     return this._createNode(
-      `${chainId}_transaction:${uniqueIdOverride ?? data.hash}`,
+      `${providerId}_transaction:${uniqueIdOverride ?? data.hash}`,
       data
     );
   }
@@ -110,8 +113,8 @@ export abstract class NodeBuilder {
     return this._createNode(`user:${data.userId}`, data);
   }
 
-  static wallet(chainId: ChainId, data: Omit<Wallet, "id">): Wallet {
-    return this._createNode(`${chainId}_wallet:${data.address}`, data);
+  static wallet(ProviderId: ProviderId, data: Omit<Wallet, "id">): Wallet {
+    return this._createNode(`${ProviderId}_wallet:${data.address}`, data);
   }
 
   private static _createNode<T extends Node>(
