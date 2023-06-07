@@ -483,8 +483,6 @@ function SendV2({
                   const parsedVal = value
                     // remove all characters except for 0-9 and .
                     .replace(/[^\d.]/g, "")
-                    // remove leading zeros
-                    .replace(/^0+(\d)/, "$1")
                     // prepend a 0 if . is the first character
                     .replace(/^\.(\d+)?$/, "0.$1")
                     // remove any periods after the first one
