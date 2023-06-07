@@ -52,10 +52,12 @@ export function formatDate(date: Date, includeTime?: boolean): string {
 /**
  * Convert the argued timestamp into a semantic period of time string.
  * @export
- * @param {string} timestamp
+ * @param {number | string} timestamp
  * @returns {string}
  */
-export function formatSemanticTimeDifference(timestamp: string): string {
+export function formatSemanticTimeDifference(
+  timestamp: number | string
+): string {
   const time = new Date(timestamp).getTime();
   const elapsedTimeSeconds = (new Date().getTime() - time) / 1000;
   if (elapsedTimeSeconds < 60) {
@@ -128,10 +130,7 @@ export function formatUsd(amount: number | string) {
  * @param {number} [maxLength=10]
  * @returns {string}
  */
-export function formatUsername(
-  username: string,
-  maxLength = 10
-): string {
+export function formatUsername(username: string, maxLength = 10): string {
   if (!username) {
     return "";
   }

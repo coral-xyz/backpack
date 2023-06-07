@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Notifications as _Notifications } from "@coral-xyz/data-components";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import { Loading, useBreakpoints } from "@coral-xyz/react-common";
+import { useFeatureGates } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import IconButton from "@mui/material/IconButton";
 
@@ -16,7 +17,7 @@ import {
 import { NotificationIconWithBadge } from "../../common/NotificationIconWithBadge";
 import { ContactRequests, Contacts } from "../Messages/Contacts";
 
-// import { NotificationList } from "./NotificationList";
+import { Notifications as LegacyNotifications } from "./legacy";
 
 const useStyles = styles(() => ({
   networkSettingsButtonContainer: {
@@ -86,6 +87,7 @@ export function NotificationButton() {
 export function Notifications() {
   const { isXs } = useBreakpoints();
   const nav = isXs ? useNavigation() : null;
+  const gates = useFeatureGates();
 
   const [openDrawer, setOpenDrawer] = isXs
     ? [false, () => {}]
@@ -99,7 +101,7 @@ export function Notifications() {
     }
   }, []);
 
-  return (
+  return gates.GQL_NOTIFICATIONS ? (
     <>
       <_Notifications
         loaderComponent={<NotificationsLoader />}
@@ -145,6 +147,8 @@ export function Notifications() {
         </WithDrawer>
       ) : null}
     </>
+  ) : (
+    <LegacyNotifications />
   );
 }
 
