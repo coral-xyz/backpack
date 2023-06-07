@@ -11,7 +11,7 @@ import CallMade from "@mui/icons-material/CallMade";
 import ListItem from "@mui/material/ListItem";
 import Typography from "@mui/material/Typography";
 
-import type { ChainId, Transaction } from "../../../graphql/graphql";
+import type { ProviderId, Transaction } from "../../../graphql/graphql";
 
 import { TransactionListItemIcon } from "./TransactionListItemIcon";
 
@@ -36,7 +36,7 @@ export function TransactionListItem({
   isLast,
   transaction,
 }: {
-  blockchain: ChainId;
+  blockchain: ProviderId;
   isFirst: boolean;
   isLast: boolean;
   transaction: Partial<Transaction>;

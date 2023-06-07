@@ -11,7 +11,7 @@ import {
   Separator,
 } from "@coral-xyz/tamagui";
 
-import type { ChainId } from "../../apollo/graphql";
+import type { ProviderId } from "../../apollo/graphql";
 
 import type { ResponseTransaction } from ".";
 import type { ParseTransactionDetails } from "./parsing";
@@ -19,7 +19,7 @@ import { TransactionListItem } from "./TransactionListItem";
 import type { TransactionGroup } from "./utils";
 
 export type TransactionListProps = {
-  blockchain: ChainId;
+  blockchain: ProviderId;
   onItemClick?: (
     transaction: ResponseTransaction,
     explorerUrl: string,

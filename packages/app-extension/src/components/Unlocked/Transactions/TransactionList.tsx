@@ -8,7 +8,7 @@ import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBullete
 import List from "@mui/material/List";
 
 import { gql } from "../../../graphql";
-import { ChainId } from "../../../graphql/graphql";
+import { ProviderId } from "../../../graphql/graphql";
 
 import { TransactionListItem } from "./TransactionListItem";
 
@@ -18,7 +18,9 @@ const GET_TRANSACTIONS = gql(`
       id
       wallet(address: $address) {
         id
-        chainId
+        provider {
+          providerId
+        }
         transactions(filters: $filters) {
           edges {
             node {
@@ -81,7 +83,7 @@ export function TransactionList({
         {transactions.map((tx, idx) => (
           <TransactionListItem
             key={tx.id}
-            blockchain={wallet?.chainId ?? ChainId.Solana}
+            blockchain={wallet?.provider.providerId ?? ProviderId.Solana}
             transaction={tx}
             isFirst={idx === 0}
             isLast={idx === transactions.length - 1}

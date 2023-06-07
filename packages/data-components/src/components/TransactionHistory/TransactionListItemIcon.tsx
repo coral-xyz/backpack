@@ -6,11 +6,11 @@ import type { SizeTokens } from "@coral-xyz/tamagui";
 import { ListItemIconCore, TamaguiIcons } from "@coral-xyz/tamagui";
 
 import { gql } from "../../apollo";
-import type { ChainId } from "../../apollo/graphql";
+import type { ProviderId } from "../../apollo/graphql";
 
 const GET_TOKEN_LOGO = gql(`
-  query GetTokenListEntryLogo($chainId: ChainID!, $filters: TokenListEntryFiltersInput) {
-    tokenList(chainId: $chainId, filters: $filters) {
+  query GetTokenListEntryLogo($providerId: ProviderID!, $filters: TokenListEntryFiltersInput) {
+    tokenList(providerId: $providerId, filters: $filters) {
       id
       logo
     }
@@ -107,7 +107,7 @@ export const TransactionListItemIconSwap = ({
   const activeWallet = useActiveWallet();
   const { data } = useSuspenseQuery_experimental(GET_TOKEN_LOGO, {
     variables: {
-      chainId: activeWallet.blockchain.toUpperCase() as ChainId,
+      providerId: activeWallet.blockchain.toUpperCase() as ProviderId,
       filters: {
         symbols,
       },
@@ -144,7 +144,7 @@ export const TransactionListItemIconTransfer = ({
   const activeWallet = useActiveWallet();
   const { data } = useSuspenseQuery_experimental(GET_TOKEN_LOGO, {
     variables: {
-      chainId: activeWallet.blockchain.toUpperCase() as ChainId,
+      providerId: activeWallet.blockchain.toUpperCase() as ProviderId,
       filters: {
         symbols: [symbol],
       },

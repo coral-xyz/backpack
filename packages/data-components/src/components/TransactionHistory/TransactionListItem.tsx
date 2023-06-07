@@ -15,7 +15,7 @@ import {
   YStack,
 } from "@coral-xyz/tamagui";
 
-import type { ChainId } from "../../apollo/graphql";
+import type { ProviderId } from "../../apollo/graphql";
 
 import type { ResponseTransaction } from ".";
 import { parseTransaction, type ParseTransactionDetails } from "./parsing";
@@ -25,7 +25,7 @@ import {
 } from "./TransactionListItemIcon";
 
 export type TransactionListItemProps = {
-  blockchain: ChainId;
+  blockchain: ProviderId;
   onClick?: (
     transaction: ResponseTransaction,
     explorerUrl: string,

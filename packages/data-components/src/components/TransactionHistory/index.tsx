@@ -2,7 +2,7 @@ import { type ReactNode, Suspense, useMemo } from "react";
 import { useActiveWallet } from "@coral-xyz/recoil";
 
 import { gql } from "../../apollo";
-import { ChainId, type GetTransactionsQuery } from "../../apollo/graphql";
+import { type GetTransactionsQuery, ProviderId } from "../../apollo/graphql";
 import { usePolledSuspenseQuery } from "../../hooks";
 
 import type { ParseTransactionDetails } from "./parsing";
@@ -20,7 +20,9 @@ const GET_TRANSACTIONS = gql(`
       id
       wallet(address: $address) {
         id
-        chainId
+        provider {
+          providerId
+        }
         transactions(filters: $filters) {
           edges {
             node {
@@ -105,7 +107,7 @@ function _TransactionHistory({
 
   return (
     <TransactionList
-      blockchain={wallet?.chainId ?? ChainId.Solana}
+      blockchain={wallet?.provider.providerId ?? ProviderId.Solana}
       onItemClick={onItemClick}
       transactions={groupedTransactions}
     />
