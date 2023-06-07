@@ -139,10 +139,7 @@ export function useSolanaTransaction({
       await confirmTransaction(
         solanaCtx.connection,
         txSig,
-        solanaCtx.commitment !== "confirmed" &&
-          solanaCtx.commitment !== "finalized"
-          ? "confirmed"
-          : solanaCtx.commitment
+        solanaCtx.commitment === "finalized" ? "finalized" : "confirmed"
       );
       setCardType("complete");
       if (onComplete) onComplete(txSig);
