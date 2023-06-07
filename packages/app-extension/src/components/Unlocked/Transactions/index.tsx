@@ -6,6 +6,7 @@ import {
   TransactionHistory,
 } from "@coral-xyz/data-components";
 import { Loading } from "@coral-xyz/react-common";
+import { useFeatureGates } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
 import IconButton from "@mui/material/IconButton";
@@ -16,6 +17,7 @@ import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
+import { RecentActivity as LegacyTransactions } from "../Balances/RecentActivity";
 
 const useStyles = styles((theme) => ({
   networkSettingsButtonContainer: {
@@ -39,7 +41,12 @@ const useStyles = styles((theme) => ({
 
 export function TransactionsButton() {
   const classes = useStyles();
+  const gates = useFeatureGates();
   const [openDrawer, setOpenDrawer] = useState(false);
+
+  const _Component = gates.GQL_TRANSACTION_HISTORY
+    ? Transactions
+    : LegacyTransactions;
 
   return (
     <div className={classes.networkSettingsButtonContainer}>
@@ -62,7 +69,7 @@ export function TransactionsButton() {
           >
             <NavStackScreen
               name="root"
-              component={(props: any) => <Transactions {...props} />}
+              component={(props: any) => <_Component {...props} />}
             />
           </NavStackEphemeral>
         </div>

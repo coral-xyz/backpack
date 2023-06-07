@@ -42,6 +42,12 @@ export function NotificationButton() {
   const classes = useStyles();
   const [openDrawer, setOpenDrawer] = useState(false);
   const theme = useCustomTheme();
+  const gates = useFeatureGates();
+
+  const _Component = gates.GQL_NOTIFICATIONS
+    ? Notifications
+    : LegacyNotifications;
+
   return (
     <div className={classes.networkSettingsButtonContainer}>
       <IconButton
@@ -67,7 +73,7 @@ export function NotificationButton() {
           >
             <NavStackScreen
               name="root"
-              component={(props: any) => <Notifications {...props} />}
+              component={(props: any) => <_Component {...props} />}
             />
             <NavStackScreen
               name="contacts"
@@ -91,7 +97,6 @@ export function NotificationButton() {
 export function Notifications() {
   const { isXs } = useBreakpoints();
   const nav = isXs ? useNavigation() : null;
-  const gates = useFeatureGates();
   const openPlugin = useOpenPlugin();
 
   const [openDrawer, setOpenDrawer] = isXs
@@ -142,7 +147,7 @@ export function Notifications() {
     [isXs, nav, openPlugin, setOpenDrawer]
   );
 
-  return gates.GQL_NOTIFICATIONS ? (
+  return (
     <>
       <_Notifications
         loaderComponent={<NotificationsLoader />}
@@ -188,8 +193,6 @@ export function Notifications() {
         </WithDrawer>
       ) : null}
     </>
-  ) : (
-    <LegacyNotifications />
   );
 }
 

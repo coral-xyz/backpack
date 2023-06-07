@@ -2,8 +2,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { Suspense, useEffect, useState } from "react";
 import { useUserMetadata } from "@coral-xyz/chat-xplat";
-import type {
-  EnrichedNotification} from "@coral-xyz/common";
+import type { EnrichedNotification } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   formatDate,
