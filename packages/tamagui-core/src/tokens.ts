@@ -22,6 +22,8 @@ export const tokens = createTokens({
     borderWidth: 2,
     container: 56,
     input: 56,
+    screen: 16,
+    headerIcon: 24,
   },
   zIndex,
   radius: {

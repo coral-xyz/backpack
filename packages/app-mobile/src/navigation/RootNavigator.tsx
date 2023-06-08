@@ -12,16 +12,13 @@ import {
   DefaultTheme,
   NavigationContainer,
 } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
 
 import { FullScreenLoading } from "~components/index";
 import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 import { GlobalDrawerContent } from "~navigation/GlobalDrawerContent";
-import { HeaderButton } from "~navigation/components";
-import { FriendDetailScreen } from "~screens/FriendDetailScreen";
-import { FriendListScreen } from "~screens/FriendListScreen";
 import { ProfileScreen } from "~screens/Unlocked/Settings/ProfileScreen";
 
+import { FriendsNavigator } from "./FriendsNavigator";
 import { LockedScreen } from "./LockedNavigator";
 import {
   OnboardingCompleteWelcome,
@@ -46,71 +43,18 @@ export function RootNavigation({
   );
 }
 
-type FriendNavigatorStackParamList = {
-  FriendList: undefined;
-  FriendDetail: {
-    userId: string;
-    username: string;
-  };
-};
-
-const FriendStack = createStackNavigator<FriendNavigatorStackParamList>();
-
-const FriendNavigator = () => {
-  return (
-    <FriendStack.Navigator>
-      <FriendStack.Screen
-        name="FriendList"
-        component={FriendListScreen}
-        options={({ navigation }) => {
-          return {
-            title: "Friends",
-            headerShown: true,
-            headerLeft: (props) => (
-              <HeaderButton
-                name="menu"
-                {...props}
-                onPress={() => {
-                  navigation.openDrawer();
-                }}
-              />
-            ),
-          };
-        }}
-      />
-      <FriendStack.Screen
-        name="FriendDetail"
-        component={FriendDetailScreen}
-        options={({ route }) => {
-          return {
-            headerBackTitleVisible: false,
-            title: route.params.username,
-          };
-        }}
-      />
-    </FriendStack.Navigator>
-  );
-};
-
 const Drawer = createDrawerNavigator();
-
 const DrawerNav = () => {
   return (
     <Drawer.Navigator
       initialRouteName="DrawerHome"
       screenOptions={{ headerShown: false }}
       drawerContent={GlobalDrawerContent}
-      // drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
       <Drawer.Screen
         name="DrawerHome"
         component={UnlockedNavigator}
         options={{ title: "Balances" }}
-      />
-      <Drawer.Screen
-        name="AccountSettings"
-        component={AccountSettingsNavigator}
-        options={{ title: "Settings" }}
       />
       <Drawer.Screen
         name="Profile"
@@ -119,7 +63,12 @@ const DrawerNav = () => {
           headerShown: true,
         }}
       />
-      <Drawer.Screen name="Friends" component={FriendNavigator} />
+      <Drawer.Screen
+        name="AccountSettings"
+        component={AccountSettingsNavigator}
+        options={{ title: "Settings" }}
+      />
+      <Drawer.Screen name="Friends" component={FriendsNavigator} />
     </Drawer.Navigator>
   );
 };
