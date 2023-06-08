@@ -10,7 +10,6 @@ import {
   ListItemSettings,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 
 import { BetterBottomSheet } from "~components/BottomSheetModal";
 import { useTheme } from "~hooks/useTheme";
@@ -42,7 +41,6 @@ export function SettingsList({ navigation }): JSX.Element {
 
   return (
     <YGroup
-      marginTop={18}
       overflow="hidden"
       borderWidth={2}
       borderColor="$borderFull"

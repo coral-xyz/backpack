@@ -1,4 +1,4 @@
-import { useState, Suspense, useEffect } from "react";
+import { useState, Suspense, useEffect, useCallback } from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -28,6 +28,12 @@ import {
   ScreenLoading,
 } from "~components/index";
 
+import {
+  BIOMETRIC_PASSWORD,
+  BiometricAuthenticationStatus,
+  tryLocalAuthenticate,
+} from "~src/features/biometrics";
+
 interface FormData {
   password: string;
 }
@@ -39,16 +45,37 @@ function Container(): JSX.Element {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
 
+  const maybeUnlock = useCallback(
+    async ({ password }: FormData) => {
+      try {
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+          params: [password, user.uuid],
+        });
+      } catch (error: any) {
+        setError("password", { message: error });
+      }
+    },
+    [background, setError, user.uuid]
+  );
+
   const onSubmit = async ({ password }: FormData) => {
-    try {
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-        params: [password, user.uuid],
-      });
-    } catch (error: any) {
-      setError("password", { message: error });
-    }
+    await maybeUnlock({ password });
   };
+
+  useEffect(() => {
+    (async function handleAuth() {
+      try {
+        const res = await tryLocalAuthenticate();
+        if (res === BiometricAuthenticationStatus.Authenticated) {
+          await maybeUnlock({ password: BIOMETRIC_PASSWORD });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // runs only once so it doesn't run on setting change
 
   // useEffect(() => {
   //   async function f() {

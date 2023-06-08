@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback } from "react";
 
 import { AuthenticatedSync } from "@coral-xyz/chat-xplat";
 import {
@@ -28,7 +28,9 @@ import {
   OnboardingNavigator,
 } from "./OnboardingNavigator";
 import { UnlockedNavigator } from "./UnlockedNavigator";
-import { NotFoundScreen } from "../screens/NotFoundScreen";
+
+import { useSession } from "~src/lib/SessionProvider";
+// import { NotFoundScreen } from "../screens/NotFoundScreen";
 
 export function RootNavigation({
   colorScheme,
@@ -57,7 +59,7 @@ const FriendStack = createStackNavigator<FriendNavigatorStackParamList>();
 const FriendNavigator = () => {
   return (
     <FriendStack.Navigator>
-      <Drawer.Screen
+      <FriendStack.Screen
         name="FriendList"
         component={FriendListScreen}
         options={({ navigation }) => {
@@ -70,20 +72,19 @@ const FriendNavigator = () => {
                 {...props}
                 onPress={() => {
                   navigation.openDrawer();
-                  // navigation.navigate("HomeWalletList");
                 }}
               />
             ),
           };
         }}
       />
-      <Drawer.Screen
+      <FriendStack.Screen
         name="FriendDetail"
         component={FriendDetailScreen}
         options={({ route }) => {
           return {
-            headerShown: true,
-            title: route.params?.username,
+            headerBackTitleVisible: false,
+            title: route.params.username,
           };
         }}
       />
@@ -124,16 +125,25 @@ const DrawerNav = () => {
 };
 
 function RootNavigator(): JSX.Element {
-  const [status, setStatus] = useState(null);
   const keyringStoreState = useKeyringStoreState();
+  const { appState, setAppState } = useSession();
+
+  const onStartOnboarding = useCallback(() => {
+    setAppState("onboardingStarted");
+  }, [setAppState]);
+
+  const onCompleteOnboarding = useCallback(() => {
+    setAppState("onboardingComplete");
+  }, [setAppState]);
+
   switch (keyringStoreState) {
     case KeyringStoreStateEnum.NeedsOnboarding:
-      return <OnboardingNavigator onStart={setStatus} />;
+      return <OnboardingNavigator onStart={onStartOnboarding} />;
     case KeyringStoreStateEnum.Locked:
       return <LockedScreen />;
     case KeyringStoreStateEnum.Unlocked:
-      if (status === "onboarding") {
-        return <OnboardingCompleteWelcome onComplete={setStatus} />;
+      if (appState === "onboardingComplete") {
+        return <OnboardingCompleteWelcome onComplete={onCompleteOnboarding} />;
       }
 
       return (

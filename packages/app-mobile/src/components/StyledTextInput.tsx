@@ -27,13 +27,16 @@ function Container({ children }: { children: JSX.Element }): JSX.Element {
   );
 }
 
+type UsernameInputProps = {
+  username: string;
+  onChange: (username: string) => void;
+  onComplete: () => void;
+};
 export function UsernameInput({
   username,
   onChange,
-}: {
-  username: string;
-  onChange: (username: string) => void;
-}): JSX.Element {
+  onComplete,
+}: UsernameInputProps): JSX.Element {
   return (
     <Container>
       <XStack>
@@ -42,8 +45,10 @@ export function UsernameInput({
           style={{ paddingLeft: 4 }}
           autoFocus
           placeholder="Username"
-          returnKeyType="next"
+          autoCapitalize="none"
+          returnKeyType="done"
           value={username}
+          onSubmitEditing={onComplete}
           onChangeText={(text) => {
             const username = text.toLowerCase().replace(/[^a-z0-9_]/g, "");
             onChange(username);

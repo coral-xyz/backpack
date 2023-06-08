@@ -28,17 +28,22 @@ export async function setTokenAsync(token: string) {
 }
 
 type TokenType = string | null;
+type AppStateType = "onboardingStarted" | "onboardingComplete" | null;
 
 type SessionContextType = {
   reset: () => void;
   token: TokenType;
   setAuthToken: (token: string) => void;
+  appState: AppStateType;
+  setAppState: (appState: AppStateType) => void;
 };
 
 const SessionContext = createContext<SessionContextType>({
   reset: () => null,
   token: null,
   setAuthToken: () => null,
+  appState: null,
+  setAppState: () => null,
 });
 
 export const SessionProvider = ({
@@ -47,6 +52,7 @@ export const SessionProvider = ({
   children: JSX.Element;
 }): JSX.Element => {
   const [token, setToken] = useState<TokenType>(null);
+  const [appState, setAppState] = useState<AppStateType>(null);
   const background = useBackgroundClient();
 
   // on app load
@@ -93,8 +99,10 @@ export const SessionProvider = ({
       reset,
       token,
       setAuthToken,
+      appState,
+      setAppState,
     }),
-    [reset, token, setAuthToken]
+    [reset, token, setAuthToken, appState, setAppState]
   );
 
   return (
