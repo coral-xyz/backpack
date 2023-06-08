@@ -1,4 +1,5 @@
 import { Suspense, useState } from "react";
+import { Alert } from "react-native";
 
 import {
   BACKPACK_CONFIG_VERSION,
@@ -12,12 +13,12 @@ import {
   useDarkMode,
   useDeveloperMode,
 } from "@coral-xyz/recoil";
+import { Stack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import {
   ScreenError,
   ScreenLoading,
-  Margin,
   RoundedContainerGroup,
   Screen,
 } from "~components/index";
@@ -80,18 +81,29 @@ function SettingsDeveloperMode() {
 function Container({ navigation }) {
   return (
     <Screen>
-      <Margin vertical={12}>
+      <Stack mb={12}>
         <RoundedContainerGroup>
           <SettingsRow
             label="Trusted Sites"
             onPress={() => navigation.push("PreferencesTrustedSites")}
             detailIcon={<IconPushDetail />}
           />
+          <SettingsRow
+            label="Biometrics"
+            onPress={() => {
+              Alert.alert(
+                "Coming Soon",
+                "Screen Unlock, transaction signing, etc"
+              );
+            }}
+            // onPress={() => navigation.push("PreferencesBiometrics")}
+            detailIcon={<IconPushDetail />}
+          />
           <SettingsDarkMode />
           <SettingsDeveloperMode />
         </RoundedContainerGroup>
-      </Margin>
-      <Margin bottom={12}>
+      </Stack>
+      <Stack mb={12}>
         <RoundedContainerGroup>
           <SettingsRow
             label={toTitleCase(Blockchain.SOLANA)}
@@ -112,15 +124,15 @@ function Container({ navigation }) {
             }
           />
         </RoundedContainerGroup>
-      </Margin>
-      <Margin bottom={12}>
+      </Stack>
+      <Stack mb={12}>
         <RoundedContainerGroup>
           <SettingsRowText
             label="Version"
             detailText={BACKPACK_CONFIG_VERSION}
           />
         </RoundedContainerGroup>
-      </Margin>
+      </Stack>
     </Screen>
   );
 }
