@@ -1,5 +1,5 @@
 import { formatUsd } from "@coral-xyz/common";
-import { type ColorTokens,type StackProps, XStack, YStack } from "tamagui";
+import { type ColorTokens, type StackProps, XStack, YStack } from "tamagui";
 
 import { Skeleton } from "../Skeleton";
 import { StyledText } from "../StyledText";

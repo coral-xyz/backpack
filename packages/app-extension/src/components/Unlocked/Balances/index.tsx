@@ -1,47 +1,54 @@
 import {
   Blockchain,
+  ETH_NATIVE_MINT,
   NAV_COMPONENT_TOKEN,
+  SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
+import { BalanceSummaryWidget } from "@coral-xyz/data-components";
 import {
-  BalancesTable,
-  BalanceSummaryWidget,
-} from "@coral-xyz/data-components";
-import { useActiveWallet , useAllWalletsDisplayed, useNavigation } from "@coral-xyz/recoil";
+  useActiveWallet,
+  useAllWalletsDisplayed,
+  useFeatureGates,
+  useNavigation,
+} from "@coral-xyz/recoil";
 
-import { SkeletonRows } from "../../common/TokenTable";
+import { type Token, TokenTables } from "../../common/TokenTable";
 
+import { BalanceSummaryWidget as LegacyBalanceSummaryWidget } from "./BalanceSummaryWidget";
 import { TransferWidget } from "./TransferWidget";
 
 export function Balances() {
-  const wallet = useActiveWallet();
+  const gates = useFeatureGates();
   const { push } = useNavigation();
 
   const swapEnabled =
     useAllWalletsDisplayed().find((w) => w.blockchain === Blockchain.SOLANA) !==
     undefined;
 
-  const onClickTokenRow = ({
-    tokenAccount,
-    symbol,
-  }: {
-    tokenAccount: string;
-    symbol: string;
-  }) => {
+  const onClickTokenRow = (
+    blockchain: Blockchain,
+    token: Token,
+    publicKey: string
+  ) => {
     push({
-      title: `${toTitleCase(wallet.blockchain)} / ${symbol}`,
+      title: `${toTitleCase(blockchain)} / ${token.ticker}`,
       componentId: NAV_COMPONENT_TOKEN,
       componentProps: {
-        blockchain: wallet.blockchain,
-        tokenAddress: tokenAccount,
-        publicKey: wallet.publicKey,
+        blockchain,
+        tokenAddress: token.address,
+        publicKey,
       },
     });
   };
 
+  const _SummaryComponent = gates.GQL_BALANCES
+    ? BalanceSummaryWidget
+    : LegacyBalanceSummaryWidget;
+
   return (
     <div>
-      <BalanceSummaryWidget style={{ marginTop: 24 }} />
+      <_SummaryComponent />
       <div
         style={{
           marginTop: "32px",
@@ -50,9 +57,18 @@ export function Balances() {
       >
         <TransferWidget rampEnabled swapEnabled={swapEnabled} />
       </div>
-      <BalancesTable
-        loaderComponent={<SkeletonRows />}
-        onItemClick={onClickTokenRow}
+      {/* TODO: put token table for GQL behind feature gate */}
+      <TokenTables
+        onClickRow={onClickTokenRow}
+        customFilter={(token) => {
+          if (token.mint && token.mint === SOL_NATIVE_MINT) {
+            return true;
+          }
+          if (token.address && token.address === ETH_NATIVE_MINT) {
+            return true;
+          }
+          return !token.nativeBalance.isZero();
+        }}
       />
     </div>
   );

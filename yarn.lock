@@ -3707,8 +3707,6 @@ __metadata:
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@fontsource/inter": ^4.5.11
-    "@graphql-codegen/cli": ^3.3.1
-    "@graphql-codegen/client-preset": ^3.0.1
     "@ledgerhq/hw-app-solana": ^6.27.2
     "@ledgerhq/hw-transport": ^6.24.1
     "@ledgerhq/hw-transport-webhid": ^6.24.1

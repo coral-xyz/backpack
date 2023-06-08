@@ -73,5 +73,7 @@ function _BalanceSummaryWidget({
     [data.user]
   );
 
-  return <BalanceSummaryCore {...aggregate} style={style} />;
+  return (
+    <BalanceSummaryCore {...aggregate} style={{ marginTop: 24, ...style }} />
+  );
 }
