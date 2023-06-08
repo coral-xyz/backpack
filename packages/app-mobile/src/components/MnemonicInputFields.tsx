@@ -48,6 +48,7 @@ const _MnemonicWordInput = forwardRef<TextInput, MnemonicWordInputProps>(
           spellCheck={false}
           scrollEnabled={false}
           onSubmitEditing={onSubmitEditing}
+          maxLength={10}
           value={word}
           style={[
             styles.input,
