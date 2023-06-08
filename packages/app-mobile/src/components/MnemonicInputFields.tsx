@@ -9,13 +9,14 @@ const ITEM_GAP = 6;
 type MnemonicWordInputProps = {
   word: string;
   index: number;
+  returnKeyType: "next" | "done";
   onChangeText: (word: string) => void;
   onSubmitEditing: () => void;
 };
 
 const _MnemonicWordInput = forwardRef<TextInput, MnemonicWordInputProps>(
   (props, ref) => {
-    const { word, index, onChangeText, onSubmitEditing } = props;
+    const { word, index, returnKeyType, onChangeText, onSubmitEditing } = props;
     const theme = useTheme();
     return (
       <View
@@ -44,7 +45,7 @@ const _MnemonicWordInput = forwardRef<TextInput, MnemonicWordInputProps>(
           clearButtonMode="while-editing"
           numberOfLines={1}
           inputMode="text"
-          returnKeyType="next"
+          returnKeyType={returnKeyType}
           spellCheck={false}
           scrollEnabled={false}
           onSubmitEditing={onSubmitEditing}
@@ -85,21 +86,29 @@ const styles = StyleSheet.create({
   },
 });
 
+type MnemonicInputFieldsProps = {
+  mnemonicWords: string[];
+  onChange?: (mnemonicWords: string[]) => void;
+  onComplete: () => void;
+};
 export function MnemonicInputFields({
   mnemonicWords,
   onChange,
-}: {
-  mnemonicWords: string[];
-  onChange?: (mnemonicWords: string[]) => void;
-}) {
+  onComplete,
+}: MnemonicInputFieldsProps) {
   const inputRef = useRef<TextInput[]>([]);
 
-  const selectNextInput = (index: number) => {
-    const next = inputRef.current[index + 1];
-    if (next) {
-      next.focus();
-    }
-  };
+  const selectNextInput = useCallback(
+    (index: number) => () => {
+      const next = inputRef.current[index + 1];
+      if (next) {
+        next.focus();
+      } else {
+        onComplete();
+      }
+    },
+    [onComplete]
+  );
 
   const keyExtractor = (_: any, index: number) => index.toString();
   const renderItem = useCallback(
@@ -113,7 +122,8 @@ export function MnemonicInputFields({
           }}
           word={item}
           index={index}
-          onSubmitEditing={() => selectNextInput(index)}
+          returnKeyType={index === mnemonicWords.length - 1 ? "done" : "next"}
+          onSubmitEditing={selectNextInput(index)}
           onChangeText={(word) => {
             if (onChange) {
               const newMnemonicWords = [...mnemonicWords];
@@ -124,7 +134,7 @@ export function MnemonicInputFields({
         />
       );
     },
-    [mnemonicWords, onChange]
+    [mnemonicWords, onChange, selectNextInput]
   );
 
   return (

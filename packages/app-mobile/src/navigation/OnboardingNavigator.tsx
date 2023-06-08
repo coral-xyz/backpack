@@ -521,6 +521,63 @@ function CreateOrRecoverUsernameScreen({
       </View>
     );
 
+  const handlePresContinue = async () => {
+    setLoading(true);
+    if (action === "recover") {
+      try {
+        const response = await fetch(`${BACKEND_API_URL}/users/${username}`);
+
+        const json: {
+          id: string;
+          publicKeys: any[];
+          msg?: string;
+        } = await response.json();
+        if (!response.ok) {
+          throw new Error(json.msg);
+        }
+
+        setOnboardingData({
+          username,
+          userId: json.id,
+          serverPublicKeys: json.publicKeys,
+        });
+
+        navigation.push(RecoverAccountRoutes.KeyringTypeSelector);
+      } catch (err: any) {
+        setError(err.message || "Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (action === "create") {
+      try {
+        // TODO(fetch) consolidate these
+        const res = await fetch(`https://auth.xnfts.dev/users/${username}`, {
+          // @ts-ignore
+          headers: {
+            "x-backpack-invite-code": onboardingData.inviteCode,
+          },
+        });
+
+        const json = await res.json();
+        if (!res.ok) {
+          throw new Error(json.message || "There was an error");
+        }
+
+        setOnboardingData({
+          username,
+        });
+
+        navigation.push(NewAccountRoutes.CreateOrImportWallet);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -531,7 +588,11 @@ function CreateOrRecoverUsernameScreen({
         {text}
         <View>
           <Box marginBottom={18}>
-            <UsernameInput username={username} onChange={setUsername} />
+            <UsernameInput
+              username={username}
+              onChange={setUsername}
+              onComplete={handlePresContinue}
+            />
           </Box>
           {maybeRender(error !== "", () => (
             <ErrorMessage for={{ message: error }} />
@@ -540,67 +601,7 @@ function CreateOrRecoverUsernameScreen({
             loading={loading}
             disabled={!username?.length}
             label="Continue"
-            onPress={async () => {
-              setLoading(true);
-              if (action === "recover") {
-                try {
-                  const response = await fetch(
-                    `${BACKEND_API_URL}/users/${username}`
-                  );
-
-                  const json: {
-                    id: string;
-                    publicKeys: any[];
-                    msg?: string;
-                  } = await response.json();
-                  if (!response.ok) {
-                    throw new Error(json.msg);
-                  }
-
-                  setOnboardingData({
-                    username,
-                    userId: json.id,
-                    serverPublicKeys: json.publicKeys,
-                  });
-
-                  navigation.push(RecoverAccountRoutes.KeyringTypeSelector);
-                } catch (err: any) {
-                  setError(err.message || "Something went wrong");
-                } finally {
-                  setLoading(false);
-                }
-              }
-
-              if (action === "create") {
-                try {
-                  // TODO(fetch) consolidate these
-                  const res = await fetch(
-                    `https://auth.xnfts.dev/users/${username}`,
-                    {
-                      // @ts-ignore
-                      headers: {
-                        "x-backpack-invite-code": onboardingData.inviteCode,
-                      },
-                    }
-                  );
-
-                  const json = await res.json();
-                  if (!res.ok) {
-                    throw new Error(json.message || "There was an error");
-                  }
-
-                  setOnboardingData({
-                    username,
-                  });
-
-                  navigation.push(NewAccountRoutes.CreateOrImportWallet);
-                } catch (err: any) {
-                  setError(err.message);
-                } finally {
-                  setLoading(false);
-                }
-              }
-            }}
+            onPress={handlePresContinue}
           />
         </View>
       </OnboardingScreen>
@@ -648,9 +649,6 @@ function OnboardingMnemonicInputScreen({
       });
   }, []); // eslint-disable-line
 
-  //
-  // Validate the mnemonic and call the onNext handler.
-  //
   const next = () => {
     background
       .request({
@@ -683,6 +681,7 @@ function OnboardingMnemonicInputScreen({
         <MnemonicInputFields
           mnemonicWords={mnemonicWords}
           onChange={readOnly ? undefined : setMnemonicWords}
+          onComplete={next}
         />
         <Margin top={12}>
           {readOnly ? (
