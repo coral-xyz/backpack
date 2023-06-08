@@ -80,13 +80,18 @@ export function NotificationList({
       section,
     }: {
       section: SectionListData<ResponseNotification, NotificationGroup>;
-    }) => <ListHeaderCore style={{ marginBottom: 0 }} title={section.date} />,
+    }) => (
+      <ListHeaderCore
+        style={{ marginBottom: 0, marginTop: 16 }}
+        title={section.date}
+      />
+    ),
     []
   );
 
   return (
     <SectionList
-      style={{ marginHorizontal: 16, marginTop: 16, marginBottom: 24 }}
+      style={{ marginHorizontal: 16, marginBottom: 24 }}
       stickySectionHeadersEnabled={false}
       showsVerticalScrollIndicator={false}
       sections={notificationGroups}

@@ -13,7 +13,7 @@ import {
 } from "./NotificationList";
 import { getGroupedNotifications } from "./utils";
 
-const DEFAULT_POLLING_INTERVAL = 60000;
+const DEFAULT_POLLING_INTERVAL = 30000;
 
 const GET_NOTIFICATIONS = gql(`
   query GetNotifications($filters: NotificationFiltersInput) {
