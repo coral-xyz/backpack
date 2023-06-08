@@ -22,6 +22,8 @@ const getServiceWorkerUrl = () => {
   const url =
     "https://mobile-service-worker.xnfts.dev/background-scripts/latest/service-worker-loader.html";
 
+  // return url;
+
   if (process.env.APP_ENV === "staging") {
     return url;
   }

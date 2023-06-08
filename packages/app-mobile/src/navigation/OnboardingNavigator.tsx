@@ -1132,7 +1132,7 @@ function CreateAccountLoadingScreen(
 export function OnboardingCompleteWelcome({
   onComplete,
 }: {
-  onComplete: (path: string) => void;
+  onComplete: () => void;
 }): JSX.Element {
   const insets = useSafeAreaInsets();
 
@@ -1167,13 +1167,7 @@ export function OnboardingCompleteWelcome({
         />
       </View>
       <View style={{ flex: 1 }} />
-      <PrimaryButton
-        disabled={false}
-        label="Finish"
-        onPress={() => {
-          onComplete("finished");
-        }}
-      />
+      <PrimaryButton disabled={false} label="Finish" onPress={onComplete} />
     </OnboardingScreen>
   );
 }
@@ -1181,11 +1175,12 @@ export function OnboardingCompleteWelcome({
 export function OnboardingNavigator({
   onStart,
 }: {
-  onStart: (path: string) => void;
+  onStart: () => void;
 }): JSX.Element {
   useEffect(() => {
-    onStart("onboarding");
-  }, [onStart]);
+    onStart();
+    // only run once
+  }, []); // eslint-disable-line
 
   const theme = useTheme();
   return (

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback } from "react";
 
 import { AuthenticatedSync } from "@coral-xyz/chat-xplat";
 import {
@@ -28,6 +28,8 @@ import {
   OnboardingNavigator,
 } from "./OnboardingNavigator";
 import { UnlockedNavigator } from "./UnlockedNavigator";
+
+import { useSession } from "~src/lib/SessionProvider";
 // import { NotFoundScreen } from "../screens/NotFoundScreen";
 
 export function RootNavigation({
@@ -124,16 +126,24 @@ const DrawerNav = () => {
 
 function RootNavigator(): JSX.Element {
   const keyringStoreState = useKeyringStoreState();
-  const [status, setStatus] = useState<string | null>(null);
+  const { appState, setAppState } = useSession();
+
+  const onStartOnboarding = useCallback(() => {
+    setAppState("onboardingStarted");
+  }, [setAppState]);
+
+  const onCompleteOnboarding = useCallback(() => {
+    setAppState("onboardingComplete");
+  }, [setAppState]);
 
   switch (keyringStoreState) {
     case KeyringStoreStateEnum.NeedsOnboarding:
-      return <OnboardingNavigator onStart={setStatus} />;
+      return <OnboardingNavigator onStart={onStartOnboarding} />;
     case KeyringStoreStateEnum.Locked:
       return <LockedScreen />;
     case KeyringStoreStateEnum.Unlocked:
-      if (status === "onboarding") {
-        return <OnboardingCompleteWelcome onComplete={setStatus} />;
+      if (appState === "onboardingComplete") {
+        return <OnboardingCompleteWelcome onComplete={onCompleteOnboarding} />;
       }
 
       return (
