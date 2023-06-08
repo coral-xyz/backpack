@@ -12,17 +12,18 @@ type ExpoExtras = {
 
 const localGraphQLApi = "http://localhost:8080/v2/graphql";
 const remoteGraphQLApi = "https://backpack-api.xnfts.dev/v2/graphql";
+const isDevMode =
+  process.env.APP_ENV !== "staging" && process.env.APP_ENV !== "production";
 
 // NOTE: this is the hardcoded hash for production builds via App Store
 // deploy your current changes to production via pull request, switch to gh-pages branch and grab the hash from there
 // then fire off a build
 const PRODUCTION_SW_HASH = "8869656";
-
 const getServiceWorkerUrl = () => {
   const url =
     "https://mobile-service-worker.xnfts.dev/background-scripts/latest/service-worker-loader.html";
 
-  // return url;
+  return url;
 
   if (process.env.APP_ENV === "staging") {
     return url;
@@ -40,10 +41,7 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
   const packageName = "app.backpack.mobile";
 
   const serviceWorkerUrl = getServiceWorkerUrl();
-  const graphqlApiUrl =
-    process.env.APP_ENV === "production" || process.env.APP_ENV === "staging"
-      ? remoteGraphQLApi
-      : localGraphQLApi;
+  const graphqlApiUrl = !isDevMode ? remoteGraphQLApi : localGraphQLApi;
 
   return {
     ...config,

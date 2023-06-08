@@ -1,4 +1,4 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useRef, forwardRef } from "react";
 import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { useTheme } from "~hooks/useTheme";
@@ -6,55 +6,82 @@ import { useTheme } from "~hooks/useTheme";
 const ITEM_HEIGHT = 40;
 const ITEM_GAP = 6;
 
-const MnemonicWordInput = memo(function MnemonicWordInput({
-  word,
-  index,
-  onChangeText,
-}: {
+type MnemonicWordInputProps = {
   word: string;
   index: number;
   onChangeText: (word: string) => void;
-}) {
-  const theme = useTheme();
-  return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: theme.custom.colors.textBackground,
-          borderColor: theme.custom.colors.textInputBorderFull,
-        },
-      ]}
-    >
-      <Text
-        style={{
-          color: theme.custom.colors.secondary,
-        }}
-      >
-        {index + 1}
-      </Text>
-      <TextInput
-        autoCapitalize="none"
-        autoComplete="off"
-        autoCorrect={false}
-        autoFocus={index === 0}
-        onChangeText={onChangeText}
-        clearButtonMode="while-editing"
-        numberOfLines={1}
-        inputMode="text"
-        returnKeyType="next"
-        spellCheck={false}
-        scrollEnabled={false}
-        value={word}
+  onSubmitEditing: () => void;
+};
+
+const _MnemonicWordInput = forwardRef<TextInput, MnemonicWordInputProps>(
+  (props, ref) => {
+    const { word, index, onChangeText, onSubmitEditing } = props;
+    const theme = useTheme();
+    return (
+      <View
         style={[
-          styles.input,
+          styles.container,
           {
-            color: theme.custom.colors.fontColor,
+            backgroundColor: theme.custom.colors.textBackground,
+            borderColor: theme.custom.colors.textInputBorderFull,
           },
         ]}
-      />
-    </View>
-  );
+      >
+        <Text
+          style={{
+            color: theme.custom.colors.secondary,
+          }}
+        >
+          {index + 1}
+        </Text>
+        <TextInput
+          ref={ref}
+          autoCapitalize="none"
+          autoComplete="off"
+          autoCorrect={false}
+          autoFocus={index === 0}
+          onChangeText={onChangeText}
+          clearButtonMode="while-editing"
+          numberOfLines={1}
+          inputMode="text"
+          returnKeyType="next"
+          spellCheck={false}
+          scrollEnabled={false}
+          onSubmitEditing={onSubmitEditing}
+          value={word}
+          style={[
+            styles.input,
+            {
+              color: theme.custom.colors.fontColor,
+            },
+          ]}
+        />
+      </View>
+    );
+  }
+);
+
+const MnemonicWordInput = memo(_MnemonicWordInput);
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingLeft: 6,
+    paddingRight: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 8,
+    borderWidth: 2,
+    overflow: "hidden",
+  },
+  input: {
+    paddingLeft: 4,
+    fontWeight: "700",
+    fontSize: 14,
+    width: "100%",
+    alignItems: "center",
+    height: ITEM_HEIGHT,
+  },
 });
 
 export function MnemonicInputFields({
@@ -64,13 +91,28 @@ export function MnemonicInputFields({
   mnemonicWords: string[];
   onChange?: (mnemonicWords: string[]) => void;
 }) {
-  const keyExtractor = (_, index) => index.toString();
+  const inputRef = useRef<TextInput[]>([]);
+
+  const selectNextInput = (index: number) => {
+    const next = inputRef.current[index + 1];
+    if (next) {
+      next.focus();
+    }
+  };
+
+  const keyExtractor = (_: any, index: number) => index.toString();
   const renderItem = useCallback(
     ({ item, index }: { item: string; index: number }) => {
       return (
         <MnemonicWordInput
+          ref={(node) => {
+            if (node) {
+              inputRef.current[index] = node;
+            }
+          }}
           word={item}
           index={index}
+          onSubmitEditing={() => selectNextInput(index)}
           onChangeText={(word) => {
             if (onChange) {
               const newMnemonicWords = [...mnemonicWords];
@@ -103,23 +145,3 @@ export function MnemonicInputFields({
     />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 6,
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 2,
-    overflow: "hidden",
-  },
-  input: {
-    paddingLeft: 4,
-    fontWeight: "700",
-    fontSize: 14,
-    width: "100%",
-    alignItems: "center",
-    height: ITEM_HEIGHT,
-  },
-});

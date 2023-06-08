@@ -42,6 +42,7 @@ export function UsernameInput({
           style={{ paddingLeft: 4 }}
           autoFocus
           placeholder="Username"
+          autoCapitalize="none"
           returnKeyType="next"
           value={username}
           onChangeText={(text) => {
