@@ -431,7 +431,13 @@ export function ImportWallets({
             disabled={ledgerLocked}
           >
             {derivationPathOptions.map((o) => (
-              <MenuItem value={o.label} key={o.label}>
+              <MenuItem
+                style={{
+                  color: "#ffffff",
+                }}
+                value={o.label}
+                key={o.label}
+              >
                 {o.label}
               </MenuItem>
             ))}
