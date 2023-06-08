@@ -44,3 +44,5 @@ export async function tryLocalAuthenticate(
     return BiometricAuthenticationStatus.Rejected;
   }
 }
+
+export const BIOMETRIC_PASSWORD = "SECRET_VARIABLE_DO_NOT_CHANGE";

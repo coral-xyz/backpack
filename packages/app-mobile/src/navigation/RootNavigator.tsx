@@ -28,7 +28,7 @@ import {
   OnboardingNavigator,
 } from "./OnboardingNavigator";
 import { UnlockedNavigator } from "./UnlockedNavigator";
-import { NotFoundScreen } from "../screens/NotFoundScreen";
+// import { NotFoundScreen } from "../screens/NotFoundScreen";
 
 export function RootNavigation({
   colorScheme,
@@ -57,7 +57,7 @@ const FriendStack = createStackNavigator<FriendNavigatorStackParamList>();
 const FriendNavigator = () => {
   return (
     <FriendStack.Navigator>
-      <Drawer.Screen
+      <FriendStack.Screen
         name="FriendList"
         component={FriendListScreen}
         options={({ navigation }) => {
@@ -70,20 +70,19 @@ const FriendNavigator = () => {
                 {...props}
                 onPress={() => {
                   navigation.openDrawer();
-                  // navigation.navigate("HomeWalletList");
                 }}
               />
             ),
           };
         }}
       />
-      <Drawer.Screen
+      <FriendStack.Screen
         name="FriendDetail"
         component={FriendDetailScreen}
         options={({ route }) => {
           return {
-            headerShown: true,
-            title: route.params?.username,
+            headerBackTitleVisible: false,
+            title: route.params.username,
           };
         }}
       />
@@ -124,8 +123,9 @@ const DrawerNav = () => {
 };
 
 function RootNavigator(): JSX.Element {
-  const [status, setStatus] = useState(null);
   const keyringStoreState = useKeyringStoreState();
+  const [status, setStatus] = useState<string | null>(null);
+
   switch (keyringStoreState) {
     case KeyringStoreStateEnum.NeedsOnboarding:
       return <OnboardingNavigator onStart={setStatus} />;

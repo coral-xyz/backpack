@@ -92,11 +92,12 @@ import { maybeRender } from "~lib/index";
 
 import {
   BiometricAuthenticationStatus,
+  BIOMETRIC_PASSWORD,
   tryLocalAuthenticate,
 } from "~src/features/biometrics";
 import {
   biometricAuthenticationSuccessful,
-  // useDeviceSupportsBiometricAuth,
+  useDeviceSupportsBiometricAuth,
 } from "~src/features/biometrics/hooks";
 import * as Linking from "~src/lib/linking";
 
@@ -172,10 +173,33 @@ type OnboardingStackParamList = {
   MnemonicInput: undefined;
   MnemonicSearch: undefined;
   SelectBlockchain: undefined;
-  ImportAccounts: undefined;
   CreatePassword: undefined;
   Biometrics: undefined;
   CreateAccountLoading: undefined;
+};
+
+type Route = {
+  [key: string]: keyof OnboardingStackParamList;
+};
+
+// in order
+const Routes: Route = {
+  CreateOrRecoverAccount: "CreateOrRecoverAccount",
+  CreateOrRecoverUsername: "CreateOrRecoverUsername",
+  MnemonicInput: "MnemonicInput",
+  Biometrics: "Biometrics",
+  CreatePassword: "CreatePassword",
+};
+
+const RecoverAccountRoutes: Route = {
+  CreateOrRecoverUsername: "CreateOrRecoverUsername",
+  KeyringTypeSelector: "KeyringTypeSelector",
+  PrivateKeyInput: "PrivateKeyInput",
+};
+
+const NewAccountRoutes: Route = {
+  CreateOrRecoverUsername: "CreateOrRecoverUsername",
+  KeyringTypeSelector: "KeyringTypeSelector",
 };
 
 const Stack = createStackNavigator<OnboardingStackParamList>();
@@ -216,9 +240,14 @@ function OnboardingScreen({
   );
 }
 
+type CreateOrRecoverAccountScreenProps = StackScreenProps<
+  OnboardingStackParamList,
+  "CreateOrRecoverAccount"
+>;
+
 function CreateOrRecoverAccountScreen({
   navigation,
-}: StackScreenProps<OnboardingStackParamList, "CreateOrRecoverAccount">) {
+}: CreateOrRecoverAccountScreenProps) {
   const insets = useSafeAreaInsets();
   const { setOnboardingData } = useOnboarding();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -250,17 +279,16 @@ function CreateOrRecoverAccountScreen({
             onPress={() => {
               setOnboardingData({
                 action: "create",
-                // dev inviteCode
-                inviteCode: "8b9f708f-df0a-497a-8bc1-f1df42959a84",
+                inviteCode: "8b9f708f-df0a-497a-8bc1-f1df42959a84", // dev inviteCode
               });
-              navigation.push("Biometrics");
+              navigation.push(NewAccountRoutes.CreateOrRecoverUsername);
             }}
           />
           <LinkButton
             label="I already have an account"
             onPress={() => {
               setOnboardingData({ action: "recover" });
-              navigation.push("CreateOrRecoverUsername");
+              navigation.push(RecoverAccountRoutes.CreateOrRecoverUsername);
             }}
           />
         </Box>
@@ -295,14 +323,14 @@ function OnboardingCreateOrImportWalletScreen({
           label="Create a new wallet"
           onPress={() => {
             setOnboardingData({ action: "create" });
-            navigation.push("KeyringTypeSelector");
+            navigation.push(NewAccountRoutes.KeyringTypeSelector);
           }}
         />
         <LinkButton
           label="I already have an wallet"
           onPress={() => {
             setOnboardingData({ action: "recover" });
-            navigation.push("KeyringTypeSelector");
+            navigation.push(RecoverAccountRoutes.KeyringTypeSelector);
           }}
         />
       </Box>
@@ -357,7 +385,7 @@ function OnboardingKeyringTypeSelectorScreen({
           label={`${toTitleCase(action as string)} with secret phrase`}
           onPress={() => {
             setOnboardingData({ keyringType: "mnemonic" });
-            navigation.push("MnemonicInput");
+            navigation.push(Routes.MnemonicInput);
           }}
         />
         {showAdvancedOptions ? (
@@ -366,7 +394,7 @@ function OnboardingKeyringTypeSelectorScreen({
               label="Recover with private key"
               onPress={() => {
                 setOnboardingData({ keyringType: "private-key" });
-                navigation.push("PrivateKeyInput");
+                navigation.push(RecoverAccountRoutes.PrivateKeyInput);
               }}
             />
           </YStack>
@@ -443,7 +471,7 @@ function OnboardingPrivateKeyInputScreen({
               });
 
               await handlePrivateKeyInput(result as PrivateKeyWalletDescriptor);
-              navigation.push("CreatePassword");
+              navigation.push(Routes.Biometrics);
             }}
           />
         </Box>
@@ -535,7 +563,7 @@ function CreateOrRecoverUsernameScreen({
                     serverPublicKeys: json.publicKeys,
                   });
 
-                  navigation.push("KeyringTypeSelector");
+                  navigation.push(RecoverAccountRoutes.KeyringTypeSelector);
                 } catch (err: any) {
                   setError(err.message || "Something went wrong");
                 } finally {
@@ -545,9 +573,11 @@ function CreateOrRecoverUsernameScreen({
 
               if (action === "create") {
                 try {
+                  // TODO(fetch) consolidate these
                   const res = await fetch(
                     `https://auth.xnfts.dev/users/${username}`,
                     {
+                      // @ts-ignore
                       headers: {
                         "x-backpack-invite-code": onboardingData.inviteCode,
                       },
@@ -563,7 +593,7 @@ function CreateOrRecoverUsernameScreen({
                     username,
                   });
 
-                  navigation.push("CreateOrImportWallet");
+                  navigation.push(NewAccountRoutes.CreateOrImportWallet);
                 } catch (err: any) {
                   setError(err.message);
                 } finally {
@@ -782,7 +812,7 @@ function MnemonicSearchScreen({
         );
 
         setOnboardingData({ signedWalletDescriptors });
-        navigation.push("CreatePassword");
+        navigation.push(Routes.Biometrics);
       } else {
         setError(true);
       }
@@ -891,18 +921,21 @@ export function OnboardingBiometricsScreen({
   route,
 }: BiometricsScreenProps): JSX.Element {
   const insets = useSafeAreaInsets();
-  const [showWarningModal, setShowWarningModal] = useState(false);
-  // const { touchId: isTouchIdDevice } = useDeviceSupportsBiometricAuth();
-  // const authenticationTypeName = isTouchIdDevice ? "Touch" : "Face";
+  const { setOnboardingData } = useOnboarding();
+  const { touchId: isTouchIdDevice } = useDeviceSupportsBiometricAuth();
+  const biometricName = isTouchIdDevice ? "Touch ID" : "Face ID";
 
   const onPressNext = useCallback(() => {
-    setShowWarningModal(false);
     navigation.navigate({
       name: "CreateAccountLoading",
       params: route.params,
       merge: true,
     });
   }, [navigation, route.params]);
+
+  const onPressCancel = useCallback(() => {
+    navigation.push(Routes.CreatePassword);
+  }, [navigation]);
 
   const onPressEnableBiometrics = useCallback(async () => {
     const authStatus = await tryLocalAuthenticate({
@@ -914,41 +947,40 @@ export function OnboardingBiometricsScreen({
       authStatus === BiometricAuthenticationStatus.MissingEnrollment
     ) {
       Alert.alert(
-        "Biometrics are disabled",
-        "To enable biometrics, allow access in system settings",
+        `${biometricName} is disabled`,
+        `To enable ${biometricName}, allow access in system settings`,
         [
           {
             text: "Settings",
             onPress: Linking.openSettings,
           },
-          { text: "Not now" },
+          { text: "Not now", onPress: onPressCancel },
         ]
       );
     }
 
     if (biometricAuthenticationSuccessful(authStatus)) {
+      setOnboardingData({ password: BIOMETRIC_PASSWORD });
       onPressNext();
     }
-  }, [onPressNext]);
+  }, [onPressNext, onPressCancel, setOnboardingData, biometricName]);
 
   return (
     <OnboardingScreen
-      title="Enable Face Id"
-      subtitle="Face ID will be used to unlock your device"
+      title={`Enable ${biometricName}`}
+      subtitle={`${biometricName} can be used to unlock your device`}
       style={{
         paddingTop: insets.top + 36,
         paddingBottom: insets.bottom + 24,
       }}
     >
-      {showWarningModal ? (
-        <StyledText>Warning modal should be shown</StyledText>
-      ) : null}
       <Box space={8}>
         <LinkButton
           disabled={false}
           label="Maybe later"
           onPress={() => {
-            setShowWarningModal(true);
+            Alert.alert(`You can always turn ${biometricName} on in Settings`);
+            navigation.push(Routes.CreatePassword);
           }}
         />
         <PrimaryButton
@@ -967,9 +999,14 @@ type CreatePasswordFormData = {
   agreedToTerms: boolean;
 };
 
+type OnboardingCreatePasswordScreenProps = StackScreenProps<
+  OnboardingStackParamList,
+  "CreatePassword"
+>;
+
 function OnboardingCreatePasswordScreen({
   navigation,
-}: StackScreenProps<OnboardingStackParamList, "CreatePassword">) {
+}: OnboardingCreatePasswordScreenProps) {
   const { setOnboardingData } = useOnboarding();
 
   const { control, handleSubmit, formState, watch } =
@@ -1042,33 +1079,6 @@ function OnboardingCreatePasswordScreen({
         />
       </OnboardingScreen>
     </KeyboardAvoidingView>
-  );
-}
-
-// TODO(peter) import flow OnboardingAccount/ImportAccounts
-function OnboardingImportAccountsScreen({
-  navigation,
-}: StackScreenProps<OnboardingStackParamList, "ImportAccounts">) {
-  // const { onboardingData} = useOnboarding();
-  // const { mnemonic, blockchain } = onboardingData;
-  // const allowMultiple = false;
-
-  return (
-    <Screen style={styles.container}>
-      <View>
-        <StyledText style={{ fontSize: 24, marginBottom: 12 }}>
-          Secret Recovery Phrase
-        </StyledText>
-      </View>
-      <View style={{ flexDirection: "row" }}>
-        <PrimaryButton
-          label="Import Accounts"
-          onPress={() => {
-            navigation.push("CreatePassword");
-          }}
-        />
-      </View>
-    </Screen>
   );
 }
 
@@ -1231,10 +1241,6 @@ export function OnboardingNavigator({
           <Stack.Screen
             name="SelectBlockchain"
             component={OnboardingBlockchainSelectScreen}
-          />
-          <Stack.Screen
-            name="ImportAccounts"
-            component={OnboardingImportAccountsScreen}
           />
           <Stack.Screen
             name="CreatePassword"

@@ -99,6 +99,8 @@ function BackgroundHiddenWebView(): JSX.Element {
       <WebView
         ref={ref}
         source={{ uri: serviceWorkerUrl }}
+        cacheMode="LOAD_CACHE_ELSE_NETWORK"
+        cacheEnabled
         // NOTE: this MUST be true. Otherwise onMessage will not fire.
         // https://github.com/react-native-webview/react-native-webview/issues/1956
         limitsNavigationsToAppBoundDomains

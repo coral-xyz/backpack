@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 
-// import { useLockScreenContext } from "@src/features/authentication/lockScreenContext";
 import { useBiometricContext } from "~src/features/biometrics/context";
 import {
   useBiometricAppSettings,
@@ -12,7 +11,6 @@ import { hideSplashScreen } from "~src/lib/splashScreen";
 
 export function useBiometricCheck(): void {
   const { requiredForAppAccess } = useBiometricAppSettings();
-  // const { setIsLockScreenVisible } = useLockScreenContext();
   const { authenticationStatus } = useBiometricContext();
   const successCallback = (): void => {
     setIsLockScreenVisible(false);
