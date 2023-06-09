@@ -141,19 +141,18 @@ function Container({ navigation }: CollectionListScreenProps): JSX.Element {
   const gap = 12;
 
   return (
-    <Screen>
-      <FlatList
-        data={rows}
-        numColumns={2}
-        ItemSeparatorComponent={ItemSeparator}
-        ListEmptyComponent={NoNFTsEmptyState}
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-        contentContainerStyle={{ gap }}
-        columnWrapperStyle={{ gap }}
-        showsVerticalScrollIndicator={false}
-      />
-    </Screen>
+    <FlatList
+      style={{ paddingTop: 16, paddingHorizontal: 16 }}
+      contentContainerStyle={{ gap, paddingBottom: 32 }}
+      data={rows}
+      numColumns={2}
+      ItemSeparatorComponent={ItemSeparator}
+      ListEmptyComponent={NoNFTsEmptyState}
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+      columnWrapperStyle={{ gap }}
+      showsVerticalScrollIndicator={false}
+    />
   );
 }
 

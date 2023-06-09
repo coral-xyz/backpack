@@ -169,19 +169,19 @@ function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
   );
 
   return (
-    <Screen>
-      <FlatList
-        data={allWallets}
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
-        ListHeaderComponent={
-          <Box my={12}>
-            <BalanceSummaryWidget />
-          </Box>
-        }
-      />
-    </Screen>
+    <FlatList
+      style={{ paddingTop: 16, paddingHorizontal: 16 }}
+      contentContainerStyle={{ paddingBottom: 32 }}
+      data={allWallets}
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+      showsVerticalScrollIndicator={false}
+      ListHeaderComponent={
+        <Box mb={12}>
+          <BalanceSummaryWidget />
+        </Box>
+      }
+    />
   );
 }
 

@@ -3858,6 +3858,7 @@ __metadata:
     jest-expo: ^47.0.0
     patch-package: ^6.5.0
     react: 18.2.0
+    react-content-loader: ^6.2.1
     react-dom: 18.2.0
     react-error-boundary: ^4.0.4
     react-hook-form: ^7.40.0
@@ -35170,6 +35171,15 @@ __metadata:
   bin:
     rc: ./cli.js
   checksum: 2e26e052f8be2abd64e6d1dabfbd7be03f80ec18ccbc49562d31f617d0015fbdbcf0f9eed30346ea6ab789e0fdfe4337f033f8016efdbee0df5354751842080e
+  languageName: node
+  linkType: hard
+
+"react-content-loader@npm:^6.2.1":
+  version: 6.2.1
+  resolution: "react-content-loader@npm:6.2.1"
+  peerDependencies:
+    react: ">=16.0.0"
+  checksum: f777d408256a4218677e47f4cf3988d9fd8e556450e9b85ee1eb3952a5d5802573cea0df5eaf4dbc936c9522f355657de6f8ab0ecdf035d7dccdef15b45c9dae
   languageName: node
   linkType: hard
 

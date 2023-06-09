@@ -63,31 +63,28 @@ function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
   );
 
   return (
-    <Screen style={{ paddingHorizontal: 0 }}>
-      <FlatList
-        contentContainerStyle={{
-          paddingHorizontal: 16,
-        }}
-        data={balances}
-        keyExtractor={(item) => item.address}
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
-        ListHeaderComponent={
-          <>
-            <BalanceSummaryWidget />
-            <Box marginVertical={12}>
-              <TransferWidget
-                swapEnabled={false}
-                rampEnabled={false}
-                onPressOption={(route: string, options: NavTokenOptions) => {
-                  navigation.push(route, options);
-                }}
-              />
-            </Box>
-          </>
-        }
-      />
-    </Screen>
+    <FlatList
+      style={{ paddingTop: 16, paddingHorizontal: 16 }}
+      contentContainerStyle={{ paddingBottom: 32 }}
+      data={balances}
+      keyExtractor={(item) => item.address}
+      renderItem={renderItem}
+      showsVerticalScrollIndicator={false}
+      ListHeaderComponent={
+        <>
+          <BalanceSummaryWidget />
+          <Box marginVertical={12}>
+            <TransferWidget
+              swapEnabled={false}
+              rampEnabled={false}
+              onPressOption={(route: string, options: NavTokenOptions) => {
+                navigation.push(route, options);
+              }}
+            />
+          </Box>
+        </>
+      }
+    />
   );
 }
 

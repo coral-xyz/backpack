@@ -1,10 +1,12 @@
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
 import { useTheme as useTamaguiTheme } from "@coral-xyz/tamagui";
+import { PlatformPressable } from "@react-navigation/elements";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StackScreenProps } from "@react-navigation/stack";
 
 import { BottomSheetViewOptions } from "~components/BottomSheetViewOptions";
+import { CurrentUserAvatar } from "~components/UserAvatar";
 import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
 import { useTheme } from "~hooks/useTheme";
 import { WINDOW_WIDTH } from "~lib/index";
@@ -122,13 +124,14 @@ export function WalletsNavigator(): JSX.Element {
               );
             },
             headerLeft: (props) => (
-              <HeaderButton
-                name="menu"
+              <PlatformPressable
                 {...props}
                 onPress={() => {
                   navigation.openDrawer();
                 }}
-              />
+              >
+                <CurrentUserAvatar size={24} />
+              </PlatformPressable>
             ),
             headerRight: (props) => (
               <HeaderButton

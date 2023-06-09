@@ -14,6 +14,7 @@ import {
 } from "@coral-xyz/recoil";
 import { PaddedListItemSeparator } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ListItemWallet, type Wallet } from "~components/ListItem";
 import {
@@ -30,6 +31,7 @@ function WalletList2({ onPressItem }) {
   const activeWallets = wallets.filter((w) => !w.isCold);
   const coldWallets = wallets.filter((w) => w.isCold);
   const primaryWallets = usePrimaryWallets();
+  const insets = useSafeAreaInsets();
 
   // Dehydrated public keys are keys that exist on the server but cannot be
   // used on the client as we don't have signing data, e.g. mnemonic, private
@@ -101,6 +103,14 @@ function WalletList2({ onPressItem }) {
       renderItem={renderItem}
       keyExtractor={(item) => item.publicKey}
       ItemSeparatorComponent={PaddedListItemSeparator}
+      style={{
+        paddingTop: 16,
+        paddingHorizontal: 16,
+        marginBottom: insets.bottom,
+      }}
+      contentContainerStyle={{
+        paddingBottom: 32,
+      }}
     />
   );
 }
@@ -122,11 +132,7 @@ function Container({ navigation }): JSX.Element {
     navigation.push("add-wallet", { blockchain });
   };
 
-  return (
-    <Screen>
-      <WalletList2 onPressItem={handlePressItem} />
-    </Screen>
-  );
+  return <WalletList2 onPressItem={handlePressItem} />;
 }
 
 export function EditWalletsScreen({ navigation }): JSX.Element {

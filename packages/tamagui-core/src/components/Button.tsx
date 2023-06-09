@@ -81,17 +81,20 @@ export function LinkButton({
   onPress,
   disabled,
   loading,
+  iconBefore,
   ...props
 }: {
   label: string;
   onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
+  iconBefore?: JSX.Element;
 }) {
   const theme = useCustomTheme();
   return (
     <BaseButton
       label={label}
+      iconBefore={iconBefore}
       onPress={onPress}
       disabled={disabled}
       loading={loading}

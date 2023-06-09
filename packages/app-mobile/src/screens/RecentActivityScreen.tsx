@@ -88,18 +88,18 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
   }, []);
 
   return (
-    <Screen>
-      <SectionList
-        sections={sections}
-        ListEmptyComponent={NoRecentActivity}
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-        renderSectionHeader={renderSectionHeader}
-        SectionSeparatorComponent={SectionSeparator}
-        stickySectionHeadersEnabled={false}
-        showsVerticalScrollIndicator={false}
-      />
-    </Screen>
+    <SectionList
+      style={{ paddingTop: 16, paddingHorizontal: 16 }}
+      contentContainerStyle={{ paddingBottom: 32 }}
+      sections={sections}
+      ListEmptyComponent={NoRecentActivity}
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+      renderSectionHeader={renderSectionHeader}
+      SectionSeparatorComponent={SectionSeparator}
+      stickySectionHeadersEnabled={false}
+      showsVerticalScrollIndicator={false}
+    />
   );
 }
 

@@ -51,6 +51,24 @@ function Container({ navigation }) {
   const { allWallets, activeWallet, selectActiveWallet } = useWallets();
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
+  // TODO: this is a hack, we should be able to get the wallets from the query
+  const wallets = data.user.wallets.edges.map((edge) => {
+    const a = allWallets.find(
+      (wallet) => wallet.publicKey === edge.node.address
+    );
+
+    return {
+      ...edge.node,
+      publicKey: edge.node.address,
+      isPrimary: edge.node.isPrimary,
+      blockchain: edge.node.chainId.toLowerCase() as Blockchain,
+      balance: formatUsd(edge.node.balances.aggregate.value),
+      // TODO: this is a hack, we should be able to get the wallets from the query
+      name: a?.name ?? "",
+      type: a?.type ?? "",
+    };
+  });
+
   const handlePressSelect = useCallback(
     async (blockchain: Blockchain, publicKey: PublicKey) => {
       setLoadingId(publicKey);
@@ -105,24 +123,6 @@ function Container({ navigation }) {
     },
     [loadingId, activeWallet.publicKey, handlePressSelect, handlePressEdit]
   );
-
-  // TODO: this is a hack, we should be able to get the wallets from the query
-  const wallets = data.user.wallets.edges.map((edge) => {
-    const a = allWallets.find(
-      (wallet) => wallet.publicKey === edge.node.address
-    );
-
-    return {
-      ...edge.node,
-      publicKey: edge.node.address,
-      isPrimary: edge.node.isPrimary,
-      blockchain: edge.node.chainId.toLowerCase() as Blockchain,
-      balance: formatUsd(edge.node.balances.aggregate.value),
-      // TODO: this is a hack, we should be able to get the wallets from the query
-      name: a?.name ?? "",
-      type: a?.type ?? "",
-    };
-  });
 
   return (
     <View style={{ height: 400 }}>
