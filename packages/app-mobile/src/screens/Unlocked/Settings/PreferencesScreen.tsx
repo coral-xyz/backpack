@@ -30,6 +30,18 @@ import {
   SettingsRowText,
 } from "./components/SettingsRow";
 
+import {
+  BiometricAuthenticationStatus,
+  // BIOMETRIC_PASSWORD,
+  tryLocalAuthenticate,
+} from "~src/features/biometrics";
+import {
+  useDeviceSupportsBiometricAuth,
+  useOsBiometricAuthEnabled,
+  biometricAuthenticationSuccessful,
+} from "~src/features/biometrics/hooks";
+import * as Linking from "~src/lib/linking";
+
 function SettingsDarkMode() {
   const [loading, setLoading] = useState(false);
   const background = useBackgroundClient();
@@ -49,7 +61,7 @@ function SettingsDarkMode() {
       loading={loading}
       value={isDarkMode}
       label="Dark Mode"
-      onPress={(value) => onDarkModeSwitch(value)}
+      onPress={onDarkModeSwitch}
     />
   );
 }
@@ -73,7 +85,57 @@ function SettingsDeveloperMode() {
       loading={loading}
       value={isDeveloperMode}
       label="Developer Mode"
-      onPress={(value) => onDeveloperModeSwitch(value)}
+      onPress={onDeveloperModeSwitch}
+    />
+  );
+}
+
+function SettingsBiometricsMode() {
+  const [loading, setLoading] = useState(false);
+  const { touchId: isTouchIdDevice } = useDeviceSupportsBiometricAuth();
+  const isSupported = useDeviceSupportsBiometricAuth();
+  const isEnabled = useOsBiometricAuthEnabled();
+  if (!isSupported) {
+    return null;
+  }
+
+  const onBiometricSwitch = async () => {
+    setLoading(true);
+    const authStatus = await tryLocalAuthenticate({
+      disableDeviceFallback: true,
+    });
+
+    if (
+      authStatus === BiometricAuthenticationStatus.Unsupported ||
+      authStatus === BiometricAuthenticationStatus.MissingEnrollment
+    ) {
+      Alert.alert(
+        `${biometricName} is disabled`,
+        `To enable ${biometricName}, allow access in system settings`,
+        [
+          {
+            text: "Settings",
+            onPress: Linking.openSettings,
+          },
+          { text: "Not now" },
+        ]
+      );
+    }
+
+    if (biometricAuthenticationSuccessful(authStatus)) {
+      console.log("warn folks password is different now or something");
+    }
+
+    setLoading(false);
+  };
+
+  const biometricName = isTouchIdDevice ? "Touch ID" : "Face ID";
+  return (
+    <SettingsRowSwitch
+      loading={loading}
+      value={Boolean(isEnabled)}
+      label={`Enable ${biometricName}`}
+      onPress={onBiometricSwitch}
     />
   );
 }
@@ -88,19 +150,9 @@ function Container({ navigation }) {
             onPress={() => navigation.push("PreferencesTrustedSites")}
             detailIcon={<IconPushDetail />}
           />
-          <SettingsRow
-            label="Biometrics"
-            onPress={() => {
-              Alert.alert(
-                "Coming Soon",
-                "Screen Unlock, transaction signing, etc"
-              );
-            }}
-            // onPress={() => navigation.push("PreferencesBiometrics")}
-            detailIcon={<IconPushDetail />}
-          />
           <SettingsDarkMode />
           <SettingsDeveloperMode />
+          <SettingsBiometricsMode />
         </RoundedContainerGroup>
       </Stack>
       <Stack mb={12}>

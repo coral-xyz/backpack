@@ -33,6 +33,7 @@ import {
   BiometricAuthenticationStatus,
   tryLocalAuthenticate,
 } from "~src/features/biometrics";
+import { useOsBiometricAuthEnabled } from "~src/features/biometrics/hooks";
 
 interface FormData {
   password: string;
@@ -42,6 +43,7 @@ function Container(): JSX.Element {
   const background = useBackgroundClient();
   const user = useUser();
   const insets = useSafeAreaInsets();
+  const isBiometricsEnabled = useOsBiometricAuthEnabled();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
 
@@ -112,24 +114,26 @@ function Container(): JSX.Element {
           <Margin top={48} bottom={24}>
             <WelcomeLogoHeader />
           </Margin>
-          <View>
-            <Margin bottom={8}>
-              <PasswordInput
-                returnKeyType="done"
-                autoFocus
-                placeholder="Password"
-                name="password"
-                control={control}
-                rules={{
-                  required: "You must enter a password",
-                }}
-              />
-              {formState.errors.password ? (
-                <ErrorMessage for={formState.errors.password} />
-              ) : null}
-            </Margin>
-            <PrimaryButton label="Unlock" onPress={handleSubmit(onSubmit)} />
-          </View>
+          {isBiometricsEnabled ? null : (
+            <View>
+              <Margin bottom={8}>
+                <PasswordInput
+                  returnKeyType="done"
+                  autoFocus
+                  placeholder="Password"
+                  name="password"
+                  control={control}
+                  rules={{
+                    required: "You must enter a password",
+                  }}
+                />
+                {formState.errors.password ? (
+                  <ErrorMessage for={formState.errors.password} />
+                ) : null}
+              </Margin>
+              <PrimaryButton label="Unlock" onPress={handleSubmit(onSubmit)} />
+            </View>
+          )}
         </Screen>
       </KeyboardAvoidingView>
       <BottomSheetHelpModal

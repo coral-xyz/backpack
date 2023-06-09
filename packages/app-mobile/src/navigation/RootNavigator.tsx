@@ -26,6 +26,10 @@ import {
 } from "./OnboardingNavigator";
 import { UnlockedNavigator } from "./UnlockedNavigator";
 
+import {
+  useDeviceSupportsBiometricAuth,
+  useOsBiometricAuthEnabled,
+} from "~src/features/biometrics/hooks";
 import { useSession } from "~src/lib/SessionProvider";
 // import { NotFoundScreen } from "../screens/NotFoundScreen";
 
@@ -79,6 +83,10 @@ const DrawerNav = () => {
 function RootNavigator(): JSX.Element {
   const keyringStoreState = useKeyringStoreState();
   const { appState, setAppState } = useSession();
+  const { touchId, faceId } = useDeviceSupportsBiometricAuth();
+  const data = useOsBiometricAuthEnabled();
+  console.log("debug:isAUthSupported", { touchId, faceId });
+  console.log("debug:isAUthEnabled", data);
 
   const onStartOnboarding = useCallback(() => {
     setAppState("onboardingStarted");
