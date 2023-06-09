@@ -60,7 +60,7 @@ function coalesceWalletData(graphqlData, recoilWallets) {
       ...edge.node,
       publicKey: edge.node.address,
       isPrimary: edge.node.isPrimary,
-      blockchain: edge.node.chainId.toLowerCase() as Blockchain,
+      blockchain: edge.node.provider.name.toLowerCase() as Blockchain,
       balance: formatUsd(edge.node.balances.aggregate.value),
       // TODO: this is a hack, we should be able to get the wallets from the query
       name: a?.name ?? "",

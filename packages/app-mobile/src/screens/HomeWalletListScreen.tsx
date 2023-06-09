@@ -102,8 +102,6 @@ function coalesceWalletData(graphqlData, recoilWallets) {
       (wallet) => wallet.publicKey === edge.node.address
     );
 
-    console.log("debug1:edg", edge);
-
     return {
       ...edge.node,
       publicKey: edge.node.address,

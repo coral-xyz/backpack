@@ -86,8 +86,8 @@ export const NftNodeFragment = gql`
 
 const GET_NFT_COLLECTIONS = gql`
   ${NftNodeFragment}
-  query WalletNftCollections($chainId: ChainID!, $address: String!) {
-    wallet(chainId: $chainId, address: $address) {
+  query WalletNftCollections($providerId: ProviderID!, $address: String!) {
+    wallet(providerId: $providerId, address: $address) {
       id
       nfts {
         edges {
@@ -104,7 +104,7 @@ function Container({ navigation }: CollectionListScreenProps): JSX.Element {
   const { blockchain, publicKey } = useActiveWallet();
   const { data } = useSuspenseQuery_experimental(GET_NFT_COLLECTIONS, {
     variables: {
-      chainId: blockchain.toUpperCase(),
+      providerId: blockchain.toUpperCase(),
       address: publicKey,
     },
   });

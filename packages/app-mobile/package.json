@@ -8,6 +8,7 @@
   "scripts": {
     "eas-build-post-install": "cd ../../ && yarn build:mobile",
     "android": "EXPO_USE_CUSTOM_INSPECTOR_PROXY=true expo start --android --localhost --dev-client",
+    "gql:generate": "graphql-codegen --config codegen.yml",
     "ios": "APP_ENV=development EXPO_USE_CUSTOM_INSPECTOR_PROXY=true expo start --ios --dev-client",
     "ios:deploy": "eas build --profile production --platform ios --auto-submit --non-interactive",
     "ios:dev-client": "APP_ENV=development eas build --profile development-simulator --platform ios",
@@ -102,6 +103,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",
+    "@graphql-codegen/cli": "^3.3.1",
+    "@graphql-codegen/client-preset": "^3.0.1",
     "@testing-library/jest-native": "^5.1.2",
     "@types/jest": "^28.1.6",
     "@types/react": "^18.0.28",

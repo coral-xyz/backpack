@@ -1,7 +1,7 @@
 import { Suspense, useCallback } from "react";
 import { SectionList } from "react-native";
 
-import { gql, useSuspenseQuery_experimental } from "@apollo/client";
+import { useSuspenseQuery_experimental } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -13,41 +13,42 @@ import {
 } from "~components/RecentActivityListItem";
 import {
   RoundedContainerGroup,
-  Screen,
   ScreenError,
   ScreenLoading,
 } from "~components/index";
 import { convertTransactionDataToSectionList } from "~lib/RecentActivityUtils";
 import { RecentActivityScreenProps } from "~navigation/types";
 
-const GET_RECENT_TRANSACTIONS = gql`
-  query WalletTransactions($chainId: ChainID!, $address: String!) {
-    wallet(chainId: $chainId, address: $address) {
-      id
-      transactions {
-        edges {
-          node {
-            id
-            description
-            block
-            fee
-            feePayer
-            hash
-            source
-            type
-            timestamp
+import { gql } from "~src/graphql/__generated__";
+
+const QUERY_TRANSACTIONS = gql(`
+  query Transactions($address: String!) {
+    user {
+      wallet(address: $address) {
+        transactions {
+          edges {
+            node {
+              id
+              block
+              description
+              fee
+              feePayer
+              hash
+              source
+              timestamp
+              type
+            }
           }
         }
       }
     }
   }
-`;
+`);
 
 function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
   const activeWallet = useActiveWallet();
-  const { data } = useSuspenseQuery_experimental(GET_RECENT_TRANSACTIONS, {
+  const { data } = useSuspenseQuery_experimental(QUERY_TRANSACTIONS, {
     variables: {
-      chainId: activeWallet.blockchain.toUpperCase(),
       address: activeWallet.publicKey,
     },
   });
@@ -63,7 +64,7 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
   );
 
   const sections = convertTransactionDataToSectionList(
-    data?.wallet?.transactions.edges
+    data.user?.wallet?.transactions?.edges ?? []
   );
 
   const keyExtractor = (item: ListItemProps) => item.id;
