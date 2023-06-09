@@ -270,8 +270,11 @@ export type Notification = Node & {
   viewed: Scalars["Boolean"];
 };
 
+/** Identifying metadata for an xNFT application that triggered a notification. */
 export type NotificationApplicationData = Node & {
   __typename?: "NotificationApplicationData";
+  /** The public key string of the xNFT application */
+  address: Scalars["String"];
   /** Globally unique identifier for the node. */
   id: Scalars["ID"];
   /** The image link to the application's icon. */
@@ -1101,6 +1104,7 @@ export type NotificationApplicationDataResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["NotificationApplicationData"] = ResolversParentTypes["NotificationApplicationData"]
 > = ResolversObject<{
+  address?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   image?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;

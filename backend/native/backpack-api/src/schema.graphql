@@ -583,11 +583,19 @@ type Notification implements Node {
   viewed: Boolean!
 }
 
-type NotificationApplicationData implements Node {
+"""
+Identifying metadata for an xNFT application that triggered a notification.
+"""
+type NotificationApplicationData implements Node @cacheControl(maxAge: 900) {
   """
   Globally unique identifier for the node.
   """
   id: ID!
+
+  """
+  The public key string of the xNFT application
+  """
+  address: String!
 
   """
   The image link to the application's icon.
