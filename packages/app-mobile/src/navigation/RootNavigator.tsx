@@ -48,20 +48,23 @@ const DrawerNav = () => {
   return (
     <Drawer.Navigator
       initialRouteName="DrawerHome"
-      screenOptions={{ headerShown: false }}
+      screenOptions={{
+        swipeEnabled: false,
+        headerShown: false,
+      }}
       drawerContent={GlobalDrawerContent}
     >
-      <Drawer.Screen
-        name="DrawerHome"
-        component={UnlockedNavigator}
-        options={{ title: "Balances" }}
-      />
       <Drawer.Screen
         name="Profile"
         component={ProfileScreen}
         options={{
           headerShown: true,
         }}
+      />
+      <Drawer.Screen
+        name="DrawerHome"
+        component={UnlockedNavigator}
+        options={{ title: "Wallets" }}
       />
       <Drawer.Screen
         name="AccountSettings"

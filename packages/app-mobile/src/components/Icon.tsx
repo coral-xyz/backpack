@@ -23,7 +23,7 @@ export const IconButton = withThemedIcon(({ onPress, name, color, size }) => {
 });
 
 export const IconMenu = withThemedIcon(({ color, size }: TamaguiIconProp) => {
-  const baseIconColor = useTamaguiTheme().fontColor.val;
+  const baseIconColor = useTamaguiTheme().baseIcon.val;
   return (
     <MaterialIcons name="menu" size={size} color={color ?? baseIconColor} />
   );
@@ -52,11 +52,20 @@ export const VerticalDotsIcon = ({
 
 export const ArrowRightIcon = ({
   size = 24,
-  color = "gray",
+  color,
 }: {
   size?: number;
   color?: string;
-}) => <MaterialIcons name="keyboard-arrow-right" size={size} color={color} />;
+}) => {
+  const baseIconColor = useTamaguiTheme().baseIcon.val;
+  return (
+    <MaterialIcons
+      name="keyboard-arrow-right"
+      size={size}
+      color={color ?? baseIconColor}
+    />
+  );
+};
 
 export {
   AvalancheIcon,

@@ -1,11 +1,20 @@
-import { Alert, Button } from "react-native";
+import { Alert, Pressable } from "react-native";
 
 import {
   UI_RPC_METHOD_ACTIVE_USER_UPDATE,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
 } from "@coral-xyz/common";
 import { useAllUsers, useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { StyledText, Stack, XStack } from "@coral-xyz/tamagui";
+import {
+  LinkButton,
+  ListItem,
+  StyledText,
+  Stack,
+  XStack,
+  useTheme as useTamaguiTheme,
+  Separator,
+} from "@coral-xyz/tamagui";
+import { MaterialIcons } from "@expo/vector-icons";
 import {
   DrawerContentScrollView,
   DrawerItemList,
@@ -14,16 +23,22 @@ import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { IconButton } from "~components/Icon";
-import { ListItemSettings } from "~components/ListItem";
 import { UserAccountListItem } from "~components/UserAccountsMenu";
 import { CurrentUserAvatar } from "~components/UserAvatar";
 
 function ListItemSettingsLockWallet(): JSX.Element {
   const background = useBackgroundClient();
+  const theme = useTamaguiTheme();
   return (
-    <ListItemSettings
-      title="Lock Backpack"
-      iconName="lock"
+    <LinkButton
+      label="Lock Backpack"
+      iconBefore={
+        <MaterialIcons
+          name="lock"
+          size={24}
+          color={theme.baseTextMedEmphasis.val}
+        />
+      }
       onPress={async () => {
         try {
           await background.request({
@@ -45,7 +60,7 @@ function Header() {
   return (
     <XStack ai="center" jc="space-between" px={16} mb={8}>
       <XStack ai="center">
-        <CurrentUserAvatar size={32} />
+        <CurrentUserAvatar size={36} />
         <StyledText ml={8}>@{user.username}</StyledText>
       </XStack>
       <IconButton
@@ -75,18 +90,20 @@ function UserList() {
   };
 
   const handlePressAddAccount = () => {
-    console.log("adding");
+    Alert.alert("TODO");
   };
 
+  const theme = useTamaguiTheme();
+
   return (
-    <Stack>
+    <Stack jc="flex-start">
       <StyledText ml={12} mb={8} size="$xs" color="$baseTextMedEmphasis">
         ACCOUNTS ({users.length})
       </StyledText>
       {users.map(({ username, uuid }: any) => {
         return (
           <UserAccountListItem
-            key={username}
+            key={uuid}
             uuid={uuid}
             username={username}
             isActive={user.username === username}
@@ -94,7 +111,19 @@ function UserList() {
           />
         );
       })}
-      <Button title="+ Add Account" onPress={handlePressAddAccount} />
+      <Pressable onPress={handlePressAddAccount}>
+        <XStack ai="center" ml={16}>
+          <MaterialIcons
+            name="add"
+            size={24}
+            color={theme.baseTextMedEmphasis.val}
+          />
+          <StyledText ml={16} color="$baseTextMedEmphasis">
+            Add Account
+          </StyledText>
+        </XStack>
+      </Pressable>
+      <Separator mt={16} />
       <ListItemSettingsLockWallet />
     </Stack>
   );
