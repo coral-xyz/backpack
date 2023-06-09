@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { useSuspenseQuery_experimental } from "@apollo/client";
+import { useSuspenseQuery } from "@apollo/client";
 import { UNKNOWN_ICON_SRC, UNKNOWN_NFT_ICON_SRC } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import type { SizeTokens } from "@coral-xyz/tamagui";
@@ -105,7 +105,7 @@ export const TransactionListItemIconSwap = ({
   symbols: [string, string];
 }) => {
   const activeWallet = useActiveWallet();
-  const { data } = useSuspenseQuery_experimental(GET_TOKEN_LOGO, {
+  const { data } = useSuspenseQuery(GET_TOKEN_LOGO, {
     variables: {
       providerId: activeWallet.blockchain.toUpperCase() as ProviderId,
       filters: {
@@ -142,7 +142,7 @@ export const TransactionListItemIconTransfer = ({
   symbol,
 }: TransactionListItemIconTypeProps & { symbol: string }) => {
   const activeWallet = useActiveWallet();
-  const { data } = useSuspenseQuery_experimental(GET_TOKEN_LOGO, {
+  const { data } = useSuspenseQuery(GET_TOKEN_LOGO, {
     variables: {
       providerId: activeWallet.blockchain.toUpperCase() as ProviderId,
       filters: {

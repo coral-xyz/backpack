@@ -25,6 +25,7 @@ const GET_NOTIFICATIONS = gql(`
             id
             app {
               id
+              address
               image
               name
             }
@@ -71,6 +72,7 @@ function _Notifications({
     pollingInterval ?? DEFAULT_POLLING_INTERVAL,
     GET_NOTIFICATIONS,
     {
+      fetchPolicy: "cache-and-network",
       variables: {
         filters: {
           limit: 50,

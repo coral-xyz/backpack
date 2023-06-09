@@ -2,7 +2,7 @@ import { startTransition, useEffect } from "react";
 import {
   type OperationVariables,
   type SuspenseQueryHookOptions,
-  useSuspenseQuery_experimental,
+  useSuspenseQuery,
 } from "@apollo/client";
 
 /**
@@ -13,7 +13,7 @@ import {
  * @template TVariables
  * @template TOptions
  * @param {number} interval
- * @param {...Parameters<typeof useSuspenseQuery_experimental} args
+ * @param {...Parameters<typeof useSuspenseQuery} args
  */
 export function usePolledSuspenseQuery<
   TData,
@@ -24,13 +24,9 @@ export function usePolledSuspenseQuery<
   >
 >(
   interval: number,
-  ...args: Parameters<
-    typeof useSuspenseQuery_experimental<TData, TVariables, TOptions>
-  >
-): ReturnType<
-  typeof useSuspenseQuery_experimental<TData, TVariables, TOptions>
-> {
-  const res = useSuspenseQuery_experimental(...args);
+  ...args: Parameters<typeof useSuspenseQuery<TData, TVariables, TOptions>>
+): ReturnType<typeof useSuspenseQuery<TData, TVariables, TOptions>> {
+  const res = useSuspenseQuery(...args);
 
   useEffect(() => {
     const id = setInterval(() => {

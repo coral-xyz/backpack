@@ -264,8 +264,11 @@ export type Notification = Node & {
   viewed: Scalars["Boolean"];
 };
 
+/** Identifying metadata for an xNFT application that triggered a notification. */
 export type NotificationApplicationData = Node & {
   __typename?: "NotificationApplicationData";
+  /** The public key string of the xNFT application */
+  address: Scalars["String"];
   /** Globally unique identifier for the node. */
   id: Scalars["ID"];
   /** The image link to the application's icon. */
@@ -698,6 +701,7 @@ export type GetNotificationsQuery = {
           app?: {
             __typename?: "NotificationApplicationData";
             id: string;
+            address: string;
             image: string;
             name: string;
           } | null;
@@ -1212,6 +1216,13 @@ export const GetNotificationsDocument = {
                                         {
                                           kind: "Field",
                                           name: { kind: "Name", value: "id" },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "address",
+                                          },
                                         },
                                         {
                                           kind: "Field",
