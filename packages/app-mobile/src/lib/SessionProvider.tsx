@@ -36,6 +36,14 @@ type SessionContextType = {
   setAuthToken: (token: string) => void;
   appState: AppStateType;
   setAppState: (appState: AppStateType) => void;
+  lockKeystore: () => void;
+  unlockKeystore: ({
+    password,
+    userUuid,
+  }: {
+    password: string;
+    userUuid: string;
+  }) => void;
 };
 
 const SessionContext = createContext<SessionContextType>({
@@ -44,6 +52,8 @@ const SessionContext = createContext<SessionContextType>({
   setAuthToken: () => null,
   appState: null,
   setAppState: () => null,
+  lockKeystore: () => null,
+  unlockKeystore: () => null,
 });
 
 export const SessionProvider = ({
@@ -51,9 +61,9 @@ export const SessionProvider = ({
 }: {
   children: JSX.Element;
 }): JSX.Element => {
+  const background = useBackgroundClient();
   const [token, setToken] = useState<TokenType>(null);
   const [appState, setAppState] = useState<AppStateType>(null);
-  const background = useBackgroundClient();
 
   // on app load
   useEffect(() => {
@@ -68,6 +78,23 @@ export const SessionProvider = ({
     setTokenAsync(token);
     setToken(token);
   }, []);
+
+  const lockKeystore = useCallback(async () => {
+    await background.request({
+      method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+      params: [],
+    });
+  }, [background]);
+
+  const unlockKeystore = useCallback(
+    async ({ password, userUuid }: { password: string; userUuid: string }) => {
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+        params: [password, userUuid],
+      });
+    },
+    [background]
+  );
 
   const reset = useCallback(async () => {
     // TODO: don't manually specify this list of keys
@@ -88,11 +115,8 @@ export const SessionProvider = ({
       }
     }
 
-    await background.request({
-      method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-      params: [],
-    });
-  }, [background]);
+    lockKeystore();
+  }, [lockKeystore]);
 
   const contextValue = useMemo(
     () => ({
@@ -101,8 +125,18 @@ export const SessionProvider = ({
       setAuthToken,
       appState,
       setAppState,
+      lockKeystore,
+      unlockKeystore,
     }),
-    [reset, token, setAuthToken, appState, setAppState]
+    [
+      reset,
+      token,
+      setAuthToken,
+      appState,
+      setAppState,
+      lockKeystore,
+      unlockKeystore,
+    ]
   );
 
   return (
