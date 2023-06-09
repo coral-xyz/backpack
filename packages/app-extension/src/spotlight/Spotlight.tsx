@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Blockchain,
   NAV_COMPONENT_MESSAGE_CHAT,
@@ -146,7 +146,7 @@ function SpotlightInner({
     nfts.length +
     xnfts.length +
     tokens.length;
-  const { push, toRoot } = useNavigation();
+  const { push } = useNavigation();
   const activeWallet = useActiveWallet();
   const connectionUrl = useBlockchainConnectionUrl(activeWallet.blockchain);
   const theme = useCustomTheme();

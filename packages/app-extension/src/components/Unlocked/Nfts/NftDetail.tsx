@@ -1,4 +1,4 @@
-import React, { type CSSProperties, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { Nft } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
@@ -109,7 +109,6 @@ export function NftsDetail({
   connectionUrl: string;
   nftId: string;
 }) {
-  const theme = useCustomTheme();
   const whitelistedChatCollection = useRecoilValue(
     chatByNftId({ publicKey, connectionUrl, nftId })
   );
@@ -427,7 +426,7 @@ function Attributes({ nft }: { nft: any }) {
 export function NftOptionsButton() {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
-  const { uuid, username } = useUser();
+  const { username } = useUser();
   const setNewAvatar = useSetRecoilState(newAvatarAtom(username));
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);

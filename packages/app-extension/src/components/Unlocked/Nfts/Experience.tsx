@@ -1,10 +1,5 @@
-import { useEffect, useState } from "react";
 import { ChatRoom } from "@coral-xyz/chat-sdk";
-import {
-  BACKEND_API_URL,
-  NAV_COMPONENT_NFT_CHAT,
-  REALTIME_API_URL,
-} from "@coral-xyz/common";
+import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common";
 import { PrimaryButton } from "@coral-xyz/react-common";
 import {
   useActiveSolanaWallet,

@@ -103,7 +103,7 @@ function SendScreen({ nft, to }: { nft: any; to: SendData }) {
   const destinationAddress = to.address;
   const [openConfirm, setOpenConfirm] = useState(false);
   const [wasSent, setWasSent] = useState(false);
-  const { isValidAddress, isErrorAddress } = useIsValidAddress(
+  const { isValidAddress } = useIsValidAddress(
     nft.blockchain,
     destinationAddress,
     solanaProvider.connection,

@@ -1,7 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
-import { Loading } from "@coral-xyz/react-common";
-import { useClosePlugin } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { motion } from "framer-motion";
 
