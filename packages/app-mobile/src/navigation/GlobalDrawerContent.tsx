@@ -6,8 +6,6 @@ import {
 } from "@coral-xyz/common";
 import { useAllUsers, useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import {
-  LinkButton,
-  ListItem,
   StyledText,
   Stack,
   XStack,
@@ -25,33 +23,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { IconButton } from "~components/Icon";
 import { UserAccountListItem } from "~components/UserAccountsMenu";
 import { CurrentUserAvatar } from "~components/UserAvatar";
-
-function ListItemSettingsLockWallet(): JSX.Element {
-  const background = useBackgroundClient();
-  const theme = useTamaguiTheme();
-  return (
-    <LinkButton
-      label="Lock Backpack"
-      iconBefore={
-        <MaterialIcons
-          name="lock"
-          size={24}
-          color={theme.baseTextMedEmphasis.val}
-        />
-      }
-      onPress={async () => {
-        try {
-          await background.request({
-            method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-            params: [],
-          });
-        } catch (error: any) {
-          Alert.alert("Error locking wallet", error.message);
-        }
-      }}
-    />
-  );
-}
 
 function Header() {
   const user = useUser();
@@ -123,8 +94,30 @@ function UserList() {
           </StyledText>
         </XStack>
       </Pressable>
-      <Separator mt={16} />
-      <ListItemSettingsLockWallet />
+      <Separator my={16} />
+      <Pressable
+        onPress={async () => {
+          try {
+            await background.request({
+              method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+              params: [],
+            });
+          } catch (error: any) {
+            Alert.alert("Error locking wallet", error.message);
+          }
+        }}
+      >
+        <XStack ai="center" ml={16}>
+          <MaterialIcons
+            name="lock"
+            size={24}
+            color={theme.baseTextMedEmphasis.val}
+          />
+          <StyledText ml={16} color="$baseTextMedEmphasis">
+            Lock Wallet
+          </StyledText>
+        </XStack>
+      </Pressable>
     </Stack>
   );
 }

@@ -58,17 +58,19 @@ function Container({ navigation, route }: any): JSX.Element {
   const gap = 12;
 
   return (
-    <Screen>
-      <FlatList
-        data={nftIds}
-        numColumns={2}
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-        contentContainerStyle={{ gap }}
-        columnWrapperStyle={{ gap }}
-        showsVerticalScrollIndicator={false}
-      />
-    </Screen>
+    <FlatList
+      data={nftIds}
+      numColumns={2}
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+      columnWrapperStyle={{ gap }}
+      showsVerticalScrollIndicator={false}
+      style={{ paddingTop: 16, paddingHorizontal: 16 }}
+      contentContainerStyle={{
+        gap,
+        paddingBottom: 32,
+      }}
+    />
   );
 }
 
