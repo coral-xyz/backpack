@@ -17,7 +17,7 @@ import {
 } from "~components/index";
 import { useWallets } from "~hooks/wallets";
 
-const GET_USER_WALLETS = gql`
+const QUERY_USER_WALLETS = gql`
   query UserWallets {
     user {
       id
@@ -25,10 +25,14 @@ const GET_USER_WALLETS = gql`
         edges {
           node {
             id
-            chainId
             address
             isPrimary
             createdAt
+            provider {
+              id
+              logo
+              name
+            }
             balances {
               id
               aggregate {
@@ -45,15 +49,10 @@ const GET_USER_WALLETS = gql`
   }
 `;
 
-function Container({ navigation }) {
-  const { data } = useSuspenseQuery_experimental(GET_USER_WALLETS);
-  const { dismiss } = useBottomSheetModal();
-  const { allWallets, activeWallet, selectActiveWallet } = useWallets();
-  const [loadingId, setLoadingId] = useState<string | null>(null);
-
+function coalesceWalletData(graphqlData, recoilWallets) {
   // TODO: this is a hack, we should be able to get the wallets from the query
-  const wallets = data.user.wallets.edges.map((edge) => {
-    const a = allWallets.find(
+  const wallets = graphqlData.user.wallets.edges.map((edge) => {
+    const a = recoilWallets.find(
       (wallet) => wallet.publicKey === edge.node.address
     );
 
@@ -68,6 +67,17 @@ function Container({ navigation }) {
       type: a?.type ?? "",
     };
   });
+
+  return wallets;
+}
+
+function Container({ navigation }) {
+  const { data } = useSuspenseQuery_experimental(QUERY_USER_WALLETS);
+  const { allWallets, activeWallet, selectActiveWallet } = useWallets();
+  const { dismiss } = useBottomSheetModal();
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+
+  const wallets = coalesceWalletData(data, allWallets);
 
   const handlePressSelect = useCallback(
     async (blockchain: Blockchain, publicKey: PublicKey) => {

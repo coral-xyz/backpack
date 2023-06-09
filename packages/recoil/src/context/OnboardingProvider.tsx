@@ -301,6 +301,7 @@ export function OnboardingProvider({
   const createUser = useCallback(
     async (data: Partial<OnboardingData>) => {
       const { inviteCode, userId, username, keyringType } = data;
+      console.log("debug:OnboardingProvider:createUser:data", data);
 
       // If userId is provided, then we are onboarding via the recover flow.
       if (userId) {
@@ -319,7 +320,10 @@ export function OnboardingProvider({
           message: getAuthMessage(userId),
         };
 
+        console.log("debug:OnboardingProvider:createUser:authData", authData);
+
         const { jwt } = await authenticate(authData!);
+        console.log("debug:OnboardingProvider:createUser:jwt", jwt);
         return { id: userId, jwt };
       }
 
@@ -337,6 +341,8 @@ export function OnboardingProvider({
         blockchainPublicKeys,
       });
 
+      console.log("debug:OnboardingProvider:createUser:body", body);
+
       try {
         const res = await fetch(`${BACKEND_API_URL}/users`, {
           method: "POST",
@@ -346,12 +352,14 @@ export function OnboardingProvider({
           },
         });
 
+        console.log("debug:OnboardingProvider:createUser:res", res);
+
         if (!res.ok) {
           throw new Error(await res.json());
         }
         return await res.json();
       } catch (err) {
-        console.error("OnboardingProvider:createUser", err);
+        console.error("debug:OnboardingProvider:createUser", err);
         throw new Error(`error creating user`);
       }
     },
