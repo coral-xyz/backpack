@@ -22,21 +22,24 @@ import { RecentActivityScreenProps } from "~navigation/types";
 import { gql } from "~src/graphql/__generated__";
 
 const QUERY_TRANSACTIONS = gql(`
+  fragment TransactionFragment on Transaction {
+    id
+    block
+    description
+    fee
+    feePayer
+    hash
+    source
+    timestamp
+    type
+  }
   query Transactions($address: String!) {
     user {
       wallet(address: $address) {
         transactions {
           edges {
             node {
-              id
-              block
-              description
-              fee
-              feePayer
-              hash
-              source
-              timestamp
-              type
+              ...TransactionFragment
             }
           }
         }

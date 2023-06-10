@@ -21,8 +21,8 @@ const documents = {
     types.NftNodeFragmentFragmentDoc,
   "\n  \n  query WalletNftCollections($providerId: ProviderID!, $address: String!) {\n    wallet(providerId: $providerId, address: $address) {\n      id\n      nfts {\n        edges {\n          node {\n            ...NftNodeFragment\n          }\n        }\n      }\n    }\n  }\n":
     types.WalletNftCollectionsDocument,
-  "\n  query Transactions($address: String!) {\n    user {\n      wallet(address: $address) {\n        transactions {\n          edges {\n            node {\n              id\n              block\n              description\n              fee\n              feePayer\n              hash\n              source\n              timestamp\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n":
-    types.TransactionsDocument,
+  "\n  fragment TransactionFragment on Transaction {\n    id\n    block\n    description\n    fee\n    feePayer\n    hash\n    source\n    timestamp\n    type\n  }\n  query Transactions($address: String!) {\n    user {\n      wallet(address: $address) {\n        transactions {\n          edges {\n            node {\n              ...TransactionFragment\n            }\n          }\n        }\n      }\n    }\n  }\n":
+    types.TransactionFragmentFragmentDoc,
   "\n  query UserWalletBalanceSummary($address: String!) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        isPrimary\n        provider {\n          id\n          name\n          logo\n        }\n        balances {\n          aggregate {\n            id\n            percentChange\n            value\n            valueChange\n          }\n        }\n      }\n    }\n  }\n":
     types.UserWalletBalanceSummaryDocument,
 };
@@ -69,8 +69,8 @@ export function gql(
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: "\n  query Transactions($address: String!) {\n    user {\n      wallet(address: $address) {\n        transactions {\n          edges {\n            node {\n              id\n              block\n              description\n              fee\n              feePayer\n              hash\n              source\n              timestamp\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n"
-): (typeof documents)["\n  query Transactions($address: String!) {\n    user {\n      wallet(address: $address) {\n        transactions {\n          edges {\n            node {\n              id\n              block\n              description\n              fee\n              feePayer\n              hash\n              source\n              timestamp\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n"];
+  source: "\n  fragment TransactionFragment on Transaction {\n    id\n    block\n    description\n    fee\n    feePayer\n    hash\n    source\n    timestamp\n    type\n  }\n  query Transactions($address: String!) {\n    user {\n      wallet(address: $address) {\n        transactions {\n          edges {\n            node {\n              ...TransactionFragment\n            }\n          }\n        }\n      }\n    }\n  }\n"
+): (typeof documents)["\n  fragment TransactionFragment on Transaction {\n    id\n    block\n    description\n    fee\n    feePayer\n    hash\n    source\n    timestamp\n    type\n  }\n  query Transactions($address: String!) {\n    user {\n      wallet(address: $address) {\n        transactions {\n          edges {\n            node {\n              ...TransactionFragment\n            }\n          }\n        }\n      }\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

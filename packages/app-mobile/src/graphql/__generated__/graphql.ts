@@ -690,6 +690,19 @@ export type WalletNftCollectionsQuery = {
   } | null;
 };
 
+export type TransactionFragmentFragment = {
+  __typename?: "Transaction";
+  id: string;
+  block: number;
+  description?: string | null;
+  fee?: string | null;
+  feePayer?: string | null;
+  hash: string;
+  source?: string | null;
+  timestamp: string;
+  type: string;
+} & { " $fragmentName"?: "TransactionFragmentFragment" };
+
 export type TransactionsQueryVariables = Exact<{
   address: Scalars["String"];
 }>;
@@ -704,17 +717,10 @@ export type TransactionsQuery = {
         __typename?: "TransactionConnection";
         edges: Array<{
           __typename?: "TransactionEdge";
-          node: {
-            __typename?: "Transaction";
-            id: string;
-            block: number;
-            description?: string | null;
-            fee?: string | null;
-            feePayer?: string | null;
-            hash: string;
-            source?: string | null;
-            timestamp: string;
-            type: string;
+          node: { __typename?: "Transaction" } & {
+            " $fragmentRefs"?: {
+              TransactionFragmentFragment: TransactionFragmentFragment;
+            };
           };
         }>;
       } | null;
@@ -845,6 +851,33 @@ export const NftNodeFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<NftNodeFragmentFragment, unknown>;
+export const TransactionFragmentFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "TransactionFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "Transaction" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "block" } },
+          { kind: "Field", name: { kind: "Name", value: "description" } },
+          { kind: "Field", name: { kind: "Name", value: "fee" } },
+          { kind: "Field", name: { kind: "Name", value: "feePayer" } },
+          { kind: "Field", name: { kind: "Name", value: "hash" } },
+          { kind: "Field", name: { kind: "Name", value: "source" } },
+          { kind: "Field", name: { kind: "Name", value: "timestamp" } },
+          { kind: "Field", name: { kind: "Name", value: "type" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<TransactionFragmentFragment, unknown>;
 export const UserWalletsDocument = {
   kind: "Document",
   definitions: [
@@ -1226,55 +1259,11 @@ export const TransactionsDocument = {
                                       kind: "SelectionSet",
                                       selections: [
                                         {
-                                          kind: "Field",
-                                          name: { kind: "Name", value: "id" },
-                                        },
-                                        {
-                                          kind: "Field",
+                                          kind: "FragmentSpread",
                                           name: {
                                             kind: "Name",
-                                            value: "block",
+                                            value: "TransactionFragment",
                                           },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "description",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: { kind: "Name", value: "fee" },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "feePayer",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: { kind: "Name", value: "hash" },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "source",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "timestamp",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: { kind: "Name", value: "type" },
                                         },
                                       ],
                                     },
@@ -1291,6 +1280,28 @@ export const TransactionsDocument = {
               ],
             },
           },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "TransactionFragment" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "Transaction" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "block" } },
+          { kind: "Field", name: { kind: "Name", value: "description" } },
+          { kind: "Field", name: { kind: "Name", value: "fee" } },
+          { kind: "Field", name: { kind: "Name", value: "feePayer" } },
+          { kind: "Field", name: { kind: "Name", value: "hash" } },
+          { kind: "Field", name: { kind: "Name", value: "source" } },
+          { kind: "Field", name: { kind: "Name", value: "timestamp" } },
+          { kind: "Field", name: { kind: "Name", value: "type" } },
         ],
       },
     },
