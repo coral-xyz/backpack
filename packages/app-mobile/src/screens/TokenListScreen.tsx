@@ -11,7 +11,6 @@ import { useRecoilValue } from "recoil";
 
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import {
-  Screen,
   RoundedContainerGroup,
   ScreenLoading,
   ScreenError,
@@ -28,6 +27,8 @@ function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
       blockchain,
     })
   );
+
+  console.log("debug1:balances", balances);
 
   const onPressToken = useCallback(
     (blockchain: Blockchain, token: Token) => {

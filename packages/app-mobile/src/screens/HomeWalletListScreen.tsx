@@ -121,6 +121,7 @@ function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
   const { data } = useSuspenseQuery_experimental(QUERY_USER_WALLETS);
   const { allWallets, selectActiveWallet } = useWallets();
   const wallets = coalesceWalletData(data, allWallets);
+  console.log("debug1:wallets", wallets);
 
   const handlePressWallet = useCallback(
     async (w: any) => {
