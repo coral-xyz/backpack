@@ -21,8 +21,8 @@ import { convertTransactionDataToSectionList } from "~lib/RecentActivityUtils";
 import { RecentActivityScreenProps } from "~navigation/types";
 
 const GET_RECENT_TRANSACTIONS = gql`
-  query WalletTransactions($chainId: ChainID!, $address: String!) {
-    wallet(chainId: $chainId, address: $address) {
+  query WalletTransactions($providerId: ProviderID!, $address: String!) {
+    wallet(providerId: $providerId, address: $address) {
       id
       transactions {
         edges {
@@ -47,7 +47,7 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
   const activeWallet = useActiveWallet();
   const { data } = useSuspenseQuery_experimental(GET_RECENT_TRANSACTIONS, {
     variables: {
-      chainId: activeWallet.blockchain.toUpperCase(),
+      providerId: activeWallet.blockchain.toUpperCase(),
       address: activeWallet.publicKey,
     },
   });
