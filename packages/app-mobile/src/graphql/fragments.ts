@@ -1,6 +1,7 @@
-import { gql } from "@apollo/client";
+import { gql } from "~src/graphql/__generated__";
+// import { gql } from "@apollo/client";
 
-export const TransactionFragment = gql`
+export const TransactionFragment = gql(`
   fragment TransactionFragment on Transaction {
     id
     block
@@ -12,9 +13,16 @@ export const TransactionFragment = gql`
     timestamp
     type
   }
-`;
+`);
 
-export const NftCollectionFragment = gql`
+// export type NftCollectionFragmentType = {
+//   id: string;
+//   name: string;
+//   address: string;
+//   image: string;
+//   verified: boolean;
+// };
+export const NftCollectionFragment = gql(`
   fragment NftCollectionFragment on Collection {
     id
     address
@@ -22,10 +30,21 @@ export const NftCollectionFragment = gql`
     name
     verified
   }
-`;
+`);
 
-export const NftNodeFragment = gql`
-  ${NftCollectionFragment}
+// export type NftNodeFragmentType = {
+//   id: string;
+//   address: string;
+//   token: string;
+//   name: string;
+//   owner: string;
+//   description: string;
+//   image: string;
+//   attributes: { trait: string; value: string }[];
+//   collection: NftCollectionFragmentType;
+// };
+
+export const NftNodeFragment = gql(`
   fragment NftNodeFragment on Nft {
     id
     address
@@ -42,4 +61,4 @@ export const NftNodeFragment = gql`
       ...NftCollectionFragment
     }
   }
-`;
+`);

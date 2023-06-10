@@ -3,19 +3,21 @@ import { View, Text, FlatList } from "react-native";
 
 import * as Linking from "expo-linking";
 
-import { gql, useSuspenseQuery_experimental } from "@apollo/client";
+import { useSuspenseQuery_experimental } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { BaseListItem } from "~components/CollectionListItem";
 import { ItemSeparator } from "~components/ListItem";
-import { EmptyState, Screen, FullScreenLoading } from "~components/index";
+import { EmptyState, FullScreenLoading } from "~components/index";
 import {
   convertNftDataToFlatlist,
   type ListItemProps,
 } from "~lib/CollectionUtils";
 import { CollectionListScreenProps } from "~navigation/types";
+
+import { gql } from "~src/graphql/__generated__";
 
 function NoNFTsEmptyState() {
   return (
@@ -33,59 +35,7 @@ function NoNFTsEmptyState() {
   );
 }
 
-// TODO generate these from the server
-export type NftCollectionFragmentType = {
-  id: string;
-  name: string;
-  address: string;
-  image: string;
-  verified: boolean;
-};
-
-export const NftCollectionFragment = gql`
-  fragment NftCollectionFragment on Collection {
-    id
-    address
-    image
-    name
-    verified
-  }
-`;
-
-export type NftNodeFragmentType = {
-  id: string;
-  address: string;
-  token: string;
-  name: string;
-  owner: string;
-  description: string;
-  image: string;
-  attributes: { trait: string; value: string }[];
-  collection: NftCollectionFragmentType;
-};
-
-export const NftNodeFragment = gql`
-  ${NftCollectionFragment}
-  fragment NftNodeFragment on Nft {
-    id
-    address
-    token
-    name
-    owner
-    description
-    image
-    attributes {
-      trait
-      value
-    }
-    collection {
-      ...NftCollectionFragment
-    }
-  }
-`;
-
-const GET_NFT_COLLECTIONS = gql`
-  ${NftNodeFragment}
+const GET_NFT_COLLECTIONS = gql(`
   query WalletNftCollections($providerId: ProviderID!, $address: String!) {
     wallet(providerId: $providerId, address: $address) {
       id
@@ -98,12 +48,13 @@ const GET_NFT_COLLECTIONS = gql`
       }
     }
   }
-`;
+`);
 
 function Container({ navigation }: CollectionListScreenProps): JSX.Element {
   const { blockchain, publicKey } = useActiveWallet();
   const { data } = useSuspenseQuery_experimental(GET_NFT_COLLECTIONS, {
     variables: {
+      // @ts-expect-error graphql ProviderID not defined as string
       providerId: blockchain.toUpperCase(),
       address: publicKey,
     },

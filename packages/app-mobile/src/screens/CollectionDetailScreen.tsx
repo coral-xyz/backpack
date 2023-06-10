@@ -7,7 +7,8 @@ import { ErrorBoundary } from "react-error-boundary";
 
 import { BaseListItem } from "~components/CollectionListItem";
 import { FullScreenLoading, Screen } from "~components/index";
-import { NftNodeFragment } from "~screens/CollectionListScreen";
+
+import { NftNodeFragment } from "~src/graphql/fragments";
 
 function ListItem({ id, onPress }: { id: string; onPress: any }): JSX.Element {
   const { data } = useFragment_experimental({

@@ -1,5 +1,5 @@
 schema: "../../backend/native/backpack-api/src/schema.graphql"
-documents: ["src/**/*.tsx"]
+documents: ["src/**/*.tsx", "src/graphql/fragments.ts"]
 ignoreNoDocuments: true
 generates:
   "./src/graphql/__generated__/":
