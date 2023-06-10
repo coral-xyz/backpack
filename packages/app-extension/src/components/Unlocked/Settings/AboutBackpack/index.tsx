@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import {
   BACKPACK_CONFIG_VERSION,
   BACKPACK_GITHUB_LINK,
@@ -9,7 +9,6 @@ import {
 } from "@coral-xyz/common";
 import {
   DiscordIcon,
-  LaunchDetail,
   List,
   ListItem,
   RedBackpack,

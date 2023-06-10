@@ -1,17 +1,13 @@
 import { useState } from "react";
-import { Blockchain, toTitleCase } from "@coral-xyz/common";
+import { Blockchain } from "@coral-xyz/common";
 import { ProxyImage } from "@coral-xyz/react-common";
 import {
-  isAggregateWallets,
   SOL_LOGO_URI,
-  useActiveWallet,
-  useActiveWallets,
   useAllWalletsDisplayed,
   useWalletName,
 } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import { ListItemIcon, Typography } from "@mui/material";
-import { useRecoilValue } from "recoil";
 
 import { TextField } from "../../../common";
 import { useNavigation } from "../../../common/Layout/NavStack";

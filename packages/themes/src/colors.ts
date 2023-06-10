@@ -85,11 +85,12 @@ export const DARK_COLORS: CustomColors = {
   copyTooltipColor: BRAND_COLOR,
   copyTooltipTextColor: BACKGROUND_COLOR_1,
   tableBorder: BACKGROUND_COLOR_0,
-  tableCellBorder: "1px solid rgba(255,255,255,0.1)",
-  balanceSkeleton: BACKGROUND_COLOR_1,
-  balanceChangeNegative: "rgb(233, 80, 80, .1)",
-  balanceChangePositive: "rgb(53, 166, 58, .1)",
-  balanceChangeNeutral: "rgb(78, 87, 104, .1)",
+  tableCellBorder: "1px solid rgba(255, 255, 255, 0.1)",
+  balanceSkeleton: "rgba(39, 39, 42, 0.5)",
+  balanceSkeletonForeground: "rgba(39, 39, 42, 0.2)",
+  balanceChangeNegative: "rgb(233, 80, 80, 0.1)",
+  balanceChangePositive: "rgb(53, 166, 58, 0.1)",
+  balanceChangeNeutral: "rgb(78, 87, 104, 0.1)",
   textBackground: BACKGROUND_COLOR_1,
   textPlaceholder: FONT_COLOR_1,
   textBorder: BACKGROUND_COLOR_1,
@@ -158,7 +159,8 @@ export const LIGHT_COLORS: CustomColors = {
   copyTooltipTextColor: LIGHT_BACKGROUND_COLOR_1,
   tableBorder: LIGHT_BORDER_COLOR,
   tableCellBorder: "1px solid #F0F0F2",
-  balanceSkeleton: "rgba(0,0,0,0.15)",
+  balanceSkeleton: "rgba(0, 0, 0, 0.15)",
+  balanceSkeletonForeground: "rgba(0, 0, 0, 0.2)",
   balanceChangeNegative: "rgb(233, 80, 80, .1)",
   balanceChangePositive: "rgb(53, 166, 58, .1)",
   balanceChangeNeutral: "rgb(78, 87, 104, .1)",
@@ -290,6 +292,7 @@ export type CustomColors = {
   balanceChangeNeutral: string;
   balanceChangePositive: string;
   balanceSkeleton: string;
+  balanceSkeletonForeground: string;
   banner: string;
   bg2: string;
   bg3: string;

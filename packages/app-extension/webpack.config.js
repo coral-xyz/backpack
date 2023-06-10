@@ -227,6 +227,7 @@ const options = {
   },
   plugins: [
     new DefinePlugin({
+      __DEV__: NODE_ENV === "development" ? "true" : "false",
       process: {
         env: {
           __DEV__: NODE_ENV === "development" ? "true" : "false",

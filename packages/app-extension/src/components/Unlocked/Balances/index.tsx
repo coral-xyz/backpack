@@ -5,18 +5,23 @@ import {
   SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
-import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
-import { useAllWalletsDisplayed, useNavigation } from "@coral-xyz/recoil";
+import { BalanceSummaryWidget } from "@coral-xyz/data-components";
+import {
+  useActiveWallet,
+  useAllWalletsDisplayed,
+  useFeatureGates,
+  useNavigation,
+} from "@coral-xyz/recoil";
 
-import { TokenTables } from "../../common/TokenTable";
+import { type Token, TokenTables } from "../../common/TokenTable";
 
-import { BalanceSummaryWidget } from "./BalanceSummaryWidget";
+import { BalanceSummaryWidget as LegacyBalanceSummaryWidget } from "./BalanceSummaryWidget";
 import { TransferWidget } from "./TransferWidget";
 
-type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
-
 export function Balances() {
+  const gates = useFeatureGates();
   const { push } = useNavigation();
+
   const swapEnabled =
     useAllWalletsDisplayed().find((w) => w.blockchain === Blockchain.SOLANA) !==
     undefined;
@@ -37,9 +42,13 @@ export function Balances() {
     });
   };
 
+  const _SummaryComponent = gates.GQL_BALANCES
+    ? BalanceSummaryWidget
+    : LegacyBalanceSummaryWidget;
+
   return (
     <div>
-      <BalanceSummaryWidget />
+      <_SummaryComponent />
       <div
         style={{
           marginTop: "32px",
@@ -48,6 +57,7 @@ export function Balances() {
       >
         <TransferWidget rampEnabled swapEnabled={swapEnabled} />
       </div>
+      {/* TODO: put token table for GQL behind feature gate */}
       <TokenTables
         onClickRow={onClickTokenRow}
         customFilter={(token) => {
@@ -66,6 +76,5 @@ export function Balances() {
 export { BalancesTableRow } from "./Balances";
 export { BalancesTableContent } from "./Balances";
 export { BalancesTableHead } from "./Balances";
-// export { useBalancesContext } from "./Balances";
 export { BalancesTable } from "./Balances";
 export { BalancesTableCell } from "./Balances";

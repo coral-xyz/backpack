@@ -30,7 +30,8 @@
     "build:mobile": "env-cmd --silent turbo run build --filter='@coral-xyz/app-mobile...' --filter='@coral-xyz/background...'",
     "upgrade:tamagui": "manypkg upgrade tamagui && manypkg upgrade @tamagui && manypkg upgrade tamagui-loader && manypkg upgrade react-native-web-lite",
     "check-deps": "check-dependency-version-consistency .",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "gql": "env-cmd --silent turbo run gql:generate"
   },
   "devDependencies": {
     "@manypkg/cli": "^0.19.1",

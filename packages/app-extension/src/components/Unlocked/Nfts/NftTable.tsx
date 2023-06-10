@@ -7,8 +7,6 @@ import {
   nftById,
   useAllWallets,
   useBlockchainConnectionUrl,
-  useNavigation,
-  useUser,
 } from "@coral-xyz/recoil";
 import type { CustomTheme } from "@coral-xyz/themes";
 import { styled } from "@coral-xyz/themes";
@@ -255,7 +253,7 @@ const ItemRow = function ({
           flex: "0 0 auto",
         }}
       >
-        {items.map((collection: NftCollection, idx: number) => {
+        {items.map((collection: NftCollection) => {
           return (
             <div
               key={collection ? collection.id : null}
@@ -323,8 +321,6 @@ function NftCollectionCard({
   connectionUrl: string;
   collection: NftCollection;
 }) {
-  const { uuid } = useUser();
-  const { push } = useNavigation();
   // Display the first NFT in the collection as the thumbnail in the grid
   const collectionDisplayNftId = collection.itemIds?.find((nftId) => !!nftId)!;
   const collectionDisplayNft = useRecoilValue(

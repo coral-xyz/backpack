@@ -3,10 +3,6 @@ import { PrimaryButton, SecondaryButton } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
 
-import {
-  registerNotificationServiceWorker,
-  saveSubscription,
-} from "../../../permissions/utils";
 import { Header, SubtextParagraph } from "../../common";
 
 export const NotificationsPermission = ({ onNext }: { onNext: () => void }) => {

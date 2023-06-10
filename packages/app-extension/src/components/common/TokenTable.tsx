@@ -256,7 +256,7 @@ function WalletTokenTable({
   );
 }
 
-const SkeletonRows = () => {
+export const SkeletonRows = () => {
   const classes = useStyles();
   return (
     <BalancesTableRow>

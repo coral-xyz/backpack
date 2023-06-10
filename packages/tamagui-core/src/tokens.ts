@@ -32,6 +32,7 @@ export const tokens = createTokens({
     medium: 8,
     true: 8, // true is always default
     small: 4,
+    circular: "50%",
   },
 });
 

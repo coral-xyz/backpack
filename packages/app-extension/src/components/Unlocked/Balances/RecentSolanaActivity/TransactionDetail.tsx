@@ -6,6 +6,7 @@ import {
   exploreAddressUrl,
   explorerUrl,
   formatWalletAddress,
+  UNKNOWN_ICON_SRC,
 } from "@coral-xyz/common";
 import { PrimaryButton, ProxyImage } from "@coral-xyz/react-common";
 import {
@@ -30,7 +31,6 @@ import { Card, List } from "@mui/material";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { Source, TransactionType } from "helius-sdk/dist/types";
 
-import { UNKNOWN_ICON_SRC } from "../../../common/Icon";
 import { WithDrawer } from "../../../common/Layout/Drawer";
 import { NavBackButton } from "../../../common/Layout/Nav";
 import {
