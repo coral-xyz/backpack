@@ -426,7 +426,7 @@ export function ScreenError({
   extra,
 }: {
   error: any;
-  extra: string;
+  extra?: string;
 }): JSX.Element {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
