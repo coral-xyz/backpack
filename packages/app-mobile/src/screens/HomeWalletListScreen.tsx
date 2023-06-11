@@ -4,8 +4,7 @@ import type { Wallet, PublicKey } from "~types/types";
 import { Suspense, useCallback } from "react";
 import { FlatList, Pressable } from "react-native";
 
-import { gql, useSuspenseQuery_experimental } from "@apollo/client";
-import { formatUsd } from "@coral-xyz/common";
+import { useSuspenseQuery_experimental } from "@apollo/client";
 import { Box, StyledText, XStack, BlockchainLogo } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -14,6 +13,7 @@ import { useWallets } from "~hooks/wallets";
 import type { HomeWalletListScreenProps } from "~navigation/WalletsNavigator";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 
+import { gql } from "~src/graphql/__generated__";
 import { useSession } from "~src/lib/SessionProvider";
 import { coalesceWalletData } from "~src/lib/WalletUtils";
 
@@ -66,7 +66,7 @@ function ListItemWalletCard({
   );
 }
 
-const QUERY_USER_WALLETS = gql`
+const QUERY_USER_WALLETS = gql(`
   query HomeUserWallets {
     user {
       id
@@ -79,7 +79,7 @@ const QUERY_USER_WALLETS = gql`
       }
     }
   }
-`;
+`);
 
 function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
   const { setActiveWallet } = useSession();

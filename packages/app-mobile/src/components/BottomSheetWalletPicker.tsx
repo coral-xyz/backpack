@@ -3,8 +3,8 @@ import type { PublicKey, Wallet } from "~types/types";
 import { Suspense, useCallback, useState } from "react";
 import { FlatList, View, Alert } from "react-native";
 
-import { gql, useSuspenseQuery_experimental } from "@apollo/client";
-import { Blockchain, formatUsd } from "@coral-xyz/common";
+import { useSuspenseQuery_experimental } from "@apollo/client";
+import { Blockchain } from "@coral-xyz/common";
 import { BottomSheetTitle, PaddedListItemSeparator } from "@coral-xyz/tamagui";
 import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { ErrorBoundary } from "react-error-boundary";
@@ -17,10 +17,11 @@ import {
 } from "~components/index";
 import { useWallets } from "~hooks/wallets";
 
+import { gql } from "~src/graphql/__generated__";
 import { useSession } from "~src/lib/SessionProvider";
 import { coalesceWalletData } from "~src/lib/WalletUtils";
 
-const QUERY_USER_WALLETS = gql`
+const QUERY_USER_WALLETS = gql(`
   query BottomSheetUserWallets {
     user {
       id
@@ -33,7 +34,7 @@ const QUERY_USER_WALLETS = gql`
       }
     }
   }
-`;
+`);
 
 function Container({ navigation }) {
   const { setActiveWallet } = useSession();
