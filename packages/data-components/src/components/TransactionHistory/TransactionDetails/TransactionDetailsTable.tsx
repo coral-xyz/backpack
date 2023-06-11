@@ -14,9 +14,9 @@ import {
   StyledText,
   TableCore,
   TableRowCore,
-  TamaguiIcons,
   XStack,
 } from "@coral-xyz/tamagui";
+import * as TamaguiIcons from "@tamagui/lucide-icons";
 import * as Linking from "expo-linking";
 
 import type { ResponseTransaction } from "..";
