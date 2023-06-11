@@ -62,3 +62,38 @@ export const NftNodeFragment = gql(`
     }
   }
 `);
+
+export const BalanceFragment = gql(`
+  fragment BalanceFragment on Balances {
+    id
+    aggregate {
+      valueChange
+      value
+      percentChange
+      id
+    }
+  }
+`);
+
+export const ProviderFragment = gql(`
+  fragment ProviderFragment on Provider {
+    id
+    name
+    logo
+}
+`);
+
+export const WalletFragment = gql(`
+  fragment WalletFragment on Wallet {
+    id
+    address
+    isPrimary
+    createdAt
+    provider {
+      ...ProviderFragment
+    }
+    balances {
+      ...BalanceFragment
+    }
+  }
+`);

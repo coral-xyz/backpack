@@ -15,6 +15,7 @@ import type { HomeWalletListScreenProps } from "~navigation/WalletsNavigator";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 
 import { useSession } from "~src/lib/SessionProvider";
+import { coalesceWalletData } from "~src/lib/WalletUtils";
 
 function ListItemWalletCard({
   isFirst,
@@ -66,58 +67,19 @@ function ListItemWalletCard({
 }
 
 const QUERY_USER_WALLETS = gql`
-  query UserWallets {
+  query HomeUserWallets {
     user {
       id
       wallets {
         edges {
           node {
-            id
-            address
-            isPrimary
-            createdAt
-            provider {
-              id
-              logo
-              name
-            }
-            balances {
-              id
-              aggregate {
-                valueChange
-                value
-                percentChange
-                id
-              }
-            }
+            ...WalletFragment
           }
         }
       }
     }
   }
 `;
-
-function coalesceWalletData(graphqlData, recoilWallets) {
-  // TODO: this is a hack, we should be able to get the wallets from the query
-  const wallets = graphqlData.user.wallets.edges.map((edge) => {
-    const a = recoilWallets.find(
-      (wallet) => wallet.publicKey === edge.node.address
-    );
-
-    return {
-      ...edge.node,
-      publicKey: edge.node.address,
-      isPrimary: edge.node.isPrimary,
-      blockchain: edge.node.provider.name.toLowerCase() as Blockchain,
-      balance: formatUsd(edge.node.balances.aggregate.value),
-      // TODO: this is a hack, we should be able to get the wallets from the query
-      name: a?.name ?? "",
-      type: a?.type ?? "",
-    };
-  });
-
-  return wallets;
-}
 
 function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
   const { setActiveWallet } = useSession();

@@ -18,60 +18,22 @@ import {
 import { useWallets } from "~hooks/wallets";
 
 import { useSession } from "~src/lib/SessionProvider";
+import { coalesceWalletData } from "~src/lib/WalletUtils";
 
 const QUERY_USER_WALLETS = gql`
-  query UserWallets {
+  query BottomSheetUserWallets {
     user {
       id
       wallets {
         edges {
           node {
-            id
-            address
-            isPrimary
-            createdAt
-            provider {
-              id
-              logo
-              name
-            }
-            balances {
-              id
-              aggregate {
-                valueChange
-                value
-                percentChange
-                id
-              }
-            }
+            ...WalletFragment
           }
         }
       }
     }
   }
 `;
-
-function coalesceWalletData(graphqlData, recoilWallets) {
-  // TODO: this is a hack, we should be able to get the wallets from the query
-  const wallets = graphqlData.user.wallets.edges.map((edge) => {
-    const a = recoilWallets.find(
-      (wallet) => wallet.publicKey === edge.node.address
-    );
-
-    return {
-      ...edge.node,
-      publicKey: edge.node.address,
-      isPrimary: edge.node.isPrimary,
-      blockchain: edge.node.provider.name.toLowerCase() as Blockchain,
-      balance: formatUsd(edge.node.balances.aggregate.value),
-      // TODO: this is a hack, we should be able to get the wallets from the query
-      name: a?.name ?? "",
-      type: a?.type ?? "",
-    };
-  });
-
-  return wallets;
-}
 
 function Container({ navigation }) {
   const { setActiveWallet } = useSession();
@@ -86,13 +48,6 @@ function Container({ navigation }) {
     async (blockchain: Blockchain, publicKey: PublicKey) => {
       setLoadingId(publicKey);
       setActiveWallet({ blockchain, publicKey });
-      // navigation.replace("TopTabsWalletDetail", {
-      //   screen: "TokenList",
-      //   params: {
-      //     publicKey,
-      //     blockchain,
-      //   },
-      // });
       selectActiveWallet({ blockchain, publicKey }, () => {
         setLoadingId(null);
         dismiss();
