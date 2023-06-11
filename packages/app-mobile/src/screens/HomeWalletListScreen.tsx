@@ -9,7 +9,7 @@ import { formatUsd } from "@coral-xyz/common";
 import { Box, StyledText, XStack, BlockchainLogo } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { Screen, ScreenError, ScreenLoading } from "~components/index";
+import { ScreenError, ScreenLoading } from "~components/index";
 import { useWallets } from "~hooks/wallets";
 import type { HomeWalletListScreenProps } from "~navigation/WalletsNavigator";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
@@ -55,7 +55,7 @@ function ListItemWalletCard({
       >
         <XStack ai="center" space={4}>
           <BlockchainLogo blockchain={blockchain} size={16} />
-          <StyledText ml={4} size="$lg" fontWeight="600">
+          <StyledText ml={8} size="$lg" fontWeight="600">
             {name}
           </StyledText>
         </XStack>
@@ -124,7 +124,6 @@ function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
   const { data } = useSuspenseQuery_experimental(QUERY_USER_WALLETS);
   const { allWallets, selectActiveWallet } = useWallets();
   const wallets = coalesceWalletData(data, allWallets);
-  console.log("debug1:wallets", wallets);
 
   const handlePressWallet = useCallback(
     async (w: any) => {

@@ -7,6 +7,7 @@ type ExpoExtras = {
     };
     serviceWorkerUrl: string;
     graphqlApiUrl: string;
+    tabBarEnabled: boolean;
   };
 };
 
@@ -87,7 +88,6 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
       },
       supportsTablet: false,
       bundleIdentifier: packageName,
-      // bundleIdentifier: IS_DEV ? 'com.myapp.dev' : 'com.myapp',
       infoPlist: {
         // ATTENTION: Your service worker must live in the top 3 or will not load
         // Apple considers this a feature
@@ -103,7 +103,6 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
     },
     android: {
       package: packageName,
-      // package: IS_DEV ? 'com.myapp.dev' : 'com.myapp',
       googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
@@ -116,6 +115,7 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
     extra: {
       graphqlApiUrl,
       serviceWorkerUrl,
+      tabBarEnabled: false,
       eas: {
         projectId: projectID,
       },

@@ -1,5 +1,7 @@
 import { useCallback } from "react";
 
+import Constants from "expo-constants";
+
 import { AuthenticatedSync } from "@coral-xyz/chat-xplat";
 import {
   KeyringStoreStateEnum,
@@ -25,6 +27,7 @@ import {
   OnboardingNavigator,
 } from "./OnboardingNavigator";
 import { UnlockedNavigator } from "./UnlockedNavigator";
+import { WalletsNavigator } from "./WalletsNavigator";
 
 import {
   useDeviceSupportsBiometricAuth,
@@ -49,6 +52,7 @@ export function RootNavigation({
 
 const Drawer = createDrawerNavigator();
 const DrawerNav = () => {
+  const tabBarEnabled = Constants.expoConfig?.extra?.tabBarEnabled;
   return (
     <Drawer.Navigator
       initialRouteName="DrawerHome"
@@ -67,7 +71,7 @@ const DrawerNav = () => {
       />
       <Drawer.Screen
         name="DrawerHome"
-        component={UnlockedNavigator}
+        component={tabBarEnabled ? UnlockedNavigator : WalletsNavigator}
         options={{ title: "Wallets" }}
       />
       <Drawer.Screen

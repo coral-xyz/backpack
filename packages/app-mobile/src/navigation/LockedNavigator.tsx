@@ -50,11 +50,13 @@ function Container(): JSX.Element {
   const maybeUnlock = useCallback(
     async ({ password }: FormData) => {
       try {
-        await background.request({
+        const res = await background.request({
           method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
           params: [password, user.uuid],
         });
+        console.log("debug1:res", res);
       } catch (error: any) {
+        console.error("debug1:error", error);
         setError("password", { message: error });
       }
     },
@@ -66,7 +68,7 @@ function Container(): JSX.Element {
   };
 
   useEffect(() => {
-    (async function handleAuth() {
+    async function handleAuth() {
       try {
         const res = await tryLocalAuthenticate();
         if (res === BiometricAuthenticationStatus.Authenticated) {
@@ -75,7 +77,10 @@ function Container(): JSX.Element {
       } catch (error) {
         console.error(error);
       }
-    })();
+    }
+    if (isBiometricsEnabled) {
+      handleAuth();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // runs only once so it doesn't run on setting change
 

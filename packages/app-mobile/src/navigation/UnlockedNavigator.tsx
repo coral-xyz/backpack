@@ -214,7 +214,6 @@ function UnlockedBottomTabNavigator(): JSX.Element {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        // tabBarShowLabel: true,
         headerShown: false,
         tabBarIcon: ({ color, size }) => {
           const Component = getIcon(route.name);
@@ -229,7 +228,7 @@ function UnlockedBottomTabNavigator(): JSX.Element {
       <Tab.Screen
         name="Wallets"
         component={WalletsNavigator}
-        options={{ title: "Assets" }}
+        options={{ title: "Wallets" }}
       />
       <Tab.Screen name="TokenPrices" component={TokenPriceNavigator} />
       <Tab.Screen
