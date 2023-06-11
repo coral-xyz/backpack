@@ -19,12 +19,16 @@ import { TokenListScreenProps } from "~navigation/types";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 import { TokenRow } from "~screens/Unlocked/components/Balances";
 
+import { useSession } from "~src/lib/SessionProvider";
+
 function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
+  const { activeWallet } = useSession();
   const { blockchain, publicKey } = route.params;
+  console.log("debug1:activeWallet", activeWallet);
   const balances = useRecoilValue(
     blockchainBalancesSorted({
-      publicKey,
-      blockchain,
+      blockchain: (activeWallet?.blockchain as Blockchain) || blockchain,
+      publicKey: activeWallet?.publicKey || publicKey,
     })
   );
 

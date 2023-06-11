@@ -32,7 +32,14 @@ export async function setTokenAsync(token: string) {
 type TokenType = string | null;
 type AppStateType = "onboardingStarted" | "onboardingComplete" | null;
 
+type ActiveWallet = {
+  publicKey: string;
+  blockchain: string;
+};
+
 type SessionContextType = {
+  activeWallet: ActiveWallet | null;
+  setActiveWallet: (wallet: ActiveWallet) => void;
   reset: () => void;
   token: TokenType;
   setAuthToken: (token: string) => void;
@@ -49,6 +56,8 @@ type SessionContextType = {
 };
 
 const SessionContext = createContext<SessionContextType>({
+  activeWallet: null,
+  setActiveWallet: () => null,
   reset: () => null,
   token: null,
   setAuthToken: () => null,
@@ -64,8 +73,10 @@ export const SessionProvider = ({
   children: JSX.Element;
 }): JSX.Element => {
   const background = useBackgroundClient();
+  const [activeWallet, setActiveWallet] = useState<ActiveWallet | null>(null);
   const [token, setToken] = useState<TokenType>(null);
   const [appState, setAppState] = useState<AppStateType>(null);
+  logger.debug("SessionProvider:activeWallet", activeWallet);
   logger.debug("SessionProvider:token", token);
   logger.debug("SessionProvider:appState", appState);
 
@@ -125,6 +136,8 @@ export const SessionProvider = ({
 
   const contextValue = useMemo(
     () => ({
+      activeWallet,
+      setActiveWallet,
       reset,
       token,
       setAuthToken,
@@ -134,6 +147,8 @@ export const SessionProvider = ({
       unlockKeystore,
     }),
     [
+      activeWallet,
+      setActiveWallet,
       reset,
       token,
       setAuthToken,
@@ -143,6 +158,8 @@ export const SessionProvider = ({
       unlockKeystore,
     ]
   );
+
+  logger.debug("debug1:aSessionProvidder:activeWallet", activeWallet);
 
   return (
     <SessionContext.Provider value={contextValue}>

@@ -14,6 +14,8 @@ import { useWallets } from "~hooks/wallets";
 import type { HomeWalletListScreenProps } from "~navigation/WalletsNavigator";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 
+import { useSession } from "~src/lib/SessionProvider";
+
 function ListItemWalletCard({
   isFirst,
   name,
@@ -118,6 +120,7 @@ function coalesceWalletData(graphqlData, recoilWallets) {
 }
 
 function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
+  const { setActiveWallet } = useSession();
   const { data } = useSuspenseQuery_experimental(QUERY_USER_WALLETS);
   const { allWallets, selectActiveWallet } = useWallets();
   const wallets = coalesceWalletData(data, allWallets);
@@ -125,17 +128,16 @@ function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
 
   const handlePressWallet = useCallback(
     async (w: any) => {
-      selectActiveWallet({ blockchain: w.blockchain, publicKey: w.publicKey });
+      const activeWallet = { blockchain: w.blockchain, publicKey: w.publicKey };
+      setActiveWallet(activeWallet);
+      selectActiveWallet(activeWallet);
       navigation.push("TopTabsWalletDetail", {
         // @ts-expect-error TODO(navigation) fix
         screen: "TokenList",
-        params: {
-          publicKey: w.publicKey,
-          blockchain: w.blockchain,
-        },
+        params: activeWallet,
       });
     },
-    [navigation, selectActiveWallet]
+    [navigation, selectActiveWallet, setActiveWallet]
   );
 
   const keyExtractor = (wallet: Wallet) => wallet.publicKey.toString();

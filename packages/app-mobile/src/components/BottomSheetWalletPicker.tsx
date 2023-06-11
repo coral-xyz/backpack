@@ -17,6 +17,8 @@ import {
 } from "~components/index";
 import { useWallets } from "~hooks/wallets";
 
+import { useSession } from "~src/lib/SessionProvider";
+
 const QUERY_USER_WALLETS = gql`
   query UserWallets {
     user {
@@ -72,6 +74,7 @@ function coalesceWalletData(graphqlData, recoilWallets) {
 }
 
 function Container({ navigation }) {
+  const { setActiveWallet } = useSession();
   const { data } = useSuspenseQuery_experimental(QUERY_USER_WALLETS);
   const { allWallets, activeWallet, selectActiveWallet } = useWallets();
   const { dismiss } = useBottomSheetModal();
@@ -82,19 +85,20 @@ function Container({ navigation }) {
   const handlePressSelect = useCallback(
     async (blockchain: Blockchain, publicKey: PublicKey) => {
       setLoadingId(publicKey);
-      navigation.replace("TopTabsWalletDetail", {
-        screen: "TokenList",
-        params: {
-          publicKey,
-          blockchain,
-        },
-      });
+      setActiveWallet({ blockchain, publicKey });
+      // navigation.replace("TopTabsWalletDetail", {
+      //   screen: "TokenList",
+      //   params: {
+      //     publicKey,
+      //     blockchain,
+      //   },
+      // });
       selectActiveWallet({ blockchain, publicKey }, () => {
         setLoadingId(null);
         dismiss();
       });
     },
-    [dismiss, selectActiveWallet, navigation]
+    [dismiss, selectActiveWallet, setActiveWallet]
   );
 
   const handlePressEdit = useCallback(
