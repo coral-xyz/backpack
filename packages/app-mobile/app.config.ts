@@ -36,6 +36,27 @@ const getServiceWorkerUrl = () => {
   }
 };
 
+const getSplashScreen = () => {
+  if (process.env.APP_ENV === "production") {
+    return {
+      image: "./assets/splash-production.png",
+      backgroundColor: "#FFF",
+    };
+  }
+
+  if (process.env.APP_ENV === "staging") {
+    return {
+      image: "./assets/splash-staging.png",
+      backgroundColor: "#000",
+    };
+  }
+
+  return {
+    resizeMode: "cover",
+    backgroundColor: "#EB6E46",
+  };
+};
+
 export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
   const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
   const packageName = isDev ? "app.backpack.dev" : "app.backpack.mobile";
@@ -57,9 +78,8 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
     // icon: "https://icogen.vercel.app/api/icon?icon=fire",
     userInterfaceStyle: "light",
     splash: {
-      image: "./assets/splash.png",
+      ...getSplashScreen(),
       resizeMode: "cover",
-      backgroundColor: "#000",
     },
     plugins: [
       [
