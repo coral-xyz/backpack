@@ -3,7 +3,8 @@ import { useSuspenseQuery } from "@apollo/client";
 import { UNKNOWN_ICON_SRC, UNKNOWN_NFT_ICON_SRC } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import type { SizeTokens } from "@coral-xyz/tamagui";
-import { ListItemIconCore, TamaguiIcons } from "@coral-xyz/tamagui";
+import { ListItemIconCore } from "@coral-xyz/tamagui";
+import * as TamaguiIcons from "@tamagui/lucide-icons";
 
 import { gql } from "../../apollo";
 import type { ProviderId } from "../../apollo/graphql";
