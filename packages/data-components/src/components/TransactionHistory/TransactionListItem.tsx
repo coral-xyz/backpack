@@ -10,10 +10,10 @@ import {
   ListItemCore,
   ListItemIconCore,
   StyledText,
-  TamaguiIcons,
   XStack,
   YStack,
 } from "@coral-xyz/tamagui";
+import * as TamaguiIcons from "@tamagui/lucide-icons";
 
 import type { ProviderId } from "../../apollo/graphql";
 
