@@ -1,4 +1,4 @@
-import { StyledText } from "@coral-xyz/tamagui";
+import { StyledText, XStack } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import {
   PlatformPressable,
@@ -14,7 +14,7 @@ type HeaderButtonProps = HeaderBackButtonProps & {
 
 export function HeaderButton({ name, tintColor, ...rest }: HeaderButtonProps) {
   return (
-    <PlatformPressable style={{ marginHorizontal: 12 }} {...rest}>
+    <PlatformPressable {...rest}>
       <MaterialIcons name={name} size={24} color={tintColor} />
     </PlatformPressable>
   );
@@ -50,3 +50,9 @@ export function HeaderAvatarButton(props) {
     </PlatformPressable>
   );
 }
+
+export const HeaderButtonSpacer = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => <XStack mx={16}>{children}</XStack>;

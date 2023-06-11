@@ -35,7 +35,7 @@ import {
   useOsBiometricAuthEnabled,
 } from "~src/features/biometrics/hooks";
 import { useSession } from "~src/lib/SessionProvider";
-// import { NotFoundScreen } from "../screens/NotFoundScreen";
+import { HeaderButtonSpacer } from "~src/navigation/components";
 
 export function RootNavigation({
   colorScheme,
@@ -70,7 +70,9 @@ const DrawerNav = () => {
           return {
             headerShown: true,
             headerLeft: (props) => (
-              <HeaderAvatarButton {...props} navigation={navigation} />
+              <HeaderButtonSpacer>
+                <HeaderAvatarButton {...props} navigation={navigation} />
+              </HeaderButtonSpacer>
             ),
           };
         }}

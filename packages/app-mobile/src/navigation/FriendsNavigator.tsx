@@ -24,7 +24,6 @@ export function FriendsNavigator() {
         options={({ navigation }) => {
           return {
             title: "Friends",
-            headerShown: true,
             headerLeft: (props) => (
               <HeaderAvatarButton {...props} navigation={navigation} />
             ),

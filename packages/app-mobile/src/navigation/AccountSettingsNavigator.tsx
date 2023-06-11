@@ -22,14 +22,15 @@ import {
   useSolanaConnectionUrl,
   useSolanaExplorer,
 } from "@coral-xyz/recoil";
+import { XStack } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ethers } from "ethers";
 
-import { AccountSettingsBottomSheet } from "~components/AccountSettingsBottomSheet";
+// import { AccountSettingsBottomSheet } from "~components/AccountSettingsBottomSheet";
 import { IconCheckmark } from "~components/Icon";
 import {
-  AccountDropdownHeader,
+  // AccountDropdownHeader,
   UserAccountMenu,
 } from "~components/UserAccountsMenu";
 import { Screen } from "~components/index";
@@ -115,7 +116,9 @@ export function AccountSettingsNavigator(): JSX.Element {
           return {
             title: "Settings",
             headerLeft: (props) => (
-              <HeaderAvatarButton {...props} navigation={navigation} />
+              <XStack ml={16}>
+                <HeaderAvatarButton {...props} navigation={navigation} />
+              </XStack>
             ),
             headerTintColor: theme.custom.colors.fontColor,
             headerBackTitle: "Back",
@@ -130,7 +133,9 @@ export function AccountSettingsNavigator(): JSX.Element {
             headerShown: true,
             title: "Settings",
             headerLeft: () => (
-              <HeaderButton name="menu" onPress={navigation.openDrawer} />
+              <XStack ml={16}>
+                <HeaderButton name="menu" onPress={navigation.openDrawer} />
+              </XStack>
             ),
             headerTintColor: theme.custom.colors.fontColor,
             headerBackTitle: "Back",
