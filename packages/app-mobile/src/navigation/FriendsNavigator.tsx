@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { HeaderButton } from "~navigation/components";
+import { HeaderAvatarButton } from "~navigation/components";
 import { FriendDetailScreen } from "~screens/FriendDetailScreen";
 import { FriendListScreen } from "~screens/FriendListScreen";
 
@@ -26,13 +26,7 @@ export function FriendsNavigator() {
             title: "Friends",
             headerShown: true,
             headerLeft: (props) => (
-              <HeaderButton
-                name="menu"
-                {...props}
-                onPress={() => {
-                  navigation.openDrawer();
-                }}
-              />
+              <HeaderAvatarButton {...props} navigation={navigation} />
             ),
           };
         }}

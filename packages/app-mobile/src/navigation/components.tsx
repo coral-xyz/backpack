@@ -6,6 +6,7 @@ import {
 } from "@react-navigation/elements";
 
 import { IconDropdown } from "~components/Icon";
+import { CurrentUserAvatar } from "~components/UserAvatar";
 
 type HeaderButtonProps = HeaderBackButtonProps & {
   name: string;
@@ -33,6 +34,19 @@ export function HeaderDropdownButton({
     >
       <StyledText color={tintColor}>{children}</StyledText>
       <IconDropdown size={22} color="$baseTextMedEmphasis" />
+    </PlatformPressable>
+  );
+}
+
+export function HeaderAvatarButton(props) {
+  return (
+    <PlatformPressable
+      {...props}
+      onPress={() => {
+        props.navigation.openDrawer();
+      }}
+    >
+      <CurrentUserAvatar size={24} />
     </PlatformPressable>
   );
 }

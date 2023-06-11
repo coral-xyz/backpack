@@ -34,7 +34,7 @@ import {
 } from "~components/UserAccountsMenu";
 import { Screen } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
-import { HeaderButton } from "~navigation/components";
+import { HeaderButton, HeaderAvatarButton } from "~navigation/components";
 import { AccountSettingsScreen } from "~screens/AccountSettingsScreen";
 import { ImportPrivateKeyScreen } from "~screens/ImportPrivateKeyScreen";
 import {
@@ -114,8 +114,8 @@ export function AccountSettingsNavigator(): JSX.Element {
         options={({ navigation }) => {
           return {
             title: "Settings",
-            headerLeft: () => (
-              <HeaderButton name="menu" onPress={navigation.openDrawer} />
+            headerLeft: (props) => (
+              <HeaderAvatarButton {...props} navigation={navigation} />
             ),
             headerTintColor: theme.custom.colors.fontColor,
             headerBackTitle: "Back",
@@ -132,12 +132,6 @@ export function AccountSettingsNavigator(): JSX.Element {
             headerLeft: () => (
               <HeaderButton name="menu" onPress={navigation.openDrawer} />
             ),
-            // headerLeft: () => (
-            //   <AccountSettingsBottomSheet navigation={navigation} />
-            // ),
-            // headerTitle: ({ options }) => (
-            //   <AccountDropdownHeader options={options} />
-            // ),
             headerTintColor: theme.custom.colors.fontColor,
             headerBackTitle: "Back",
           };

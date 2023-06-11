@@ -4,18 +4,16 @@ import Constants from "expo-constants";
 
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
 import { useTheme as useTamaguiTheme } from "@coral-xyz/tamagui";
-import { PlatformPressable } from "@react-navigation/elements";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StackScreenProps } from "@react-navigation/stack";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BottomSheetViewOptions } from "~components/BottomSheetViewOptions";
-import { CurrentUserAvatar } from "~components/UserAvatar";
 import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
 import { useTheme } from "~hooks/useTheme";
 import { WINDOW_WIDTH } from "~lib/index";
-import { HeaderButton } from "~navigation/components";
+import { HeaderAvatarButton, HeaderButton } from "~navigation/components";
 import { TopTabsParamList } from "~navigation/types";
 import { CollectionDetailScreen } from "~screens/CollectionDetailScreen";
 import { CollectionItemDetailScreen } from "~screens/CollectionItemDetailScreen";
@@ -137,14 +135,7 @@ export function WalletsNavigator(): JSX.Element {
                 );
               },
               headerLeft: (props) => (
-                <PlatformPressable
-                  {...props}
-                  onPress={() => {
-                    navigation.openDrawer();
-                  }}
-                >
-                  <CurrentUserAvatar size={24} />
-                </PlatformPressable>
+                <HeaderAvatarButton {...props} navigation={navigation} />
               ),
               headerRight: (props) => (
                 <HeaderButton

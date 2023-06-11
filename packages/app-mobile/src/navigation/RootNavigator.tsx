@@ -28,6 +28,7 @@ import {
 } from "./OnboardingNavigator";
 import { UnlockedNavigator } from "./UnlockedNavigator";
 import { WalletsNavigator } from "./WalletsNavigator";
+import { HeaderAvatarButton } from "./components";
 
 import {
   useDeviceSupportsBiometricAuth,
@@ -65,8 +66,13 @@ const DrawerNav = () => {
       <Drawer.Screen
         name="Profile"
         component={ProfileScreen}
-        options={{
-          headerShown: true,
+        options={({ navigation }) => {
+          return {
+            headerShown: true,
+            headerLeft: (props) => (
+              <HeaderAvatarButton {...props} navigation={navigation} />
+            ),
+          };
         }}
       />
       <Drawer.Screen
