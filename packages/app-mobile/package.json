@@ -6,7 +6,7 @@
     "hoistingLimits": "workspaces"
   },
   "scripts": {
-    "eas-build-post-install": "cd ../../ && yarn build:mobile",
+    "eas-build-post-install": "yarn gql:generate && cd ../../ && yarn build:mobile",
     "android": "EXPO_USE_CUSTOM_INSPECTOR_PROXY=true expo start --android --localhost --dev-client",
     "gql:generate": "graphql-codegen --config codegen.yml",
     "ios": "APP_ENV=development EXPO_USE_CUSTOM_INSPECTOR_PROXY=true expo start --ios --dev-client",
