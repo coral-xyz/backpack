@@ -4,6 +4,8 @@ import type { Wallet, PublicKey } from "~types/types";
 import { Suspense, useCallback } from "react";
 import { FlatList, Pressable } from "react-native";
 
+import Constants from "expo-constants";
+
 import { useSuspenseQuery_experimental } from "@apollo/client";
 import { Box, StyledText, XStack, BlockchainLogo } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
@@ -143,7 +145,12 @@ export function HomeWalletListScreen({
 }: HomeWalletListScreenProps): JSX.Element {
   return (
     <ErrorBoundary
-      fallbackRender={({ error }) => <ScreenError error={error.message} />}
+      fallbackRender={({ error }) => (
+        <ScreenError
+          error={error.message}
+          extra={Constants.expoConfig?.extra?.graphqlApiUrl}
+        />
+      )}
     >
       <Suspense fallback={<ScreenLoading />}>
         <Container navigation={navigation} route={route} />
