@@ -26,6 +26,7 @@ import {
   WelcomeLogoHeader,
   ScreenError,
   ScreenLoading,
+  CurrentUserAvatar,
 } from "~components/index";
 
 import {
@@ -95,6 +96,22 @@ function Container(): JSX.Element {
   //   f();
   // });
 
+  const [keyboardStatus, setKeyboardStatus] = useState("hidden");
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardStatus("shown");
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardStatus("hidden");
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
   return (
     <>
       <KeyboardAvoidingView
@@ -117,11 +134,16 @@ function Container(): JSX.Element {
             }}
           />
           <Margin top={48} bottom={24}>
-            <WelcomeLogoHeader />
+            <WelcomeLogoHeader username={user.username} />
           </Margin>
           {isBiometricsEnabled ? null : (
             <View>
               <Margin bottom={8}>
+                {user.username && keyboardStatus === "hidden" ? (
+                  <View style={{ marginBottom: -40, alignSelf: "center" }}>
+                    <CurrentUserAvatar size={212} />
+                  </View>
+                ) : null}
                 <PasswordInput
                   returnKeyType="done"
                   autoFocus

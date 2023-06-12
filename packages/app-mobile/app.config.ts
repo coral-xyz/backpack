@@ -52,7 +52,7 @@ const getSplashScreen = () => {
   }
 
   return {
-    resizeMode: "cover",
+    image: "./assets/splash-development.png",
     backgroundColor: "#EB6E46",
   };
 };

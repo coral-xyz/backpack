@@ -135,7 +135,7 @@ export function Screen({
   headerPadding,
 }: {
   scrollable?: boolean;
-  children: JSX.Element | JSX.Element[] | null;
+  children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   headerPadding?: boolean;
 }) {
@@ -465,7 +465,7 @@ export const ScreenEmptyList = ({
   );
 };
 
-export function WelcomeLogoHeader() {
+export function WelcomeLogoHeader({ username }) {
   const theme = useTheme();
   const [showDebug, setShowDebug] = useState(false);
   return (
@@ -495,7 +495,7 @@ export function WelcomeLogoHeader() {
               color: theme.custom.colors.secondary,
             }}
           >
-            gm
+            gm {username}
           </Text>
         </Margin>
       </View>
