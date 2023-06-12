@@ -77,7 +77,12 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
           },
         }}
       >
-        <div style={{ height: "100%" }}>
+        <div
+          style={{
+            height: "100%",
+            background: theme.custom.colors.backgroundBackdrop,
+          }}
+        >
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
             options={() => ({ title: "" })}
