@@ -3,8 +3,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
   Blockchain,
+  formatWalletAddress,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
   HardwareIcon,
@@ -961,7 +961,7 @@ function StackedWalletAddress({
               fontSize: "14px",
             }}
           >
-            {walletAddressDisplay(publicKey)}
+            {formatWalletAddress(publicKey)}
           </Typography>
         </div>
       </div>

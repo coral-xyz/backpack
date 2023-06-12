@@ -3,7 +3,7 @@ import type { PublicKey, Wallet } from "~types/types";
 import { useCallback } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
+import { Blockchain, formatWalletAddress } from "@coral-xyz/common";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HardwareIcon, ImportedIcon, MnemonicIcon } from "~components/Icon";
@@ -109,7 +109,7 @@ function WalletListItem({
               <Text
                 style={{ fontSize: 14, color: theme.custom.colors.fontColor }}
               >
-                {walletAddressDisplay(publicKey)}
+                {formatWalletAddress(publicKey)}
               </Text>
             </Row>
           </View>

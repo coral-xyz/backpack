@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-import { formatUSD, proxyImageUrl, toTitleCase } from "@coral-xyz/common";
+import { formatUsd, proxyImageUrl, toTitleCase } from "@coral-xyz/common";
 import { getBlockchainLogo, isAggregateWallets } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
@@ -160,11 +160,11 @@ export function BalancesTableCell({ props }: any) {
   const changeLabel =
     polarity === "positive" ? (
       <Typography className={classes.tokenBalanceChangePositive}>
-        +{formatUSD(balanceChange.toLocaleString())}
+        +{formatUsd(balanceChange.toLocaleString())}
       </Typography>
     ) : polarity === "negative" ? (
       <Typography className={classes.tokenBalanceChangeNegative}>
-        {formatUSD(balanceChange.toLocaleString())}
+        {formatUsd(balanceChange.toLocaleString())}
       </Typography>
     ) : null;
 
@@ -188,7 +188,7 @@ export function BalancesTableCell({ props }: any) {
         <div className={classes.tokenListItemRow}>
           <Typography className={classes.tokenName}>{title}</Typography>
           <Typography className={classes.tokenBalance}>
-            {usdValue ? formatUSD(usdValue) : "-"}
+            {usdValue ? formatUsd(usdValue) : "-"}
           </Typography>
         </div>
         <div className={classes.tokenListItemRow}>

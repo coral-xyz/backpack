@@ -13,7 +13,7 @@ import {
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
-  walletAddressDisplay,
+  formatWalletAddress,
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
@@ -276,7 +276,7 @@ export function AccountSettingsNavigator(): JSX.Element {
           options={({ route }) => {
             const { name, publicKey } = route.params;
             return {
-              title: `${name} (${walletAddressDisplay(publicKey)})`,
+              title: `${name} (${formatWalletAddress(publicKey)})`,
             };
           }}
         />
@@ -384,15 +384,15 @@ function PreferencesSolanaConnection({ navigation }) {
   const menuItems = {
     "Mainnet (Beta)": {
       onPress: () => changeNetwork(SolanaCluster.MAINNET),
-      detail: currentUrl === SolanaCluster.MAINNET ? <IconCheckmark /> : <></>,
+      detail: currentUrl === SolanaCluster.MAINNET ? <IconCheckmark /> : null,
     },
     Devnet: {
       onPress: () => changeNetwork(SolanaCluster.DEVNET),
-      detail: currentUrl === SolanaCluster.DEVNET ? <IconCheckmark /> : <></>,
+      detail: currentUrl === SolanaCluster.DEVNET ? <IconCheckmark /> : null,
     },
     Localnet: {
       onPress: () => changeNetwork(SolanaCluster.LOCALNET),
-      detail: currentUrl === SolanaCluster.LOCALNET ? <IconCheckmark /> : <></>,
+      detail: currentUrl === SolanaCluster.LOCALNET ? <IconCheckmark /> : null,
     },
     Custom: {
       onPress: () => {
@@ -436,15 +436,15 @@ export function PreferencesSolanaCommitment({ navigation }) {
   const menuItems = {
     Processed: {
       onPress: () => changeCommitment("processed"),
-      detail: commitment === "processed" ? <IconCheckmark /> : <></>,
+      detail: commitment === "processed" ? <IconCheckmark /> : null,
     },
     Confirmed: {
       onPress: () => changeCommitment("confirmed"),
-      detail: commitment === "confirmed" ? <IconCheckmark /> : <></>,
+      detail: commitment === "confirmed" ? <IconCheckmark /> : null,
     },
     Finalized: {
       onPress: () => changeCommitment("finalized"),
-      detail: commitment === "finalized" ? <IconCheckmark /> : <></>,
+      detail: commitment === "finalized" ? <IconCheckmark /> : null,
     },
   };
 
@@ -468,20 +468,20 @@ export function PreferencesSolanaExplorer({ navigation }) {
     "Solana Beach": {
       onPress: () => changeExplorer(SolanaExplorer.SOLANA_BEACH),
       detail:
-        explorer === SolanaExplorer.SOLANA_BEACH ? <IconCheckmark /> : <></>,
+        explorer === SolanaExplorer.SOLANA_BEACH ? <IconCheckmark /> : null,
     },
     "Solana Explorer": {
       onPress: () => changeExplorer(SolanaExplorer.SOLANA_EXPLORER),
       detail:
-        explorer === SolanaExplorer.SOLANA_EXPLORER ? <IconCheckmark /> : <></>,
+        explorer === SolanaExplorer.SOLANA_EXPLORER ? <IconCheckmark /> : null,
     },
     "Solana FM": {
       onPress: () => changeExplorer(SolanaExplorer.SOLANA_FM),
-      detail: explorer === SolanaExplorer.SOLANA_FM ? <IconCheckmark /> : <></>,
+      detail: explorer === SolanaExplorer.SOLANA_FM ? <IconCheckmark /> : null,
     },
     Solscan: {
       onPress: () => changeExplorer(SolanaExplorer.SOLSCAN),
-      detail: explorer === SolanaExplorer.SOLSCAN ? <IconCheckmark /> : <></>,
+      detail: explorer === SolanaExplorer.SOLSCAN ? <IconCheckmark /> : null,
     },
   };
 
@@ -627,11 +627,7 @@ function PreferencesEthereumConnection({ navigation }) {
         close();
       },
       detail:
-        currentUrl === EthereumConnectionUrl.MAINNET ? (
-          <IconCheckmark />
-        ) : (
-          <></>
-        ),
+        currentUrl === EthereumConnectionUrl.MAINNET ? <IconCheckmark /> : null,
     },
     "Görli Testnet": {
       onPress: async () => {
@@ -639,7 +635,7 @@ function PreferencesEthereumConnection({ navigation }) {
         close();
       },
       detail:
-        currentUrl === EthereumConnectionUrl.GOERLI ? <IconCheckmark /> : <></>,
+        currentUrl === EthereumConnectionUrl.GOERLI ? <IconCheckmark /> : null,
     },
     Localnet: {
       onPress: async () => {
@@ -649,9 +645,7 @@ function PreferencesEthereumConnection({ navigation }) {
       detail:
         currentUrl === EthereumConnectionUrl.LOCALNET ? (
           <IconCheckmark />
-        ) : (
-          <></>
-        ),
+        ) : null,
     },
     Custom: {
       onPress: () => navigation.push("PreferencesEthereumCustomRpcUrl"),

@@ -15,7 +15,7 @@ import {
   Blockchain,
   ETH_NATIVE_MINT,
   SOL_NATIVE_MINT,
-  walletAddressDisplay,
+  formatWalletAddress,
   toDisplayBalance,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
 } from "@coral-xyz/common";
@@ -166,7 +166,7 @@ function CopyablePublicKey({ address }): JSX.Element {
           backgroundColor: theme.custom.colors.bg2,
         }}
       >
-        {walletAddressDisplay(address)}
+        {formatWalletAddress(address)}
       </Text>
     </Pressable>
   );

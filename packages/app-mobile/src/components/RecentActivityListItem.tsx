@@ -1,4 +1,4 @@
-import { walletAddressDisplay } from "@coral-xyz/common";
+import { formatWalletAddress } from "@coral-xyz/common";
 
 import {
   ListItemActivity,
@@ -77,7 +77,7 @@ export function ListItem({
           grouped
           onPress={console.log}
           topLeftText="App Interaction"
-          bottomLeftText={walletAddressDisplay(item.hash)}
+          bottomLeftText={formatWalletAddress(item.hash)}
           bottomRightText=""
           topRightText=""
           showSuccessIcon={!item.transactionError}
