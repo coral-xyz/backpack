@@ -13,7 +13,7 @@ import { UI_RPC_METHOD_KEYRING_STORE_LOCK, getLogger } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const logger = getLogger("SessionProvider");
+const logger = getLogger("debug2:SessionProvider");
 
 const key = "@@session";
 

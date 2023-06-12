@@ -95,10 +95,6 @@ const DrawerNav = () => {
 function RootNavigator(): JSX.Element {
   const keyringStoreState = useKeyringStoreState();
   const { appState, setAppState } = useSession();
-  const { touchId, faceId } = useDeviceSupportsBiometricAuth();
-  const data = useOsBiometricAuthEnabled();
-  console.log("debug:isAUthSupported", { touchId, faceId });
-  console.log("debug:isAUthEnabled", data);
 
   const onStartOnboarding = useCallback(() => {
     setAppState("onboardingStarted");
@@ -114,7 +110,7 @@ function RootNavigator(): JSX.Element {
     case KeyringStoreStateEnum.Locked:
       return <LockedScreen />;
     case KeyringStoreStateEnum.Unlocked:
-      if (appState === "onboardingComplete") {
+      if (appState === "onboardingStarted") {
         return <OnboardingCompleteWelcome onComplete={onCompleteOnboarding} />;
       }
 
