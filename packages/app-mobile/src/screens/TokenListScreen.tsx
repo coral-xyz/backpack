@@ -24,15 +24,12 @@ import { useSession } from "~src/lib/SessionProvider";
 function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
   const { activeWallet } = useSession();
   const { blockchain, publicKey } = route.params;
-  console.log("debug1:activeWallet", activeWallet);
   const balances = useRecoilValue(
     blockchainBalancesSorted({
       blockchain: (activeWallet?.blockchain as Blockchain) || blockchain,
       publicKey: activeWallet?.publicKey || publicKey,
     })
   );
-
-  console.log("debug1:balances", balances);
 
   const onPressToken = useCallback(
     (blockchain: Blockchain, token: Token) => {

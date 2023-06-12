@@ -30,10 +30,6 @@ import { UnlockedNavigator } from "./UnlockedNavigator";
 import { WalletsNavigator } from "./WalletsNavigator";
 import { HeaderAvatarButton } from "./components";
 
-import {
-  useDeviceSupportsBiometricAuth,
-  useOsBiometricAuthEnabled,
-} from "~src/features/biometrics/hooks";
 import { useSession } from "~src/lib/SessionProvider";
 import { HeaderButtonSpacer } from "~src/navigation/components";
 

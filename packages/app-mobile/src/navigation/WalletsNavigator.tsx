@@ -5,11 +5,14 @@ import Constants from "expo-constants";
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
 import { useTheme as useTamaguiTheme } from "@coral-xyz/tamagui";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { StackScreenProps } from "@react-navigation/stack";
+import {
+  createStackNavigator,
+  StackScreenProps,
+} from "@react-navigation/stack";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BottomSheetViewOptions } from "~components/BottomSheetViewOptions";
+import { IconCloseModal } from "~components/Icon";
 import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
 import { useTheme } from "~hooks/useTheme";
 import { WINDOW_WIDTH } from "~lib/index";
@@ -20,9 +23,13 @@ import { CollectionItemDetailScreen } from "~screens/CollectionItemDetailScreen"
 import { CollectionListScreen } from "~screens/CollectionListScreen";
 import { HomeWalletListScreen } from "~screens/HomeWalletListScreen";
 import { NotificationsScreen } from "~screens/NotificationsScreen";
+import { ReceiveTokenScreen } from "~screens/ReceiveTokenScreen";
 import { RecentActivityScreen } from "~screens/RecentActivityScreen";
 import { TokenDetailScreen } from "~screens/TokenDetailScreen";
 import { TokenListScreen } from "~screens/TokenListScreen";
+import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollectibleSelectRecipientScreen";
+
+import { SendNavigator } from "~src/navigation/SendNavigator";
 
 const TopTabs = createMaterialTopTabNavigator<TopTabsParamList>();
 function TopTabsNavigator(): JSX.Element {
@@ -99,7 +106,7 @@ export type TokenDetailScreenParams = StackScreenProps<
   "TokenDetail"
 >;
 
-const Stack = createNativeStackNavigator<WalletStackParamList>();
+const Stack = createStackNavigator<WalletStackParamList>();
 export function WalletsNavigator(): JSX.Element {
   const tabBarEnabled = Constants.expoConfig?.extra?.tabBarEnabled;
   const insets = useSafeAreaInsets();
@@ -192,6 +199,37 @@ export function WalletsNavigator(): JSX.Element {
             };
           }}
         />
+        <Stack.Group
+          screenOptions={{
+            presentation: "modal",
+            headerShown: true,
+            headerBackTitleVisible: false,
+            headerTintColor: theme.fontColor.val,
+            headerBackImage: IconCloseModal,
+          }}
+        >
+          <Stack.Screen
+            options={{ title: "Deposit" }}
+            name="DepositSingle"
+            component={ReceiveTokenScreen}
+          />
+          <Stack.Group screenOptions={{ headerShown: false }}>
+            <Stack.Screen
+              name="SendSelectTokenModal"
+              component={SendNavigator}
+            />
+          </Stack.Group>
+          <Stack.Screen
+            name="SendCollectibleSelectRecipient"
+            component={SendCollectibleSendRecipientScreen}
+            options={({ route }) => {
+              const { nft } = route.params;
+              return {
+                title: `Send ${nft.name}`,
+              };
+            }}
+          />
+        </Stack.Group>
       </Stack.Navigator>
     </View>
   );

@@ -26,7 +26,6 @@ import { EditWalletDetailScreen } from "~screens/Unlocked/EditWalletDetailScreen
 import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollectibleSelectRecipientScreen";
 import {
   SendTokenConfirmScreen,
-  SendTokenListScreen,
   SendTokenSelectRecipientScreen,
 } from "~screens/Unlocked/SendTokenScreen";
 import { SwapTokenScreen } from "~screens/Unlocked/SwapTokenScreen";
@@ -35,44 +34,7 @@ import { UtilsDesignScreen } from "~screens/Utils/UtilsDesignScreen";
 
 import { TokenPriceNavigator } from "./TokenPriceNavigator";
 
-const ModalStack = createStackNavigator();
-function SendModalStackNavigator(): JSX.Element {
-  const theme = useTheme();
-  return (
-    <ModalStack.Navigator
-      screenOptions={{
-        headerTintColor: theme.custom.colors.fontColor,
-        headerBackTitleVisible: false,
-      }}
-    >
-      <Stack.Screen
-        options={{ title: "Select Token" }}
-        name="SendSelectTokenModal"
-        component={SendTokenListScreen}
-      />
-      <Stack.Screen
-        name="SendTokenModal"
-        component={SendTokenSelectRecipientScreen}
-        options={({ route }) => {
-          const { token } = route.params;
-          return {
-            title: `Send ${token.ticker}`,
-          };
-        }}
-      />
-      <Stack.Screen
-        name="SendTokenConfirm"
-        component={SendTokenConfirmScreen}
-        options={({ route }) => {
-          const { token } = route.params;
-          return {
-            title: `Send ${token.ticker}`,
-          };
-        }}
-      />
-    </ModalStack.Navigator>
-  );
-}
+import { SendNavigator } from "~src/navigation/SendNavigator";
 
 const Stack = createStackNavigator<UnlockedNavigatorStackParamList>();
 export function UnlockedNavigator(): JSX.Element {
@@ -99,10 +61,7 @@ export function UnlockedNavigator(): JSX.Element {
         <Stack.Group
           screenOptions={{ presentation: "modal", headerShown: false }}
         >
-          <Stack.Screen
-            name="SendSelectTokenModal"
-            component={SendModalStackNavigator}
-          />
+          <Stack.Screen name="SendSelectTokenModal" component={SendNavigator} />
           <Stack.Screen
             name="SendCollectibleSelectRecipient"
             component={SendCollectibleSendRecipientScreen}
