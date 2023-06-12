@@ -9,6 +9,7 @@ import type {
 } from "../services/secureUI/events";
 import type {
   SECURE_SVM_EVENTS,
+  SECURE_SVM_SAY_HELLO,
   SECURE_SVM_SIGN_ALL_TX,
   SECURE_SVM_SIGN_MESSAGE,
   SECURE_SVM_SIGN_TX,
@@ -31,6 +32,8 @@ export type SecureEvent<T extends SECURE_EVENTS = SECURE_EVENTS> =
     ? SECURE_SVM_SIGN_TX
     : T extends "SECURE_SVM_SIGN_ALL_TX"
     ? SECURE_SVM_SIGN_ALL_TX
+    : T extends "SECURE_SVM_SAY_HELLO"
+    ? SECURE_SVM_SAY_HELLO
     : // EVM
     T extends "SECURE_EVM_SIGN_MESSAGE"
     ? SECURE_EVM_SIGN_MESSAGE

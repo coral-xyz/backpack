@@ -14,7 +14,6 @@ import { v4 } from "uuid";
 type QueuedRequest = {
   request: SecureRequest;
   resolve: (resonse: SecureResponse) => void;
-  reject: (error: any) => void;
 };
 
 export class ToSecureUITransportSender implements TransportSender {
@@ -60,21 +59,25 @@ export class ToSecureUITransportSender implements TransportSender {
     port.disconnect();
     this.port = null;
 
-    // reject all waiting responses
-    this.responseQueue.forEach((response) => response.reject("Plugin Closed"));
+    // resolve all waiting responses with error
+    this.responseQueue.forEach((response) =>
+      response.resolve({
+        name: response.request.name,
+        error: "Plugin Closed",
+      } as SecureResponse)
+    );
     this.responseQueue = [];
   };
 
   public send = <T extends SECURE_EVENTS>(request: SecureRequest<T>) => {
     return new Promise<SecureResponse<T>>(
-      (resolve: (response: SecureResponse<T>) => void, reject) => {
+      (resolve: (response: SecureResponse<T>) => void) => {
         const requestWithId = { ...request, id: v4() };
         console.log("PCA request sent", requestWithId);
 
         this.requestQueue.push({
           request: requestWithId,
           resolve,
-          reject,
         });
         this.sendRequests();
       }
@@ -103,28 +106,25 @@ export class ToSecureUITransportSender implements TransportSender {
     // if we're not waiting for any more responses
     // and this is the popup we originally opened
     // -> close the popup.
-    if (
-      this.responseQueue.length <= 0 &&
-      this.port?.name === this.lastOpenedWindowId &&
-      this.port.sender?.tab?.windowId
-    ) {
-      chrome.windows.remove(this.port.sender?.tab?.windowId).catch((e) => {
-        console.error(e);
-      });
-    }
+    // if (
+    //   this.responseQueue.length <= 0 &&
+    //   this.port?.name === this.lastOpenedWindowId &&
+    //   this.port.sender?.tab?.windowId
+    // ) {
+    //   chrome.windows.remove(this.port.sender?.tab?.windowId).catch((e) => {
+    //     console.error(e);
+    //   });
+    // }
 
     // resolve request
-    if (response.data.error) {
-      queuedRequest.reject(response.data);
-    } else {
-      queuedRequest.resolve(response.data);
-    }
+    // queuedRequest.resolve(response.data);
   };
 
   private sendRequests = () => {
     // open popup if we dont have one.
     if (!this.port) {
-      return this.openPopup(v4());
+      this.openPopup(v4());
+      return;
     }
 
     // send all pending requests

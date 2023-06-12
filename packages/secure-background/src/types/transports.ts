@@ -21,11 +21,11 @@ export interface SecureEventBase<T extends SECURE_EVENTS = SECURE_EVENTS> {
   request: SerializableJson;
   displayOptions?: PassThroughToUI;
   response?: SerializableJson;
-  error?: string;
+  error?: any;
 }
 
 export type SecureRequest<
-  T extends SecureEventBase | SECURE_EVENTS = SECURE_EVENTS
+  T extends SecureEventBase<SECURE_EVENTS> | SECURE_EVENTS = SECURE_EVENTS
 > = T extends SecureEventBase
   ? {
       name: T["name"];
@@ -43,23 +43,33 @@ export type SecureRequest<
   : never;
 
 export type SecureResponse<
-  T extends SecureEventBase | SECURE_EVENTS = SECURE_EVENTS
+  T extends SecureEventBase<SECURE_EVENTS> | SECURE_EVENTS = SECURE_EVENTS
 > = T extends SecureEventBase
-  ? {
-      name: T["name"];
-      id?: T["id"];
-      response: T["response"] extends undefined ? undefined : T["response"];
-      error?: T["error"];
-    }
+  ?
+      | {
+          name: T["name"];
+          id?: T["id"];
+          response: T["response"] extends undefined ? undefined : T["response"];
+        }
+      | {
+          name: T["name"];
+          id?: T["id"];
+          error: T["error"];
+        }
   : T extends SECURE_EVENTS
-  ? {
-      name: T;
-      id?: SecureEvent<T>["id"];
-      response: SecureEvent<T>["response"] extends undefined
-        ? undefined
-        : SecureEvent<T>["response"];
-      error?: SecureEvent<T>["error"];
-    }
+  ?
+      | {
+          name: T;
+          id?: SecureEvent<T>["id"];
+          response: SecureEvent<T>["response"] extends undefined
+            ? undefined
+            : SecureEvent<T>["response"];
+        }
+      | {
+          name: T;
+          id?: SecureEvent<T>["id"];
+          error: SecureEvent<T>["error"];
+        }
   : never;
 
 // TransportReceiver

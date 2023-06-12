@@ -18,7 +18,7 @@ export class FromContentScriptTransportReceiver implements TransportReceiver {
     this.server.handler(async (message) => {
       return handler(message.data.params[0])
         .then((result) => [result])
-        .catch((error) => [undefined, error]);
+        .catch((error) => [{ name: message.data.params[0].name, error }]);
     });
     return () => {
       // currently not possible to destroy ChannelServer.

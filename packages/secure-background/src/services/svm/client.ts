@@ -14,6 +14,11 @@ export class SVMClient {
         request,
         displayOptions,
       })
-      .then((response) => response?.response?.singedMessage);
+      .then((response) => {
+        if ("error" in response) {
+          throw response;
+        }
+        return response?.response?.singedMessage;
+      });
   }
 }

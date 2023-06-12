@@ -2,7 +2,9 @@ import { IS_MOBILE } from "@coral-xyz/common";
 import { KeyringStore } from "@coral-xyz/secure-background/legacyExport";
 import { startSecureService } from "@coral-xyz/secure-background/service";
 import {
+  combineTransportReceivers,
   FromContentScriptTransportReceiver,
+  FromExtensionTransportReceiver,
   mockTransportSender,
   ToSecureUITransportSender,
 } from "@coral-xyz/secure-client";
@@ -40,6 +42,7 @@ export function start(cfg: Config): Background {
 
   if (!cfg.isMobile) {
     const contentScriptReceiver = new FromContentScriptTransportReceiver();
+    const extensionReceiver = new FromExtensionTransportReceiver();
     const secureUISender = new ToSecureUITransportSender();
 
     // New secure service
@@ -47,7 +50,10 @@ export function start(cfg: Config): Background {
       {
         backendNotificationClient: mockTransportSender,
         secureUIClient: secureUISender,
-        secureServer: contentScriptReceiver,
+        secureServer: combineTransportReceivers(
+          contentScriptReceiver,
+          extensionReceiver
+        ),
         secureStorage: LocalStorageDb,
       },
       keyringStore

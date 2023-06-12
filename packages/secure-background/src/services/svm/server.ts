@@ -12,6 +12,7 @@ import type { SECURE_UI_EVENTS } from "../secureUI/events";
 
 import type {
   SECURE_SVM_EVENTS,
+  SECURE_SVM_SAY_HELLO,
   SECURE_SVM_SIGN_ALL_TX,
   SECURE_SVM_SIGN_MESSAGE,
   SECURE_SVM_SIGN_TX,
@@ -42,6 +43,8 @@ export class SVMService {
         return this.handleSign(request);
       case "SECURE_SVM_SIGN_ALL_TX":
         return this.handleSignAll(request);
+      case "SECURE_SVM_SAY_HELLO":
+        return this.handleHello(request);
     }
   };
 
@@ -80,6 +83,16 @@ export class SVMService {
       name: "SECURE_SVM_SIGN_TX",
       response: {
         signedTx: "string",
+      },
+    };
+  };
+  private handleHello: TransportHandler<SECURE_SVM_SAY_HELLO> = async ({
+    request,
+  }) => {
+    return {
+      name: "SECURE_SVM_SAY_HELLO",
+      response: {
+        message: "hello " + request.name,
       },
     };
   };

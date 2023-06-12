@@ -6,10 +6,17 @@ import {
   openPopupWindow,
 } from "@coral-xyz/common";
 import type {
+  SECURE_EVENTS,
+  SECURE_SVM_SAY_HELLO,
   SECURE_UI_EVENTS,
   TransportReceiver,
+  TransportSender,
 } from "@coral-xyz/secure-client";
-import { ToSecureUITransportReceiver } from "@coral-xyz/secure-client";
+import {
+  FromExtensionTransportSender,
+  ToSecureUITransportReceiver,
+} from "@coral-xyz/secure-client";
+import { v4 } from "uuid";
 
 import "./index.css";
 
@@ -30,13 +37,26 @@ chrome.runtime
   })
   .catch(console.error);
 
+// Send connect event to background script to open channel.
+// add unique name so background can identify the popup.
 const urlParams = new URLSearchParams(window.location.search);
-const windowId = urlParams.get("windowId") ?? undefined;
+const windowId = urlParams.get("windowId") ?? v4();
+const port = chrome.runtime.connect({ name: windowId });
+
 const secureUITransportReceiver =
-  new ToSecureUITransportReceiver<SECURE_UI_EVENTS>(windowId);
+  new ToSecureUITransportReceiver<SECURE_UI_EVENTS>(port);
+const extensionTransportSender =
+  new FromExtensionTransportSender<SECURE_EVENTS>();
 
 secureUITransportReceiver.setHandler(async (request) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
+  const response = await extensionTransportSender.send({
+    name: "SECURE_SVM_SAY_HELLO",
+    request: {
+      name: "Philipp",
+    },
+  } as SECURE_SVM_SAY_HELLO);
+  console.log(response);
   return {
     ...request,
     request: undefined,
@@ -72,7 +92,10 @@ root.render(
       <App />
     </Suspense>
     <Suspense fallback={null}>
-      <SecureUI receiver={secureUITransportReceiver} />
+      <SecureUI
+        sender={extensionTransportSender}
+        receiver={secureUITransportReceiver}
+      />
     </Suspense>
     <Suspense fallback={null}>
       <LedgerIframe />
@@ -82,9 +105,12 @@ root.render(
 
 function SecureUI({
   receiver,
+  sender,
 }: {
   receiver: TransportReceiver<SECURE_UI_EVENTS>;
+  sender: TransportSender<SECURE_EVENTS>;
 }) {
   receiver;
+  sender;
   return null;
 }

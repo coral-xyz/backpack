@@ -28,7 +28,10 @@ export class FromContentScriptTransportSender implements TransportSender {
         return response;
       })
       .catch((e) => {
-        console.error(e);
+        return {
+          name: request.name,
+          error: e,
+        };
       });
   };
 }

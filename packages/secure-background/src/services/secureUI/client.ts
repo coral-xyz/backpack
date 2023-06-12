@@ -15,6 +15,11 @@ export class SecureUIClient {
         name: "SECURE_UI_APPROVE_SIGN_MESSAGE",
         request,
       })
-      .then(({ response }) => response?.approved);
+      .then((response) => {
+        if ("error" in response) {
+          throw response;
+        }
+        return response.response?.approved;
+      });
   }
 }

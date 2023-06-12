@@ -10,18 +10,11 @@ import type {
   TransportHandler,
   TransportReceiver,
 } from "@coral-xyz/secure-background/clients";
-import { v4 } from "uuid";
 
 export class ToSecureUITransportReceiver<X extends SECURE_EVENTS>
   implements TransportReceiver<X>
 {
-  private port: chrome.runtime.Port;
-
-  constructor(windowId: string = v4()) {
-    // Send connect event to background script to open channel.
-    // add unique name so background can identify the popup.
-    this.port = chrome.runtime.connect({ name: windowId });
-  }
+  constructor(private port: chrome.runtime.Port) {}
 
   public setHandler = <T extends X>(handler: TransportHandler<T>) => {
     const listener = (message: {
@@ -35,7 +28,12 @@ export class ToSecureUITransportReceiver<X extends SECURE_EVENTS>
       message.data.forEach((request) =>
         handler(request)
           .then((result) => this.sendResponse(request, result))
-          .catch((error) => this.sendResponse(request, null, error))
+          .catch((error) =>
+            this.sendResponse(request, {
+              name: request.name,
+              error,
+            } as SecureResponse<T>)
+          )
       );
     };
     this.port.onMessage.addListener(listener);
@@ -46,16 +44,14 @@ export class ToSecureUITransportReceiver<X extends SECURE_EVENTS>
 
   private sendResponse = (
     request: SecureRequest<X>,
-    response: SecureResponse<X> | null,
-    error?: any
+    response: SecureResponse<X>
   ) => {
-    console.log("PCA", "SEND_RESPONSE", request, response, error);
+    console.log("PCA", "SEND_RESPONSE", request, response);
     this.port.postMessage({
       channel: CHANNEL_SECURE_UI_RESPONSE,
       data: {
         ...response,
         id: request.id,
-        error,
       },
     });
   };
