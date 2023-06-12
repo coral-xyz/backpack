@@ -9,7 +9,7 @@ import type {
   SECURE_UI_EVENTS,
   TransportReceiver,
 } from "@coral-xyz/secure-client";
-import { SecureUITransportReceiver } from "@coral-xyz/secure-client";
+import { ToSecureUITransportReceiver } from "@coral-xyz/secure-client";
 
 import "./index.css";
 
@@ -30,8 +30,10 @@ chrome.runtime
   })
   .catch(console.error);
 
+const urlParams = new URLSearchParams(window.location.search);
+const windowId = urlParams.get("windowId") ?? undefined;
 const secureUITransportReceiver =
-  new SecureUITransportReceiver<SECURE_UI_EVENTS>();
+  new ToSecureUITransportReceiver<SECURE_UI_EVENTS>(windowId);
 
 secureUITransportReceiver.setHandler(async (request) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));

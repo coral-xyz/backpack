@@ -2,10 +2,9 @@ import { IS_MOBILE } from "@coral-xyz/common";
 import { KeyringStore } from "@coral-xyz/secure-background/legacyExport";
 import { startSecureService } from "@coral-xyz/secure-background/service";
 import {
-  ContentScriptTransportReceiver,
+  FromContentScriptTransportReceiver,
   mockTransportSender,
-  SecureUITransportReceiver,
-  SecureUITransportSender,
+  ToSecureUITransportSender,
 } from "@coral-xyz/secure-client";
 import { EventEmitter } from "eventemitter3";
 
@@ -40,8 +39,8 @@ export function start(cfg: Config): Background {
   const _ethereumConnection = ethereumConnection.start(cfg, events, ethereumB);
 
   if (!cfg.isMobile) {
-    const contentScriptReceiver = new ContentScriptTransportReceiver();
-    const secureUISender = new SecureUITransportSender();
+    const contentScriptReceiver = new FromContentScriptTransportReceiver();
+    const secureUISender = new ToSecureUITransportSender();
 
     // New secure service
     startSecureService(

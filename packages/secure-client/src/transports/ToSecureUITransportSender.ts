@@ -17,43 +17,53 @@ type QueuedRequest = {
   reject: (error: any) => void;
 };
 
-export class SecureUITransportSender implements TransportSender {
+export class ToSecureUITransportSender implements TransportSender {
   private port: chrome.runtime.Port | null = null;
   private requestQueue: QueuedRequest[] = [];
   private responseQueue: QueuedRequest[] = [];
+  private lastOpenedWindowId: string | null = null;
 
   constructor() {
     chrome.runtime.onConnect.addListener((port) => {
       console.log("PCA", "connect", port.name);
-      // setup listener
-      const listener = this.responseHandler.bind(this);
-      port.onMessage.addListener(listener);
+
+      // if we are still connected to a plugin -> disconnect.
+      if (this.port) {
+        this.disconnectPlugin(this.port);
+      }
+
+      // set port
       this.port = port;
+
+      // setup message listener
+      const messageListner = this.responseHandler.bind(this);
+      port.onMessage.addListener(messageListner);
 
       // send queued requests
       this.sendRequests();
 
-      // handle disconnect
-      port.onDisconnect.addListener((port) => {
-        if (this.port?.name !== port.name) {
-          // It's possible that a plugin is closed because another opened.
-          // We only handle the disconnect if the current port was disconnected.
-          return;
-        }
-        console.log("PCA", "disconnect", port.name);
-
-        // remove listener & reference
-        port.onMessage.removeListener(listener);
-        this.port = null;
-
-        // reject all waiting responses
-        this.responseQueue.forEach((response) =>
-          response.reject("Plugin Closed")
-        );
-        this.responseQueue = [];
-      });
+      // listen to disconnect
+      const disconnectListener = this.disconnectPlugin.bind(this);
+      port.onDisconnect.addListener(disconnectListener);
     });
   }
+
+  private disconnectPlugin = (port: chrome.runtime.Port) => {
+    // It's possible that a plugin is closed because a new one opened.
+    // We only handle the disconnect if the port is currently connected.
+    if (this.port?.name !== port.name) {
+      return;
+    }
+    console.log("PCA", "disconnect", port.name);
+
+    // remove listeners & reference
+    port.disconnect();
+    this.port = null;
+
+    // reject all waiting responses
+    this.responseQueue.forEach((response) => response.reject("Plugin Closed"));
+    this.responseQueue = [];
+  };
 
   public send = <T extends SECURE_EVENTS>(request: SecureRequest<T>) => {
     return new Promise<SecureResponse<T>>(
@@ -75,6 +85,8 @@ export class SecureUITransportSender implements TransportSender {
     if (response.channel !== CHANNEL_SECURE_UI_RESPONSE) {
       return;
     }
+
+    // find waiting request in responseQueue
     const index = this.responseQueue.findIndex(
       (queuedResponse) => queuedResponse.request.id === response.data?.id
     );
@@ -84,9 +96,24 @@ export class SecureUITransportSender implements TransportSender {
       return;
     }
 
+    // remove request from queue
     const queuedRequest = this.responseQueue[index];
     this.responseQueue.splice(index, 1);
 
+    // if we're not waiting for any more responses
+    // and this is the popup we originally opened
+    // -> close the popup.
+    if (
+      this.responseQueue.length <= 0 &&
+      this.port?.name === this.lastOpenedWindowId &&
+      this.port.sender?.tab?.windowId
+    ) {
+      chrome.windows.remove(this.port.sender?.tab?.windowId).catch((e) => {
+        console.error(e);
+      });
+    }
+
+    // resolve request
     if (response.data.error) {
       queuedRequest.reject(response.data);
     } else {
@@ -97,7 +124,7 @@ export class SecureUITransportSender implements TransportSender {
   private sendRequests = () => {
     // open popup if we dont have one.
     if (!this.port) {
-      return this.openPopup();
+      return this.openPopup(v4());
     }
 
     // send all pending requests
@@ -123,8 +150,9 @@ export class SecureUITransportSender implements TransportSender {
     }
   };
 
-  private openPopup = () => {
-    openPopupWindow("popup.html").catch((e) => {
+  private openPopup = (windowId: string) => {
+    this.lastOpenedWindowId = windowId;
+    openPopupWindow("popup.html?windowId=" + windowId).catch((e) => {
       console.error(e);
     });
   };

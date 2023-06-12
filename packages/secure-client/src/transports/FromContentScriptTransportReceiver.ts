@@ -5,7 +5,7 @@ import {
 } from "@coral-xyz/common";
 import type { TransportReceiver } from "@coral-xyz/secure-background/clients";
 
-export class ContentScriptTransportReceiver implements TransportReceiver {
+export class FromContentScriptTransportReceiver implements TransportReceiver {
   private server: ChannelServer;
 
   constructor() {

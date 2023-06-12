@@ -12,15 +12,15 @@ import type {
 } from "@coral-xyz/secure-background/clients";
 import { v4 } from "uuid";
 
-export class SecureUITransportReceiver<X extends SECURE_EVENTS>
+export class ToSecureUITransportReceiver<X extends SECURE_EVENTS>
   implements TransportReceiver<X>
 {
   private port: chrome.runtime.Port;
 
-  constructor() {
+  constructor(windowId: string = v4()) {
     // Send connect event to background script to open channel.
     // add unique name so background can identify the popup.
-    this.port = chrome.runtime.connect({ name: v4() });
+    this.port = chrome.runtime.connect({ name: windowId });
   }
 
   public setHandler = <T extends X>(handler: TransportHandler<T>) => {

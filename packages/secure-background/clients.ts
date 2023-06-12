@@ -1,3 +1,5 @@
+// exports in this file will be exported from @coral-xyz/secure-client
+
 // Types
 export * from "./src/types/events";
 export * from "./src/types/transports";

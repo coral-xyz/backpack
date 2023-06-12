@@ -28,7 +28,7 @@ import {
   SOLANA_RPC_METHOD_OPEN_XNFT,
 } from "@coral-xyz/common";
 import {
-  ContentScriptTransportSender,
+  FromContentScriptTransportSender,
   SolanaClient,
 } from "@coral-xyz/secure-client";
 import type { Provider } from "@project-serum/anchor";
@@ -89,7 +89,7 @@ export class ProviderSolanaInjection
     );
 
     this.#secureSolanaClient = new SolanaClient(
-      new ContentScriptTransportSender()
+      new FromContentScriptTransportSender()
     );
 
     this.#requestManager = this.#backpackRequestManager;

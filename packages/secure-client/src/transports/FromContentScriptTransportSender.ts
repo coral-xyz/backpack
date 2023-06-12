@@ -8,7 +8,7 @@ import type {
   TransportSender,
 } from "@coral-xyz/secure-background/clients";
 
-export class ContentScriptTransportSender implements TransportSender {
+export class FromContentScriptTransportSender implements TransportSender {
   private client: InjectedRequestManager;
 
   constructor() {
