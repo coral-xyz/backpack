@@ -1,16 +1,11 @@
 import { useState, Suspense, useEffect, useCallback } from "react";
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  View,
-} from "react-native";
+import { Keyboard, StyleSheet, View } from "react-native";
 
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { ErrorBoundary } from "react-error-boundary";
 import { useForm } from "react-hook-form";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
@@ -96,27 +91,27 @@ function Container(): JSX.Element {
   //   f();
   // });
 
-  const [keyboardStatus, setKeyboardStatus] = useState("hidden");
-
-  useEffect(() => {
-    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
-      setKeyboardStatus("shown");
-    });
-    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
-      setKeyboardStatus("hidden");
-    });
-
-    return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-    };
-  }, []);
+  // const [keyboardStatus, setKeyboardStatus] = useState("hidden");
+  //
+  // useEffect(() => {
+  //   const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+  //     setKeyboardStatus("shown");
+  //   });
+  //   const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+  //     setKeyboardStatus("hidden");
+  //   });
+  //
+  //   return () => {
+  //     showSubscription.remove();
+  //     hideSubscription.remove();
+  //   };
+  // }, []);
 
   return (
     <>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      <KeyboardAwareScrollView
+        scrollEnabled={false}
+        contentContainerStyle={{ flexGrow: 1 }}
       >
         <Screen
           style={[
@@ -133,14 +128,12 @@ function Container(): JSX.Element {
               setIsModalVisible((last) => !last);
             }}
           />
-          <Margin top={48} bottom={24}>
-            <WelcomeLogoHeader username={user.username} />
-          </Margin>
+          <WelcomeLogoHeader username={user.username} />
           {isBiometricsEnabled ? null : (
             <View>
               <Margin bottom={8}>
-                {user.username && keyboardStatus === "hidden" ? (
-                  <View style={{ marginBottom: -40, alignSelf: "center" }}>
+                {user.username ? (
+                  <View style={[{ marginBottom: -40, alignSelf: "center" }]}>
                     <CurrentUserAvatar size={212} />
                   </View>
                 ) : null}
@@ -162,7 +155,7 @@ function Container(): JSX.Element {
             </View>
           )}
         </Screen>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
       <BottomSheetHelpModal
         showResetButton
         isVisible={isModalVisible}

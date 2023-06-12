@@ -465,7 +465,7 @@ export const ScreenEmptyList = ({
   );
 };
 
-export function WelcomeLogoHeader({ username }) {
+export function WelcomeLogoHeader({ username }: { username?: string }) {
   const theme = useTheme();
   const [showDebug, setShowDebug] = useState(false);
   return (
