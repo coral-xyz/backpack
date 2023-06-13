@@ -2,14 +2,13 @@ import { useState } from "react";
 import { MessageBubbleIcon } from "@coral-xyz/react-common";
 import {
   chatByCollectionId,
-  madLadGold,
   nftById,
   nftCollectionsWithIds,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { CircularProgress, Grid, Typography } from "@mui/material";
 import type { UnwrapRecoilValue } from "recoil";
-import { useRecoilValue, useRecoilValueLoadable } from "recoil";
+import { useRecoilValueLoadable } from "recoil";
 
 import { useOpenChat } from "./NftDetail";
 import { NFTCard } from "./NftEntry";

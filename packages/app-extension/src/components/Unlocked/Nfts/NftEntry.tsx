@@ -266,27 +266,26 @@ function MadLadsGold({ nft }: { nft: Nft }) {
         gap: "6px",
       }}
     >
-      {state !== "loading" && contents.isStaked ? <>
-        <ElectricBolt
-          style={{
-              color: "#f62138",
+      {state !== "loading" && contents.isStaked ? (
+        <>
+          <Typography
+            style={{
+              color: "#000",
+              fontSize: "14px",
+              fontWeight: 600,
             }}
-          />
-        <Gold balance={contents.goldPoints} />
-      </> : null}
+          >
+            STAKED
+          </Typography>
+          <Gold balance={contents.goldPoints} />
+        </>
+      ) : null}
     </div>
   );
 }
 
 function Gold({ balance }: { balance: anchor.BN }) {
-  /*
-// eslint-disable-next-line no-unsafe-optional-chaining
-  const grouped = balance.toString().match(/(\d+?)(?=(\d{2})+(?!\d)|$)/g);
-	// @ts-ignore
-  const [dust, copper, silver, gold, ...diamondsArr] = grouped?.reverse().filter(Boolean);
-  const diamonds = diamondsArr.join("");
-	console.log(diamonds, gold, silver, copper, dust);
-	*/
+  // TODO: render gold nicely.
   return null;
 }
 
