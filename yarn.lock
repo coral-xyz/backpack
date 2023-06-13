@@ -3855,8 +3855,8 @@ __metadata:
     "@react-navigation/stack": ^6.3.2
     "@shopify/flash-list": 1.4.0
     "@tamagui/font-inter": ^1.28.1
-    "@tamagui/helpers-icon": ^1.33.2
-    "@tamagui/lucide-icons": ^1.33.2
+    "@tamagui/helpers-icon": ^1.28.1
+    "@tamagui/lucide-icons": ^1.28.1
     "@testing-library/jest-native": ^5.1.2
     "@types/jest": ^28.1.6
     "@types/react": ^18.0.28
@@ -12721,7 +12721,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tamagui/helpers-icon@npm:1.33.2, @tamagui/helpers-icon@npm:^1.33.2":
+"@tamagui/helpers-icon@npm:^1.28.1":
   version: 1.33.2
   resolution: "@tamagui/helpers-icon@npm:1.33.2"
   dependencies:
@@ -12839,19 +12839,6 @@ __metadata:
     react: "*"
     react-native-svg: ">=12"
   checksum: 7533027eb2363ec279ecf719eb4d5384ce87c198dfcf7756b196f206dc2bfe546eb2bce75bc54680a077397f8e4366b0b5c82cacaa6d5867d5410a2fe40286e9
-  languageName: node
-  linkType: hard
-
-"@tamagui/lucide-icons@npm:^1.33.2":
-  version: 1.33.2
-  resolution: "@tamagui/lucide-icons@npm:1.33.2"
-  dependencies:
-    "@tamagui/core": 1.33.2
-    "@tamagui/helpers-icon": 1.33.2
-  peerDependencies:
-    react: "*"
-    react-native-svg: ">=12"
-  checksum: be3839fd7ffc9bbcc818c91ab6aacaa037dac02072cf61fd6afde0d2bcd7f5de95957ca814dd88f495790b58a484dfbe94884fb5d4f373226ddfc6327bfcd802
   languageName: node
   linkType: hard
 
