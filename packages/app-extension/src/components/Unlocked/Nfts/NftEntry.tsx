@@ -210,6 +210,10 @@ function NftCardButton({
           e.currentTarget.src = UNKNOWN_NFT_ICON_SRC;
         }}
       />
+      {/*
+					This is ok to because the gold query will just return error if it's a fake collection.
+					Would still be nice to do this check in a more robust way.
+				*/}
       {nft.collectionName === "Mad Lads" ? <MadLadsGold nft={nft} /> : null}
       <div
         style={{
@@ -252,6 +256,9 @@ function NftCardButton({
 
 function MadLadsGold({ nft }: { nft: Nft }) {
   const { contents, state } = useRecoilValueLoadable(madLadGold(nft.mint!));
+  if (state === "hasError") {
+    return null;
+  }
   return (
     <div
       style={{
@@ -266,7 +273,7 @@ function MadLadsGold({ nft }: { nft: Nft }) {
         gap: "6px",
       }}
     >
-      {state !== "loading" && contents.isStaked ? (
+      {state === "hasValue" && contents.isStaked ? (
         <>
           <Typography
             style={{
