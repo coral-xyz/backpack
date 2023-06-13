@@ -4,7 +4,7 @@ import { Pressable } from "react-native";
 
 import { useTheme as useTamaguiTheme } from "@coral-xyz/tamagui";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import { themed as withThemedIcon } from "@tamagui/lucide-icons/src/themed";
+import { themed as withThemedIcon } from "@tamagui/helpers-icon";
 import Svg, { Path, Rect } from "react-native-svg";
 
 import { useTheme } from "~hooks/useTheme";

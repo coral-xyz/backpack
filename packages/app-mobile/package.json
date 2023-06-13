@@ -46,6 +46,8 @@
     "@react-navigation/stack": "^6.3.2",
     "@shopify/flash-list": "1.4.0",
     "@tamagui/font-inter": "^1.28.1",
+    "@tamagui/helpers-icon": "^1.33.2",
+    "@tamagui/lucide-icons": "^1.33.2",
     "apollo3-cache-persist": "^0.14.1",
     "big-integer": "^1.6.51",
     "buffer": "^6.0.3",
