@@ -587,7 +587,7 @@ export function SwapProvider({
 export function useSwapContext(): SwapContext {
   const ctx = useContext(_SwapContext);
   if (ctx === null) {
-    throw new Error("Context not available");
+    throw new Error("useSwapContext must be used within a SwapProvider");
   }
   return ctx;
 }
