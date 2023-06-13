@@ -16,7 +16,11 @@ import { IconCloseModal } from "~components/Icon";
 import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
 import { useTheme } from "~hooks/useTheme";
 import { WINDOW_WIDTH } from "~lib/index";
-import { HeaderAvatarButton, HeaderButton } from "~navigation/components";
+import {
+  HeaderAvatarButton,
+  HeaderButton,
+  HeaderButtonSpacer,
+} from "~navigation/components";
 import { TopTabsParamList } from "~navigation/types";
 import { CollectionDetailScreen } from "~screens/CollectionDetailScreen";
 import { CollectionItemDetailScreen } from "~screens/CollectionItemDetailScreen";
