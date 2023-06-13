@@ -1,5 +1,7 @@
 import type { SECURE_SVM_EVENTS } from "./src/services/svm/events";
 import { SVMService } from "./src/services/svm/server";
+import type { SECURE_USER_EVENTS } from "./src/services/user/events";
+import { UserService } from "./src/services/user/server";
 import type { LocalStorageDb } from "./src/store/db";
 import type { KeyringStore } from "./src/store/keyring";
 import { combineTransportReceivers } from "./src/transports/combineTransportReceivers";
@@ -31,6 +33,11 @@ export function startSecureService(
 
   new SVMService({
     secureServer: combinedServer as TransportReceiver<SECURE_SVM_EVENTS>,
+    keyringStore: keyringStore,
+    secureUIClient: interfaces.secureUIClient,
+  });
+  new UserService({
+    secureServer: combinedServer as TransportReceiver<SECURE_USER_EVENTS>,
     keyringStore: keyringStore,
     secureUIClient: interfaces.secureUIClient,
   });

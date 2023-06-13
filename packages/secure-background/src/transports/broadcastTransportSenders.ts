@@ -1,5 +1,5 @@
 import type { SECURE_EVENTS } from "../types/events";
-import type { TransportReceiver, TransportSender } from "../types/transports";
+import type { TransportSender } from "../types/transports";
 
 export function broadcastTransportSenders<
   T extends SECURE_EVENTS = SECURE_EVENTS

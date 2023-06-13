@@ -1,4 +1,7 @@
-import { CHANNEL_SECURE_BACKGROUND_EXTENSION_REQUEST } from "@coral-xyz/common";
+import {
+  CHANNEL_SECURE_BACKGROUND_EXTENSION_REQUEST,
+  CHANNEL_SECURE_BACKGROUND_EXTENSION_RESPONSE,
+} from "@coral-xyz/common";
 import type {
   SECURE_EVENTS,
   SecureEvent,
@@ -15,25 +18,35 @@ export class FromExtensionTransportReceiver<
   constructor() {}
 
   public setHandler = (handler) => {
-    const listener = async (
-      message: {
-        channel: string;
-        data: SecureRequest<T>;
-      },
-      _sender,
-      response: (respones) => void
-    ) => {
+    const listener = async (message: {
+      channel: string;
+      data: SecureRequest<T>;
+    }) => {
       if (message.channel !== CHANNEL_SECURE_BACKGROUND_EXTENSION_REQUEST) {
         return;
       }
+
       handler(message.data)
-        .then((result) => response(result))
-        .catch((error: any) =>
-          response({
-            name: message.data.name,
-            error,
-          } as SecureResponse<T>)
-        );
+        .then((result) => {
+          return chrome.runtime.sendMessage({
+            channel: CHANNEL_SECURE_BACKGROUND_EXTENSION_RESPONSE,
+            data: {
+              ...result,
+              name: message.data.name,
+              id: message.data.id,
+            },
+          });
+        })
+        .catch((error: any) => {
+          return chrome.runtime.sendMessage({
+            channel: CHANNEL_SECURE_BACKGROUND_EXTENSION_RESPONSE,
+            data: {
+              name: message.data.name,
+              id: message.data.id,
+              error,
+            },
+          });
+        });
     };
     chrome.runtime.onMessage.addListener(listener);
     return () => {

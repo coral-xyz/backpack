@@ -20,6 +20,11 @@ export interface SecureEventBase<T extends SECURE_EVENTS = SECURE_EVENTS> {
   id?: string | number;
   request: SerializableJson;
   displayOptions?: PassThroughToUI;
+  // {
+  //   priority: number,
+  //   component: string,
+  //   props: PassThroughToUI
+  // };
   response?: SerializableJson;
   error?: any;
 }

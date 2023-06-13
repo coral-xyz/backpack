@@ -24,7 +24,9 @@ export const CHANNEL_SECURE_BACKGROUND_RESPONSE =
 export const CHANNEL_SECURE_UI_REQUEST = "channel-secure-ui-request";
 export const CHANNEL_SECURE_UI_RESPONSE = "channel-secure-ui-response";
 export const CHANNEL_SECURE_BACKGROUND_EXTENSION_REQUEST =
-  "channel-secure-event-request";
+  "channel-secure-extension-event-request";
+export const CHANNEL_SECURE_BACKGROUND_EXTENSION_RESPONSE =
+  "channel-secure-extension-event-response";
 export const CHANNEL_SOLANA_NOTIFICATION = "channel-solana-notification";
 export const CHANNEL_SOLANA_CONNECTION_RPC_UI =
   "channel-solana-connection-rpc-ui";

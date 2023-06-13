@@ -15,6 +15,7 @@ import type {
 import {
   FromExtensionTransportSender,
   ToSecureUITransportReceiver,
+  UserClient,
 } from "@coral-xyz/secure-client";
 import { v4 } from "uuid";
 
@@ -48,15 +49,15 @@ const secureUITransportReceiver =
 const extensionTransportSender =
   new FromExtensionTransportSender<SECURE_EVENTS>();
 
+const user = new UserClient(extensionTransportSender);
+
 secureUITransportReceiver.setHandler(async (request) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
-  const response = await extensionTransportSender.send({
-    name: "SECURE_SVM_SAY_HELLO",
-    request: {
-      name: "Philipp",
-    },
-  } as SECURE_SVM_SAY_HELLO);
-  console.log(response);
+  const response = await user.unlockKeyring({
+    uuid: "uuid",
+    password: "password",
+  });
+  console.log("PCA unlock response", response);
   return {
     ...request,
     request: undefined,
