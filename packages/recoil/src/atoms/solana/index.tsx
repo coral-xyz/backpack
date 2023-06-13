@@ -1,5 +1,6 @@
 export * from "./isONELive";
 export * from "./jupiter";
+export * from "./mad-lads";
 export * from "./nft";
 export * from "./preferences";
 export * from "./recent-transactions";
