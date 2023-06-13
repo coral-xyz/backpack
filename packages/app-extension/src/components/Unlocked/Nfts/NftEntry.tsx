@@ -18,7 +18,6 @@ import {
   useOpenPlugin,
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
-import { ElectricBolt } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Button, IconButton, MenuItem, Typography } from "@mui/material";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
@@ -211,9 +210,9 @@ function NftCardButton({
         }}
       />
       {/*
-					This is ok to because the gold query will just return error if it's a fake collection.
-					Would still be nice to do this check in a more robust way.
-				*/}
+          This is ok to because the gold query will just return error if it's a fake collection.
+          Would still be nice to do this check in a more robust way.
+        */}
       {nft.collectionName === "Mad Lads" ? <MadLadsGold nft={nft} /> : null}
       <div
         style={{
