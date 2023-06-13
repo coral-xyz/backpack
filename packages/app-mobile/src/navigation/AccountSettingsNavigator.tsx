@@ -22,19 +22,20 @@ import {
   useSolanaConnectionUrl,
   useSolanaExplorer,
 } from "@coral-xyz/recoil";
+import { XStack } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ethers } from "ethers";
 
-import { AccountSettingsBottomSheet } from "~components/AccountSettingsBottomSheet";
+// import { AccountSettingsBottomSheet } from "~components/AccountSettingsBottomSheet";
 import { IconCheckmark } from "~components/Icon";
 import {
-  AccountDropdownHeader,
+  // AccountDropdownHeader,
   UserAccountMenu,
 } from "~components/UserAccountsMenu";
 import { Screen } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
-import { HeaderButton } from "~navigation/components";
+import { HeaderButton, HeaderAvatarButton } from "~navigation/components";
 import { AccountSettingsScreen } from "~screens/AccountSettingsScreen";
 import { ImportPrivateKeyScreen } from "~screens/ImportPrivateKeyScreen";
 import {
@@ -114,8 +115,10 @@ export function AccountSettingsNavigator(): JSX.Element {
         options={({ navigation }) => {
           return {
             title: "Settings",
-            headerLeft: () => (
-              <HeaderButton name="menu" onPress={navigation.openDrawer} />
+            headerLeft: (props) => (
+              <XStack ml={16}>
+                <HeaderAvatarButton {...props} navigation={navigation} />
+              </XStack>
             ),
             headerTintColor: theme.custom.colors.fontColor,
             headerBackTitle: "Back",
@@ -130,14 +133,10 @@ export function AccountSettingsNavigator(): JSX.Element {
             headerShown: true,
             title: "Settings",
             headerLeft: () => (
-              <HeaderButton name="menu" onPress={navigation.openDrawer} />
+              <XStack ml={16}>
+                <HeaderButton name="menu" onPress={navigation.openDrawer} />
+              </XStack>
             ),
-            // headerLeft: () => (
-            //   <AccountSettingsBottomSheet navigation={navigation} />
-            // ),
-            // headerTitle: ({ options }) => (
-            //   <AccountDropdownHeader options={options} />
-            // ),
             headerTintColor: theme.custom.colors.fontColor,
             headerBackTitle: "Back",
           };

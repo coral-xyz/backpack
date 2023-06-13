@@ -11,7 +11,6 @@ import { useRecoilValue } from "recoil";
 
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import {
-  Screen,
   RoundedContainerGroup,
   ScreenLoading,
   ScreenError,
@@ -20,12 +19,15 @@ import { TokenListScreenProps } from "~navigation/types";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 import { TokenRow } from "~screens/Unlocked/components/Balances";
 
+import { useSession } from "~src/lib/SessionProvider";
+
 function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
+  const { activeWallet } = useSession();
   const { blockchain, publicKey } = route.params;
   const balances = useRecoilValue(
     blockchainBalancesSorted({
-      publicKey,
-      blockchain,
+      blockchain: (activeWallet?.blockchain as Blockchain) || blockchain,
+      publicKey: activeWallet?.publicKey || publicKey,
     })
   );
 

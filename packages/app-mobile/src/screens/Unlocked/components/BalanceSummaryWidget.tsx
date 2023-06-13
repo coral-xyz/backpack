@@ -73,7 +73,11 @@ type QueryUserBalanceSummary = {
     wallet: {
       id: string;
       isPrimary: boolean;
-      chainId: string;
+      provider: {
+        id: string;
+        name: string;
+        logo: string;
+      };
       balances: {
         aggregate: {
           id: string;
@@ -86,14 +90,18 @@ type QueryUserBalanceSummary = {
   };
 };
 
-const GET_USER_BALANCE_SUMMARY = gql`
+const QUEYR_USER_BALANCE_SUMMARY = gql`
   query UserWalletBalanceSummary($address: String!) {
     user {
       id
       wallet(address: $address) {
         id
         isPrimary
-        chainId
+        provider {
+          id
+          name
+          logo
+        }
         balances {
           aggregate {
             id
@@ -128,7 +136,7 @@ function ErrorFallback({ error }: { error: Error }) {
 
 function Container() {
   const activeWallet = useActiveWallet();
-  const { data } = useSuspenseQuery_experimental(GET_USER_BALANCE_SUMMARY, {
+  const { data } = useSuspenseQuery_experimental(QUEYR_USER_BALANCE_SUMMARY, {
     variables: {
       address: activeWallet.publicKey,
     },

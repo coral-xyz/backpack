@@ -24,7 +24,8 @@ import {
 } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { WINDOW_WIDTH } from "~lib/index";
-import { NftNodeFragment } from "~screens/CollectionListScreen";
+
+import { NftNodeFragment } from "~src/graphql/fragments";
 
 function ActionMenu({ blockchain, nft }: { blockchain: Blockchain; nft: any }) {
   const connectionUrl = useBlockchainConnectionUrl(blockchain);

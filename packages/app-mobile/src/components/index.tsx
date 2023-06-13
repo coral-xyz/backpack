@@ -135,7 +135,7 @@ export function Screen({
   headerPadding,
 }: {
   scrollable?: boolean;
-  children: JSX.Element | JSX.Element[] | null;
+  children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   headerPadding?: boolean;
 }) {
@@ -421,13 +421,20 @@ export function FullScreenLoading({
 }
 
 export const ScreenLoading = FullScreenLoading;
-export function ScreenError({ error }: { error: any }): JSX.Element {
+export function ScreenError({
+  error,
+  extra,
+}: {
+  error: any;
+  extra?: string;
+}): JSX.Element {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <StyledText fontSize="$lg" color="$negative">
         Something went wrong:
       </StyledText>
       <Text>{error.message}</Text>
+      <Text>{extra}</Text>
     </View>
   );
 }
@@ -458,7 +465,7 @@ export const ScreenEmptyList = ({
   );
 };
 
-export function WelcomeLogoHeader() {
+export function WelcomeLogoHeader({ username }: { username?: string }) {
   const theme = useTheme();
   const [showDebug, setShowDebug] = useState(false);
   return (
@@ -488,7 +495,7 @@ export function WelcomeLogoHeader() {
               color: theme.custom.colors.secondary,
             }}
           >
-            gm
+            gm {username}
           </Text>
         </Margin>
       </View>

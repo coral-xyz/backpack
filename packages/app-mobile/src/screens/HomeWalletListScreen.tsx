@@ -4,33 +4,20 @@ import type { Wallet, PublicKey } from "~types/types";
 import { Suspense, useCallback } from "react";
 import { FlatList, Pressable } from "react-native";
 
-import { gql, useSuspenseQuery_experimental } from "@apollo/client";
-import { formatUsd } from "@coral-xyz/common";
+import Constants from "expo-constants";
+
+import { useSuspenseQuery_experimental } from "@apollo/client";
 import { Box, StyledText, XStack, BlockchainLogo } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { Screen, ScreenError, ScreenLoading } from "~components/index";
+import { ScreenError, ScreenLoading } from "~components/index";
 import { useWallets } from "~hooks/wallets";
 import type { HomeWalletListScreenProps } from "~navigation/WalletsNavigator";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 
-// TOOD(peter) GET_WALLET_DATA + ListItemData is a hack until we have aggregate wallets
-const GET_WALLET_DATA = gql`
-  query WalletData($chainId: ChainID!, $address: String!) {
-    wallet(chainId: $chainId, address: $address) {
-      id
-      balances {
-        id
-        aggregate {
-          id
-          percentChange
-          value
-          valueChange
-        }
-      }
-    }
-  }
-`;
+import { gql } from "~src/graphql/__generated__";
+import { useSession } from "~src/lib/SessionProvider";
+import { coalesceWalletData } from "~src/lib/WalletUtils";
 
 function ListItemWalletCard({
   isFirst,
@@ -70,8 +57,8 @@ function ListItemWalletCard({
         height={70}
       >
         <XStack ai="center" space={4}>
-          <BlockchainLogo blockchain={blockchain} size={18} />
-          <StyledText size="$lg" fontWeight="600">
+          <BlockchainLogo blockchain={blockchain} size={16} />
+          <StyledText ml={8} size="$lg" fontWeight="600">
             {name}
           </StyledText>
         </XStack>
@@ -81,88 +68,55 @@ function ListItemWalletCard({
   );
 }
 
-function ListItemData({
-  isFirst,
-  wallet,
-  onPress,
-}: {
-  wallet: Wallet;
-  isFirst: boolean;
-  onPress: () => void;
-}): JSX.Element {
-  // TODO(peter/graphql): this request needs to fetch all of the balances
-  const { data } = useSuspenseQuery_experimental(GET_WALLET_DATA, {
-    variables: {
-      chainId: wallet.blockchain.toUpperCase(),
-      address: wallet.publicKey,
-    },
-  });
-
-  const balance = data.wallet.balances?.aggregate.value?.toFixed(2) ?? "0.00";
-
-  return (
-    <ListItemWalletCard
-      isFirst={isFirst}
-      name={wallet.name}
-      blockchain={wallet.blockchain}
-      publicKey={wallet.publicKey}
-      type={wallet.type}
-      balance={formatUsd(balance)}
-      onPress={onPress}
-    />
-  );
-}
-
-function ListItem({
-  isFirst,
-  item: wallet,
-  onPress,
-}: {
-  isFirst: boolean;
-  item: Wallet;
-  onPress: any;
-}): JSX.Element {
-  const ErrorMessage = ({ error }) => {
-    return (
-      <StyledText color="$redText" size="$sm" textAlign="center">
-        {error.message}
-      </StyledText>
-    );
-  };
-  return (
-    <ErrorBoundary
-      fallbackRender={({ error }) => <ErrorMessage error={error} />}
-    >
-      <Suspense>
-        <ListItemData isFirst={isFirst} wallet={wallet} onPress={onPress} />
-      </Suspense>
-    </ErrorBoundary>
-  );
-}
+const QUERY_USER_WALLETS = gql(`
+  query HomeUserWallets {
+    user {
+      id
+      wallets {
+        edges {
+          node {
+            ...WalletFragment
+          }
+        }
+      }
+    }
+  }
+`);
 
 function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
+  const { setActiveWallet } = useSession();
+  const { data } = useSuspenseQuery_experimental(QUERY_USER_WALLETS);
   const { allWallets, selectActiveWallet } = useWallets();
+  const wallets = coalesceWalletData(data, allWallets);
 
   const handlePressWallet = useCallback(
-    async (w: Wallet) => {
-      selectActiveWallet({ blockchain: w.blockchain, publicKey: w.publicKey });
+    async (w: any) => {
+      const activeWallet = { blockchain: w.blockchain, publicKey: w.publicKey };
+      setActiveWallet(activeWallet);
+      selectActiveWallet(activeWallet);
       navigation.push("TopTabsWalletDetail", {
+        // @ts-expect-error TODO(navigation) fix
         screen: "TokenList",
-        params: {
-          publicKey: w.publicKey,
-          blockchain: w.blockchain,
-        },
+        params: activeWallet,
       });
     },
-    [navigation, selectActiveWallet]
+    [navigation, selectActiveWallet, setActiveWallet]
   );
 
   const keyExtractor = (wallet: Wallet) => wallet.publicKey.toString();
   const renderItem = useCallback(
-    ({ item: wallet, index }: { item: Wallet; index: number }) => {
+    ({ item, index }) => {
       const isFirst = index === 0;
       return (
-        <ListItem isFirst={isFirst} item={wallet} onPress={handlePressWallet} />
+        <ListItemWalletCard
+          isFirst={isFirst}
+          name={item.name}
+          blockchain={item.blockchain}
+          publicKey={item.publicKey}
+          type={item.type}
+          balance={item.balance}
+          onPress={handlePressWallet}
+        />
       );
     },
     [handlePressWallet]
@@ -172,7 +126,7 @@ function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
     <FlatList
       style={{ paddingTop: 16, paddingHorizontal: 16 }}
       contentContainerStyle={{ paddingBottom: 32 }}
-      data={allWallets}
+      data={wallets}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
       showsVerticalScrollIndicator={false}
@@ -191,7 +145,12 @@ export function HomeWalletListScreen({
 }: HomeWalletListScreenProps): JSX.Element {
   return (
     <ErrorBoundary
-      fallbackRender={({ error }) => <ScreenError error={error.message} />}
+      fallbackRender={({ error }) => (
+        <ScreenError
+          error={error.message}
+          extra={Constants.expoConfig?.extra?.graphqlApiUrl}
+        />
+      )}
     >
       <Suspense fallback={<ScreenLoading />}>
         <Container navigation={navigation} route={route} />

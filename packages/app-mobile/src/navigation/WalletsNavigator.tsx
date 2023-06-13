@@ -1,25 +1,39 @@
+import { View } from "react-native";
+
+import Constants from "expo-constants";
+
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
 import { useTheme as useTamaguiTheme } from "@coral-xyz/tamagui";
-import { PlatformPressable } from "@react-navigation/elements";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { StackScreenProps } from "@react-navigation/stack";
+import {
+  createStackNavigator,
+  StackScreenProps,
+} from "@react-navigation/stack";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BottomSheetViewOptions } from "~components/BottomSheetViewOptions";
-import { CurrentUserAvatar } from "~components/UserAvatar";
+import { IconCloseModal } from "~components/Icon";
 import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
 import { useTheme } from "~hooks/useTheme";
 import { WINDOW_WIDTH } from "~lib/index";
-import { HeaderButton } from "~navigation/components";
+import {
+  HeaderAvatarButton,
+  HeaderButton,
+  HeaderButtonSpacer,
+} from "~navigation/components";
 import { TopTabsParamList } from "~navigation/types";
 import { CollectionDetailScreen } from "~screens/CollectionDetailScreen";
 import { CollectionItemDetailScreen } from "~screens/CollectionItemDetailScreen";
 import { CollectionListScreen } from "~screens/CollectionListScreen";
 import { HomeWalletListScreen } from "~screens/HomeWalletListScreen";
 import { NotificationsScreen } from "~screens/NotificationsScreen";
+import { ReceiveTokenScreen } from "~screens/ReceiveTokenScreen";
 import { RecentActivityScreen } from "~screens/RecentActivityScreen";
 import { TokenDetailScreen } from "~screens/TokenDetailScreen";
 import { TokenListScreen } from "~screens/TokenListScreen";
+import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollectibleSelectRecipientScreen";
+
+import { SendNavigator } from "~src/navigation/SendNavigator";
 
 const TopTabs = createMaterialTopTabNavigator<TopTabsParamList>();
 function TopTabsNavigator(): JSX.Element {
@@ -96,98 +110,131 @@ export type TokenDetailScreenParams = StackScreenProps<
   "TokenDetail"
 >;
 
-const Stack = createNativeStackNavigator<WalletStackParamList>();
+const Stack = createStackNavigator<WalletStackParamList>();
 export function WalletsNavigator(): JSX.Element {
+  const tabBarEnabled = Constants.expoConfig?.extra?.tabBarEnabled;
+  const insets = useSafeAreaInsets();
   const theme = useTamaguiTheme();
   return (
-    <Stack.Navigator
-      initialRouteName="HomeWalletList"
-      screenOptions={{
-        headerTintColor: theme.fontColor.val,
+    <View
+      style={{
+        flex: 1,
+        marginBottom: !tabBarEnabled ? insets.bottom : 0,
       }}
     >
-      <Stack.Screen
-        name="HomeWalletList"
-        component={HomeWalletListScreen}
-        options={({ navigation }) => {
-          return {
+      <Stack.Navigator
+        initialRouteName="HomeWalletList"
+        screenOptions={{
+          headerTintColor: theme.fontColor.val,
+        }}
+      >
+        <Stack.Screen
+          name="HomeWalletList"
+          component={HomeWalletListScreen}
+          options={({ navigation }) => {
+            return {
+              headerShown: true,
+              headerBackTitleVisible: false,
+              title: "Balances",
+              headerTitle: ({ tintColor, children }) => {
+                return (
+                  <BottomSheetViewOptions
+                    tintColor={tintColor}
+                    title={children}
+                    navigation={navigation}
+                  />
+                );
+              },
+              headerLeft: (props) => (
+                <HeaderAvatarButton {...props} navigation={navigation} />
+              ),
+              headerRight: (props) => (
+                <HeaderButton
+                  name="notifications"
+                  {...props}
+                  onPress={() => {
+                    navigation.navigate("Notifications");
+                  }}
+                />
+              ),
+            };
+          }}
+        />
+        <Stack.Screen name="Notifications" component={NotificationsScreen} />
+        <Stack.Screen
+          name="TopTabsWalletDetail"
+          component={TopTabsNavigator}
+          options={{
+            headerShadowVisible: false,
+            headerBackTitleVisible: false,
+            headerTitle: () => {
+              return <WalletSwitcherButton />;
+            },
+          }}
+        />
+        <Stack.Screen
+          name="TokenDetail"
+          component={TokenDetailScreen}
+          options={({ route }) => {
+            const { blockchain, tokenTicker } = route.params;
+            const title = `${toTitleCase(blockchain)} / ${tokenTicker}`;
+            return {
+              title,
+            };
+          }}
+        />
+        <Stack.Screen
+          name="CollectionDetail"
+          component={CollectionDetailScreen}
+          options={({ route }) => {
+            return {
+              headerBackTitleVisible: false,
+              title: route.params.title,
+            };
+          }}
+        />
+        <Stack.Screen
+          name="CollectionItemDetail"
+          component={CollectionItemDetailScreen}
+          options={({ route }) => {
+            return {
+              headerBackTitleVisible: false,
+              title: route.params.title,
+            };
+          }}
+        />
+        <Stack.Group
+          screenOptions={{
+            presentation: "modal",
             headerShown: true,
             headerBackTitleVisible: false,
-            title: "Balances",
-            headerTitle: ({ tintColor, children }) => {
-              return (
-                <BottomSheetViewOptions
-                  tintColor={tintColor}
-                  title={children}
-                  navigation={navigation}
-                />
-              );
-            },
-            headerLeft: (props) => (
-              <PlatformPressable
-                {...props}
-                onPress={() => {
-                  navigation.openDrawer();
-                }}
-              >
-                <CurrentUserAvatar size={24} />
-              </PlatformPressable>
-            ),
-            headerRight: (props) => (
-              <HeaderButton
-                name="notifications"
-                {...props}
-                onPress={() => {
-                  navigation.navigate("Notifications");
-                }}
-              />
-            ),
-          };
-        }}
-      />
-      <Stack.Screen name="Notifications" component={NotificationsScreen} />
-      <Stack.Screen
-        name="TopTabsWalletDetail"
-        component={TopTabsNavigator}
-        options={{
-          headerShadowVisible: false,
-          headerBackTitleVisible: false,
-          headerTitle: () => {
-            return <WalletSwitcherButton />;
-          },
-        }}
-      />
-      <Stack.Screen
-        name="TokenDetail"
-        component={TokenDetailScreen}
-        options={({ route }) => {
-          const { blockchain, tokenTicker } = route.params;
-          const title = `${toTitleCase(blockchain)} / ${tokenTicker}`;
-          return {
-            title,
-          };
-        }}
-      />
-      <Stack.Screen
-        name="CollectionDetail"
-        component={CollectionDetailScreen}
-        options={({ route }) => {
-          return {
-            headerBackTitleVisible: false,
-            title: route.params.title,
-          };
-        }}
-      />
-      <Stack.Screen
-        name="CollectionItemDetail"
-        component={CollectionItemDetailScreen}
-        options={({ route }) => {
-          return {
-            headerBackTitleVisible: false,
-            title: route.params.title,
-          };
-        }}
-      />
-    </Stack.Navigator>
+            headerTintColor: theme.fontColor.val,
+            headerBackImage: IconCloseModal,
+          }}
+        >
+          <Stack.Screen
+            options={{ title: "Deposit" }}
+            name="DepositSingle"
+            component={ReceiveTokenScreen}
+          />
+          <Stack.Group screenOptions={{ headerShown: false }}>
+            <Stack.Screen
+              name="SendSelectTokenModal"
+              component={SendNavigator}
+            />
+          </Stack.Group>
+          <Stack.Screen
+            name="SendCollectibleSelectRecipient"
+            component={SendCollectibleSendRecipientScreen}
+            options={({ route }) => {
+              const { nft } = route.params;
+              return {
+                title: `Send ${nft.name}`,
+              };
+            }}
+          />
+        </Stack.Group>
+      </Stack.Navigator>
+    </View>
   );
 }

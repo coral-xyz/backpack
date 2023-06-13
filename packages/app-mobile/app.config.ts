@@ -7,13 +7,13 @@ type ExpoExtras = {
     };
     serviceWorkerUrl: string;
     graphqlApiUrl: string;
+    tabBarEnabled: boolean;
   };
 };
 
 const localGraphQLApi = "http://localhost:8080/v2/graphql";
 const remoteGraphQLApi = "https://backpack-api.xnfts.dev/v2/graphql";
-const isDevMode =
-  process.env.APP_ENV !== "staging" && process.env.APP_ENV !== "production";
+const isDev = process.env.APP_ENV === "development";
 
 // NOTE: this is the hardcoded hash for production builds via App Store
 // deploy your current changes to production via pull request, switch to gh-pages branch and grab the hash from there
@@ -36,12 +36,33 @@ const getServiceWorkerUrl = () => {
   }
 };
 
+const getSplashScreen = () => {
+  if (process.env.APP_ENV === "production") {
+    return {
+      image: "./assets/splash-production.png",
+      backgroundColor: "#FFF",
+    };
+  }
+
+  if (process.env.APP_ENV === "staging") {
+    return {
+      image: "./assets/splash-staging.png",
+      backgroundColor: "#000",
+    };
+  }
+
+  return {
+    image: "./assets/splash-development.png",
+    backgroundColor: "#EB6E46",
+  };
+};
+
 export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
   const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
-  const packageName = "app.backpack.mobile";
+  const packageName = isDev ? "app.backpack.dev" : "app.backpack.mobile";
 
   const serviceWorkerUrl = getServiceWorkerUrl();
-  const graphqlApiUrl = !isDevMode ? remoteGraphQLApi : localGraphQLApi;
+  const graphqlApiUrl = !isDev ? remoteGraphQLApi : localGraphQLApi;
 
   return {
     ...config,
@@ -50,14 +71,15 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
     owner: "coral-xyz",
     version: "0.1.0",
     orientation: "portrait",
-    icon: "./assets/icon.png",
+    icon: isDev
+      ? "./assets/app-logo-development.png"
+      : "./assets/app-logo-production.png",
     // generate icon dynamically based on STAGING vs. PRODUCTION
     // icon: "https://icogen.vercel.app/api/icon?icon=fire",
     userInterfaceStyle: "light",
     splash: {
-      image: "./assets/splash.png",
+      ...getSplashScreen(),
       resizeMode: "cover",
-      backgroundColor: "#000",
     },
     plugins: [
       [
@@ -86,7 +108,6 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
       },
       supportsTablet: false,
       bundleIdentifier: packageName,
-      // bundleIdentifier: IS_DEV ? 'com.myapp.dev' : 'com.myapp',
       infoPlist: {
         // ATTENTION: Your service worker must live in the top 3 or will not load
         // Apple considers this a feature
@@ -102,7 +123,6 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
     },
     android: {
       package: packageName,
-      // package: IS_DEV ? 'com.myapp.dev' : 'com.myapp',
       googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
@@ -115,6 +135,7 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
     extra: {
       graphqlApiUrl,
       serviceWorkerUrl,
+      tabBarEnabled: false,
       eas: {
         projectId: projectID,
       },

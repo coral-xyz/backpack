@@ -30,6 +30,7 @@ import {
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
   XNFT_GG_LINK,
   PrivateKeyWalletDescriptor,
+  getLogger,
 } from "@coral-xyz/common";
 import {
   useSavePrivateKey,
@@ -100,6 +101,8 @@ import {
   useDeviceSupportsBiometricAuth,
 } from "~src/features/biometrics/hooks";
 import * as Linking from "~src/lib/linking";
+
+const logger = getLogger("debug1:OnboardingNavigator");
 
 function Network({
   id,
@@ -1096,16 +1099,19 @@ function CreateAccountLoadingScreen(
 
   useEffect(() => {
     (async () => {
+      logger.debug("CreateAccountLoadingScreen:onboardingData", onboardingData);
       const res = await maybeCreateUser({
         ...onboardingData,
         keyringType: onboardingData.keyringType || "mnemonic",
       });
 
+      logger.debug("CreateAccountLoadingScreen:res", res);
+
       if (!res.ok) {
         setError(true);
+      } else {
+        setAuthToken(res.jwt);
       }
-
-      setAuthToken(res.jwt);
     })();
   }, [onboardingData, background, maybeCreateUser, setAuthToken]);
 

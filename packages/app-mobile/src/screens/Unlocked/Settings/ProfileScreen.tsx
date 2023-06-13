@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { View } from "react-native";
 
 import { Blockchain, formatWalletAddress } from "@coral-xyz/common";
-import { useActiveWallets } from "@coral-xyz/recoil";
+import { usePrimaryWallets } from "@coral-xyz/recoil";
 import { StyledText, XStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -44,12 +44,12 @@ function Pill({
   );
 }
 
-function ActiveWalletList() {
-  const activeWallets = useActiveWallets();
+function PrimaryWalletList() {
+  const primaryWallets = usePrimaryWallets();
 
   return (
     <XStack ai="center" jc="center" gap={8} flexWrap="wrap">
-      {activeWallets.map((wallet) => (
+      {primaryWallets.map((wallet) => (
         <Pill
           key={wallet.publicKey}
           blockchain={wallet.blockchain}
@@ -64,7 +64,7 @@ function Container(): JSX.Element {
   return (
     <Screen>
       <AvatarHeader />
-      <ActiveWalletList />
+      <PrimaryWalletList />
     </Screen>
   );
 }

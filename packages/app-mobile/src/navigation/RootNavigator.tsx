@@ -1,5 +1,7 @@
 import { useCallback } from "react";
 
+import Constants from "expo-constants";
+
 import { AuthenticatedSync } from "@coral-xyz/chat-xplat";
 import {
   KeyringStoreStateEnum,
@@ -25,9 +27,11 @@ import {
   OnboardingNavigator,
 } from "./OnboardingNavigator";
 import { UnlockedNavigator } from "./UnlockedNavigator";
+import { WalletsNavigator } from "./WalletsNavigator";
+import { HeaderAvatarButton } from "./components";
 
 import { useSession } from "~src/lib/SessionProvider";
-// import { NotFoundScreen } from "../screens/NotFoundScreen";
+import { HeaderButtonSpacer } from "~src/navigation/components";
 
 export function RootNavigation({
   colorScheme,
@@ -45,6 +49,7 @@ export function RootNavigation({
 
 const Drawer = createDrawerNavigator();
 const DrawerNav = () => {
+  const tabBarEnabled = Constants.expoConfig?.extra?.tabBarEnabled;
   return (
     <Drawer.Navigator
       initialRouteName="DrawerHome"
@@ -57,13 +62,20 @@ const DrawerNav = () => {
       <Drawer.Screen
         name="Profile"
         component={ProfileScreen}
-        options={{
-          headerShown: true,
+        options={({ navigation }) => {
+          return {
+            headerShown: true,
+            headerLeft: (props) => (
+              <HeaderButtonSpacer>
+                <HeaderAvatarButton {...props} navigation={navigation} />
+              </HeaderButtonSpacer>
+            ),
+          };
         }}
       />
       <Drawer.Screen
         name="DrawerHome"
-        component={UnlockedNavigator}
+        component={tabBarEnabled ? UnlockedNavigator : WalletsNavigator}
         options={{ title: "Wallets" }}
       />
       <Drawer.Screen
@@ -94,7 +106,7 @@ function RootNavigator(): JSX.Element {
     case KeyringStoreStateEnum.Locked:
       return <LockedScreen />;
     case KeyringStoreStateEnum.Unlocked:
-      if (appState === "onboardingComplete") {
+      if (appState === "onboardingStarted") {
         return <OnboardingCompleteWelcome onComplete={onCompleteOnboarding} />;
       }
 
