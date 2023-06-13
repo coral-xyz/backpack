@@ -351,7 +351,7 @@ export function OnboardingProvider({
         }
         return await res.json();
       } catch (err) {
-        console.error("debug:OnboardingProvider:createUser", err);
+        console.error("OnboardingProvider:createUser", err);
         throw new Error(`error creating user`);
       }
     },
