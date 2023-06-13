@@ -99,32 +99,31 @@ function SwitchTokensButton({
   );
 }
 
-function InputTokenTextInput() {
-  const {
-    fromAmount,
-    setFromAmount,
-    fromToken,
-    // availableForSwap,
-    // exceedsBalance,
-  } = useSwapContext();
+function TextInputToken({
+  direction,
+}: {
+  direction: "from" | "to";
+}): JSX.Element {
+  const { toAmount, toToken, fromAmount, setFromAmount, fromToken } =
+    useSwapContext();
 
-  return (
-    <UnstyledTokenTextInput
-      placeholder="0"
-      onChangeAmount={setFromAmount}
-      decimals={fromToken?.decimals}
-      value={fromAmount}
-      style={{ fontSize: 36, flex: 1 }}
-    />
-  );
-}
-
-function TextInputToken({ direction }) {
   if (direction === "from") {
-    return <InputTokenTextInput />;
+    return (
+      <UnstyledTokenTextInput
+        placeholder="0"
+        onChangeAmount={setFromAmount}
+        decimals={fromToken?.decimals}
+        value={fromAmount}
+        style={{ fontSize: 36, flex: 1 }}
+      />
+    );
   }
 
-  return <TextInput placeholder="0" style={{ fontSize: 36, flex: 1 }} />;
+  const value = toAmount
+    ? ethers.utils.formatUnits(toAmount, toToken?.decimals)
+    : "";
+
+  return <StyledText fontSize="$3xl">{value.toString()}</StyledText>;
 }
 
 function InputTokenSelectorButton({ onPress }) {
@@ -387,33 +386,3 @@ export function SwapTokenScreen({ navigation, route }): JSX.Element {
     </ErrorBoundary>
   );
 }
-
-// <View>
-//   <InputField
-//     leftLabel="Sending"
-//     rightLabelComponent={
-//       <InputFieldMaxLabel
-//         label="Max swap:"
-//         amount={BigNumber.from(0)}
-//         onSetAmount={console.log}
-//         decimals={0}
-//       />
-//     }
-//   >
-//     <StyledTokenTextInput
-//       value={BigNumber.from(20)}
-//       decimals={0}
-//       placeholder="0"
-//       onChangeText={console.log}
-//     />
-//   </InputField>
-//   <InputField leftLabel="Receiving">
-//     <StyledTokenTextInput
-//       value={BigNumber.from(20)}
-//       decimals={0}
-//       placeholder="0"
-//       onChangeText={console.log}
-//     />
-//   </InputField>
-// </View>
-//
