@@ -1,5 +1,6 @@
 import type { MouseEvent } from "react";
 import { useState } from "react";
+import type * as anchor from "@coral-xyz/anchor";
 import type { Nft } from "@coral-xyz/common";
 import {
   NAV_COMPONENT_NFT_DETAIL,
@@ -10,12 +11,14 @@ import {
   chatByCollectionId,
   chatByNftId,
   collectibleXnft,
+  madLadGold,
   useActiveWallet,
   useBlockchainConnectionUrl,
   useNavigation,
   useOpenPlugin,
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
+import { ElectricBolt } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Button, IconButton, MenuItem, Typography } from "@mui/material";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
@@ -207,6 +210,7 @@ function NftCardButton({
           e.currentTarget.src = UNKNOWN_NFT_ICON_SRC;
         }}
       />
+      {nft.collectionName === "Mad Lads" ? <MadLadsGold nft={nft} /> : null}
       <div
         style={{
           width: "100%",
@@ -244,6 +248,46 @@ function NftCardButton({
       </div>
     </Button>
   );
+}
+
+function MadLadsGold({ nft }: { nft: Nft }) {
+  const { contents, state } = useRecoilValueLoadable(madLadGold(nft.mint!));
+  return (
+    <div
+      style={{
+        width: "100%",
+        position: "absolute",
+        left: 0,
+        top: 8,
+        zIndex: 2,
+        display: "flex",
+        justifyContent: "flex-start",
+        padding: "0 8px",
+        gap: "6px",
+      }}
+    >
+      {state !== "loading" && contents.isStaked ? <>
+        <ElectricBolt
+          style={{
+              color: "#f62138",
+            }}
+          />
+        <Gold balance={contents.goldPoints} />
+      </> : null}
+    </div>
+  );
+}
+
+function Gold({ balance }: { balance: anchor.BN }) {
+  /*
+// eslint-disable-next-line no-unsafe-optional-chaining
+  const grouped = balance.toString().match(/(\d+?)(?=(\d{2})+(?!\d)|$)/g);
+	// @ts-ignore
+  const [dust, copper, silver, gold, ...diamondsArr] = grouped?.reverse().filter(Boolean);
+  const diamonds = diamondsArr.join("");
+	console.log(diamonds, gold, silver, copper, dust);
+	*/
+  return null;
 }
 
 function NftCardFooter({
