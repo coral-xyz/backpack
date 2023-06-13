@@ -283,17 +283,19 @@ function MadLadsGold({ nft }: { nft: Nft }) {
           >
             STAKED
           </Typography>
-          <Gold balance={contents.goldPoints} />
+          {/*<Gold balance={contents.goldPoints} />*/}
         </>
       ) : null}
     </div>
   );
 }
 
+/*
 function Gold({ balance }: { balance: anchor.BN }) {
   // TODO: render gold nicely.
   return null;
 }
+*/
 
 function NftCardFooter({
   nft,
