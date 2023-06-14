@@ -1,32 +1,15 @@
 import type { BigNumberish } from "ethers";
 
-import { useState, memo, Suspense, useCallback, useMemo } from "react";
-import {
-  Pressable,
-  Text,
-  View,
-  TextInput,
-  Alert,
-  ActivityIndicator,
-} from "react-native";
+import { useState, Suspense } from "react";
+import { View, Pressable, ActivityIndicator } from "react-native";
 
 import {
   Blockchain,
   ETH_NATIVE_MINT,
   SOL_NATIVE_MINT,
-  formatWalletAddress,
   toDisplayBalance,
-  NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
 } from "@coral-xyz/common";
-import {
-  useActiveWallet,
-  useDarkMode,
-  useJupiterOutputTokens,
-  useSwapContext,
-  // SwapProvider,
-  TokenData,
-  TokenDataWithPrice,
-} from "@coral-xyz/recoil";
+import { useSwapContext, TokenData } from "@coral-xyz/recoil";
 import {
   XStack,
   Stack,
@@ -35,19 +18,13 @@ import {
   IconKeyboardArrowRight,
   ProxyImage,
 } from "@coral-xyz/tamagui";
-import { useNavigation } from "@react-navigation/native";
-import { Currency } from "@tamagui/lucide-icons";
-import { ethers, FixedNumber, BigNumber } from "ethers";
+import { ethers, FixedNumber } from "ethers";
 import { ErrorBoundary } from "react-error-boundary";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import * as BottomDrawerCards from "~components/BottomDrawerCards";
-import { BetterBottomSheet2 } from "~components/BottomSheetModal";
-import { InputField, InputFieldMaxLabel } from "~components/Form";
+import { InputFieldMaxLabel } from "~components/Form";
 import {
   ScreenError,
   ScreenLoading,
-  StyledTokenTextInput,
   PrimaryButton,
   Screen,
   FullScreenLoading,
@@ -121,13 +98,15 @@ function TextInputToken({
 
   if (direction === "from") {
     return (
-      <UnstyledTokenTextInput
-        placeholder="0"
-        onChangeAmount={setFromAmount}
-        decimals={fromToken?.decimals}
-        value={fromAmount}
-        style={{ fontSize: 36, flex: 1 }}
-      />
+      <View style={{ height: 45 }}>
+        <UnstyledTokenTextInput
+          placeholder="0"
+          onChangeAmount={setFromAmount}
+          decimals={fromToken?.decimals}
+          value={fromAmount}
+          style={{ fontSize: 36, flex: 1, height: 0 }}
+        />
+      </View>
     );
   }
 
@@ -135,20 +114,28 @@ function TextInputToken({
     ? ethers.utils.formatUnits(toAmount, toToken?.decimals)
     : "";
 
-  return <StyledText fontSize="$3xl">{value.toString()}</StyledText>;
+  return (
+    <View style={{ height: 45 }}>
+      <StyledText fontSize="$3xl">{value.toString()}</StyledText>
+    </View>
+  );
 }
 
 function InputTokenSelectorButton({ onPress }) {
   const { fromToken } = useSwapContext();
   return (
-    <TokenSelectorButton token={fromToken!} direction="to" onPress={onPress} />
+    <TokenSelectorButton
+      token={fromToken!}
+      direction="from"
+      onPress={onPress}
+    />
   );
 }
 
 function OutputTokenSelectorButton({ onPress }) {
   const { toToken } = useSwapContext();
   return (
-    <TokenSelectorButton token={toToken!} direction="from" onPress={onPress} />
+    <TokenSelectorButton token={toToken!} direction="to" onPress={onPress} />
   );
 }
 
@@ -196,7 +183,12 @@ function CurrencyInputBox({ children, direction }): JSX.Element {
   return (
     <Stack jc="center" bg="$card" borderRadius={16} height={88} p={16}>
       <XStack ai="center" jc="space-between">
-        <TextInputToken direction={direction} />
+        <YStack>
+          <StyledText fontSize="$xs" color="$baseTextMedEmphasis">
+            {direction === "from" ? "You pay" : "You receive"}
+          </StyledText>
+          <TextInputToken direction={direction} />
+        </YStack>
         <YStack>{children}</YStack>
       </XStack>
     </Stack>
@@ -251,28 +243,30 @@ function SwapInfo() {
   // Loading indicator when routes are being loaded due to polling
   if (isLoadingRoutes || isLoadingTransactions) {
     return (
-      <Stack opacity={0.5} bg="$card" borderRadius={16} p={16}>
+      <YStack opacity={0.5} bg="$card" borderRadius={16} p={16}>
         <ActivityIndicator
           style={{ position: "absolute", left: "50%", top: "50%" }}
         />
-        <SwapInfoRow label="Wallet" value="TODO wallet" />
-        <SwapInfoRow label="You Pay" value="-" />
-        <SwapInfoRow label="Rate" value="-" />
-        <SwapInfoRow label="Estimated fees" value="-" />
-        <SwapInfoRow label="Price impact" value="-" />
-      </Stack>
+        <YStack space={8}>
+          <SwapInfoRow label="Wallet" value="TODO wallet" />
+          <SwapInfoRow label="You Pay" value="-" />
+          <SwapInfoRow label="Rate" value="-" />
+          <SwapInfoRow label="Estimated fees" value="-" />
+          <SwapInfoRow label="Price impact" value="-" />
+        </YStack>
+      </YStack>
     );
   }
 
   if (!fromAmount || !toAmount || !fromToken || !toToken) {
     return (
-      <Stack bg="$card" borderRadius={16} p={16}>
+      <YStack bg="$card" borderRadius={16} p={16} space={8}>
         <SwapInfoRow label="Wallet" value="TODO wallet" />
         <SwapInfoRow label="You Pay" value="-" />
         <SwapInfoRow label="Rate" value="-" />
         <SwapInfoRow label="Estimated fees" value="-" />
         <SwapInfoRow label="Price impact" value="-" />
-      </Stack>
+      </YStack>
     );
   }
 
@@ -317,18 +311,18 @@ function SwapInfo() {
     : "-";
 
   return (
-    <Stack bg="$card" borderRadius={16} p={16}>
+    <YStack bg="$card" borderRadius={16} p={16} space={8}>
       <SwapInfoRow label="Wallet" value="TODO wallet" />
       <SwapInfoRow label="You Pay" value={youPayLabel} />
       <SwapInfoRow label="Rate" value={rateLabel} />
       <SwapInfoRow label="Estimated fees" value={networkFeeLabel} />
       <SwapInfoRow label="Price impact" value={priceImpactLabel} />
-    </Stack>
+    </YStack>
   );
 }
 
-export function SwapTokenConfirmScreen({ navigation }) {
-  const { executeSwap } = useSwapContext();
+export function SwapTokenConfirmScreen(): JSX.Element {
+  const { executeSwap, toToken } = useSwapContext();
   const [swapState, setSwapState] = useState(SwapState.CONFIRMATION);
 
   const handleExecuteSwap = async () => {
@@ -344,7 +338,11 @@ export function SwapTokenConfirmScreen({ navigation }) {
   if (swapState === SwapState.CONFIRMING) {
     return (
       <Screen>
-        <FullScreenLoading label="Swapping..." />
+        <FullScreenLoading label="Swapping tokens..." />
+        <StyledText>
+          {toToken?.ticker} will be deposited in your wallet once the
+          transaction is complete
+        </StyledText>
       </Screen>
     );
   }
@@ -358,6 +356,8 @@ export function SwapTokenConfirmScreen({ navigation }) {
         <StyledText textAlign="center">
           You will see your new balance shortly or w/e
         </StyledText>
+        <StyledText textAlign="center">View transaction</StyledText>
+        <PrimaryButton label="Close" />
       </Screen>
     );
   }
@@ -380,9 +380,11 @@ function Container({ navigation }) {
 
   return (
     <Screen>
-      <YStack space={6}>
-        <SwapForm navigation={navigation} />
-        <SwapInfo />
+      <YStack space={6} f={1} jc="space-between">
+        <YStack space={6}>
+          <SwapForm navigation={navigation} />
+          <SwapInfo />
+        </YStack>
         <PrimaryButton
           loading={isLoadingRoutes || isLoadingTransactions}
           disabled={isIncomplete}
@@ -398,13 +400,17 @@ function Container({ navigation }) {
 
 export function SwapTokenListScreen({ navigation, route }): JSX.Element {
   const { direction } = route.params;
-  const { setFromMint, setToMint } = useSwapContext();
+  const { setFromMint, setToMint, toTokens, fromTokens, fromToken } =
+    useSwapContext();
+  // TODO get the right stuff to show up in each list
+  console.log("debug3:toTokens", toTokens);
+  console.log("debug3:fromTokens", fromTokens);
 
   return (
     <Screen>
       <SearchableTokenTables
         onPressRow={(_b: Blockchain, token: Token) => {
-          if (direction === "to") {
+          if (direction === "from") {
             setFromMint(token.mint!);
           } else {
             setToMint(token.mint!);
@@ -412,13 +418,18 @@ export function SwapTokenListScreen({ navigation, route }): JSX.Element {
           navigation.goBack();
         }}
         customFilter={(token: Token) => {
-          // TODO make sure custom filter only supports SOL swaps
+          if (token?.mint !== fromToken?.mint) {
+            return true;
+          }
+
           if (token.mint && token.mint === SOL_NATIVE_MINT) {
             return true;
           }
+
           if (token.address && token.address === ETH_NATIVE_MINT) {
             return true;
           }
+
           return !token.nativeBalance.isZero();
         }}
       />
