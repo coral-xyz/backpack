@@ -66,8 +66,9 @@ export class ToSecureUITransportSender<
     // remove listeners & reference
     try {
       port.disconnect();
-    } catch (_e) {
-      /* this is okay to fail, means no listeners anyways. */
+    } catch (e) {
+      /* this is okay to fail, as it means no listeners left. */
+      console.error(e);
     }
     this.port = null;
 
