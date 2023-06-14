@@ -336,7 +336,11 @@ const ItemRow = function ({
   // Minus one because we need to chop off the header.
   const start = (itemStartIndex - 1) * itemsPerRow;
   const end = start + itemsPerRow;
-  const items = collection.itemIds.slice(start, end);
+  const items = new Array(itemsPerRow).fill(null);
+  const collectionItems = collection.itemIds.slice(start, end);
+  collectionItems.forEach((item, k) => {
+    items[k] = item;
+  });
 
   return (
     <CustomCard top={false} bottom={false}>
@@ -348,7 +352,7 @@ const ItemRow = function ({
           flex: "0 0 auto",
         }}
       >
-        {items.map((nftId: string) => {
+        {items.map((nftId: string | null) => {
           return (
             <div
               key={nftId}
@@ -360,7 +364,7 @@ const ItemRow = function ({
                 margin: "0px 6px",
               }}
             >
-              {collection ? (
+              {nftId !== null && collection ? (
                 <Suspense fallback={<Loading />}>
                   <NftCard
                     publicKey={publicKey}
