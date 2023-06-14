@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useCallback } from "react";
+
+import Constants from "expo-constants";
 
 import { AuthenticatedSync } from "@coral-xyz/chat-xplat";
 import {
@@ -12,22 +14,24 @@ import {
   DefaultTheme,
   NavigationContainer,
 } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
 
+import { FullScreenLoading } from "~components/index";
 import { AccountSettingsNavigator } from "~navigation/AccountSettingsNavigator";
 import { GlobalDrawerContent } from "~navigation/GlobalDrawerContent";
-import { HeaderButton } from "~navigation/components";
-import { FriendDetailScreen } from "~screens/FriendDetailScreen";
-import { FriendListScreen } from "~screens/FriendListScreen";
 import { ProfileScreen } from "~screens/Unlocked/Settings/ProfileScreen";
 
+import { FriendsNavigator } from "./FriendsNavigator";
 import { LockedScreen } from "./LockedNavigator";
 import {
   OnboardingCompleteWelcome,
   OnboardingNavigator,
 } from "./OnboardingNavigator";
 import { UnlockedNavigator } from "./UnlockedNavigator";
-import { NotFoundScreen } from "../screens/NotFoundScreen";
+import { WalletsNavigator } from "./WalletsNavigator";
+import { HeaderAvatarButton } from "./components";
+
+import { useSession } from "~src/lib/SessionProvider";
+import { HeaderButtonSpacer } from "~src/navigation/components";
 
 export function RootNavigation({
   colorScheme,
@@ -43,96 +47,67 @@ export function RootNavigation({
   );
 }
 
-type FriendNavigatorStackParamList = {
-  FriendList: undefined;
-  FriendDetail: {
-    userId: string;
-    username: string;
-  };
-};
-
-const FriendStack = createStackNavigator<FriendNavigatorStackParamList>();
-
-const FriendNavigator = () => {
+const Drawer = createDrawerNavigator();
+const DrawerNav = () => {
+  const tabBarEnabled = Constants.expoConfig?.extra?.tabBarEnabled;
   return (
-    <FriendStack.Navigator>
+    <Drawer.Navigator
+      initialRouteName="DrawerHome"
+      screenOptions={{
+        swipeEnabled: false,
+        headerShown: false,
+      }}
+      drawerContent={GlobalDrawerContent}
+    >
       <Drawer.Screen
-        name="FriendList"
-        component={FriendListScreen}
+        name="Profile"
+        component={ProfileScreen}
         options={({ navigation }) => {
           return {
-            title: "Friends",
             headerShown: true,
             headerLeft: (props) => (
-              <HeaderButton
-                name="menu"
-                {...props}
-                onPress={() => {
-                  navigation.openDrawer();
-                  // navigation.navigate("HomeWalletList");
-                }}
-              />
+              <HeaderButtonSpacer>
+                <HeaderAvatarButton {...props} navigation={navigation} />
+              </HeaderButtonSpacer>
             ),
           };
         }}
       />
       <Drawer.Screen
-        name="FriendDetail"
-        component={FriendDetailScreen}
-        options={({ route }) => {
-          return {
-            headerShown: true,
-            title: route.params?.username,
-          };
-        }}
-      />
-    </FriendStack.Navigator>
-  );
-};
-
-const Drawer = createDrawerNavigator();
-
-const DrawerNav = () => {
-  return (
-    <Drawer.Navigator
-      initialRouteName="DrawerHome"
-      screenOptions={{ headerShown: false }}
-      drawerContent={GlobalDrawerContent}
-      // drawerContent={(props) => <CustomDrawerContent {...props} />}
-    >
-      <Drawer.Screen
         name="DrawerHome"
-        component={UnlockedNavigator}
-        options={{ title: "Balances" }}
+        component={tabBarEnabled ? UnlockedNavigator : WalletsNavigator}
+        options={{ title: "Wallets" }}
       />
       <Drawer.Screen
         name="AccountSettings"
         component={AccountSettingsNavigator}
         options={{ title: "Settings" }}
       />
-      <Drawer.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{
-          headerShown: true,
-        }}
-      />
-      <Drawer.Screen name="Friends" component={FriendNavigator} />
+      <Drawer.Screen name="Friends" component={FriendsNavigator} />
     </Drawer.Navigator>
   );
 };
 
 function RootNavigator(): JSX.Element {
-  const [status, setStatus] = useState(null);
   const keyringStoreState = useKeyringStoreState();
+  const { appState, setAppState } = useSession();
+
+  const onStartOnboarding = useCallback(() => {
+    setAppState("onboardingStarted");
+  }, [setAppState]);
+
+  const onCompleteOnboarding = useCallback(() => {
+    setAppState("onboardingComplete");
+  }, [setAppState]);
+
   switch (keyringStoreState) {
     case KeyringStoreStateEnum.NeedsOnboarding:
-      return <OnboardingNavigator onStart={setStatus} />;
+      return <OnboardingNavigator onStart={onStartOnboarding} />;
     case KeyringStoreStateEnum.Locked:
       return <LockedScreen />;
     case KeyringStoreStateEnum.Unlocked:
-      if (status === "onboarding") {
-        return <OnboardingCompleteWelcome onComplete={setStatus} />;
+      if (appState === "onboardingStarted") {
+        return <OnboardingCompleteWelcome onComplete={onCompleteOnboarding} />;
       }
 
       return (
@@ -144,6 +119,6 @@ function RootNavigator(): JSX.Element {
         </>
       );
     default:
-      return <NotFoundScreen />;
+      return <FullScreenLoading />;
   }
 }

@@ -19,7 +19,7 @@ import {
 } from "~components/ListItem";
 import {
   RoundedContainerGroup,
-  Screen,
+  // Screen,
   ScreenEmptyList,
   ScreenError,
   ScreenLoading,
@@ -141,7 +141,11 @@ function NotificationList({
   return (
     <SectionList
       sections={sections}
-      contentContainerStyle={{ flex: sections.length > 0 ? undefined : 1 }}
+      style={{ paddingTop: 16, paddingHorizontal: 16 }}
+      contentContainerStyle={{
+        flex: sections.length > 0 ? undefined : 1,
+        paddingBottom: 32,
+      }}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
       renderSectionHeader={renderSectionHeader}
@@ -163,19 +167,15 @@ function NotificationList({
 
 function Container(): JSX.Element {
   return (
-    <Screen>
-      <NotificationsData>
-        {({
-          groupedNotifications,
-        }: {
-          groupedNotifications: GroupedNotification[];
-        }) => {
-          return (
-            <NotificationList groupedNotifications={groupedNotifications} />
-          );
-        }}
-      </NotificationsData>
-    </Screen>
+    <NotificationsData>
+      {({
+        groupedNotifications,
+      }: {
+        groupedNotifications: GroupedNotification[];
+      }) => {
+        return <NotificationList groupedNotifications={groupedNotifications} />;
+      }}
+    </NotificationsData>
   );
 }
 

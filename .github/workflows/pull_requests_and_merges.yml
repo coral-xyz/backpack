@@ -83,7 +83,18 @@ jobs:
       - name: Build background-service-worker.html
         run: cd packages/background && yarn build:html
 
-      - name: (Github Pages) Deploy background-service-worker.html
+      - if: github.event_name == 'pull_request'
+        name: "set env.commit_sha from latest commit in PR"
+        run: echo "commit_sha=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_ENV"
+
+      - if: github.event_name == 'push'
+        name: "set env.commit_sha from commit or merge commit"
+        run: echo "commit_sha=${{ github.sha }}" >> "$GITHUB_ENV"
+
+      - name: "set env.short_sha"
+        run: echo "short_sha=$(echo "${{ env.commit_sha }}" | cut -c1-7)" >> "$GITHUB_ENV"
+
+      - name: (Github Pages) Deploy LATEST background-service-worker.html
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -91,6 +102,15 @@ jobs:
           publish_dir: packages/background/build
           github_token: ${{ secrets.GITHUB_TOKEN }}
           destination_dir: "background-scripts/latest"
+
+      - name: (Github Pages) Deploy short_sha background-service-worker.html
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          cname: mobile-service-worker.xnfts.dev
+          publish_dir: packages/background/build
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          destination_dir: "background-scripts/${{ env.short_sha }}"
 
       - name: (Github Pages) Deploy ledger injection
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'

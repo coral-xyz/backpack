@@ -14,12 +14,7 @@ export function NotFoundScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "red",
     alignItems: "center",
     justifyContent: "center",
-  },
-  text: {
-    fontSize: 24,
-    color: "black",
   },
 });

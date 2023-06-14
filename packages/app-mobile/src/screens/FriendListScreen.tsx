@@ -142,37 +142,42 @@ function Container({ navigation }: any): JSX.Element {
 
   const keyExtractor = useCallback((item) => item.id, []);
   const renderItem = useCallback(
-    ({ item }) => {
+    ({ item, index }) => {
+      const isFirst = index === 0;
+      const isLast = index === data.length - 1;
       return (
-        <_ListItemOneLine
-          title={item.username}
-          icon={<UserAvatar size={32} uri={item.avatar} />}
-          iconAfter={<ArrowRightIcon />}
-          onPress={() => handlePressUser(item.id, item.username)}
-        />
+        <RoundedContainerGroup
+          disableTopRadius={!isFirst}
+          disableBottomRadius={!isLast}
+        >
+          <_ListItemOneLine
+            title={item.username}
+            icon={<UserAvatar size={32} uri={item.avatar} />}
+            iconAfter={<ArrowRightIcon />}
+            onPress={() => handlePressUser(item.id, item.username)}
+          />
+        </RoundedContainerGroup>
       );
     },
-    [handlePressUser]
+    [handlePressUser, data.length]
   );
 
   return (
-    <Screen>
-      <RoundedContainerGroup>
-        <FlatList
-          data={data}
-          renderItem={renderItem}
-          ItemSeparatorComponent={Separator}
-          keyExtractor={keyExtractor}
-          ListEmptyComponent={
-            <ScreenEmptyList
-              title="You have no friends!"
-              subtitle="Go add some"
-              iconName="settings"
-            />
-          }
+    <FlatList
+      style={{ paddingTop: 16, paddingHorizontal: 16 }}
+      contentContainerStyle={{ paddingBottom: 32 }}
+      data={data}
+      renderItem={renderItem}
+      ItemSeparatorComponent={Separator}
+      keyExtractor={keyExtractor}
+      ListEmptyComponent={
+        <ScreenEmptyList
+          title="You have no friends!"
+          subtitle="Go add some"
+          iconName="settings"
         />
-      </RoundedContainerGroup>
-    </Screen>
+      }
+    />
   );
 }
 

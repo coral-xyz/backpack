@@ -28,6 +28,7 @@ import type {
   GetProgramAccountsConfig,
   GetProgramAccountsFilter,
   GetSupplyConfig,
+  GetVersionedTransactionConfig,
   InflationGovernor,
   InflationReward,
   LeaderSchedule,
@@ -424,11 +425,11 @@ export class BackgroundSolanaConnection extends Connection {
 
   async getParsedTransactions(
     signatures: TransactionSignature[],
-    commitment?: Finality
+    commitmentOrConfig?: GetVersionedTransactionConfig | Finality
   ): Promise<(ParsedConfirmedTransaction | null)[]> {
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
-      params: [signatures, commitment],
+      params: [signatures, commitmentOrConfig],
     });
   }
 
@@ -445,11 +446,11 @@ export class BackgroundSolanaConnection extends Connection {
 
   async getParsedTransaction(
     signature: TransactionSignature,
-    commitment?: Finality
+    commitmentOrConfig?: GetVersionedTransactionConfig | Finality
   ): Promise<ParsedConfirmedTransaction | null> {
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION,
-      params: [signature, commitment],
+      params: [signature, commitmentOrConfig],
     });
   }
 
@@ -1010,8 +1011,8 @@ export class BackgroundSolanaConnection extends Connection {
 export async function confirmTransaction(
   c: Connection,
   txSig: string,
-  commitment: Finality
-): Promise<ParsedConfirmedTransaction> {
+  commitmentOrConfig?: GetVersionedTransactionConfig | Finality
+): Promise<ReturnType<(typeof c)["getParsedTransaction"]>> {
   return new Promise(async (resolve, reject) => {
     setTimeout(
       () =>
@@ -1019,9 +1020,9 @@ export async function confirmTransaction(
       30000
     );
     await new Promise((resolve) => setTimeout(resolve, 5000));
-    let tx = await c.getParsedTransaction(txSig, commitment);
+    let tx = await c.getParsedTransaction(txSig, commitmentOrConfig);
     while (tx === null) {
-      tx = await c.getParsedTransaction(txSig, commitment);
+      tx = await c.getParsedTransaction(txSig, commitmentOrConfig);
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
     resolve(tx);

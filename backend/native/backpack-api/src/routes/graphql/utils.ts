@@ -5,9 +5,9 @@ import { AUTH_JWT_PUBLIC_KEY } from "../../config";
 
 import {
   type BalanceAggregate,
-  ChainId,
   type Node,
   type PageInfo,
+  ProviderId,
   type TokenBalance,
 } from "./types";
 
@@ -129,19 +129,19 @@ export async function getSubjectFromVerifiedJwt(
 }
 
 /**
- * Infer and return a ChainId enum variant from the argued string value.
+ * Infer and return a ProviderId enum variant from the argued string value.
  * @export
  * @param {string} val
- * @returns {(ChainId | never)}
+ * @returns {(ProviderId | never)}
  */
-export function inferChainIdFromString(val: string): ChainId | never {
+export function inferProviderIdFromString(val: string): ProviderId | never {
   switch (val) {
     case "ethereum": {
-      return ChainId.Ethereum;
+      return ProviderId.Ethereum;
     }
 
     case "solana": {
-      return ChainId.Solana;
+      return ProviderId.Solana;
     }
 
     default: {

@@ -2,6 +2,7 @@ import { Chain } from "@coral-xyz/zeus";
 import { GraphQLError } from "graphql";
 
 import { NodeBuilder } from "../nodes";
+import { getProviderForId } from "../providers";
 import {
   type Friend,
   type FriendRequest,
@@ -14,7 +15,7 @@ import {
   type WalletConnection,
   type WalletFiltersInput,
 } from "../types";
-import { createConnection, inferChainIdFromString } from "../utils";
+import { createConnection, inferProviderIdFromString } from "../utils";
 
 type HasuraOptions = {
   secret: string;
@@ -367,11 +368,15 @@ export class Hasura {
     }
 
     const { blockchain, created_at, is_primary } = resp.auth_public_keys[0];
-    const chain = inferChainIdFromString(blockchain);
+    const provider = getProviderForId(inferProviderIdFromString(blockchain));
 
-    return NodeBuilder.wallet(chain, {
+    return NodeBuilder.wallet(provider.id(), {
       address,
-      chainId: chain,
+      provider: NodeBuilder.provider({
+        logo: provider.logo(),
+        name: provider.name(),
+        providerId: provider.id(),
+      }),
       createdAt: new Date(created_at as string).toISOString(),
       isPrimary: is_primary ?? false,
     });
@@ -396,8 +401,8 @@ export class Hasura {
         auth_public_keys: [
           {
             where: {
-              blockchain: filters?.chainId
-                ? { _eq: filters.chainId.toLowerCase() }
+              blockchain: filters?.providerId
+                ? { _eq: filters.providerId.toLowerCase() }
                 : undefined,
               is_primary: filters?.primaryOnly ? { _eq: true } : undefined,
               public_key: filters?.pubkeys
@@ -422,10 +427,17 @@ export class Hasura {
     }
 
     const nodes = resp.auth_public_keys.map((pk) => {
-      const chain = inferChainIdFromString(pk.blockchain);
-      return NodeBuilder.wallet(chain, {
+      const provider = getProviderForId(
+        inferProviderIdFromString(pk.blockchain)
+      );
+
+      return NodeBuilder.wallet(provider.id(), {
         address: pk.public_key,
-        chainId: chain,
+        provider: NodeBuilder.provider({
+          logo: provider.logo(),
+          name: provider.name(),
+          providerId: provider.id(),
+        }),
         createdAt: new Date(pk.created_at as string).toISOString(),
         isPrimary: pk.is_primary ?? false,
       });

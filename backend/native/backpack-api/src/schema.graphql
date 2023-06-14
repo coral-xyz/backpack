@@ -25,7 +25,7 @@ type Mutation {
   Authenticate a user and set the JWT in their cookies.
   """
   authenticate(
-    chainId: ChainID!
+    providerId: ProviderID!
     message: String!
     publicKey: String!
     signature: String!
@@ -40,7 +40,7 @@ type Mutation {
   Attempt to add a new wallet public key to the user account.
   """
   importPublicKey(
-    chainId: ChainID!
+    providerId: ProviderID!
     address: String!
     signature: String!
   ): Boolean
@@ -59,7 +59,7 @@ type Query {
   Get the entire or a specific entry of a token list.
   """
   tokenList(
-    chainId: ChainID!
+    providerId: ProviderID!
     filters: TokenListEntryFiltersInput
   ): [TokenListEntry]! @cacheControl(maxAge: 600)
 
@@ -70,9 +70,9 @@ type Query {
   user: User @cacheControl(maxAge: 60, scope: PRIVATE)
 
   """
-  Fetching a wallet and it's assets by the public key address and associated `ChainID`.
+  Fetching a wallet and it's assets by the public key address and associated `ProviderID`.
   """
-  wallet(chainId: ChainID!, address: String!): Wallet
+  wallet(providerId: ProviderID!, address: String!): Wallet
     @deprecated(
       reason: "Should use the user entrypoint for authentication identities."
     )
@@ -88,9 +88,9 @@ enum CacheControlScope {
 }
 
 """
-Chain ID enum variants for the supported blockchains in the API.
+Provider ID enum variants for the supported blockchains or wallet types in the API.
 """
-enum ChainID {
+enum ProviderID {
   ETHEREUM
   SOLANA
 }
@@ -196,14 +196,14 @@ Input filter type for fetching user wallets and their data.
 """
 input WalletFiltersInput {
   """
-  A `ChainID` value to filter for all of the public keys of the user for a given blockchain.
-  """
-  chainId: ChainID
-
-  """
   Flag to filter for only the primary wallets for each registered blockchain of the user.
   """
   primaryOnly: Boolean
+
+  """
+  A `ProviderID` value to filter for all of the public keys of the user for a given blockchain.
+  """
+  providerId: ProviderID
 
   """
   A list of public keys to filter in the response.
@@ -583,11 +583,19 @@ type Notification implements Node {
   viewed: Boolean!
 }
 
-type NotificationApplicationData implements Node {
+"""
+Identifying metadata for an xNFT application that triggered a notification.
+"""
+type NotificationApplicationData implements Node @cacheControl(maxAge: 900) {
   """
   Globally unique identifier for the node.
   """
   id: ID!
+
+  """
+  The public key string of the xNFT application
+  """
+  address: String!
 
   """
   The image link to the application's icon.
@@ -618,6 +626,31 @@ Relay edge specification for `Notification` nodes.
 type NotificationEdge {
   cursor: String!
   node: Notification!
+}
+
+"""
+Schema exposure of the blockchain data provider used for a `Wallet`.
+"""
+type Provider implements Node {
+  """
+  Globally unique identifier for the node.
+  """
+  id: ID!
+
+  """
+  The logo URL of the provider.
+  """
+  logo: String!
+
+  """
+  The display name of the provider.
+  """
+  name: String!
+
+  """
+  The `ProviderID` enum variant associated with the data provider.
+  """
+  providerId: ProviderID!
 }
 
 """
@@ -862,11 +895,6 @@ type Wallet implements Node {
   address: String!
 
   """
-  The blockchain enum variant that the wallet is associated with.
-  """
-  chainId: ChainID!
-
-  """
   The timestamp that the wallet was imported or registered to the Backpack user.
   """
   createdAt: String!
@@ -885,6 +913,11 @@ type Wallet implements Node {
   The Relay connection for all of the NFTs owned by the wallet.
   """
   nfts(filters: NftFiltersInput): NftConnection @cacheControl(maxAge: 60)
+
+  """
+  The blockchain enum variant that the wallet is associated with.
+  """
+  provider: Provider!
 
   """
   The Relay connection for all transactions initiated or associated with the wallet.

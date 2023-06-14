@@ -1,3 +1,4 @@
+import { UNKNOWN_ICON_SRC } from "@coral-xyz/common";
 import {
   PrimaryButton,
   ProxyImage,
@@ -7,7 +8,6 @@ import { useAvatarUrl, useUser, useWalletName } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 
 import { formatWalletAddress } from "../../../components/common";
-import { UNKNOWN_ICON_SRC } from "../../common/Icon";
 
 const useStyles = styles((theme) => ({
   connectablesContainer: {

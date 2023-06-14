@@ -12,11 +12,16 @@
       },
       "android": {
         "image": "latest"
-      },
+      }
+    },
+    "development": {
+      "extends": "monorepo",
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "development",
       "env": {
-        "APP_ENV": "production"
-      },
-      "channel": "monorepo"
+        "APP_ENV": "development"
+      }
     },
     "development-simulator": {
       "extends": "monorepo",
@@ -25,18 +30,27 @@
       "ios": {
         "simulator": true
       },
-      "channel": "development-simulator"
+      "channel": "development-simulator",
+      "env": {
+        "APP_ENV": "development"
+      }
     },
     "preview": {
       "extends": "monorepo",
       "distribution": "internal",
-      "channel": "preview"
+      "channel": "staging",
+      "env": {
+        "APP_ENV": "staging"
+      }
     },
     "production": {
       "extends": "monorepo",
       "channel": "production",
       "distribution": "store",
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "APP_ENV": "staging"
+      }
     }
   },
   "submit": {

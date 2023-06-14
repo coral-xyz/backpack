@@ -18,10 +18,11 @@ import {
   ScreenLoading,
 } from "~components/index";
 import { convertTransactionDataToSectionList } from "~lib/RecentActivityUtils";
+import { RecentActivityScreenProps } from "~navigation/types";
 
 const GET_RECENT_TRANSACTIONS = gql`
-  query WalletTransactions($chainId: ChainID!, $address: String!) {
-    wallet(chainId: $chainId, address: $address) {
+  query WalletTransactions($providerId: ProviderID!, $address: String!) {
+    wallet(providerId: $providerId, address: $address) {
       id
       transactions {
         edges {
@@ -42,11 +43,11 @@ const GET_RECENT_TRANSACTIONS = gql`
   }
 `;
 
-function Container({ navigation }: any): JSX.Element {
+function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
   const activeWallet = useActiveWallet();
   const { data } = useSuspenseQuery_experimental(GET_RECENT_TRANSACTIONS, {
     variables: {
-      chainId: activeWallet.blockchain.toUpperCase(),
+      providerId: activeWallet.blockchain.toUpperCase(),
       address: activeWallet.publicKey,
     },
   });
@@ -87,28 +88,31 @@ function Container({ navigation }: any): JSX.Element {
   }, []);
 
   return (
-    <Screen>
-      <SectionList
-        sections={sections}
-        ListEmptyComponent={NoRecentActivity}
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-        renderSectionHeader={renderSectionHeader}
-        SectionSeparatorComponent={SectionSeparator}
-        stickySectionHeadersEnabled={false}
-        showsVerticalScrollIndicator={false}
-      />
-    </Screen>
+    <SectionList
+      style={{ paddingTop: 16, paddingHorizontal: 16 }}
+      contentContainerStyle={{ paddingBottom: 32 }}
+      sections={sections}
+      ListEmptyComponent={NoRecentActivity}
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+      renderSectionHeader={renderSectionHeader}
+      SectionSeparatorComponent={SectionSeparator}
+      stickySectionHeadersEnabled={false}
+      showsVerticalScrollIndicator={false}
+    />
   );
 }
 
-export function RecentActivityScreen({ navigation }: any): JSX.Element {
+export function RecentActivityScreen({
+  navigation,
+  route,
+}: RecentActivityScreenProps): JSX.Element {
   return (
     <ErrorBoundary
       fallbackRender={({ error }) => <ScreenError error={error} />}
     >
       <Suspense fallback={<ScreenLoading />}>
-        <Container navigation={navigation} />
+        <Container navigation={navigation} route={route} />
       </Suspense>
     </ErrorBoundary>
   );

@@ -1,39 +1,60 @@
-import type { Blockchain } from "@coral-xyz/common";
 import type { PublicKey, Wallet } from "~types/types";
 
-import { useCallback, useState } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { Suspense, useCallback, useState } from "react";
+import { FlatList, View, Alert } from "react-native";
 
-import { usePrimaryWallets } from "@coral-xyz/recoil";
-import { PaddedListItemSeparator, StyledText } from "@coral-xyz/tamagui";
+import { useSuspenseQuery_experimental } from "@apollo/client";
+import { Blockchain } from "@coral-xyz/common";
+import { BottomSheetTitle, PaddedListItemSeparator } from "@coral-xyz/tamagui";
 import { useBottomSheetModal } from "@gorhom/bottom-sheet";
+import { ErrorBoundary } from "react-error-boundary";
 
 import { ListItemWallet } from "~components/ListItem";
+import {
+  LinkButton__ as LinkButton,
+  ScreenError,
+  ScreenLoading,
+} from "~components/index";
 import { useWallets } from "~hooks/wallets";
 
-const BlueLinkButton = ({ onPress, label }): JSX.Element => (
-  <Pressable style={{ padding: 12 }} onPress={onPress}>
-    <StyledText alignSelf="center" fontSize="$lg" color="$accentBlue">
-      {label}
-    </StyledText>
-  </Pressable>
-);
+import { gql } from "~src/graphql/__generated__";
+import { useSession } from "~src/lib/SessionProvider";
+import { coalesceWalletData } from "~src/lib/WalletUtils";
 
-export function BottomSheetWalletPicker({ navigation }) {
-  const { dismiss } = useBottomSheetModal();
+const QUERY_USER_WALLETS = gql(`
+  query BottomSheetUserWallets {
+    user {
+      id
+      wallets {
+        edges {
+          node {
+            ...WalletFragment
+          }
+        }
+      }
+    }
+  }
+`);
+
+function Container({ navigation }) {
+  const { setActiveWallet } = useSession();
+  const { data } = useSuspenseQuery_experimental(QUERY_USER_WALLETS);
   const { allWallets, activeWallet, selectActiveWallet } = useWallets();
-  const primaryWallets = usePrimaryWallets();
+  const { dismiss } = useBottomSheetModal();
   const [loadingId, setLoadingId] = useState<string | null>(null);
+
+  const wallets = coalesceWalletData(data, allWallets);
 
   const handlePressSelect = useCallback(
     async (blockchain: Blockchain, publicKey: PublicKey) => {
       setLoadingId(publicKey);
+      setActiveWallet({ blockchain, publicKey });
       selectActiveWallet({ blockchain, publicKey }, () => {
         setLoadingId(null);
         dismiss();
       });
     },
-    [dismiss, selectActiveWallet]
+    [dismiss, selectActiveWallet, setActiveWallet]
   );
 
   const handlePressEdit = useCallback(
@@ -54,10 +75,6 @@ export function BottomSheetWalletPicker({ navigation }) {
 
   const renderItem = useCallback(
     ({ item }) => {
-      const isPrimary = !!primaryWallets.find(
-        (x) => x.publicKey === item.publicKey
-      );
-
       return (
         <ListItemWallet
           name={item.name}
@@ -66,36 +83,46 @@ export function BottomSheetWalletPicker({ navigation }) {
           blockchain={item.blockchain}
           selected={item.publicKey === activeWallet.publicKey}
           loading={loadingId === item.publicKey}
-          primary={isPrimary}
+          primary={item.isPrimary}
           isCold={false}
-          balance={5555.34}
+          balance={item.balance}
           onPressEdit={handlePressEdit}
           onSelect={handlePressSelect}
         />
       );
     },
-    [
-      loadingId,
-      activeWallet.publicKey,
-      primaryWallets,
-      handlePressSelect,
-      handlePressEdit,
-    ]
+    [loadingId, activeWallet.publicKey, handlePressSelect, handlePressEdit]
   );
 
   return (
     <View style={{ height: 400 }}>
-      <StyledText fontSize="$lg" textAlign="center" mb={18}>
-        Wallets
-      </StyledText>
+      <BottomSheetTitle title="Wallets" />
       <FlatList
-        data={allWallets}
+        data={wallets}
         keyExtractor={(item) => item.publicKey}
         renderItem={renderItem}
         ItemSeparatorComponent={PaddedListItemSeparator}
         showsVerticalScrollIndicator={false}
       />
-      <BlueLinkButton label="Add wallet" onPress={console.log} />
+      <LinkButton
+        color="$accentBlue"
+        label="Add wallet"
+        onPress={() => {
+          Alert.alert("TODO");
+        }}
+      />
     </View>
+  );
+}
+
+export function BottomSheetWalletPicker({ navigation }): JSX.Element {
+  return (
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ScreenError error={error} />}
+    >
+      <Suspense fallback={<ScreenLoading />}>
+        <Container navigation={navigation} />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

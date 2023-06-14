@@ -1,5 +1,6 @@
 import type { MouseEvent } from "react";
 import { useState } from "react";
+import type * as anchor from "@coral-xyz/anchor";
 import type { Nft } from "@coral-xyz/common";
 import {
   NAV_COMPONENT_NFT_DETAIL,
@@ -10,6 +11,7 @@ import {
   chatByCollectionId,
   chatByNftId,
   collectibleXnft,
+  madLadGold,
   useActiveWallet,
   useBlockchainConnectionUrl,
   useNavigation,
@@ -207,6 +209,11 @@ function NftCardButton({
           e.currentTarget.src = UNKNOWN_NFT_ICON_SRC;
         }}
       />
+      {/*
+          This is ok to because the gold query will just return error if it's a fake collection.
+          Would still be nice to do this check in a more robust way.
+        */}
+      {nft.collectionName === "Mad Lads" ? <MadLadsGold nft={nft} /> : null}
       <div
         style={{
           width: "100%",
@@ -245,6 +252,50 @@ function NftCardButton({
     </Button>
   );
 }
+
+function MadLadsGold({ nft }: { nft: Nft }) {
+  const { contents, state } = useRecoilValueLoadable(madLadGold(nft.mint!));
+  if (state === "hasError") {
+    return null;
+  }
+  return (
+    <div
+      style={{
+        width: "100%",
+        position: "absolute",
+        left: 0,
+        top: 8,
+        zIndex: 2,
+        display: "flex",
+        justifyContent: "flex-start",
+        padding: "0 8px",
+        gap: "6px",
+      }}
+    >
+      {state === "hasValue" && contents.isStaked ? (
+        <>
+          <Typography
+            style={{
+              color: "#000",
+              fontSize: "14px",
+              fontWeight: 600,
+            }}
+          >
+            STAKED
+          </Typography>
+          {/*<Gold balance={contents.goldPoints} />*/}
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+/*
+function Gold({ balance }: { balance: anchor.BN }) {
+  // TODO: render gold nicely.
+  return null;
+}
+*/
 
 function NftCardFooter({
   nft,

@@ -25,6 +25,7 @@ export class Swr extends RESTDataSource {
   async getXnftData(address: string): Promise<NotificationApplicationData> {
     const resp = await this.get(`/nft-data/xnft/${address}`);
     return NodeBuilder.notificationAppData(address, {
+      address,
       image: resp.metadata.image,
       name: resp.metadata.name,
     });

@@ -170,7 +170,6 @@ export function OnboardingProvider({
     async ({ blockchain, onStatus }: SelectBlockchainType) => {
       const handleStatus = (status: string) => {
         if (onStatus) {
-          console.log("mobile:status", status);
           onStatus(status);
         }
       };
@@ -242,7 +241,7 @@ export function OnboardingProvider({
         }
       }
     },
-    [data]
+    [data, background, setOnboardingData, signMessageForWallet]
   );
 
   const handlePrivateKeyInput = useCallback(
@@ -273,7 +272,7 @@ export function OnboardingProvider({
         },
       });
     },
-    [data]
+    [data, setOnboardingData, signMessageForWallet]
   );
 
   const getKeyringInit = useCallback(
@@ -293,7 +292,7 @@ export function OnboardingProvider({
         };
       }
     },
-    [data]
+    []
   );
 
   //
@@ -330,9 +329,7 @@ export function OnboardingProvider({
           ? [data.privateKeyKeyringInit]
           : data.signedWalletDescriptors;
 
-      //
       // If we're down here, then we are creating a user for the first time.
-      //
       const body = JSON.stringify({
         username,
         inviteCode,
@@ -354,11 +351,11 @@ export function OnboardingProvider({
         }
         return await res.json();
       } catch (err) {
-        console.error("OnboardingProvider:createUser::error", err);
+        console.error("OnboardingProvider:createUser", err);
         throw new Error(`error creating user`);
       }
     },
-    [data]
+    [authenticate]
   );
 
   //
@@ -386,11 +383,11 @@ export function OnboardingProvider({
           });
         }
       } catch (err) {
-        console.error("OnboardingProvider:createStore::error", err);
+        console.error("OnboardingProvider:createStore", err);
         throw new Error(`error creating account`);
       }
     },
-    [data]
+    [background, getKeyringInit]
   );
 
   const maybeCreateUser = useCallback(
@@ -400,11 +397,11 @@ export function OnboardingProvider({
         await createStore(id, jwt, data);
         return { ok: true, jwt };
       } catch (err) {
-        console.error("OnboardingProvider:maybeCreateUser::error", err);
+        console.error("OnboardingProvider:maybeCreateUser", err);
         return { ok: false, jwt: "" };
       }
     },
-    [data]
+    [createStore, createUser]
   );
 
   const contextValue = useMemo(

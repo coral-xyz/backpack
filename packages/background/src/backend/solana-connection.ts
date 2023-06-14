@@ -50,13 +50,14 @@ import type {
   GetProgramAccountsConfig,
   GetProgramAccountsFilter,
   GetSupplyConfig,
+  GetTransactionConfig,
+  GetVersionedTransactionConfig,
   InflationGovernor,
   InflationReward,
   LeaderSchedule,
   LogsCallback,
   LogsFilter,
   Message,
-  MessageV0,
   NonceAccount,
   ParsedAccountData,
   ParsedConfirmedTransaction,
@@ -461,18 +462,16 @@ export class SolanaConnectionBackend {
 
   async confirmTransaction(
     strategy: BlockheightBasedTransactionConfirmationStrategy,
-    commitment?: Commitment
+    commitmentOrConfig?: GetVersionedTransactionConfig | Finality
   ): Promise<RpcResponseAndContext<SignatureResult>> {
     const tx = await confirmTransaction(
       this.connection!,
       strategy.signature,
-      commitment === "confirmed" || commitment === "finalized"
-        ? commitment
-        : "confirmed"
+      buildVersionedTransactionConfig(commitmentOrConfig)
     );
     return {
       context: {
-        slot: tx.slot,
+        slot: tx!.slot,
       },
       value: {
         err: null,
@@ -528,22 +527,22 @@ export class SolanaConnectionBackend {
 
   async getParsedTransactions(
     signatures: TransactionSignature[],
-    commitment?: Finality
-  ): Promise<(ParsedConfirmedTransaction | null)[]> {
+    commitmentOrConfig?: GetVersionedTransactionConfig | Finality
+  ): ReturnType<Connection["getParsedTransactions"]> {
     return await this.connection!.getParsedTransactions(
       signatures,
-      commitment ?? "confirmed"
+      buildVersionedTransactionConfig(commitmentOrConfig)
     );
   }
 
   async getParsedTransaction(
     signature: TransactionSignature,
-    commitment?: Finality
-  ): Promise<ParsedConfirmedTransaction | null> {
+    commitmentOrConfig?: GetVersionedTransactionConfig | Finality
+  ): ReturnType<Connection["getParsedTransaction"]> {
     const conn = new Connection(this.url!); // Unhooked connection.
     return await conn.getParsedTransaction(
       signature,
-      commitment ?? "confirmed"
+      buildVersionedTransactionConfig(commitmentOrConfig)
     );
   }
 
@@ -1040,3 +1039,18 @@ export class SolanaConnectionBackend {
     throw new Error("not implemented");
   }
 }
+
+/**
+ * Accepts undefined, a commitment string, or a Versioned Transaction
+ * Config object and returns a Versioned Transaction Config object.
+ */
+const buildVersionedTransactionConfig = (
+  commitmentOrConfig?: Finality | GetVersionedTransactionConfig
+): GetVersionedTransactionConfig =>
+  typeof commitmentOrConfig === "string" || !commitmentOrConfig
+    ? {
+        commitment:
+          commitmentOrConfig === "finalized" ? "finalized" : "confirmed",
+        maxSupportedTransactionVersion: 0, // required for versioned tx support
+      }
+    : commitmentOrConfig;

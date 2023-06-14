@@ -5,6 +5,8 @@ import { useUserMetadata } from "@coral-xyz/chat-xplat";
 import type { EnrichedNotification } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
+  formatDate,
+  formatSemanticTimeDifference,
   sendFriendRequest,
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
@@ -28,7 +30,7 @@ import {
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { IconButton, List, ListItem, Typography } from "@mui/material";
+import { List, ListItem, Typography } from "@mui/material";
 import { useRecoilState } from "recoil";
 
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
@@ -37,7 +39,6 @@ import {
   NavStackScreen,
   useNavigation,
 } from "../../common/Layout/NavStack";
-import { NotificationIconWithBadge } from "../../common/NotificationIconWithBadge";
 import { ContactRequests, Contacts } from "../Messages/Contacts";
 
 const useStyles = styles((theme) => ({
@@ -105,77 +106,6 @@ const useStyles = styles((theme) => ({
     },
   },
 }));
-
-export function NotificationButton() {
-  const classes = useStyles();
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const theme = useCustomTheme();
-  return (
-    <div className={classes.networkSettingsButtonContainer}>
-      <IconButton
-        disableRipple
-        className={classes.networkSettingsButton}
-        onClick={() => setOpenDrawer(true)}
-        size="large"
-      >
-        <NotificationIconWithBadge
-          style={{
-            color: theme.custom.colors.icon,
-            backgroundColor: "transparent",
-            borderRadius: "12px",
-          }}
-        />
-      </IconButton>
-      <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        <div style={{ height: "100%" }}>
-          <NavStackEphemeral
-            initialRoute={{ name: "root" }}
-            options={() => ({ title: "Notifications" })}
-            navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
-          >
-            <NavStackScreen
-              name="root"
-              component={(props: any) => <Notifications {...props} />}
-            />
-            <NavStackScreen
-              name="contacts"
-              component={(props: any) => <Contacts {...props} />}
-            />
-            <NavStackScreen
-              name="contact-requests"
-              component={(props: any) => <ContactRequests {...props} />}
-            />
-            <NavStackScreen
-              name="contact-requests-sent"
-              component={(props: any) => <ContactRequests {...props} />}
-            />
-          </NavStackEphemeral>
-        </div>
-      </WithDrawer>
-    </div>
-  );
-}
-
-const formatDate = (date: Date) => {
-  const months = [
-    "Jan",
-    "Feb",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "Aug",
-    "Sept",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const mm = months[date.getMonth()];
-  const dd = date.getDate();
-  const yyyy = date.getFullYear();
-  return `${dd} ${mm} ${yyyy}`;
-};
 
 const getGroupedNotifications = (notifications: EnrichedNotification[]) => {
   const groupedNotifications: {
@@ -326,21 +256,6 @@ export function Notifications() {
   );
 }
 
-// export function RecentActivityList({
-//   groupedNotifications,
-// }: {
-//   groupedNotifications: {
-//     date: string;
-//     notifications: EnrichedNotification[];
-//   }[];
-// }) {
-//   return (
-//     <Suspense fallback={<NotificationsLoader />}>
-//       <NotificationList groupedNotifications={groupedNotifications} />
-//     </Suspense>
-//   );
-// }
-
 function NotificationsLoader() {
   return (
     <div
@@ -419,35 +334,6 @@ function NotificationList({
     <NoNotificationsLabel minimize={false} />
   );
 }
-
-const getTimeStr = (timestamp: number) => {
-  const elapsedTimeSeconds = (new Date().getTime() - timestamp) / 1000;
-  if (elapsedTimeSeconds < 60) {
-    return "now";
-  }
-  if (elapsedTimeSeconds / 60 < 60) {
-    const min = Math.floor(elapsedTimeSeconds / 60);
-    if (min === 1) {
-      return "1 min";
-    } else {
-      return `${min} mins`;
-    }
-  }
-
-  if (elapsedTimeSeconds / 3600 < 24) {
-    const hours = Math.floor(elapsedTimeSeconds / 3600);
-    if (hours === 1) {
-      return "1 hour";
-    } else {
-      return `${hours} hours`;
-    }
-  }
-  const days = Math.floor(elapsedTimeSeconds / 3600 / 24);
-  if (days === 1) {
-    return `1 day`;
-  }
-  return `${days} days`;
-};
 
 function NotificationListItem({
   notification,
@@ -536,7 +422,7 @@ function NotificationListItem({
         </div>
         <div>
           <div className={classes.time}>
-            {getTimeStr(notification.timestamp)}
+            {formatSemanticTimeDifference(notification.timestamp)}
           </div>
         </div>
       </div>
@@ -683,7 +569,7 @@ function FriendRequestListItem({
                 <Typography className={classes.txSig}>{title}</Typography>
               </div>
               <div className={classes.time}>
-                {getTimeStr(notification.timestamp)}
+                {formatSemanticTimeDifference(notification.timestamp)}
               </div>
             </div>
             <Typography className={classes.txBody}>@{user.username}</Typography>

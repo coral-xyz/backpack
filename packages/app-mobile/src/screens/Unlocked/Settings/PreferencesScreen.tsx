@@ -1,4 +1,5 @@
 import { Suspense, useState } from "react";
+import { Alert } from "react-native";
 
 import {
   BACKPACK_CONFIG_VERSION,
@@ -12,12 +13,12 @@ import {
   useDarkMode,
   useDeveloperMode,
 } from "@coral-xyz/recoil";
+import { Stack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import {
   ScreenError,
   ScreenLoading,
-  Margin,
   RoundedContainerGroup,
   Screen,
 } from "~components/index";
@@ -28,6 +29,18 @@ import {
   SettingsRowSwitch,
   SettingsRowText,
 } from "./components/SettingsRow";
+
+import {
+  BiometricAuthenticationStatus,
+  // BIOMETRIC_PASSWORD,
+  tryLocalAuthenticate,
+} from "~src/features/biometrics";
+import {
+  useDeviceSupportsBiometricAuth,
+  useOsBiometricAuthEnabled,
+  biometricAuthenticationSuccessful,
+} from "~src/features/biometrics/hooks";
+import * as Linking from "~src/lib/linking";
 
 function SettingsDarkMode() {
   const [loading, setLoading] = useState(false);
@@ -48,7 +61,7 @@ function SettingsDarkMode() {
       loading={loading}
       value={isDarkMode}
       label="Dark Mode"
-      onPress={(value) => onDarkModeSwitch(value)}
+      onPress={onDarkModeSwitch}
     />
   );
 }
@@ -72,7 +85,57 @@ function SettingsDeveloperMode() {
       loading={loading}
       value={isDeveloperMode}
       label="Developer Mode"
-      onPress={(value) => onDeveloperModeSwitch(value)}
+      onPress={onDeveloperModeSwitch}
+    />
+  );
+}
+
+function SettingsBiometricsMode() {
+  const [loading, setLoading] = useState(false);
+  const { touchId: isTouchIdDevice } = useDeviceSupportsBiometricAuth();
+  const isSupported = useDeviceSupportsBiometricAuth();
+  const isEnabled = useOsBiometricAuthEnabled();
+  if (!isSupported) {
+    return null;
+  }
+
+  const onBiometricSwitch = async () => {
+    setLoading(true);
+    const authStatus = await tryLocalAuthenticate({
+      disableDeviceFallback: true,
+    });
+
+    if (
+      authStatus === BiometricAuthenticationStatus.Unsupported ||
+      authStatus === BiometricAuthenticationStatus.MissingEnrollment
+    ) {
+      Alert.alert(
+        `${biometricName} is disabled`,
+        `To enable ${biometricName}, allow access in system settings`,
+        [
+          {
+            text: "Settings",
+            onPress: Linking.openSettings,
+          },
+          { text: "Not now" },
+        ]
+      );
+    }
+
+    if (biometricAuthenticationSuccessful(authStatus)) {
+      console.log("warn folks password is different now or something");
+    }
+
+    setLoading(false);
+  };
+
+  const biometricName = isTouchIdDevice ? "Touch ID" : "Face ID";
+  return (
+    <SettingsRowSwitch
+      loading={loading}
+      value={Boolean(isEnabled)}
+      label={`Enable ${biometricName}`}
+      onPress={onBiometricSwitch}
     />
   );
 }
@@ -80,7 +143,7 @@ function SettingsDeveloperMode() {
 function Container({ navigation }) {
   return (
     <Screen>
-      <Margin vertical={12}>
+      <Stack mb={12}>
         <RoundedContainerGroup>
           <SettingsRow
             label="Trusted Sites"
@@ -89,9 +152,10 @@ function Container({ navigation }) {
           />
           <SettingsDarkMode />
           <SettingsDeveloperMode />
+          <SettingsBiometricsMode />
         </RoundedContainerGroup>
-      </Margin>
-      <Margin bottom={12}>
+      </Stack>
+      <Stack mb={12}>
         <RoundedContainerGroup>
           <SettingsRow
             label={toTitleCase(Blockchain.SOLANA)}
@@ -112,15 +176,15 @@ function Container({ navigation }) {
             }
           />
         </RoundedContainerGroup>
-      </Margin>
-      <Margin bottom={12}>
+      </Stack>
+      <Stack mb={12}>
         <RoundedContainerGroup>
           <SettingsRowText
             label="Version"
             detailText={BACKPACK_CONFIG_VERSION}
           />
         </RoundedContainerGroup>
-      </Margin>
+      </Stack>
     </Screen>
   );
 }

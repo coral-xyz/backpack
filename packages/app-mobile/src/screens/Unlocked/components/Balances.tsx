@@ -245,7 +245,7 @@ export function TokenRow({
       <View style={{ flexDirection: "row" }}>
         {iconUrl ? (
           <Margin right={12}>
-            <ProxyImage style={styles.rowLogo} src={iconUrl} />
+            <ProxyImage size={50} style={styles.rowLogo} src={iconUrl} />
           </Margin>
         ) : null}
         <View>
@@ -288,9 +288,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   rowLogo: {
-    width: 50,
-    height: 50,
-    aspectRatio: 1,
     borderRadius: 25,
   },
   tokenName: {

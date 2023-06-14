@@ -11,20 +11,23 @@ import { useRecoilValue } from "recoil";
 
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import {
-  Screen,
   RoundedContainerGroup,
   ScreenLoading,
   ScreenError,
 } from "~components/index";
+import { TokenListScreenProps } from "~navigation/types";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 import { TokenRow } from "~screens/Unlocked/components/Balances";
 
-function Container({ navigation, route }): JSX.Element {
+import { useSession } from "~src/lib/SessionProvider";
+
+function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
+  const { activeWallet } = useSession();
   const { blockchain, publicKey } = route.params;
   const balances = useRecoilValue(
     blockchainBalancesSorted({
-      publicKey,
-      blockchain,
+      blockchain: (activeWallet?.blockchain as Blockchain) || blockchain,
+      publicKey: activeWallet?.publicKey || publicKey,
     })
   );
 
@@ -62,34 +65,35 @@ function Container({ navigation, route }): JSX.Element {
   );
 
   return (
-    <Screen style={{ paddingHorizontal: 0 }}>
-      <FlatList
-        contentContainerStyle={{
-          paddingHorizontal: 16,
-        }}
-        data={balances}
-        keyExtractor={(item) => item.address}
-        renderItem={renderItem}
-        ListHeaderComponent={
-          <>
-            <BalanceSummaryWidget />
-            <Box marginVertical={12}>
-              <TransferWidget
-                swapEnabled={false}
-                rampEnabled={false}
-                onPressOption={(route: string, options: NavTokenOptions) => {
-                  navigation.push(route, options);
-                }}
-              />
-            </Box>
-          </>
-        }
-      />
-    </Screen>
+    <FlatList
+      style={{ paddingTop: 16, paddingHorizontal: 16 }}
+      contentContainerStyle={{ paddingBottom: 32 }}
+      data={balances}
+      keyExtractor={(item) => item.address}
+      renderItem={renderItem}
+      showsVerticalScrollIndicator={false}
+      ListHeaderComponent={
+        <>
+          <BalanceSummaryWidget />
+          <Box marginVertical={12}>
+            <TransferWidget
+              swapEnabled={false}
+              rampEnabled={false}
+              onPressOption={(route: string, options: NavTokenOptions) => {
+                navigation.push(route, options);
+              }}
+            />
+          </Box>
+        </>
+      }
+    />
   );
 }
 
-export function TokenListScreen({ navigation, route }: any): JSX.Element {
+export function TokenListScreen({
+  navigation,
+  route,
+}: TokenListScreenProps): JSX.Element {
   return (
     <ErrorBoundary
       fallbackRender={({ error }) => <ScreenError error={error} />}

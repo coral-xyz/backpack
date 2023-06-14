@@ -32,7 +32,7 @@ export const importPublicKeyMutationResolver: MutationResolvers["importPublicKey
     // Validate the argument inputs
     const { blockchain, publicKey, signature } =
       await CreatePublicKeys.parseAsync({
-        blockchain: args.chainId.toLowerCase(),
+        blockchain: args.providerId.toLowerCase(),
         publicKey: args.address,
         signature: args.signature,
       });

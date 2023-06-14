@@ -17,12 +17,14 @@
     "isolatedModules": true,
     "noEmit": true,
     "downlevelIteration": true,
+    "noUnusedParameters": true,
     "jsx": "react-jsx",
     "paths": {
       "@coral-xyz/tamagui": ["../tamagui-core"],
       "@coral-xyz/background": ["../background"],
       "@coral-xyz/chat-sdk": ["../chat-sdk"],
       "@coral-xyz/common": ["../common"],
+      "@coral-xyz/data-components": ["../data-components"],
       "@coral-xyz/db": ["../db"],
       "@coral-xyz/message-sdk": ["../message-sdk"],
       "@coral-xyz/react-common": ["../react-common"],
@@ -39,10 +41,12 @@
     { "path": "../secure-client" },
     { "path": "../chat-sdk" },
     { "path": "../common" },
+    { "path": "../data-components" },
     { "path": "../db" },
     { "path": "../message-sdk" },
     { "path": "../react-common" },
     { "path": "../recoil" },
+    { "path": "../tamagui-core" },
     { "path": "../themes" }
   ]
 }

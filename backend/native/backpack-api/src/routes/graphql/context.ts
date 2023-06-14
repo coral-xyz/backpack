@@ -36,10 +36,13 @@ export interface ApiContext {
     swr: Swr;
     tensor: Tensor;
   };
-  devnet: boolean;
   http: {
     req: Request;
     res: Response;
+  };
+  network: {
+    devnet: boolean;
+    rpc?: string;
   };
 }
 
@@ -74,6 +77,8 @@ export const createContext: ContextFunction<
   // Extract the target blockchain network from the headers if present
   const devnet: boolean =
     (req.headers["x-blockchain-devnet"] || "false") === "true";
+  const rpc: string | undefined =
+    (req.headers["x-blockchain-rpc"] as string) || undefined;
 
   return {
     authorization: {
@@ -92,10 +97,13 @@ export const createContext: ContextFunction<
       swr: new Swr(),
       tensor: new Tensor({ apiKey: TENSOR_API_KEY }),
     },
-    devnet,
     http: {
       req,
       res,
+    },
+    network: {
+      devnet,
+      rpc,
     },
   };
 };

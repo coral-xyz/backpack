@@ -11,6 +11,8 @@ import { SessionProvider } from "~lib/SessionProvider";
 import RelayEnvironment from "./graphql/RelayEnvironment";
 import { useApolloClient } from "./graphql/apollo";
 
+import { BiometricContextProvider } from "~src/features/biometrics/context";
+
 const suspenseCache = new SuspenseCache();
 
 function InnerProvider({
@@ -32,7 +34,9 @@ function InnerProvider({
         <SafeAreaProvider>
           <NotificationsProvider>
             <ActionSheetProvider>
-              <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
+              <BiometricContextProvider>
+                <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
+              </BiometricContextProvider>
             </ActionSheetProvider>
           </NotificationsProvider>
         </SafeAreaProvider>

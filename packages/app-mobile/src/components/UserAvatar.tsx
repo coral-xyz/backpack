@@ -81,10 +81,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export function Avatar({ size = 64 }: { size?: number }): JSX.Element {
+export const Avatar = memo(function Avatar({
+  size = 64,
+}: {
+  size?: number;
+}): JSX.Element {
   const avatarUrl = useAvatarUrl(size);
   const theme = useTheme();
-
   const outerSize = size + 6;
 
   return (
@@ -100,7 +103,7 @@ export function Avatar({ size = 64 }: { size?: number }): JSX.Element {
       <UserAvatar size={size} uri={avatarUrl} />
     </View>
   );
-}
+});
 
 export const CurrentUserAvatar = ({ size = 64 }: { size?: number }) => (
   <Avatar size={size} />

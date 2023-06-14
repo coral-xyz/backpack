@@ -6,6 +6,7 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
+      "~src/*": ["src/*"],
       "~navigation/*": ["src/navigation/*"],
       "~components/*": ["src/components/*"],
       "~hooks/*": ["src/hooks/*"],

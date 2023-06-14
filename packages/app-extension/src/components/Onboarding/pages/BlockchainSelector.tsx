@@ -1,12 +1,10 @@
 import { Blockchain } from "@coral-xyz/common";
 import { PrimaryButton } from "@coral-xyz/react-common";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 
 import { Header, SubtextParagraph } from "../../common";
 import {
-  BscIcon,
   EthereumIconOnboarding as EthereumIcon,
-  PolygonIcon,
   SolanaIconOnboarding as SolanaIcon,
 } from "../../common/Icon";
 import { ActionCard } from "../../common/Layout/ActionCard";
@@ -89,31 +87,31 @@ export const BlockchainSelector = ({
   );
 };
 
-function SoonBadge() {
-  return (
-    <div
-      style={{
-        paddingLeft: "8px",
-        paddingRight: "8px",
-        paddingTop: "2px",
-        paddingBottom: "2px",
-        backgroundColor: "rgb(206, 121, 7, 0.15)",
-        height: "20px",
-        borderRadius: "10px",
-        display: "inline-block",
-        marginLeft: "4px",
-      }}
-    >
-      <Typography
-        style={{
-          color: "#EFA411",
-          fontSize: "12px",
-          lineHeight: "16px",
-          fontWeight: 600,
-        }}
-      >
-        soon
-      </Typography>
-    </div>
-  );
-}
+// function SoonBadge() {
+//   return (
+//     <div
+//       style={{
+//         paddingLeft: "8px",
+//         paddingRight: "8px",
+//         paddingTop: "2px",
+//         paddingBottom: "2px",
+//         backgroundColor: "rgb(206, 121, 7, 0.15)",
+//         height: "20px",
+//         borderRadius: "10px",
+//         display: "inline-block",
+//         marginLeft: "4px",
+//       }}
+//     >
+//       <Typography
+//         style={{
+//           color: "#EFA411",
+//           fontSize: "12px",
+//           lineHeight: "16px",
+//           fontWeight: 600,
+//         }}
+//       >
+//         soon
+//       </Typography>
+//     </div>
+//   );
+// }

@@ -21,7 +21,7 @@
     "start:fresh": "yarn install && yarn clean && yarn install && yarn start",
     "test": "env-cmd --silent turbo run test -- --passWithNoTests --watchAll=false",
     "build": "env-cmd --silent turbo run build --filter='!./examples/**' ",
-    "build:fresh": "git add .; git clean -xfd && yarn install && yarn build --force",
+    "build:fresh": "node scripts/confirm-before-build-fresh.js && git add . && git clean -xfd && yarn install && yarn build --force",
     "e2e": "env-cmd --silent turbo run e2e",
     "clean": "git clean -xfd",
     "start:ext": "env-cmd --silent turbo run start --filter='@coral-xyz/app-extension...' --filter='@coral-xyz/background...'",
@@ -30,7 +30,8 @@
     "build:mobile": "env-cmd --silent turbo run build --filter='@coral-xyz/app-mobile...' --filter='@coral-xyz/background...'",
     "upgrade:tamagui": "manypkg upgrade tamagui && manypkg upgrade @tamagui && manypkg upgrade tamagui-loader && manypkg upgrade react-native-web-lite",
     "check-deps": "check-dependency-version-consistency .",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "gql": "env-cmd --silent turbo run gql:generate"
   },
   "devDependencies": {
     "@manypkg/cli": "^0.19.1",

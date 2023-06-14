@@ -2,7 +2,6 @@ import {
   AssetTransfersCategory,
   type AssetTransfersParams,
   type AssetTransfersWithMetadataResponse,
-  BigNumber,
   SortingOrder,
 } from "alchemy-sdk";
 import { ethers } from "ethers";
@@ -14,39 +13,39 @@ import { EthereumTokenList } from "../tokens";
 import {
   type BalanceFiltersInput,
   type Balances,
-  ChainId,
   type Nft,
   type NftAttribute,
   type NftConnection,
   type NftFiltersInput,
+  ProviderId,
   type TokenBalance,
   type TransactionConnection,
   type TransactionFiltersInput,
 } from "../types";
 import { calculateBalanceAggregate, createConnection } from "../utils";
 
-import type { Blockchain } from ".";
+import type { BlockchainDataProvider } from ".";
 
 /**
  * Ethereum blockchain implementation for the common API.
  * @export
  * @class Ethereum
- * @implements {Blockchain}
+ * @implements {BlockchainDataProvider}
  */
-export class Ethereum implements Blockchain {
-  readonly #ctx: ApiContext;
+export class Ethereum implements BlockchainDataProvider {
+  readonly #ctx?: ApiContext;
 
-  constructor(ctx: ApiContext) {
+  constructor(ctx?: ApiContext) {
     this.#ctx = ctx;
   }
 
   /**
    * Chain ID enum variant.
-   * @returns {ChainId}
+   * @returns {ProviderId}
    * @memberof Ethereum
    */
-  id(): ChainId {
-    return ChainId.Ethereum;
+  id(): ProviderId {
+    return ProviderId.Ethereum;
   }
 
   /**
@@ -77,6 +76,15 @@ export class Ethereum implements Blockchain {
   }
 
   /**
+   * The display name of the data provider.
+   * @returns {string}
+   * @memberof Ethereum
+   */
+  name(): string {
+    return "Ethereum";
+  }
+
+  /**
    * Symbol of the native coin.
    * @returns {string}
    * @memberof Ethereum
@@ -97,6 +105,10 @@ export class Ethereum implements Blockchain {
     address: string,
     filters?: Partial<BalanceFiltersInput>
   ): Promise<Balances> {
+    if (!this.#ctx) {
+      throw new Error("API context object not available");
+    }
+
     // Fetch the native and all token balances of the address and filter out the empty balances
     const [native, tokenBalances] = await Promise.all([
       this.#ctx.dataSources.alchemy.core.getBalance(address),
@@ -123,13 +135,18 @@ export class Ethereum implements Blockchain {
     ]);
 
     // Build the token balance node for the native balance of the wallet
+    const nativeDisplayAmount = ethers.utils.formatUnits(
+      native,
+      this.decimals()
+    );
+
     const nativeTokenNode = NodeBuilder.tokenBalance(
       this.id(),
       {
         address,
         amount: native.toString(),
         decimals: this.decimals(),
-        displayAmount: ethers.utils.formatUnits(native, this.decimals()),
+        displayAmount: nativeDisplayAmount,
         marketData: NodeBuilder.marketData("ethereum", {
           lastUpdatedAt: prices.ethereum.last_updated,
           percentChange: prices.ethereum.price_change_percentage_24h,
@@ -137,11 +154,9 @@ export class Ethereum implements Blockchain {
           sparkline: prices.ethereum.sparkline_in_7d.price,
           usdChange: prices.ethereum.price_change_24h,
           value:
-            parseFloat(ethers.utils.formatUnits(native, this.decimals())) *
-            prices.ethereum.current_price,
+            parseFloat(nativeDisplayAmount) * prices.ethereum.current_price,
           valueChange:
-            parseFloat(ethers.utils.formatUnits(native, this.decimals())) *
-            prices.ethereum.price_change_24h,
+            parseFloat(nativeDisplayAmount) * prices.ethereum.price_change_24h,
         }),
         token: this.defaultAddress(),
         tokenListEntry: NodeBuilder.tokenListEntry(
@@ -153,9 +168,12 @@ export class Ethereum implements Blockchain {
 
     // Map the non-empty token balances to their schema type
     const ercTokenNodes = nonEmptyTokens.reduce<TokenBalance[]>((acc, curr) => {
-      const amt = BigNumber.from(curr.rawBalance ?? "0");
       const id = meta.get(curr.contractAddress);
       const p: CoinGeckoPriceData | null = prices[id ?? ""] ?? null;
+
+      const amount = curr.rawBalance ?? "0";
+      const displayAmount = curr.balance ?? "0";
+
       const marketData =
         p && id
           ? NodeBuilder.marketData(id, {
@@ -164,12 +182,8 @@ export class Ethereum implements Blockchain {
               price: p.current_price,
               sparkline: p.sparkline_in_7d.price,
               usdChange: p.price_change_24h,
-              value:
-                parseFloat(ethers.utils.formatUnits(amt, curr.decimals ?? 0)) *
-                p.current_price,
-              valueChange:
-                parseFloat(ethers.utils.formatUnits(amt, curr.decimals ?? 0)) *
-                p.price_change_24h,
+              value: parseFloat(displayAmount) * p.current_price,
+              valueChange: parseFloat(displayAmount) * p.price_change_24h,
             })
           : undefined;
 
@@ -187,9 +201,9 @@ export class Ethereum implements Blockchain {
           this.id(),
           {
             address: `${address}/${curr.contractAddress}`,
-            amount: amt.toString(),
+            amount,
             decimals: curr.decimals ?? 0,
-            displayAmount: curr.balance ?? "0",
+            displayAmount,
             marketData,
             token: curr.contractAddress,
             tokenListEntry,
@@ -222,6 +236,10 @@ export class Ethereum implements Blockchain {
     address: string,
     filters?: NftFiltersInput
   ): Promise<NftConnection> {
+    if (!this.#ctx) {
+      throw new Error("API context object not available");
+    }
+
     // Get all NFTs held by the address from Alchemy
     const nfts = await this.#ctx.dataSources.alchemy.nft.getNftsForOwner(
       address,
@@ -282,6 +300,10 @@ export class Ethereum implements Blockchain {
     address: string,
     filters?: TransactionFiltersInput
   ): Promise<TransactionConnection> {
+    if (!this.#ctx) {
+      throw new Error("API context object not available");
+    }
+
     const params: AssetTransfersParams = {
       category: [
         AssetTransfersCategory.ERC1155,
@@ -316,7 +338,7 @@ export class Ethereum implements Blockchain {
 
     const receipts = await Promise.all(
       combined.map((tx) =>
-        this.#ctx.dataSources.alchemy.core.getTransactionReceipt(tx.hash)
+        this.#ctx!.dataSources.alchemy.core.getTransactionReceipt(tx.hash)
       )
     );
 

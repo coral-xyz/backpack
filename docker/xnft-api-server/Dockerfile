@@ -18,7 +18,6 @@ COPY ["packages/app-extension", "./packages/app-extension"]
 COPY ["packages/db", "./packages/db"]
 COPY ["packages/wallet-standard", "./packages/wallet-standard"]
 COPY ["packages/background", "./packages/background"]
-COPY ["packages/blockchains", "./packages/blockchains"]
 COPY ["packages/tamagui-core", "./packages/tamagui-core"]
 COPY ["packages/recoil", "./packages/recoil"]
 COPY ["packages/ledger-injection", "./packages/ledger-injection"]
@@ -26,6 +25,7 @@ COPY ["packages/themes", "./packages/themes"]
 COPY ["packages/react-common", "./packages/react-common"]
 COPY ["packages/provider-core", "./packages/provider-core"]
 COPY ["packages/provider-injection", "./packages/provider-injection"]
+COPY ["packages/secure-background", "./packages/secure-background"]
 
 # set up yarn v3
 COPY .yarnrc.yml .yarnrc.yml

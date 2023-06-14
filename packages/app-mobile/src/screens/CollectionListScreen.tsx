@@ -1,25 +1,23 @@
 import { Suspense, useMemo, useCallback } from "react";
-import { View, Pressable, Text, FlatList } from "react-native";
+import { View, Text, FlatList } from "react-native";
 
 import * as Linking from "expo-linking";
 
-import { gql, useSuspenseQuery_experimental } from "@apollo/client";
+import { useSuspenseQuery_experimental } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
-import { XStack, StyledText, ProxyImage } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ErrorBoundary } from "react-error-boundary";
 
+import { BaseListItem } from "~components/CollectionListItem";
 import { ItemSeparator } from "~components/ListItem";
-import {
-  EmptyState,
-  Screen,
-  RoundedContainerGroup,
-  FullScreenLoading,
-} from "~components/index";
+import { EmptyState, FullScreenLoading } from "~components/index";
 import {
   convertNftDataToFlatlist,
   type ListItemProps,
 } from "~lib/CollectionUtils";
+import { CollectionListScreenProps } from "~navigation/types";
+
+import { gql } from "~src/graphql/__generated__";
 
 function NoNFTsEmptyState() {
   return (
@@ -37,132 +35,9 @@ function NoNFTsEmptyState() {
   );
 }
 
-function ImageBox({ images }: { images: string[] }): JSX.Element {
-  return (
-    <View
-      style={{
-        borderRadius: 12,
-        flexDirection: "row",
-        flexWrap: "wrap",
-        gap: 8,
-        padding: 8,
-        alignItems: "center",
-        backgroundColor: "#eee",
-        justifyContent: "space-evenly",
-      }}
-    >
-      {images.map((uri: string) => {
-        return (
-          <ProxyImage
-            key={uri}
-            src={uri}
-            size={64}
-            style={{
-              borderRadius: 8,
-              width: 64,
-              height: 64,
-            }}
-          />
-        );
-      })}
-    </View>
-  );
-}
-
-function CollectionImage({ images }: { images: string[] }): JSX.Element {
-  if (images.length === 1) {
-    return (
-      <ProxyImage
-        size={164}
-        src={images[0]}
-        style={{ borderRadius: 12, aspectRatio: 1, height: 164, padding: 12 }}
-      />
-    );
-  }
-
-  return <ImageBox images={images.slice(0, 4)} />;
-}
-
-function ListItem({
-  item,
-  handlePress,
-}: {
-  item: ListItemProps;
-  handlePress: (item: ListItemProps) => void;
-}): JSX.Element {
-  return (
-    <Pressable style={{ flex: 1 }} onPress={() => handlePress(item)}>
-      <CollectionImage images={item.images} />
-      <XStack mt={8}>
-        <StyledText
-          mr={4}
-          fontSize="$base"
-          numberOfLines={1}
-          maxWidth="80%"
-          ellipsizeMode="tail"
-        >
-          {item.name}
-        </StyledText>
-      </XStack>
-    </Pressable>
-  );
-}
-
-// TODO generate these from the server
-export type NftCollectionFragmentType = {
-  id: string;
-  name: string;
-  address: string;
-  image: string;
-  verified: boolean;
-};
-
-export const NftCollectionFragment = gql`
-  fragment NftCollectionFragment on Collection {
-    id
-    address
-    image
-    name
-    verified
-  }
-`;
-
-export type NftNodeFragmentType = {
-  id: string;
-  address: string;
-  token: string;
-  name: string;
-  owner: string;
-  description: string;
-  image: string;
-  attributes: { trait: string; value: string }[];
-  collection: NftCollectionFragmentType;
-};
-
-export const NftNodeFragment = gql`
-  ${NftCollectionFragment}
-  fragment NftNodeFragment on Nft {
-    id
-    address
-    token
-    name
-    owner
-    description
-    image
-    attributes {
-      trait
-      value
-    }
-    collection {
-      ...NftCollectionFragment
-    }
-  }
-`;
-
-const GET_NFT_COLLECTIONS = gql`
-  ${NftNodeFragment}
-  query WalletNftCollections($chainId: ChainID!, $address: String!) {
-    wallet(chainId: $chainId, address: $address) {
+const GET_NFT_COLLECTIONS = gql(`
+  query WalletNftCollections($providerId: ProviderID!, $address: String!) {
+    wallet(providerId: $providerId, address: $address) {
       id
       nfts {
         edges {
@@ -173,22 +48,21 @@ const GET_NFT_COLLECTIONS = gql`
       }
     }
   }
-`;
+`);
 
-function Container({ navigation }: any): JSX.Element {
+function Container({ navigation }: CollectionListScreenProps): JSX.Element {
   const { blockchain, publicKey } = useActiveWallet();
   const { data } = useSuspenseQuery_experimental(GET_NFT_COLLECTIONS, {
     variables: {
-      chainId: blockchain.toUpperCase(),
+      // @ts-expect-error graphql ProviderID not defined as string
+      providerId: blockchain.toUpperCase(),
       address: publicKey,
     },
   });
 
   const handlePressItem = useCallback(
     (item: ListItemProps) => {
-      // TODO item.nfts not item.images
       if (item.type === "collection" && item.images.length > 1) {
-        // navigate to collection detail
         navigation.push("CollectionDetail", {
           id: item.id,
           title: item.name,
@@ -196,7 +70,6 @@ function Container({ navigation }: any): JSX.Element {
         });
       } else {
         const nft = item.type === "collection" ? item.nfts[0] : item;
-        // navigation to nft detail
         navigation.push("CollectionItemDetail", {
           id: nft.id,
           title: nft.name,
@@ -211,37 +84,37 @@ function Container({ navigation }: any): JSX.Element {
   const keyExtractor = (item: ListItemProps) => item.id;
   const renderItem = useCallback(
     ({ item }: { item: ListItemProps }) => {
-      return <ListItem item={item} handlePress={handlePressItem} />;
+      return <BaseListItem onPress={handlePressItem} item={item} />;
     },
     [handlePressItem]
   );
 
-  const numColumns = 2;
   const gap = 12;
 
   return (
-    <Screen>
-      <RoundedContainerGroup style={{ padding: 12 }}>
-        <FlatList
-          data={rows}
-          numColumns={numColumns}
-          ItemSeparatorComponent={ItemSeparator}
-          ListEmptyComponent={NoNFTsEmptyState}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-          contentContainerStyle={{ gap }}
-          columnWrapperStyle={{ gap }}
-        />
-      </RoundedContainerGroup>
-    </Screen>
+    <FlatList
+      style={{ paddingTop: 16, paddingHorizontal: 16 }}
+      contentContainerStyle={{ gap, paddingBottom: 32 }}
+      data={rows}
+      numColumns={2}
+      ItemSeparatorComponent={ItemSeparator}
+      ListEmptyComponent={NoNFTsEmptyState}
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+      columnWrapperStyle={{ gap }}
+      showsVerticalScrollIndicator={false}
+    />
   );
 }
 
-export function CollectionListScreen({ navigation, route }: any): JSX.Element {
+export function CollectionListScreen({
+  navigation,
+  route,
+}: CollectionListScreenProps): JSX.Element {
   return (
     <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
       <Suspense fallback={<FullScreenLoading />}>
-        <Container navigation={navigation} />
+        <Container navigation={navigation} route={route} />
       </Suspense>
     </ErrorBoundary>
   );

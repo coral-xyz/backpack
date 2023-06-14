@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-import { formatUsd, proxyImageUrl, toTitleCase } from "@coral-xyz/common";
+import {
+  formatUsd,
+  proxyImageUrl,
+  toTitleCase,
+  UNKNOWN_ICON_SRC,
+} from "@coral-xyz/common";
 import { getBlockchainLogo, isAggregateWallets } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
@@ -16,7 +21,6 @@ import {
 } from "@mui/material";
 import { useRecoilValue } from "recoil";
 
-import { UNKNOWN_ICON_SRC } from "../../common/Icon";
 import { WalletDrawerButton } from "../../common/WalletList";
 
 const useStyles = styles((theme) => ({

@@ -140,7 +140,7 @@ export const ListItemWallet = ({
             <XStack ai="center">
               <StyledText
                 color="$baseTextHighEmphasis"
-                fontSize="$lg"
+                fontSize={dehydrated ? "$sm" : "$lg"}
                 mb={2}
                 mr={4}
                 opacity={opacity}
@@ -169,7 +169,7 @@ export const ListItemWallet = ({
                 fontWeight="$medium"
                 color="$baseTextMedEmphasis"
               >
-                ${balance}
+                {balance}
               </StyledText>
             )}
 

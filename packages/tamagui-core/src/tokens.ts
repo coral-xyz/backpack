@@ -22,6 +22,8 @@ export const tokens = createTokens({
     borderWidth: 2,
     container: 56,
     input: 56,
+    screen: 16,
+    headerIcon: 24,
   },
   zIndex,
   radius: {
@@ -30,6 +32,7 @@ export const tokens = createTokens({
     medium: 8,
     true: 8, // true is always default
     small: 4,
+    circular: "50%",
   },
 });
 

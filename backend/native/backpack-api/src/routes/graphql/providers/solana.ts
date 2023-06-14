@@ -14,13 +14,13 @@ import { SolanaTokenList } from "../tokens";
 import {
   type BalanceFiltersInput,
   type Balances,
-  ChainId,
   type Collection,
   type Listing,
   type Nft,
   type NftAttribute,
   type NftConnection,
   type NftFiltersInput,
+  ProviderId,
   type TokenBalance,
   type Transaction,
   type TransactionConnection,
@@ -28,28 +28,28 @@ import {
 } from "../types";
 import { calculateBalanceAggregate, createConnection } from "../utils";
 
-import type { Blockchain } from ".";
+import type { BlockchainDataProvider } from ".";
 
 /**
  * Solana blockchain implementation for the common API.
  * @export
  * @class Solana
- * @implements {Blockchain}
+ * @implements {BlockchainDataProvider}
  */
-export class Solana implements Blockchain {
-  readonly #ctx: ApiContext;
+export class Solana implements BlockchainDataProvider {
+  readonly #ctx?: ApiContext;
 
-  constructor(ctx: ApiContext) {
+  constructor(ctx?: ApiContext) {
     this.#ctx = ctx;
   }
 
   /**
    * Chain ID enum variant.
-   * @returns {ChainId}
+   * @returns {ProviderId}
    * @memberof Solana
    */
-  id(): ChainId {
-    return ChainId.Solana;
+  id(): ProviderId {
+    return ProviderId.Solana;
   }
 
   /**
@@ -80,6 +80,15 @@ export class Solana implements Blockchain {
   }
 
   /**
+   * The display name of the data provider.
+   * @returns {string}
+   * @memberof Solana
+   */
+  name(): string {
+    return "Solana";
+  }
+
+  /**
    * Symbol of the native token.
    * @returns {string}
    * @memberof Solana
@@ -100,6 +109,10 @@ export class Solana implements Blockchain {
     address: string,
     filters?: BalanceFiltersInput
   ): Promise<Balances> {
+    if (!this.#ctx) {
+      throw new Error("API context object not available");
+    }
+
     // Get the address balances and filter out the NFTs and empty ATAs
     const balances = await this.#ctx.dataSources.helius.getBalances(address);
     const nonEmptyOrNftTokens = balances.tokens.filter(
@@ -125,30 +138,27 @@ export class Solana implements Blockchain {
     ]);
 
     // Build the token balance node for the native balance of the wallet
+    const nativeDisplayAmount = ethers.utils.formatUnits(
+      balances.nativeBalance,
+      this.decimals()
+    );
+
     const nativeTokenNode = NodeBuilder.tokenBalance(
       this.id(),
       {
         address,
         amount: balances.nativeBalance.toString(),
         decimals: this.decimals(),
-        displayAmount: ethers.utils.formatUnits(
-          balances.nativeBalance,
-          this.decimals()
-        ),
+        displayAmount: nativeDisplayAmount,
         marketData: NodeBuilder.marketData("solana", {
           lastUpdatedAt: prices.solana.last_updated,
           percentChange: prices.solana.price_change_percentage_24h,
           price: prices.solana.current_price,
           sparkline: prices.solana.sparkline_in_7d.price,
           usdChange: prices.solana.price_change_24h,
-          value:
-            parseFloat(
-              ethers.utils.formatUnits(balances.nativeBalance, this.decimals())
-            ) * prices.solana.current_price,
+          value: parseFloat(nativeDisplayAmount) * prices.solana.current_price,
           valueChange:
-            parseFloat(
-              ethers.utils.formatUnits(balances.nativeBalance, this.decimals())
-            ) * prices.solana.price_change_24h,
+            parseFloat(nativeDisplayAmount) * prices.solana.price_change_24h,
         }),
         token: this.defaultAddress(),
         tokenListEntry: NodeBuilder.tokenListEntry(
@@ -163,6 +173,12 @@ export class Solana implements Blockchain {
       (acc, curr) => {
         const id = meta.get(curr.mint);
         const p: CoinGeckoPriceData | null = prices[id ?? ""] ?? null;
+
+        const displayAmount = ethers.utils.formatUnits(
+          curr.amount,
+          curr.decimals
+        );
+
         const marketData =
           p && id
             ? NodeBuilder.marketData(id, {
@@ -171,17 +187,8 @@ export class Solana implements Blockchain {
                 price: p.current_price,
                 sparkline: p.sparkline_in_7d.price,
                 usdChange: p.price_change_24h,
-                value:
-                  parseFloat(
-                    ethers.utils.formatUnits(curr.amount, curr.decimals)
-                  ) * p.current_price,
-                valueChange:
-                  parseFloat(
-                    ethers.utils.formatUnits(
-                      balances.nativeBalance,
-                      this.decimals()
-                    )
-                  ) * p.price_change_24h,
+                value: parseFloat(displayAmount) * p.current_price,
+                valueChange: parseFloat(displayAmount) * p.price_change_24h,
               })
             : undefined;
 
@@ -201,10 +208,7 @@ export class Solana implements Blockchain {
               address: curr.tokenAccount,
               amount: curr.amount.toString(),
               decimals: curr.decimals,
-              displayAmount: ethers.utils.formatUnits(
-                curr.amount,
-                curr.decimals
-              ),
+              displayAmount,
               marketData,
               token: curr.mint,
               tokenListEntry,
@@ -238,6 +242,10 @@ export class Solana implements Blockchain {
     address: string,
     filters?: NftFiltersInput
   ): Promise<NftConnection> {
+    if (!this.#ctx) {
+      throw new Error("API context object not available");
+    }
+
     // Get the list of digital assets (NFTs) owned by the argued address from Helius DAS API.
     const response = await this.#ctx.dataSources.helius.rpc.getAssetsByOwner(
       address
@@ -302,7 +310,7 @@ export class Solana implements Blockchain {
             this.decimals()
           ),
           source: tensorListing.tx.source,
-          url: this.#ctx.dataSources.tensor.getListingUrl(item.id),
+          url: this.#ctx!.dataSources.tensor.getListingUrl(item.id),
         });
       }
 
@@ -335,6 +343,10 @@ export class Solana implements Blockchain {
     address: string,
     filters?: TransactionFiltersInput
   ): Promise<TransactionConnection> {
+    if (!this.#ctx) {
+      throw new Error("API context object not available");
+    }
+
     const resp = await this.#ctx.dataSources.helius.getTransactionHistory(
       address,
       filters?.before ?? undefined,

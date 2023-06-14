@@ -1,4 +1,4 @@
-import type { Nft, NftCollection } from "@coral-xyz/common";
+import type { NftCollection } from "@coral-xyz/common";
 import {
   NAV_COMPONENT_NFT_COLLECTION,
   UNKNOWN_NFT_ICON_SRC,
@@ -16,7 +16,7 @@ import { useRecoilValue } from "recoil";
 
 import { RightClickMenu } from "../../common/Layout/RightClickMenu";
 
-const useStyles = styles((theme) => ({
+const useStyles = styles(() => ({
   button: {
     "&:hover": {
       opacity: HOVER_OPACITY,
@@ -85,7 +85,7 @@ export function CollectionCard({ collection }: { collection: NftCollection }) {
 
   return (
     <RightClickMenu
-      renderItems={(close) => (
+      renderItems={(_close) => (
         <MenuItem onClick={openCollection}>View Items</MenuItem>
       )}
     >

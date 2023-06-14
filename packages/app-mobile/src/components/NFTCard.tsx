@@ -31,13 +31,12 @@ export function BaseCard({
       }}
     >
       <ProxyImage
+        size={320}
+        src={imageUrl ?? UNKNOWN_NFT_ICON_SRC}
         style={{
           borderRadius: 8,
           backgroundColor: theme.custom.colors.borderFull,
-          aspectRatio: 1,
-          width: "100%",
         }}
-        src={imageUrl ?? UNKNOWN_NFT_ICON_SRC}
       />
       {subtitle ? (
         <View

@@ -14,6 +14,7 @@ import {
 import * as Clipboard from "expo-clipboard";
 import Constants from "expo-constants";
 import { Image } from "expo-image";
+import * as Updates from "expo-updates";
 
 import { Blockchain, formatWalletAddress } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
@@ -30,6 +31,7 @@ import {
   StyledText,
   UserAvatar,
   XStack,
+  TwoButtonFooter,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -60,7 +62,25 @@ export {
   SecondaryButton,
   StyledText,
   UserAvatar,
+  TwoButtonFooter,
 };
+
+// TODO(fix LinkButton inside tamagui)
+export const LinkButton__ = ({
+  onPress,
+  label,
+  color,
+}: {
+  onPress: () => void;
+  label: string;
+  color: string; // TODO tamagui color props
+}): JSX.Element => (
+  <Pressable style={{ padding: 12 }} onPress={onPress}>
+    <StyledText alignSelf="center" fontSize="$lg" color={color}>
+      {label}
+    </StyledText>
+  </Pressable>
+);
 
 export function CallToAction({
   icon,
@@ -115,7 +135,7 @@ export function Screen({
   headerPadding,
 }: {
   scrollable?: boolean;
-  children: JSX.Element | JSX.Element[] | null;
+  children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   headerPadding?: boolean;
 }) {
@@ -365,7 +385,13 @@ export function DummyScreen({ route }) {
   );
 }
 
-export function FullScreenLoading({ label }: { label?: string }): JSX.Element {
+export function FullScreenLoading({
+  label,
+  children,
+}: {
+  label?: string;
+  children?: React.ReactNode;
+}): JSX.Element {
   const theme = useTheme();
   return (
     <View
@@ -389,18 +415,26 @@ export function FullScreenLoading({ label }: { label?: string }): JSX.Element {
           {label}
         </Text>
       ) : null}
+      {children}
     </View>
   );
 }
 
 export const ScreenLoading = FullScreenLoading;
-export function ScreenError({ error }: { error: any }): JSX.Element {
+export function ScreenError({
+  error,
+  extra,
+}: {
+  error: any;
+  extra?: string;
+}): JSX.Element {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <StyledText fontSize="$lg" color="$negative">
         Something went wrong:
       </StyledText>
       <Text>{error.message}</Text>
+      <Text>{extra}</Text>
     </View>
   );
 }
@@ -431,7 +465,7 @@ export const ScreenEmptyList = ({
   );
 };
 
-export function WelcomeLogoHeader() {
+export function WelcomeLogoHeader({ username }: { username?: string }) {
   const theme = useTheme();
   const [showDebug, setShowDebug] = useState(false);
   return (
@@ -461,7 +495,7 @@ export function WelcomeLogoHeader() {
               color: theme.custom.colors.secondary,
             }}
           >
-            gm
+            gm {username}
           </Text>
         </Margin>
       </View>
@@ -473,7 +507,16 @@ export function WelcomeLogoHeader() {
             backgroundColor: "white",
           }}
         >
-          {JSON.stringify(Constants?.expoConfig?.extra, null, 2)}
+          {JSON.stringify(
+            {
+              graphqlApiUrl: Constants.expoConfig?.extra?.graphqlApiUrl,
+              serviceWorkerUrl: Constants.expoConfig?.extra?.serviceWorkerUrl,
+              channel: Updates.channel === "" ? "none" : Updates.channel,
+              env: process.env.APP_ENV ?? "none",
+            },
+            null,
+            2
+          )}
         </Text>
       ) : null}
     </>
@@ -667,28 +710,6 @@ export function AddConnectWalletButton({
     </Pressable>
   );
 }
-
-export function TwoButtonFooter({
-  leftButton,
-  rightButton,
-}: {
-  leftButton: JSX.Element;
-  rightButton: JSX.Element;
-}): JSX.Element {
-  return (
-    <View style={twoButtonFooterStyles.container}>
-      <View style={{ flex: 1, marginRight: 8 }}>{leftButton}</View>
-      <View style={{ flex: 1, marginLeft: 8 }}>{rightButton}</View>
-    </View>
-  );
-}
-
-const twoButtonFooterStyles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-});
 
 export function HeaderIconSubtitle({
   icon,

@@ -1,27 +1,7 @@
-// TODO auto-generated once off plaane
-type GraphQLWalletData = {
-  wallet: {
-    nfts: {
-      edges: {
-        node: {
-          id: string;
-          image: string;
-          name: string;
-          address: string;
-          collection: {
-            address: string;
-            id: string;
-            image: string;
-            name: string;
-            verified: true;
-          };
-          attributes: { trait: string; value: string }[];
-          description: string;
-        };
-      }[];
-    };
-  };
-};
+import {
+  WalletNftCollectionsQuery,
+  Nft,
+} from "~src/graphql/__generated__/graphql";
 
 export type ListItemProps = {
   id: string;
@@ -35,13 +15,12 @@ export type ListItemProps = {
 };
 
 export function convertNftDataToFlatlist(
-  data: GraphQLWalletData
+  data: WalletNftCollectionsQuery
 ): ListItemProps[] {
-  const nfts = data.wallet.nfts.edges.map((edge) => edge.node);
-
-  // Group the nodes by collection
   const collectionMap = new Map();
-  nfts.forEach((nft) => {
+  data.wallet?.nfts?.edges?.map((edge) => {
+    const nft = edge.node as Nft; // TODO(graphql) see if this is right
+
     if (!nft.collection) {
       // If there's no collection, use the node name as the id
       const id = nft.address;

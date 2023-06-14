@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Blockchain } from "@coral-xyz/common";
 import {
   SOL_LOGO_URI,
@@ -105,21 +105,21 @@ export const SimpleTransaction = ({
             ? "You Received"
             : `You sent @${remoteUsername}`}
         </div>
-        {!loading && (
+        {!loading ? (
           <>
-            {tokenAddress && (
+            {tokenAddress ? (
               <ParsedTransactionWithSuspense
                 message={message}
                 tokenAddress={tokenAddress}
                 amount={amount}
               />
-            )}
-            {!tokenAddress && (
+            ) : null}
+            {!tokenAddress ? (
               <ParsedSolTransaction message={message} amount={amount} />
-            )}
+            ) : null}
           </>
-        )}
-        {loading && <TxSkeleton />}
+        ) : null}
+        {loading ? <TxSkeleton /> : null}
         <div
           style={{
             display: "flex",
@@ -231,11 +231,11 @@ function ParsedTransaction({ tokenAddress, amount, message }) {
         <div style={{ fontSize: 30, display: "flex" }}>
           <div>{amount.toFixed(2)}</div>
         </div>
-        {message && (
+        {message ? (
           <div style={{ marginBottom: 10, color: theme.custom.colors.icon }}>
             {message}
           </div>
-        )}
+        ) : null}
         <div
           style={{
             display: "flex",
@@ -269,11 +269,11 @@ function ParsedSolTransaction({ amount, message }) {
         <div style={{ fontSize: 30, display: "flex" }}>
           <div>{amount.toFixed(2)}</div>
         </div>
-        {message && (
+        {message ? (
           <div style={{ marginBottom: 10, color: theme.custom.colors.icon }}>
             {message}
           </div>
-        )}
+        ) : null}
         <div
           style={{
             display: "flex",
