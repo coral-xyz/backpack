@@ -179,11 +179,23 @@ function InputMaxTokenButton() {
   );
 }
 
-function CurrencyInputBox({ children, direction }): JSX.Element {
+function BoxContainer({
+  children,
+}: {
+  children: React.ReactNode;
+}): JSX.Element {
   return (
     <Stack jc="center" bg="$card" borderRadius={16} height={88} p={16}>
+      {children}
+    </Stack>
+  );
+}
+
+function CurrencyInputBox({ children, direction }): JSX.Element {
+  return (
+    <BoxContainer>
       <XStack ai="center" jc="space-between">
-        <YStack>
+        <YStack f={1}>
           <StyledText fontSize="$xs" color="$baseTextMedEmphasis">
             {direction === "from" ? "You pay" : "You receive"}
           </StyledText>
@@ -191,12 +203,12 @@ function CurrencyInputBox({ children, direction }): JSX.Element {
         </YStack>
         <YStack>{children}</YStack>
       </XStack>
-    </Stack>
+    </BoxContainer>
   );
 }
 
 function SwapForm({ navigation }) {
-  const { swapToFromMints, fromToken, canSwitch } = useSwapContext();
+  const { swapToFromMints, canSwitch } = useSwapContext();
 
   const handleChangeToken = (direction: string) => {
     navigation.push("SwapTokenList", { direction });
@@ -248,7 +260,6 @@ function SwapInfo() {
           style={{ position: "absolute", left: "50%", top: "50%" }}
         />
         <YStack space={8}>
-          <SwapInfoRow label="Wallet" value="TODO wallet" />
           <SwapInfoRow label="You Pay" value="-" />
           <SwapInfoRow label="Rate" value="-" />
           <SwapInfoRow label="Estimated fees" value="-" />
@@ -261,7 +272,6 @@ function SwapInfo() {
   if (!fromAmount || !toAmount || !fromToken || !toToken) {
     return (
       <YStack bg="$card" borderRadius={16} p={16} space={8}>
-        <SwapInfoRow label="Wallet" value="TODO wallet" />
         <SwapInfoRow label="You Pay" value="-" />
         <SwapInfoRow label="Rate" value="-" />
         <SwapInfoRow label="Estimated fees" value="-" />
@@ -312,7 +322,6 @@ function SwapInfo() {
 
   return (
     <YStack bg="$card" borderRadius={16} p={16} space={8}>
-      <SwapInfoRow label="Wallet" value="TODO wallet" />
       <SwapInfoRow label="You Pay" value={youPayLabel} />
       <SwapInfoRow label="Rate" value={rateLabel} />
       <SwapInfoRow label="Estimated fees" value={networkFeeLabel} />
@@ -321,8 +330,9 @@ function SwapInfo() {
   );
 }
 
-export function SwapTokenConfirmScreen(): JSX.Element {
-  const { executeSwap, toToken } = useSwapContext();
+export function SwapTokenConfirmScreen({ navigation }): JSX.Element {
+  const { executeSwap, toToken, toAmount, fromAmount, fromToken } =
+    useSwapContext();
   const [swapState, setSwapState] = useState(SwapState.CONFIRMATION);
 
   const handleExecuteSwap = async () => {
@@ -337,34 +347,78 @@ export function SwapTokenConfirmScreen(): JSX.Element {
 
   if (swapState === SwapState.CONFIRMING) {
     return (
-      <Screen>
-        <FullScreenLoading label="Swapping tokens..." />
-        <StyledText>
-          {toToken?.ticker} will be deposited in your wallet once the
-          transaction is complete
-        </StyledText>
+      <Screen jc="center">
+        <YStack space={12}>
+          <FullScreenLoading label="Swapping tokens..." />
+          <StyledText textAlign="center">
+            {toToken?.ticker} will be deposited in your wallet once the
+            transaction is complete
+          </StyledText>
+        </YStack>
       </Screen>
     );
   }
 
   if (swapState === SwapState.CONFIRMED) {
     return (
-      <Screen jc="center">
-        <StyledText fontSize="$3xl" textAlign="center">
-          Swap confirmed!
-        </StyledText>
-        <StyledText textAlign="center">
-          You will see your new balance shortly or w/e
-        </StyledText>
-        <StyledText textAlign="center">View transaction</StyledText>
-        <PrimaryButton label="Close" />
+      <Screen jc="space-between">
+        <Stack />
+        <YStack space={12}>
+          <StyledText fontSize="$3xl" textAlign="center">
+            Swap confirmed!
+          </StyledText>
+          <StyledText textAlign="center">
+            Your balance should be updated shortly
+          </StyledText>
+        </YStack>
+        <PrimaryButton
+          label="Close"
+          onPress={() => {
+            navigation.popToTop();
+            navigation.goBack(null);
+          }}
+        />
       </Screen>
     );
   }
 
+  const toDisplayValue = toAmount
+    ? ethers.utils.formatUnits(toAmount, toToken?.decimals)
+    : "";
+
+  const fromDisplayValue = fromAmount
+    ? ethers.utils.formatUnits(fromAmount, fromToken?.decimals)
+    : "";
+
   return (
-    <Screen>
-      <SwapInfo />
+    <Screen style={{ justifyContent: "space-between" }}>
+      <YStack f={1} space={8}>
+        <BoxContainer>
+          <YStack space={4}>
+            <StyledText fontSize="$xs" color="$baseTextMedEmphasis">
+              You pay
+            </StyledText>
+            <View style={{ height: 45 }}>
+              <StyledText fontSize="$3xl">
+                {fromDisplayValue} {fromToken?.ticker}
+              </StyledText>
+            </View>
+          </YStack>
+        </BoxContainer>
+        <BoxContainer>
+          <YStack space={4}>
+            <StyledText fontSize="$xs" color="$baseTextMedEmphasis">
+              You receive
+            </StyledText>
+            <View style={{ height: 45 }}>
+              <StyledText fontSize="$3xl">
+                {toDisplayValue} {toToken?.ticker}
+              </StyledText>
+            </View>
+          </YStack>
+        </BoxContainer>
+        <SwapInfo />
+      </YStack>
       <PrimaryButton label="Swap" onPress={handleExecuteSwap} />
     </Screen>
   );

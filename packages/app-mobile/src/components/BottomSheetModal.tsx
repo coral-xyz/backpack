@@ -144,7 +144,7 @@ function InnerSheet({
   onLayout,
   ...props
 }: {
-  children: JSX.Element;
+  children: React.ReactNode;
   onLayout: (data: any) => void;
 }): JSX.Element {
   const insets = useSafeAreaInsets();
