@@ -1,6 +1,6 @@
 import type { SecureEventBase } from "../../types/transports";
 
-// Add new events here and in: ../../events.ts
+// Also add new events to: ../../events.ts
 
 export type SECURE_EVM_EVENTS =
   | "SECURE_EVM_SIGN_MESSAGE"

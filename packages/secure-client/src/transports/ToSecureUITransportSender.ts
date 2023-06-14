@@ -8,19 +8,27 @@ import type {
   SecureRequest,
   SecureResponse,
   TransportSender,
-} from "@coral-xyz/secure-background/clients";
+} from "@coral-xyz/secure-background/types";
 import { v4 } from "uuid";
 
-type QueuedRequest = {
+type QueuedRequest<
+  X extends SECURE_EVENTS,
+  R extends "response" | "confirmation" = "response"
+> = {
   request: SecureRequest;
-  resolve: (resonse: SecureResponse) => void;
+  resolve: (resonse: SecureResponse<X, R>) => void;
 };
 
-export class ToSecureUITransportSender implements TransportSender {
+export class ToSecureUITransportSender<
+  X extends SECURE_EVENTS,
+  R extends "response" | "confirmation" = "response"
+> implements TransportSender<X, R>
+{
   private port: chrome.runtime.Port | null = null;
-  private requestQueue: QueuedRequest[] = [];
-  private responseQueue: QueuedRequest[] = [];
+  private requestQueue: QueuedRequest<X, R>[] = [];
+  private responseQueue: QueuedRequest<X, R>[] = [];
   private lastOpenedWindowId: string | null = null;
+  private maybeClosePopupTimeout: any;
 
   constructor() {
     chrome.runtime.onConnect.addListener((port) => {
@@ -64,16 +72,21 @@ export class ToSecureUITransportSender implements TransportSender {
       response.resolve({
         name: response.request.name,
         error: "Plugin Closed",
-      } as SecureResponse)
+      } as SecureResponse<X, R>)
     );
     this.responseQueue = [];
   };
 
-  public send = <T extends SECURE_EVENTS>(request: SecureRequest<T>) => {
-    return new Promise<SecureResponse<T>>(
-      (resolve: (response: SecureResponse<T>) => void) => {
+  public send = <C extends R = R, T extends X = X>(
+    request: SecureRequest<T>
+  ) => {
+    // new request -> we wont need to close popup.
+    clearTimeout(this.maybeClosePopupTimeout);
+
+    return new Promise<SecureResponse<T, C>>(
+      (resolve: (response: SecureResponse<T, C>) => void) => {
         const requestWithId = { ...request, id: v4() };
-        console.log("PCA request sent", requestWithId);
+        console.log("PCA request to secure UI sent", requestWithId);
 
         this.requestQueue.push({
           request: requestWithId,
@@ -84,7 +97,7 @@ export class ToSecureUITransportSender implements TransportSender {
     );
   };
 
-  public responseHandler = (response) => {
+  private responseHandler = (response) => {
     if (response.channel !== CHANNEL_SECURE_UI_RESPONSE) {
       return;
     }
@@ -93,7 +106,7 @@ export class ToSecureUITransportSender implements TransportSender {
     const index = this.responseQueue.findIndex(
       (queuedResponse) => queuedResponse.request.id === response.data?.id
     );
-    console.log("PCA response received", response, index);
+    console.log("PCA response from secure UI received", response, index);
 
     if (index < 0) {
       return;
@@ -103,22 +116,40 @@ export class ToSecureUITransportSender implements TransportSender {
     const queuedRequest = this.responseQueue[index];
     this.responseQueue.splice(index, 1);
 
+    // resolve request
+    queuedRequest.resolve(response.data);
+
+    // if we could close popup
+    // -> wait for followup prompts (ie Ledger signing)
+    // -> then maybe close popup
+    if (this.isPopupClosable()) {
+      this.maybeClosePopupTimeout = setTimeout(
+        this.maybeClosePopup.bind(this),
+        300
+      );
+    }
+  };
+
+  private isPopupClosable = () => {
     // if we're not waiting for any more responses
     // and this is the popup we originally opened
-    // -> close the popup.
-    // if (
-    //   this.responseQueue.length <= 0 &&
-    //   this.port?.name === this.lastOpenedWindowId &&
-    //   this.port.sender?.tab?.windowId
-    // ) {
-    //   chrome.windows.remove(this.port.sender?.tab?.windowId).catch((e) => {
-    //     console.error(e);
-    //   });
-    // }
-
-    // resolve request
-    // queuedRequest.resolve(response.data);
+    // -> we can close popup.
+    return (
+      this.responseQueue.length <= 0 &&
+      this.requestQueue.length <= 0 &&
+      this.port?.name === this.lastOpenedWindowId
+    );
   };
+
+  private maybeClosePopup() {
+    // if we can close popup
+    // -> close the popup.
+    if (this.isPopupClosable() && this.port?.sender?.tab?.windowId) {
+      chrome.windows.remove(this.port.sender.tab.windowId).catch((e) => {
+        console.error(e);
+      });
+    }
+  }
 
   private sendRequests = () => {
     // open popup if we dont have one.

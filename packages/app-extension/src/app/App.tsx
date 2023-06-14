@@ -6,7 +6,11 @@ import {
   EXTENSION_HEIGHT,
   EXTENSION_WIDTH,
 } from "@coral-xyz/common";
-import { NotificationsProvider, useKeyringStoreState } from "@coral-xyz/recoil";
+import {
+  NotificationsProvider,
+  secureBackgroundSenderAtom,
+  useKeyringStoreState,
+} from "@coral-xyz/recoil";
 import {
   BACKGROUND_BACKDROP_COLOR,
   LIGHT_BACKGROUND_BACKDROP_COLOR,
@@ -22,6 +26,8 @@ import { ErrorBoundary } from "./ErrorBoundary";
 
 const Router = lazy(() => import("./Router"));
 
+import type { TransportSender } from "@coral-xyz/secure-client";
+
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -34,7 +40,11 @@ const BACKDROP_STYLE = {
   background: "red",
 };
 
-export default function App() {
+export default function App({
+  secureBackgroundSender,
+}: {
+  secureBackgroundSender: TransportSender;
+}) {
   //
   // We use an extra copy of preferences in the local storage backend to avoid
   // hitting the service worker for a slightly faster load time.
@@ -54,7 +64,11 @@ export default function App() {
       }}
     >
       <HashRouter>
-        <RecoilRoot>
+        <RecoilRoot
+          initializeState={({ set }) => {
+            set(secureBackgroundSenderAtom, secureBackgroundSender);
+          }}
+        >
           <ApolloProvider client={apolloClient}>
             <WithTheme>
               <_App />

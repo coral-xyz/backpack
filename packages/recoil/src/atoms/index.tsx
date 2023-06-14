@@ -13,6 +13,7 @@ export * from "./preferences/connection-urls";
 export * from "./prices";
 export * from "./primaryWallets";
 export * from "./recent-transactions";
+export * from "./secureClientAtoms";
 export * from "./solana";
 export * from "./spotlight";
 export * from "./transaction-request";

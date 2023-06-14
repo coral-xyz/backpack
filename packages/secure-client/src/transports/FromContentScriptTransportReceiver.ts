@@ -1,11 +1,20 @@
 import type { ChannelServer } from "@coral-xyz/common";
 import {
   CHANNEL_SECURE_BACKGROUND_REQUEST,
+  CHANNEL_SECURE_BACKGROUND_RESPONSE,
   ChannelContentScript,
 } from "@coral-xyz/common";
-import type { TransportReceiver } from "@coral-xyz/secure-background/clients";
+import type {
+  SECURE_EVENTS,
+  TransportHandler,
+  TransportReceiver,
+} from "@coral-xyz/secure-background/types";
 
-export class FromContentScriptTransportReceiver implements TransportReceiver {
+export class FromContentScriptTransportReceiver<
+  T extends SECURE_EVENTS = SECURE_EVENTS,
+  R extends "response" | "confirmation" = "response"
+> implements TransportReceiver<T, R>
+{
   private server: ChannelServer;
 
   constructor() {
@@ -14,9 +23,13 @@ export class FromContentScriptTransportReceiver implements TransportReceiver {
     );
   }
 
-  public setHandler = (handler) => {
-    this.server.handler(async (message) => {
-      return handler(message.data.params[0])
+  public setHandler = (handler: TransportHandler<T, R>) => {
+    this.server.handler((message) => {
+      const handled = handler(message?.data?.params?.[0]);
+
+      if (!handled) return null;
+
+      return handled
         .then((result) => [result])
         .catch((error) => [{ name: message.data.params[0].name, error }]);
     });

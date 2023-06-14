@@ -8,7 +8,6 @@ import type {
   TransportSender,
 } from "../../types/transports";
 import { SecureUIClient } from "../secureUI/client";
-import type { SECURE_UI_EVENTS } from "../secureUI/events";
 
 import type { SECURE_USER_EVENTS, SECURE_USER_UNLOCK_KEYRING } from "./events";
 
@@ -20,7 +19,7 @@ export class UserService {
   constructor(interfaces: {
     secureServer: TransportReceiver<SECURE_USER_EVENTS>;
     keyringStore: KeyringStore;
-    secureUIClient: TransportSender<SECURE_UI_EVENTS>;
+    secureUIClient: TransportSender<SECURE_USER_EVENTS, "confirmation">;
   }) {
     this.keyringStore = interfaces.keyringStore;
     this.secureUIClient = new SecureUIClient(interfaces.secureUIClient);
@@ -30,7 +29,6 @@ export class UserService {
   }
 
   private eventHandler: TransportHandler<SECURE_USER_EVENTS> = (request) => {
-    console.log("PCA", "UserService", "event handlder", request);
     switch (request.name) {
       case "SECURE_USER_UNLOCK_KEYRING":
         return this.handleUnlockKeyring(request);

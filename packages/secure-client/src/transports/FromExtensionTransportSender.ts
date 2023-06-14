@@ -9,18 +9,23 @@ import type {
   TransportHandler,
   TransportSend,
   TransportSender,
-} from "@coral-xyz/secure-background/clients";
+} from "@coral-xyz/secure-background/types";
 import { v4 } from "uuid";
 
-type QueuedRequest = {
+type QueuedRequest<
+  X extends SECURE_EVENTS,
+  R extends "response" | "confirmation" = "response"
+> = {
   request: SecureRequest;
-  resolve: (resonse: SecureResponse) => void;
+  resolve: (resonse: SecureResponse<X, R>) => void;
 };
 
-export class FromExtensionTransportSender<X extends SECURE_EVENTS>
-  implements TransportSender<X>
+export class FromExtensionTransportSender<
+  X extends SECURE_EVENTS,
+  R extends "response" | "confirmation" = "response"
+> implements TransportSender<X, R>
 {
-  private responseQueue: QueuedRequest[] = [];
+  private responseQueue: QueuedRequest<X, R>[] = [];
 
   constructor() {
     chrome.runtime.onMessage.addListener(this.responseHandler.bind(this));
@@ -28,18 +33,21 @@ export class FromExtensionTransportSender<X extends SECURE_EVENTS>
 
   private responseHandler = (message: {
     channel: string;
-    data: SecureResponse<X>;
+    data: SecureResponse<X, R>;
   }) => {
     if (message.channel !== CHANNEL_SECURE_BACKGROUND_EXTENSION_RESPONSE) {
       return;
     }
     const request = this.getRequest(message.data.id);
+
+    console.log("PCA FromExtensionTransportSender response Received", message);
+
     request?.resolve(message.data);
   };
 
   private getRequest = (
     id: string | number | undefined
-  ): QueuedRequest | null => {
+  ): QueuedRequest<X, R> | null => {
     if (id === undefined) {
       return null;
     }
@@ -57,15 +65,21 @@ export class FromExtensionTransportSender<X extends SECURE_EVENTS>
     return queuedRequest;
   };
 
-  public send: TransportSend<X> = <T extends X>(request) => {
-    return new Promise<SecureResponse<T>>(
-      (resolve: (response: SecureResponse<T>) => void) => {
+  public send = <C extends R = R, T extends X = X>(
+    request: SecureRequest<T>
+  ) => {
+    return new Promise<SecureResponse<T, C>>(
+      (resolve: (response: SecureResponse<T, C>) => void) => {
         const requestWithId: SecureRequest<T> & { id: string } = {
           ...request,
           id: v4(),
         };
 
-        console.log("PCA FromExtensionTransportSender Request", request);
+        console.log(
+          "PCA FromExtensionTransportSender send Request",
+          request,
+          CHANNEL_SECURE_BACKGROUND_EXTENSION_REQUEST
+        );
 
         this.responseQueue.push({
           request: requestWithId,
@@ -82,7 +96,7 @@ export class FromExtensionTransportSender<X extends SECURE_EVENTS>
             return request?.resolve({
               name: requestWithId.name,
               error: e,
-            } as SecureResponse<T>);
+            } as SecureResponse<T, C>);
           });
       }
     );

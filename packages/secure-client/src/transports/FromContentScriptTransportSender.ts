@@ -4,11 +4,18 @@ import {
   InjectedRequestManager,
 } from "@coral-xyz/common";
 import type {
+  SECURE_EVENTS,
+  SecureRequest,
+  SecureResponse,
   TransportSend,
   TransportSender,
-} from "@coral-xyz/secure-background/clients";
+} from "@coral-xyz/secure-background/types";
 
-export class FromContentScriptTransportSender implements TransportSender {
+export class FromContentScriptTransportSender<
+  X extends SECURE_EVENTS,
+  R extends "response" | "confirmation" = "response"
+> implements TransportSender<X, R>
+{
   private client: InjectedRequestManager;
 
   constructor() {
@@ -18,7 +25,9 @@ export class FromContentScriptTransportSender implements TransportSender {
     );
   }
 
-  public send: TransportSend = async (request) => {
+  public send = async <C extends R = R, T extends X = X>(
+    request: SecureRequest<T>
+  ): Promise<SecureResponse<T, C>> => {
     return this.client
       .request({
         method: "ContentScriptTransportSenderRequest",

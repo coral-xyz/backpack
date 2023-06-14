@@ -8,7 +8,6 @@ import type {
   TransportSender,
 } from "../../types/transports";
 import { SecureUIClient } from "../secureUI/client";
-import type { SECURE_UI_EVENTS } from "../secureUI/events";
 
 import type {
   SECURE_SVM_EVENTS,
@@ -24,13 +23,13 @@ export class SVMService {
   private keyringStore: KeyringStore;
 
   constructor(interfaces: {
-    secureServer: TransportReceiver<SECURE_SVM_EVENTS>;
+    secureReceiver: TransportReceiver<SECURE_SVM_EVENTS, "response">;
     keyringStore: KeyringStore;
-    secureUIClient: TransportSender<SECURE_UI_EVENTS>;
+    secureUISender: TransportSender<SECURE_SVM_EVENTS, "confirmation">;
   }) {
     this.keyringStore = interfaces.keyringStore;
-    this.secureUIClient = new SecureUIClient(interfaces.secureUIClient);
-    this.destroy = interfaces.secureServer.setHandler(
+    this.secureUIClient = new SecureUIClient(interfaces.secureUISender);
+    this.destroy = interfaces.secureReceiver.setHandler(
       this.eventHandler.bind(this)
     );
   }
@@ -48,33 +47,48 @@ export class SVMService {
     }
   };
 
-  private handleSignMessage: TransportHandler<SECURE_SVM_SIGN_MESSAGE> =
-    async ({ request }) => {
-      const approved = await this.secureUIClient.approveSignMessage({
-        ...request,
-        displayOptions: {
-          popup: true,
-        },
-      });
+  private handleSignMessage: TransportHandler<SECURE_SVM_SIGN_MESSAGE> = async (
+    event
+  ) => {
+    console.log("PCA HANDLE sign message", event);
+    // const confirm = await this.secureUISender.send(request)
+    const confirmation = await this.secureUIClient.confirm(event);
 
-      if (!approved) {
-        throw "Denied";
-      }
-
-      const blockchainKeyring =
-        this.keyringStore.activeUserKeyring.keyringForBlockchain(
-          Blockchain.SOLANA
-        );
+    console.log("PCA confirmation", confirmation);
+    if (confirmation.error || !confirmation.response?.confirmed) {
       return {
         name: "SECURE_SVM_SIGN_MESSAGE",
-        response: {
-          singedMessage: await blockchainKeyring.signMessage(
-            request.message,
-            request.publicKey
-          ),
-        },
+        error: "User Denied Request",
       };
+    }
+
+    const blockchainKeyring =
+      this.keyringStore.activeUserKeyring.keyringForBlockchain(
+        Blockchain.SOLANA
+      );
+
+    if (blockchainKeyring.ledgerKeyring) {
+      // open ledger prompt
+    }
+
+    const singedMessage = await blockchainKeyring.signMessage(
+      event.request.message,
+      event.request.publicKey
+    );
+
+    if (blockchainKeyring.ledgerKeyring) {
+      // close ledger prompt
+    }
+
+    console.log("PCA responde to contentscript", singedMessage);
+
+    return {
+      name: "SECURE_SVM_SIGN_MESSAGE",
+      response: {
+        singedMessage,
+      },
     };
+  };
 
   private handleSign: TransportHandler<SECURE_SVM_SIGN_TX> = async ({
     request,
@@ -86,6 +100,7 @@ export class SVMService {
       },
     };
   };
+
   private handleHello: TransportHandler<SECURE_SVM_SAY_HELLO> = async ({
     request,
   }) => {

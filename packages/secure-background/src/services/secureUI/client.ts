@@ -1,25 +1,19 @@
-import type { TransportSender } from "../../types/transports";
+import { v4 } from "uuid";
+
+import type { SECURE_EVENTS } from "../../types/events";
 import type {
-  SECURE_UI_APPROVE_SIGN_MESSAGE,
-  SECURE_UI_EVENTS,
-} from "../secureUI/events";
+  SecureRequest,
+  SecureResponse,
+  TransportSender,
+} from "../../types/transports";
 
-export class SecureUIClient {
-  constructor(private client: TransportSender<SECURE_UI_EVENTS>) {}
+export class SecureUIClient<T extends SECURE_EVENTS = SECURE_EVENTS> {
+  constructor(private client: TransportSender<T, "confirmation">) {}
 
-  public approveSignMessage(
-    request: SECURE_UI_APPROVE_SIGN_MESSAGE["request"]
-  ) {
-    return this.client
-      .send({
-        name: "SECURE_UI_APPROVE_SIGN_MESSAGE",
-        request,
-      })
-      .then((response) => {
-        if ("error" in response) {
-          throw response;
-        }
-        return response.response?.approved;
-      });
+  public confirm(
+    request: SecureRequest<T>
+  ): Promise<SecureResponse<T, "confirmation">> {
+    console.log("PCA", "confirm", request);
+    return this.client.send(request);
   }
 }

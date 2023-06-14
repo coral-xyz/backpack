@@ -13,13 +13,14 @@ import type {
   TransportReceiver,
   TransportSender,
 } from "./src/types/transports";
+import type { SECURE_EVENTS } from "./types";
 
 // Secure Service
 export function startSecureService(
   interfaces: {
     backendNotificationClient: TransportSender;
-    secureUIClient: TransportSender;
-    secureServer: TransportReceiver;
+    secureUIClient: TransportSender<SECURE_EVENTS, "confirmation">;
+    secureServer: TransportReceiver<SECURE_EVENTS, "response">;
     secureStorage: LocalStorageDb;
   },
   keyringStore: KeyringStore
@@ -32,9 +33,9 @@ export function startSecureService(
   );
 
   new SVMService({
-    secureServer: combinedServer as TransportReceiver<SECURE_SVM_EVENTS>,
+    secureReceiver: combinedServer as TransportReceiver<SECURE_SVM_EVENTS>,
     keyringStore: keyringStore,
-    secureUIClient: interfaces.secureUIClient,
+    secureUISender: interfaces.secureUIClient,
   });
   new UserService({
     secureServer: combinedServer as TransportReceiver<SECURE_USER_EVENTS>,

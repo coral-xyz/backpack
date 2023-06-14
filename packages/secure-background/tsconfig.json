@@ -9,6 +9,7 @@
     "index.ts",
     "legacyExport.ts",
     "service.ts",
-    "clients.ts"
+    "clients.ts",
+    "types.ts"
   ]
 }

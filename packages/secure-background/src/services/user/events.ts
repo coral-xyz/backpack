@@ -1,6 +1,6 @@
 import type { SecureEventBase } from "../../types/transports";
 
-// Add new events here and in: ../../events.ts
+// Also add new events to: ../../events.ts
 
 export type SECURE_USER_EVENTS = "SECURE_USER_UNLOCK_KEYRING";
 

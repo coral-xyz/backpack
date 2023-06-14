@@ -1,6 +1,7 @@
 import { IS_MOBILE } from "@coral-xyz/common";
 import { KeyringStore } from "@coral-xyz/secure-background/legacyExport";
 import { startSecureService } from "@coral-xyz/secure-background/service";
+import type { SECURE_EVENTS } from "@coral-xyz/secure-client";
 import {
   combineTransportReceivers,
   FromContentScriptTransportReceiver,
@@ -43,7 +44,10 @@ export function start(cfg: Config): Background {
   if (!cfg.isMobile) {
     const contentScriptReceiver = new FromContentScriptTransportReceiver();
     const extensionReceiver = new FromExtensionTransportReceiver();
-    const secureUISender = new ToSecureUITransportSender();
+    const secureUISender = new ToSecureUITransportSender<
+      SECURE_EVENTS,
+      "confirmation"
+    >();
 
     // New secure service
     startSecureService(

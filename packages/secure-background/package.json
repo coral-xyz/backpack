@@ -14,8 +14,7 @@
     "build": "tsc -b",
     "dev": "tsc --watch",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
-    "lint:fix": "yarn run lint --fix",
-    "build:publish": "yarn build; cd ../background; yarn build; cd ../app-extension; yarn build;"
+    "lint:fix": "yarn run lint --fix"
   },
   "dependencies": {
     "@coral-xyz/common": "*",

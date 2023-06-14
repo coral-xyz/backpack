@@ -1,4 +1,4 @@
-import type { PassThroughToUI, TransportSender } from "../../types/transports";
+import type { TransportSender } from "../../types/transports";
 import type { SECURE_SVM_SIGN_MESSAGE } from "../svm/events";
 
 export class SVMClient {
@@ -6,19 +6,20 @@ export class SVMClient {
 
   public signMessage(
     request: SECURE_SVM_SIGN_MESSAGE["request"],
-    displayOptions?: PassThroughToUI
+    confirmOptions: SECURE_SVM_SIGN_MESSAGE["confirmOptions"]
   ): Promise<string | null> {
     return this.client
       .send({
         name: "SECURE_SVM_SIGN_MESSAGE",
         request,
-        displayOptions,
+        confirmOptions,
       })
       .then((response) => {
+        console.log("PCA svm client response received", response);
         if ("error" in response) {
           throw response;
         }
-        return response?.response?.singedMessage;
+        return response?.response?.singedMessage ?? null;
       });
   }
 }

@@ -1,9 +1,9 @@
+import { SVMClient } from "@coral-xyz/secure-background/clients";
 import type {
   PassThroughToUI,
   SECURE_SVM_SIGN_MESSAGE,
   TransportSender,
-} from "@coral-xyz/secure-background/clients";
-import { SVMClient } from "@coral-xyz/secure-background/clients";
+} from "@coral-xyz/secure-background/types";
 
 export class SolanaClient {
   private secureSvmClient: SVMClient;

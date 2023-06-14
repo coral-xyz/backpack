@@ -9,15 +9,16 @@ import type {
   SecureResponse,
   TransportHandler,
   TransportReceiver,
-} from "@coral-xyz/secure-background/clients";
+} from "@coral-xyz/secure-background/types";
 
 export class FromExtensionTransportReceiver<
-  T extends SECURE_EVENTS = SECURE_EVENTS
-> implements TransportReceiver<T>
+  T extends SECURE_EVENTS = SECURE_EVENTS,
+  R extends "response" | "confirmation" = "response"
+> implements TransportReceiver<T, R>
 {
   constructor() {}
 
-  public setHandler = (handler) => {
+  public setHandler = (handler: TransportHandler<T, R>) => {
     const listener = async (message: {
       channel: string;
       data: SecureRequest<T>;
@@ -26,7 +27,13 @@ export class FromExtensionTransportReceiver<
         return;
       }
 
-      handler(message.data)
+      const handled = handler(message.data);
+
+      if (!handled) {
+        return;
+      }
+
+      handled
         .then((result) => {
           return chrome.runtime.sendMessage({
             channel: CHANNEL_SECURE_BACKGROUND_EXTENSION_RESPONSE,

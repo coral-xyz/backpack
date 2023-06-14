@@ -5,17 +5,11 @@ import {
   isValidEventOrigin,
   openPopupWindow,
 } from "@coral-xyz/common";
-import type {
-  SECURE_EVENTS,
-  SECURE_SVM_SAY_HELLO,
-  SECURE_UI_EVENTS,
-  TransportReceiver,
-  TransportSender,
-} from "@coral-xyz/secure-client";
+import type { SECURE_EVENTS } from "@coral-xyz/secure-client";
 import {
   FromExtensionTransportSender,
+  SecureUI,
   ToSecureUITransportReceiver,
-  UserClient,
 } from "@coral-xyz/secure-client";
 import { v4 } from "uuid";
 
@@ -44,26 +38,12 @@ const urlParams = new URLSearchParams(window.location.search);
 const windowId = urlParams.get("windowId") ?? v4();
 const port = chrome.runtime.connect({ name: windowId });
 
-const secureUITransportReceiver =
-  new ToSecureUITransportReceiver<SECURE_UI_EVENTS>(port);
+const secureUITransportReceiver = new ToSecureUITransportReceiver<
+  SECURE_EVENTS,
+  "confirmation"
+>(port);
 const extensionTransportSender =
   new FromExtensionTransportSender<SECURE_EVENTS>();
-
-const user = new UserClient(extensionTransportSender);
-
-secureUITransportReceiver.setHandler(async (request) => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  const response = await user.unlockKeyring({
-    uuid: "uuid",
-    password: "password",
-  });
-  console.log("PCA unlock response", response);
-  return {
-    ...request,
-    request: undefined,
-    response: { approved: true },
-  };
-});
 //
 // Configure event listeners.
 //
@@ -90,12 +70,12 @@ const root = createRoot(container!);
 root.render(
   <>
     <Suspense fallback={null}>
-      <App />
+      <App secureBackgroundSender={extensionTransportSender} />
     </Suspense>
     <Suspense fallback={null}>
       <SecureUI
-        sender={extensionTransportSender}
-        receiver={secureUITransportReceiver}
+        secureBackgroundSender={extensionTransportSender}
+        secureUIReceiver={secureUITransportReceiver}
       />
     </Suspense>
     <Suspense fallback={null}>
@@ -103,15 +83,3 @@ root.render(
     </Suspense>
   </>
 );
-
-function SecureUI({
-  receiver,
-  sender,
-}: {
-  receiver: TransportReceiver<SECURE_UI_EVENTS>;
-  sender: TransportSender<SECURE_EVENTS>;
-}) {
-  receiver;
-  sender;
-  return null;
-}
