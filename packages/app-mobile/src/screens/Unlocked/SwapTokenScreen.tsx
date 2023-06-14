@@ -336,6 +336,9 @@ export function SwapTokenConfirmScreen({ navigation }): JSX.Element {
   const [swapState, setSwapState] = useState(SwapState.CONFIRMATION);
 
   const handleExecuteSwap = async () => {
+    navigation.setOptions({
+      headerShown: false,
+    });
     setSwapState(SwapState.CONFIRMING);
     const result = await executeSwap();
     if (result) {
@@ -348,8 +351,11 @@ export function SwapTokenConfirmScreen({ navigation }): JSX.Element {
   if (swapState === SwapState.CONFIRMING) {
     return (
       <Screen jc="center">
-        <YStack space={12}>
-          <FullScreenLoading label="Swapping tokens..." />
+        <YStack space={12} alignSelf="center">
+          <ActivityIndicator size="large" />
+          <StyledText fontSize="$lg" textAlign="center">
+            Swapping...
+          </StyledText>
           <StyledText textAlign="center">
             {toToken?.ticker} will be deposited in your wallet once the
             transaction is complete
