@@ -2,13 +2,12 @@ import { Suspense, useState } from "react";
 import { View, StyleSheet } from "react-native";
 
 import { Blockchain } from "@coral-xyz/common";
-import { UsdBalanceAndPercentChange } from "@coral-xyz/tamagui";
+import { UsdBalanceAndPercentChange, Stack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { RecentActivityList } from "~components/RecentActivityList";
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import {
-  Screen,
   TokenAmountHeader,
   ScreenLoading,
   ScreenError,
@@ -43,7 +42,7 @@ function TokenHeader({
   }
 
   return (
-    <View>
+    <Stack mb={24}>
       <View>
         <TokenAmountHeader
           token={token}
@@ -57,6 +56,7 @@ function TokenHeader({
       </View>
       <View style={styles.tokenHeaderButtonContainer}>
         <TransferWidget
+          swapEnabled
           token={token}
           blockchain={blockchain}
           address={address}
@@ -67,7 +67,7 @@ function TokenHeader({
           }
         />
       </View>
-    </View>
+    </Stack>
   );
 }
 
@@ -91,24 +91,23 @@ function Container({
     blockchain === Blockchain.ETHEREUM ? [tokenAddress] : undefined;
 
   return (
-    <Screen>
-      <RecentActivityList
-        blockchain={blockchain}
-        address={activityAddress}
-        contractAddresses={contractAddresses}
-        minimize
-        style={{ marginTop: 18 }}
-        ListHeaderComponent={
-          <TokenHeader
-            blockchain={blockchain}
-            address={tokenAddress}
-            onPressOption={(route: string, options: NavTokenOptions) => {
-              navigation.push(route, options);
-            }}
-          />
-        }
-      />
-    </Screen>
+    <RecentActivityList
+      ListHeaderComponent={
+        <TokenHeader
+          blockchain={blockchain}
+          address={tokenAddress}
+          onPressOption={(route: string, options: NavTokenOptions) => {
+            navigation.push(route, options);
+          }}
+        />
+      }
+      style={{ paddingTop: 16, paddingHorizontal: 16 }}
+      contentContainerStyle={{ paddingBottom: 32 }}
+      blockchain={blockchain}
+      address={activityAddress}
+      contractAddresses={contractAddresses}
+      minimize
+    />
   );
 }
 

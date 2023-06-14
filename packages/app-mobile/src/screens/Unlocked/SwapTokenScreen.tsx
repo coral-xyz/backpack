@@ -1,6 +1,6 @@
 import type { BigNumberish } from "ethers";
 
-import { memo, Suspense, useCallback, useMemo } from "react";
+import { useState, memo, Suspense, useCallback, useMemo } from "react";
 import {
   Pressable,
   Text,
@@ -41,6 +41,8 @@ import { ethers, FixedNumber, BigNumber } from "ethers";
 import { ErrorBoundary } from "react-error-boundary";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import * as BottomDrawerCards from "~components/BottomDrawerCards";
+import { BetterBottomSheet2 } from "~components/BottomSheetModal";
 import { InputField, InputFieldMaxLabel } from "~components/Form";
 import {
   ScreenError,
@@ -58,6 +60,14 @@ import { Token } from "~types/types";
 
 const { Zero } = ethers.constants;
 
+// TODO(peter) share between extension/mobile
+enum SwapState {
+  INITIAL,
+  CONFIRMATION,
+  CONFIRMING,
+  CONFIRMED,
+  ERROR,
+}
 /**
  * Hides miniscule amounts of SOL
  * @example approximateAmount(0.00203928) = "0.002"
@@ -75,12 +85,12 @@ function SwitchTokensButton({
 }): JSX.Element {
   return (
     <Stack
-      bg="$baseBackgroundL1"
+      bg="$card"
       borderColor="$baseBackgroundL1"
       borderWidth={1}
       width={44}
       height={44}
-      borderRadius={12}
+      borderRadius={16}
       ai="center"
       jc="center"
       position="absolute"
@@ -92,8 +102,9 @@ function SwitchTokensButton({
         disabled={disabled}
         onPress={onPress}
         name="compare-arrows"
-        color="$accentBlue"
+        color="$baseTextMedEmphasis"
         size={24}
+        iconStyle={{ transform: [{ rotate: "90deg" }] }}
       />
     </Stack>
   );
@@ -317,25 +328,62 @@ function SwapInfo() {
 }
 
 function Container({ navigation, route }) {
-  const handleSwap = () => {};
-
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const { isLoadingRoutes, isLoadingTransactions } = useSwapContext();
-
   const isDisabled = isLoadingRoutes || isLoadingTransactions;
 
   return (
-    <Screen>
-      <YStack space={6}>
-        <SwapForm navigation={navigation} />
-        <SwapInfo />
-        <PrimaryButton
-          loading={isLoadingRoutes || isLoadingTransactions}
-          disabled={isDisabled}
-          label="Review"
-          onPress={() => handleSwap()}
-        />
-      </YStack>
-    </Screen>
+    <>
+      <Screen>
+        <YStack space={6}>
+          <SwapForm navigation={navigation} />
+          <SwapInfo />
+          <PrimaryButton
+            loading={isLoadingRoutes || isLoadingTransactions}
+            disabled={isDisabled}
+            label="Review"
+            onPress={() => setIsModalVisible(true)}
+          />
+        </YStack>
+      </Screen>
+      {!isDisabled ? (
+        <BetterBottomSheet2
+          isVisible={isModalVisible}
+          resetVisibility={() => {
+            setIsModalVisible(() => false);
+          }}
+        >
+          <SwapConfirmation />
+        </BetterBottomSheet2>
+      ) : null}
+    </>
+  );
+}
+
+function SwapConfirmation() {
+  const { executeSwap } = useSwapContext();
+  const [swapState, setSwapState] = useState(SwapState.CONFIRMATION);
+
+  const handleExecuteSwap = async () => {
+    setSwapState(SwapState.CONFIRMING);
+    const result = await executeSwap();
+    if (result) {
+      setSwapState(SwapState.CONFIRMED);
+    } else {
+      setSwapState(SwapState.ERROR);
+    }
+  };
+
+  return (
+    <BottomDrawerCards.Container>
+      <BottomDrawerCards.Header text="You Receive" />
+      <SwapInfo />
+      <PrimaryButton
+        loading={SwapState.CONFIRMING === swapState}
+        label="Confirm"
+        onPress={handleExecuteSwap}
+      />
+    </BottomDrawerCards.Container>
   );
 }
 

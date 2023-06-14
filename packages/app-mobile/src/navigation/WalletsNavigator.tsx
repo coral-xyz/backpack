@@ -34,6 +34,10 @@ import { TokenListScreen } from "~screens/TokenListScreen";
 import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollectibleSelectRecipientScreen";
 
 import { SendNavigator } from "~src/navigation/SendNavigator";
+import {
+  SwapTokenScreen,
+  SwapTokenListScreen,
+} from "~src/screens/Unlocked/SwapTokenScreen";
 
 const TopTabs = createMaterialTopTabNavigator<TopTabsParamList>();
 function TopTabsNavigator(): JSX.Element {
@@ -98,6 +102,20 @@ export type WalletStackParamList = {
     blockchain: Blockchain;
   };
   Notifications: undefined;
+
+  SwapToken: {
+    title?: string;
+    address: string;
+    blockchain: Blockchain
+  }
+  SwapTokenList: undefined;
+  DepositSingle: undefined;
+  SendSelectTokenModal: undefined;
+  SendCollectibleSelectRecipient: {
+    nft: {
+      name: string;
+    };
+  };
 };
 
 export type HomeWalletListScreenProps = StackScreenProps<
@@ -146,16 +164,20 @@ export function WalletsNavigator(): JSX.Element {
                 );
               },
               headerLeft: (props) => (
-                <HeaderAvatarButton {...props} navigation={navigation} />
+                <HeaderButtonSpacer>
+                  <HeaderAvatarButton {...props} navigation={navigation} />
+                </HeaderButtonSpacer>
               ),
               headerRight: (props) => (
-                <HeaderButton
-                  name="notifications"
-                  {...props}
-                  onPress={() => {
-                    navigation.navigate("Notifications");
-                  }}
-                />
+                <HeaderButtonSpacer>
+                  <HeaderButton
+                    name="notifications"
+                    {...props}
+                    onPress={() => {
+                      navigation.navigate("Notifications");
+                    }}
+                  />
+                </HeaderButtonSpacer>
               ),
             };
           }}
@@ -212,6 +234,16 @@ export function WalletsNavigator(): JSX.Element {
             headerBackImage: IconCloseModal,
           }}
         >
+          <Stack.Screen
+            name="SwapToken"
+            component={SwapTokenScreen}
+            options={{ title: "Swap Token" }}
+          />
+          <Stack.Screen
+            name="SwapTokenList"
+            component={SwapTokenListScreen}
+            options={{ title: "Select Token" }}
+          />
           <Stack.Screen
             options={{ title: "Deposit" }}
             name="DepositSingle"

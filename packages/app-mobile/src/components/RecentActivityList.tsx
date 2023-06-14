@@ -34,6 +34,7 @@ export function RecentActivityList({
   transactions,
   minimize = false,
   style,
+  contentContainerStyle,
   ListHeaderComponent,
 }: {
   blockchain: Blockchain;
@@ -42,6 +43,7 @@ export function RecentActivityList({
   transactions?: RecentTransaction[];
   minimize?: boolean;
   style?: StyleProp<ViewStyle>;
+  contentContainerStyle?: StyleProp<ViewStyle>;
   ListHeaderComponent?: JSX.Element;
 }) {
   return (
@@ -54,6 +56,7 @@ export function RecentActivityList({
           transactions={transactions}
           minimize={minimize}
           style={style}
+          contentContainerStyle={contentContainerStyle}
           ListHeaderComponent={ListHeaderComponent}
         />
       </Suspense>
@@ -67,6 +70,8 @@ export function _RecentActivityList({
   contractAddresses,
   transactions: _transactions,
   ListHeaderComponent,
+  style,
+  contentContainerStyle,
 }: {
   blockchain?: Blockchain;
   address?: string;
@@ -74,6 +79,7 @@ export function _RecentActivityList({
   transactions?: RecentTransaction[];
   minimize?: boolean;
   style?: StyleProp<ViewStyle>;
+  contentContainerStyle?: StyleProp<ViewStyle>;
   ListHeaderComponent?: JSX.Element;
 }): JSX.Element {
   const sections = useRecentTransactionsGroupedByDate({
@@ -114,7 +120,11 @@ export function _RecentActivityList({
     <SectionList
       sections={sections}
       keyExtractor={keyExtractor}
-      contentContainerStyle={{ flex: sections.length > 0 ? undefined : 1 }}
+      style={style}
+      contentContainerStyle={[
+        { flex: sections.length > 0 ? undefined : 1 },
+        contentContainerStyle,
+      ]}
       renderItem={renderItem}
       scrollEnabled={sections.length > 0}
       renderSectionHeader={renderSectionHeader}
