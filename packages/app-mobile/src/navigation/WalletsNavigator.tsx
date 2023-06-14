@@ -3,6 +3,7 @@ import { View } from "react-native";
 import Constants from "expo-constants";
 
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
+import { SwapProvider } from "@coral-xyz/recoil";
 import { useTheme as useTamaguiTheme } from "@coral-xyz/tamagui";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import {
@@ -36,6 +37,7 @@ import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollec
 import { SendNavigator } from "~src/navigation/SendNavigator";
 import {
   SwapTokenScreen,
+  SwapTokenConfirmScreen,
   SwapTokenListScreen,
 } from "~src/screens/Unlocked/SwapTokenScreen";
 
@@ -102,13 +104,7 @@ export type WalletStackParamList = {
     blockchain: Blockchain;
   };
   Notifications: undefined;
-
-  SwapToken: {
-    title?: string;
-    address: string;
-    blockchain: Blockchain
-  }
-  SwapTokenList: undefined;
+  SwapModal: undefined;
   DepositSingle: undefined;
   SendSelectTokenModal: undefined;
   SendCollectibleSelectRecipient: {
@@ -235,16 +231,6 @@ export function WalletsNavigator(): JSX.Element {
           }}
         >
           <Stack.Screen
-            name="SwapToken"
-            component={SwapTokenScreen}
-            options={{ title: "Swap Token" }}
-          />
-          <Stack.Screen
-            name="SwapTokenList"
-            component={SwapTokenListScreen}
-            options={{ title: "Select Token" }}
-          />
-          <Stack.Screen
             options={{ title: "Deposit" }}
             name="DepositSingle"
             component={ReceiveTokenScreen}
@@ -254,6 +240,7 @@ export function WalletsNavigator(): JSX.Element {
               name="SendSelectTokenModal"
               component={SendNavigator}
             />
+            <Stack.Screen name="SwapModal" component={SwapNavigator} />
           </Stack.Group>
           <Stack.Screen
             name="SendCollectibleSelectRecipient"
@@ -268,5 +255,56 @@ export function WalletsNavigator(): JSX.Element {
         </Stack.Group>
       </Stack.Navigator>
     </View>
+  );
+}
+
+type SwapStackParamList = {
+  SwapToken: {
+    title?: string;
+    address: string;
+    blockchain: Blockchain;
+  };
+  SwapTokenList: undefined;
+  SwapTokenConfirm: {
+    title?: string;
+    address: string;
+    blockchain: Blockchain;
+  };
+};
+
+const SwapStack = createStackNavigator<SwapStackParamList>();
+function SwapNavigator(): JSX.Element {
+  const theme = useTheme();
+  return (
+    <SwapProvider>
+      <SwapStack.Navigator
+        screenOptions={{
+          // headerShown: false,
+          headerTintColor: theme.custom.colors.fontColor,
+          headerBackTitleVisible: false,
+        }}
+      >
+        <SwapStack.Screen
+          name="SwapToken"
+          component={SwapTokenScreen}
+          options={{ title: "Swap Token" }}
+        />
+        <SwapStack.Screen
+          name="SwapTokenConfirm"
+          component={SwapTokenConfirmScreen}
+          options={{ title: "Review Order" }}
+        />
+        <SwapStack.Screen
+          name="SwapTokenList"
+          component={SwapTokenListScreen}
+          options={({ route }) => {
+            const title = route.params.direction === "from" ? "From" : "To";
+            return {
+              title: `Select ${title}`,
+            };
+          }}
+        />
+      </SwapStack.Navigator>
+    </SwapProvider>
   );
 }

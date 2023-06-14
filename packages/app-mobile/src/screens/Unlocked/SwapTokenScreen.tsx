@@ -23,7 +23,7 @@ import {
   useDarkMode,
   useJupiterOutputTokens,
   useSwapContext,
-  SwapProvider,
+  // SwapProvider,
   TokenData,
   TokenDataWithPrice,
 } from "@coral-xyz/recoil";
@@ -50,6 +50,7 @@ import {
   StyledTokenTextInput,
   PrimaryButton,
   Screen,
+  FullScreenLoading,
 } from "~components/index";
 
 import { SearchableTokenTables } from "./components/Balances";
@@ -207,7 +208,6 @@ function SwapForm({ navigation }) {
 
   const handleChangeToken = (direction: string) => {
     navigation.push("SwapTokenList", { direction });
-    // navigation.push token selector
   };
 
   return (
@@ -327,40 +327,7 @@ function SwapInfo() {
   );
 }
 
-function Container({ navigation, route }) {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const { isLoadingRoutes, isLoadingTransactions } = useSwapContext();
-  const isDisabled = isLoadingRoutes || isLoadingTransactions;
-
-  return (
-    <>
-      <Screen>
-        <YStack space={6}>
-          <SwapForm navigation={navigation} />
-          <SwapInfo />
-          <PrimaryButton
-            loading={isLoadingRoutes || isLoadingTransactions}
-            disabled={isDisabled}
-            label="Review"
-            onPress={() => setIsModalVisible(true)}
-          />
-        </YStack>
-      </Screen>
-      {!isDisabled ? (
-        <BetterBottomSheet2
-          isVisible={isModalVisible}
-          resetVisibility={() => {
-            setIsModalVisible(() => false);
-          }}
-        >
-          <SwapConfirmation />
-        </BetterBottomSheet2>
-      ) : null}
-    </>
-  );
-}
-
-function SwapConfirmation() {
+export function SwapTokenConfirmScreen({ navigation }) {
   const { executeSwap } = useSwapContext();
   const [swapState, setSwapState] = useState(SwapState.CONFIRMATION);
 
@@ -374,49 +341,87 @@ function SwapConfirmation() {
     }
   };
 
+  if (swapState === SwapState.CONFIRMING) {
+    return (
+      <Screen>
+        <FullScreenLoading label="Swapping..." />
+      </Screen>
+    );
+  }
+
+  if (swapState === SwapState.CONFIRMED) {
+    return (
+      <Screen jc="center">
+        <StyledText fontSize="$3xl" textAlign="center">
+          Swap confirmed!
+        </StyledText>
+        <StyledText textAlign="center">
+          You will see your new balance shortly or w/e
+        </StyledText>
+      </Screen>
+    );
+  }
+
   return (
-    <BottomDrawerCards.Container>
-      <BottomDrawerCards.Header text="You Receive" />
+    <Screen>
       <SwapInfo />
-      <PrimaryButton
-        loading={SwapState.CONFIRMING === swapState}
-        label="Confirm"
-        onPress={handleExecuteSwap}
-      />
-    </BottomDrawerCards.Container>
+      <PrimaryButton label="Swap" onPress={handleExecuteSwap} />
+    </Screen>
+  );
+}
+
+function Container({ navigation }) {
+  const { toAmount, fromAmount, isLoadingRoutes, isLoadingTransactions } =
+    useSwapContext();
+
+  // Parameters aren't all entered or the swap data is loading
+  const isIncomplete =
+    !fromAmount || !toAmount || isLoadingRoutes || isLoadingTransactions;
+
+  return (
+    <Screen>
+      <YStack space={6}>
+        <SwapForm navigation={navigation} />
+        <SwapInfo />
+        <PrimaryButton
+          loading={isLoadingRoutes || isLoadingTransactions}
+          disabled={isIncomplete}
+          label="Review"
+          onPress={() => {
+            navigation.push("SwapTokenConfirm");
+          }}
+        />
+      </YStack>
+    </Screen>
   );
 }
 
 export function SwapTokenListScreen({ navigation, route }): JSX.Element {
   const { direction } = route.params;
-  const { fromTokens, toTokens, setFromMint, setToMint } = useSwapContext();
-  console.log("debug1:fromTokens", fromTokens);
-  console.log("debug1:toTokens", toTokens);
+  const { setFromMint, setToMint } = useSwapContext();
 
   return (
     <Screen>
-      <SwapProvider>
-        <SearchableTokenTables
-          onPressRow={(_b: Blockchain, token: Token) => {
-            if (direction === "from") {
-              setFromMint(token.mint!);
-            } else {
-              setToMint(token.mint!);
-            }
-            navigation.goBack();
-          }}
-          customFilter={(token: Token) => {
-            // TODO make sure custom filter only supports SOL swaps
-            if (token.mint && token.mint === SOL_NATIVE_MINT) {
-              return true;
-            }
-            if (token.address && token.address === ETH_NATIVE_MINT) {
-              return true;
-            }
-            return !token.nativeBalance.isZero();
-          }}
-        />
-      </SwapProvider>
+      <SearchableTokenTables
+        onPressRow={(_b: Blockchain, token: Token) => {
+          if (direction === "to") {
+            setFromMint(token.mint!);
+          } else {
+            setToMint(token.mint!);
+          }
+          navigation.goBack();
+        }}
+        customFilter={(token: Token) => {
+          // TODO make sure custom filter only supports SOL swaps
+          if (token.mint && token.mint === SOL_NATIVE_MINT) {
+            return true;
+          }
+          if (token.address && token.address === ETH_NATIVE_MINT) {
+            return true;
+          }
+          return !token.nativeBalance.isZero();
+        }}
+      />
     </Screen>
   );
 }
@@ -427,9 +432,7 @@ export function SwapTokenScreen({ navigation, route }): JSX.Element {
       fallbackRender={({ error }) => <ScreenError error={error} />}
     >
       <Suspense fallback={<ScreenLoading />}>
-        <SwapProvider>
-          <Container navigation={navigation} route={route} />
-        </SwapProvider>
+        <Container navigation={navigation} route={route} />
       </Suspense>
     </ErrorBoundary>
   );

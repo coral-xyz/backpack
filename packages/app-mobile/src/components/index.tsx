@@ -133,11 +133,13 @@ export function Screen({
   children,
   style,
   headerPadding,
+  jc,
 }: {
   scrollable?: boolean;
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   headerPadding?: boolean;
+  jc?: "space-between" | "center"
 }) {
   const [show, setShow] = useState(true);
   const insets = useSafeAreaInsets();
@@ -186,6 +188,7 @@ export function Screen({
         {
           backgroundColor: theme.custom.colors.background,
           marginTop: headerPadding ? insets.top : undefined,
+          justifyContent: jc,
         },
         style,
       ]}

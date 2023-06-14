@@ -48,7 +48,7 @@ export function TransferWidget({
           label="Swap"
           icon="compare-arrows"
           onPress={() =>
-            onPressOption("SwapToken", {
+            onPressOption("SwapModal", {
               blockchain,
               title: token?.name,
               address,
