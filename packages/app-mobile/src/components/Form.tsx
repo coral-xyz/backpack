@@ -12,26 +12,38 @@ import { useTheme } from "~hooks/useTheme";
 export function InputGroup({
   hasError,
   children,
+  errorMessage,
 }: {
   hasError?: boolean;
   children: JSX.Element | JSX.Element[];
+  errorMessage?: string;
 }): JSX.Element {
   const theme = useTheme();
   const borderColor = hasError
     ? theme.custom.colors.negative
     : theme.custom.colors.textInputBorderFull;
   return (
-    <View
-      style={[
-        styles.inputWrapper,
-        {
-          borderColor,
-          backgroundColor: theme.custom.colors.textBackground,
-        },
-      ]}
-    >
-      {children}
-    </View>
+    <>
+      <View
+        style={[
+          styles.inputWrapper,
+          {
+            borderColor,
+            backgroundColor: theme.custom.colors.textBackground,
+          },
+        ]}
+      >
+        {children}
+      </View>
+
+      {errorMessage ? (
+        <Text
+          style={{ ...styles.errorText, color: theme.custom.colors.negative }}
+        >
+          {errorMessage}
+        </Text>
+      ) : null}
+    </>
   );
 }
 
@@ -109,6 +121,9 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 16,
   },
+  errorText: {
+    textAlign: "center",
+  },
 });
 
 // Simple label with a text input
@@ -117,9 +132,7 @@ export function InputField({
   rightLabel,
   rightLabelComponent,
   children,
-  hasError,
 }: {
-  leftLabel: string;
   rightLabel?: string;
   rightLabelComponent?: JSX.Element;
   children: JSX.Element;
