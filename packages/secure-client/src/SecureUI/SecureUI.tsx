@@ -20,7 +20,10 @@ export function SecureUI({
   secureBackgroundSender: TransportSender<SECURE_EVENTS>;
 }) {
   useEffect(() => {
-    const user = new UserClient(secureBackgroundSender);
+    const user = new UserClient(secureBackgroundSender, {
+      address: "EXTENSION",
+      name: "Backpack",
+    });
 
     secureUIReceiver.setHandler(async (request) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));

@@ -2,14 +2,15 @@ import { SVMClient } from "@coral-xyz/secure-background/clients";
 import type {
   PassThroughToUI,
   SECURE_SVM_SIGN_MESSAGE,
+  SecureEventOrigin,
   TransportSender,
 } from "@coral-xyz/secure-background/types";
 
 export class SolanaClient {
   private secureSvmClient: SVMClient;
 
-  constructor(client: TransportSender) {
-    this.secureSvmClient = new SVMClient(client);
+  constructor(client: TransportSender, origin: SecureEventOrigin) {
+    this.secureSvmClient = new SVMClient(client, origin);
   }
 
   public signMessage(

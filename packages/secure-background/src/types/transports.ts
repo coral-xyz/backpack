@@ -15,8 +15,14 @@ type SerializableJson = {
 
 export type PassThroughToUI = SerializableJson;
 
+export type SecureEventOrigin = {
+  name: string;
+  address: string;
+};
+
 export interface SecureEventBase<T extends SECURE_EVENTS = SECURE_EVENTS> {
   name: T;
+  origin: SecureEventOrigin;
   id?: string | number;
   request: SerializableJson;
   confirmOptions?: PassThroughToUI;
@@ -37,6 +43,7 @@ export type SecureRequest<
 > = T extends SecureEventBase
   ? {
       name: T["name"];
+      origin: T["origin"];
       id?: T["id"];
       request: T["request"];
       confirmOptions?: T["confirmOptions"];
@@ -44,6 +51,7 @@ export type SecureRequest<
   : T extends SECURE_EVENTS
   ? {
       name: T;
+      origin: SecureEvent<T>["origin"];
       id?: SecureEvent<T>["id"];
       request: SecureEvent<T>["request"];
       confirmOptions?: SecureEvent<T>["confirmOptions"];
