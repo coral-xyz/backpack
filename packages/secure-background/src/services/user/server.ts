@@ -1,6 +1,5 @@
-import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
-
 import type { KeyringStore } from "../../store/keyring";
+import { KeyringStoreStateEnum } from "../../store/keyring";
 import type {
   TransportHandler,
   TransportReceiver,

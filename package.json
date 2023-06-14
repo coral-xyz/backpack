@@ -10,7 +10,6 @@
       "examples",
       "examples/xnft/*",
       "packages/*",
-      "packages/blockchains/*",
       "web"
     ]
   },

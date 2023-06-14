@@ -44,10 +44,10 @@ export class LedgerKeyringBase
     return this.walletDescriptors.map((x) => x.publicKey);
   }
 
-  public exportSecretKey(address: string): string | null {
+  public exportSecretKey(_address: string): string | null {
     throw new Error("ledger keyring cannot export secret keys");
   }
-  public importSecretKey(secretKey: string): string {
+  public importSecretKey(_secretKey: string): string {
     throw new Error("ledger keyring cannot import secret keys");
   }
 

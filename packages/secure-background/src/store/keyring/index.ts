@@ -14,8 +14,6 @@ import {
   defaultPreferences,
   NOTIFICATION_KEYRING_STORE_LOCKED,
 } from "@coral-xyz/common";
-import type { KeyringStoreState } from "@coral-xyz/recoil";
-import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import { generateMnemonic } from "bip39";
 
 import { hdFactoryForBlockchain, keyringForBlockchain } from "../../keyring";
@@ -34,6 +32,14 @@ import {
   getKeyringStore_NO_MIGRATION,
   setKeyringStore,
 } from "./store";
+
+export type KeyringStoreState = "locked" | "unlocked" | "needs-onboarding";
+
+export const KeyringStoreStateEnum: { [key: string]: KeyringStoreState } = {
+  Locked: "locked",
+  Unlocked: "unlocked",
+  NeedsOnboarding: "needs-onboarding",
+};
 
 /**
  * KeyringStore API for managing all wallet keys .

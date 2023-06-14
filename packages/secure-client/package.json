@@ -4,9 +4,9 @@
   "description": "",
   "license": "ISC",
   "module": "dist/esm/index.js",
-  "source": "src/index.ts",
+  "source": "index.ts",
   "react-native": "dist/esm/index.js",
-  "types": "src/index.ts",
+  "types": "index.ts",
   "files": [
     "dist"
   ],
@@ -19,8 +19,9 @@
   },
   "dependencies": {
     "@coral-xyz/common": "*",
-    "@coral-xyz/recoil": "*",
     "@coral-xyz/secure-background": "*",
+    "@coral-xyz/tamagui": "*",
+    "recoil": "^0.7.7",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

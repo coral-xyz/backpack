@@ -5,6 +5,12 @@ import type {
   TransportReceiver,
   TransportSender,
 } from "@coral-xyz/secure-background/types";
+import {
+  config as tamaguiConfig,
+  Stack,
+  TamaguiProvider,
+  Text,
+} from "@coral-xyz/tamagui";
 import { RecoilRoot } from "recoil";
 
 import {
@@ -47,7 +53,11 @@ export function SecureUI({
         set(secureUIReceiverAtom, secureUIReceiver);
       }}
     >
-      null;
+      <TamaguiProvider config={tamaguiConfig}>
+        <Stack margin={10}>
+          <Text color="$accentPurple">Hello</Text>
+        </Stack>
+      </TamaguiProvider>
     </RecoilRoot>
   );
 }

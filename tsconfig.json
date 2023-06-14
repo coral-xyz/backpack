@@ -4,7 +4,6 @@
   "include": [],
   "references": [
     { "path": "packages/background" },
-    { "path": "packages/blockchains" },
     { "path": "packages/secure-background" },
     { "path": "packages/secure-client" },
     { "path": "packages/chat-sdk" },
@@ -21,7 +20,6 @@
     { "path": "packages/tamagui-core" },
     { "path": "packages/themes" },
     { "path": "packages/wallet-standard" },
-    { "path": "packages/react-native-core" },
-    { "path": "packages/tamagui-core" }
+    { "path": "packages/react-native-core" }
   ]
 }

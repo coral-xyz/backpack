@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "@coral-xyz/common": "*",
-    "@coral-xyz/recoil": "*",
     "@solana/web3.js": "^1.63.1",
     "@types/uuid": "^9.0.1",
     "bip32": "^2.0.6",

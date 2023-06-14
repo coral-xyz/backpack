@@ -8,9 +8,9 @@ import {
 import type { SECURE_EVENTS } from "@coral-xyz/secure-client";
 import {
   FromExtensionTransportSender,
-  SecureUI,
   ToSecureUITransportReceiver,
 } from "@coral-xyz/secure-client";
+import { SecureUI } from "@coral-xyz/secure-client/ui";
 import { v4 } from "uuid";
 
 import "./index.css";
