@@ -14,9 +14,6 @@ export const madLadGold = selectorFamily<any | null, string>({
   get:
     (_mintAddress) =>
     async ({ get }) => {
-      // Stupid hack. To reduce RPC burst. Instead we should just have
-      // a virtual list for the collection view.
-      await new Promise((resolve) => setTimeout(resolve, 2000));
       const { blockchain, publicKey } = get(activeWallet);
       if (blockchain !== Blockchain.SOLANA) {
         return null;

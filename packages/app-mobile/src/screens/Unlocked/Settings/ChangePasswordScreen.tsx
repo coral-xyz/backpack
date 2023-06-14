@@ -1,4 +1,4 @@
-import { Alert, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 import {
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
@@ -17,7 +17,7 @@ function InstructionText({
   onPress,
 }: {
   text: string;
-  onPress: () => void;
+  onPress?: () => void;
 }) {
   const theme = useTheme();
   return (
@@ -44,7 +44,13 @@ type PasswordInput = {
 export function ChangePasswordScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const background = useBackgroundClient();
-  const { control, handleSubmit, formState, watch } = useForm({
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors, isDirty, isValid },
+    setError,
+  } = useForm({
     defaultValues: {
       currentPassword: "",
       newPassword: "",
@@ -52,19 +58,11 @@ export function ChangePasswordScreen({ navigation }) {
     },
   });
 
-  const hasError = (name: string) => !!formState.errors[name];
-  const isValid = Object.keys(formState.errors).length === 0;
-
   const onSubmit = async ({
     currentPassword,
     newPassword,
     verifyPassword,
   }: PasswordInput) => {
-    Alert.alert(
-      "success",
-      JSON.stringify({ currentPassword, newPassword, verifyPassword })
-    );
-
     const isCurrentCorrect = await background.request({
       method: UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
       params: [currentPassword],
@@ -74,13 +72,15 @@ export function ChangePasswordScreen({ navigation }) {
       newPassword.trim() === "" || newPassword !== verifyPassword;
 
     if (!isCurrentCorrect || mismatchError) {
-      return;
+      return setError("currentPassword", { message: "Incorrect password" });
     }
 
     await background.request({
       method: UI_RPC_METHOD_PASSWORD_UPDATE,
       params: [currentPassword, newPassword],
     });
+
+    navigation.popToTop();
   };
 
   const handlePressForgotPassword = () => {
@@ -92,7 +92,10 @@ export function ChangePasswordScreen({ navigation }) {
       style={{ justifyContent: "space-between", marginBottom: insets.bottom }}
     >
       <View>
-        <InputGroup hasError={hasError("currentPassword")}>
+        <InputGroup
+          hasError={Boolean(errors.currentPassword)}
+          errorMessage={errors.currentPassword?.message}
+        >
           <InputListItem
             title="Current"
             placeholder="Enter password"
@@ -105,6 +108,7 @@ export function ChangePasswordScreen({ navigation }) {
             }}
           />
         </InputGroup>
+
         <Margin top={12} bottom={36}>
           <InstructionText
             text="Forgot password?"
@@ -112,7 +116,14 @@ export function ChangePasswordScreen({ navigation }) {
           />
         </Margin>
         <InputGroup
-          hasError={hasError("newPassword") || hasError("verifyPassword")}
+          hasError={Boolean(errors.newPassword || errors.verifyPassword)}
+          errorMessage={[
+            errors.newPassword?.message,
+            errors.verifyPassword?.message,
+          ]
+            .filter(Boolean)
+            .join(". ")
+            .concat(".")}
         >
           <InputListItem
             title="New"
@@ -125,7 +136,7 @@ export function ChangePasswordScreen({ navigation }) {
               required: true,
               validate: (val: string) => {
                 if (val === watch("currentPassword")) {
-                  return "Your passwords are the same";
+                  return "Your new password must be different";
                 }
               },
             }}
@@ -138,21 +149,21 @@ export function ChangePasswordScreen({ navigation }) {
             control={control}
             rules={{
               required: true,
-              minLength: 8,
               validate: (val: string) => {
                 if (val !== watch("newPassword")) {
-                  return "Passwords do not match";
+                  return "Password and confirmation do not match";
                 }
               },
             }}
           />
         </InputGroup>
+
         <Margin top={12}>
-          <InstructionText text="Your password must be at least 8 characters long and contain letters and numbers." />
+          <InstructionText text="Your password must be at least 8 characters long." />
         </Margin>
       </View>
       <PrimaryButton
-        disabled={!isValid}
+        disabled={Boolean(!isDirty && !isValid)}
         label="Change Password"
         onPress={handleSubmit(onSubmit)}
       />
