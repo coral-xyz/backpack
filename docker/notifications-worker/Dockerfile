@@ -26,6 +26,7 @@ COPY ["packages/themes", "./packages/themes"]
 COPY ["packages/provider-core", "./packages/provider-core"]
 COPY ["packages/provider-injection", "./packages/provider-injection"]
 COPY ["packages/secure-background", "./packages/secure-background"]
+COPY ["packages/secure-client", "./packages/secure-client"]
 
 # set up yarn v3
 COPY .yarnrc.yml .yarnrc.yml
