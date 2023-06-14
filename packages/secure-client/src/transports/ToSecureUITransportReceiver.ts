@@ -10,6 +10,7 @@ import type {
   TransportHandler,
   TransportReceiver,
 } from "@coral-xyz/secure-background/types";
+import { RequestResponder } from "packages/secure-background/src/transports/RequestResponder";
 
 export class ToSecureUITransportReceiver<
   X extends SECURE_EVENTS,
@@ -28,18 +29,13 @@ export class ToSecureUITransportReceiver<
       }
       console.log("PCA message received", message.data);
       message.data.forEach((request) => {
-        const handled = handler(request);
-        if (!handled) return;
-
-        handled
-          .then((result) => this.sendResponse(request, result))
-          .catch((error) => {
-            console.error("PCA", error);
-            this.sendResponse(request, {
-              name: request.name,
-              error,
-            } as SecureResponse<X, R>);
-          });
+        new RequestResponder({
+          request,
+          handler,
+          onResponse: (result) => {
+            this.sendResponse(request, result);
+          },
+        });
       });
     };
     this.port.onMessage.addListener(listener);

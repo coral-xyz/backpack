@@ -9,6 +9,7 @@ import type {
   TransportHandler,
   TransportReceiver,
 } from "@coral-xyz/secure-background/types";
+import { RequestResponder } from "packages/secure-background/src/transports/RequestResponder";
 
 export class FromContentScriptTransportReceiver<
   T extends SECURE_EVENTS = SECURE_EVENTS,
@@ -25,16 +26,13 @@ export class FromContentScriptTransportReceiver<
 
   public setHandler = (handler: TransportHandler<T, R>) => {
     this.server.handler((message) => {
-      const handled = handler(message?.data?.params?.[0]);
-
-      if (!handled) return null;
-
-      return handled
-        .then((result) => [result])
-        .catch((error) => {
-          console.error("PCA", error);
-          return [{ name: message.data.params[0].name, error }];
+      return new Promise((resolve) => {
+        new RequestResponder({
+          request: message?.data?.params?.[0],
+          handler,
+          onResponse: (response) => resolve([response]),
         });
+      });
     });
     return () => {
       // currently not possible to destroy ChannelServer.

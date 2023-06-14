@@ -6,14 +6,15 @@ import type {
   SECURE_EVENTS,
   SecureEvent,
   SecureRequest,
-  SecureResponse,
+  SecureResponseType,
   TransportHandler,
   TransportReceiver,
 } from "@coral-xyz/secure-background/types";
+import { RequestResponder } from "packages/secure-background/src/transports/RequestResponder";
 
 export class FromExtensionTransportReceiver<
   T extends SECURE_EVENTS = SECURE_EVENTS,
-  R extends "response" | "confirmation" = "response"
+  R extends SecureResponseType = SecureResponseType.response
 > implements TransportReceiver<T, R>
 {
   constructor() {}
@@ -27,34 +28,20 @@ export class FromExtensionTransportReceiver<
         return;
       }
 
-      const handled = handler(message.data);
-
-      if (!handled) {
-        return;
-      }
-
-      handled
-        .then((result) => {
-          return chrome.runtime.sendMessage({
-            channel: CHANNEL_SECURE_BACKGROUND_EXTENSION_RESPONSE,
-            data: {
-              ...result,
-              name: message.data.name,
-              id: message.data.id,
-            },
-          });
-        })
-        .catch((error) => {
-          console.error("PCA", error);
-          return chrome.runtime.sendMessage({
-            channel: CHANNEL_SECURE_BACKGROUND_EXTENSION_RESPONSE,
-            data: {
-              name: message.data.name,
-              id: message.data.id,
-              error,
-            },
-          });
-        });
+      new RequestResponder<T, R>({
+        request: message.data,
+        handler,
+        onResponse: (response) => {
+          chrome.runtime
+            .sendMessage({
+              channel: CHANNEL_SECURE_BACKGROUND_EXTENSION_RESPONSE,
+              data: response,
+            })
+            .catch((error) => {
+              console.error("PCA", error);
+            });
+        },
+      });
     };
     chrome.runtime.onMessage.addListener(listener);
     return () => {
