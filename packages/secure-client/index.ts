@@ -16,3 +16,7 @@ export {
 
 //Clients
 export { SolanaClient } from "./src/clients/SolanaClient";
+
+// UI
+// split into separate entrypoint so @coral-xyz/provider-injection's esbuild doesn't have to deal with it.
+// -> @coral-xyz/secure-client/ui

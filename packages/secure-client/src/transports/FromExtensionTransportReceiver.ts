@@ -44,7 +44,8 @@ export class FromExtensionTransportReceiver<
             },
           });
         })
-        .catch((error: any) => {
+        .catch((error) => {
+          console.error("PCA", error);
           return chrome.runtime.sendMessage({
             channel: CHANNEL_SECURE_BACKGROUND_EXTENSION_RESPONSE,
             data: {

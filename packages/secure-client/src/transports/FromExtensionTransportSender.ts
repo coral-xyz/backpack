@@ -92,6 +92,7 @@ export class FromExtensionTransportSender<
             data: requestWithId,
           })
           .catch((e) => {
+            console.error("PCA", e);
             const request = this.getRequest(requestWithId.id);
             return request?.resolve({
               name: requestWithId.name,

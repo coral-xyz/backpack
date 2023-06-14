@@ -31,7 +31,10 @@ export class FromContentScriptTransportReceiver<
 
       return handled
         .then((result) => [result])
-        .catch((error) => [{ name: message.data.params[0].name, error }]);
+        .catch((error) => {
+          console.error("PCA", error);
+          return [{ name: message.data.params[0].name, error }];
+        });
     });
     return () => {
       // currently not possible to destroy ChannelServer.

@@ -64,7 +64,11 @@ export class ToSecureUITransportSender<
     console.log("PCA", "disconnect", port.name);
 
     // remove listeners & reference
-    port.disconnect();
+    try {
+      port.disconnect();
+    } catch (_e) {
+      /* this is okay to fail, means no listeners anyways. */
+    }
     this.port = null;
 
     // resolve all waiting responses with error

@@ -33,12 +33,13 @@ export class ToSecureUITransportReceiver<
 
         handled
           .then((result) => this.sendResponse(request, result))
-          .catch((error) =>
+          .catch((error) => {
+            console.error("PCA", error);
             this.sendResponse(request, {
               name: request.name,
               error,
-            } as SecureResponse<X, R>)
-          );
+            } as SecureResponse<X, R>);
+          });
       });
     };
     this.port.onMessage.addListener(listener);
