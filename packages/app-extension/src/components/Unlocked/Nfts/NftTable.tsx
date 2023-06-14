@@ -172,7 +172,7 @@ const FooterRow = function () {
   return <CustomCard top={false} bottom />;
 };
 
-const LoadingRow = function ({ itemsPerRow }: { itemsPerRow: number }) {
+export const LoadingRow = function ({ itemsPerRow }: { itemsPerRow: number }) {
   const items = new Array(itemsPerRow).fill(null);
 
   return (
@@ -180,31 +180,82 @@ const LoadingRow = function ({ itemsPerRow }: { itemsPerRow: number }) {
       <div
         style={{
           display: "flex",
-          padding: `6px 6px ${6 + 26}px 6px`,
-          justifyContent: "space-evenly",
+          height: "191.5px",
+          justifyContent: "space-between",
           flex: "0 0 auto",
+          paddingLeft: "12px",
+          paddingRight: "12px",
         }}
       >
         {items.map(() => {
           return (
             <div
               style={{
-                position: "relative",
-                width: "153.5px",
-                height: `${153.5}px`,
-                margin: "0px 6px",
-                borderRadius: "8px",
-                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                marginTop: "6px",
               }}
             >
-              <Skeleton
+              <div
                 style={{
-                  height: "100%",
-                  width: "100%",
-                  transform: "none",
-                  transformOrigin: "none",
+                  width: "153.5px",
+                  height: `153.5px`,
+                  position: "relative",
+                  borderRadius: "8px",
+                  overflow: "hidden",
                 }}
-              />
+              >
+                <Skeleton
+                  style={{
+                    width: "153.5px",
+                    height: `153.5px`,
+                    transform: "none",
+                    transformOrigin: "none",
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div
+                  style={{
+                    height: "26px",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Skeleton
+                    style={{
+                      width: "100px",
+                      height: `10.5px`,
+                      transform: "none",
+                      transformOrigin: "none",
+                    }}
+                  />
+                </div>
+                <div
+                  style={{
+                    height: "26px",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Skeleton
+                    style={{
+                      width: "40px",
+                      height: `10.5px`,
+                      transform: "none",
+                      transformOrigin: "none",
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           );
         })}
