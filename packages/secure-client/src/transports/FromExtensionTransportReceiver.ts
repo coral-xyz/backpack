@@ -2,19 +2,17 @@ import {
   CHANNEL_SECURE_BACKGROUND_EXTENSION_REQUEST,
   CHANNEL_SECURE_BACKGROUND_EXTENSION_RESPONSE,
 } from "@coral-xyz/common";
+import { TransportResponder } from "@coral-xyz/secure-background/clients";
 import type {
   SECURE_EVENTS,
-  SecureEvent,
   SecureRequest,
-  SecureResponseType,
   TransportHandler,
   TransportReceiver,
 } from "@coral-xyz/secure-background/types";
-import { RequestResponder } from "packages/secure-background/src/transports/RequestResponder";
 
 export class FromExtensionTransportReceiver<
   T extends SECURE_EVENTS = SECURE_EVENTS,
-  R extends SecureResponseType = SecureResponseType.response
+  R extends "response" | "confirmation" = "response"
 > implements TransportReceiver<T, R>
 {
   constructor() {}
@@ -28,7 +26,7 @@ export class FromExtensionTransportReceiver<
         return;
       }
 
-      new RequestResponder<T, R>({
+      new TransportResponder<T, R>({
         request: message.data,
         handler,
         onResponse: (response) => {

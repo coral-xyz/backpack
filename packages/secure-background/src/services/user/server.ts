@@ -2,13 +2,14 @@ import type { KeyringStore } from "../../store/keyring";
 import { KeyringStoreStateEnum } from "../../store/keyring";
 import type {
   TransportHandler,
+  TransportHandlers,
   TransportReceiver,
   TransportRemoveListener,
   TransportSender,
 } from "../../types/transports";
 import { SecureUIClient } from "../secureUI/client";
 
-import type { SECURE_USER_EVENTS, SECURE_USER_UNLOCK_KEYRING } from "./events";
+import type { SECURE_USER_EVENTS } from "./events";
 
 export class UserService {
   public destroy: TransportRemoveListener;
@@ -27,56 +28,38 @@ export class UserService {
     );
   }
 
-  private eventHandler: TransportHandler<SECURE_USER_EVENTS> = (request) => {
-    switch (request.name) {
-      case "SECURE_USER_UNLOCK_KEYRING":
-        return this.handleUnlockKeyring(request);
-    }
+  private eventHandler: TransportHandler<SECURE_USER_EVENTS> = async (
+    request
+  ) => {
+    const handlers: TransportHandlers<SECURE_USER_EVENTS> = {
+      SECURE_USER_UNLOCK_KEYRING: this.handleUnlockKeyring,
+    };
+
+    const handler = handlers[request.name]?.bind(this);
+    return handler && handler(request);
   };
 
-  private handleUnlockKeyring: TransportHandler<SECURE_USER_UNLOCK_KEYRING> =
-    async (request) => {
+  private handleUnlockKeyring: TransportHandler<"SECURE_USER_UNLOCK_KEYRING"> =
+    async (event) => {
       const uuid =
-        request.request.uuid ?? this.keyringStore.activeUserKeyring?.uuid;
+        event.request.uuid ?? this.keyringStore.activeUserKeyring?.uuid;
       const keyringState = await this.keyringStore.state();
 
       if (
         keyringState === KeyringStoreStateEnum.Locked &&
-        request.request.password &&
+        event.request.password &&
         uuid
       ) {
         return this.keyringStore
           .tryUnlock({
-            password: request.request.password,
+            password: event.request.password,
             uuid: uuid,
           })
-          .then(() => {
-            return {
-              name: request.name,
-              response: {
-                unlocked: true,
-              },
-            };
-          })
-          .catch((e) => {
-            return {
-              name: request.name,
-              error: e,
-            };
-          });
+          .then(() => event.respond({ unlocked: true }))
+          .catch((e) => event.error(e));
       } else if (keyringState === KeyringStoreStateEnum.Unlocked) {
-        return {
-          name: request.name,
-          response: {
-            unlocked: true,
-          },
-        };
+        return event.respond({ unlocked: true });
       }
-      return {
-        name: request.name,
-        response: {
-          unlocked: false,
-        },
-      };
+      return event.respond({ unlocked: false });
     };
 }

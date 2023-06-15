@@ -43,7 +43,7 @@ import type {
   VersionedTransaction,
 } from "@solana/web3.js";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { encode } from "bs58";
+import { decode, encode } from "bs58";
 
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 import * as cmn from "./common/solana";
@@ -91,6 +91,7 @@ export class ProviderSolanaInjection
     this.#secureSolanaClient = new SolanaClient(
       new FromContentScriptTransportSender(),
       {
+        context: "web",
         name: document.title,
         address: window.location.origin,
       }
@@ -397,13 +398,16 @@ export class ProviderSolanaInjection
       publicKey: (publicKey ?? this.#publicKey).toString(),
       message: encode(msg),
     });
-    console.log("PCA", solanaResponse);
-
-    return await cmn.signMessage(
-      publicKey ?? this.#publicKey,
-      this.#requestManager,
-      msg
-    );
+    if (!solanaResponse) {
+      throw new Error("signature failed");
+    }
+    return decode(solanaResponse);
+    // nocommit
+    // return await cmn.signMessage(
+    //   publicKey ?? this.#publicKey,
+    //   this.#requestManager,
+    //   msg
+    // );
   }
 
   public get isBackpack() {

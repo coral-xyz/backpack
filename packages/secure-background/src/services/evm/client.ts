@@ -4,8 +4,6 @@ import type {
   TransportSender,
 } from "../../types/transports";
 
-import type { SECURE_EVM_EVENTS, SECURE_EVM_SIGN_MESSAGE } from "./events";
-
 export class EVMClient {
   constructor(
     private secureBackgroundClient: TransportSender,
@@ -13,7 +11,7 @@ export class EVMClient {
   ) {}
 
   public async signMessage(
-    request: SecureRequest<SECURE_EVM_SIGN_MESSAGE>["request"]
+    request: SecureRequest<"SECURE_EVM_SIGN_MESSAGE">["request"]
   ) {
     await this.secureBackgroundClient.send({
       name: "SECURE_EVM_SIGN_MESSAGE",

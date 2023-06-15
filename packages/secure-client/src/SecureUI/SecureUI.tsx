@@ -4,6 +4,7 @@ import type {
   SECURE_EVENTS,
   SecureRequest,
   TransportReceiver,
+  TransportResponder,
   TransportSender,
 } from "@coral-xyz/secure-background/types";
 import {
@@ -16,12 +17,14 @@ import {
   Text,
   TwoButtonFooter,
 } from "@coral-xyz/tamagui";
+import { decode } from "bs58";
 import { RecoilRoot } from "recoil";
 
 import {
   secureBackgroundSenderAtom,
   secureUIReceiverAtom,
 } from "./_atoms/transportAtoms";
+import { ApproveTransactionBottomSheet } from "./ApproveTransactionBottomSheet";
 
 export function SecureUI({
   secureUIReceiver,
@@ -30,43 +33,54 @@ export function SecureUI({
   secureUIReceiver: TransportReceiver<SECURE_EVENTS, "confirmation">;
   secureBackgroundSender: TransportSender<SECURE_EVENTS>;
 }) {
-  const [position, setPosition] = useState(0);
   const [open, setOpen] = useState<{
-    request: SecureRequest<SECURE_EVENTS>;
+    event: TransportResponder<SECURE_EVENTS, "confirmation">;
     resolve: (resonse: any) => void;
   } | null>(null);
 
   useEffect(() => {
     const user = new UserClient(secureBackgroundSender, {
+      context: "extension",
       address: "EXTENSION",
       name: "Backpack",
     });
 
-    secureUIReceiver.setHandler(async (request) => {
+    secureUIReceiver.setHandler(async (event) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       let resolve;
       const promise = new Promise<any>((_resolve) => {
         resolve = _resolve;
       });
 
-      const resolver = async (response: any) => {
+      const resolver = async (
+        response: Parameters<typeof event.respond>[0]
+      ) => {
         const unlockResponse = await user.unlockKeyring({
           uuid: "uuid",
           password: "password",
         });
         console.log("PCA unlock response", unlockResponse);
         setOpen(null);
-        resolve(response);
+        resolve(event.respond(response));
       };
-
+      console.log("event received");
       setOpen({
-        request,
+        event,
         resolve: resolver,
       });
 
       return promise;
     });
   }, [secureUIReceiver, secureBackgroundSender]);
+
+  //@ts-ignore
+  const msgBuffer = Buffer.from(decode(open?.event?.request?.message ?? ""));
+  const message = msgBuffer.toString();
+
+  // if popup was opened for a confirmation -> how fullscreen;
+  const DefaultPresentation = window.location.href.includes("windowId=")
+    ? FullscreenPresentation
+    : ModalPresentation;
 
   return (
     <RecoilRoot
@@ -83,49 +97,87 @@ export function SecureUI({
           left="0px"
           height="100%"
           width="100%"
-          pointerEvents="none"
+          pointerEvents="box-none"
+          outlineColor="red"
+          outlineOffset="$-1"
         >
-          <Sheet
-            forceRemoveScrollEnabled
+          <DefaultPresentation
             open={!!open}
-            modal={false}
-            dismissOnSnapToBottom={false}
-            position={position}
-            onPositionChange={setPosition}
-            zIndex={100_000}
-            animation="bouncy"
+            setOpen={(isOpen) => {
+              if (!isOpen) open?.resolve({ confirmed: false });
+            }}
           >
-            <Sheet.Overlay backgroundColor="rgba(0,0,0,0.3)" />
-            <Sheet.Handle />
-            <Sheet.Frame>
-              <TwoButtonFooter
-                leftButton={
-                  <SecondaryButton
-                    label="Deny"
-                    onPress={() =>
-                      open?.resolve({
-                        name: open.request.name,
-                        response: { confirmed: false },
-                      })
-                    }
-                  />
-                }
-                rightButton={
-                  <PrimaryButton
-                    label="Approve"
-                    onPress={() =>
-                      open?.resolve({
-                        name: open.request.name,
-                        response: { confirmed: true },
-                      })
-                    }
-                  />
-                }
-              />
-            </Sheet.Frame>
-          </Sheet>
+            <ApproveTransactionBottomSheet
+              message={message}
+              onApprove={() => open?.resolve({ confirmed: true })}
+              onDeny={() => open?.resolve({ confirmed: false })}
+            />
+          </DefaultPresentation>
         </Stack>
       </TamaguiProvider>
     </RecoilRoot>
+  );
+}
+
+function FullscreenPresentation({
+  open,
+  children,
+}: {
+  children: React.ReactElement;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}) {
+  if (!open) {
+    return null;
+  }
+  return (
+    <Stack
+      position="absolute"
+      height="100%"
+      width="100%"
+      display="flex"
+      justifyContent="center"
+      alignContent="center"
+      backgroundColor="$background"
+      pointerEvents="auto"
+    >
+      {children}
+    </Stack>
+  );
+}
+
+function ModalPresentation({
+  open,
+  children,
+  setOpen,
+}: {
+  children: React.ReactElement;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}) {
+  const [position, setPosition] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    setIsOpen(true);
+  }, []);
+
+  const render = open && isOpen;
+  return (
+    <Sheet
+      forceRemoveScrollEnabled
+      open={render}
+      modal
+      onOpenChange={setOpen}
+      dismissOnSnapToBottom={false}
+      position={position}
+      onPositionChange={setPosition}
+      zIndex={100_000}
+      animation="bouncy"
+    >
+      <Sheet.Overlay backgroundColor="rgba(0,0,0,0.3)" />
+      <Sheet.Handle />
+      <Sheet.Frame>{render ? children : null}</Sheet.Frame>
+    </Sheet>
   );
 }

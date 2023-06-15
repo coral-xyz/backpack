@@ -8,3 +8,4 @@ export {
   mockTransportReceiver,
   mockTransportSender,
 } from "./src/transports/mockTransports";
+export { TransportResponder } from "./src/transports/TransportResponder";

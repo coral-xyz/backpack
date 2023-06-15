@@ -1,19 +1,18 @@
 import type { SECURE_EVENTS } from "../types/events";
 import type {
-  SecureEventBase,
   SecureRequest,
   SecureResponse,
-  SecuresResponseType,
   TransportHandler,
 } from "../types/transports";
 
-export class RequestResponder<
+export class TransportResponder<
   T extends SECURE_EVENTS = SECURE_EVENTS,
-  R extends SecuresResponseType = SecuresResponseType.response
-> {
-  public event: SecureRequest<T>;
-  public request: SecureRequest<T>["request"];
-  public name: T;
+  R extends "response" | "confirmation" = "response"
+> implements TransportResponder<T, R>
+{
+  public readonly name: T;
+  public readonly event: SecureRequest<T>;
+  public readonly request: SecureRequest<T>["request"];
   private onResponse: (response: SecureResponse<T, R>) => void;
 
   constructor({
@@ -30,15 +29,13 @@ export class RequestResponder<
     this.onResponse = onResponse;
     this.name = request.name;
 
-    try {
-      handler(this);
-    } catch (error) {
+    handler(this).catch((error) => {
       onResponse({
         name: this.event.name,
         id: this.event.id,
         error,
-      } as SecureResponse<T, R>);
-    }
+      });
+    });
   }
 
   public respond = (response: SecureResponse<T, R>["response"]) => {
@@ -46,7 +43,8 @@ export class RequestResponder<
       name: this.event.name,
       id: this.event.id,
       response,
-    } as SecureResponse<T, R>);
+    });
+    return "RESPONDED" as const;
   };
 
   public error = (error: any) => {
@@ -54,6 +52,7 @@ export class RequestResponder<
       name: this.event.name,
       id: this.event.id,
       error,
-    } as SecureResponse<T, R>);
+    });
+    return "RESPONDED" as const;
   };
 }

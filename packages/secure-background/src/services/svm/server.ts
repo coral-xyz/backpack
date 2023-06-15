@@ -1,21 +1,17 @@
 import { Blockchain } from "@coral-xyz/common";
 
 import type { KeyringStore } from "../../store/keyring";
+import type { SECURE_EVENTS } from "../../types/events";
 import type {
   TransportHandler,
+  TransportHandlers,
   TransportReceiver,
   TransportRemoveListener,
   TransportSender,
 } from "../../types/transports";
 import { SecureUIClient } from "../secureUI/client";
 
-import type {
-  SECURE_SVM_EVENTS,
-  SECURE_SVM_SAY_HELLO,
-  SECURE_SVM_SIGN_ALL_TX,
-  SECURE_SVM_SIGN_MESSAGE,
-  SECURE_SVM_SIGN_TX,
-} from "./events";
+import type { SECURE_SVM_EVENTS } from "./events";
 
 export class SVMService {
   public destroy: TransportRemoveListener;
@@ -23,7 +19,7 @@ export class SVMService {
   private keyringStore: KeyringStore;
 
   constructor(interfaces: {
-    secureReceiver: TransportReceiver<SECURE_SVM_EVENTS, "response">;
+    secureReceiver: TransportReceiver<SECURE_SVM_EVENTS>;
     keyringStore: KeyringStore;
     secureUISender: TransportSender<SECURE_SVM_EVENTS, "confirmation">;
   }) {
@@ -35,91 +31,66 @@ export class SVMService {
   }
 
   private eventHandler: TransportHandler<SECURE_SVM_EVENTS> = (request) => {
-    switch (request.name) {
-      case "SECURE_SVM_SIGN_MESSAGE":
-        return this.handleSignMessage(request);
-      case "SECURE_SVM_SIGN_TX":
-        return this.handleSign(request);
-      case "SECURE_SVM_SIGN_ALL_TX":
-        return this.handleSignAll(request);
-      case "SECURE_SVM_SAY_HELLO":
-        return this.handleHello(request);
-    }
+    const handlers: TransportHandlers<SECURE_SVM_EVENTS> = {
+      SECURE_SVM_SIGN_MESSAGE: this.handleSignMessage,
+      SECURE_SVM_SIGN_TX: this.handleSign,
+      SECURE_SVM_SIGN_ALL_TX: this.handleSignAll,
+      SECURE_SVM_SAY_HELLO: this.handleHello,
+    };
+
+    const handler = handlers[request.name]?.bind(this);
+    return handler && handler(request);
   };
 
-  private handleSignMessage: TransportHandler<SECURE_SVM_SIGN_MESSAGE> = async (
-    event
-  ) => {
-    console.log("PCA HANDLE sign message", event);
-    // const confirm = await this.secureUISender.send(request)
-    const confirmation = await this.secureUIClient.confirm(event);
+  private handleSignMessage: TransportHandler<"SECURE_SVM_SIGN_MESSAGE"> =
+    async (event) => {
+      console.log("PCA HANDLE sign message", event);
+      // const confirm = await this.secureUISender.send(request)
+      const confirmation = await this.secureUIClient.confirm(event.event);
 
-    console.log("PCA confirmation", confirmation);
-    if (confirmation.error || !confirmation.response?.confirmed) {
-      return {
-        name: "SECURE_SVM_SIGN_MESSAGE",
-        error: "User Denied Request",
-      };
-    }
+      console.log("PCA confirmation", confirmation);
+      if (confirmation.error || !confirmation.response?.confirmed) {
+        return event.error("User Denied Request");
+      }
 
-    const blockchainKeyring =
-      this.keyringStore.activeUserKeyring.keyringForBlockchain(
-        Blockchain.SOLANA
+      const blockchainKeyring =
+        this.keyringStore.activeUserKeyring.keyringForBlockchain(
+          Blockchain.SOLANA
+        );
+
+      if (blockchainKeyring.ledgerKeyring) {
+        // open ledger prompt
+      }
+
+      const singedMessage = await blockchainKeyring.signMessage(
+        event.request.message,
+        event.request.publicKey
       );
 
-    if (blockchainKeyring.ledgerKeyring) {
-      // open ledger prompt
-    }
+      if (blockchainKeyring.ledgerKeyring) {
+        // close ledger prompt
+      }
 
-    const singedMessage = await blockchainKeyring.signMessage(
-      event.request.message,
-      event.request.publicKey
-    );
+      console.log("PCA responde to contentscript", singedMessage);
 
-    if (blockchainKeyring.ledgerKeyring) {
-      // close ledger prompt
-    }
-
-    console.log("PCA responde to contentscript", singedMessage);
-
-    return {
-      name: "SECURE_SVM_SIGN_MESSAGE",
-      response: {
-        singedMessage,
-      },
+      return event.respond({ singedMessage });
     };
+
+  private handleSign: TransportHandler<"SECURE_SVM_SIGN_TX"> = async (
+    event
+  ) => {
+    return event.respond({ signedTx: "string" });
   };
 
-  private handleSign: TransportHandler<SECURE_SVM_SIGN_TX> = async ({
-    request,
-  }) => {
-    return {
-      name: "SECURE_SVM_SIGN_TX",
-      response: {
-        signedTx: "string",
-      },
-    };
+  private handleHello: TransportHandler<"SECURE_SVM_SAY_HELLO"> = async (
+    event
+  ) => {
+    return event.respond({ message: "hello " + event.request.name });
   };
 
-  private handleHello: TransportHandler<SECURE_SVM_SAY_HELLO> = async ({
-    request,
+  private handleSignAll: TransportHandler<"SECURE_SVM_SIGN_ALL_TX"> = async ({
+    respond,
   }) => {
-    return {
-      name: "SECURE_SVM_SAY_HELLO",
-      response: {
-        message: "hello " + request.name,
-      },
-    };
-  };
-
-  private handleSignAll: TransportHandler<SECURE_SVM_SIGN_ALL_TX> = async ({
-    request,
-  }) => {
-    return {
-      name: "SECURE_SVM_SIGN_ALL_TX",
-      response: {
-        signedTx: ["string"],
-      },
-    };
+    return respond({ signedTx: ["string"] });
   };
 }

@@ -2,16 +2,13 @@ import type { KeyringStore } from "../../store/keyring";
 import type {
   SecureRequest,
   TransportHandler,
+  TransportHandlers,
   TransportReceiver,
   TransportRemoveListener,
   TransportSender,
 } from "../../types/transports";
 
-import type {
-  SECURE_EVM_EVENTS,
-  SECURE_EVM_SIGN_MESSAGE,
-  SECURE_EVM_SIGN_TX,
-} from "./events";
+import type { SECURE_EVM_EVENTS } from "./events";
 
 export class EVMService {
   public destroy: TransportRemoveListener;
@@ -25,21 +22,21 @@ export class EVMService {
   }
 
   private eventHandler: TransportHandler<SECURE_EVM_EVENTS> = (request) => {
-    switch (request.name) {
-      case "SECURE_EVM_SIGN_MESSAGE":
-        return this.handleSignMessage(request);
-      case "SECURE_EVM_SIGN_TX":
-        return this.handleSign(request);
-    }
+    const handlers: TransportHandlers<SECURE_EVM_EVENTS> = {
+      SECURE_EVM_SIGN_MESSAGE: this.handleSignMessage,
+      SECURE_EVM_SIGN_TX: this.handleSign,
+    };
+
+    const handler = handlers[request.name]?.bind(this);
+    return handler && handler(request);
   };
 
-  private handleSignMessage: TransportHandler<SECURE_EVM_SIGN_MESSAGE> = async (
-    request
-  ) => {
-    throw "Not Implemented";
-  };
+  private handleSignMessage: TransportHandler<"SECURE_EVM_SIGN_MESSAGE"> =
+    async (request) => {
+      throw "Not Implemented";
+    };
 
-  private handleSign: TransportHandler<SECURE_EVM_SIGN_TX> = async (
+  private handleSign: TransportHandler<"SECURE_EVM_SIGN_TX"> = async (
     request
   ) => {
     throw "Not Implemented";

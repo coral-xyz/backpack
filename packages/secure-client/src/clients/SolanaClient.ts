@@ -1,7 +1,6 @@
 import { SVMClient } from "@coral-xyz/secure-background/clients";
 import type {
-  PassThroughToUI,
-  SECURE_SVM_SIGN_MESSAGE,
+  SecureEvent,
   SecureEventOrigin,
   TransportSender,
 } from "@coral-xyz/secure-background/types";
@@ -14,9 +13,9 @@ export class SolanaClient {
   }
 
   public signMessage(
-    request: SECURE_SVM_SIGN_MESSAGE["request"],
-    displayOptions?: PassThroughToUI
+    request: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["request"],
+    confirmOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["confirmOptions"]
   ): Promise<string | null> {
-    return this.secureSvmClient.signMessage(request, displayOptions);
+    return this.secureSvmClient.signMessage(request, confirmOptions);
   }
 }

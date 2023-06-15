@@ -15,9 +15,9 @@ import type {
   SECURE_USER_UNLOCK_KEYRING,
 } from "../services/user/events";
 
-export * from "../services/evm/events";
-export * from "../services/svm/events";
-export * from "../services/user/events";
+export type { SECURE_EVM_EVENTS } from "../services/evm/events";
+export type { SECURE_SVM_EVENTS } from "../services/svm/events";
+export type { SECURE_USER_EVENTS } from "../services/user/events";
 
 export type SECURE_EVENTS =
   | SECURE_SVM_EVENTS

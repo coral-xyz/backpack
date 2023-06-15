@@ -3,6 +3,7 @@ import {
   CHANNEL_SECURE_UI_REQUEST,
   CHANNEL_SECURE_UI_RESPONSE,
 } from "@coral-xyz/common";
+import { TransportResponder } from "@coral-xyz/secure-background/clients";
 import type {
   SECURE_EVENTS,
   SecureRequest,
@@ -10,8 +11,6 @@ import type {
   TransportHandler,
   TransportReceiver,
 } from "@coral-xyz/secure-background/types";
-import { RequestResponder } from "packages/secure-background/src/transports/RequestResponder";
-
 export class ToSecureUITransportReceiver<
   X extends SECURE_EVENTS,
   R extends "response" | "confirmation" = "response"
@@ -29,10 +28,11 @@ export class ToSecureUITransportReceiver<
       }
       console.log("PCA message received", message.data);
       message.data.forEach((request) => {
-        new RequestResponder({
+        new TransportResponder({
           request,
           handler,
           onResponse: (result) => {
+            console.log("PCA", "sending result", result);
             this.sendResponse(request, result);
           },
         });
