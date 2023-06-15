@@ -11,12 +11,14 @@ export const ProxyImage = React.memo(function ProxyImage({
   loadingStyles,
   size,
   original,
+  noSkeleton,
   ...imgProps
 }: {
   removeOnError?: boolean;
   loadingStyles?: React.CSSProperties;
   size?: number;
   original?: boolean;
+  noSkeleton?: boolean;
 } & ImgProps) {
   const placeholderRef = useRef<HTMLSpanElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -58,7 +60,7 @@ export const ProxyImage = React.memo(function ProxyImage({
 
   return (
     <>
-      {imgProps.src ? (
+      {imgProps.src && !noSkeleton ? (
         <Skeleton
           style={{
             height: "100%",
@@ -110,7 +112,7 @@ export const ProxyImage = React.memo(function ProxyImage({
               : proxyImageUrl(imgProps.src ?? "", size)
           }
         />
-      ) : (
+      ) : !noSkeleton ? (
         <Skeleton
           style={{
             height: "100%",
@@ -122,7 +124,7 @@ export const ProxyImage = React.memo(function ProxyImage({
           }}
           className={imgProps.className}
         />
-      )}
+      ) : null}
     </>
   );
 });

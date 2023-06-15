@@ -522,6 +522,7 @@ export const EXTENSION_HEIGHT = 600;
 // UI View Model Constants.
 //
 export const TAB_BALANCES = "balances";
+export const TAB_TOKENS = "tokens";
 export const TAB_SWAP = "swap";
 export const TAB_NFTS = "nfts";
 export const TAB_MESSAGES = "messages";
@@ -531,6 +532,7 @@ export const TAB_RECENT_ACTIVITY = "recent-activity";
 export const TAB_NOTIFICATIONS = "notifications";
 export const TAB_SET = new Set([
   TAB_BALANCES,
+  TAB_TOKENS,
   TAB_SWAP,
   TAB_NFTS,
   TAB_APPS,
@@ -540,7 +542,7 @@ export const TAB_SET = new Set([
   TAB_NOTIFICATIONS,
 ]);
 
-export const NAV_COMPONENT_TOKEN = "balances/token";
+export const NAV_COMPONENT_TOKEN = "tokens/token";
 export const NAV_COMPONENT_NFT_DETAIL = "nfts/detail";
 export const NAV_COMPONENT_NFT_COLLECTION = "nfts/collection";
 export const NAV_COMPONENT_NFT_EXPERIENCE = "nfts/experience";

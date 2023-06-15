@@ -148,7 +148,6 @@ export function UpdateProfilePicture({
                   >
                     <_BalancesTableHead
                       blockchain={activeWallet.blockchain}
-                      wallet={activeWallet}
                       showContent
                       setShowContent={() => {}}
                     />
@@ -295,7 +294,6 @@ const BlockchainNFTs = React.memo(function BlockchainNFTs({
     <>
       <_BalancesTableHead
         blockchain={blockchain}
-        wallet={wallet!}
         showContent={showContent}
         setShowContent={setShowContent}
       />

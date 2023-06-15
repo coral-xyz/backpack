@@ -45,6 +45,7 @@ export function WithNav({
   title,
   navButtonLeft,
   navButtonRight,
+  navButtonCenter,
   children,
   navbarStyle = {},
   navContentStyle = {},
@@ -57,6 +58,7 @@ export function WithNav({
   title?: string;
   navButtonLeft?: React.ReactNode;
   navButtonRight?: React.ReactNode;
+  navButtonCenter?: React.ReactNode;
   children?: React.ReactNode;
   navbarStyle?: React.CSSProperties;
   navContentStyle?: React.CSSProperties;
@@ -67,10 +69,16 @@ export function WithNav({
   isVerified?: boolean;
 }) {
   return (
-    <>
+    <div
+      style={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <NavBar
         notchViewComponent={notchViewComponent}
-        title={title || ""}
+        title={navButtonCenter || title || ""}
         image={image}
         isVerified={isVerified}
         onClick={onClick}
@@ -83,7 +91,7 @@ export function WithNav({
         noScrollbars={noScrollbars}
         renderComponent={children}
       />
-    </>
+    </div>
   );
 }
 
@@ -97,7 +105,7 @@ function NavBar({
   onClick,
   isVerified,
 }: {
-  title: string;
+  title: React.ReactNode | string;
   image?: string;
   onClick?: any;
   navButtonLeft: React.ReactNode;
@@ -107,30 +115,28 @@ function NavBar({
   isVerified?: boolean;
 }) {
   return (
-    <Suspense fallback={null}>
-      <div
-        style={{
-          display: "flex",
-          height: `${NAV_BAR_HEIGHT}px`,
-          position: "relative",
-          justifyContent: "space-between",
-          padding: "10px 16px",
-          ...style,
-        }}
-      >
-        <div style={{ position: "relative", width: "100%", display: "flex" }}>
-          <NavButton button={navButtonLeft} />
-          <CenterDisplay
-            image={image}
-            onClick={onClick}
-            isVerified={isVerified}
-            title={title}
-            notchViewComponent={notchViewComponent}
-          />
-          <NavButton button={navButtonRight} align="right" />
-        </div>
+    <div
+      style={{
+        display: "flex",
+        height: `${NAV_BAR_HEIGHT}px`,
+        position: "relative",
+        justifyContent: "space-between",
+        padding: "10px 16px",
+        ...style,
+      }}
+    >
+      <div style={{ position: "relative", width: "100%", display: "flex" }}>
+        <NavButton button={navButtonLeft} />
+        <CenterDisplay
+          image={image}
+          onClick={onClick}
+          isVerified={isVerified}
+          title={title}
+          notchViewComponent={notchViewComponent}
+        />
+        <NavButton button={navButtonRight} align="right" />
       </div>
-    </Suspense>
+    </div>
   );
 }
 
@@ -218,7 +224,7 @@ function CenterDisplay({
   onClick,
   isVerified,
 }: {
-  title: string;
+  title: React.ReactNode | string;
   notchViewComponent?: React.ReactElement | null;
   image?: string;
   onClick?: any;

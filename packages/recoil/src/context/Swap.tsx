@@ -109,6 +109,7 @@ export type SwapContext = {
   isJupiterError: boolean;
   canSwap: boolean;
   canSwitch: boolean;
+  isInDrawer: boolean;
 };
 
 const _SwapContext = React.createContext<SwapContext | null>(null);
@@ -129,9 +130,11 @@ function useDebounce(value: any, wait = DEFAULT_DEBOUNCE_DELAY) {
 export function SwapProvider({
   tokenAddress,
   children,
+  isInDrawer = false,
 }: {
   tokenAddress?: string;
   children: React.ReactNode;
+  isInDrawer?: boolean;
 }) {
   const blockchain = Blockchain.SOLANA; // Solana only at the moment.
   const solanaCtx = useSolanaCtx();
@@ -569,6 +572,7 @@ export function SwapProvider({
         feeExceedsBalance,
         canSwap: !availableForSwap.isZero(),
         canSwitch,
+        isInDrawer,
       }}
     >
       {children}

@@ -6,7 +6,7 @@ import { TextInput } from "./Inputs";
 
 export const useStyles = styles((theme) => ({
   searchField: {
-    marginTop: "10px",
+    marginTop: "0px !important",
     marginBottom: "16px",
     width: "inherit",
     display: "flex",

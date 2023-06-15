@@ -90,7 +90,7 @@ export function NftTable({
                   i,
                   blockchainCollections,
                   collapsedCollections,
-                  collapseSingleCollection,
+                  //                  collapseSingleCollection,
                   numberOfItemsPerRow,
                   prependItems
                 );
@@ -110,7 +110,7 @@ export function NftTable({
                   i,
                   blockchainCollections,
                   collapsedCollections,
-                  collapseSingleCollection,
+                  //                  collapseSingleCollection,
                   numberOfItemsPerRow,
                   prependItems
                 );
@@ -123,7 +123,7 @@ export function NftTable({
                   index,
                   blockchainCollections,
                   collapsedCollections,
-                  collapseSingleCollection,
+                  //                  collapseSingleCollection,
                   numberOfItemsPerRow,
                   prependItems
                 );
@@ -137,6 +137,7 @@ export function NftTable({
   );
 }
 
+/*
 const HeaderRow = function HeaderRow({
   listIndex,
   blockchainIndex,
@@ -158,7 +159,6 @@ const HeaderRow = function HeaderRow({
     <CustomCard top bottom={isCollapsed}>
       <_BalancesTableHead
         blockchain={blockchain as Blockchain}
-        wallet={wallet!}
         showContent={!isCollapsed}
         setShowContent={(isCollapsed) => {
           collapseSingleCollection(listIndex, blockchainIndex, !isCollapsed);
@@ -166,6 +166,11 @@ const HeaderRow = function HeaderRow({
       />
     </CustomCard>
   );
+};
+*/
+
+const HeaderRow = function () {
+  return <CustomCard top bottom={false} />;
 };
 
 const FooterRow = function () {
@@ -232,23 +237,6 @@ export const LoadingRow = function ({ itemsPerRow }: { itemsPerRow: number }) {
                   <Skeleton
                     style={{
                       width: "100px",
-                      height: `10.5px`,
-                      transform: "none",
-                      transformOrigin: "none",
-                    }}
-                  />
-                </div>
-                <div
-                  style={{
-                    height: "26px",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Skeleton
-                    style={{
-                      width: "40px",
                       height: `10.5px`,
                       transform: "none",
                       transformOrigin: "none",
@@ -349,6 +337,7 @@ const CustomCard = styled("div")(
             borderTopLeftRadius: "12px",
             borderTopRightRadius: "12px",
             borderTop: theme.custom.colors.borderFull,
+            minHeight: "12px",
           }
         : {}),
       ...(bottom
@@ -426,7 +415,7 @@ const getItemForIndex = (
   index: number,
   blockchainCollections: AllWalletCollections,
   collapsedCollections: CollapsedCollections,
-  collapseSingleCollection: collapseSingleCollection,
+  //  collapseSingleCollection: collapseSingleCollection,
   itemsPerRow: number,
   prependItems: Row[]
 ): Row | null => {
@@ -477,16 +466,18 @@ const getItemForIndex = (
 
   if (wrappedCollectionGroupIndex === 0) {
     return {
-      height: isCollapsed ? 52 : 36,
+      height: 12, //isCollapsed ? 52 : 36,
       key: `header${blockchainIndex}`,
       component: (
-        <HeaderRow
+        <HeaderRow />
+        /*
           listIndex={index}
           blockchainIndex={blockchainIndex}
           blockchainCollections={blockchainCollections}
           isCollapsed={collapsedCollections[blockchainIndex]}
           collapseSingleCollection={collapseSingleCollection}
         />
+				*/
       ),
     };
   }

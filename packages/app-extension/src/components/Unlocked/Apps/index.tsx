@@ -105,7 +105,6 @@ function PluginGrid() {
             !_isAggregateWallets ? (
               <_BalancesTableHead
                 blockchain={wallet.blockchain}
-                wallet={wallet}
                 showContent
                 setShowContent={() => {}}
               />
@@ -135,7 +134,6 @@ function PluginGrid() {
           !_isAggregateWallets ? (
             <_BalancesTableHead
               blockchain={activeWallet.blockchain}
-              wallet={activeWallet}
               showContent
               setShowContent={() => {}}
             />
@@ -182,22 +180,16 @@ function WalletXnftGrid({
       }}
     >
       <BalancesTableProvider>
-        <_WalletXnftGrid
-          isLoading={isLoading}
-          plugins={plugins}
-          wallet={wallet}
-        />
+        <_WalletXnftGrid isLoading={isLoading} plugins={plugins} />
       </BalancesTableProvider>
     </div>
   );
 }
 
 function _WalletXnftGrid({
-  wallet,
   isLoading,
   plugins,
 }: {
-  wallet: { publicKey: string; name: string; blockchain: Blockchain };
   isLoading: boolean;
   plugins: Array<any>;
 }) {
@@ -211,11 +203,10 @@ function _WalletXnftGrid({
   const iconsPerRow = isXs ? 4 : 6;
   return (
     <>
-      <BalancesTableHead wallet={wallet} />
       {showContent ? (
         <div
           style={{
-            paddingTop: "8px",
+            paddingTop: "18px",
             paddingBottom: "18px",
             paddingLeft: "10px",
             paddingRight: "10px",

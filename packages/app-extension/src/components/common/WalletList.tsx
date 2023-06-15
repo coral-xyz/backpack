@@ -11,6 +11,7 @@ import {
   List,
   ListItem,
   MnemonicIcon,
+  ProxyImage,
   SecretKeyIcon,
 } from "@coral-xyz/react-common";
 import {
@@ -84,19 +85,25 @@ const useStyles = styles((theme) => ({
 export function WalletDrawerButton({
   wallet,
   style,
+  buttonStyle,
+  showIcon = true,
 }: {
   wallet: { name: string; publicKey: string };
   style?: React.CSSProperties;
+  buttonStyle?: React.CSSProperties;
+  showIcon?: boolean;
 }) {
   const { setOpen } = useWalletDrawerContext();
   return (
     <WalletButton
-      wallet={wallet}
+      wallet={wallet as any}
       onClick={(e: any) => {
         e.stopPropagation();
         setOpen(true);
       }}
       style={style}
+      buttonStyle={buttonStyle}
+      showIcon={showIcon}
     />
   );
 }
@@ -105,14 +112,19 @@ function WalletButton({
   wallet,
   onClick,
   style,
+  buttonStyle,
+  showIcon = true,
 }: {
-  wallet: { name: string; publicKey: string };
+  wallet: { name: string; publicKey: string; blockchain: Blockchain };
   onClick: (e: any) => void;
   style?: React.CSSProperties;
+  buttonStyle?: React.CSSProperties;
+  showIcon?: boolean;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const [tooltipOpen, setTooltipOpen] = useState(false);
+  const iconUrl = getBlockchainLogo(wallet.blockchain);
 
   const onCopy = async () => {
     setTooltipOpen(true);
@@ -126,12 +138,51 @@ function WalletButton({
         flex: 1,
         display: "flex",
         justifyContent: "space-between",
-        marginLeft: "8px",
+        //        marginLeft: "8px",
         ...style,
       }}
     >
-      <Button disableRipple className={classes.addressButton} onClick={onClick}>
-        {wallet.name}
+      <Button
+        disableRipple
+        className={classes.addressButton}
+        onClick={onClick}
+        style={{
+          border: theme.custom.colors.borderFull,
+          background: theme.custom.colors.nav,
+          padding: "5px",
+          paddingLeft: "8px",
+          borderRadius: "30px",
+          ...buttonStyle,
+        }}
+      >
+        {showIcon ? (
+          <div
+            style={{
+              width: "15px",
+              marginRight: "6px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            {" "}
+            <ProxyImage
+              noSkeleton
+              src={iconUrl}
+              style={{
+                width: "15px",
+              }}
+            />
+          </div>
+        ) : null}
+        <Typography
+          style={{
+            fontSize: "14px",
+            fontWeight: 500,
+          }}
+        >
+          {wallet.name}
+        </Typography>
         <ExpandMore
           style={{
             width: "18px",
@@ -139,6 +190,7 @@ function WalletButton({
           }}
         />
       </Button>
+      {/*
       <WithCopyTooltip tooltipOpen={tooltipOpen}>
         <Button
           disableRipple
@@ -160,6 +212,7 @@ function WalletButton({
           />
         </Button>
       </WithCopyTooltip>
+			*/}
     </div>
   );
 }
