@@ -1,15 +1,25 @@
-import type { BigNumberish } from "ethers";
-
-import { useState, Suspense } from "react";
-import { View, Pressable, ActivityIndicator } from "react-native";
+import { useState, useLayoutEffect, Suspense, useTransition } from "react";
+import {
+  ScrollView,
+  View,
+  Pressable,
+  ActivityIndicator,
+  Keyboard,
+} from "react-native";
 
 import {
   Blockchain,
   ETH_NATIVE_MINT,
   SOL_NATIVE_MINT,
+  WSOL_MINT,
   toDisplayBalance,
 } from "@coral-xyz/common";
-import { useSwapContext, TokenData } from "@coral-xyz/recoil";
+import {
+  useSwapContext,
+  TokenData,
+  useJupiterOutputTokens,
+  SwapState,
+} from "@coral-xyz/recoil";
 import {
   XStack,
   Stack,
@@ -17,42 +27,33 @@ import {
   StyledText,
   IconKeyboardArrowRight,
   ProxyImage,
+  useTheme as useTamaguiTheme,
 } from "@coral-xyz/tamagui";
 import { ethers, FixedNumber } from "ethers";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { InputFieldMaxLabel } from "~components/Form";
 import {
-  ScreenError,
   ScreenLoading,
   PrimaryButton,
+  DangerButton,
   Screen,
-  FullScreenLoading,
+  ScreenErrorFallback,
 } from "~components/index";
 
-import { SearchableTokenTables } from "./components/Balances";
+import { TokenTables } from "./components/Balances";
 
 import { IconButton } from "~src/components/Icon";
-import { UnstyledTokenTextInput } from "~src/components/TokenInputField";
+import { TokenInputField } from "~src/components/TokenInputField";
+import { formatAmount, approximateAmount } from "~src/lib/CurrencyUtils";
 import { Token } from "~types/types";
 
-const { Zero } = ethers.constants;
-
-// TODO(peter) share between extension/mobile
-enum SwapState {
-  INITIAL,
-  CONFIRMATION,
-  CONFIRMING,
-  CONFIRMED,
-  ERROR,
+export enum Direction {
+  To,
+  From,
 }
-/**
- * Hides miniscule amounts of SOL
- * @example approximateAmount(0.00203928) = "0.002"
- * @param value BigNumberish amount of Solana Lamports
- */
-const approximateAmount = (value: BigNumberish) =>
-  ethers.utils.formatUnits(value, 9).replace(/(0.0{2,}[1-9])(\d+)/, "$1");
+
+const { Zero } = ethers.constants;
 
 function SwitchTokensButton({
   disabled,
@@ -88,31 +89,37 @@ function SwitchTokensButton({
   );
 }
 
-function TextInputToken({
-  direction,
-}: {
-  direction: "from" | "to";
-}): JSX.Element {
-  const { toAmount, toToken, fromAmount, setFromAmount, fromToken } =
-    useSwapContext();
+function TextInputToken({ direction }: { direction: Direction }): JSX.Element {
+  const theme = useTamaguiTheme();
+  const {
+    toAmount,
+    toToken,
+    fromAmount,
+    setFromAmount,
+    fromToken,
+    exceedsBalance,
+  } = useSwapContext();
 
-  if (direction === "from") {
+  if (direction === Direction.From) {
     return (
       <View style={{ height: 45 }}>
-        <UnstyledTokenTextInput
-          placeholder="0"
-          onChangeAmount={setFromAmount}
-          decimals={fromToken?.decimals}
+        <TokenInputField
+          setValue={setFromAmount}
           value={fromAmount}
-          style={{ fontSize: 36, flex: 1, height: 0 }}
+          decimals={fromToken?.decimals}
+          style={{
+            fontSize: 36,
+            flex: 1,
+            color: exceedsBalance
+              ? theme.redText.val
+              : theme.baseTextHighEmphasis.val,
+          }}
         />
       </View>
     );
   }
 
-  const value = toAmount
-    ? ethers.utils.formatUnits(toAmount, toToken?.decimals)
-    : "";
+  const value = formatAmount(toAmount, toToken?.decimals);
 
   return (
     <View style={{ height: 45 }}>
@@ -126,7 +133,7 @@ function InputTokenSelectorButton({ onPress }) {
   return (
     <TokenSelectorButton
       token={fromToken!}
-      direction="from"
+      direction={Direction.From}
       onPress={onPress}
     />
   );
@@ -135,7 +142,11 @@ function InputTokenSelectorButton({ onPress }) {
 function OutputTokenSelectorButton({ onPress }) {
   const { toToken } = useSwapContext();
   return (
-    <TokenSelectorButton token={toToken!} direction="to" onPress={onPress} />
+    <TokenSelectorButton
+      token={toToken!}
+      direction={Direction.To}
+      onPress={onPress}
+    />
   );
 }
 
@@ -145,23 +156,25 @@ function TokenSelectorButton({
   onPress,
 }: {
   token: TokenData;
-  direction: string;
-  onPress: (direction: string) => void;
+  direction: Direction;
+  onPress: (direction: Direction) => void;
 }): JSX.Element {
   return (
     <Pressable onPress={() => onPress(direction)}>
       <XStack
         bg="$card"
         ai="center"
-        borderRadius={8}
-        px={8}
-        py={4}
+        borderRadius={12}
+        px={12}
+        py={8}
         borderColor="$baseBackgroundL1"
         borderWidth={1}
       >
         <ProxyImage src={token?.logo} size={24} style={{ borderRadius: 12 }} />
-        <StyledText ml={4}>{token?.ticker}</StyledText>
-        <IconKeyboardArrowRight />
+        <StyledText ml={8} mr={-4}>
+          {token?.ticker}
+        </StyledText>
+        <IconKeyboardArrowRight size={24} />
       </XStack>
     </Pressable>
   );
@@ -181,25 +194,48 @@ function InputMaxTokenButton() {
 
 function BoxContainer({
   children,
+  hasError,
 }: {
   children: React.ReactNode;
+  hasError?: boolean;
 }): JSX.Element {
   return (
-    <Stack jc="center" bg="$card" borderRadius={16} height={88} p={16}>
+    <Stack
+      jc="center"
+      bg="$card"
+      borderRadius={16}
+      p={16}
+      borderWidth={1}
+      borderColor={hasError ? "$redBorder" : "$borderFull"}
+    >
       {children}
     </Stack>
   );
 }
 
-function CurrencyInputBox({ children, direction }): JSX.Element {
+function CurrencyInputBox({
+  children,
+  direction,
+}: {
+  children: React.ReactNode;
+  direction: Direction;
+}): JSX.Element {
+  const { exceedsBalance } = useSwapContext();
   return (
-    <BoxContainer>
+    <BoxContainer
+      hasError={direction === Direction.From ? exceedsBalance : false}
+    >
       <XStack ai="center" jc="space-between">
-        <YStack f={1}>
-          <StyledText fontSize="$xs" color="$baseTextMedEmphasis">
-            {direction === "from" ? "You pay" : "You receive"}
+        <YStack f={1} pr={16}>
+          <StyledText mb={4} fontSize="$xs" color="$baseTextMedEmphasis">
+            {direction === Direction.From ? "You pay" : "You receive"}
           </StyledText>
           <TextInputToken direction={direction} />
+          <StyledText fontSize="$xs" color="$redText">
+            {direction === Direction.From && exceedsBalance
+              ? "Insufficient balance"
+              : ""}
+          </StyledText>
         </YStack>
         <YStack>{children}</YStack>
       </XStack>
@@ -210,20 +246,26 @@ function CurrencyInputBox({ children, direction }): JSX.Element {
 function SwapForm({ navigation }) {
   const { swapToFromMints, canSwitch } = useSwapContext();
 
-  const handleChangeToken = (direction: string) => {
+  const handleChangeToken = (direction: Direction) => {
+    Keyboard.dismiss();
     navigation.push("SwapTokenList", { direction });
+  };
+
+  const onPressSwitchTokens = () => {
+    Keyboard.dismiss();
+    swapToFromMints();
   };
 
   return (
     <YStack space={3}>
-      <CurrencyInputBox direction="from">
+      <CurrencyInputBox direction={Direction.From}>
         <YStack space={4}>
           <InputTokenSelectorButton onPress={handleChangeToken} />
           <InputMaxTokenButton />
         </YStack>
       </CurrencyInputBox>
-      <SwitchTokensButton disabled={!canSwitch} onPress={swapToFromMints} />
-      <CurrencyInputBox direction="to">
+      <SwitchTokensButton disabled={!canSwitch} onPress={onPressSwitchTokens} />
+      <CurrencyInputBox direction={Direction.To}>
         <OutputTokenSelectorButton onPress={handleChangeToken} />
       </CurrencyInputBox>
     </YStack>
@@ -388,13 +430,8 @@ export function SwapTokenConfirmScreen({ navigation }): JSX.Element {
     );
   }
 
-  const toDisplayValue = toAmount
-    ? ethers.utils.formatUnits(toAmount, toToken?.decimals)
-    : "";
-
-  const fromDisplayValue = fromAmount
-    ? ethers.utils.formatUnits(fromAmount, fromToken?.decimals)
-    : "";
+  const toDisplayValue = formatAmount(toAmount, toToken?.decimals);
+  const fromDisplayValue = formatAmount(fromAmount, fromToken?.decimals);
 
   return (
     <Screen style={{ justifyContent: "space-between" }}>
@@ -430,51 +467,78 @@ export function SwapTokenConfirmScreen({ navigation }): JSX.Element {
   );
 }
 
-function Container({ navigation }) {
-  const { toAmount, fromAmount, isLoadingRoutes, isLoadingTransactions } =
-    useSwapContext();
+function ConfirmSwapButton({ onPress }: { onPress: () => void }): JSX.Element {
+  const {
+    toAmount,
+    toMint,
+    fromAmount,
+    fromMint,
+    isJupiterError,
+    exceedsBalance,
+    feeExceedsBalance,
+    isLoadingRoutes,
+    isLoadingTransactions,
+  } = useSwapContext();
+  const tokenAccounts = useJupiterOutputTokens(fromMint);
+
+  if (fromMint === toMint) {
+    return <DangerButton label="Invalid swap" disabled />;
+  } else if (exceedsBalance) {
+    return <DangerButton label="Insufficient balance" disabled />;
+  } else if (feeExceedsBalance && !isIncomplete) {
+    return <DangerButton label="Insufficient balance for fee" disabled />;
+  } else if (isJupiterError || tokenAccounts.length === 0) {
+    return <DangerButton label="Swaps unavailable" disabled />;
+  }
+
+  let label;
+  if (fromMint === SOL_NATIVE_MINT && toMint === WSOL_MINT) {
+    label = "Wrap";
+  } else if (fromMint === WSOL_MINT && toMint === SOL_NATIVE_MINT) {
+    label = "Unwrap";
+  } else {
+    label = "Review";
+  }
 
   // Parameters aren't all entered or the swap data is loading
   const isIncomplete =
     !fromAmount || !toAmount || isLoadingRoutes || isLoadingTransactions;
 
   return (
-    <Screen>
-      <YStack space={6} f={1} jc="space-between">
-        <YStack space={6}>
-          <SwapForm navigation={navigation} />
-          <SwapInfo />
-        </YStack>
-        <PrimaryButton
-          loading={isLoadingRoutes || isLoadingTransactions}
-          disabled={isIncomplete}
-          label="Review"
-          onPress={() => {
-            navigation.push("SwapTokenConfirm");
-          }}
-        />
-      </YStack>
-    </Screen>
+    <PrimaryButton label={label} disabled={isIncomplete} onPress={onPress} />
   );
 }
 
 export function SwapTokenListScreen({ navigation, route }): JSX.Element {
   const { direction } = route.params;
-  const { setFromMint, setToMint, toTokens, fromTokens, fromToken } =
-    useSwapContext();
-  // TODO get the right stuff to show up in each list
-  console.log("debug3:toTokens", toTokens);
-  console.log("debug3:fromTokens", fromTokens);
+  const { setFromMint, setToMint, fromToken } = useSwapContext();
+  const [inputText, setInputText] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
+  const [isPending, startTransition] = useTransition();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerSearchBarOptions: {
+        placeholder: "Search for tokens",
+        onChangeText: (event) => {
+          const text = event.nativeEvent.text.toLowerCase();
+          setInputText(text);
+          startTransition(() => {
+            setSearchFilter(text);
+          });
+        },
+      },
+    });
+  }, [navigation]);
 
   return (
-    <Screen>
-      <SearchableTokenTables
+    <Screen style={{ marginTop: 100 }}>
+      <TokenTables
+        searchFilter={searchFilter}
         onPressRow={(_b: Blockchain, token: Token) => {
-          if (direction === "from") {
-            setFromMint(token.mint!);
-          } else {
-            setToMint(token.mint!);
-          }
+          const handler =
+            direction === Direction.From ? setFromMint : setToMint;
+          handler(token.mint!);
           navigation.goBack();
         }}
         customFilter={(token: Token) => {
@@ -497,11 +561,27 @@ export function SwapTokenListScreen({ navigation, route }): JSX.Element {
   );
 }
 
+function Container({ navigation }) {
+  return (
+    <Screen>
+      <YStack space={6} f={1} jc="space-between">
+        <YStack space={6}>
+          <SwapForm navigation={navigation} />
+          <SwapInfo />
+        </YStack>
+        <ConfirmSwapButton
+          onPress={() => {
+            navigation.push("SwapTokenConfirm");
+          }}
+        />
+      </YStack>
+    </Screen>
+  );
+}
+
 export function SwapTokenScreen({ navigation, route }): JSX.Element {
   return (
-    <ErrorBoundary
-      fallbackRender={({ error }) => <ScreenError error={error} />}
-    >
+    <ErrorBoundary FallbackComponent={ScreenErrorFallback}>
       <Suspense fallback={<ScreenLoading />}>
         <Container navigation={navigation} route={route} />
       </Suspense>

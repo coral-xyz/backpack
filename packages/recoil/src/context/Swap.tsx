@@ -34,6 +34,14 @@ const DEFAULT_SLIPPAGE_PERCENT = 1;
 // Poll for new routes every 30 seconds in case of changing market conditions
 const ROUTE_POLL_INTERVAL = 30000;
 
+export enum SwapState {
+  INITIAL,
+  CONFIRMATION,
+  CONFIRMING,
+  CONFIRMED,
+  ERROR,
+}
+
 type JupiterRoute = {
   inAmount: string;
   outAmount: string;

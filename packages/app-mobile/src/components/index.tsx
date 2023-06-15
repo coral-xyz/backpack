@@ -139,7 +139,7 @@ export function Screen({
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   headerPadding?: boolean;
-  jc?: "space-between" | "center"
+  jc?: "space-between" | "center";
 }) {
   const [show, setShow] = useState(true);
   const insets = useSafeAreaInsets();
@@ -439,6 +439,15 @@ export function ScreenError({
       <Text>{error.message}</Text>
       <Text>{extra}</Text>
     </View>
+  );
+}
+
+export function ScreenErrorFallback({ error, resetErrorBoundary }) {
+  return (
+    <>
+      <ScreenError error={error} />
+      <PrimaryButton label="Reset" onPress={resetErrorBoundary} />
+    </>
   );
 }
 

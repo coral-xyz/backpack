@@ -163,7 +163,7 @@ function WalletTokenTable({
 
       {expanded ? (
         <FlatList
-          scrollEnabled={false}
+          scrollEnabled
           data={tokenAccountsFiltered}
           keyExtractor={(item) => item.address}
           ItemSeparatorComponent={ListRowSeparator}

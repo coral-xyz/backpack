@@ -3862,6 +3862,7 @@ __metadata:
     "@types/jest": ^28.1.6
     "@types/react": ^18.0.28
     "@types/react-native": ~0.71.6
+    "@uidotdev/usehooks": ^2.0.1
     apollo3-cache-persist: ^0.14.1
     babel-plugin-relay: ^15.0.0
     babel-plugin-transform-inline-environment-variables: ^0.4.4
@@ -15604,6 +15605,16 @@ __metadata:
   peerDependencies:
     jsbi: ^3 || ^4
   checksum: 2a1a4c2ec32fda31cf384fce57dd45286d8ff38b771f733f992e5e05d6e91d149dad8f74b0bec2a4f9d88a3a05e9daf6baa0a1c433de30e07794d737f8609df0
+  languageName: node
+  linkType: hard
+
+"@uidotdev/usehooks@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@uidotdev/usehooks@npm:2.0.1"
+  peerDependencies:
+    react: ">=18.0.0"
+    react-dom: ">=18.0.0"
+  checksum: 176bd62347aae83dbca95777074a6d6a8c638e2aea88cd46396e30549f820ccb3c331f027d94d15695c97896912758285557487ed137bd5245b596718c3329d9
   languageName: node
   linkType: hard
 

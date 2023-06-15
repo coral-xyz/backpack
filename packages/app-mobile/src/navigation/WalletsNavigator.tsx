@@ -6,6 +6,7 @@ import { Blockchain, toTitleCase } from "@coral-xyz/common";
 import { SwapProvider } from "@coral-xyz/recoil";
 import { useTheme as useTamaguiTheme } from "@coral-xyz/tamagui";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
   createStackNavigator,
   StackScreenProps,
@@ -36,6 +37,7 @@ import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollec
 
 import { SendNavigator } from "~src/navigation/SendNavigator";
 import {
+  Direction,
   SwapTokenScreen,
   SwapTokenConfirmScreen,
   SwapTokenListScreen,
@@ -264,7 +266,9 @@ type SwapStackParamList = {
     address: string;
     blockchain: Blockchain;
   };
-  SwapTokenList: undefined;
+  SwapTokenList: {
+    direction: Direction;
+  };
   SwapTokenConfirm: {
     title?: string;
     address: string;
@@ -272,14 +276,14 @@ type SwapStackParamList = {
   };
 };
 
-const SwapStack = createStackNavigator<SwapStackParamList>();
+const SwapStack = createNativeStackNavigator<SwapStackParamList>();
 function SwapNavigator(): JSX.Element {
   const theme = useTheme();
   return (
     <SwapProvider>
       <SwapStack.Navigator
         screenOptions={{
-          // headerShown: false,
+          headerShown: true,
           headerTintColor: theme.custom.colors.fontColor,
           headerBackTitleVisible: false,
         }}
@@ -298,7 +302,8 @@ function SwapNavigator(): JSX.Element {
           name="SwapTokenList"
           component={SwapTokenListScreen}
           options={({ route }) => {
-            const title = route.params.direction === "from" ? "From" : "To";
+            const title =
+              route.params.direction === Direction.From ? "From" : "To";
             return {
               title: `Select ${title}`,
             };
