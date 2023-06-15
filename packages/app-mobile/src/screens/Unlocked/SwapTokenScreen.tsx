@@ -41,11 +41,12 @@ import {
   ScreenErrorFallback,
 } from "~components/index";
 
-import { TokenTables } from "./components/Balances";
+import { SearchableTokenList, TokenTables } from "./components/Balances";
 
 import { IconButton } from "~src/components/Icon";
 import { TokenInputField } from "~src/components/TokenInputField";
 import { formatAmount, approximateAmount } from "~src/lib/CurrencyUtils";
+import { useSession } from "~src/lib/SessionProvider";
 import { Token } from "~types/types";
 
 export enum Direction {
@@ -123,7 +124,9 @@ function TextInputToken({ direction }: { direction: Direction }): JSX.Element {
 
   return (
     <View style={{ height: 45 }}>
-      <StyledText fontSize="$3xl">{value.toString()}</StyledText>
+      <StyledText fontSize="$3xl" textOverflow="ellipsis">
+        {value.toString()}
+      </StyledText>
     </View>
   );
 }
@@ -511,10 +514,11 @@ function ConfirmSwapButton({ onPress }: { onPress: () => void }): JSX.Element {
 
 export function SwapTokenListScreen({ navigation, route }): JSX.Element {
   const { direction } = route.params;
+  const { activeWallet } = useSession();
   const { setFromMint, setToMint, fromToken } = useSwapContext();
-  const [inputText, setInputText] = useState("");
+  const [_inputText, setInputText] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
-  const [isPending, startTransition] = useTransition();
+  const [_isPending, startTransition] = useTransition();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -532,32 +536,33 @@ export function SwapTokenListScreen({ navigation, route }): JSX.Element {
   }, [navigation]);
 
   return (
-    <Screen style={{ marginTop: 100 }}>
-      <TokenTables
-        searchFilter={searchFilter}
-        onPressRow={(_b: Blockchain, token: Token) => {
-          const handler =
-            direction === Direction.From ? setFromMint : setToMint;
-          handler(token.mint!);
-          navigation.goBack();
-        }}
-        customFilter={(token: Token) => {
-          if (token?.mint !== fromToken?.mint) {
-            return true;
-          }
+    <SearchableTokenList
+      style={{ flex: 1, paddingTop: 16, paddingHorizontal: 12 }}
+      contentContainerStyle={{ paddingBottom: 64 }}
+      searchFilter={searchFilter}
+      publicKey={activeWallet!.publicKey}
+      blockchain={activeWallet!.blockchain as Blockchain}
+      customFilter={(token: Token) => {
+        if (token?.mint !== fromToken?.mint) {
+          return true;
+        }
 
-          if (token.mint && token.mint === SOL_NATIVE_MINT) {
-            return true;
-          }
+        if (token.mint && token.mint === SOL_NATIVE_MINT) {
+          return true;
+        }
 
-          if (token.address && token.address === ETH_NATIVE_MINT) {
-            return true;
-          }
+        if (token.address && token.address === ETH_NATIVE_MINT) {
+          return true;
+        }
 
-          return !token.nativeBalance.isZero();
-        }}
-      />
-    </Screen>
+        return !token.nativeBalance.isZero();
+      }}
+      onPressRow={(_b: Blockchain, token: Token) => {
+        const handler = direction === Direction.From ? setFromMint : setToMint;
+        handler(token.mint!);
+        navigation.goBack();
+      }}
+    />
   );
 }
 
