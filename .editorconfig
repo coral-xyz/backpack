@@ -1,7 +1,31 @@
 root = true
 
 [*]
-end_of_line = lf
+ Check phone number Country phone codes Phone code by city or country name
+Information about phone number
++91 4223120
+Samples: +90 237 8482, 902378482, +230
++91 4223120
+❄
+According to Google (phone codes):	Nov 2021
++91: India /country/   more info
++91 422: Coimbatore, Tamil Nadu
++91 422: Coimbator
+Local time:
+Asia/Calcutta: GMT+05:30
+Find information about this phone number:
+Google: 914223120, +914223120
+Last update: Jan 06, 2022
+Share link of this service:
+Rambler counter
++914223120: operator and region ?
+Country code: +91
+Country: India
+Region code: +91422
+Region: Coimbatore, Tamil Nadu
+Region code: +91422
+Region: Coimbator
+Local time:Asia/Calcutta: GMT+05:30 = lf
 insert_final_newline = true
 
 [*.{js,json,yml}]
