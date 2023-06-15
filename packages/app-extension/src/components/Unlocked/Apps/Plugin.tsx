@@ -5,11 +5,8 @@ import { Loading, PowerIcon } from "@coral-xyz/react-common";
 import {
   transactionRequest,
   useActiveSolanaWallet,
-  useBackgroundClient,
   useClosePlugin,
-  useConnectionBackgroundClient,
   useFreshPlugin,
-  useNavigationSegue,
   useOpenPlugin,
   usePlugins,
 } from "@coral-xyz/recoil";
@@ -49,7 +46,6 @@ function LoadPlugin({
 }) {
   const { publicKey } = useActiveSolanaWallet(); // TODO: aggregate wallet considerations.
   const plugins = usePlugins(publicKey);
-  const segue = useNavigationSegue();
   const setTransactionRequest = useSetRecoilState(transactionRequest);
   const openPlugin = useOpenPlugin();
 
@@ -68,7 +64,6 @@ function LoadPlugin({
     );
   }
   plugin.setHostApi({
-    push: segue.push,
     request: setTransactionRequest,
     openPlugin,
   });

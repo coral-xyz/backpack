@@ -63,7 +63,6 @@ export class Plugin {
   //
   // Host APIs.
   //
-  private _navPushFn?: (args: any) => void;
   private _requestTxApprovalFn?: (request: any) => void;
   private _openPlugin?: (xnftAddress: string) => void;
 
@@ -139,7 +138,7 @@ export class Plugin {
   }
 
   public get needsLoad() {
-    return this._navPushFn === undefined;
+    return this._openPlugin === undefined;
   }
 
   //
@@ -228,15 +227,12 @@ export class Plugin {
   // Apis set from the outside host.
   //
   public setHostApi({
-    push,
     request,
     openPlugin,
   }: {
-    push: any;
     request: any;
     openPlugin: any;
   }) {
-    this._navPushFn = push;
     this._openPlugin = openPlugin;
     this._requestTxApprovalFn = request;
   }
