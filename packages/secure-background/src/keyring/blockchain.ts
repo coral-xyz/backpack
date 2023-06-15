@@ -7,9 +7,10 @@ import type {
 import { getLogger } from "@coral-xyz/common";
 import { decode } from "bs58";
 
-import { setIsCold } from "../store/isCold";
-import { DefaultKeyname, setKeyname } from "../store/keyname";
+import type { SecureStore } from "../store/SecureStore";
 
+// import { setIsCold } from "../store/isCold";
+// import { DefaultKeyname, setKeyname } from "../store/keyname";
 import type {
   AnyKeyring,
   HdKeyring,
@@ -24,6 +25,7 @@ const logger = getLogger("background/backend/keyring");
 
 // Represents key data for a single blockchain network, e.g., solana or ethereum.
 export class BlockchainKeyring {
+  private store: SecureStore;
   private hdKeyringFactory: HdKeyringFactory;
   private keyringFactory: KeyringFactory;
   private ledgerKeyringFactory: LedgerKeyringFactory;
@@ -34,10 +36,12 @@ export class BlockchainKeyring {
   private deletedWallets?: Array<string>;
 
   constructor(
+    store: SecureStore,
     hdKeyringFactory: HdKeyringFactory,
     keyringFactory: KeyringFactory,
     ledgerKeyringFactory: LedgerKeyringFactory
   ) {
+    this.store = store;
     this.hdKeyringFactory = hdKeyringFactory;
     this.keyringFactory = keyringFactory;
     this.ledgerKeyringFactory = ledgerKeyringFactory;
@@ -87,8 +91,8 @@ export class BlockchainKeyring {
       // Init using private key
       this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
       this.importedKeyring = this.keyringFactory.init([keyringInit.privateKey]);
-      const name = DefaultKeyname.defaultImported(1);
-      await setKeyname(keyringInit.publicKey, name);
+      const name = this.store.defaultKeyname.defaultImported(1);
+      await this.store.setKeyname(keyringInit.publicKey, name);
       newAccounts = [[name, keyringInit.publicKey]];
     } else {
       // Init using ledger
@@ -100,9 +104,9 @@ export class BlockchainKeyring {
         index,
         walletDescriptor,
       ] of keyringInit.signedWalletDescriptors.entries()) {
-        const name = DefaultKeyname.defaultLedger(index + 1);
-        await setKeyname(walletDescriptor.publicKey, name);
-        await setIsCold(walletDescriptor.publicKey, true);
+        const name = this.store.defaultKeyname.defaultLedger(index + 1);
+        await this.store.setKeyname(walletDescriptor.publicKey, name);
+        await this.store.setIsCold(walletDescriptor.publicKey, true);
         newAccounts.push([walletDescriptor.publicKey, name]);
       }
     }
@@ -127,8 +131,8 @@ export class BlockchainKeyring {
     // Persist a given name for this wallet.
     const newAccounts: Array<[string, string]> = [];
     for (const [index, publicKey] of this.hdKeyring.publicKeys().entries()) {
-      const name = DefaultKeyname.defaultDerived(index + 1);
-      await setKeyname(publicKey, name);
+      const name = this.store.defaultKeyname.defaultDerived(index + 1);
+      await this.store.setKeyname(publicKey, name);
       newAccounts.push([publicKey, name]);
     }
     return newAccounts;
@@ -170,10 +174,10 @@ export class BlockchainKeyring {
   }> {
     const { publicKey, derivationPath } = this.hdKeyring!.deriveNextKey();
     // Save a default name.
-    const name = DefaultKeyname.defaultDerived(
+    const name = this.store.defaultKeyname.defaultDerived(
       this.hdKeyring!.publicKeys().length
     );
-    await setKeyname(publicKey, name);
+    await this.store.setKeyname(publicKey, name);
     return { publicKey, derivationPath, name };
   }
 
@@ -187,10 +191,10 @@ export class BlockchainKeyring {
     const publicKey = this.hdKeyring.addDerivationPath(derivationPath);
 
     // Save a default name.
-    const name = DefaultKeyname.defaultDerived(
+    const name = this.store.defaultKeyname.defaultDerived(
       this.hdKeyring.publicKeys().length
     );
-    await setKeyname(publicKey, name);
+    await this.store.setKeyname(publicKey, name);
 
     return {
       publicKey,
@@ -204,11 +208,11 @@ export class BlockchainKeyring {
   ): Promise<[string, string]> {
     const pubkey = this.importedKeyring!.importSecretKey(secretKey).toString();
     if (!name || name.length === 0) {
-      name = DefaultKeyname.defaultImported(
+      name = this.store.defaultKeyname.defaultImported(
         this.importedKeyring!.publicKeys().length
       );
     }
-    await setKeyname(pubkey, name);
+    await this.store.setKeyname(pubkey, name);
     return [pubkey, name];
   }
 

@@ -12,18 +12,21 @@ import {
   nextIndicesFromPaths,
 } from "@coral-xyz/common";
 
-import { getKeyringStore_NO_MIGRATION, setKeyringStore } from "../store";
+import type { SecureStore } from "../../SecureStore";
 
-export async function migrate_0_2_0_2408(userInfo: {
-  uuid: string;
-  password: string;
-}) {
+export async function migrate_0_2_0_2408(
+  userInfo: {
+    uuid: string;
+    password: string;
+  },
+  store: SecureStore
+) {
   const { password } = userInfo;
 
   //
   // Get the current keyring store.
   //
-  const json = await getKeyringStore_NO_MIGRATION(password);
+  const json = await store.getKeyringStore_NO_MIGRATION(password);
 
   //
   // Update it to the new format.
@@ -95,5 +98,5 @@ export async function migrate_0_2_0_2408(userInfo: {
   //
   // Save the new format.
   //
-  await setKeyringStore(json, password);
+  await store.setKeyringStore(json, password);
 }

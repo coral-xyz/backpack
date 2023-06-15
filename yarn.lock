@@ -4378,6 +4378,7 @@ __metadata:
   dependencies:
     "@coral-xyz/common": "*"
     "@coral-xyz/db": "*"
+    "@coral-xyz/secure-background": "*"
     "@coral-xyz/soulbound": ^0.1.3
     "@coral-xyz/xnft": ^0.2.50
     "@metaplex-foundation/mpl-token-metadata": ^2.5.2
@@ -4405,7 +4406,6 @@ __metadata:
   resolution: "@coral-xyz/secure-background@workspace:packages/secure-background"
   dependencies:
     "@coral-xyz/common": "*"
-    "@coral-xyz/recoil": "*"
     "@solana/web3.js": ^1.63.1
     "@types/eventemitter3": ^2.0.2
     "@types/uuid": ^9.0.1
@@ -4427,7 +4427,6 @@ __metadata:
   resolution: "@coral-xyz/secure-client@workspace:packages/secure-client"
   dependencies:
     "@coral-xyz/common": "*"
-    "@coral-xyz/recoil": "*"
     "@coral-xyz/secure-background": "*"
     "@coral-xyz/tamagui": "*"
     eslint-config-custom: "*"

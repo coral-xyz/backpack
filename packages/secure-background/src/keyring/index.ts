@@ -13,6 +13,7 @@ import {
   SolanaLedgerKeyringFactory,
 } from "../services/svm/keyring";
 import { deriveSolanaPrivateKey } from "../services/svm/util";
+import type { SecureStore } from "../store/SecureStore";
 
 import { BlockchainKeyring } from "./blockchain";
 
@@ -24,15 +25,18 @@ export function hdFactoryForBlockchain(blockchain: Blockchain) {
 }
 
 export function keyringForBlockchain(
-  blockchain: Blockchain
+  blockchain: Blockchain,
+  store: SecureStore
 ): BlockchainKeyring {
   return {
     [Blockchain.SOLANA]: new BlockchainKeyring(
+      store,
       new SolanaHdKeyringFactory(),
       new SolanaKeyringFactory(),
       new SolanaLedgerKeyringFactory()
     ),
     [Blockchain.ETHEREUM]: new BlockchainKeyring(
+      store,
       new EthereumHdKeyringFactory(),
       new EthereumKeyringFactory(),
       new EthereumLedgerKeyringFactory()

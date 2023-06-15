@@ -1,7 +1,4 @@
-import * as isCold from "./src/store/isCold";
-import * as keyname from "./src/store/keyname";
-import * as preferences from "./src/store/preferences";
-import * as usernames from "./src/store/usernames";
+import { extensionDB, SecureStore } from "./src/store/SecureStore";
 
 export { keyringForBlockchain, mnemonicPathToPrivateKey } from "./src/keyring";
 export type { BlockchainKeyring } from "./src/keyring/blockchain";
@@ -10,11 +7,7 @@ export {
   type KeyringStoreState,
   KeyringStoreStateEnum,
 } from "./src/store/keyring";
-export type { User } from "./src/store/usernames";
+export type { User } from "./src/store/SecureStore";
+export { extensionDB } from "./src/store/SecureStore";
 
-export const secureStore = {
-  ...isCold,
-  ...preferences,
-  ...usernames,
-  ...keyname,
-};
+export const secureStore = new SecureStore(extensionDB);

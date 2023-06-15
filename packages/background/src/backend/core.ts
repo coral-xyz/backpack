@@ -96,20 +96,6 @@ import type { Nav } from "./legacy-store";
 import * as legacyStore from "./legacy-store";
 import type { SolanaConnectionBackend } from "./solana-connection";
 
-const {
-  getActiveUser,
-  getUserData,
-  setUser,
-
-  getWalletDataForUser,
-  setWalletDataForUser,
-
-  getKeyname,
-  setKeyname,
-
-  getIsCold,
-  setIsCold,
-} = secureStore;
 const { base58: bs58 } = ethers.utils;
 
 export function start(
@@ -255,7 +241,7 @@ export class Backend {
   }
 
   async solanaConnectionUrlRead(uuid: string): Promise<string> {
-    let data = await getWalletDataForUser(uuid);
+    let data = await secureStore.getWalletDataForUser(uuid);
 
     // migrate the old default RPC value, this can be removed in future
     const OLD_DEFAULT = "https://solana-rpc-nodes.projectserum.com";
@@ -273,7 +259,7 @@ export class Backend {
           cluster: SolanaCluster.DEFAULT,
         },
       };
-      await setWalletDataForUser(uuid, data);
+      await secureStore.setWalletDataForUser(uuid, data);
     }
 
     return (data.solana && data.solana.cluster) ?? SolanaCluster.DEFAULT;
@@ -282,7 +268,7 @@ export class Backend {
   // Returns true if the url changed.
   async solanaConnectionUrlUpdate(cluster: string): Promise<boolean> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
 
     if (data.solana.cluster === cluster) {
       return false;
@@ -299,7 +285,7 @@ export class Backend {
     }
     const activeWallet = keyring ? keyring.getActiveWallet() : null;
 
-    await setWalletDataForUser(uuid, {
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       solana: {
         ...data.solana,
@@ -319,7 +305,7 @@ export class Backend {
   }
 
   async solanaExplorerRead(uuid: string): Promise<string> {
-    const data = await getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
     return data.solana && data.solana.explorer
       ? data.solana.explorer
       : SolanaExplorer.DEFAULT;
@@ -327,8 +313,8 @@ export class Backend {
 
   async solanaExplorerUpdate(explorer: string): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await getWalletDataForUser(uuid);
-    await setWalletDataForUser(uuid, {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       solana: {
         ...data.solana,
@@ -345,7 +331,7 @@ export class Backend {
   }
 
   async solanaCommitmentRead(uuid: string): Promise<Commitment> {
-    const data = await getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
     return data.solana && data.solana.commitment
       ? data.solana.commitment
       : "processed";
@@ -353,8 +339,8 @@ export class Backend {
 
   async solanaCommitmentUpdate(commitment: Commitment): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await getWalletDataForUser(uuid);
-    await setWalletDataForUser(uuid, {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       solana: {
         ...data.solana,
@@ -410,7 +396,7 @@ export class Backend {
   ///////////////////////////////////////////////////////////////////////////////
 
   async ethereumExplorerRead(uuid: string): Promise<string> {
-    const data = await getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
     return data.ethereum && data.ethereum.explorer
       ? data.ethereum.explorer
       : EthereumExplorer.DEFAULT;
@@ -418,8 +404,8 @@ export class Backend {
 
   async ethereumExplorerUpdate(explorer: string): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await getWalletDataForUser(uuid);
-    await setWalletDataForUser(uuid, {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       ethereum: {
         ...(data.ethereum || {}),
@@ -436,7 +422,7 @@ export class Backend {
   }
 
   async ethereumConnectionUrlRead(uuid: string): Promise<string> {
-    const data = await getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
     return data.ethereum && data.ethereum.connectionUrl
       ? data.ethereum.connectionUrl
       : EthereumConnectionUrl.DEFAULT;
@@ -444,9 +430,9 @@ export class Backend {
 
   async ethereumConnectionUrlUpdate(connectionUrl: string): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
 
-    await setWalletDataForUser(uuid, {
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       ethereum: {
         ...(data.ethereum || {}),
@@ -476,7 +462,7 @@ export class Backend {
   }
 
   async ethereumChainIdRead(): Promise<string> {
-    const data = await getWalletDataForUser(
+    const data = await secureStore.getWalletDataForUser(
       this.keyringStore.activeUserKeyring.uuid
     );
     return data.ethereum && data.ethereum.chainId
@@ -487,8 +473,8 @@ export class Backend {
 
   async ethereumChainIdUpdate(chainId: string): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await getWalletDataForUser(uuid);
-    await setWalletDataForUser(uuid, {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       ethereum: {
         ...(data.ethereum || {}),
@@ -538,7 +524,7 @@ export class Backend {
     // If keyring init parameters were provided then init the keyring
     if (keyringInit) {
       // Create an empty keyring to init
-      blockchainKeyring = keyringForBlockchain(blockchain);
+      blockchainKeyring = keyringForBlockchain(blockchain, secureStore);
       if ("mnemonic" in keyringInit) {
         // If mnemonic wasn't actually passed retrieve it from the store. This
         // is to avoid having to pass the mnemonic to the client to make this
@@ -709,7 +695,7 @@ export class Backend {
     //
     const userInfo = { password, uuid };
     await this.keyringStore.tryUnlock(userInfo);
-    const activeUser = (await getUserData()).activeUser;
+    const activeUser = (await secureStore.getUserData()).activeUser;
     const blockchainActiveWallets = await this.blockchainActiveWallets();
     const ethereumConnectionUrl = await this.ethereumConnectionUrlRead(
       userInfo.uuid
@@ -789,8 +775,8 @@ export class Backend {
         for (const publicKey of publicKeys) {
           namedPublicKeys[blockchain][keyring].push({
             publicKey,
-            name: await getKeyname(publicKey),
-            isCold: await getIsCold(publicKey),
+            name: await secureStore.getKeyname(publicKey),
+            isCold: await secureStore.getIsCold(publicKey),
           });
         }
       }
@@ -814,7 +800,7 @@ export class Backend {
     // we return a default set of preferences.
     //
     try {
-      return await getWalletDataForUser(uuid);
+      return await secureStore.getWalletDataForUser(uuid);
     } catch (err) {
       return defaultPreferences();
     }
@@ -976,11 +962,11 @@ export class Backend {
   }
 
   async keyIsCold(publicKey: string): Promise<boolean> {
-    return await getIsCold(publicKey);
+    return await secureStore.getIsCold(publicKey);
   }
 
   async keyIsColdUpdate(publicKey: string, isCold: boolean): Promise<string> {
-    await setIsCold(publicKey, isCold);
+    await secureStore.setIsCold(publicKey, isCold);
     const walletData = await this.keyringStoreReadAllPubkeyData();
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEY_IS_COLD_UPDATE,
@@ -998,7 +984,7 @@ export class Backend {
    * @param publicKey - public key to read the name for
    */
   async keynameRead(publicKey: string): Promise<string> {
-    return await getKeyname(publicKey);
+    return await secureStore.getKeyname(publicKey);
   }
 
   /**
@@ -1007,7 +993,7 @@ export class Backend {
    * @param newName - new name to associate with the public key
    */
   async keynameUpdate(publicKey: string, newName: string): Promise<string> {
-    await setKeyname(publicKey, newName);
+    await secureStore.setKeyname(publicKey, newName);
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYNAME_UPDATE,
       data: {
@@ -1103,7 +1089,7 @@ export class Backend {
   // keyring is locked.
   async userRead(): Promise<User> {
     try {
-      const user = await getActiveUser();
+      const user = await secureStore.getActiveUser();
       return user;
     } catch (err) {
       return { username: "", uuid: "", jwt: "" };
@@ -1111,7 +1097,7 @@ export class Backend {
   }
 
   async userJwtUpdate(uuid: string, jwt: string) {
-    await setUser(uuid, { jwt });
+    await secureStore.setUser(uuid, { jwt });
 
     const walletData = await this.keyringStoreReadAllPubkeyData();
     const preferences = await this.preferencesRead(uuid);
@@ -1137,7 +1123,7 @@ export class Backend {
   }
 
   async allUsersRead(): Promise<Array<User>> {
-    const userData = await getUserData();
+    const userData = await secureStore.getUserData();
     return userData.users;
   }
 
@@ -1193,7 +1179,7 @@ export class Backend {
   }
 
   async keyringAutoLockSettingsRead(uuid: string) {
-    const data = await getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
     return data.autoLockSettings;
   }
 
@@ -1505,7 +1491,7 @@ export class Backend {
     //
     // If we're logging out the last user, reset the entire app.
     //
-    const data = await getUserData();
+    const data = await secureStore.getUserData();
     if (data.users.length === 1) {
       await this.keyringReset();
       return SUCCESS_RESPONSE;
@@ -1665,14 +1651,14 @@ export class Backend {
     if (state === "needs-onboarding") {
       return DEFAULT_DARK_MODE;
     }
-    const data = await getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
     return data.darkMode ?? DEFAULT_DARK_MODE;
   }
 
   async darkModeUpdate(darkMode: boolean): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await getWalletDataForUser(uuid);
-    await setWalletDataForUser(uuid, {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       darkMode,
     });
@@ -1686,14 +1672,14 @@ export class Backend {
   }
 
   async developerModeRead(uuid: string): Promise<boolean> {
-    const data = await getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
     return data.developerMode ?? false;
   }
 
   async developerModeUpdate(developerMode: boolean): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await getWalletDataForUser(uuid);
-    await setWalletDataForUser(uuid, {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       developerMode,
     });
@@ -1708,8 +1694,8 @@ export class Backend {
 
   async aggregateWalletsUpdate(aggregateWallets: boolean): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await getWalletDataForUser(uuid);
-    await setWalletDataForUser(uuid, {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       aggregateWallets,
     });
@@ -1724,7 +1710,7 @@ export class Backend {
 
   async isApprovedOrigin(origin: string): Promise<boolean> {
     const { uuid } = await this.userRead();
-    const data = await getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
     if (!data.approvedOrigins) {
       return false;
     }
@@ -1733,14 +1719,14 @@ export class Backend {
   }
 
   async approvedOriginsRead(uuid: string): Promise<Array<string>> {
-    const data = await getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
     return data.approvedOrigins;
   }
 
   async approvedOriginsUpdate(approvedOrigins: Array<string>): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await getWalletDataForUser(uuid);
-    await setWalletDataForUser(uuid, {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       approvedOrigins,
     });
@@ -1756,9 +1742,9 @@ export class Backend {
 
   async approvedOriginsDelete(origin: string): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
     const approvedOrigins = data.approvedOrigins.filter((o) => o !== origin);
-    await setWalletDataForUser(uuid, {
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       approvedOrigins,
     });

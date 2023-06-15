@@ -5,15 +5,9 @@ import {
   getLogger,
 } from "@coral-xyz/common";
 
-import {
-  getWalletData_DEPRECATED,
-  setWalletData_DEPRECATED,
-  setWalletDataForUser,
-} from "../../preferences";
-import { getUserData, setUserData } from "../../usernames";
+import type { KeyringStoreJson, SecureStore } from "../../SecureStore";
+import type { SecretPayload } from "../crypto";
 import { decrypt } from "../crypto";
-import type { KeyringStoreJson } from "../store";
-import { getKeyringCiphertext, setKeyringStore } from "../store";
 
 const logger = getLogger("migrations/0_2_0_510");
 
@@ -23,24 +17,36 @@ const logger = getLogger("migrations/0_2_0_510");
 // idempotent.
 //
 // In the event of failure, the user must re-onboard.
-export async function migrate_0_2_0_510(userInfo: {
-  uuid: string;
-  password: string;
-}) {
-  const username = await migrateWalletData_0_2_0_510(userInfo);
-  await migrateUserData_0_2_0_510(userInfo, username);
-  await migrateKeyringStore_0_2_0_510(userInfo, username);
+export async function migrate_0_2_0_510(
+  userInfo: {
+    uuid: string;
+    password: string;
+  },
+  store: SecureStore,
+  unsafeGetKeyringCiphertext: () => Promise<SecretPayload>
+) {
+  const username = await migrateWalletData_0_2_0_510(userInfo, store);
+  await migrateUserData_0_2_0_510(userInfo, username, store);
+  await migrateKeyringStore_0_2_0_510(
+    userInfo,
+    username,
+    store,
+    unsafeGetKeyringCiphertext
+  );
 }
 
 // Migration:
 //
 //  - moves the wallet data object to a user specfic location.
 //  - clears out the old global wallet data object.
-async function migrateWalletData_0_2_0_510(userInfo: {
-  uuid: string;
-  password: string;
-}): Promise<string> {
-  const walletData = await getWalletData_DEPRECATED();
+async function migrateWalletData_0_2_0_510(
+  userInfo: {
+    uuid: string;
+    password: string;
+  },
+  store: SecureStore
+): Promise<string> {
+  const walletData = await store.getWalletData_DEPRECATED();
 
   if (!walletData) {
     logger.error("wallet data not found on disk");
@@ -60,13 +66,13 @@ async function migrateWalletData_0_2_0_510(userInfo: {
   }
 
   // Write the username specific data.
-  await setWalletDataForUser(userInfo.uuid, {
+  await store.setWalletDataForUser(userInfo.uuid, {
     ...defaultPreferences(),
     ...walletData,
   });
 
   // Clear the old data.
-  await setWalletData_DEPRECATED(undefined);
+  await store.setWalletData_DEPRECATED(undefined);
 
   return username;
 }
@@ -76,11 +82,12 @@ async function migrateWalletData_0_2_0_510(userInfo: {
 // - creates the UserData storage field.
 async function migrateUserData_0_2_0_510(
   userInfo: { uuid: string; password: string },
-  username: string
+  username: string,
+  store: SecureStore
 ) {
   let invariantViolation = false;
   try {
-    await getUserData();
+    await store.getUserData();
     invariantViolation = true;
   } catch {
     // expect err
@@ -95,7 +102,7 @@ async function migrateUserData_0_2_0_510(
     uuid: userInfo.uuid,
     jwt: "",
   };
-  await setUserData({
+  await store.setUserData({
     activeUser,
     users: [activeUser],
   });
@@ -110,10 +117,12 @@ async function migrateKeyringStore_0_2_0_510(
     uuid: string;
     password: string;
   },
-  username: string
+  username: string,
+  store: SecureStore,
+  unsafeGetKeyringCiphertext: () => Promise<SecretPayload>
 ) {
   const { uuid, password } = userInfo;
-  const ciphertextPayload = await getKeyringCiphertext();
+  const ciphertextPayload = await unsafeGetKeyringCiphertext();
   if (ciphertextPayload === undefined || ciphertextPayload === null) {
     logger.error("keyring store not found on disk");
     return;
@@ -145,5 +154,5 @@ async function migrateKeyringStore_0_2_0_510(
     lastUsedTs,
   };
 
-  await setKeyringStore(newJson, password);
+  await store.setKeyringStore(newJson, password);
 }

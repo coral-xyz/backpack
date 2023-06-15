@@ -1,5 +1,9 @@
 import { IS_MOBILE } from "@coral-xyz/common";
-import { KeyringStore } from "@coral-xyz/secure-background/legacyExport";
+import {
+  extensionDB,
+  KeyringStore,
+  secureStore,
+} from "@coral-xyz/secure-background/legacyExport";
 import { startSecureService } from "@coral-xyz/secure-background/service";
 import type { SECURE_EVENTS } from "@coral-xyz/secure-client";
 import {
@@ -13,7 +17,6 @@ import { EventEmitter } from "eventemitter3";
 
 import * as coreBackend from "./backend/core";
 import * as ethereumConnectionBackend from "./backend/ethereum-connection";
-import { LocalStorageDb } from "./backend/legacy-store/db";
 import { initPushNotificationHandlers } from "./backend/push-notifications";
 import * as solanaConnectionBackend from "./backend/solana-connection";
 import * as ethereumConnection from "./frontend/ethereum-connection";
@@ -32,7 +35,7 @@ export function start(cfg: Config): Background {
   // Backends.
   const solanaB = solanaConnectionBackend.start(events);
   const ethereumB = ethereumConnectionBackend.start(events);
-  const keyringStore = new KeyringStore(events);
+  const keyringStore = new KeyringStore(events, secureStore);
   const coreB = coreBackend.start(events, keyringStore, solanaB, ethereumB);
 
   // Frontend.
@@ -58,7 +61,7 @@ export function start(cfg: Config): Background {
           contentScriptReceiver,
           extensionReceiver
         ),
-        secureStorage: LocalStorageDb,
+        secureDB: extensionDB,
       },
       keyringStore
     );

@@ -18,20 +18,12 @@ import { generateMnemonic } from "bip39";
 
 import { hdFactoryForBlockchain, keyringForBlockchain } from "../../keyring";
 import type { BlockchainKeyring } from "../../keyring/blockchain";
-import { LocalStorageDb } from "../db";
-import { setIsCold } from "../isCold";
-import { DefaultKeyname, setKeyname } from "../keyname";
-import { getWalletDataForUser, setWalletDataForUser } from "../preferences";
-import type { User } from "../usernames";
-import { getUserData, setActiveUser, setUserData } from "../usernames";
-
-import type { KeyringStoreJson, UserKeyringJson } from "./store";
-import {
-  doesCiphertextExist,
-  getKeyringStore,
-  getKeyringStore_NO_MIGRATION,
-  setKeyringStore,
-} from "./store";
+import type {
+  KeyringStoreJson,
+  SecureStore,
+  User,
+  UserKeyringJson,
+} from "../SecureStore";
 
 export type KeyringStoreState = "locked" | "unlocked" | "needs-onboarding";
 
@@ -55,6 +47,7 @@ export class KeyringStore {
   };
 
   private events: EventEmitter;
+  private store: SecureStore;
   private users: Map<string, UserKeyring>;
   // Must be undefined when the keyring-store is locked or uninitialized.
   private activeUserUuid?: string;
@@ -78,10 +71,11 @@ export class KeyringStore {
   // Initialization.
   ///////////////////////////////////////////////////////////////////////////////
 
-  constructor(events: EventEmitter) {
+  constructor(events: EventEmitter, store: SecureStore) {
     this.users = new Map();
     this.lastUsedTs = 0;
     this.events = events;
+    this.store = store;
 
     this.autoLockCountdown = (() => {
       let autoLockCountdownTimer: ReturnType<typeof setTimeout>;
@@ -136,8 +130,9 @@ export class KeyringStore {
         start: () => {
           // Get the auto-lock interval from the
           // user's preferences and start the countdown timer.
-          getWalletDataForUser(this.activeUserUuid!).then(
-            ({ autoLockSettings, autoLockSecs }) => {
+          this.store
+            .getWalletDataForUser(this.activeUserUuid!)
+            .then(({ autoLockSettings, autoLockSecs }) => {
               switch (autoLockSettings?.option) {
                 case "never":
                   shouldLockImmediatelyWhenClosed = false;
@@ -158,8 +153,8 @@ export class KeyringStore {
                     DEFAULT_AUTO_LOCK_INTERVAL_SECS;
               }
               startAutoLockCountdownTimer();
-            }
-          );
+            })
+            .catch((e) => console.error(e));
         },
         restart: () => {
           // Reset the countdown timer and start it again.
@@ -225,14 +220,17 @@ export class KeyringStore {
     jwt: string
   ) {
     // Store unlocked keyring in memory.
-    this.users.set(uuid, await UserKeyring.init(username, keyringInit, uuid));
+    this.users.set(
+      uuid,
+      await UserKeyring.init(username, keyringInit, uuid, this.store)
+    );
     this.activeUserUuid = uuid;
 
     // Per user preferences.
-    await setWalletDataForUser(uuid, defaultPreferences());
+    await this.store.setWalletDataForUser(uuid, defaultPreferences());
 
     // Persist active user to disk.
-    await setActiveUser({
+    await this.store.setActiveUser({
       username,
       uuid,
       jwt,
@@ -257,7 +255,7 @@ export class KeyringStore {
     if (this.isUnlocked()) {
       return false;
     }
-    return await doesCiphertextExist();
+    return await this.store.doesCiphertextExist();
   }
 
   private isUnlocked(): boolean {
@@ -287,15 +285,15 @@ export class KeyringStore {
         throw new Error(`User not found: ${uuid}`);
       }
       this.users.delete(uuid);
-      await setWalletDataForUser(uuid, undefined);
+      await this.store.setWalletDataForUser(uuid, undefined);
 
       //
       // If the active user is being removed, then auto switch it.
       //
       if (this.activeUserUuid === uuid) {
-        const userData = await getUserData();
+        const userData = await this.store.getUserData();
         const users = userData.users.filter((user) => user.uuid !== uuid);
-        await setUserData({
+        await this.store.setUserData({
           activeUser: users[0],
           users,
         });
@@ -309,7 +307,7 @@ export class KeyringStore {
 
   public async tryUnlock(userInfo: { password: string; uuid: string }) {
     return this.withLock(async () => {
-      const json = await getKeyringStore(userInfo);
+      const json = await this.store.getKeyringStore(userInfo);
       await this.fromJson(json);
 
       // Must use this object, because the uuid may have been set during migration.
@@ -328,7 +326,7 @@ export class KeyringStore {
    */
   public async checkPassword(password: string) {
     try {
-      await getKeyringStore_NO_MIGRATION(password);
+      await this.store.getKeyringStore_NO_MIGRATION(password);
       return true;
     } catch (err) {
       return false;
@@ -368,7 +366,7 @@ export class KeyringStore {
       method: "DELETE",
     });
     // Then reset persistent disk storage.
-    return LocalStorageDb.reset();
+    return this.store.reset();
   }
 
   public async passwordUpdate(currentPassword: string, newPassword: string) {
@@ -385,10 +383,10 @@ export class KeyringStore {
   }
 
   public async activeUserUpdate(uuid: string): Promise<User> {
-    const userData = await getUserData();
+    const userData = await this.store.getUserData();
     const user = userData.users.filter((u) => u.uuid === uuid)[0];
     this.activeUserUuid = uuid;
-    await setActiveUser(user);
+    await this.store.setActiveUser(user);
     return user;
   }
 
@@ -401,8 +399,8 @@ export class KeyringStore {
     option?: AutolockSettingsOption
   ) {
     return await this.withUnlock(async () => {
-      const data = await getWalletDataForUser(this.activeUserUuid!);
-      await setWalletDataForUser(this.activeUserUuid!, {
+      const data = await this.store.getWalletDataForUser(this.activeUserUuid!);
+      await this.store.setWalletDataForUser(this.activeUserUuid!, {
         ...data,
         autoLockSettings: {
           seconds,
@@ -641,7 +639,7 @@ export class KeyringStore {
     if (!forceBecauseCalledFromInit && !this.isUnlocked()) {
       throw new Error("attempted persist of locked keyring");
     }
-    await setKeyringStore(this.toJson(), this.password!);
+    await this.store.setKeyringStore(this.toJson(), this.password!);
   }
 
   private updateLastUsed() {
@@ -667,7 +665,7 @@ export class KeyringStore {
     const { users } = json;
     this.users = new Map(
       Object.entries(users).map(([username, obj]) => {
-        return [username, UserKeyring.fromJson(obj)];
+        return [username, UserKeyring.fromJson(obj, this.store)];
       })
     );
   }
@@ -680,13 +678,15 @@ class UserKeyring {
   uuid: string;
   private mnemonic?: string;
   activeBlockchain: Blockchain;
+  private store: SecureStore;
 
   ///////////////////////////////////////////////////////////////////////////////
   // Initialization.
   ///////////////////////////////////////////////////////////////////////////////
 
-  constructor() {
+  constructor(store: SecureStore) {
     this.blockchains = new Map();
+    this.store = store;
   }
 
   public static async init(
@@ -695,9 +695,10 @@ class UserKeyring {
       | MnemonicKeyringInit
       | LedgerKeyringInit
       | PrivateKeyKeyringInit,
-    uuid: string
+    uuid: string,
+    store: SecureStore
   ): Promise<UserKeyring> {
-    const keyring = new UserKeyring();
+    const keyring = new UserKeyring(store);
     keyring.uuid = uuid;
     keyring.username = username;
 
@@ -822,7 +823,7 @@ class UserKeyring {
     blockchain: Blockchain,
     keyringInit: MnemonicKeyringInit | LedgerKeyringInit | PrivateKeyKeyringInit
   ): Promise<void> {
-    const keyring = keyringForBlockchain(blockchain as Blockchain);
+    const keyring = keyringForBlockchain(blockchain as Blockchain, this.store);
     if ("mnemonic" in keyringInit) {
       if (keyringInit.mnemonic === true) {
         keyringInit.mnemonic = this.mnemonic!;
@@ -932,11 +933,11 @@ class UserKeyring {
     const blockchainKeyring = this.blockchains.get(walletDescriptor.blockchain);
     const ledgerKeyring = blockchainKeyring!.ledgerKeyring!;
     await ledgerKeyring.add(walletDescriptor);
-    const name = DefaultKeyname.defaultLedger(
+    const name = this.store.defaultKeyname.defaultLedger(
       ledgerKeyring.publicKeys().length
     );
-    await setKeyname(walletDescriptor.publicKey, name);
-    await setIsCold(walletDescriptor.publicKey, true);
+    await this.store.setKeyname(walletDescriptor.publicKey, name);
+    await this.store.setIsCold(walletDescriptor.publicKey, true);
   }
 
   public async keyDelete(blockchain: Blockchain, pubkey: string) {
@@ -962,17 +963,21 @@ class UserKeyring {
     };
   }
 
-  public static fromJson(json: UserKeyringJson): UserKeyring {
+  public static fromJson(
+    json: UserKeyringJson,
+    store: SecureStore
+  ): UserKeyring {
     const { uuid, username, activeBlockchain, mnemonic, blockchains } = json;
 
-    const u = new UserKeyring();
+    const u = new UserKeyring(store);
     u.uuid = uuid;
     u.username = username;
     u.mnemonic = mnemonic;
     u.blockchains = new Map(
       Object.entries(blockchains).map(([blockchain, obj]) => {
         const blockchainKeyring = keyringForBlockchain(
-          blockchain as Blockchain
+          blockchain as Blockchain,
+          store
         );
         blockchainKeyring.fromJson(obj);
         return [blockchain, blockchainKeyring];

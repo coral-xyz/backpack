@@ -1,7 +1,7 @@
 import { BACKPACK_CONFIG_VERSION, getLogger } from "@coral-xyz/common";
 
-import { LocalStorageDb } from "../../db";
-import { getWalletData_DEPRECATED } from "../../preferences";
+import type { SecureDB, SecureStore } from "../../SecureStore";
+import type { SecretPayload } from "../crypto";
 
 import { migrate_0_2_0_510 } from "./migrate_0_2_0_510";
 import { migrate_0_2_0_2408 } from "./migrate_0_2_0_2408";
@@ -20,28 +20,43 @@ const logger = getLogger("background/migrations");
  *   - append a new `runMigration` function in the block of code below,
  *     with the migration build number dependent on the previous one.
  */
-export async function runMigrationsIfNeeded(userInfo: {
-  uuid: string;
-  password: string;
-}) {
+export async function runMigrationsIfNeeded(
+  userInfo: {
+    uuid: string;
+    password: string;
+  },
+  store: SecureStore,
+  db: SecureDB,
+  unsafeGetKeyringCiphertext: () => Promise<SecretPayload>
+) {
   try {
-    await _runMigrationsIfNeeded(userInfo);
+    await _runMigrationsIfNeeded(
+      userInfo,
+      store,
+      db,
+      unsafeGetKeyringCiphertext
+    );
   } catch (err) {
     // Note: the UI currently assumes this string format.
     throw new Error(`migration failed: ${err.toString()}`);
   }
 }
 
-async function _runMigrationsIfNeeded(userInfo: {
-  uuid: string;
-  password: string;
-}) {
+async function _runMigrationsIfNeeded(
+  userInfo: {
+    uuid: string;
+    password: string;
+  },
+  store: SecureStore,
+  db: SecureDB,
+  unsafeGetKeyringCiphertext: () => Promise<SecretPayload>
+) {
   const LATEST_MIGRATION_BUILD = 2408; // Update this everytime a migration is added.
-  const lastMigration = await getMigration();
+  const lastMigration = await getMigration(db);
 
   logger.debug("starting migrations with last migration", lastMigration);
   if (BACKPACK_CONFIG_VERSION === "development") {
-    const migrationLog = await getMigrationLog();
+    const migrationLog = await getMigrationLog(db);
     logger.debug("migration log:", migrationLog);
   }
 
@@ -76,51 +91,64 @@ async function _runMigrationsIfNeeded(userInfo: {
   //
   if (
     lastMigration === undefined &&
-    (await getWalletData_DEPRECATED()) !== undefined
+    (await store.getWalletData_DEPRECATED()) !== undefined
   ) {
-    await runMigration(510, async () => {
-      await migrate_0_2_0_510(userInfo);
+    await runMigration(510, db, async () => {
+      await migrate_0_2_0_510(userInfo, store, unsafeGetKeyringCiphertext);
     });
   }
-  if ((await getMigration())?.build === 510) {
-    await runMigration(2408, async () => {
-      await migrate_0_2_0_2408(userInfo);
+  if ((await getMigration(db))?.build === 510) {
+    await runMigration(2408, db, async () => {
+      await migrate_0_2_0_2408(userInfo, store);
     });
   }
 
   //
   // Set the last migration as finalized.
   //
-  const finalMigration = await getMigration();
+  const finalMigration = await getMigration(db);
   if (
     finalMigration === undefined ||
     finalMigration?.build !== LATEST_MIGRATION_BUILD ||
     finalMigration?.state !== "finalized"
   ) {
-    await setMigration({
-      build: LATEST_MIGRATION_BUILD,
-      state: "finalized",
-    });
+    await setMigration(
+      {
+        build: LATEST_MIGRATION_BUILD,
+        state: "finalized",
+      },
+      db
+    );
   }
 
   if (BACKPACK_CONFIG_VERSION === "development") {
-    const migrationLog = await getMigrationLog();
+    const migrationLog = await getMigrationLog(db);
     logger.debug("migration log:", migrationLog);
   }
   logger.debug("migration success");
 }
 
-async function runMigration(build: number, fn: () => Promise<void>) {
+async function runMigration(
+  build: number,
+  db: SecureDB,
+  fn: () => Promise<void>
+) {
   logger.debug(`running migration ${build}`);
-  await setMigration({
-    build,
-    state: "start",
-  });
+  await setMigration(
+    {
+      build,
+      state: "start",
+    },
+    db
+  );
   await fn();
-  await setMigration({
-    build,
-    state: "end",
-  });
+  await setMigration(
+    {
+      build,
+      state: "end",
+    },
+    db
+  );
   logger.debug(`migration ${build} was a success`);
 }
 
@@ -142,25 +170,27 @@ type Migration = {
   state: "start" | "end" | "finalized";
 };
 
-async function getMigration(): Promise<Migration | undefined> {
-  const data = await LocalStorageDb.get(STORE_MIGRATION_KEY);
+async function getMigration(db: SecureDB): Promise<Migration | undefined> {
+  const data = await db.get(STORE_MIGRATION_KEY);
   return data;
 }
 
-async function setMigration(m: Migration) {
-  await LocalStorageDb.set(STORE_MIGRATION_KEY, m);
-  await pushMigrationLog(m);
+async function setMigration(m: Migration, db: SecureDB) {
+  await db.set(STORE_MIGRATION_KEY, m);
+  await pushMigrationLog(m, db);
 }
 
-async function getMigrationLog(): Promise<Array<Migration> | undefined> {
-  return await LocalStorageDb.get(STORE_MIGRATION_LOG_KEY);
+async function getMigrationLog(
+  db: SecureDB
+): Promise<Array<Migration> | undefined> {
+  return await db.get(STORE_MIGRATION_LOG_KEY);
 }
 
-async function pushMigrationLog(m: Migration) {
-  let log = await getMigrationLog();
+async function pushMigrationLog(m: Migration, db: SecureDB) {
+  let log = await getMigrationLog(db);
   if (log === undefined) {
     log = [];
   }
   log.push(m);
-  await LocalStorageDb.set(STORE_MIGRATION_LOG_KEY, log);
+  await db.set(STORE_MIGRATION_LOG_KEY, log);
 }
