@@ -130,6 +130,20 @@ export function DiscordIcon({
   return <MaterialCommunityIcons name="discord" color={color} size={size} />;
 }
 
+export function GitHubIcon({
+  color = "#000",
+  size = 24,
+}: IconProps): JSX.Element {
+  return <MaterialCommunityIcons name="github" color={color} size={size} />;
+}
+
+export function OpenInBrowserIcon({
+  color = "#000",
+  size = 24,
+}: IconProps): JSX.Element {
+  return <MaterialIcons name="open-in-browser" color={color} size={size} />;
+}
+
 export function WidgetIcon({
   color = "#E33E3F",
   size = 24,

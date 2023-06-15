@@ -29,9 +29,9 @@ import {
   RoundedContainerGroup,
   SecondaryButton,
   StyledText,
+  TwoButtonFooter,
   UserAvatar,
   XStack,
-  TwoButtonFooter,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -43,8 +43,8 @@ import { useTheme } from "~hooks/useTheme";
 
 export { ActionCard } from "./ActionCard";
 export { MnemonicInputFields } from "./MnemonicInputFields";
-export { NavHeader } from "./NavHeader";
 export { NFTCard } from "./NFTCard";
+export { NavHeader } from "./NavHeader";
 export { PasswordInput } from "./PasswordInput";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
@@ -61,8 +61,8 @@ export {
   RoundedContainerGroup,
   SecondaryButton,
   StyledText,
-  UserAvatar,
   TwoButtonFooter,
+  UserAvatar,
 };
 
 // TODO(fix LinkButton inside tamagui)
@@ -465,7 +465,7 @@ export const ScreenEmptyList = ({
   );
 };
 
-export function WelcomeLogoHeader({ username }: { username?: string }) {
+export function WelcomeLogoHeader({ subtitle }: { subtitle?: string }) {
   const theme = useTheme();
   const [showDebug, setShowDebug] = useState(false);
   return (
@@ -486,18 +486,20 @@ export function WelcomeLogoHeader({ username }: { username?: string }) {
         >
           Backpack
         </Text>
-        <Margin top={8}>
-          <Text
-            style={{
-              lineHeight: 24,
-              fontSize: 16,
-              fontWeight: "500",
-              color: theme.custom.colors.secondary,
-            }}
-          >
-            gm {username}
-          </Text>
-        </Margin>
+        {subtitle ? (
+          <Margin top={8}>
+            <Text
+              style={{
+                lineHeight: 24,
+                fontSize: 16,
+                fontWeight: "500",
+                color: theme.custom.colors.secondary,
+              }}
+            >
+              {subtitle}
+            </Text>
+          </Margin>
+        ) : null}
       </View>
       {showDebug ? (
         <Text

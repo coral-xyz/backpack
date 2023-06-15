@@ -1,4 +1,4 @@
-import { useState, Suspense, useEffect, useCallback } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { Keyboard, StyleSheet, View } from "react-native";
 
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
@@ -15,13 +15,13 @@ import {
 import { ErrorMessage } from "~components/ErrorMessage";
 import { PasswordInput } from "~components/PasswordInput";
 import {
+  CurrentUserAvatar,
   Margin,
   PrimaryButton,
   Screen,
-  WelcomeLogoHeader,
   ScreenError,
   ScreenLoading,
-  CurrentUserAvatar,
+  WelcomeLogoHeader,
 } from "~components/index";
 
 import {
@@ -128,7 +128,7 @@ function Container(): JSX.Element {
               setIsModalVisible((last) => !last);
             }}
           />
-          <WelcomeLogoHeader username={user.username} />
+          <WelcomeLogoHeader subtitle={`gm ${user.username}`} />
           {isBiometricsEnabled ? null : (
             <View>
               <Margin bottom={8}>

@@ -540,10 +540,11 @@ export function _ListItemOneLine({
   icon: JSX.Element | null;
   title: string;
   rightText?: string;
-  iconAfter: JSX.Element;
+  iconAfter: JSX.Element | null;
   onPress?: () => void;
 }): JSX.Element {
   const theme = useTheme();
+  console.log({ title, icon });
   return (
     <Pressable
       disabled={!onPress}
@@ -552,7 +553,7 @@ export function _ListItemOneLine({
     >
       <XStack py={8} px={16} f={1} bg="$nav" jc="space-between" ai="center">
         <XStack ai="center">
-          <View style={{ width: 32, height: 32 }}>{icon}</View>
+          {icon ? <View style={{ width: 32, height: 32 }}>{icon}</View> : null}
           <StyledText ml={16} fontSize="$base" color="$fontColor">
             {title}
           </StyledText>
@@ -570,10 +571,12 @@ export function ListItemSettings({
   title,
   iconName,
   onPress,
+  iconAfter = <IconKeyboardArrowRight />,
 }: {
   title: string;
-  iconName: string;
   onPress?: () => void;
+  iconName?: string;
+  iconAfter?: JSX.Element | null;
 }): JSX.Element {
   const Icon = getIcon(iconName);
   return (
@@ -581,7 +584,7 @@ export function ListItemSettings({
       onPress={onPress}
       title={title}
       icon={Icon}
-      iconAfter={<IconKeyboardArrowRight />}
+      iconAfter={iconAfter}
     />
   );
 }
