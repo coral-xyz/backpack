@@ -27,10 +27,10 @@ import {
   SOLANA_RPC_METHOD_DISCONNECT,
   SOLANA_RPC_METHOD_OPEN_XNFT,
 } from "@coral-xyz/common";
-import {
-  FromContentScriptTransportSender,
-  SolanaClient,
-} from "@coral-xyz/secure-client";
+// import {
+//   FromContentScriptTransportSender,
+//   SolanaClient,
+// } from "@coral-xyz/secure-client";
 import type { Provider } from "@project-serum/anchor";
 import type {
   Commitment,
@@ -61,7 +61,7 @@ export class ProviderSolanaInjection
   // Channel to send extension specific RPC requests to the extension.
   //
   #backpackRequestManager: InjectedRequestManager;
-  #secureSolanaClient: SolanaClient;
+  // #secureSolanaClient: SolanaClient;
   #xnftRequestManager: ChainedRequestManager;
 
   #requestManager: InjectedRequestManager | ChainedRequestManager;
@@ -88,14 +88,14 @@ export class ProviderSolanaInjection
       CHANNEL_SOLANA_RPC_RESPONSE
     );
 
-    this.#secureSolanaClient = new SolanaClient(
-      new FromContentScriptTransportSender(),
-      {
-        context: "web",
-        name: document.title,
-        address: window.location.origin,
-      }
-    );
+    // this.#secureSolanaClient = new SolanaClient(
+    //   new FromContentScriptTransportSender(),
+    //   {
+    //     context: "web",
+    //     name: document.title,
+    //     address: window.location.origin,
+    //   }
+    // );
 
     this.#requestManager = this.#backpackRequestManager;
     this.#connectionRequestManager = new InjectedRequestManager(
@@ -394,20 +394,19 @@ export class ProviderSolanaInjection
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
-    const solanaResponse = await this.#secureSolanaClient.signMessage({
-      publicKey: (publicKey ?? this.#publicKey).toString(),
-      message: encode(msg),
-    });
-    if (!solanaResponse) {
-      throw new Error("signature failed");
-    }
-    return decode(solanaResponse);
-    // nocommit
-    // return await cmn.signMessage(
-    //   publicKey ?? this.#publicKey,
-    //   this.#requestManager,
-    //   msg
-    // );
+    // const solanaResponse = await this.#secureSolanaClient.signMessage({
+    //   publicKey: (publicKey ?? this.#publicKey).toString(),
+    //   message: encode(msg),
+    // });
+    // if (!solanaResponse) {
+    //   throw new Error("signature failed");
+    // }
+    // return decode(solanaResponse);
+    return await cmn.signMessage(
+      publicKey ?? this.#publicKey,
+      this.#requestManager,
+      msg
+    );
   }
 
   public get isBackpack() {
