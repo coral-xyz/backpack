@@ -77,7 +77,7 @@ function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
           <BalanceSummaryWidget />
           <Box marginVertical={12}>
             <TransferWidget
-              swapEnabled={false}
+              swapEnabled
               rampEnabled={false}
               onPressOption={(route: string, options: NavTokenOptions) => {
                 navigation.push(route, options);

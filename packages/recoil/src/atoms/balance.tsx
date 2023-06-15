@@ -103,12 +103,16 @@ export const blockchainTokenNativeData = selectorFamily<
  */
 export const blockchainTokenData = selectorFamily<
   TokenDataWithPrice | null,
-  { publicKey: string; tokenAddress: string; blockchain: Blockchain }
+  { publicKey: string; tokenAddress?: string; blockchain: Blockchain }
 >({
   key: "blockchainTokenData",
   get:
     ({ publicKey, tokenAddress, blockchain }) =>
     ({ get }) => {
+      if (!tokenAddress) {
+        return null;
+      }
+
       switch (blockchain) {
         case Blockchain.SOLANA:
           return get(solanaFungibleTokenBalance({ publicKey, tokenAddress }));

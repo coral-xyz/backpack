@@ -21,6 +21,7 @@ import type {
   TokenDataWithPrice,
 } from "@coral-xyz/recoil";
 import {
+  SwapState,
   useActiveWallet,
   useDarkMode,
   useJupiterOutputTokens,
@@ -37,7 +38,7 @@ import {
   Typography,
 } from "@mui/material";
 import type { BigNumberish } from "ethers";
-import { ethers,FixedNumber } from "ethers";
+import { ethers, FixedNumber } from "ethers";
 
 import { Button as XnftButton } from "../../plugin/Component";
 import { TextField } from "../common";
@@ -228,14 +229,6 @@ const useStyles = styles((theme) => ({
     textAlign: "right",
   },
 }));
-
-enum SwapState {
-  INITIAL,
-  CONFIRMATION,
-  CONFIRMING,
-  CONFIRMED,
-  ERROR,
-}
 
 export function Swap({ blockchain }: { blockchain: Blockchain }) {
   const isDark = useDarkMode();

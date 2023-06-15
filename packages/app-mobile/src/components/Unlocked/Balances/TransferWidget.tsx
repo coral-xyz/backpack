@@ -1,92 +1,83 @@
 import { Pressable, Text, View } from "react-native";
 
 import { Blockchain } from "@coral-xyz/common";
-// import // SwapProvider, // TODO(peter): turn back on when app store approved
-// enabledBlockchains as enabledBlockchainsAtom,
-// "@coral-xyz/recoil";
-import { Box } from "@coral-xyz/tamagui";
+import { XStack } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
-// import { useRecoilValueLoadable } from "recoil";
 
 import { Margin } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 
-import { Token, NavTokenAction, NavTokenOptions } from "~types/types";
-
-const getRouteFromAction = (
-  action: NavTokenAction
-): "DepositSingle" | "SendSelectTokenModal" | "SwapModal" => {
-  switch (action) {
-    case NavTokenAction.Receive:
-      return "DepositSingle";
-    case NavTokenAction.Send:
-      return "SendSelectTokenModal";
-    case NavTokenAction.Swap:
-      return "SwapModal";
-    default:
-      return "DepositSingle";
-  }
-};
+import { Token, NavTokenOptions } from "~types/types";
 
 export function TransferWidget({
   address,
   blockchain,
   onPressOption,
-  rampEnabled,
   swapEnabled,
   token,
 }: {
   address?: string;
   blockchain?: Blockchain;
-  onPressOption: (action: NavTokenAction, options: NavTokenOptions) => void;
+  onPressOption: (route: string, options: NavTokenOptions) => void;
   rampEnabled: boolean;
   swapEnabled: boolean;
   token?: Token;
 }): JSX.Element {
-  const onPress = (action: NavTokenAction, options: NavTokenOptions) => {
-    const route = getRouteFromAction(action);
-    onPressOption(route, options);
-  };
-
   return (
-    <View
-      style={{
-        alignSelf: "center",
-        alignItems: "center",
-        flexDirection: "row",
-        justifyContent: "center",
-      }}
-    >
-      {rampEnabled ? (
-        <RampButton blockchain={blockchain} address={address} />
-      ) : null}
-      <Box mx={8}>
-        <ReceiveButton onPress={onPress} blockchain={blockchain} />
-      </Box>
-      <SendButton onPress={onPress} blockchain={blockchain} token={token} />
+    <XStack space={10} ai="center" alignSelf="center" jc="center">
+      <TransferButton
+        label="Receive"
+        icon="arrow-downward"
+        onPress={() => onPressOption("DepositSingle", { blockchain })}
+      />
+      <TransferButton
+        label="Send"
+        icon="arrow-upward"
+        onPress={() =>
+          onPressOption("SendSelectTokenModal", {
+            title: "TODO",
+            blockchain,
+            token: token
+              ? { ...token, nativeBalance: token.nativeBalance.toString() }
+              : null,
+          })
+        }
+      />
       {swapEnabled ? (
-        <SwapButton
-        // onPress={onPress}
-        // blockchain={blockchain}
-        // address={address}
+        <TransferButton
+          label="Swap"
+          icon="compare-arrows"
+          onPress={() =>
+            onPressOption("SwapModal", {
+              blockchain,
+              title: token?.name,
+              address,
+            })
+          }
         />
       ) : null}
-    </View>
+    </XStack>
   );
 }
 
 function TransferButton({
+  disabled,
   icon,
   label,
   onPress,
 }: {
+  disabled?: boolean;
   icon: string;
   label: string;
   onPress: () => void;
 }): JSX.Element {
   const theme = useTheme();
   return (
-    <Pressable onPress={onPress} style={{ alignItems: "center" }}>
+    <Pressable
+      disabled={disabled}
+      onPress={onPress}
+      style={{ alignItems: "center", opacity: disabled ? 0.5 : 1 }}
+    >
       <Margin bottom={8}>
         <View
           style={{
@@ -120,79 +111,4 @@ function TransferButton({
       </Text>
     </Pressable>
   );
-}
-
-// NOTE(peter) turned off for app store launch
-function SwapButton() {
-  // function SwapButton({
-  // blockchain,
-  // address,
-  // onPress,
-  // }: {
-  // blockchain?: Blockchain;
-  // address?: string;
-  // onPress: (route: NavTokenAction, options: NavTokenOptions) => void;
-  // }) {
-  return null;
-  // return (
-  //   <SwapProvider tokenAddress={address}>
-  //     <TransferButton
-  //       label="Swap"
-  //       icon="compare-arrows"
-  //       onPress={() => onPress(NavTokenAction.Swap, { blockchain })}
-  //     />
-  //   </SwapProvider>
-  // );
-}
-
-function SendButton({
-  blockchain,
-  onPress,
-  token,
-}: {
-  blockchain?: Blockchain;
-  onPress: (route: NavTokenAction, options: NavTokenOptions) => void;
-  token?: Token;
-}): JSX.Element {
-  return (
-    <TransferButton
-      label="Send"
-      icon="arrow-upward"
-      onPress={() =>
-        onPress(NavTokenAction.Send, {
-          blockchain,
-          token: token
-            ? { ...token, nativeBalance: token.nativeBalance.toString() }
-            : null,
-          title: "TODO",
-        })
-      }
-    />
-  );
-}
-
-function ReceiveButton({
-  blockchain,
-  onPress,
-}: {
-  blockchain?: Blockchain;
-  onPress: (route: NavTokenAction, options: NavTokenOptions) => void;
-}): JSX.Element {
-  return (
-    <TransferButton
-      label="Receive"
-      icon="arrow-downward"
-      onPress={() => onPress(NavTokenAction.Receive, { blockchain })}
-    />
-  );
-}
-
-function RampButton({
-  blockchain,
-  address,
-}: {
-  blockchain?: Blockchain;
-  address?: string;
-}): null {
-  return null;
 }
