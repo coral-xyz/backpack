@@ -325,12 +325,7 @@ export class KeyringStore {
    * Check if a password is valid by attempting to decrypt the stored keyring.
    */
   public async checkPassword(password: string) {
-    try {
-      await this.store.getKeyringStore_NO_MIGRATION(password);
-      return true;
-    } catch (err) {
-      return false;
-    }
+    return this.store.checkPassword(password);
   }
 
   public lock() {

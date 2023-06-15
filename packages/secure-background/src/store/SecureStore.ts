@@ -50,6 +50,19 @@ export type User = {
   jwt: string;
 };
 
+export type MigrationPrivateStoreInterface = {
+  store: SecureStore;
+  db: SecureDB;
+  getKeyringCiphertext: () => Promise<SecretPayload>;
+  getKeyringStore_NO_MIGRATION: (password: string) => Promise<KeyringStoreJson>;
+  getWalletData_DEPRECATED: () => Promise<
+    DeprecatedWalletDataDoNotUse | undefined
+  >;
+  setWalletData_DEPRECATED: (
+    data: undefined | DeprecatedWalletDataDoNotUse
+  ) => Promise<void>;
+};
+
 const KEY_IS_COLD_STORE = "is-cold-store";
 const KEY_KEYNAME_STORE = "keyname-store";
 const STORE_KEY_USER_DATA = "user-data";
@@ -67,6 +80,17 @@ export class SecureStore {
     defaultLedger(index: number): string {
       return `Ledger ${index}`;
     },
+  };
+
+  // this privatStore is passed to migrations
+  // to provide access to deprecated and select private methods
+  private MigrationPrivateStoreInterface: MigrationPrivateStoreInterface = {
+    store: this,
+    db: this.db,
+    getKeyringCiphertext: this.getKeyringCiphertext.bind(this),
+    getKeyringStore_NO_MIGRATION: this.getKeyringStore_NO_MIGRATION.bind(this),
+    getWalletData_DEPRECATED: this.getWalletData_DEPRECATED.bind(this),
+    setWalletData_DEPRECATED: this.setWalletData_DEPRECATED.bind(this),
   };
 
   constructor(private db: SecureDB) {}
@@ -179,14 +203,14 @@ export class SecureStore {
     return `${STORE_KEY_WALLET_DATA}_${uuid}`;
   }
 
-  async getWalletData_DEPRECATED(): Promise<
+  private async getWalletData_DEPRECATED(): Promise<
     DeprecatedWalletDataDoNotUse | undefined
   > {
     const data = await this.db.get(STORE_KEY_WALLET_DATA);
     return data;
   }
 
-  async setWalletData_DEPRECATED(
+  private async setWalletData_DEPRECATED(
     data: undefined | DeprecatedWalletDataDoNotUse
   ) {
     await this.db.set(STORE_KEY_WALLET_DATA, data);
@@ -202,17 +226,12 @@ export class SecureStore {
     uuid: string;
     password: string;
   }): Promise<KeyringStoreJson> {
-    await runMigrationsIfNeeded(
-      userInfo,
-      this,
-      this.db,
-      this.getKeyringCiphertext.bind(this)
-    );
+    await runMigrationsIfNeeded(userInfo, this.MigrationPrivateStoreInterface);
     const json = await this.getKeyringStore_NO_MIGRATION(userInfo.password);
     return json;
   }
 
-  async getKeyringStore_NO_MIGRATION(password: string) {
+  private async getKeyringStore_NO_MIGRATION(password: string) {
     const ciphertextPayload = await this.getKeyringCiphertext();
     if (ciphertextPayload === undefined || ciphertextPayload === null) {
       throw new Error("keyring store not found on disk");
@@ -220,6 +239,15 @@ export class SecureStore {
     const plaintext = await decrypt(ciphertextPayload, password);
     const json = JSON.parse(plaintext);
     return json;
+  }
+
+  async checkPassword(password: string) {
+    try {
+      await this.getKeyringStore_NO_MIGRATION(password);
+      return true;
+    } catch (err) {
+      return false;
+    }
   }
 
   async doesCiphertextExist(): Promise<boolean> {

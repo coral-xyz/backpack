@@ -12,21 +12,21 @@ import {
   nextIndicesFromPaths,
 } from "@coral-xyz/common";
 
-import type { SecureStore } from "../../SecureStore";
+import type { MigrationPrivateStoreInterface } from "../../SecureStore";
 
 export async function migrate_0_2_0_2408(
   userInfo: {
     uuid: string;
     password: string;
   },
-  store: SecureStore
+  storeInterface: MigrationPrivateStoreInterface
 ) {
   const { password } = userInfo;
 
   //
   // Get the current keyring store.
   //
-  const json = await store.getKeyringStore_NO_MIGRATION(password);
+  const json = await storeInterface.getKeyringStore_NO_MIGRATION(password);
 
   //
   // Update it to the new format.
@@ -39,8 +39,7 @@ export async function migrate_0_2_0_2408(
       // Migrate hd keyring
       // Remaps old style DerivationPath and accountIndices to a flat array
       // of derivation paths
-      // @ts-ignore
-      let hdKeyring = blockchainKeyring.hdKeyring;
+      let hdKeyring = blockchainKeyring.hdKeyring as any;
       if (hdKeyring && hdKeyring.accountIndices !== undefined) {
         const derivationPaths = hdKeyring.accountIndices.map((i: number) => {
           if (hdKeyring.derivationPath === "bip44") {
@@ -64,7 +63,7 @@ export async function migrate_0_2_0_2408(
 
       // Migrate ledger keyring
       // @ts-ignore
-      let ledgerKeyring = blockchainKeyring.ledgerKeyring;
+      let ledgerKeyring = blockchainKeyring.ledgerKeyring as any;
       if (ledgerKeyring.derivationPaths !== undefined) {
         const walletDescriptors = ledgerKeyring.derivationPaths.map(
           (d: { path: string; account: number; publicKey: string }) => {
@@ -98,5 +97,5 @@ export async function migrate_0_2_0_2408(
   //
   // Save the new format.
   //
-  await store.setKeyringStore(json, password);
+  await storeInterface.store.setKeyringStore(json, password);
 }
