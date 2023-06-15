@@ -2,7 +2,7 @@ import type { ChannelAppUiClient } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
 
 import { useEffect, useState } from "react";
-import { Text, View, Pressable } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 import {
   EthereumConnectionUrl,
@@ -35,7 +35,7 @@ import {
 } from "~components/UserAccountsMenu";
 import { Screen } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
-import { HeaderButton, HeaderAvatarButton } from "~navigation/components";
+import { HeaderAvatarButton, HeaderButton } from "~navigation/components";
 import { AccountSettingsScreen } from "~screens/AccountSettingsScreen";
 import { ImportPrivateKeyScreen } from "~screens/ImportPrivateKeyScreen";
 import {
@@ -65,6 +65,8 @@ import {
   ShowRecoveryPhraseWarningScreen,
 } from "~screens/Unlocked/ShowRecoveryPhraseScreen";
 import { YourAccountScreen } from "~screens/Unlocked/YourAccountScreen";
+
+import { AboutBackpackScreen } from "~src/screens/Unlocked/Settings/AboutBackpackScreen";
 
 const { hexlify } = ethers.utils;
 
@@ -96,6 +98,7 @@ type AccountSettingsParamList = {
   "show-private-key-warning": undefined;
   "show-private-key": undefined;
   "edit-wallets": undefined;
+  "about-backpack": undefined;
   "edit-wallets-rename": undefined;
   "edit-wallets-wallet-detail": { name: string; publicKey: string };
   "add-wallet": undefined;
@@ -280,6 +283,11 @@ export function AccountSettingsNavigator(): JSX.Element {
           }}
         />
         <Stack.Screen
+          name="about-backpack"
+          component={AboutBackpackScreen}
+          options={{ title: "About" }}
+        />
+        <Stack.Screen
           options={{ title: "Add / Connect Wallet" }}
           name="add-wallet"
           component={AddConnectWalletScreen}
@@ -309,20 +317,6 @@ function PreferencesSolanaCustomRpcUrl({ navigation }) {
   const background = useBackgroundClient();
   const [rpcUrl, setRpcUrl] = useState("");
   const [rpcUrlError, setRpcUrlError] = useState(false);
-
-  const changeNetwork = () => {
-    try {
-      background
-        .request({
-          method: UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
-          params: [rpcUrl],
-        })
-        .then(close)
-        .catch(console.error);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   useEffect(() => {
     if (!rpcUrl) {
@@ -500,7 +494,7 @@ export function PreferencesSolanaExplorer({ navigation }) {
   return <SettingsList menuItems={menuItems} />;
 }
 
-function PreferencesSolana({ route, navigation }) {
+function PreferencesSolana({ navigation }) {
   const menuItems = {
     "RPC Connection": {
       onPress: () => navigation.push("PreferencesSolanaConnection"),
@@ -560,10 +554,6 @@ function PreferencesEthereumCustomRpcUrl({ navigation }) {
       setRpcUrlError(true);
     }
   }, [rpcUrl]);
-
-  async function onSubmit() {
-    await changeNetwork(background, rpcUrl, chainId);
-  }
 
   // <div style={{ paddingTop: 16, height: "100%" }}>
   //   <form
@@ -664,7 +654,7 @@ function PreferencesEthereumConnection({ navigation }) {
   return <SettingsList menuItems={menuItems} />;
 }
 
-function PreferencesEthereum({ route, navigation }) {
+function PreferencesEthereum({ navigation }) {
   return (
     <Screen>
       <SettingsRow

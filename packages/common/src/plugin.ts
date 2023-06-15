@@ -4,7 +4,6 @@ import base32Encode from "base32-encode";
 import base58 from "bs58";
 
 import { openPopupWindow, resizeExtensionWindow } from "./browser/extension";
-import type { BackgroundClient } from "./channel/app-ui";
 import { PluginServer } from "./channel/plugin";
 import {
   CHANNEL_PLUGIN_NOTIFICATION,
@@ -64,18 +63,8 @@ export class Plugin {
   //
   // Host APIs.
   //
-  private _navPushFn?: (args: any) => void;
   private _requestTxApprovalFn?: (request: any) => void;
-  private _backgroundClient?: BackgroundClient;
-  private _connectionBackgroundClient?: BackgroundClient;
   private _openPlugin?: (xnftAddress: string) => void;
-
-  //
-  // The last time a click event was handled for the plugin. This is used as an
-  // approximation to ensure the trusted transaction signing view can only be
-  // displayed in the context of a click handler.
-  //
-  private _lastClickTsMs?: number;
 
   readonly iframeRootUrl: string;
   readonly iconUrl: string;
@@ -97,7 +86,6 @@ export class Plugin {
     //
     // Provide connection for the plugin.
     //
-
     this._activeWallets = activeWallets;
     this._connectionUrls = connectionUrls;
     this.title = title;
@@ -150,7 +138,7 @@ export class Plugin {
   }
 
   public get needsLoad() {
-    return this._navPushFn === undefined;
+    return this._openPlugin === undefined;
   }
 
   //
@@ -170,12 +158,6 @@ export class Plugin {
     this.iframeRoot.style.width = "100%";
     this.iframeRoot.style.height = "100vh";
     this.iframeRoot.style.border = "none";
-    this.iframeRoot.setAttribute(
-      "allow",
-      preference?.mediaPermissions
-        ? "camera;microphone;display-capture;fullscreen;clipboard-write *"
-        : "fullscreen;clipboard-write *"
-    );
     this.iframeRoot.setAttribute("fetchpriority", "low");
     this.iframeRoot.src = url.toString();
     this.iframeRoot.sandbox.add("allow-same-origin");
@@ -245,18 +227,14 @@ export class Plugin {
   // Apis set from the outside host.
   //
   public setHostApi({
-    push,
-    pop,
     request,
-    backgroundClient,
-    connectionBackgroundClient,
     openPlugin,
-  }: any) {
-    this._navPushFn = push;
+  }: {
+    request: any;
+    openPlugin: any;
+  }) {
     this._openPlugin = openPlugin;
     this._requestTxApprovalFn = request;
-    this._backgroundClient = backgroundClient;
-    this._connectionBackgroundClient = connectionBackgroundClient;
   }
 
   //////////////////////////////////////////////////////////////////////////////

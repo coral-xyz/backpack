@@ -1,9 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
-  externalResourceUri,
   fetchXnft,
-  TAB_SET,
   TAB_XNFT,
   UI_RPC_METHOD_NAVIGATION_POP,
   UI_RPC_METHOD_NAVIGATION_PUSH,
@@ -123,10 +120,7 @@ export function useFreshPlugin(address?: string): {
   //
   // Host APIs to hook into the plugin.
   //
-  const segue = useNavigationSegue();
   const setTransactionRequest = useSetRecoilState(atoms.transactionRequest);
-  const backgroundClient = useBackgroundClient();
-  const connectionBackgroundClient = useConnectionBackgroundClient();
   const openPlugin = useOpenPlugin();
 
   useEffect(() => {
@@ -147,11 +141,7 @@ export function useFreshPlugin(address?: string): {
           connectionUrls
         );
         plugin.setHostApi({
-          push: segue.push,
-          pop: segue.pop,
           request: setTransactionRequest,
-          backgroundClient,
-          connectionBackgroundClient,
           openPlugin,
         });
         PLUGIN_CACHE.set(address, plugin);

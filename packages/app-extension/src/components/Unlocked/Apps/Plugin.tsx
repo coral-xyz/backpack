@@ -5,11 +5,8 @@ import { Loading, PowerIcon } from "@coral-xyz/react-common";
 import {
   transactionRequest,
   useActiveSolanaWallet,
-  useBackgroundClient,
   useClosePlugin,
-  useConnectionBackgroundClient,
   useFreshPlugin,
-  useNavigationSegue,
   useOpenPlugin,
   usePlugins,
 } from "@coral-xyz/recoil";
@@ -49,10 +46,7 @@ function LoadPlugin({
 }) {
   const { publicKey } = useActiveSolanaWallet(); // TODO: aggregate wallet considerations.
   const plugins = usePlugins(publicKey);
-  const segue = useNavigationSegue();
   const setTransactionRequest = useSetRecoilState(transactionRequest);
-  const backgroundClient = useBackgroundClient();
-  const connectionBackgroundClient = useConnectionBackgroundClient();
   const openPlugin = useOpenPlugin();
 
   if (!xnftAddress) {
@@ -70,11 +64,7 @@ function LoadPlugin({
     );
   }
   plugin.setHostApi({
-    push: segue.push,
-    pop: segue.pop,
     request: setTransactionRequest,
-    backgroundClient,
-    connectionBackgroundClient,
     openPlugin,
   });
 
