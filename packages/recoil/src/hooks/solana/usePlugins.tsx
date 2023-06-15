@@ -148,10 +148,7 @@ export function useFreshPlugin(address?: string): {
         );
         plugin.setHostApi({
           push: segue.push,
-          pop: segue.pop,
           request: setTransactionRequest,
-          backgroundClient,
-          connectionBackgroundClient,
           openPlugin,
         });
         PLUGIN_CACHE.set(address, plugin);
