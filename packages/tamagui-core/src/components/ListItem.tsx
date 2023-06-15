@@ -544,7 +544,6 @@ export function _ListItemOneLine({
   onPress?: () => void;
 }): JSX.Element {
   const theme = useTheme();
-  console.log({ title, icon });
   return (
     <Pressable
       disabled={!onPress}
