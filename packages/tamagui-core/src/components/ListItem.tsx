@@ -575,7 +575,7 @@ export function ListItemSettings({
 }: {
   title: string;
   onPress?: () => void;
-  iconName?: string;
+  iconName: string;
   iconAfter?: JSX.Element | null;
 }): JSX.Element {
   const Icon = getIcon(iconName);

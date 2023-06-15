@@ -1,83 +1,103 @@
-import { useState } from "react";
-import { Pressable, Alert } from "react-native";
+import { useCallback, useMemo, useState } from "react";
+import { Alert, Pressable } from "react-native";
 
 import { UI_RPC_METHOD_KEYRING_STORE_LOCK } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import {
-  YGroup,
   Separator,
   StyledText,
-  ListItemSettings,
+  YGroup,
+  _ListItemOneLine,
+  getIcon,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import { BetterBottomSheet } from "~components/BottomSheetModal";
 import { useTheme } from "~hooks/useTheme";
 
-function ListItemSettingsLockWallet(): JSX.Element {
-  const background = useBackgroundClient();
-  return (
-    <ListItemSettings
-      title="Lock"
-      iconName="lock"
-      onPress={async () => {
-        try {
-          await background.request({
-            method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-            params: [],
-          });
-        } catch (error: any) {
-          Alert.alert("Error locking wallet", error.message);
-        }
-      }}
-    />
-  );
-}
+import { ArrowRightIcon } from "./Icon";
 
 export function SettingsList({ navigation }): JSX.Element {
-  const handlePress = (route: string) => {
-    navigation.push(route);
-  };
+  const background = useBackgroundClient();
+
+  const lockWallet = useCallback(async () => {
+    try {
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+        params: [],
+      });
+    } catch (error: any) {
+      Alert.alert("Error locking wallet", error.message);
+    }
+  }, [background]);
+
+  const groupedMenuItems = useMemo(
+    () => [
+      [
+        {
+          label: "Wallets",
+          iconName: "account-balance-wallet",
+          route: "edit-wallets",
+          icon: getIcon("account-balance-wallet"),
+        },
+      ],
+      [
+        {
+          label: "Your Account",
+          iconName: "account-circle",
+          route: "YourAccount",
+          icon: getIcon("account-circle"),
+        },
+        {
+          label: "Preferences",
+          iconName: "settings",
+          route: "Preferences",
+          icon: getIcon("settings"),
+        },
+        {
+          label: "Lock",
+          iconName: "lock",
+          onPress: lockWallet,
+          hideArrow: true,
+          icon: getIcon("lock"),
+        },
+      ],
+      [{ label: "About Backpack", route: "about-backpack" }],
+    ],
+    [lockWallet]
+  );
 
   return (
-    <YGroup
-      overflow="hidden"
-      borderWidth={2}
-      borderColor="$borderFull"
-      borderRadius="$container"
-      separator={<Separator />}
-    >
-      <YGroup.Item>
-        <ListItemSettings
-          title="Wallets"
-          iconName="account-balance-wallet"
-          onPress={() => {
-            handlePress("edit-wallets");
-          }}
-        />
-      </YGroup.Item>
-      <YGroup.Item>
-        <ListItemSettings
-          title="Account"
-          iconName="account-circle"
-          onPress={() => {
-            handlePress("YourAccount");
-          }}
-        />
-      </YGroup.Item>
-      <YGroup.Item>
-        <ListItemSettings
-          title="Preferences"
-          iconName="settings"
-          onPress={() => {
-            handlePress("Preferences");
-          }}
-        />
-      </YGroup.Item>
-      <YGroup.Item>
-        <ListItemSettingsLockWallet />
-      </YGroup.Item>
-    </YGroup>
+    <>
+      {groupedMenuItems.map((group, index) => (
+        <YGroup
+          overflow="hidden"
+          borderWidth={2}
+          borderColor="$borderFull"
+          borderRadius="$container"
+          marginBottom={16}
+          key={JSON.stringify(index)}
+          separator={<Separator />}
+        >
+          {group.map((item) => (
+            <YGroup.Item key={item.label}>
+              <_ListItemOneLine
+                title={item.label}
+                icon={item.icon}
+                iconAfter={item.hideArrow ? null : <ArrowRightIcon />}
+                onPress={() => {
+                  if (item.onPress) {
+                    item.onPress();
+                  } else {
+                    navigation.push(item.route);
+                  }
+                }}
+              />
+            </YGroup.Item>
+          ))}
+        </YGroup>
+      ))}
+    </>
   );
 }
 
