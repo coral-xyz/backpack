@@ -3,7 +3,6 @@ import React from "react";
 import * as Linking from "expo-linking";
 
 import {
-  BACKPACK_FEATURE_XNFT,
   DISCORD_INVITE_LINK,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
 } from "@coral-xyz/common";
@@ -24,9 +23,9 @@ import {
 type SettingsMenuItem = {
   label: string;
   onPress: () => void;
-  icon?: JSX.Element | undefined;
+  icon?: JSX.Element;
   disabled?: boolean;
-  detailIcon: JSX.Element | null;
+  detailIcon?: JSX.Element | null;
 };
 
 export function SettingsList() {
@@ -52,7 +51,7 @@ export function SettingsList() {
     },
   ];
 
-  const settingsMenu = [
+  const settingsMenu: SettingsMenuItem[] = [
     {
       label: "Your Account",
       onPress: () => navigation.push("YourAccount"),
@@ -89,7 +88,6 @@ export function SettingsList() {
     label: "Lock Wallet",
     onPress: () => lockWallet(),
     icon: <IconLeft name="lock" />,
-    detailIcon: null,
   });
 
   const discordList = [
