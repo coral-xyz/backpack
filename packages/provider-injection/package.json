@@ -4,7 +4,8 @@
   "source": "src/index.ts",
   "scripts": {
     "start": "yarn build",
-    "build": "node build.js"
+    "build": "node build.js",
+    "build:publish": "cd ../secure-client; yarn build; cd ../provider-core; yarn build; cd ../provider-injection; yarn build; cp ./dist/browser/index.js ../app-extension/build/injected.js"
   },
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "dependencies": {
@@ -13,6 +14,7 @@
     "@coral-xyz/wallet-standard": "*",
     "@project-serum/anchor": "^0.23.0",
     "@solana/web3.js": "^1.63.1",
+    "bip32": "^4.0.0",
     "bs58": "^5.0.0",
     "eth-rpc-errors": "^4.0.3",
     "eventemitter3": "^4.0.7"

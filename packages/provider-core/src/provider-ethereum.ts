@@ -9,6 +9,7 @@ import {
   ETHEREUM_RPC_METHOD_CONNECT,
   ETHEREUM_RPC_METHOD_SWITCH_CHAIN,
   getLogger,
+  InjectedRequestManager,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTED,
@@ -20,7 +21,6 @@ import { ethers } from "ethers";
 import EventEmitter from "eventemitter3";
 
 import * as cmn from "./common/ethereum";
-import { RequestManager } from "./request-manager";
 import { isValidEventOrigin } from ".";
 
 const logger = getLogger("provider-ethereum-injection");
@@ -99,12 +99,12 @@ export class ProviderEthereumInjection extends EventEmitter {
   /**
    * Channel to send extension specific RPC requests to the extension.
    */
-  requestManager: RequestManager;
+  requestManager: InjectedRequestManager;
 
   /**
    *  Channel to send Solana connection API requests to the extension.
    */
-  connectionRequestManager: RequestManager;
+  connectionRequestManager: InjectedRequestManager;
 
   /**
    * The chain ID of the currently connected Ethereum chain.
@@ -144,12 +144,12 @@ export class ProviderEthereumInjection extends EventEmitter {
   constructor() {
     super();
 
-    this.requestManager = new RequestManager(
+    this.requestManager = new InjectedRequestManager(
       CHANNEL_ETHEREUM_RPC_REQUEST,
       CHANNEL_ETHEREUM_RPC_RESPONSE
     );
 
-    this.connectionRequestManager = new RequestManager(
+    this.connectionRequestManager = new InjectedRequestManager(
       CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST,
       CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE
     );

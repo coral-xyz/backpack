@@ -12,6 +12,7 @@ import {
   CHANNEL_SOLANA_RPC_RESPONSE,
   DEFAULT_SOLANA_CLUSTER,
   getLogger,
+  InjectedRequestManager,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_CONNECTED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
@@ -26,6 +27,10 @@ import {
   SOLANA_RPC_METHOD_DISCONNECT,
   SOLANA_RPC_METHOD_OPEN_XNFT,
 } from "@coral-xyz/common";
+// import {
+//   FromContentScriptTransportSender,
+//   SolanaClient,
+// } from "@coral-xyz/secure-client";
 import type { Provider } from "@project-serum/anchor";
 import type {
   Commitment,
@@ -38,10 +43,10 @@ import type {
   VersionedTransaction,
 } from "@solana/web3.js";
 import { Connection, PublicKey } from "@solana/web3.js";
+import { decode, encode } from "bs58";
 
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 import * as cmn from "./common/solana";
-import { RequestManager } from "./request-manager";
 import { ChainedRequestManager, isValidEventOrigin } from ".";
 
 const logger = getLogger("provider-solana-injection");
@@ -55,14 +60,15 @@ export class ProviderSolanaInjection
   //
   // Channel to send extension specific RPC requests to the extension.
   //
-  #backpackRequestManager: RequestManager;
+  #backpackRequestManager: InjectedRequestManager;
+  // #secureSolanaClient: SolanaClient;
   #xnftRequestManager: ChainedRequestManager;
 
-  #requestManager: RequestManager | ChainedRequestManager;
+  #requestManager: InjectedRequestManager | ChainedRequestManager;
   //
   // Channel to send Solana Connection API requests to the extension.
   //
-  #connectionRequestManager: RequestManager;
+  #connectionRequestManager: InjectedRequestManager;
 
   #isBackpack: boolean;
   #isConnected: boolean;
@@ -77,12 +83,22 @@ export class ProviderSolanaInjection
       Object.freeze(this);
     }
     this.#options = undefined;
-    this.#backpackRequestManager = new RequestManager(
+    this.#backpackRequestManager = new InjectedRequestManager(
       CHANNEL_SOLANA_RPC_REQUEST,
       CHANNEL_SOLANA_RPC_RESPONSE
     );
+
+    // this.#secureSolanaClient = new SolanaClient(
+    //   new FromContentScriptTransportSender(),
+    //   {
+    //     context: "web",
+    //     name: document.title,
+    //     address: window.location.origin,
+    //   }
+    // );
+
     this.#requestManager = this.#backpackRequestManager;
-    this.#connectionRequestManager = new RequestManager(
+    this.#connectionRequestManager = new InjectedRequestManager(
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
       CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
     );
@@ -378,6 +394,14 @@ export class ProviderSolanaInjection
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
+    // const solanaResponse = await this.#secureSolanaClient.signMessage({
+    //   publicKey: (publicKey ?? this.#publicKey).toString(),
+    //   message: encode(msg),
+    // });
+    // if (!solanaResponse) {
+    //   throw new Error("signature failed");
+    // }
+    // return decode(solanaResponse);
     return await cmn.signMessage(
       publicKey ?? this.#publicKey,
       this.#requestManager,

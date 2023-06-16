@@ -5,6 +5,7 @@ import {
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
   getLogger,
+  InjectedRequestManager,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED,
   PLUGIN_NOTIFICATION_MOUNT,
@@ -27,7 +28,6 @@ import type {
 
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 import type { ChainedRequestManager } from "./chained-request-manager";
-import { RequestManager } from "./request-manager";
 import { isValidEventOrigin } from ".";
 
 const logger = getLogger("provider-xnft-injection");
@@ -37,7 +37,7 @@ const logger = getLogger("provider-xnft-injection");
 //
 export class ProviderRootXnftInjection extends PrivateEventEmitter {
   #requestManager: ChainedRequestManager;
-  #connectionRequestManager: RequestManager;
+  #connectionRequestManager: InjectedRequestManager;
   #publicKeys: { [blockchain: string]: string };
   #connectionUrls: { [blockchain: string]: string | null };
 
@@ -59,7 +59,7 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
       Object.freeze(this);
     }
     this.#requestManager = requestManager;
-    this.#connectionRequestManager = new RequestManager(
+    this.#connectionRequestManager = new InjectedRequestManager(
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
       CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
     );

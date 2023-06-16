@@ -1,5 +1,18 @@
 import { IS_MOBILE } from "@coral-xyz/common";
-import { KeyringStore, startSecureService } from "@coral-xyz/secure-background";
+import {
+  extensionDB,
+  KeyringStore,
+  secureStore,
+} from "@coral-xyz/secure-background/legacyExport";
+import { startSecureService } from "@coral-xyz/secure-background/service";
+import type { SECURE_EVENTS } from "@coral-xyz/secure-client";
+import {
+  combineTransportReceivers,
+  FromContentScriptTransportReceiver,
+  FromExtensionTransportReceiver,
+  mockTransportSender,
+  ToSecureUITransportSender,
+} from "@coral-xyz/secure-client";
 import { EventEmitter } from "eventemitter3";
 
 import * as coreBackend from "./backend/core";
@@ -22,7 +35,7 @@ export function start(cfg: Config): Background {
   // Backends.
   const solanaB = solanaConnectionBackend.start(events);
   const ethereumB = ethereumConnectionBackend.start(events);
-  const keyringStore = new KeyringStore(events);
+  const keyringStore = new KeyringStore(events, secureStore);
   const coreB = coreBackend.start(events, keyringStore, solanaB, ethereumB);
 
   // Frontend.
@@ -31,9 +44,28 @@ export function start(cfg: Config): Background {
   const _solanaConnection = solanaConnection.start(cfg, events, solanaB);
   const _ethereumConnection = ethereumConnection.start(cfg, events, ethereumB);
 
-  // New secure service
-  startSecureService(cfg, keyringStore);
+  if (!cfg.isMobile) {
+    const contentScriptReceiver = new FromContentScriptTransportReceiver();
+    const extensionReceiver = new FromExtensionTransportReceiver();
+    const secureUISender = new ToSecureUITransportSender<
+      SECURE_EVENTS,
+      "confirmation"
+    >();
 
+    // New secure service
+    startSecureService(
+      {
+        backendNotificationClient: mockTransportSender,
+        secureUIClient: secureUISender,
+        secureServer: combineTransportReceivers(
+          contentScriptReceiver,
+          extensionReceiver
+        ),
+        secureDB: extensionDB,
+      },
+      keyringStore
+    );
+  }
   initPushNotificationHandlers();
 
   if (!IS_MOBILE) {

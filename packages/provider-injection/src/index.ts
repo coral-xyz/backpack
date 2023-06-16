@@ -9,7 +9,6 @@ import {
   ProviderEthereumXnftInjection,
   ProviderRootXnftInjection,
   ProviderSolanaInjection,
-  ProviderSolanaXnftInjection,
 } from "@coral-xyz/provider-core";
 import { initialize } from "@coral-xyz/wallet-standard";
 

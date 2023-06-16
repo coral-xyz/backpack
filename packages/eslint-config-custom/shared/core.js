@@ -199,7 +199,14 @@ module.exports = {
         },
       },
     ],
-
+    "no-restricted-imports": [
+      "error",
+      {
+        name: "@coral-xyz/secure-background",
+        message:
+          "Don't use/import @coral-xyz/secure-background directly. Use @coral-xyz/secure-client instead to communicate with secure-background.",
+      },
+    ],
     // "simple-import-sort/imports": [
     //   "warn",
     //   {

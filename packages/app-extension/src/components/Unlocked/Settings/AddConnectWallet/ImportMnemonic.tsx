@@ -18,7 +18,7 @@ import {
   useDehydratedWallets,
   useRpcRequests,
 } from "@coral-xyz/recoil";
-import { mnemonicPathToPrivateKey } from "@coral-xyz/secure-background";
+import { mnemonicPathToPrivateKey } from "@coral-xyz/secure-background/legacyExport";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box, Typography } from "@mui/material";
 

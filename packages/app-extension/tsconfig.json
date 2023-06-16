@@ -30,13 +30,15 @@
       "@coral-xyz/react-common": ["../react-common"],
       "@coral-xyz/recoil": ["../recoil"],
       "@coral-xyz/themes": ["../themes"],
-      "@coral-xyz/secure-background": ["../secure-background"]
+      "@coral-xyz/secure-background": ["../secure-background"],
+      "@coral-xyz/secure-client": ["../secure-client"]
     }
   },
   "references": [
     { "path": "../tamagui-core" },
     { "path": "../background" },
     { "path": "../secure-background" },
+    { "path": "../secure-client" },
     { "path": "../chat-sdk" },
     { "path": "../common" },
     { "path": "../data-components" },

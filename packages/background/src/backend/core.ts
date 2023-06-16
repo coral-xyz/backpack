@@ -65,15 +65,17 @@ import {
   SolanaExplorer,
   TAB_XNFT,
 } from "@coral-xyz/common";
-import type { KeyringStoreState } from "@coral-xyz/recoil";
-import { KeyringStoreStateEnum, makeDefaultNav } from "@coral-xyz/recoil";
-import type { BlockchainKeyring } from "@coral-xyz/secure-background";
-import { keyringForBlockchain } from "@coral-xyz/secure-background";
+import { makeDefaultNav } from "@coral-xyz/recoil";
 import type {
+  BlockchainKeyring,
   KeyringStore,
   User,
-} from "@coral-xyz/secure-background/src/legacyExport";
-import { secureStore } from "@coral-xyz/secure-background/src/legacyExport";
+} from "@coral-xyz/secure-background/legacyExport";
+import {
+  keyringForBlockchain,
+  secureStore,
+} from "@coral-xyz/secure-background/legacyExport";
+import { KeyringStoreState } from "@coral-xyz/secure-background/types";
 import type {
   Commitment,
   SendOptions,
@@ -94,7 +96,6 @@ import type { Nav } from "./legacy-store";
 import * as legacyStore from "./legacy-store";
 import type { SolanaConnectionBackend } from "./solana-connection";
 
-const { getWalletDataForUser, setUser, setWalletDataForUser } = secureStore;
 const { base58: bs58 } = ethers.utils;
 
 export function start(
@@ -240,7 +241,7 @@ export class Backend {
   }
 
   async solanaConnectionUrlRead(uuid: string): Promise<string> {
-    let data = await getWalletDataForUser(uuid);
+    let data = await secureStore.getWalletDataForUser(uuid);
 
     // migrate the old default RPC value, this can be removed in future
     const OLD_DEFAULT = "https://solana-rpc-nodes.projectserum.com";
@@ -258,7 +259,7 @@ export class Backend {
           cluster: SolanaCluster.DEFAULT,
         },
       };
-      await setWalletDataForUser(uuid, data);
+      await secureStore.setWalletDataForUser(uuid, data);
     }
 
     return (data.solana && data.solana.cluster) ?? SolanaCluster.DEFAULT;
@@ -267,7 +268,7 @@ export class Backend {
   // Returns true if the url changed.
   async solanaConnectionUrlUpdate(cluster: string): Promise<boolean> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
 
     if (data.solana.cluster === cluster) {
       return false;
@@ -284,7 +285,7 @@ export class Backend {
     }
     const activeWallet = keyring ? keyring.getActiveWallet() : null;
 
-    await setWalletDataForUser(uuid, {
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       solana: {
         ...data.solana,
@@ -512,7 +513,7 @@ export class Backend {
   ) {
     if (
       !keyringInit &&
-      (await this.keyringStoreState()) !== KeyringStoreStateEnum.Unlocked
+      (await this.keyringStoreState()) !== KeyringStoreState.Unlocked
     ) {
       throw new Error(
         "provide a keyring init or unlock keyring to sign message"
@@ -523,7 +524,7 @@ export class Backend {
     // If keyring init parameters were provided then init the keyring
     if (keyringInit) {
       // Create an empty keyring to init
-      blockchainKeyring = keyringForBlockchain(blockchain);
+      blockchainKeyring = keyringForBlockchain(blockchain, secureStore);
       if ("mnemonic" in keyringInit) {
         // If mnemonic wasn't actually passed retrieve it from the store. This
         // is to avoid having to pass the mnemonic to the client to make this
@@ -1096,7 +1097,7 @@ export class Backend {
   }
 
   async userJwtUpdate(uuid: string, jwt: string) {
-    await setUser(uuid, { jwt });
+    await secureStore.setUser(uuid, { jwt });
 
     const walletData = await this.keyringStoreReadAllPubkeyData();
     const preferences = await this.preferencesRead(uuid);

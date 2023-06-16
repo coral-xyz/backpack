@@ -1,10 +1,17 @@
-import { lazy, Suspense } from "react";
+import React, { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import {
   BACKPACK_FEATURE_POP_MODE,
   isValidEventOrigin,
   openPopupWindow,
 } from "@coral-xyz/common";
+import type { SECURE_EVENTS } from "@coral-xyz/secure-client";
+import {
+  FromExtensionTransportSender,
+  ToSecureUITransportReceiver,
+} from "@coral-xyz/secure-client";
+import { SecureUI } from "@coral-xyz/secure-client/ui";
+import { v4 } from "uuid";
 
 import "./index.css";
 
@@ -25,9 +32,18 @@ chrome.runtime
   })
   .catch(console.error);
 
-// Connect to the background script so it can detect if the popup is closed
-chrome.runtime.connect();
+// Send connect event to background script to open channel.
+// add unique name so background can identify the popup.
+const urlParams = new URLSearchParams(window.location.search);
+const windowId = urlParams.get("windowId") ?? v4();
+const port = chrome.runtime.connect({ name: windowId });
 
+const secureUITransportReceiver = new ToSecureUITransportReceiver<
+  SECURE_EVENTS,
+  "confirmation"
+>(port);
+const extensionTransportSender =
+  new FromExtensionTransportSender<SECURE_EVENTS>();
 //
 // Configure event listeners.
 //
@@ -54,7 +70,13 @@ const root = createRoot(container!);
 root.render(
   <>
     <Suspense fallback={null}>
-      <App />
+      <App secureBackgroundSender={extensionTransportSender} />
+    </Suspense>
+    <Suspense fallback={null}>
+      <SecureUI
+        secureBackgroundSender={extensionTransportSender}
+        secureUIReceiver={secureUITransportReceiver}
+      />
     </Suspense>
     <Suspense fallback={null}>
       <LedgerIframe />

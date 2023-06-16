@@ -4,7 +4,7 @@ import Constants from "expo-constants";
 
 import { AuthenticatedSync } from "@coral-xyz/chat-xplat";
 import {
-  KeyringStoreStateEnum,
+  KeyringStoreState,
   useKeyringStoreState,
   WithAuth,
 } from "@coral-xyz/recoil";
@@ -101,11 +101,11 @@ function RootNavigator(): JSX.Element {
   }, [setAppState]);
 
   switch (keyringStoreState) {
-    case KeyringStoreStateEnum.NeedsOnboarding:
+    case KeyringStoreState.NeedsOnboarding:
       return <OnboardingNavigator onStart={onStartOnboarding} />;
-    case KeyringStoreStateEnum.Locked:
+    case KeyringStoreState.Locked:
       return <LockedScreen />;
-    case KeyringStoreStateEnum.Unlocked:
+    case KeyringStoreState.Unlocked:
       if (appState === "onboardingStarted") {
         return <OnboardingCompleteWelcome onComplete={onCompleteOnboarding} />;
       }
