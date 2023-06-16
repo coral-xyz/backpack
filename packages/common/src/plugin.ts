@@ -104,13 +104,24 @@ export class Plugin {
       this._connectionUrls[Blockchain.SOLANA]?.includes("devnet");
 
     const iframeRootUrl =
-      !isDevnetHACKY && (url.startsWith("ar://") || url.startsWith("ipfs://"))
+      !isDevnetHACKY &&
+      (url.startsWith("ar://") ||
+        url.startsWith("ipfs://") ||
+        url.startsWith("solana://") ||
+        url.startsWith("data:image"))
         ? //  || this.xnftAddress.toBase58() ===
           //   "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8"
           `https://${xnftAddressB32}.gateway.xnfts.dev`
         : externalResourceUri(url);
 
-    const whitelistedProtocols = ["ar://", "ipfs://", "https://", "http://"];
+    const whitelistedProtocols = [
+      "ar://",
+      "ipfs://",
+      "solana://",
+      "data:image",
+      "https://",
+      "http://",
+    ];
     const isWhitelisted = whitelistedProtocols.find((p) =>
       iframeRootUrl.startsWith(p)
     );

@@ -336,10 +336,12 @@ export async function fetchSplMetadataUri(
             const resp = await fetch(
               `${externalResourceUri(uri, { cached: true })}`
             );
+            console.log("Result: ", resp);
             resolve(await resp.json());
           } catch (err) {
             try {
               const resp = await fetch(externalResourceUri(uri));
+              console.log("Result: ", resp);
               resolve(await resp.json());
             } catch (e) {
               reject(err);

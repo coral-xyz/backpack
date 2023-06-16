@@ -4,5 +4,6 @@ export function externalResourceUri(uri: string): string {
       .replace(/^ipfs:\/\//, "https://nftstorage.link/ipfs/")
       // .replace(/^ipfs:\/\//, "https://ipfs.io/ipfs/")
       .replace(/^ar:\/\//, "https://www.arweave.net/")
+      .replace(/^solana:\/\//, "https://www.solanadata.dev/devnet/")
   );
 }

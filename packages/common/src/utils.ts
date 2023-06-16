@@ -53,6 +53,7 @@ export function externalResourceUri(
   uri: string,
   options: { cached?: boolean } = {}
 ): string {
+  console.log("URI: ", uri);
   if (uri) {
     uri = uri.replace(/\0/g, "");
   }
@@ -62,6 +63,17 @@ export function externalResourceUri(
   }
   if (uri && uri.startsWith("ar://")) {
     return uri.replace("ar://", "https://arweave.net/");
+  }
+  if (uri && uri.startsWith("solana://")) {
+    console.log("SOLANA\nSOLANA\nSOLANA\n", uri);
+    return uri.replace("solana://", "https://www.solanadata.dev/devnet/");
+  }
+  if (uri && uri.startsWith("data:image")) {
+    console.log("DATA\nDATA\nDATA\n", uri);
+    return uri.replace(
+      "data:image",
+      "https://www.solanadata.dev/data_uri/data:image"
+    );
   }
   if (options.cached) {
     return `https://swr.xnfts.dev/1min/${uri}`;
