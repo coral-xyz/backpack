@@ -4,10 +4,8 @@ import { Alert } from "react-native";
 import {
   BACKPACK_CONFIG_VERSION,
   Blockchain,
-  UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
   toTitleCase,
 } from "@coral-xyz/common";
-import { useBackgroundClient, useDarkMode } from "@coral-xyz/recoil";
 import { Stack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -36,30 +34,6 @@ import {
   useOsBiometricAuthEnabled,
 } from "~src/features/biometrics/hooks";
 import * as Linking from "~src/lib/linking";
-
-function SettingsDarkMode() {
-  const [loading, setLoading] = useState(false);
-  const background = useBackgroundClient();
-  const isDarkMode = useDarkMode();
-
-  const onDarkModeSwitch = async (isDarkMode: boolean) => {
-    setLoading(true);
-    await background.request({
-      method: UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
-      params: [isDarkMode],
-    });
-    setLoading(false);
-  };
-
-  return (
-    <SettingsRowSwitch
-      loading={loading}
-      value={isDarkMode}
-      label="Dark Mode"
-      onPress={onDarkModeSwitch}
-    />
-  );
-}
 
 function SettingsBiometricsMode() {
   const [loading, setLoading] = useState(false);
@@ -121,7 +95,6 @@ function Container({ navigation }) {
             onPress={() => navigation.push("PreferencesTrustedSites")}
             detailIcon={<IconPushDetail />}
           />
-          <SettingsDarkMode />
           <SettingsBiometricsMode />
         </RoundedContainerGroup>
       </Stack>
