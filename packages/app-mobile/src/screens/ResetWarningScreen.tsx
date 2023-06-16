@@ -44,7 +44,9 @@ export function ResetWarningScreen({ navigation }): JSX.Element {
       buttonTitle="Reset"
       title="Reset Backpack"
       subtext="This will remove all the user accounts you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
-      onNext={reset}
+      onNext={async () => {
+        await reset();
+      }}
     />
   );
 }
