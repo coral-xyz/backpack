@@ -226,7 +226,11 @@ export function AccountSettingsNavigator(): JSX.Element {
           name="import-private-key"
           component={ImportPrivateKeyScreen}
         />
-        <Stack.Screen name="reset-warning" component={ResetWarningScreen} />
+        <Stack.Screen
+          name="reset-warning"
+          component={ResetWarningScreen}
+          options={{ title: "Warning" }}
+        />
         <Stack.Screen
           name="show-secret-phrase-warning"
           component={ShowRecoveryPhraseWarningScreen}
