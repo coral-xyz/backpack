@@ -1,5 +1,6 @@
 import type { KeyringStore, UserPublicKeys } from "../../store/keyring";
 import type { SecureStore } from "../../store/SecureStore";
+import type { SecureEvent } from "../../types/events";
 import { KeyringStoreState } from "../../types/keyring";
 import type {
   TransportHandler,
@@ -51,32 +52,35 @@ export class UserService {
     error,
   }) => {
     try {
-      const activeUser = await this.secureStore.getActiveUser();
-      const preferences = await this.secureStore.getWalletDataForUser(
-        activeUser.uuid
-      );
-      const keyringState = await this.keyringStore.state();
+      let response: SecureEvent<"SECURE_USER_GET">["response"] = {
+        keyringState: await this.keyringStore.state(),
+      };
 
-      let publicKeys: UserPublicKeys | null = null;
-      let activePubkeys: string[] = [];
-
-      if (request.requireUnlock === true) {
-        await this.secureUIClient.confirm(event);
+      try {
+        const activeUser = await this.secureStore.getActiveUser();
+        const preferences = await this.secureStore.getWalletDataForUser(
+          activeUser.uuid
+        );
+        response.user = { ...activeUser, preferences };
+      } catch (_e) {
+        null;
       }
 
-      if (keyringState === "unlocked" && this.keyringStore.activeUserKeyring) {
-        publicKeys = await this.keyringStore.activeUserKeyring.publicKeys();
-        activePubkeys = await this.keyringStore.activeWallets();
+      if (
+        response.keyringState === "unlocked" &&
+        this.keyringStore.activeUserKeyring
+      ) {
+        const publicKeys =
+          await this.keyringStore.activeUserKeyring.publicKeys();
+        const activePubkeys = await this.keyringStore.activeWallets();
+
+        response = { ...response, publicKeys, activePubkeys };
       }
 
-      return respond({
-        ...activeUser,
-        preferences,
-        keyringState,
-        publicKeys,
-        activePubkeys,
-      });
+      console.log("PCA", response);
+      return respond(response);
     } catch (e) {
+      console.error("PCA", e);
       return error(e);
     }
   };

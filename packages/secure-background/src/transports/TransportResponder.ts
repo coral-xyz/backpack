@@ -8,8 +8,7 @@ import type {
 export class TransportResponder<
   T extends SECURE_EVENTS = SECURE_EVENTS,
   R extends "response" | "confirmation" = "response"
-> implements TransportResponder<T, R>
-{
+> {
   public readonly name: T;
   public readonly event: SecureRequest<T>;
   public readonly request: SecureRequest<T>["request"];
@@ -29,7 +28,9 @@ export class TransportResponder<
     this.onResponse = onResponse;
     this.name = request.name;
 
-    handler(this).catch((error) => {
+    const returns = handler(this);
+
+    returns?.catch((error) => {
       onResponse({
         name: this.event.name,
         id: this.event.id,

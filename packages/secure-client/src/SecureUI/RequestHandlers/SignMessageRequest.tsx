@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   PrimaryButton,
   ProxyImage,
@@ -10,9 +9,32 @@ import {
   XStack,
   YStack,
 } from "@coral-xyz/tamagui";
+import { decode } from "bs58";
 import { useRecoilValue } from "recoil";
 
-import { userAtom } from "./_atoms/userAtom";
+import type { QueuedRequest } from "../_atoms/clientAtoms";
+import { userAtom } from "../_atoms/userAtom";
+import { Presentation } from "../Presentation";
+
+export function SignMessageRequest({
+  currentRequest,
+}: {
+  currentRequest: QueuedRequest;
+}) {
+  //@ts-ignore
+  const msgBuffer = Buffer.from(decode(currentRequest.request.message! ?? ""));
+  const message = msgBuffer.toString();
+
+  return (
+    <Presentation currentRequest={currentRequest}>
+      <ApproveTransactionBottomSheet
+        message={message}
+        onApprove={() => currentRequest.respond({ confirmed: true })}
+        onDeny={() => currentRequest.respond({ confirmed: false })}
+      />
+    </Presentation>
+  );
+}
 
 function ResourceThing({ imageUrl, title, subtitle }) {
   return (
@@ -41,7 +63,6 @@ export function ApproveTransactionBottomSheet(props: {
   onDeny: () => void;
 }) {
   const user = useRecoilValue(userAtom);
-  const [message, setMessage] = useState("");
   // i have a <Screen> component that handles insets, etc. Might want to make Screen.web.tsx that just handles padding
   return (
     <YStack f={1} jc="space-between" pb={48} pt={64} px={16}>
@@ -72,7 +93,6 @@ export function ApproveTransactionBottomSheet(props: {
           height={128}
           value={props.message + JSON.stringify(user, null, 2)}
           placeholder="Enter message"
-          onChangeText={setMessage}
           mb={16}
         />
         <TwoButtonFooter

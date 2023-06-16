@@ -22,19 +22,16 @@ export interface SECURE_USER_UNLOCK_KEYRING
 }
 
 export interface SECURE_USER_GET extends SecureEventBase<"SECURE_USER_GET"> {
-  request: {
-    requireUnlock?: boolean;
-  };
-  confirmResponse: {
-    password: string;
-  };
+  request: {};
   response: {
-    uuid: string;
-    jwt: string;
-    username: string;
-    preferences: Preferences;
+    user?: {
+      uuid: string;
+      jwt: string;
+      username: string;
+      preferences: Preferences;
+    };
     keyringState: KeyringStoreState;
-    activePubkeys: string[];
-    publicKeys: UserPublicKeys | null;
+    activePubkeys?: string[];
+    publicKeys?: UserPublicKeys | null;
   };
 }

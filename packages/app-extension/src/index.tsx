@@ -32,10 +32,16 @@ chrome.runtime
   })
   .catch(console.error);
 
+const urlParams = new URLSearchParams(window.location.search);
+const requestWindowId = urlParams.get("windowId");
+// if popup was passed windowId it was opened by secure-background
+// and should not render app since secure-ui will handle the request.
+const shouldRenderApp = !requestWindowId;
+const windowId = requestWindowId ?? v4();
+
+console.log(requestWindowId, shouldRenderApp);
 // Send connect event to background script to open channel.
 // add unique name so background can identify the popup.
-const urlParams = new URLSearchParams(window.location.search);
-const windowId = urlParams.get("windowId") ?? v4();
 const port = chrome.runtime.connect({ name: windowId });
 
 const secureUITransportReceiver = new ToSecureUITransportReceiver<
@@ -73,9 +79,11 @@ const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
   <>
-    <Suspense fallback={null}>
-      <App secureBackgroundSender={extensionTransportSender} />
-    </Suspense>
+    {shouldRenderApp ? (
+      <Suspense fallback={null}>
+        <App secureBackgroundSender={extensionTransportSender} />
+      </Suspense>
+    ) : null}
     <Suspense fallback={null}>
       <SecureUI
         secureBackgroundSender={extensionTransportSender}
