@@ -90,11 +90,6 @@ function Container({ navigation }) {
     <Screen>
       <Stack mb={12}>
         <RoundedContainerGroup>
-          <SettingsRow
-            label="Trusted Sites"
-            onPress={() => navigation.push("PreferencesTrustedSites")}
-            detailIcon={<IconPushDetail />}
-          />
           <SettingsBiometricsMode />
         </RoundedContainerGroup>
       </Stack>
