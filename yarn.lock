@@ -3871,6 +3871,7 @@ __metadata:
     eslint-config-custom: "*"
     ethers: ^5.7.2
     expo: ~48.0.18
+    expo-application: ~5.1.1
     expo-av: ~13.2.1
     expo-blur: ~12.2.1
     expo-build-properties: ~0.6.0
