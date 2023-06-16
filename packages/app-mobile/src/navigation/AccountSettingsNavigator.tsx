@@ -197,7 +197,7 @@ export function AccountSettingsNavigator(): JSX.Element {
           component={PreferencesSolanaCommitment}
         />
         <Stack.Screen
-          // options={{ title: "Preferences" }}
+          options={{ title: "Solana Explorer" }}
           name="PreferencesSolanaExplorer"
           component={PreferencesSolanaExplorer}
         />
