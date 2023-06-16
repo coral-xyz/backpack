@@ -46,7 +46,6 @@ export function SecureUI({
     });
 
     secureUIReceiver.setHandler(async (event) => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       let resolve;
       const promise = new Promise<any>((_resolve) => {
         resolve = _resolve;
@@ -159,6 +158,8 @@ function ModalPresentation({
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
+    // this effect is to force the sheet from rendering before animating
+    // prevents bug where animations comes in from top.
     setIsOpen(true);
   }, []);
 
@@ -167,7 +168,7 @@ function ModalPresentation({
     <Sheet
       forceRemoveScrollEnabled
       open={render}
-      modal
+      modal={false}
       onOpenChange={setOpen}
       dismissOnSnapToBottom={false}
       position={position}
@@ -176,7 +177,7 @@ function ModalPresentation({
       animation="bouncy"
     >
       <Sheet.Overlay backgroundColor="rgba(0,0,0,0.3)" />
-      <Sheet.Handle />
+      {/* <Sheet.Handle /> */}
       <Sheet.Frame>{render ? children : null}</Sheet.Frame>
     </Sheet>
   );

@@ -26,6 +26,15 @@ import type {
   UserKeyringJson,
 } from "../SecureStore";
 
+export type UserPublicKeys = Record<
+  Blockchain,
+  {
+    hdPublicKeys: Array<string>;
+    importedPublicKeys: Array<string>;
+    ledgerPublicKeys: Array<string>;
+  }
+>;
+
 /**
  * KeyringStore API for managing all wallet keys .
  */
@@ -530,13 +539,7 @@ export class KeyringStore {
   /**
    * Return the public keys of all blockchain keyrings in the keyring.
    */
-  public async publicKeys(): Promise<{
-    [key: string]: {
-      hdPublicKeys: Array<string>;
-      importedPublicKeys: Array<string>;
-      ledgerPublicKeys: Array<string>;
-    };
-  }> {
+  public async publicKeys(): Promise<UserPublicKeys> {
     return await this.withUnlock(async () => {
       return await this.activeUserKeyring.publicKeys();
     });
@@ -746,13 +749,7 @@ class UserKeyring {
     return [...this.blockchains.keys()].map((b) => b as Blockchain);
   }
 
-  public async publicKeys(): Promise<{
-    [key: string]: {
-      hdPublicKeys: Array<string>;
-      importedPublicKeys: Array<string>;
-      ledgerPublicKeys: Array<string>;
-    };
-  }> {
+  public async publicKeys(): Promise<UserPublicKeys> {
     const entries = this.blockchainKeyrings().map((blockchain) => {
       const keyring = this.keyringForBlockchain(blockchain);
       return [blockchain, keyring.publicKeys()];

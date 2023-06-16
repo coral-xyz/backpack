@@ -42,6 +42,7 @@ export function startSecureService(
   new UserService({
     secureServer: combinedServer as TransportReceiver<SECURE_USER_EVENTS>,
     keyringStore: keyringStore,
+    secureStore: secureStore,
     secureUIClient: interfaces.secureUIClient,
   });
 }

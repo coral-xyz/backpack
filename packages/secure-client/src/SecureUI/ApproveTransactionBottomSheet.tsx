@@ -10,6 +10,9 @@ import {
   XStack,
   YStack,
 } from "@coral-xyz/tamagui";
+import { useRecoilValue } from "recoil";
+
+import { userAtom } from "./_atoms/userAtom";
 
 function ResourceThing({ imageUrl, title, subtitle }) {
   return (
@@ -37,6 +40,7 @@ export function ApproveTransactionBottomSheet(props: {
   onApprove: () => void;
   onDeny: () => void;
 }) {
+  const user = useRecoilValue(userAtom);
   const [message, setMessage] = useState("");
   // i have a <Screen> component that handles insets, etc. Might want to make Screen.web.tsx that just handles padding
   return (
@@ -66,7 +70,7 @@ export function ApproveTransactionBottomSheet(props: {
           autoFocus
           bg="$nav"
           height={128}
-          value={props.message}
+          value={props.message + JSON.stringify(user, null, 2)}
           placeholder="Enter message"
           onChangeText={setMessage}
           mb={16}
