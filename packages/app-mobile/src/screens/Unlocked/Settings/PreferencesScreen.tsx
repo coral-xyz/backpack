@@ -4,23 +4,16 @@ import { Alert } from "react-native";
 import {
   BACKPACK_CONFIG_VERSION,
   Blockchain,
-  UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
-  UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
   toTitleCase,
 } from "@coral-xyz/common";
-import {
-  useBackgroundClient,
-  useDarkMode,
-  useDeveloperMode,
-} from "@coral-xyz/recoil";
 import { Stack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import {
-  ScreenError,
-  ScreenLoading,
   RoundedContainerGroup,
   Screen,
+  ScreenError,
+  ScreenLoading,
 } from "~components/index";
 
 import {
@@ -36,59 +29,11 @@ import {
   tryLocalAuthenticate,
 } from "~src/features/biometrics";
 import {
+  biometricAuthenticationSuccessful,
   useDeviceSupportsBiometricAuth,
   useOsBiometricAuthEnabled,
-  biometricAuthenticationSuccessful,
 } from "~src/features/biometrics/hooks";
 import * as Linking from "~src/lib/linking";
-
-function SettingsDarkMode() {
-  const [loading, setLoading] = useState(false);
-  const background = useBackgroundClient();
-  const isDarkMode = useDarkMode();
-
-  const onDarkModeSwitch = async (isDarkMode: boolean) => {
-    setLoading(true);
-    await background.request({
-      method: UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
-      params: [isDarkMode],
-    });
-    setLoading(false);
-  };
-
-  return (
-    <SettingsRowSwitch
-      loading={loading}
-      value={isDarkMode}
-      label="Dark Mode"
-      onPress={onDarkModeSwitch}
-    />
-  );
-}
-
-function SettingsDeveloperMode() {
-  const [loading, setLoading] = useState(false);
-  const background = useBackgroundClient();
-  const isDeveloperMode = useDeveloperMode();
-
-  const onDeveloperModeSwitch = async (isDeveloperMode: boolean) => {
-    setLoading(true);
-    await background.request({
-      method: UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
-      params: [isDeveloperMode],
-    });
-    setLoading(false);
-  };
-
-  return (
-    <SettingsRowSwitch
-      loading={loading}
-      value={isDeveloperMode}
-      label="Developer Mode"
-      onPress={onDeveloperModeSwitch}
-    />
-  );
-}
 
 function SettingsBiometricsMode() {
   const [loading, setLoading] = useState(false);
@@ -145,13 +90,6 @@ function Container({ navigation }) {
     <Screen>
       <Stack mb={12}>
         <RoundedContainerGroup>
-          <SettingsRow
-            label="Trusted Sites"
-            onPress={() => navigation.push("PreferencesTrustedSites")}
-            detailIcon={<IconPushDetail />}
-          />
-          <SettingsDarkMode />
-          <SettingsDeveloperMode />
           <SettingsBiometricsMode />
         </RoundedContainerGroup>
       </Stack>

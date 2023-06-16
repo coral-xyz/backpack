@@ -3,8 +3,10 @@ import { View } from "react-native";
 import Constants from "expo-constants";
 
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
+import { SwapProvider } from "@coral-xyz/recoil";
 import { useTheme as useTamaguiTheme } from "@coral-xyz/tamagui";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
   createStackNavigator,
   StackScreenProps,
@@ -34,6 +36,12 @@ import { TokenListScreen } from "~screens/TokenListScreen";
 import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollectibleSelectRecipientScreen";
 
 import { SendNavigator } from "~src/navigation/SendNavigator";
+import {
+  Direction,
+  SwapTokenScreen,
+  SwapTokenConfirmScreen,
+  SwapTokenListScreen,
+} from "~src/screens/Unlocked/SwapTokenScreen";
 
 const TopTabs = createMaterialTopTabNavigator<TopTabsParamList>();
 function TopTabsNavigator(): JSX.Element {
@@ -98,6 +106,14 @@ export type WalletStackParamList = {
     blockchain: Blockchain;
   };
   Notifications: undefined;
+  SwapModal: undefined;
+  DepositSingle: undefined;
+  SendSelectTokenModal: undefined;
+  SendCollectibleSelectRecipient: {
+    nft: {
+      name: string;
+    };
+  };
 };
 
 export type HomeWalletListScreenProps = StackScreenProps<
@@ -146,16 +162,20 @@ export function WalletsNavigator(): JSX.Element {
                 );
               },
               headerLeft: (props) => (
-                <HeaderAvatarButton {...props} navigation={navigation} />
+                <HeaderButtonSpacer>
+                  <HeaderAvatarButton {...props} navigation={navigation} />
+                </HeaderButtonSpacer>
               ),
               headerRight: (props) => (
-                <HeaderButton
-                  name="notifications"
-                  {...props}
-                  onPress={() => {
-                    navigation.navigate("Notifications");
-                  }}
-                />
+                <HeaderButtonSpacer>
+                  <HeaderButton
+                    name="notifications"
+                    {...props}
+                    onPress={() => {
+                      navigation.navigate("Notifications");
+                    }}
+                  />
+                </HeaderButtonSpacer>
               ),
             };
           }}
@@ -222,6 +242,7 @@ export function WalletsNavigator(): JSX.Element {
               name="SendSelectTokenModal"
               component={SendNavigator}
             />
+            <Stack.Screen name="SwapModal" component={SwapNavigator} />
           </Stack.Group>
           <Stack.Screen
             name="SendCollectibleSelectRecipient"
@@ -236,5 +257,59 @@ export function WalletsNavigator(): JSX.Element {
         </Stack.Group>
       </Stack.Navigator>
     </View>
+  );
+}
+
+type SwapStackParamList = {
+  SwapToken: {
+    title?: string;
+    address: string;
+    blockchain: Blockchain;
+  };
+  SwapTokenList: {
+    direction: Direction;
+  };
+  SwapTokenConfirm: {
+    title?: string;
+    address: string;
+    blockchain: Blockchain;
+  };
+};
+
+const SwapStack = createNativeStackNavigator<SwapStackParamList>();
+function SwapNavigator(): JSX.Element {
+  const theme = useTheme();
+  return (
+    <SwapProvider>
+      <SwapStack.Navigator
+        screenOptions={{
+          headerShown: true,
+          headerTintColor: theme.custom.colors.fontColor,
+          headerBackTitleVisible: false,
+        }}
+      >
+        <SwapStack.Screen
+          name="SwapToken"
+          component={SwapTokenScreen}
+          options={{ title: "Swap Token" }}
+        />
+        <SwapStack.Screen
+          name="SwapTokenConfirm"
+          component={SwapTokenConfirmScreen}
+          options={{ title: "Review Order" }}
+        />
+        <SwapStack.Screen
+          name="SwapTokenList"
+          component={SwapTokenListScreen}
+          options={({ route }) => {
+            const title =
+              route.params.direction === Direction.From ? "From" : "To";
+            return {
+              title: `Select ${title}`,
+            };
+          }}
+        />
+      </SwapStack.Navigator>
+    </SwapProvider>
   );
 }

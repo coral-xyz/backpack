@@ -6,27 +6,24 @@ import {
 } from "@coral-xyz/common";
 import { useAllUsers, useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import {
-  StyledText,
+  Separator,
   Stack,
+  StyledText,
   XStack,
   useTheme as useTamaguiTheme,
-  Separator,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import {
   DrawerContentScrollView,
   DrawerItemList,
 } from "@react-navigation/drawer";
-import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { IconButton } from "~components/Icon";
 import { UserAccountListItem } from "~components/UserAccountsMenu";
 import { CurrentUserAvatar } from "~components/UserAvatar";
 
 function Header() {
   const user = useUser();
-  const navigation = useNavigation();
 
   return (
     <XStack ai="center" jc="space-between" px={16} mb={8}>
@@ -34,14 +31,6 @@ function Header() {
         <CurrentUserAvatar size={36} />
         <StyledText ml={8}>@{user.username}</StyledText>
       </XStack>
-      <IconButton
-        name="settings"
-        size="$headerIcon"
-        color="$baseIcon"
-        onPress={() => {
-          navigation.navigate("AccountSettings");
-        }}
-      />
     </XStack>
   );
 }

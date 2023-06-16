@@ -2,17 +2,25 @@
 // This means we might just use the scrollview directly from within a flatlist by using ListHeaderComponent and ListFooterComponent
 import type { Blockchain } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
-import type { Token } from "~types/types";
+import type { Token, PublicKey } from "~types/types";
 
-import React, { useEffect, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState, useCallback } from "react";
+import {
+  StyleProp,
+  ViewStyle,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import { formatUsd } from "@coral-xyz/common";
 import {
   blockchainBalancesSorted,
   allWalletsDisplayed,
 } from "@coral-xyz/recoil";
-import { TextPercentChanged } from "@coral-xyz/tamagui";
+import { TextPercentChanged, RoundedContainerGroup } from "@coral-xyz/tamagui";
 import { useNavigation } from "@react-navigation/native";
 import { useRecoilValueLoadable } from "recoil";
 
@@ -92,6 +100,77 @@ export function TokenTables({
   );
 }
 
+export function SearchableTokenList({
+  blockchain,
+  publicKey,
+  onPressRow,
+  searchFilter = "",
+  customFilter = () => true,
+  style,
+  contentContainerStyle,
+}: {
+  blockchain: Blockchain;
+  publicKey: PublicKey;
+  onPressRow: (blockchain: Blockchain, token: Token) => void;
+  tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
+  searchFilter?: string;
+  customFilter?: (token: Token) => boolean;
+  style?: StyleProp<ViewStyle>;
+  contentContainerStyle?: StyleProp<ViewStyle>;
+}): JSX.Element {
+  const rta = useRecoilValueLoadable(
+    blockchainBalancesSorted({
+      publicKey,
+      blockchain,
+    })
+  );
+
+  const rawTokenAccounts = rta.state === "hasValue" ? rta.contents : [];
+  const searchLower = searchFilter.toLowerCase();
+  const tokenAccountsFiltered = rawTokenAccounts
+    .filter(
+      (t: Token) =>
+        t?.name.toLowerCase().startsWith(searchLower) ||
+        t?.ticker.toLowerCase().startsWith(searchLower)
+    )
+    .filter(customFilter);
+
+  const keyExtractor = (item) => item.address;
+  const renderItem = useCallback(
+    ({ item: token, index }: { item: Token; index: number }) => {
+      const isFirst = index === 0;
+      const isLast = index === tokenAccountsFiltered.length - 1;
+
+      return (
+        <RoundedContainerGroup
+          disableTopRadius={!isFirst}
+          disableBottomRadius={!isLast}
+        >
+          <TokenRow
+            onPressRow={onPressRow}
+            blockchain={blockchain}
+            token={token}
+            walletPublicKey={publicKey}
+          />
+        </RoundedContainerGroup>
+      );
+    },
+    [blockchain, onPressRow, publicKey, tokenAccountsFiltered.length]
+  );
+
+  return (
+    <FlatList
+      style={style}
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={contentContainerStyle}
+      data={tokenAccountsFiltered}
+      showsVerticalScrollIndicator={false}
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+    />
+  );
+}
+
 // Renders the header (expand/collapse) as well as the list of tokens
 function WalletTokenTable({
   blockchain,
@@ -163,7 +242,7 @@ function WalletTokenTable({
 
       {expanded ? (
         <FlatList
-          scrollEnabled={false}
+          scrollEnabled
           data={tokenAccountsFiltered}
           keyExtractor={(item) => item.address}
           ItemSeparatorComponent={ListRowSeparator}
