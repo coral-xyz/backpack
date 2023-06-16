@@ -314,7 +314,6 @@ export function AccountSettingsNavigator(): JSX.Element {
 }
 
 function PreferencesSolanaCustomRpcUrl({ navigation }) {
-  const background = useBackgroundClient();
   const [rpcUrl, setRpcUrl] = useState("");
   const [rpcUrlError, setRpcUrlError] = useState(false);
 
@@ -386,22 +385,6 @@ function PreferencesSolanaConnection({ navigation }) {
     Localnet: {
       onPress: () => changeNetwork(SolanaCluster.LOCALNET),
       detail: currentUrl === SolanaCluster.LOCALNET ? <IconCheckmark /> : null,
-    },
-    Custom: {
-      onPress: () => {
-        navigation.push("PreferencesSolanaCustomRpcUrl");
-      },
-      detail:
-        currentUrl !== SolanaCluster.MAINNET &&
-        currentUrl !== SolanaCluster.DEVNET &&
-        currentUrl !== SolanaCluster.LOCALNET ? (
-          <>
-            <IconCheckmark />
-            <IconPushDetail />
-          </>
-        ) : (
-          <IconPushDetail />
-        ),
     },
   };
 
@@ -537,7 +520,6 @@ export const changeNetwork = async (
 };
 
 function PreferencesEthereumCustomRpcUrl({ navigation }) {
-  const background = useBackgroundClient();
   const [rpcUrl, setRpcUrl] = useState("");
   const [chainId, setChainId] = useState("");
   const [rpcUrlError, setRpcUrlError] = useState(false);
@@ -635,19 +617,6 @@ function PreferencesEthereumConnection({ navigation }) {
         currentUrl === EthereumConnectionUrl.LOCALNET ? (
           <IconCheckmark />
         ) : null,
-    },
-    Custom: {
-      onPress: () => navigation.push("PreferencesEthereumCustomRpcUrl"),
-      detail:
-        currentUrl !== EthereumConnectionUrl.MAINNET &&
-        currentUrl !== EthereumConnectionUrl.GOERLI &&
-        currentUrl !== EthereumConnectionUrl.LOCALNET ? (
-          <>
-            <IconCheckmark /> <IconPushDetail />
-          </>
-        ) : (
-          <IconPushDetail />
-        ),
     },
   };
 
