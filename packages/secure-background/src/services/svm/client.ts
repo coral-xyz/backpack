@@ -1,14 +1,8 @@
-import type {
-  SecureEventOrigin,
-  TransportSender,
-} from "../../types/transports";
+import type { TransportSender } from "../../types/transports";
 import type { SECURE_SVM_SIGN_MESSAGE } from "../svm/events";
 
 export class SVMClient {
-  constructor(
-    private client: TransportSender,
-    private origin: SecureEventOrigin
-  ) {}
+  constructor(private client: TransportSender) {}
 
   public signMessage(
     request: SECURE_SVM_SIGN_MESSAGE["request"],
@@ -17,7 +11,6 @@ export class SVMClient {
     return this.client
       .send({
         name: "SECURE_SVM_SIGN_MESSAGE",
-        origin: this.origin,
         request,
         confirmOptions,
       })

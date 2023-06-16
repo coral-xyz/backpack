@@ -89,12 +89,11 @@ export class ProviderSolanaInjection
     );
 
     this.#secureSolanaClient = new SolanaClient(
-      new FromContentScriptTransportSender(),
-      {
-        context: "web",
+      new FromContentScriptTransportSender({
+        context: "browser",
         name: document.title,
         address: window.location.origin,
-      }
+      })
     );
 
     this.#requestManager = this.#backpackRequestManager;

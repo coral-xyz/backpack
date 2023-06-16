@@ -50,7 +50,11 @@ export function start(cfg: Config): Background {
     const secureUISender = new ToSecureUITransportSender<
       SECURE_EVENTS,
       "confirmation"
-    >();
+    >({
+      address: "secure-background",
+      name: "Backpack",
+      context: "extension",
+    });
 
     // New secure service
     startSecureService(

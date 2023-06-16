@@ -4,9 +4,9 @@ import {
 } from "@coral-xyz/common";
 import type {
   SECURE_EVENTS,
+  SecureEventOrigin,
   SecureRequest,
   SecureResponse,
-  TransportHandler,
   TransportSend,
   TransportSender,
 } from "@coral-xyz/secure-background/types";
@@ -27,7 +27,7 @@ export class FromExtensionTransportSender<
 {
   private responseQueue: QueuedRequest<X, R>[] = [];
 
-  constructor() {
+  constructor(private origin: SecureEventOrigin) {
     chrome.runtime.onMessage.addListener(this.responseHandler.bind(this));
   }
 
@@ -65,13 +65,14 @@ export class FromExtensionTransportSender<
     return queuedRequest;
   };
 
-  public send = <C extends R = R, T extends X = X>(
+  public send: TransportSend<X, R> = <C extends R = R, T extends X = X>(
     request: SecureRequest<T>
   ) => {
     return new Promise<SecureResponse<T, C>>(
       (resolve: (response: SecureResponse<T, C>) => void) => {
         const requestWithId: SecureRequest<T> & { id: string } = {
           ...request,
+          origin: this.origin,
           id: v4(),
         };
 

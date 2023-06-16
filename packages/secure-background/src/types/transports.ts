@@ -22,7 +22,7 @@ export type { TransportResponder } from "../transports/TransportResponder";
 export type PassThroughToUI = SerializableJson;
 
 export type SecureEventOrigin = {
-  context: "xnft" | "web" | "extension" | "mobile";
+  context: "xnft" | "browser" | "background" | "extension" | "mobile";
   name: string;
   address: string;
 };
@@ -99,5 +99,5 @@ export type TransportSend<
   T extends SECURE_EVENTS = SECURE_EVENTS,
   R extends "response" | "confirmation" = "response"
 > = <X extends T = T>(
-  request: SecureRequest<X>
+  request: Omit<SecureRequest<X>, "origin" | "id">
 ) => Promise<SecureResponse<X, R>>;

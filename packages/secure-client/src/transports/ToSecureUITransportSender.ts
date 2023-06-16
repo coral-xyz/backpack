@@ -5,8 +5,10 @@ import {
 } from "@coral-xyz/common";
 import type {
   SECURE_EVENTS,
+  SecureEventOrigin,
   SecureRequest,
   SecureResponse,
+  TransportSend,
   TransportSender,
 } from "@coral-xyz/secure-background/types";
 import { v4 } from "uuid";
@@ -30,7 +32,7 @@ export class ToSecureUITransportSender<
   private lastOpenedWindowId: string | null = null;
   private maybeClosePopupTimeout: any;
 
-  constructor() {
+  constructor(private origin: SecureEventOrigin) {
     chrome.runtime.onConnect.addListener((port) => {
       console.log("PCA", "connect", port.name);
 
@@ -82,7 +84,7 @@ export class ToSecureUITransportSender<
     this.responseQueue = [];
   };
 
-  public send = <C extends R = R, T extends X = X>(
+  public send: TransportSend<X, R> = <C extends R = R, T extends X = X>(
     request: SecureRequest<T>
   ) => {
     // new request -> we wont need to close popup.
@@ -90,7 +92,7 @@ export class ToSecureUITransportSender<
 
     return new Promise<SecureResponse<T, C>>(
       (resolve: (response: SecureResponse<T, C>) => void) => {
-        const requestWithId = { ...request, id: v4() };
+        const requestWithId = { ...request, origin: this.origin, id: v4() };
         console.log("PCA request to secure UI sent", requestWithId);
 
         this.requestQueue.push({

@@ -43,7 +43,11 @@ const secureUITransportReceiver = new ToSecureUITransportReceiver<
   "confirmation"
 >(port);
 const extensionTransportSender =
-  new FromExtensionTransportSender<SECURE_EVENTS>();
+  new FromExtensionTransportSender<SECURE_EVENTS>({
+    name: "Backpack Extension",
+    address: window.location.origin,
+    context: "extension",
+  });
 //
 // Configure event listeners.
 //
