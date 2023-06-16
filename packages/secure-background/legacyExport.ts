@@ -2,11 +2,7 @@ import { extensionDB, SecureStore } from "./src/store/SecureStore";
 
 export { keyringForBlockchain, mnemonicPathToPrivateKey } from "./src/keyring";
 export type { BlockchainKeyring } from "./src/keyring/blockchain";
-export {
-  KeyringStore,
-  type KeyringStoreState,
-  KeyringStoreStateEnum,
-} from "./src/store/keyring";
+export { KeyringStore } from "./src/store/keyring";
 export type { User } from "./src/store/SecureStore";
 export { extensionDB } from "./src/store/SecureStore";
 

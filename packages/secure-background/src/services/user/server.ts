@@ -1,5 +1,5 @@
 import type { KeyringStore } from "../../store/keyring";
-import { KeyringStoreStateEnum } from "../../store/keyring";
+import { KeyringStoreState } from "../../types/keyring";
 import type {
   TransportHandler,
   TransportHandlers,
@@ -46,7 +46,7 @@ export class UserService {
       const keyringState = await this.keyringStore.state();
 
       if (
-        keyringState === KeyringStoreStateEnum.Locked &&
+        keyringState === KeyringStoreState.Locked &&
         event.request.password &&
         uuid
       ) {
@@ -57,7 +57,7 @@ export class UserService {
           })
           .then(() => event.respond({ unlocked: true }))
           .catch((e) => event.error(e));
-      } else if (keyringState === KeyringStoreStateEnum.Unlocked) {
+      } else if (keyringState === KeyringStoreState.Unlocked) {
         return event.respond({ unlocked: true });
       }
       return event.respond({ unlocked: false });

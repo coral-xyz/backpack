@@ -18,20 +18,13 @@ import { generateMnemonic } from "bip39";
 
 import { hdFactoryForBlockchain, keyringForBlockchain } from "../../keyring";
 import type { BlockchainKeyring } from "../../keyring/blockchain";
+import { KeyringStoreState } from "../../types/keyring";
 import type {
   KeyringStoreJson,
   SecureStore,
   User,
   UserKeyringJson,
 } from "../SecureStore";
-
-export type KeyringStoreState = "locked" | "unlocked" | "needs-onboarding";
-
-export const KeyringStoreStateEnum: { [key: string]: KeyringStoreState } = {
-  Locked: "locked",
-  Unlocked: "unlocked",
-  NeedsOnboarding: "needs-onboarding",
-};
 
 /**
  * KeyringStore API for managing all wallet keys .
@@ -243,12 +236,12 @@ export class KeyringStore {
 
   public async state(): Promise<KeyringStoreState> {
     if (this.isUnlocked()) {
-      return KeyringStoreStateEnum.Unlocked;
+      return KeyringStoreState.Unlocked;
     }
     if (await this.isLocked()) {
-      return KeyringStoreStateEnum.Locked;
+      return KeyringStoreState.Locked;
     }
-    return KeyringStoreStateEnum.NeedsOnboarding;
+    return KeyringStoreState.NeedsOnboarding;
   }
 
   private async isLocked(): Promise<boolean> {

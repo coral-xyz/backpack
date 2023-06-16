@@ -17,7 +17,6 @@ import {
 } from "@coral-xyz/common";
 import { EmptyState } from "@coral-xyz/react-common";
 import {
-  KeyringStoreStateEnum,
   useApprovedOrigins,
   useBackgroundClient,
   useBackgroundResponder,
@@ -26,6 +25,7 @@ import {
   useEnabledBlockchains,
   useKeyringStoreState,
 } from "@coral-xyz/recoil";
+import { KeyringStoreState } from "@coral-xyz/secure-background/types";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { AnimatePresence, motion } from "framer-motion";
@@ -71,7 +71,7 @@ export default function Router() {
 let lock = 0;
 function _Router() {
   const needsOnboarding =
-    useKeyringStoreState() === KeyringStoreStateEnum.NeedsOnboarding;
+    useKeyringStoreState() === KeyringStoreState.NeedsOnboarding;
 
   useEffect(() => {
     const current = Date.now();
@@ -148,7 +148,7 @@ function QueryLocked() {
   const url = new URL(window.location.href);
   const requestId = url.searchParams.get("requestId")!;
   const keyringStoreState = useKeyringStoreState();
-  const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
+  const isLocked = keyringStoreState === KeyringStoreState.Locked;
 
   // Wallet is unlocked so close the window. We're done.
   if (!isLocked) {
@@ -170,7 +170,7 @@ function QueryLocked() {
 function QueryLockedApproval() {
   logger.debug("query locked approval");
   const keyringStoreState = useKeyringStoreState();
-  const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
+  const isLocked = keyringStoreState === KeyringStoreState.Locked;
   return isLocked ? <LockedBootstrap /> : <QueryApproval />;
 }
 
@@ -378,9 +378,9 @@ function WithEnabledBlockchain({
 function WithUnlock({ children }: { children: React.ReactElement }) {
   const keyringStoreState = useKeyringStoreState();
   const needsOnboarding =
-    keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
+    keyringStoreState === KeyringStoreState.NeedsOnboarding;
   const isLocked =
-    !needsOnboarding && keyringStoreState === KeyringStoreStateEnum.Locked;
+    !needsOnboarding && keyringStoreState === KeyringStoreState.Locked;
 
   return (
     <AnimatePresence initial={false}>

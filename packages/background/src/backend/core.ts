@@ -65,8 +65,7 @@ import {
   SolanaExplorer,
   TAB_XNFT,
 } from "@coral-xyz/common";
-import type { KeyringStoreState } from "@coral-xyz/recoil";
-import { KeyringStoreStateEnum, makeDefaultNav } from "@coral-xyz/recoil";
+import { makeDefaultNav } from "@coral-xyz/recoil";
 import type {
   BlockchainKeyring,
   KeyringStore,
@@ -76,6 +75,7 @@ import {
   keyringForBlockchain,
   secureStore,
 } from "@coral-xyz/secure-background/legacyExport";
+import { KeyringStoreState } from "@coral-xyz/secure-background/types";
 import type {
   Commitment,
   SendOptions,
@@ -513,7 +513,7 @@ export class Backend {
   ) {
     if (
       !keyringInit &&
-      (await this.keyringStoreState()) !== KeyringStoreStateEnum.Unlocked
+      (await this.keyringStoreState()) !== KeyringStoreState.Unlocked
     ) {
       throw new Error(
         "provide a keyring init or unlock keyring to sign message"

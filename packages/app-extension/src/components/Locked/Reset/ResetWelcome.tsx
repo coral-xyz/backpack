@@ -3,7 +3,8 @@ import {
   QuestionIcon,
   SecondaryButton,
 } from "@coral-xyz/react-common";
-import { KeyringStoreStateEnum, useKeyringStoreState } from "@coral-xyz/recoil";
+import { useKeyringStoreState } from "@coral-xyz/recoil";
+import { KeyringStoreState } from "@coral-xyz/secure-background/types";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
 
@@ -12,7 +13,7 @@ import { useNavigation } from "../../common/Layout/NavStack";
 
 export function ResetWelcome({ onClose }: { onClose: () => void }) {
   const keyringStoreState = useKeyringStoreState();
-  const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
+  const isLocked = keyringStoreState === KeyringStoreState.Locked;
 
   const theme = useCustomTheme();
   const nav = useNavigation();

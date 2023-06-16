@@ -49,17 +49,14 @@ import {
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
 } from "@coral-xyz/common";
+import { KeyringStoreState } from "@coral-xyz/secure-background/types";
 import type { Commitment } from "@solana/web3.js";
 import { useRecoilState, useResetRecoilState, useSetRecoilState } from "recoil";
 
 import * as atoms from "../atoms";
 import { allPlugins } from "../hooks";
 import type { WalletPublicKeys } from "../types";
-import {
-  KeyringStoreStateEnum,
-  useUpdateAllSplTokenAccounts,
-  useUpdateEthereumBalances,
-} from "../";
+import { useUpdateAllSplTokenAccounts, useUpdateEthereumBalances } from "../";
 
 import { useNavigate } from "./useNavigatePolyfill";
 
@@ -361,11 +358,11 @@ export function NotificationsProvider(props: any) {
 
     const handleKeyringStoreCreated = (notif: Notification) => {
       setPreferences(notif.data.preferences);
-      setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
+      setKeyringStoreState(KeyringStoreState.Unlocked);
     };
 
     const handleKeyringStoreLocked = () => {
-      setKeyringStoreState(KeyringStoreStateEnum.Locked);
+      setKeyringStoreState(KeyringStoreState.Locked);
       setAuthenticatedUser(null);
     };
 
@@ -375,7 +372,7 @@ export function NotificationsProvider(props: any) {
       // and may be updated by migrations that occur on an unlock attempt. The
       // recoil state won't be updated by migrations.
       setActiveUser(notif.data.activeUser);
-      setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
+      setKeyringStoreState(KeyringStoreState.Unlocked);
     };
 
     const handleKeyringKeyDelete = (notif: Notification) => {
@@ -563,7 +560,7 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleReset = () => {
-      setKeyringStoreState(KeyringStoreStateEnum.NeedsOnboarding);
+      setKeyringStoreState(KeyringStoreState.NeedsOnboarding);
     };
 
     const handleApprovedOriginsUpdate = (notif: Notification) => {
