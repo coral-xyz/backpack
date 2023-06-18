@@ -46,6 +46,11 @@ type Mutation {
   ): Boolean
 
   """
+  Set the `viewed` status of the argued notification IDs are `true`.
+  """
+  markNotificationsAsRead(ids: [Int!]!): Int!
+
+  """
   Allows users to send friend requests to another remote user.
   """
   sendFriendRequest(otherUserId: String!, accept: Boolean!): Boolean
@@ -561,6 +566,11 @@ type Notification implements Node {
   Arbitrary body data of the notification parsed as an object.
   """
   body: JSONObject!
+
+  """
+  The database unique integer identifier.
+  """
+  dbId: Int!
 
   """
   The emitting source of the notification.
