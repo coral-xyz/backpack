@@ -1,4 +1,4 @@
-import type { Blockchain, Preferences } from "@coral-xyz/common";
+import type { Preferences } from "@coral-xyz/common";
 
 import type { UserPublicKeys } from "../../store/keyring";
 import type { KeyringStoreState } from "../../types/keyring";

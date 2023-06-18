@@ -1,7 +1,6 @@
 import { Blockchain } from "@coral-xyz/common";
 
 import type { KeyringStore } from "../../store/keyring";
-import type { SECURE_EVENTS } from "../../types/events";
 import type {
   TransportHandler,
   TransportHandlers,

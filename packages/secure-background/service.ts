@@ -4,12 +4,9 @@ import type { SECURE_USER_EVENTS } from "./src/services/user/events";
 import { UserService } from "./src/services/user/server";
 import type { KeyringStore } from "./src/store/keyring";
 import type { SecureDB } from "./src/store/SecureStore";
-import { extensionDB, SecureStore } from "./src/store/SecureStore";
+import { SecureStore } from "./src/store/SecureStore";
 import { combineTransportReceivers } from "./src/transports/combineTransportReceivers";
-import {
-  mockTransportReceiver,
-  mockTransportSender,
-} from "./src/transports/mockTransports";
+import { mockTransportReceiver } from "./src/transports/mockTransports";
 import type {
   TransportReceiver,
   TransportSender,
@@ -26,7 +23,6 @@ export function startSecureService(
   },
   keyringStore: KeyringStore
 ) {
-  const localClient = mockTransportSender;
   const localServer = mockTransportReceiver;
   const combinedServer = combineTransportReceivers(
     interfaces.secureServer,

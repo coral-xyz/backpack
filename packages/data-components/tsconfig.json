@@ -2,8 +2,6 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist/esm/",
-    "rootDir": "./src",
-    "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "rootDir": "./src"
   }
 }

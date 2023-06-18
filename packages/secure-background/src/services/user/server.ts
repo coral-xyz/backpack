@@ -15,9 +15,9 @@ import type { SECURE_USER_EVENTS } from "./events";
 
 export class UserService {
   public destroy: TransportRemoveListener;
-  private secureUIClient: SecureUIClient;
   private keyringStore: KeyringStore;
   private secureStore: SecureStore;
+  private secureUIClient: SecureUIClient;
 
   constructor(interfaces: {
     secureServer: TransportReceiver<SECURE_USER_EVENTS>;
@@ -46,8 +46,6 @@ export class UserService {
   };
 
   private handleUserGet: TransportHandler<"SECURE_USER_GET"> = async ({
-    request,
-    event,
     respond,
     error,
   }) => {

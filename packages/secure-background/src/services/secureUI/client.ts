@@ -1,5 +1,3 @@
-import { v4 } from "uuid";
-
 import type { SECURE_EVENTS } from "../../types/events";
 import type {
   SecureRequest,
