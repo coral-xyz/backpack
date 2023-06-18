@@ -97,7 +97,7 @@ export function SecureUI({
           left="0px"
           height="100%"
           width="100%"
-          pointerEvents="box-none"
+          pointerEvents="none"
           outlineColor="red"
           outlineOffset="$-1"
         >
