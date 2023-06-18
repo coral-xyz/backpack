@@ -156,6 +156,8 @@ export type Mutation = {
   deauthenticate: Scalars["String"];
   /** Attempt to add a new wallet public key to the user account. */
   importPublicKey?: Maybe<Scalars["Boolean"]>;
+  /** Set the `viewed` status of the argued notification IDs are `true`. */
+  markNotificationsAsRead: Scalars["Int"];
   /** Allows users to send friend requests to another remote user. */
   sendFriendRequest?: Maybe<Scalars["Boolean"]>;
 };
@@ -173,6 +175,11 @@ export type MutationImportPublicKeyArgs = {
   address: Scalars["String"];
   providerId: ProviderId;
   signature: Scalars["String"];
+};
+
+/** Root level mutation type. */
+export type MutationMarkNotificationsAsReadArgs = {
+  ids: Array<Scalars["Int"]>;
 };
 
 /** Root level mutation type. */
@@ -252,6 +259,8 @@ export type Notification = Node & {
   app?: Maybe<NotificationApplicationData>;
   /** Arbitrary body data of the notification parsed as an object. */
   body: Scalars["JSONObject"];
+  /** The database unique integer identifier. */
+  dbId: Scalars["Int"];
   /** Globally unique identifier for a specific notification. */
   id: Scalars["ID"];
   /** The emitting source of the notification. */

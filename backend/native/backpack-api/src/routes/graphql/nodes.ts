@@ -63,11 +63,8 @@ export abstract class NodeBuilder {
     );
   }
 
-  static notification(
-    dbId: unknown,
-    data: Omit<Notification, "id">
-  ): Notification {
-    return this._createNode(`notification:${dbId}`, data);
+  static notification(data: Omit<Notification, "id">): Notification {
+    return this._createNode(`notification:${data.dbId}`, data);
   }
 
   static notificationAppData(

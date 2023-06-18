@@ -82,8 +82,9 @@ export class Hasura {
       throw new GraphQLError("Failed to create new notification");
     }
 
-    return NodeBuilder.notification(resp.insert_auth_notifications_one.id, {
+    return NodeBuilder.notification({
       body: b,
+      dbId: resp.insert_auth_notifications_one.id,
       source,
       title,
       timestamp: timestamp.toISOString(),
@@ -268,8 +269,9 @@ export class Hasura {
 
     // Create the list of notification type nodes for the connection
     const nodes = resp.auth_notifications.map((n) =>
-      NodeBuilder.notification(n.id, {
+      NodeBuilder.notification({
         body: n.body,
+        dbId: n.id,
         source: n.xnft_id,
         timestamp: new Date(n.timestamp as string).toISOString(),
         title: n.title,

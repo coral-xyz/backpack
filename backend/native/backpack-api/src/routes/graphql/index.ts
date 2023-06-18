@@ -10,6 +10,7 @@ import {
   friendshipTypeResolvers,
   importPublicKeyMutationResolver,
   jsonObjectScalar,
+  markNotificationsAsReadMutationResolver,
   notificationTypeResolvers,
   sendFriendRequestMutationResolver,
   tokenListQueryResolver,
@@ -28,6 +29,7 @@ const mutationResolvers: MutationResolvers = {
   authenticate: authenticateMutationResolver,
   deauthenticate: deauthenticateMutationResolver,
   importPublicKey: importPublicKeyMutationResolver,
+  markNotificationsAsRead: markNotificationsAsReadMutationResolver,
   sendFriendRequest: sendFriendRequestMutationResolver,
 };
 
