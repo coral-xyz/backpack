@@ -284,7 +284,7 @@ export class BlockchainKeyring {
     walletAddress: string
   ): Promise<string> {
     const keyring = this.getKeyring(walletAddress);
-    const msgBuffer = Buffer.from(msg);
+    const msgBuffer = Buffer.from(decode(msg));
     return keyring.signMessage(msgBuffer, walletAddress);
   }
 
