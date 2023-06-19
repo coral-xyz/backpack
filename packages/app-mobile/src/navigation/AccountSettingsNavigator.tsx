@@ -153,11 +153,11 @@ export function AccountSettingsNavigator(): JSX.Element {
           component={YourAccountScreen}
           options={{
             title: "Your Account",
-            headerBackTitle: "Profile",
+            // headerBackTitle: "Profile",
           }}
         />
         <Stack.Screen
-          options={{ title: "Change password" }}
+          options={{ title: "Change Password" }}
           name="change-password"
           component={ChangePasswordScreen}
         />
