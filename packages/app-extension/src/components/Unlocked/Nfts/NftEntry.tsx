@@ -1,10 +1,11 @@
 import type { MouseEvent } from "react";
-import { useState } from "react";
-import type * as anchor from "@coral-xyz/anchor";
+import { useEffect, useState } from "react";
 import type { Nft } from "@coral-xyz/common";
 import {
   NAV_COMPONENT_NFT_DETAIL,
+  UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   UNKNOWN_NFT_ICON_SRC,
+  // eslint-disable-next-line import/no-duplicates
 } from "@coral-xyz/common";
 import { AppsColorIcon, ProxyImage } from "@coral-xyz/react-common";
 import {
@@ -13,6 +14,7 @@ import {
   collectibleXnft,
   madLadGold,
   useActiveWallet,
+  useBackgroundClient,
   useBlockchainConnectionUrl,
   useNavigation,
   useOpenPlugin,
@@ -22,10 +24,11 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Button, IconButton, MenuItem, Typography } from "@mui/material";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
+import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
 import { RightClickMenu } from "../../common/Layout/RightClickMenu";
 import PopoverMenu from "../../common/PopoverMenu";
 
-import { useOpenChat } from "./NftDetail";
+import { BurnConfirmationCard, useOpenChat } from "./NftDetail";
 import { SendDrawer } from "./SendDrawer";
 
 const useStyles = styles((theme) => ({
@@ -77,6 +80,9 @@ export function NFTCard({
   const connectionUrl = useBlockchainConnectionUrl(activeWallet.blockchain);
   const { push } = useNavigation();
   const openPlugin = useOpenPlugin();
+  const background = useBackgroundClient();
+  const [openBurnDrawer, setOpenBurnDrawer] = useState(false);
+  const [wasBurnt, setWasBurnt] = useState(false);
   const whitelistedNftChat = useRecoilValue(
     chatByNftId({
       publicKey: activeWallet.publicKey,
@@ -95,9 +101,19 @@ export function NFTCard({
     )
   );
 
-  if (!nft) {
-    return null;
-  }
+  useEffect(() => {
+    (async () => {
+      // If the modal is being closed and the NFT has been burnt then navigate
+      // back to the nav root because the send screen is no longer valid as the
+      // wallet no longer possesses the NFT.
+      if (!openBurnDrawer && wasBurnt) {
+        await background.request({
+          method: UI_RPC_METHOD_NAVIGATION_TO_ROOT,
+          params: [],
+        });
+      }
+    })();
+  }, [openBurnDrawer, wasBurnt, background]);
 
   const chat =
     whitelistedNftChat ?? showCollectionChat ? whitelistedCollectionChat : null;
@@ -128,36 +144,57 @@ export function NFTCard({
     e.stopPropagation();
   };
 
+  const onBurn = () => {
+    setOpenBurnDrawer(true);
+  };
+
+  if (!nft) {
+    return null;
+  }
+
   return (
     <SendDrawer nft={nft}>
       {(openDrawer) => (
-        <RightClickMenu
-          renderItems={(closeMenu) => (
-            <NftRightClickActionMenu
-              onOpenDetails={openDetails}
-              onOpenChat={chat ? onOpenChat : undefined}
-              onOpenXnft={xnft ? onOpenXnft : undefined}
-              onOpenSend={openDrawer}
-              closeMenu={closeMenu}
-            />
-          )}
-        >
-          <>
-            <NftCardButton
-              onClick={xnft ? onOpenXnft : openDetails}
+        <>
+          <RightClickMenu
+            renderItems={(closeMenu) => (
+              <NftRightClickActionMenu
+                onOpenDetails={openDetails}
+                onOpenChat={chat ? onOpenChat : undefined}
+                onOpenXnft={xnft ? onOpenXnft : undefined}
+                onOpenSend={openDrawer}
+                closeMenu={closeMenu}
+                onBurn={onBurn}
+              />
+            )}
+          >
+            <>
+              <NftCardButton
+                onClick={xnft ? onOpenXnft : openDetails}
+                nft={nft}
+                isXnft={!!xnft}
+              />
+              <NftCardFooter
+                nft={nft}
+                subtitle={subtitle}
+                onOpenDetails={openDetails}
+                onOpenChat={chat ? onOpenChat : undefined}
+                onOpenXnft={xnft ? onOpenXnft : undefined}
+                onOpenSend={openDrawer}
+                onBurn={onBurn}
+              />
+            </>
+          </RightClickMenu>
+          <ApproveTransactionDrawer
+            openDrawer={openBurnDrawer}
+            setOpenDrawer={setOpenBurnDrawer}
+          >
+            <BurnConfirmationCard
               nft={nft}
-              isXnft={!!xnft}
+              onComplete={() => setWasBurnt(true)}
             />
-            <NftCardFooter
-              nft={nft}
-              subtitle={subtitle}
-              onOpenDetails={openDetails}
-              onOpenChat={chat ? onOpenChat : undefined}
-              onOpenXnft={xnft ? onOpenXnft : undefined}
-              onOpenSend={openDrawer}
-            />
-          </>
-        </RightClickMenu>
+          </ApproveTransactionDrawer>
+        </>
       )}
     </SendDrawer>
   );
@@ -304,6 +341,7 @@ function NftCardFooter({
   onOpenChat,
   onOpenXnft,
   onOpenSend,
+  onBurn,
 }: {
   nft: any;
   subtitle?: {
@@ -314,6 +352,7 @@ function NftCardFooter({
   onOpenChat?: (e: any) => Promise<void>;
   onOpenXnft?: (e: MouseEvent) => void;
   onOpenSend: () => void;
+  onBurn: () => void;
 }) {
   const theme = useCustomTheme();
   return (
@@ -367,6 +406,7 @@ function NftCardFooter({
         onOpenChat={onOpenChat}
         onOpenXnft={onOpenXnft}
         onOpenSend={onOpenSend}
+        onBurn={onBurn}
       />
     </div>
   );
@@ -378,13 +418,16 @@ function NftRightClickActionMenu({
   onOpenDetails,
   onOpenSend,
   closeMenu,
+  onBurn,
 }: {
   onOpenChat?: (e: any) => Promise<void>;
   onOpenXnft?: (e: MouseEvent) => void;
   onOpenDetails: () => void;
   onOpenSend: () => void;
   closeMenu: () => void;
+  onBurn: () => void;
 }) {
+  const theme = useCustomTheme();
   return (
     <>
       {onOpenXnft ? <MenuItem onClick={onOpenXnft}>Open xNFT</MenuItem> : null}
@@ -409,6 +452,15 @@ function NftRightClickActionMenu({
       >
         Send
       </MenuItem>
+      <MenuItem
+        sx={{ color: `${theme.custom.colors.negative} !important` }}
+        onClick={() => {
+          closeMenu();
+          onBurn();
+        }}
+      >
+        Burn
+      </MenuItem>
     </>
   );
 }
@@ -418,11 +470,13 @@ function NftMoreInfoActionMenu({
   onOpenXnft,
   onOpenDetails,
   onOpenSend,
+  onBurn,
 }: {
   onOpenDetails: () => Promise<void>;
   onOpenChat?: (e: any) => Promise<void>;
   onOpenXnft?: (e: MouseEvent) => void;
   onOpenSend: () => void;
+  onBurn: () => void;
 }) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const theme = useCustomTheme();
@@ -478,6 +532,17 @@ function NftMoreInfoActionMenu({
             }}
           >
             Send
+          </PopoverMenu.Item>
+        </PopoverMenu.Group>
+        <PopoverMenu.Group>
+          <PopoverMenu.Item
+            sx={{ color: `${theme.custom.colors.negative} !important` }}
+            onClick={() => {
+              onBurn();
+              setAnchorEl(null);
+            }}
+          >
+            Burn
           </PopoverMenu.Item>
         </PopoverMenu.Group>
       </PopoverMenu.Root>

@@ -562,7 +562,7 @@ export function NftOptionsButton() {
   );
 }
 
-function BurnConfirmationCard({
+export function BurnConfirmationCard({
   nft,
   onComplete,
 }: {
