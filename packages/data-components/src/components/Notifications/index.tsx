@@ -1,7 +1,6 @@
 import { type ReactNode, Suspense, useMemo } from "react";
 import { useMutation } from "@apollo/client";
-import { unreadCount } from "@coral-xyz/recoil";
-import { useSetRecoilState } from "recoil";
+import { useUnreadCount } from "@coral-xyz/recoil";
 import { useAsyncEffect } from "use-async-effect";
 
 import { gql } from "../../apollo";
@@ -79,7 +78,7 @@ function _Notifications({
   onItemClick,
   pollingInterval,
 }: Omit<NotificationsProps, "loaderComponent">) {
-  const setUnreadCount = useSetRecoilState(unreadCount);
+  const [, setUnreadCount] = useUnreadCount();
   const [markNotificationsAsRead] = useMutation(MARK_NOTIFICATIONS_AS_READ);
   const { data } = usePolledSuspenseQuery(
     pollingInterval ?? DEFAULT_POLLING_INTERVAL,
