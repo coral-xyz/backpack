@@ -24,26 +24,28 @@ import { coalesceWalletData } from "~src/lib/WalletUtils";
 function ListItemWalletCard({
   isFirst,
   name,
-  balance,
-  publicKey,
   type,
+  publicKey,
   blockchain,
+  isCold,
+  balance,
   onPress,
 }: {
   isFirst: boolean;
   name: string;
   type: string;
-  blockchain: Blockchain;
   publicKey: PublicKey;
+  blockchain: Blockchain;
+  isCold: boolean;
   balance: string;
-  onPress: (w: { blockchain: Blockchain; publicKey: PublicKey }) => void;
+  onPress: (w: Wallet) => void;
 }) {
   const dehydrated = type === "dehydrated";
   return (
     <Pressable
       onPress={() => {
         if (!dehydrated) {
-          onPress?.({ blockchain, publicKey });
+          onPress({ name, type, publicKey, blockchain, isCold });
         }
       }}
     >
@@ -88,22 +90,20 @@ const QUERY_USER_WALLETS = gql(`
 function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
   const { setActiveWallet } = useSession();
   const { data } = useSuspenseQuery(QUERY_USER_WALLETS);
-  const { allWallets, selectActiveWallet } = useWallets();
+  const { allWallets } = useWallets();
   const wallets = coalesceWalletData(data, allWallets);
   const insets = useSafeAreaInsets();
 
   const handlePressWallet = useCallback(
-    async (w: any) => {
-      const activeWallet = { blockchain: w.blockchain, publicKey: w.publicKey };
-      setActiveWallet(activeWallet);
-      selectActiveWallet(activeWallet);
+    async (wallet: Wallet) => {
+      setActiveWallet(wallet);
       navigation.push("TopTabsWalletDetail", {
         // @ts-expect-error TODO(navigation) fix
         screen: "TokenList",
-        params: activeWallet,
+        params: wallet,
       });
     },
-    [navigation, selectActiveWallet, setActiveWallet]
+    [navigation, setActiveWallet]
   );
 
   const keyExtractor = (wallet: Wallet) => wallet.publicKey.toString();
@@ -112,11 +112,12 @@ function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
       const isFirst = index === 0;
       return (
         <ListItemWalletCard
-          isFirst={isFirst}
           name={item.name}
-          blockchain={item.blockchain}
-          publicKey={item.publicKey}
           type={item.type}
+          publicKey={item.publicKey}
+          blockchain={item.blockchain}
+          isCold={item.isCold}
+          isFirst={isFirst}
           balance={item.balance}
           onPress={handlePressWallet}
         />

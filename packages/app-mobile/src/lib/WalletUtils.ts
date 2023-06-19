@@ -1,25 +1,32 @@
 import type { Blockchain } from "@coral-xyz/common";
+import type { Wallet } from "@coral-xyz/recoil";
 
 import { formatUsd } from "@coral-xyz/common";
 
-export function coalesceWalletData(graphqlData, recoilWallets) {
-  // TODO: this is a hack, we should be able to get the wallets from the query
-  const wallets = graphqlData.user.wallets.edges.map((edge) => {
+type WalletData = Wallet & {
+  balance: string;
+  isPrimary: boolean;
+};
+
+export function coalesceWalletData(
+  graphqlData,
+  recoilWallets: Wallet[]
+): WalletData[] {
+  return graphqlData.user.wallets.edges.map((edge) => {
     const a = recoilWallets.find(
       (wallet) => wallet.publicKey === edge.node.address
     );
 
     return {
       ...edge.node,
-      publicKey: edge.node.address,
-      isPrimary: edge.node.isPrimary,
-      blockchain: edge.node.provider.name.toLowerCase() as Blockchain,
-      balance: formatUsd(edge.node.balances.aggregate.value),
-      // TODO: this is a hack, we should be able to get the wallets from the query
+      // wallet name & type comes from recoil for the foreseeable future. Privacy concern
       name: a?.name ?? "",
       type: a?.type ?? "",
+      isCold: a?.isCold ?? false,
+      publicKey: edge.node.address,
+      blockchain: edge.node.provider.name.toLowerCase() as Blockchain,
+      isPrimary: edge.node.isPrimary,
+      balance: formatUsd(edge.node.balances.aggregate.value),
     };
   });
-
-  return wallets;
 }

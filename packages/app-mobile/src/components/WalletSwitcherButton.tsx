@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Pressable } from "react-native";
 
-import { useActiveWallet } from "@coral-xyz/recoil";
 import {
   StyledText,
   XStack,
@@ -12,13 +11,14 @@ import { useNavigation } from "@react-navigation/native";
 import { BetterBottomSheet } from "~components/BottomSheetModal";
 import { BottomSheetWalletPicker } from "~components/BottomSheetWalletPicker";
 import { IconDropdown } from "~components/Icon";
+import { BlockchainLogo } from "~components/index";
 
-import { BlockchainLogo } from ".";
+import { useSession } from "~src/lib/SessionProvider";
 
 export function WalletSwitcherButton(): JSX.Element {
+  const { activeWallet } = useSession();
   const navigation = useNavigation();
   const theme = useTamaguiTheme();
-  const activeWallet = useActiveWallet();
   const [isVisible, setIsVisible] = useState(false);
 
   return (
