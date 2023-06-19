@@ -1,60 +1,35 @@
 import type { Blockchain } from "@coral-xyz/common";
-import type { PublicKey } from "~types/types";
+import type { Wallet } from "@coral-xyz/recoil";
 
 import { Suspense, useCallback } from "react";
 import { FlatList } from "react-native";
 
-import { UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE } from "@coral-xyz/common";
-import {
-  useActiveWallet,
-  useAllWallets,
-  useBackgroundClient,
-  useDehydratedWallets,
-  usePrimaryWallets,
-} from "@coral-xyz/recoil";
+import { usePrimaryWallets } from "@coral-xyz/recoil";
 import { PaddedListItemSeparator } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { ListItemWallet, type Wallet } from "~components/ListItem";
+import { ListItemWallet } from "~components/ListItem";
 import {
   RoundedContainerGroup,
   ScreenError,
   ScreenLoading,
 } from "~components/index";
 
+import { useWallets } from "~src/hooks/wallets";
+import { useSession } from "~src/lib/SessionProvider";
+
 function WalletList2({ onPressItem }) {
-  const background = useBackgroundClient();
-  const activeWallet = useActiveWallet();
-  const wallets = useAllWallets();
-  const activeWallets = wallets.filter((w) => !w.isCold);
-  const coldWallets = wallets.filter((w) => w.isCold);
+  const { allWallets } = useWallets();
+  const { setActiveWallet } = useSession();
   const primaryWallets = usePrimaryWallets();
   const insets = useSafeAreaInsets();
 
-  // Dehydrated public keys are keys that exist on the server but cannot be
-  // used on the client as we don't have signing data, e.g. mnemonic, private
-  // key or ledger derivation path
-  const dehydratedWallets = useDehydratedWallets().map((w: any) => ({
-    ...w,
-    name: "", // TODO server side does not sync wallet names
-    type: "dehydrated",
-  }));
-
-  // activeWallet={activeWallet}
-  // activeWallets={activeWallets.concat(dehydratedWallets)}
-  // coldWallets={coldWallets}
-
-  const data = [...activeWallets, ...dehydratedWallets];
-
   const handleSelectWallet = useCallback(
-    async (b: Blockchain, pk: PublicKey) => {
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-        params: [pk, b],
-      });
+    async (wallet: Wallet) => {
+      await setActiveWallet(wallet);
     },
-    [background]
+    [setActiveWallet]
   );
 
   const renderItem = useCallback(
@@ -64,7 +39,7 @@ function WalletList2({ onPressItem }) {
       );
 
       const isFirst = index === 0;
-      const isLast = index === data.length - 1;
+      const isLast = index === allWallets.length - 1;
 
       return (
         <RoundedContainerGroup
@@ -87,18 +62,12 @@ function WalletList2({ onPressItem }) {
         </RoundedContainerGroup>
       );
     },
-    [
-      onPressItem,
-      data.length,
-      activeWallet.publicKey,
-      handleSelectWallet,
-      primaryWallets,
-    ]
+    [onPressItem, allWallets.length, handleSelectWallet, primaryWallets]
   );
 
   return (
     <FlatList
-      data={data}
+      data={allWallets}
       renderItem={renderItem}
       keyExtractor={(item) => item.publicKey}
       ItemSeparatorComponent={PaddedListItemSeparator}
@@ -125,10 +94,6 @@ function Container({ navigation }): JSX.Element {
       name,
       type,
     });
-  };
-
-  const handlePressAddWallet = (blockchain: Blockchain) => {
-    navigation.push("add-wallet", { blockchain });
   };
 
   return <WalletList2 onPressItem={handlePressItem} />;

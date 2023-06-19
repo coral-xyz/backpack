@@ -1,10 +1,10 @@
-import type { PublicKey, Wallet } from "~types/types";
+import type { Wallet } from "~types/types";
 
 import { ActivityIndicator, Alert, Pressable, Image } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
 
-import { Blockchain, formatWalletAddress } from "@coral-xyz/common";
+import { formatWalletAddress } from "@coral-xyz/common";
 import {
   ListItem,
   StyledText,
@@ -56,19 +56,6 @@ const CopyPublicKey = ({ publicKey }: { publicKey: string }) => {
   );
 };
 
-type ListItemWalletProps = Wallet & {
-  onPressEdit: (
-    b: Blockchain,
-    w: Pick<Wallet, "name" | "publicKey" | "type">
-  ) => void;
-  onSelect: (b: Blockchain, pk: PublicKey) => void;
-  selected: boolean;
-  loading: boolean;
-  primary: boolean;
-  balance: number;
-  grouped?: boolean;
-};
-
 const WalletState = ({
   selected,
   loading,
@@ -90,16 +77,27 @@ const WalletState = ({
   return null;
 };
 
+type ListItemWalletProps = Wallet & {
+  onPressEdit: (wallet: Wallet) => void;
+  onSelect: (wallet: Wallet) => void;
+  selected: boolean;
+  loading: boolean;
+  primary: boolean;
+  balance: number;
+  grouped?: boolean;
+};
+
 export const ListItemWallet = ({
   grouped = true,
   loading,
   name,
-  balance,
   publicKey,
   blockchain,
+  type,
+  isCold,
+  balance,
   selected,
   primary,
-  type,
   onPressEdit,
   onSelect,
 }: ListItemWalletProps) => {
@@ -110,12 +108,20 @@ export const ListItemWallet = ({
     console.log("recover");
   };
 
+  const wallet = {
+    name,
+    type,
+    publicKey,
+    blockchain,
+    isCold,
+  };
+
   return (
     <ListItem
       backgroundColor="$nav"
       onPress={() => {
         if (!dehydrated && !selected) {
-          onSelect(blockchain, publicKey);
+          onSelect(wallet);
         }
       }}
       borderRadius={!grouped ? "$container" : undefined}
@@ -132,7 +138,7 @@ export const ListItemWallet = ({
           style={{ flexDirection: "row", alignItems: "center" }}
           onPress={() => {
             if (!dehydrated && !selected) {
-              onSelect(blockchain, publicKey);
+              onSelect(wallet);
             }
           }}
         >
