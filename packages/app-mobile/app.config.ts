@@ -11,36 +11,27 @@ type ExpoExtras = {
   };
 };
 
-const localGraphQLApi = "http://localhost:8080/v2/graphql";
-const remoteGraphQLApi = "https://backpack-api.xnfts.dev/v2/graphql";
-const isDev = process.env.APP_ENV === "development";
-
 // NOTE: this is the hardcoded hash for production builds via App Store
 // deploy your current changes to production via pull request, switch to gh-pages branch and grab the hash from there
 // then fire off a build
-const PRODUCTION_SW_HASH = "8869656";
-const getServiceWorkerUrl = () => {
-  const url =
-    "https://mobile-service-worker.xnfts.dev/background-scripts/latest/service-worker-loader.html";
+const PROD_SW_HASH = "8869656";
 
-  return url;
+const isDev = process.env.APP_ENV === "development";
+const localGraphQLApi = "http://localhost:8080/v2/graphql";
+const remoteGraphQLApi = "https://backpack-api.xnfts.dev/v2/graphql";
+const latestServiceWorkerUrl =
+  "https://mobile-service-worker.xnfts.dev/background-scripts/latest/service-worker-loader.html";
 
-  if (process.env.APP_ENV === "staging") {
-    return url;
-  }
-
-  if (process.env.APP_ENV === "production") {
-    return url.replace(/latest/g, PRODUCTION_SW_HASH);
-  } else {
-    return "http://localhost:9333";
-  }
-};
-
-const getSplashScreen = () => {
+const getEnvironment = () => {
   if (process.env.APP_ENV === "production") {
     return {
       image: "./assets/splash-production.png",
       backgroundColor: "#FFF",
+      packageName: "app.backpack.mobile",
+      // graphqlApiUrl: localGraphQLApi,
+      graphqlApiUrl: remoteGraphQLApi,
+      serviceWorkerUrl: latestServiceWorkerUrl,
+      // serviceWorkerUrl:  latestServiceWorkerUrl.replace(/latest/g, PROD_SW_HASH),
     };
   }
 
@@ -48,21 +39,33 @@ const getSplashScreen = () => {
     return {
       image: "./assets/splash-staging.png",
       backgroundColor: "#000",
+      packageName: "app.backpack.dev",
+      // graphqlApiUrl: localGraphQLApi,
+      graphqlApiUrl: remoteGraphQLApi,
+      serviceWorkerUrl: latestServiceWorkerUrl,
     };
   }
 
   return {
     image: "./assets/splash-development.png",
     backgroundColor: "#EB6E46",
+    packageName: "app.backpack.dev",
+    // graphqlApiUrl: localGraphQLApi,
+    graphqlApiUrl: remoteGraphQLApi,
+    // serviceWorkerUrl: 'http://localhost:9333',
+    serviceWorkerUrl: latestServiceWorkerUrl,
   };
 };
 
 export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
   const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
-  const packageName = isDev ? "app.backpack.dev" : "app.backpack.mobile";
-
-  const serviceWorkerUrl = getServiceWorkerUrl();
-  const graphqlApiUrl = !isDev ? remoteGraphQLApi : localGraphQLApi;
+  const {
+    image,
+    backgroundColor,
+    packageName,
+    serviceWorkerUrl,
+    graphqlApiUrl,
+  } = getEnvironment();
 
   return {
     ...config,
@@ -78,7 +81,8 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
     // icon: "https://icogen.vercel.app/api/icon?icon=fire",
     userInterfaceStyle: "light",
     splash: {
-      ...getSplashScreen(),
+      image,
+      backgroundColor,
       resizeMode: "cover",
     },
     plugins: [

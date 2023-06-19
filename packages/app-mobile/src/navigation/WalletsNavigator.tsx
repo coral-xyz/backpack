@@ -128,135 +128,123 @@ export type TokenDetailScreenParams = StackScreenProps<
 
 const Stack = createStackNavigator<WalletStackParamList>();
 export function WalletsNavigator(): JSX.Element {
-  const tabBarEnabled = Constants.expoConfig?.extra?.tabBarEnabled;
-  const insets = useSafeAreaInsets();
   const theme = useTamaguiTheme();
   return (
-    <View
-      style={{
-        flex: 1,
-        marginBottom: !tabBarEnabled ? insets.bottom : 0,
+    <Stack.Navigator
+      initialRouteName="HomeWalletList"
+      screenOptions={{
+        headerTintColor: theme.fontColor.val,
       }}
     >
-      <Stack.Navigator
-        initialRouteName="HomeWalletList"
+      <Stack.Screen
+        name="HomeWalletList"
+        component={HomeWalletListScreen}
+        options={({ navigation }) => {
+          return {
+            headerShown: true,
+            headerBackTitleVisible: false,
+            title: "Balances",
+            headerTitle: ({ tintColor, children }) => {
+              return (
+                <BottomSheetViewOptions
+                  tintColor={tintColor}
+                  title={children}
+                  navigation={navigation}
+                />
+              );
+            },
+            headerLeft: (props) => (
+              <HeaderButtonSpacer>
+                <HeaderAvatarButton {...props} navigation={navigation} />
+              </HeaderButtonSpacer>
+            ),
+            headerRight: (props) => (
+              <HeaderButtonSpacer>
+                <HeaderButton
+                  name="notifications"
+                  {...props}
+                  onPress={() => {
+                    navigation.navigate("Notifications");
+                  }}
+                />
+              </HeaderButtonSpacer>
+            ),
+          };
+        }}
+      />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} />
+      <Stack.Screen
+        name="TopTabsWalletDetail"
+        component={TopTabsNavigator}
+        options={{
+          headerShadowVisible: false,
+          headerBackTitleVisible: false,
+          headerTitle: () => {
+            return <WalletSwitcherButton />;
+          },
+        }}
+      />
+      <Stack.Screen
+        name="TokenDetail"
+        component={TokenDetailScreen}
+        options={({ route }) => {
+          const { blockchain, tokenTicker } = route.params;
+          const title = `${toTitleCase(blockchain)} / ${tokenTicker}`;
+          return {
+            title,
+          };
+        }}
+      />
+      <Stack.Screen
+        name="CollectionDetail"
+        component={CollectionDetailScreen}
+        options={({ route }) => {
+          return {
+            headerBackTitleVisible: false,
+            title: route.params.title,
+          };
+        }}
+      />
+      <Stack.Screen
+        name="CollectionItemDetail"
+        component={CollectionItemDetailScreen}
+        options={({ route }) => {
+          return {
+            headerBackTitleVisible: false,
+            title: route.params.title,
+          };
+        }}
+      />
+      <Stack.Group
         screenOptions={{
+          presentation: "modal",
+          headerShown: true,
+          headerBackTitleVisible: false,
           headerTintColor: theme.fontColor.val,
+          headerBackImage: IconCloseModal,
         }}
       >
         <Stack.Screen
-          name="HomeWalletList"
-          component={HomeWalletListScreen}
-          options={({ navigation }) => {
-            return {
-              headerShown: true,
-              headerBackTitleVisible: false,
-              title: "Balances",
-              headerTitle: ({ tintColor, children }) => {
-                return (
-                  <BottomSheetViewOptions
-                    tintColor={tintColor}
-                    title={children}
-                    navigation={navigation}
-                  />
-                );
-              },
-              headerLeft: (props) => (
-                <HeaderButtonSpacer>
-                  <HeaderAvatarButton {...props} navigation={navigation} />
-                </HeaderButtonSpacer>
-              ),
-              headerRight: (props) => (
-                <HeaderButtonSpacer>
-                  <HeaderButton
-                    name="notifications"
-                    {...props}
-                    onPress={() => {
-                      navigation.navigate("Notifications");
-                    }}
-                  />
-                </HeaderButtonSpacer>
-              ),
-            };
-          }}
+          options={{ title: "Deposit" }}
+          name="DepositSingle"
+          component={ReceiveTokenScreen}
         />
-        <Stack.Screen name="Notifications" component={NotificationsScreen} />
-        <Stack.Screen
-          name="TopTabsWalletDetail"
-          component={TopTabsNavigator}
-          options={{
-            headerShadowVisible: false,
-            headerBackTitleVisible: false,
-            headerTitle: () => {
-              return <WalletSwitcherButton />;
-            },
-          }}
-        />
-        <Stack.Screen
-          name="TokenDetail"
-          component={TokenDetailScreen}
-          options={({ route }) => {
-            const { blockchain, tokenTicker } = route.params;
-            const title = `${toTitleCase(blockchain)} / ${tokenTicker}`;
-            return {
-              title,
-            };
-          }}
-        />
-        <Stack.Screen
-          name="CollectionDetail"
-          component={CollectionDetailScreen}
-          options={({ route }) => {
-            return {
-              headerBackTitleVisible: false,
-              title: route.params.title,
-            };
-          }}
-        />
-        <Stack.Screen
-          name="CollectionItemDetail"
-          component={CollectionItemDetailScreen}
-          options={({ route }) => {
-            return {
-              headerBackTitleVisible: false,
-              title: route.params.title,
-            };
-          }}
-        />
-        <Stack.Group
-          screenOptions={{
-            presentation: "modal",
-            headerShown: true,
-            headerBackTitleVisible: false,
-            headerTintColor: theme.fontColor.val,
-            headerBackImage: IconCloseModal,
-          }}
-        >
-          <Stack.Screen
-            options={{ title: "Deposit" }}
-            name="DepositSingle"
-            component={ReceiveTokenScreen}
-          />
-          <Stack.Group screenOptions={{ headerShown: false }}>
-            <Stack.Screen
-              name="SendSelectTokenModal"
-              component={SendNavigator}
-            />
-            <Stack.Screen name="SwapModal" component={SwapNavigator} />
-          </Stack.Group>
-          <Stack.Screen
-            name="SendCollectibleSelectRecipient"
-            component={SendCollectibleSendRecipientScreen}
-            options={({ route }) => {
-              const { nft } = route.params;
-              return {
-                title: `Send ${nft.name}`,
-              };
-            }}
-          />
+        <Stack.Group screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="SendSelectTokenModal" component={SendNavigator} />
+          <Stack.Screen name="SwapModal" component={SwapNavigator} />
         </Stack.Group>
-      </Stack.Navigator>
-    </View>
+        <Stack.Screen
+          name="SendCollectibleSelectRecipient"
+          component={SendCollectibleSendRecipientScreen}
+          options={({ route }) => {
+            const { nft } = route.params;
+            return {
+              title: `Send ${nft.name}`,
+            };
+          }}
+        />
+      </Stack.Group>
+    </Stack.Navigator>
   );
 }
 

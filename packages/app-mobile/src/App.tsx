@@ -77,7 +77,7 @@ function Main(): JSX.Element | null {
     >
       {webviewLoaded ? (
         <Providers>
-          <StatusBar />
+          <StatusBar style="dark" />
           <RootNavigation colorScheme={theme.colorScheme as "dark" | "light"} />
         </Providers>
       ) : (

@@ -40,7 +40,7 @@
       "distribution": "internal",
       "channel": "staging",
       "env": {
-        "APP_ENV": "staging"
+        "APP_ENV": "production"
       }
     },
     "production": {
@@ -49,7 +49,7 @@
       "distribution": "store",
       "autoIncrement": true,
       "env": {
-        "APP_ENV": "staging"
+        "APP_ENV": "production"
       }
     }
   },

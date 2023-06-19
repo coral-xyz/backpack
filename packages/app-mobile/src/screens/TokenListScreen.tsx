@@ -7,6 +7,7 @@ import { FlatList } from "react-native";
 import { blockchainBalancesSorted } from "@coral-xyz/recoil";
 import { Box } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRecoilValue } from "recoil";
 
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
@@ -24,6 +25,7 @@ import { useSession } from "~src/lib/SessionProvider";
 function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
   const { activeWallet } = useSession();
   const { blockchain, publicKey } = route.params;
+  const insets = useSafeAreaInsets();
   const balances = useRecoilValue(
     blockchainBalancesSorted({
       blockchain: (activeWallet?.blockchain as Blockchain) || blockchain,
@@ -67,7 +69,7 @@ function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
   return (
     <FlatList
       style={{ paddingTop: 16, paddingHorizontal: 16 }}
-      contentContainerStyle={{ paddingBottom: 32 }}
+      contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
       data={balances}
       keyExtractor={(item) => item.address}
       renderItem={renderItem}
