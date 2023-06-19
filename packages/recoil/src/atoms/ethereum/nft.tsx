@@ -77,6 +77,12 @@ const ethereumNftCollections = selectorFamily<
         });
       }
 
+      // Sort items to ensure a non-random ordering on each load
+      for (let key in collections) {
+        if (Object.prototype.hasOwnProperty.call(collections, key)) {
+          collections[key]!.itemIds?.sort();
+        }
+      }
       return { collections, nfts };
     },
 });
