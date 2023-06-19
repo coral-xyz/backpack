@@ -63,22 +63,17 @@ function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
     [balances.length, onPressToken, blockchain, publicKey]
   );
 
-  const refreshing = false;
-  const onRefetch = () => {};
-
   return (
     <FlatList
       style={{ paddingTop: 16, paddingHorizontal: 16 }}
       contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
-      onRefresh={onRefetch}
-      refreshing={refreshing}
       data={balances}
       keyExtractor={(item) => item.address}
       renderItem={renderItem}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={
         <>
-          <BalanceSummaryWidget onRefetch={onRefetch} loading={refreshing} />
+          <BalanceSummaryWidget />
           <Box marginVertical={12}>
             <TransferWidget
               swapEnabled
