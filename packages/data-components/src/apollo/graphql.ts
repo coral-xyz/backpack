@@ -703,6 +703,7 @@ export type GetNotificationsQuery = {
           __typename?: "Notification";
           id: string;
           body: { data: string } | Record<string, any>;
+          dbId: number;
           source: string;
           timestamp: string;
           title: string;
@@ -718,6 +719,15 @@ export type GetNotificationsQuery = {
       }>;
     } | null;
   } | null;
+};
+
+export type MarkNotificationsAsReadMutationVariables = Exact<{
+  ids: Array<Scalars["Int"]> | Scalars["Int"];
+}>;
+
+export type MarkNotificationsAsReadMutation = {
+  __typename?: "Mutation";
+  markNotificationsAsRead: number;
 };
 
 export type GetTokenListEntryLogoQueryVariables = Exact<{
@@ -1253,6 +1263,10 @@ export const GetNotificationsDocument = {
                                   },
                                   {
                                     kind: "Field",
+                                    name: { kind: "Name", value: "dbId" },
+                                  },
+                                  {
+                                    kind: "Field",
                                     name: { kind: "Name", value: "source" },
                                   },
                                   {
@@ -1286,6 +1300,57 @@ export const GetNotificationsDocument = {
 } as unknown as DocumentNode<
   GetNotificationsQuery,
   GetNotificationsQueryVariables
+>;
+export const MarkNotificationsAsReadDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "MarkNotificationsAsRead" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "ids" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "ListType",
+              type: {
+                kind: "NonNullType",
+                type: {
+                  kind: "NamedType",
+                  name: { kind: "Name", value: "Int" },
+                },
+              },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "markNotificationsAsRead" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "ids" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "ids" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  MarkNotificationsAsReadMutation,
+  MarkNotificationsAsReadMutationVariables
 >;
 export const GetTokenListEntryLogoDocument = {
   kind: "Document",

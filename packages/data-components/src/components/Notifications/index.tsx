@@ -1,4 +1,8 @@
 import { type ReactNode, Suspense, useMemo } from "react";
+import { useMutation } from "@apollo/client";
+import { unreadCount } from "@coral-xyz/recoil";
+import { useSetRecoilState } from "recoil";
+import { useAsyncEffect } from "use-async-effect";
 
 import { gql } from "../../apollo";
 import {
@@ -30,6 +34,7 @@ const GET_NOTIFICATIONS = gql(`
               name
             }
             body
+            dbId
             source
             timestamp
             title
@@ -38,6 +43,12 @@ const GET_NOTIFICATIONS = gql(`
         }
       }
     }
+  }
+`);
+
+const MARK_NOTIFICATIONS_AS_READ = gql(`
+  mutation MarkNotificationsAsRead($ids: [Int!]!) {
+    markNotificationsAsRead(ids: $ids)
   }
 `);
 
@@ -68,6 +79,8 @@ function _Notifications({
   onItemClick,
   pollingInterval,
 }: Omit<NotificationsProps, "loaderComponent">) {
+  const setUnreadCount = useSetRecoilState(unreadCount);
+  const [markNotificationsAsRead] = useMutation(MARK_NOTIFICATIONS_AS_READ);
   const { data } = usePolledSuspenseQuery(
     pollingInterval ?? DEFAULT_POLLING_INTERVAL,
     GET_NOTIFICATIONS,
@@ -97,6 +110,23 @@ function _Notifications({
     () => getGroupedNotifications(notifications),
     [notifications]
   );
+
+  /**
+   * Async component effect to mark the discovered unread notifications as read
+   * via the GraphQL mutation function.
+   */
+  useAsyncEffect(async () => {
+    const unread = notifications.reduce<number[]>((acc, curr) => {
+      if (!curr.viewed) {
+        acc.push(curr.dbId);
+      }
+      return acc;
+    }, []);
+
+    if (unread.length === 0) return;
+    await markNotificationsAsRead({ variables: { ids: unread } });
+    setUnreadCount(0);
+  }, [markNotificationsAsRead, notifications, setUnreadCount]);
 
   return (
     <NotificationList
