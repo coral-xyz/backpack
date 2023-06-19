@@ -73,7 +73,7 @@ function Container(): JSX.Element {
               <CurrentUserAvatar size={164} />
             </View>
           ) : null}
-          {!isBiometricsEnabled ? (
+          {isBiometricsEnabled ? (
             <BiometricsUnlock userUuid={user.uuid} />
           ) : (
             <PasswordUnlock userUuid={user.uuid} />
