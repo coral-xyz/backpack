@@ -23,6 +23,7 @@ import { PasswordInput } from "~components/PasswordInput";
 import {
   CurrentUserAvatar,
   PrimaryButton,
+  LinkButton,
   Screen,
   ScreenError,
   ScreenLoading,
@@ -34,7 +35,10 @@ import {
   BiometricAuthenticationStatus,
   tryLocalAuthenticate,
 } from "~src/features/biometrics";
-import { useOsBiometricAuthEnabled } from "~src/features/biometrics/hooks";
+import {
+  useDeviceSupportsBiometricAuth,
+  useOsBiometricAuthEnabled,
+} from "~src/features/biometrics/hooks";
 
 interface FormData {
   password: string;
@@ -78,6 +82,12 @@ function Container(): JSX.Element {
           ) : (
             <PasswordUnlock userUuid={user.uuid} />
           )}
+          <LinkButton
+            label="Having trouble logging in?"
+            onPress={() => {
+              setIsModalVisible(true);
+            }}
+          />
         </View>
       </Screen>
       <BottomSheetHelpModal
@@ -93,6 +103,7 @@ function Container(): JSX.Element {
 
 function BiometricsUnlock({ userUuid }: { userUuid: string }) {
   const background = useBackgroundClient();
+  const { biometricName } = useDeviceSupportsBiometricAuth();
 
   const tryBiometricsUnlock = async () => {
     try {
@@ -114,7 +125,10 @@ function BiometricsUnlock({ userUuid }: { userUuid: string }) {
   }, []); // runs only once so it doesn't run on setting change
 
   return (
-    <PrimaryButton label="Login with Face ID" onPress={tryBiometricsUnlock} />
+    <PrimaryButton
+      label={`Login with ${biometricName}`}
+      onPress={tryBiometricsUnlock}
+    />
   );
 }
 

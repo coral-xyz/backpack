@@ -83,7 +83,7 @@ export function BottomSheetHelpModal({
   ];
 
   if (showResetButton) {
-    menuOptions.push({
+    menuOptions.unshift({
       icon: (
         <MaterialIcons
           name="people"

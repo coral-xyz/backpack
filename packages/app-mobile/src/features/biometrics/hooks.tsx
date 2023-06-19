@@ -63,17 +63,23 @@ export function biometricAuthenticationDisabledByOS(
 export function useDeviceSupportsBiometricAuth(): {
   touchId: boolean;
   faceId: boolean;
+  biometricName: "Touch ID" | "Face ID";
 } {
   // check if device supports biometric authentication
   const authenticationTypes = useAsyncData(
     supportedAuthenticationTypesAsync
   ).data;
+
+  const touchId =
+    authenticationTypes?.includes(AuthenticationType.FINGERPRINT) ?? false;
+  const faceId =
+    authenticationTypes?.includes(AuthenticationType.FACIAL_RECOGNITION) ??
+    false;
+
   return {
-    touchId:
-      authenticationTypes?.includes(AuthenticationType.FINGERPRINT) ?? false,
-    faceId:
-      authenticationTypes?.includes(AuthenticationType.FACIAL_RECOGNITION) ??
-      false,
+    touchId,
+    faceId,
+    biometricName: touchId ? "Touch ID" : "Face ID",
   };
 }
 
