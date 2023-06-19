@@ -82,6 +82,9 @@ export function SecureUI({
     ? FullscreenPresentation
     : ModalPresentation;
 
+  // eslint-disable-next-line no-constant-condition
+  if (true) return null;
+
   return (
     <RecoilRoot
       initializeState={({ set }) => {
