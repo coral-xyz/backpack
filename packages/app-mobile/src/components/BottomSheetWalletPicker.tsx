@@ -35,6 +35,10 @@ const QUERY_USER_WALLETS = gql(`
   }
 `);
 
+function Wrapper({ children }: { children: React.ReactNode }): JSX.Element {
+  return <View style={{ height: 400 }}>{children}</View>;
+}
+
 function Container({ navigation }) {
   const { activeWallet, setActiveWallet } = useSession();
   const { data } = useSuspenseQuery(QUERY_USER_WALLETS);
@@ -87,7 +91,7 @@ function Container({ navigation }) {
   );
 
   return (
-    <View style={{ height: 400 }}>
+    <Wrapper>
       <BottomSheetTitle title="Wallets" />
       <FlatList
         data={wallets}
@@ -103,16 +107,28 @@ function Container({ navigation }) {
           Alert.alert("TODO");
         }}
       />
-    </View>
+    </Wrapper>
+  );
+}
+
+function FallbackComponent({ error }) {
+  return (
+    <Wrapper>
+      <ScreenError error={error} />
+    </Wrapper>
   );
 }
 
 export function BottomSheetWalletPicker({ navigation }): JSX.Element {
   return (
-    <ErrorBoundary
-      fallbackRender={({ error }) => <ScreenError error={error} />}
-    >
-      <Suspense fallback={<ScreenLoading />}>
+    <ErrorBoundary FallbackComponent={FallbackComponent}>
+      <Suspense
+        fallback={
+          <Wrapper>
+            <ScreenLoading />
+          </Wrapper>
+        }
+      >
         <Container navigation={navigation} />
       </Suspense>
     </ErrorBoundary>

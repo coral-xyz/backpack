@@ -4,7 +4,7 @@ import { ActivityIndicator, Alert, Pressable, Image } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
 
-import { Blockchain, formatWalletAddress } from "@coral-xyz/common";
+import { formatWalletAddress } from "@coral-xyz/common";
 import {
   ListItem,
   StyledText,

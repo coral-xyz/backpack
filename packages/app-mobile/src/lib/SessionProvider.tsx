@@ -40,7 +40,7 @@ type AppStateType = "onboardingStarted" | "onboardingComplete" | null;
 
 type SessionContextType = {
   activeWallet: Wallet | null;
-  setActiveWallet: (wallet: Wallet) => void;
+  setActiveWallet: (wallet: Wallet) => Promise<void>;
   reset: () => void;
   token: TokenType;
   setAuthToken: (token: string) => void;
@@ -58,7 +58,7 @@ type SessionContextType = {
 
 const SessionContext = createContext<SessionContextType>({
   activeWallet: null,
-  setActiveWallet: () => null,
+  setActiveWallet: async () => {},
   reset: () => null,
   token: null,
   setAuthToken: () => null,
