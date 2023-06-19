@@ -1,5 +1,10 @@
 import { View } from "react-native";
 
+import { UI_RPC_METHOD_USER_ACCOUNT_LOGOUT } from "@coral-xyz/common";
+import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
+import { useNavigation } from "@react-navigation/native";
+
+import { WarningIcon } from "~components/Icon";
 import {
   DangerButton,
   Header,
@@ -9,14 +14,8 @@ import {
   SubtextParagraph,
   TwoButtonFooter,
 } from "~components/index";
-import {
-  UI_RPC_METHOD_KEYRING_RESET,
-  UI_RPC_METHOD_USER_ACCOUNT_LOGOUT,
-} from "@coral-xyz/common";
-import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { useNavigation } from "@react-navigation/native";
 
-import { WarningIcon } from "~components/Icon";
+import { useSession } from "~src/lib/SessionProvider";
 
 export function LogoutWarningScreen({ navigation }): JSX.Element {
   const background = useBackgroundClient();
@@ -38,7 +37,7 @@ export function LogoutWarningScreen({ navigation }): JSX.Element {
 }
 
 export function ResetWarningScreen({ navigation }): JSX.Element {
-  const background = useBackgroundClient();
+  const { reset } = useSession();
 
   return (
     <Warning
@@ -46,10 +45,7 @@ export function ResetWarningScreen({ navigation }): JSX.Element {
       title="Reset Backpack"
       subtext="This will remove all the user accounts you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
       onNext={async () => {
-        await background.request({
-          method: UI_RPC_METHOD_KEYRING_RESET,
-          params: [],
-        });
+        await reset();
       }}
     />
   );
