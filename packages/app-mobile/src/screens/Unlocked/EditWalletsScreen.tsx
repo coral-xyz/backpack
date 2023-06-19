@@ -19,7 +19,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ListItemWallet, type Wallet } from "~components/ListItem";
 import {
   RoundedContainerGroup,
-  Screen,
   ScreenError,
   ScreenLoading,
 } from "~components/index";
@@ -78,7 +77,7 @@ function WalletList2({ onPressItem }) {
             publicKey={item.publicKey}
             type={item.type}
             blockchain={item.blockchain}
-            selected={item.publicKey === activeWallet.publicKey}
+            selected={false}
             primary={isPrimary}
             onPressEdit={onPressItem}
             onSelect={handleSelectWallet}
