@@ -514,23 +514,7 @@ export function SwapProvider({
     // Stop polling for route updates when swap is finalised
     stopRoutePolling();
     try {
-      const signature = await sendAndConfirmTransaction(transaction);
-
-      if (SWAP_FEES_ENABLED) {
-        try {
-          await fetch("https://jupiter.xnfts.dev/swap", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              signature,
-            }),
-          });
-        } catch (e) {
-          //  do nothing as we don't want to block the UI if it fails
-        }
-      }
+      await sendAndConfirmTransaction(transaction);
     } catch (e) {
       console.log("swap error", e);
       return false;

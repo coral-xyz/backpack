@@ -2,7 +2,6 @@ import { Chain } from "@coral-xyz/zeus";
 import type { V4SwapPostRequest } from "@jup-ag/api";
 import { Connection } from "@solana/web3.js";
 import { Hono } from "hono";
-import { importSPKI, jwtVerify } from "jose";
 
 type HasuraWebhook = {
   created_at: string;
@@ -67,46 +66,8 @@ const app = new Hono<{ Bindings: Env }>();
 // start routes ----------------------------------------
 
 app.post("/swap", async (c) => {
-  try {
-    const jwt = await jwtVerify(
-      c.req.cookie("jwt")!,
-      await importSPKI(c.env.AUTH_JWT_PUBLIC_KEY, "RS256"),
-      {
-        issuer: "auth.xnfts.dev",
-        audience: "backpack",
-      }
-    );
-    const userId = jwt.payload.sub;
-
-    const json = (await c.req.json()) as any;
-
-    const chain = Chain(c.env.HASURA_URL, {
-      headers: { Authorization: `Bearer ${c.env.HASURA_JWT}` },
-    });
-
-    try {
-      await chain("mutation")(
-        {
-          insert_auth_swaps_one: [
-            {
-              object: {
-                fee_payer_id: userId,
-                transaction_signature: json.signature,
-              },
-            },
-            { id: true },
-          ],
-        },
-        { operationName: "trackSwap" }
-      );
-    } catch (err) {
-      // fail silently
-      console.error(err);
-    }
-    return c.json({ ok: true });
-  } catch (error: any) {
-    return c.json({ error: error.message }, 500);
-  }
+  // removed, but keep the route to avoid breaking the frontend
+  return c.json({ ok: true, message: "no-op" });
 });
 
 app.post("/swap-webhook", async (c) => {
