@@ -11,15 +11,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRecoilValue } from "recoil";
 
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
-import {
-  RoundedContainerGroup,
-  ScreenLoading,
-  ScreenError,
-} from "~components/index";
+import { RoundedContainerGroup, ScreenError } from "~components/index";
 import { TokenListScreenProps } from "~navigation/types";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 import { TokenRow } from "~screens/Unlocked/components/Balances";
 
+import { ScreenListLoading } from "~src/components/LoadingStates";
 import { useSession } from "~src/lib/SessionProvider";
 
 function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
@@ -66,17 +63,22 @@ function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
     [balances.length, onPressToken, blockchain, publicKey]
   );
 
+  const refreshing = false;
+  const onRefetch = () => {};
+
   return (
     <FlatList
       style={{ paddingTop: 16, paddingHorizontal: 16 }}
       contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
+      onRefresh={onRefetch}
+      refreshing={refreshing}
       data={balances}
       keyExtractor={(item) => item.address}
       renderItem={renderItem}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={
         <>
-          <BalanceSummaryWidget />
+          <BalanceSummaryWidget onRefetch={onRefetch} loading={refreshing} />
           <Box marginVertical={12}>
             <TransferWidget
               swapEnabled
@@ -100,7 +102,7 @@ export function TokenListScreen({
     <ErrorBoundary
       fallbackRender={({ error }) => <ScreenError error={error} />}
     >
-      <Suspense fallback={<ScreenLoading />}>
+      <Suspense fallback={<ScreenListLoading style={{ marginTop: 164 }} />}>
         <Container navigation={navigation} route={route} />
       </Suspense>
     </ErrorBoundary>

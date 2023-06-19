@@ -1,7 +1,5 @@
 import { View } from "react-native";
 
-import Constants from "expo-constants";
-
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
 import { SwapProvider } from "@coral-xyz/recoil";
 import { useTheme as useTamaguiTheme } from "@coral-xyz/tamagui";
@@ -11,7 +9,6 @@ import {
   createStackNavigator,
   StackScreenProps,
 } from "@react-navigation/stack";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BottomSheetViewOptions } from "~components/BottomSheetViewOptions";
 import { IconCloseModal } from "~components/Icon";
@@ -268,36 +265,38 @@ const SwapStack = createNativeStackNavigator<SwapStackParamList>();
 function SwapNavigator(): JSX.Element {
   const theme = useTheme();
   return (
-    <SwapProvider>
-      <SwapStack.Navigator
-        screenOptions={{
-          headerShown: true,
-          headerTintColor: theme.custom.colors.fontColor,
-          headerBackTitleVisible: false,
-        }}
-      >
-        <SwapStack.Screen
-          name="SwapToken"
-          component={SwapTokenScreen}
-          options={{ title: "Swap Token" }}
-        />
-        <SwapStack.Screen
-          name="SwapTokenConfirm"
-          component={SwapTokenConfirmScreen}
-          options={{ title: "Review Order" }}
-        />
-        <SwapStack.Screen
-          name="SwapTokenList"
-          component={SwapTokenListScreen}
-          options={({ route }) => {
-            const title =
-              route.params.direction === Direction.From ? "From" : "To";
-            return {
-              title: `Select ${title}`,
-            };
+    <View style={{ paddingBottom: 48 }}>
+      <SwapProvider>
+        <SwapStack.Navigator
+          screenOptions={{
+            headerShown: true,
+            headerTintColor: theme.custom.colors.fontColor,
+            headerBackTitleVisible: false,
           }}
-        />
-      </SwapStack.Navigator>
-    </SwapProvider>
+        >
+          <SwapStack.Screen
+            name="SwapToken"
+            component={SwapTokenScreen}
+            options={{ title: "Swap Token" }}
+          />
+          <SwapStack.Screen
+            name="SwapTokenConfirm"
+            component={SwapTokenConfirmScreen}
+            options={{ title: "Review Order" }}
+          />
+          <SwapStack.Screen
+            name="SwapTokenList"
+            component={SwapTokenListScreen}
+            options={({ route }) => {
+              const title =
+                route.params.direction === Direction.From ? "From" : "To";
+              return {
+                title: `Select ${title}`,
+              };
+            }}
+          />
+        </SwapStack.Navigator>
+      </SwapProvider>
+    </View>
   );
 }

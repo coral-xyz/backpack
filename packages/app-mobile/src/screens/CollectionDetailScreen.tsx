@@ -1,17 +1,17 @@
 import { Suspense, useCallback, useMemo } from "react";
 import { FlatList, Text } from "react-native";
 
-import { useFragment_experimental } from "@apollo/client";
+import { useFragment } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { BaseListItem } from "~components/CollectionListItem";
-import { FullScreenLoading, Screen } from "~components/index";
+import { FullScreenLoading } from "~components/index";
 
 import { NftNodeFragment } from "~src/graphql/fragments";
 
 function ListItem({ id, onPress }: { id: string; onPress: any }): JSX.Element {
-  const { data } = useFragment_experimental({
+  const { data } = useFragment({
     fragment: NftNodeFragment,
     fragmentName: "NftNodeFragment",
     from: {
