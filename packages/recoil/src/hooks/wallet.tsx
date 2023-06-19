@@ -75,23 +75,11 @@ export function useAllWalletsPerBlockchain(blockchain: Blockchain): Array<{
   return useRecoilValue(atoms.allWalletsPerBlockchain(blockchain));
 }
 
-export function useAllWallets(): Array<{
-  name: string;
-  type: string;
-  publicKey: string;
-  blockchain: Blockchain;
-  isCold?: boolean;
-}> {
+export function useAllWallets(): Wallet[] {
   return useRecoilValue(atoms.allWallets);
 }
 
-export function useAllWalletsDisplayed(): Array<{
-  name: string;
-  type: string;
-  publicKey: string;
-  blockchain: Blockchain;
-  isCold?: boolean;
-}> {
+export function useAllWalletsDisplayed(): Wallet[] {
   return useRecoilValue(atoms.allWalletsDisplayed);
 }
 
