@@ -3,7 +3,7 @@ import { View, Text, FlatList } from "react-native";
 
 import * as Linking from "expo-linking";
 
-import { useSuspenseQuery_experimental } from "@apollo/client";
+import { useSuspenseQuery } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ErrorBoundary } from "react-error-boundary";
@@ -52,7 +52,7 @@ const GET_NFT_COLLECTIONS = gql(`
 
 function Container({ navigation }: CollectionListScreenProps): JSX.Element {
   const { blockchain, publicKey } = useActiveWallet();
-  const { data } = useSuspenseQuery_experimental(GET_NFT_COLLECTIONS, {
+  const { data } = useSuspenseQuery(GET_NFT_COLLECTIONS, {
     variables: {
       // @ts-expect-error graphql ProviderID not defined as string
       providerId: blockchain.toUpperCase(),

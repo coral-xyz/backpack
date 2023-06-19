@@ -6,15 +6,17 @@ import { FlatList, Pressable } from "react-native";
 
 import Constants from "expo-constants";
 
-import { useSuspenseQuery_experimental } from "@apollo/client";
-import { Box, StyledText, XStack, BlockchainLogo } from "@coral-xyz/tamagui";
+import { useSuspenseQuery } from "@apollo/client";
+import { Stack, StyledText, XStack, BlockchainLogo } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { ScreenError, ScreenLoading } from "~components/index";
+import { ScreenError } from "~components/index";
 import { useWallets } from "~hooks/wallets";
 import type { HomeWalletListScreenProps } from "~navigation/WalletsNavigator";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 
+import { ScreenListLoading } from "~src/components/LoadingStates";
 import { gql } from "~src/graphql/__generated__";
 import { useSession } from "~src/lib/SessionProvider";
 import { coalesceWalletData } from "~src/lib/WalletUtils";
@@ -85,9 +87,10 @@ const QUERY_USER_WALLETS = gql(`
 
 function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
   const { setActiveWallet } = useSession();
-  const { data } = useSuspenseQuery_experimental(QUERY_USER_WALLETS);
+  const { data } = useSuspenseQuery(QUERY_USER_WALLETS);
   const { allWallets, selectActiveWallet } = useWallets();
   const wallets = coalesceWalletData(data, allWallets);
+  const insets = useSafeAreaInsets();
 
   const handlePressWallet = useCallback(
     async (w: any) => {
@@ -125,15 +128,15 @@ function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
   return (
     <FlatList
       style={{ paddingTop: 16, paddingHorizontal: 16 }}
-      contentContainerStyle={{ paddingBottom: 32 }}
+      contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
       data={wallets}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={
-        <Box mb={12}>
+        <Stack mb={12}>
           <BalanceSummaryWidget />
-        </Box>
+        </Stack>
       }
     />
   );
@@ -152,9 +155,11 @@ export function HomeWalletListScreen({
         />
       )}
     >
-      <Suspense fallback={<ScreenLoading />}>
+      <Suspense fallback={<ScreenListLoading style={{ marginTop: 100 }} />}>
         <Container navigation={navigation} route={route} />
       </Suspense>
     </ErrorBoundary>
   );
 }
+
+// <Container navigation={navigation} route={route} />

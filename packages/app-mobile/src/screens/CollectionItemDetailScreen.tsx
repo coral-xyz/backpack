@@ -3,7 +3,7 @@ import { Alert, View, Text, ScrollView } from "react-native";
 
 import * as Linking from "expo-linking";
 
-import { useFragment_experimental } from "@apollo/client";
+import { useFragment } from "@apollo/client";
 import { Blockchain, explorerNftUrl } from "@coral-xyz/common";
 import {
   useEthereumExplorer,
@@ -112,7 +112,7 @@ function Description({ description }: { description: string }) {
 
 function Container({ navigation, route }): JSX.Element {
   const { blockchain } = route.params;
-  const { data: nft } = useFragment_experimental({
+  const { data: nft } = useFragment({
     fragment: NftNodeFragment,
     fragmentName: "NftNodeFragment",
     from: {

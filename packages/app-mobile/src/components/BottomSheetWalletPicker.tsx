@@ -3,7 +3,7 @@ import type { PublicKey, Wallet } from "~types/types";
 import { Suspense, useCallback, useState } from "react";
 import { FlatList, View, Alert } from "react-native";
 
-import { useSuspenseQuery_experimental } from "@apollo/client";
+import { useSuspenseQuery } from "@apollo/client";
 import { Blockchain } from "@coral-xyz/common";
 import { BottomSheetTitle, PaddedListItemSeparator } from "@coral-xyz/tamagui";
 import { useBottomSheetModal } from "@gorhom/bottom-sheet";
@@ -38,7 +38,7 @@ const QUERY_USER_WALLETS = gql(`
 
 function Container({ navigation }) {
   const { setActiveWallet } = useSession();
-  const { data } = useSuspenseQuery_experimental(QUERY_USER_WALLETS);
+  const { data } = useSuspenseQuery(QUERY_USER_WALLETS);
   const { allWallets, activeWallet, selectActiveWallet } = useWallets();
   const { dismiss } = useBottomSheetModal();
   const [loadingId, setLoadingId] = useState<string | null>(null);
