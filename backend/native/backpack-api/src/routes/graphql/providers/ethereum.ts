@@ -1,3 +1,4 @@
+import { EthereumTokenList } from "@coral-xyz/common";
 import {
   AssetTransfersCategory,
   type AssetTransfersParams,
@@ -9,7 +10,6 @@ import { ethers } from "ethers";
 import type { CoinGeckoPriceData } from "../clients/coingecko";
 import type { ApiContext } from "../context";
 import { NodeBuilder } from "../nodes";
-import { EthereumTokenList } from "../tokens";
 import {
   type BalanceFiltersInput,
   type Balances,

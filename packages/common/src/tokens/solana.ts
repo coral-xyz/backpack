@@ -1,4 +1,4 @@
-import type { TokenListEntry } from "../types";
+import type { TokenListEntry } from "./types";
 
 export const SolanaTokenList: Record<string, Omit<TokenListEntry, "id">> = {
   "11111111111111111111111111111111": {
