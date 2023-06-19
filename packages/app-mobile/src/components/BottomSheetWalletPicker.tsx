@@ -51,7 +51,8 @@ function Container({ navigation }) {
   const handlePressSelect = useCallback(
     async (wallet: Wallet) => {
       setLoadingId(wallet.publicKey);
-      await setActiveWallet(wallet);
+      // if the delay is terrible, add await here
+      setActiveWallet(wallet);
       setLoadingId(null);
       dismiss();
     },
