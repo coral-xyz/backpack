@@ -1,4 +1,4 @@
-import type { PublicKey, Wallet } from "~types/types";
+import type { Wallet } from "~types/types";
 
 import { useCallback } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
@@ -7,7 +7,6 @@ import { Blockchain, formatWalletAddress } from "@coral-xyz/common";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HardwareIcon, ImportedIcon, MnemonicIcon } from "~components/Icon";
-import { ListItemWalletOverview } from "~components/ListItem";
 import {
   BlockchainLogo,
   CopyButtonIcon,
@@ -21,20 +20,37 @@ import {
 import { useTheme } from "~hooks/useTheme";
 import { useWallets } from "~hooks/wallets";
 
-export function WalletListScreen({ navigation, route }): JSX.Element {
+import { useSession } from "~src/lib/SessionProvider";
+
+export function WalletListScreen({ navigation }): JSX.Element {
   const insets = useSafeAreaInsets();
-  const { activeWallet, selectActiveWallet, allWallets } = useWallets();
+  const { activeWallet, setActiveWallet } = useSession();
+  const { allWallets } = useWallets();
 
   const handlePressWallet = useCallback(
-    (w: Wallet) => {
-      selectActiveWallet(
-        { blockchain: w.blockchain, publicKey: w.publicKey },
-        () => {
-          navigation.goBack();
-        }
+    async (wallet: Wallet) => {
+      await setActiveWallet(wallet);
+      navigation.goBack();
+    },
+    [setActiveWallet, navigation]
+  );
+
+  const keyExtractor = (item) => item.publicKey;
+  const renderItem = useCallback(
+    ({ item: wallet }) => {
+      return (
+        <WalletListItem
+          name={wallet.name}
+          publicKey={wallet.publicKey}
+          type={wallet.type as string}
+          blockchain={wallet.blockchain}
+          onPress={handlePressWallet}
+          icon={<CopyButtonIcon text={wallet.publicKey} />}
+          isSelected={wallet.publicKey === activeWallet?.publicKey}
+        />
       );
     },
-    [selectActiveWallet, navigation]
+    [activeWallet?.publicKey, handlePressWallet]
   );
 
   return (
@@ -42,20 +58,8 @@ export function WalletListScreen({ navigation, route }): JSX.Element {
       <FlatList
         data={allWallets}
         ItemSeparatorComponent={() => <ListRowSeparator />}
-        keyExtractor={(item) => item.publicKey.toString()}
-        renderItem={({ item: wallet }) => {
-          return (
-            <WalletListItem
-              name={wallet.name}
-              publicKey={wallet.publicKey}
-              type={wallet.type as string}
-              blockchain={wallet.blockchain}
-              onPress={handlePressWallet}
-              icon={<CopyButtonIcon text={wallet.publicKey} />}
-              isSelected={wallet.publicKey === activeWallet?.publicKey}
-            />
-          );
-        }}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
       />
     </Screen>
   );
