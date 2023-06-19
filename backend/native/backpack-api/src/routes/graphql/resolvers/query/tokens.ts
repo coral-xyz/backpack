@@ -1,8 +1,8 @@
+import { EthereumTokenList, SolanaTokenList } from "@coral-xyz/common";
 import type { GraphQLResolveInfo } from "graphql";
 
 import type { ApiContext } from "../../context";
 import { NodeBuilder } from "../../nodes";
-import { EthereumTokenList, SolanaTokenList } from "../../tokens";
 import {
   ProviderId,
   type QueryResolvers,

@@ -1,3 +1,4 @@
+import { SolanaTokenList } from "@coral-xyz/common";
 import { getATAAddressesSync } from "@saberhq/token-utils";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { ethers } from "ethers";
@@ -10,7 +11,6 @@ import {
 import type { TensorActingListingsResponse } from "../clients/tensor";
 import type { ApiContext } from "../context";
 import { NodeBuilder } from "../nodes";
-import { SolanaTokenList } from "../tokens";
 import {
   type BalanceFiltersInput,
   type Balances,
