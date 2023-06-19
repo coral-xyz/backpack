@@ -924,8 +924,7 @@ export function OnboardingBiometricsScreen({
 }: BiometricsScreenProps): JSX.Element {
   const insets = useSafeAreaInsets();
   const { setOnboardingData } = useOnboarding();
-  const { touchId: isTouchIdDevice } = useDeviceSupportsBiometricAuth();
-  const biometricName = isTouchIdDevice ? "Touch ID" : "Face ID";
+  const { biometricName } = useDeviceSupportsBiometricAuth();
 
   const onPressNext = useCallback(() => {
     navigation.navigate({
