@@ -100,7 +100,7 @@ export const requestQueueAtom = atom<QueuedRequest[]>({
               if (queue instanceof DefaultValue) {
                 return [queuedRequest];
               }
-              return [...queue, queuedRequest];
+              return [queuedRequest, ...queue];
             });
 
             return promise;

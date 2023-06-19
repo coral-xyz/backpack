@@ -15,11 +15,6 @@ export function Presentation({
   children: React.ReactElement;
 }) {
   const currentUser = useRecoilValue(userAtom);
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    setOpen(!!currentRequest);
-  }, [currentRequest]);
 
   if (!currentUser) {
     return null;
@@ -44,6 +39,8 @@ export function Presentation({
         position="absolute"
         top="0px"
         left="0px"
+        right="0px"
+        bottom="0px"
         height="100%"
         width="100%"
         pointerEvents="box-none"
@@ -51,7 +48,8 @@ export function Presentation({
         outlineOffset="$-1"
       >
         <Present
-          open={!!open}
+          key={currentRequest.queueId}
+          open={!!currentRequest}
           setOpen={(isOpen) => {
             if (!isOpen) currentRequest.respond({ confirmed: false });
           }}
@@ -71,7 +69,7 @@ function FullscreenPresentation({
   open: boolean;
   setOpen: (open: boolean) => void;
 }) {
-  if (!open) {
+  if (open) {
     return null;
   }
   return (
@@ -99,27 +97,25 @@ function ModalPresentation({
   open: boolean;
   setOpen: (open: boolean) => void;
 }) {
-  const [position, setPosition] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     // this effect is to force the sheet from rendering before animating
     // prevents bug where animations comes in from top.
-    setIsOpen(true);
+    setTimeout(() => setIsOpen(true), 200);
   }, []);
 
   const render = open && isOpen;
   return (
     <Sheet
-      forceRemoveScrollEnabled
       open={render}
-      modal={false}
+      modal
       onOpenChange={setOpen}
+      snapPoints={[80]}
       dismissOnSnapToBottom={false}
-      position={position}
-      onPositionChange={setPosition}
+      position={0}
       zIndex={100_000}
-      animation="bouncy"
+      animation="quick"
     >
       <Sheet.Overlay backgroundColor="rgba(0,0,0,0.3)" />
       {/* <Sheet.Handle /> */}
