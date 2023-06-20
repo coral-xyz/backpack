@@ -10,9 +10,9 @@
     "@coral-xyz/common": "*"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230518.0",
+    "@cloudflare/workers-types": "^4.20221111.1",
     "eslint-config-custom": "*",
-    "typescript": "^5.1.3",
+    "typescript": "^4.9.5",
     "wrangler": "^3.1.0"
   }
 }
