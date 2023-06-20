@@ -1,9 +1,9 @@
 import type { BigNumber } from "ethers";
 
 import type { StyleProp, ViewStyle } from "react-native";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 
-import { StyledText } from "@coral-xyz/tamagui";
+import { XStack, StyledText } from "@coral-xyz/tamagui";
 import { ethers } from "ethers";
 
 import { ProxyImage } from "~components/index";
@@ -20,7 +20,6 @@ type TokenAmountHeaderProps = {
 };
 
 export const TokenAmountHeader = ({
-  style,
   token,
   amount,
   displayLogo = true,
@@ -33,28 +32,23 @@ export const TokenAmountHeader = ({
       : formattedAmount;
 
   return (
-    <View style={[styles.container, style]}>
+    <XStack ai="center" als="center">
       {displayLogo ? (
         <ProxyImage size={32} src={token.logo!} style={styles.logo} />
       ) : null}
-      <View style={styles.container}>
+      <XStack ai="center" als="center" space={6}>
         <StyledText fontWeight="600" fontSize="$4xl" color="$fontColor">
           {maybeTruncatedAmount}
         </StyledText>
         <StyledText fontWeight="500" fontSize="$4xl" color="$secondary">
           {token.ticker ?? ""}
         </StyledText>
-      </View>
-    </View>
+      </XStack>
+    </XStack>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "center",
-  },
   logo: {
     borderRadius: 16,
     marginRight: 8,

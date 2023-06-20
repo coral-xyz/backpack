@@ -193,9 +193,7 @@ export const ListItemWallet = ({
               <CopyPublicKey publicKey={publicKey} />
             </XStack>
           </YStack>
-          <Pressable
-            onPress={() => onPressEdit(blockchain, { name, publicKey, type })}
-          >
+          <Pressable onPress={() => onPressEdit(wallet)}>
             <ArrowRightIcon />
           </Pressable>
         </XStack>
