@@ -30,7 +30,7 @@ function Pill({ trait, value }: Attribute): JSX.Element {
 export function CollectionAttributes({
   attributes,
 }: {
-  attributes: Attribute[];
+  attributes: Attribute[] | undefined;
 }): JSX.Element | null {
   if (!attributes || attributes?.length === 0) {
     return null;

@@ -118,9 +118,14 @@ export type HomeWalletListScreenProps = StackScreenProps<
   "HomeWalletList"
 >;
 
-export type TokenDetailScreenParams = StackScreenProps<
+export type TokenDetailScreenProps = StackScreenProps<
   WalletStackParamList,
   "TokenDetail"
+>;
+
+export type CollectionItemDetailScreenProps = StackScreenProps<
+  WalletStackParamList,
+  "CollectionItemDetail"
 >;
 
 const Stack = createStackNavigator<WalletStackParamList>();
@@ -205,7 +210,7 @@ export function WalletsNavigator(): JSX.Element {
       <Stack.Screen
         name="CollectionItemDetail"
         component={CollectionItemDetailScreen}
-        options={({ route }) => {
+        options={({ route, navigation }) => {
           return {
             headerBackTitleVisible: false,
             title: route.params.title,
