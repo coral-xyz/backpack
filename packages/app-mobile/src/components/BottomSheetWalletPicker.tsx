@@ -62,16 +62,19 @@ function Container({ navigation }) {
   const handlePressEdit = useCallback(
     (wallet: Wallet) => {
       dismiss();
-      navigation.push("AccountSettings", {
+      navigation.navigate("AccountSettings", {
         screen: "edit-wallets-wallet-detail",
-        params: wallet,
+        params: {
+          name: wallet.name,
+          publicKey: wallet.publicKey,
+        },
       });
     },
     [dismiss, navigation]
   );
 
   const renderItem = useCallback(
-    ({ item }: object) => {
+    ({ item }) => {
       return (
         <ListItemWallet
           name={item.name}
