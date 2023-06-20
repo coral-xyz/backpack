@@ -116,7 +116,7 @@ function BackgroundHiddenWebView(): JSX.Element {
         // }}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
-          // maybeParseLog(msg);
+          maybeParseLog(msg);
           if (msg.type === BACKGROUND_SERVICE_WORKER_READY) {
             // @ts-expect-error
             setInjectJavaScript(ref.current?.injectJavaScript);

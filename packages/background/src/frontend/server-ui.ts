@@ -114,6 +114,7 @@ import type { Backend } from "../backend/core";
 import type { Config, Handle, PublicKeyData } from "../types";
 
 const logger = getLogger("background-server-ui");
+const logger2 = getLogger("dc1");
 
 export function start(_cfg: Config, events: EventEmitter, b: Backend): Handle {
   const rpcServerUi = ChannelAppUi.server(CHANNEL_POPUP_RPC);
@@ -335,8 +336,10 @@ async function handle<T = any>(
       // @ts-ignore
       return await handleUsernameAccountCreate(ctx, ...params);
     case UI_RPC_METHOD_ACTIVE_USER_UPDATE:
+      logger2.debug("dc1:UI_RPC_METHOD_ACTIVE_USER_UPDATE:params", params);
       // @ts-ignore
       const response = await handleActiveUserUpdate(ctx, ...params);
+      logger2.debug("dc1:UI_RPC_METHOD_ACTIVE_USER_UPDATE:response", response);
       ctx.backend.keyringStoreAutoLockReset();
       return response;
     //
@@ -607,7 +610,10 @@ async function handleActiveUserUpdate(
   ctx: Context<Backend>,
   ...args: Parameters<Backend["activeUserUpdate"]>
 ): Promise<RpcResponse<string>> {
+  logger2.debug("handleActiveUserUpdate:args", args);
   const resp = await ctx.backend.activeUserUpdate(...args);
+  logger2.debug("handleActiveUserUpdate:resp");
+  logger2.debug("handleActiveUserUpdate:resp", resp);
   return [resp];
 }
 

@@ -22,6 +22,7 @@ import {
   EthereumExplorer,
   getAccountRecoveryPaths,
   getAddMessage,
+  getLogger,
   getRecoveryPaths,
   makeUrl,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
@@ -96,6 +97,8 @@ import type { EthereumConnectionBackend } from "./ethereum-connection";
 import type { Nav } from "./legacy-store";
 import * as legacyStore from "./legacy-store";
 import type { SolanaConnectionBackend } from "./solana-connection";
+
+const logger2 = getLogger("dc1");
 
 const { base58: bs58 } = ethers.utils;
 
@@ -638,6 +641,7 @@ export class Backend {
   }
 
   async activeUserUpdate(uuid: string): Promise<string> {
+    logger2.debug("activeUserUpdate", uuid);
     // Change active user account.
     const { username, jwt } = await this.keyringStore.activeUserUpdate(uuid);
 
