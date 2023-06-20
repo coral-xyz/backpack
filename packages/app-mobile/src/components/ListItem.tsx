@@ -1,6 +1,7 @@
+import type { Blockchain } from "@coral-xyz/common";
 import type { Wallet } from "~types/types";
 
-import { ActivityIndicator, Alert, Pressable, Image } from "react-native";
+import { ActivityIndicator, Alert, Image, Pressable } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
 
@@ -22,7 +23,6 @@ import { PriceChangePill } from "~components/Pill";
 import { BlockchainLogo } from "~components/index";
 
 export {
-  _ListItemOneLine,
   ItemSeparator,
   ListHeader,
   ListItemActivity,
@@ -38,6 +38,7 @@ export {
   PaddedListItemSeparator,
   SectionHeader,
   SectionSeparator,
+  _ListItemOneLine,
 } from "@coral-xyz/tamagui";
 
 const CopyPublicKey = ({ publicKey }: { publicKey: string }) => {
@@ -78,7 +79,7 @@ const WalletState = ({
 };
 
 type ListItemWalletProps = Wallet & {
-  onPressEdit: (wallet: Wallet) => void;
+  onPressEdit: (blockchain: Blockchain, wallet: Wallet) => void;
   onSelect: (wallet: Wallet) => void;
   selected: boolean;
   loading: boolean;
@@ -193,7 +194,7 @@ export const ListItemWallet = ({
               <CopyPublicKey publicKey={publicKey} />
             </XStack>
           </YStack>
-          <Pressable onPress={() => onPressEdit(wallet)}>
+          <Pressable onPress={() => onPressEdit(blockchain, wallet)}>
             <ArrowRightIcon />
           </Pressable>
         </XStack>

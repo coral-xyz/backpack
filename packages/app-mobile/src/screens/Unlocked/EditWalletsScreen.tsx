@@ -1,4 +1,3 @@
-import type { Blockchain } from "@coral-xyz/common";
 import type { Wallet } from "@coral-xyz/recoil";
 
 import { Suspense, useCallback } from "react";
@@ -19,7 +18,11 @@ import {
 import { useWallets } from "~src/hooks/wallets";
 import { useSession } from "~src/lib/SessionProvider";
 
-function WalletList2({ onPressItem }) {
+function WalletList2({
+  onPressItem,
+}: {
+  onPressItem: React.ComponentProps<typeof ListItemWallet>["onPressEdit"];
+}) {
   const { allWallets } = useWallets();
   const { setActiveWallet } = useSession();
   const primaryWallets = usePrimaryWallets();
@@ -84,19 +87,18 @@ function WalletList2({ onPressItem }) {
 }
 
 function Container({ navigation }): JSX.Element {
-  const handlePressItem = (
-    blockchain: Blockchain,
-    { name, publicKey, type }: Wallet
-  ) => {
-    navigation.navigate("edit-wallets-wallet-detail", {
-      blockchain,
-      publicKey,
-      name,
-      type,
-    });
-  };
-
-  return <WalletList2 onPressItem={handlePressItem} />;
+  return (
+    <WalletList2
+      onPressItem={(blockchain, { name, publicKey, type }) => {
+        navigation.navigate("edit-wallets-wallet-detail", {
+          blockchain,
+          publicKey,
+          name,
+          type,
+        });
+      }}
+    />
+  );
 }
 
 export function EditWalletsScreen({ navigation }): JSX.Element {

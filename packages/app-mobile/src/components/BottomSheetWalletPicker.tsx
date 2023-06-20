@@ -1,7 +1,7 @@
 import type { Wallet } from "~types/types";
 
 import { Suspense, useCallback, useState } from "react";
-import { FlatList, View, Alert } from "react-native";
+import { Alert, FlatList, View } from "react-native";
 
 import { useSuspenseQuery } from "@apollo/client";
 import { BottomSheetTitle, PaddedListItemSeparator } from "@coral-xyz/tamagui";
@@ -59,12 +59,15 @@ function Container({ navigation }) {
     [dismiss, setActiveWallet]
   );
 
-  const handlePressEdit = useCallback(
-    (wallet: Wallet) => {
+  const handlePressEdit = useCallback<
+    React.ComponentProps<typeof ListItemWallet>["onPressEdit"]
+  >(
+    (blockchain, wallet) => {
       dismiss();
       navigation.navigate("AccountSettings", {
         screen: "edit-wallets-wallet-detail",
         params: {
+          blockchain,
           name: wallet.name,
           publicKey: wallet.publicKey,
         },
