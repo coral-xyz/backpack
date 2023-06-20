@@ -14,12 +14,9 @@ import * as SecureStore from "expo-secure-store";
 import {
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  getLogger,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const logger = getLogger("debug2:SessionProvider");
 
 const key = "@@session";
 
@@ -86,7 +83,7 @@ export const SessionProvider = ({
   // on app load
   useEffect(() => {
     getTokenAsync().then((token) => {
-      logger.debug("SessionProvider:getTokenAsync:token", token);
+      console.log("SessionProvider:getTokenAsync:token", token);
       if (token) {
         setToken(token);
       }
