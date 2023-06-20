@@ -63,6 +63,7 @@ import {
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
   SolanaCluster,
   SolanaExplorer,
+  TAB_BALANCES_SET,
   TAB_XNFT,
 } from "@coral-xyz/common";
 import { makeDefaultNav } from "@coral-xyz/recoil";
@@ -1982,6 +1983,8 @@ export class Backend {
     //
     // Migrate balances tab if needed.
     //
+    // This only works if this method is called on app load.
+    //
     if (!nav.data["balances"].ref) {
       nav.data["balances"] = {
         id: "balances",
@@ -2039,11 +2042,7 @@ export class Backend {
     //
     // Sync the "balances" ref field
     //
-    if (
-      activeTab === "tokens" ||
-      activeTab == "nfts" ||
-      activeTab === "recent-activity"
-    ) {
+    if (TAB_BALANCES_SET.has(activeTab)) {
       currNav.data["balances"].ref = activeTab;
     }
 
@@ -2101,11 +2100,7 @@ export class Backend {
     //
     // Sync the "balances" ref field
     //
-    if (
-      activeTab === "tokens" ||
-      activeTab == "nfts" ||
-      activeTab === "recent-activity"
-    ) {
+    if (TAB_BALANCES_SET.has(activeTab)) {
       currNav.data["balances"].ref = activeTab;
     }
 

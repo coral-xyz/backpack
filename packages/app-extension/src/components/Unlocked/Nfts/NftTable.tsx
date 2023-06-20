@@ -31,12 +31,6 @@ type Row = {
   component: JSX.Element;
 };
 
-type collapseSingleCollection = (
-  listIndex: number,
-  blockchainCollectionIndex: number,
-  isCollapsed: boolean
-) => void;
-
 export function NftTable({
   blockchainCollections,
   prependItems = [],
@@ -50,18 +44,6 @@ export function NftTable({
     );
 
   const ref = useRef<VariableSizeList>(null);
-
-  const collapseSingleCollection: collapseSingleCollection = useCallback(
-    (listIndex: number, blockchainIndex: number, isCollapsed: boolean) => {
-      setCollapsedCollections((oldValue) => {
-        const collapsed = [...oldValue];
-        collapsed[blockchainIndex] = isCollapsed;
-        return collapsed;
-      });
-      ref.current?.resetAfterIndex && ref.current?.resetAfterIndex(listIndex);
-    },
-    [setCollapsedCollections, ref]
-  );
 
   const nftWidth = 174;
 
@@ -90,7 +72,6 @@ export function NftTable({
                   i,
                   blockchainCollections,
                   collapsedCollections,
-                  //                  collapseSingleCollection,
                   numberOfItemsPerRow,
                   prependItems
                 );
@@ -110,7 +91,6 @@ export function NftTable({
                   i,
                   blockchainCollections,
                   collapsedCollections,
-                  //                  collapseSingleCollection,
                   numberOfItemsPerRow,
                   prependItems
                 );
@@ -123,7 +103,6 @@ export function NftTable({
                   index,
                   blockchainCollections,
                   collapsedCollections,
-                  //                  collapseSingleCollection,
                   numberOfItemsPerRow,
                   prependItems
                 );
@@ -136,38 +115,6 @@ export function NftTable({
     </Autosizer>
   );
 }
-
-/*
-const HeaderRow = function HeaderRow({
-  listIndex,
-  blockchainIndex,
-  blockchainCollections,
-  isCollapsed,
-  collapseSingleCollection,
-}: {
-  listIndex: number;
-  blockchainIndex: number;
-  blockchainCollections: AllWalletCollections;
-  isCollapsed: boolean;
-  collapseSingleCollection: collapseSingleCollection;
-}) {
-  const c = blockchainCollections[blockchainIndex];
-  const wallets = useAllWallets();
-  const wallet = wallets.find((wallet) => wallet.publicKey === c.publicKey);
-  const blockchain = wallet?.blockchain;
-  return (
-    <CustomCard top bottom={isCollapsed}>
-      <_BalancesTableHead
-        blockchain={blockchain as Blockchain}
-        showContent={!isCollapsed}
-        setShowContent={(isCollapsed) => {
-          collapseSingleCollection(listIndex, blockchainIndex, !isCollapsed);
-        }}
-      />
-    </CustomCard>
-  );
-};
-*/
 
 const HeaderRow = function () {
   return <CustomCard top bottom={false} />;
@@ -415,7 +362,6 @@ const getItemForIndex = (
   index: number,
   blockchainCollections: AllWalletCollections,
   collapsedCollections: CollapsedCollections,
-  //  collapseSingleCollection: collapseSingleCollection,
   itemsPerRow: number,
   prependItems: Row[]
 ): Row | null => {
@@ -468,17 +414,7 @@ const getItemForIndex = (
     return {
       height: 12, //isCollapsed ? 52 : 36,
       key: `header${blockchainIndex}`,
-      component: (
-        <HeaderRow />
-        /*
-          listIndex={index}
-          blockchainIndex={blockchainIndex}
-          blockchainCollections={blockchainCollections}
-          isCollapsed={collapsedCollections[blockchainIndex]}
-          collapseSingleCollection={collapseSingleCollection}
-        />
-				*/
-      ),
+      component: <HeaderRow />,
     };
   }
   if (collectionGroupIndex >= numberOfRowsInCollection) {

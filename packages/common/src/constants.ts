@@ -541,6 +541,11 @@ export const TAB_SET = new Set([
   TAB_RECENT_ACTIVITY,
   TAB_NOTIFICATIONS,
 ]);
+export const TAB_BALANCES_SET = new Set([
+  TAB_TOKENS,
+  TAB_NFTS,
+  TAB_RECENT_ACTIVITY,
+]);
 
 export const NAV_COMPONENT_TOKEN = "tokens/token";
 export const NAV_COMPONENT_NFT_DETAIL = "nfts/detail";

@@ -23,21 +23,14 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { IconButton, Typography } from "@mui/material";
 
 import { useNavigation } from "../../common/Layout/NavStack";
-import { TransactionsButton } from "../../Unlocked/Transactions";
 import { NotificationButton } from "../Notifications";
 
 import { AvatarHeader } from "./AvatarHeader/AvatarHeader";
-//import { AvatarPopoverButton } from "./AvatarPopover";
 
 export function SettingsButton() {
   return (
     <div style={{ display: "flex" }}>
       <SearchButton />
-      {/*
-      <div style={{ width: "16px" }} />
-			<MessagesButton />
-      <TransactionsButton />
-				*/}
       <NotificationButton />
     </div>
   );
@@ -67,32 +60,6 @@ function SearchButton() {
           color: theme.custom.colors.icon,
           backgroundColor: "transparent",
           borderRadius: "12px",
-        }}
-      />
-    </IconButton>
-  );
-}
-
-function MessagesButton() {
-  const theme = useCustomTheme();
-  return (
-    <IconButton
-      disableRipple
-      sx={{
-        padding: 0,
-        width: "24px",
-        "&:hover": {
-          background: "transparent",
-        },
-      }}
-      size="large"
-      onClick={() => {}}
-    >
-      <MessageBubbleIcon
-        style={{
-          color: theme.custom.colors.icon,
-          backgroundColor: "transparent",
-          width: "18px",
         }}
       />
     </IconButton>
