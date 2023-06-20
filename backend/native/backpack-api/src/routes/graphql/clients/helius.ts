@@ -12,6 +12,7 @@ export const IN_MEM_COLLECTION_DATA_CACHE = new LRUCache<
   allowStale: false,
   max: 1000,
   ttl: 1000 * 60 * 30, // 30 minute TTL
+  ttlAutopurge: true,
 });
 
 type HeliusOptions = {
