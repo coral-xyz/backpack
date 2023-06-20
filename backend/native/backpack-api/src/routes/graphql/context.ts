@@ -20,6 +20,7 @@ const IN_MEM_JWT_CACHE = new LRUCache<string, string>({
   allowStale: false,
   max: 1000,
   ttl: 1000 * 60 * 5, // 5 minute TTL
+  ttlAutopurge: true,
 });
 
 export interface ApiContext {

@@ -14,7 +14,7 @@ export const fetchHandler: ExportedHandlerFetchHandler<Environment> = async (
   if (!idsParameter) {
     return new Response(
       JSON.stringify({ error: "no asset ids found in url" }),
-      { status: 400 }
+      { headers: { "Content-Type": "application/json" }, status: 400 }
     );
   }
 
@@ -24,9 +24,7 @@ export const fetchHandler: ExportedHandlerFetchHandler<Environment> = async (
   ).filter((x) => x) as CoinGeckoPriceData[];
 
   return new Response(JSON.stringify(values), {
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     status: 200,
   });
 };
