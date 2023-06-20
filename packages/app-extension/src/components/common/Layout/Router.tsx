@@ -95,18 +95,28 @@ export function Router() {
 }
 
 function NotificationsPage() {
-  const gates = useFeatureGates();
-  const _Component = gates.GQL_NOTIFICATIONS
-    ? Notifications
-    : LegacyNotifications;
+  const _Component = () => {
+    const gates = useFeatureGates();
+    return gates.GQL_NOTIFICATIONS ? (
+      <Notifications />
+    ) : (
+      <LegacyNotifications />
+    );
+  };
   return <NavScreen component={<_Component />} />;
 }
 
 function TransactionsPage() {
-  const gates = useFeatureGates();
-  const _Component = gates.GQL_TRANSACTION_HISTORY
-    ? Transactions
-    : LegacyTransactions;
+  const _Component = () => {
+    const gates = useFeatureGates();
+
+    return gates.GQL_TRANSACTION_HISTORY ? (
+      <Transactions />
+    ) : (
+      <LegacyTransactions />
+    );
+  };
+
   return <NavScreen component={<_Component />} />;
 }
 

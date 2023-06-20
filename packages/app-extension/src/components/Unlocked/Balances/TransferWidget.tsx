@@ -1,6 +1,5 @@
-import React from "react";
-import type {
-  Blockchain} from "@coral-xyz/common";
+import React, { Suspense } from "react";
+import type { Blockchain } from "@coral-xyz/common";
 import {
   ETH_NATIVE_MINT,
   SOL_NATIVE_MINT,
@@ -115,9 +114,10 @@ function SwapButton({
   };
 
   const _SwapButtonIfTheTokenIsSwappable = () => {
-    // This component loads inside Suspense, so it should not block
-    // rendering as we wait for Jupiter Routes to be downloaded and parsed
-    const { canSwap } = useSwapContext();
+    const { canSwap, isLoading } = useSwapContext();
+    if (isLoading) {
+      return <SwapButtonComponent />;
+    }
     return canSwap ? (
       <SwapButtonComponent
         routes={[

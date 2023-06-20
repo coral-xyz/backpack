@@ -18,14 +18,12 @@ import * as bs58 from "bs58";
 import { BigNumber, ethers, FixedNumber } from "ethers";
 
 import { blockchainTokenData } from "../atoms/balance";
-import { jupiterInputTokens } from "../atoms/solana/jupiter";
 import {
-  useFeatureGates,
-  useJupiterOutputTokens,
-  useJupiterTokenList,
-  useLoader,
-  useSolanaCtx,
-} from "../hooks";
+  jupiterInputTokens,
+  jupiterOutputTokens,
+  jupiterTokenList as jupiterTokenListAtom,
+} from "../atoms/solana/jupiter";
+import { useFeatureGates, useLoader, useSolanaCtx } from "../hooks";
 import type { TokenData, TokenDataWithBalance } from "../types";
 
 const { Zero } = ethers.constants;
@@ -110,6 +108,7 @@ export type SwapContext = {
   canSwap: boolean;
   canSwitch: boolean;
   isInDrawer: boolean;
+  isLoading: boolean;
 };
 
 const _SwapContext = React.createContext<SwapContext | null>(null);
@@ -139,16 +138,19 @@ export function SwapProvider({
   const blockchain = Blockchain.SOLANA; // Solana only at the moment.
   const solanaCtx = useSolanaCtx();
   const { backgroundClient, connection, walletPublicKey } = solanaCtx;
-  const jupiterTokenList = useJupiterTokenList();
+  const [jupiterTokenList, jupiterTokenlistState] = useLoader(
+    jupiterTokenListAtom,
+    []
+  );
   const { SWAP_FEES_ENABLED } = useFeatureGates();
   const JUPITER_BASE_URL = SWAP_FEES_ENABLED
     ? "https://jupiter.xnfts.dev/v4/"
     : "https://quote-api.jup.ag/v4/";
-  const [fromTokens] = useLoader(
+  const [fromTokens, state] = useLoader(
     jupiterInputTokens({ publicKey: walletPublicKey.toString() }),
     []
   );
-  const [token] = tokenAddress
+  const [token, _state] = tokenAddress
     ? // TODO: refactor so this hook isn't behind a conditional
       // eslint-disable-next-line react-hooks/rules-of-hooks
       useLoader(
@@ -159,7 +161,7 @@ export function SwapProvider({
         }),
         undefined
       )
-    : [undefined];
+    : [undefined, "hasValue"];
 
   // Swap setttings
   const [[fromMint, toMint], setFromMintToMint] = useState([
@@ -250,7 +252,11 @@ export function SwapProvider({
     }
   }
 
-  const toTokens = useJupiterOutputTokens(fromMint);
+  //  const toTokens = useJupiterOutputTokens(fromMint);
+  const [toTokens, toTokensState] = useLoader(
+    jupiterOutputTokens({ inputMint: fromMint }),
+    []
+  );
   const toToken = toTokens.find((t) => t.mint === toMint);
 
   let availableForSwap = fromToken
@@ -573,6 +579,13 @@ export function SwapProvider({
         canSwap: !availableForSwap.isZero(),
         canSwitch,
         isInDrawer,
+        isLoading:
+          state === "loading" ||
+          _state === "loading" ||
+          jupiterTokenlistState === "loading" ||
+          toTokensState === "loading" ||
+          isLoadingRoutes ||
+          isLoadingTransactions,
       }}
     >
       {children}

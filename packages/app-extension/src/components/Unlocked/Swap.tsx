@@ -24,8 +24,8 @@ import type {
   TokenDataWithPrice,
 } from "@coral-xyz/recoil";
 import {
-  SwapState,
   SwapProvider,
+  SwapState,
   useActiveWallet,
   useBackgroundClient,
   useDarkMode,
@@ -144,8 +144,8 @@ const useStyles = styles((theme) => ({
     justifyContent: "center",
     flexDirection: "column",
     borderRadius: "22px",
-    position: "fixed",
-    top: 175,
+    position: "absolute",
+    top: 120,
     left: 24,
   },
   switchTokensButton: {

@@ -16,6 +16,7 @@ import { useUnreadGlobal } from "@coral-xyz/db";
 import {
   BalancesIcon,
   GridIcon,
+  ImageIcon,
   Loading,
   MessageBubbleIcon,
   SwapIcon,
@@ -350,7 +351,7 @@ function TabBarXl() {
             onClick={() => onTabClick(TAB_TOKENS)}
             value={TAB_TOKENS}
             disableRipple
-            className={`${isXs ? classes.tabXs : classes.tab} ${
+            className={`${classes.tab} ${
               tab === TAB_TOKENS ? classes.activeTab : ""
             }`}
             icon={
@@ -364,6 +365,44 @@ function TabBarXl() {
                   width: "20px",
                   height: "20px",
                 }}
+              />
+            }
+          />
+          <Tab
+            onClick={() => onTabClick(TAB_NFTS)}
+            value={TAB_NFTS}
+            disableRipple
+            className={`${classes.tab} ${
+              tab === TAB_NFTS ? classes.activeTab : ""
+            }`}
+            icon={
+              <ImageIcon
+                fill={
+                  tab === TAB_NFTS
+                    ? theme.custom.colors.brandColor
+                    : theme.custom.colors.icon
+                }
+                style={{
+                  width: "20px",
+                  height: "20px",
+                }}
+              />
+            }
+          />
+          <Tab
+            onClick={() => onTabClick(TAB_SWAP)}
+            value={TAB_SWAP}
+            disableRipple
+            className={`${classes.tab} ${
+              tab === TAB_SWAP ? classes.activeTab : ""
+            }`}
+            icon={
+              <SwapIcon
+                fill={
+                  tab === TAB_SWAP
+                    ? theme.custom.colors.brandColor
+                    : theme.custom.colors.icon
+                }
               />
             }
           />
@@ -422,6 +461,25 @@ function TabBarXl() {
               />
             </>
           ) : null}
+          <Tab
+            onClick={() => onTabClick(TAB_APPS)}
+            value={TAB_APPS}
+            disableRipple
+            className={isXs ? classes.tabXs : classes.tab}
+            icon={
+              <GridIcon
+                fill={
+                  tab === TAB_APPS
+                    ? theme.custom.colors.brandColor
+                    : theme.custom.colors.icon
+                }
+                style={{
+                  width: "20px",
+                  height: "20px",
+                }}
+              />
+            }
+          />
         </div>
         {!isXs ? (
           <div

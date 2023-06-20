@@ -66,11 +66,7 @@ function RecentTransactions({
     extractTime(a) > extractTime(b) ? -1 : 1
   );
 
-  return (
-    <Suspense fallback={null}>
-      <BlockchainActivityList transactions={sortedTransactions} />
-    </Suspense>
-  );
+  return <BlockchainActivityList transactions={sortedTransactions} />;
 }
 
 export function RecentActivityList({
