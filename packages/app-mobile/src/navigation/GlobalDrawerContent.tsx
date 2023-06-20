@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Alert, Pressable } from "react-native";
 
 import {
@@ -39,14 +40,20 @@ function UserList() {
   const background = useBackgroundClient();
   const users = useAllUsers();
   const user = useUser();
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  const handlePressItem = async (uuid: string) => {
-    await background.request({
-      method: UI_RPC_METHOD_ACTIVE_USER_UPDATE,
-      params: [uuid],
-    });
-
-    // onDismiss();
+  const handleUpdateActiveUser = async (uuid: string) => {
+    try {
+      setLoadingId(uuid);
+      await background.request({
+        method: UI_RPC_METHOD_ACTIVE_USER_UPDATE,
+        params: [uuid],
+      });
+    } catch (error) {
+      console.error("Error updating active user", error);
+    } finally {
+      setLoadingId(null);
+    }
   };
 
   const handlePressAddAccount = () => {
@@ -67,7 +74,8 @@ function UserList() {
             uuid={uuid}
             username={username}
             isActive={user.username === username}
-            onPress={handlePressItem}
+            isLoading={loadingId === uuid}
+            onPress={handleUpdateActiveUser}
           />
         );
       })}
