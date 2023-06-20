@@ -1,10 +1,9 @@
-import type { Blockchain } from "@coral-xyz/common";
 import type { Wallet } from "@coral-xyz/recoil";
 
-import { Suspense, useCallback } from "react";
+import { Suspense, useCallback, useMemo } from "react";
 import { FlatList } from "react-native";
 
-import { usePrimaryWallets } from "@coral-xyz/recoil";
+import { useSuspenseQuery } from "@apollo/client";
 import { PaddedListItemSeparator } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,30 +15,51 @@ import {
   ScreenLoading,
 } from "~components/index";
 
+import { gql } from "~src/graphql/__generated__";
 import { useWallets } from "~src/hooks/wallets";
-import { useSession } from "~src/lib/SessionProvider";
+import { coalesceWalletData } from "~src/lib/WalletUtils";
+import { EditWalletsScreenProps } from "~src/navigation/AccountSettingsNavigator";
 
-function WalletList2({ onPressItem }) {
+const QUERY_USER_WALLETS = gql(`
+  query BottomSheetUserWallets {
+    user {
+      id
+      wallets {
+        edges {
+          node {
+            ...WalletFragment
+          }
+        }
+      }
+    }
+  }
+`);
+
+function Container({ navigation }: EditWalletsScreenProps) {
+  const { data } = useSuspenseQuery(QUERY_USER_WALLETS);
   const { allWallets } = useWallets();
-  const { setActiveWallet } = useSession();
-  const primaryWallets = usePrimaryWallets();
   const insets = useSafeAreaInsets();
 
-  const handleSelectWallet = useCallback(
-    async (wallet: Wallet) => {
-      await setActiveWallet(wallet);
-    },
-    [setActiveWallet]
+  const wallets = useMemo(
+    () => coalesceWalletData(data, allWallets),
+    [data, allWallets]
   );
 
+  const handlePressEdit = useCallback(
+    (wallet: Wallet) => {
+      navigation.navigate("edit-wallets-wallet-detail", {
+        name: wallet.name,
+        publicKey: wallet.publicKey,
+      });
+    },
+    [navigation]
+  );
+
+  const keyExtractor = (item: Wallet) => item.publicKey;
   const renderItem = useCallback(
     ({ item, index }) => {
-      const isPrimary = !!primaryWallets.find(
-        (x) => x.publicKey === item.publicKey
-      );
-
       const isFirst = index === 0;
-      const isLast = index === allWallets.length - 1;
+      const isLast = index === wallets.length - 1;
 
       return (
         <RoundedContainerGroup
@@ -47,29 +67,29 @@ function WalletList2({ onPressItem }) {
           disableBottomRadius={!isLast}
         >
           <ListItemWallet
-            loading={false}
             name={item.name}
-            publicKey={item.publicKey}
             type={item.type}
+            publicKey={item.publicKey}
             blockchain={item.blockchain}
+            isCold={item.isCold}
             selected={false}
-            primary={isPrimary}
-            onPressEdit={onPressItem}
-            onSelect={handleSelectWallet}
-            isCold={false}
-            balance={5555.34}
+            loading={false}
+            primary={item.isPrimary}
+            balance={item.balance}
+            onPressEdit={handlePressEdit}
+            onSelect={handlePressEdit}
           />
         </RoundedContainerGroup>
       );
     },
-    [onPressItem, allWallets.length, handleSelectWallet, primaryWallets]
+    [handlePressEdit, wallets.length]
   );
 
   return (
     <FlatList
-      data={allWallets}
+      data={wallets}
       renderItem={renderItem}
-      keyExtractor={(item) => item.publicKey}
+      keyExtractor={keyExtractor}
       ItemSeparatorComponent={PaddedListItemSeparator}
       style={{
         paddingTop: 16,
@@ -83,29 +103,16 @@ function WalletList2({ onPressItem }) {
   );
 }
 
-function Container({ navigation }): JSX.Element {
-  const handlePressItem = (
-    blockchain: Blockchain,
-    { name, publicKey, type }: Wallet
-  ) => {
-    navigation.navigate("edit-wallets-wallet-detail", {
-      blockchain,
-      publicKey,
-      name,
-      type,
-    });
-  };
-
-  return <WalletList2 onPressItem={handlePressItem} />;
-}
-
-export function EditWalletsScreen({ navigation }): JSX.Element {
+export function EditWalletsScreen({
+  navigation,
+  route,
+}: EditWalletsScreenProps): JSX.Element {
   return (
     <ErrorBoundary
       fallbackRender={({ error }) => <ScreenError error={error} />}
     >
       <Suspense fallback={<ScreenLoading />}>
-        <Container navigation={navigation} />
+        <Container navigation={navigation} route={route} />
       </Suspense>
     </ErrorBoundary>
   );

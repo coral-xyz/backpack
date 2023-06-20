@@ -1,4 +1,5 @@
 import type { ChannelAppUiClient } from "@coral-xyz/common";
+import type { StackScreenProps } from "@react-navigation/stack";
 import type { Commitment } from "@solana/web3.js";
 
 import { useEffect, useState } from "react";
@@ -106,6 +107,11 @@ type AccountSettingsParamList = {
   "logout-warning": undefined;
   UserAccountMenu: undefined;
 };
+
+export type EditWalletsScreenProps = StackScreenProps<
+  AccountSettingsParamList,
+  "edit-wallets"
+>;
 
 const Stack = createStackNavigator<AccountSettingsParamList>();
 export function AccountSettingsNavigator(): JSX.Element {
