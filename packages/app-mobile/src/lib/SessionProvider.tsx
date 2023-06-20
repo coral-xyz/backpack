@@ -36,7 +36,11 @@ export async function setTokenAsync(token: string) {
 }
 
 type TokenType = string | null;
-type AppStateType = "onboardingStarted" | "onboardingComplete" | null;
+type AppStateType =
+  | "onboardingStarted"
+  | "onboardingComplete"
+  | "isAddingAccount"
+  | null;
 
 type SessionContextType = {
   activeWallet: Wallet | null;

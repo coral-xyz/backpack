@@ -23,6 +23,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { UserAccountListItem } from "~components/UserAccountsMenu";
 import { CurrentUserAvatar } from "~components/UserAvatar";
 
+import { useSession } from "~src/lib/SessionProvider";
+
 function Header() {
   const user = useUser();
 
@@ -41,6 +43,7 @@ function UserList() {
   const users = useAllUsers();
   const user = useUser();
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const { setAppState } = useSession();
 
   const handleUpdateActiveUser = async (uuid: string) => {
     try {
@@ -57,7 +60,7 @@ function UserList() {
   };
 
   const handlePressAddAccount = () => {
-    Alert.alert("TODO");
+    setAppState("isAddingAccount");
   };
 
   const theme = useTamaguiTheme();

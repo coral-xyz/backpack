@@ -69,7 +69,6 @@ import {
 import { UsernameInput } from "~components/StyledTextInput";
 import {
   ActionCard,
-  // Box,
   FullScreenLoading,
   Header,
   Margin,
@@ -201,6 +200,7 @@ const RecoverAccountRoutes: Route = {
 };
 
 const NewAccountRoutes: Route = {
+  CreateOrImportWallet: "CreateOrImportWallet",
   CreateOrRecoverUsername: "CreateOrRecoverUsername",
   KeyringTypeSelector: "KeyringTypeSelector",
 };
@@ -1091,7 +1091,7 @@ type CreateAccountLoadingScreenProps = StackScreenProps<
 function CreateAccountLoadingScreen(
   _p: CreateAccountLoadingScreenProps
 ): JSX.Element {
-  const { setAuthToken } = useSession();
+  const { setAuthToken, appState } = useSession();
   const background = useBackgroundClient();
   const { onboardingData, maybeCreateUser } = useOnboarding();
   const [error, setError] = useState(false);
@@ -1101,6 +1101,7 @@ function CreateAccountLoadingScreen(
       logger.debug("CreateAccountLoadingScreen:onboardingData", onboardingData);
       const res = await maybeCreateUser({
         ...onboardingData,
+        isAddingAccount: appState === "isAddingAccount",
         keyringType: onboardingData.keyringType || "mnemonic",
       });
 
@@ -1112,7 +1113,7 @@ function CreateAccountLoadingScreen(
         setAuthToken(res.jwt);
       }
     })();
-  }, [onboardingData, background, maybeCreateUser, setAuthToken]);
+  }, [onboardingData, background, maybeCreateUser, setAuthToken, appState]);
 
   if (error) {
     return (
