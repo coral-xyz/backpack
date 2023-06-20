@@ -9,6 +9,7 @@ import {
   SolTransactionStep,
   useUser,
 } from "@coral-xyz/recoil";
+import { YStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import {
@@ -74,16 +75,14 @@ function ConfirmToken({
   return (
     <Container>
       <Header text={title} />
-      <Margin vertical={24}>
+      <YStack space={16} my={12}>
         <TokenAmountHeader amount={amount} token={token} />
-      </Margin>
-      <Margin bottom={24}>
         <Breakdown
           address={destination.address}
           username={destinationLabel}
           avatarUrl={destination.image}
         />
-      </Margin>
+      </YStack>
       <PrimaryButton label="Send" onPress={onConfirm} />
     </Container>
   );

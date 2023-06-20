@@ -30,14 +30,14 @@ import {
   SecondaryButton,
   StyledText,
   TwoButtonFooter,
-  UserAvatar,
   XStack,
+  Stack,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ContentCopyIcon, RedBackpack } from "~components/Icon";
-import { CurrentUserAvatar } from "~components/UserAvatar";
+import { UserAvatar, CurrentUserAvatar } from "~components/UserAvatar";
 import { getBlockchainLogo } from "~hooks/index";
 import { useTheme } from "~hooks/useTheme";
 
@@ -772,11 +772,11 @@ export const WalletAddressLabel = memo(function WalletAddressLabel({
   publicKey: string;
 }): JSX.Element {
   return (
-    <Box p={4} backgroundColor="$background" borderRadius="$small">
+    <Stack px={6} py={4} bg="$background" br="$small">
       <StyledText fontSize="$sm" color="$secondary">
         ({formatWalletAddress(publicKey)})
       </StyledText>
-    </Box>
+    </Stack>
   );
 });
 
@@ -789,8 +789,8 @@ export function NameAddressLabel({
   name: string;
 }): JSX.Element {
   return (
-    <XStack alignItems="center">
-      <StyledText mr={8} fontSize="$sm" color="$fontColor">
+    <XStack space={8} ai="center">
+      <StyledText fontSize="$sm" color="$fontColor">
         {name}
       </StyledText>
       <WalletAddressLabel publicKey={publicKey} />
@@ -802,10 +802,8 @@ export function NameAddressLabel({
 export function CurrentUserAvatarWalletNameAddress() {
   const w = useActiveWallet();
   return (
-    <XStack alignItems="center">
-      <Box mr={8}>
-        <CurrentUserAvatar size={24} />
-      </Box>
+    <XStack space={6} ai="center">
+      <CurrentUserAvatar size={24} />
       <NameAddressLabel publicKey={w.publicKey} name={w.name} />
     </XStack>
   );
@@ -823,10 +821,8 @@ export function AvatarUserNameAddress({
   publicKey: string;
 }): JSX.Element {
   return (
-    <XStack alignItems="center">
-      <Box mr={8}>
-        <UserAvatar uri={avatarUrl} size={24} />
-      </Box>
+    <XStack space={6} ai="center">
+      <UserAvatar uri={avatarUrl} size={28} />
       <NameAddressLabel publicKey={publicKey} name={username} />
     </XStack>
   );

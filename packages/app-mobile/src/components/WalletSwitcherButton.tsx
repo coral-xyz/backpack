@@ -35,9 +35,9 @@ export function WalletSwitcherButton(): JSX.Element {
         }}
       >
         <XStack space={8} ai="center" py={8} px={18}>
-          <BlockchainLogo blockchain={activeWallet.blockchain} size={16} />
+          <BlockchainLogo blockchain={activeWallet!.blockchain} size={16} />
           <StyledText fontSize="$base" color="$fontColor" mr={-6}>
-            {activeWallet.name}
+            {activeWallet?.name}
           </StyledText>
           <IconDropdown size={22} color="$fontColor" />
         </XStack>
