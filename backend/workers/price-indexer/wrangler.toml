@@ -2,6 +2,3 @@ name = "price-indexer"
 main = "src/index.ts"
 compatibility_date = "2022-12-05"
 node_compat = true
-
-[vars]
-COINGECKO_API_KEY = "CG-56b7uKfAFDjsWNsij7r8fbHH"
