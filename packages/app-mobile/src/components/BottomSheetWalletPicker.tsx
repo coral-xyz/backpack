@@ -1,6 +1,6 @@
 import type { Wallet } from "~types/types";
 
-import { Suspense, useCallback, useState } from "react";
+import { Suspense, useCallback, useMemo, useState } from "react";
 import { FlatList, View, Alert } from "react-native";
 
 import { useSuspenseQuery } from "@apollo/client";
@@ -46,7 +46,10 @@ function Container({ navigation }) {
   const { dismiss } = useBottomSheetModal();
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  const wallets = coalesceWalletData(data, allWallets);
+  const wallets = useMemo(
+    () => coalesceWalletData(data, allWallets),
+    [data, allWallets]
+  );
 
   const handlePressSelect = useCallback(
     async (wallet: Wallet) => {
@@ -73,6 +76,7 @@ function Container({ navigation }) {
     [dismiss, navigation]
   );
 
+  const keyExtractor = (item) => item.publicKey;
   const renderItem = useCallback(
     ({ item }) => {
       return (
@@ -99,7 +103,7 @@ function Container({ navigation }) {
       <BottomSheetTitle title="Wallets" />
       <FlatList
         data={wallets}
-        keyExtractor={(item) => item.publicKey}
+        keyExtractor={keyExtractor}
         renderItem={renderItem}
         ItemSeparatorComponent={PaddedListItemSeparator}
         showsVerticalScrollIndicator={false}
