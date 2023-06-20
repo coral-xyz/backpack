@@ -96,6 +96,7 @@ enum CacheControlScope {
 Provider ID enum variants for the supported blockchains or wallet types in the API.
 """
 enum ProviderID {
+  BITCOIN
   ETHEREUM
   SOLANA
 }

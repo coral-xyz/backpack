@@ -346,6 +346,7 @@ export type Provider = Node & {
 
 /** Provider ID enum variants for the supported blockchains or wallet types in the API. */
 export enum ProviderId {
+  Bitcoin = "BITCOIN",
   Ethereum = "ETHEREUM",
   Solana = "SOLANA",
 }
