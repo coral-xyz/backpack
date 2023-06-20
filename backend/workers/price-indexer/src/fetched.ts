@@ -23,5 +23,10 @@ export const fetchHandler: ExportedHandlerFetchHandler<Environment> = async (
     await Promise.all(ids.map((i) => env.PRICES_KV.get(i, "json")))
   ).filter((x) => x) as CoinGeckoPriceData[];
 
-  return new Response(JSON.stringify(values), { status: 200 });
+  return new Response(JSON.stringify(values), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    status: 200,
+  });
 };

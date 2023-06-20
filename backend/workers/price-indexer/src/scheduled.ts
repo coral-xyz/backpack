@@ -19,8 +19,8 @@ function chunk<T>(items: T[], size: number): T[][] {
 export const scheduledHandler: ExportedHandlerScheduledHandler<
   Environment
 > = async (_event, env, ctx) => {
-  const chunkedSolanaTokens = chunk(Object.values(SolanaTokenList), 100);
-  const chunkedEthereumTokens = chunk(Object.values(EthereumTokenList), 100);
+  const chunkedSolanaTokens = chunk(Object.values(SolanaTokenList), 50);
+  const chunkedEthereumTokens = chunk(Object.values(EthereumTokenList), 50);
   const allTokensToRequest = [chunkedEthereumTokens, chunkedSolanaTokens];
 
   for (const tokenSet of allTokensToRequest) {
@@ -35,7 +35,7 @@ export const scheduledHandler: ExportedHandlerScheduledHandler<
         page: "1",
         per_page: "100",
         price_change_percentage: "24h",
-        sparkline: "24h",
+        sparkline: "true",
         vs_currency: "usd",
       });
 
@@ -47,11 +47,9 @@ export const scheduledHandler: ExportedHandlerScheduledHandler<
 
       const json: CoinGeckoPriceData[] = await response.json();
 
-      ctx.waitUntil(
-        Promise.all(
-          json.map((j) =>
-            env.PRICES_KV.put(j.id, JSON.stringify(j), { expirationTtl: 120 })
-          )
+      await Promise.all(
+        json.map((j) =>
+          env.PRICES_KV.put(j.id, JSON.stringify(j), { expirationTtl: 100 })
         )
       );
 

@@ -1,4 +1,4 @@
-export { CoinGecko } from "./coingecko";
+export { CoinGeckoIndexer } from "./coingecko";
 export { Hasura } from "./hasura";
 export { Helius } from "./helius";
 export { Swr } from "./swr";
