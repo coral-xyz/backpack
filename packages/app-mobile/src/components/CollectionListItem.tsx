@@ -66,7 +66,7 @@ export function ProxyNFTImage({
   style,
 }: {
   size: number;
-  src: string;
+  src: string | null | undefined;
   style: any;
 }): JSX.Element {
   const uri = src ?? UNKNOWN_NFT_ICON_SRC;

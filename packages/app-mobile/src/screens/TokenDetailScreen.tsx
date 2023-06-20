@@ -17,7 +17,7 @@ import {
   useBlockchainTokenData,
   useBlockchainActiveWallet,
 } from "~hooks/recoil";
-import type { TokenDetailScreenParams } from "~navigation/WalletsNavigator";
+import type { TokenDetailScreenProps } from "~navigation/WalletsNavigator";
 
 import { NavTokenAction, NavTokenOptions } from "~types/types";
 
@@ -74,7 +74,7 @@ function TokenHeader({
 function Container({
   route,
   navigation,
-}: TokenDetailScreenParams): JSX.Element | null {
+}: TokenDetailScreenProps): JSX.Element | null {
   const { blockchain, tokenAddress } = route.params;
 
   // We only use ethereumWallet here, even though its shared on the Solana side too.
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
 export function TokenDetailScreen({
   route,
   navigation,
-}: TokenDetailScreenParams): JSX.Element | null {
+}: TokenDetailScreenProps): JSX.Element | null {
   return (
     <ErrorBoundary
       fallbackRender={({ error }) => <ScreenError error={error} />}

@@ -4,6 +4,7 @@ import { FlatList, Text } from "react-native";
 import { useFragment } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import { ErrorBoundary } from "react-error-boundary";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BaseListItem } from "~components/CollectionListItem";
 import { FullScreenLoading } from "~components/index";
@@ -34,6 +35,7 @@ function ListItem({ id, onPress }: { id: string; onPress: any }): JSX.Element {
 }
 
 function Container({ navigation, route }: any): JSX.Element {
+  const insets = useSafeAreaInsets();
   const activeWallet = useActiveWallet();
   const { nftIds } = route.params;
 
@@ -66,10 +68,13 @@ function Container({ navigation, route }: any): JSX.Element {
       renderItem={renderItem}
       columnWrapperStyle={{ gap }}
       showsVerticalScrollIndicator={false}
-      style={{ paddingTop: 16, paddingHorizontal: 16 }}
+      style={{
+        paddingTop: 16,
+        paddingHorizontal: 16,
+      }}
       contentContainerStyle={{
         gap,
-        paddingBottom: 32,
+        paddingBottom: insets.bottom + 32,
       }}
     />
   );

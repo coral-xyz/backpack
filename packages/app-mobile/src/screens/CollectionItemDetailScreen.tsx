@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { Alert, View, Text, ScrollView } from "react-native";
 
 import * as Linking from "expo-linking";
@@ -10,24 +10,29 @@ import {
   useSolanaExplorer,
   useBlockchainConnectionUrl,
 } from "@coral-xyz/recoil";
-import { Box } from "@coral-xyz/tamagui";
+import { YStack } from "@coral-xyz/tamagui";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { ErrorBoundary } from "react-error-boundary";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { CollectionAttributes } from "~components/CollectionAttributesList";
 import { ProxyNFTImage } from "~components/CollectionListItem";
-import {
-  PrimaryButton,
-  Screen,
-  SecondaryButton,
-  FullScreenLoading,
-} from "~components/index";
+import { PrimaryButton, Screen, FullScreenLoading } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { WINDOW_WIDTH } from "~lib/index";
+import { HeaderButton, HeaderButtonSpacer } from "~navigation/components";
 
 import { NftNodeFragment } from "~src/graphql/fragments";
+import { CollectionItemDetailScreenProps } from "~src/navigation/WalletsNavigator";
 
-function ActionMenu({ blockchain, nft }: { blockchain: Blockchain; nft: any }) {
+function ActionMenu({
+  blockchain,
+  nft,
+  ...rest
+}: {
+  blockchain: Blockchain;
+  nft: any;
+}) {
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
   const ethExpl = useEthereumExplorer();
   const solExpl = useSolanaExplorer();
@@ -71,10 +76,23 @@ function ActionMenu({ blockchain, nft }: { blockchain: Blockchain; nft: any }) {
     );
   };
 
-  return <SecondaryButton label="Options" onPress={onPress} />;
+  return (
+    <HeaderButtonSpacer>
+      <HeaderButton
+        {...rest}
+        disabled={!nft.name}
+        name="menu"
+        onPress={onPress}
+      />
+    </HeaderButtonSpacer>
+  );
 }
 
-function Description({ description }: { description: string }) {
+function Description({
+  description,
+}: {
+  description: string | undefined | null;
+}) {
   const theme = useTheme();
   if (!description || description === "") {
     return null;
@@ -110,7 +128,13 @@ function Description({ description }: { description: string }) {
   );
 }
 
-function Container({ navigation, route }): JSX.Element {
+function Container({
+  navigation,
+  route,
+}: CollectionItemDetailScreenProps): JSX.Element {
+  const { showActionSheetWithOptions } = useActionSheet();
+
+  const insets = useSafeAreaInsets();
   const { blockchain } = route.params;
   const { data: nft } = useFragment({
     fragment: NftNodeFragment,
@@ -121,27 +145,39 @@ function Container({ navigation, route }): JSX.Element {
     },
   });
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: (props) => (
+        <ActionMenu {...props} nft={nft} blockchain={blockchain} />
+      ),
+    });
+  }, [navigation, showActionSheetWithOptions, blockchain, nft]);
+
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: insets.bottom }}
+    >
       <Screen>
-        <ProxyNFTImage
-          src={nft.image}
-          size={WINDOW_WIDTH}
-          style={{ borderRadius: 8, maxWidth: "100%" }}
-        />
-        <Description description={nft.description} />
-        <Box marginVertical={12}>
+        <YStack space={16}>
+          <ProxyNFTImage
+            src={nft.image}
+            size={WINDOW_WIDTH}
+            style={{ borderRadius: 8, maxWidth: "100%" }}
+          />
+          <Description description={nft.description} />
+          <CollectionAttributes attributes={nft.attributes} />
           <PrimaryButton
             label="Send"
             onPress={() => {
               navigation.navigate("SendCollectibleSelectRecipient", {
-                nft,
+                nft: {
+                  name: nft.name ?? "NFT",
+                },
               });
             }}
           />
-        </Box>
-        <CollectionAttributes attributes={nft.attributes} />
-        <ActionMenu nft={nft} blockchain={blockchain} />
+        </YStack>
       </Screen>
     </ScrollView>
   );
@@ -150,7 +186,7 @@ function Container({ navigation, route }): JSX.Element {
 export function CollectionItemDetailScreen({
   navigation,
   route,
-}: any): JSX.Element {
+}: CollectionItemDetailScreenProps): JSX.Element {
   return (
     <ErrorBoundary fallbackRender={({ error }) => <Text>{error.message}</Text>}>
       <Suspense fallback={<FullScreenLoading />}>
