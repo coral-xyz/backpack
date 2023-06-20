@@ -1,30 +1,30 @@
 import type { BigNumber } from "ethers";
 
 import { memo, Suspense } from "react";
-import { Image, ActivityIndicator, Text } from "react-native";
+import { ActivityIndicator, Image, Text } from "react-native";
 
 import { Blockchain } from "@coral-xyz/common";
 import {
-  useSolanaTransaction,
   SolTransactionStep,
+  useSolanaTransaction,
   useUser,
 } from "@coral-xyz/recoil";
 import { YStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import {
-  Error,
-  Sending,
-  Header,
   Container,
+  Error,
+  Header,
+  Sending,
 } from "~components/BottomDrawerCards";
 import { Table } from "~components/Table";
 import {
+  AvatarUserNameAddress,
+  CurrentUserAvatarWalletNameAddress,
   Margin,
   PrimaryButton,
   TokenAmountHeader,
-  CurrentUserAvatarWalletNameAddress,
-  AvatarUserNameAddress,
   WalletAddressLabel,
 } from "~components/index";
 
@@ -69,8 +69,8 @@ function ConfirmToken({
       ? "Send to your wallet"
       : `Send to ${destination.username}`;
 
-  const destinationLabel = (destination.username ||
-    destination.walletName) as string;
+  const destinationLabel = (destination.walletName ||
+    destination.username) as string;
 
   return (
     <Container>
@@ -104,8 +104,8 @@ function ConfirmCollectible({
       ? "Send to your wallet"
       : `Send to ${destination.username}`;
 
-  const destinationLabel = (destination.username ||
-    destination.walletName) as string;
+  const destinationLabel = (destination.walletName ||
+    destination.username) as string;
 
   return (
     <Container>
