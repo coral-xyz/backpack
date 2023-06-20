@@ -51,6 +51,8 @@ function Container({ navigation, route }): JSX.Element {
     [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
   }[activeWallet.blockchain];
 
+  console.log("d1:nft", nft);
+
   // the names are confusing but necessary for cross-chain work
   // mint is the address
   // token is the ATA
@@ -62,6 +64,8 @@ function Container({ navigation, route }): JSX.Element {
     }),
     [nft.address, nft.token, nft.image]
   );
+
+  console.log("d1:tokenToSend", tokenToSend);
 
   return (
     <>

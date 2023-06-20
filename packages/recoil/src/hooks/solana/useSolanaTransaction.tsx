@@ -114,6 +114,14 @@ export function useSolanaTransaction({
             decimals: token.decimals,
           });
         } else {
+          console.log(
+            "d1:useSolanaTransaction:destinationAddress",
+            destinationAddress
+          );
+          console.log("d1:useSolanaTransaction:mint", token.mint);
+          console.log("d1:useSolanaTransaction:mintInfo", mintInfo.programId);
+          console.log("d1:useSolanaTransaction:token", token);
+          console.log("d1:useSolanaTransaction:amount", amount.toNumber());
           txSig = await Solana.transferToken(solanaCtx, {
             destination: new PublicKey(destinationAddress),
             mint: new PublicKey(token.mint!),

@@ -124,12 +124,12 @@ export function NftDetailScreen({ navigation, route }): JSX.Element | null {
 function NftImage({ imageUrl }: { imageUrl: string }): JSX.Element {
   return (
     <ProxyImage
+      src={imageUrl ?? UNKNOWN_NFT_ICON_SRC}
       style={{
         width: "100%",
         borderRadius: 8,
         aspectRatio: 1,
       }}
-      src={imageUrl ?? UNKNOWN_NFT_ICON_SRC}
     />
   );
 }

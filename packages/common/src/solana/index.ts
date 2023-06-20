@@ -145,11 +145,17 @@ export class Solana {
     const { walletPublicKey, registry, tokenInterface, commitment } = ctx;
     const { mint, programId, destination, amount } = req;
 
+    console.log("d1:transferToken:ctx", ctx);
+    console.log("d1:transferToken:req", req);
+
     const decimals = (() => {
       if (req.decimals !== undefined) {
         return req.decimals;
       }
+      console.log("d1:transferToken:req.decimals", req.decimals);
+      console.log("d1:transferToken:mint", mint, mint.toString());
       const tokenInfo = registry.get(mint.toString());
+      console.log("d1:transferToken:tokenInfo", tokenInfo);
       if (!tokenInfo) {
         throw new Error("no token info found");
       }
