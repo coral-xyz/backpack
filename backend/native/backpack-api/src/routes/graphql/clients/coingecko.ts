@@ -1,6 +1,6 @@
 import { RESTDataSource } from "@apollo/datasource-rest";
 
-type CoinGeckoOptions = {
+type CoinGeckoIndexerOptions = {
   apiKey: string;
 };
 
@@ -10,14 +10,14 @@ type CoinGeckoOptions = {
  * @class CoinGecko
  * @extends {RESTDataSource}
  */
-export class CoinGecko extends RESTDataSource {
-  readonly #apiKey: string;
+export class CoinGeckoIndexer extends RESTDataSource {
+  // readonly #apiKey: string;
 
-  override baseURL = "https://pro-api.coingecko.com";
+  override baseURL = "https://price-indexer.backpack.workers.dev";
 
-  constructor(opts: CoinGeckoOptions) {
+  constructor(_opts: CoinGeckoIndexerOptions) {
     super();
-    this.#apiKey = opts.apiKey;
+    // this.#apiKey = opts.apiKey;
   }
 
   /**
@@ -28,16 +28,9 @@ export class CoinGecko extends RESTDataSource {
    * @memberof CoinGecko
    */
   async getPrices(ids: string[]): Promise<CoinGeckoGetPricesResponse> {
-    const resp: CoinGeckoPriceData[] = await this.get("/api/v3/coins/markets", {
-      headers: {
-        "x-cg-pro-api-key": this.#apiKey,
-      },
+    const resp: CoinGeckoPriceData[] = await this.get("/", {
       params: {
         ids: ids.join(","),
-        page: "1",
-        price_change_percentage: "24h",
-        sparkline: "true",
-        vs_currency: "usd",
       },
     });
 
