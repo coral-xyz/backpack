@@ -14,6 +14,7 @@ import { useRecoilValue } from "recoil";
 
 import type { QueuedRequest } from "../_atoms/clientAtoms";
 import { userAtom } from "../_atoms/userAtom";
+import { RequireUserUnlocked } from "../Guards/RequireUserUnlocked";
 import { Presentation } from "../Presentation";
 
 export function SignMessageRequest({
@@ -26,12 +27,20 @@ export function SignMessageRequest({
   const message = msgBuffer.toString();
 
   return (
-    <Presentation currentRequest={currentRequest}>
-      <ApproveTransactionBottomSheet
-        message={message}
-        onApprove={() => currentRequest.respond({ confirmed: true })}
-        onDeny={() => currentRequest.respond({ confirmed: false })}
-      />
+    <Presentation
+      currentRequest={currentRequest}
+      onClosed={() => currentRequest.respond({ confirmed: false })}
+    >
+      {(currentRequest) => (
+        <RequireUserUnlocked force>
+          <ApproveTransactionBottomSheet
+            id={currentRequest.queueId}
+            message={message}
+            onApprove={() => currentRequest.respond({ confirmed: true })}
+            onDeny={() => currentRequest.respond({ confirmed: false })}
+          />
+        </RequireUserUnlocked>
+      )}
     </Presentation>
   );
 }
@@ -58,6 +67,7 @@ function ResourceThing({ imageUrl, title, subtitle }) {
 }
 
 export function ApproveTransactionBottomSheet(props: {
+  id: string;
   message: string;
   onApprove: () => void;
   onDeny: () => void;
@@ -84,7 +94,7 @@ export function ApproveTransactionBottomSheet(props: {
         </XStack>
       </Stack>
       <Stack>
-        <StyledText mb={8}>Message</StyledText>
+        <StyledText mb={8}>Message {props.id}</StyledText>
         <TextArea
           borderColor="$borderFull"
           borderWidth={2}

@@ -87,7 +87,17 @@ export class UserService {
     async (event) => {
       const uuid =
         event.request.uuid ?? this.keyringStore.activeUserKeyring?.uuid;
-      const keyringState = await this.keyringStore.state();
+      let keyringState = await this.keyringStore.state();
+
+      // if keyring is unlocked but password was provided, lock and verify password
+      if (
+        keyringState === KeyringStoreState.Unlocked &&
+        event.request.password &&
+        uuid
+      ) {
+        this.keyringStore.lock();
+        keyringState = await this.keyringStore.state();
+      }
 
       if (
         keyringState === KeyringStoreState.Locked &&
@@ -100,10 +110,11 @@ export class UserService {
             uuid: uuid,
           })
           .then(() => event.respond({ unlocked: true }))
-          .catch((e) => event.error(e));
+          .catch((e) => event.error("Wrong Password."));
       } else if (keyringState === KeyringStoreState.Unlocked) {
         return event.respond({ unlocked: true });
       }
+
       return event.respond({ unlocked: false });
     };
 }

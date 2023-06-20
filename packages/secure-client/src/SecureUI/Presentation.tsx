@@ -1,24 +1,26 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import type {
+  SECURE_EVENTS,
+  SecureResponse,
+} from "@coral-xyz/secure-background/types";
 import { Sheet, Stack, Theme } from "@coral-xyz/tamagui";
-import { useRecoilValue } from "recoil";
+import { useRecoilCallback, useRecoilValue } from "recoil";
 
 import type { QueuedRequest } from "./_atoms/clientAtoms";
 import { userAtom } from "./_atoms/userAtom";
 
-export function Presentation({
+export function Presentation<T extends SECURE_EVENTS = SECURE_EVENTS>({
   currentRequest,
   presentation,
+  onClosed,
   children,
 }: {
   currentRequest: QueuedRequest;
   presentation?: "modal" | "fullscreen";
-  children: React.ReactElement;
+  onClosed: () => void;
+  children: (request: QueuedRequest<T>) => React.ReactElement;
 }) {
   const currentUser = useRecoilValue(userAtom);
-
-  if (!currentUser) {
-    return null;
-  }
 
   // // if popup was opened for a confirmation -> show fullscreen;
   const DefaultPresentation = window.location.href.includes("windowId=")
@@ -33,7 +35,7 @@ export function Presentation({
       : DefaultPresentation;
 
   return (
-    <Theme name={currentUser.user?.preferences.darkMode ? "dark" : "light"}>
+    <Theme name={currentUser?.user?.preferences.darkMode ? "dark" : "light"}>
       <Stack
         zIndex={10}
         position="absolute"
@@ -43,17 +45,9 @@ export function Presentation({
         bottom="0px"
         height="100%"
         width="100%"
-        pointerEvents="box-none"
-        outlineColor="red"
-        outlineOffset="$-1"
+        backgroundColor="rgba(0,0,0,0.5)"
       >
-        <Present
-          key={currentRequest.queueId}
-          open={!!currentRequest}
-          setOpen={(isOpen) => {
-            if (!isOpen) currentRequest.respond({ confirmed: false });
-          }}
-        >
+        <Present onClosed={onClosed} currentRequest={currentRequest}>
           {children}
         </Present>
       </Stack>
@@ -61,17 +55,14 @@ export function Presentation({
   );
 }
 
-function FullscreenPresentation({
-  open,
+function FullscreenPresentation<T extends SECURE_EVENTS = SECURE_EVENTS>({
+  currentRequest,
   children,
 }: {
-  children: React.ReactElement;
-  open: boolean;
-  setOpen: (open: boolean) => void;
+  children: (request: QueuedRequest<T>) => React.ReactElement;
+  currentRequest: QueuedRequest<T>;
+  onClosed: () => void;
 }) {
-  if (open) {
-    return null;
-  }
   return (
     <Stack
       position="absolute"
@@ -83,43 +74,80 @@ function FullscreenPresentation({
       backgroundColor="$background"
       pointerEvents="auto"
     >
-      {children}
+      {children(currentRequest)}
     </Stack>
   );
 }
 
-function ModalPresentation({
-  open,
+function ModalPresentation<T extends SECURE_EVENTS = SECURE_EVENTS>({
+  currentRequest,
+  onClosed,
   children,
-  setOpen,
 }: {
-  children: React.ReactElement;
-  open: boolean;
-  setOpen: (open: boolean) => void;
+  children: (request: QueuedRequest<T>) => React.ReactElement;
+  currentRequest: QueuedRequest<T>;
+  onClosed: () => void;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean | null>(null);
 
+  // open sheet when currentRequest changes
   useEffect(() => {
-    // this effect is to force the sheet from rendering before animating
+    // On initial render, wait to force the sheet from rendering before animating
     // prevents bug where animations comes in from top.
-    setTimeout(() => setIsOpen(true), 200);
-  }, []);
+    if (isOpen === null) {
+      setTimeout(() => setIsOpen(true), 200);
+    } else if (isOpen === false) {
+      setIsOpen(true);
+    }
+    // if sheet already open - close then reopen
+    else if (isOpen === true) {
+      setIsOpen(false);
+      setTimeout(() => setIsOpen(true), 200);
+    }
+  }, [currentRequest]);
 
-  const render = open && isOpen;
+  // Give Sheet time to animate out before sending response
+  const respond = useCallback(
+    (response: SecureResponse<T, "confirmation">["response"]) => {
+      setIsOpen(false);
+      setTimeout(() => currentRequest.respond(response), 200);
+    },
+    [currentRequest]
+  );
+
+  // Give Sheet time to animate out before sending response
+  const error = useCallback(
+    (error) => {
+      setIsOpen(false);
+      setTimeout(() => currentRequest.error(error), 200);
+    },
+    [currentRequest]
+  );
+
+  if (!currentRequest) {
+    return null;
+  }
+
   return (
     <Sheet
-      open={render}
+      open={!!isOpen}
       modal
-      onOpenChange={setOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          onClosed();
+        }
+      }}
       snapPoints={[80]}
       dismissOnSnapToBottom={false}
       position={0}
       zIndex={100_000}
       animation="quick"
     >
-      <Sheet.Overlay backgroundColor="rgba(0,0,0,0.3)" />
+      {/* <Sheet.Overlay backgroundColor="rgba(0,0,0,0.3)" /> */}
       {/* <Sheet.Handle /> */}
-      <Sheet.Frame>{render ? children : null}</Sheet.Frame>
+      <Sheet.Frame>
+        {children({ ...currentRequest, respond, error })}
+      </Sheet.Frame>
     </Sheet>
   );
 }
