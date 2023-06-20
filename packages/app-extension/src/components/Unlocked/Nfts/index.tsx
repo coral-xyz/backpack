@@ -16,14 +16,17 @@ import EntryONE from "./EntryONE";
 import { NftTable } from "./NftTable";
 
 export function Nfts() {
-  const oneLive = useRecoilValue(isOneLive);
+  const oneLiveLoadable = useRecoilValueLoadable(isOneLive);
   const activeWallet = useActiveWallet();
   const wallets = useAllWalletsDisplayed();
   const _isAggregateWallets = useRecoilValue(isAggregateWallets);
   const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
   const isLoading = state === "loading";
   const allWalletCollections = (state === "hasValue" && contents) || null;
-
+  const oneLive =
+    oneLiveLoadable.state === "hasValue"
+      ? oneLiveLoadable.contents
+      : { isLive: false };
   const NFTList = useMemo(() => {
     return (
       <NftTable
@@ -55,7 +58,6 @@ export function Nfts() {
         .reduce((acc, c) => (c === null ? acc : c.itemIds.length + acc), 0)
     : 0;
   const isEmpty = nftCount === 0 && !isLoading;
-
   return (
     <div
       style={{
@@ -82,7 +84,6 @@ export function Nfts() {
               !_isAggregateWallets ? (
                 <_BalancesTableHead
                   blockchain={activeWallet.blockchain}
-                  wallet={activeWallet}
                   showContent
                   setShowContent={() => {}}
                 />

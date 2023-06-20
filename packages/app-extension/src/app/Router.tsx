@@ -20,7 +20,6 @@ import {
   useApprovedOrigins,
   useBackgroundClient,
   useBackgroundResponder,
-  useBootstrapFast,
   useDarkMode,
   useEnabledBlockchains,
   useKeyringStoreState,
@@ -422,7 +421,6 @@ function WithLockMotion({ children, id }: any) {
 }
 
 function LockedBootstrap({ onUnlock }: any) {
-  useBootstrapFast();
   return <Locked onUnlock={onUnlock} />;
 }
 

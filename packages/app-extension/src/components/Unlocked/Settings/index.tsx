@@ -8,6 +8,7 @@ import {
   GridIcon,
   List,
   ListItem,
+  MessageBubbleIcon,
   PushDetail,
 } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
@@ -22,20 +23,15 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { IconButton, Typography } from "@mui/material";
 
 import { useNavigation } from "../../common/Layout/NavStack";
-import { TransactionsButton } from "../../Unlocked/Transactions";
 import { NotificationButton } from "../Notifications";
 
 import { AvatarHeader } from "./AvatarHeader/AvatarHeader";
-import { AvatarPopoverButton } from "./AvatarPopover";
 
 export function SettingsButton() {
   return (
     <div style={{ display: "flex" }}>
       <SearchButton />
-      <TransactionsButton />
       <NotificationButton />
-      <div style={{ width: "16px" }} />
-      <AvatarPopoverButton />
     </div>
   );
 }
