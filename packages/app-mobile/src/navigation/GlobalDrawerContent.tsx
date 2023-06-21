@@ -20,7 +20,7 @@ import {
 } from "@react-navigation/drawer";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { UserAccountListItem } from "~components/UserAccountsMenu";
+import { UserAccountListItem } from "~components/ListItem";
 import { CurrentUserAvatar } from "~components/UserAvatar";
 
 import { useSession } from "~src/lib/SessionProvider";

@@ -14,7 +14,7 @@ const cache = new Map();
 
 // This component exists because our avatars return either SVG or PNG or GIF from 1 endpoint with no extension
 // used for any user
-export const UserAvatar = memo(function UserAvatar({
+export function UserAvatar({
   uri,
   size = 32,
   style,
@@ -70,7 +70,7 @@ export const UserAvatar = memo(function UserAvatar({
       ]}
     />
   );
-});
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -81,12 +81,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export const Avatar = memo(function Avatar({
+export function Avatar({
   size = 64,
+  username,
 }: {
   size?: number;
+  username?: string;
 }): JSX.Element {
-  const avatarUrl = useAvatarUrl(size);
+  const avatarUrl = useAvatarUrl(size, username);
   const theme = useTheme();
   const outerSize = size + 6;
 
@@ -103,7 +105,7 @@ export const Avatar = memo(function Avatar({
       <UserAvatar size={size} uri={avatarUrl} />
     </View>
   );
-});
+}
 
 export const CurrentUserAvatar = ({ size = 64 }: { size?: number }) => (
   <Avatar size={size} />
