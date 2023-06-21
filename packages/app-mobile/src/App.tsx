@@ -38,7 +38,7 @@ export function App(): JSX.Element {
   return (
     <ErrorBoundary fallbackRender={renderError}>
       <BackgroundHiddenWebView />
-      <Suspense fallback={<FullScreenLoading label="loading recoil..." />}>
+      <Suspense fallback={<FullScreenLoading />}>
         <RecoilRoot>
           <Main />
         </RecoilRoot>

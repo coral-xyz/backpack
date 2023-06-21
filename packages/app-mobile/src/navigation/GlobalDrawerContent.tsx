@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Alert, Pressable } from "react-native";
 
+import Constants from "expo-constants";
+
 import {
   UI_RPC_METHOD_ACTIVE_USER_UPDATE,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
@@ -12,6 +14,7 @@ import {
   StyledText,
   XStack,
   useTheme as useTamaguiTheme,
+  YStack,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import {
@@ -127,20 +130,22 @@ function UserList() {
 }
 
 export function GlobalDrawerContent(props) {
-  const insets = useSafeAreaInsets();
+  // SafeAreaView doesn't load immediately which causes screen thrashing
+  // it will go from 0 to 34 on an iphone x, but only in this global drawer context -_-
+  const marginBottom = Constants.statusBarHeight >= 53 ? 50 : 16;
   return (
     <DrawerContentScrollView
       {...props}
       contentContainerStyle={{
         flexGrow: 1,
         justifyContent: "space-between",
-        marginBottom: insets.bottom,
+        marginBottom,
       }}
     >
-      <Stack>
+      <YStack>
         <Header />
         <DrawerItemList {...props} />
-      </Stack>
+      </YStack>
       <UserList />
     </DrawerContentScrollView>
   );
