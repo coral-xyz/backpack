@@ -113,7 +113,7 @@ import type { Commitment } from "@solana/web3.js";
 import type { Backend } from "../backend/core";
 import type { Config, Handle, PublicKeyData } from "../types";
 
-const logger = getLogger("dc1: background-server-ui");
+const logger = getLogger("background-server-ui");
 
 export function start(_cfg: Config, events: EventEmitter, b: Backend): Handle {
   const rpcServerUi = ChannelAppUi.server(CHANNEL_POPUP_RPC);
@@ -335,10 +335,8 @@ async function handle<T = any>(
       // @ts-ignore
       return await handleUsernameAccountCreate(ctx, ...params);
     case UI_RPC_METHOD_ACTIVE_USER_UPDATE:
-      logger.debug("dc1:UI_RPC_METHOD_ACTIVE_USER_UPDATE:params", params);
       // @ts-ignore
       const response = await handleActiveUserUpdate(ctx, ...params);
-      logger.debug("dc1:UI_RPC_METHOD_ACTIVE_USER_UPDATE:response", response);
       ctx.backend.keyringStoreAutoLockReset();
       return response;
     //
@@ -609,10 +607,7 @@ async function handleActiveUserUpdate(
   ctx: Context<Backend>,
   ...args: Parameters<Backend["activeUserUpdate"]>
 ): Promise<RpcResponse<string>> {
-  logger.debug("handleActiveUserUpdate:args", args);
   const resp = await ctx.backend.activeUserUpdate(...args);
-  logger.debug("handleActiveUserUpdate:resp");
-  logger.debug("handleActiveUserUpdate:resp", resp);
   return [resp];
 }
 
