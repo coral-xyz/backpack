@@ -22,7 +22,9 @@ import {
   EthereumExplorer,
   getAccountRecoveryPaths,
   getAddMessage,
+  getLogger,
   getRecoveryPaths,
+  IS_MOBILE,
   makeUrl,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
@@ -63,6 +65,7 @@ import {
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
   SolanaCluster,
   SolanaExplorer,
+  TAB_BALANCES,
   TAB_BALANCES_SET,
   TAB_XNFT,
 } from "@coral-xyz/common";
@@ -649,20 +652,25 @@ export class Backend {
     const xnftPreferences = await this.getXnftPreferences();
     const blockchainKeyrings = await this.blockchainKeyringsRead();
 
-    // Reset the navigation to the default everytime we switch users
-    // but keep the active tab.
-    const { activeTab } = (await legacyStore.getNav())!;
-    await legacyStore.setNav({
-      ...defaultNav,
-      activeTab,
-    });
-    const url = defaultNav.data[activeTab].urls[0];
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-      data: {
-        url,
-      },
-    });
+    // getNav doesn't need to be called for mobile since we have our own system
+    if (!IS_MOBILE) {
+      const navData = await legacyStore.getNav();
+      const activeTab = navData?.activeTab ?? TAB_BALANCES;
+      if (activeTab) {
+        await legacyStore.setNav({
+          ...defaultNav,
+          activeTab,
+        });
+      }
+
+      const url = defaultNav.data[activeTab].urls[0];
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+        data: {
+          url,
+        },
+      });
+    }
 
     // Push it.
     this.events.emit(BACKEND_EVENT, {
