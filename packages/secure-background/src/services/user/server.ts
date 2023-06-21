@@ -1,4 +1,4 @@
-import type { Blockchain } from "@coral-xyz/common";
+import type { Blockchain, Preferences } from "@coral-xyz/common";
 
 import type { KeyringStore } from "../../store/keyring";
 import type { SecureStore } from "../../store/SecureStore";
@@ -45,6 +45,7 @@ export class UserService {
     const handlers: TransportHandlers<SECURE_USER_EVENTS> = {
       SECURE_USER_UNLOCK_KEYRING: this.handleUnlockKeyring,
       SECURE_USER_GET: this.handleUserGet,
+      SECURE_USER_APPROVE_ORIGIN: this.handleApproveOrigin,
     };
 
     const handler = handlers[request.name]?.bind(this);
@@ -99,6 +100,39 @@ export class UserService {
       return error(e);
     }
   };
+
+  private handleApproveOrigin: TransportHandler<"SECURE_USER_APPROVE_ORIGIN"> =
+    async ({ event, request, respond, error }) => {
+      try {
+        const activeUser = await this.secureStore.getActiveUser();
+        const preferences = await this.secureStore.getWalletDataForUser(
+          activeUser.uuid
+        );
+
+        if (preferences.approvedOrigins.includes(request.origin)) {
+          return respond({ approved: true });
+        }
+
+        const approve = await this.secureUIClient.confirm(event);
+
+        if (!approve.response) {
+          return error(approve.error);
+        }
+
+        const newPreferences: Preferences = {
+          ...preferences,
+          approvedOrigins: [...preferences.approvedOrigins, request.origin],
+        };
+        await this.secureStore.setWalletDataForUser(
+          activeUser.uuid,
+          newPreferences
+        );
+
+        return respond({ approved: true });
+      } catch (e) {
+        return error(e);
+      }
+    };
 
   private handleUnlockKeyring: TransportHandler<"SECURE_USER_UNLOCK_KEYRING"> =
     async (event) => {

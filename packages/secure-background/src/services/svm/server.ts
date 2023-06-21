@@ -97,6 +97,20 @@ export class SVMService {
       return event.error(user.error);
     }
 
+    if (
+      !user.response.user?.preferences.approvedOrigins.includes(
+        event.event.origin.address
+      )
+    ) {
+      const approvedOrigin = await this.userClient.approveOrigin({
+        origin: event.event.origin.address,
+      });
+
+      if (!approvedOrigin.response) {
+        return event.error(approvedOrigin.error);
+      }
+    }
+
     const publicKey = user.response.activePublicKeys?.[Blockchain.SOLANA];
     const connectionUrl = user.response.user?.preferences.solana.cluster;
 

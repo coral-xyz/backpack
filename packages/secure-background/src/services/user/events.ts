@@ -8,7 +8,8 @@ import type { SecureEventBase } from "../../types/transports";
 
 export type SECURE_USER_EVENTS =
   | "SECURE_USER_UNLOCK_KEYRING"
-  | "SECURE_USER_GET";
+  | "SECURE_USER_GET"
+  | "SECURE_USER_APPROVE_ORIGIN";
 
 export interface SECURE_USER_UNLOCK_KEYRING
   extends SecureEventBase<"SECURE_USER_UNLOCK_KEYRING"> {
@@ -36,5 +37,17 @@ export interface SECURE_USER_GET extends SecureEventBase<"SECURE_USER_GET"> {
     };
     activePublicKeys?: Partial<Record<Blockchain, string>>;
     publicKeys?: UserPublicKeys | null;
+  };
+}
+export interface SECURE_USER_APPROVE_ORIGIN
+  extends SecureEventBase<"SECURE_USER_APPROVE_ORIGIN"> {
+  request: {
+    origin: string;
+  };
+  response: {
+    approved: true;
+  };
+  confirmationResponse: {
+    confirmed: true;
   };
 }

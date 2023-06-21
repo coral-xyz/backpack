@@ -11,6 +11,7 @@ import type {
   SECURE_SVM_SIGN_TX,
 } from "../services/svm/events";
 import type {
+  SECURE_USER_APPROVE_ORIGIN,
   SECURE_USER_EVENTS,
   SECURE_USER_GET,
   SECURE_USER_UNLOCK_KEYRING,
@@ -40,6 +41,8 @@ export type SecureEvent<T extends SECURE_EVENTS = SECURE_EVENTS> =
     ? SECURE_EVM_SIGN_TX
     : T extends "SECURE_USER_UNLOCK_KEYRING"
     ? SECURE_USER_UNLOCK_KEYRING
+    : T extends "SECURE_USER_APPROVE_ORIGIN"
+    ? SECURE_USER_APPROVE_ORIGIN
     : T extends "SECURE_USER_GET"
     ? SECURE_USER_GET
     : never;

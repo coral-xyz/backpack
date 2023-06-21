@@ -14,6 +14,7 @@ import {
   secureBackgroundSenderAtom,
   secureUIReceiverAtom,
 } from "./_atoms/clientAtoms";
+import { ApproveOriginRequest } from "./RequestHandlers/ApproveOriginRequest";
 import { SignMessageRequest } from "./RequestHandlers/SignMessageRequest";
 import { UnlockRequest } from "./RequestHandlers/UnlockRequest";
 
@@ -29,6 +30,14 @@ function SecureUIRoot() {
     switch (currentRequest.name) {
       case "SECURE_SVM_SIGN_MESSAGE":
         return <SignMessageRequest currentRequest={currentRequest} />;
+      case "SECURE_USER_APPROVE_ORIGIN":
+        return (
+          <ApproveOriginRequest
+            currentRequest={
+              currentRequest as QueuedRequest<"SECURE_USER_APPROVE_ORIGIN">
+            }
+          />
+        );
       case "SECURE_USER_UNLOCK_KEYRING":
         return (
           <UnlockRequest

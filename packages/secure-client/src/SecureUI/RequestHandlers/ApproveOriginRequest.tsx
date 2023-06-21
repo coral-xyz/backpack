@@ -1,3 +1,8 @@
+import type { SecureEvent } from "@coral-xyz/secure-background/types";
+import {
+  SECURE_EVENTS,
+  SecureRequest,
+} from "@coral-xyz/secure-background/types";
 import {
   PrimaryButton,
   ProxyImage,
@@ -18,14 +23,12 @@ import { ApproveTransactionBottomSheet } from "../_sharedComponents/ApproveTrans
 import { RequireUserUnlocked } from "../Guards/RequireUserUnlocked";
 import { Presentation } from "../Presentation";
 
-export function SignMessageRequest({
+export function ApproveOriginRequest({
   currentRequest,
 }: {
-  currentRequest: QueuedRequest;
+  currentRequest: QueuedRequest<"SECURE_USER_APPROVE_ORIGIN">;
 }) {
-  //@ts-ignore
-  const msgBuffer = Buffer.from(decode(currentRequest.request.message! ?? ""));
-  const message = msgBuffer.toString();
+  const message = currentRequest.request.origin;
 
   return (
     <Presentation
@@ -33,10 +36,10 @@ export function SignMessageRequest({
       onClosed={() => currentRequest.error("Plugin Closed")}
     >
       {(currentRequest) => (
-        <RequireUserUnlocked force>
+        <RequireUserUnlocked>
           <ApproveTransactionBottomSheet
             id={currentRequest.queueId}
-            title="Approve Message"
+            title="Approve Origin"
             message={message}
             onApprove={() => currentRequest.respond({ confirmed: true })}
             onDeny={() => currentRequest.error("User Denied Approval")}
