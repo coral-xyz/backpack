@@ -6,6 +6,7 @@ export type SECURE_SVM_EVENTS =
   | "SECURE_SVM_SIGN_MESSAGE"
   | "SECURE_SVM_SIGN_TX"
   | "SECURE_SVM_SIGN_ALL_TX"
+  | "SECURE_SVM_DISCONNECT"
   | "SECURE_SVM_CONNECT";
 
 export interface SECURE_SVM_SIGN_MESSAGE
@@ -28,6 +29,13 @@ export interface SECURE_SVM_CONNECT
   response: {
     publicKey: string;
     connectionUrl: string;
+  };
+}
+export interface SECURE_SVM_DISCONNECT
+  extends SecureEventBase<"SECURE_SVM_DISCONNECT"> {
+  request: {};
+  response: {
+    disconnected: true;
   };
 }
 

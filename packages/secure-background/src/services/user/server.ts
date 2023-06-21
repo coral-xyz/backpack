@@ -15,7 +15,7 @@ import type {
 import { SecureUIClient } from "../secureUI/client";
 
 import type { SECURE_USER_EVENTS } from "./events";
-type Blockchains = (typeof Blockchain)[keyof typeof Blockchain];
+
 export class UserService {
   public destroy: TransportRemoveListener;
   private keyringStore: KeyringStore;
@@ -46,6 +46,7 @@ export class UserService {
       SECURE_USER_UNLOCK_KEYRING: this.handleUnlockKeyring,
       SECURE_USER_GET: this.handleUserGet,
       SECURE_USER_APPROVE_ORIGIN: this.handleApproveOrigin,
+      SECURE_USER_REMOVE_ORIGIN: this.handleRemoveOrigin,
     };
 
     const handler = handlers[request.name]?.bind(this);
@@ -129,6 +130,39 @@ export class UserService {
         );
 
         return respond({ approved: true });
+      } catch (e) {
+        return error(e);
+      }
+    };
+
+  private handleRemoveOrigin: TransportHandler<"SECURE_USER_REMOVE_ORIGIN"> =
+    async ({ event, request, respond, error }) => {
+      try {
+        const activeUser = await this.secureStore.getActiveUser();
+        const preferences = await this.secureStore.getWalletDataForUser(
+          activeUser.uuid
+        );
+
+        const index = preferences.approvedOrigins.indexOf(request.origin);
+        if (index < 0) {
+          return respond({ removed: true });
+        }
+
+        const approvedOrigins = [...preferences.approvedOrigins];
+
+        // remove origin
+        approvedOrigins.splice(index, 1);
+
+        const newPreferences: Preferences = {
+          ...preferences,
+          approvedOrigins,
+        };
+        await this.secureStore.setWalletDataForUser(
+          activeUser.uuid,
+          newPreferences
+        );
+
+        return respond({ removed: true });
       } catch (e) {
         return error(e);
       }

@@ -36,13 +36,25 @@ export class SolanaClient {
     return connected.response;
   }
 
+  public async disconnect(): Promise<{
+    disconnected: true;
+  }> {
+    const connected = await this.secureSvmClient.disconnect();
+
+    if (!connected.response) {
+      throw new Error(connected.error);
+    }
+
+    return connected.response;
+  }
+
   public async signMessage(
     request: {
       publicKey: PublicKey;
       message: Uint8Array;
     },
     confirmOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["confirmOptions"]
-  ): Promise<Uint8Array | null> {
+  ): Promise<Uint8Array> {
     const svmResponse = await this.secureSvmClient.signMessage(
       {
         publicKey: request.publicKey.toBase58(),

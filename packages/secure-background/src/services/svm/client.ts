@@ -26,12 +26,27 @@ export class SVMClient {
   }
 
   public connect(
-    request?: SecureEvent<"SECURE_SVM_CONNECT">["request"],
+    request: SecureEvent<"SECURE_SVM_CONNECT">["request"] = {},
     confirmOptions?: SecureEvent<"SECURE_SVM_CONNECT">["confirmOptions"]
   ): Promise<SecureResponse<"SECURE_SVM_CONNECT">> {
     return this.client
       .send({
         name: "SECURE_SVM_CONNECT",
+        request: request,
+        confirmOptions,
+      })
+      .then((response) => {
+        console.log("PCA svm client response received", response);
+        return response;
+      });
+  }
+  public disconnect(
+    request?: SecureEvent<"SECURE_SVM_DISCONNECT">["request"],
+    confirmOptions?: SecureEvent<"SECURE_SVM_DISCONNECT">["confirmOptions"]
+  ): Promise<SecureResponse<"SECURE_SVM_DISCONNECT">> {
+    return this.client
+      .send({
+        name: "SECURE_SVM_DISCONNECT",
         request: request ?? {},
         confirmOptions,
       })

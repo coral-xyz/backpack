@@ -9,6 +9,7 @@ import type { SecureEventBase } from "../../types/transports";
 export type SECURE_USER_EVENTS =
   | "SECURE_USER_UNLOCK_KEYRING"
   | "SECURE_USER_GET"
+  | "SECURE_USER_REMOVE_ORIGIN"
   | "SECURE_USER_APPROVE_ORIGIN";
 
 export interface SECURE_USER_UNLOCK_KEYRING
@@ -49,5 +50,15 @@ export interface SECURE_USER_APPROVE_ORIGIN
   };
   confirmationResponse: {
     confirmed: true;
+  };
+}
+
+export interface SECURE_USER_REMOVE_ORIGIN
+  extends SecureEventBase<"SECURE_USER_REMOVE_ORIGIN"> {
+  request: {
+    origin: string;
+  };
+  response: {
+    removed: true;
   };
 }

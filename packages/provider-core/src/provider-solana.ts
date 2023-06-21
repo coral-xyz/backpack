@@ -255,7 +255,8 @@ export class ProviderSolanaInjection
 
   async connect() {
     if (this.#isConnected) {
-      throw new Error("provider already connected");
+      console.warn("provider already connected");
+      return;
     }
     if (this.#isXnft) {
       console.warn("xnft already connected");
@@ -263,9 +264,6 @@ export class ProviderSolanaInjection
     // Send request to the RPC API.
     const result = await this.#secureSolanaClient.connect();
 
-    if (!result) {
-      throw new Error("Failed to connect");
-    }
     this.#connect(result.publicKey, result.connectionUrl);
   }
 
@@ -274,11 +272,9 @@ export class ProviderSolanaInjection
       console.warn("xnft can't be disconnected");
       return;
     }
-    await this.#requestManager.request({
-      method: SOLANA_RPC_METHOD_DISCONNECT,
-      params: [],
-    });
+    await this.#secureSolanaClient.disconnect();
     this.#connection = this.defaultConnection();
+    this.#isConnected = false;
     this.#publicKey = undefined;
   }
 
@@ -300,6 +296,9 @@ export class ProviderSolanaInjection
     publicKey?: PublicKey
   ): Promise<TransactionSignature> {
     if (!this.#publicKey) {
+      await this.connect();
+    }
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.sendAndConfirm(
@@ -319,6 +318,9 @@ export class ProviderSolanaInjection
     connection?: Connection,
     publicKey?: PublicKey
   ): Promise<TransactionSignature> {
+    if (!this.#publicKey) {
+      await this.connect();
+    }
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
@@ -351,6 +353,9 @@ export class ProviderSolanaInjection
     publicKey?: PublicKey
   ): Promise<SimulatedTransactionResponse> {
     if (!this.#publicKey) {
+      await this.connect();
+    }
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.simulate(
@@ -369,15 +374,15 @@ export class ProviderSolanaInjection
     connection?: Connection
   ): Promise<T> {
     if (!this.#publicKey) {
+      await this.connect();
+    }
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     const solanaResponse = await this.#secureSolanaClient.signTransaction({
       publicKey: publicKey ?? this.#publicKey,
       tx,
     });
-    if (!solanaResponse) {
-      throw new Error("signature failed");
-    }
     return solanaResponse;
   }
 
@@ -386,6 +391,9 @@ export class ProviderSolanaInjection
     publicKey?: PublicKey,
     connection?: Connection
   ): Promise<Array<T>> {
+    if (!this.#publicKey) {
+      await this.connect();
+    }
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
@@ -400,6 +408,9 @@ export class ProviderSolanaInjection
     msg: Uint8Array,
     publicKey?: PublicKey
   ): Promise<Uint8Array> {
+    if (!this.#publicKey) {
+      await this.connect();
+    }
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }

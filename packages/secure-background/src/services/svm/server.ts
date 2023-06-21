@@ -39,6 +39,7 @@ export class SVMService {
       SECURE_SVM_SIGN_TX: this.handleSign,
       SECURE_SVM_SIGN_ALL_TX: this.handleSignAll,
       SECURE_SVM_CONNECT: this.handleConnect,
+      SECURE_SVM_DISCONNECT: this.handleDisconnect,
     };
 
     const handler = handlers[request.name]?.bind(this);
@@ -97,6 +98,8 @@ export class SVMService {
       return event.error(user.error);
     }
 
+    console.log("PCA CONNECT", user);
+
     if (
       !user.response.user?.preferences.approvedOrigins.includes(
         event.event.origin.address
@@ -124,6 +127,20 @@ export class SVMService {
     return event.respond({
       publicKey,
       connectionUrl,
+    });
+  };
+
+  private handleDisconnect: TransportHandler<"SECURE_SVM_DISCONNECT"> = async (
+    event
+  ) => {
+    const removed = await this.userClient.removeOrigin({
+      origin: event.event.origin.address,
+    });
+    if (!removed.response?.removed) {
+      return event.error(removed.error);
+    }
+    return event.respond({
+      disconnected: true,
     });
   };
 
