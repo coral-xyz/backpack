@@ -22,7 +22,6 @@ import {
   EthereumExplorer,
   getAccountRecoveryPaths,
   getAddMessage,
-  getLogger,
   getRecoveryPaths,
   IS_MOBILE,
   makeUrl,
@@ -65,8 +64,8 @@ import {
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
   SolanaCluster,
   SolanaExplorer,
-  TAB_BALANCES,
   TAB_BALANCES_SET,
+  TAB_TOKENS,
   TAB_XNFT,
 } from "@coral-xyz/common";
 import { makeDefaultNav } from "@coral-xyz/recoil";
@@ -655,7 +654,7 @@ export class Backend {
     // getNav doesn't need to be called for mobile since we have our own system
     if (!IS_MOBILE) {
       const navData = await legacyStore.getNav();
-      const activeTab = navData?.activeTab ?? TAB_BALANCES;
+      const activeTab = navData?.activeTab ?? TAB_TOKENS;
       if (activeTab) {
         await legacyStore.setNav({
           ...defaultNav,
