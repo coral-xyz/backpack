@@ -82,6 +82,7 @@ function UserList() {
         style={{ marginBottom: 8, maxHeight: 260 }}
         keyExtractor={(item) => item.uuid}
         showsVerticalScrollIndicator={false}
+        scrollEnabled={users.length >= 4}
         renderItem={({ item: { username, uuid } }) => {
           return (
             <UserAccountListItem
