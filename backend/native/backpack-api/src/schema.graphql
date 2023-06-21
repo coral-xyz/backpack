@@ -96,6 +96,7 @@ enum CacheControlScope {
 Provider ID enum variants for the supported blockchains or wallet types in the API.
 """
 enum ProviderID {
+  BITCOIN
   ETHEREUM
   SOLANA
 }
@@ -189,6 +190,11 @@ input TransactionFiltersInput {
   Block hash or signature to search before.
   """
   before: String
+
+  """
+  Used for transaction pagination for a Bitcoin provider wallet.
+  """
+  offset: Int
 
   """
   A token mint or contract address to filter for.
