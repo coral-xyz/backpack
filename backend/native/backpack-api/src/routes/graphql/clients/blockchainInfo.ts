@@ -36,16 +36,21 @@ export class BlockchainInfo extends RESTDataSource {
   /**
    * Return the recent transactions for a Bitcoin wallet address.
    * @param {string} address
-   * @returns {Promise<BlockchainInfoTransactionsResponse["txs"]>}
+   * @param {number} [transactionOffset]
+   * @returns {Promise<BlockchainInfoTransactionsResponse>}
    * @memberof BlockchainInfo
    */
   async getRawAddressData(
-    address: string
-  ): Promise<BlockchainInfoTransactionsResponse["txs"]> {
-    const resp: BlockchainInfoTransactionsResponse = await this.get(
-      `/rawaddr/${address}`
-    );
-    return resp.txs;
+    address: string,
+    transactionOffset?: number
+  ): Promise<BlockchainInfoTransactionsResponse> {
+    return this.get(`/rawaddr/${address}`, {
+      params: transactionOffset
+        ? {
+            offset: transactionOffset.toString(),
+          }
+        : undefined,
+    });
   }
 }
 

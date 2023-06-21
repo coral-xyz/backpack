@@ -166,23 +166,24 @@ export class Bitcoin implements BlockchainDataProvider {
   /**
    * Get the transaction history with parameters for the argued address.
    * @param {string} address
-   * @param {TransactionFiltersInput} [_filters]
+   * @param {TransactionFiltersInput} [filters]
    * @returns {Promise<TransactionConnection>}
    * @memberof Bitcoin
    */
   async getTransactionsForAddress(
     address: string,
-    _filters?: TransactionFiltersInput
+    filters?: TransactionFiltersInput
   ): Promise<TransactionConnection> {
     if (!this.#ctx) {
       throw new Error("API context object not available");
     }
 
-    const txs = await this.#ctx.dataSources.blockchainInfo.getRawAddressData(
-      address
+    const resp = await this.#ctx.dataSources.blockchainInfo.getRawAddressData(
+      address,
+      filters?.offset ?? undefined
     );
 
-    const nodes: Transaction[] = txs.map((t) =>
+    const nodes: Transaction[] = resp.txs.map((t) =>
       NodeBuilder.transaction(this.id(), {
         block: t.block_index,
         fee: t.fee.toString(),
@@ -193,6 +194,8 @@ export class Bitcoin implements BlockchainDataProvider {
       })
     );
 
-    return createConnection(nodes, false, false); // FIXME: add pagination with limitation filter
+    const hasNext = resp.n_tx > (filters?.offset ?? 0) + 50;
+    const hasPrevious = filters?.offset ? filters.offset > 0 : false;
+    return createConnection(nodes, hasNext, hasPrevious);
   }
 }

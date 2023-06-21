@@ -192,6 +192,11 @@ input TransactionFiltersInput {
   before: String
 
   """
+  Used for transaction pagination for a Bitcoin provider wallet.
+  """
+  offset: Int
+
+  """
   A token mint or contract address to filter for.
   """
   token: String
