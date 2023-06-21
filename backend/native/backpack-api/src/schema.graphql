@@ -854,6 +854,11 @@ type User implements Node {
   id: ID!
 
   """
+  The aggregate token balances and value for all wallets associated with the user.
+  """
+  allWalletsAggregate: Balances @cacheControl(maxAge: 60, scope: PRIVATE)
+
+  """
   The image link for the avatar of the user.
   """
   avatar: String!
@@ -866,7 +871,7 @@ type User implements Node {
   """
   A grouping object of the friends and friend request data for the user.
   """
-  friendship: Friendship @cacheControl(inheritMaxAge: true)
+  friendship: Friendship @cacheControl(inheritMaxAge: true, scope: PRIVATE)
 
   """
   The Relay connection for the notifications received by the user.
@@ -893,7 +898,7 @@ type User implements Node {
   The Relay connection for the wallet's and their data that are registered to the user.
   """
   wallets(filters: WalletFiltersInput): WalletConnection
-    @cacheControl(maxAge: 60)
+    @cacheControl(maxAge: 60, scope: PRIVATE)
 }
 
 """

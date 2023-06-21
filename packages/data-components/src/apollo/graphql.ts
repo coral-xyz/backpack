@@ -502,6 +502,8 @@ export type TransactionFiltersInput = {
  */
 export type User = Node & {
   __typename?: "User";
+  /** The aggregate token balances and value for all wallets associated with the user. */
+  allWalletsAggregate?: Maybe<Balances>;
   /** The image link for the avatar of the user. */
   avatar: Scalars["String"];
   /** The timestamp of the creation of the user. */

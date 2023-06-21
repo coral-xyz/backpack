@@ -21,7 +21,7 @@ import type {
 export abstract class NodeBuilder {
   static balances(
     owner: string,
-    providerId: ProviderId,
+    providerId: ProviderId | "AGGREGATE",
     data: Omit<Balances, "id">
   ): Balances {
     return this._createNode(`${providerId}_balances:${owner}`, data);

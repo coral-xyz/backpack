@@ -104,7 +104,7 @@ export const createContext: ContextFunction<
       coinGecko: new CoinGeckoIndexer({ apiKey: COINGECKO_API_KEY }),
       hasura: new Hasura({ secret: HASURA_JWT, url: HASURA_URL }),
       helius: new Helius({ apiKey: HELIUS_API_KEY, devnet }),
-      swr: new Swr(),
+      swr: new Swr({}),
       tensor: new Tensor({ apiKey: TENSOR_API_KEY }),
     },
     http: {
