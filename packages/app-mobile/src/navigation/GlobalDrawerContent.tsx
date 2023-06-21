@@ -70,6 +70,7 @@ function UserList() {
   };
 
   const theme = useTamaguiTheme();
+  const activeUser = users.find((u) => u.uuid === user.uuid);
 
   return (
     <Stack jc="flex-start">
@@ -77,7 +78,7 @@ function UserList() {
         ACCOUNTS ({users.length})
       </StyledText>
       <FlatList
-        data={users}
+        data={[activeUser, ...users.filter((u) => u.uuid !== user.uuid)]}
         style={{ marginBottom: 8, maxHeight: 260 }}
         keyExtractor={(item) => item.uuid}
         showsVerticalScrollIndicator={false}
