@@ -8,12 +8,14 @@ import type {
 import { config as tamaguiConfig, TamaguiProvider } from "@coral-xyz/tamagui";
 import { RecoilRoot, useRecoilValue } from "recoil";
 
+import type { QueuedRequest } from "./_atoms/clientAtoms";
 import {
   currentRequestAtom,
   secureBackgroundSenderAtom,
   secureUIReceiverAtom,
 } from "./_atoms/clientAtoms";
 import { SignMessageRequest } from "./RequestHandlers/SignMessageRequest";
+import { UnlockRequest } from "./RequestHandlers/UnlockRequest";
 
 function SecureUIRoot() {
   const currentRequest = useRecoilValue(currentRequestAtom);
@@ -27,6 +29,14 @@ function SecureUIRoot() {
     switch (currentRequest.name) {
       case "SECURE_SVM_SIGN_MESSAGE":
         return <SignMessageRequest currentRequest={currentRequest} />;
+      case "SECURE_USER_UNLOCK_KEYRING":
+        return (
+          <UnlockRequest
+            currentRequest={
+              currentRequest as QueuedRequest<"SECURE_USER_UNLOCK_KEYRING">
+            }
+          />
+        );
       default:
         return null;
     }

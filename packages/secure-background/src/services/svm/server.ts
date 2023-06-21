@@ -9,21 +9,25 @@ import type {
   TransportSender,
 } from "../../types/transports";
 import { SecureUIClient } from "../secureUI/client";
+import { UserClient } from "../user/client";
 
 import type { SECURE_SVM_EVENTS } from "./events";
 
 export class SVMService {
   public destroy: TransportRemoveListener;
   private secureUIClient: SecureUIClient;
+  private userClient: UserClient;
   private keyringStore: KeyringStore;
 
   constructor(interfaces: {
     secureReceiver: TransportReceiver<SECURE_SVM_EVENTS>;
+    secureSender: TransportSender;
     keyringStore: KeyringStore;
     secureUISender: TransportSender<SECURE_SVM_EVENTS, "confirmation">;
   }) {
     this.keyringStore = interfaces.keyringStore;
     this.secureUIClient = new SecureUIClient(interfaces.secureUISender);
+    this.userClient = new UserClient(interfaces.secureSender);
     this.destroy = interfaces.secureReceiver.setHandler(
       this.eventHandler.bind(this)
     );
@@ -34,7 +38,7 @@ export class SVMService {
       SECURE_SVM_SIGN_MESSAGE: this.handleSignMessage,
       SECURE_SVM_SIGN_TX: this.handleSign,
       SECURE_SVM_SIGN_ALL_TX: this.handleSignAll,
-      SECURE_SVM_SAY_HELLO: this.handleHello,
+      SECURE_SVM_CONNECT: this.handleConnect,
     };
 
     const handler = handlers[request.name]?.bind(this);
@@ -75,16 +79,44 @@ export class SVMService {
       return event.respond({ singedMessage });
     };
 
+  private handleConnect: TransportHandler<"SECURE_SVM_CONNECT"> = async (
+    event
+  ) => {
+    const unlockResponse = await this.userClient.unlockKeyring();
+
+    if (!unlockResponse.response) {
+      return event.error(unlockResponse.error);
+    }
+    if (!unlockResponse.response?.unlocked) {
+      return event.error("Keyring locked.");
+    }
+
+    const user = await this.userClient.getUser();
+
+    if (!user.response) {
+      return event.error(user.error);
+    }
+
+    const publicKey = user.response.activePublicKeys?.[Blockchain.SOLANA];
+    const connectionUrl = user.response.user?.preferences.solana.cluster;
+
+    if (!publicKey) {
+      return event.error("No Solana Pubkey Found");
+    }
+    if (!connectionUrl) {
+      return event.error("No Solana connectionUrl Found");
+    }
+
+    return event.respond({
+      publicKey,
+      connectionUrl,
+    });
+  };
+
   private handleSign: TransportHandler<"SECURE_SVM_SIGN_TX"> = async (
     event
   ) => {
-    return event.respond({ signedTx: "string" });
-  };
-
-  private handleHello: TransportHandler<"SECURE_SVM_SAY_HELLO"> = async (
-    event
-  ) => {
-    return event.respond({ message: "hello " + event.request.name });
+    return event.error("Not Implemented");
   };
 
   private handleSignAll: TransportHandler<"SECURE_SVM_SIGN_ALL_TX"> = async ({

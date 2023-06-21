@@ -1,8 +1,11 @@
-import type { KeyringStore, UserPublicKeys } from "../../store/keyring";
+import type { Blockchain } from "@coral-xyz/common";
+
+import type { KeyringStore } from "../../store/keyring";
 import type { SecureStore } from "../../store/SecureStore";
 import type { SecureEvent } from "../../types/events";
 import { KeyringStoreState } from "../../types/keyring";
 import type {
+  TransportBroadcaster,
   TransportHandler,
   TransportHandlers,
   TransportReceiver,
@@ -12,21 +15,24 @@ import type {
 import { SecureUIClient } from "../secureUI/client";
 
 import type { SECURE_USER_EVENTS } from "./events";
-
+type Blockchains = (typeof Blockchain)[keyof typeof Blockchain];
 export class UserService {
   public destroy: TransportRemoveListener;
   private keyringStore: KeyringStore;
   private secureStore: SecureStore;
   private secureUIClient: SecureUIClient;
+  private notificationBroadcaster: TransportBroadcaster;
 
   constructor(interfaces: {
     secureServer: TransportReceiver<SECURE_USER_EVENTS>;
+    notificationBroadcaster: TransportBroadcaster;
     keyringStore: KeyringStore;
     secureStore: SecureStore;
     secureUIClient: TransportSender<SECURE_USER_EVENTS, "confirmation">;
   }) {
     this.keyringStore = interfaces.keyringStore;
     this.secureStore = interfaces.secureStore;
+    this.notificationBroadcaster = interfaces.notificationBroadcaster;
     this.secureUIClient = new SecureUIClient(interfaces.secureUIClient);
     this.destroy = interfaces.secureServer.setHandler(
       this.eventHandler.bind(this)
@@ -72,7 +78,18 @@ export class UserService {
           await this.keyringStore.activeUserKeyring.publicKeys();
         const activePubkeys = await this.keyringStore.activeWallets();
 
-        response = { ...response, publicKeys, activePubkeys };
+        const activePublicKeys: Partial<Record<Blockchain, string>> = {};
+        activePubkeys.forEach((pubKey) => {
+          const blockchain = Object.entries(publicKeys).find(
+            ([_blockchain, keyrings]) => {
+              return Object.values(keyrings).flat().includes(pubKey);
+            }
+          );
+          if (blockchain) {
+            activePublicKeys[blockchain[0]] = pubKey;
+          }
+        });
+        response = { ...response, publicKeys, activePublicKeys };
       }
 
       console.log("PCA", response);
@@ -85,36 +102,53 @@ export class UserService {
 
   private handleUnlockKeyring: TransportHandler<"SECURE_USER_UNLOCK_KEYRING"> =
     async (event) => {
-      const uuid =
-        event.request.uuid ?? this.keyringStore.activeUserKeyring?.uuid;
+      console.log("PCA user server handleUnlockKeyring");
+      let uuid = event.request.uuid;
+      let password = event.request.password;
       let keyringState = await this.keyringStore.state();
 
-      // if keyring is unlocked but password was provided, lock and verify password
-      if (
-        keyringState === KeyringStoreState.Unlocked &&
-        event.request.password &&
-        uuid
-      ) {
+      if (!uuid) {
+        const activeUser = await this.secureStore.getActiveUser();
+        uuid = activeUser.uuid;
+      }
+
+      if (keyringState === KeyringStoreState.NeedsOnboarding) {
+        return event.error("Needs Onboarding");
+      }
+
+      // if keyring is unlocked but password was provided, lock keyring to verify password
+      if (keyringState === KeyringStoreState.Unlocked && password) {
         this.keyringStore.lock();
-        keyringState = await this.keyringStore.state();
+        keyringState = KeyringStoreState.Locked;
       }
 
-      if (
-        keyringState === KeyringStoreState.Locked &&
-        event.request.password &&
-        uuid
-      ) {
+      // If keyring is not locked send response
+      if (keyringState !== KeyringStoreState.Locked) {
+        return event.respond({
+          unlocked: keyringState === KeyringStoreState.Unlocked,
+        });
+      }
+
+      // Keyring is locked, lets try to unlock it:
+      // if we have a password lets go:
+      if (password) {
         return this.keyringStore
-          .tryUnlock({
-            password: event.request.password,
-            uuid: uuid,
+          .tryUnlock({ password, uuid })
+          .then(async () => {
+            return event.respond({ unlocked: true });
           })
-          .then(() => event.respond({ unlocked: true }))
           .catch((e) => event.error("Wrong Password."));
-      } else if (keyringState === KeyringStoreState.Unlocked) {
-        return event.respond({ unlocked: true });
       }
 
-      return event.respond({ unlocked: false });
+      // If we dont have a password ask the user to unlock.
+      else {
+        const confirmation = await this.secureUIClient.confirm(event.event);
+
+        if (!confirmation.response) {
+          return event.error(confirmation.error);
+        }
+
+        return event.respond({ unlocked: confirmation.response.unlocked });
+      }
     };
 }

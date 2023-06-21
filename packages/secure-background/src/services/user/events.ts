@@ -1,4 +1,4 @@
-import type { Preferences } from "@coral-xyz/common";
+import type { Blockchain, Preferences } from "@coral-xyz/common";
 
 import type { UserPublicKeys } from "../../store/keyring";
 import type { KeyringStoreState } from "../../types/keyring";
@@ -19,19 +19,22 @@ export interface SECURE_USER_UNLOCK_KEYRING
   response: {
     unlocked: boolean;
   };
+  confirmationResponse: {
+    unlocked: boolean;
+  };
 }
 
 export interface SECURE_USER_GET extends SecureEventBase<"SECURE_USER_GET"> {
   request: {};
   response: {
+    keyringState: KeyringStoreState;
     user?: {
       uuid: string;
       jwt: string;
       username: string;
       preferences: Preferences;
     };
-    keyringState: KeyringStoreState;
-    activePubkeys?: string[];
+    activePublicKeys?: Partial<Record<Blockchain, string>>;
     publicKeys?: UserPublicKeys | null;
   };
 }

@@ -57,6 +57,14 @@ export function RequireUserUnlocked({
   return children;
 }
 
+function Onboard() {
+  return null;
+}
+
+function Error() {
+  return null;
+}
+
 function Unlock({ didUnlock = () => {} }: { didUnlock?: () => void }) {
   const currentUser = useRecoilValue(userAtom);
   const userUpdated = useSetRecoilState(userUpdatedAtom);
@@ -138,14 +146,6 @@ function Unlock({ didUnlock = () => {} }: { didUnlock?: () => void }) {
       </Margin>
     </Stack>
   );
-}
-
-function Onboard() {
-  return null;
-}
-
-function Error() {
-  return null;
 }
 
 export function RedBackpack(props: SvgProps) {

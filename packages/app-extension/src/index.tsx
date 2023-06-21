@@ -5,11 +5,11 @@ import {
   isValidEventOrigin,
   openPopupWindow,
 } from "@coral-xyz/common";
-import type { SECURE_EVENTS } from "@coral-xyz/secure-client";
 import {
   FromExtensionTransportSender,
   ToSecureUITransportReceiver,
 } from "@coral-xyz/secure-client";
+import type { SECURE_EVENTS } from "@coral-xyz/secure-client/types";
 import { SecureUI } from "@coral-xyz/secure-client/ui";
 import { v4 } from "uuid";
 

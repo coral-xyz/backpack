@@ -6,7 +6,7 @@ export type SECURE_SVM_EVENTS =
   | "SECURE_SVM_SIGN_MESSAGE"
   | "SECURE_SVM_SIGN_TX"
   | "SECURE_SVM_SIGN_ALL_TX"
-  | "SECURE_SVM_SAY_HELLO";
+  | "SECURE_SVM_CONNECT";
 
 export interface SECURE_SVM_SIGN_MESSAGE
   extends SecureEventBase<"SECURE_SVM_SIGN_MESSAGE"> {
@@ -19,13 +19,12 @@ export interface SECURE_SVM_SIGN_MESSAGE
   };
 }
 
-export interface SECURE_SVM_SAY_HELLO
-  extends SecureEventBase<"SECURE_SVM_SAY_HELLO"> {
-  request: {
-    name: string;
-  };
+export interface SECURE_SVM_CONNECT
+  extends SecureEventBase<"SECURE_SVM_CONNECT"> {
+  request: {};
   response: {
-    message: string;
+    publicKey: string;
+    connectionUrl: string;
   };
 }
 

@@ -21,7 +21,7 @@ import { ErrorBoundary } from "./ErrorBoundary";
 
 const Router = lazy(() => import("./Router"));
 
-import type { TransportSender } from "@coral-xyz/secure-client";
+import type { TransportSender } from "@coral-xyz/secure-client/types";
 
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";

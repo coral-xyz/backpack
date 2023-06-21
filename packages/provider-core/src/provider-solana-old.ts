@@ -27,14 +27,6 @@ import {
   SOLANA_RPC_METHOD_DISCONNECT,
   SOLANA_RPC_METHOD_OPEN_XNFT,
 } from "@coral-xyz/common";
-import type {
-  SECURE_SVM_EVENTS,
-  SecureEventOrigin,
-} from "@coral-xyz/secure-background/types";
-import {
-  FromContentScriptTransportSender,
-  SolanaClient,
-} from "@coral-xyz/secure-client";
 import type { Provider } from "@project-serum/anchor";
 import type {
   Commitment,
@@ -47,12 +39,10 @@ import type {
   VersionedTransaction,
 } from "@solana/web3.js";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { decode, encode } from "bs58";
 
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 import * as cmn from "./common/solana";
-import type { ChainedRequestManager } from ".";
-import { isValidEventOrigin } from ".";
+import { ChainedRequestManager, isValidEventOrigin } from ".";
 
 const logger = getLogger("provider-solana-injection");
 
@@ -81,10 +71,6 @@ export class ProviderSolanaInjection
   #connection: Connection;
   #handlePublicKeyUpdated: any;
 
-  #secureSolanaClient: SolanaClient;
-  #secureClientOrigin: SecureEventOrigin;
-  #secureClientSender: FromContentScriptTransportSender<SECURE_SVM_EVENTS>;
-
   constructor() {
     super();
     if (new.target === ProviderSolanaInjection) {
@@ -107,19 +93,6 @@ export class ProviderSolanaInjection
     this.#isConnected = false;
     this.#publicKey = undefined;
     this.#connection = this.defaultConnection();
-
-    this.#secureClientOrigin = {
-      context: "browser",
-      name: document.title,
-      address: window.location.origin,
-    };
-    this.#secureClientSender = new FromContentScriptTransportSender(
-      this.#secureClientOrigin
-    );
-    this.#secureSolanaClient = new SolanaClient(
-      this.#secureClientSender,
-      this.defaultConnection()
-    );
   }
 
   defaultConnection(): Connection {
@@ -185,10 +158,15 @@ export class ProviderSolanaInjection
 
   #handlePluginConnect(event: Event) {
     const { publicKeys, connectionUrls } = event.data.detail.data;
+    if (!this.#xnftRequestManager) {
+      this.#xnftRequestManager = new ChainedRequestManager(
+        CHANNEL_PLUGIN_RPC_REQUEST,
+        CHANNEL_PLUGIN_RPC_RESPONSE
+      );
+    }
+    this.#requestManager = this.#xnftRequestManager;
     const publicKey = publicKeys[Blockchain.SOLANA];
     const connectionUrl = connectionUrls[Blockchain.SOLANA];
-
-    this.#secureClientOrigin.context = "xnft";
     this.#isXnft = true;
     this.#connect(publicKey, connectionUrl);
     this.emit("connect", event.data.detail);
@@ -208,9 +186,9 @@ export class ProviderSolanaInjection
 
   #handlePluginConnectionUrlUpdated(event: Event) {
     const connectionUrl = event.data.detail.data.url;
-    this.#secureSolanaClient = new SolanaClient(
-      this.#secureClientSender,
-      new Connection(connectionUrl)
+    this.#connection = new BackgroundSolanaConnection(
+      this.#connectionRequestManager,
+      connectionUrl
     );
     this.emit("connectionDidChange", event.data.detail);
   }
@@ -228,9 +206,9 @@ export class ProviderSolanaInjection
   #connect(publicKey: string, connectionUrl: string) {
     this.#isConnected = true;
     this.#publicKey = new PublicKey(publicKey);
-    this.#secureSolanaClient = new SolanaClient(
-      this.#secureClientSender,
-      new Connection(connectionUrl)
+    this.#connection = new BackgroundSolanaConnection(
+      this.#connectionRequestManager,
+      connectionUrl
     );
   }
 
@@ -241,9 +219,9 @@ export class ProviderSolanaInjection
   }
 
   #handleNotificationConnectionUrlUpdated(event: Event) {
-    this.#secureSolanaClient = new SolanaClient(
-      this.#secureClientSender,
-      new Connection(event.data.detail.data.url)
+    this.#connection = new BackgroundSolanaConnection(
+      this.#connectionRequestManager,
+      event.data.detail.data.url
     );
     this.emit("connectionDidChange", event.data.detail);
   }
@@ -261,18 +239,17 @@ export class ProviderSolanaInjection
       console.warn("xnft already connected");
     }
     // Send request to the RPC API.
-    const result = await this.#secureSolanaClient.connect();
+    const result = await this.#requestManager.request({
+      method: SOLANA_RPC_METHOD_CONNECT,
+      params: [],
+    });
 
-    if (!result) {
-      throw new Error("Failed to connect");
-    }
     this.#connect(result.publicKey, result.connectionUrl);
   }
 
   async disconnect() {
     if (this.#isXnft) {
       console.warn("xnft can't be disconnected");
-      return;
     }
     await this.#requestManager.request({
       method: SOLANA_RPC_METHOD_DISCONNECT,
@@ -371,14 +348,12 @@ export class ProviderSolanaInjection
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
-    const solanaResponse = await this.#secureSolanaClient.signTransaction({
-      publicKey: publicKey ?? this.#publicKey,
-      tx,
-    });
-    if (!solanaResponse) {
-      throw new Error("signature failed");
-    }
-    return solanaResponse;
+    return await cmn.signTransaction(
+      publicKey ?? this.#publicKey,
+      this.#requestManager,
+      connection ?? this.#connection,
+      tx
+    );
   }
 
   async signAllTransactions<T extends Transaction | VersionedTransaction>(
@@ -396,6 +371,7 @@ export class ProviderSolanaInjection
       txs
     );
   }
+
   async signMessage(
     msg: Uint8Array,
     publicKey?: PublicKey
@@ -403,14 +379,11 @@ export class ProviderSolanaInjection
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
-    const solanaResponse = await this.#secureSolanaClient.signMessage({
-      publicKey: publicKey ?? this.#publicKey,
-      message: msg,
-    });
-    if (!solanaResponse) {
-      throw new Error("signature failed");
-    }
-    return solanaResponse;
+    return await cmn.signMessage(
+      publicKey ?? this.#publicKey,
+      this.#requestManager,
+      msg
+    );
   }
 
   public get isBackpack() {

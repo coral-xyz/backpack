@@ -8,9 +8,9 @@ import type {
 export class SecureUIClient<T extends SECURE_EVENTS = SECURE_EVENTS> {
   constructor(private client: TransportSender<T, "confirmation">) {}
 
-  public confirm(
-    request: SecureRequest<T>
-  ): Promise<SecureResponse<T, "confirmation">> {
+  public confirm<X extends T = T>(
+    request: SecureRequest<X>
+  ): Promise<SecureResponse<X, "confirmation">> {
     console.log("PCA", "confirm", request);
     return this.client.send(request);
   }

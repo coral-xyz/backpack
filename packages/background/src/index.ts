@@ -4,15 +4,15 @@ import {
   KeyringStore,
   secureStore,
 } from "@coral-xyz/secure-background/legacyExport";
-import { startSecureService } from "@coral-xyz/secure-background/service";
-import type { SECURE_EVENTS } from "@coral-xyz/secure-client";
 import {
+  BackendNotificationBroadcaster,
   combineTransportReceivers,
   FromContentScriptTransportReceiver,
   FromExtensionTransportReceiver,
-  mockTransportSender,
   ToSecureUITransportSender,
 } from "@coral-xyz/secure-client";
+import { startSecureService } from "@coral-xyz/secure-client/service";
+import type { SECURE_EVENTS } from "@coral-xyz/secure-client/types";
 import { EventEmitter } from "eventemitter3";
 
 import * as coreBackend from "./backend/core";
@@ -45,6 +45,7 @@ export function start(cfg: Config): Background {
   const _ethereumConnection = ethereumConnection.start(cfg, events, ethereumB);
 
   if (!cfg.isMobile) {
+    const notificationBroadcaster = new BackendNotificationBroadcaster(events);
     const contentScriptReceiver = new FromContentScriptTransportReceiver();
     const extensionReceiver = new FromExtensionTransportReceiver();
     const secureUISender = new ToSecureUITransportSender<
@@ -53,13 +54,13 @@ export function start(cfg: Config): Background {
     >({
       address: "secure-background",
       name: "Backpack",
-      context: "extension",
+      context: "background",
     });
 
     // New secure service
     startSecureService(
       {
-        backendNotificationClient: mockTransportSender,
+        notificationBroadcaster,
         secureUIClient: secureUISender,
         secureServer: combineTransportReceivers(
           contentScriptReceiver,

@@ -38,9 +38,7 @@ export interface SecureEventBase<T extends SECURE_EVENTS = SECURE_EVENTS> {
   //   component: string,
   //   props: PassThroughToUI
   // };
-  confirmationResponse?: {
-    confirmed: boolean;
-  };
+  confirmationResponse?: SerializableJson;
   response?: SerializableJson;
   error?: any;
 }
@@ -101,3 +99,7 @@ export type TransportSend<
 > = <X extends T = T>(
   request: Omit<SecureRequest<X>, "origin" | "id">
 ) => Promise<SecureResponse<X, R>>;
+
+export interface TransportBroadcaster {
+  broadcast: (request: any) => Promise<void>;
+}
