@@ -340,6 +340,7 @@ export type Provider = Node & {
 
 /** Provider ID enum variants for the supported blockchains or wallet types in the API. */
 export enum ProviderId {
+  Bitcoin = "BITCOIN",
   Ethereum = "ETHEREUM",
   Solana = "SOLANA",
 }
@@ -489,6 +490,8 @@ export type TransactionFiltersInput = {
   after?: InputMaybe<Scalars["String"]>;
   /** Block hash or signature to search before. */
   before?: InputMaybe<Scalars["String"]>;
+  /** Used for transaction pagination for a Bitcoin provider wallet. */
+  offset?: InputMaybe<Scalars["Int"]>;
   /** A token mint or contract address to filter for. */
   token?: InputMaybe<Scalars["String"]>;
 };

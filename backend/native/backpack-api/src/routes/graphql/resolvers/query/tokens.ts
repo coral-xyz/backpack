@@ -1,4 +1,8 @@
-import { EthereumTokenList, SolanaTokenList } from "@coral-xyz/common";
+import {
+  BitcoinToken,
+  EthereumTokenList,
+  SolanaTokenList,
+} from "@coral-xyz/common";
 import type { GraphQLResolveInfo } from "graphql";
 
 import type { ApiContext } from "../../context";
@@ -25,7 +29,11 @@ export const tokenListQueryResolver: QueryResolvers["tokenList"] = async (
   _info: GraphQLResolveInfo
 ): Promise<TokenListEntry[]> => {
   const list =
-    providerId === ProviderId.Ethereum ? EthereumTokenList : SolanaTokenList;
+    providerId === ProviderId.Ethereum
+      ? EthereumTokenList
+      : providerId === ProviderId.Solana
+      ? SolanaTokenList
+      : { [BitcoinToken.address]: BitcoinToken };
 
   if (!filters) {
     return Object.values(list).map((entry) =>

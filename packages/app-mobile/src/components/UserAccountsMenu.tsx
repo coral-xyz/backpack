@@ -1,7 +1,13 @@
 import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
 
-import { useCallback, useMemo, useRef } from "react";
-import { ScrollView, Pressable, Text, View } from "react-native";
+import { useCallback, useMemo, useRef, useState } from "react";
+import {
+  ScrollView,
+  Pressable,
+  Text,
+  View,
+  ActivityIndicator,
+} from "react-native";
 
 import { UI_RPC_METHOD_ACTIVE_USER_UPDATE } from "@coral-xyz/common";
 import { useAllUsers, useBackgroundClient, useUser } from "@coral-xyz/recoil";
@@ -109,14 +115,21 @@ function UsersList({ onDismiss }: { onDismiss: () => void }): JSX.Element {
   const background = useBackgroundClient();
   const users = useAllUsers();
   const _user = useUser();
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  const handlePressItem = async (uuid: string) => {
-    await background.request({
-      method: UI_RPC_METHOD_ACTIVE_USER_UPDATE,
-      params: [uuid],
-    });
-
-    onDismiss();
+  const handleUpdateActiveUser = async (uuid: string) => {
+    try {
+      setLoadingId(uuid);
+      await background.request({
+        method: UI_RPC_METHOD_ACTIVE_USER_UPDATE,
+        params: [uuid],
+      });
+      onDismiss();
+    } catch (error) {
+      console.error("Error updating active user", error);
+    } finally {
+      setLoadingId(null);
+    }
   };
 
   const s = users.find((u) => u.uuid === _user.uuid);
@@ -133,7 +146,8 @@ function UsersList({ onDismiss }: { onDismiss: () => void }): JSX.Element {
               uuid={s.uuid}
               username={s.username}
               isActive={_user.username === s.username}
-              onPress={handlePressItem}
+              isLoading={loadingId === s.uuid}
+              onPress={handleUpdateActiveUser}
             />
           ) : null}
           {users.map(({ username, uuid }: any) => {
@@ -146,7 +160,8 @@ function UsersList({ onDismiss }: { onDismiss: () => void }): JSX.Element {
                 uuid={uuid}
                 username={username}
                 isActive={_user.username === username}
-                onPress={handlePressItem}
+                isLoading={loadingId === s.uuid}
+                onPress={handleUpdateActiveUser}
               />
             );
           })}
@@ -156,22 +171,37 @@ function UsersList({ onDismiss }: { onDismiss: () => void }): JSX.Element {
   );
 }
 
+const getDetailIcon = (isLoading: boolean, isActive: boolean) => {
+  if (isLoading) {
+    return <ActivityIndicator size="small" />;
+  }
+
+  if (isActive) {
+    return <IconCheckmark size={24} />;
+  }
+
+  return null;
+};
+
 export function UserAccountListItem({
   uuid,
   username,
   isActive,
+  isLoading,
   onPress,
 }: {
   uuid: string;
   username: string;
   isActive: boolean;
+  isLoading: boolean;
   onPress: (uuid: string) => void;
 }): JSX.Element {
+  const detailIcon = getDetailIcon(isLoading, isActive);
   return (
     <SettingsRow
       icon={<Avatar size={24} />}
       label={`@${username}`}
-      detailIcon={isActive ? <IconCheckmark size={24} /> : null}
+      detailIcon={detailIcon}
       onPress={() => onPress(uuid)}
     />
   );

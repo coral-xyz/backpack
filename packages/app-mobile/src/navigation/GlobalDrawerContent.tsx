@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Alert, Pressable } from "react-native";
 
 import {
@@ -22,6 +23,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { UserAccountListItem } from "~components/UserAccountsMenu";
 import { CurrentUserAvatar } from "~components/UserAvatar";
 
+import { useSession } from "~src/lib/SessionProvider";
+
 function Header() {
   const user = useUser();
 
@@ -39,18 +42,25 @@ function UserList() {
   const background = useBackgroundClient();
   const users = useAllUsers();
   const user = useUser();
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const { setAppState } = useSession();
 
-  const handlePressItem = async (uuid: string) => {
-    await background.request({
-      method: UI_RPC_METHOD_ACTIVE_USER_UPDATE,
-      params: [uuid],
-    });
-
-    // onDismiss();
+  const handleUpdateActiveUser = async (uuid: string) => {
+    try {
+      setLoadingId(uuid);
+      await background.request({
+        method: UI_RPC_METHOD_ACTIVE_USER_UPDATE,
+        params: [uuid],
+      });
+    } catch (error) {
+      console.error("Error updating active user", error);
+    } finally {
+      setLoadingId(null);
+    }
   };
 
   const handlePressAddAccount = () => {
-    Alert.alert("TODO");
+    setAppState("isAddingAccount");
   };
 
   const theme = useTamaguiTheme();
@@ -67,7 +77,8 @@ function UserList() {
             uuid={uuid}
             username={username}
             isActive={user.username === username}
-            onPress={handlePressItem}
+            isLoading={loadingId === uuid}
+            onPress={handleUpdateActiveUser}
           />
         );
       })}

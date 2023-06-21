@@ -69,7 +69,6 @@ import {
 import { UsernameInput } from "~components/StyledTextInput";
 import {
   ActionCard,
-  // Box,
   FullScreenLoading,
   Header,
   Margin,
@@ -192,6 +191,7 @@ const Routes: Route = {
   MnemonicInput: "MnemonicInput",
   Biometrics: "Biometrics",
   CreatePassword: "CreatePassword",
+  CreateAccountLoading: "CreateAccountLoading",
 };
 
 const RecoverAccountRoutes: Route = {
@@ -201,6 +201,7 @@ const RecoverAccountRoutes: Route = {
 };
 
 const NewAccountRoutes: Route = {
+  CreateOrImportWallet: "CreateOrImportWallet",
   CreateOrRecoverUsername: "CreateOrRecoverUsername",
   KeyringTypeSelector: "KeyringTypeSelector",
 };
@@ -430,6 +431,7 @@ function OnboardingPrivateKeyInputScreen({
   const [privateKey, setPrivateKey] = useState("");
   const { handlePrivateKeyInput, onboardingData } = useOnboarding();
   const { serverPublicKeys } = onboardingData;
+  const { appState } = useSession();
 
   const { handleSavePrivateKey } = useSavePrivateKey({
     onboarding: true,
@@ -474,7 +476,11 @@ function OnboardingPrivateKeyInputScreen({
               });
 
               await handlePrivateKeyInput(result as PrivateKeyWalletDescriptor);
-              navigation.push(Routes.Biometrics);
+              if (appState === "isAddingAccount") {
+                navigation.push(Routes.CreateAccountLoading);
+              } else {
+                navigation.push(Routes.Biometrics);
+              }
             }}
           />
         </Box>
@@ -758,6 +764,7 @@ function MnemonicSearchScreen({
   const background = useBackgroundClient();
   const { onboardingData, setOnboardingData } = useOnboarding();
   const { signMessageForWallet } = useRpcRequests();
+  const { appState } = useSession();
 
   const { userId } = onboardingData;
   const authMessage = userId ? getAuthMessage(userId) : "";
@@ -814,7 +821,12 @@ function MnemonicSearchScreen({
         );
 
         setOnboardingData({ signedWalletDescriptors });
-        navigation.push(Routes.Biometrics);
+
+        if (appState === "isAddingAccount") {
+          navigation.push(Routes.CreateAccountLoading);
+        } else {
+          navigation.push(Routes.Biometrics);
+        }
       } else {
         setError(true);
       }
@@ -855,6 +867,7 @@ function OnboardingBlockchainSelectScreen({
   const [loading, setLoading] = useState(new Set());
   const { onboardingData, handleSelectBlockchain } = useOnboarding();
   const { blockchainOptions, selectedBlockchains } = onboardingData;
+  const { appState } = useSession();
   const numColumns = 2;
   const gap = 8;
 
@@ -906,7 +919,11 @@ function OnboardingBlockchainSelectScreen({
         disabled={selectedBlockchains.length === 0}
         label="Next"
         onPress={() => {
-          navigation.push("Biometrics");
+          if (appState === "isAddingAccount") {
+            navigation.push(Routes.CreateAccountLoading);
+          } else {
+            navigation.push(Routes.Biometrics);
+          }
         }}
       />
     </OnboardingScreen>
@@ -934,10 +951,6 @@ export function OnboardingBiometricsScreen({
     });
   }, [navigation, route.params]);
 
-  const onPressCancel = useCallback(() => {
-    navigation.push(Routes.CreatePassword);
-  }, [navigation]);
-
   const onPressEnableBiometrics = useCallback(async () => {
     const authStatus = await tryLocalAuthenticate({
       disableDeviceFallback: true,
@@ -955,7 +968,12 @@ export function OnboardingBiometricsScreen({
             text: "Settings",
             onPress: Linking.openSettings,
           },
-          { text: "Not now", onPress: onPressCancel },
+          {
+            text: "Not now",
+            onPress: () => {
+              navigation.push(Routes.CreatePassword);
+            },
+          },
         ]
       );
     }
@@ -964,7 +982,7 @@ export function OnboardingBiometricsScreen({
       setOnboardingData({ password: BIOMETRIC_PASSWORD });
       onPressNext();
     }
-  }, [onPressNext, onPressCancel, setOnboardingData, biometricName]);
+  }, [onPressNext, navigation, setOnboardingData, biometricName]);
 
   return (
     <OnboardingScreen
@@ -1091,7 +1109,7 @@ type CreateAccountLoadingScreenProps = StackScreenProps<
 function CreateAccountLoadingScreen(
   _p: CreateAccountLoadingScreenProps
 ): JSX.Element {
-  const { setAuthToken } = useSession();
+  const { setAuthToken, appState } = useSession();
   const background = useBackgroundClient();
   const { onboardingData, maybeCreateUser } = useOnboarding();
   const [error, setError] = useState(false);
@@ -1101,6 +1119,7 @@ function CreateAccountLoadingScreen(
       logger.debug("CreateAccountLoadingScreen:onboardingData", onboardingData);
       const res = await maybeCreateUser({
         ...onboardingData,
+        isAddingAccount: appState === "isAddingAccount",
         keyringType: onboardingData.keyringType || "mnemonic",
       });
 
@@ -1112,7 +1131,7 @@ function CreateAccountLoadingScreen(
         setAuthToken(res.jwt);
       }
     })();
-  }, [onboardingData, background, maybeCreateUser, setAuthToken]);
+  }, [onboardingData, background, maybeCreateUser, setAuthToken, appState]);
 
   if (error) {
     return (

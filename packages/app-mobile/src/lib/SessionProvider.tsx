@@ -14,12 +14,9 @@ import * as SecureStore from "expo-secure-store";
 import {
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  getLogger,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const logger = getLogger("debug2:SessionProvider");
 
 const key = "@@session";
 
@@ -36,7 +33,11 @@ export async function setTokenAsync(token: string) {
 }
 
 type TokenType = string | null;
-type AppStateType = "onboardingStarted" | "onboardingComplete" | null;
+type AppStateType =
+  | "onboardingStarted"
+  | "onboardingComplete"
+  | "isAddingAccount"
+  | null;
 
 type SessionContextType = {
   activeWallet: Wallet | null;
@@ -82,7 +83,7 @@ export const SessionProvider = ({
   // on app load
   useEffect(() => {
     getTokenAsync().then((token) => {
-      logger.debug("SessionProvider:getTokenAsync:token", token);
+      console.log("SessionProvider:getTokenAsync:token", token);
       if (token) {
         setToken(token);
       }
@@ -126,26 +127,31 @@ export const SessionProvider = ({
   );
 
   const reset = useCallback(async () => {
-    // TODO: don't manually specify this list of keys
-    // ^^ this was done before peter's time so no idea
-    const stores = [
-      "keyring-store",
-      "keyname-store",
-      "wallet-data",
-      "nav-store7",
-    ];
+    await background.request({
+      method: UI_RPC_METHOD_KEYRING_RESET,
+      params: [],
+    });
 
-    for (const store of stores) {
-      try {
-        await SecureStore.deleteItemAsync(store);
-      } catch (err) {
-        console.error(err);
-        // ignore
-      }
-    }
+    // // TODO: don't manually specify this list of keys
+    // // ^^ this was done before peter's time so no idea
+    // const stores = [
+    //   "keyring-store",
+    //   "keyname-store",
+    //   "wallet-data",
+    //   "nav-store7",
+    // ];
+    //
+    // for (const store of stores) {
+    //   try {
+    //     await SecureStore.deleteItemAsync(store);
+    //   } catch (err) {
+    //     console.error(err);
+    //     // ignore
+    //   }
+    // }
 
-    lockKeystore();
-  }, [lockKeystore]);
+    // lockKeystore();
+  }, [background]);
 
   const contextValue = useMemo(
     () => ({
