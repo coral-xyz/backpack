@@ -127,26 +127,31 @@ export const SessionProvider = ({
   );
 
   const reset = useCallback(async () => {
-    // TODO: don't manually specify this list of keys
-    // ^^ this was done before peter's time so no idea
-    const stores = [
-      "keyring-store",
-      "keyname-store",
-      "wallet-data",
-      "nav-store7",
-    ];
+    await background.request({
+      method: UI_RPC_METHOD_KEYRING_RESET,
+      params: [],
+    });
 
-    for (const store of stores) {
-      try {
-        await SecureStore.deleteItemAsync(store);
-      } catch (err) {
-        console.error(err);
-        // ignore
-      }
-    }
+    // // TODO: don't manually specify this list of keys
+    // // ^^ this was done before peter's time so no idea
+    // const stores = [
+    //   "keyring-store",
+    //   "keyname-store",
+    //   "wallet-data",
+    //   "nav-store7",
+    // ];
+    //
+    // for (const store of stores) {
+    //   try {
+    //     await SecureStore.deleteItemAsync(store);
+    //   } catch (err) {
+    //     console.error(err);
+    //     // ignore
+    //   }
+    // }
 
-    lockKeystore();
-  }, [lockKeystore]);
+    // lockKeystore();
+  }, [background]);
 
   const contextValue = useMemo(
     () => ({
