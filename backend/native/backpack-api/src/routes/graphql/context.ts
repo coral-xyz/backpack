@@ -13,7 +13,14 @@ import {
   TENSOR_API_KEY,
 } from "../../config";
 
-import { CoinGeckoIndexer, Hasura, Helius, Swr, Tensor } from "./clients";
+import {
+  BlockchainInfo,
+  CoinGeckoIndexer,
+  Hasura,
+  Helius,
+  Swr,
+  Tensor,
+} from "./clients";
 import { extractJwt, getSubjectFromVerifiedJwt } from "./utils";
 
 const IN_MEM_JWT_CACHE = new LRUCache<string, string>({
@@ -31,6 +38,7 @@ export interface ApiContext {
   };
   dataSources: {
     alchemy: Alchemy;
+    blockchainInfo: BlockchainInfo;
     coinGecko: CoinGeckoIndexer;
     hasura: Hasura;
     helius: Helius;
@@ -92,6 +100,7 @@ export const createContext: ContextFunction<
         apiKey: ALCHEMY_API_KEY,
         network: devnet ? Network.ETH_SEPOLIA : Network.ETH_MAINNET,
       }),
+      blockchainInfo: new BlockchainInfo({}),
       coinGecko: new CoinGeckoIndexer({ apiKey: COINGECKO_API_KEY }),
       hasura: new Hasura({ secret: HASURA_JWT, url: HASURA_URL }),
       helius: new Helius({ apiKey: HELIUS_API_KEY, devnet }),

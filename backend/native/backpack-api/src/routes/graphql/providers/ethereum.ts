@@ -97,13 +97,13 @@ export class Ethereum implements BlockchainDataProvider {
    * Fetch and aggregate the native and token balances and
    * prices for the argued wallet address.
    * @param {string} address
-   * @param {Partial<BalanceFiltersInput>} [filters]
+   * @param {BalanceFiltersInput} [filters]
    * @returns {Promise<Balances>}
    * @memberof Ethereum
    */
   async getBalancesForAddress(
     address: string,
-    filters?: Partial<BalanceFiltersInput>
+    filters?: BalanceFiltersInput
   ): Promise<Balances> {
     if (!this.#ctx) {
       throw new Error("API context object not available");
