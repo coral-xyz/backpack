@@ -46,6 +46,10 @@ function UserList() {
   const { setAppState } = useSession();
 
   const handleUpdateActiveUser = async (uuid: string) => {
+    if (uuid === user.uuid) {
+      return;
+    }
+
     try {
       setLoadingId(uuid);
       await background.request({
