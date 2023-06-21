@@ -64,6 +64,7 @@ import {
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
   SolanaCluster,
   SolanaExplorer,
+  TAB_BALANCES,
   TAB_BALANCES_SET,
   TAB_XNFT,
 } from "@coral-xyz/common";
@@ -98,7 +99,7 @@ import type { Nav } from "./legacy-store";
 import * as legacyStore from "./legacy-store";
 import type { SolanaConnectionBackend } from "./solana-connection";
 
-const logger2 = getLogger("dc1");
+const logger = getLogger("dc1:core");
 
 const { base58: bs58 } = ethers.utils;
 
@@ -641,25 +642,33 @@ export class Backend {
   }
 
   async activeUserUpdate(uuid: string): Promise<string> {
-    logger2.debug("activeUserUpdate", uuid);
+    logger.debug("activeUserUpdate", uuid);
     // Change active user account.
     const { username, jwt } = await this.keyringStore.activeUserUpdate(uuid);
+    logger.debug("activeUserUpdate:username", username);
+    logger.debug("activeUserUpdate:jwt", jwt);
 
     // Get data to push back to the UI.
     const walletData = await this.keyringStoreReadAllPubkeyData();
+
+    logger.debug("activeUserUpdate:walletData", walletData);
 
     // Get preferences to push back to the UI.
     const preferences = await this.preferencesRead(uuid);
     const xnftPreferences = await this.getXnftPreferences();
     const blockchainKeyrings = await this.blockchainKeyringsRead();
 
-    // Reset the navigation to the default everytime we switch users
-    // but keep the active tab.
-    const { activeTab } = (await legacyStore.getNav())!;
-    await legacyStore.setNav({
-      ...defaultNav,
-      activeTab,
-    });
+    logger.debug("activeUserUpdate:legacyStore");
+
+    const navData = await legacyStore.getNav();
+    const activeTab = navData?.activeTab ?? TAB_BALANCES;
+    if (activeTab) {
+      await legacyStore.setNav({
+        ...defaultNav,
+        activeTab,
+      });
+    }
+
     const url = defaultNav.data[activeTab].urls[0];
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,

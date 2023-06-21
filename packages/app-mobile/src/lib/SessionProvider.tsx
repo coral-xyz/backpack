@@ -9,10 +9,11 @@ import {
   useEffect,
 } from "react";
 
-import * as SecureStore from "expo-secure-store";
+// import * as SecureStore from "expo-secure-store";
 
 import {
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_KEYRING_RESET,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
