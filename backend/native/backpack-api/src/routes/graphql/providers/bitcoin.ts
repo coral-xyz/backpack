@@ -1,3 +1,4 @@
+import { BitcoinToken } from "@coral-xyz/common";
 import { ethers } from "ethers";
 
 import type { ApiContext } from "../context";
@@ -54,7 +55,7 @@ export class Bitcoin implements BlockchainDataProvider {
    * @memberof Bitcoin
    */
   defaultAddress(): string {
-    return ""; // FIXME:
+    return BitcoinToken.address;
   }
 
   /**
@@ -63,7 +64,7 @@ export class Bitcoin implements BlockchainDataProvider {
    * @memberof Bitcoin
    */
   logo(): string {
-    return "https://assets.coingecko.com/coins/images/1/large/bitcoin.png";
+    return BitcoinToken.logo!;
   }
 
   /**
@@ -72,7 +73,7 @@ export class Bitcoin implements BlockchainDataProvider {
    * @memberof Bitcoin
    */
   name(): string {
-    return "Bitcoin";
+    return BitcoinToken.name;
   }
 
   /**
@@ -81,7 +82,7 @@ export class Bitcoin implements BlockchainDataProvider {
    * @memberof Bitcoin
    */
   symbol(): string {
-    return "BTC";
+    return BitcoinToken.symbol;
   }
 
   /**
@@ -117,16 +118,18 @@ export class Bitcoin implements BlockchainDataProvider {
           amount: balance.final_balance.toString(),
           decimals: this.decimals(),
           displayAmount,
-          marketData: NodeBuilder.marketData("bitcoin", {
-            lastUpdatedAt: prices.bitcoin.last_updated,
-            percentChange: prices.bitcoin.price_change_percentage_24h,
-            price: prices.bitcoin.current_price,
-            sparkline: prices.bitcoin.sparkline_in_7d.price,
-            usdChange: prices.bitcoin.price_change_24h,
-            value: parseFloat(displayAmount) * prices.bitcoin.current_price,
-            valueChange:
-              parseFloat(displayAmount) * prices.bitcoin.price_change_24h,
-          }),
+          marketData: prices?.bitcoin
+            ? NodeBuilder.marketData("bitcoin", {
+                lastUpdatedAt: prices.bitcoin.last_updated,
+                percentChange: prices.bitcoin.price_change_percentage_24h,
+                price: prices.bitcoin.current_price,
+                sparkline: prices.bitcoin.sparkline_in_7d.price,
+                usdChange: prices.bitcoin.price_change_24h,
+                value: parseFloat(displayAmount) * prices.bitcoin.current_price,
+                valueChange:
+                  parseFloat(displayAmount) * prices.bitcoin.price_change_24h,
+              })
+            : undefined,
           token: this.defaultAddress(),
           tokenListEntry: NodeBuilder.tokenListEntry({
             address: this.defaultAddress(),
@@ -146,11 +149,18 @@ export class Bitcoin implements BlockchainDataProvider {
     });
   }
 
-  getNftsForAddress(
-    address: string,
-    filters?: NftFiltersInput | undefined
+  /**
+   * Get a list of NFT data for tokens owned by the argued address.
+   * @param {string} _address
+   * @param {NftFiltersInput} [_filters]
+   * @returns {Promise<NftConnection>}
+   * @memberof Bitcoin
+   */
+  async getNftsForAddress(
+    _address: string,
+    _filters?: NftFiltersInput | undefined
   ): Promise<NftConnection> {
-    throw new Error("Method not implemented.");
+    return createConnection([], false, false);
   }
 
   /**
