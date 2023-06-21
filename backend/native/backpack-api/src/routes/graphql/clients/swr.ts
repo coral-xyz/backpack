@@ -3,6 +3,8 @@ import { RESTDataSource } from "@apollo/datasource-rest";
 import { NodeBuilder } from "../nodes";
 import type { NotificationApplicationData } from "../types";
 
+type SwrOptions = {};
+
 /**
  * Custom GraphQL REST data source class for the Backpack SWR cache API.
  * @export
@@ -12,7 +14,7 @@ import type { NotificationApplicationData } from "../types";
 export class Swr extends RESTDataSource {
   override baseURL = "https://swr.xnfts.dev";
 
-  constructor() {
+  constructor(_opts: SwrOptions) {
     super();
   }
 

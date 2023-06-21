@@ -16954,9 +16954,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"alchemy-sdk@npm:^2.8.0":
-  version: 2.8.0
-  resolution: "alchemy-sdk@npm:2.8.0"
+"alchemy-sdk@npm:^2.9.0":
+  version: 2.9.0
+  resolution: "alchemy-sdk@npm:2.9.0"
   dependencies:
     "@ethersproject/abi": ^5.7.0
     "@ethersproject/abstract-provider": ^5.7.0
@@ -16972,7 +16972,7 @@ __metadata:
     axios: ^0.26.1
     sturdy-websocket: ^0.2.1
     websocket: ^1.0.34
-  checksum: 862c2467369c0873e1a5af30cd48c89189c15a9e0462560b1969a4961f35a354cf9308d9cf45a32c76256c2a98d8d8c15db1488dd94bcc6fc87a454e5aacbe32
+  checksum: 6d26c01e11048e340918ada4df3121accb903004d52d484a026efa83576538de8345aa19e434a766f2c041befdb3f668f7887a7839f7393cd9d765f555802945
   languageName: node
   linkType: hard
 
@@ -18358,7 +18358,7 @@ __metadata:
     "@types/redis": ^4.0.11
     "@types/request": ^2.48.8
     "@types/web-push": ^3.3.2
-    alchemy-sdk: ^2.8.0
+    alchemy-sdk: ^2.9.0
     asn1.js: ^5.4.1
     body-parser: ^1.20.1
     bs58: ^5.0.0

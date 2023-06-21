@@ -508,6 +508,8 @@ export type TransactionFiltersInput = {
  */
 export type User = Node & {
   __typename?: "User";
+  /** The aggregate token balances and value for all wallets associated with the user. */
+  allWalletsAggregate?: Maybe<Balances>;
   /** The image link for the avatar of the user. */
   avatar: Scalars["String"];
   /** The timestamp of the creation of the user. */
@@ -1321,6 +1323,11 @@ export type UserResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["User"] = ResolversParentTypes["User"]
 > = ResolversObject<{
+  allWalletsAggregate?: Resolver<
+    Maybe<ResolversTypes["Balances"]>,
+    ParentType,
+    ContextType
+  >;
   avatar?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   friendship?: Resolver<
