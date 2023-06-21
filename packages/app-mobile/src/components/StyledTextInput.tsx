@@ -47,6 +47,7 @@ export function UsernameInput({
           placeholder="Username"
           autoCapitalize="none"
           returnKeyType="done"
+          maxLength={15}
           value={username}
           onSubmitEditing={onComplete}
           onChangeText={(text) => {

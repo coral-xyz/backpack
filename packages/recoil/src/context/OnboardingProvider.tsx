@@ -364,17 +364,24 @@ export function OnboardingProvider({
   const createStore = useCallback(
     async (uuid: string, jwt: string, data: Partial<OnboardingData>) => {
       const { isAddingAccount, username, password } = data;
+      // console.log("db1:isAddingAccount", isAddingAccount);
+      // console.log("db1:data", data);
 
       const keyringInit = getKeyringInit(data);
 
       try {
         if (isAddingAccount) {
+          // console.log("db1:isAddingAccount:username", username);
+          // console.log("db1:isAddingAccount:keyringInit", keyringInit);
+          // console.log("db1:isAddingAccount:uuid", uuid);
+          // console.log("db1:isAddingAccount:jwt", jwt);
           // Add a new account if needed, this will also create the new keyring
           // store
           await background.request({
             method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
             params: [username, keyringInit, uuid, jwt],
           });
+          // console.log("db1:account created:res", res);
         } else {
           // Add a new keyring store under the new account
           await background.request({
