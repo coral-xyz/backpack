@@ -28,6 +28,20 @@ import { useBackgroundClient } from "../hooks/client";
 import { useAuthentication } from "../hooks/useAuthentication";
 import { useRpcRequests } from "../hooks/useRpcRequests";
 
+// for mobile, just leave for now
+const logger =
+  (
+    prefix = "" // eslint-disable-line
+  ) =>
+  (...args: any) => {
+    // eslint-disable-line
+    if (false!) {
+      console.log(prefix, ...args);
+    }
+  };
+
+const maybeLog = logger("op1");
+
 export const getWaitlistId = () => {
   if (window?.localStorage) {
     const WAITLIST_RES_ID_KEY = "waitlist-form-res-id";
@@ -300,10 +314,12 @@ export function OnboardingProvider({
   //
   const createUser = useCallback(
     async (data: Partial<OnboardingData>) => {
+      maybeLog("createUser:data", data);
       const { inviteCode, userId, username, keyringType } = data;
 
       // If userId is provided, then we are onboarding via the recover flow.
       if (userId) {
+        maybeLog("createUser:userId", userId);
         // Authenticate the user that the recovery has a JWT.
         // Take the first keyring init to fetch the JWT, it doesn't matter which
         // we use if there are multiple.
@@ -318,6 +334,8 @@ export function OnboardingProvider({
           signature,
           message: getAuthMessage(userId),
         };
+
+        maybeLog("createUser:authData", authData);
 
         const { jwt } = await authenticate(authData!);
         return { id: userId, jwt };
@@ -337,6 +355,8 @@ export function OnboardingProvider({
         blockchainPublicKeys,
       });
 
+      maybeLog("createUser:body", body);
+
       try {
         const res = await fetch(`${BACKEND_API_URL}/users`, {
           method: "POST",
@@ -346,13 +366,18 @@ export function OnboardingProvider({
           },
         });
 
+        maybeLog("createUser:res", res);
+        const json = await res.json();
+        maybeLog("createUser:json", json);
+
         if (!res.ok) {
-          throw new Error(await res.json());
+          throw new Error(json);
         }
-        return await res.json();
+
+        return json;
       } catch (err) {
         console.error("OnboardingProvider:createUser", err);
-        throw new Error(`error creating user`);
+        throw new Error(`createUser:error:${err.message}`);
       }
     },
     [authenticate]
@@ -364,25 +389,24 @@ export function OnboardingProvider({
   const createStore = useCallback(
     async (uuid: string, jwt: string, data: Partial<OnboardingData>) => {
       const { isAddingAccount, username, password } = data;
-      // console.log("db1:isAddingAccount", isAddingAccount);
-      // console.log("db1:data", data);
+      maybeLog("createStore:data", data);
 
       const keyringInit = getKeyringInit(data);
+      maybeLog("createStore:isAddingAccount:keyringInit", keyringInit);
+      maybeLog("createStore:isAddingAccount:username", username);
 
       try {
         if (isAddingAccount) {
-          // console.log("db1:isAddingAccount:username", username);
-          // console.log("db1:isAddingAccount:keyringInit", keyringInit);
-          // console.log("db1:isAddingAccount:uuid", uuid);
-          // console.log("db1:isAddingAccount:jwt", jwt);
+          maybeLog("createStore:isAddingAccount", isAddingAccount);
           // Add a new account if needed, this will also create the new keyring
           // store
-          await background.request({
+          const res = await background.request({
             method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
             params: [username, keyringInit, uuid, jwt],
           });
-          // console.log("db1:account created:res", res);
+          maybeLog("createStore:isAddingAccount:res", res);
         } else {
+          maybeLog("createStore:else", username);
           // Add a new keyring store under the new account
           await background.request({
             method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
@@ -391,7 +415,7 @@ export function OnboardingProvider({
         }
       } catch (err) {
         console.error("OnboardingProvider:createStore", err);
-        throw new Error(`error creating account`);
+        throw new Error(`createStore:error:${err.message}`);
       }
     },
     [background, getKeyringInit]
