@@ -17,14 +17,13 @@ import {
   YStack,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
-import {
-  DrawerContentScrollView,
-  DrawerItemList,
-} from "@react-navigation/drawer";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { DrawerItemList } from "@react-navigation/drawer";
+import { FlatList } from "react-native-gesture-handler";
 
 import { UserAccountListItem } from "~components/ListItem";
 import { CurrentUserAvatar } from "~components/UserAvatar";
+
+import RNDrawerContentView from "./RNDrawerContentView";
 
 import { useSession } from "~src/lib/SessionProvider";
 
@@ -77,18 +76,24 @@ function UserList() {
       <StyledText ml={12} mb={8} size="$xs" color="$baseTextMedEmphasis">
         ACCOUNTS ({users.length})
       </StyledText>
-      {users.map(({ username, uuid }: any) => {
-        return (
-          <UserAccountListItem
-            key={uuid}
-            uuid={uuid}
-            username={username}
-            isActive={user.username === username}
-            isLoading={loadingId === uuid}
-            onPress={handleUpdateActiveUser}
-          />
-        );
-      })}
+      <FlatList
+        data={users}
+        style={{ marginBottom: 8, maxHeight: 260 }}
+        keyExtractor={(item) => item.uuid}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item: { username, uuid } }) => {
+          return (
+            <UserAccountListItem
+              key={uuid}
+              uuid={uuid}
+              username={username}
+              isActive={user.username === username}
+              isLoading={loadingId === uuid}
+              onPress={handleUpdateActiveUser}
+            />
+          );
+        }}
+      />
       <Pressable onPress={handlePressAddAccount}>
         <XStack ai="center" ml={16}>
           <MaterialIcons
@@ -134,9 +139,9 @@ export function GlobalDrawerContent(props) {
   // it will go from 0 to 34 on an iphone x, but only in this global drawer context -_-
   const marginBottom = Constants.statusBarHeight >= 53 ? 50 : 16;
   return (
-    <DrawerContentScrollView
+    <RNDrawerContentView
       {...props}
-      contentContainerStyle={{
+      style={{
         flexGrow: 1,
         justifyContent: "space-between",
         marginBottom,
@@ -147,6 +152,6 @@ export function GlobalDrawerContent(props) {
         <DrawerItemList {...props} />
       </YStack>
       <UserList />
-    </DrawerContentScrollView>
+    </RNDrawerContentView>
   );
 }

@@ -151,8 +151,8 @@ export const SessionProvider = ({
     //   }
     // }
 
-    // lockKeystore();
-  }, [background]);
+    lockKeystore();
+  }, [background, lockKeystore]);
 
   const contextValue = useMemo(
     () => ({

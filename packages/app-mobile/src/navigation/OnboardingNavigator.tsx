@@ -1141,13 +1141,15 @@ function CreateAccountLoadingScreen(
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const isAddingAccount = appState === "isAddingAccount";
+
   maybeLog("on1:CreateAccountLoadingScreen:error", error);
   maybeLog("on1:CreateAccountLoadingScreen:loading", loading);
 
   const completeOnboarding = useCallback(async () => {
     const data = {
       ...onboardingData,
-      isAddingAccount: appState === "isAddingAccount",
+      isAddingAccount,
       keyringType: onboardingData.keyringType || "mnemonic",
     };
 
@@ -1160,15 +1162,17 @@ function CreateAccountLoadingScreen(
       setLoading(false);
     } else {
       setLoading(false);
-      setAppState("onboardingComplete");
+      if (isAddingAccount) {
+        setAppState("onboardingComplete");
+      }
       setAuthToken(res.jwt);
     }
   }, [
+    isAddingAccount,
     setAppState,
     setError,
     setLoading,
     maybeCreateUser,
-    appState,
     onboardingData,
     setAuthToken,
   ]);
