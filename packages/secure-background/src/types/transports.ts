@@ -22,7 +22,13 @@ export type { TransportResponder } from "../transports/TransportResponder";
 export type PassThroughToUI = SerializableJson;
 
 export type SecureEventOrigin = {
-  context: "xnft" | "browser" | "background" | "extension" | "mobile";
+  context:
+    | "xnft"
+    | "browser"
+    | "background"
+    | "extension"
+    | "mobile"
+    | "secureUI";
   name: string;
   address: string;
 };

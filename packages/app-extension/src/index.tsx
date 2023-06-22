@@ -54,6 +54,13 @@ const extensionTransportSender =
     address: window.location.origin,
     context: "extension",
   });
+const secureUITransportSender = new FromExtensionTransportSender<SECURE_EVENTS>(
+  {
+    name: "Backpack Extension",
+    address: window.location.origin,
+    context: "secureUI",
+  }
+);
 //
 // Configure event listeners.
 //
@@ -86,7 +93,7 @@ root.render(
     ) : null}
     <Suspense fallback={null}>
       <SecureUI
-        secureBackgroundSender={extensionTransportSender}
+        secureBackgroundSender={secureUITransportSender}
         secureUIReceiver={secureUITransportReceiver}
       />
     </Suspense>
