@@ -49,7 +49,7 @@ export function FriendsNavigator() {
         options={({ route }) => {
           return {
             headerBackTitleVisible: false,
-            title: route.params.username,
+            title: `@${route.params.username}`,
           };
         }}
       />
