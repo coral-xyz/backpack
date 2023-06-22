@@ -1,6 +1,5 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import EventEmitter from "eventemitter3";
-// use expo-secure-store if in react-native, otherwise fake-expo-secure-store.ts
-import { deleteItemAsync, getItemAsync, setItemAsync } from "expo-secure-store";
 
 import {
   MOBILE_CHANNEL_BG_REQUEST,
@@ -295,25 +294,16 @@ export function startMobileIfNeeded() {
 
   const handleRemoveLocalStorage = async (key: string) => {
     try {
-      await deleteItemAsync(key);
+      await AsyncStorage.removeItem(key);
       return ["success", undefined];
     } catch (error) {
       return ["error", error];
     }
   };
 
-  // Expo's mobile SecureStore has specific requirements for the way the key is stored:
-  // Keys may contain alphanumeric characters ., -, and _.
-  // Read more here: https://docs.expo.dev/versions/latest/sdk/securestore/
-  // const parseKeyForMobile = (str: string): string =>
-  //   str.replace(/[^a-zA-Z0-9._-]/g, "_").toString();
-
-  // like localStorage, expo-secure-store can only save and return strings,
-  // so we must JSON.parse and JSON.stringify values when needed
-  // https://docs.expo.dev/versions/latest/sdk/securestore
   const handleGetLocalStorage = async (key: string) => {
     try {
-      const value = await getItemAsync(key);
+      const value = await AsyncStorage.getItem(key);
       const str = String(value);
       const json = JSON.parse(str);
       return [json, undefined];
@@ -323,24 +313,13 @@ export function startMobileIfNeeded() {
   };
 
   const handleSetLocalStorage = async (key: string, value: any) => {
-    await setItemAsync(key, JSON.stringify(value));
+    await AsyncStorage.setItem(key, JSON.stringify(value));
     return ["success", undefined];
   };
 
   const handleClearLocalStorage = async () => {
-    // // TODO: don't manually specify this list of keys
-    // // ^^ this was done before peter's time so no idea
-    const keys = [
-      "is-cold-store",
-      "keyname-store",
-      "user-data",
-      "wallet-data",
-      "keyring-store",
-      "nav-store7",
-    ];
-
     try {
-      await Promise.all(keys.map((key) => deleteItemAsync(key)));
+      await AsyncStorage.clear();
       return ["success", undefined];
     } catch (error) {
       return ["error", error];
