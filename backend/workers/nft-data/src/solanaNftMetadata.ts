@@ -6,20 +6,47 @@ import { externalResourceUri } from "./externalResourceUri";
 const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
   "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
 );
+
+const SHADOW_NFT_PROGRAM_ID = new PublicKey(
+  "9fQse1hBRfzWweeUod6WEsR4jZf7hVucetEheCaWooY5"
+);
+
 export async function solanaNftMetadata(
   mintAddress: string,
   c: any
 ): Promise<{ metadataAccount: any; externalMetadata: any } | null> {
+  const mint = new PublicKey(mintAddress).toBuffer();
+
+  // Define metadata account addresses for both types
   const metadataAccountAddress = PublicKey.findProgramAddressSync(
-    [
-      Buffer.from("metadata"),
-      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-      new PublicKey(mintAddress).toBuffer(),
-    ],
+    [Buffer.from("metadata"), TOKEN_METADATA_PROGRAM_ID.toBuffer(), mint],
     TOKEN_METADATA_PROGRAM_ID
   )[0];
 
-  const metadataAccountResponse = await c.env.solanaRpc.fetch(
+  const shadowMetadataAccountAddress = PublicKey.findProgramAddressSync(
+    [mint],
+    SHADOW_NFT_PROGRAM_ID
+  )[0];
+
+  // Send both requests in parallel
+  const [metadataAccountResponse, shadowMetadataAccountResponse] =
+    await Promise.all([
+      fetchMetadataAccount(metadataAccountAddress, c),
+      fetchMetadataAccount(shadowMetadataAccountAddress, c),
+    ]);
+
+  // Check the responses to decide which one to use
+  if (metadataAccountResponse) {
+    return prepareResult(metadataAccountResponse, false);
+  } else if (shadowMetadataAccountResponse) {
+    return prepareResult(shadowMetadataAccountResponse, true);
+  }
+
+  return null;
+}
+
+async function fetchMetadataAccount(accountAddress: PublicKey, c: any) {
+  const response = await c.env.solanaRpc.fetch(
     new Request("https://rpc-proxy.backpack.workers.dev/", {
       method: "POST",
       headers: {
@@ -30,7 +57,7 @@ export async function solanaNftMetadata(
         "id": 1,
         "method": "getAccountInfo",
         "params": [
-          "${metadataAccountAddress}",
+          "${accountAddress}",
           {
             "encoding": "base64"
           }
@@ -39,14 +66,16 @@ export async function solanaNftMetadata(
     })
   );
 
-  const metadataAccount = await metadataAccountResponse.json();
+  const account = await response.json();
+  const data = account?.result?.value?.data?.[0];
 
-  const data = metadataAccount?.result?.value?.data?.[0];
-  if (!metadataAccount || !data) {
-    return null;
-  }
+  return data ?? null;
+}
 
-  const parsedMetadata = metadata.decodeMetadata(Buffer.from(data, "base64"));
+async function prepareResult(metadataAccountData: any, isShadow: boolean) {
+  const parsedMetadata = isShadow
+    ? ""
+    : metadata.decodeMetadata(Buffer.from(metadataAccountData, "base64"));
 
   if (!parsedMetadata?.data?.uri) {
     return null;
