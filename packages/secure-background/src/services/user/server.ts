@@ -1,5 +1,10 @@
-import type { Blockchain, Preferences } from "@coral-xyz/common";
+import {
+  type Blockchain,
+  NOTIFICATION_KEYRING_STORE_UNLOCKED,
+  type Preferences,
+} from "@coral-xyz/common";
 
+import { SecureUIClient } from "../../background-clients/SecureUIClient";
 import type { KeyringStore } from "../../store/keyring";
 import type { SecureStore } from "../../store/SecureStore";
 import type { SecureEvent } from "../../types/events";
@@ -12,7 +17,6 @@ import type {
   TransportRemoveListener,
   TransportSender,
 } from "../../types/transports";
-import { SecureUIClient } from "../secureUI/client";
 
 import type { SECURE_USER_EVENTS } from "./events";
 
@@ -175,6 +179,32 @@ export class UserService {
       let password = event.request.password;
       let keyringState = await this.keyringStore.state();
 
+      const handleUnlocked = async () => {
+        try {
+          const activeUser = await this.secureStore.getActiveUser();
+          const preferences = await this.secureStore.getWalletDataForUser(
+            activeUser.uuid
+          );
+          const blockchainActiveWallets =
+            await this.keyringStore.activeWallets();
+
+          await this.notificationBroadcaster.broadcast({
+            name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
+            data: {
+              activeUser,
+              blockchainActiveWallets,
+              ethereumConnectionUrl: preferences.ethereum.connectionUrl,
+              ethereumChainId: preferences.ethereum.chainId,
+              solanaConnectionUrl: preferences.solana.cluster,
+              solanaCommitment: preferences.solana.commitment,
+            },
+          });
+        } catch (e) {
+          return event.error(e);
+        }
+        return event.respond({ unlocked: true });
+      };
+
       if (!uuid) {
         const activeUser = await this.secureStore.getActiveUser();
         uuid = activeUser.uuid;
@@ -191,10 +221,8 @@ export class UserService {
       }
 
       // If keyring is not locked send response
-      if (keyringState !== KeyringStoreState.Locked) {
-        return event.respond({
-          unlocked: keyringState === KeyringStoreState.Unlocked,
-        });
+      if (keyringState === KeyringStoreState.Unlocked) {
+        return handleUnlocked();
       }
 
       // Keyring is locked, lets try to unlock it:
@@ -203,7 +231,7 @@ export class UserService {
         return this.keyringStore
           .tryUnlock({ password, uuid })
           .then(async () => {
-            return event.respond({ unlocked: true });
+            return handleUnlocked();
           })
           .catch((e) => event.error("Wrong Password."));
       }
@@ -212,11 +240,11 @@ export class UserService {
       else {
         const confirmation = await this.secureUIClient.confirm(event.event);
 
-        if (!confirmation.response) {
+        if (!confirmation.response?.unlocked) {
           return event.error(confirmation.error);
         }
 
-        return event.respond({ unlocked: confirmation.response.unlocked });
+        return handleUnlocked();
       }
     };
 }

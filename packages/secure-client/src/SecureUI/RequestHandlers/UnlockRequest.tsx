@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import type { SECURE_EVENTS } from "@coral-xyz/secure-background/types";
 
 import type { QueuedRequest } from "../_atoms/clientAtoms";
 import { RequireUserUnlocked } from "../Guards/RequireUserUnlocked";
@@ -13,7 +12,7 @@ export function UnlockRequest({
   return (
     <Presentation
       currentRequest={currentRequest}
-      onClosed={() => currentRequest.respond({ unlocked: false })}
+      onClosed={() => currentRequest.error("Plugin Closed")}
     >
       {(currentRequest) => (
         <RequireUserUnlocked force>

@@ -19,10 +19,10 @@ export interface SECURE_USER_UNLOCK_KEYRING
     password?: string;
   };
   response: {
-    unlocked: boolean;
+    unlocked: true;
   };
   confirmationResponse: {
-    unlocked: boolean;
+    unlocked: true;
   };
 }
 
