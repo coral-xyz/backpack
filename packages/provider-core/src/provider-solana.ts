@@ -119,7 +119,7 @@ export class ProviderSolanaInjection
     );
     this.#secureSolanaClient = new SolanaClient(
       this.#secureClientSender,
-      this.defaultConnection()
+      this.#connection
     );
   }
 
@@ -209,9 +209,13 @@ export class ProviderSolanaInjection
 
   #handlePluginConnectionUrlUpdated(event: Event) {
     const connectionUrl = event.data.detail.data.url;
+    this.#connection = new BackgroundSolanaConnection(
+      this.#connectionRequestManager,
+      connectionUrl
+    );
     this.#secureSolanaClient = new SolanaClient(
       this.#secureClientSender,
-      new Connection(connectionUrl)
+      this.#connection
     );
     this.emit("connectionDidChange", event.data.detail);
   }
@@ -235,13 +239,17 @@ export class ProviderSolanaInjection
     );
     this.#secureSolanaClient = new SolanaClient(
       this.#secureClientSender,
-      new Connection(connectionUrl)
+      this.#connection
     );
   }
 
   #handleNotificationDisconnected(event: Event) {
     this.#isConnected = false;
     this.#connection = this.defaultConnection();
+    this.#secureSolanaClient = new SolanaClient(
+      this.#secureClientSender,
+      this.#connection
+    );
     this.emit("disconnect", event.data.detail);
   }
 
@@ -279,6 +287,10 @@ export class ProviderSolanaInjection
     }
     await this.#secureSolanaClient.disconnect();
     this.#connection = this.defaultConnection();
+    this.#secureSolanaClient = new SolanaClient(
+      this.#secureClientSender,
+      this.#connection
+    );
     this.#isConnected = false;
     this.#publicKey = undefined;
   }
@@ -388,6 +400,7 @@ export class ProviderSolanaInjection
     const solanaResponse = await this.#secureSolanaClient.signTransaction({
       publicKey: publicKey ?? this.#publicKey,
       tx,
+      customConnection: connection,
     });
     return solanaResponse;
   }
@@ -397,19 +410,28 @@ export class ProviderSolanaInjection
     publicKey?: PublicKey,
     connection?: Connection
   ): Promise<Array<T>> {
+    console.log("PCA signAllTransactions");
     if (!this.#publicKey) {
       await this.connect();
     }
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
-    return await cmn.signAllTransactions(
-      publicKey ?? this.#publicKey,
-      this.#requestManager,
-      connection ?? this.#connection,
-      txs
-    );
+    const solanaResponse = await this.#secureSolanaClient.signAllTransactions({
+      publicKey: publicKey ?? this.#publicKey,
+      txs,
+      customConnection: connection,
+    });
+    // const old = await cmn.signAllTransactions(
+    //   publicKey ?? this.#publicKey,
+    //   this.#requestManager,
+    //   connection ?? this.#connection,
+    //   txs
+    // );
+    // console.log(old, solanaResponse);
+    return solanaResponse;
   }
+
   async signMessage(
     msg: Uint8Array,
     publicKey?: PublicKey

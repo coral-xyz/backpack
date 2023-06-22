@@ -41,6 +41,22 @@ export class SVMClient {
       });
   }
 
+  public signAllTransactions(
+    request: SecureRequest<"SECURE_SVM_SIGN_ALL_TX">["request"],
+    confirmOptions?: SecureRequest<"SECURE_SVM_SIGN_ALL_TX">["confirmOptions"]
+  ): Promise<SecureResponse<"SECURE_SVM_SIGN_ALL_TX">> {
+    return this.client
+      .send({
+        name: "SECURE_SVM_SIGN_ALL_TX",
+        request,
+        confirmOptions,
+      })
+      .then((response) => {
+        console.log("PCA svm client response received", response);
+        return response;
+      });
+  }
+
   public connect(
     request: SecureEvent<"SECURE_SVM_CONNECT">["request"] = {},
     confirmOptions?: SecureEvent<"SECURE_SVM_CONNECT">["confirmOptions"]

@@ -1,9 +1,9 @@
-import type { SECURE_EVENTS } from "../../types/events";
+import type { SECURE_EVENTS } from "../types/events";
 import type {
   SecureRequest,
   SecureResponse,
   TransportSender,
-} from "../../types/transports";
+} from "../types/transports";
 
 export class SecureUIClient<T extends SECURE_EVENTS = SECURE_EVENTS> {
   constructor(private client: TransportSender<T, "confirmation">) {}

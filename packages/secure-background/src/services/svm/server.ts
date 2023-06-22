@@ -1,6 +1,7 @@
 import { Blockchain, deserializeTransaction } from "@coral-xyz/common";
 import bs58, { encode } from "bs58";
 
+import { SecureUIClient } from "../../background-clients/SecureUIClient";
 import type { KeyringStore } from "../../store/keyring";
 import type {
   TransportHandler,
@@ -9,7 +10,6 @@ import type {
   TransportRemoveListener,
   TransportSender,
 } from "../../types/transports";
-import { SecureUIClient } from "../secureUI/client";
 import { UserClient } from "../user/client";
 
 import type { SECURE_SVM_EVENTS } from "./events";
@@ -148,39 +148,57 @@ export class SVMService {
   ) => {
     const confirmation = await this.secureUIClient.confirm(event.event);
 
-    console.log("PCA confirmation", confirmation);
     if (!confirmation.response?.confirmed) {
       return event.error(confirmation.error);
     }
 
-    const blockchainKeyring =
-      this.keyringStore.activeUserKeyring.keyringForBlockchain(
-        Blockchain.SOLANA
-      );
-
-    if (blockchainKeyring.ledgerKeyring) {
-      // open ledger prompt
-    }
-
-    const tx = deserializeTransaction(event.request.tx);
-    const message = tx.message.serialize();
-    const txMessage = bs58.encode(message);
-
-    const signature = await blockchainKeyring.signTransaction(
-      txMessage,
-      event.request.publicKey
+    const signature = await this.getTransactionSignature(
+      event.request.publicKey,
+      event.request.tx
     );
-
-    if (blockchainKeyring.ledgerKeyring) {
-      // close ledger prompt
-    }
 
     return event.respond({ signature });
   };
 
   private handleSignAll: TransportHandler<"SECURE_SVM_SIGN_ALL_TX"> = async ({
+    event,
+    request,
     error,
+    respond,
   }) => {
-    return error("Not Implemented");
+    const confirmation = await this.secureUIClient.confirm(event);
+
+    if (!confirmation.response?.confirmed) {
+      return error(confirmation.error);
+    }
+
+    const signatures: string[] = await Promise.all(
+      request.txs.map((tx) => {
+        return this.getTransactionSignature(request.publicKey, tx);
+      })
+    );
+
+    return respond({ signatures });
   };
+
+  private async getTransactionSignature(
+    publicKey: string,
+    tx: string
+  ): Promise<string> {
+    const blockchainKeyring =
+      this.keyringStore.activeUserKeyring.keyringForBlockchain(
+        Blockchain.SOLANA
+      );
+
+    const transaction = deserializeTransaction(tx);
+    const message = transaction.message.serialize();
+    const txMessage = bs58.encode(message);
+
+    const signature = await blockchainKeyring.signTransaction(
+      txMessage,
+      publicKey
+    );
+
+    return signature;
+  }
 }

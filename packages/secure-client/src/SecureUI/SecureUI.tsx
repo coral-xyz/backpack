@@ -15,6 +15,7 @@ import {
   secureUIReceiverAtom,
 } from "./_atoms/clientAtoms";
 import { ApproveOriginRequest } from "./RequestHandlers/ApproveOriginRequest";
+import { SignAllTransactionsRequest } from "./RequestHandlers/SignAllTransactionsRequest";
 import { SignMessageRequest } from "./RequestHandlers/SignMessageRequest";
 import { SignTransactionRequest } from "./RequestHandlers/SignTransactionRequest";
 import { UnlockRequest } from "./RequestHandlers/UnlockRequest";
@@ -37,14 +38,6 @@ function SecureUIRoot() {
             }
           />
         );
-      case "SECURE_USER_APPROVE_ORIGIN":
-        return (
-          <ApproveOriginRequest
-            currentRequest={
-              currentRequest as QueuedRequest<"SECURE_USER_APPROVE_ORIGIN">
-            }
-          />
-        );
       case "SECURE_SVM_SIGN_TX":
         return (
           <SignTransactionRequest
@@ -53,6 +46,23 @@ function SecureUIRoot() {
             }
           />
         );
+      case "SECURE_SVM_SIGN_ALL_TX":
+        return (
+          <SignAllTransactionsRequest
+            currentRequest={
+              currentRequest as QueuedRequest<"SECURE_SVM_SIGN_ALL_TX">
+            }
+          />
+        );
+      case "SECURE_USER_APPROVE_ORIGIN":
+        return (
+          <ApproveOriginRequest
+            currentRequest={
+              currentRequest as QueuedRequest<"SECURE_USER_APPROVE_ORIGIN">
+            }
+          />
+        );
+
       case "SECURE_USER_UNLOCK_KEYRING":
         return (
           <UnlockRequest

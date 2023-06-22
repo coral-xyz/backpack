@@ -141,6 +141,52 @@ export class SolanaClient {
     return tx;
   }
 
+  public async signAllTransactions<
+    T extends Transaction | VersionedTransaction
+  >(
+    request: {
+      publicKey: PublicKey;
+      txs: T[];
+      signers?: Signer[];
+      customConnection?: Connection;
+    },
+    confirmOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["confirmOptions"]
+  ): Promise<T[]> {
+    const publicKey = request.publicKey;
+
+    const txStrs = await Promise.all(
+      request.txs.map(async (tx) => {
+        const preparedTx = await this.prepareTransaction({
+          publicKey: request.publicKey,
+          tx,
+          signers: request.signers,
+          customConnection: request.customConnection,
+        });
+        return encode(preparedTx.serialize({ requireAllSignatures: false }));
+      })
+    );
+
+    const signatures = await this.secureSvmClient.signAllTransactions(
+      {
+        publicKey: publicKey.toBase58(),
+        txs: txStrs,
+      },
+      confirmOptions
+    );
+
+    if (!signatures.response?.signatures) {
+      throw new Error(signatures.error);
+    }
+
+    const txs = signatures.response.signatures.map((signature, i) => {
+      const tx = request.txs[i];
+      tx.addSignature(publicKey, decode(signature));
+      return tx;
+    });
+
+    return txs;
+  }
+
   public async send<T extends Transaction | VersionedTransaction>(
     request: {
       publicKey: PublicKey;

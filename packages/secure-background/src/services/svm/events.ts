@@ -54,7 +54,7 @@ export interface SECURE_SVM_SIGN_ALL_TX
   extends SecureEventBase<"SECURE_SVM_SIGN_ALL_TX"> {
   request: {
     publicKey: string;
-    tx: string[];
+    txs: string[];
   };
   response: {
     signatures: string[];
