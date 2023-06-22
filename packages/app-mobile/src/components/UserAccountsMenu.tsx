@@ -1,13 +1,7 @@
 import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
 
 import { useCallback, useMemo, useRef, useState } from "react";
-import {
-  ScrollView,
-  Pressable,
-  Text,
-  View,
-  ActivityIndicator,
-} from "react-native";
+import { ScrollView, Pressable, Text, View } from "react-native";
 
 import { UI_RPC_METHOD_ACTIVE_USER_UPDATE } from "@coral-xyz/common";
 import { useAllUsers, useBackgroundClient, useUser } from "@coral-xyz/recoil";
@@ -15,10 +9,10 @@ import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { ExpandCollapseIcon, IconCheckmark } from "~components/Icon";
-import { Screen, Avatar, RoundedContainerGroup } from "~components/index";
+import { ExpandCollapseIcon } from "~components/Icon";
+import { UserAccountListItem } from "~components/ListItem";
+import { Screen, RoundedContainerGroup } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
-import { SettingsRow } from "~screens/Unlocked/Settings/components/SettingsRow";
 
 // NOTE(peter) not used anymore in lieu of using react navigation modal
 export function AccountDropdownHeader(): JSX.Element {
@@ -95,6 +89,7 @@ export function AccountDropdownHeader(): JSX.Element {
   );
 }
 
+// used to be used for the user accounts
 export function UserAccountMenu({ navigation }): JSX.Element {
   const insets = useSafeAreaInsets();
 
@@ -111,6 +106,7 @@ export function UserAccountMenu({ navigation }): JSX.Element {
   );
 }
 
+// deprecated not used anywhere
 function UsersList({ onDismiss }: { onDismiss: () => void }): JSX.Element {
   const background = useBackgroundClient();
   const users = useAllUsers();
@@ -168,41 +164,5 @@ function UsersList({ onDismiss }: { onDismiss: () => void }): JSX.Element {
         </>
       </RoundedContainerGroup>
     </ScrollView>
-  );
-}
-
-const getDetailIcon = (isLoading: boolean, isActive: boolean) => {
-  if (isLoading) {
-    return <ActivityIndicator size="small" />;
-  }
-
-  if (isActive) {
-    return <IconCheckmark size={24} />;
-  }
-
-  return null;
-};
-
-export function UserAccountListItem({
-  uuid,
-  username,
-  isActive,
-  isLoading,
-  onPress,
-}: {
-  uuid: string;
-  username: string;
-  isActive: boolean;
-  isLoading: boolean;
-  onPress: (uuid: string) => void;
-}): JSX.Element {
-  const detailIcon = getDetailIcon(isLoading, isActive);
-  return (
-    <SettingsRow
-      icon={<Avatar size={24} />}
-      label={`@${username}`}
-      detailIcon={detailIcon}
-      onPress={() => onPress(uuid)}
-    />
   );
 }

@@ -52,8 +52,8 @@ const getEnvironment = () => {
     packageName: "app.backpack.dev",
     // graphqlApiUrl: localGraphQLApi,
     graphqlApiUrl: remoteGraphQLApi,
-    // serviceWorkerUrl: 'http://localhost:9333',
-    serviceWorkerUrl: latestServiceWorkerUrl,
+    serviceWorkerUrl: "http://localhost:9333",
+    // serviceWorkerUrl: latestServiceWorkerUrl,
   };
 };
 

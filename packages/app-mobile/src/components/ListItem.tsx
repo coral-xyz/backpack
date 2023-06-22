@@ -14,12 +14,15 @@ import {
 } from "@coral-xyz/tamagui";
 
 import {
+  IconCheckmark,
   ArrowRightIcon,
   IconCheckmarkBold,
   WarningIcon,
 } from "~components/Icon";
 import { PriceChangePill } from "~components/Pill";
+import { Avatar } from "~components/UserAvatar";
 import { BlockchainLogo } from "~components/index";
+import { SettingsRow } from "~screens/Unlocked/Settings/components/SettingsRow";
 
 export {
   _ListItemOneLine,
@@ -233,5 +236,41 @@ export function ListItemTokenPrice({
         <PriceChangePill percentChange={percentChange} price={price} />
       </XStack>
     </ListItem>
+  );
+}
+
+const getDetailIcon = (isLoading: boolean, isActive: boolean) => {
+  if (isLoading) {
+    return <ActivityIndicator size="small" />;
+  }
+
+  if (isActive) {
+    return <IconCheckmark size={24} />;
+  }
+
+  return null;
+};
+
+export function UserAccountListItem({
+  uuid,
+  username,
+  isActive,
+  isLoading,
+  onPress,
+}: {
+  uuid: string;
+  username: string;
+  isActive: boolean;
+  isLoading: boolean;
+  onPress: (uuid: string) => void;
+}): JSX.Element {
+  const detailIcon = getDetailIcon(isLoading, isActive);
+  return (
+    <SettingsRow
+      icon={<Avatar username={username} size={24} />}
+      label={`@${username}`}
+      detailIcon={detailIcon}
+      onPress={() => onPress(uuid)}
+    />
   );
 }

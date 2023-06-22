@@ -133,26 +133,8 @@ export const SessionProvider = ({
       params: [],
     });
 
-    // // TODO: don't manually specify this list of keys
-    // // ^^ this was done before peter's time so no idea
-    // const stores = [
-    //   "keyring-store",
-    //   "keyname-store",
-    //   "wallet-data",
-    //   "nav-store7",
-    // ];
-    //
-    // for (const store of stores) {
-    //   try {
-    //     await SecureStore.deleteItemAsync(store);
-    //   } catch (err) {
-    //     console.error(err);
-    //     // ignore
-    //   }
-    // }
-
-    // lockKeystore();
-  }, [background]);
+    lockKeystore();
+  }, [background, lockKeystore]);
 
   const contextValue = useMemo(
     () => ({

@@ -1,4 +1,8 @@
-import type { Blockchain, WalletDescriptor } from "@coral-xyz/common";
+import type {
+  Blockchain,
+  ServerPublicKey,
+  WalletDescriptor,
+} from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useEffect, useState, useCallback } from "react";
@@ -30,7 +34,6 @@ import {
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
   XNFT_GG_LINK,
   PrivateKeyWalletDescriptor,
-  getLogger,
 } from "@coral-xyz/common";
 import {
   useSavePrivateKey,
@@ -101,7 +104,52 @@ import {
 } from "~src/features/biometrics/hooks";
 import * as Linking from "~src/lib/linking";
 
-const logger = getLogger("debug1:OnboardingNavigator");
+const logger =
+  (prefix = "") =>
+  (...args: any) => {
+    if (process.env.NODE_ENV === "development") {
+      console.log(prefix, ...args);
+    }
+  };
+
+const maybeLog = logger("on1");
+
+async function fetchRequestCheckIfUserExists({
+  username,
+}: {
+  username: string;
+}): Promise<{ id: string; publicKeys: ServerPublicKey[]; msg?: string }> {
+  const res = await fetch(`${BACKEND_API_URL}/users/${username}`);
+  const json = await res.json();
+
+  if (!res.ok) {
+    const errorMessage = json.msg || "fetching username failed";
+    throw new Error(errorMessage);
+  }
+
+  return json;
+}
+
+async function fetchRequestCreateUser({
+  username,
+  inviteCode,
+}: {
+  username: string;
+  inviteCode: string | undefined;
+}) {
+  const res = await fetch(`https://auth.xnfts.dev/users/${username}`, {
+    headers: {
+      "x-backpack-invite-code": inviteCode || "",
+    },
+  });
+
+  const json = await res.json();
+  if (!res.ok) {
+    throw new Error(json.message || "creating user failed");
+  }
+
+  return json;
+}
 
 function Network({
   id,
@@ -534,17 +582,7 @@ function CreateOrRecoverUsernameScreen({
     setLoading(true);
     if (action === "recover") {
       try {
-        const response = await fetch(`${BACKEND_API_URL}/users/${username}`);
-
-        const json: {
-          id: string;
-          publicKeys: any[];
-          msg?: string;
-        } = await response.json();
-        if (!response.ok) {
-          throw new Error(json.msg);
-        }
-
+        const json = await fetchRequestCheckIfUserExists({ username });
         setOnboardingData({
           username,
           userId: json.id,
@@ -553,7 +591,7 @@ function CreateOrRecoverUsernameScreen({
 
         navigation.push(RecoverAccountRoutes.KeyringTypeSelector);
       } catch (err: any) {
-        setError(err.message || "Something went wrong");
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -561,23 +599,12 @@ function CreateOrRecoverUsernameScreen({
 
     if (action === "create") {
       try {
-        // TODO(fetch) consolidate these
-        const res = await fetch(`https://auth.xnfts.dev/users/${username}`, {
-          // @ts-ignore
-          headers: {
-            "x-backpack-invite-code": onboardingData.inviteCode,
-          },
-        });
-
-        const json = await res.json();
-        if (!res.ok) {
-          throw new Error(json.message || "There was an error");
-        }
-
-        setOnboardingData({
+        await fetchRequestCreateUser({
           username,
+          inviteCode: onboardingData.inviteCode,
         });
 
+        setOnboardingData({ username });
         navigation.push(NewAccountRoutes.CreateOrImportWallet);
       } catch (err: any) {
         setError(err.message);
@@ -1108,30 +1135,51 @@ type CreateAccountLoadingScreenProps = StackScreenProps<
 
 function CreateAccountLoadingScreen(
   _p: CreateAccountLoadingScreenProps
-): JSX.Element {
-  const { setAuthToken, appState } = useSession();
-  const background = useBackgroundClient();
+): JSX.Element | null {
+  const { setAuthToken, appState, setAppState } = useSession();
   const { onboardingData, maybeCreateUser } = useOnboarding();
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const isAddingAccount = appState === "isAddingAccount";
+
+  maybeLog("on1:CreateAccountLoadingScreen:error", error);
+  maybeLog("on1:CreateAccountLoadingScreen:loading", loading);
+
+  const completeOnboarding = useCallback(async () => {
+    const data = {
+      ...onboardingData,
+      isAddingAccount,
+      keyringType: onboardingData.keyringType || "mnemonic",
+    };
+
+    maybeLog("on1:CreateAccountLoadingScreen:data", data);
+    const res = await maybeCreateUser(data);
+    maybeLog("on1:CreateAccountLoadingScreen:res", res);
+
+    if (!res.ok) {
+      setError(true);
+      setLoading(false);
+    } else {
+      setLoading(false);
+      if (isAddingAccount) {
+        setAppState("onboardingComplete");
+      }
+      setAuthToken(res.jwt);
+    }
+  }, [
+    isAddingAccount,
+    setAppState,
+    setError,
+    setLoading,
+    maybeCreateUser,
+    onboardingData,
+    setAuthToken,
+  ]);
 
   useEffect(() => {
-    (async () => {
-      logger.debug("CreateAccountLoadingScreen:onboardingData", onboardingData);
-      const res = await maybeCreateUser({
-        ...onboardingData,
-        isAddingAccount: appState === "isAddingAccount",
-        keyringType: onboardingData.keyringType || "mnemonic",
-      });
-
-      logger.debug("CreateAccountLoadingScreen:res", res);
-
-      if (!res.ok) {
-        setError(true);
-      } else {
-        setAuthToken(res.jwt);
-      }
-    })();
-  }, [onboardingData, background, maybeCreateUser, setAuthToken, appState]);
+    completeOnboarding();
+  }, [completeOnboarding]);
 
   if (error) {
     return (
@@ -1149,7 +1197,11 @@ function CreateAccountLoadingScreen(
     );
   }
 
-  return <FullScreenLoading label="Creating your wallet..." />;
+  if (loading) {
+    return <FullScreenLoading label="Creating your wallet..." />;
+  }
+
+  return null;
 }
 
 export function OnboardingCompleteWelcome({

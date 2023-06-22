@@ -53,8 +53,7 @@ function ListItemWalletCard({
         mt={isFirst ? 0 : -12}
         jc="space-between"
         p={16}
-        borderTopEndRadius={12}
-        borderTopStartRadius={12}
+        borderRadius={12}
         borderWidth={1}
         borderColor="$baseBorderLight"
         backgroundColor="$card"
