@@ -89,8 +89,21 @@ export type Friend = Node & {
   avatar: Scalars["String"];
   /** Globally unique identifier for a friend of a user. */
   id: Scalars["ID"];
+  /** The primary wallets associated with the user. */
+  primaryWallets: Array<FriendPrimaryWallet>;
   /** The Backpack username of the friend. */
   username: Scalars["String"];
+};
+
+/** Abbreviated wallet information for the primary wallet(s) of a friend. */
+export type FriendPrimaryWallet = Node & {
+  __typename?: "FriendPrimaryWallet";
+  /** The public key of the wallet. */
+  address: Scalars["String"];
+  /** Globally unique identifier for the friend's primary wallet. */
+  id: Scalars["ID"];
+  /** The ID of the provider associated with the wallet. */
+  provider: Provider;
 };
 
 /** Friend request data for a user. */
@@ -733,6 +746,7 @@ export type ResolversTypes = ResolversObject<{
   Collection: ResolverTypeWrapper<Collection>;
   Float: ResolverTypeWrapper<Scalars["Float"]>;
   Friend: ResolverTypeWrapper<Friend>;
+  FriendPrimaryWallet: ResolverTypeWrapper<FriendPrimaryWallet>;
   FriendRequest: ResolverTypeWrapper<FriendRequest>;
   FriendRequestType: FriendRequestType;
   Friendship: ResolverTypeWrapper<Friendship>;
@@ -752,6 +766,7 @@ export type ResolversTypes = ResolversObject<{
     | ResolversTypes["Balances"]
     | ResolversTypes["Collection"]
     | ResolversTypes["Friend"]
+    | ResolversTypes["FriendPrimaryWallet"]
     | ResolversTypes["FriendRequest"]
     | ResolversTypes["Listing"]
     | ResolversTypes["MarketData"]
@@ -800,6 +815,7 @@ export type ResolversParentTypes = ResolversObject<{
   Collection: Collection;
   Float: Scalars["Float"];
   Friend: Friend;
+  FriendPrimaryWallet: FriendPrimaryWallet;
   FriendRequest: FriendRequest;
   Friendship: Friendship;
   ID: Scalars["ID"];
@@ -818,6 +834,7 @@ export type ResolversParentTypes = ResolversObject<{
     | ResolversParentTypes["Balances"]
     | ResolversParentTypes["Collection"]
     | ResolversParentTypes["Friend"]
+    | ResolversParentTypes["FriendPrimaryWallet"]
     | ResolversParentTypes["FriendRequest"]
     | ResolversParentTypes["Listing"]
     | ResolversParentTypes["MarketData"]
@@ -915,7 +932,22 @@ export type FriendResolvers<
 > = ResolversObject<{
   avatar?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  primaryWallets?: Resolver<
+    Array<ResolversTypes["FriendPrimaryWallet"]>,
+    ParentType,
+    ContextType
+  >;
   username?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type FriendPrimaryWalletResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["FriendPrimaryWallet"] = ResolversParentTypes["FriendPrimaryWallet"]
+> = ResolversObject<{
+  address?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  provider?: Resolver<ResolversTypes["Provider"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1085,6 +1117,7 @@ export type NodeResolvers<
     | "Balances"
     | "Collection"
     | "Friend"
+    | "FriendPrimaryWallet"
     | "FriendRequest"
     | "Listing"
     | "MarketData"
@@ -1417,6 +1450,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Balances?: BalancesResolvers<ContextType>;
   Collection?: CollectionResolvers<ContextType>;
   Friend?: FriendResolvers<ContextType>;
+  FriendPrimaryWallet?: FriendPrimaryWalletResolvers<ContextType>;
   FriendRequest?: FriendRequestResolvers<ContextType>;
   Friendship?: FriendshipResolvers<ContextType>;
   JSONObject?: GraphQLScalarType;

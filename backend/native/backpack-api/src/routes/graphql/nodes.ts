@@ -2,6 +2,7 @@ import type {
   Balances,
   Collection,
   Friend,
+  FriendPrimaryWallet,
   FriendRequest,
   Listing,
   MarketData,
@@ -29,6 +30,16 @@ export abstract class NodeBuilder {
 
   static friend(dbId: unknown, data: Omit<Friend, "id">): Friend {
     return this._createNode(`friend:${dbId}`, data);
+  }
+
+  static friendPrimaryWallet(
+    userId: string,
+    data: Omit<FriendPrimaryWallet, "id">
+  ): FriendPrimaryWallet {
+    return this._createNode(
+      `friend_primary_wallet:${userId}:${data.address}`,
+      data
+    );
   }
 
   static friendRequest(

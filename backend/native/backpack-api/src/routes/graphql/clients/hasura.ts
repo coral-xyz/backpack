@@ -160,6 +160,10 @@ export class Hasura {
           {
             id: true,
             username: true,
+            public_keys: [
+              { where: { is_primary: { _eq: true } } },
+              { blockchain: true, public_key: true },
+            ],
           },
         ],
       },
@@ -169,6 +173,19 @@ export class Hasura {
     return detailsResp.auth_users.map((u) =>
       NodeBuilder.friend(u.id, {
         avatar: `https://swr.xnfts.dev/avatars/${u.username}`,
+        primaryWallets: u.public_keys.map((pk) => {
+          const provider = getProviderForId(
+            inferProviderIdFromString(pk.blockchain)
+          );
+          return NodeBuilder.friendPrimaryWallet(u.id as string, {
+            address: pk.public_key,
+            provider: NodeBuilder.provider({
+              logo: provider.logo(),
+              name: provider.name(),
+              providerId: provider.id(),
+            }),
+          });
+        }),
         username: u.username as string,
       })
     );

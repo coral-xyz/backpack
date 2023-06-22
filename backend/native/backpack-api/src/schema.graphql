@@ -348,9 +348,34 @@ type Friend implements Node {
   avatar: String!
 
   """
+  The primary wallets associated with the user.
+  """
+  primaryWallets: [FriendPrimaryWallet!]!
+
+  """
   The Backpack username of the friend.
   """
   username: String!
+}
+
+"""
+Abbreviated wallet information for the primary wallet(s) of a friend.
+"""
+type FriendPrimaryWallet implements Node {
+  """
+  Globally unique identifier for the friend's primary wallet.
+  """
+  id: ID!
+
+  """
+  The public key of the wallet.
+  """
+  address: String!
+
+  """
+  The ID of the provider associated with the wallet.
+  """
+  provider: Provider!
 }
 
 """
