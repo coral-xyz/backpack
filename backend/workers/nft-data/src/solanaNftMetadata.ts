@@ -29,6 +29,7 @@ export async function solanaNftMetadata(
   )[0];
 
   // Send both requests in parallel
+  // Honestly didn't see a way around fetching both. Checking mint account owner would also add addl calls.
   const [metadataAccountResponse, shadowMetadataAccountResponse] =
     await Promise.all([
       fetchMetadataAccount(metadataAccountAddress, c),
