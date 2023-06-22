@@ -78,6 +78,7 @@ export const BalanceFragment = gql(`
 export const ProviderFragment = gql(`
   fragment ProviderFragment on Provider {
     id
+    providerId
     name
     logo
 }
@@ -94,6 +95,27 @@ export const WalletFragment = gql(`
     }
     balances {
       ...BalanceFragment
+    }
+  }
+`);
+
+export const PrimaryWalletFragment = gql(`
+  fragment PrimaryWalletFragment on FriendPrimaryWallet {
+    id
+    address
+    provider {
+      ...ProviderFragment
+    }
+  }
+`);
+
+export const FriendFragment = gql(`
+  fragment FriendFragment on Friend {
+    id
+    username
+    avatar
+    primaryWallets {
+      ...PrimaryWalletFragment
     }
   }
 `);

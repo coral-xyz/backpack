@@ -239,7 +239,7 @@ export function SubtextParagraph({
   style,
   onPress,
 }: {
-  children: string;
+  children: React.ReactNode;
   style?: StyleProp<TextStyle>;
   onPress?: () => void;
 }) {
