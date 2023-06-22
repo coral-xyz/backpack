@@ -287,46 +287,57 @@ export class Solana extends SolanaRpc implements BlockchainDataProvider {
   ): Promise<TransactionConnection> {
     if (!this.ctx) {
       throw new Error("API context object not available");
+    } else if (this.ctx.network.rpc) {
+      return super.getTransactionsForAddress(address, filters);
     }
 
-    const resp = await this.ctx.dataSources.helius.getTransactionHistory(
-      address,
-      filters?.before ?? undefined,
-      filters?.after ?? undefined,
-      filters?.token ?? undefined
-    );
+    try {
+      const resp = await this.ctx.dataSources.helius.getTransactionHistory(
+        address,
+        filters?.before ?? undefined,
+        filters?.after ?? undefined,
+        filters?.token ?? undefined
+      );
 
-    const nodes: Transaction[] = resp.map((r) => {
-      const transactionError: string | undefined = r.transactionError
-        ? typeof r.transactionError === "string"
-          ? r.transactionError
-          : (r.transactionError as any).error
-        : undefined;
-
-      const nfts =
-        r.events?.nft?.nfts && r.events.nft?.nfts.length > 0
-          ? r.events.nft.nfts.map((n) => n.mint)
+      const nodes: Transaction[] = resp.map((r) => {
+        const transactionError: string | undefined = r.transactionError
+          ? typeof r.transactionError === "string"
+            ? r.transactionError
+            : (r.transactionError as any).error
           : undefined;
 
-      return NodeBuilder.transaction(this.id(), {
-        description: r.description,
-        block: r.slot,
-        error: transactionError,
-        fee: `${ethers.utils.formatUnits(
-          r.fee,
-          this.decimals()
-        )} ${this.symbol()}`,
-        feePayer: r.feePayer,
-        hash: r.signature,
-        nfts,
-        raw: r,
-        source: r.source,
-        timestamp: new Date(r.timestamp * 1000).toISOString(),
-        type: r.type,
-      });
-    });
+        const nfts =
+          r.events?.nft?.nfts && r.events.nft?.nfts.length > 0
+            ? r.events.nft.nfts.map((n) => n.mint)
+            : undefined;
 
-    return createConnection(nodes, false, false); // FIXME: next and previous page
+        return NodeBuilder.transaction(this.id(), {
+          description: r.description,
+          block: r.slot,
+          error: transactionError,
+          fee: `${ethers.utils.formatUnits(
+            r.fee,
+            this.decimals()
+          )} ${this.symbol()}`,
+          feePayer: r.feePayer,
+          hash: r.signature,
+          nfts,
+          raw: r,
+          source: r.source,
+          timestamp: new Date(r.timestamp * 1000).toISOString(),
+          type: r.type,
+        });
+      });
+
+      return createConnection(
+        nodes,
+        filters?.after !== undefined,
+        filters?.before !== undefined
+      );
+    } catch (err) {
+      console.error(`Falling back to Solana RPC: ${err}`);
+      return super.getTransactionsForAddress(address, filters);
+    }
   }
 }
 

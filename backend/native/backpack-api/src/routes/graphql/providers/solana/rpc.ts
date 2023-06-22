@@ -5,7 +5,12 @@ import {
   type TokenAccountData,
 } from "@saberhq/token-utils";
 import type { MintInfo } from "@solana/spl-token";
-import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
+import {
+  Connection,
+  PublicKey,
+  SystemProgram,
+  Transaction as SolanaTransaction,
+} from "@solana/web3.js";
 import { ethers } from "ethers";
 
 import { HELIUS_API_KEY } from "../../../../config";
@@ -19,6 +24,7 @@ import {
   type NftFiltersInput,
   ProviderId,
   type TokenBalance,
+  type Transaction,
   type TransactionConnection,
   type TransactionFiltersInput,
 } from "../../types";
@@ -283,12 +289,58 @@ export class SolanaRpc implements BlockchainDataProvider {
    * @param {TransactionFiltersInput} [filters]
    * @returns {Promise<TransactionConnection>}
    * @memberof SolanaRpc
-   * TODO:
    */
   async getTransactionsForAddress(
     address: string,
     filters?: TransactionFiltersInput | undefined
   ): Promise<TransactionConnection> {
-    throw new Error("Method not implemented.");
+    // Get the most recent transaction signatures for the argued address and pagination parameters
+    const signatures = await this.#connection.getSignaturesForAddress(
+      new PublicKey(address),
+      {
+        limit: 50,
+        before: filters?.before ?? undefined,
+        until: filters?.after ?? undefined,
+      }
+    );
+
+    // Fetch the parsed transactions for each of the found signatures
+    const transactions = await this.#connection.getTransactions(
+      signatures.map((s) => s.signature),
+      { maxSupportedTransactionVersion: 0 }
+    );
+
+    // Filter out the `null` transactions and compile the remainders into `Transaction` schema nodes
+    const nodes = transactions.reduce<Transaction[]>((acc, curr, idx) => {
+      if (curr) {
+        acc.push(
+          NodeBuilder.transaction(this.id(), {
+            block: curr.slot,
+            error: curr.meta?.err?.toString(),
+            fee: curr.meta?.fee
+              ? `${ethers.utils.formatUnits(
+                  curr.meta.fee,
+                  this.decimals()
+                )} SOL`
+              : undefined,
+            feePayer: curr.transaction.message.staticAccountKeys[0].toBase58(),
+            hash: signatures[idx].signature,
+            raw: JSON.parse(JSON.stringify(curr)),
+            timestamp: curr.blockTime
+              ? new Date(curr.blockTime * 1000).toISOString()
+              : new Date().toISOString(),
+            type: "standard",
+          })
+        );
+      }
+      return acc;
+    }, []);
+
+    // Construct and return the transaction connection object
+    return createConnection(
+      nodes,
+      filters?.after !== undefined,
+      filters?.before !== undefined
+    );
   }
 }
