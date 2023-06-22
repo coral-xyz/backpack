@@ -35,7 +35,7 @@ export class TransportResponder<
     const returns = handler(this);
 
     if (returns) {
-      logger.debug("Handling", event);
+      logger.debug("Handling", request.id);
       returns.catch((error) => {
         onResponse({
           name: this.event.name,
@@ -52,7 +52,6 @@ export class TransportResponder<
       id: this.event.id,
       response,
     };
-    logger.debug("Response", eventResponse);
     this.onResponse(eventResponse);
     return "RESPONDED" as const;
   };
@@ -63,7 +62,6 @@ export class TransportResponder<
       id: this.event.id,
       error,
     };
-    logger.error("Response", eventResponse);
     this.onResponse(eventResponse);
     return "RESPONDED" as const;
   };

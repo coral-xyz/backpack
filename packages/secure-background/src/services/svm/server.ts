@@ -49,11 +49,8 @@ export class SVMService {
 
   private handleSignMessage: TransportHandler<"SECURE_SVM_SIGN_MESSAGE"> =
     async (event) => {
-      console.log("PCA HANDLE sign message", event);
-      // const confirm = await this.secureUISender.send(request)
       const confirmation = await this.secureUIClient.confirm(event.event);
 
-      console.log("PCA confirmation", confirmation);
       if (confirmation.error || !confirmation.response?.confirmed) {
         return event.error("User Denied Request");
       }
@@ -75,8 +72,6 @@ export class SVMService {
       if (blockchainKeyring.ledgerKeyring) {
         // close ledger prompt
       }
-
-      console.log("PCA responde to contentscript", singedMessage);
 
       return event.respond({ singedMessage });
     };

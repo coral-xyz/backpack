@@ -102,9 +102,7 @@ export class FromExtensionTransportSender<
                 id: requestWithId.id,
                 error: e,
               } as SecureResponse<T, C>;
-
               logger.debug("Response", response);
-
               return request.resolve(response);
             }
           });
