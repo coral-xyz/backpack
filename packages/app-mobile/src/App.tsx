@@ -42,51 +42,65 @@ SplashScreen.preventAutoHideAsync();
 
 // SETUP SECURE BACKGROUND
 const events = new EventEmitter3();
+
+// this is legacy and will be removed later
 const keyringStore = new KeyringStore(events, secureStore);
+
+// this might need different Transport, currently sends notification via provided eventEmitter events
 const notificationBroadcaster = new BackendNotificationBroadcaster(events);
+
+// Local Transports all use provided EventEmitter to communicate via provided channels
+
+// secure-background channel receiver / sender(originA) / sender(originB)
 const secureBackgroundReceiver = new LocalTransportReceiver(events, {
-  request: "background-request",
-  response: "background-response",
+  request: "secure-background-request",
+  response: "secure-background-response",
 });
-const secureBackgroundSender = new LocalTransportSender(
+const appBackgroundSender = new LocalTransportSender(
   {
     address: "app-mobile",
     name: "Backpack Mobile",
     context: "mobile",
   },
   events,
-  { request: "background-request", response: "background-response" }
-);
-const secureUIBackgroundSender = new LocalTransportSender<
-  SECURE_EVENTS,
-  "confirmation"
->(
   {
-    address: "app-mobile-secure-background",
-    name: "Backpack Mobile",
-    context: "background",
-  },
-  events,
-  { request: "secureui-request", response: "secureui-response" }
+    request: "secure-background-request",
+    response: "secure-background-response",
+  }
 );
-const secureUIReceiver = new LocalTransportReceiver<
-  SECURE_EVENTS,
-  "confirmation"
->(events, { request: "secureui-request", response: "secureui-response" });
-const secureUISender = new LocalTransportSender(
+const secureUIBackgroundSender = new LocalTransportSender(
   {
     address: "app-mobile",
     name: "Backpack Mobile",
     context: "secureUI",
   },
   events,
-  { request: "background-request", response: "background-response" }
+  {
+    request: "secure-background-request",
+    response: "secure-background-response",
+  }
 );
 
+// secure-ui channel sender/receiver
+const secureUiSender = new LocalTransportSender<SECURE_EVENTS, "confirmation">(
+  {
+    address: "app-mobile-secure-background",
+    name: "Backpack Mobile",
+    context: "background",
+  },
+  events,
+  { request: "secure-ui-request", response: "secure-ui-response" }
+);
+const secureUIReceiver = new LocalTransportReceiver<
+  SECURE_EVENTS,
+  "confirmation"
+>(events, { request: "secure-ui-request", response: "secure-ui-response" });
+
+// start service
 startSecureService(
   {
     notificationBroadcaster,
-    secureUIClient: secureUIBackgroundSender,
+    secureUIClient: secureUiSender,
     secureServer: secureBackgroundReceiver,
     secureDB: extensionDB,
   },
@@ -110,7 +124,7 @@ export function App(): JSX.Element {
       <Suspense fallback={<FullScreenLoading />}>
         <RecoilRoot
           initializeState={({ set }) => {
-            set(secureBackgroundSenderAtom, secureBackgroundSender);
+            set(secureBackgroundSenderAtom, appBackgroundSender);
           }}
         >
           <Main />
@@ -118,7 +132,7 @@ export function App(): JSX.Element {
       </Suspense>
       <SecureUI
         secureUIReceiver={secureUIReceiver}
-        secureBackgroundSender={secureUISender}
+        secureBackgroundSender={secureUIBackgroundSender}
       />
     </ErrorBoundary>
   );
