@@ -39,7 +39,6 @@ const requestWindowId = urlParams.get("windowId");
 const shouldRenderApp = !requestWindowId;
 const windowId = requestWindowId ?? v4();
 
-console.log(requestWindowId, shouldRenderApp);
 // Send connect event to background script to open channel.
 // add unique name so background can identify the popup.
 const port = chrome.runtime.connect({ name: windowId });
