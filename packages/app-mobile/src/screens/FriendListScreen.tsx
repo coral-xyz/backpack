@@ -31,9 +31,7 @@ const QUERY_USER_FRIENDS = gql(`
       id
       friendship {
         friends {
-          avatar
-          id
-          username
+          ...FriendFragment
         }
       }
     }
