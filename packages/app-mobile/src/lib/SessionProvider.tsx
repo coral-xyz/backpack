@@ -9,8 +9,6 @@ import {
   useEffect,
 } from "react";
 
-// import * as SecureStore from "expo-secure-store";
-
 import {
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_RESET,

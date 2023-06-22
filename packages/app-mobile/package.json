@@ -71,7 +71,6 @@
     "expo-linking": "~4.0.1",
     "expo-local-authentication": "~13.3.0",
     "expo-random": "~13.1.1",
-    "expo-secure-store": "~12.1.1",
     "expo-splash-screen": "~0.18.2",
     "expo-sqlite": "~11.1.1",
     "expo-status-bar": "~1.4.4",
