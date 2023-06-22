@@ -10,6 +10,7 @@ import {
   type Notification,
   type NotificationConnection,
   type NotificationFiltersInput,
+  type ProviderId,
   type User,
   type Wallet,
   type WalletConnection,
@@ -339,10 +340,15 @@ export class Hasura {
    * by the user ID in the database.
    * @param {string} id
    * @param {string} address
+   * @param {ProviderId} [providerId]
    * @returns {Promise<Wallet | null>}
    * @memberof Hasura
    */
-  async getWallet(id: string, address: string): Promise<Wallet | null> {
+  async getWallet(
+    id: string,
+    address: string,
+    providerId?: ProviderId
+  ): Promise<Wallet | null> {
     // Query Hasura for a single public key owned by the argued user ID
     // and matches the argued public key address
     const resp = await this.#chain("query")(
@@ -370,7 +376,9 @@ export class Hasura {
     }
 
     const { blockchain, created_at, is_primary } = resp.auth_public_keys[0];
-    const provider = getProviderForId(inferProviderIdFromString(blockchain));
+    const provider = getProviderForId(
+      providerId ?? inferProviderIdFromString(blockchain)
+    );
 
     return NodeBuilder.wallet(provider.id(), {
       address,

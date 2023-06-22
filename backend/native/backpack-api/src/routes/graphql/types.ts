@@ -544,6 +544,7 @@ export type UserNotificationsArgs = {
  */
 export type UserWalletArgs = {
   address: Scalars["String"];
+  providerId?: InputMaybe<ProviderId>;
 };
 
 /**

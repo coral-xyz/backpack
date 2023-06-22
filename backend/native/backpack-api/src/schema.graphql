@@ -892,7 +892,7 @@ type User implements Node {
   """
   Get a single wallet object for the argued public key address.
   """
-  wallet(address: String!): Wallet
+  wallet(address: String!, providerId: ProviderID): Wallet
 
   """
   The Relay connection for the wallet's and their data that are registered to the user.

@@ -24,6 +24,7 @@ import {
 } from "../../types";
 import { calculateBalanceAggregate, createConnection } from "../../utils";
 import type { BlockchainDataProvider } from "..";
+import { createMarketDataNode, sortTokenBalanceNodes } from "../util";
 
 /**
  * Solana blockchain implementation for the common API sourced by raw RPC calls.
@@ -188,16 +189,11 @@ export class SolanaRpc implements BlockchainDataProvider {
         amount: balance.toString(),
         decimals: this.decimals(),
         displayAmount: nativeDisplayAmount,
-        marketData: NodeBuilder.marketData("solana", {
-          lastUpdatedAt: prices.solana.last_updated,
-          percentChange: prices.solana.price_change_percentage_24h,
-          price: prices.solana.current_price,
-          sparkline: prices.solana.sparkline_in_7d.price,
-          usdChange: prices.solana.price_change_24h,
-          value: parseFloat(nativeDisplayAmount) * prices.solana.current_price,
-          valueChange:
-            parseFloat(nativeDisplayAmount) * prices.solana.price_change_24h,
-        }),
+        marketData: createMarketDataNode(
+          nativeDisplayAmount,
+          "solana",
+          prices.solana
+        ),
         token: this.defaultAddress(),
         tokenListEntry: NodeBuilder.tokenListEntry(
           SolanaTokenList[this.defaultAddress()]
@@ -220,19 +216,7 @@ export class SolanaRpc implements BlockchainDataProvider {
           mintDecimals
         );
 
-        const marketData =
-          p && id
-            ? NodeBuilder.marketData(id, {
-                lastUpdatedAt: p.last_updated,
-                percentChange: p.price_change_percentage_24h,
-                price: p.current_price,
-                sparkline: p.sparkline_in_7d.price,
-                usdChange: p.price_change_24h,
-                value: parseFloat(displayAmount) * p.current_price,
-                valueChange: parseFloat(displayAmount) * p.price_change_24h,
-              })
-            : undefined;
-
+        const marketData = createMarketDataNode(displayAmount, id, p);
         const tokenListEntry = SolanaTokenList[curr.data.mint.toBase58()]
           ? NodeBuilder.tokenListEntry(
               SolanaTokenList[curr.data.mint.toBase58()]
@@ -264,9 +248,10 @@ export class SolanaRpc implements BlockchainDataProvider {
     );
 
     // Sort the native and token account nodes by market value decreasing
-    const tokenNodes = [nativeTokenNode, ...splTokenNodes].sort(
-      (a, b) => (b.marketData?.value ?? 0) - (a.marketData?.value ?? 0)
-    );
+    const tokenNodes = sortTokenBalanceNodes([
+      nativeTokenNode,
+      ...splTokenNodes,
+    ]);
 
     // Construct and return the balances schema node
     return NodeBuilder.balances(address, this.id(), {

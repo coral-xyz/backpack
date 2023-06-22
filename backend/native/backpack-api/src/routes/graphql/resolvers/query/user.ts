@@ -183,11 +183,15 @@ export const userTypeResolvers: UserResolvers = {
    */
   async wallet(
     _parent: User,
-    { address }: UserWalletArgs,
+    { address, providerId }: UserWalletArgs,
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<Wallet | null> {
-    return ctx.dataSources.hasura.getWallet(ctx.authorization.userId!, address);
+    return ctx.dataSources.hasura.getWallet(
+      ctx.authorization.userId!,
+      address,
+      providerId ?? undefined
+    );
   },
 
   /**
