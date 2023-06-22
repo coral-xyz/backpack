@@ -7,6 +7,7 @@
     "deploy": "wrangler publish"
   },
   "dependencies": {
+    "@genesysgo/shadow-nft-generated-client": "1.0.1",
     "@project-serum/token": "^0.1.0",
     "@solana/web3.js": "^1.69.0",
     "hono": "^2.5.8"

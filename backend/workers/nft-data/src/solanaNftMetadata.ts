@@ -1,3 +1,4 @@
+import { Metadata } from "@genesysgo/shadow-nft-generated-client";
 import { metadata } from "@project-serum/token";
 import { PublicKey } from "@solana/web3.js";
 
@@ -74,20 +75,56 @@ async function fetchMetadataAccount(accountAddress: PublicKey, c: any) {
 }
 
 async function prepareResult(metadataAccountData: any, isShadow: boolean) {
-  const parsedMetadata = isShadow
-    ? ""
-    : metadata.decodeMetadata(Buffer.from(metadataAccountData, "base64"));
+  let jsonMetadata;
+  let parsedMetadata;
+  if (isShadow) {
+    parsedMetadata = Metadata.decode(
+      Buffer.from(metadataAccountData, "base64")
+    );
 
-  if (!parsedMetadata?.data?.uri) {
-    return null;
+    if (!parsedMetadata?.uri) {
+      return null;
+    }
+
+    const reconstructedUrl = reconstructUrlFromChainData(parsedMetadata.uri);
+    jsonMetadata = await (
+      await fetch(externalResourceUri(reconstructedUrl))
+    ).json();
+  } else {
+    parsedMetadata = metadata.decodeMetadata(
+      Buffer.from(metadataAccountData, "base64")
+    );
+
+    if (!parsedMetadata?.data?.uri) {
+      return null;
+    }
+
+    jsonMetadata = await (
+      await fetch(externalResourceUri(parsedMetadata.data.uri))
+    ).json();
   }
-
-  const jsonMetadata = await (
-    await fetch(externalResourceUri(parsedMetadata.data.uri))
-  ).json();
 
   return {
     metadataAccount: parsedMetadata,
     externalMetadata: jsonMetadata,
   };
+}
+
+function reconstructUrlFromChainData(url: any) {
+  // Construct the domain part of the URL string based on the prefix kind
+  let domain;
+  switch (url.prefix.kind) {
+    case "ShadowDrive":
+      domain = `https://shdw-drive.genesysgo.net`;
+      break;
+    // Shadow Drive only supported for now
+    default:
+      throw new Error("Invalid prefix type");
+  }
+
+  const urlString = `${domain}/${url.prefix.value.account.toString()}/${
+    url.object
+  }`;
+
+  return urlString;
 }

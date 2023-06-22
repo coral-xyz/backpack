@@ -4032,6 +4032,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@coral-xyz/borsh@npm:^0.28.0":
+  version: 0.28.0
+  resolution: "@coral-xyz/borsh@npm:0.28.0"
+  dependencies:
+    bn.js: ^5.1.2
+    buffer-layout: ^1.2.0
+  peerDependencies:
+    "@solana/web3.js": ^1.68.0
+  checksum: bc2b06b777f9ed43d3b886d2350826bd44d5b932c4fd4471af5956e8755236f5854938c890ee4986d88f61d1439e1d84e715c43dcb6dca4e76198c1ce8dc7a58
+  languageName: node
+  linkType: hard
+
 "@coral-xyz/chat-sdk@*, @coral-xyz/chat-sdk@workspace:packages/chat-sdk":
   version: 0.0.0-use.local
   resolution: "@coral-xyz/chat-sdk@workspace:packages/chat-sdk"
@@ -6721,6 +6733,18 @@ __metadata:
   version: 1.1.3
   resolution: "@gar/promisify@npm:1.1.3"
   checksum: 4059f790e2d07bf3c3ff3e0fec0daa8144fe35c1f6e0111c9921bd32106adaa97a4ab096ad7dab1e28ee6a9060083c4d1a4ada42a7f5f3f7a96b8812e2b757c1
+  languageName: node
+  linkType: hard
+
+"@genesysgo/shadow-nft-generated-client@npm:1.0.1":
+  version: 1.0.1
+  resolution: "@genesysgo/shadow-nft-generated-client@npm:1.0.1"
+  dependencies:
+    "@coral-xyz/borsh": ^0.28.0
+    "@solana/web3.js": ^1.77.3
+    bn.js: ^5.2.1
+    rimraf: ^3.0.2
+  checksum: e4c89cee560dbeb4a63f68b641771c243dc4ed644357e085db2ff6116fb5621507da6dc4ed93abc187528dbd2d4cf1178f6b14d1356bdc33c6b2187eb041c2be
   languageName: node
   linkType: hard
 
@@ -33808,6 +33832,7 @@ __metadata:
   resolution: "nft-data@workspace:backend/workers/nft-data"
   dependencies:
     "@cloudflare/workers-types": ^4.20221111.1
+    "@genesysgo/shadow-nft-generated-client": 1.0.1
     "@project-serum/token": ^0.1.0
     "@solana/web3.js": ^1.69.0
     hono: ^2.5.8
