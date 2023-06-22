@@ -1,19 +1,19 @@
 import type { Wallet } from "~types/types";
 
 import { Suspense, useCallback, useMemo, useState } from "react";
-import { FlatList, View, Alert } from "react-native";
+import { FlatList, View, Alert, ActivityIndicator } from "react-native";
 
 import { useSuspenseQuery } from "@apollo/client";
-import { BottomSheetTitle, PaddedListItemSeparator } from "@coral-xyz/tamagui";
+import {
+  BottomSheetTitle,
+  PaddedListItemSeparator,
+  YStack,
+} from "@coral-xyz/tamagui";
 import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { ListItemWallet } from "~components/ListItem";
-import {
-  LinkButton__ as LinkButton,
-  ScreenError,
-  ScreenLoading,
-} from "~components/index";
+import { LinkButton__ as LinkButton, ScreenError } from "~components/index";
 import { useWallets } from "~hooks/wallets";
 
 import { gql } from "~src/graphql/__generated__";
@@ -133,7 +133,9 @@ export function BottomSheetWalletPicker({ navigation }): JSX.Element {
       <Suspense
         fallback={
           <Wrapper>
-            <ScreenLoading />
+            <YStack f={1} ai="center" jc="center">
+              <ActivityIndicator />
+            </YStack>
           </Wrapper>
         }
       >

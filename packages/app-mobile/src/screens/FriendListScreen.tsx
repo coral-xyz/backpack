@@ -50,7 +50,7 @@ function Container({ navigation }: FriendListScreenProps): JSX.Element {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerSearchBarOptions: {
-        placeholder: "Search for tokens",
+        placeholder: "Search for your friends",
         onChangeText: (event) => {
           const text = event.nativeEvent.text.toLowerCase();
           setInputText(text);
