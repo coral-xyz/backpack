@@ -4,6 +4,7 @@ import {
   type Preferences,
 } from "@coral-xyz/common";
 
+import { NotificationsClient } from "../../background-clients/NotificationsClient";
 import { SecureUIClient } from "../../background-clients/SecureUIClient";
 import type { KeyringStore } from "../../store/keyring";
 import type { SecureStore } from "../../store/SecureStore";
@@ -25,18 +26,20 @@ export class UserService {
   private keyringStore: KeyringStore;
   private secureStore: SecureStore;
   private secureUIClient: SecureUIClient;
-  private notificationBroadcaster: TransportBroadcaster;
+  private notificationClient: NotificationsClient;
 
   constructor(interfaces: {
     secureServer: TransportReceiver<SECURE_USER_EVENTS>;
+    secureUIClient: TransportSender<SECURE_USER_EVENTS, "confirmation">;
     notificationBroadcaster: TransportBroadcaster;
     keyringStore: KeyringStore;
     secureStore: SecureStore;
-    secureUIClient: TransportSender<SECURE_USER_EVENTS, "confirmation">;
   }) {
     this.keyringStore = interfaces.keyringStore;
     this.secureStore = interfaces.secureStore;
-    this.notificationBroadcaster = interfaces.notificationBroadcaster;
+    this.notificationClient = new NotificationsClient(
+      interfaces.notificationBroadcaster
+    );
     this.secureUIClient = new SecureUIClient(interfaces.secureUIClient);
     this.destroy = interfaces.secureServer.setHandler(
       this.eventHandler.bind(this)
@@ -57,49 +60,52 @@ export class UserService {
     return handler && handler(request);
   };
 
+  private getUser = async (): Promise<
+    SecureEvent<"SECURE_USER_GET">["response"]
+  > => {
+    let response: SecureEvent<"SECURE_USER_GET">["response"] = {
+      keyringState: await this.keyringStore.state(),
+    };
+
+    try {
+      const activeUser = await this.secureStore.getActiveUser();
+      const preferences = await this.secureStore.getWalletDataForUser(
+        activeUser.uuid
+      );
+      response.user = { ...activeUser, preferences };
+    } catch (_e) {
+      null;
+    }
+
+    if (
+      response.keyringState === "unlocked" &&
+      this.keyringStore.activeUserKeyring
+    ) {
+      const publicKeys = await this.keyringStore.activeUserKeyring.publicKeys();
+      const activePubkeys = await this.keyringStore.activeWallets();
+      const activePublicKeys: Partial<Record<Blockchain, string>> =
+        Object.fromEntries(
+          activePubkeys.map((publicKey) => {
+            return [
+              this.keyringStore.activeUserKeyring.blockchainForPublicKey(
+                publicKey
+              ),
+              publicKey,
+            ];
+          })
+        );
+      response = { ...response, publicKeys, activePublicKeys };
+    }
+    return response;
+  };
+
   private handleUserGet: TransportHandler<"SECURE_USER_GET"> = async ({
     respond,
     error,
   }) => {
     try {
-      let response: SecureEvent<"SECURE_USER_GET">["response"] = {
-        keyringState: await this.keyringStore.state(),
-      };
-
-      try {
-        const activeUser = await this.secureStore.getActiveUser();
-        const preferences = await this.secureStore.getWalletDataForUser(
-          activeUser.uuid
-        );
-        response.user = { ...activeUser, preferences };
-      } catch (_e) {
-        null;
-      }
-
-      if (
-        response.keyringState === "unlocked" &&
-        this.keyringStore.activeUserKeyring
-      ) {
-        const publicKeys =
-          await this.keyringStore.activeUserKeyring.publicKeys();
-        const activePubkeys = await this.keyringStore.activeWallets();
-
-        const activePublicKeys: Partial<Record<Blockchain, string>> = {};
-        activePubkeys.forEach((pubKey) => {
-          const blockchain = Object.entries(publicKeys).find(
-            ([_blockchain, keyrings]) => {
-              return Object.values(keyrings).flat().includes(pubKey);
-            }
-          );
-          if (blockchain) {
-            activePublicKeys[blockchain[0]] = pubKey;
-          }
-        });
-        response = { ...response, publicKeys, activePublicKeys };
-      }
-
-      console.log("PCA", response);
-      return respond(response);
+      const user = await this.getUser();
+      return respond(user);
     } catch (e) {
       console.error("PCA", e);
       return error(e);
@@ -174,30 +180,27 @@ export class UserService {
 
   private handleUnlockKeyring: TransportHandler<"SECURE_USER_UNLOCK_KEYRING"> =
     async (event) => {
-      console.log("PCA user server handleUnlockKeyring");
       let uuid = event.request.uuid;
       let password = event.request.password;
       let keyringState = await this.keyringStore.state();
 
       const handleUnlocked = async () => {
         try {
-          const activeUser = await this.secureStore.getActiveUser();
-          const preferences = await this.secureStore.getWalletDataForUser(
-            activeUser.uuid
-          );
-          const blockchainActiveWallets =
-            await this.keyringStore.activeWallets();
-
-          await this.notificationBroadcaster.broadcast({
-            name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
-            data: {
-              activeUser,
-              blockchainActiveWallets,
-              ethereumConnectionUrl: preferences.ethereum.connectionUrl,
-              ethereumChainId: preferences.ethereum.chainId,
-              solanaConnectionUrl: preferences.solana.cluster,
-              solanaCommitment: preferences.solana.commitment,
+          const user = await this.getUser();
+          if (!user.user || !user.activePublicKeys) {
+            return event.error("No user found.");
+          }
+          await this.notificationClient.keyringUnlocked({
+            activeUser: {
+              jwt: user.user.jwt,
+              username: user.user.username,
+              uuid: user.user.uuid,
             },
+            blockchainActiveWallets: user.activePublicKeys,
+            ethereumConnectionUrl: user.user.preferences.ethereum.connectionUrl,
+            ethereumChainId: user.user.preferences.ethereum.chainId,
+            solanaConnectionUrl: user.user.preferences.solana.cluster,
+            solanaCommitment: user.user.preferences.solana.commitment,
           });
         } catch (e) {
           return event.error(e);
