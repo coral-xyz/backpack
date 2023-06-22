@@ -11,6 +11,21 @@ import {
   useStore,
   WEB_VIEW_EVENTS,
 } from "@coral-xyz/common";
+import { secureBackgroundSenderAtom } from "@coral-xyz/recoil";
+import {
+  extensionDB,
+  KeyringStore,
+  secureStore,
+} from "@coral-xyz/secure-background/legacyExport";
+import {
+  BackendNotificationBroadcaster,
+  LocalTransportReceiver,
+  LocalTransportSender,
+} from "@coral-xyz/secure-client";
+import { startSecureService } from "@coral-xyz/secure-client/service";
+import { SECURE_EVENTS } from "@coral-xyz/secure-client/types";
+import { SecureUI } from "@coral-xyz/secure-client/ui";
+import { EventEmitter as EventEmitter3 } from "eventemitter3";
 import { ErrorBoundary } from "react-error-boundary";
 import { WebView } from "react-native-webview";
 import { RecoilRoot } from "recoil";
@@ -24,6 +39,60 @@ import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import { RootNavigation } from "./navigation/RootNavigator";
 
 SplashScreen.preventAutoHideAsync();
+
+// SETUP SECURE BACKGROUND
+const events = new EventEmitter3();
+const keyringStore = new KeyringStore(events, secureStore);
+const notificationBroadcaster = new BackendNotificationBroadcaster(events);
+const secureBackgroundReceiver = new LocalTransportReceiver(events, {
+  request: "background-request",
+  response: "background-response",
+});
+const secureBackgroundSender = new LocalTransportSender(
+  {
+    address: "app-mobile",
+    name: "Backpack Mobile",
+    context: "mobile",
+  },
+  events,
+  { request: "background-request", response: "background-response" }
+);
+const secureUIBackgroundSender = new LocalTransportSender<
+  SECURE_EVENTS,
+  "confirmation"
+>(
+  {
+    address: "app-mobile-secure-background",
+    name: "Backpack Mobile",
+    context: "background",
+  },
+  events,
+  { request: "secureui-request", response: "secureui-response" }
+);
+const secureUIReceiver = new LocalTransportReceiver<
+  SECURE_EVENTS,
+  "confirmation"
+>(events, { request: "secureui-request", response: "secureui-response" });
+const secureUISender = new LocalTransportSender(
+  {
+    address: "app-mobile",
+    name: "Backpack Mobile",
+    context: "secureUI",
+  },
+  events,
+  { request: "background-request", response: "background-response" }
+);
+
+startSecureService(
+  {
+    notificationBroadcaster,
+    secureUIClient: secureUIBackgroundSender,
+    secureServer: secureBackgroundReceiver,
+    secureDB: extensionDB,
+  },
+  keyringStore
+);
+/// SETUP SECURE BACKGROUND
 
 export function App(): JSX.Element {
   const renderError = useCallback(
@@ -39,10 +108,18 @@ export function App(): JSX.Element {
     <ErrorBoundary fallbackRender={renderError}>
       <BackgroundHiddenWebView />
       <Suspense fallback={<FullScreenLoading />}>
-        <RecoilRoot>
+        <RecoilRoot
+          initializeState={({ set }) => {
+            set(secureBackgroundSenderAtom, secureBackgroundSender);
+          }}
+        >
           <Main />
         </RecoilRoot>
       </Suspense>
+      <SecureUI
+        secureUIReceiver={secureUIReceiver}
+        secureBackgroundSender={secureUISender}
+      />
     </ErrorBoundary>
   );
 }
