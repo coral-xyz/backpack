@@ -1,253 +1,207 @@
 import { SolanaTokenList } from "@coral-xyz/common";
 import { getATAAddressesSync } from "@saberhq/token-utils";
-import { PublicKey, SystemProgram } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import { ethers } from "ethers";
 
-import type { CoinGeckoPriceData } from "../clients/coingecko";
+import type { CoinGeckoPriceData } from "../../clients/coingecko";
 import {
   type HeliusGetAssetsByOwnerResponse,
   IN_MEM_COLLECTION_DATA_CACHE,
-} from "../clients/helius";
-import type { TensorActingListingsResponse } from "../clients/tensor";
-import type { ApiContext } from "../context";
-import { NodeBuilder } from "../nodes";
-import {
-  type BalanceFiltersInput,
-  type Balances,
-  type Collection,
-  type Listing,
-  type Nft,
-  type NftAttribute,
-  type NftConnection,
-  type NftFiltersInput,
+} from "../../clients/helius";
+import type { TensorActingListingsResponse } from "../../clients/tensor";
+import type { ApiContext } from "../../context";
+import { NodeBuilder } from "../../nodes";
+import type {
+  BalanceFiltersInput,
+  Balances,
+  Collection,
+  Listing,
+  Nft,
+  NftAttribute,
+  NftConnection,
+  NftFiltersInput,
   ProviderId,
-  type TokenBalance,
-  type Transaction,
-  type TransactionConnection,
-  type TransactionFiltersInput,
-} from "../types";
-import { calculateBalanceAggregate, createConnection } from "../utils";
+  TokenBalance,
+  Transaction,
+  TransactionConnection,
+  TransactionFiltersInput,
+} from "../../types";
+import { calculateBalanceAggregate, createConnection } from "../../utils";
+import type { BlockchainDataProvider } from "..";
 
-import type { BlockchainDataProvider } from ".";
+import { SolanaRpc } from "./rpc";
 
 /**
- * Solana blockchain implementation for the common API.
+ * Solana blockchain implementation for the common API sourced by API indexes.
  * @export
  * @class Solana
+ * @extends {SolanaRpc}
  * @implements {BlockchainDataProvider}
  */
-export class Solana implements BlockchainDataProvider {
-  readonly #ctx?: ApiContext;
-
+export class Solana extends SolanaRpc implements BlockchainDataProvider {
   constructor(ctx?: ApiContext) {
-    this.#ctx = ctx;
-  }
-
-  /**
-   * Chain ID enum variant.
-   * @returns {ProviderId}
-   * @memberof Solana
-   */
-  id(): ProviderId {
-    return ProviderId.Solana;
-  }
-
-  /**
-   * Native coin decimals.
-   * @returns {number}
-   * @memberof Solana
-   */
-  decimals(): number {
-    return 9;
-  }
-
-  /**
-   * Default native address.
-   * @returns {string}
-   * @memberof Solana
-   */
-  defaultAddress(): string {
-    return SystemProgram.programId.toBase58();
-  }
-
-  /**
-   * Logo URL of the native coin.
-   * @returns {string}
-   * @memberof Solana
-   */
-  logo(): string {
-    return SolanaTokenList[this.defaultAddress()].logo!;
-  }
-
-  /**
-   * The display name of the data provider.
-   * @returns {string}
-   * @memberof Solana
-   */
-  name(): string {
-    return "Solana";
-  }
-
-  /**
-   * Symbol of the native token.
-   * @returns {string}
-   * @memberof Solana
-   */
-  symbol(): string {
-    return "SOL";
+    super(ctx);
   }
 
   /**
    * Fetch and aggregate the native and token balances and
    * prices for the argued wallet address.
+   * @override
    * @param {string} address
    * @param {BalanceFiltersInput} [filters]
    * @returns {Promise<Balances>}
    * @memberof Solana
    */
-  async getBalancesForAddress(
+  override async getBalancesForAddress(
     address: string,
     filters?: BalanceFiltersInput
   ): Promise<Balances> {
-    if (!this.#ctx) {
+    if (!this.ctx) {
       throw new Error("API context object not available");
     }
 
-    // Get the address balances and filter out the NFTs and empty ATAs
-    const balances = await this.#ctx.dataSources.helius.getBalances(address);
-    const nonEmptyOrNftTokens = balances.tokens.filter(
-      (t) => t.amount > 0 && !(t.amount === 1 && t.decimals === 0)
-    );
+    try {
+      // Get the address balances and filter out the NFTs and empty ATAs
+      const balances = await this.ctx.dataSources.helius.getBalances(address);
+      const nonEmptyOrNftTokens = balances.tokens.filter(
+        (t) => t.amount > 0 && !(t.amount === 1 && t.decimals === 0)
+      );
 
-    // Get the list of SPL mints and fetch their Coingecko IDs from the
-    // in-memory Jupiter token list
-    const nonNftMints = nonEmptyOrNftTokens.map((t) => t.mint);
-    const meta = nonNftMints.reduce<Map<string, string>>((acc, curr) => {
-      const entry = SolanaTokenList[curr];
-      if (entry && entry.coingeckoId) {
-        acc.set(curr, entry.coingeckoId);
-      }
-      return acc;
-    }, new Map());
+      // Get the list of SPL mints and fetch their Coingecko IDs from the
+      // in-memory Jupiter token list
+      const nonNftMints = nonEmptyOrNftTokens.map((t) => t.mint);
+      const meta = nonNftMints.reduce<Map<string, string>>((acc, curr) => {
+        const entry = SolanaTokenList[curr];
+        if (entry && entry.coingeckoId) {
+          acc.set(curr, entry.coingeckoId);
+        }
+        return acc;
+      }, new Map());
 
-    // Query market data for SOL and each of the found SPL token IDs
-    const ids = [...meta.values()];
-    const prices = await this.#ctx.dataSources.coinGecko.getPrices([
-      "solana",
-      ...ids,
-    ]);
+      // Query market data for SOL and each of the found SPL token IDs
+      const ids = [...meta.values()];
+      const prices = await this.ctx.dataSources.coinGecko.getPrices([
+        "solana",
+        ...ids,
+      ]);
 
-    // Build the token balance node for the native balance of the wallet
-    const nativeDisplayAmount = ethers.utils.formatUnits(
-      balances.nativeBalance,
-      this.decimals()
-    );
+      // Build the token balance node for the native balance of the wallet
+      const nativeDisplayAmount = ethers.utils.formatUnits(
+        balances.nativeBalance,
+        this.decimals()
+      );
 
-    const nativeTokenNode = NodeBuilder.tokenBalance(
-      this.id(),
-      {
-        address,
-        amount: balances.nativeBalance.toString(),
-        decimals: this.decimals(),
-        displayAmount: nativeDisplayAmount,
-        marketData: NodeBuilder.marketData("solana", {
-          lastUpdatedAt: prices.solana.last_updated,
-          percentChange: prices.solana.price_change_percentage_24h,
-          price: prices.solana.current_price,
-          sparkline: prices.solana.sparkline_in_7d.price,
-          usdChange: prices.solana.price_change_24h,
-          value: parseFloat(nativeDisplayAmount) * prices.solana.current_price,
-          valueChange:
-            parseFloat(nativeDisplayAmount) * prices.solana.price_change_24h,
-        }),
-        token: this.defaultAddress(),
-        tokenListEntry: NodeBuilder.tokenListEntry(
-          SolanaTokenList[this.defaultAddress()]
-        ),
-      },
-      true
-    );
+      const nativeTokenNode = NodeBuilder.tokenBalance(
+        this.id(),
+        {
+          address,
+          amount: balances.nativeBalance.toString(),
+          decimals: this.decimals(),
+          displayAmount: nativeDisplayAmount,
+          marketData: NodeBuilder.marketData("solana", {
+            lastUpdatedAt: prices.solana.last_updated,
+            percentChange: prices.solana.price_change_percentage_24h,
+            price: prices.solana.current_price,
+            sparkline: prices.solana.sparkline_in_7d.price,
+            usdChange: prices.solana.price_change_24h,
+            value:
+              parseFloat(nativeDisplayAmount) * prices.solana.current_price,
+            valueChange:
+              parseFloat(nativeDisplayAmount) * prices.solana.price_change_24h,
+          }),
+          token: this.defaultAddress(),
+          tokenListEntry: NodeBuilder.tokenListEntry(
+            SolanaTokenList[this.defaultAddress()]
+          ),
+        },
+        true
+      );
 
-    // Map each SPL token into their `TokenBalance` return type object
-    const splTokenNodes = nonEmptyOrNftTokens.reduce<TokenBalance[]>(
-      (acc, curr) => {
-        const id = meta.get(curr.mint);
-        const p: CoinGeckoPriceData | null = prices[id ?? ""] ?? null;
+      // Map each SPL token into their `TokenBalance` return type object
+      const splTokenNodes = nonEmptyOrNftTokens.reduce<TokenBalance[]>(
+        (acc, curr) => {
+          const id = meta.get(curr.mint);
+          const p: CoinGeckoPriceData | null = prices[id ?? ""] ?? null;
 
-        const displayAmount = ethers.utils.formatUnits(
-          curr.amount,
-          curr.decimals
-        );
+          const displayAmount = ethers.utils.formatUnits(
+            curr.amount,
+            curr.decimals
+          );
 
-        const marketData =
-          p && id
-            ? NodeBuilder.marketData(id, {
-                lastUpdatedAt: p.last_updated,
-                percentChange: p.price_change_percentage_24h,
-                price: p.current_price,
-                sparkline: p.sparkline_in_7d.price,
-                usdChange: p.price_change_24h,
-                value: parseFloat(displayAmount) * p.current_price,
-                valueChange: parseFloat(displayAmount) * p.price_change_24h,
-              })
+          const marketData =
+            p && id
+              ? NodeBuilder.marketData(id, {
+                  lastUpdatedAt: p.last_updated,
+                  percentChange: p.price_change_percentage_24h,
+                  price: p.current_price,
+                  sparkline: p.sparkline_in_7d.price,
+                  usdChange: p.price_change_24h,
+                  value: parseFloat(displayAmount) * p.current_price,
+                  valueChange: parseFloat(displayAmount) * p.price_change_24h,
+                })
+              : undefined;
+
+          const tokenListEntry = SolanaTokenList[curr.mint]
+            ? NodeBuilder.tokenListEntry(SolanaTokenList[curr.mint])
             : undefined;
 
-        const tokenListEntry = SolanaTokenList[curr.mint]
-          ? NodeBuilder.tokenListEntry(SolanaTokenList[curr.mint])
-          : undefined;
+          if (filters?.marketListedTokensOnly && !marketData) {
+            return acc;
+          }
 
-        if (filters?.marketListedTokensOnly && !marketData) {
-          return acc;
-        }
+          return [
+            ...acc,
+            NodeBuilder.tokenBalance(
+              this.id(),
+              {
+                address: curr.tokenAccount,
+                amount: curr.amount.toString(),
+                decimals: curr.decimals,
+                displayAmount,
+                marketData,
+                token: curr.mint,
+                tokenListEntry,
+              },
+              false
+            ),
+          ];
+        },
+        []
+      );
 
-        return [
-          ...acc,
-          NodeBuilder.tokenBalance(
-            this.id(),
-            {
-              address: curr.tokenAccount,
-              amount: curr.amount.toString(),
-              decimals: curr.decimals,
-              displayAmount,
-              marketData,
-              token: curr.mint,
-              tokenListEntry,
-            },
-            false
-          ),
-        ];
-      },
-      []
-    );
+      // Combine and sort the native and SPL token nodes by total market value decreasing
+      const tokenNodes = [nativeTokenNode, ...splTokenNodes].sort(
+        (a, b) => (b.marketData?.value ?? 0) - (a.marketData?.value ?? 0)
+      );
 
-    // Combine and sort the native and SPL token nodes by total market value decreasing
-    const tokenNodes = [nativeTokenNode, ...splTokenNodes].sort(
-      (a, b) => (b.marketData?.value ?? 0) - (a.marketData?.value ?? 0)
-    );
-
-    return NodeBuilder.balances(address, this.id(), {
-      aggregate: calculateBalanceAggregate(address, tokenNodes),
-      tokens: createConnection(tokenNodes, false, false),
-    });
+      return NodeBuilder.balances(address, this.id(), {
+        aggregate: calculateBalanceAggregate(address, tokenNodes),
+        tokens: createConnection(tokenNodes, false, false),
+      });
+    } catch (err) {
+      console.error(`Falling back to RPC: ${JSON.stringify(err)}`);
+      return super.getBalancesForAddress(address, filters);
+    }
   }
 
   /**
    * Get a list of NFT data for tokens owned by the argued address.
+   * @override
    * @param {string} address
    * @param {NftFiltersInput} [filters]
    * @returns {Promise<NftConnection>}
    * @memberof Solana
    */
-  async getNftsForAddress(
+  override async getNftsForAddress(
     address: string,
     filters?: NftFiltersInput
   ): Promise<NftConnection> {
-    if (!this.#ctx) {
+    if (!this.ctx) {
       throw new Error("API context object not available");
     }
 
     // Get the list of digital assets (NFTs) owned by the argued address from Helius DAS API.
-    const response = await this.#ctx.dataSources.helius.rpc.getAssetsByOwner(
+    const response = await this.ctx.dataSources.helius.rpc.getAssetsByOwner(
       address
     );
 
@@ -265,7 +219,7 @@ export class Solana implements BlockchainDataProvider {
     // listing data array if the request fails
     let listings: TensorActingListingsResponse;
     try {
-      listings = await this.#ctx.dataSources.tensor.getActiveListingsForWallet(
+      listings = await this.ctx.dataSources.tensor.getActiveListingsForWallet(
         address
       );
     } catch (err) {
@@ -274,7 +228,7 @@ export class Solana implements BlockchainDataProvider {
     }
 
     // Create a map of collection address to name and image for reference
-    const collectionMap = await _getCollectionMetadatas(this.#ctx, items);
+    const collectionMap = await _getCollectionMetadatas(this.ctx, items);
 
     // Create a map of associated token account addresses
     const atas = getATAAddressesSync({
@@ -287,7 +241,8 @@ export class Solana implements BlockchainDataProvider {
 
     // Map all NFT metadatas into their return type with possible collection data
     const nodes: Nft[] = items.map((item) => {
-      const collection = this._parseCollectionMetadata(
+      const collection = _parseCollectionMetadata(
+        this.id(),
         collectionMap,
         item.grouping.find((g) => g.group_key === "collection")?.group_value
       );
@@ -310,7 +265,7 @@ export class Solana implements BlockchainDataProvider {
             this.decimals()
           ),
           source: tensorListing.tx.source,
-          url: this.#ctx!.dataSources.tensor.getListingUrl(item.id),
+          url: this.ctx!.dataSources.tensor.getListingUrl(item.id),
         });
       }
 
@@ -334,20 +289,21 @@ export class Solana implements BlockchainDataProvider {
 
   /**
    * Get the transaction history with parameters for the argued address.
+   * @override
    * @param {string} address
    * @param {TransactionFiltersInput} [filters]
    * @returns {Promise<TransactionConnection>}
-   * @memberof Ethereum
+   * @memberof Solana
    */
-  async getTransactionsForAddress(
+  override async getTransactionsForAddress(
     address: string,
     filters?: TransactionFiltersInput
   ): Promise<TransactionConnection> {
-    if (!this.#ctx) {
+    if (!this.ctx) {
       throw new Error("API context object not available");
     }
 
-    const resp = await this.#ctx.dataSources.helius.getTransactionHistory(
+    const resp = await this.ctx.dataSources.helius.getTransactionHistory(
       address,
       filters?.before ?? undefined,
       filters?.after ?? undefined,
@@ -385,29 +341,6 @@ export class Solana implements BlockchainDataProvider {
     });
 
     return createConnection(nodes, false, false); // FIXME: next and previous page
-  }
-
-  /**
-   * Parse a potential collection data object from the on-chain metadata for an NFT.
-   * @private
-   * @param {Map<string, { name?: string; image?: string }>} collectionMap
-   * @param {string} [groupingKey]
-   * @returns {(Collection | undefined)}
-   * @memberof Solana
-   */
-  private _parseCollectionMetadata(
-    collectionMap: Map<string, { name?: string; image?: string }>,
-    groupingKey?: string
-  ): Collection | undefined {
-    const mapValue = groupingKey ? collectionMap.get(groupingKey) : undefined;
-    return mapValue
-      ? NodeBuilder.nftCollection(this.id(), {
-          address: groupingKey!,
-          image: mapValue?.image,
-          name: mapValue?.name,
-          verified: true,
-        })
-      : undefined;
   }
 }
 
@@ -473,4 +406,28 @@ async function _getCollectionMetadatas(
   }
 
   return collectionMap;
+}
+
+/**
+ * Parse a potential collection data object from the on-chain metadata for an NFT.
+ * @private
+ * @param {ProviderId} id
+ * @param {Map<string, { name?: string; image?: string }>} collectionMap
+ * @param {string} [groupingKey]
+ * @returns {(Collection | undefined)}
+ */
+function _parseCollectionMetadata(
+  id: ProviderId,
+  collectionMap: Map<string, { name?: string; image?: string }>,
+  groupingKey?: string
+): Collection | undefined {
+  const mapValue = groupingKey ? collectionMap.get(groupingKey) : undefined;
+  return mapValue
+    ? NodeBuilder.nftCollection(id, {
+        address: groupingKey!,
+        image: mapValue?.image,
+        name: mapValue?.name,
+        verified: true,
+      })
+    : undefined;
 }
