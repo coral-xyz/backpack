@@ -135,7 +135,7 @@ export async function getSubjectFromVerifiedJwt(
  * @returns {(ProviderId | never)}
  */
 export function inferProviderIdFromString(val: string): ProviderId | never {
-  switch (val) {
+  switch (val.toLowerCase()) {
     case "ethereum": {
       return ProviderId.Ethereum;
     }

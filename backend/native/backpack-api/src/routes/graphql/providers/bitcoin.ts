@@ -186,7 +186,7 @@ export class Bitcoin implements BlockchainDataProvider {
     const nodes: Transaction[] = resp.txs.map((t) =>
       NodeBuilder.transaction(this.id(), {
         block: t.block_index,
-        fee: t.fee.toString(),
+        fee: `${ethers.utils.formatUnits(t.fee, this.decimals())} BTC`,
         hash: t.hash,
         raw: t,
         timestamp: new Date(t.time).toISOString(),
