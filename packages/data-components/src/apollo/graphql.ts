@@ -83,8 +83,21 @@ export type Friend = Node & {
   avatar: Scalars["String"];
   /** Globally unique identifier for a friend of a user. */
   id: Scalars["ID"];
+  /** The primary wallets associated with the user. */
+  primaryWallets: Array<FriendPrimaryWallet>;
   /** The Backpack username of the friend. */
   username: Scalars["String"];
+};
+
+/** Abbreviated wallet information for the primary wallet(s) of a friend. */
+export type FriendPrimaryWallet = Node & {
+  __typename?: "FriendPrimaryWallet";
+  /** The public key of the wallet. */
+  address: Scalars["String"];
+  /** Globally unique identifier for the friend's primary wallet. */
+  id: Scalars["ID"];
+  /** The ID of the provider associated with the wallet. */
+  provider: Provider;
 };
 
 /** Friend request data for a user. */
@@ -538,6 +551,7 @@ export type UserNotificationsArgs = {
  */
 export type UserWalletArgs = {
   address: Scalars["String"];
+  providerId?: InputMaybe<ProviderId>;
 };
 
 /**
