@@ -100,20 +100,25 @@ function Container({ navigation }: FriendListScreenProps): JSX.Element {
   return (
     <FlatList
       style={{
-        opacity: isPending ? 0.9 : 1,
+        opacity: isPending ? 0.8 : 1,
         paddingTop: 16,
         paddingHorizontal: 16,
       }}
-      contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}
+      contentContainerStyle={{
+        flexGrow: filteredResults.length === 0 ? 1 : undefined,
+        paddingBottom: insets.bottom + 32,
+      }}
+      scrollEnabled={filteredResults.length > 0}
+      contentInsetAdjustmentBehavior="automatic"
       data={filteredResults}
       renderItem={renderItem}
       ItemSeparatorComponent={Separator}
       keyExtractor={keyExtractor}
       ListEmptyComponent={
         <ScreenEmptyList
-          title="You have no friends!"
-          subtitle="Go add some"
-          iconName="settings"
+          title="No results"
+          subtitle="Add some friends to see them here."
+          iconName="person-add"
         />
       }
     />

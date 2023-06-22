@@ -315,7 +315,7 @@ function CreateOrRecoverAccountScreen({
           styles.container,
           {
             marginTop: insets.top,
-            marginBottom: insets.bottom,
+            // marginBottom: insets.bottom,
             paddingLeft: insets.left,
             paddingRight: insets.right,
           },
@@ -864,26 +864,21 @@ function MnemonicSearchScreen({
     return <FullScreenLoading />;
   }
 
+  const subtitle =
+    serverPublicKeys.length === 1
+      ? `We couldn't find the public key
+            ${formatWalletAddress(serverPublicKeys[0].publicKey)} using your
+            recovery phrase.`
+      : `We couldn't find any wallets using your recovery phrase.`;
+
   return (
-    <Screen>
-      <Box>
-        <Header text="Unable to recover wallet" />
-        {serverPublicKeys.length === 1 ? (
-          <SubtextParagraph>
-            We couldn't find the public key
-            {formatWalletAddress(serverPublicKeys[0].publicKey)} using your
-            recovery phrase.
-          </SubtextParagraph>
-        ) : (
-          <SubtextParagraph>
-            We couldn't find any wallets using your recovery phrase.
-          </SubtextParagraph>
-        )}
-      </Box>
-      <Box>
-        <PrimaryButton label="Retry" onPress={() => navigation.goBack()} />
-      </Box>
-    </Screen>
+    <OnboardingScreen title="Unable to recover wallet" subtitle={subtitle}>
+      <Box />
+      <PrimaryButton
+        label="Go back & retry"
+        onPress={() => navigation.goBack()}
+      />
+    </OnboardingScreen>
   );
 }
 
