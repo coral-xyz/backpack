@@ -5,7 +5,7 @@ import type {
 } from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -19,6 +19,7 @@ import {
   ViewStyle,
   Alert,
   ActivityIndicator,
+  TextInput,
 } from "react-native";
 
 import {
@@ -1059,6 +1060,8 @@ function OnboardingCreatePasswordScreen({
     navigation.push("CreateAccountLoading");
   };
 
+  const nextInputRef = useRef<TextInput>(null);
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -1077,6 +1080,9 @@ function OnboardingCreatePasswordScreen({
               placeholder="Password"
               control={control}
               returnKeyType="next"
+              onSubmitEditing={() => {
+                nextInputRef.current?.focus();
+              }}
               rules={{
                 required: "You must specify a password",
                 minLength: {
@@ -1088,10 +1094,12 @@ function OnboardingCreatePasswordScreen({
             <ErrorMessage for={errors.password} />
           </Margin>
           <PasswordInput
+            ref={nextInputRef}
             name="passwordConfirmation"
             placeholder="Confirm Password"
-            returnKeyType="done"
             control={control}
+            returnKeyType="done"
+            onSubmitEditing={handleSubmit(onSubmit)}
             rules={{
               validate: (val: string) => {
                 if (val !== watch("password")) {

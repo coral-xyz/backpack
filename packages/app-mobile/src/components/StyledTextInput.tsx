@@ -1,3 +1,4 @@
+import { forwardRef, Ref } from "react";
 import type { TextInputProps } from "react-native";
 import { View, StyleSheet, TextInput as RNTextInput } from "react-native";
 
@@ -60,20 +61,24 @@ export function UsernameInput({
   );
 }
 
-export function StyledTextInput({
-  style,
-  value,
-  placeholder,
-  onChangeText,
-  onBlur,
-  multiline,
-  numberOfLines,
-  ...props
-}: TextInputProps): JSX.Element {
+export const StyledTextInput = forwardRef(function StyledTextInput(
+  {
+    style,
+    value,
+    placeholder,
+    onChangeText,
+    onBlur,
+    multiline,
+    numberOfLines,
+    ...props
+  }: TextInputProps,
+  ref: Ref<RNTextInput>
+): JSX.Element {
   const theme = useTheme();
 
   return (
     <RNTextInput
+      ref={ref}
       style={[
         {
           backgroundColor: theme.custom.colors.textBackground,
@@ -104,7 +109,7 @@ export function StyledTextInput({
       {...props}
     />
   );
-}
+});
 
 export function SearchInput({ style, ...props }: TextInputProps): JSX.Element {
   const theme = useTheme();
