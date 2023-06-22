@@ -10,6 +10,7 @@ import {
   type Notification,
   type NotificationConnection,
   type NotificationFiltersInput,
+  type ProviderId,
   type User,
   type Wallet,
   type WalletConnection,
@@ -82,8 +83,9 @@ export class Hasura {
       throw new GraphQLError("Failed to create new notification");
     }
 
-    return NodeBuilder.notification(resp.insert_auth_notifications_one.id, {
+    return NodeBuilder.notification({
       body: b,
+      dbId: resp.insert_auth_notifications_one.id,
       source,
       title,
       timestamp: timestamp.toISOString(),
@@ -158,6 +160,10 @@ export class Hasura {
           {
             id: true,
             username: true,
+            public_keys: [
+              { where: { is_primary: { _eq: true } } },
+              { blockchain: true, public_key: true },
+            ],
           },
         ],
       },
@@ -167,6 +173,19 @@ export class Hasura {
     return detailsResp.auth_users.map((u) =>
       NodeBuilder.friend(u.id, {
         avatar: `https://swr.xnfts.dev/avatars/${u.username}`,
+        primaryWallets: u.public_keys.map((pk) => {
+          const provider = getProviderForId(
+            inferProviderIdFromString(pk.blockchain)
+          );
+          return NodeBuilder.friendPrimaryWallet(u.id as string, {
+            address: pk.public_key,
+            provider: NodeBuilder.provider({
+              logo: provider.logo(),
+              name: provider.name(),
+              providerId: provider.id(),
+            }),
+          });
+        }),
         username: u.username as string,
       })
     );
@@ -268,8 +287,9 @@ export class Hasura {
 
     // Create the list of notification type nodes for the connection
     const nodes = resp.auth_notifications.map((n) =>
-      NodeBuilder.notification(n.id, {
+      NodeBuilder.notification({
         body: n.body,
+        dbId: n.id,
         source: n.xnft_id,
         timestamp: new Date(n.timestamp as string).toISOString(),
         title: n.title,
@@ -337,10 +357,15 @@ export class Hasura {
    * by the user ID in the database.
    * @param {string} id
    * @param {string} address
+   * @param {ProviderId} [providerId]
    * @returns {Promise<Wallet | null>}
    * @memberof Hasura
    */
-  async getWallet(id: string, address: string): Promise<Wallet | null> {
+  async getWallet(
+    id: string,
+    address: string,
+    providerId?: ProviderId
+  ): Promise<Wallet | null> {
     // Query Hasura for a single public key owned by the argued user ID
     // and matches the argued public key address
     const resp = await this.#chain("query")(
@@ -368,7 +393,9 @@ export class Hasura {
     }
 
     const { blockchain, created_at, is_primary } = resp.auth_public_keys[0];
-    const provider = getProviderForId(inferProviderIdFromString(blockchain));
+    const provider = getProviderForId(
+      providerId ?? inferProviderIdFromString(blockchain)
+    );
 
     return NodeBuilder.wallet(provider.id(), {
       address,

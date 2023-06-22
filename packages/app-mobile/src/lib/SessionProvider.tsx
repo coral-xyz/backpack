@@ -1,3 +1,5 @@
+import type { Wallet } from "@coral-xyz/recoil";
+
 import {
   createContext,
   useState,
@@ -7,13 +9,15 @@ import {
   useEffect,
 } from "react";
 
-import * as SecureStore from "expo-secure-store";
+// import * as SecureStore from "expo-secure-store";
 
-import { UI_RPC_METHOD_KEYRING_STORE_LOCK, getLogger } from "@coral-xyz/common";
+import {
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_KEYRING_RESET,
+  UI_RPC_METHOD_KEYRING_STORE_LOCK,
+} from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const logger = getLogger("debug2:SessionProvider");
 
 const key = "@@session";
 
@@ -30,16 +34,15 @@ export async function setTokenAsync(token: string) {
 }
 
 type TokenType = string | null;
-type AppStateType = "onboardingStarted" | "onboardingComplete" | null;
-
-type ActiveWallet = {
-  publicKey: string;
-  blockchain: string;
-};
+type AppStateType =
+  | "onboardingStarted"
+  | "onboardingComplete"
+  | "isAddingAccount"
+  | null;
 
 type SessionContextType = {
-  activeWallet: ActiveWallet | null;
-  setActiveWallet: (wallet: ActiveWallet) => void;
+  activeWallet: Wallet | null;
+  setActiveWallet: (wallet: Wallet) => Promise<void>;
   reset: () => void;
   token: TokenType;
   setAuthToken: (token: string) => void;
@@ -57,7 +60,7 @@ type SessionContextType = {
 
 const SessionContext = createContext<SessionContextType>({
   activeWallet: null,
-  setActiveWallet: () => null,
+  setActiveWallet: async () => {},
   reset: () => null,
   token: null,
   setAuthToken: () => null,
@@ -73,22 +76,34 @@ export const SessionProvider = ({
   children: JSX.Element;
 }): JSX.Element => {
   const background = useBackgroundClient();
-  const [activeWallet, setActiveWallet] = useState<ActiveWallet | null>(null);
+  // eslint-disable-next-line react/hook-use-state
+  const [activeWallet, setActiveWallet_] = useState<Wallet | null>(null);
   const [token, setToken] = useState<TokenType>(null);
   const [appState, setAppState] = useState<AppStateType>(null);
-  logger.debug("SessionProvider:activeWallet", activeWallet);
-  logger.debug("SessionProvider:token", token);
-  logger.debug("SessionProvider:appState", appState);
 
   // on app load
   useEffect(() => {
     getTokenAsync().then((token) => {
-      logger.debug("SessionProvider:getTokenAsync:token", token);
+      console.log("SessionProvider:getTokenAsync:token", token);
       if (token) {
         setToken(token);
       }
     });
   }, []);
+
+  const setActiveWallet = useCallback(
+    async (wallet: Wallet) => {
+      setActiveWallet_(wallet);
+      // recoil is super slow so we update the active wallet in memory first, then use this as a side-effect
+      if (activeWallet?.publicKey !== wallet.publicKey) {
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+          params: [wallet.publicKey, wallet.blockchain],
+        });
+      }
+    },
+    [background, activeWallet]
+  );
 
   const setAuthToken = useCallback((token: string) => {
     setTokenAsync(token);
@@ -113,26 +128,13 @@ export const SessionProvider = ({
   );
 
   const reset = useCallback(async () => {
-    // TODO: don't manually specify this list of keys
-    // ^^ this was done before peter's time so no idea
-    const stores = [
-      "keyring-store",
-      "keyname-store",
-      "wallet-data",
-      "nav-store7",
-    ];
-
-    for (const store of stores) {
-      try {
-        await SecureStore.deleteItemAsync(store);
-      } catch (err) {
-        console.error(err);
-        // ignore
-      }
-    }
+    await background.request({
+      method: UI_RPC_METHOD_KEYRING_RESET,
+      params: [],
+    });
 
     lockKeystore();
-  }, [lockKeystore]);
+  }, [background, lockKeystore]);
 
   const contextValue = useMemo(
     () => ({
@@ -158,8 +160,6 @@ export const SessionProvider = ({
       unlockKeystore,
     ]
   );
-
-  logger.debug("debug1:aSessionProvidder:activeWallet", activeWallet);
 
   return (
     <SessionContext.Provider value={contextValue}>

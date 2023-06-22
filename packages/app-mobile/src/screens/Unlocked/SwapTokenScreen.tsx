@@ -223,13 +223,16 @@ function CurrencyInputBox({
   children: React.ReactNode;
   direction: Direction;
 }): JSX.Element {
-  const { exceedsBalance } = useSwapContext();
+  const { exceedsBalance, isLoadingRoutes, isLoadingTransactions } =
+    useSwapContext();
+
+  const isLoading = isLoadingTransactions || isLoadingRoutes;
   return (
     <BoxContainer
       hasError={direction === Direction.From ? exceedsBalance : false}
     >
       <XStack ai="center" jc="space-between">
-        <YStack f={1} pr={16}>
+        <YStack f={1} pr={16} opacity={isLoading ? 0.4 : 1}>
           <StyledText mb={4} fontSize="$xs" color="$baseTextMedEmphasis">
             {direction === Direction.From ? "You pay" : "You receive"}
           </StyledText>
@@ -484,6 +487,10 @@ function ConfirmSwapButton({ onPress }: { onPress: () => void }): JSX.Element {
   } = useSwapContext();
   const tokenAccounts = useJupiterOutputTokens(fromMint);
 
+  // Parameters aren't all entered or the swap data is loading
+  const isIncomplete =
+    !fromAmount || !toAmount || isLoadingRoutes || isLoadingTransactions;
+
   if (fromMint === toMint) {
     return <DangerButton label="Invalid swap" disabled />;
   } else if (exceedsBalance) {
@@ -502,10 +509,6 @@ function ConfirmSwapButton({ onPress }: { onPress: () => void }): JSX.Element {
   } else {
     label = "Review";
   }
-
-  // Parameters aren't all entered or the swap data is loading
-  const isIncomplete =
-    !fromAmount || !toAmount || isLoadingRoutes || isLoadingTransactions;
 
   return (
     <PrimaryButton label={label} disabled={isIncomplete} onPress={onPress} />

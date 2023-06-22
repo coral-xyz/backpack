@@ -38,7 +38,7 @@ export function App(): JSX.Element {
   return (
     <ErrorBoundary fallbackRender={renderError}>
       <BackgroundHiddenWebView />
-      <Suspense fallback={<FullScreenLoading label="loading recoil..." />}>
+      <Suspense fallback={<FullScreenLoading />}>
         <RecoilRoot>
           <Main />
         </RecoilRoot>
@@ -77,7 +77,7 @@ function Main(): JSX.Element | null {
     >
       {webviewLoaded ? (
         <Providers>
-          <StatusBar />
+          <StatusBar style="dark" />
           <RootNavigation colorScheme={theme.colorScheme as "dark" | "light"} />
         </Providers>
       ) : (
@@ -116,7 +116,7 @@ function BackgroundHiddenWebView(): JSX.Element {
         // }}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
-          // maybeParseLog(msg);
+          maybeParseLog(msg);
           if (msg.type === BACKGROUND_SERVICE_WORKER_READY) {
             // @ts-expect-error
             setInjectJavaScript(ref.current?.injectJavaScript);

@@ -1,10 +1,10 @@
-import type { PublicKey, Wallet } from "~types/types";
+import type { Wallet } from "~types/types";
 
 import { ActivityIndicator, Alert, Pressable, Image } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
 
-import { Blockchain, formatWalletAddress } from "@coral-xyz/common";
+import { formatWalletAddress } from "@coral-xyz/common";
 import {
   ListItem,
   StyledText,
@@ -14,12 +14,15 @@ import {
 } from "@coral-xyz/tamagui";
 
 import {
+  IconCheckmark,
   ArrowRightIcon,
   IconCheckmarkBold,
   WarningIcon,
 } from "~components/Icon";
 import { PriceChangePill } from "~components/Pill";
+import { Avatar } from "~components/UserAvatar";
 import { BlockchainLogo } from "~components/index";
+import { SettingsRow } from "~screens/Unlocked/Settings/components/SettingsRow";
 
 export {
   _ListItemOneLine,
@@ -56,19 +59,6 @@ const CopyPublicKey = ({ publicKey }: { publicKey: string }) => {
   );
 };
 
-type ListItemWalletProps = Wallet & {
-  onPressEdit: (
-    b: Blockchain,
-    w: Pick<Wallet, "name" | "publicKey" | "type">
-  ) => void;
-  onSelect: (b: Blockchain, pk: PublicKey) => void;
-  selected: boolean;
-  loading: boolean;
-  primary: boolean;
-  balance: number;
-  grouped?: boolean;
-};
-
 const WalletState = ({
   selected,
   loading,
@@ -90,16 +80,27 @@ const WalletState = ({
   return null;
 };
 
+type ListItemWalletProps = Wallet & {
+  onPressEdit: (wallet: Wallet) => void;
+  onSelect: (wallet: Wallet) => void;
+  selected: boolean;
+  loading: boolean;
+  primary: boolean;
+  balance: number;
+  grouped?: boolean;
+};
+
 export const ListItemWallet = ({
   grouped = true,
   loading,
   name,
-  balance,
   publicKey,
   blockchain,
+  type,
+  isCold,
+  balance,
   selected,
   primary,
-  type,
   onPressEdit,
   onSelect,
 }: ListItemWalletProps) => {
@@ -110,12 +111,20 @@ export const ListItemWallet = ({
     console.log("recover");
   };
 
+  const wallet = {
+    name,
+    type,
+    publicKey,
+    blockchain,
+    isCold,
+  };
+
   return (
     <ListItem
       backgroundColor="$nav"
       onPress={() => {
         if (!dehydrated && !selected) {
-          onSelect(blockchain, publicKey);
+          onSelect(wallet);
         }
       }}
       borderRadius={!grouped ? "$container" : undefined}
@@ -132,7 +141,7 @@ export const ListItemWallet = ({
           style={{ flexDirection: "row", alignItems: "center" }}
           onPress={() => {
             if (!dehydrated && !selected) {
-              onSelect(blockchain, publicKey);
+              onSelect(wallet);
             }
           }}
         >
@@ -187,9 +196,7 @@ export const ListItemWallet = ({
               <CopyPublicKey publicKey={publicKey} />
             </XStack>
           </YStack>
-          <Pressable
-            onPress={() => onPressEdit(blockchain, { name, publicKey, type })}
-          >
+          <Pressable onPress={() => onPressEdit(wallet)}>
             <ArrowRightIcon />
           </Pressable>
         </XStack>
@@ -229,5 +236,41 @@ export function ListItemTokenPrice({
         <PriceChangePill percentChange={percentChange} price={price} />
       </XStack>
     </ListItem>
+  );
+}
+
+const getDetailIcon = (isLoading: boolean, isActive: boolean) => {
+  if (isLoading) {
+    return <ActivityIndicator size="small" />;
+  }
+
+  if (isActive) {
+    return <IconCheckmark size={24} />;
+  }
+
+  return null;
+};
+
+export function UserAccountListItem({
+  uuid,
+  username,
+  isActive,
+  isLoading,
+  onPress,
+}: {
+  uuid: string;
+  username: string;
+  isActive: boolean;
+  isLoading: boolean;
+  onPress: (uuid: string) => void;
+}): JSX.Element {
+  const detailIcon = getDetailIcon(isLoading, isActive);
+  return (
+    <SettingsRow
+      icon={<Avatar username={username} size={24} />}
+      label={`@${username}`}
+      detailIcon={detailIcon}
+      onPress={() => onPress(uuid)}
+    />
   );
 }

@@ -1,20 +1,19 @@
-import type { PublicKey, Wallet } from "~types/types";
+import type { Wallet } from "~types/types";
 
-import { Suspense, useCallback, useState } from "react";
-import { FlatList, View, Alert } from "react-native";
+import { Suspense, useCallback, useMemo, useState } from "react";
+import { FlatList, View, Alert, ActivityIndicator } from "react-native";
 
-import { useSuspenseQuery_experimental } from "@apollo/client";
-import { Blockchain } from "@coral-xyz/common";
-import { BottomSheetTitle, PaddedListItemSeparator } from "@coral-xyz/tamagui";
+import { useSuspenseQuery } from "@apollo/client";
+import {
+  BottomSheetTitle,
+  PaddedListItemSeparator,
+  YStack,
+} from "@coral-xyz/tamagui";
 import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { ListItemWallet } from "~components/ListItem";
-import {
-  LinkButton__ as LinkButton,
-  ScreenError,
-  ScreenLoading,
-} from "~components/index";
+import { LinkButton__ as LinkButton, ScreenError } from "~components/index";
 import { useWallets } from "~hooks/wallets";
 
 import { gql } from "~src/graphql/__generated__";
@@ -36,70 +35,75 @@ const QUERY_USER_WALLETS = gql(`
   }
 `);
 
+function Wrapper({ children }: { children: React.ReactNode }): JSX.Element {
+  return <View style={{ height: 400 }}>{children}</View>;
+}
+
 function Container({ navigation }) {
-  const { setActiveWallet } = useSession();
-  const { data } = useSuspenseQuery_experimental(QUERY_USER_WALLETS);
-  const { allWallets, activeWallet, selectActiveWallet } = useWallets();
+  const { activeWallet, setActiveWallet } = useSession();
+  const { data } = useSuspenseQuery(QUERY_USER_WALLETS);
+  const { allWallets } = useWallets();
   const { dismiss } = useBottomSheetModal();
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  const wallets = coalesceWalletData(data, allWallets);
+  const wallets = useMemo(
+    () => coalesceWalletData(data, allWallets),
+    [data, allWallets]
+  );
 
   const handlePressSelect = useCallback(
-    async (blockchain: Blockchain, publicKey: PublicKey) => {
-      setLoadingId(publicKey);
-      setActiveWallet({ blockchain, publicKey });
-      selectActiveWallet({ blockchain, publicKey }, () => {
-        setLoadingId(null);
-        dismiss();
-      });
+    async (wallet: Wallet) => {
+      setLoadingId(wallet.publicKey);
+      // if the delay is terrible, add await here
+      setActiveWallet(wallet);
+      setLoadingId(null);
+      dismiss();
     },
-    [dismiss, selectActiveWallet, setActiveWallet]
+    [dismiss, setActiveWallet]
   );
 
   const handlePressEdit = useCallback(
-    (blockchain: Blockchain, { name, publicKey, type }: Wallet) => {
+    (wallet: Wallet) => {
       dismiss();
-      navigation.push("AccountSettings", {
+      navigation.navigate("AccountSettings", {
         screen: "edit-wallets-wallet-detail",
         params: {
-          blockchain,
-          publicKey,
-          name,
-          type,
+          name: wallet.name,
+          publicKey: wallet.publicKey,
         },
       });
     },
     [dismiss, navigation]
   );
 
+  const keyExtractor = (item) => item.publicKey;
   const renderItem = useCallback(
     ({ item }) => {
       return (
         <ListItemWallet
           name={item.name}
-          publicKey={item.publicKey}
           type={item.type}
+          publicKey={item.publicKey}
           blockchain={item.blockchain}
-          selected={item.publicKey === activeWallet.publicKey}
+          isCold={item.isCold}
+          selected={item.publicKey === activeWallet?.publicKey}
           loading={loadingId === item.publicKey}
           primary={item.isPrimary}
-          isCold={false}
           balance={item.balance}
           onPressEdit={handlePressEdit}
           onSelect={handlePressSelect}
         />
       );
     },
-    [loadingId, activeWallet.publicKey, handlePressSelect, handlePressEdit]
+    [loadingId, activeWallet?.publicKey, handlePressSelect, handlePressEdit]
   );
 
   return (
-    <View style={{ height: 400 }}>
+    <Wrapper>
       <BottomSheetTitle title="Wallets" />
       <FlatList
         data={wallets}
-        keyExtractor={(item) => item.publicKey}
+        keyExtractor={keyExtractor}
         renderItem={renderItem}
         ItemSeparatorComponent={PaddedListItemSeparator}
         showsVerticalScrollIndicator={false}
@@ -111,16 +115,30 @@ function Container({ navigation }) {
           Alert.alert("TODO");
         }}
       />
-    </View>
+    </Wrapper>
+  );
+}
+
+function FallbackComponent({ error }) {
+  return (
+    <Wrapper>
+      <ScreenError error={error} />
+    </Wrapper>
   );
 }
 
 export function BottomSheetWalletPicker({ navigation }): JSX.Element {
   return (
-    <ErrorBoundary
-      fallbackRender={({ error }) => <ScreenError error={error} />}
-    >
-      <Suspense fallback={<ScreenLoading />}>
+    <ErrorBoundary FallbackComponent={FallbackComponent}>
+      <Suspense
+        fallback={
+          <Wrapper>
+            <YStack f={1} ai="center" jc="center">
+              <ActivityIndicator />
+            </YStack>
+          </Wrapper>
+        }
+      >
         <Container navigation={navigation} />
       </Suspense>
     </ErrorBoundary>

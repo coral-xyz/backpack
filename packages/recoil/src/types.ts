@@ -8,6 +8,7 @@ import {
   TAB_NOTIFICATIONS,
   TAB_RECENT_ACTIVITY,
   TAB_SWAP,
+  TAB_TOKENS,
 } from "@coral-xyz/common";
 import type { BigNumber } from "ethers";
 import type { RecoilValueReadOnly } from "recoil";
@@ -93,17 +94,19 @@ export const TABS = [
   [TAB_MESSAGES, "Messages"],
   [TAB_RECENT_ACTIVITY, "Recent Activity"],
   [TAB_NOTIFICATIONS, "Notifications"],
+  [TAB_TOKENS, "Tokens"],
 ];
 
 export function makeDefaultNav() {
   const defaultNav: any = {
-    activeTab: TAB_BALANCES,
+    activeTab: TAB_TOKENS,
     data: {},
   };
   TABS.forEach(([tabName, tabTitle]) => {
     defaultNav.data[tabName] = {
       id: tabName,
       urls: [makeUrl(tabName, { title: tabTitle, props: {} })],
+      ref: tabName === "balances" ? "tokens" : undefined,
     };
   });
   return defaultNav;

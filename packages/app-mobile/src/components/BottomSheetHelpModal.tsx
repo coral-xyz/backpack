@@ -1,4 +1,5 @@
-import { Alert, FlatList, Pressable, StyleSheet } from "react-native";
+import { useState } from "react";
+import { View, Alert, FlatList, Pressable, StyleSheet } from "react-native";
 
 import * as Linking from "expo-linking";
 
@@ -11,7 +12,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 
 import { BetterBottomSheet } from "~components/BottomSheetModal";
 import { DiscordIcon, TwitterIcon, IconMenu } from "~components/Icon";
-import { RoundedContainerGroup } from "~components/index";
+import { FullScreenLoading } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { useSession } from "~lib/SessionProvider";
 import {
@@ -51,6 +52,7 @@ export function BottomSheetHelpModal({
   showResetButton?: boolean;
 }): JSX.Element {
   const theme = useTheme();
+  const [loading, setLoading] = useState(false);
   const { reset } = useSession();
 
   const menuOptions = [
@@ -81,7 +83,7 @@ export function BottomSheetHelpModal({
   ];
 
   if (showResetButton) {
-    menuOptions.push({
+    menuOptions.unshift({
       icon: (
         <MaterialIcons
           name="people"
@@ -98,7 +100,10 @@ export function BottomSheetHelpModal({
           [
             {
               text: "Yes",
-              onPress: () => reset(),
+              onPress: () => {
+                setLoading(true);
+                reset();
+              },
             },
             {
               text: "No",
@@ -110,6 +115,16 @@ export function BottomSheetHelpModal({
     });
   }
 
+  if (loading) {
+    return (
+      <View
+        style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0 }}
+      >
+        <FullScreenLoading label="Resetting Backpack..." />
+      </View>
+    );
+  }
+
   return (
     <BetterBottomSheet isVisible={isVisible} resetVisibility={resetVisibility}>
       <Content menuOptions={menuOptions} />
@@ -117,23 +132,26 @@ export function BottomSheetHelpModal({
   );
 }
 
+type ListItem = any;
 function Content({ menuOptions }: { menuOptions: any[] }): JSX.Element {
-  return (
-    <RoundedContainerGroup>
-      <FlatList
-        data={menuOptions}
-        scrollEnabled={false}
-        renderItem={({ item }) => {
-          return (
-            <SettingsRow
-              onPress={item.onPress}
-              icon={item.icon}
-              detailIcon={item.detailIcon}
-              label={item.label}
-            />
-          );
-        }}
+  const keyExtractor = (item: ListItem) => item.label;
+  const renderItem = ({ item }: { item: ListItem }) => {
+    return (
+      <SettingsRow
+        onPress={item.onPress}
+        icon={item.icon}
+        detailIcon={item.detailIcon}
+        label={item.label}
       />
-    </RoundedContainerGroup>
+    );
+  };
+
+  return (
+    <FlatList
+      data={menuOptions}
+      scrollEnabled={false}
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+    />
   );
 }

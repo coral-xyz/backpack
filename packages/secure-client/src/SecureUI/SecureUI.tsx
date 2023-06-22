@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { UserClient } from "@coral-xyz/secure-background/clients";
 import type {
   SECURE_EVENTS,
   TransportReceiver,

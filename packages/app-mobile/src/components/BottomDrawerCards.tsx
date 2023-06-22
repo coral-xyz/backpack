@@ -142,11 +142,16 @@ export function Sending({
               <Margin top={8}>
                 <PrimaryButton
                   label="Close"
+                  // Uncomment when tabs are back
+                  // onPress={() => {
+                  //   navigation.reset({
+                  //     index: 0,
+                  //     routes: [{ name: "Tabs" }],
+                  //   });
+                  // }}
                   onPress={() => {
-                    navigation.reset({
-                      index: 0,
-                      routes: [{ name: "Tabs" }],
-                    });
+                    navigation.popToTop();
+                    navigation.goBack(null);
                   }}
                 />
               </Margin>

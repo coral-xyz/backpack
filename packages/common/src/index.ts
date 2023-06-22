@@ -32,6 +32,7 @@ export * from "./notifications";
 export * from "./plugin";
 export * from "./preferences";
 export * from "./solana";
+export * from "./tokens";
 export * from "./types";
 export * from "./utils";
 export { useStore } from "./zustand-store";

@@ -1,71 +1,65 @@
-import type { Blockchain } from "@coral-xyz/common";
-import type { PublicKey } from "~types/types";
+import type { Wallet } from "@coral-xyz/recoil";
 
-import { Suspense, useCallback } from "react";
+import { Suspense, useCallback, useMemo } from "react";
 import { FlatList } from "react-native";
 
-import { UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE } from "@coral-xyz/common";
-import {
-  useActiveWallet,
-  useAllWallets,
-  useBackgroundClient,
-  useDehydratedWallets,
-  usePrimaryWallets,
-} from "@coral-xyz/recoil";
+import { useSuspenseQuery } from "@apollo/client";
 import { PaddedListItemSeparator } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { ListItemWallet, type Wallet } from "~components/ListItem";
+import { ListItemWallet } from "~components/ListItem";
 import {
   RoundedContainerGroup,
-  Screen,
   ScreenError,
   ScreenLoading,
 } from "~components/index";
 
-function WalletList2({ onPressItem }) {
-  const background = useBackgroundClient();
-  const activeWallet = useActiveWallet();
-  const wallets = useAllWallets();
-  const activeWallets = wallets.filter((w) => !w.isCold);
-  const coldWallets = wallets.filter((w) => w.isCold);
-  const primaryWallets = usePrimaryWallets();
+import { gql } from "~src/graphql/__generated__";
+import { useWallets } from "~src/hooks/wallets";
+import { coalesceWalletData } from "~src/lib/WalletUtils";
+import { EditWalletsScreenProps } from "~src/navigation/AccountSettingsNavigator";
+
+const QUERY_USER_WALLETS = gql(`
+  query BottomSheetUserWallets {
+    user {
+      id
+      wallets {
+        edges {
+          node {
+            ...WalletFragment
+          }
+        }
+      }
+    }
+  }
+`);
+
+function Container({ navigation }: EditWalletsScreenProps) {
+  const { data } = useSuspenseQuery(QUERY_USER_WALLETS);
+  const { allWallets } = useWallets();
   const insets = useSafeAreaInsets();
 
-  // Dehydrated public keys are keys that exist on the server but cannot be
-  // used on the client as we don't have signing data, e.g. mnemonic, private
-  // key or ledger derivation path
-  const dehydratedWallets = useDehydratedWallets().map((w: any) => ({
-    ...w,
-    name: "", // TODO server side does not sync wallet names
-    type: "dehydrated",
-  }));
-
-  // activeWallet={activeWallet}
-  // activeWallets={activeWallets.concat(dehydratedWallets)}
-  // coldWallets={coldWallets}
-
-  const data = [...activeWallets, ...dehydratedWallets];
-
-  const handleSelectWallet = useCallback(
-    async (b: Blockchain, pk: PublicKey) => {
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-        params: [pk, b],
-      });
-    },
-    [background]
+  const wallets = useMemo(
+    () => coalesceWalletData(data, allWallets),
+    [data, allWallets]
   );
 
+  const handlePressEdit = useCallback(
+    (wallet: Wallet) => {
+      navigation.navigate("edit-wallets-wallet-detail", {
+        name: wallet.name,
+        publicKey: wallet.publicKey,
+      });
+    },
+    [navigation]
+  );
+
+  const keyExtractor = (item: Wallet) => item.publicKey;
   const renderItem = useCallback(
     ({ item, index }) => {
-      const isPrimary = !!primaryWallets.find(
-        (x) => x.publicKey === item.publicKey
-      );
-
       const isFirst = index === 0;
-      const isLast = index === data.length - 1;
+      const isLast = index === wallets.length - 1;
 
       return (
         <RoundedContainerGroup
@@ -73,35 +67,29 @@ function WalletList2({ onPressItem }) {
           disableBottomRadius={!isLast}
         >
           <ListItemWallet
-            loading={false}
             name={item.name}
-            publicKey={item.publicKey}
             type={item.type}
+            publicKey={item.publicKey}
             blockchain={item.blockchain}
-            selected={item.publicKey === activeWallet.publicKey}
-            primary={isPrimary}
-            onPressEdit={onPressItem}
-            onSelect={handleSelectWallet}
-            isCold={false}
-            balance={5555.34}
+            isCold={item.isCold}
+            selected={false}
+            loading={false}
+            primary={item.isPrimary}
+            balance={item.balance}
+            onPressEdit={handlePressEdit}
+            onSelect={handlePressEdit}
           />
         </RoundedContainerGroup>
       );
     },
-    [
-      onPressItem,
-      data.length,
-      activeWallet.publicKey,
-      handleSelectWallet,
-      primaryWallets,
-    ]
+    [handlePressEdit, wallets.length]
   );
 
   return (
     <FlatList
-      data={data}
+      data={wallets}
       renderItem={renderItem}
-      keyExtractor={(item) => item.publicKey}
+      keyExtractor={keyExtractor}
       ItemSeparatorComponent={PaddedListItemSeparator}
       style={{
         paddingTop: 16,
@@ -115,33 +103,16 @@ function WalletList2({ onPressItem }) {
   );
 }
 
-function Container({ navigation }): JSX.Element {
-  const handlePressItem = (
-    blockchain: Blockchain,
-    { name, publicKey, type }: Wallet
-  ) => {
-    navigation.navigate("edit-wallets-wallet-detail", {
-      blockchain,
-      publicKey,
-      name,
-      type,
-    });
-  };
-
-  const handlePressAddWallet = (blockchain: Blockchain) => {
-    navigation.push("add-wallet", { blockchain });
-  };
-
-  return <WalletList2 onPressItem={handlePressItem} />;
-}
-
-export function EditWalletsScreen({ navigation }): JSX.Element {
+export function EditWalletsScreen({
+  navigation,
+  route,
+}: EditWalletsScreenProps): JSX.Element {
   return (
     <ErrorBoundary
       fallbackRender={({ error }) => <ScreenError error={error} />}
     >
       <Suspense fallback={<ScreenLoading />}>
-        <Container navigation={navigation} />
+        <Container navigation={navigation} route={route} />
       </Suspense>
     </ErrorBoundary>
   );

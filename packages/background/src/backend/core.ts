@@ -23,6 +23,7 @@ import {
   getAccountRecoveryPaths,
   getAddMessage,
   getRecoveryPaths,
+  IS_MOBILE,
   makeUrl,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
@@ -63,6 +64,8 @@ import {
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
   SolanaCluster,
   SolanaExplorer,
+  TAB_BALANCES_SET,
+  TAB_TOKENS,
   TAB_XNFT,
 } from "@coral-xyz/common";
 import { makeDefaultNav } from "@coral-xyz/recoil";
@@ -649,20 +652,25 @@ export class Backend {
     const xnftPreferences = await this.getXnftPreferences();
     const blockchainKeyrings = await this.blockchainKeyringsRead();
 
-    // Reset the navigation to the default everytime we switch users
-    // but keep the active tab.
-    const { activeTab } = (await legacyStore.getNav())!;
-    await legacyStore.setNav({
-      ...defaultNav,
-      activeTab,
-    });
-    const url = defaultNav.data[activeTab].urls[0];
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-      data: {
-        url,
-      },
-    });
+    // getNav doesn't need to be called for mobile since we have our own system
+    if (!IS_MOBILE) {
+      const navData = await legacyStore.getNav();
+      const activeTab = navData?.activeTab ?? TAB_TOKENS;
+      if (activeTab) {
+        await legacyStore.setNav({
+          ...defaultNav,
+          activeTab,
+        });
+      }
+
+      const url = defaultNav.data[activeTab].urls[0];
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+        data: {
+          url,
+        },
+      });
+    }
 
     // Push it.
     this.events.emit(BACKEND_EVENT, {
@@ -1978,13 +1986,38 @@ export class Backend {
       await legacyStore.setNav(defaultNav);
       nav = defaultNav;
     }
+    nav = nav as Nav;
+
+    //
+    // Migrate balances tab if needed.
+    //
+    // This only works if this method is called on app load.
+    //
+    if (!nav.data["balances"].ref) {
+      nav.data["balances"] = {
+        id: "balances",
+        ref: "tokens",
+        urls: [],
+      };
+      nav.data["tokens"] = {
+        id: "tokens",
+        urls: [makeUrl("tokens", { title: "Tokens", props: {} })],
+      };
+      await legacyStore.setNav(nav);
+    }
+
     // @ts-ignore
     return nav;
   }
 
   async navReadUrl(): Promise<string> {
     const nav = await this.navRead();
-    let urls = nav.data[nav.activeTab].urls;
+
+    let tab = nav.data[nav.activeTab];
+    if (tab.ref) {
+      tab = nav.data[tab.ref];
+    }
+    let urls = tab.urls;
     if (nav.data[TAB_XNFT]?.urls.length > 0) {
       urls = nav.data[TAB_XNFT].urls;
     }
@@ -1997,23 +2030,35 @@ export class Backend {
       throw new Error("invariant violation");
     }
 
+    if (activeTab !== TAB_XNFT) {
+      delete currNav.data[TAB_XNFT];
+    }
+
+    // Newly introduced messages tab needs to be added to the
+    // store for backward compatability
+    if (activeTab === "messages" && !currNav.data[activeTab]) {
+      currNav.data[activeTab] = {
+        id: "messages",
+        urls: [makeUrl("messages", { title: "Messages", props: {} })],
+      };
+    }
+
+    // The "balances" tab is just a ref to the other internal tabs.
+    activeTab =
+      activeTab === "balances" ? currNav.data[activeTab].ref : activeTab;
+
+    //
+    // Sync the "balances" ref field
+    //
+    if (TAB_BALANCES_SET.has(activeTab)) {
+      currNav.data["balances"].ref = activeTab;
+    }
+
     const nav = {
       ...currNav,
       activeTab,
     };
 
-    if (activeTab !== TAB_XNFT) {
-      delete nav.data[TAB_XNFT];
-    }
-
-    // Newly introduced messages tab needs to be added to the
-    // store for backward compatability
-    if (activeTab === "messages" && !nav.data[activeTab]) {
-      nav.data[activeTab] = {
-        id: "messages",
-        urls: [makeUrl("messages", { title: "Messages", props: {} })],
-      };
-    }
     await legacyStore.setNav(nav);
 
     const navData = nav.data[activeTab];
@@ -2031,8 +2076,6 @@ export class Backend {
   }
 
   async navigationOpenChat(chatName: string): Promise<string> {
-    console.log("openchat");
-
     return SUCCESS_RESPONSE;
   }
 
@@ -2051,14 +2094,23 @@ export class Backend {
     }
 
     // Update the active tab's nav stack.
-    const navData = currNav.data[activeTab ?? currNav.activeTab];
+    activeTab = activeTab ?? currNav.activeTab;
+
+    const navData = currNav.data[activeTab!];
     if (!navData) {
       // We exit gracefully so that we don't crash the app.
       console.error(`navData not found for tab ${activeTab}`);
       return SUCCESS_RESPONSE;
     }
     navData.urls[navData.urls.length - 1] = url;
-    currNav.data[activeTab ?? currNav.activeTab] = navData;
+    currNav.data[activeTab!] = navData;
+
+    //
+    // Sync the "balances" ref field
+    //
+    if (TAB_BALANCES_SET.has(activeTab)) {
+      currNav.data["balances"].ref = activeTab;
+    }
 
     // Save the change.
     await legacyStore.setNav(currNav);

@@ -83,8 +83,21 @@ export type Friend = Node & {
   avatar: Scalars["String"];
   /** Globally unique identifier for a friend of a user. */
   id: Scalars["ID"];
+  /** The primary wallets associated with the user. */
+  primaryWallets: Array<FriendPrimaryWallet>;
   /** The Backpack username of the friend. */
   username: Scalars["String"];
+};
+
+/** Abbreviated wallet information for the primary wallet(s) of a friend. */
+export type FriendPrimaryWallet = Node & {
+  __typename?: "FriendPrimaryWallet";
+  /** The public key of the wallet. */
+  address: Scalars["String"];
+  /** Globally unique identifier for the friend's primary wallet. */
+  id: Scalars["ID"];
+  /** The ID of the provider associated with the wallet. */
+  provider: Provider;
 };
 
 /** Friend request data for a user. */
@@ -156,6 +169,8 @@ export type Mutation = {
   deauthenticate: Scalars["String"];
   /** Attempt to add a new wallet public key to the user account. */
   importPublicKey?: Maybe<Scalars["Boolean"]>;
+  /** Set the `viewed` status of the argued notification IDs are `true`. */
+  markNotificationsAsRead: Scalars["Int"];
   /** Allows users to send friend requests to another remote user. */
   sendFriendRequest?: Maybe<Scalars["Boolean"]>;
 };
@@ -173,6 +188,11 @@ export type MutationImportPublicKeyArgs = {
   address: Scalars["String"];
   providerId: ProviderId;
   signature: Scalars["String"];
+};
+
+/** Root level mutation type. */
+export type MutationMarkNotificationsAsReadArgs = {
+  ids: Array<Scalars["Int"]>;
 };
 
 /** Root level mutation type. */
@@ -252,6 +272,8 @@ export type Notification = Node & {
   app?: Maybe<NotificationApplicationData>;
   /** Arbitrary body data of the notification parsed as an object. */
   body: Scalars["JSONObject"];
+  /** The database unique integer identifier. */
+  dbId: Scalars["Int"];
   /** Globally unique identifier for a specific notification. */
   id: Scalars["ID"];
   /** The emitting source of the notification. */
@@ -331,6 +353,7 @@ export type Provider = Node & {
 
 /** Provider ID enum variants for the supported blockchains or wallet types in the API. */
 export enum ProviderId {
+  Bitcoin = "BITCOIN",
   Ethereum = "ETHEREUM",
   Solana = "SOLANA",
 }
@@ -480,6 +503,8 @@ export type TransactionFiltersInput = {
   after?: InputMaybe<Scalars["String"]>;
   /** Block hash or signature to search before. */
   before?: InputMaybe<Scalars["String"]>;
+  /** Used for transaction pagination for a Bitcoin provider wallet. */
+  offset?: InputMaybe<Scalars["Int"]>;
   /** A token mint or contract address to filter for. */
   token?: InputMaybe<Scalars["String"]>;
 };
@@ -490,6 +515,8 @@ export type TransactionFiltersInput = {
  */
 export type User = Node & {
   __typename?: "User";
+  /** The aggregate token balances and value for all wallets associated with the user. */
+  allWalletsAggregate?: Maybe<Balances>;
   /** The image link for the avatar of the user. */
   avatar: Scalars["String"];
   /** The timestamp of the creation of the user. */
@@ -524,6 +551,7 @@ export type UserNotificationsArgs = {
  */
 export type UserWalletArgs = {
   address: Scalars["String"];
+  providerId?: InputMaybe<ProviderId>;
 };
 
 /**
@@ -694,6 +722,7 @@ export type GetNotificationsQuery = {
           __typename?: "Notification";
           id: string;
           body: { data: string } | Record<string, any>;
+          dbId: number;
           source: string;
           timestamp: string;
           title: string;
@@ -709,6 +738,15 @@ export type GetNotificationsQuery = {
       }>;
     } | null;
   } | null;
+};
+
+export type MarkNotificationsAsReadMutationVariables = Exact<{
+  ids: Array<Scalars["Int"]> | Scalars["Int"];
+}>;
+
+export type MarkNotificationsAsReadMutation = {
+  __typename?: "Mutation";
+  markNotificationsAsRead: number;
 };
 
 export type GetTokenListEntryLogoQueryVariables = Exact<{
@@ -1244,6 +1282,10 @@ export const GetNotificationsDocument = {
                                   },
                                   {
                                     kind: "Field",
+                                    name: { kind: "Name", value: "dbId" },
+                                  },
+                                  {
+                                    kind: "Field",
                                     name: { kind: "Name", value: "source" },
                                   },
                                   {
@@ -1277,6 +1319,57 @@ export const GetNotificationsDocument = {
 } as unknown as DocumentNode<
   GetNotificationsQuery,
   GetNotificationsQueryVariables
+>;
+export const MarkNotificationsAsReadDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "MarkNotificationsAsRead" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "ids" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "ListType",
+              type: {
+                kind: "NonNullType",
+                type: {
+                  kind: "NamedType",
+                  name: { kind: "Name", value: "Int" },
+                },
+              },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "markNotificationsAsRead" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "ids" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "ids" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  MarkNotificationsAsReadMutation,
+  MarkNotificationsAsReadMutationVariables
 >;
 export const GetTokenListEntryLogoDocument = {
   kind: "Document",

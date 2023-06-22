@@ -5,7 +5,7 @@ import { useAuthenticatedUser, useBootstrapFast } from "@coral-xyz/recoil";
 
 import { Spotlight } from "../../spotlight/Spotlight";
 import { Router } from "../common/Layout/Router";
-import { WithTabs } from "../common/Layout/Tab";
+import { WithTabBarBottom } from "../common/Layout/Tab";
 import { WalletDrawerProvider } from "../common/WalletList";
 
 import { ApproveTransactionRequest } from "./ApproveTransactionRequest";
@@ -19,7 +19,6 @@ const suspenseCache = new SuspenseCache();
 //
 export function Unlocked() {
   useBootstrapFast();
-
   const user = useAuthenticatedUser();
   if (!user) {
     return <Loading />;
@@ -32,7 +31,7 @@ export function Unlocked() {
       <WithVersion>
         <WalletDrawerProvider>
           <Spotlight />
-          <WithTabs>
+          <WithTabBarBottom>
             <div
               style={{
                 display: "flex",
@@ -44,7 +43,7 @@ export function Unlocked() {
               <ApproveTransactionRequest />
               <PrimaryPubkeySelector />
             </div>
-          </WithTabs>
+          </WithTabBarBottom>
         </WalletDrawerProvider>
       </WithVersion>
     </ApolloProvider>

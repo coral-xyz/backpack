@@ -2,13 +2,16 @@ import { useEffect, useState } from "react";
 import {
   Blockchain,
   SOL_NATIVE_MINT,
+  TAB_BALANCES,
   toDisplayBalance,
+  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   WSOL_MINT,
 } from "@coral-xyz/common";
 import {
   CheckIcon,
   CrossIcon,
   DangerButton,
+  EmptyState,
   Loading,
   MaxLabel,
   PrimaryButton,
@@ -21,14 +24,18 @@ import type {
   TokenDataWithPrice,
 } from "@coral-xyz/recoil";
 import {
+  SwapProvider,
   SwapState,
   useActiveWallet,
+  useBackgroundClient,
   useDarkMode,
   useJupiterOutputTokens,
+  useNavigation,
   useSwapContext,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandMore, SwapVert as SwitchIcon } from "@mui/icons-material";
+import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import Info from "@mui/icons-material/Info";
 import {
   IconButton,
@@ -44,13 +51,20 @@ import { Button as XnftButton } from "../../plugin/Component";
 import { TextField } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { BottomCard } from "../common/Layout/BottomCard";
-import { useDrawerContext } from "../common/Layout/Drawer";
-import { useNavigation } from "../common/Layout/NavStack";
+import {
+  CloseButton,
+  useDrawerContext,
+  WithDrawer,
+} from "../common/Layout/Drawer";
+import {
+  NavStackEphemeral,
+  NavStackScreen,
+  useNavigation as useNavigationDrawer,
+} from "../common/Layout/NavStack";
 import { TokenAmountHeader } from "../common/TokenAmountHeader";
 import { TokenInputField } from "../common/TokenInput";
 import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
-import { WalletDrawerButton } from "../common/WalletList";
 
 const { Zero } = ethers.constants;
 
@@ -130,8 +144,8 @@ const useStyles = styles((theme) => ({
     justifyContent: "center",
     flexDirection: "column",
     borderRadius: "22px",
-    position: "fixed",
-    top: 175,
+    position: "absolute",
+    top: 120,
     left: 24,
   },
   switchTokensButton: {
@@ -231,8 +245,9 @@ const useStyles = styles((theme) => ({
 }));
 
 export function Swap({ blockchain }: { blockchain: Blockchain }) {
+  const { close } = useDrawerContext();
   const isDark = useDarkMode();
-  const nav = useNavigation();
+  const nav = useNavigationDrawer();
 
   useEffect(() => {
     nav.setOptions({
@@ -245,15 +260,22 @@ export function Swap({ blockchain }: { blockchain: Blockchain }) {
     throw new Error("only Solana swaps are supported currently");
   }
 
-  return <_Swap />;
+  return <_Swap isInDrawer close={close} />;
 }
 
-function _Swap() {
+export function _Swap({
+  isInDrawer,
+  close = () => {},
+}: {
+  isInDrawer?: boolean;
+  close?: () => void;
+}) {
   const isDark = useDarkMode();
   const classes = useStyles();
   const { swapToFromMints, fromToken, canSwitch } = useSwapContext();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const { close } = useDrawerContext();
+  const { blockchain } = useActiveWallet();
+  const background = useBackgroundClient();
 
   const isLoading = !fromToken;
 
@@ -263,9 +285,26 @@ function _Swap() {
   };
 
   const onViewBalances = () => {
-    setOpenDrawer(false);
-    close();
+    if (!isInDrawer) {
+      background.request({
+        method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+        params: [TAB_BALANCES],
+      });
+    } else {
+      setOpenDrawer(false);
+      close();
+    }
   };
+
+  if (blockchain === Blockchain.ETHEREUM) {
+    return (
+      <EmptyState
+        icon={(props: any) => <DoNotDisturbIcon {...props} />}
+        title="Ethereum Swaps Soon"
+        subtitle="For now, please use a Solana wallet to swap"
+      />
+    );
+  }
 
   return (
     <>
@@ -742,14 +781,8 @@ function SwapInfoRows({
   transactionFees?: SwapContext["transactionFees"];
 }) {
   const classes = useStyles();
-  const wallet = useActiveWallet();
 
-  const rows: Array<SwapInfoRowProps> = [
-    {
-      label: "Wallet",
-      value: <WalletDrawerButton wallet={wallet} style={{ height: "20px" }} />,
-    },
-  ];
+  const rows: Array<SwapInfoRowProps> = [];
 
   if (!compact) {
     rows.push({ label: "You Pay", value: youPay });
@@ -846,39 +879,110 @@ function SwitchTokensButton({
 }
 
 function InputTokenSelectorButton() {
-  const { fromToken, setFromMint } = useSwapContext();
-  return <TokenSelectorButton token={fromToken!} input setMint={setFromMint} />;
+  const { fromToken, isInDrawer } = useSwapContext();
+  return isInDrawer ? (
+    <TokenSelectorButtonInDrawer token={fromToken!} input isFromMint />
+  ) : (
+    <TokenSelectorButton token={fromToken!} input isFromMint />
+  );
 }
 
 function OutputTokensSelectorButton() {
-  const { toToken, setToMint } = useSwapContext();
+  const { toToken, isInDrawer } = useSwapContext();
+  return isInDrawer ? (
+    <TokenSelectorButtonInDrawer
+      token={toToken!}
+      input={false}
+      isFromMint={false}
+    />
+  ) : (
+    <TokenSelectorButton token={toToken!} input={false} isFromMint={false} />
+  );
+}
+
+function TokenSelectorButtonInDrawer({
+  token,
+  input,
+  isFromMint,
+}: {
+  token: TokenData;
+  input: boolean;
+  isFromMint: boolean;
+}) {
+  const nav = useNavigationDrawer();
   return (
-    <TokenSelectorButton token={toToken!} setMint={setToMint} input={false} />
+    <_TokenSelectorButton
+      token={token}
+      push={() => {
+        nav.push("select-token", {
+          isFromMint,
+          input,
+        });
+      }}
+    />
   );
 }
 
 function TokenSelectorButton({
   token,
-  setMint,
   input,
+  isFromMint,
 }: {
   token: TokenData;
-  setMint: (mint: string) => void;
   input: boolean;
+  isFromMint: boolean;
+}) {
+  const nav = useNavigation();
+  const [openDrawer, setOpenDrawer] = useState(false);
+  return (
+    <>
+      <_TokenSelectorButton
+        token={token}
+        push={() => {
+          setOpenDrawer(true);
+        }}
+      />
+      <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+        <NavStackEphemeral
+          initialRoute={{ name: "root" }}
+          options={() => ({ title: "" })}
+          navButtonLeft={
+            <CloseButton
+              onClick={() => {
+                setOpenDrawer(false);
+              }}
+            />
+          }
+        >
+          <NavStackScreen
+            name="root"
+            component={() => (
+              <SwapSelectTokenInDrawer
+                isFromMint={isFromMint}
+                input={input}
+                close={() => setOpenDrawer(false)}
+              />
+            )}
+          />
+        </NavStackEphemeral>
+      </WithDrawer>
+    </>
+  );
+}
+
+function _TokenSelectorButton({
+  token,
+  push,
+}: {
+  token: TokenData;
+  push: () => void;
 }) {
   const classes = useStyles();
-  const nav = useNavigation();
 
   return (
     <InputAdornment position="end">
       <XnftButton
-        onClick={() =>
-          nav.push("select-token", {
-            // @ts-ignore
-            setMint: (...args: any) => setMint(...args),
-            input,
-          })
-        }
+        onClick={() => push()}
         style={{
           backgroundColor: "transparent",
           width: "auto",
@@ -901,19 +1005,24 @@ function TokenSelectorButton({
   );
 }
 
-export function SwapSelectToken({
-  setMint,
-  customFilter,
+export function SwapSelectTokenInDrawer({
+  customFilter = () => true,
   input,
+  isFromMint,
+  close,
 }: {
-  setMint: (mint: string) => void;
-  customFilter: (token: Token) => boolean;
+  customFilter?: (token: Token) => boolean;
   input: boolean;
+  isFromMint: boolean;
+  close?: () => void;
 }) {
+  const nav = useNavigationDrawer();
   const isDark = useDarkMode();
   const theme = useCustomTheme();
-  const nav = useNavigation();
-  const { fromTokens, toTokens } = useSwapContext();
+
+  const { fromTokens, toTokens, setFromMint, setToMint } = useSwapContext();
+  const setMint = isFromMint ? setFromMint : setToMint;
+
   useEffect(() => {
     nav.setOptions({
       headerTitle: "Select Token",
@@ -929,7 +1038,7 @@ export function SwapSelectToken({
 
   const onClickRow = (_blockchain: Blockchain, token: Token) => {
     setMint(token.mint!);
-    nav.pop();
+    close ? close() : nav.pop();
   };
 
   return (

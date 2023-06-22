@@ -6,6 +6,7 @@ import { useKeyringStoreState } from "./keyring";
 import { useNavigation, useTab } from "./navigation";
 import { useAllUsers } from "./preferences";
 import { useSolanaCommitment } from "./solana";
+import { useAllWalletsDisplayed } from "./wallet";
 
 export function useBootstrapFast() {
   useRecoilValue(atoms.bootstrapFast);
@@ -17,6 +18,7 @@ export function useBootstrapFast() {
   useKeyringStoreState();
   useSolanaCommitment();
   useAllUsers();
+  useAllWalletsDisplayed();
 }
 
 export function useRedirectUrl(): string {

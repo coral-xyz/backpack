@@ -46,6 +46,11 @@ type Mutation {
   ): Boolean
 
   """
+  Set the `viewed` status of the argued notification IDs are `true`.
+  """
+  markNotificationsAsRead(ids: [Int!]!): Int!
+
+  """
   Allows users to send friend requests to another remote user.
   """
   sendFriendRequest(otherUserId: String!, accept: Boolean!): Boolean
@@ -91,6 +96,7 @@ enum CacheControlScope {
 Provider ID enum variants for the supported blockchains or wallet types in the API.
 """
 enum ProviderID {
+  BITCOIN
   ETHEREUM
   SOLANA
 }
@@ -184,6 +190,11 @@ input TransactionFiltersInput {
   Block hash or signature to search before.
   """
   before: String
+
+  """
+  Used for transaction pagination for a Bitcoin provider wallet.
+  """
+  offset: Int
 
   """
   A token mint or contract address to filter for.
@@ -337,9 +348,34 @@ type Friend implements Node {
   avatar: String!
 
   """
+  The primary wallets associated with the user.
+  """
+  primaryWallets: [FriendPrimaryWallet!]!
+
+  """
   The Backpack username of the friend.
   """
   username: String!
+}
+
+"""
+Abbreviated wallet information for the primary wallet(s) of a friend.
+"""
+type FriendPrimaryWallet implements Node {
+  """
+  Globally unique identifier for the friend's primary wallet.
+  """
+  id: ID!
+
+  """
+  The public key of the wallet.
+  """
+  address: String!
+
+  """
+  The ID of the provider associated with the wallet.
+  """
+  provider: Provider!
 }
 
 """
@@ -561,6 +597,11 @@ type Notification implements Node {
   Arbitrary body data of the notification parsed as an object.
   """
   body: JSONObject!
+
+  """
+  The database unique integer identifier.
+  """
+  dbId: Int!
 
   """
   The emitting source of the notification.
@@ -838,6 +879,11 @@ type User implements Node {
   id: ID!
 
   """
+  The aggregate token balances and value for all wallets associated with the user.
+  """
+  allWalletsAggregate: Balances @cacheControl(maxAge: 60, scope: PRIVATE)
+
+  """
   The image link for the avatar of the user.
   """
   avatar: String!
@@ -850,7 +896,7 @@ type User implements Node {
   """
   A grouping object of the friends and friend request data for the user.
   """
-  friendship: Friendship @cacheControl(inheritMaxAge: true)
+  friendship: Friendship @cacheControl(inheritMaxAge: true, scope: PRIVATE)
 
   """
   The Relay connection for the notifications received by the user.
@@ -871,13 +917,13 @@ type User implements Node {
   """
   Get a single wallet object for the argued public key address.
   """
-  wallet(address: String!): Wallet
+  wallet(address: String!, providerId: ProviderID): Wallet
 
   """
   The Relay connection for the wallet's and their data that are registered to the user.
   """
   wallets(filters: WalletFiltersInput): WalletConnection
-    @cacheControl(maxAge: 60)
+    @cacheControl(maxAge: 60, scope: PRIVATE)
 }
 
 """

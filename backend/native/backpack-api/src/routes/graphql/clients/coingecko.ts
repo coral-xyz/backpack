@@ -1,8 +1,16 @@
 import { RESTDataSource } from "@apollo/datasource-rest";
+import { LRUCache } from "lru-cache";
 
-type CoinGeckoOptions = {
+type CoinGeckoIndexerOptions = {
   apiKey: string;
 };
+
+const IN_MEM_PRICE_DATA_CACHE = new LRUCache<string, CoinGeckoPriceData>({
+  allowStale: false,
+  max: 1000,
+  ttl: 1000 * 60, // 1 minute TTL
+  ttlAutopurge: true,
+});
 
 /**
  * Custom GraphQL REST data source class abstraction for CoinGecko.
@@ -10,38 +18,46 @@ type CoinGeckoOptions = {
  * @class CoinGecko
  * @extends {RESTDataSource}
  */
-export class CoinGecko extends RESTDataSource {
-  readonly #apiKey: string;
+export class CoinGeckoIndexer extends RESTDataSource {
+  // readonly #apiKey: string;
 
-  override baseURL = "https://pro-api.coingecko.com";
+  override baseURL = "https://price-indexer.backpack.workers.dev";
 
-  constructor(opts: CoinGeckoOptions) {
+  constructor(_opts: CoinGeckoIndexerOptions) {
     super();
-    this.#apiKey = opts.apiKey;
+    // this.#apiKey = opts.apiKey;
   }
 
   /**
    * Fetches the market price data for the argued asset IDs.
-   * @template I
-   * @param {I[]} ids
-   * @returns {Promise<CoinGeckoGetPricesResponse<I>>}
+   * @param {string[]} ids
+   * @returns {Promise<CoinGeckoGetPricesResponse>}
    * @memberof CoinGecko
    */
   async getPrices(ids: string[]): Promise<CoinGeckoGetPricesResponse> {
-    const resp: CoinGeckoPriceData[] = await this.get("/api/v3/coins/markets", {
-      headers: {
-        "x-cg-pro-api-key": this.#apiKey,
-      },
-      params: {
-        ids: ids.join(","),
-        page: "1",
-        price_change_percentage: "24h",
-        sparkline: "true",
-        vs_currency: "usd",
-      },
-    });
+    const data: CoinGeckoPriceData[] = [];
 
-    return resp.reduce<CoinGeckoGetPricesResponse>((acc, curr) => {
+    const notInCache: string[] = [];
+    for (const i of ids) {
+      if (IN_MEM_PRICE_DATA_CACHE.has(i)) {
+        data.push(IN_MEM_PRICE_DATA_CACHE.get(i)!);
+      } else {
+        notInCache.push(i);
+      }
+    }
+
+    if (notInCache.length > 0) {
+      const resp: CoinGeckoPriceData[] = await this.get("/", {
+        params: {
+          ids: notInCache.join(","),
+        },
+      });
+
+      data.push(...resp);
+    }
+
+    return data.reduce<CoinGeckoGetPricesResponse>((acc, curr) => {
+      IN_MEM_PRICE_DATA_CACHE.set(curr.id, curr);
       acc[curr.id] = curr;
       return acc;
     }, {});

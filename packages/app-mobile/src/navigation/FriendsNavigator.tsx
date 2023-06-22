@@ -1,4 +1,7 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import {
+  createNativeStackNavigator,
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack";
 
 import { HeaderAvatarButton } from "~navigation/components";
 import { FriendDetailScreen } from "~screens/FriendDetailScreen";
@@ -14,6 +17,16 @@ export type FriendsNavigatorStackParamList = {
 
 const FriendStack =
   createNativeStackNavigator<FriendsNavigatorStackParamList>();
+
+export type FriendListScreenProps = NativeStackScreenProps<
+  FriendsNavigatorStackParamList,
+  "FriendList"
+>;
+
+export type FriendDetailScreenProps = NativeStackScreenProps<
+  FriendsNavigatorStackParamList,
+  "FriendDetail"
+>;
 
 export function FriendsNavigator() {
   return (
@@ -36,7 +49,7 @@ export function FriendsNavigator() {
         options={({ route }) => {
           return {
             headerBackTitleVisible: false,
-            title: route.params.username,
+            title: `@${route.params.username}`,
           };
         }}
       />

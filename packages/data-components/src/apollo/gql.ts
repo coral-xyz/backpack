@@ -19,8 +19,10 @@ const documents = {
     types.GetTokenBalancesDocument,
   "\n  mutation SendFriendRequest($otherUserId: String!, $accept: Boolean!) {\n    sendFriendRequest(otherUserId: $otherUserId, accept: $accept)\n  }\n":
     types.SendFriendRequestDocument,
-  "\n  query GetNotifications($filters: NotificationFiltersInput) {\n    user {\n      id\n      notifications(filters: $filters) {\n        edges {\n          node {\n            id\n            app {\n              id\n              address\n              image\n              name\n            }\n            body\n            source\n            timestamp\n            title\n            viewed\n          }\n        }\n      }\n    }\n  }\n":
+  "\n  query GetNotifications($filters: NotificationFiltersInput) {\n    user {\n      id\n      notifications(filters: $filters) {\n        edges {\n          node {\n            id\n            app {\n              id\n              address\n              image\n              name\n            }\n            body\n            dbId\n            source\n            timestamp\n            title\n            viewed\n          }\n        }\n      }\n    }\n  }\n":
     types.GetNotificationsDocument,
+  "\n  mutation MarkNotificationsAsRead($ids: [Int!]!) {\n    markNotificationsAsRead(ids: $ids)\n  }\n":
+    types.MarkNotificationsAsReadDocument,
   "\n  query GetTokenListEntryLogo($providerId: ProviderID!, $filters: TokenListEntryFiltersInput) {\n    tokenList(providerId: $providerId, filters: $filters) {\n      id\n      logo\n    }\n  }\n":
     types.GetTokenListEntryLogoDocument,
   "\n  query GetTransactions($address: String!, $filters: TransactionFiltersInput) {\n    user {\n      id\n      wallet(address: $address) {\n        id\n        provider {\n          providerId\n        }\n        transactions(filters: $filters) {\n          edges {\n            node {\n              id\n              description\n              fee\n              feePayer\n              error\n              hash\n              nfts\n              source\n              timestamp\n              type\n            }\n          }\n        }\n      }\n    }\n  }\n":
@@ -63,8 +65,14 @@ export function gql(
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: "\n  query GetNotifications($filters: NotificationFiltersInput) {\n    user {\n      id\n      notifications(filters: $filters) {\n        edges {\n          node {\n            id\n            app {\n              id\n              address\n              image\n              name\n            }\n            body\n            source\n            timestamp\n            title\n            viewed\n          }\n        }\n      }\n    }\n  }\n"
-): (typeof documents)["\n  query GetNotifications($filters: NotificationFiltersInput) {\n    user {\n      id\n      notifications(filters: $filters) {\n        edges {\n          node {\n            id\n            app {\n              id\n              address\n              image\n              name\n            }\n            body\n            source\n            timestamp\n            title\n            viewed\n          }\n        }\n      }\n    }\n  }\n"];
+  source: "\n  query GetNotifications($filters: NotificationFiltersInput) {\n    user {\n      id\n      notifications(filters: $filters) {\n        edges {\n          node {\n            id\n            app {\n              id\n              address\n              image\n              name\n            }\n            body\n            dbId\n            source\n            timestamp\n            title\n            viewed\n          }\n        }\n      }\n    }\n  }\n"
+): (typeof documents)["\n  query GetNotifications($filters: NotificationFiltersInput) {\n    user {\n      id\n      notifications(filters: $filters) {\n        edges {\n          node {\n            id\n            app {\n              id\n              address\n              image\n              name\n            }\n            body\n            dbId\n            source\n            timestamp\n            title\n            viewed\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(
+  source: "\n  mutation MarkNotificationsAsRead($ids: [Int!]!) {\n    markNotificationsAsRead(ids: $ids)\n  }\n"
+): (typeof documents)["\n  mutation MarkNotificationsAsRead($ids: [Int!]!) {\n    markNotificationsAsRead(ids: $ids)\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

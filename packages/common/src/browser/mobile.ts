@@ -1,6 +1,6 @@
 import EventEmitter from "eventemitter3";
 // use expo-secure-store if in react-native, otherwise fake-expo-secure-store.ts
-import { getItemAsync, setItemAsync } from "expo-secure-store";
+import { deleteItemAsync, getItemAsync, setItemAsync } from "expo-secure-store";
 
 import {
   MOBILE_CHANNEL_BG_REQUEST,
@@ -19,6 +19,13 @@ import { useStore } from "../zustand-store";
 import { BrowserRuntimeCommon } from "./common";
 
 const logger = getLogger("common/mobile");
+
+type Result = any;
+type Response = {
+  id: string;
+  result: Result;
+  error: any;
+};
 
 /**
  * Event emitter for *all* events on the web view component.
@@ -100,6 +107,7 @@ export function startMobileIfNeeded() {
     const handler = (event: any) => {
       if (event && event.data && event.data.wrappedEvent) {
         cb(event.data.wrappedEvent, {}, (result: any) => {
+          // eslint-disable-next-line
           postMsgFromWorker({
             channel: MOBILE_CHANNEL_FE_RESPONSE,
             data: {
@@ -112,6 +120,7 @@ export function startMobileIfNeeded() {
         });
       }
     };
+
     EVENT_LISTENERS.push(handler);
     return handler;
   };
@@ -120,6 +129,7 @@ export function startMobileIfNeeded() {
     const handler = (event: any) => {
       if (event && event.data && event.data.wrappedEvent) {
         cb(event.data.wrappedEvent, {}, (result: any) => {
+          // eslint-disable-next-line
           postMsgFromAppUi({
             channel: MOBILE_CHANNEL_BG_RESPONSE,
             data: {
@@ -132,23 +142,25 @@ export function startMobileIfNeeded() {
         });
       }
     };
+
     EVENT_LISTENERS.push(handler);
     return handler;
   };
 
+  // eslint-disable-next-line
   BrowserRuntimeCommon.sendMessageToAnywhere = (_msg, _cb) => {
     throw new Error("sendMessageToAnywhere not implemented on mobile");
   };
 
+  // eslint-disable-next-line
   BrowserRuntimeCommon.addEventListenerFromAnywhere = (_cb) => {
     throw new Error("addEventListenerFromAnywhere not implemented on mobile");
   };
 
-  //
-  // Assumes this is only called from the background service worker.
-  //
-  BrowserRuntimeCommon.getLocalStorage = async (key: string): Promise<any> => {
-    const { id, result, error } = await BackendRequestManager.request({
+  BrowserRuntimeCommon.getLocalStorage = async (
+    key: string
+  ): Promise<Result> => {
+    const { result }: Response = await BackendRequestManager.request({
       channel: MOBILE_CHANNEL_HOST_RPC_REQUEST,
       data: {
         id: generateUniqueId(),
@@ -156,17 +168,30 @@ export function startMobileIfNeeded() {
         params: [key],
       },
     });
+
     return result;
   };
 
-  //
-  // Assumes this is only called from the background service worker.
-  //
+  BrowserRuntimeCommon.removeLocalStorage = async (
+    key: string
+  ): Promise<Result> => {
+    const { result }: Response = await BackendRequestManager.request({
+      channel: MOBILE_CHANNEL_HOST_RPC_REQUEST,
+      data: {
+        id: generateUniqueId(),
+        method: "removeLocalStorage",
+        params: [key],
+      },
+    });
+
+    return result;
+  };
+
   BrowserRuntimeCommon.setLocalStorage = async (
     key: string,
     value: any
-  ): Promise<void> => {
-    const { id, result, error } = await BackendRequestManager.request({
+  ): Promise<Result> => {
+    const { result }: Response = await BackendRequestManager.request({
       channel: MOBILE_CHANNEL_HOST_RPC_REQUEST,
       data: {
         id: generateUniqueId(),
@@ -174,6 +199,21 @@ export function startMobileIfNeeded() {
         params: [key, value],
       },
     });
+
+    return result;
+  };
+
+  BrowserRuntimeCommon.clearLocalStorage = async (): Promise<Result> => {
+    const { result }: Response = await BackendRequestManager.request({
+      channel: MOBILE_CHANNEL_HOST_RPC_REQUEST,
+      data: {
+        id: generateUniqueId(),
+        method: "clearLocalStorage",
+        params: [],
+      },
+    });
+
+    return result;
   };
 
   BrowserRuntimeCommon.checkForError = () => {
@@ -238,14 +278,27 @@ export function startMobileIfNeeded() {
   }: {
     data: { id: string; method: string; params: Array<any> };
   }) => {
-    const { id, method, params } = data;
+    const { method, params } = data;
     switch (method) {
       case "getLocalStorage":
         return await handleGetLocalStorage(params[0]);
+      case "removeLocalStorage":
+        return await handleRemoveLocalStorage(params[0]);
       case "setLocalStorage":
         return await handleSetLocalStorage(params[0], params[1]);
+      case "clearLocalStorage":
+        return await handleClearLocalStorage();
       default:
         return [];
+    }
+  };
+
+  const handleRemoveLocalStorage = async (key: string) => {
+    try {
+      await deleteItemAsync(key);
+      return ["success", undefined];
+    } catch (error) {
+      return ["error", error];
     }
   };
 
@@ -259,25 +312,39 @@ export function startMobileIfNeeded() {
   // so we must JSON.parse and JSON.stringify values when needed
   // https://docs.expo.dev/versions/latest/sdk/securestore
   const handleGetLocalStorage = async (key: string) => {
-    // const stores = [
-    //   "keyring-store",
-    //   "keyname-store",
-    //   "wallet-data",
-    //   "nav-store7",
-    // ];
-    // for (const store of stores) {
-    //   try {
-    //     await deleteItemAsync(store);
-    //   } catch (err) {
-    //     // ignore
-    //   }
-    // }
-
-    return [JSON.parse(String(await getItemAsync(key))), undefined];
+    try {
+      const value = await getItemAsync(key);
+      const str = String(value);
+      const json = JSON.parse(str);
+      return [json, undefined];
+    } catch (error) {
+      return ["error", error];
+    }
   };
+
   const handleSetLocalStorage = async (key: string, value: any) => {
     await setItemAsync(key, JSON.stringify(value));
     return ["success", undefined];
+  };
+
+  const handleClearLocalStorage = async () => {
+    // // TODO: don't manually specify this list of keys
+    // // ^^ this was done before peter's time so no idea
+    const keys = [
+      "is-cold-store",
+      "keyname-store",
+      "user-data",
+      "wallet-data",
+      "keyring-store",
+      "nav-store7",
+    ];
+
+    try {
+      await Promise.all(keys.map((key) => deleteItemAsync(key)));
+      return ["success", undefined];
+    } catch (error) {
+      return ["error", error];
+    }
   };
 }
 
@@ -289,12 +356,10 @@ class CommonRequestManager {
    */
   public static response(msg: any) {
     const {
-      channel: _,
       data: { id, result, error },
     } = msg;
     const resolver = CommonRequestManager._resolvers[id];
     if (resolver === undefined) {
-      logger.debug("isServiceWorker", isServiceWorker().toString());
       logger.error("unable to find resolver for data", { id, result, error });
       return;
     }
@@ -310,6 +375,7 @@ class FrontendRequestManager extends CommonRequestManager {
   public static request<T = any>(msg: any): Promise<T> {
     return new Promise((resolve, reject) => {
       CommonRequestManager._resolvers[msg.data.id] = { resolve, reject };
+      // eslint-disable-next-line
       postMsgFromAppUi({
         channel: MOBILE_CHANNEL_FE_REQUEST,
         data: {
@@ -324,6 +390,7 @@ class BackendRequestManager extends CommonRequestManager {
   public static request<T = any>(msg: any): Promise<T> {
     return new Promise((resolve, reject) => {
       CommonRequestManager._resolvers[msg.data.id] = { resolve, reject };
+      // eslint-disable-next-line
       postMsgFromWorker({
         channel: MOBILE_CHANNEL_BG_REQUEST,
         data: {

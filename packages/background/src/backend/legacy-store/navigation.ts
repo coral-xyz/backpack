@@ -15,6 +15,10 @@ export type Nav = {
 type NavData = {
   id: string;
   urls: Array<any>;
+  // If set, the tab is a reference to another tab (e.g., balances which
+  // is broken up into three: tokens, collectibles, and recent activity.
+  // This is a total hack to avoid rewriting the navigation.
+  ref?: any;
 };
 
 export async function getNav(): Promise<Nav | undefined> {

@@ -1,0 +1,18 @@
+{
+  "name": "price-indexer",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "wrangler dev --local --test-scheduled",
+    "deploy": "wrangler publish"
+  },
+  "dependencies": {
+    "@coral-xyz/common": "*"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20221111.1",
+    "eslint-config-custom": "*",
+    "typescript": "^4.9.5",
+    "wrangler": "^3.1.0"
+  }
+}

@@ -9,6 +9,7 @@ import {
   type TransactionFiltersInput,
 } from "../types";
 
+import { Bitcoin } from "./bitcoin";
 import { Ethereum } from "./ethereum";
 import { Solana } from "./solana";
 
@@ -47,6 +48,9 @@ export function getProviderForId(
   ctx?: ApiContext
 ): BlockchainDataProvider {
   switch (id) {
+    case ProviderId.Bitcoin: {
+      return new Bitcoin(ctx);
+    }
     case ProviderId.Ethereum: {
       return new Ethereum(ctx);
     }

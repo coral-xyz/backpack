@@ -1,4 +1,5 @@
 import type { ChannelAppUiClient } from "@coral-xyz/common";
+import type { StackScreenProps } from "@react-navigation/stack";
 import type { Commitment } from "@solana/web3.js";
 
 import { useEffect, useState } from "react";
@@ -107,6 +108,11 @@ type AccountSettingsParamList = {
   UserAccountMenu: undefined;
 };
 
+export type EditWalletsScreenProps = StackScreenProps<
+  AccountSettingsParamList,
+  "edit-wallets"
+>;
+
 const Stack = createStackNavigator<AccountSettingsParamList>();
 export function AccountSettingsNavigator(): JSX.Element {
   const theme = useTheme();
@@ -153,11 +159,11 @@ export function AccountSettingsNavigator(): JSX.Element {
           component={YourAccountScreen}
           options={{
             title: "Your Account",
-            headerBackTitle: "Profile",
+            // headerBackTitle: "Profile",
           }}
         />
         <Stack.Screen
-          options={{ title: "Change password" }}
+          options={{ title: "Change Password" }}
           name="change-password"
           component={ChangePasswordScreen}
         />
@@ -197,7 +203,7 @@ export function AccountSettingsNavigator(): JSX.Element {
           component={PreferencesSolanaCommitment}
         />
         <Stack.Screen
-          // options={{ title: "Preferences" }}
+          options={{ title: "Solana Explorer" }}
           name="PreferencesSolanaExplorer"
           component={PreferencesSolanaExplorer}
         />
@@ -226,7 +232,11 @@ export function AccountSettingsNavigator(): JSX.Element {
           name="import-private-key"
           component={ImportPrivateKeyScreen}
         />
-        <Stack.Screen name="reset-warning" component={ResetWarningScreen} />
+        <Stack.Screen
+          name="reset-warning"
+          component={ResetWarningScreen}
+          options={{ title: "Warning" }}
+        />
         <Stack.Screen
           name="show-secret-phrase-warning"
           component={ShowRecoveryPhraseWarningScreen}
@@ -441,24 +451,11 @@ export function PreferencesSolanaExplorer({ navigation }) {
   const explorer = useSolanaExplorer();
 
   const menuItems = {
-    "Solana Beach": {
-      onPress: () => changeExplorer(SolanaExplorer.SOLANA_BEACH),
-      detail:
-        explorer === SolanaExplorer.SOLANA_BEACH ? <IconCheckmark /> : null,
-    },
-    "Solana Explorer": {
-      onPress: () => changeExplorer(SolanaExplorer.SOLANA_EXPLORER),
-      detail:
-        explorer === SolanaExplorer.SOLANA_EXPLORER ? <IconCheckmark /> : null,
-    },
-    "Solana FM": {
-      onPress: () => changeExplorer(SolanaExplorer.SOLANA_FM),
-      detail: explorer === SolanaExplorer.SOLANA_FM ? <IconCheckmark /> : null,
-    },
-    Solscan: {
-      onPress: () => changeExplorer(SolanaExplorer.SOLSCAN),
-      detail: explorer === SolanaExplorer.SOLSCAN ? <IconCheckmark /> : null,
-    },
+    "Solana Beach": SolanaExplorer.SOLANA_BEACH,
+    "Solana Explorer": SolanaExplorer.SOLANA_EXPLORER,
+    "Solana FM": SolanaExplorer.SOLANA_FM,
+    Solscan: SolanaExplorer.SOLSCAN,
+    XRAY: SolanaExplorer.XRAY,
   };
 
   const changeExplorer = (explorer: string) => {
@@ -474,7 +471,20 @@ export function PreferencesSolanaExplorer({ navigation }) {
     }
   };
 
-  return <SettingsList menuItems={menuItems} />;
+  return (
+    <SettingsList
+      menuItems={Object.entries(menuItems).reduce(
+        (acc, [name, url]) => ({
+          ...acc,
+          [name]: {
+            onPress: () => changeExplorer(url),
+            detail: explorer === url ? <IconCheckmark /> : null,
+          },
+        }),
+        {} as React.ComponentProps<typeof SettingsList>["menuItems"]
+      )}
+    />
+  );
 }
 
 function PreferencesSolana({ navigation }) {

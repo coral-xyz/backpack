@@ -1,7 +1,11 @@
-import type { Blockchain, WalletDescriptor } from "@coral-xyz/common";
+import type {
+  Blockchain,
+  ServerPublicKey,
+  WalletDescriptor,
+} from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -15,6 +19,7 @@ import {
   ViewStyle,
   Alert,
   ActivityIndicator,
+  TextInput,
 } from "react-native";
 
 import {
@@ -30,7 +35,6 @@ import {
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
   XNFT_GG_LINK,
   PrivateKeyWalletDescriptor,
-  getLogger,
 } from "@coral-xyz/common";
 import {
   useSavePrivateKey,
@@ -69,7 +73,6 @@ import {
 import { UsernameInput } from "~components/StyledTextInput";
 import {
   ActionCard,
-  // Box,
   FullScreenLoading,
   Header,
   Margin,
@@ -102,7 +105,52 @@ import {
 } from "~src/features/biometrics/hooks";
 import * as Linking from "~src/lib/linking";
 
-const logger = getLogger("debug1:OnboardingNavigator");
+const logger =
+  (prefix = "") =>
+  (...args: any) => {
+    if (process.env.NODE_ENV === "development") {
+      console.log(prefix, ...args);
+    }
+  };
+
+const maybeLog = logger("on1");
+
+async function fetchRequestCheckIfUserExists({
+  username,
+}: {
+  username: string;
+}): Promise<{ id: string; publicKeys: ServerPublicKey[]; msg?: string }> {
+  const res = await fetch(`${BACKEND_API_URL}/users/${username}`);
+  const json = await res.json();
+
+  if (!res.ok) {
+    const errorMessage = json.msg || "fetching username failed";
+    throw new Error(errorMessage);
+  }
+
+  return json;
+}
+
+async function fetchRequestCreateUser({
+  username,
+  inviteCode,
+}: {
+  username: string;
+  inviteCode: string | undefined;
+}) {
+  const res = await fetch(`https://auth.xnfts.dev/users/${username}`, {
+    headers: {
+      "x-backpack-invite-code": inviteCode || "",
+    },
+  });
+
+  const json = await res.json();
+  if (!res.ok) {
+    throw new Error(json.message || "creating user failed");
+  }
+
+  return json;
+}
 
 function Network({
   id,
@@ -192,6 +240,7 @@ const Routes: Route = {
   MnemonicInput: "MnemonicInput",
   Biometrics: "Biometrics",
   CreatePassword: "CreatePassword",
+  CreateAccountLoading: "CreateAccountLoading",
 };
 
 const RecoverAccountRoutes: Route = {
@@ -201,6 +250,7 @@ const RecoverAccountRoutes: Route = {
 };
 
 const NewAccountRoutes: Route = {
+  CreateOrImportWallet: "CreateOrImportWallet",
   CreateOrRecoverUsername: "CreateOrRecoverUsername",
   KeyringTypeSelector: "KeyringTypeSelector",
 };
@@ -266,7 +316,7 @@ function CreateOrRecoverAccountScreen({
           styles.container,
           {
             marginTop: insets.top,
-            marginBottom: insets.bottom,
+            // marginBottom: insets.bottom,
             paddingLeft: insets.left,
             paddingRight: insets.right,
           },
@@ -430,6 +480,7 @@ function OnboardingPrivateKeyInputScreen({
   const [privateKey, setPrivateKey] = useState("");
   const { handlePrivateKeyInput, onboardingData } = useOnboarding();
   const { serverPublicKeys } = onboardingData;
+  const { appState } = useSession();
 
   const { handleSavePrivateKey } = useSavePrivateKey({
     onboarding: true,
@@ -474,7 +525,11 @@ function OnboardingPrivateKeyInputScreen({
               });
 
               await handlePrivateKeyInput(result as PrivateKeyWalletDescriptor);
-              navigation.push(Routes.Biometrics);
+              if (appState === "isAddingAccount") {
+                navigation.push(Routes.CreateAccountLoading);
+              } else {
+                navigation.push(Routes.Biometrics);
+              }
             }}
           />
         </Box>
@@ -528,17 +583,7 @@ function CreateOrRecoverUsernameScreen({
     setLoading(true);
     if (action === "recover") {
       try {
-        const response = await fetch(`${BACKEND_API_URL}/users/${username}`);
-
-        const json: {
-          id: string;
-          publicKeys: any[];
-          msg?: string;
-        } = await response.json();
-        if (!response.ok) {
-          throw new Error(json.msg);
-        }
-
+        const json = await fetchRequestCheckIfUserExists({ username });
         setOnboardingData({
           username,
           userId: json.id,
@@ -547,7 +592,7 @@ function CreateOrRecoverUsernameScreen({
 
         navigation.push(RecoverAccountRoutes.KeyringTypeSelector);
       } catch (err: any) {
-        setError(err.message || "Something went wrong");
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -555,23 +600,12 @@ function CreateOrRecoverUsernameScreen({
 
     if (action === "create") {
       try {
-        // TODO(fetch) consolidate these
-        const res = await fetch(`https://auth.xnfts.dev/users/${username}`, {
-          // @ts-ignore
-          headers: {
-            "x-backpack-invite-code": onboardingData.inviteCode,
-          },
-        });
-
-        const json = await res.json();
-        if (!res.ok) {
-          throw new Error(json.message || "There was an error");
-        }
-
-        setOnboardingData({
+        await fetchRequestCreateUser({
           username,
+          inviteCode: onboardingData.inviteCode,
         });
 
+        setOnboardingData({ username });
         navigation.push(NewAccountRoutes.CreateOrImportWallet);
       } catch (err: any) {
         setError(err.message);
@@ -758,6 +792,7 @@ function MnemonicSearchScreen({
   const background = useBackgroundClient();
   const { onboardingData, setOnboardingData } = useOnboarding();
   const { signMessageForWallet } = useRpcRequests();
+  const { appState } = useSession();
 
   const { userId } = onboardingData;
   const authMessage = userId ? getAuthMessage(userId) : "";
@@ -814,7 +849,12 @@ function MnemonicSearchScreen({
         );
 
         setOnboardingData({ signedWalletDescriptors });
-        navigation.push(Routes.Biometrics);
+
+        if (appState === "isAddingAccount") {
+          navigation.push(Routes.CreateAccountLoading);
+        } else {
+          navigation.push(Routes.Biometrics);
+        }
       } else {
         setError(true);
       }
@@ -825,26 +865,21 @@ function MnemonicSearchScreen({
     return <FullScreenLoading />;
   }
 
+  const subtitle =
+    serverPublicKeys.length === 1
+      ? `We couldn't find the public key
+            ${formatWalletAddress(serverPublicKeys[0].publicKey)} using your
+            recovery phrase.`
+      : `We couldn't find any wallets using your recovery phrase.`;
+
   return (
-    <Screen>
-      <Box>
-        <Header text="Unable to recover wallet" />
-        {serverPublicKeys.length === 1 ? (
-          <SubtextParagraph>
-            We couldn't find the public key
-            {formatWalletAddress(serverPublicKeys[0].publicKey)} using your
-            recovery phrase.
-          </SubtextParagraph>
-        ) : (
-          <SubtextParagraph>
-            We couldn't find any wallets using your recovery phrase.
-          </SubtextParagraph>
-        )}
-      </Box>
-      <Box>
-        <PrimaryButton label="Retry" onPress={() => navigation.goBack()} />
-      </Box>
-    </Screen>
+    <OnboardingScreen title="Unable to recover wallet" subtitle={subtitle}>
+      <Box />
+      <PrimaryButton
+        label="Go back & retry"
+        onPress={() => navigation.goBack()}
+      />
+    </OnboardingScreen>
   );
 }
 
@@ -855,6 +890,7 @@ function OnboardingBlockchainSelectScreen({
   const [loading, setLoading] = useState(new Set());
   const { onboardingData, handleSelectBlockchain } = useOnboarding();
   const { blockchainOptions, selectedBlockchains } = onboardingData;
+  const { appState } = useSession();
   const numColumns = 2;
   const gap = 8;
 
@@ -906,7 +942,11 @@ function OnboardingBlockchainSelectScreen({
         disabled={selectedBlockchains.length === 0}
         label="Next"
         onPress={() => {
-          navigation.push("Biometrics");
+          if (appState === "isAddingAccount") {
+            navigation.push(Routes.CreateAccountLoading);
+          } else {
+            navigation.push(Routes.Biometrics);
+          }
         }}
       />
     </OnboardingScreen>
@@ -924,8 +964,7 @@ export function OnboardingBiometricsScreen({
 }: BiometricsScreenProps): JSX.Element {
   const insets = useSafeAreaInsets();
   const { setOnboardingData } = useOnboarding();
-  const { touchId: isTouchIdDevice } = useDeviceSupportsBiometricAuth();
-  const biometricName = isTouchIdDevice ? "Touch ID" : "Face ID";
+  const { biometricName } = useDeviceSupportsBiometricAuth();
 
   const onPressNext = useCallback(() => {
     navigation.navigate({
@@ -934,10 +973,6 @@ export function OnboardingBiometricsScreen({
       merge: true,
     });
   }, [navigation, route.params]);
-
-  const onPressCancel = useCallback(() => {
-    navigation.push(Routes.CreatePassword);
-  }, [navigation]);
 
   const onPressEnableBiometrics = useCallback(async () => {
     const authStatus = await tryLocalAuthenticate({
@@ -956,7 +991,12 @@ export function OnboardingBiometricsScreen({
             text: "Settings",
             onPress: Linking.openSettings,
           },
-          { text: "Not now", onPress: onPressCancel },
+          {
+            text: "Not now",
+            onPress: () => {
+              navigation.push(Routes.CreatePassword);
+            },
+          },
         ]
       );
     }
@@ -965,7 +1005,7 @@ export function OnboardingBiometricsScreen({
       setOnboardingData({ password: BIOMETRIC_PASSWORD });
       onPressNext();
     }
-  }, [onPressNext, onPressCancel, setOnboardingData, biometricName]);
+  }, [onPressNext, navigation, setOnboardingData, biometricName]);
 
   return (
     <OnboardingScreen
@@ -1020,6 +1060,8 @@ function OnboardingCreatePasswordScreen({
     navigation.push("CreateAccountLoading");
   };
 
+  const nextInputRef = useRef<TextInput>(null);
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -1038,6 +1080,9 @@ function OnboardingCreatePasswordScreen({
               placeholder="Password"
               control={control}
               returnKeyType="next"
+              onSubmitEditing={() => {
+                nextInputRef.current?.focus();
+              }}
               rules={{
                 required: "You must specify a password",
                 minLength: {
@@ -1049,10 +1094,12 @@ function OnboardingCreatePasswordScreen({
             <ErrorMessage for={errors.password} />
           </Margin>
           <PasswordInput
+            ref={nextInputRef}
             name="passwordConfirmation"
             placeholder="Confirm Password"
-            returnKeyType="done"
             control={control}
+            returnKeyType="done"
+            onSubmitEditing={handleSubmit(onSubmit)}
             rules={{
               validate: (val: string) => {
                 if (val !== watch("password")) {
@@ -1091,29 +1138,51 @@ type CreateAccountLoadingScreenProps = StackScreenProps<
 
 function CreateAccountLoadingScreen(
   _p: CreateAccountLoadingScreenProps
-): JSX.Element {
-  const { setAuthToken } = useSession();
-  const background = useBackgroundClient();
+): JSX.Element | null {
+  const { setAuthToken, appState, setAppState } = useSession();
   const { onboardingData, maybeCreateUser } = useOnboarding();
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const isAddingAccount = appState === "isAddingAccount";
+
+  maybeLog("on1:CreateAccountLoadingScreen:error", error);
+  maybeLog("on1:CreateAccountLoadingScreen:loading", loading);
+
+  const completeOnboarding = useCallback(async () => {
+    const data = {
+      ...onboardingData,
+      isAddingAccount,
+      keyringType: onboardingData.keyringType || "mnemonic",
+    };
+
+    maybeLog("on1:CreateAccountLoadingScreen:data", data);
+    const res = await maybeCreateUser(data);
+    maybeLog("on1:CreateAccountLoadingScreen:res", res);
+
+    if (!res.ok) {
+      setError(true);
+      setLoading(false);
+    } else {
+      setLoading(false);
+      if (isAddingAccount) {
+        setAppState("onboardingComplete");
+      }
+      setAuthToken(res.jwt);
+    }
+  }, [
+    isAddingAccount,
+    setAppState,
+    setError,
+    setLoading,
+    maybeCreateUser,
+    onboardingData,
+    setAuthToken,
+  ]);
 
   useEffect(() => {
-    (async () => {
-      logger.debug("CreateAccountLoadingScreen:onboardingData", onboardingData);
-      const res = await maybeCreateUser({
-        ...onboardingData,
-        keyringType: onboardingData.keyringType || "mnemonic",
-      });
-
-      logger.debug("CreateAccountLoadingScreen:res", res);
-
-      if (!res.ok) {
-        setError(true);
-      } else {
-        setAuthToken(res.jwt);
-      }
-    })();
-  }, [onboardingData, background, maybeCreateUser, setAuthToken]);
+    completeOnboarding();
+  }, [completeOnboarding]);
 
   if (error) {
     return (
@@ -1131,7 +1200,11 @@ function CreateAccountLoadingScreen(
     );
   }
 
-  return <FullScreenLoading label="Creating your wallet..." />;
+  if (loading) {
+    return <FullScreenLoading label="Creating your wallet..." />;
+  }
+
+  return null;
 }
 
 export function OnboardingCompleteWelcome({

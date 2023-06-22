@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   ETH_NATIVE_MINT,
@@ -18,7 +18,7 @@ import { Typography } from "@mui/material";
 import { useNavigation } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";
-import { Swap, SwapSelectToken } from "../../Unlocked/Swap";
+import { Swap, SwapSelectTokenInDrawer } from "../../Unlocked/Swap";
 
 import {
   AddressSelectorLoader,
@@ -86,34 +86,46 @@ function SwapButton({
     routes = [],
   }: {
     routes?: React.ComponentProps<typeof TransferButton>["routes"];
-  }) => (
-    <TransferButton
-      label="Swap"
-      labelComponent={
-        <SwapHoriz
-          style={{
-            color: theme.custom.colors.fontColor,
-            display: "flex",
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        />
-      }
-      routes={routes}
-      disabled={routes.length === 0}
-    />
-  );
-
+  }) => {
+    return (
+      <TransferButton
+        label="Swap"
+        labelComponent={
+          <SwapHoriz
+            style={{
+              color: theme.custom.colors.fontColor,
+              display: "flex",
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+          />
+        }
+        routes={routes}
+        disabled={routes.length === 0}
+      />
+    );
+  };
   const SwapButtonIfTheTokenIsSwappable = () => {
-    // This component loads inside Suspense, so it should not block
-    // rendering as we wait for Jupiter Routes to be downloaded and parsed
-    const { canSwap } = useSwapContext();
+    return (
+      <SwapProvider tokenAddress={address} isInDrawer>
+        <_SwapButtonIfTheTokenIsSwappable />
+      </SwapProvider>
+    );
+  };
+
+  const _SwapButtonIfTheTokenIsSwappable = () => {
+    const { canSwap, isLoading } = useSwapContext();
+    if (isLoading) {
+      return <SwapButtonComponent />;
+    }
     return canSwap ? (
       <SwapButtonComponent
         routes={[
           {
             name: "swap",
-            component: (props: any) => <Swap {...props} />,
+            component: (props: any) => (
+              <Swap {...props} tokenAddress={address} />
+            ),
             title: `Swap`,
             props: {
               blockchain,
@@ -122,7 +134,7 @@ function SwapButton({
           {
             title: `Select Token`,
             name: "select-token",
-            component: (props: any) => <SwapSelectToken {...props} />,
+            component: (props: any) => <SwapSelectTokenInDrawer {...props} />,
           },
         ]}
       />
@@ -130,16 +142,7 @@ function SwapButton({
     null;
   };
 
-  // This displays a semi-transparent Swap button while Jupiter routes are
-  // first downloaded and parsed. After that it will either make the button
-  // fully opaque and clickable or hide it if the token isn't supported
-  return (
-    <React.Suspense fallback={<SwapButtonComponent />}>
-      <SwapProvider tokenAddress={address}>
-        <SwapButtonIfTheTokenIsSwappable />
-      </SwapProvider>
-    </React.Suspense>
-  );
+  return <SwapButtonIfTheTokenIsSwappable />;
 }
 
 function SendButton({

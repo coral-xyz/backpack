@@ -204,7 +204,6 @@ function WalletTokenTable({
 
   return (
     <BalancesTable style={tableStyle}>
-      <BalancesTableHead wallet={wallet} />
       <BalancesTableContent
         style={
           useVirtualization ? { height: `calc(100% - ${headerHeight}px)` } : {}
@@ -270,8 +269,8 @@ export const SkeletonRows = () => {
       >
         <Skeleton
           variant="circular"
-          width={40}
-          height={40}
+          width={44}
+          height={44}
           className={classes.skeleton}
         />
         <div style={{ marginLeft: "5px", width: "50%" }}>

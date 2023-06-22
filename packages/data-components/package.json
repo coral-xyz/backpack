@@ -23,7 +23,9 @@
     "helius-sdk": "^1.0.6",
     "react": "^18.2.0",
     "react-error-boundary": "^4.0.4",
-    "react-native-svg": "^13.9.0"
+    "react-native-svg": "^13.9.0",
+    "recoil": "^0.7.5",
+    "use-async-effect": "^2.2.7"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^3.3.1",

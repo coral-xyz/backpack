@@ -8,7 +8,6 @@ import {
 import { BalanceSummaryWidget } from "@coral-xyz/data-components";
 import {
   useActiveWallet,
-  useAllWalletsDisplayed,
   useFeatureGates,
   useNavigation,
 } from "@coral-xyz/recoil";
@@ -22,9 +21,7 @@ export function Balances() {
   const gates = useFeatureGates();
   const { push } = useNavigation();
 
-  const swapEnabled =
-    useAllWalletsDisplayed().find((w) => w.blockchain === Blockchain.SOLANA) !==
-    undefined;
+  const swapEnabled = useActiveWallet().blockchain === Blockchain.SOLANA;
 
   const onClickTokenRow = (
     blockchain: Blockchain,
@@ -51,8 +48,8 @@ export function Balances() {
       <_SummaryComponent />
       <div
         style={{
-          marginTop: "32px",
-          marginBottom: "32px",
+          marginTop: "20px",
+          marginBottom: "20px",
         }}
       >
         <TransferWidget rampEnabled swapEnabled={swapEnabled} />

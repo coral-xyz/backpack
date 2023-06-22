@@ -6,15 +6,17 @@ import { FlatList, Pressable } from "react-native";
 
 import Constants from "expo-constants";
 
-import { useSuspenseQuery_experimental } from "@apollo/client";
-import { Box, StyledText, XStack, BlockchainLogo } from "@coral-xyz/tamagui";
+import { useSuspenseQuery } from "@apollo/client";
+import { Stack, StyledText, XStack, BlockchainLogo } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { ScreenError, ScreenLoading } from "~components/index";
+import { ScreenError } from "~components/index";
 import { useWallets } from "~hooks/wallets";
 import type { HomeWalletListScreenProps } from "~navigation/WalletsNavigator";
 import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 
+import { ScreenListLoading } from "~src/components/LoadingStates";
 import { gql } from "~src/graphql/__generated__";
 import { useSession } from "~src/lib/SessionProvider";
 import { coalesceWalletData } from "~src/lib/WalletUtils";
@@ -22,26 +24,28 @@ import { coalesceWalletData } from "~src/lib/WalletUtils";
 function ListItemWalletCard({
   isFirst,
   name,
-  balance,
-  publicKey,
   type,
+  publicKey,
   blockchain,
+  isCold,
+  balance,
   onPress,
 }: {
   isFirst: boolean;
   name: string;
   type: string;
-  blockchain: Blockchain;
   publicKey: PublicKey;
+  blockchain: Blockchain;
+  isCold: boolean;
   balance: string;
-  onPress: (w: { blockchain: Blockchain; publicKey: PublicKey }) => void;
+  onPress: (w: Wallet) => void;
 }) {
   const dehydrated = type === "dehydrated";
   return (
     <Pressable
       onPress={() => {
         if (!dehydrated) {
-          onPress?.({ blockchain, publicKey });
+          onPress({ name, type, publicKey, blockchain, isCold });
         }
       }}
     >
@@ -49,8 +53,7 @@ function ListItemWalletCard({
         mt={isFirst ? 0 : -12}
         jc="space-between"
         p={16}
-        borderTopEndRadius={12}
-        borderTopStartRadius={12}
+        borderRadius={12}
         borderWidth={1}
         borderColor="$baseBorderLight"
         backgroundColor="$card"
@@ -85,22 +88,21 @@ const QUERY_USER_WALLETS = gql(`
 
 function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
   const { setActiveWallet } = useSession();
-  const { data } = useSuspenseQuery_experimental(QUERY_USER_WALLETS);
-  const { allWallets, selectActiveWallet } = useWallets();
+  const { data } = useSuspenseQuery(QUERY_USER_WALLETS);
+  const { allWallets } = useWallets();
   const wallets = coalesceWalletData(data, allWallets);
+  const insets = useSafeAreaInsets();
 
   const handlePressWallet = useCallback(
-    async (w: any) => {
-      const activeWallet = { blockchain: w.blockchain, publicKey: w.publicKey };
-      setActiveWallet(activeWallet);
-      selectActiveWallet(activeWallet);
+    async (wallet: Wallet) => {
+      setActiveWallet(wallet);
       navigation.push("TopTabsWalletDetail", {
         // @ts-expect-error TODO(navigation) fix
         screen: "TokenList",
-        params: activeWallet,
+        params: wallet,
       });
     },
-    [navigation, selectActiveWallet, setActiveWallet]
+    [navigation, setActiveWallet]
   );
 
   const keyExtractor = (wallet: Wallet) => wallet.publicKey.toString();
@@ -109,11 +111,12 @@ function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
       const isFirst = index === 0;
       return (
         <ListItemWalletCard
-          isFirst={isFirst}
           name={item.name}
-          blockchain={item.blockchain}
-          publicKey={item.publicKey}
           type={item.type}
+          publicKey={item.publicKey}
+          blockchain={item.blockchain}
+          isCold={item.isCold}
+          isFirst={isFirst}
           balance={item.balance}
           onPress={handlePressWallet}
         />
@@ -125,15 +128,15 @@ function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
   return (
     <FlatList
       style={{ paddingTop: 16, paddingHorizontal: 16 }}
-      contentContainerStyle={{ paddingBottom: 32 }}
+      contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
       data={wallets}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={
-        <Box mb={12}>
+        <Stack mb={12}>
           <BalanceSummaryWidget />
-        </Box>
+        </Stack>
       }
     />
   );
@@ -152,9 +155,11 @@ export function HomeWalletListScreen({
         />
       )}
     >
-      <Suspense fallback={<ScreenLoading />}>
+      <Suspense fallback={<ScreenListLoading style={{ marginTop: 100 }} />}>
         <Container navigation={navigation} route={route} />
       </Suspense>
     </ErrorBoundary>
   );
 }
+
+// <Container navigation={navigation} route={route} />

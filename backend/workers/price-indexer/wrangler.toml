@@ -1,0 +1,10 @@
+name = "price-indexer"
+main = "src/index.ts"
+compatibility_date = "2022-12-05"
+node_compat = true
+kv_namespaces = [
+  { binding = "PRICES_KV", id = "4b7d24a9eb0241aeb942704d423c102a" }
+]
+
+[triggers]
+crons = ["*/1 * * * *"]

@@ -1,4 +1,7 @@
+import { useState } from "react";
 import { Alert, Pressable } from "react-native";
+
+import Constants from "expo-constants";
 
 import {
   UI_RPC_METHOD_ACTIVE_USER_UPDATE,
@@ -11,16 +14,18 @@ import {
   StyledText,
   XStack,
   useTheme as useTamaguiTheme,
+  YStack,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
-import {
-  DrawerContentScrollView,
-  DrawerItemList,
-} from "@react-navigation/drawer";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { DrawerItemList } from "@react-navigation/drawer";
+import { FlatList } from "react-native-gesture-handler";
 
-import { UserAccountListItem } from "~components/UserAccountsMenu";
+import { UserAccountListItem } from "~components/ListItem";
 import { CurrentUserAvatar } from "~components/UserAvatar";
+
+import RNDrawerContentView from "./RNDrawerContentView";
+
+import { useSession } from "~src/lib/SessionProvider";
 
 function Header() {
   const user = useUser();
@@ -39,38 +44,58 @@ function UserList() {
   const background = useBackgroundClient();
   const users = useAllUsers();
   const user = useUser();
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const { setAppState } = useSession();
 
-  const handlePressItem = async (uuid: string) => {
-    await background.request({
-      method: UI_RPC_METHOD_ACTIVE_USER_UPDATE,
-      params: [uuid],
-    });
+  const handleUpdateActiveUser = async (uuid: string) => {
+    if (uuid === user.uuid) {
+      return;
+    }
 
-    // onDismiss();
+    try {
+      setLoadingId(uuid);
+      await background.request({
+        method: UI_RPC_METHOD_ACTIVE_USER_UPDATE,
+        params: [uuid],
+      });
+    } catch (error) {
+      console.error("Error updating active user", error);
+    } finally {
+      setLoadingId(null);
+    }
   };
 
   const handlePressAddAccount = () => {
-    Alert.alert("TODO");
+    setAppState("isAddingAccount");
   };
 
   const theme = useTamaguiTheme();
+  const activeUser = users.find((u) => u.uuid === user.uuid);
 
   return (
     <Stack jc="flex-start">
       <StyledText ml={12} mb={8} size="$xs" color="$baseTextMedEmphasis">
         ACCOUNTS ({users.length})
       </StyledText>
-      {users.map(({ username, uuid }: any) => {
-        return (
-          <UserAccountListItem
-            key={uuid}
-            uuid={uuid}
-            username={username}
-            isActive={user.username === username}
-            onPress={handlePressItem}
-          />
-        );
-      })}
+      <FlatList
+        data={[activeUser, ...users.filter((u) => u.uuid !== user.uuid)]}
+        style={{ marginBottom: 8, maxHeight: 260 }}
+        keyExtractor={(item) => item.uuid}
+        showsVerticalScrollIndicator={false}
+        scrollEnabled={users.length >= 4}
+        renderItem={({ item: { username, uuid } }) => {
+          return (
+            <UserAccountListItem
+              key={uuid}
+              uuid={uuid}
+              username={username}
+              isActive={user.username === username}
+              isLoading={loadingId === uuid}
+              onPress={handleUpdateActiveUser}
+            />
+          );
+        }}
+      />
       <Pressable onPress={handlePressAddAccount}>
         <XStack ai="center" ml={16}>
           <MaterialIcons
@@ -112,21 +137,23 @@ function UserList() {
 }
 
 export function GlobalDrawerContent(props) {
-  const insets = useSafeAreaInsets();
+  // SafeAreaView doesn't load immediately which causes screen thrashing
+  // it will go from 0 to 34 on an iphone x, but only in this global drawer context -_-
+  const marginBottom = Constants.statusBarHeight >= 53 ? 50 : 16;
   return (
-    <DrawerContentScrollView
+    <RNDrawerContentView
       {...props}
-      contentContainerStyle={{
+      style={{
         flexGrow: 1,
         justifyContent: "space-between",
-        marginBottom: insets.bottom,
+        marginBottom,
       }}
     >
-      <Stack>
+      <YStack>
         <Header />
         <DrawerItemList {...props} />
-      </Stack>
+      </YStack>
       <UserList />
-    </DrawerContentScrollView>
+    </RNDrawerContentView>
   );
 }

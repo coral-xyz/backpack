@@ -1,11 +1,17 @@
-import { Suspense, useCallback, useEffect, useState } from "react";
-import { Keyboard, StyleSheet, View } from "react-native";
+import { Suspense, useEffect, useState } from "react";
+import {
+  Keyboard,
+  StyleSheet,
+  View,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
+import { YStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 import { useForm } from "react-hook-form";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
@@ -16,8 +22,8 @@ import { ErrorMessage } from "~components/ErrorMessage";
 import { PasswordInput } from "~components/PasswordInput";
 import {
   CurrentUserAvatar,
-  Margin,
   PrimaryButton,
+  LinkButton,
   Screen,
   ScreenError,
   ScreenLoading,
@@ -29,133 +35,61 @@ import {
   BiometricAuthenticationStatus,
   tryLocalAuthenticate,
 } from "~src/features/biometrics";
-import { useOsBiometricAuthEnabled } from "~src/features/biometrics/hooks";
+import {
+  useDeviceSupportsBiometricAuth,
+  useOsBiometricAuthEnabled,
+} from "~src/features/biometrics/hooks";
 
 interface FormData {
   password: string;
 }
 
 function Container(): JSX.Element {
-  const background = useBackgroundClient();
   const user = useUser();
   const insets = useSafeAreaInsets();
-  const isBiometricsEnabled = useOsBiometricAuthEnabled();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const { control, handleSubmit, formState, setError } = useForm<FormData>();
-
-  const maybeUnlock = useCallback(
-    async ({ password }: FormData) => {
-      try {
-        const res = await background.request({
-          method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-          params: [password, user.uuid],
-        });
-        console.log("debug1:res", res);
-      } catch (error: any) {
-        console.error("debug1:error", error);
-        setError("password", { message: error });
-      }
-    },
-    [background, setError, user.uuid]
-  );
-
-  const onSubmit = async ({ password }: FormData) => {
-    await maybeUnlock({ password });
-  };
-
-  useEffect(() => {
-    async function handleAuth() {
-      try {
-        const res = await tryLocalAuthenticate();
-        if (res === BiometricAuthenticationStatus.Authenticated) {
-          await maybeUnlock({ password: BIOMETRIC_PASSWORD });
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    if (isBiometricsEnabled) {
-      handleAuth();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // runs only once so it doesn't run on setting change
-
-  // useEffect(() => {
-  //   async function f() {
-  //     await background.request({
-  //       method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-  //       params: ["backpack", user.uuid],
-  //     });
-  //   }
-  //
-  //   f();
-  // });
-
-  // const [keyboardStatus, setKeyboardStatus] = useState("hidden");
-  //
-  // useEffect(() => {
-  //   const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
-  //     setKeyboardStatus("shown");
-  //   });
-  //   const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
-  //     setKeyboardStatus("hidden");
-  //   });
-  //
-  //   return () => {
-  //     showSubscription.remove();
-  //     hideSubscription.remove();
-  //   };
-  // }, []);
+  const isBiometricsEnabled = useOsBiometricAuthEnabled();
 
   return (
-    <>
-      <KeyboardAwareScrollView
-        scrollEnabled={false}
-        contentContainerStyle={{ flexGrow: 1 }}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <Screen
+        style={[
+          styles.container,
+          {
+            marginTop: insets.top,
+            marginBottom: insets.bottom,
+          },
+        ]}
       >
-        <Screen
-          style={[
-            styles.container,
-            {
-              marginTop: insets.top,
-              marginBottom: insets.bottom,
-            },
-          ]}
-        >
-          <HelpModalMenuButton
+        <HelpModalMenuButton
+          onPress={() => {
+            Keyboard.dismiss();
+            setIsModalVisible((last) => !last);
+          }}
+        />
+        <WelcomeLogoHeader subtitle={`gm ${user.username}`} />
+        <View>
+          {user.username ? (
+            <View style={[{ marginBottom: -40, alignSelf: "center" }]}>
+              <CurrentUserAvatar size={164} />
+            </View>
+          ) : null}
+          {isBiometricsEnabled ? (
+            <BiometricsUnlock userUuid={user.uuid} />
+          ) : (
+            <PasswordUnlock userUuid={user.uuid} />
+          )}
+          <LinkButton
+            label="Having trouble logging in?"
             onPress={() => {
-              Keyboard.dismiss();
-              setIsModalVisible((last) => !last);
+              setIsModalVisible(true);
             }}
           />
-          <WelcomeLogoHeader subtitle={`gm ${user.username}`} />
-          {isBiometricsEnabled ? null : (
-            <View>
-              <Margin bottom={8}>
-                {user.username ? (
-                  <View style={[{ marginBottom: -40, alignSelf: "center" }]}>
-                    <CurrentUserAvatar size={212} />
-                  </View>
-                ) : null}
-                <PasswordInput
-                  returnKeyType="done"
-                  autoFocus
-                  placeholder="Password"
-                  name="password"
-                  control={control}
-                  rules={{
-                    required: "You must enter a password",
-                  }}
-                />
-                {formState.errors.password ? (
-                  <ErrorMessage for={formState.errors.password} />
-                ) : null}
-              </Margin>
-              <PrimaryButton label="Unlock" onPress={handleSubmit(onSubmit)} />
-            </View>
-          )}
-        </Screen>
-      </KeyboardAwareScrollView>
+        </View>
+      </Screen>
       <BottomSheetHelpModal
         showResetButton
         isVisible={isModalVisible}
@@ -163,7 +97,78 @@ function Container(): JSX.Element {
           setIsModalVisible(() => false);
         }}
       />
-    </>
+    </KeyboardAvoidingView>
+  );
+}
+
+function BiometricsUnlock({ userUuid }: { userUuid: string }) {
+  const background = useBackgroundClient();
+  const { biometricName } = useDeviceSupportsBiometricAuth();
+
+  const tryBiometricsUnlock = async () => {
+    try {
+      const res = await tryLocalAuthenticate();
+      if (res === BiometricAuthenticationStatus.Authenticated) {
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+          params: [BIOMETRIC_PASSWORD, userUuid],
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    tryBiometricsUnlock();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // runs only once so it doesn't run on setting change
+
+  return (
+    <PrimaryButton
+      label={`Login with ${biometricName}`}
+      onPress={tryBiometricsUnlock}
+    />
+  );
+}
+
+function PasswordUnlock({ userUuid }: { userUuid: string }): JSX.Element {
+  const background = useBackgroundClient();
+  const { control, handleSubmit, formState, setError } = useForm<FormData>();
+
+  const onSubmit = async ({ password }: FormData) => {
+    await maybeUnlock({ password });
+  };
+
+  const maybeUnlock = async ({ password }: FormData) => {
+    try {
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+        params: [password, userUuid],
+      });
+    } catch (error: any) {
+      setError("password", { message: error });
+    }
+  };
+
+  return (
+    <YStack space={8}>
+      <PasswordInput
+        onSubmitEditing={handleSubmit(onSubmit)}
+        returnKeyType="done"
+        autoFocus
+        placeholder="Password"
+        name="password"
+        control={control}
+        rules={{
+          required: "You must enter a password",
+        }}
+      />
+      {formState.errors.password ? (
+        <ErrorMessage for={formState.errors.password} />
+      ) : null}
+      <PrimaryButton label="Unlock" onPress={handleSubmit(onSubmit)} />
+    </YStack>
   );
 }
 

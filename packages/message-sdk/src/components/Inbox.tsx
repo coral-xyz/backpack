@@ -94,7 +94,7 @@ export function InboxInner() {
     <div
       className={classes.container}
       style={{
-        marginTop: "8px",
+        //        marginTop: "8px",
         display: "flex",
         flexDirection: "column",
       }}

@@ -7,8 +7,6 @@ import {
   View,
 } from "react-native";
 
-import { StatusBar } from "expo-status-bar";
-
 import { ErrorBoundary } from "react-error-boundary";
 import { WebView } from "react-native-webview";
 
@@ -54,7 +52,6 @@ function Container() {
         style={{ flex: 1, backgroundColor: "yellow" }}
       />
       <LoadingView isLoading={isLoading} />
-      <StatusBar style="auto" />
     </View>
   );
 }
