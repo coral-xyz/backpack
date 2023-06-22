@@ -68,11 +68,12 @@ export class ProviderSolanaInjection
   #backpackRequestManager: InjectedRequestManager;
   #xnftRequestManager: ChainedRequestManager;
 
-  #requestManager: InjectedRequestManager | ChainedRequestManager;
   //
   // Channel to send Solana Connection API requests to the extension.
   //
   #connectionRequestManager: InjectedRequestManager;
+
+  #requestManager: InjectedRequestManager | ChainedRequestManager;
 
   #isBackpack: boolean;
   #isConnected: boolean;
@@ -97,17 +98,17 @@ export class ProviderSolanaInjection
     );
 
     this.#requestManager = this.#backpackRequestManager;
-    this.#connectionRequestManager = new InjectedRequestManager(
-      CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
-      CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
-    );
+
     this.#initChannels();
 
     this.#isBackpack = true;
     this.#isConnected = false;
     this.#publicKey = undefined;
     this.#connection = this.defaultConnection();
-
+    this.#connectionRequestManager = new InjectedRequestManager(
+      CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
+      CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
+    );
     this.#secureClientOrigin = {
       context: "browser",
       name: document.title,
@@ -228,6 +229,10 @@ export class ProviderSolanaInjection
   #connect(publicKey: string, connectionUrl: string) {
     this.#isConnected = true;
     this.#publicKey = new PublicKey(publicKey);
+    this.#connection = new BackgroundSolanaConnection(
+      this.#connectionRequestManager,
+      connectionUrl
+    );
     this.#secureSolanaClient = new SolanaClient(
       this.#secureClientSender,
       new Connection(connectionUrl)
