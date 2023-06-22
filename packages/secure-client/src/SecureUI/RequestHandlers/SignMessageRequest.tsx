@@ -33,7 +33,7 @@ export function SignMessageRequest({
       onClosed={() => currentRequest.error("Plugin Closed")}
     >
       {(currentRequest) => (
-        <RequireUserUnlocked force>
+        <RequireUserUnlocked>
           <ApproveTransactionBottomSheet
             id={currentRequest.queueId}
             title="Approve Message"

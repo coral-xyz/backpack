@@ -74,7 +74,6 @@ function Unlock({ didUnlock = () => {} }: { didUnlock?: () => void }) {
 
   const onSubmit = async (event) => {
     const password = event.target.value;
-    console.log(password);
     const unlockResponse = await userClient.unlockKeyring({
       uuid: currentUser?.user?.uuid,
       password,

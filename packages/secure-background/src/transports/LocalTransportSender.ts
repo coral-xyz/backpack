@@ -1,6 +1,7 @@
 import {
   CHANNEL_SECURE_BACKGROUND_EXTENSION_REQUEST,
   CHANNEL_SECURE_BACKGROUND_EXTENSION_RESPONSE,
+  getLogger,
 } from "@coral-xyz/common";
 import type {
   SECURE_EVENTS,
@@ -20,6 +21,8 @@ type QueuedRequest<
   request: SecureRequest;
   resolve: (resonse: SecureResponse<X, R>) => void;
 };
+
+const logger = getLogger("secure-background LocalTransportSender");
 
 export class LocalTransportSender<
   X extends SECURE_EVENTS,
@@ -48,10 +51,10 @@ export class LocalTransportSender<
 
   private responseHandler = (event: SecureResponse<X, R>) => {
     const request = this.getRequest(event.id);
-
-    console.log("PCA LocalTransportSencder response Received", event);
-
-    request?.resolve(event);
+    if (request) {
+      logger.debug("Response", event);
+      request.resolve(event);
+    }
   };
 
   private getRequest = (
@@ -85,12 +88,7 @@ export class LocalTransportSender<
           id: v4(),
         };
 
-        console.log(
-          "PCA LocalTransportSender send Request",
-          request,
-          CHANNEL_SECURE_BACKGROUND_EXTENSION_REQUEST
-        );
-
+        logger.debug("Request", requestWithId);
         this.responseQueue.push({
           request: requestWithId,
           resolve,

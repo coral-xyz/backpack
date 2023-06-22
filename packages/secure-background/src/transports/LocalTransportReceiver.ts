@@ -1,7 +1,3 @@
-import {
-  CHANNEL_SECURE_BACKGROUND_EXTENSION_REQUEST,
-  CHANNEL_SECURE_BACKGROUND_EXTENSION_RESPONSE,
-} from "@coral-xyz/common";
 import { TransportResponder } from "@coral-xyz/secure-background/clients";
 import type {
   SECURE_EVENTS,

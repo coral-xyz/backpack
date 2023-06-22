@@ -410,7 +410,6 @@ export class ProviderSolanaInjection
     publicKey?: PublicKey,
     connection?: Connection
   ): Promise<Array<T>> {
-    console.log("PCA signAllTransactions");
     if (!this.#publicKey) {
       await this.connect();
     }

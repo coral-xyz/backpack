@@ -1,9 +1,13 @@
+import { getLogger } from "@coral-xyz/common";
+
 import type { SECURE_EVENTS } from "../types/events";
 import type {
   SecureRequest,
   SecureResponse,
   TransportHandler,
 } from "../types/transports";
+
+const logger = getLogger("secure-background TransportResponder");
 
 export class TransportResponder<
   T extends SECURE_EVENTS = SECURE_EVENTS,
@@ -30,30 +34,37 @@ export class TransportResponder<
 
     const returns = handler(this);
 
-    returns?.catch((error) => {
-      onResponse({
-        name: this.event.name,
-        id: this.event.id,
-        error,
+    if (returns) {
+      logger.debug("Handling", event);
+      returns.catch((error) => {
+        onResponse({
+          name: this.event.name,
+          id: this.event.id,
+          error,
+        });
       });
-    });
+    }
   }
 
   public respond = (response: SecureResponse<T, R>["response"]) => {
-    this.onResponse({
+    const eventResponse = {
       name: this.event.name,
       id: this.event.id,
       response,
-    });
+    };
+    logger.debug("Response", eventResponse);
+    this.onResponse(eventResponse);
     return "RESPONDED" as const;
   };
 
   public error = (error: any) => {
-    this.onResponse({
+    const eventResponse = {
       name: this.event.name,
       id: this.event.id,
       error,
-    });
+    };
+    logger.error("Response", eventResponse);
+    this.onResponse(eventResponse);
     return "RESPONDED" as const;
   };
 }

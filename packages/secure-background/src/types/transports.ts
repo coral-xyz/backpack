@@ -30,7 +30,7 @@ export type SecureEventOrigin = {
 export interface SecureEventBase<T extends SECURE_EVENTS = SECURE_EVENTS> {
   name: T;
   origin: SecureEventOrigin;
-  id?: string | number;
+  id: string | number;
   request: SerializableJson;
   confirmOptions?: PassThroughToUI;
   // {
@@ -46,7 +46,7 @@ export interface SecureEventBase<T extends SECURE_EVENTS = SECURE_EVENTS> {
 export type SecureRequest<T extends SECURE_EVENTS = SECURE_EVENTS> = {
   name: T;
   origin: SecureEvent<T>["origin"];
-  id?: SecureEvent<T>["id"];
+  id: SecureEvent<T>["id"];
   request: SecureEvent<T>["request"];
   confirmOptions?: SecureEvent<T>["confirmOptions"];
 };
@@ -56,7 +56,7 @@ export type SecureResponse<
   R extends "response" | "confirmation" = "response"
 > = {
   name: T;
-  id?: SecureEvent<T>["id"];
+  id: SecureEvent<T>["id"];
   response?: R extends "response"
     ? SecureEvent<T>["response"]
     : SecureEvent<T>["confirmationResponse"];

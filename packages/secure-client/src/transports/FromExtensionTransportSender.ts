@@ -1,6 +1,7 @@
 import {
   CHANNEL_SECURE_BACKGROUND_EXTENSION_REQUEST,
   CHANNEL_SECURE_BACKGROUND_EXTENSION_RESPONSE,
+  getLogger,
 } from "@coral-xyz/common";
 import type {
   SECURE_EVENTS,
@@ -11,6 +12,8 @@ import type {
   TransportSender,
 } from "@coral-xyz/secure-background/types";
 import { v4 } from "uuid";
+
+const logger = getLogger("secure-client FromExtensionTransportSender");
 
 type QueuedRequest<
   X extends SECURE_EVENTS,
@@ -40,9 +43,11 @@ export class FromExtensionTransportSender<
     }
     const request = this.getRequest(message.data.id);
 
-    console.log("PCA FromExtensionTransportSender response Received", message);
+    if (request) {
+      logger.debug("Response", message.data);
 
-    request?.resolve(message.data);
+      request.resolve(message.data);
+    }
   };
 
   private getRequest = (
@@ -76,11 +81,7 @@ export class FromExtensionTransportSender<
           id: v4(),
         };
 
-        console.log(
-          "PCA FromExtensionTransportSender send Request",
-          request,
-          CHANNEL_SECURE_BACKGROUND_EXTENSION_REQUEST
-        );
+        logger.debug("Request", requestWithId);
 
         this.responseQueue.push({
           request: requestWithId,
@@ -93,12 +94,19 @@ export class FromExtensionTransportSender<
             data: requestWithId,
           })
           .catch((e) => {
-            console.error("PCA", e);
             const request = this.getRequest(requestWithId.id);
-            return request?.resolve({
-              name: requestWithId.name,
-              error: e,
-            } as SecureResponse<T, C>);
+
+            if (request) {
+              const response = {
+                name: requestWithId.name,
+                id: requestWithId.id,
+                error: e,
+              } as SecureResponse<T, C>;
+
+              logger.debug("Response", response);
+
+              return request.resolve(response);
+            }
           });
       }
     );

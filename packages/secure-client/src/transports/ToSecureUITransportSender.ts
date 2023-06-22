@@ -1,6 +1,7 @@
 import {
   CHANNEL_SECURE_UI_REQUEST,
   CHANNEL_SECURE_UI_RESPONSE,
+  getLogger,
   openPopupWindow,
 } from "@coral-xyz/common";
 import type {
@@ -12,6 +13,8 @@ import type {
   TransportSender,
 } from "@coral-xyz/secure-background/types";
 import { v4 } from "uuid";
+
+const logger = getLogger("secure-client ToSecureUITransportSender");
 
 type QueuedRequest<
   X extends SECURE_EVENTS,
@@ -34,7 +37,7 @@ export class ToSecureUITransportSender<
 
   constructor(private origin: SecureEventOrigin) {
     chrome.runtime.onConnect.addListener((port) => {
-      console.log("PCA", "connect", port.name);
+      logger.debug("Plugin Connected", port.name);
 
       // if we are still connected to a plugin -> disconnect.
       if (this.port) {
@@ -63,24 +66,29 @@ export class ToSecureUITransportSender<
     if (this.port?.name !== port.name) {
       return;
     }
-    console.log("PCA", "disconnect", port.name);
+
+    logger.debug("Plugin Disconnected", port.name);
 
     // remove listeners & reference
     try {
       port.disconnect();
     } catch (e) {
       /* this is okay to fail, as it means no listeners left. */
-      console.error(e);
+      logger.error("Plugin Disconnect", e);
     }
     this.port = null;
 
     // resolve all waiting responses with error
-    this.responseQueue.forEach((response) =>
-      response.resolve({
+    this.responseQueue.forEach((response) => {
+      const responseWithId = {
         name: response.request.name,
+        id: response.request.id,
         error: "Plugin Closed",
-      } as SecureResponse<X, R>)
-    );
+      } as SecureResponse<X, R>;
+
+      logger.debug("Response", responseWithId);
+      response.resolve(responseWithId);
+    });
     this.responseQueue = [];
   };
 
@@ -93,7 +101,6 @@ export class ToSecureUITransportSender<
     return new Promise<SecureResponse<T, C>>(
       (resolve: (response: SecureResponse<T, C>) => void) => {
         const requestWithId = { ...request, origin: this.origin, id: v4() };
-        console.log("PCA request to secure UI sent", requestWithId);
 
         this.requestQueue.push({
           request: requestWithId,
@@ -113,7 +120,6 @@ export class ToSecureUITransportSender<
     const index = this.responseQueue.findIndex(
       (queuedResponse) => queuedResponse.request.id === response.data?.id
     );
-    console.log("PCA response from secure UI received", response, index);
 
     if (index < 0) {
       return;
@@ -122,6 +128,8 @@ export class ToSecureUITransportSender<
     // remove request from queue
     const queuedRequest = this.responseQueue[index];
     this.responseQueue.splice(index, 1);
+
+    logger.debug("Response", response.data);
 
     // resolve request
     queuedRequest.resolve(response.data);
@@ -152,8 +160,10 @@ export class ToSecureUITransportSender<
     // if we can close popup
     // -> close the popup.
     if (this.isPopupClosable() && this.port?.sender?.tab?.windowId) {
+      const name = this.port.name;
+      logger.debug("Plugin Close", name);
       chrome.windows.remove(this.port.sender.tab.windowId).catch((e) => {
-        console.error(e);
+        logger.error("Plugin Close", name, e);
       });
     }
   }
@@ -168,7 +178,10 @@ export class ToSecureUITransportSender<
     // send all pending requests
     this.port.postMessage({
       channel: CHANNEL_SECURE_UI_REQUEST,
-      data: this.requestQueue.map((queued) => queued.request),
+      data: this.requestQueue.map((queued) => {
+        logger.debug("Request", queued.request);
+        return queued.request;
+      }),
     });
 
     // move requests to responseQueue to wait for response.
@@ -183,7 +196,7 @@ export class ToSecureUITransportSender<
           focused: true,
         })
         .catch((e) => {
-          console.error(e);
+          logger.error("window.update", e);
         });
     }
   };
@@ -191,7 +204,7 @@ export class ToSecureUITransportSender<
   private openPopup = (windowId: string) => {
     this.lastOpenedWindowId = windowId;
     openPopupWindow("popup.html?windowId=" + windowId).catch((e) => {
-      console.error(e);
+      logger.error("openPopup", e);
     });
   };
 }

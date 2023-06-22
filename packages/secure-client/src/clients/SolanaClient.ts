@@ -202,7 +202,6 @@ export class SolanaClient {
     const publicKey = request.publicKey;
     const options = request.options;
     const connection = request.customConnection ?? this.connection;
-    console.log("PCA NEW REQUEST", request.tx);
 
     const signedTx = await this.signTransaction(
       {
@@ -214,7 +213,7 @@ export class SolanaClient {
       confirmOptions
     );
     const serializedTransaction = signedTx.serialize();
-    console.log("PCA NEW SERIALIZED", serializedTransaction);
+
     return await connection.sendRawTransaction(serializedTransaction, options);
     // return await connection.sendRawTransaction(new Uint8Array(signedTx.serialize()), options);
   }

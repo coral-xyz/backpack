@@ -20,7 +20,6 @@ export class SVMClient {
         confirmOptions,
       })
       .then((response) => {
-        console.log("PCA svm client response received", response);
         return response;
       });
   }
@@ -36,7 +35,6 @@ export class SVMClient {
         confirmOptions,
       })
       .then((response) => {
-        console.log("PCA svm client response received", response);
         return response;
       });
   }
@@ -52,7 +50,6 @@ export class SVMClient {
         confirmOptions,
       })
       .then((response) => {
-        console.log("PCA svm client response received", response);
         return response;
       });
   }
@@ -68,7 +65,6 @@ export class SVMClient {
         confirmOptions,
       })
       .then((response) => {
-        console.log("PCA svm client response received", response);
         return response;
       });
   }
@@ -84,7 +80,6 @@ export class SVMClient {
         confirmOptions,
       })
       .then((response) => {
-        console.log("PCA svm client response received", response);
         return response;
       });
   }

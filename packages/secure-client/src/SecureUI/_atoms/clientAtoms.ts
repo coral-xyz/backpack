@@ -63,12 +63,12 @@ export const requestQueueAtom = atom<QueuedRequest[]>({
         });
       };
 
-      console.log("PCA requestQueueAtom effect");
+      // console.log("PCA requestQueueAtom effect");
       getPromise(secureUIReceiverAtom)
         .then((receiver) => {
-          console.log("PCA LISTENER setup");
+          // console.log("PCA LISTENER setup");
           destroy = receiver.setHandler(async (event) => {
-            console.log("PCA SECURE UI queue atom received", event);
+            // console.log("PCA SECURE UI queue atom received", event);
             let resolve: (response: ReturnType<typeof event.respond>) => void;
             const promise = new Promise<ReturnType<typeof event.respond>>(
               (_resolve) => {
@@ -96,7 +96,7 @@ export const requestQueueAtom = atom<QueuedRequest[]>({
             };
 
             setSelf((queue) => {
-              console.log("setself PCA", queue);
+              // console.log("setself PCA", queue);
               if (queue instanceof DefaultValue) {
                 return [queuedRequest];
               }

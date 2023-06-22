@@ -107,7 +107,6 @@ export class UserService {
       const user = await this.getUser();
       return respond(user);
     } catch (e) {
-      console.error("PCA", e);
       return error(e);
     }
   };
