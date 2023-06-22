@@ -301,14 +301,14 @@ export class ProviderSolanaInjection
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
-    return await cmn.sendAndConfirm(
-      publicKey ?? this.#publicKey,
-      this.#requestManager,
-      connection ?? this.#connection,
+    const solanaResponse = await this.#secureSolanaClient.sendAndConfirm({
+      publicKey: publicKey ?? this.#publicKey,
       tx,
       signers,
-      options
-    );
+      options,
+      customConnection: connection,
+    });
+    return solanaResponse;
   }
 
   async send<T extends Transaction | VersionedTransaction>(
@@ -324,14 +324,15 @@ export class ProviderSolanaInjection
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
-    return await cmn.send(
-      publicKey ?? this.#publicKey,
-      this.#requestManager,
-      connection ?? this.#connection,
+
+    const solanaResponse = await this.#secureSolanaClient.send({
+      publicKey: publicKey ?? this.#publicKey,
       tx,
       signers,
-      options
-    );
+      options,
+      customConnection: connection,
+    });
+    return solanaResponse;
   }
 
   // @ts-ignore
@@ -418,9 +419,6 @@ export class ProviderSolanaInjection
       publicKey: publicKey ?? this.#publicKey,
       message: msg,
     });
-    if (!solanaResponse) {
-      throw new Error("signature failed");
-    }
     return solanaResponse;
   }
 

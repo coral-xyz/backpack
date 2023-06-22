@@ -155,6 +155,13 @@ export class Backend {
     const signature = await this.solanaSignTransaction(txStr, walletAddress);
     const pubkey = new PublicKey(walletAddress);
     const tx = deserializeTransaction(txStr);
+
+    console.log(
+      "PCA OLD",
+      signature,
+      bs58.decode(signature),
+      Buffer.from(bs58.decode(signature))
+    );
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
 
     // Send it to the network.

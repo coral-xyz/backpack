@@ -46,7 +46,7 @@ export interface SECURE_SVM_SIGN_TX
     tx: string;
   };
   response: {
-    signedTx: string;
+    signature: string;
   };
 }
 
@@ -57,6 +57,6 @@ export interface SECURE_SVM_SIGN_ALL_TX
     tx: string[];
   };
   response: {
-    signedTx: string[];
+    signatures: string[];
   };
 }

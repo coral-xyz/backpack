@@ -16,6 +16,7 @@ import {
 } from "./_atoms/clientAtoms";
 import { ApproveOriginRequest } from "./RequestHandlers/ApproveOriginRequest";
 import { SignMessageRequest } from "./RequestHandlers/SignMessageRequest";
+import { SignTransactionRequest } from "./RequestHandlers/SignTransactionRequest";
 import { UnlockRequest } from "./RequestHandlers/UnlockRequest";
 
 function SecureUIRoot() {
@@ -29,12 +30,26 @@ function SecureUIRoot() {
   return (() => {
     switch (currentRequest.name) {
       case "SECURE_SVM_SIGN_MESSAGE":
-        return <SignMessageRequest currentRequest={currentRequest} />;
+        return (
+          <SignMessageRequest
+            currentRequest={
+              currentRequest as QueuedRequest<"SECURE_SVM_SIGN_MESSAGE">
+            }
+          />
+        );
       case "SECURE_USER_APPROVE_ORIGIN":
         return (
           <ApproveOriginRequest
             currentRequest={
               currentRequest as QueuedRequest<"SECURE_USER_APPROVE_ORIGIN">
+            }
+          />
+        );
+      case "SECURE_SVM_SIGN_TX":
+        return (
+          <SignTransactionRequest
+            currentRequest={
+              currentRequest as QueuedRequest<"SECURE_SVM_SIGN_TX">
             }
           />
         );

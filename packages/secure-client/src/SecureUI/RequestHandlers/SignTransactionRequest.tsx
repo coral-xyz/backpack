@@ -18,26 +18,22 @@ import { ApproveTransactionBottomSheet } from "../_sharedComponents/ApproveTrans
 import { RequireUserUnlocked } from "../Guards/RequireUserUnlocked";
 import { Presentation } from "../Presentation";
 
-export function SignMessageRequest({
+export function SignTransactionRequest({
   currentRequest,
 }: {
-  currentRequest: QueuedRequest<"SECURE_SVM_SIGN_MESSAGE">;
+  currentRequest: QueuedRequest<"SECURE_SVM_SIGN_TX">;
 }) {
-  //@ts-ignore
-  const msgBuffer = Buffer.from(decode(currentRequest.request.message! ?? ""));
-  const message = msgBuffer.toString();
-
   return (
     <Presentation
       currentRequest={currentRequest}
       onClosed={() => currentRequest.error("Plugin Closed")}
     >
       {(currentRequest) => (
-        <RequireUserUnlocked force>
+        <RequireUserUnlocked>
           <ApproveTransactionBottomSheet
             id={currentRequest.queueId}
-            title="Approve Message"
-            message={message}
+            title="Sign Transaction"
+            message={JSON.stringify(currentRequest.request)}
             onApprove={() => currentRequest.respond({ confirmed: true })}
             onDeny={() => currentRequest.error("User Denied Approval")}
           />

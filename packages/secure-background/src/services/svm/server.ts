@@ -1,4 +1,5 @@
-import { Blockchain } from "@coral-xyz/common";
+import { Blockchain, deserializeTransaction } from "@coral-xyz/common";
+import bs58, { encode } from "bs58";
 
 import type { KeyringStore } from "../../store/keyring";
 import type {
@@ -98,8 +99,6 @@ export class SVMService {
       return event.error(user.error);
     }
 
-    console.log("PCA CONNECT", user);
-
     if (
       !user.response.user?.preferences.approvedOrigins.includes(
         event.event.origin.address
@@ -147,12 +146,41 @@ export class SVMService {
   private handleSign: TransportHandler<"SECURE_SVM_SIGN_TX"> = async (
     event
   ) => {
-    return event.error("Not Implemented");
+    const confirmation = await this.secureUIClient.confirm(event.event);
+
+    console.log("PCA confirmation", confirmation);
+    if (!confirmation.response?.confirmed) {
+      return event.error(confirmation.error);
+    }
+
+    const blockchainKeyring =
+      this.keyringStore.activeUserKeyring.keyringForBlockchain(
+        Blockchain.SOLANA
+      );
+
+    if (blockchainKeyring.ledgerKeyring) {
+      // open ledger prompt
+    }
+
+    const tx = deserializeTransaction(event.request.tx);
+    const message = tx.message.serialize();
+    const txMessage = bs58.encode(message);
+
+    const signature = await blockchainKeyring.signTransaction(
+      txMessage,
+      event.request.publicKey
+    );
+
+    if (blockchainKeyring.ledgerKeyring) {
+      // close ledger prompt
+    }
+
+    return event.respond({ signature });
   };
 
   private handleSignAll: TransportHandler<"SECURE_SVM_SIGN_ALL_TX"> = async ({
-    respond,
+    error,
   }) => {
-    return respond({ signedTx: ["string"] });
+    return error("Not Implemented");
   };
 }

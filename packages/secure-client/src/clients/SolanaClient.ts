@@ -1,12 +1,20 @@
-import { isVersionedTransaction } from "@coral-xyz/common";
+import {
+  deserializeLegacyTransaction,
+  deserializeTransaction,
+  isVersionedTransaction,
+} from "@coral-xyz/common";
 import { SVMClient, UserClient } from "@coral-xyz/secure-background/clients";
 import type {
   SecureEvent,
   TransportSender,
 } from "@coral-xyz/secure-background/types";
 import type {
+  ConfirmOptions,
   Connection,
   PublicKey,
+  SendOptions,
+  Signer,
+  SimulateTransactionConfig,
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
@@ -68,35 +76,151 @@ export class SolanaClient {
     return decode(svmResponse.response.singedMessage);
   }
 
+  private async prepareTransaction<
+    T extends Transaction | VersionedTransaction
+  >(request: {
+    publicKey: PublicKey;
+    tx: T;
+    signers?: Signer[];
+    customConnection?: Connection;
+  }): Promise<T> {
+    const tx = request.tx;
+    const publicKey = request.publicKey;
+    const signers = request.signers;
+    const connection = request.customConnection ?? this.connection;
+
+    const versioned = isVersionedTransaction(tx);
+    if (!versioned) {
+      if (signers) {
+        signers.forEach((s: Signer) => {
+          tx.partialSign(s);
+        });
+      }
+      if (!tx.feePayer) {
+        tx.feePayer = publicKey;
+      }
+      if (!tx.recentBlockhash) {
+        const { blockhash } = await connection.getLatestBlockhash();
+        tx.recentBlockhash = blockhash;
+      }
+    } else {
+      if (signers) {
+        tx.sign(signers);
+      }
+    }
+    return tx;
+  }
+
   public async signTransaction<T extends Transaction | VersionedTransaction>(
     request: {
       publicKey: PublicKey;
       tx: T;
+      signers?: Signer[];
+      customConnection?: Connection;
     },
     confirmOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["confirmOptions"]
   ): Promise<T> {
     const tx = request.tx;
     const publicKey = request.publicKey;
+    const preparedTx = await this.prepareTransaction(request);
+    const txStr = encode(preparedTx.serialize({ requireAllSignatures: false }));
 
-    const versioned = isVersionedTransaction(tx);
-    if (!versioned) {
-      if (!tx.feePayer) {
-        tx.feePayer = publicKey;
-      }
-      if (!tx.recentBlockhash) {
-        const { blockhash } = await this.connection.getLatestBlockhash();
-        tx.recentBlockhash = blockhash;
-      }
+    const signature = await this.secureSvmClient.signTransaction(
+      {
+        publicKey: publicKey.toBase58(),
+        tx: txStr,
+      },
+      confirmOptions
+    );
+
+    if (!signature.response?.signature) {
+      throw new Error(signature.error);
     }
-    const txStr = encode(tx.serialize({ requireAllSignatures: false }));
-
-    // const signature = await this.secureSvmClient.signTransaction({
-    //   publicKey: publicKey.toBase58(),
-    //   tx: txStr,
-    // }, confirmOptions);
-
-    // tx.addSignature(publicKey, decode(signature));
+    tx.addSignature(publicKey, decode(signature.response.signature));
 
     return tx;
+  }
+
+  public async send<T extends Transaction | VersionedTransaction>(
+    request: {
+      publicKey: PublicKey;
+      tx: T;
+      customConnection?: Connection;
+      signers?: Signer[];
+      options?: SendOptions | ConfirmOptions;
+    },
+    confirmOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["confirmOptions"]
+  ): Promise<string> {
+    const tx = request.tx;
+    const signers = request.signers;
+    const publicKey = request.publicKey;
+    const options = request.options;
+    const connection = request.customConnection ?? this.connection;
+    console.log("PCA NEW REQUEST", request.tx);
+
+    const signedTx = await this.signTransaction(
+      {
+        tx,
+        signers,
+        publicKey,
+        customConnection: request.customConnection,
+      },
+      confirmOptions
+    );
+    const serializedTransaction = signedTx.serialize();
+    console.log("PCA NEW SERIALIZED", serializedTransaction);
+    return await connection.sendRawTransaction(serializedTransaction, options);
+    // return await connection.sendRawTransaction(new Uint8Array(signedTx.serialize()), options);
+  }
+
+  public async sendAndConfirm<T extends Transaction | VersionedTransaction>(
+    request: {
+      publicKey: PublicKey;
+      tx: T;
+      customConnection?: Connection;
+      signers?: Signer[];
+      options?: SendOptions | ConfirmOptions;
+    },
+    confirmOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["confirmOptions"]
+  ): Promise<string> {
+    return this.send(
+      {
+        ...request,
+        options: {
+          ...request.options,
+          commitment: "confirmed",
+        },
+      },
+      confirmOptions
+    );
+  }
+
+  public async simulate<T extends Transaction | VersionedTransaction>(request: {
+    publicKey: PublicKey;
+    tx: T;
+    customConnection?: Connection;
+    signers?: Signer[];
+    options?: SendOptions | ConfirmOptions;
+  }) {
+    const tx = request.tx;
+    const connection = request.customConnection ?? this.connection;
+    const publicKey = request.publicKey;
+    const preparedTx = await this.prepareTransaction(request);
+
+    const signersOrConf =
+      "message" in tx
+        ? ({
+            accounts: {
+              encoding: "base64",
+              addresses: [publicKey.toString()],
+            },
+          } as SimulateTransactionConfig)
+        : undefined;
+
+    return isVersionedTransaction(preparedTx)
+      ? await connection.simulateTransaction(preparedTx, signersOrConf)
+      : await this.connection.simulateTransaction(preparedTx, undefined, [
+          publicKey,
+        ]);
   }
 }
