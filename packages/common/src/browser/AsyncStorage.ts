@@ -1,27 +1,17 @@
 // NOTE this is just a stub for the native AsyncStorage wrapper
-interface SecureDB {
-  get: (key: string) => Promise<any>;
-  set: (key: string, value: any) => Promise<void>;
-  remove: (key: string) => Promise<void>;
-  reset: () => Promise<void>;
-}
+// interface S {
+//   getItem: (key: string) => Promise<any>;
+//   setItem: (key: string, value: any) => Promise<void>;
+//   removeItem: (key: string) => Promise<void>;
+//   clear: () => Promise<void>;
+// }
 
-export class SecureStorage implements SecureDB {
-  async get(key: string): Promise<string | null> {
-    console.log("z1:web.ts:getItem");
-    return localStorage.getItem(key);
-  }
+const AsyncStorage = {
+  getItem: (key: string) => Promise.resolve(localStorage.getItem(key)),
+  setItem: (key: string, value: any) =>
+    Promise.resolve(localStorage.setItem(key, value)),
+  removeItem: (key: string) => Promise.resolve(localStorage.removeItem(key)),
+  clear: () => Promise.resolve(localStorage.clear()),
+};
 
-  async set(key: string, value: string): Promise<void> {
-    console.log("z1:web.ts:setItem");
-    return localStorage.setItem(key, value);
-  }
-
-  async remove(key: string): Promise<void> {
-    return localStorage.removeItem(key);
-  }
-
-  async reset(): Promise<void> {
-    return localStorage.clear();
-  }
-}
+export default AsyncStorage;

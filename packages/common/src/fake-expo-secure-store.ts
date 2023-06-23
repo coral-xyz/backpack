@@ -3,22 +3,21 @@
 // dependencies which are incompatible with standard react code.
 
 // NOTE this is just a stub for the native AsyncStorage wrapper
-export default class SecureStorage {
-  async getItem(key: string): Promise<string | null> {
-    console.log("z1:web.ts:getItem");
-    return localStorage.getItem(key);
-  }
+let MEM_STORAGE = {};
+const AsyncStorage = {
+  getItem: (key: string) => Promise.resolve(MEM_STORAGE[key]),
+  setItem: (key: string, value: any) => {
+    MEM_STORAGE[key] = value;
+    return Promise.resolve();
+  },
+  removeItem: (key: string) => {
+    delete MEM_STORAGE[key];
+    return Promise.resolve();
+  },
+  clear: () => {
+    MEM_STORAGE = {};
+    return Promise.resolve();
+  },
+};
 
-  async setItem(key: string, value: string): Promise<void> {
-    console.log("z1:web.ts:setItem");
-    return localStorage.setItem(key, value);
-  }
-
-  async removeItem(key: string): Promise<void> {
-    return localStorage.removeItem(key);
-  }
-
-  async clear(): Promise<void> {
-    return localStorage.clear();
-  }
-}
+export default AsyncStorage;
