@@ -3,19 +3,19 @@ import { GraphQLError } from "graphql";
 
 import { NodeBuilder } from "../nodes";
 import { getProviderForId } from "../providers";
-import {
-  type Friend,
-  type FriendRequest,
-  FriendRequestType,
-  type Notification,
-  type NotificationConnection,
-  type NotificationFiltersInput,
-  type ProviderId,
-  type User,
-  type Wallet,
-  type WalletConnection,
-  type WalletFiltersInput,
+import type {
+  Friend,
+  FriendRequest,
+  Notification,
+  NotificationConnection,
+  NotificationFiltersInput,
+  ProviderId,
+  User,
+  Wallet,
+  WalletConnection,
+  WalletFiltersInput,
 } from "../types";
+import { FriendRequestType } from "../types";
 import { createConnection, inferProviderIdFromString } from "../utils";
 
 type HasuraOptions = {

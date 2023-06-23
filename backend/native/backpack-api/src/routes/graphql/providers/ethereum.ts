@@ -10,18 +10,18 @@ import { ethers } from "ethers";
 import type { CoinGeckoPriceData } from "../clients/coingecko";
 import type { ApiContext } from "../context";
 import { NodeBuilder } from "../nodes";
-import {
-  type BalanceFiltersInput,
-  type Balances,
-  type Nft,
-  type NftAttribute,
-  type NftConnection,
-  type NftFiltersInput,
-  ProviderId,
-  type TokenBalance,
-  type TransactionConnection,
-  type TransactionFiltersInput,
+import type {
+  BalanceFiltersInput,
+  Balances,
+  Nft,
+  NftAttribute,
+  NftConnection,
+  NftFiltersInput,
+  TokenBalance,
+  TransactionConnection,
+  TransactionFiltersInput,
 } from "../types";
+import { ProviderId } from "../types";
 import { calculateBalanceAggregate, createConnection } from "../utils";
 
 import type { BlockchainDataProvider } from ".";

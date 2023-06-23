@@ -1,13 +1,13 @@
 import type { ApiContext } from "../context";
-import {
-  type BalanceFiltersInput,
-  type Balances,
-  type NftConnection,
-  type NftFiltersInput,
-  ProviderId,
-  type TransactionConnection,
-  type TransactionFiltersInput,
+import type {
+  BalanceFiltersInput,
+  Balances,
+  NftConnection,
+  NftFiltersInput,
+  TransactionConnection,
+  TransactionFiltersInput,
 } from "../types";
+import { ProviderId } from "../types";
 
 import { Bitcoin } from "./bitcoin";
 import { Ethereum } from "./ethereum";

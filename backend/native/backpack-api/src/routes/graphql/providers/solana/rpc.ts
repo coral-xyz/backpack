@@ -1,33 +1,40 @@
-import { SolanaTokenList, TOKEN_PROGRAM_ID } from "@coral-xyz/common";
+import {
+  externalResourceUri,
+  SolanaTokenList,
+  TOKEN_PROGRAM_ID,
+} from "@coral-xyz/common";
+import {
+  type FindNftsByMintListOutput,
+  type JsonMetadata,
+  Metaplex,
+} from "@metaplex-foundation/js";
 import {
   deserializeAccount,
   deserializeMint,
+  getATAAddressSync,
   type TokenAccountData,
 } from "@saberhq/token-utils";
 import type { MintInfo } from "@solana/spl-token";
-import {
-  Connection,
-  PublicKey,
-  SystemProgram,
-  Transaction as SolanaTransaction,
-} from "@solana/web3.js";
+import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
 import { ethers } from "ethers";
 
 import { HELIUS_API_KEY } from "../../../../config";
 import type { CoinGeckoPriceData } from "../../clients/coingecko";
+import { IN_MEM_COLLECTION_DATA_CACHE } from "../../clients/helius";
 import type { ApiContext } from "../../context";
 import { NodeBuilder } from "../../nodes";
-import {
-  type BalanceFiltersInput,
-  type Balances,
-  type NftConnection,
-  type NftFiltersInput,
-  ProviderId,
-  type TokenBalance,
-  type Transaction,
-  type TransactionConnection,
-  type TransactionFiltersInput,
+import type {
+  BalanceFiltersInput,
+  Balances,
+  Nft,
+  NftConnection,
+  NftFiltersInput,
+  TokenBalance,
+  Transaction,
+  TransactionConnection,
+  TransactionFiltersInput,
 } from "../../types";
+import { ProviderId } from "../../types";
 import { calculateBalanceAggregate, createConnection } from "../../utils";
 import type { BlockchainDataProvider } from "..";
 import { createMarketDataNode, sortTokenBalanceNodes } from "../util";
@@ -41,6 +48,7 @@ import { createMarketDataNode, sortTokenBalanceNodes } from "../util";
 export class SolanaRpc implements BlockchainDataProvider {
   protected readonly ctx?: ApiContext;
   readonly #connection: Connection;
+  readonly #mpl: Metaplex;
 
   constructor(ctx?: ApiContext) {
     const rpcUrl =
@@ -50,6 +58,7 @@ export class SolanaRpc implements BlockchainDataProvider {
         : `https://rpc.helius.xyz/?api-key=${HELIUS_API_KEY}`);
 
     this.#connection = new Connection(rpcUrl, "confirmed");
+    this.#mpl = Metaplex.make(this.#connection);
     this.ctx = ctx;
   }
 
@@ -273,13 +282,94 @@ export class SolanaRpc implements BlockchainDataProvider {
    * @param {NftFiltersInput} [filters]
    * @returns {Promise<NftConnection>}
    * @memberof SolanaRpc
-   * TODO:
    */
   async getNftsForAddress(
     address: string,
     filters?: NftFiltersInput | undefined
   ): Promise<NftConnection> {
-    throw new Error("Method not implemented.");
+    if (!this.ctx) {
+      throw new Error("API context object not available");
+    }
+
+    // Query for all NFTs owned by the argued wallet address
+    let nfts: FindNftsByMintListOutput;
+    if (filters?.addresses && filters.addresses.length > 0) {
+      nfts = await this.#mpl
+        .nfts()
+        .findAllByMintList({
+          mints: filters?.addresses?.map((addr) => new PublicKey(addr)),
+        })
+        .run();
+    } else {
+      nfts = await this.#mpl
+        .nfts()
+        .findAllByOwner({ owner: new PublicKey(address) })
+        .run();
+    }
+
+    // Attempt to fetch all of the off-chain metadata for each NFT
+    const metadatas = await Promise.all(
+      nfts.map((n) => {
+        if (!n) {
+          return Promise.resolve(null);
+        } else if (n?.json) {
+          return Promise.resolve(n.json);
+        }
+
+        // If the JSON metadata doesn't already exist on the object, try to fetch it
+        return this.#mpl
+          .storage()
+          .downloadJson<JsonMetadata>(externalResourceUri(n.uri));
+      })
+    );
+
+    // Construct the `Nft` schema nodes from the gathered data
+    const nodes: Nft[] = nfts.reduce<Nft[]>((acc, curr, idx) => {
+      if (curr) {
+        const meta = metadatas[idx];
+        const ata = getATAAddressSync({
+          mint: curr.address,
+          owner: new PublicKey(address),
+        });
+
+        // Try to get the collection metadata from the in-memory cache
+        const collectionData = IN_MEM_COLLECTION_DATA_CACHE.get(
+          curr.collection?.address?.toBase58() ?? ""
+        );
+
+        const node = NodeBuilder.nft(this.id(), {
+          address: curr.address.toBase58(),
+          collection: curr.collection
+            ? NodeBuilder.nftCollection(this.id(), {
+                address: curr.collection.address.toBase58(),
+                image: collectionData?.image,
+                name: collectionData?.name,
+                verified: curr.collection.verified,
+              })
+            : undefined,
+          compressed: false,
+          owner: address,
+          token: ata.toBase58(),
+          metadataUri: curr.uri,
+          name: curr.name,
+        });
+
+        // Attach the additional optional information about the NFT if the metadata was found
+        if (meta) {
+          node.attributes = meta.attributes?.map((a) => ({
+            trait: a.trait_type ?? "",
+            value: a.value ?? "",
+          }));
+          node.description = meta.description;
+          node.image = meta.image;
+        }
+
+        acc.push(node);
+      }
+      return acc;
+    }, []);
+
+    return createConnection(nodes, false, false);
   }
 
   /**
