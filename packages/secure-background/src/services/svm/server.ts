@@ -4,6 +4,7 @@ import bs58, { encode } from "bs58";
 import { SecureUIClient } from "../../background-clients/SecureUIClient";
 import type { KeyringStore } from "../../store/keyring";
 import type {
+  SecureRequest,
   TransportHandler,
   TransportHandlers,
   TransportReceiver,
@@ -24,7 +25,7 @@ export class SVMService {
     secureReceiver: TransportReceiver<SECURE_SVM_EVENTS>;
     secureSender: TransportSender;
     keyringStore: KeyringStore;
-    secureUISender: TransportSender<SECURE_SVM_EVENTS, "confirmation">;
+    secureUISender: TransportSender<SECURE_SVM_EVENTS, "uiResponse">;
   }) {
     this.keyringStore = interfaces.keyringStore;
     this.secureUIClient = new SecureUIClient(interfaces.secureUISender);

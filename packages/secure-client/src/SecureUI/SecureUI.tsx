@@ -79,7 +79,7 @@ export function SecureUI({
   secureUIReceiver,
   secureBackgroundSender,
 }: {
-  secureUIReceiver: TransportReceiver<SECURE_EVENTS, "confirmation">;
+  secureUIReceiver: TransportReceiver<SECURE_EVENTS, "uiResponse">;
   secureBackgroundSender: TransportSender<SECURE_EVENTS>;
 }) {
   return (

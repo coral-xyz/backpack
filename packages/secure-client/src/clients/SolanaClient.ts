@@ -61,14 +61,14 @@ export class SolanaClient {
       publicKey: PublicKey;
       message: Uint8Array;
     },
-    confirmOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["confirmOptions"]
+    uiOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["uiOptions"]
   ): Promise<Uint8Array> {
     const svmResponse = await this.secureSvmClient.signMessage(
       {
         publicKey: request.publicKey.toBase58(),
         message: encode(request.message),
       },
-      confirmOptions
+      uiOptions
     );
     if (!svmResponse.response) {
       throw new Error(svmResponse.error);
@@ -118,7 +118,7 @@ export class SolanaClient {
       signers?: Signer[];
       customConnection?: Connection;
     },
-    confirmOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["confirmOptions"]
+    uiOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["uiOptions"]
   ): Promise<T> {
     const tx = request.tx;
     const publicKey = request.publicKey;
@@ -130,7 +130,7 @@ export class SolanaClient {
         publicKey: publicKey.toBase58(),
         tx: txStr,
       },
-      confirmOptions
+      uiOptions
     );
 
     if (!signature.response?.signature) {
@@ -150,7 +150,7 @@ export class SolanaClient {
       signers?: Signer[];
       customConnection?: Connection;
     },
-    confirmOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["confirmOptions"]
+    uiOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["uiOptions"]
   ): Promise<T[]> {
     const publicKey = request.publicKey;
 
@@ -171,7 +171,7 @@ export class SolanaClient {
         publicKey: publicKey.toBase58(),
         txs: txStrs,
       },
-      confirmOptions
+      uiOptions
     );
 
     if (!signatures.response?.signatures) {
@@ -195,7 +195,7 @@ export class SolanaClient {
       signers?: Signer[];
       options?: SendOptions | ConfirmOptions;
     },
-    confirmOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["confirmOptions"]
+    uiOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["uiOptions"]
   ): Promise<string> {
     const tx = request.tx;
     const signers = request.signers;
@@ -210,7 +210,7 @@ export class SolanaClient {
         publicKey,
         customConnection: request.customConnection,
       },
-      confirmOptions
+      uiOptions
     );
     const serializedTransaction = signedTx.serialize();
 
@@ -226,7 +226,7 @@ export class SolanaClient {
       signers?: Signer[];
       options?: SendOptions | ConfirmOptions;
     },
-    confirmOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["confirmOptions"]
+    uiOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["uiOptions"]
   ): Promise<string> {
     return this.send(
       {
@@ -236,7 +236,7 @@ export class SolanaClient {
           commitment: "confirmed",
         },
       },
-      confirmOptions
+      uiOptions
     );
   }
 

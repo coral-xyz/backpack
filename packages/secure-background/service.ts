@@ -21,7 +21,7 @@ import type { SECURE_EVENTS } from "./types";
 export function startSecureService(
   interfaces: {
     notificationBroadcaster: TransportBroadcaster;
-    secureUIClient: TransportSender<SECURE_EVENTS, "confirmation">;
+    secureUIClient: TransportSender<SECURE_EVENTS, "uiResponse">;
     secureServer: TransportReceiver<SECURE_EVENTS, "response">;
     secureDB: SecureDB;
   },

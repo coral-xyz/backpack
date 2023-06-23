@@ -3,6 +3,7 @@ import type {
   SECURE_EVM_SIGN_MESSAGE,
   SECURE_EVM_SIGN_TX,
 } from "../services/evm/events";
+import type { LEDGER_EVENTS } from "../services/ledger/events";
 import type {
   SECURE_SVM_CONNECT,
   SECURE_SVM_DISCONNECT,
@@ -26,7 +27,8 @@ export type { SECURE_USER_EVENTS } from "../services/user/events";
 export type SECURE_EVENTS =
   | SECURE_EVM_EVENTS
   | SECURE_SVM_EVENTS
-  | SECURE_USER_EVENTS;
+  | SECURE_USER_EVENTS
+  | LEDGER_EVENTS;
 
 export type SecureEvent<T extends SECURE_EVENTS = SECURE_EVENTS> =
   T extends "SECURE_SVM_SIGN_MESSAGE"

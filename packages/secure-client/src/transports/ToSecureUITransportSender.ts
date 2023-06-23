@@ -9,6 +9,8 @@ import type {
   SecureEventOrigin,
   SecureRequest,
   SecureResponse,
+  SecureResponseType,
+  TransportQueuedRequest,
   TransportSend,
   TransportSender,
 } from "@coral-xyz/secure-background/types";
@@ -16,22 +18,14 @@ import { v4 } from "uuid";
 
 const logger = getLogger("secure-client ToSecureUITransportSender");
 
-type QueuedRequest<
-  X extends SECURE_EVENTS,
-  R extends "response" | "confirmation" = "response"
-> = {
-  request: SecureRequest;
-  resolve: (resonse: SecureResponse<X, R>) => void;
-};
-
 export class ToSecureUITransportSender<
   X extends SECURE_EVENTS,
-  R extends "response" | "confirmation" = "response"
+  R extends SecureResponseType = "response"
 > implements TransportSender<X, R>
 {
   private port: chrome.runtime.Port | null = null;
-  private requestQueue: QueuedRequest<X, R>[] = [];
-  private responseQueue: QueuedRequest<X, R>[] = [];
+  private requestQueue: TransportQueuedRequest<X, R>[] = [];
+  private responseQueue: TransportQueuedRequest<X, R>[] = [];
   private lastOpenedWindowId: string | null = null;
   private maybeClosePopupTimeout: any;
 

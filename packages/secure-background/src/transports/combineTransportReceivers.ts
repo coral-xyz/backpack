@@ -1,9 +1,12 @@
 import type { SECURE_EVENTS } from "../types/events";
-import type { TransportReceiver } from "../types/transports";
+import type {
+  SecureResponseType,
+  TransportReceiver,
+} from "../types/transports";
 
 export function combineTransportReceivers<
   T extends SECURE_EVENTS = SECURE_EVENTS,
-  R extends "response" | "confirmation" = "response"
+  R extends SecureResponseType = "response"
 >(...servers: TransportReceiver<T, R>[]): TransportReceiver<T, R> {
   return {
     setHandler: (listener) => {

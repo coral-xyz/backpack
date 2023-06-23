@@ -11,13 +11,13 @@ export class SVMClient {
 
   public signMessage(
     request: SecureRequest<"SECURE_SVM_SIGN_MESSAGE">["request"],
-    confirmOptions?: SecureRequest<"SECURE_SVM_SIGN_MESSAGE">["confirmOptions"]
+    uiOptions?: SecureRequest<"SECURE_SVM_SIGN_MESSAGE">["uiOptions"]
   ): Promise<SecureResponse<"SECURE_SVM_SIGN_MESSAGE">> {
     return this.client
       .send({
         name: "SECURE_SVM_SIGN_MESSAGE",
         request,
-        confirmOptions,
+        uiOptions,
       })
       .then((response) => {
         return response;
@@ -26,13 +26,13 @@ export class SVMClient {
 
   public signTransaction(
     request: SecureRequest<"SECURE_SVM_SIGN_TX">["request"],
-    confirmOptions?: SecureRequest<"SECURE_SVM_SIGN_TX">["confirmOptions"]
+    uiOptions?: SecureRequest<"SECURE_SVM_SIGN_TX">["uiOptions"]
   ): Promise<SecureResponse<"SECURE_SVM_SIGN_TX">> {
     return this.client
       .send({
         name: "SECURE_SVM_SIGN_TX",
         request,
-        confirmOptions,
+        uiOptions,
       })
       .then((response) => {
         return response;
@@ -41,13 +41,13 @@ export class SVMClient {
 
   public signAllTransactions(
     request: SecureRequest<"SECURE_SVM_SIGN_ALL_TX">["request"],
-    confirmOptions?: SecureRequest<"SECURE_SVM_SIGN_ALL_TX">["confirmOptions"]
+    uiOptions?: SecureRequest<"SECURE_SVM_SIGN_ALL_TX">["uiOptions"]
   ): Promise<SecureResponse<"SECURE_SVM_SIGN_ALL_TX">> {
     return this.client
       .send({
         name: "SECURE_SVM_SIGN_ALL_TX",
         request,
-        confirmOptions,
+        uiOptions,
       })
       .then((response) => {
         return response;
@@ -56,13 +56,13 @@ export class SVMClient {
 
   public connect(
     request: SecureEvent<"SECURE_SVM_CONNECT">["request"] = {},
-    confirmOptions?: SecureEvent<"SECURE_SVM_CONNECT">["confirmOptions"]
+    uiOptions?: SecureEvent<"SECURE_SVM_CONNECT">["uiOptions"]
   ): Promise<SecureResponse<"SECURE_SVM_CONNECT">> {
     return this.client
       .send({
         name: "SECURE_SVM_CONNECT",
         request: request,
-        confirmOptions,
+        uiOptions,
       })
       .then((response) => {
         return response;
@@ -71,13 +71,13 @@ export class SVMClient {
 
   public disconnect(
     request?: SecureEvent<"SECURE_SVM_DISCONNECT">["request"],
-    confirmOptions?: SecureEvent<"SECURE_SVM_DISCONNECT">["confirmOptions"]
+    uiOptions?: SecureEvent<"SECURE_SVM_DISCONNECT">["uiOptions"]
   ): Promise<SecureResponse<"SECURE_SVM_DISCONNECT">> {
     return this.client
       .send({
         name: "SECURE_SVM_DISCONNECT",
         request: request ?? {},
-        confirmOptions,
+        uiOptions,
       })
       .then((response) => {
         return response;

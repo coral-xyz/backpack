@@ -4,6 +4,7 @@ import type { SECURE_EVENTS } from "../types/events";
 import type {
   SecureRequest,
   SecureResponse,
+  SecureResponseType,
   TransportHandler,
 } from "../types/transports";
 
@@ -11,7 +12,7 @@ const logger = getLogger("secure-background TransportResponder");
 
 export class TransportResponder<
   T extends SECURE_EVENTS = SECURE_EVENTS,
-  R extends "response" | "confirmation" = "response"
+  R extends SecureResponseType = "response"
 > {
   public readonly name: T;
   public readonly event: SecureRequest<T>;
