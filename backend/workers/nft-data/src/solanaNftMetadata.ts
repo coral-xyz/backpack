@@ -1,5 +1,6 @@
 import { Metadata } from "@genesysgo/shadow-nft-generated-client";
 import { metadata } from "@project-serum/token";
+import { getMint } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
 
 import { externalResourceUri } from "./externalResourceUri";
@@ -18,7 +19,10 @@ export async function solanaNftMetadata(
 ): Promise<{ metadataAccount: any; externalMetadata: any } | null> {
   const mint = new PublicKey(mintAddress).toBuffer();
 
-  // Define metadata account addresses for both types
+  const mintAccount = await getMint(c, new PublicKey(mintAddress));
+
+  // Define metadata account addresses for all possible standards,
+  // other standards can add their own :)
   const metadataAccountAddress = PublicKey.findProgramAddressSync(
     [Buffer.from("metadata"), TOKEN_METADATA_PROGRAM_ID.toBuffer(), mint],
     TOKEN_METADATA_PROGRAM_ID
@@ -29,22 +33,29 @@ export async function solanaNftMetadata(
     SHADOW_NFT_PROGRAM_ID
   )[0];
 
-  // Send both requests in parallel
-  // Honestly didn't see a way around fetching both. Checking mint account owner would also add addl calls.
-  const [metadataAccountResponse, shadowMetadataAccountResponse] =
-    await Promise.all([
-      fetchMetadataAccount(metadataAccountAddress, c),
-      fetchMetadataAccount(shadowMetadataAccountAddress, c),
-    ]);
+  let metadataAccountResponse;
+  switch (mintAccount?.mintAuthority?.toBase58()) {
+    case metadataAccountAddress.toBase58():
+      metadataAccountResponse = await fetchMetadataAccount(
+        metadataAccountAddress,
+        c
+      );
+      return metadataAccountResponse
+        ? prepareResult(metadataAccountResponse, "metaplex")
+        : null;
 
-  // Check the responses to decide which one to use
-  if (metadataAccountResponse) {
-    return prepareResult(metadataAccountResponse, false);
-  } else if (shadowMetadataAccountResponse) {
-    return prepareResult(shadowMetadataAccountResponse, true);
+    case shadowMetadataAccountAddress.toBase58():
+      metadataAccountResponse = await fetchMetadataAccount(
+        shadowMetadataAccountAddress,
+        c
+      );
+      return metadataAccountResponse
+        ? prepareResult(metadataAccountResponse, "shadow")
+        : null;
+
+    default:
+      return null;
   }
-
-  return null;
 }
 
 async function fetchMetadataAccount(accountAddress: PublicKey, c: any) {
@@ -74,34 +85,40 @@ async function fetchMetadataAccount(accountAddress: PublicKey, c: any) {
   return data ?? null;
 }
 
-async function prepareResult(metadataAccountData: any, isShadow: boolean) {
+async function prepareResult(metadataAccountData: any, standard: string) {
   let jsonMetadata;
   let parsedMetadata;
-  if (isShadow) {
-    parsedMetadata = Metadata.decode(
-      Buffer.from(metadataAccountData, "base64")
-    );
 
-    if (!parsedMetadata?.uri) {
-      return null;
-    }
+  switch (standard) {
+    case "shadow":
+      parsedMetadata = Metadata.decode(
+        Buffer.from(metadataAccountData, "base64")
+      );
 
-    const reconstructedUrl = reconstructUrlFromChainData(parsedMetadata.uri);
-    jsonMetadata = await (
-      await fetch(externalResourceUri(reconstructedUrl))
-    ).json();
-  } else {
-    parsedMetadata = metadata.decodeMetadata(
-      Buffer.from(metadataAccountData, "base64")
-    );
+      if (!parsedMetadata?.uri) {
+        return null;
+      }
 
-    if (!parsedMetadata?.data?.uri) {
-      return null;
-    }
+      const reconstructedUrl = reconstructUrlFromChainData(parsedMetadata.uri);
+      jsonMetadata = await (
+        await fetch(externalResourceUri(reconstructedUrl))
+      ).json();
+      break;
+    case "metaplex":
+      parsedMetadata = metadata.decodeMetadata(
+        Buffer.from(metadataAccountData, "base64")
+      );
 
-    jsonMetadata = await (
-      await fetch(externalResourceUri(parsedMetadata.data.uri))
-    ).json();
+      if (!parsedMetadata?.data?.uri) {
+        return null;
+      }
+
+      jsonMetadata = await (
+        await fetch(externalResourceUri(parsedMetadata.data.uri))
+      ).json();
+      break;
+    default:
+      null;
   }
 
   return {
