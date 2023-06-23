@@ -36,8 +36,8 @@ export class CoinGeckoIndexer extends RESTDataSource {
    */
   async getPrices(ids: string[]): Promise<CoinGeckoGetPricesResponse> {
     const data: CoinGeckoPriceData[] = [];
-
     const notInCache: string[] = [];
+
     for (const i of ids) {
       if (IN_MEM_PRICE_DATA_CACHE.has(i)) {
         data.push(IN_MEM_PRICE_DATA_CACHE.get(i)!);
@@ -57,7 +57,9 @@ export class CoinGeckoIndexer extends RESTDataSource {
     }
 
     return data.reduce<CoinGeckoGetPricesResponse>((acc, curr) => {
-      IN_MEM_PRICE_DATA_CACHE.set(curr.id, curr);
+      if (notInCache.includes(curr.id)) {
+        IN_MEM_PRICE_DATA_CACHE.set(curr.id, curr);
+      }
       acc[curr.id] = curr;
       return acc;
     }, {});
