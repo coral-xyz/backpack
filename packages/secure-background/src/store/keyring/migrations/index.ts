@@ -186,7 +186,7 @@ async function pushMigrationLog(
   storeInterface: MigrationPrivateStoreInterface
 ) {
   let log = await getMigrationLog(storeInterface);
-  if (log === undefined) {
+  if (log == undefined) {
     log = [];
   }
   log.push(m);
