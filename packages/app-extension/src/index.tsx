@@ -5,11 +5,11 @@ import {
   isValidEventOrigin,
   openPopupWindow,
 } from "@coral-xyz/common";
-import type { SECURE_EVENTS } from "@coral-xyz/secure-client";
 import {
   FromExtensionTransportSender,
   ToSecureUITransportReceiver,
 } from "@coral-xyz/secure-client";
+import type { SECURE_EVENTS } from "@coral-xyz/secure-client/types";
 import { SecureUI } from "@coral-xyz/secure-client/ui";
 import { v4 } from "uuid";
 
@@ -32,10 +32,15 @@ chrome.runtime
   })
   .catch(console.error);
 
+const urlParams = new URLSearchParams(window.location.search);
+const requestWindowId = urlParams.get("windowId");
+// if popup was passed windowId it was opened by secure-background
+// and should not render app since secure-ui will handle the request.
+const shouldRenderApp = !requestWindowId;
+const windowId = requestWindowId ?? v4();
+
 // Send connect event to background script to open channel.
 // add unique name so background can identify the popup.
-const urlParams = new URLSearchParams(window.location.search);
-const windowId = urlParams.get("windowId") ?? v4();
 const port = chrome.runtime.connect({ name: windowId });
 
 const secureUITransportReceiver = new ToSecureUITransportReceiver<
@@ -43,7 +48,18 @@ const secureUITransportReceiver = new ToSecureUITransportReceiver<
   "confirmation"
 >(port);
 const extensionTransportSender =
-  new FromExtensionTransportSender<SECURE_EVENTS>();
+  new FromExtensionTransportSender<SECURE_EVENTS>({
+    name: "Backpack Extension",
+    address: window.location.origin,
+    context: "extension",
+  });
+const secureUITransportSender = new FromExtensionTransportSender<SECURE_EVENTS>(
+  {
+    name: "Backpack Extension",
+    address: window.location.origin,
+    context: "secureUI",
+  }
+);
 //
 // Configure event listeners.
 //
@@ -69,12 +85,14 @@ const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
   <>
-    <Suspense fallback={null}>
-      <App secureBackgroundSender={extensionTransportSender} />
-    </Suspense>
+    {shouldRenderApp ? (
+      <Suspense fallback={null}>
+        <App secureBackgroundSender={extensionTransportSender} />
+      </Suspense>
+    ) : null}
     <Suspense fallback={null}>
       <SecureUI
-        secureBackgroundSender={extensionTransportSender}
+        secureBackgroundSender={secureUITransportSender}
         secureUIReceiver={secureUITransportReceiver}
       />
     </Suspense>

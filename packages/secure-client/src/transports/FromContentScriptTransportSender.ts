@@ -1,15 +1,18 @@
 import {
   CHANNEL_SECURE_BACKGROUND_REQUEST,
   CHANNEL_SECURE_BACKGROUND_RESPONSE,
+  getLogger,
   InjectedRequestManager,
 } from "@coral-xyz/common";
 import type {
   SECURE_EVENTS,
-  SecureRequest,
-  SecureResponse,
+  SecureEventOrigin,
   TransportSend,
   TransportSender,
 } from "@coral-xyz/secure-background/types";
+import { v4 } from "uuid";
+
+const logger = getLogger("secure-client FromContentScriptTransportSender");
 
 export class FromContentScriptTransportSender<
   X extends SECURE_EVENTS,
@@ -18,29 +21,36 @@ export class FromContentScriptTransportSender<
 {
   private client: InjectedRequestManager;
 
-  constructor() {
+  constructor(private origin: SecureEventOrigin) {
     this.client = new InjectedRequestManager(
       CHANNEL_SECURE_BACKGROUND_REQUEST,
       CHANNEL_SECURE_BACKGROUND_RESPONSE
     );
   }
 
-  public send = async <C extends R = R, T extends X = X>(
-    request: SecureRequest<T>
-  ): Promise<SecureResponse<T, C>> => {
+  public send: TransportSend<X, R> = async (request) => {
+    const id = v4();
+    const requestWithId = { ...request, origin: this.origin, id };
+
+    logger.debug("Request", requestWithId);
+
     return this.client
       .request({
         method: "ContentScriptTransportSenderRequest",
-        params: [request],
+        params: [requestWithId],
       })
       .then((response) => {
+        logger.debug("Response", response);
         return response;
       })
       .catch((e) => {
-        return {
+        const responseWithId = {
           name: request.name,
+          id,
           error: e,
         };
+        logger.error("Response", responseWithId);
+        return responseWithId;
       });
   };
 }

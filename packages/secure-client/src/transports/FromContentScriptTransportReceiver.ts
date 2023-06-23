@@ -1,7 +1,6 @@
 import type { ChannelServer } from "@coral-xyz/common";
 import {
   CHANNEL_SECURE_BACKGROUND_REQUEST,
-  CHANNEL_SECURE_BACKGROUND_RESPONSE,
   ChannelContentScript,
 } from "@coral-xyz/common";
 import { TransportResponder } from "@coral-xyz/secure-background/clients";

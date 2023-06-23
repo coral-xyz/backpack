@@ -4,8 +4,6 @@ export { UserClient } from "./src/services/user/client";
 
 // Transports
 export { combineTransportReceivers } from "./src/transports/combineTransportReceivers";
-export {
-  mockTransportReceiver,
-  mockTransportSender,
-} from "./src/transports/mockTransports";
+export { LocalTransportReceiver } from "./src/transports/LocalTransportReceiver";
+export { LocalTransportSender } from "./src/transports/LocalTransportSender";
 export { TransportResponder } from "./src/transports/TransportResponder";

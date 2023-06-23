@@ -22,7 +22,13 @@ export type { TransportResponder } from "../transports/TransportResponder";
 export type PassThroughToUI = SerializableJson;
 
 export type SecureEventOrigin = {
-  context: "xnft" | "web" | "extension" | "mobile";
+  context:
+    | "xnft"
+    | "browser"
+    | "background"
+    | "extension"
+    | "mobile"
+    | "secureUI";
   name: string;
   address: string;
 };
@@ -30,7 +36,7 @@ export type SecureEventOrigin = {
 export interface SecureEventBase<T extends SECURE_EVENTS = SECURE_EVENTS> {
   name: T;
   origin: SecureEventOrigin;
-  id?: string | number;
+  id: string | number;
   request: SerializableJson;
   confirmOptions?: PassThroughToUI;
   // {
@@ -38,9 +44,7 @@ export interface SecureEventBase<T extends SECURE_EVENTS = SECURE_EVENTS> {
   //   component: string,
   //   props: PassThroughToUI
   // };
-  confirmationResponse?: {
-    confirmed: boolean;
-  };
+  confirmationResponse?: SerializableJson;
   response?: SerializableJson;
   error?: any;
 }
@@ -48,7 +52,7 @@ export interface SecureEventBase<T extends SECURE_EVENTS = SECURE_EVENTS> {
 export type SecureRequest<T extends SECURE_EVENTS = SECURE_EVENTS> = {
   name: T;
   origin: SecureEvent<T>["origin"];
-  id?: SecureEvent<T>["id"];
+  id: SecureEvent<T>["id"];
   request: SecureEvent<T>["request"];
   confirmOptions?: SecureEvent<T>["confirmOptions"];
 };
@@ -58,7 +62,7 @@ export type SecureResponse<
   R extends "response" | "confirmation" = "response"
 > = {
   name: T;
-  id?: SecureEvent<T>["id"];
+  id: SecureEvent<T>["id"];
   response?: R extends "response"
     ? SecureEvent<T>["response"]
     : SecureEvent<T>["confirmationResponse"];
@@ -99,5 +103,9 @@ export type TransportSend<
   T extends SECURE_EVENTS = SECURE_EVENTS,
   R extends "response" | "confirmation" = "response"
 > = <X extends T = T>(
-  request: SecureRequest<X>
+  request: Omit<SecureRequest<X>, "origin" | "id">
 ) => Promise<SecureResponse<X, R>>;
+
+export interface TransportBroadcaster {
+  broadcast: (request: any) => Promise<void>;
+}

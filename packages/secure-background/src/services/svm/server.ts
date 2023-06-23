@@ -1,7 +1,8 @@
-import { Blockchain } from "@coral-xyz/common";
+import { Blockchain, deserializeTransaction } from "@coral-xyz/common";
+import bs58, { encode } from "bs58";
 
+import { SecureUIClient } from "../../background-clients/SecureUIClient";
 import type { KeyringStore } from "../../store/keyring";
-import type { SECURE_EVENTS } from "../../types/events";
 import type {
   TransportHandler,
   TransportHandlers,
@@ -9,22 +10,25 @@ import type {
   TransportRemoveListener,
   TransportSender,
 } from "../../types/transports";
-import { SecureUIClient } from "../secureUI/client";
+import { UserClient } from "../user/client";
 
 import type { SECURE_SVM_EVENTS } from "./events";
 
 export class SVMService {
   public destroy: TransportRemoveListener;
   private secureUIClient: SecureUIClient;
+  private userClient: UserClient;
   private keyringStore: KeyringStore;
 
   constructor(interfaces: {
     secureReceiver: TransportReceiver<SECURE_SVM_EVENTS>;
+    secureSender: TransportSender;
     keyringStore: KeyringStore;
     secureUISender: TransportSender<SECURE_SVM_EVENTS, "confirmation">;
   }) {
     this.keyringStore = interfaces.keyringStore;
     this.secureUIClient = new SecureUIClient(interfaces.secureUISender);
+    this.userClient = new UserClient(interfaces.secureSender);
     this.destroy = interfaces.secureReceiver.setHandler(
       this.eventHandler.bind(this)
     );
@@ -35,7 +39,8 @@ export class SVMService {
       SECURE_SVM_SIGN_MESSAGE: this.handleSignMessage,
       SECURE_SVM_SIGN_TX: this.handleSign,
       SECURE_SVM_SIGN_ALL_TX: this.handleSignAll,
-      SECURE_SVM_SAY_HELLO: this.handleHello,
+      SECURE_SVM_CONNECT: this.handleConnect,
+      SECURE_SVM_DISCONNECT: this.handleDisconnect,
     };
 
     const handler = handlers[request.name]?.bind(this);
@@ -44,11 +49,8 @@ export class SVMService {
 
   private handleSignMessage: TransportHandler<"SECURE_SVM_SIGN_MESSAGE"> =
     async (event) => {
-      console.log("PCA HANDLE sign message", event);
-      // const confirm = await this.secureUISender.send(request)
       const confirmation = await this.secureUIClient.confirm(event.event);
 
-      console.log("PCA confirmation", confirmation);
       if (confirmation.error || !confirmation.response?.confirmed) {
         return event.error("User Denied Request");
       }
@@ -71,26 +73,127 @@ export class SVMService {
         // close ledger prompt
       }
 
-      console.log("PCA responde to contentscript", singedMessage);
-
       return event.respond({ singedMessage });
     };
+
+  private handleConnect: TransportHandler<"SECURE_SVM_CONNECT"> = async (
+    event
+  ) => {
+    const unlockResponse = await this.userClient.unlockKeyring();
+
+    if (!unlockResponse.response) {
+      return event.error(unlockResponse.error);
+    }
+    if (!unlockResponse.response?.unlocked) {
+      return event.error("Keyring locked.");
+    }
+
+    const user = await this.userClient.getUser();
+
+    if (!user.response) {
+      return event.error(user.error);
+    }
+
+    if (
+      !user.response.user?.preferences.approvedOrigins.includes(
+        event.event.origin.address
+      )
+    ) {
+      const approvedOrigin = await this.userClient.approveOrigin({
+        origin: event.event.origin.address,
+      });
+
+      if (!approvedOrigin.response) {
+        return event.error(approvedOrigin.error);
+      }
+    }
+
+    const publicKey = user.response.activePublicKeys?.[Blockchain.SOLANA];
+    const connectionUrl = user.response.user?.preferences.solana.cluster;
+
+    if (!publicKey) {
+      return event.error("No Solana Pubkey Found");
+    }
+    if (!connectionUrl) {
+      return event.error("No Solana connectionUrl Found");
+    }
+
+    return event.respond({
+      publicKey,
+      connectionUrl,
+    });
+  };
+
+  private handleDisconnect: TransportHandler<"SECURE_SVM_DISCONNECT"> = async (
+    event
+  ) => {
+    const removed = await this.userClient.removeOrigin({
+      origin: event.event.origin.address,
+    });
+    if (!removed.response?.removed) {
+      return event.error(removed.error);
+    }
+    return event.respond({
+      disconnected: true,
+    });
+  };
 
   private handleSign: TransportHandler<"SECURE_SVM_SIGN_TX"> = async (
     event
   ) => {
-    return event.respond({ signedTx: "string" });
-  };
+    const confirmation = await this.secureUIClient.confirm(event.event);
 
-  private handleHello: TransportHandler<"SECURE_SVM_SAY_HELLO"> = async (
-    event
-  ) => {
-    return event.respond({ message: "hello " + event.request.name });
+    if (!confirmation.response?.confirmed) {
+      return event.error(confirmation.error);
+    }
+
+    const signature = await this.getTransactionSignature(
+      event.request.publicKey,
+      event.request.tx
+    );
+
+    return event.respond({ signature });
   };
 
   private handleSignAll: TransportHandler<"SECURE_SVM_SIGN_ALL_TX"> = async ({
+    event,
+    request,
+    error,
     respond,
   }) => {
-    return respond({ signedTx: ["string"] });
+    const confirmation = await this.secureUIClient.confirm(event);
+
+    if (!confirmation.response?.confirmed) {
+      return error(confirmation.error);
+    }
+
+    const signatures: string[] = await Promise.all(
+      request.txs.map((tx) => {
+        return this.getTransactionSignature(request.publicKey, tx);
+      })
+    );
+
+    return respond({ signatures });
   };
+
+  private async getTransactionSignature(
+    publicKey: string,
+    tx: string
+  ): Promise<string> {
+    const blockchainKeyring =
+      this.keyringStore.activeUserKeyring.keyringForBlockchain(
+        Blockchain.SOLANA
+      );
+
+    const transaction = deserializeTransaction(tx);
+    const message = transaction.message.serialize();
+    const txMessage = bs58.encode(message);
+
+    const signature = await blockchainKeyring.signTransaction(
+      txMessage,
+      publicKey
+    );
+
+    return signature;
+  }
 }

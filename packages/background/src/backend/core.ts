@@ -158,6 +158,7 @@ export class Backend {
     const signature = await this.solanaSignTransaction(txStr, walletAddress);
     const pubkey = new PublicKey(walletAddress);
     const tx = deserializeTransaction(txStr);
+
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
 
     // Send it to the network.

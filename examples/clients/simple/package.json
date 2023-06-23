@@ -16,7 +16,7 @@
     "wagmi": "^0.6.3"
   },
   "devDependencies": {
-    "@parcel/transformer-html": "^2.9.1",
+    "@parcel/transformer-html": "^2.9.2",
     "@parcel/transformer-posthtml": "^2.9.1",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",

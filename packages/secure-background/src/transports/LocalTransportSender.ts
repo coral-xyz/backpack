@@ -11,9 +11,8 @@ import type {
   TransportSend,
   TransportSender,
 } from "@coral-xyz/secure-background/types";
+import type EventEmitter from "eventemitter3";
 import { v4 } from "uuid";
-
-const logger = getLogger("secure-client FromExtensionTransportSender");
 
 type QueuedRequest<
   X extends SECURE_EVENTS,
@@ -23,30 +22,38 @@ type QueuedRequest<
   resolve: (resonse: SecureResponse<X, R>) => void;
 };
 
-export class FromExtensionTransportSender<
+const logger = getLogger("secure-background LocalTransportSender");
+
+export class LocalTransportSender<
   X extends SECURE_EVENTS,
   R extends "response" | "confirmation" = "response"
 > implements TransportSender<X, R>
 {
   private responseQueue: QueuedRequest<X, R>[] = [];
+  private channels: { request: string; response: string } = {
+    request: "LOCAL_BACKGROUND_REQUEST",
+    response: "LOCAL_BACKGROND_RESPONSE",
+  };
 
-  constructor(private origin: SecureEventOrigin) {
-    chrome.runtime.onMessage.addListener(this.responseHandler.bind(this));
+  constructor(
+    private origin: SecureEventOrigin,
+    private emitter: EventEmitter,
+    channels?: { request: string; response: string }
+  ) {
+    if (channels) {
+      this.channels = channels;
+    }
+    emitter.addListener(
+      this.channels.response,
+      this.responseHandler.bind(this)
+    );
   }
 
-  private responseHandler = (message: {
-    channel: string;
-    data: SecureResponse<X, R>;
-  }) => {
-    if (message.channel !== CHANNEL_SECURE_BACKGROUND_EXTENSION_RESPONSE) {
-      return;
-    }
-    const request = this.getRequest(message.data.id);
-
+  private responseHandler = (event: SecureResponse<X, R>) => {
+    const request = this.getRequest(event.id);
     if (request) {
-      logger.debug("Response", message.data);
-
-      request.resolve(message.data);
+      logger.debug("Response", event);
+      request.resolve(event);
     }
   };
 
@@ -82,30 +89,12 @@ export class FromExtensionTransportSender<
         };
 
         logger.debug("Request", requestWithId);
-
         this.responseQueue.push({
           request: requestWithId,
           resolve,
         });
 
-        chrome.runtime
-          .sendMessage({
-            channel: CHANNEL_SECURE_BACKGROUND_EXTENSION_REQUEST,
-            data: requestWithId,
-          })
-          .catch((e) => {
-            const request = this.getRequest(requestWithId.id);
-
-            if (request) {
-              const response = {
-                name: requestWithId.name,
-                id: requestWithId.id,
-                error: e,
-              } as SecureResponse<T, C>;
-              logger.debug("Response", response);
-              return request.resolve(response);
-            }
-          });
+        this.emitter.emit(this.channels.request, requestWithId);
       }
     );
   };
