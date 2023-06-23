@@ -1,7 +1,7 @@
 import {
+  CHANNEL_SECURE_BACKGROUND_RESPONSE,
   CHANNEL_SECURE_UI_REQUEST,
   CHANNEL_SECURE_UI_RESPONSE,
-  getLogger,
 } from "@coral-xyz/common";
 import { TransportResponder } from "@coral-xyz/secure-background/clients";
 import type {
@@ -11,9 +11,6 @@ import type {
   TransportHandler,
   TransportReceiver,
 } from "@coral-xyz/secure-background/types";
-
-const logger = getLogger("secure-client ToSecureUITransportReceiver");
-
 export class ToSecureUITransportReceiver<
   X extends SECURE_EVENTS,
   R extends "response" | "confirmation" = "response"
@@ -29,12 +26,13 @@ export class ToSecureUITransportReceiver<
       if (message.channel !== CHANNEL_SECURE_UI_REQUEST) {
         return;
       }
-
+      console.log("PCA message received", message.data);
       message.data.forEach((request) => {
         new TransportResponder({
           request,
           handler,
           onResponse: (result) => {
+            console.log("PCA", "sending result", result);
             this.sendResponse(request, result);
           },
         });
@@ -50,16 +48,13 @@ export class ToSecureUITransportReceiver<
     request: SecureRequest<X>,
     response: SecureResponse<X, R>
   ) => {
-    try {
-      this.port.postMessage({
-        channel: CHANNEL_SECURE_UI_RESPONSE,
-        data: {
-          ...response,
-          id: request.id,
-        },
-      });
-    } catch (e) {
-      logger.error(e);
-    }
+    console.log("PCA", "SEND_RESPONSE", request, response);
+    this.port.postMessage({
+      channel: CHANNEL_SECURE_UI_RESPONSE,
+      data: {
+        ...response,
+        id: request.id,
+      },
+    });
   };
 }

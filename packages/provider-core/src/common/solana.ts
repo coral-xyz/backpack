@@ -17,6 +17,7 @@ import type {
   SimulatedTransactionResponse,
   Transaction,
   TransactionSignature,
+  Version,
   VersionedTransaction,
 } from "@solana/web3.js";
 import { decode, encode } from "bs58";

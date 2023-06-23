@@ -12,7 +12,6 @@ import {
   Blockchain,
   confirmTransaction,
   customSplTokenAccounts,
-  DEFAULT_SOLANA_CLUSTER,
   fetchSplMetadataUri,
   getLogger,
   NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
@@ -111,12 +110,9 @@ export function start(events: EventEmitter): SolanaConnectionBackend {
   return b;
 }
 
-const defaultSolanaUrl =
-  process.env.DEFAULT_SOLANA_CONNECTION_URL || DEFAULT_SOLANA_CLUSTER;
-
 export class SolanaConnectionBackend {
   private cache = new Map<string, CachedValue<any>>();
-  private connection?: Connection = new Connection(defaultSolanaUrl);
+  private connection?: Connection;
   private url?: string;
   private pollIntervals: Array<any>;
   private events: EventEmitter;
@@ -188,7 +184,6 @@ export class SolanaConnectionBackend {
     };
 
     const handleKeyringStoreLocked = (_notif: Notification) => {
-      this.connection = new Connection(defaultSolanaUrl);
       this.stopPolling();
     };
 

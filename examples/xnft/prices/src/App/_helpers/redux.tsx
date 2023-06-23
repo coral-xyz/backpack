@@ -1,13 +1,15 @@
-import type { Dispatch, MutableRefObject, ReactNode } from "react";
 import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
   useMemo,
-  useReducer,
-  useRef,
+  useEffect,
+  useContext,
   useState,
+  useCallback,
+  Dispatch,
+  useRef,
+  MutableRefObject,
+  useReducer,
+  ReactNode,
+  createContext,
 } from "react";
 
 export type Reducer<State, Actions> = (state: State, action: Actions) => State;
@@ -99,6 +101,7 @@ function useThunk<State, Actions>([state, dispatch]: [
   const containerRef: MutableRefObject<State> = useRef<State>(state);
   const thunkDispatch: ThunkDispatch<State, Actions> = useCallback(
     (action: Actions | Thunk<State, Actions>) => {
+      // console.log("PCA", "useThunk", action);
       switch (typeof action) {
         case "object": {
           dispatch(action as Actions);

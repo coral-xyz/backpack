@@ -27,6 +27,10 @@ import {
   SOLANA_RPC_METHOD_DISCONNECT,
   SOLANA_RPC_METHOD_OPEN_XNFT,
 } from "@coral-xyz/common";
+// import {
+//   FromContentScriptTransportSender,
+//   SolanaClient,
+// } from "@coral-xyz/secure-client";
 import type { Provider } from "@project-serum/anchor";
 import type {
   Commitment,
@@ -39,6 +43,7 @@ import type {
   VersionedTransaction,
 } from "@solana/web3.js";
 import { Connection, PublicKey } from "@solana/web3.js";
+import { decode, encode } from "bs58";
 
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 import * as cmn from "./common/solana";
@@ -56,6 +61,7 @@ export class ProviderSolanaInjection
   // Channel to send extension specific RPC requests to the extension.
   //
   #backpackRequestManager: InjectedRequestManager;
+  // #secureSolanaClient: SolanaClient;
   #xnftRequestManager: ChainedRequestManager;
 
   #requestManager: InjectedRequestManager | ChainedRequestManager;
@@ -81,6 +87,15 @@ export class ProviderSolanaInjection
       CHANNEL_SOLANA_RPC_REQUEST,
       CHANNEL_SOLANA_RPC_RESPONSE
     );
+
+    // this.#secureSolanaClient = new SolanaClient(
+    //   new FromContentScriptTransportSender(),
+    //   {
+    //     context: "web",
+    //     name: document.title,
+    //     address: window.location.origin,
+    //   }
+    // );
 
     this.#requestManager = this.#backpackRequestManager;
     this.#connectionRequestManager = new InjectedRequestManager(
@@ -379,6 +394,14 @@ export class ProviderSolanaInjection
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
+    // const solanaResponse = await this.#secureSolanaClient.signMessage({
+    //   publicKey: (publicKey ?? this.#publicKey).toString(),
+    //   message: encode(msg),
+    // });
+    // if (!solanaResponse) {
+    //   throw new Error("signature failed");
+    // }
+    // return decode(solanaResponse);
     return await cmn.signMessage(
       publicKey ?? this.#publicKey,
       this.#requestManager,

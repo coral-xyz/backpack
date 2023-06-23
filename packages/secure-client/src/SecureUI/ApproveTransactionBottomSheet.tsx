@@ -1,8 +1,4 @@
-import type { SecureEvent } from "@coral-xyz/secure-background/types";
-import {
-  SECURE_EVENTS,
-  SecureRequest,
-} from "@coral-xyz/secure-background/types";
+import { useState } from "react";
 import {
   PrimaryButton,
   ProxyImage,
@@ -14,9 +10,6 @@ import {
   XStack,
   YStack,
 } from "@coral-xyz/tamagui";
-import { useRecoilValue } from "recoil";
-
-import { userAtom } from "../_atoms/userAtom";
 
 function ResourceThing({ imageUrl, title, subtitle }) {
   return (
@@ -40,19 +33,17 @@ function ResourceThing({ imageUrl, title, subtitle }) {
 }
 
 export function ApproveTransactionBottomSheet(props: {
-  id: string;
-  title: string;
   message: string;
   onApprove: () => void;
   onDeny: () => void;
 }) {
-  const user = useRecoilValue(userAtom);
+  const [message, setMessage] = useState("");
   // i have a <Screen> component that handles insets, etc. Might want to make Screen.web.tsx that just handles padding
   return (
     <YStack f={1} jc="space-between" pb={48} pt={64} px={16}>
       <Stack>
         <StyledText mb={48} textAlign="center">
-          {props.title}
+          Approve Message
         </StyledText>
         <XStack jc="space-around" ai="center">
           <ResourceThing
@@ -68,7 +59,7 @@ export function ApproveTransactionBottomSheet(props: {
         </XStack>
       </Stack>
       <Stack>
-        <StyledText mb={8}>Message {props.id}</StyledText>
+        <StyledText mb={8}>Message</StyledText>
         <TextArea
           borderColor="$borderFull"
           borderWidth={2}
@@ -77,6 +68,7 @@ export function ApproveTransactionBottomSheet(props: {
           height={128}
           value={props.message}
           placeholder="Enter message"
+          onChangeText={setMessage}
           mb={16}
         />
         <TwoButtonFooter
