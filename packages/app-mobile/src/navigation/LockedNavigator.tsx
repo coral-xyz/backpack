@@ -9,7 +9,7 @@ import {
 
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { YStack } from "@coral-xyz/tamagui";
+import { StyledText, YStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -30,6 +30,7 @@ import {
   WelcomeLogoHeader,
 } from "~components/index";
 
+import { InputForm } from "~src/components/Form";
 import {
   BIOMETRIC_PASSWORD,
   BiometricAuthenticationStatus,
@@ -153,20 +154,21 @@ function PasswordUnlock({ userUuid }: { userUuid: string }): JSX.Element {
 
   return (
     <YStack space={8}>
-      <PasswordInput
-        onSubmitEditing={handleSubmit(onSubmit)}
-        returnKeyType="done"
-        autoFocus
-        placeholder="Password"
-        name="password"
-        control={control}
-        rules={{
-          required: "You must enter a password",
-        }}
-      />
-      {formState.errors.password ? (
-        <ErrorMessage for={formState.errors.password} />
-      ) : null}
+      <InputForm
+        hasError={Boolean(formState.errors.password)}
+        errorMessage={formState?.errors?.password?.message}
+      >
+        <PasswordInput
+          onSubmitEditing={handleSubmit(onSubmit)}
+          returnKeyType="done"
+          placeholder="Password"
+          name="password"
+          control={control}
+          rules={{
+            required: "You must enter a password",
+          }}
+        />
+      </InputForm>
       <PrimaryButton label="Unlock" onPress={handleSubmit(onSubmit)} />
     </YStack>
   );

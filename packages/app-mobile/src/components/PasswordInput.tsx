@@ -14,6 +14,7 @@ export const PasswordInput = forwardRef(
       name,
       placeholder,
       autoFocus,
+      hasError,
       ...props
     }: PasswordInputProps,
     ref: Ref<TextInput>
@@ -22,8 +23,12 @@ export const PasswordInput = forwardRef(
       name={name}
       control={control}
       rules={rules}
-      render={({ field: { onChange, onBlur, value } }) => (
+      render={({
+        field: { onChange, onBlur, value },
+        fieldState: { invalid },
+      }) => (
         <StyledTextInput
+          hasError={hasError || invalid}
           ref={ref}
           autoFocus={autoFocus}
           autoCapitalize="none"

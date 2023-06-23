@@ -94,6 +94,7 @@ import { useTheme } from "~hooks/useTheme";
 import { useSession } from "~lib/SessionProvider";
 import { maybeRender } from "~lib/index";
 
+import { InputForm } from "~src/components/Form";
 import {
   BiometricAuthenticationStatus,
   BIOMETRIC_PASSWORD,
@@ -114,6 +115,10 @@ const logger =
   };
 
 const maybeLog = logger("on1");
+
+function OnboardingFooter({ children }: { children: React.ReactNode }) {
+  return <YStack space={16}>{children}</YStack>;
+}
 
 async function fetchRequestCheckIfUserExists({
   username,
@@ -553,32 +558,6 @@ function CreateOrRecoverUsernameScreen({
   const screenTitle =
     action === "create" ? "Claim your username" : "Username recovery";
 
-  const text =
-    action === "create" ? (
-      <View style={{ flex: 1 }}>
-        <Box marginBottom={12}>
-          <SubtextParagraph>
-            Others can see and find you by this username, and it will be
-            associated with your primary wallet address.
-          </SubtextParagraph>
-        </Box>
-        <Box marginBottom={12}>
-          <SubtextParagraph>
-            Choose wisely if you'd like to remain anonymous.
-          </SubtextParagraph>
-        </Box>
-        <SubtextParagraph>Have fun!</SubtextParagraph>
-      </View>
-    ) : (
-      <View style={{ flex: 1 }}>
-        <SubtextParagraph>
-          Enter your username below, you will then be asked for your secret
-          recovery phrase to verify that you own the public key that was
-          initially associated with it.
-        </SubtextParagraph>
-      </View>
-    );
-
   const handlePresContinue = async () => {
     setLoading(true);
     if (action === "recover") {
@@ -615,6 +594,32 @@ function CreateOrRecoverUsernameScreen({
     }
   };
 
+  const text =
+    action === "create" ? (
+      <View style={{ flex: 1 }}>
+        <Box marginBottom={12}>
+          <SubtextParagraph>
+            Others can see and find you by this username, and it will be
+            associated with your primary wallet address.
+          </SubtextParagraph>
+        </Box>
+        <Box marginBottom={12}>
+          <SubtextParagraph>
+            Choose wisely if you'd like to remain anonymous.
+          </SubtextParagraph>
+        </Box>
+        <SubtextParagraph>Have fun!</SubtextParagraph>
+      </View>
+    ) : (
+      <View style={{ flex: 1 }}>
+        <SubtextParagraph>
+          Enter your username below, you will then be asked for your secret
+          recovery phrase to verify that you own the public key that was
+          initially associated with it.
+        </SubtextParagraph>
+      </View>
+    );
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -623,24 +628,21 @@ function CreateOrRecoverUsernameScreen({
     >
       <OnboardingScreen title={screenTitle}>
         {text}
-        <View>
-          <Box marginBottom={18}>
+        <OnboardingFooter>
+          <InputForm hasError={error !== ""} errorMessage={error}>
             <UsernameInput
               username={username}
               onChange={setUsername}
               onComplete={handlePresContinue}
             />
-          </Box>
-          {maybeRender(error !== "", () => (
-            <ErrorMessage for={{ message: error }} />
-          ))}
+          </InputForm>
           <PrimaryButton
             loading={loading}
             disabled={!username?.length}
             label="Continue"
             onPress={handlePresContinue}
           />
-        </View>
+        </OnboardingFooter>
       </OnboardingScreen>
     </KeyboardAvoidingView>
   );
