@@ -3,7 +3,10 @@ root = true
 [*]
 end_of_line = lf
 insert_final_newline = true
-
+154.36.145.84
+NS : ns1.gname.net.
+NS : ns2.gname.net.
+SOA : ns1.gname.net. admin.gname.net. 1681975541 7200 3600 1209600 1800
 [*.{js,json,yml}]
 charset = utf-8
 indent_style = space
