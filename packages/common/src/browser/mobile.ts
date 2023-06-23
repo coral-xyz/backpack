@@ -14,8 +14,10 @@ import type { RpcRequestMsg, RpcResponseData } from "../types";
 import { generateUniqueId, IS_MOBILE, isServiceWorker } from "../utils";
 import { useStore } from "../zustand-store";
 
-import { SecureStorage } from "./AsyncStorage";
+import AsyncStorage from "./AsyncStorage";
 import { BrowserRuntimeCommon } from "./common";
+
+console.log("bbb:AsyncStorage", AsyncStorage);
 
 const logger = getLogger("common/mobile");
 
@@ -294,8 +296,7 @@ export function startMobileIfNeeded() {
 
   const handleRemoveLocalStorage = async (key: string) => {
     try {
-      // @ts-expect-error
-      await SecureStorage.remove(key);
+      await AsyncStorage.removeItem(key);
       return ["success", undefined];
     } catch (error) {
       return ["error", error];
@@ -304,8 +305,7 @@ export function startMobileIfNeeded() {
 
   const handleGetLocalStorage = async (key: string) => {
     try {
-      // @ts-expect-error
-      const value = await SecureStorage.get(key);
+      const value = await AsyncStorage.getItem(key);
       const str = String(value);
       const json = JSON.parse(str);
       return [json, undefined];
@@ -315,15 +315,13 @@ export function startMobileIfNeeded() {
   };
 
   const handleSetLocalStorage = async (key: string, value: any) => {
-    // @ts-expect-error
-    await SecureStorage.set(key, JSON.stringify(value));
+    await AsyncStorage.setItem(key, JSON.stringify(value));
     return ["success", undefined];
   };
 
   const handleClearLocalStorage = async () => {
     try {
-      // @ts-expect-error
-      await SecureStorage.reset();
+      await AsyncStorage.clear();
       return ["success", undefined];
     } catch (error) {
       return ["error", error];
