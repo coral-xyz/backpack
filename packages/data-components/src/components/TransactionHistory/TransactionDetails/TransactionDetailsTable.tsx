@@ -19,8 +19,8 @@ import {
 import * as TamaguiIcons from "@tamagui/lucide-icons";
 import * as Linking from "expo-linking";
 
-import type { ResponseTransaction } from "..";
 import type { ParseTransactionDetails } from "../parsing";
+import type { ResponseTransaction } from "../utils";
 
 const openUrl = Platform.select({
   native: Linking.openURL,

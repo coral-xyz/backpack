@@ -2,12 +2,12 @@ import { type ReactNode, Suspense, useMemo } from "react";
 import { useActiveWallet } from "@coral-xyz/recoil";
 
 import { gql } from "../../apollo";
-import { type GetTransactionsQuery, ProviderId } from "../../apollo/graphql";
+import { ProviderId } from "../../apollo/graphql";
 import { usePolledSuspenseQuery } from "../../hooks";
 
 import type { ParseTransactionDetails } from "./parsing";
 import { TransactionList } from "./TransactionList";
-import { getGroupedTransactions } from "./utils";
+import { getGroupedTransactions, type ResponseTransaction } from "./utils";
 
 export type { ParseTransactionDetails } from "./parsing";
 export * from "./TransactionDetails";
@@ -43,12 +43,6 @@ const GET_TRANSACTIONS = gql(`
     }
   }
 `);
-
-export type ResponseTransaction = NonNullable<
-  NonNullable<
-    NonNullable<GetTransactionsQuery["user"]>["wallet"]
-  >["transactions"]
->["edges"][number]["node"];
 
 export type TransactionHistoryProps = {
   contractOrMint?: string;

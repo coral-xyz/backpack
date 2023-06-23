@@ -11,9 +11,8 @@ import {
   Separator,
 } from "@coral-xyz/tamagui";
 
-import type { ResponseNotification } from ".";
 import { NotificationListItem } from "./NotificationListItem";
-import type { NotificationGroup } from "./utils";
+import type { NotificationGroup, ResponseNotification } from "./utils";
 
 export type NotificationListProps = {
   notificationGroups: NotificationGroup[];

@@ -4,17 +4,14 @@ import { useUnreadCount } from "@coral-xyz/recoil";
 import { useAsyncEffect } from "use-async-effect";
 
 import { gql } from "../../apollo";
-import {
-  type GetNotificationsQuery,
-  SortDirection,
-} from "../../apollo/graphql";
+import { SortDirection } from "../../apollo/graphql";
 import { usePolledSuspenseQuery } from "../../hooks";
 
 import {
   NotificationList,
   type NotificationListProps,
 } from "./NotificationList";
-import { getGroupedNotifications } from "./utils";
+import { getGroupedNotifications, type ResponseNotification } from "./utils";
 
 const DEFAULT_POLLING_INTERVAL = 30000;
 
@@ -50,10 +47,6 @@ const MARK_NOTIFICATIONS_AS_READ = gql(`
     markNotificationsAsRead(ids: $ids)
   }
 `);
-
-export type ResponseNotification = NonNullable<
-  NonNullable<GetNotificationsQuery["user"]>["notifications"]
->["edges"][number]["node"];
 
 export type NotificationsProps = Omit<
   NotificationListProps,
