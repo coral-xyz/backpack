@@ -7,12 +7,12 @@ import type { GraphQLResolveInfo } from "graphql";
 
 import type { ApiContext } from "../../context";
 import { NodeBuilder } from "../../nodes";
-import {
-  ProviderId,
-  type QueryResolvers,
-  type QueryTokenListArgs,
-  type TokenListEntry,
+import type {
+  QueryResolvers,
+  QueryTokenListArgs,
+  TokenListEntry,
 } from "../../types";
+import { ProviderId } from "../../types";
 
 /**
  * Handler for the `tokenList` query.

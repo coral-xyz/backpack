@@ -3,13 +3,8 @@ import { importSPKI, jwtVerify } from "jose";
 
 import { AUTH_JWT_PUBLIC_KEY } from "../../config";
 
-import {
-  type BalanceAggregate,
-  type Node,
-  type PageInfo,
-  ProviderId,
-  type TokenBalance,
-} from "./types";
+import type { BalanceAggregate, Node, PageInfo, TokenBalance } from "./types";
+import { ProviderId } from "./types";
 
 export type Edge<T extends Node> = {
   cursor: string;

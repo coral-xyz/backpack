@@ -3,17 +3,17 @@ import { ethers } from "ethers";
 
 import type { ApiContext } from "../context";
 import { NodeBuilder } from "../nodes";
-import {
-  type BalanceFiltersInput,
-  type Balances,
-  type NftConnection,
-  type NftFiltersInput,
-  ProviderId,
-  type TokenBalance,
-  type Transaction,
-  type TransactionConnection,
-  type TransactionFiltersInput,
+import type {
+  BalanceFiltersInput,
+  Balances,
+  NftConnection,
+  NftFiltersInput,
+  TokenBalance,
+  Transaction,
+  TransactionConnection,
+  TransactionFiltersInput,
 } from "../types";
+import { ProviderId } from "../types";
 import { calculateBalanceAggregate, createConnection } from "../utils";
 
 import type { BlockchainDataProvider } from ".";

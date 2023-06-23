@@ -9721,7 +9721,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metaplex-foundation/mpl-token-metadata@npm:^2.2.2, @metaplex-foundation/mpl-token-metadata@npm:^2.3.3, @metaplex-foundation/mpl-token-metadata@npm:^2.5.1, @metaplex-foundation/mpl-token-metadata@npm:^2.5.2, @metaplex-foundation/mpl-token-metadata@npm:^2.7.0, @metaplex-foundation/mpl-token-metadata@npm:^2.8.1, @metaplex-foundation/mpl-token-metadata@npm:^2.8.6":
+"@metaplex-foundation/mpl-token-metadata@npm:^2.2.2, @metaplex-foundation/mpl-token-metadata@npm:^2.3.3, @metaplex-foundation/mpl-token-metadata@npm:^2.5.1, @metaplex-foundation/mpl-token-metadata@npm:^2.5.2, @metaplex-foundation/mpl-token-metadata@npm:^2.7.0, @metaplex-foundation/mpl-token-metadata@npm:^2.8.6":
   version: 2.9.1
   resolution: "@metaplex-foundation/mpl-token-metadata@npm:2.9.1"
   dependencies:
@@ -9733,6 +9733,21 @@ __metadata:
     bn.js: ^5.2.0
     debug: ^4.3.4
   checksum: 70573878ad010b5e0b9dc5c46241ee977e42b140cd279de58d7a4a51c597aa9f8c724dac2f9fb63ed0d3ee563840cad701edbac467358f2c882fa84cbd6f6d62
+  languageName: node
+  linkType: hard
+
+"@metaplex-foundation/mpl-token-metadata@npm:^2.8.1":
+  version: 2.12.0
+  resolution: "@metaplex-foundation/mpl-token-metadata@npm:2.12.0"
+  dependencies:
+    "@metaplex-foundation/beet": ^0.7.1
+    "@metaplex-foundation/beet-solana": ^0.4.0
+    "@metaplex-foundation/cusper": ^0.0.2
+    "@solana/spl-token": ^0.3.6
+    "@solana/web3.js": ^1.66.2
+    bn.js: ^5.2.0
+    debug: ^4.3.4
+  checksum: fe2804cfe940d484073de801e35de9f2bc3b35aa4a432e1975f0c13280337c0bbba291ce8aed056d55e4a0f7b48964c4b236a51353017fd6c569598a5abf4634
   languageName: node
   linkType: hard
 

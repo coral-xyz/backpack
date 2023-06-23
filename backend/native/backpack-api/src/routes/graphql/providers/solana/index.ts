@@ -184,93 +184,100 @@ export class Solana extends SolanaRpc implements BlockchainDataProvider {
   ): Promise<NftConnection> {
     if (!this.ctx) {
       throw new Error("API context object not available");
+    } else if (this.ctx.network.rpc) {
+      return super.getNftsForAddress(address, filters);
     }
 
-    // Get the list of digital assets (NFTs) owned by the argued address from Helius DAS API.
-    const response = await this.ctx.dataSources.helius.rpc.getAssetsByOwner(
-      address
-    );
-
-    // Optionally filter for only argued NFT mints if provided
-    let { items } = response.result;
-    if (filters?.addresses) {
-      items = items.filter((i) => filters.addresses?.includes(i.id));
-    }
-
-    if (items.length === 0) {
-      return createConnection([], false, false);
-    }
-
-    // Get active listings for the argued wallet address and assign empty
-    // listing data array if the request fails
-    let listings: TensorActingListingsResponse;
     try {
-      listings = await this.ctx.dataSources.tensor.getActiveListingsForWallet(
+      // Get the list of digital assets (NFTs) owned by the argued address from Helius DAS API.
+      const response = await this.ctx.dataSources.helius.rpc.getAssetsByOwner(
         address
       );
-    } catch (err) {
-      console.error(err);
-      listings = { data: { userActiveListings: { txs: [] } } };
-    }
 
-    // Create a map of collection address to name and image for reference
-    const collectionMap = await _getCollectionMetadatas(this.ctx, items);
-
-    // Create a map of associated token account addresses
-    const atas = getATAAddressesSync({
-      mints: items.reduce<Record<string, PublicKey>>((acc, curr) => {
-        acc[curr.id] = new PublicKey(curr.id);
-        return acc;
-      }, {}),
-      owner: new PublicKey(address),
-    });
-
-    // Map all NFT metadatas into their return type with possible collection data
-    const nodes: Nft[] = items.map((item) => {
-      const collection = _parseCollectionMetadata(
-        this.id(),
-        collectionMap,
-        item.grouping.find((g) => g.group_key === "collection")?.group_value
-      );
-
-      const attributes: NftAttribute[] | undefined =
-        item.content.metadata?.attributes?.map((x) => ({
-          trait: x.trait_type,
-          value: x.value,
-        }));
-
-      let listing: Listing | undefined = undefined;
-      const tensorListing = listings.data.userActiveListings.txs.find(
-        (t) => t.tx.mintOnchainId === item.id
-      );
-
-      if (tensorListing) {
-        listing = NodeBuilder.tensorListing(item.id, {
-          amount: ethers.utils.formatUnits(
-            tensorListing.tx.grossAmount,
-            this.decimals()
-          ),
-          source: tensorListing.tx.source,
-          url: this.ctx!.dataSources.tensor.getListingUrl(item.id),
-        });
+      // Optionally filter for only argued NFT mints if provided
+      let { items } = response.result;
+      if (filters?.addresses) {
+        items = items.filter((i) => filters.addresses?.includes(i.id));
       }
 
-      return NodeBuilder.nft(this.id(), {
-        address: item.id,
-        attributes,
-        collection,
-        compressed: item.compression?.compressed ?? false,
-        description: item.content?.metadata?.description || undefined,
-        image: item.content?.files?.at(0)?.uri || undefined,
-        listing,
-        metadataUri: item.content?.json_uri || undefined,
-        name: item.content?.metadata?.name || undefined,
-        owner: address,
-        token: atas.accounts[item.id].address.toBase58(),
-      });
-    });
+      if (items.length === 0) {
+        return createConnection([], false, false);
+      }
 
-    return createConnection(nodes, false, false);
+      // Get active listings for the argued wallet address and assign empty
+      // listing data array if the request fails
+      let listings: TensorActingListingsResponse;
+      try {
+        listings = await this.ctx.dataSources.tensor.getActiveListingsForWallet(
+          address
+        );
+      } catch (err) {
+        console.error(err);
+        listings = { data: { userActiveListings: { txs: [] } } };
+      }
+
+      // Create a map of collection address to name and image for reference
+      const collectionMap = await _getCollectionMetadatas(this.ctx, items);
+
+      // Create a map of associated token account addresses
+      const atas = getATAAddressesSync({
+        mints: items.reduce<Record<string, PublicKey>>((acc, curr) => {
+          acc[curr.id] = new PublicKey(curr.id);
+          return acc;
+        }, {}),
+        owner: new PublicKey(address),
+      });
+
+      // Map all NFT metadatas into their return type with possible collection data
+      const nodes: Nft[] = items.map((item) => {
+        const collection = _parseCollectionMetadata(
+          this.id(),
+          collectionMap,
+          item.grouping.find((g) => g.group_key === "collection")?.group_value
+        );
+
+        const attributes: NftAttribute[] | undefined =
+          item.content.metadata?.attributes?.map((x) => ({
+            trait: x.trait_type,
+            value: x.value,
+          }));
+
+        let listing: Listing | undefined = undefined;
+        const tensorListing = listings.data.userActiveListings.txs.find(
+          (t) => t.tx.mintOnchainId === item.id
+        );
+
+        if (tensorListing) {
+          listing = NodeBuilder.tensorListing(item.id, {
+            amount: ethers.utils.formatUnits(
+              tensorListing.tx.grossAmount,
+              this.decimals()
+            ),
+            source: tensorListing.tx.source,
+            url: this.ctx!.dataSources.tensor.getListingUrl(item.id),
+          });
+        }
+
+        return NodeBuilder.nft(this.id(), {
+          address: item.id,
+          attributes,
+          collection,
+          compressed: item.compression?.compressed ?? false,
+          description: item.content?.metadata?.description || undefined,
+          image: item.content?.files?.at(0)?.uri || undefined,
+          listing,
+          metadataUri: item.content?.json_uri || undefined,
+          name: item.content?.metadata?.name || undefined,
+          owner: address,
+          token: atas.accounts[item.id].address.toBase58(),
+        });
+      });
+
+      return createConnection(nodes, false, false);
+    } catch (err) {
+      console.error(`Falling back to Solana RPC: ${err}`);
+      return super.getNftsForAddress(address, filters);
+    }
   }
 
   /**
