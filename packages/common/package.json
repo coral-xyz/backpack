@@ -4,10 +4,10 @@
   "license": "ISC",
   "author": "",
   "module": "dist/esm/index.js",
-  "react-native": "dist/rn/index.js",
+  "react-native": "src/index.ts",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "build": "./scripts/config.sh && tsc -p tsconfig.prod.json && tsc-alias && tsc -p tsconfig.rn.json",
+    "build": "./scripts/config.sh && tsc -p tsconfig.prod.json",
     "dev": "tsc --watch",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
     "lint:fix": "yarn run lint --fix",
