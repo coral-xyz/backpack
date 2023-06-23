@@ -319,7 +319,7 @@ export function OnboardingProvider({
 
       // If userId is provided, then we are onboarding via the recover flow.
       if (userId) {
-        maybeLog("createUser:userId", userId);
+        maybeLog("createUser:userId:exists", userId);
         // Authenticate the user that the recovery has a JWT.
         // Take the first keyring init to fetch the JWT, it doesn't matter which
         // we use if there are multiple.
@@ -338,6 +338,7 @@ export function OnboardingProvider({
         maybeLog("createUser:authData", authData);
 
         const { jwt } = await authenticate(authData!);
+        maybeLog("createUser:jwt:exists", jwt);
         return { id: userId, jwt };
       }
 
@@ -425,7 +426,13 @@ export function OnboardingProvider({
     async (data: Partial<OnboardingData>) => {
       try {
         const { id, jwt } = await createUser(data);
+        maybeLog("maybeCreateUser:createUser complete");
+        maybeLog("maybeCreateUser:createUser:id", id);
+        maybeLog("maybeCreateUser:createUser:jwt", jwt);
         await createStore(id, jwt, data);
+        maybeLog("maybeCreateUser:createStore:id", id);
+        maybeLog("maybeCreateUser:createStore:jwt", jwt);
+        maybeLog("maybeCreateUser:createStore:data", data);
         return { ok: true, jwt };
       } catch (err) {
         console.error("OnboardingProvider:maybeCreateUser", err);
