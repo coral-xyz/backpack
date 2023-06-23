@@ -298,19 +298,21 @@ export function startMobileIfNeeded() {
       await SecureStorage.remove(key);
       return ["success", undefined];
     } catch (error) {
-      return ["error", error];
+      return ["error", undefined];
     }
   };
 
   const handleGetLocalStorage = async (key: string) => {
+    logger.debug("ab1:getLocalStorage:key", key);
     try {
       // @ts-expect-error
-      const value = await SecureStorage.get(key);
-      const str = String(value);
+      const str = await SecureStorage.get(key);
+      logger.debug("ab1:getLocalStorage:key:str", key, str);
       const json = JSON.parse(str);
+      logger.debug("ab1:getLocalStorage:key:json", key, json);
       return [json, undefined];
     } catch (error) {
-      return ["error", error];
+      return ["error", undefined];
     }
   };
 
@@ -326,7 +328,7 @@ export function startMobileIfNeeded() {
       await SecureStorage.reset();
       return ["success", undefined];
     } catch (error) {
-      return ["error", error];
+      return ["error", undefined];
     }
   };
 }

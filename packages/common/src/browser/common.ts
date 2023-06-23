@@ -1,3 +1,5 @@
+import { getLogger } from "../logging";
+const logger = getLogger("ab1:common:BrowserRuntimeCommon");
 //
 // Browser apis that can be used in a mobile web view as well as the extension.
 //
@@ -27,8 +29,10 @@ export class BrowserRuntimeCommon {
   }
 
   public static async getLocalStorage(key: string): Promise<any> {
+    logger.debug("getLocalStorage:key", key);
     return new Promise((resolve, reject) => {
       return chrome?.storage.local.get(key, (result) => {
+        logger.debug("getLocalStorage:key:result", key, result);
         const err = BrowserRuntimeCommon.checkForError();
         if (err) {
           reject(err);

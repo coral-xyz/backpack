@@ -1,3 +1,5 @@
+import { getLogger } from "../logging";
+const logger = getLogger("ab1:AsyncStorage:web");
 // NOTE this is just a stub for the native AsyncStorage wrapper
 interface SecureDB {
   get: (key: string) => Promise<any>;
@@ -8,12 +10,12 @@ interface SecureDB {
 
 export class SecureStorage implements SecureDB {
   async get(key: string): Promise<string | null> {
-    console.log("z1:web.ts:getItem");
+    logger.debug("getItem", key);
     return localStorage.getItem(key);
   }
 
-  async set(key: string, value: string): Promise<void> {
-    console.log("z1:web.ts:setItem");
+  async set(key: string, value: any): Promise<void> {
+    logger.debug("setItem", key, value);
     return localStorage.setItem(key, value);
   }
 

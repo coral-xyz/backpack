@@ -1,9 +1,12 @@
-import { BrowserRuntimeCommon } from "@coral-xyz/common";
+import { BrowserRuntimeCommon, getLogger } from "@coral-xyz/common";
 
 import type { SecureDB } from "./SecureStore";
 
+const logger = getLogger("ab1:AsyncStorage:extensionDB");
+
 export const extensionDB: SecureDB = {
   async get(key: string): Promise<any> {
+    logger.debug("getItem", key);
     return await BrowserRuntimeCommon.getLocalStorage(key);
   },
 

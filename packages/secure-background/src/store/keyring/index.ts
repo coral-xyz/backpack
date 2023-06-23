@@ -12,6 +12,7 @@ import {
   BACKEND_EVENT,
   DEFAULT_AUTO_LOCK_INTERVAL_SECS,
   defaultPreferences,
+  getLogger,
   NOTIFICATION_KEYRING_STORE_LOCKED,
 } from "@coral-xyz/common";
 import { generateMnemonic } from "bip39";
@@ -25,6 +26,8 @@ import type {
   User,
   UserKeyringJson,
 } from "../SecureStore";
+
+const logger = getLogger("ab1");
 
 /**
  * KeyringStore API for managing all wallet keys .
@@ -236,8 +239,11 @@ export class KeyringStore {
 
   public async state(): Promise<KeyringStoreState> {
     if (this.isUnlocked()) {
+      logger.debug("keyringstorestate:state:isUnlocked", this.isUnlocked());
       return KeyringStoreState.Unlocked;
     }
+
+    logger.debug("keyringstorestate:state:isLocked", await this.isLocked());
     if (await this.isLocked()) {
       return KeyringStoreState.Locked;
     }
@@ -245,9 +251,13 @@ export class KeyringStore {
   }
 
   private async isLocked(): Promise<boolean> {
+    logger.debug("keyringstorestate:isLocked:isUnlocked", this.isUnlocked());
     if (this.isUnlocked()) {
       return false;
     }
+
+    logger.debug("keyringstorestate:isLocked:continue");
+
     return await this.store.doesCiphertextExist();
   }
 

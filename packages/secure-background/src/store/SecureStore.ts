@@ -4,10 +4,13 @@ import type {
   DeprecatedWalletDataDoNotUse,
   Preferences,
 } from "@coral-xyz/common";
+import { getLogger } from "@coral-xyz/common";
 
 import type { SecretPayload } from "./keyring/crypto";
 import { decrypt, encrypt } from "./keyring/crypto";
 import { runMigrationsIfNeeded } from "./keyring/migrations";
+
+const logger = getLogger("ab1");
 
 export { extensionDB } from "./extensionDB";
 
@@ -156,6 +159,7 @@ export class SecureStore {
 
   async getUserData(): Promise<UserData> {
     const data = await this.db.get(STORE_KEY_USER_DATA);
+    logger.debug("getUserData:data", data);
     if (data === undefined) {
       throw new Error("user data not found");
     }
@@ -251,8 +255,12 @@ export class SecureStore {
   }
 
   async doesCiphertextExist(): Promise<boolean> {
+    logger.debug("doesCiphertextExist:init");
     const ciphertext = await this.getKeyringCiphertext();
-    return ciphertext !== undefined && ciphertext !== null;
+    logger.debug("doesCiphertextExist:ciphertext", ciphertext);
+    const res = ciphertext !== undefined && ciphertext !== null;
+    logger.debug("doesCiphertextExist:ciphertext:res", res);
+    return res;
   }
 
   async setKeyringStore(
@@ -266,7 +274,9 @@ export class SecureStore {
 
   // Never call this externally. Only exported for migrations.
   private async getKeyringCiphertext(): Promise<SecretPayload> {
-    return await this.db.get(KEY_KEYRING_STORE);
+    const res = await this.db.get(KEY_KEYRING_STORE);
+    logger.debug("getKeyringCiphertext:res", res);
+    return res;
   }
 
   private async setKeyringCiphertext(ciphertext: SecretPayload) {
