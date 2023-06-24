@@ -380,6 +380,21 @@ function NavScreenInner({
         bottom: 0,
       }}
     >
+      <WithNav
+        title={title}
+        image={image}
+        onClick={onClick}
+        notchViewComponent={notchViewComponent}
+        navButtonLeft={navButtonLeft}
+        navButtonRight={navButtonRight}
+        navButtonCenter={navButtonCenter}
+        navbarStyle={navbarStyle}
+        noScrollbars={noScrollbars}
+        isVerified={isVerified}
+      >
+        <WithTabs>{component}</WithTabs>
+      </WithNav>
+      {/*
       {isXs ? (
         <WithNav
           title={title}
@@ -412,7 +427,8 @@ function NavScreenInner({
             {component}
           </WithNav>
         </WithTabs>
-      )}
+				)}
+				*/}
     </div>
   );
 }

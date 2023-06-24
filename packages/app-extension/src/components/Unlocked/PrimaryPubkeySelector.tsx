@@ -25,11 +25,16 @@ export const PrimaryPubkeySelector = () => {
   const gates = useFeatureGates();
   const wallets = useRecoilValue(serverPublicKeys);
   const primaryWallets = usePrimaryWallets();
-  const blockchains: Blockchain[] = [Blockchain.SOLANA, Blockchain.ETHEREUM];
+  const blockchains: Blockchain[] = [
+    Blockchain.SOLANA,
+    Blockchain.ECLIPSE,
+    Blockchain.ETHEREUM,
+  ];
   const needsMigration: Blockchain[] = [];
   const [selectedAddresses, setSelectedSolAddresses] = useState({
     [Blockchain.ETHEREUM]: "",
     [Blockchain.SOLANA]: "",
+    [Blockchain.ECLIPSE]: "",
   });
   const setServerPublicKeys = useSetRecoilState(serverPublicKeys);
   const [migrationDone, setMigrationDone] = useState(false);
@@ -102,6 +107,8 @@ export const PrimaryPubkeySelector = () => {
             disabled={
               (needsMigration.find((x) => x === Blockchain.SOLANA) &&
                 !selectedAddresses[Blockchain.SOLANA]) ||
+              (needsMigration.find((x) => x === Blockchain.ECLIPSE) &&
+                !selectedAddresses[Blockchain.ECLIPSE]) ||
               (needsMigration.find((x) => x === Blockchain.ETHEREUM) &&
                 !selectedAddresses[Blockchain.ETHEREUM])
             }

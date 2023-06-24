@@ -19,6 +19,8 @@ export function useBlockchainExplorer(blockchain: Blockchain) {
         return atoms.ethereumExplorer;
       case Blockchain.SOLANA:
         return atoms.solanaExplorer;
+      case Blockchain.ECLIPSE:
+        return atoms.solanaExplorer; // TODO
       default:
         throw new Error(`invalid blockchain ${blockchain}`);
     }
@@ -33,10 +35,13 @@ export function useBlockchainConnectionUrl(blockchain: Blockchain) {
         return atoms.ethereumConnectionUrl;
       case Blockchain.SOLANA:
         return atoms.solanaConnectionUrl;
+      case Blockchain.ECLIPSE:
+        return atoms.eclipseConnectionUrl;
       default:
         throw new Error(`invalid blockchain ${blockchain}`);
     }
   })();
+
   return useRecoilValue(value);
 }
 

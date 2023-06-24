@@ -40,6 +40,7 @@ export const HardwareDefaultWallet = ({
     (async () => {
       const ledgerWallet = {
         [Blockchain.SOLANA]: new Solana(transport),
+        [Blockchain.ECLIPSE]: new Solana(transport),
         [Blockchain.ETHEREUM]: new Ethereum(transport),
       }[blockchain];
       setLedgerWallet(ledgerWallet);
@@ -61,7 +62,8 @@ export const HardwareDefaultWallet = ({
             await ledgerWallet.getAddress(path.replace("m/", ""))
           ).address;
           const publicKey =
-            blockchain === Blockchain.SOLANA
+            blockchain === Blockchain.SOLANA ||
+            blockchain === Blockchain.ECLIPSE
               ? base58.encode(ledgerAddress as Buffer)
               : ledgerAddress.toString();
           publicKeys.push(publicKey);

@@ -404,6 +404,11 @@ export function SecretKeyIcon({
   );
 }
 
+export function EclipseIcon() {
+  // TODO
+  return <div>ECL</div>;
+}
+
 export function SolanaIcon() {
   return (
     <svg

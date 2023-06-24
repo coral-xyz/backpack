@@ -43,6 +43,9 @@ import { Scrollbar } from "../Layout/Scrollbar";
 
 const { base58: bs58 } = ethers.utils;
 
+// TODO: move this somewhere.
+class Eclipse extends Solana {}
+
 export function ImportWallets({
   blockchain,
   mnemonic,
@@ -118,6 +121,22 @@ export function ImportWallets({
             ]
           : []
       ),
+    // TODO: need to figure out the eclipse coin type.
+    [Blockchain.ECLIPSE]: [
+      {
+        path: (i: number) => legacyBip44Indexed(Blockchain.ECLIPSE, i),
+        label: "m/44/501'/x'",
+      },
+      {
+        path: (i: number) => legacyBip44ChangeIndexed(Blockchain.ECLIPSE, i),
+        label: "m/44/501'/x'/0'",
+      },
+      {
+        path: (i: number) =>
+          legacyBip44ChangeIndexed(Blockchain.ECLIPSE, i) + "/0'",
+        label: "m/44/501'/x'/0'/0'",
+      },
+    ],
     [Blockchain.ETHEREUM]: [
       {
         path: (i: number) => legacyEthereum(i),
@@ -293,6 +312,8 @@ export function ImportWallets({
         };
       });
       return accounts;
+    } else if (blockchain === Blockchain.ECLIPSE) {
+      throw new Error("eclipse not implemented");
     } else if (blockchain === Blockchain.ETHEREUM) {
       // TODO use Backpack configured value
       const ethereumMainnetRpc =
@@ -337,6 +358,7 @@ export function ImportWallets({
     setLedgerLocked(true);
     const ledger = {
       [Blockchain.SOLANA]: new Solana(transport),
+      [Blockchain.ECLIPSE]: new Eclipse(transport),
       [Blockchain.ETHEREUM]: new Ethereum(transport),
     }[blockchain];
     // Add remaining accounts
@@ -347,7 +369,9 @@ export function ImportWallets({
     }
     setLedgerLocked(false);
     return publicKeys.map((p) =>
-      blockchain === Blockchain.SOLANA ? bs58.encode(p) : p.toString()
+      blockchain === Blockchain.SOLANA || blockchain === Blockchain.ECLIPSE
+        ? bs58.encode(p)
+        : p.toString()
     );
   };
 
@@ -391,12 +415,14 @@ export function ImportWallets({
   // Symbol for balance displays
   const symbol = {
     [Blockchain.SOLANA]: "SOL",
+    [Blockchain.ECLIPSE]: "ECL",
     [Blockchain.ETHEREUM]: "ETH",
   }[blockchain];
 
   // Decimals for balance displays
   const decimals = {
     [Blockchain.SOLANA]: 9,
+    [Blockchain.ECLIPSE]: 9,
     [Blockchain.ETHEREUM]: 18,
   }[blockchain];
 

@@ -20,6 +20,7 @@ import { BlockchainKeyring } from "./blockchain";
 export function hdFactoryForBlockchain(blockchain: Blockchain) {
   return {
     [Blockchain.SOLANA]: new SolanaHdKeyringFactory(),
+    [Blockchain.ECLIPSE]: new EclipseHdKeyringFactory(),
     [Blockchain.ETHEREUM]: new EthereumHdKeyringFactory(),
   }[blockchain];
 }
@@ -34,6 +35,12 @@ export function keyringForBlockchain(
       new SolanaHdKeyringFactory(),
       new SolanaKeyringFactory(),
       new SolanaLedgerKeyringFactory()
+    ),
+    [Blockchain.ECLIPSE]: new BlockchainKeyring(
+      store,
+      new EclipseHdKeyringFactory(),
+      new EclipseKeyringFactory(),
+      new EclipseLedgerKeyringFactory()
     ),
     [Blockchain.ETHEREUM]: new BlockchainKeyring(
       store,
@@ -56,6 +63,21 @@ export function mnemonicPathToPrivateKey(
     return Buffer.from(deriveSolanaPrivateKey(seed, derivationPath)).toString(
       "hex"
     );
+  } else if (blockchain === Blockchain.ECLIPSE) {
+    return Buffer.from(deriveEclipsePrivateKey(seed, derivationPath)).toString(
+      "hex"
+    );
   }
   throw new Error("invalid blockchain");
+}
+
+// TODO: move this elsewhere.
+class EclipseHdKeyringFactory extends SolanaHdKeyringFactory {}
+class EclipseKeyringFactory extends SolanaKeyringFactory {}
+class EclipseLedgerKeyringFactory extends SolanaLedgerKeyringFactory {}
+export function deriveEclipsePrivateKey(
+  seed: Buffer,
+  derivationPath: string
+): Uint8Array {
+  return deriveSolanaPrivateKey(seed, derivationPath);
 }
