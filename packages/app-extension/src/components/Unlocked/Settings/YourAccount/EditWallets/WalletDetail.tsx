@@ -50,7 +50,7 @@ export const WalletDetail: React.FC<{
       try {
         keyname = await background.request({
           method: UI_RPC_METHOD_KEYNAME_READ,
-          params: [publicKey],
+          params: [publicKey, blockchain],
         });
       } catch {
         // No wallet name, might be dehydrated
@@ -99,6 +99,7 @@ export const WalletDetail: React.FC<{
         nav.push("edit-wallets-rename", {
           publicKey,
           name: walletName,
+          blockchain,
         }),
     },
   };

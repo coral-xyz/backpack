@@ -4,6 +4,7 @@ import { Box, Grid } from "@mui/material";
 
 import { Header, SubtextParagraph } from "../../common";
 import {
+  EclipseIconOnboarding as EclipseIcon,
   EthereumIconOnboarding as EthereumIcon,
   SolanaIconOnboarding as SolanaIcon,
 } from "../../common/Icon";
@@ -71,6 +72,14 @@ export const BlockchainSelector = ({
                 checked={selectedBlockchains.includes(Blockchain.SOLANA)}
                 text="Solana"
                 onClick={() => onClick(Blockchain.SOLANA)}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <ActionCard
+                icon={<EclipseIcon />}
+                checked={selectedBlockchains.includes(Blockchain.ECLIPSE)}
+                text="Solana"
+                onClick={() => onClick(Blockchain.ECLIPSE)}
               />
             </Grid>
           </Grid>

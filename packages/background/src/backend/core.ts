@@ -33,6 +33,7 @@ import {
   NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_DEVELOPER_MODE_UPDATED,
+  NOTIFICATION_ECLIPSE_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
@@ -784,7 +785,10 @@ export class Backend {
         for (const publicKey of publicKeys) {
           namedPublicKeys[blockchain][keyring].push({
             publicKey,
-            name: await secureStore.getKeyname(publicKey),
+            name: await secureStore.getKeyname(
+              publicKey,
+              blockchain as Blockchain
+            ),
             isCold: await secureStore.getIsCold(publicKey),
           });
         }
@@ -833,6 +837,14 @@ export class Backend {
       if (blockchain === Blockchain.SOLANA) {
         this.events.emit(BACKEND_EVENT, {
           name: NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
+          data: {
+            activeWallet: newActivePublicKey,
+            activeWallets: await this.activeWallets(),
+          },
+        });
+      } else if (blockchain === Blockchain.ECLIPSE) {
+        this.events.emit(BACKEND_EVENT, {
+          name: NOTIFICATION_ECLIPSE_ACTIVE_WALLET_UPDATED,
           data: {
             activeWallet: newActivePublicKey,
             activeWallets: await this.activeWallets(),
@@ -992,8 +1004,11 @@ export class Backend {
    * Read the name associated with a public key in the local store.
    * @param publicKey - public key to read the name for
    */
-  async keynameRead(publicKey: string): Promise<string> {
-    return await secureStore.getKeyname(publicKey);
+  async keynameRead(
+    publicKey: string,
+    blockchain: Blockchain
+  ): Promise<string> {
+    return await secureStore.getKeyname(publicKey, blockchain);
   }
 
   /**
@@ -1001,8 +1016,12 @@ export class Backend {
    * @param publicKey - public key to update the name for
    * @param newName - new name to associate with the public key
    */
-  async keynameUpdate(publicKey: string, newName: string): Promise<string> {
-    await secureStore.setKeyname(publicKey, newName);
+  async keynameUpdate(
+    publicKey: string,
+    newName: string,
+    blockchain: Blockchain
+  ): Promise<string> {
+    await secureStore.setKeyname(publicKey, newName, blockchain);
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYNAME_UPDATE,
       data: {

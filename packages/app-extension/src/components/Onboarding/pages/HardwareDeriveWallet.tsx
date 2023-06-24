@@ -33,6 +33,7 @@ export const HardwareDeriveWallet = ({
     (async () => {
       const ledgerWallet = {
         [Blockchain.SOLANA]: new Solana(transport),
+        [Blockchain.ECLIPSE]: new Solana(transport),
         [Blockchain.ETHEREUM]: new Ethereum(transport),
       }[blockchain];
       setLedgerWallet(ledgerWallet);
@@ -54,7 +55,7 @@ export const HardwareDeriveWallet = ({
           await ledgerWallet.getAddress(derivationPath.replace("m/", ""))
         ).address;
         publicKey =
-          blockchain === Blockchain.SOLANA
+          blockchain === Blockchain.SOLANA || blockchain === Blockchain.ECLIPSE
             ? base58.encode(ledgerAddress)
             : ledgerAddress.toString();
       } catch (error) {

@@ -9,6 +9,7 @@ export const HARDENING = 0x80000000;
 export const blockchainCoinType = {
   [Blockchain.ETHEREUM]: 60,
   [Blockchain.SOLANA]: 501,
+  [Blockchain.ECLIPSE]: 501,
 };
 
 export const getCoinType = (blockchain: Blockchain) => {

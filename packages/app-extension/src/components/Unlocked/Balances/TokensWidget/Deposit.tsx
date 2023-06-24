@@ -11,7 +11,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import { IconButton, Modal, Typography } from "@mui/material";
 
-import { formatWalletAddress,TextField } from "../../../common";
+import { formatWalletAddress, TextField } from "../../../common";
 import { CloseButton, useDrawerContext } from "../../../common/Layout/Drawer";
 import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 
@@ -447,6 +447,11 @@ function _Deposit({
         <Typography className={classes.subtext}>
           {blockchain === Blockchain.SOLANA ? (
             <>This address can only receive SOL and SPL tokens on Solana.</>
+          ) : null}
+          {blockchain === Blockchain.ECLIPSE ? (
+            <>
+              This address can only receive and ECL and SPL tokens on Eclipse.
+            </>
           ) : null}
           {blockchain === Blockchain.ETHEREUM ? (
             <>This address can only receive ETH and ERC20 tokens on Ethereum.</>

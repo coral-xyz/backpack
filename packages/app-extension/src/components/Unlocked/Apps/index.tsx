@@ -100,16 +100,17 @@ function PluginGrid() {
           subtitle="Switch to Solana to use xNFTs"
           buttonText=""
           onClick={() => {}}
-          header={
-            // Only show the wallet switcher if we are in single wallet mode.
-            !_isAggregateWallets ? (
-              <_BalancesTableHead
-                blockchain={wallet.blockchain}
-                showContent
-                setShowContent={() => {}}
-              />
-            ) : null
-          }
+        />
+      );
+    }
+    if (wallet.blockchain === Blockchain.ECLIPSE) {
+      return (
+        <EmptyState
+          icon={(props: any) => <BlockIcon {...props} />}
+          title="Eclipse xNFTs not yet supported"
+          subtitle="Switch to Solana to use xNFTs"
+          buttonText=""
+          onClick={() => {}}
         />
       );
     }
