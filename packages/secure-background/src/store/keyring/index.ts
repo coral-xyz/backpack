@@ -921,7 +921,11 @@ class UserKeyring {
     const name = this.store.defaultKeyname.defaultLedger(
       ledgerKeyring.publicKeys().length
     );
-    await this.store.setKeyname(walletDescriptor.publicKey, name);
+    await this.store.setKeyname(
+      walletDescriptor.publicKey,
+      name,
+      walletDescriptor.blockchain
+    );
     await this.store.setIsCold(walletDescriptor.publicKey, true);
   }
 

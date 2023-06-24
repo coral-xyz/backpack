@@ -344,6 +344,8 @@ export const NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE =
   "notification-ethereum-fee-data-did-update";
 export const NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE =
   "notification-ethereum-tokens-did-update";
+export const NOTIFICATION_ECLIPSE_ACTIVE_WALLET_UPDATED =
+  "notification-keyring-eclipse-active-wallet-updated";
 // Solana specific notifications
 export const NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED =
   "notification-keyring-solana-active-wallet-updated";

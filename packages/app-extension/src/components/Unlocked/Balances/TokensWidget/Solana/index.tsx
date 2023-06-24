@@ -24,6 +24,44 @@ const useStyles = styles((theme) => ({
   },
 }));
 
+export function SendEclipseConfirmationCard({
+  token,
+  destinationAddress,
+  destinationUser,
+  amount,
+  onComplete,
+  onViewBalances,
+}: {
+  token: {
+    address: string;
+    logo: string;
+    decimals: number;
+    tokenId?: string;
+    mint?: string;
+  };
+  destinationAddress: string;
+  destinationUser?: {
+    username: string;
+    walletName?: string;
+    image: string;
+  };
+  amount: BigNumber;
+  onComplete?: (txSig?: any) => void;
+  onViewBalances?: () => void;
+}) {
+  return (
+    <SendSvmConfirmationCard
+      token={token}
+      destinationAddress={destinationAddress}
+      destinationUser={destinationUser}
+      amount={amount}
+      onComplete={onComplete}
+      onViewBalances={onViewBalances}
+      blockchain={Blockchain.ECLIPSE}
+    />
+  );
+}
+
 export function SendSolanaConfirmationCard({
   token,
   destinationAddress,
@@ -49,6 +87,46 @@ export function SendSolanaConfirmationCard({
   onComplete?: (txSig?: any) => void;
   onViewBalances?: () => void;
 }) {
+  return (
+    <SendSvmConfirmationCard
+      token={token}
+      destinationAddress={destinationAddress}
+      destinationUser={destinationUser}
+      amount={amount}
+      onComplete={onComplete}
+      onViewBalances={onViewBalances}
+      blockchain={Blockchain.SOLANA}
+    />
+  );
+}
+
+function SendSvmConfirmationCard({
+  token,
+  destinationAddress,
+  destinationUser,
+  amount,
+  onComplete,
+  onViewBalances,
+  blockchain,
+}: {
+  token: {
+    address: string;
+    logo: string;
+    decimals: number;
+    tokenId?: string;
+    mint?: string;
+  };
+  destinationAddress: string;
+  destinationUser?: {
+    username: string;
+    walletName?: string;
+    image: string;
+  };
+  amount: BigNumber;
+  onComplete?: (txSig?: any) => void;
+  onViewBalances?: () => void;
+  blockchain: Blockchain;
+}) {
   const { txSignature, onConfirm, cardType, error } = useSolanaTransaction({
     token,
     destinationAddress,
@@ -70,7 +148,7 @@ export function SendSolanaConfirmationCard({
         />
       ) : cardType === "sending" ? (
         <Sending
-          blockchain={Blockchain.SOLANA}
+          blockchain={blockchain}
           isComplete={false}
           amount={amount}
           token={token}
@@ -78,7 +156,7 @@ export function SendSolanaConfirmationCard({
         />
       ) : cardType === "complete" ? (
         <Sending
-          blockchain={Blockchain.SOLANA}
+          blockchain={blockchain}
           isComplete
           amount={amount}
           token={token}
@@ -87,7 +165,7 @@ export function SendSolanaConfirmationCard({
         />
       ) : (
         <Error
-          blockchain={Blockchain.SOLANA}
+          blockchain={blockchain}
           signature={txSignature!}
           onRetry={onConfirm}
           error={error}

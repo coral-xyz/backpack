@@ -17,6 +17,7 @@ import {
   NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_DEVELOPER_MODE_UPDATED,
+  NOTIFICATION_ECLIPSE_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
@@ -292,6 +293,9 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
           handleSolanaActiveWalletUpdated(notif);
           break;
+        case NOTIFICATION_ECLIPSE_ACTIVE_WALLET_UPDATED:
+          handleEclipseActiveWalletUpdated(notif);
+          break;
         case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
           handleEthereumActiveWalletUpdated(notif);
           break;
@@ -555,6 +559,14 @@ export function NotificationsProvider(props: any) {
     const handleSolanaActiveWalletUpdated = (notif: Notification) => {
       allPlugins().forEach((p) => {
         p.pushSolanaPublicKeyChangedNotification(notif.data.activeWallet);
+      });
+      setActivePublicKeys(notif.data.activeWallets);
+    };
+
+    const handleEclipseActiveWalletUpdated = (notif: Notification) => {
+      allPlugins().forEach((p) => {
+        // TODO
+        //        p.pushSolanaPublicKeyChangedNotification(notif.data.activeWallet);
       });
       setActivePublicKeys(notif.data.activeWallets);
     };

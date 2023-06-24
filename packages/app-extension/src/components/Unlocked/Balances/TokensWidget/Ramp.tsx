@@ -97,6 +97,14 @@ const RAMP_SUPPORTED_TOKENS = {
       subtitle: "Solana",
     },
   ],
+  [Blockchain.ECLIPSE]: [
+    // TODO: probably need to remove this.
+    {
+      title: "ECL",
+      icon: SOL_LOGO_URI,
+      subtitle: "Eclipse",
+    },
+  ],
   [Blockchain.ETHEREUM]: [
     {
       title: "ETH",

@@ -30,6 +30,7 @@ import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
 import type { SxProps, Theme } from "@mui/material/styles";
 
 import {
+  EclipseIconOnboarding as EclipseIcon,
   EthereumIconOnboarding as EthereumIcon,
   SolanaIconOnboarding as SolanaIcon,
 } from "../common/Icon";
@@ -432,6 +433,13 @@ export function WalletListBlockchainSelector() {
             onClick={() => onClick(Blockchain.SOLANA)}
           />
         </Grid>
+        <Grid item xs={6}>
+          <ActionCard
+            icon={<EclipseIcon />}
+            text="Eclipse"
+            onClick={() => onClick(Blockchain.ECLIPSE)}
+          />
+        </Grid>
       </Grid>
     </Box>
   );
@@ -686,7 +694,10 @@ function WalletListItem({
   inverted?: boolean;
 }) {
   const primaryWallets = usePrimaryWallets();
-  const isPrimary = primaryWallets.find((x) => x.publicKey === wallet.publicKey)
+  const isPrimary = primaryWallets.find(
+    (x) =>
+      x.publicKey === wallet.publicKey && x.blockchain === wallet.blockchain
+  )
     ? true
     : false;
   const theme = useCustomTheme();

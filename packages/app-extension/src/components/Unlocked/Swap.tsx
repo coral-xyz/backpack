@@ -305,6 +305,15 @@ export function _Swap({
       />
     );
   }
+  if (blockchain === Blockchain.ECLIPSE) {
+    return (
+      <EmptyState
+        icon={(props: any) => <DoNotDisturbIcon {...props} />}
+        title="Eclipse Swaps Soon"
+        subtitle="For now, please use a Solana wallet to swap"
+      />
+    );
+  }
 
   return (
     <>

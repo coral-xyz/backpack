@@ -127,6 +127,10 @@ export function EthereumIconOnboarding() {
   );
 }
 
+export function EclipseIconOnboarding() {
+  return <div>ECLIPSE</div>;
+}
+
 export function SolanaIconOnboarding() {
   return (
     <svg

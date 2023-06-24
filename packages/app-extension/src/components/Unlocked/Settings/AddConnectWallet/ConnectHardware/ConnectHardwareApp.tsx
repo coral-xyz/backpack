@@ -1,5 +1,6 @@
 import { Blockchain } from "@coral-xyz/common";
 import {
+  EclipseIcon,
   EthereumIcon,
   PrimaryButton,
   SolanaIcon,
@@ -17,6 +18,10 @@ export function ConnectHardwareApp({
 }) {
   const header = {
     [Blockchain.SOLANA]: { icon: <SolanaIcon />, text: "Open the Solana app" },
+    [Blockchain.ECLIPSE]: {
+      icon: <EclipseIcon />,
+      text: "Open the Eclipse app",
+    },
     [Blockchain.ETHEREUM]: {
       icon: <EthereumIcon />,
       text: "Open the Ethereum app",

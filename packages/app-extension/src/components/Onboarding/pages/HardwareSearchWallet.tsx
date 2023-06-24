@@ -40,6 +40,7 @@ export const HardwareSearchWallet = ({
     (async () => {
       const ledger = {
         [Blockchain.SOLANA]: new Solana(transport),
+        [Blockchain.ECLIPSE]: new Solana(transport),
         [Blockchain.ETHEREUM]: new Ethereum(transport),
       }[blockchain];
       for (const derivationPath of getRecoveryPaths(blockchain, true)) {

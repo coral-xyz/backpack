@@ -44,7 +44,10 @@ import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 import { TokenInputField } from "../../../common/TokenInput";
 
 import { SendEthereumConfirmationCard } from "./Ethereum";
-import { SendSolanaConfirmationCard } from "./Solana";
+import {
+  SendEclipseConfirmationCard,
+  SendSolanaConfirmationCard,
+} from "./Solana";
 
 export const useStyles = makeStyles((theme) => ({
   topImage: {
@@ -189,6 +192,7 @@ export function Send({
 
   const SendConfirmComponent = {
     [Blockchain.SOLANA]: SendSolanaConfirmationCard,
+    [Blockchain.ECLIPSE]: SendEclipseConfirmationCard,
     [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
   }[blockchain];
 

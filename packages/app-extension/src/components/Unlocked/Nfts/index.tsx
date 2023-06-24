@@ -80,15 +80,6 @@ export function Nfts() {
             buttonText="Browse Magic Eden"
             onClick={() => window.open("https://magiceden.io")}
             verticallyCentered={!oneLive}
-            header={
-              !_isAggregateWallets ? (
-                <_BalancesTableHead
-                  blockchain={activeWallet.blockchain}
-                  showContent
-                  setShowContent={() => {}}
-                />
-              ) : null
-            }
             style={{
               height: !oneLive.isLive ? "100%" : undefined,
             }}

@@ -318,9 +318,9 @@ async function handle<T = any>(
     // Nicknames for keys.
     //
     case UI_RPC_METHOD_KEYNAME_READ:
-      return await handleKeynameRead(ctx, params[0]);
+      return await handleKeynameRead(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYNAME_UPDATE:
-      return await handleKeynameUpdate(ctx, params[0], params[1]);
+      return await handleKeynameUpdate(ctx, params[0], params[1], params[2]);
     //
     // User.
     //
@@ -549,18 +549,20 @@ async function handleKeyIsColdUpdate(
 
 async function handleKeynameRead(
   ctx: Context<Backend>,
-  pubkey: string
+  pubkey: string,
+  blockchain: Blockchain
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.keynameRead(pubkey);
+  const resp = await ctx.backend.keynameRead(pubkey, blockchain);
   return [resp];
 }
 
 async function handleKeynameUpdate(
   ctx: Context<Backend>,
   pubkey: string,
-  newName: string
+  newName: string,
+  blockchain: Blockchain
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.keynameUpdate(pubkey, newName);
+  const resp = await ctx.backend.keynameUpdate(pubkey, newName, blockchain);
   return [resp];
 }
 

@@ -30,7 +30,7 @@ export function RenameWalletScreen({ navigation, route }): JSX.Element {
   const handleSaveName = async () => {
     await background.request({
       method: UI_RPC_METHOD_KEYNAME_UPDATE,
-      params: [publicKey, walletName],
+      params: [publicKey, walletName], // TODO: add blockchain as third param here.
     });
 
     navigation.goBack();
