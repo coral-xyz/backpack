@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Navigate,
   Route,
@@ -10,9 +10,9 @@ import { useUsersMetadata } from "@coral-xyz/chat-xplat";
 import type { SearchParamsFor, SubscriptionType } from "@coral-xyz/common";
 import {
   BACKPACK_TEAM,
-  Blockchain,
   NAV_COMPONENT_MESSAGE_PROFILE,
 } from "@coral-xyz/common";
+import { Collectibles } from "@coral-xyz/data-components";
 import {
   ChatScreen,
   Inbox,
@@ -20,7 +20,7 @@ import {
   ProfileScreen,
   RequestsScreen,
 } from "@coral-xyz/message-sdk";
-import { Loading, useBreakpoints } from "@coral-xyz/react-common";
+import { useBreakpoints } from "@coral-xyz/react-common";
 import {
   SwapProvider,
   useActiveWallet,
@@ -141,7 +141,7 @@ function BalancesPage() {
 }
 
 function NftsPage() {
-  return <NavScreen noScrollbars component={<Nfts />} />;
+  return <NavScreen noScrollbars component={<Collectibles />} />;
 }
 
 function NftsChatPage() {

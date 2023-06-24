@@ -4,7 +4,10 @@ import { useActiveWallet } from "@coral-xyz/recoil";
 import { gql } from "../../apollo";
 import { usePolledSuspenseQuery } from "../../hooks";
 
+import { CollectibleList } from "./CollectibleList";
 import { getGroupedCollectibles, type ResponseCollectible } from "./utils";
+
+export type { ResponseCollectible };
 
 const DEFAULT_POLLING_INTERVAL = 60000;
 
@@ -43,7 +46,7 @@ export type CollectiblesProps = {
   pollingInterval?: number;
 };
 
-export const Notifications = ({
+export const Collectibles = ({
   loaderComponent,
   ...rest
 }: CollectiblesProps) => (
@@ -83,5 +86,10 @@ function _Collectibles({
     [collectibles]
   );
 
-  return <div>{groupedCollectibles.map((c) => c.collection).join(", ")}</div>;
+  return (
+    <CollectibleList
+      collectibleGroups={groupedCollectibles}
+      onCardClick={() => alert("CLICK")}
+    />
+  );
 }

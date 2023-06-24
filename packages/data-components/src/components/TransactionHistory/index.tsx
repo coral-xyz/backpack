@@ -9,7 +9,7 @@ import type { ParseTransactionDetails } from "./parsing";
 import { TransactionList } from "./TransactionList";
 import { getGroupedTransactions, type ResponseTransaction } from "./utils";
 
-export type { ParseTransactionDetails } from "./parsing";
+export type { ParseTransactionDetails, ResponseTransaction };
 export * from "./TransactionDetails";
 
 const DEFAULT_POLLING_INTERVAL = 60000;

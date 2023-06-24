@@ -13,6 +13,8 @@ import {
 } from "./NotificationList";
 import { getGroupedNotifications, type ResponseNotification } from "./utils";
 
+export type { ResponseNotification };
+
 const DEFAULT_POLLING_INTERVAL = 30000;
 
 const GET_NOTIFICATIONS = gql(`

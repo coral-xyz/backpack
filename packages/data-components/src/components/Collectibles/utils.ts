@@ -22,7 +22,7 @@ export function getGroupedCollectibles(
 ): CollectibleGroup[] {
   const collectibleGroupMap: Record<string, ResponseCollectible[]> = {};
   for (const c of collectibles) {
-    const key = c.collection?.address ?? c.address;
+    const key = c.collection?.name ?? c.name ?? "Unknown";
     if (collectibleGroupMap[key]) {
       collectibleGroupMap[key].push(c);
     } else {
