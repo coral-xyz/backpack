@@ -22,6 +22,7 @@ function groupByColdWallet(wallets: Wallet[]): Result {
 }
 
 export function useWallets(): {
+  activeWallets: Wallet[];
   allWallets: Wallet[];
   coldWallets: Wallet[];
 } {
@@ -38,6 +39,7 @@ export function useWallets(): {
   }));
 
   return {
+    activeWallets,
     allWallets: [...activeWallets, ...dehydratedWallets],
     coldWallets,
   };

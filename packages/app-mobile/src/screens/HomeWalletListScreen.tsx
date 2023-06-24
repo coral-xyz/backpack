@@ -1,5 +1,5 @@
 import type { Blockchain } from "@coral-xyz/common";
-import type { Wallet, PublicKey } from "~types/types";
+import type { PublicKey, Wallet } from "~types/types";
 
 import { Suspense, useCallback } from "react";
 import { FlatList, Pressable } from "react-native";
@@ -7,7 +7,7 @@ import { FlatList, Pressable } from "react-native";
 import Constants from "expo-constants";
 
 import { useSuspenseQuery } from "@apollo/client";
-import { Stack, StyledText, XStack, BlockchainLogo } from "@coral-xyz/tamagui";
+import { BlockchainLogo, Stack, StyledText, XStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -89,8 +89,8 @@ const QUERY_USER_WALLETS = gql(`
 function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
   const { setActiveWallet } = useSession();
   const { data } = useSuspenseQuery(QUERY_USER_WALLETS);
-  const { allWallets } = useWallets();
-  const wallets = coalesceWalletData(data, allWallets);
+  const { activeWallets } = useWallets();
+  const wallets = coalesceWalletData(data, activeWallets);
   const insets = useSafeAreaInsets();
 
   const handlePressWallet = useCallback(

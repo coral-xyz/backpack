@@ -12,21 +12,25 @@ export function coalesceWalletData(
   graphqlData,
   recoilWallets: Wallet[]
 ): WalletData[] {
-  return graphqlData.user.wallets.edges.map((edge) => {
-    const a = recoilWallets.find(
-      (wallet) => wallet.publicKey === edge.node.address
-    );
+  return graphqlData.user.wallets.edges
+    .map((edge) => {
+      const a = recoilWallets.find(
+        (wallet) => wallet.publicKey === edge.node.address
+      );
 
-    return {
-      ...edge.node,
-      // wallet name & type comes from recoil for the foreseeable future. Privacy concern
-      name: a?.name ?? "",
-      type: a?.type ?? "",
-      isCold: a?.isCold ?? false,
-      publicKey: edge.node.address,
-      blockchain: edge.node.provider.name.toLowerCase() as Blockchain,
-      isPrimary: edge.node.isPrimary,
-      balance: formatUsd(edge.node.balances.aggregate.value),
-    };
-  });
+      return a
+        ? {
+            ...edge.node,
+            // wallet name & type comes from recoil for the foreseeable future. Privacy concern
+            name: a.name ?? "",
+            type: a.type ?? "",
+            isCold: a.isCold ?? false,
+            publicKey: edge.node.address,
+            blockchain: edge.node.provider.name.toLowerCase() as Blockchain,
+            isPrimary: edge.node.isPrimary,
+            balance: formatUsd(edge.node.balances.aggregate.value),
+          }
+        : null;
+    })
+    .filter(Boolean);
 }
