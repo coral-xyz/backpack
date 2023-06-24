@@ -43,7 +43,7 @@ export function CollectibleList({
     <FlatList
       showsVerticalScrollIndicator={false}
       style={{ marginHorizontal: 16, marginTop: 16 }}
-      // contentContainerStyle={{ gap: 12, paddingBottom: 12 }}
+      contentContainerStyle={{ gap: 12, paddingBottom: 12 }}
       columnWrapperStyle={{ gap: 12 }}
       numColumns={2}
       data={collectibleGroups}

@@ -1,8 +1,8 @@
-import { View } from "react-native";
-import { UNKNOWN_NFT_ICON_SRC } from "@coral-xyz/common";
+import { Image, View } from "react-native";
+import { externalResourceUri,UNKNOWN_NFT_ICON_SRC } from "@coral-xyz/common";
 import { ProxyImage, StyledText, XStack, YStack } from "@coral-xyz/tamagui";
 
-import type { CollectibleGroup, ResponseCollectible } from "./utils";
+import type { CollectibleGroup } from "./utils";
 
 export type CollectibleCardProps = {
   collectibles: CollectibleGroup;
@@ -14,9 +14,16 @@ export function CollectibleCard({
   onCardClick,
 }: CollectibleCardProps) {
   return (
-    <YStack cursor="pointer" pointerEvents="box-only" onPress={onCardClick}>
+    <YStack
+      flex={1}
+      cursor="pointer"
+      pointerEvents="box-only"
+      onPress={onCardClick}
+    >
       <_CollectibleImagePreview
-        images={collectibles.data.map((d) => d.image)}
+        images={collectibles.data.map((d) =>
+          d.image ? externalResourceUri(d.image) : UNKNOWN_NFT_ICON_SRC
+        )}
       />
       <XStack marginTop={8}>
         <StyledText
@@ -33,16 +40,16 @@ export function CollectibleCard({
 }
 
 type _CollectibleImagePreviewProps = {
-  images: ResponseCollectible["image"][];
+  images: string[];
 };
 
 function _CollectibleImagePreview({ images }: _CollectibleImagePreviewProps) {
   if (images.length === 1) {
     return (
       <ProxyImage
-        style={{ borderRadius: 12 }}
-        size={170}
-        src={images[0] ?? UNKNOWN_NFT_ICON_SRC}
+        style={{ borderRadius: 12, height: 164, width: 164 }}
+        size={164}
+        src={images[0]}
       />
     );
   }
@@ -62,16 +69,16 @@ function _CollectibleImagePreviewBox({
         alignItems: "center",
         gap: 12,
         borderRadius: 12,
-        height: 170,
+        height: 164,
         padding: 12,
       }}
     >
       {images.map((uri, idx) => (
         <ProxyImage
           key={`${idx}-${uri}`}
-          style={{ borderRadius: 8 }}
+          style={{ borderRadius: 8, height: 64, width: 64 }}
           size={64}
-          src={uri ?? UNKNOWN_NFT_ICON_SRC}
+          src={uri}
         />
       ))}
     </View>
