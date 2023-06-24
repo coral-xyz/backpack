@@ -9,7 +9,7 @@ import {
 
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { StyledText, YStack } from "@coral-xyz/tamagui";
+import { YStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -18,7 +18,6 @@ import {
   BottomSheetHelpModal,
   HelpModalMenuButton,
 } from "~components/BottomSheetHelpModal";
-import { ErrorMessage } from "~components/ErrorMessage";
 import { PasswordInput } from "~components/PasswordInput";
 import {
   CurrentUserAvatar,
@@ -153,11 +152,8 @@ function PasswordUnlock({ userUuid }: { userUuid: string }): JSX.Element {
   };
 
   return (
-    <YStack space={8}>
-      <InputForm
-        hasError={Boolean(formState.errors.password)}
-        errorMessage={formState?.errors?.password?.message}
-      >
+    <YStack space={12}>
+      <InputForm hasError={Boolean(formState.errors.password)}>
         <PasswordInput
           onSubmitEditing={handleSubmit(onSubmit)}
           returnKeyType="done"

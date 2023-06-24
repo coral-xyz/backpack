@@ -272,14 +272,16 @@ export function InputForm({
 }: {
   children: React.ReactNode;
   hasError: boolean;
-  errorMessage: string | undefined;
+  errorMessage?: string | undefined;
 }) {
   return (
     <YStack space={8}>
       {children}
-      <YStack mx={4} ai="center" als="center">
-        {hasError ? <ErrorMessage for={{ message: errorMessage }} /> : null}
-      </YStack>
+      {hasError && errorMessage ? (
+        <YStack mx={4} ai="center" als="center">
+          <ErrorMessage for={{ message: errorMessage }} />
+        </YStack>
+      ) : null}
     </YStack>
   );
 }
