@@ -46,7 +46,7 @@ export function HeaderAvatarButton(props) {
         props.navigation.openDrawer();
       }}
     >
-      <CurrentUserAvatar size={24} />
+      <CurrentUserAvatar size={32} />
     </PlatformPressable>
   );
 }
