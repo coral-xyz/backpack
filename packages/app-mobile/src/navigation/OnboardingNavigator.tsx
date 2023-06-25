@@ -22,6 +22,8 @@ import {
   TextInput,
 } from "react-native";
 
+import * as Haptics from "expo-haptics";
+
 import {
   getAuthMessage,
   formatWalletAddress,
@@ -70,14 +72,13 @@ import {
   TwitterIcon,
   WidgetIcon,
 } from "~components/Icon";
-import { UsernameInput } from "~components/StyledTextInput";
+import { UsernameInput, PasswordInput } from "~components/StyledTextInput";
 import {
   ActionCard,
   FullScreenLoading,
   Header,
   Margin,
   MnemonicInputFields,
-  PasswordInput,
   PrimaryButton,
   SecondaryButton,
   LinkButton,
@@ -94,6 +95,7 @@ import { useTheme } from "~hooks/useTheme";
 import { useSession } from "~lib/SessionProvider";
 import { maybeRender } from "~lib/index";
 
+import * as Form from "~src/components/Form";
 import {
   BiometricAuthenticationStatus,
   BIOMETRIC_PASSWORD,
@@ -553,32 +555,6 @@ function CreateOrRecoverUsernameScreen({
   const screenTitle =
     action === "create" ? "Claim your username" : "Username recovery";
 
-  const text =
-    action === "create" ? (
-      <View style={{ flex: 1 }}>
-        <Box marginBottom={12}>
-          <SubtextParagraph>
-            Others can see and find you by this username, and it will be
-            associated with your primary wallet address.
-          </SubtextParagraph>
-        </Box>
-        <Box marginBottom={12}>
-          <SubtextParagraph>
-            Choose wisely if you'd like to remain anonymous.
-          </SubtextParagraph>
-        </Box>
-        <SubtextParagraph>Have fun!</SubtextParagraph>
-      </View>
-    ) : (
-      <View style={{ flex: 1 }}>
-        <SubtextParagraph>
-          Enter your username below, you will then be asked for your secret
-          recovery phrase to verify that you own the public key that was
-          initially associated with it.
-        </SubtextParagraph>
-      </View>
-    );
-
   const handlePresContinue = async () => {
     setLoading(true);
     if (action === "recover") {
@@ -592,6 +568,7 @@ function CreateOrRecoverUsernameScreen({
 
         navigation.push(RecoverAccountRoutes.KeyringTypeSelector);
       } catch (err: any) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -615,6 +592,34 @@ function CreateOrRecoverUsernameScreen({
     }
   };
 
+  const text =
+    action === "create" ? (
+      <View style={{ flex: 1 }}>
+        <Box mb={12}>
+          <SubtextParagraph>
+            Others can see and find you by this username, and it will be
+            associated with your primary wallet address.
+          </SubtextParagraph>
+        </Box>
+        <Box mb={12}>
+          <SubtextParagraph>
+            Choose wisely if you'd like to remain anonymous.
+          </SubtextParagraph>
+        </Box>
+        <SubtextParagraph>Have fun!</SubtextParagraph>
+      </View>
+    ) : (
+      <View style={{ flex: 1 }}>
+        <SubtextParagraph>
+          Enter your username below, you will then be asked for your secret
+          recovery phrase to verify that you own the public key that was
+          initially associated with it.
+        </SubtextParagraph>
+      </View>
+    );
+
+  const isButtonDisabled = loading || username.length < 4;
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -623,24 +628,24 @@ function CreateOrRecoverUsernameScreen({
     >
       <OnboardingScreen title={screenTitle}>
         {text}
-        <View>
-          <Box marginBottom={18}>
-            <UsernameInput
-              username={username}
-              onChange={setUsername}
-              onComplete={handlePresContinue}
-            />
-          </Box>
-          {maybeRender(error !== "", () => (
-            <ErrorMessage for={{ message: error }} />
-          ))}
-          <PrimaryButton
-            loading={loading}
-            disabled={!username?.length}
-            label="Continue"
-            onPress={handlePresContinue}
+        <Form.Input errorMessage={error}>
+          <UsernameInput
+            showError={Boolean(error)}
+            username={username}
+            onChange={setUsername}
+            onComplete={() => {
+              if (!isButtonDisabled) {
+                handlePresContinue();
+              }
+            }}
           />
-        </View>
+        </Form.Input>
+        <PrimaryButton
+          loading={loading}
+          disabled={isButtonDisabled}
+          label="Continue"
+          onPress={handlePresContinue}
+        />
       </OnboardingScreen>
     </KeyboardAvoidingView>
   );
@@ -1073,26 +1078,24 @@ function OnboardingCreatePasswordScreen({
         subtitle="It should be at least 8 characters. You'll need this to unlock Backpack."
       >
         <View style={{ flex: 1, justifyContent: "flex-start" }}>
-          <Margin bottom={12}>
-            <PasswordInput
-              autoFocus
-              name="password"
-              placeholder="Password"
-              control={control}
-              returnKeyType="next"
-              onSubmitEditing={() => {
-                nextInputRef.current?.focus();
-              }}
-              rules={{
-                required: "You must specify a password",
-                minLength: {
-                  value: 8,
-                  message: "Password must be at least 8 characters",
-                },
-              }}
-            />
-            <ErrorMessage for={errors.password} />
-          </Margin>
+          <PasswordInput
+            autoFocus
+            name="password"
+            placeholder="Password"
+            control={control}
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              nextInputRef.current?.focus();
+            }}
+            rules={{
+              required: "You must specify a password",
+              minLength: {
+                value: 8,
+                message: "Password must be at least 8 characters",
+              },
+            }}
+          />
+          <ErrorMessage for={errors.password} />
           <PasswordInput
             ref={nextInputRef}
             name="passwordConfirmation"

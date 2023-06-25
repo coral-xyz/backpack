@@ -1,4 +1,13 @@
-import { Text } from "react-native";
+import { StyledText } from "@coral-xyz/tamagui";
 
-export const ErrorMessage = (props: any) =>
-  props.for ? <Text style={{ color: "red" }}>{props.for.message}</Text> : null;
+export function ErrorMessage(props: any) {
+  if (props.for) {
+    return (
+      <StyledText fontWeight="400" size={8} color="$redText">
+        {props.for.message}
+      </StyledText>
+    );
+  }
+
+  return null;
+}

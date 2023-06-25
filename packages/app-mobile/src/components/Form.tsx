@@ -3,10 +3,12 @@ import type { BigNumber } from "ethers";
 import type { StyleProp, ViewStyle } from "react-native";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
+import { YStack } from "@coral-xyz/tamagui";
 import { ethers } from "ethers";
 import { Controller } from "react-hook-form";
 
-import { useTheme } from "~hooks/useTheme";
+import { ErrorMessage } from "~src/components/ErrorMessage";
+import { useTheme } from "~src/hooks/useTheme";
 
 // Wraps multiple components in one singular input group with a shared border
 export function InputGroup({
@@ -262,3 +264,66 @@ const inputFieldMaxLabelStyles = StyleSheet.create({
     lineHeight: 16,
   },
 });
+
+export function InputForm({
+  children,
+  hasError,
+  errorMessage,
+}: {
+  children: React.ReactNode;
+  hasError: boolean;
+  errorMessage?: string | undefined;
+}) {
+  return (
+    <YStack space={8}>
+      {children}
+      {hasError && errorMessage ? (
+        <YStack mx={4} ai="center" als="center">
+          <ErrorMessage for={{ message: errorMessage }} />
+        </YStack>
+      ) : null}
+    </YStack>
+  );
+}
+
+export function Group({
+  children,
+  errorMessage,
+}: {
+  children: React.ReactNode;
+  errorMessage?: string;
+}) {
+  return (
+    <YStack space={4} mb={8}>
+      {children}
+      {errorMessage ? (
+        <YStack mx={4} ai="center" als="center">
+          <ErrorMessage for={{ message: errorMessage }} />
+        </YStack>
+      ) : null}
+    </YStack>
+  );
+}
+
+export function Wrapper({ children }: { children: React.ReactNode }) {
+  return <YStack space={8}>{children}</YStack>;
+}
+
+export function Input({
+  children,
+  errorMessage,
+}: {
+  children: React.ReactNode;
+  errorMessage?: string;
+}) {
+  return (
+    <YStack space={4} mb={8}>
+      {children}
+      {errorMessage ? (
+        <YStack mx={4} ai="center" als="center">
+          <ErrorMessage for={{ message: errorMessage }} />
+        </YStack>
+      ) : null}
+    </YStack>
+  );
+}

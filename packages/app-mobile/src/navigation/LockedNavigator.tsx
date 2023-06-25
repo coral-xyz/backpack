@@ -7,9 +7,10 @@ import {
   Platform,
 } from "react-native";
 
+import * as Haptics from "expo-haptics";
+
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { YStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -18,8 +19,7 @@ import {
   BottomSheetHelpModal,
   HelpModalMenuButton,
 } from "~components/BottomSheetHelpModal";
-import { ErrorMessage } from "~components/ErrorMessage";
-import { PasswordInput } from "~components/PasswordInput";
+import { PasswordInput } from "~components/StyledTextInput";
 import {
   CurrentUserAvatar,
   PrimaryButton,
@@ -30,6 +30,7 @@ import {
   WelcomeLogoHeader,
 } from "~components/index";
 
+import * as Form from "~src/components/Form";
 import {
   BIOMETRIC_PASSWORD,
   BiometricAuthenticationStatus,
@@ -147,28 +148,27 @@ function PasswordUnlock({ userUuid }: { userUuid: string }): JSX.Element {
         params: [password, userUuid],
       });
     } catch (error: any) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setError("password", { message: error });
     }
   };
 
   return (
-    <YStack space={8}>
-      <PasswordInput
-        onSubmitEditing={handleSubmit(onSubmit)}
-        returnKeyType="done"
-        autoFocus
-        placeholder="Password"
-        name="password"
-        control={control}
-        rules={{
-          required: "You must enter a password",
-        }}
-      />
-      {formState.errors.password ? (
-        <ErrorMessage for={formState.errors.password} />
-      ) : null}
+    <Form.Wrapper>
+      <Form.Group>
+        <PasswordInput
+          onSubmitEditing={handleSubmit(onSubmit)}
+          returnKeyType="done"
+          placeholder="Password"
+          name="password"
+          control={control}
+          rules={{
+            required: "You must enter a password",
+          }}
+        />
+      </Form.Group>
       <PrimaryButton label="Unlock" onPress={handleSubmit(onSubmit)} />
-    </YStack>
+    </Form.Wrapper>
   );
 }
 
