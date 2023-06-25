@@ -618,7 +618,7 @@ function CreateOrRecoverUsernameScreen({
       </View>
     );
 
-  const isButtonDisabled = Boolean(error) || loading || username.length < 4;
+  const isButtonDisabled = loading || username.length < 4;
 
   return (
     <KeyboardAvoidingView
