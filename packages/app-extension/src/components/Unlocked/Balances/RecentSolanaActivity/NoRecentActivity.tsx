@@ -22,9 +22,6 @@ export function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
         contentStyle={{
           color: minimize ? theme.custom.colors.secondary : "inherit",
         }}
-        innerStyle={{
-          marginBottom: minimize !== true ? "64px" : 0, // Tab height offset.
-        }}
         minimize={minimize}
       />
     </div>
