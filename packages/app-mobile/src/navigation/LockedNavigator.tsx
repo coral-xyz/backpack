@@ -7,9 +7,10 @@ import {
   Platform,
 } from "react-native";
 
+import * as Haptics from "expo-haptics";
+
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { YStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -18,7 +19,7 @@ import {
   BottomSheetHelpModal,
   HelpModalMenuButton,
 } from "~components/BottomSheetHelpModal";
-import { PasswordInput } from "~components/PasswordInput";
+import { PasswordInput } from "~components/StyledTextInput";
 import {
   CurrentUserAvatar,
   PrimaryButton,
@@ -29,7 +30,7 @@ import {
   WelcomeLogoHeader,
 } from "~components/index";
 
-import { InputForm } from "~src/components/Form";
+import * as Form from "~src/components/Form";
 import {
   BIOMETRIC_PASSWORD,
   BiometricAuthenticationStatus,
@@ -147,13 +148,14 @@ function PasswordUnlock({ userUuid }: { userUuid: string }): JSX.Element {
         params: [password, userUuid],
       });
     } catch (error: any) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setError("password", { message: error });
     }
   };
 
   return (
-    <YStack space={12}>
-      <InputForm hasError={Boolean(formState.errors.password)}>
+    <Form.Wrapper>
+      <Form.Group>
         <PasswordInput
           onSubmitEditing={handleSubmit(onSubmit)}
           returnKeyType="done"
@@ -164,9 +166,9 @@ function PasswordUnlock({ userUuid }: { userUuid: string }): JSX.Element {
             required: "You must enter a password",
           }}
         />
-      </InputForm>
+      </Form.Group>
       <PrimaryButton label="Unlock" onPress={handleSubmit(onSubmit)} />
-    </YStack>
+    </Form.Wrapper>
   );
 }
 

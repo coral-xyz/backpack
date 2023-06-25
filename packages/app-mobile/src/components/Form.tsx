@@ -285,3 +285,45 @@ export function InputForm({
     </YStack>
   );
 }
+
+export function Group({
+  children,
+  errorMessage,
+}: {
+  children: React.ReactNode;
+  errorMessage?: string;
+}) {
+  return (
+    <YStack space={4} mb={8}>
+      {children}
+      {errorMessage ? (
+        <YStack mx={4} ai="center" als="center">
+          <ErrorMessage for={{ message: errorMessage }} />
+        </YStack>
+      ) : null}
+    </YStack>
+  );
+}
+
+export function Wrapper({ children }: { children: React.ReactNode }) {
+  return <YStack space={8}>{children}</YStack>;
+}
+
+export function Input({
+  children,
+  errorMessage,
+}: {
+  children: React.ReactNode;
+  errorMessage?: string;
+}) {
+  return (
+    <YStack space={4} mb={8}>
+      {children}
+      {errorMessage ? (
+        <YStack mx={4} ai="center" als="center">
+          <ErrorMessage for={{ message: errorMessage }} />
+        </YStack>
+      ) : null}
+    </YStack>
+  );
+}
