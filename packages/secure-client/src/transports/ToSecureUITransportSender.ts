@@ -134,7 +134,7 @@ export class ToSecureUITransportSender<
     if (this.isPopupClosable()) {
       this.maybeClosePopupTimeout = setTimeout(
         this.maybeClosePopup.bind(this),
-        300
+        10
       );
     }
   };

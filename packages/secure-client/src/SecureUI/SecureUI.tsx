@@ -1,5 +1,6 @@
 import type {
   SECURE_EVENTS,
+  SECURE_LEDGER_EVENTS,
   TransportReceiver,
   TransportSender,
 } from "@coral-xyz/secure-background/types";
@@ -13,6 +14,7 @@ import {
   secureUIReceiverAtom,
 } from "./_atoms/clientAtoms";
 import { ApproveOriginRequest } from "./RequestHandlers/ApproveOriginRequest";
+import { LedgerSignRequest } from "./RequestHandlers/LedgerSignRequest";
 import { SignAllTransactionsRequest } from "./RequestHandlers/SignAllTransactionsRequest";
 import { SignMessageRequest } from "./RequestHandlers/SignMessageRequest";
 import { SignTransactionRequest } from "./RequestHandlers/SignTransactionRequest";
@@ -33,6 +35,17 @@ function SecureUIRoot() {
           <SignMessageRequest
             currentRequest={
               currentRequest as QueuedRequest<"SECURE_SVM_SIGN_MESSAGE">
+            }
+          />
+        );
+      case "LEDGER_SVM_SIGN_TX":
+      case "LEDGER_SVM_SIGN_MESSAGE":
+      case "LEDGER_EVM_SIGN_TX":
+      case "LEDGER_EVM_SIGN_MESSAGE":
+        return (
+          <LedgerSignRequest
+            currentRequest={
+              currentRequest as QueuedRequest<SECURE_LEDGER_EVENTS>
             }
           />
         );

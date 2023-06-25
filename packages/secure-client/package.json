@@ -21,6 +21,9 @@
     "@coral-xyz/common": "*",
     "@coral-xyz/secure-background": "*",
     "@coral-xyz/tamagui": "*",
+    "@ledgerhq/hw-app-eth": "^6.33.6",
+    "@ledgerhq/hw-app-solana": "^7.0.10",
+    "@ledgerhq/hw-transport-webhid": "^6.27.16",
     "recoil": "^0.7.7",
     "uuid": "^9.0.0"
   },

@@ -1,8 +1,3 @@
-import type { SecureEvent } from "@coral-xyz/secure-background/types";
-import {
-  SECURE_EVENTS,
-  SecureRequest,
-} from "@coral-xyz/secure-background/types";
 import {
   PrimaryButton,
   ProxyImage,

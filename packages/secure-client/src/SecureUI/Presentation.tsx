@@ -15,7 +15,7 @@ export function Presentation<T extends SECURE_EVENTS = SECURE_EVENTS>({
   onClosed,
   children,
 }: {
-  currentRequest: QueuedRequest;
+  currentRequest: QueuedRequest<T>;
   presentation?: "modal" | "fullscreen";
   onClosed: () => void;
   children: (request: QueuedRequest<T>) => React.ReactElement;
