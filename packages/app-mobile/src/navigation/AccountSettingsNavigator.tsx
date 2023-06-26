@@ -1,9 +1,14 @@
-import type { ChannelAppUiClient } from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 import type { Commitment } from "@solana/web3.js";
 
-import { useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { useCallback, useMemo } from "react";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  View,
+} from "react-native";
 
 import {
   EthereumConnectionUrl,
@@ -15,6 +20,7 @@ import {
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
   formatWalletAddress,
+  Blockchain,
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
@@ -23,17 +29,19 @@ import {
   useSolanaConnectionUrl,
   useSolanaExplorer,
 } from "@coral-xyz/recoil";
-import { XStack } from "@coral-xyz/tamagui";
+import {
+  PrimaryButton,
+  RoundedContainerGroup,
+  XStack,
+} from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ethers } from "ethers";
+import { useForm } from "react-hook-form";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-// import { AccountSettingsBottomSheet } from "~components/AccountSettingsBottomSheet";
 import { IconCheckmark } from "~components/Icon";
-import {
-  // AccountDropdownHeader,
-  UserAccountMenu,
-} from "~components/UserAccountsMenu";
+import { UserAccountMenu } from "~components/UserAccountsMenu";
 import { Screen } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { HeaderAvatarButton, HeaderButton } from "~navigation/components";
@@ -42,6 +50,7 @@ import { ImportPrivateKeyScreen } from "~screens/ImportPrivateKeyScreen";
 import {
   LogoutWarningScreen,
   ResetWarningScreen,
+  RemoveWalletScreen,
 } from "~screens/ResetWarningScreen";
 import { EditWalletDetailScreen } from "~screens/Unlocked/EditWalletDetailScreen";
 import { EditWalletsScreen } from "~screens/Unlocked/EditWalletsScreen";
@@ -67,13 +76,11 @@ import {
 } from "~screens/Unlocked/ShowRecoveryPhraseScreen";
 import { YourAccountScreen } from "~screens/Unlocked/YourAccountScreen";
 
+import { InputGroup, InputListItem } from "~src/components/Form";
 import { AboutBackpackScreen } from "~src/screens/Unlocked/Settings/AboutBackpackScreen";
+import { PublicKey } from "~src/types/types";
 
 const { hexlify } = ethers.utils;
-
-function DummyScreen() {
-  return <View style={{ flex: 1, backgroundColor: "red" }} />;
-}
 
 type AccountSettingsParamList = {
   Settings: undefined;
@@ -90,17 +97,26 @@ type AccountSettingsParamList = {
   PreferencesSolanaExplorer: undefined;
   PreferencesSolanaCustomRpcUrl: undefined;
   PreferencesTrustedSites: undefined;
-  xNFTSettings: undefined;
-  WaitingRoom: undefined;
   "import-private-key": undefined;
   "reset-warning": undefined;
   "show-secret-phrase-warning": undefined;
-  "show-secret-phrase": undefined;
-  "show-private-key-warning": undefined;
-  "show-private-key": undefined;
-  "edit-wallets": undefined;
+  "show-secret-phrase": {
+    mnemonic: string;
+  };
+  "show-private-key-warning": {
+    publicKey: PublicKey;
+  };
+  "show-private-key": {
+    privateKey: string;
+  };
+  "edit-wallets": {
+    blockchain: Blockchain;
+    publicKey: PublicKey;
+    type: string;
+  };
   "about-backpack": undefined;
   "edit-wallets-rename": undefined;
+  "edit-wallets-remove": undefined;
   "edit-wallets-wallet-detail": { name: string; publicKey: string };
   "add-wallet": undefined;
   "forgot-password": undefined;
@@ -112,6 +128,9 @@ export type EditWalletsScreenProps = StackScreenProps<
   AccountSettingsParamList,
   "edit-wallets"
 >;
+
+const Checkmark = () => <IconCheckmark size={18} />;
+const BlankItem = () => <View />;
 
 const Stack = createStackNavigator<AccountSettingsParamList>();
 export function AccountSettingsNavigator(): JSX.Element {
@@ -183,7 +202,7 @@ export function AccountSettingsNavigator(): JSX.Element {
           component={PreferencesEthereumConnection}
         />
         <Stack.Screen
-          options={{ title: "Preferences" }}
+          options={{ title: "Change RPC Connection" }}
           name="PreferencesEthereumCustomRpcUrl"
           component={PreferencesEthereumCustomRpcUrl}
         />
@@ -193,12 +212,12 @@ export function AccountSettingsNavigator(): JSX.Element {
           component={PreferencesSolana}
         />
         <Stack.Screen
-          // options={{ title: "Preferences" }}
+          options={{ title: "Solana Connection" }}
           name="PreferencesSolanaConnection"
           component={PreferencesSolanaConnection}
         />
         <Stack.Screen
-          // options={{ title: "Preferences" }}
+          options={{ title: "Solana Commitment" }}
           name="PreferencesSolanaCommitment"
           component={PreferencesSolanaCommitment}
         />
@@ -208,7 +227,7 @@ export function AccountSettingsNavigator(): JSX.Element {
           component={PreferencesSolanaExplorer}
         />
         <Stack.Screen
-          // options={{ title: "Preferences" }}
+          options={{ title: "Change RPC Connection" }}
           name="PreferencesSolanaCustomRpcUrl"
           component={PreferencesSolanaCustomRpcUrl}
         />
@@ -216,16 +235,6 @@ export function AccountSettingsNavigator(): JSX.Element {
           options={{ title: "Trusted Sites" }}
           name="PreferencesTrustedSites"
           component={PreferencesTrustedSitesScreen}
-        />
-        <Stack.Screen
-          options={{ title: "xNFTs" }}
-          name="xNFTSettings"
-          component={DummyScreen}
-        />
-        <Stack.Screen
-          options={{ title: "Waiting Room" }}
-          name="WaitingRoom"
-          component={DummyScreen}
         />
         <Stack.Screen
           options={{ title: "Import Private Key" }}
@@ -245,16 +254,17 @@ export function AccountSettingsNavigator(): JSX.Element {
         <Stack.Screen
           name="show-secret-phrase"
           component={ShowRecoveryPhraseScreen}
+          options={{ title: "Secret Recovery Phrase" }}
         />
         <Stack.Screen
           name="show-private-key-warning"
           component={ShowPrivateKeyWarningScreen}
-          options={{ title: "Warning" }}
+          options={{ title: "Show Private Key" }}
         />
         <Stack.Screen
           name="show-private-key"
           component={ShowPrivateKeyScreen}
-          options={{ title: "Show Private Key" }}
+          options={{ title: "Private Key" }}
         />
         <Stack.Screen
           name="edit-wallets"
@@ -281,6 +291,11 @@ export function AccountSettingsNavigator(): JSX.Element {
           name="edit-wallets-rename"
           component={RenameWalletScreen}
           options={{ title: "Rename Wallet" }}
+        />
+        <Stack.Screen
+          name="edit-wallets-remove"
+          component={RemoveWalletScreen}
+          options={{ title: "Remove Wallet" }}
         />
         <Stack.Screen
           name="edit-wallets-wallet-detail"
@@ -323,167 +338,209 @@ export function AccountSettingsNavigator(): JSX.Element {
   );
 }
 
+type SolanaRPCUrlFormData = { url: string };
+
 function PreferencesSolanaCustomRpcUrl({ navigation }) {
-  const [rpcUrl, setRpcUrl] = useState("");
-  const [rpcUrlError, setRpcUrlError] = useState(false);
+  const insets = useSafeAreaInsets();
+  const background = useBackgroundClient();
 
-  useEffect(() => {
-    if (!rpcUrl) {
-      setRpcUrlError(false);
-      return;
-    }
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isDirty, isValid },
+    setError,
+  } = useForm<SolanaRPCUrlFormData>();
+
+  const onSubmit = async ({ url }: SolanaRPCUrlFormData) => {
     try {
-      new URL(rpcUrl.trim());
-      setRpcUrlError(false);
-    } catch (e: any) {
-      setRpcUrlError(true);
+      await background.request({
+        method: UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
+        params: [url],
+      });
+    } catch (err) {
+      console.error(err);
+      setError("url", { message: "Incorrect URL" });
     }
-  }, [rpcUrl]);
-
-  // return (
-  //   <div style={{ paddingTop: 16, height: "100%" }}>
-  //     <form
-  //       onSubmit={changeNetwork}
-  //       style={{ display: "flex", height: "100%", flexDirection: "column" }}
-  //     >
-  //       <div style={{ flex: 1, flexGrow: 1 }}>
-  //         <Inputs error={rpcUrlError}>
-  //           <InputListItem
-  //             isFirst={true}
-  //             isLast={true}
-  //             button={false}
-  //             title={"RPC"}
-  //             placeholder={"RPC URL"}
-  //             value={rpcUrl}
-  //             onChange={(e) => {
-  //               setRpcUrl(e.target.value);
-  //             }}
-  //           />
-  //         </Inputs>
-  //       </div>
-  //       <div style={{ padding: 16 }}>
-  //         <PrimaryButton
-  //           disabled={!rpcUrl || rpcUrlError}
-  //           label="Switch"
-  //           type="submit"
-  //         />
-  //       </div>
-  //     </form>
-  //   </div>
-  // );
+  };
 
   return (
-    <View style={{ padding: 16 }}>
-      <Text>TODO form lists</Text>
-      <Text>{JSON.stringify({ rpcUrl, rpcUrlError })}</Text>
-    </View>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={72}
+    >
+      <Screen jc="space-between" style={{ marginBottom: insets.bottom }}>
+        <InputGroup
+          hasError={Boolean(errors.url)}
+          errorMessage={errors.url?.message}
+        >
+          <InputListItem
+            autoCorrect={false}
+            autoCapitalize="none"
+            keyboardType="url"
+            autoComplete="off"
+            title="RPC"
+            placeholder="RPC Url"
+            returnKeyType="done"
+            name="url"
+            onSubmitEditing={handleSubmit(onSubmit)}
+            control={control}
+            rules={{
+              pattern:
+                /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
+              required: true,
+            }}
+          />
+        </InputGroup>
+        <PrimaryButton
+          disabled={Boolean(!isDirty && !isValid)}
+          label="Update network"
+          onPress={handleSubmit(onSubmit)}
+        />
+      </Screen>
+    </KeyboardAvoidingView>
   );
 }
 
 function PreferencesSolanaConnection({ navigation }) {
   const background = useBackgroundClient();
   const currentUrl = useSolanaConnectionUrl();
-  const menuItems = {
-    "Mainnet (Beta)": {
-      onPress: () => changeNetwork(SolanaCluster.MAINNET),
-      detail: currentUrl === SolanaCluster.MAINNET ? <IconCheckmark /> : null,
-    },
-    Devnet: {
-      onPress: () => changeNetwork(SolanaCluster.DEVNET),
-      detail: currentUrl === SolanaCluster.DEVNET ? <IconCheckmark /> : null,
-    },
-    Localnet: {
-      onPress: () => changeNetwork(SolanaCluster.LOCALNET),
-      detail: currentUrl === SolanaCluster.LOCALNET ? <IconCheckmark /> : null,
-    },
-  };
 
-  const changeNetwork = (url: string) => {
-    try {
-      background
-        .request({
+  const handleUpdate = useCallback(
+    async (url: string) => {
+      try {
+        await background.request({
           method: UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
           params: [url],
-        })
-        .then(close)
-        .catch(console.error);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+        });
+      } catch (err) {
+        Alert.alert("Something went wrong", "Try again");
+        console.error(err);
+      }
+    },
+    [background]
+  );
 
-  return <SettingsList menuItems={menuItems} />;
+  const menuItems = useMemo(() => {
+    return {
+      "Mainnet (Beta)": {
+        onPress: () => handleUpdate(SolanaCluster.MAINNET),
+        detail:
+          currentUrl === SolanaCluster.MAINNET ? <Checkmark /> : <BlankItem />,
+      },
+      Devnet: {
+        onPress: () => handleUpdate(SolanaCluster.DEVNET),
+        detail:
+          currentUrl === SolanaCluster.DEVNET ? <Checkmark /> : <BlankItem />,
+      },
+      Localnet: {
+        onPress: () => handleUpdate(SolanaCluster.LOCALNET),
+        detail:
+          currentUrl === SolanaCluster.LOCALNET ? <Checkmark /> : <BlankItem />,
+      },
+      Custom: {
+        onPress: () => navigation.push("PreferencesSolanaCustomRpcUrl"),
+        detail: null,
+      },
+    };
+  }, [handleUpdate, currentUrl, navigation]);
+
+  return (
+    <Screen>
+      <SettingsList menuItems={menuItems} />
+    </Screen>
+  );
 }
 
 export function PreferencesSolanaCommitment({ navigation }) {
   const commitment = useSolanaCommitment();
   const background = useBackgroundClient();
 
-  const menuItems = {
-    Processed: {
-      onPress: () => changeCommitment("processed"),
-      detail: commitment === "processed" ? <IconCheckmark /> : null,
+  const handleUpdate = useCallback(
+    async (commitment: Commitment) => {
+      try {
+        await background.request({
+          method: UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
+          params: [commitment],
+        });
+      } catch (error) {
+        Alert.alert("Something went wrong", "Try again");
+        console.error(error);
+      }
     },
-    Confirmed: {
-      onPress: () => changeCommitment("confirmed"),
-      detail: commitment === "confirmed" ? <IconCheckmark /> : null,
-    },
-    Finalized: {
-      onPress: () => changeCommitment("finalized"),
-      detail: commitment === "finalized" ? <IconCheckmark /> : null,
-    },
-  };
+    [background]
+  );
 
-  const changeCommitment = (commitment: Commitment) => {
-    background
-      .request({
-        method: UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
-        params: [commitment],
-      })
-      .catch(console.error);
-  };
+  const menuItems = useMemo(() => {
+    return {
+      Processed: {
+        onPress: () => handleUpdate("processed"),
+        detail: commitment === "processed" ? <Checkmark /> : <BlankItem />,
+      },
+      Confirmed: {
+        onPress: () => handleUpdate("confirmed"),
+        detail: commitment === "confirmed" ? <Checkmark /> : <BlankItem />,
+      },
+      Finalized: {
+        onPress: () => handleUpdate("finalized"),
+        detail: commitment === "finalized" ? <Checkmark /> : <BlankItem />,
+      },
+    };
+  }, [handleUpdate, commitment]);
 
-  return <SettingsList menuItems={menuItems} />;
+  return (
+    <Screen>
+      <SettingsList menuItems={menuItems} />
+    </Screen>
+  );
 }
 
 export function PreferencesSolanaExplorer({ navigation }) {
   const background = useBackgroundClient();
   const explorer = useSolanaExplorer();
 
-  const menuItems = {
-    "Solana Beach": SolanaExplorer.SOLANA_BEACH,
-    "Solana Explorer": SolanaExplorer.SOLANA_EXPLORER,
-    "Solana FM": SolanaExplorer.SOLANA_FM,
-    Solscan: SolanaExplorer.SOLSCAN,
-    XRAY: SolanaExplorer.XRAY,
-  };
-
-  const changeExplorer = (explorer: string) => {
-    try {
-      background
-        .request({
+  const handleUpdate = useCallback(
+    async (explorer: string) => {
+      try {
+        await background.request({
           method: UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
           params: [explorer],
-        })
-        .catch(console.error);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+        });
+      } catch (err) {
+        Alert.alert("Something went wrong", "Try again");
+        console.error(err);
+      }
+    },
+    [background]
+  );
+
+  const menuItems = useMemo(() => {
+    const items = {
+      "Solana Beach": SolanaExplorer.SOLANA_BEACH,
+      "Solana Explorer": SolanaExplorer.SOLANA_EXPLORER,
+      "Solana FM": SolanaExplorer.SOLANA_FM,
+      Solscan: SolanaExplorer.SOLSCAN,
+      XRAY: SolanaExplorer.XRAY,
+    };
+
+    const menuItems = Object.entries(items).reduce(
+      (acc, [name, url]) => ({
+        ...acc,
+        [name]: {
+          onPress: () => handleUpdate(url),
+          detail: explorer === url ? <Checkmark /> : <BlankItem />,
+        },
+      }),
+      {} as React.ComponentProps<typeof SettingsList>["menuItems"]
+    );
+
+    return menuItems;
+  }, [handleUpdate, explorer]);
 
   return (
-    <SettingsList
-      menuItems={Object.entries(menuItems).reduce(
-        (acc, [name, url]) => ({
-          ...acc,
-          [name]: {
-            onPress: () => changeExplorer(url),
-            detail: explorer === url ? <IconCheckmark /> : null,
-          },
-        }),
-        {} as React.ComponentProps<typeof SettingsList>["menuItems"]
-      )}
-    />
+    <Screen>
+      <SettingsList menuItems={menuItems} />
+    </Screen>
   );
 }
 
@@ -507,11 +564,11 @@ function PreferencesSolana({ navigation }) {
   );
 }
 
-export const changeNetwork = async (
-  background: ChannelAppUiClient,
+async function changeEthereumNetwork(
+  background: any,
   url: string,
   chainId?: string
-) => {
+) {
   await background.request({
     method: UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
     params: [url],
@@ -527,73 +584,83 @@ export const changeNetwork = async (
     method: UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
     params: [chainId],
   });
+}
+
+type EthereumRPCFormData = {
+  url: string;
+  chainId: string;
 };
 
 function PreferencesEthereumCustomRpcUrl({ navigation }) {
-  const [rpcUrl, setRpcUrl] = useState("");
-  const [chainId, setChainId] = useState("");
-  const [rpcUrlError, setRpcUrlError] = useState(false);
+  const insets = useSafeAreaInsets();
+  const background = useBackgroundClient();
 
-  useEffect(() => {
-    if (!rpcUrl) {
-      setRpcUrlError(false);
-      return;
-    }
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isDirty, isValid },
+    setError,
+  } = useForm<EthereumRPCFormData>();
+
+  const onSubmit = async ({ url, chainId }: EthereumRPCFormData) => {
     try {
-      new URL(rpcUrl.trim());
-      setRpcUrlError(false);
-    } catch (e: any) {
-      setRpcUrlError(true);
+      await changeEthereumNetwork(background, url, chainId);
+    } catch (err) {
+      console.error(err);
+      setError("url", { message: "Incorrect URL" });
     }
-  }, [rpcUrl]);
-
-  // <div style={{ paddingTop: 16, height: "100%" }}>
-  //   <form
-  //     onSubmit={async () => {
-  //         await changeNetwork(background, rpcUrl, chainId);
-  //       close();
-  //     }}
-  //     style={{ display: "flex", height: "100%", flexDirection: "column" }}
-  //   >
-  //     <div style={{ flex: 1, flexGrow: 1 }}>
-  //       <Inputs error={rpcUrlError}>
-  //         <InputListItem
-  //           isLast={false}
-  //           isFirst={true}
-  //           button={false}
-  //           title={"RPC"}
-  //           placeholder={"RPC URL"}
-  //           value={rpcUrl}
-  //           onChange={(e) => {
-  //             setRpcUrl(e.target.value);
-  //           }}
-  //         />
-  //         <InputListItem
-  //           isLast={true}
-  //           isFirst={false}
-  //           button={false}
-  //           title={"Chain"}
-  //           placeholder={"Chain ID"}
-  //           value={chainId}
-  //           onChange={(e) => setChainId(e.target.value)}
-  //         />
-  //       </Inputs>
-  //     </div>
-  //     <div style={{ padding: 16 }}>
-  //       <PrimaryButton
-  //         disabled={!rpcUrl || rpcUrlError}
-  //         label="Switch"
-  //         type="submit"
-  //       />
-  //     </div>
-  //   </form>
-  // </div>
+  };
 
   return (
-    <View style={{ padding: 16 }}>
-      <Text>TODO form lists</Text>
-      <Text>{JSON.stringify({ rpcUrl, chainId, rpcUrlError })}</Text>
-    </View>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={72}
+    >
+      <Screen jc="space-between" style={{ marginBottom: insets.bottom }}>
+        <InputGroup
+          hasError={Boolean(errors.url)}
+          errorMessage={errors.url?.message}
+        >
+          <InputListItem
+            autoCorrect={false}
+            autoCapitalize="none"
+            keyboardType="url"
+            autoComplete="off"
+            title="RPC"
+            placeholder="RPC Url"
+            returnKeyType="next"
+            name="url"
+            control={control}
+            rules={{
+              pattern:
+                /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
+              required: true,
+            }}
+          />
+          <InputListItem
+            autoCorrect={false}
+            autoCapitalize="none"
+            keyboardType="url"
+            autoComplete="off"
+            title="Chain ID"
+            placeholder="Chain ID"
+            returnKeyType="done"
+            name="chainId"
+            onSubmitEditing={handleSubmit(onSubmit)}
+            control={control}
+            rules={{
+              required: true,
+            }}
+          />
+        </InputGroup>
+        <PrimaryButton
+          disabled={Boolean(!isDirty && !isValid)}
+          label="Update network"
+          onPress={handleSubmit(onSubmit)}
+        />
+      </Screen>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -601,46 +668,69 @@ function PreferencesEthereumConnection({ navigation }) {
   const background = useBackgroundClient();
   const currentUrl = useEthereumConnectionUrl();
 
+  const handleUpdate = useCallback(
+    async (url: string, chainId?: string) => {
+      try {
+        await changeEthereumNetwork(background, url, chainId);
+      } catch (error) {
+        Alert.alert("Something went wrong", "Try again");
+        console.error(error);
+      }
+    },
+    [background]
+  );
+
   const menuItems = {
     Mainnet: {
-      onPress: async () => {
-        await changeNetwork(background, EthereumConnectionUrl.MAINNET, "0x1");
-        close();
-      },
+      onPress: () => handleUpdate(EthereumConnectionUrl.MAINNET, "0x1"),
       detail:
-        currentUrl === EthereumConnectionUrl.MAINNET ? <IconCheckmark /> : null,
+        currentUrl === EthereumConnectionUrl.MAINNET ? (
+          <Checkmark />
+        ) : (
+          <BlankItem />
+        ),
     },
     "Görli Testnet": {
-      onPress: async () => {
-        await changeNetwork(background, EthereumConnectionUrl.GOERLI, "0x5");
-        close();
-      },
+      onPress: () => handleUpdate(EthereumConnectionUrl.GOERLI, "0x5"),
       detail:
-        currentUrl === EthereumConnectionUrl.GOERLI ? <IconCheckmark /> : null,
+        currentUrl === EthereumConnectionUrl.GOERLI ? (
+          <Checkmark />
+        ) : (
+          <BlankItem />
+        ),
     },
-    Localnet: {
-      onPress: async () => {
-        await changeNetwork(background, EthereumConnectionUrl.LOCALNET);
-        close();
-      },
-      detail:
-        currentUrl === EthereumConnectionUrl.LOCALNET ? (
-          <IconCheckmark />
-        ) : null,
+    Custom: {
+      onPress: () => navigation.push("PreferencesEthereumCustomRpcUrl"),
+      detail: null,
     },
+    // Localnet: {
+    //   onPress: () => handleUpdate(EthereumConnectionUrl.LOCALNET),
+    //   detail:
+    //     currentUrl === EthereumConnectionUrl.LOCALNET ? (
+    //       <Checkmark />
+    //     ) : (
+    //       <BlankItem />
+    //     ),
+    // },
   };
 
-  return <SettingsList menuItems={menuItems} />;
+  return (
+    <Screen>
+      <SettingsList menuItems={menuItems} />
+    </Screen>
+  );
 }
 
 function PreferencesEthereum({ navigation }) {
   return (
     <Screen>
-      <SettingsRow
-        label="RPC Connection"
-        onPress={() => navigation.push("PreferencesEthereumConnection")}
-        detailIcon={<IconPushDetail />}
-      />
+      <RoundedContainerGroup>
+        <SettingsRow
+          label="RPC Connection"
+          onPress={() => navigation.push("PreferencesEthereumConnection")}
+          detailIcon={<IconPushDetail />}
+        />
+      </RoundedContainerGroup>
     </Screen>
   );
 }

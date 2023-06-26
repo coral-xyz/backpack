@@ -32,12 +32,12 @@ export function IconExpand({ collapsed = true }: { collapsed: boolean }) {
   );
 }
 
-export function IconLaunchDetail() {
+export function IconLaunchDetail({ size = 24 }: { size?: number }) {
   const theme = useTheme();
   return (
     <MaterialCommunityIcons
       name="arrow-top-right"
-      size={24}
+      size={size}
       color={theme.custom.colors.icon}
     />
   );
@@ -178,7 +178,7 @@ export function SettingsRow({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     height: 48,
     flexDirection: "row",
     alignItems: "center",

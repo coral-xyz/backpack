@@ -93,7 +93,7 @@ export function UsernameInput({
   );
 }
 
-type StyledTextInputProps = TextInputProps & { hasError: boolean };
+type StyledTextInputProps = TextInputProps & { hasError?: boolean };
 export const StyledTextInput = forwardRef(function StyledTextInput(
   {
     style,
@@ -176,7 +176,8 @@ export function SearchInput({ style, ...props }: TextInputProps): JSX.Element {
   );
 }
 
-type PasswordInputProps = TextInputProps & UseControllerProps;
+type PasswordInputProps = TextInputProps &
+  UseControllerProps & { hasError?: boolean };
 export const PasswordInput = forwardRef(
   (
     {

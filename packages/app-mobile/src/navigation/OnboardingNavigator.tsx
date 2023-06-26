@@ -1032,7 +1032,7 @@ export function OnboardingBiometricsScreen({
         />
         <PrimaryButton
           disabled={false}
-          label="Turn on Face ID"
+          label={`Enable ${biometricName}`}
           onPress={onPressEnableBiometrics}
         />
       </Box>

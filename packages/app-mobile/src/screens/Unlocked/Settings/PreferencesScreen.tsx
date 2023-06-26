@@ -1,12 +1,8 @@
 import { Suspense, useState } from "react";
 import { Alert } from "react-native";
 
-import {
-  BACKPACK_CONFIG_VERSION,
-  Blockchain,
-  toTitleCase,
-} from "@coral-xyz/common";
-import { Stack } from "@coral-xyz/tamagui";
+import { BACKPACK_CONFIG_VERSION, Blockchain } from "@coral-xyz/common";
+import { YStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import {
@@ -15,17 +11,12 @@ import {
   ScreenError,
   ScreenLoading,
 } from "~components/index";
+import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 
-import {
-  IconPushDetail,
-  SettingsRow,
-  SettingsRowSwitch,
-  SettingsRowText,
-} from "./components/SettingsRow";
+import { SettingsRowSwitch, SettingsRowText } from "./components/SettingsRow";
 
 import {
   BiometricAuthenticationStatus,
-  // BIOMETRIC_PASSWORD,
   tryLocalAuthenticate,
 } from "~src/features/biometrics";
 import {
@@ -37,7 +28,7 @@ import * as Linking from "~src/lib/linking";
 
 function SettingsBiometricsMode() {
   const [loading, setLoading] = useState(false);
-  const { touchId: isTouchIdDevice } = useDeviceSupportsBiometricAuth();
+  const { biometricName } = useDeviceSupportsBiometricAuth();
   const isSupported = useDeviceSupportsBiometricAuth();
   const isEnabled = useOsBiometricAuthEnabled();
   if (!isSupported) {
@@ -74,7 +65,6 @@ function SettingsBiometricsMode() {
     setLoading(false);
   };
 
-  const biometricName = isTouchIdDevice ? "Touch ID" : "Face ID";
   return (
     <SettingsRowSwitch
       loading={loading}
@@ -86,43 +76,37 @@ function SettingsBiometricsMode() {
 }
 
 function Container({ navigation }) {
+  const menuItems = {
+    Solana: {
+      onPress: () => {
+        navigation.push("PreferencesSolana", {
+          blockchain: Blockchain.SOLANA,
+        });
+      },
+    },
+    Ethereum: {
+      onPress: () => {
+        navigation.push("PreferencesEthereum", {
+          blockchain: Blockchain.ETHEREUM,
+        });
+      },
+    },
+  };
+
   return (
     <Screen>
-      <Stack mb={12}>
+      <YStack space="$settingsList">
         <RoundedContainerGroup>
           <SettingsBiometricsMode />
         </RoundedContainerGroup>
-      </Stack>
-      <Stack mb={12}>
-        <RoundedContainerGroup>
-          <SettingsRow
-            label={toTitleCase(Blockchain.SOLANA)}
-            detailIcon={<IconPushDetail />}
-            onPress={() =>
-              navigation.push("PreferencesSolana", {
-                blockchain: Blockchain.SOLANA,
-              })
-            }
-          />
-          <SettingsRow
-            label={toTitleCase(Blockchain.ETHEREUM)}
-            detailIcon={<IconPushDetail />}
-            onPress={() =>
-              navigation.push("PreferencesEthereum", {
-                blockchain: Blockchain.ETHEREUM,
-              })
-            }
-          />
-        </RoundedContainerGroup>
-      </Stack>
-      <Stack mb={12}>
+        <SettingsList menuItems={menuItems} />
         <RoundedContainerGroup>
           <SettingsRowText
             label="Version"
             detailText={BACKPACK_CONFIG_VERSION}
           />
         </RoundedContainerGroup>
-      </Stack>
+      </YStack>
     </Screen>
   );
 }
