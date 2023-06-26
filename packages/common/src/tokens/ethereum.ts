@@ -1,6 +1,6 @@
-import type { TokenListEntry } from "./types";
+import type { CustomTokenList } from "./types";
 
-export const EthereumTokenList: Record<string, Omit<TokenListEntry, "id">> = {
+export const EthereumTokenList: CustomTokenList = {
   "0x0000000000000000000000000000000000000000": {
     address: "0x0000000000000000000000000000000000000000",
     coingeckoId: "ethereum",

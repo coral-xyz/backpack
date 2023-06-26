@@ -46,11 +46,11 @@ const apollo = new ApolloServer<ApiContext>({
     ApolloServerPluginResponseCache({
       generateCacheKey(req, keyData): string {
         const {
-          network: { devnet },
+          network: { rpc },
         } = req.contextValue as ApiContext;
 
         return createHash("sha256")
-          .update(`${devnet ? "devnet" : ""}-${JSON.stringify(keyData)}`)
+          .update(`${rpc ?? ""}-${JSON.stringify(keyData)}`)
           .digest("hex");
       },
       async sessionId(req): Promise<string | null> {

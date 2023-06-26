@@ -50,7 +50,6 @@ export interface ApiContext {
     res: Response;
   };
   network: {
-    devnet: boolean;
     rpc?: string;
   };
 }
@@ -112,7 +111,6 @@ export const createContext: ContextFunction<
       res,
     },
     network: {
-      devnet,
       rpc,
     },
   };

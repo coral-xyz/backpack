@@ -1,4 +1,4 @@
-import { EthereumTokenList } from "@coral-xyz/common";
+import { type CustomTokenList, EthereumTokenList } from "@coral-xyz/common";
 import {
   AssetTransfersCategory,
   type AssetTransfersParams,
@@ -33,10 +33,12 @@ import type { BlockchainDataProvider } from ".";
  * @implements {BlockchainDataProvider}
  */
 export class Ethereum implements BlockchainDataProvider {
-  readonly #ctx?: ApiContext;
+  protected readonly ctx?: ApiContext;
+  protected readonly tokenList: CustomTokenList;
 
-  constructor(ctx?: ApiContext) {
-    this.#ctx = ctx;
+  constructor(ctx?: ApiContext, tokenList?: CustomTokenList) {
+    this.ctx = ctx;
+    this.tokenList = tokenList ?? EthereumTokenList;
   }
 
   /**
@@ -85,15 +87,6 @@ export class Ethereum implements BlockchainDataProvider {
   }
 
   /**
-   * Symbol of the native coin.
-   * @returns {string}
-   * @memberof Ethereum
-   */
-  symbol(): string {
-    return "ETH";
-  }
-
-  /**
    * Fetch and aggregate the native and token balances and
    * prices for the argued wallet address.
    * @param {string} address
@@ -105,14 +98,14 @@ export class Ethereum implements BlockchainDataProvider {
     address: string,
     filters?: BalanceFiltersInput
   ): Promise<Balances> {
-    if (!this.#ctx) {
+    if (!this.ctx) {
       throw new Error("API context object not available");
     }
 
     // Fetch the native and all token balances of the address and filter out the empty balances
     const [native, tokenBalances] = await Promise.all([
-      this.#ctx.dataSources.alchemy.core.getBalance(address),
-      this.#ctx.dataSources.alchemy.core.getTokensForOwner(address),
+      this.ctx.dataSources.alchemy.core.getBalance(address),
+      this.ctx.dataSources.alchemy.core.getTokensForOwner(address),
     ]);
 
     const nonEmptyTokens = tokenBalances.tokens.filter(
@@ -129,7 +122,7 @@ export class Ethereum implements BlockchainDataProvider {
 
     // Get price data from Coingecko for the discovered tokens
     const ids = [...meta.values()];
-    const prices = await this.#ctx.dataSources.coinGecko.getPrices([
+    const prices = await this.ctx.dataSources.coinGecko.getPrices([
       "ethereum",
       ...ids,
     ]);
@@ -236,12 +229,12 @@ export class Ethereum implements BlockchainDataProvider {
     address: string,
     filters?: NftFiltersInput
   ): Promise<NftConnection> {
-    if (!this.#ctx) {
+    if (!this.ctx) {
       throw new Error("API context object not available");
     }
 
     // Get all NFTs held by the address from Alchemy
-    const nfts = await this.#ctx.dataSources.alchemy.nft.getNftsForOwner(
+    const nfts = await this.ctx.dataSources.alchemy.nft.getNftsForOwner(
       address,
       { contractAddresses: filters?.addresses ?? undefined }
     );
@@ -300,7 +293,7 @@ export class Ethereum implements BlockchainDataProvider {
     address: string,
     filters?: TransactionFiltersInput
   ): Promise<TransactionConnection> {
-    if (!this.#ctx) {
+    if (!this.ctx) {
       throw new Error("API context object not available");
     }
 
@@ -320,11 +313,11 @@ export class Ethereum implements BlockchainDataProvider {
     };
 
     const txs = await Promise.allSettled([
-      this.#ctx.dataSources.alchemy.core.getAssetTransfers({
+      this.ctx.dataSources.alchemy.core.getAssetTransfers({
         fromAddress: address,
         ...params,
       }) as Promise<AssetTransfersWithMetadataResponse>,
-      this.#ctx.dataSources.alchemy.core.getAssetTransfers({
+      this.ctx.dataSources.alchemy.core.getAssetTransfers({
         toAddress: address,
         ...params,
       }) as Promise<AssetTransfersWithMetadataResponse>,
@@ -338,7 +331,7 @@ export class Ethereum implements BlockchainDataProvider {
 
     const receipts = await Promise.all(
       combined.map((tx) =>
-        this.#ctx!.dataSources.alchemy.core.getTransactionReceipt(tx.hash)
+        this.ctx!.dataSources.alchemy.core.getTransactionReceipt(tx.hash)
       )
     );
 
@@ -357,10 +350,10 @@ export class Ethereum implements BlockchainDataProvider {
           block: Number(tx.blockNum),
           fee:
             receipts[i]?.gasUsed && receipts[i]?.effectiveGasPrice
-              ? `${ethers.utils.formatUnits(
+              ? ethers.utils.formatUnits(
                   receipts[i]!.gasUsed.mul(receipts[i]!.effectiveGasPrice),
                   this.decimals()
-                )} ${this.symbol()}`
+                )
               : undefined,
           feePayer: tx.from,
           hash: tx.hash,

@@ -1,4 +1,3 @@
-import { SolanaTokenList } from "@coral-xyz/common";
 import { getATAAddressesSync } from "@saberhq/token-utils";
 import { PublicKey } from "@solana/web3.js";
 import { ethers } from "ethers";
@@ -74,7 +73,7 @@ export class Solana extends SolanaRpc implements BlockchainDataProvider {
       // in-memory Jupiter token list
       const nonNftMints = nonEmptyOrNftTokens.map((t) => t.mint);
       const meta = nonNftMints.reduce<Map<string, string>>((acc, curr) => {
-        const entry = SolanaTokenList[curr];
+        const entry = this.tokenList[curr];
         if (entry && entry.coingeckoId) {
           acc.set(curr, entry.coingeckoId);
         }
@@ -108,7 +107,7 @@ export class Solana extends SolanaRpc implements BlockchainDataProvider {
           ),
           token: this.defaultAddress(),
           tokenListEntry: NodeBuilder.tokenListEntry(
-            SolanaTokenList[this.defaultAddress()]
+            this.tokenList[this.defaultAddress()]
           ),
         },
         true
@@ -126,8 +125,8 @@ export class Solana extends SolanaRpc implements BlockchainDataProvider {
           );
 
           const marketData = createMarketDataNode(displayAmount, id, p);
-          const tokenListEntry = SolanaTokenList[curr.mint]
-            ? NodeBuilder.tokenListEntry(SolanaTokenList[curr.mint])
+          const tokenListEntry = this.tokenList[curr.mint]
+            ? NodeBuilder.tokenListEntry(this.tokenList[curr.mint])
             : undefined;
 
           if (filters?.marketListedTokensOnly && !marketData) {
@@ -322,10 +321,7 @@ export class Solana extends SolanaRpc implements BlockchainDataProvider {
           description: r.description,
           block: r.slot,
           error: transactionError,
-          fee: `${ethers.utils.formatUnits(
-            r.fee,
-            this.decimals()
-          )} ${this.symbol()}`,
+          fee: ethers.utils.formatUnits(r.fee, this.decimals()),
           feePayer: r.feePayer,
           hash: r.signature,
           nfts,

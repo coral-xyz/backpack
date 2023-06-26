@@ -15,10 +15,10 @@ export * from "./TransactionDetails";
 const DEFAULT_POLLING_INTERVAL = 60000;
 
 const GET_TRANSACTIONS = gql(`
-  query GetTransactions($address: String!, $filters: TransactionFiltersInput) {
+  query GetTransactions($address: String!, $providerId: ProviderID!, $filters: TransactionFiltersInput) {
     user {
       id
-      wallet(address: $address) {
+      wallet(address: $address, providerId: $providerId) {
         id
         provider {
           providerId
@@ -82,6 +82,7 @@ function _TransactionHistory({
     {
       variables: {
         address: activeWallet.publicKey,
+        providerId: activeWallet.blockchain.toUpperCase() as ProviderId,
         filters: {
           token: contractOrMint,
         },
