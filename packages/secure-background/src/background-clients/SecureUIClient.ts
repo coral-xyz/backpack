@@ -6,11 +6,17 @@ import type {
 } from "../types/transports";
 
 export class SecureUIClient<T extends SECURE_EVENTS = SECURE_EVENTS> {
-  constructor(private client: TransportSender<T, "confirmation">) {}
+  constructor(private client: TransportSender<T, "uiResponse" | "response">) {}
 
   public confirm<X extends T = T>(
     request: SecureRequest<X>
-  ): Promise<SecureResponse<X, "confirmation">> {
+  ): Promise<SecureResponse<X, "uiResponse">> {
+    return this.client.send(request);
+  }
+
+  public ledgerSign<X extends T = T>(
+    request: SecureRequest<X>
+  ): Promise<SecureResponse<X, "response">> {
     return this.client.send(request);
   }
 }

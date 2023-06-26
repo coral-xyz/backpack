@@ -15,7 +15,7 @@ export function Presentation<T extends SECURE_EVENTS = SECURE_EVENTS>({
   onClosed,
   children,
 }: {
-  currentRequest: QueuedRequest;
+  currentRequest: QueuedRequest<T>;
   presentation?: "modal" | "fullscreen";
   onClosed: () => void;
   children: (request: QueuedRequest<T>) => React.ReactElement;
@@ -108,7 +108,7 @@ function ModalPresentation<T extends SECURE_EVENTS = SECURE_EVENTS>({
 
   // Give Sheet time to animate out before sending response
   const respond = useCallback(
-    (response: SecureResponse<T, "confirmation">["response"]) => {
+    (response: SecureResponse<T, "uiResponse">["response"]) => {
       setIsOpen(false);
       setTimeout(() => currentRequest.respond(response), 200);
     },

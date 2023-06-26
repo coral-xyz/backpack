@@ -1,6 +1,7 @@
 import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
+  deserializeTransaction,
   getIndexedPath,
   LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
   LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
@@ -8,7 +9,7 @@ import {
 } from "@coral-xyz/common";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { mnemonicToSeedSync, validateMnemonic } from "bip39";
-import { ethers } from "ethers";
+import { ethers, Wallet } from "ethers";
 import nacl from "tweetnacl";
 
 import { LedgerKeyringBase } from "../../keyring/ledger";
@@ -23,7 +24,14 @@ import type {
   LedgerKeyring,
   LedgerKeyringJson,
 } from "../../keyring/types";
+import type { TransportResponder } from "../../transports/TransportResponder";
+import type { SecureRequest } from "../../types/transports";
+import type {
+  LEDGER_SVM_SIGN_TX,
+  SECURE_LEDGER_EVENTS,
+} from "../ledger/events";
 
+import { SECURE_SVM_SIGN_TX } from "./events";
 import { deriveSolanaKeypair } from "./util";
 
 const { base58 } = ethers.utils;
@@ -282,5 +290,46 @@ class SolanaLedgerKeyring extends LedgerKeyringBase implements LedgerKeyring {
         walletDescriptor.derivationPath.replace("m/", ""),
       ],
     });
+  }
+
+  public async prepareSignTransaction(
+    request: SecureRequest<"SECURE_SVM_SIGN_TX">["request"]
+  ): Promise<SecureRequest<"LEDGER_SVM_SIGN_TX">["request"]> {
+    const walletDescriptor = this.walletDescriptors.find(
+      (p) => p.publicKey === request.publicKey
+    );
+    if (!walletDescriptor) {
+      throw new Error("ledger address not found");
+    }
+
+    const transaction = deserializeTransaction(request.tx);
+    const message = transaction.message.serialize();
+    const txMessage = base58.encode(message);
+
+    return {
+      txMessage,
+      derivationPath: walletDescriptor.derivationPath.replace("m/", ""),
+    };
+  }
+
+  public async prepareSignMessage(
+    request: SecureRequest<"SECURE_SVM_SIGN_MESSAGE">["request"]
+  ): Promise<SecureRequest<"LEDGER_SVM_SIGN_MESSAGE">["request"]> {
+    const walletDescriptor = this.walletDescriptors.find(
+      (p) => p.publicKey === request.publicKey
+    );
+    if (!walletDescriptor) {
+      throw new Error("ledger address not found");
+    }
+
+    // For ledger signing to work, message needs valid header:
+    // https://github.com/solana-labs/solana/blob/e80f67dd58b7fa3901168055211f346164efa43a/docs/src/proposals/off-chain-message-signing.md
+
+    // See secure-client/clients/SolanaClient.prepareSolanaOffchainMessage
+
+    return {
+      message: request.message,
+      derivationPath: walletDescriptor.derivationPath.replace("m/", ""),
+    };
   }
 }

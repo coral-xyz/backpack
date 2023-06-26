@@ -3,8 +3,6 @@ import {
   BackgroundSolanaConnection,
   Blockchain,
   CHANNEL_PLUGIN_NOTIFICATION,
-  CHANNEL_PLUGIN_RPC_REQUEST,
-  CHANNEL_PLUGIN_RPC_RESPONSE,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
   CHANNEL_SOLANA_NOTIFICATION,
@@ -23,8 +21,6 @@ import {
   PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED,
   PLUGIN_NOTIFICATION_UNMOUNT,
   PLUGIN_NOTIFICATION_UPDATE_METADATA,
-  SOLANA_RPC_METHOD_CONNECT,
-  SOLANA_RPC_METHOD_DISCONNECT,
   SOLANA_RPC_METHOD_OPEN_XNFT,
 } from "@coral-xyz/common";
 import type {
@@ -47,7 +43,6 @@ import type {
   VersionedTransaction,
 } from "@solana/web3.js";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { decode, encode } from "bs58";
 
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 import * as cmn from "./common/solana";
@@ -429,6 +424,18 @@ export class ProviderSolanaInjection
     // );
     // console.log(old, solanaResponse);
     return solanaResponse;
+  }
+
+  public async prepareSolanaOffchainMessage(
+    message: Uint8Array,
+    encoding: "ASCII" | "UTF-8" = "UTF-8",
+    maxLength: 1212 | 65515 = 1212
+  ): Promise<Uint8Array> {
+    return this.#secureSolanaClient.prepareSolanaOffchainMessage({
+      message,
+      encoding,
+      maxLength,
+    });
   }
 
   async signMessage(

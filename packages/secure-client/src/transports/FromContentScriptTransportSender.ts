@@ -7,6 +7,7 @@ import {
 import type {
   SECURE_EVENTS,
   SecureEventOrigin,
+  SecureResponseType,
   TransportSend,
   TransportSender,
 } from "@coral-xyz/secure-background/types";
@@ -16,7 +17,7 @@ const logger = getLogger("secure-client FromContentScriptTransportSender");
 
 export class FromContentScriptTransportSender<
   X extends SECURE_EVENTS,
-  R extends "response" | "confirmation" = "response"
+  R extends SecureResponseType = "response"
 > implements TransportSender<X, R>
 {
   private client: InjectedRequestManager;

@@ -7,6 +7,7 @@ import { TransportResponder } from "@coral-xyz/secure-background/clients";
 import type {
   SECURE_EVENTS,
   SecureRequest,
+  SecureResponseType,
   TransportHandler,
   TransportReceiver,
 } from "@coral-xyz/secure-background/types";
@@ -15,7 +16,7 @@ const logger = getLogger("secure-client FromExtensionTransportReceiver");
 
 export class FromExtensionTransportReceiver<
   T extends SECURE_EVENTS = SECURE_EVENTS,
-  R extends "response" | "confirmation" = "response"
+  R extends SecureResponseType = "response"
 > implements TransportReceiver<T, R>
 {
   constructor() {}

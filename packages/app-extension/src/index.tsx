@@ -45,7 +45,7 @@ const port = chrome.runtime.connect({ name: windowId });
 
 const secureUITransportReceiver = new ToSecureUITransportReceiver<
   SECURE_EVENTS,
-  "confirmation"
+  "uiResponse"
 >(port);
 const extensionTransportSender =
   new FromExtensionTransportSender<SECURE_EVENTS>({

@@ -22,6 +22,7 @@ import type {
   LedgerKeyring,
   LedgerKeyringJson,
 } from "../../keyring/types";
+import type { SecureRequest } from "../../types/transports";
 
 import { deriveEthereumWallet } from "./util";
 
@@ -278,5 +279,36 @@ class EthereumLedgerKeyring extends LedgerKeyringBase implements LedgerKeyring {
       method: LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
       params: [msg, walletDescriptor.derivationPath],
     });
+  }
+
+  public async prepareSignTransaction(
+    request: SecureRequest<"SECURE_EVM_SIGN_TX">["request"]
+  ): Promise<SecureRequest<"LEDGER_EVM_SIGN_TX">["request"]> {
+    const walletDescriptor = this.walletDescriptors.find(
+      (p) => p.publicKey === request.publicKey
+    );
+    if (!walletDescriptor) {
+      throw new Error("ledger public key not found");
+    }
+    const tx = ethers.utils.parseTransaction(ethers.utils.hexlify(request.tx));
+    return {
+      tx: ethers.utils.serializeTransaction(tx),
+      derivationPath: walletDescriptor.derivationPath,
+    };
+  }
+
+  public async prepareSignMessage(
+    request: SecureRequest<"SECURE_EVM_SIGN_MESSAGE">["request"]
+  ): Promise<SecureRequest<"LEDGER_EVM_SIGN_MESSAGE">["request"]> {
+    const walletDescriptor = this.walletDescriptors.find(
+      (p) => p.publicKey === request.publicKey
+    );
+    if (!walletDescriptor) {
+      throw new Error("ledger public key not found");
+    }
+    return {
+      message: request.message,
+      derivationPath: walletDescriptor.derivationPath,
+    };
   }
 }

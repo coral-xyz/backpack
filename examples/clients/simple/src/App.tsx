@@ -5,6 +5,8 @@ import { SendAllButton } from "./solana/SendAllButton";
 import { SendLamportButton } from "./solana/SendLamportButton";
 import { SendTokenButton } from "./solana/SendTokenButton";
 import { SignMessageButton } from "./solana/SignMessageButton";
+import { SignMessageButtonSolanaOffchain } from "./solana/SignMessageButtonSolanaOffchain";
+import { SignMessageButtonSolanaOffchainASCII } from "./solana/SignMessageButtonSolanaOffchainASCII";
 import { EthereumWallet } from "./EthereumWallet";
 import { SolanaWallet } from "./SolanaWallet";
 
@@ -17,6 +19,8 @@ function App() {
         <SendAllButton />
         <SendTokenButton />
         <SignMessageButton />
+        <SignMessageButtonSolanaOffchain />
+        <SignMessageButtonSolanaOffchainASCII />
         <OpenXnftButton />
       </SolanaWallet>
 

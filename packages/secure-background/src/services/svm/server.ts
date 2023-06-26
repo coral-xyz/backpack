@@ -4,12 +4,14 @@ import bs58, { encode } from "bs58";
 import { SecureUIClient } from "../../background-clients/SecureUIClient";
 import type { KeyringStore } from "../../store/keyring";
 import type {
+  SecureRequest,
   TransportHandler,
   TransportHandlers,
   TransportReceiver,
   TransportRemoveListener,
   TransportSender,
 } from "../../types/transports";
+import { LedgerClient } from "../ledger/client";
 import { UserClient } from "../user/client";
 
 import type { SECURE_SVM_EVENTS } from "./events";
@@ -17,6 +19,7 @@ import type { SECURE_SVM_EVENTS } from "./events";
 export class SVMService {
   public destroy: TransportRemoveListener;
   private secureUIClient: SecureUIClient;
+  private ledgerClient: LedgerClient;
   private userClient: UserClient;
   private keyringStore: KeyringStore;
 
@@ -24,11 +27,12 @@ export class SVMService {
     secureReceiver: TransportReceiver<SECURE_SVM_EVENTS>;
     secureSender: TransportSender;
     keyringStore: KeyringStore;
-    secureUISender: TransportSender<SECURE_SVM_EVENTS, "confirmation">;
+    secureUISender: TransportSender<SECURE_SVM_EVENTS, "uiResponse">;
   }) {
     this.keyringStore = interfaces.keyringStore;
     this.secureUIClient = new SecureUIClient(interfaces.secureUISender);
     this.userClient = new UserClient(interfaces.secureSender);
+    this.ledgerClient = new LedgerClient(interfaces.secureUISender);
     this.destroy = interfaces.secureReceiver.setHandler(
       this.eventHandler.bind(this)
     );
@@ -60,20 +64,31 @@ export class SVMService {
           Blockchain.SOLANA
         );
 
-      if (blockchainKeyring.ledgerKeyring) {
-        // open ledger prompt
+      const isLedgerWallet = !!blockchainKeyring.ledgerKeyring
+        ?.publicKeys()
+        .includes(event.request.publicKey);
+
+      if (blockchainKeyring.ledgerKeyring && isLedgerWallet) {
+        const ledgerRequest =
+          await blockchainKeyring.ledgerKeyring.prepareSignMessage<"LEDGER_SVM_SIGN_MESSAGE">(
+            event.request
+          );
+        const ledgerResponse = await this.ledgerClient.svmSignMessage(
+          ledgerRequest
+        );
+        if (!ledgerResponse.response?.signature) {
+          throw ledgerResponse.error;
+        }
+        return event.respond({
+          singedMessage: ledgerResponse.response?.signature,
+        });
+      } else {
+        const singedMessage = await blockchainKeyring.signMessage(
+          event.request.message,
+          event.request.publicKey
+        );
+        return event.respond({ singedMessage });
       }
-
-      const singedMessage = await blockchainKeyring.signMessage(
-        event.request.message,
-        event.request.publicKey
-      );
-
-      if (blockchainKeyring.ledgerKeyring) {
-        // close ledger prompt
-      }
-
-      return event.respond({ singedMessage });
     };
 
   private handleConnect: TransportHandler<"SECURE_SVM_CONNECT"> = async (
@@ -158,8 +173,8 @@ export class SVMService {
   private handleSignAll: TransportHandler<"SECURE_SVM_SIGN_ALL_TX"> = async ({
     event,
     request,
-    error,
     respond,
+    error,
   }) => {
     const confirmation = await this.secureUIClient.confirm(event);
 
@@ -167,11 +182,20 @@ export class SVMService {
       return error(confirmation.error);
     }
 
-    const signatures: string[] = await Promise.all(
-      request.txs.map((tx) => {
-        return this.getTransactionSignature(request.publicKey, tx);
-      })
-    );
+    const signatures: string[] = [];
+
+    for (let i = 0; i < request.txs.length; i++) {
+      const tx = request.txs[i];
+      try {
+        const signature = await this.getTransactionSignature(
+          request.publicKey,
+          tx
+        );
+        signatures.push(signature);
+      } catch (e) {
+        return error(e);
+      }
+    }
 
     return respond({ signatures });
   };
@@ -189,11 +213,34 @@ export class SVMService {
     const message = transaction.message.serialize();
     const txMessage = bs58.encode(message);
 
-    const signature = await blockchainKeyring.signTransaction(
-      txMessage,
-      publicKey
-    );
+    const isLedgerWallet = !!blockchainKeyring.ledgerKeyring
+      ?.publicKeys()
+      .includes(publicKey);
 
-    return signature;
+    // If we need ledger signature, request via ledgerClient
+    if (blockchainKeyring.ledgerKeyring && isLedgerWallet) {
+      const ledgerRequest =
+        await blockchainKeyring.ledgerKeyring.prepareSignTransaction<"LEDGER_SVM_SIGN_TX">(
+          {
+            publicKey,
+            tx,
+          }
+        );
+      const ledgerResponse = await this.ledgerClient.svmSignTransaction(
+        ledgerRequest
+      );
+      if (!ledgerResponse.response?.signature) {
+        throw ledgerResponse.error;
+      }
+      return ledgerResponse.response?.signature;
+    }
+    // otherwise sign with keyring
+    else {
+      const signature = await blockchainKeyring.signTransaction(
+        txMessage,
+        publicKey
+      );
+      return signature;
+    }
   }
 }

@@ -11,7 +11,14 @@ import {
 import type { LedgerKeyring, LedgerKeyringJson } from "./types";
 
 export class LedgerKeyringBase
-  implements Omit<Omit<LedgerKeyring, "signTransaction">, "signMessage">
+  implements
+    Omit<
+      LedgerKeyring,
+      | "signTransaction"
+      | "signMessage"
+      | "prepareSignTransaction"
+      | "prepareSignMessage"
+    >
 {
   protected walletDescriptors: Array<WalletDescriptor>;
   protected blockchain: Blockchain;

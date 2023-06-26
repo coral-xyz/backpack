@@ -5,6 +5,10 @@ import type {
   WalletDescriptor,
 } from "@coral-xyz/common";
 
+import type { SECURE_LEDGER_EVENTS } from "../services/ledger/events";
+import type { SECURE_EVENTS } from "../types/events";
+import type { SecureRequest } from "../types/transports";
+
 export type {
   HdKeyringJson,
   KeyringJson,
@@ -58,6 +62,12 @@ export interface LedgerKeyringFactory {
 
 export interface LedgerKeyring extends KeyringBase {
   nextDerivationPath(): string;
+  prepareSignTransaction<T extends SECURE_LEDGER_EVENTS = SECURE_LEDGER_EVENTS>(
+    request: SecureRequest<SECURE_EVENTS>["request"]
+  ): Promise<SecureRequest<T>["request"]>;
+  prepareSignMessage<T extends SECURE_LEDGER_EVENTS = SECURE_LEDGER_EVENTS>(
+    request: SecureRequest<SECURE_EVENTS>["request"]
+  ): Promise<SecureRequest<T>["request"]>;
   signTransaction(tx: Buffer, address: string): Promise<string>;
   signMessage(tx: Buffer, address: string): Promise<string>;
   add(walletDescriptor: WalletDescriptor): Promise<void>;

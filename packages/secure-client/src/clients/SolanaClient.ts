@@ -56,19 +56,64 @@ export class SolanaClient {
     return connected.response;
   }
 
+  async prepareSolanaOffchainMessage({
+    message,
+    encoding = "UTF-8",
+    maxLength = 1212,
+  }: {
+    message: Uint8Array;
+    encoding: "ASCII" | "UTF-8";
+    maxLength: 1212 | 65515;
+  }): Promise<Uint8Array> {
+    // https://github.com/solana-labs/solana/blob/e80f67dd58b7fa3901168055211f346164efa43a/docs/src/proposals/off-chain-message-signing.md
+
+    if (message.length > maxLength) {
+      throw new Error(`Max message length (${maxLength}) exeeded!`);
+    }
+    const firstByte = new Uint8Array([255]);
+    const domain8Bit = Uint8Array.from("solana offchain", (x) =>
+      x.charCodeAt(0)
+    );
+    const headerVersion8Bit = new Uint8Array([0]);
+    const headerFormat8Bit =
+      encoding === "ASCII"
+        ? new Uint8Array([0])
+        : maxLength === 1212
+        ? new Uint8Array([1])
+        : new Uint8Array([2]);
+
+    const headerLength16Bit = new Uint16Array([message.length]);
+    const headerLength8Bit = new Uint8Array(
+      headerLength16Bit.buffer,
+      headerLength16Bit.byteOffset,
+      headerLength16Bit.byteLength
+    );
+
+    const payload = new Uint8Array([
+      ...firstByte,
+      ...domain8Bit,
+      ...headerVersion8Bit,
+      ...headerFormat8Bit,
+      ...headerLength8Bit,
+      ...message,
+    ]);
+
+    return payload;
+  }
+
   public async signMessage(
     request: {
       publicKey: PublicKey;
       message: Uint8Array;
     },
-    confirmOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["confirmOptions"]
+    uiOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["uiOptions"]
   ): Promise<Uint8Array> {
     const svmResponse = await this.secureSvmClient.signMessage(
       {
         publicKey: request.publicKey.toBase58(),
         message: encode(request.message),
       },
-      confirmOptions
+      uiOptions
     );
     if (!svmResponse.response) {
       throw new Error(svmResponse.error);
@@ -118,7 +163,7 @@ export class SolanaClient {
       signers?: Signer[];
       customConnection?: Connection;
     },
-    confirmOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["confirmOptions"]
+    uiOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["uiOptions"]
   ): Promise<T> {
     const tx = request.tx;
     const publicKey = request.publicKey;
@@ -130,7 +175,7 @@ export class SolanaClient {
         publicKey: publicKey.toBase58(),
         tx: txStr,
       },
-      confirmOptions
+      uiOptions
     );
 
     if (!signature.response?.signature) {
@@ -150,7 +195,7 @@ export class SolanaClient {
       signers?: Signer[];
       customConnection?: Connection;
     },
-    confirmOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["confirmOptions"]
+    uiOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["uiOptions"]
   ): Promise<T[]> {
     const publicKey = request.publicKey;
 
@@ -171,7 +216,7 @@ export class SolanaClient {
         publicKey: publicKey.toBase58(),
         txs: txStrs,
       },
-      confirmOptions
+      uiOptions
     );
 
     if (!signatures.response?.signatures) {
@@ -195,7 +240,7 @@ export class SolanaClient {
       signers?: Signer[];
       options?: SendOptions | ConfirmOptions;
     },
-    confirmOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["confirmOptions"]
+    uiOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["uiOptions"]
   ): Promise<string> {
     const tx = request.tx;
     const signers = request.signers;
@@ -210,7 +255,7 @@ export class SolanaClient {
         publicKey,
         customConnection: request.customConnection,
       },
-      confirmOptions
+      uiOptions
     );
     const serializedTransaction = signedTx.serialize();
 
@@ -226,7 +271,7 @@ export class SolanaClient {
       signers?: Signer[];
       options?: SendOptions | ConfirmOptions;
     },
-    confirmOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["confirmOptions"]
+    uiOptions?: SecureEvent<"SECURE_SVM_SIGN_MESSAGE">["uiOptions"]
   ): Promise<string> {
     return this.send(
       {
@@ -236,7 +281,7 @@ export class SolanaClient {
           commitment: "confirmed",
         },
       },
-      confirmOptions
+      uiOptions
     );
   }
 

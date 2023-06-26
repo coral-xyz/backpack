@@ -18,7 +18,7 @@ export interface SECURE_SVM_SIGN_MESSAGE
   response: {
     singedMessage: string;
   };
-  confirmationResponse: {
+  uiResponse: {
     confirmed: true;
   };
 }

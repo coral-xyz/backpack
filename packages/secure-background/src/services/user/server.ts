@@ -30,7 +30,7 @@ export class UserService {
 
   constructor(interfaces: {
     secureServer: TransportReceiver<SECURE_USER_EVENTS>;
-    secureUIClient: TransportSender<SECURE_USER_EVENTS, "confirmation">;
+    secureUIClient: TransportSender<SECURE_USER_EVENTS, "uiResponse">;
     notificationBroadcaster: TransportBroadcaster;
     keyringStore: KeyringStore;
     secureStore: SecureStore;

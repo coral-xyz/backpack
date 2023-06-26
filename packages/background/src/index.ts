@@ -50,7 +50,7 @@ export function start(cfg: Config): Background {
     const extensionReceiver = new FromExtensionTransportReceiver();
     const secureUISender = new ToSecureUITransportSender<
       SECURE_EVENTS,
-      "confirmation"
+      "uiResponse"
     >({
       address: "secure-background",
       name: "Backpack",

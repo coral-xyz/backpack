@@ -21,7 +21,7 @@ export interface SECURE_USER_UNLOCK_KEYRING
   response: {
     unlocked: true;
   };
-  confirmationResponse: {
+  uiResponse: {
     unlocked: true;
   };
 }
@@ -48,7 +48,7 @@ export interface SECURE_USER_APPROVE_ORIGIN
   response: {
     approved: true;
   };
-  confirmationResponse: {
+  uiResponse: {
     confirmed: true;
   };
 }

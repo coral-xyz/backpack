@@ -8,28 +8,22 @@ import type {
   SecureEventOrigin,
   SecureRequest,
   SecureResponse,
+  SecureResponseType,
+  TransportQueuedRequest,
   TransportSend,
   TransportSender,
 } from "@coral-xyz/secure-background/types";
 import type EventEmitter from "eventemitter3";
 import { v4 } from "uuid";
 
-type QueuedRequest<
-  X extends SECURE_EVENTS,
-  R extends "response" | "confirmation" = "response"
-> = {
-  request: SecureRequest;
-  resolve: (resonse: SecureResponse<X, R>) => void;
-};
-
 const logger = getLogger("secure-background LocalTransportSender");
 
 export class LocalTransportSender<
   X extends SECURE_EVENTS,
-  R extends "response" | "confirmation" = "response"
+  R extends SecureResponseType = "response"
 > implements TransportSender<X, R>
 {
-  private responseQueue: QueuedRequest<X, R>[] = [];
+  private responseQueue: TransportQueuedRequest<X, R>[] = [];
   private channels: { request: string; response: string } = {
     request: "LOCAL_BACKGROUND_REQUEST",
     response: "LOCAL_BACKGROND_RESPONSE",
@@ -59,7 +53,7 @@ export class LocalTransportSender<
 
   private getRequest = (
     id: string | number | undefined
-  ): QueuedRequest<X, R> | null => {
+  ): TransportQueuedRequest<X, R> | null => {
     if (id === undefined) {
       return null;
     }

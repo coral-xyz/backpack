@@ -8,6 +8,7 @@ import type {
   SECURE_EVENTS,
   SecureRequest,
   SecureResponse,
+  SecureResponseType,
   TransportHandler,
   TransportReceiver,
 } from "@coral-xyz/secure-background/types";
@@ -16,7 +17,7 @@ const logger = getLogger("secure-client ToSecureUITransportReceiver");
 
 export class ToSecureUITransportReceiver<
   X extends SECURE_EVENTS,
-  R extends "response" | "confirmation" = "response"
+  R extends SecureResponseType = "response"
 > implements TransportReceiver<X, R>
 {
   constructor(private port: chrome.runtime.Port) {}

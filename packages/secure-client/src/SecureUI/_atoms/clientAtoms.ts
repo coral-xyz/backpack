@@ -18,7 +18,7 @@ export const secureBackgroundSenderAtom = atom<TransportSender>({
 });
 
 export const secureUIReceiverAtom = atom<
-  TransportReceiver<SECURE_EVENTS, "confirmation">
+  TransportReceiver<SECURE_EVENTS, "uiResponse">
 >({
   key: "secureUIReceiverAtom",
   // this prevents recoil from freezing the object in dev mode
@@ -43,7 +43,7 @@ export type QueuedRequest<T extends SECURE_EVENTS = SECURE_EVENTS> = {
   request: SecureRequest<T>["request"];
   queueId: string;
   error: (error: any) => void;
-  respond: (response: SecureResponse<T, "confirmation">["response"]) => void;
+  respond: (response: SecureResponse<T, "uiResponse">["response"]) => void;
 };
 
 // access queue via currentRequestAtom
