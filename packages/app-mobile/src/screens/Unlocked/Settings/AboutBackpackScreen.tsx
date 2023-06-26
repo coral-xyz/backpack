@@ -8,9 +8,17 @@ import {
   DISCORD_INVITE_LINK,
   TWITTER_LINK,
 } from "@coral-xyz/common";
-import { YGroup, _ListItemOneLine } from "@coral-xyz/tamagui";
+import {
+  Separator,
+  XStack,
+  YGroup,
+  YStack,
+  _ListItemOneLine,
+} from "@coral-xyz/tamagui";
 
 import { Screen, WelcomeLogoHeader } from "~components/index";
+
+import { IconLaunchDetail } from "./components/SettingsRow";
 
 import {
   DiscordIcon,
@@ -52,7 +60,7 @@ const groupedMenuItems = [
   ],
 ];
 
-export function AboutBackpackScreen({}): JSX.Element {
+export function AboutBackpackScreen(): JSX.Element {
   const theme = useTheme();
   return (
     <Screen>
@@ -60,33 +68,37 @@ export function AboutBackpackScreen({}): JSX.Element {
         <WelcomeLogoHeader subtitle={BACKPACK_CONFIG_VERSION} />
       </View>
 
-      {groupedMenuItems.map((group, index) => (
-        <YGroup
-          overflow="hidden"
-          borderWidth={2}
-          borderColor="$borderFull"
-          borderRadius="$container"
-          marginBottom={16}
-          key={JSON.stringify(index)}
-        >
-          {group.map((item) => (
-            <YGroup.Item key={item.label}>
-              <_ListItemOneLine
-                title={item.label}
-                icon={
-                  item.icon ? (
-                    <item.icon color={theme.custom.colors.secondary} />
-                  ) : null
-                }
-                iconAfter={null}
-                onPress={() => {
-                  Linking.openURL(item.url);
-                }}
-              />
-            </YGroup.Item>
-          ))}
-        </YGroup>
-      ))}
+      <YStack space="$settingsList">
+        {groupedMenuItems.map((group, index) => (
+          <YGroup
+            overflow="hidden"
+            borderWidth={2}
+            borderColor="$borderFull"
+            borderRadius="$container"
+            separator={<Separator />}
+            key={JSON.stringify(index)}
+          >
+            {group.map((item) => (
+              <YGroup.Item key={item.label}>
+                <_ListItemOneLine
+                  title={item.label}
+                  icon={
+                    item.icon ? (
+                      <YStack mt={4} ai="center">
+                        <item.icon color={theme.custom.colors.secondary} />
+                      </YStack>
+                    ) : null
+                  }
+                  iconAfter={<IconLaunchDetail size={18} />}
+                  onPress={() => {
+                    Linking.openURL(item.url);
+                  }}
+                />
+              </YGroup.Item>
+            ))}
+          </YGroup>
+        ))}
+      </YStack>
     </Screen>
   );
 }

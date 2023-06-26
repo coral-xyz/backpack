@@ -32,12 +32,12 @@ export function IconExpand({ collapsed = true }: { collapsed: boolean }) {
   );
 }
 
-export function IconLaunchDetail() {
+export function IconLaunchDetail({ size = 24 }: { size?: number }) {
   const theme = useTheme();
   return (
     <MaterialCommunityIcons
       name="arrow-top-right"
-      size={24}
+      size={size}
       color={theme.custom.colors.icon}
     />
   );
