@@ -322,27 +322,13 @@ class SolanaLedgerKeyring extends LedgerKeyringBase implements LedgerKeyring {
       throw new Error("ledger address not found");
     }
 
+    // For ledger signing to work, message needs valid header:
     // https://github.com/solana-labs/solana/blob/e80f67dd58b7fa3901168055211f346164efa43a/docs/src/proposals/off-chain-message-signing.md
-    const message = Buffer.from(base58.decode(request.message));
-    const firstByte = Buffer.from(new Uint8Array([255]));
-    const domain = Buffer.from("solana offchain");
-    const headerVersion8Bit = Buffer.from(new Uint8Array([0]));
-    const headerFormat8Bit = Buffer.from(new Uint8Array([0]));
 
-    const headerLength16Bit = Buffer.alloc(2, 0);
-    Buffer.from(new Uint16Array([message.length])).copy(headerLength16Bit);
-
-    const payload = Buffer.concat([
-      firstByte,
-      domain,
-      headerVersion8Bit,
-      headerFormat8Bit,
-      headerLength16Bit,
-      message,
-    ]);
+    // See secure-client/clients/SolanaClient.prepareSolanaOffchainMessage
 
     return {
-      message: base58.encode(payload),
+      message: request.message,
       derivationPath: walletDescriptor.derivationPath.replace("m/", ""),
     };
   }

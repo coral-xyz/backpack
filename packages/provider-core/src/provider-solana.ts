@@ -426,6 +426,18 @@ export class ProviderSolanaInjection
     return solanaResponse;
   }
 
+  public async prepareSolanaOffchainMessage(
+    message: Uint8Array,
+    encoding: "ASCII" | "UTF-8" = "UTF-8",
+    maxLength: 1212 | 65515 = 1212
+  ): Promise<Uint8Array> {
+    return this.#secureSolanaClient.prepareSolanaOffchainMessage({
+      message,
+      encoding,
+      maxLength,
+    });
+  }
+
   async signMessage(
     msg: Uint8Array,
     publicKey?: PublicKey
