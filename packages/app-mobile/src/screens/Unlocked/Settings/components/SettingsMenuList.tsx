@@ -1,18 +1,6 @@
-import { forwardRef } from "react";
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 
-import {
-  styled,
-  themeable,
-  TamaguiElement,
-  ListItemFrame,
-  ListItemText,
-  useListItem,
-  ListItemProps,
-  YGroup,
-  Separator,
-  _ListItemOneLine,
-} from "@coral-xyz/tamagui";
+import { YGroup, Separator, _ListItemOneLine } from "@coral-xyz/tamagui";
 
 import { IconPushDetail } from "./SettingsRow";
 
@@ -39,7 +27,6 @@ export function SettingsList({
       borderWidth={2}
       borderColor="$borderFull"
       borderRadius="$container"
-      marginBottom={16}
       separator={<Separator />}
     >
       {Object.entries(menuItems).map(
@@ -57,22 +44,3 @@ export function SettingsList({
     </YGroup>
   );
 }
-
-const CustomListItemFrame = styled(ListItemFrame, {
-  paddingHorizontal: 12,
-  height: "$container",
-});
-
-const CustomListItemText = styled(ListItemText, {
-  fontFamily: "InterMedium",
-  fontSize: 16,
-  lineHeight: 24,
-});
-
-export const ListItem = themeable(
-  forwardRef<TamaguiElement, ListItemProps>((propsIn, ref) => {
-    const { props } = useListItem(propsIn);
-
-    return <CustomListItemFrame {...props} ref={ref} />;
-  })
-);

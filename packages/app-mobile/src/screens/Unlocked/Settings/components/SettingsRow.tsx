@@ -178,7 +178,7 @@ export function SettingsRow({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     height: 48,
     flexDirection: "row",
     alignItems: "center",

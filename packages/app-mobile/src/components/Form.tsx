@@ -1,9 +1,16 @@
 import type { BigNumber } from "ethers";
 
 import type { StyleProp, ViewStyle } from "react-native";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TextInputProps,
+} from "react-native";
 
-import { YStack } from "@coral-xyz/tamagui";
+import { XStack, YStack } from "@coral-xyz/tamagui";
 import { ethers } from "ethers";
 import { Controller } from "react-hook-form";
 
@@ -58,7 +65,8 @@ export function InputListItem({
   rules,
   secureTextEntry,
   name,
-}: {
+  ...props
+}: TextInputProps & {
   autoFocus?: boolean;
   title: string;
   placeholder?: string;
@@ -69,7 +77,7 @@ export function InputListItem({
 }): JSX.Element {
   const theme = useTheme();
   return (
-    <View style={[styles.inputListItem]}>
+    <XStack height={48} ai="center" jc="space-between">
       <Text style={[styles.label, { color: theme.custom.colors.fontColor }]}>
         {title}
       </Text>
@@ -92,10 +100,11 @@ export function InputListItem({
             placeholder={placeholder}
             placeholderTextColor={theme.custom.colors.textPlaceholder}
             secureTextEntry={secureTextEntry}
+            {...props}
           />
         )}
       />
-    </View>
+    </XStack>
   );
 }
 
@@ -105,13 +114,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 2,
   },
-  inputListItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
   label: {
-    paddingLeft: 12,
+    paddingLeft: 16,
     width: 80,
     overflow: "hidden",
     fontWeight: "500",

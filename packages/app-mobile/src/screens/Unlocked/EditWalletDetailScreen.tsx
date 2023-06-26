@@ -8,6 +8,7 @@ import {
   UI_RPC_METHOD_KEYNAME_READ,
 } from "@coral-xyz/common";
 import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
+import { YStack } from "@coral-xyz/tamagui";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { Screen } from "~components/index";
@@ -80,9 +81,11 @@ export function EditWalletDetailScreen({ navigation, route }): JSX.Element {
 
   return (
     <Screen>
-      <SettingsList menuItems={menuItems} />
-      {type !== "ledger" ? <SettingsList menuItems={secrets} /> : null}
-      {!isLastRecoverable ? <SettingsList menuItems={removeWallet} /> : null}
+      <YStack space="$settingsList">
+        <SettingsList menuItems={menuItems} />
+        {type !== "ledger" ? <SettingsList menuItems={secrets} /> : null}
+        {!isLastRecoverable ? <SettingsList menuItems={removeWallet} /> : null}
+      </YStack>
     </Screen>
   );
 }
