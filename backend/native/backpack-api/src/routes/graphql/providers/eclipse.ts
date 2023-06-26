@@ -8,6 +8,10 @@ import { ProviderId } from "../types";
 import { SolanaRpc } from "./solana/rpc";
 import type { BlockchainDataProvider } from ".";
 
+export type EclipseProviderSettings = {
+  context?: ApiContext;
+};
+
 /**
  * Eclipse SVM L2 implementation for the common data provider API.
  * @export
@@ -16,12 +20,12 @@ import type { BlockchainDataProvider } from ".";
  * @implements {BlockchainDataProvider}
  */
 export class Eclipse extends SolanaRpc implements BlockchainDataProvider {
-  constructor(ctx?: ApiContext) {
-    super(
-      ctx,
-      EclipseTokenList,
-      "https://api.injective.eclipsenetwork.xyz:8899"
-    );
+  constructor({ context }: EclipseProviderSettings) {
+    super({
+      context,
+      customRpc: "https://api.injective.eclipsenetwork.xyz:8899",
+      tokenList: EclipseTokenList,
+    });
   }
 
   /**

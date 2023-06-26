@@ -18,6 +18,10 @@ import { calculateBalanceAggregate, createConnection } from "../utils";
 
 import type { BlockchainDataProvider } from ".";
 
+export type BitcoinProviderSettings = {
+  context?: ApiContext;
+};
+
 /**
  * Bitcoin blockchain implementation for the common API.
  * @export
@@ -27,8 +31,8 @@ import type { BlockchainDataProvider } from ".";
 export class Bitcoin implements BlockchainDataProvider {
   readonly #ctx?: ApiContext;
 
-  constructor(ctx?: ApiContext) {
-    this.#ctx = ctx;
+  constructor({ context }: BitcoinProviderSettings) {
+    this.#ctx = context;
   }
 
   /**

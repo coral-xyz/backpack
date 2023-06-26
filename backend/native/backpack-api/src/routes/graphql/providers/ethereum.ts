@@ -30,6 +30,12 @@ import { calculateBalanceAggregate, createConnection } from "../utils";
 
 import type { BlockchainDataProvider } from ".";
 
+export type EthereumProviderSettings = {
+  context?: ApiContext;
+  customSdkConfig?: AlchemySettings;
+  tokenList?: CustomTokenList;
+};
+
 /**
  * Ethereum blockchain implementation for the common API.
  * @export
@@ -41,17 +47,17 @@ export class Ethereum implements BlockchainDataProvider {
   protected readonly sdk?: Alchemy;
   protected readonly tokenList: CustomTokenList;
 
-  constructor(
-    ctx?: ApiContext,
-    tokenList?: CustomTokenList,
-    customSdkConfig?: AlchemySettings
-  ) {
-    this.ctx = ctx;
+  constructor({
+    context,
+    customSdkConfig,
+    tokenList,
+  }: EthereumProviderSettings) {
+    this.ctx = context;
     this.tokenList = tokenList ?? EthereumTokenList;
     this.sdk = new Alchemy(
       customSdkConfig ?? {
         apiKey: ALCHEMY_API_KEY,
-        network: ctx?.network.devnet
+        network: context?.network.devnet
           ? Network.ETH_SEPOLIA
           : Network.ETH_MAINNET,
       }

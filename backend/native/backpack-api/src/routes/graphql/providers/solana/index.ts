@@ -33,6 +33,10 @@ import { createMarketDataNode, sortTokenBalanceNodes } from "../util";
 
 import { SolanaRpc } from "./rpc";
 
+export type SolanaProviderSettings = {
+  context?: ApiContext;
+};
+
 /**
  * Solana blockchain implementation for the common API sourced by API indexes.
  * @export
@@ -43,11 +47,11 @@ import { SolanaRpc } from "./rpc";
 export class Solana extends SolanaRpc implements BlockchainDataProvider {
   readonly #helius: Helius;
 
-  constructor(ctx?: ApiContext) {
-    super(ctx);
+  constructor({ context }: SolanaProviderSettings) {
+    super({ context });
     this.#helius = new Helius({
       apiKey: HELIUS_API_KEY,
-      devnet: ctx?.network.devnet,
+      devnet: context?.network.devnet,
     });
   }
 
