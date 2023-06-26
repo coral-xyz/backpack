@@ -2,6 +2,7 @@ import type { TokenListEntry } from "./types";
 
 export { EclipseTokenList } from "./eclipse";
 export { EthereumTokenList } from "./ethereum";
+export { PolygonTokenList } from "./polygon";
 export { SolanaTokenList } from "./solana";
 export type { CustomTokenList } from "./types";
 

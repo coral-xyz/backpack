@@ -356,6 +356,7 @@ export enum ProviderId {
   Bitcoin = "BITCOIN",
   Eclipse = "ECLIPSE",
   Ethereum = "ETHEREUM",
+  Polygon = "POLYGON",
   Solana = "SOLANA",
 }
 

@@ -2,7 +2,7 @@ import { EclipseTokenList } from "@coral-xyz/common";
 import { SystemProgram } from "@solana/web3.js";
 
 import type { ApiContext } from "../context";
-import type { NftConnection, NftFiltersInput} from "../types";
+import type { NftConnection, NftFiltersInput } from "../types";
 import { ProviderId } from "../types";
 
 import { SolanaRpc } from "./solana/rpc";
@@ -31,7 +31,7 @@ export class Eclipse extends SolanaRpc implements BlockchainDataProvider {
    * @memberof Eclipse
    */
   override id(): ProviderId {
-    return ProviderId.Solana;
+    return ProviderId.Eclipse;
   }
 
   /**

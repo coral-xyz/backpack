@@ -1,7 +1,7 @@
 import type { CustomTokenList } from "./types";
 
 export const SolanaTokenList: CustomTokenList = {
-  "11111111111111111111111111111111": {
+  native: {
     address: "11111111111111111111111111111111",
     coingeckoId: "solana",
     logo: "https://assets.coingecko.com/coins/images/4128/large/solana.png",
