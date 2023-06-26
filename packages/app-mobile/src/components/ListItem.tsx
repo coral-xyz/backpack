@@ -205,6 +205,75 @@ export const ListItemWallet = ({
   );
 };
 
+export function ListItemEditWallet({
+  grouped = true,
+  name,
+  publicKey,
+  blockchain,
+  type,
+  isCold,
+  primary,
+  onPress,
+}) {
+  const dehydrated = type === "dehydrated";
+  const opacity = dehydrated ? 0.5 : 1;
+
+  const wallet = {
+    name,
+    type,
+    publicKey,
+    blockchain,
+    isCold,
+  };
+
+  return (
+    <ListItem
+      backgroundColor="$nav"
+      onPress={() => {
+        onPress(wallet);
+      }}
+      borderRadius={!grouped ? "$container" : undefined}
+      borderColor={!grouped ? "$borderFull" : undefined}
+      borderWidth={!grouped ? 2 : undefined}
+      paddingHorizontal={12}
+      paddingVertical={12}
+      icon={
+        <BlockchainLogo blockchain={blockchain} size={24} style={{ opacity }} />
+      }
+    >
+      <XStack f={1} ai="center" jc="space-between">
+        <YStack>
+          <StyledText
+            color="$baseTextHighEmphasis"
+            fontSize={dehydrated ? "$sm" : "$lg"}
+            mb={2}
+            mr={4}
+            opacity={opacity}
+          >
+            {dehydrated ? "Not recovered" : name}
+          </StyledText>
+          <StyledText color="$baseTextMedEmphasis" fontSize="$sm">
+            {formatWalletAddress(publicKey)} {primary ? "(Primary)" : ""}
+          </StyledText>
+        </YStack>
+        <XStack ai="center" jc="flex-end">
+          <YStack mr={8} ai="flex-end">
+            {dehydrated ? (
+              <XStack ai="center">
+                <WarningIcon size="$sm" color="$yellowIcon" />
+                <StyledText ml={4} mb={2} fontSize="$sm" color="$yellowText">
+                  Could not add
+                </StyledText>
+              </XStack>
+            ) : null}
+          </YStack>
+          <ArrowRightIcon />
+        </XStack>
+      </XStack>
+    </ListItem>
+  );
+}
+
 export function ListItemTokenPrice({
   grouped,
   imageUrl,

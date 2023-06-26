@@ -44,7 +44,7 @@ export const SectionSeparator = () => <View style={{ height: 12 }} />;
 // TODO(peter) something about padding looks weird
 export function PaddedListItemSeparator() {
   return (
-    <Stack bg="$nav" pl={60}>
+    <Stack bg="$nav" pl={54}>
       <Stack borderColor="$borderColor" borderWidth={1} />
     </Stack>
   );

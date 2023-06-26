@@ -1,10 +1,21 @@
-import { UI_RPC_METHOD_USER_ACCOUNT_LOGOUT } from "@coral-xyz/common";
+import { useState } from "react";
+import { View } from "react-native";
+
+import {
+  formatWalletAddress,
+  UI_RPC_METHOD_KEYRING_KEY_DELETE,
+  UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_DELETE,
+  UI_RPC_METHOD_USER_ACCOUNT_LOGOUT,
+} from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
   DangerButton,
+  EmptyState,
+  FullScreenLoading,
   Screen,
   SecondaryButton,
   TwoButtonFooter,
@@ -41,6 +52,72 @@ export function ResetWarningScreen(): JSX.Element {
       title="Reset Backpack"
       subtext="This will remove all the user accounts you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
       onNext={reset}
+    />
+  );
+}
+
+export function RemoveWalletScreen({ route, navigation }): JSX.Element {
+  const background = useBackgroundClient();
+  const { blockchain, publicKey, type } = route.params;
+  const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const onRemove = async () => {
+    setLoading(true);
+    if (type === "dehydrated") {
+      await background.request({
+        method: UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_DELETE,
+        params: [blockchain, publicKey],
+      });
+    } else {
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
+        params: [blockchain, publicKey],
+      });
+    }
+    setLoading(false);
+    setShowSuccess(true);
+  };
+
+  if (loading) {
+    return <FullScreenLoading label="Removing wallet..." />;
+  }
+
+  if (showSuccess) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <EmptyState
+          icon={(props: any) => <MaterialIcons name="check" {...props} />}
+          title="All done"
+          subtitle="Your wallet has been removed from Backpack."
+          buttonText="Go back"
+          onPress={() => {
+            navigation.goBack();
+          }}
+        />
+      </View>
+    );
+  }
+
+  const title = `Are you sure you want to remove ${formatWalletAddress(
+    publicKey
+  )}?`;
+
+  const subtitle =
+    type === "derived"
+      ? "Removing from Backpack will not delete the wallet’s contents. It will still be available by importing your secret recovery phrase in a new Backpack."
+      : type === "ledger"
+      ? "Removing from Backpack will not delete the wallet’s contents. It will still be available by connecting your ledger."
+      : type === "dehydrated"
+      ? "Removing from Backpack will remove the connection between your username and this public key. You can always add it back later by adding the wallet to Backpack."
+      : "Removing from Backpack will delete the wallet’s keypair. Make sure you have exported and saved the private key before removing.";
+
+  return (
+    <Warning
+      buttonTitle="Remove"
+      title={title}
+      subtext={subtitle}
+      onNext={onRemove}
     />
   );
 }

@@ -1,14 +1,12 @@
-import type { ChannelAppUiClient } from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 import type { Commitment } from "@solana/web3.js";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  Text,
   View,
 } from "react-native";
 
@@ -22,6 +20,7 @@ import {
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
   formatWalletAddress,
+  Blockchain,
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
@@ -33,22 +32,16 @@ import {
 import {
   PrimaryButton,
   RoundedContainerGroup,
-  StyledText,
   XStack,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ethers } from "ethers";
-
-// import { AccountSettingsBottomSheet } from "~components/AccountSettingsBottomSheet";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { IconCheckmark } from "~components/Icon";
-import {
-  // AccountDropdownHeader,
-  UserAccountMenu,
-} from "~components/UserAccountsMenu";
+import { UserAccountMenu } from "~components/UserAccountsMenu";
 import { Screen } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { HeaderAvatarButton, HeaderButton } from "~navigation/components";
@@ -57,6 +50,7 @@ import { ImportPrivateKeyScreen } from "~screens/ImportPrivateKeyScreen";
 import {
   LogoutWarningScreen,
   ResetWarningScreen,
+  RemoveWalletScreen,
 } from "~screens/ResetWarningScreen";
 import { EditWalletDetailScreen } from "~screens/Unlocked/EditWalletDetailScreen";
 import { EditWalletsScreen } from "~screens/Unlocked/EditWalletsScreen";
@@ -84,12 +78,9 @@ import { YourAccountScreen } from "~screens/Unlocked/YourAccountScreen";
 
 import { InputGroup, InputListItem } from "~src/components/Form";
 import { AboutBackpackScreen } from "~src/screens/Unlocked/Settings/AboutBackpackScreen";
+import { PublicKey } from "~src/types/types";
 
 const { hexlify } = ethers.utils;
-
-function DummyScreen() {
-  return <View style={{ flex: 1, backgroundColor: "red" }} />;
-}
 
 type AccountSettingsParamList = {
   Settings: undefined;
@@ -106,17 +97,26 @@ type AccountSettingsParamList = {
   PreferencesSolanaExplorer: undefined;
   PreferencesSolanaCustomRpcUrl: undefined;
   PreferencesTrustedSites: undefined;
-  xNFTSettings: undefined;
-  WaitingRoom: undefined;
   "import-private-key": undefined;
   "reset-warning": undefined;
   "show-secret-phrase-warning": undefined;
-  "show-secret-phrase": undefined;
-  "show-private-key-warning": undefined;
-  "show-private-key": undefined;
-  "edit-wallets": undefined;
+  "show-secret-phrase": {
+    mnemonic: string;
+  };
+  "show-private-key-warning": {
+    publicKey: PublicKey;
+  };
+  "show-private-key": {
+    privateKey: string;
+  };
+  "edit-wallets": {
+    blockchain: Blockchain;
+    publicKey: PublicKey;
+    type: string;
+  };
   "about-backpack": undefined;
   "edit-wallets-rename": undefined;
+  "edit-wallets-remove": undefined;
   "edit-wallets-wallet-detail": { name: string; publicKey: string };
   "add-wallet": undefined;
   "forgot-password": undefined;
@@ -237,16 +237,6 @@ export function AccountSettingsNavigator(): JSX.Element {
           component={PreferencesTrustedSitesScreen}
         />
         <Stack.Screen
-          options={{ title: "xNFTs" }}
-          name="xNFTSettings"
-          component={DummyScreen}
-        />
-        <Stack.Screen
-          options={{ title: "Waiting Room" }}
-          name="WaitingRoom"
-          component={DummyScreen}
-        />
-        <Stack.Screen
           options={{ title: "Import Private Key" }}
           name="import-private-key"
           component={ImportPrivateKeyScreen}
@@ -301,6 +291,11 @@ export function AccountSettingsNavigator(): JSX.Element {
           name="edit-wallets-rename"
           component={RenameWalletScreen}
           options={{ title: "Rename Wallet" }}
+        />
+        <Stack.Screen
+          name="edit-wallets-remove"
+          component={RemoveWalletScreen}
+          options={{ title: "Remove Wallet" }}
         />
         <Stack.Screen
           name="edit-wallets-wallet-detail"

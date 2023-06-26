@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Alert } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
@@ -16,9 +16,10 @@ import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenu
 import { IconCopyContent } from "~screens/Unlocked/Settings/components/SettingsRow";
 
 export function EditWalletDetailScreen({ navigation, route }): JSX.Element {
-  const { blockchain, name, publicKey, type } = route.params;
+  const { blockchain, publicKey, type } = route.params;
   const background = useBackgroundClient();
   const publicKeyData = useWalletPublicKeys();
+  const [name, setName] = useState(route.params.name);
 
   const readNewName = useCallback(() => {
     (async () => {
@@ -27,8 +28,11 @@ export function EditWalletDetailScreen({ navigation, route }): JSX.Element {
         params: [publicKey],
       });
 
+      setName(name);
+
       navigation.setOptions({
         title: `${name} (${formatWalletAddress(publicKey)})`,
+        name,
       });
     })();
   }, [background, publicKey, navigation]);
@@ -49,7 +53,7 @@ export function EditWalletDetailScreen({ navigation, route }): JSX.Element {
       onPress: () =>
         navigation.push("edit-wallets-rename", {
           publicKey,
-          name: route.params.name,
+          name,
         }),
     },
     "Copy Address": {
