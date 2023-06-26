@@ -41,28 +41,28 @@ export interface BlockchainDataProvider {
  * based on the enum variant argued.
  * @export
  * @param {ProviderId} id
- * @param {ApiContext} [ctx]
+ * @param {ApiContext} [context]
  * @returns {BlockchainDataProvider}
  */
 export function getProviderForId(
   id: ProviderId,
-  ctx?: ApiContext
+  context?: ApiContext
 ): BlockchainDataProvider {
   switch (id) {
     case ProviderId.Bitcoin: {
-      return new Bitcoin(ctx);
+      return new Bitcoin({ context });
     }
     case ProviderId.Eclipse: {
-      return new Eclipse(ctx);
+      return new Eclipse({ context });
     }
     case ProviderId.Ethereum: {
-      return new Ethereum(ctx);
+      return new Ethereum({ context });
     }
     case ProviderId.Polygon: {
-      return new Polygon(ctx);
+      return new Polygon({ context });
     }
     case ProviderId.Solana: {
-      return new Solana(ctx);
+      return new Solana({ context });
     }
   }
 }

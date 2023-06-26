@@ -8,6 +8,10 @@ import { ProviderId } from "../types";
 import type { BlockchainDataProvider } from ".";
 import { Ethereum } from "./ethereum";
 
+export type PolygonProviderSettings = {
+  context?: ApiContext;
+};
+
 /**
  * Polygon PoS L2 implementation of the common data provider API.
  * @export
@@ -16,12 +20,16 @@ import { Ethereum } from "./ethereum";
  * @implements {BlockchainDataProvider}
  */
 export class Polygon extends Ethereum implements BlockchainDataProvider {
-  constructor(ctx?: ApiContext) {
-    super(ctx, PolygonTokenList, {
-      apiKey: ALCHEMY_API_KEY,
-      network: ctx?.network.devnet
-        ? Network.MATIC_MUMBAI
-        : Network.MATIC_MAINNET,
+  constructor({ context }: PolygonProviderSettings) {
+    super({
+      context,
+      customSdkConfig: {
+        apiKey: ALCHEMY_API_KEY,
+        network: context?.network.devnet
+          ? Network.MATIC_MUMBAI
+          : Network.MATIC_MAINNET,
+      },
+      tokenList: PolygonTokenList,
     });
   }
 

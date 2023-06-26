@@ -40,6 +40,12 @@ import { calculateBalanceAggregate, createConnection } from "../../utils";
 import type { BlockchainDataProvider } from "..";
 import { createMarketDataNode, sortTokenBalanceNodes } from "../util";
 
+export type SolanaRpcProviderSettings = {
+  context?: ApiContext;
+  customRpc?: string;
+  tokenList?: CustomTokenList;
+};
+
 /**
  * Solana blockchain implementation for the common API sourced by raw RPC calls.
  * @export
@@ -53,19 +59,15 @@ export class SolanaRpc implements BlockchainDataProvider {
   readonly #connection: Connection;
   readonly #mpl: Metaplex;
 
-  constructor(
-    ctx?: ApiContext,
-    tokenList?: CustomTokenList,
-    customRpc?: string
-  ) {
+  constructor({ context, customRpc, tokenList }: SolanaRpcProviderSettings) {
     const rpcUrl =
-      ctx?.network.rpc ??
+      context?.network.rpc ??
       customRpc ??
       `https://rpc.helius.xyz/?api-key=${HELIUS_API_KEY}`;
 
     this.#connection = new Connection(rpcUrl, "confirmed");
     this.#mpl = Metaplex.make(this.#connection);
-    this.ctx = ctx;
+    this.ctx = context;
     this.tokenList = tokenList ?? SolanaTokenList;
   }
 
