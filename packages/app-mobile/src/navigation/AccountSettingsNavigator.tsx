@@ -264,16 +264,17 @@ export function AccountSettingsNavigator(): JSX.Element {
         <Stack.Screen
           name="show-secret-phrase"
           component={ShowRecoveryPhraseScreen}
+          options={{ title: "Secret Recovery Phrase" }}
         />
         <Stack.Screen
           name="show-private-key-warning"
           component={ShowPrivateKeyWarningScreen}
-          options={{ title: "Warning" }}
+          options={{ title: "Show Private Key" }}
         />
         <Stack.Screen
           name="show-private-key"
           component={ShowPrivateKeyScreen}
-          options={{ title: "Show Private Key" }}
+          options={{ title: "Private Key" }}
         />
         <Stack.Screen
           name="edit-wallets"

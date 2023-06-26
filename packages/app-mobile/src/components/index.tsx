@@ -32,6 +32,7 @@ import {
   TwoButtonFooter,
   XStack,
   Stack,
+  YStack,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -223,7 +224,6 @@ export function Header({
           color: theme.custom.colors.fontColor,
           fontSize: 24,
           fontWeight: "500",
-          lineHeight: 32,
         },
         style,
       ]}
@@ -734,20 +734,13 @@ export function HeaderIconSubtitle({
   subtitle?: string;
 }): JSX.Element {
   return (
-    <View style={headerIconSubtitleStyles.container}>
-      <Margin bottom={16}>{icon}</Margin>
+    <YStack space={12} ai="center" mb={24}>
+      {icon}
       <Header text={title} />
       {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
-    </View>
+    </YStack>
   );
 }
-
-const headerIconSubtitleStyles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    marginBottom: 24,
-  },
-});
 
 export function Row({
   children,

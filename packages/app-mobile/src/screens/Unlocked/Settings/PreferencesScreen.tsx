@@ -1,12 +1,8 @@
 import { Suspense, useState } from "react";
 import { Alert } from "react-native";
 
-import {
-  BACKPACK_CONFIG_VERSION,
-  Blockchain,
-  toTitleCase,
-} from "@coral-xyz/common";
-import { Stack, YStack, _ListItemOneLine } from "@coral-xyz/tamagui";
+import { BACKPACK_CONFIG_VERSION, Blockchain } from "@coral-xyz/common";
+import { YStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import {
@@ -17,12 +13,7 @@ import {
 } from "~components/index";
 import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 
-import {
-  IconPushDetail,
-  SettingsRow,
-  SettingsRowSwitch,
-  SettingsRowText,
-} from "./components/SettingsRow";
+import { SettingsRowSwitch, SettingsRowText } from "./components/SettingsRow";
 
 import {
   BiometricAuthenticationStatus,

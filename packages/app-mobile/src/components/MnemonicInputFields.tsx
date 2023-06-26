@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
 type MnemonicInputFieldsProps = {
   mnemonicWords: string[];
   onChange?: (mnemonicWords: string[]) => void;
-  onComplete: () => void;
+  onComplete?: () => void;
 };
 export function MnemonicInputFields({
   mnemonicWords,
