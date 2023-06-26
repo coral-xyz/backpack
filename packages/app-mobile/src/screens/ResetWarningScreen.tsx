@@ -61,22 +61,31 @@ export function RemoveWalletScreen({ route, navigation }): JSX.Element {
   const { blockchain, publicKey, type } = route.params;
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState(false);
 
   const onRemove = async () => {
+    setShowSuccess(false);
+    setError(false);
     setLoading(true);
-    if (type === "dehydrated") {
-      await background.request({
-        method: UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_DELETE,
-        params: [blockchain, publicKey],
-      });
-    } else {
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
-        params: [blockchain, publicKey],
-      });
+    try {
+      if (type === "dehydrated") {
+        await background.request({
+          method: UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_DELETE,
+          params: [blockchain, publicKey],
+        });
+      } else {
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
+          params: [blockchain, publicKey],
+        });
+      }
+      setLoading(false);
+      setShowSuccess(true);
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+      setError(true);
     }
-    setLoading(false);
-    setShowSuccess(true);
   };
 
   if (loading) {
@@ -91,6 +100,22 @@ export function RemoveWalletScreen({ route, navigation }): JSX.Element {
           title="All done"
           subtitle="Your wallet has been removed from Backpack."
           buttonText="Go back"
+          onPress={() => {
+            navigation.goBack();
+          }}
+        />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <EmptyState
+          icon={(props: any) => <MaterialIcons name="warning" {...props} />}
+          title="Something went wrong"
+          subtitle="We weren't able to remove your wallet"
+          buttonText="Go back and try again"
           onPress={() => {
             navigation.goBack();
           }}
