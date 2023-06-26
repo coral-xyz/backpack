@@ -8,6 +8,13 @@ export const EthereumTokenList: CustomTokenList = {
     symbol: "ETH",
     logo: "https://assets.coingecko.com/coins/images/279/large/ethereum.png",
   },
+  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+    address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    coingeckoId: "usd-coin",
+    name: "USD Coin",
+    symbol: "USDC",
+    logo: "https://assets.coingecko.com/coins/images/6319/large/USD_Coin_icon.png?1547042389",
+  },
   "0x111111111117dc0aa78b770fa6a738034120c302": {
     address: "0x111111111117dc0aa78b770fa6a738034120c302",
     coingeckoId: "1inch",
