@@ -99,6 +99,7 @@ enum ProviderID {
   BITCOIN
   ECLIPSE
   ETHEREUM
+  POLYGON
   SOLANA
 }
 

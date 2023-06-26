@@ -1,7 +1,7 @@
 import type { CustomTokenList } from "./types";
 
 export const EthereumTokenList: CustomTokenList = {
-  "0x0000000000000000000000000000000000000000": {
+  native: {
     address: "0x0000000000000000000000000000000000000000",
     coingeckoId: "ethereum",
     name: "Ethereum",

@@ -12,6 +12,7 @@ import { ProviderId } from "../types";
 import { Bitcoin } from "./bitcoin";
 import { Eclipse } from "./eclipse";
 import { Ethereum } from "./ethereum";
+import { Polygon } from "./polygon";
 import { Solana } from "./solana";
 
 export interface BlockchainDataProvider {
@@ -57,6 +58,9 @@ export function getProviderForId(
     case ProviderId.Ethereum: {
       return new Ethereum(ctx);
     }
+    case ProviderId.Polygon: {
+      return new Polygon(ctx);
+    }
     case ProviderId.Solana: {
       return new Solana(ctx);
     }
@@ -79,6 +83,9 @@ export function inferProviderIdFromString(val: string): ProviderId | never {
     }
     case "ethereum": {
       return ProviderId.Ethereum;
+    }
+    case "polygon": {
+      return ProviderId.Polygon;
     }
     case "solana": {
       return ProviderId.Solana;

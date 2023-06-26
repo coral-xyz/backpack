@@ -102,7 +102,7 @@ export class SolanaRpc implements BlockchainDataProvider {
    * @memberof SolanaRpc
    */
   logo(): string {
-    return this.tokenList[this.defaultAddress()].logo!;
+    return this.tokenList["native"].logo!;
   }
 
   /**
@@ -208,9 +208,7 @@ export class SolanaRpc implements BlockchainDataProvider {
           prices.solana
         ),
         token: this.defaultAddress(),
-        tokenListEntry: NodeBuilder.tokenListEntry(
-          this.tokenList[this.defaultAddress()]
-        ),
+        tokenListEntry: NodeBuilder.tokenListEntry(this.tokenList["native"]),
       },
       true
     );

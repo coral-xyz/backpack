@@ -12,4 +12,7 @@ export type TokenListEntry = {
   symbol: string;
 };
 
-export type CustomTokenList = Record<string, TokenListEntry>;
+export type CustomTokenList = {
+  native: TokenListEntry;
+  [addr: string]: TokenListEntry;
+};
