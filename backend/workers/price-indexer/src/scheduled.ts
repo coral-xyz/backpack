@@ -1,6 +1,8 @@
 import {
   BitcoinToken,
+  EclipseTokenList,
   EthereumTokenList,
+  PolygonTokenList,
   SolanaTokenList,
 } from "@coral-xyz/common/src/tokens";
 
@@ -20,23 +22,26 @@ function chunk<T>(items: T[], size: number): T[][] {
 export const scheduledHandler: ExportedHandlerScheduledHandler<
   Environment
 > = async (_event, env, _ctx) => {
-  const allTokensToRequest = chunk(
-    [
-      BitcoinToken,
-      ...Object.values(SolanaTokenList),
-      ...Object.values(EthereumTokenList),
-    ],
-    50
-  );
+  const mergedTokenLists = [
+    BitcoinToken,
+    ...Object.values(EclipseTokenList),
+    ...Object.values(EthereumTokenList),
+    ...Object.values(PolygonTokenList),
+    ...Object.values(SolanaTokenList),
+  ];
+
+  const uniqueTokenIds = mergedTokenLists.reduce<Set<string>>((acc, curr) => {
+    if (curr.coingeckoId && !acc.has(curr.coingeckoId)) {
+      acc.add(curr.coingeckoId);
+    }
+    return acc;
+  }, new Set());
+
+  const allTokensToRequest = chunk([...uniqueTokenIds.values()], 50);
 
   for (const tokens of allTokensToRequest) {
-    const ids = tokens
-      .filter((t) => t.coingeckoId !== undefined)
-      .map((t) => t.coingeckoId)
-      .join(",");
-
     const params = new URLSearchParams({
-      ids,
+      ids: tokens.join(","),
       page: "1",
       per_page: "100",
       price_change_percentage: "24h",
