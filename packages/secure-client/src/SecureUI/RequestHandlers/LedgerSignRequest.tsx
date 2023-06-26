@@ -98,8 +98,8 @@ async function svmSignTx(
       });
     })
     .catch((e) => {
-      console.log(e);
-      // currentRequest.error(JSON.stringify(e))
+      // console.log(e);
+      currentRequest.error(JSON.stringify(e));
     });
 }
 
@@ -130,8 +130,8 @@ async function svmSignMessage(
       });
     })
     .catch((e) => {
-      console.log(e);
-      // currentRequest.error(JSON.stringify(e))
+      // console.log(e);
+      currentRequest.error(JSON.stringify(e));
     });
 }
 
