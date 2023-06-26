@@ -93,7 +93,7 @@ export class SolanaRpc implements BlockchainDataProvider {
    * @memberof SolanaRpc
    */
   defaultAddress(): string {
-    return SystemProgram.programId.toBase58();
+    return this.tokenList.native.address;
   }
 
   /**
@@ -102,7 +102,7 @@ export class SolanaRpc implements BlockchainDataProvider {
    * @memberof SolanaRpc
    */
   logo(): string {
-    return this.tokenList["native"].logo!;
+    return this.tokenList.native.logo!;
   }
 
   /**

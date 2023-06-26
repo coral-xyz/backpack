@@ -82,7 +82,7 @@ export class Ethereum implements BlockchainDataProvider {
    * @memberof Ethereum
    */
   defaultAddress(): string {
-    return "0x0000000000000000000000000000000000000000";
+    return this.tokenList.native.address;
   }
 
   /**
@@ -91,7 +91,7 @@ export class Ethereum implements BlockchainDataProvider {
    * @memberof Ethereum
    */
   logo(): string {
-    return this.tokenList["native"].logo!;
+    return this.tokenList.native.logo!;
   }
 
   /**

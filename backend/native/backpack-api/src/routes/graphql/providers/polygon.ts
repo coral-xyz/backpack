@@ -52,7 +52,7 @@ export class Polygon extends Ethereum implements BlockchainDataProvider {
    * @memberof Polygon
    */
   override defaultAddress(): string {
-    return "0x0000000000000000000000000000000000000000";
+    return this.tokenList.native.address;
   }
 
   /**
@@ -62,7 +62,7 @@ export class Polygon extends Ethereum implements BlockchainDataProvider {
    * @memberof Polygon
    */
   override logo(): string {
-    return this.tokenList["native"].logo!;
+    return this.tokenList.native.logo!;
   }
 
   /**
