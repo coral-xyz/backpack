@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { StyledText, YStack } from "@coral-xyz/tamagui";
+import { YStack } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { useForm } from "react-hook-form";

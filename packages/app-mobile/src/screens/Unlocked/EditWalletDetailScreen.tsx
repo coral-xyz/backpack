@@ -1,30 +1,38 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import { Alert } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
 
-import { Margin, Screen } from "~components/index";
-import { UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
+import {
+  formatWalletAddress,
+  UI_RPC_METHOD_KEYNAME_READ,
+} from "@coral-xyz/common";
 import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
+import { useFocusEffect } from "@react-navigation/native";
+
+import { Screen } from "~components/index";
 import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 import { IconCopyContent } from "~screens/Unlocked/Settings/components/SettingsRow";
 
 export function EditWalletDetailScreen({ navigation, route }): JSX.Element {
   const { blockchain, name, publicKey, type } = route.params;
   const background = useBackgroundClient();
-  const [walletName, setWalletName] = useState(name);
   const publicKeyData = useWalletPublicKeys();
 
-  useEffect(() => {
+  const readNewName = useCallback(() => {
     (async () => {
-      const keyname = await background.request({
+      const name = await background.request({
         method: UI_RPC_METHOD_KEYNAME_READ,
         params: [publicKey],
       });
 
-      setWalletName(keyname);
+      navigation.setOptions({
+        title: `${name} (${formatWalletAddress(publicKey)})`,
+      });
     })();
-  }, [background, publicKey]);
+  }, [background, publicKey, navigation]);
+
+  useFocusEffect(readNewName);
 
   // Account recovery is not possible for private key imports, so prevent
   // removal of wallets if they are the last one in the wallet that can be used
@@ -40,7 +48,7 @@ export function EditWalletDetailScreen({ navigation, route }): JSX.Element {
       onPress: () =>
         navigation.push("edit-wallets-rename", {
           publicKey,
-          name: walletName,
+          name: route.params.name,
         }),
     },
     "Copy Address": {
@@ -67,25 +75,14 @@ export function EditWalletDetailScreen({ navigation, route }): JSX.Element {
           name,
           type,
         }),
-      // style: {
-      //   color: theme.custom.colors.negative,
-      // },
     },
   };
 
   return (
     <Screen>
       <SettingsList menuItems={menuItems} />
-      {type !== "ledger" && (
-        <Margin top={24}>
-          <SettingsList menuItems={secrets} />
-        </Margin>
-      )}
-      {!isLastRecoverable && (
-        <Margin top={24}>
-          <SettingsList menuItems={removeWallet} />
-        </Margin>
-      )}
+      {type !== "ledger" ? <SettingsList menuItems={secrets} /> : null}
+      {!isLastRecoverable ? <SettingsList menuItems={removeWallet} /> : null}
     </Screen>
   );
 }

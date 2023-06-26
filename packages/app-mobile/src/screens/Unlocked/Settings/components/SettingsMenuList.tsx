@@ -10,14 +10,14 @@ import {
   useListItem,
   ListItemProps,
   YGroup,
+  Separator,
+  _ListItemOneLine,
 } from "@coral-xyz/tamagui";
 
 import { IconPushDetail } from "./SettingsRow";
 
 export function SettingsList({
-  style,
   menuItems,
-  textStyle,
 }: {
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
@@ -34,23 +34,23 @@ export function SettingsList({
   };
 }) {
   return (
-    <YGroup als="center" bordered backgroundColor="$nav">
+    <YGroup
+      overflow="hidden"
+      borderWidth={2}
+      borderColor="$borderFull"
+      borderRadius="$container"
+      marginBottom={16}
+      separator={<Separator />}
+    >
       {Object.entries(menuItems).map(
         ([key, { onPress, detail, icon, label }]) => (
           <YGroup.Item key={key}>
-            <ListItem
-              hoverTheme
-              pressTheme
-              backgroundColor="$nav"
+            <_ListItemOneLine
+              title={label ?? key}
               icon={icon}
-              iconAfter={detail ?? IconPushDetail}
-              onPress={() => onPress && onPress()}
-              style={style}
-            >
-              <CustomListItemText style={textStyle}>
-                {label ?? key}
-              </CustomListItemText>
-            </ListItem>
+              iconAfter={detail ?? <IconPushDetail />}
+              onPress={onPress}
+            />
           </YGroup.Item>
         )
       )}

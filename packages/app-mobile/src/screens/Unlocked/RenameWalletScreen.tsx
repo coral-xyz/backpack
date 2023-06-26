@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 
 import {
   UI_RPC_METHOD_KEYNAME_UPDATE,
@@ -37,44 +37,50 @@ export function RenameWalletScreen({ navigation, route }): JSX.Element {
   };
 
   return (
-    <Screen
-      style={{ marginBottom: insets.bottom, justifyContent: "space-between" }}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={72}
     >
-      <View>
-        <StyledTextInput
-          autoFocus
-          value={walletName}
-          onChangeText={setWalletName}
-          onSubmitEditing={handleSaveName}
-          returnKeyType="done"
-        />
-        <Text
-          style={{
-            marginTop: 12,
-            textAlign: "center",
-            color: theme.custom.colors.secondary,
-          }}
-        >
-          ({formatWalletAddress(publicKey)})
-        </Text>
-      </View>
-      <TwoButtonFooter
-        leftButton={
-          <SecondaryButton
-            label="Cancel"
-            onPress={() => {
-              navigation.goBack();
+      <Screen
+        style={{ marginBottom: insets.bottom, justifyContent: "space-between" }}
+      >
+        <View>
+          <StyledTextInput
+            autoFocus
+            value={walletName}
+            onChangeText={setWalletName}
+            onSubmitEditing={handleSaveName}
+            returnKeyType="done"
+          />
+          <Text
+            style={{
+              marginTop: 12,
+              textAlign: "center",
+              color: theme.custom.colors.secondary,
             }}
-          />
-        }
-        rightButton={
-          <PrimaryButton
-            label="Update"
-            disabled={isPrimaryDisabled}
-            onPress={handleSaveName}
-          />
-        }
-      />
-    </Screen>
+          >
+            ({formatWalletAddress(publicKey)})
+          </Text>
+        </View>
+        <TwoButtonFooter
+          leftButton={
+            <SecondaryButton
+              label="Cancel"
+              onPress={() => {
+                navigation.goBack();
+              }}
+            />
+          }
+          rightButton={
+            <PrimaryButton
+              label="Update"
+              disabled={isPrimaryDisabled}
+              onPress={handleSaveName}
+            />
+          }
+        />
+      </Screen>
+    </KeyboardAvoidingView>
   );
 }

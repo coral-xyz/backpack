@@ -176,7 +176,8 @@ export function SearchInput({ style, ...props }: TextInputProps): JSX.Element {
   );
 }
 
-type PasswordInputProps = TextInputProps & UseControllerProps;
+type PasswordInputProps = TextInputProps &
+  UseControllerProps & { hasError?: boolean };
 export const PasswordInput = forwardRef(
   (
     {

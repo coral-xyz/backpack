@@ -543,17 +543,24 @@ export function _ListItemOneLine({
   iconAfter: JSX.Element | null;
   onPress?: () => void;
 }): JSX.Element {
-  const theme = useTheme();
   return (
-    <Pressable
+    <ListItem
+      pressTheme
       disabled={!onPress}
       onPress={onPress}
-      style={{ height: 48, backgroundColor: theme.custom.colors.nav }}
+      height={48}
+      bg="$nav"
+      py={8}
+      px={16}
     >
-      <XStack py={8} px={16} f={1} bg="$nav" jc="space-between" ai="center">
+      <XStack f={1} jc="space-between" ai="center">
         <XStack ai="center">
-          {icon ? <View style={{ width: 32, height: 32 }}>{icon}</View> : null}
-          <StyledText ml={16} fontSize="$base" color="$fontColor">
+          {icon ? (
+            <Stack mr={8} width={32} height={32}>
+              {icon}
+            </Stack>
+          ) : null}
+          <StyledText fontSize="$base" color="$fontColor">
             {title}
           </StyledText>
         </XStack>
@@ -562,7 +569,7 @@ export function _ListItemOneLine({
           {iconAfter}
         </XStack>
       </XStack>
-    </Pressable>
+    </ListItem>
   );
 }
 
