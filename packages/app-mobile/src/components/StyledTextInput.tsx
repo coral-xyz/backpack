@@ -93,7 +93,7 @@ export function UsernameInput({
   );
 }
 
-type StyledTextInputProps = TextInputProps & { hasError: boolean };
+type StyledTextInputProps = TextInputProps & { hasError?: boolean };
 export const StyledTextInput = forwardRef(function StyledTextInput(
   {
     style,

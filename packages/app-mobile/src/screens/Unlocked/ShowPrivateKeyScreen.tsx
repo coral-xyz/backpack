@@ -1,9 +1,14 @@
-import { useState } from "react";
+import { useCallback } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
+import { StyledText, YStack } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
+import { useForm } from "react-hook-form";
+import { AvoidSoftInput } from "react-native-avoid-softinput";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { EyeIcon, WarningIcon } from "~components/Icon";
 import {
@@ -18,106 +23,138 @@ import {
 } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 
+import * as Form from "~src/components/Form";
+import { PasswordInput } from "~src/components/StyledTextInput";
+
+AvoidSoftInput.setAvoidOffset(88);
+AvoidSoftInput.setHideAnimationDelay(100);
+
+const warnings = [
+  {
+    icon: "chat",
+    text: "Backpack support will never ask for your private key.",
+  },
+  {
+    icon: "web",
+    text: "Never share your private key or enter it into an app or website.",
+  },
+  {
+    icon: "lock",
+    text: "Anyone with your private key will have complete control of your account.",
+  },
+];
+
+function WarningList() {
+  const theme = useTheme();
+  return (
+    <>
+      {warnings.map(({ icon, text }) => (
+        <View
+          key={text}
+          style={[
+            {
+              backgroundColor: theme.custom.colors.nav,
+              borderColor: theme.custom.colors.borderFull,
+            },
+            styles.listContainer,
+          ]}
+        >
+          <Margin right={12}>
+            <MaterialIcons name={icon} size={24} color="#E95050" />
+          </Margin>
+          <Text
+            style={[
+              {
+                color: theme.custom.colors.fontColor,
+              },
+              styles.listItem,
+            ]}
+          >
+            {text}
+          </Text>
+        </View>
+      ))}
+    </>
+  );
+}
+
+interface FormData {
+  password: string;
+}
+
 export function ShowPrivateKeyWarningScreen({
   route,
   navigation,
 }): JSX.Element {
+  const insets = useSafeAreaInsets();
   const { publicKey } = route.params;
-  const theme = useTheme();
   const background = useBackgroundClient();
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const { control, handleSubmit, formState, setError } = useForm<FormData>();
 
-  const handlePressConfirm = async () => {
-    let privateKey;
+  const onSubmit = async ({ password }: FormData) => {
     try {
-      privateKey = await background.request({
+      const privateKey = await background.request({
         method: UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
         params: [password, publicKey],
       });
+      navigation.push("show-private-key", { privateKey });
     } catch (e) {
       console.error(e);
-      setError(true);
-      return;
+      setError("password", {
+        message: "Incorrect password",
+      });
     }
-
-    navigation.push("show-private-key", { privateKey });
   };
 
-  const warnings = [
-    {
-      icon: "chat",
-      text: "Backpack support will never ask for your private key.",
-    },
-    {
-      icon: "web",
-      text: "Never share your private key or enter it into an app or website.",
-    },
-    {
-      icon: "lock",
-      text: "Anyone with your private key will have complete control of your account.",
-    },
-  ];
+  const onFocusEffect = useCallback(() => {
+    // This should be run when screen gains focus - enable the module where it's needed
+    AvoidSoftInput.setShouldMimicIOSBehavior(true);
+    AvoidSoftInput.setEnabled(true);
+    return () => {
+      // This should be run when screen loses focus - disable the module where it's not needed, to make a cleanup
+      AvoidSoftInput.setEnabled(false);
+      AvoidSoftInput.setShouldMimicIOSBehavior(false);
+    };
+  }, []);
+
+  useFocusEffect(onFocusEffect); // register callback to focus events
 
   return (
-    <Screen style={{ justifyContent: "space-between" }}>
-      <View>
-        <View style={styles.header}>
-          <Margin bottom={16}>
-            <WarningIcon color="#E95050" />
-          </Margin>
+    <Screen
+      style={{ marginBottom: insets.bottom, justifyContent: "space-between" }}
+    >
+      <YStack>
+        <YStack ai="center" mb={24}>
+          <WarningIcon color="$redIcon" />
           <Header text="Warning" />
-        </View>
-        {warnings.map(({ icon, text }) => (
-          <View
-            key={text}
-            style={[
-              {
-                backgroundColor: theme.custom.colors.nav,
-                borderColor: theme.custom.colors.borderFull,
-              },
-              styles.listContainer,
-            ]}
-          >
-            <Margin right={12}>
-              <MaterialIcons name={icon} size={24} color="#E95050" />
-            </Margin>
-            <Text
-              style={[
-                {
-                  color: theme.custom.colors.fontColor,
-                },
-                styles.listItem,
-              ]}
-            >
-              {text}
-            </Text>
-          </View>
-        ))}
-      </View>
-      <View>
-        <Margin bottom={8}>
-          <StyledTextInput
-            autoFocus
-            value={password}
-            onChangeText={(text: string) => setPassword(text)}
-            // error={error}
+        </YStack>
+        <WarningList />
+      </YStack>
+      <Form.Wrapper>
+        <Form.Group errorMessage={formState.errors.password?.message}>
+          <PasswordInput
+            onSubmitEditing={handleSubmit(onSubmit)}
+            returnKeyType="done"
             placeholder="Password"
-            secureTextEntry
+            name="password"
+            control={control}
+            rules={{
+              required: "You must enter a password",
+            }}
           />
-        </Margin>
+        </Form.Group>
         <DangerButton
           label="Show private key"
-          disabled={password.length < 8}
-          onPress={handlePressConfirm}
+          onPress={handleSubmit(onSubmit)}
         />
-      </View>
+      </Form.Wrapper>
     </Screen>
   );
 }
 
 export function ShowPrivateKeyScreen({ route, navigation }): JSX.Element {
   const { privateKey } = route.params;
+  const insets = useSafeAreaInsets();
 
   const handlePressClose = () => {
     navigation.goBack();
@@ -127,6 +164,7 @@ export function ShowPrivateKeyScreen({ route, navigation }): JSX.Element {
     <Screen
       style={{
         justifyContent: "space-between",
+        marginBottom: insets.bottom,
       }}
     >
       <View>
@@ -138,6 +176,7 @@ export function ShowPrivateKeyScreen({ route, navigation }): JSX.Element {
         <Margin top={16}>
           <Margin bottom={12}>
             <StyledTextInput
+              hasError={false}
               style={{ height: 100 }}
               multiline
               value={privateKey}
@@ -153,10 +192,6 @@ export function ShowPrivateKeyScreen({ route, navigation }): JSX.Element {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    // alignSelf: "center",
-    marginBottom: 24,
-  },
   listContainer: {
     borderRadius: 12,
     padding: 12,
