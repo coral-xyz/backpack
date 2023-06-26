@@ -51,17 +51,39 @@ router.get("/", extractUserId, async (req, res) => {
   const limit: number = req.query.limit ? parseInt(req.query.limit) : 20;
 
   const isSolPublicKey = validatePublicKey(usernamePrefix, "solana");
+  const isEclipsePublicKey = validatePublicKey(usernamePrefix, "eclipse");
   const isEthPublicKey = validatePublicKey(usernamePrefix, "ethereum");
 
-  let users;
+  let users: any = [];
+
+  //
+  // SVM.
+  //
   if (isSolPublicKey) {
-    users = await getUserByPublicKeyAndChain(usernamePrefix, Blockchain.SOLANA);
-  } else if (isEthPublicKey) {
+    users = users.concat(
+      await getUserByPublicKeyAndChain(usernamePrefix, Blockchain.SOLANA)
+    );
+  }
+  if (isEclipsePublicKey) {
+    users = users.concat(
+      await getUserByPublicKeyAndChain(usernamePrefix, Blockchain.ECLIPSE)
+    );
+  }
+
+  //
+  // EVM.
+  //
+  if (isEthPublicKey) {
     users = await getUserByPublicKeyAndChain(
       usernamePrefix,
       Blockchain.ETHEREUM
     );
-  } else {
+  }
+
+  //
+  // Not a pubkey so assume it's a username.
+  //
+  if (users.length === 0) {
     users = await getUsersByPrefix({ usernamePrefix, uuid, limit });
   }
 
@@ -88,6 +110,7 @@ router.get("/", extractUserId, async (req, res) => {
         remoteRequested: friendship?.remoteRequested || false,
         areFriends: friendship?.areFriends || false,
         searchedSolPubKey: isSolPublicKey ? usernamePrefix : undefined,
+        searchedEclipsePubKey: isEclipsePublicKey ? usernamePrefix : undefined,
         searchedEthPubKey: isEthPublicKey ? usernamePrefix : undefined,
         // TODO: fix the disambiguation with snake_case and camelCase in API responses
         public_keys: public_keys.map((pk) => ({
@@ -261,6 +284,29 @@ router.get("/primarySolPubkey/:username", async (req, res) => {
       return res
         .status(411)
         .json({ msg: "No active pubkey on SOL for this user" });
+
+    return res.json({
+      publicKey: pubKey.publicKey,
+    });
+  } catch (e) {
+    return res.status(411).json({ msg: "User not found" });
+  }
+});
+
+router.get("/primaryEclipsePubkey/:username", async (req, res) => {
+  const username = req.params.username;
+  try {
+    const user = await getUserByUsername(username);
+    if (!user) {
+      return res.status(411).json({ msg: "User not found" });
+    }
+    const pubKey = user.publicKeys.find(
+      (x) => x.blockchain === Blockchain.ECLIPSE && x.primary
+    );
+    if (!pubKey)
+      return res
+        .status(411)
+        .json({ msg: "No active pubkey on Eclipse for this user" });
 
     return res.json({
       publicKey: pubKey.publicKey,
