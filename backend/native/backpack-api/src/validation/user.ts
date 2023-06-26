@@ -35,6 +35,19 @@ export const SolanaPublicKey = z.object({
   blockchain: z.literal("solana"),
 });
 
+export const EclipsePublicKey = z.object({
+  publicKey: z.string().refine((str) => {
+    try {
+      new PublicKey(str);
+      return true;
+    } catch {
+      // Pass
+    }
+    return false;
+  }, "must be a valid Eclipse public key"),
+  blockchain: z.literal("eclipse"),
+});
+
 export const EthereumPublicKey = z.object({
   publicKey: z.string().refine((str) => {
     try {
@@ -50,6 +63,7 @@ export const EthereumPublicKey = z.object({
 
 export const BlockchainPublicKey = z.discriminatedUnion("blockchain", [
   SolanaPublicKey,
+  EclipsePublicKey,
   EthereumPublicKey,
 ]);
 
@@ -65,9 +79,14 @@ export const CreateSolanaPublicKey = SolanaPublicKey.extend({
   signature: z.string(),
 });
 
+export const CreateEclipsePublicKey = EclipsePublicKey.extend({
+  signature: z.string(),
+});
+
 export const CreatePublicKeys = z.discriminatedUnion("blockchain", [
   CreateEthereumPublicKey,
   CreateSolanaPublicKey,
+  CreateEclipsePublicKey,
 ]);
 
 export const CreateUserWithPublicKeys = BaseCreateUser.extend({

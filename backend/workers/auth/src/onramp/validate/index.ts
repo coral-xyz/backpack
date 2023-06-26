@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 import type { BlockChain } from "../zodTypes";
 
 export const validatePublicKey = (address: string, chain: BlockChain) => {
-  if (chain === "solana") {
+  if (chain === "solana" || chain === "eclipse") {
     try {
       new PublicKey(address);
     } catch (err) {

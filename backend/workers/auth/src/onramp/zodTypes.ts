@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const ZodChain = z.enum(["solana", "ethereum"]);
+const ZodChain = z.enum(["solana", "ethereum", "eclipse"]);
 export type BlockChain = z.infer<typeof ZodChain>;
 
 export const CreateSessionRequest = z.object({

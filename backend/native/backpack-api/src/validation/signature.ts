@@ -64,6 +64,14 @@ export const validateSolanaSignature = (
   }
 };
 
+export const validateEclipseSignature = (
+  msg: Buffer,
+  encodedSignature: string,
+  encodedPublicKey: string
+) => {
+  return validateSolanaSignature(msg, encodedSignature, encodedPublicKey);
+};
+
 /**
  * Validate a signature
  * @param msg - signed message
@@ -80,6 +88,7 @@ export const validateSignature = (
   const validationMethod = {
     [Blockchain.ETHEREUM]: validateEthereumSignature,
     [Blockchain.SOLANA]: validateSolanaSignature,
+    [/*Blockchain.ECLIPSE*/ "eclipse"]: validateEclipseSignature, // todo: use enum
   }[blockchain];
 
   return validationMethod(msg, signature, publicKey);
