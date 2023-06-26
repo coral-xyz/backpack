@@ -25,6 +25,11 @@ import { useTheme } from "~hooks/useTheme";
 
 import * as Form from "~src/components/Form";
 import { PasswordInput } from "~src/components/StyledTextInput";
+import { BIOMETRIC_PASSWORD } from "~src/features/biometrics";
+import {
+  useDeviceSupportsBiometricAuth,
+  useOsBiometricAuthEnabled,
+} from "~src/features/biometrics/hooks";
 
 AvoidSoftInput.setAvoidOffset(88);
 AvoidSoftInput.setHideAnimationDelay(100);
@@ -90,12 +95,17 @@ export function ShowPrivateKeyWarningScreen({
   const { publicKey } = route.params;
   const background = useBackgroundClient();
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
+  const isBiometricsEnabled = useOsBiometricAuthEnabled();
+  const { biometricName } = useDeviceSupportsBiometricAuth();
 
   const onSubmit = async ({ password }: FormData) => {
+    const biometricsOrPassword = isBiometricsEnabled
+      ? BIOMETRIC_PASSWORD
+      : password;
     try {
       const privateKey = await background.request({
         method: UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
-        params: [password, publicKey],
+        params: [biometricsOrPassword, publicKey],
       });
       navigation.push("show-private-key", { privateKey });
     } catch (e) {
@@ -131,20 +141,24 @@ export function ShowPrivateKeyWarningScreen({
         <WarningList />
       </YStack>
       <Form.Wrapper>
-        <Form.Group errorMessage={formState.errors.password?.message}>
-          <PasswordInput
-            onSubmitEditing={handleSubmit(onSubmit)}
-            returnKeyType="done"
-            placeholder="Password"
-            name="password"
-            control={control}
-            rules={{
-              required: "You must enter a password",
-            }}
-          />
-        </Form.Group>
+        {!isBiometricsEnabled ? (
+          <Form.Group errorMessage={formState.errors.password?.message}>
+            <PasswordInput
+              onSubmitEditing={handleSubmit(onSubmit)}
+              returnKeyType="done"
+              placeholder="Password"
+              name="password"
+              control={control}
+              rules={{
+                required: "You must enter a password",
+              }}
+            />
+          </Form.Group>
+        ) : null}
         <DangerButton
-          label="Show private key"
+          label={`Show private key ${
+            isBiometricsEnabled ? `using ${biometricName}` : ""
+          }`}
           onPress={handleSubmit(onSubmit)}
         />
       </Form.Wrapper>

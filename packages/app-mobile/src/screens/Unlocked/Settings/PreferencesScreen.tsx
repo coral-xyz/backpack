@@ -37,7 +37,7 @@ import * as Linking from "~src/lib/linking";
 
 function SettingsBiometricsMode() {
   const [loading, setLoading] = useState(false);
-  const { touchId: isTouchIdDevice } = useDeviceSupportsBiometricAuth();
+  const { biometricName } = useDeviceSupportsBiometricAuth();
   const isSupported = useDeviceSupportsBiometricAuth();
   const isEnabled = useOsBiometricAuthEnabled();
   if (!isSupported) {
@@ -74,7 +74,6 @@ function SettingsBiometricsMode() {
     setLoading(false);
   };
 
-  const biometricName = isTouchIdDevice ? "Touch ID" : "Face ID";
   return (
     <SettingsRowSwitch
       loading={loading}
