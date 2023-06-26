@@ -4,7 +4,7 @@ import { Suspense, useCallback, useMemo } from "react";
 import { FlatList } from "react-native";
 
 import { useSuspenseQuery } from "@apollo/client";
-import { PaddedListItemSeparator } from "@coral-xyz/tamagui";
+import { PaddedListItemSeparator, Separator } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -73,7 +73,6 @@ function Container({ navigation }: EditWalletsScreenProps) {
             blockchain={item.blockchain}
             isCold={item.isCold}
             primary={item.isPrimary}
-            balance={item.balance}
             onPress={handlePressEdit}
           />
         </RoundedContainerGroup>
@@ -87,7 +86,7 @@ function Container({ navigation }: EditWalletsScreenProps) {
       data={wallets}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
-      ItemSeparatorComponent={PaddedListItemSeparator}
+      ItemSeparatorComponent={Separator}
       style={{
         paddingTop: 16,
         paddingHorizontal: 16,

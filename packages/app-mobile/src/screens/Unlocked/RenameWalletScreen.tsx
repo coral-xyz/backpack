@@ -12,7 +12,6 @@ import {
   PrimaryButton,
   Screen,
   SecondaryButton,
-  StyledText,
   StyledTextInput,
   TwoButtonFooter,
 } from "~components/index";
@@ -45,7 +44,6 @@ export function RenameWalletScreen({ navigation, route }): JSX.Element {
     >
       <Screen jc="space-between" style={{ marginBottom: insets.bottom }}>
         <View>
-          <StyledText>{JSON.stringify({ walletName, name })}</StyledText>
           <StyledTextInput
             autoFocus
             value={walletName}

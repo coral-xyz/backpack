@@ -228,6 +228,8 @@ export function ListItemEditWallet({
 
   return (
     <ListItem
+      hoverTheme
+      pressTheme
       backgroundColor="$nav"
       onPress={() => {
         onPress(wallet);
