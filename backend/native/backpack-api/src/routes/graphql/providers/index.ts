@@ -10,6 +10,7 @@ import type {
 import { ProviderId } from "../types";
 
 import { Bitcoin } from "./bitcoin";
+import { Eclipse } from "./eclipse";
 import { Ethereum } from "./ethereum";
 import { Solana } from "./solana";
 
@@ -19,7 +20,6 @@ export interface BlockchainDataProvider {
   defaultAddress(): string;
   logo(): string;
   name(): string;
-  symbol(): string;
 
   getBalancesForAddress(
     address: string,
@@ -51,11 +51,40 @@ export function getProviderForId(
     case ProviderId.Bitcoin: {
       return new Bitcoin(ctx);
     }
+    case ProviderId.Eclipse: {
+      return new Eclipse(ctx);
+    }
     case ProviderId.Ethereum: {
       return new Ethereum(ctx);
     }
     case ProviderId.Solana: {
       return new Solana(ctx);
+    }
+  }
+}
+
+/**
+ * Infer and return a ProviderId enum variant from the argued string value.
+ * @export
+ * @param {string} val
+ * @returns {(ProviderId | never)}
+ */
+export function inferProviderIdFromString(val: string): ProviderId | never {
+  switch (val.toLowerCase()) {
+    case "bitcoin": {
+      return ProviderId.Bitcoin;
+    }
+    case "eclipse": {
+      return ProviderId.Eclipse;
+    }
+    case "ethereum": {
+      return ProviderId.Ethereum;
+    }
+    case "solana": {
+      return ProviderId.Solana;
+    }
+    default: {
+      throw new Error(`unknown chain id string: ${val}`);
     }
   }
 }

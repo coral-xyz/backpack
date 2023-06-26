@@ -77,15 +77,6 @@ export class Bitcoin implements BlockchainDataProvider {
   }
 
   /**
-   * Symbol of the native coin.
-   * @returns {string}
-   * @memberof Bitcoin
-   */
-  symbol(): string {
-    return BitcoinToken.symbol;
-  }
-
-  /**
    * Fetch and aggregate the native and prices for the argued wallet address.
    * @param {string} address
    * @param {BalanceFiltersInput} [_filters]
@@ -132,11 +123,11 @@ export class Bitcoin implements BlockchainDataProvider {
             : undefined,
           token: this.defaultAddress(),
           tokenListEntry: NodeBuilder.tokenListEntry({
-            address: this.defaultAddress(),
+            address: BitcoinToken.address,
             coingeckoId: "bitcoin",
-            logo: this.logo(),
-            name: this.name(),
-            symbol: this.symbol(),
+            logo: BitcoinToken.logo,
+            name: BitcoinToken.name,
+            symbol: BitcoinToken.symbol,
           }),
         },
         true

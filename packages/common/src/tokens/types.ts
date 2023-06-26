@@ -11,3 +11,5 @@ export type TokenListEntry = {
   /** The registered symbol of the token. */
   symbol: string;
 };
+
+export type CustomTokenList = Record<string, TokenListEntry>;

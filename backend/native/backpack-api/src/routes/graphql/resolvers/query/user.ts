@@ -190,7 +190,7 @@ export const userTypeResolvers: UserResolvers = {
     return ctx.dataSources.hasura.getWallet(
       ctx.authorization.userId!,
       address,
-      providerId ?? undefined
+      providerId
     );
   },
 
