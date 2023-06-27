@@ -29,11 +29,10 @@ import {
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ,
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
-  UI_RPC_METHOD_ETHEREUM_EXPLORER_READ,
-  UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE,
   UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
   UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
+  UI_RPC_METHOD_EXPLORER_UPDATE,
   UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
   UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_GET_FEATURE_GATES,
@@ -89,8 +88,6 @@ import {
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ,
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
-  UI_RPC_METHOD_SOLANA_EXPLORER_READ,
-  UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
   UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
@@ -391,10 +388,8 @@ async function handle<T = any>(
       return await handleSolanaCommitmentRead(ctx, params[0]);
     case UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE:
       return await handleSolanaCommitmentUpdate(ctx, params[0]);
-    case UI_RPC_METHOD_SOLANA_EXPLORER_READ:
-      return await handleSolanaExplorerRead(ctx, params[0]);
-    case UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE:
-      return await handleSolanaExplorerUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_EXPLORER_UPDATE:
+      return await handleExplorerUpdate(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ:
       return await handleSolanaConnectionUrlRead(ctx, params[0]);
     case UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE:
@@ -402,10 +397,6 @@ async function handle<T = any>(
     //
     // Ethereum
     //
-    case UI_RPC_METHOD_ETHEREUM_EXPLORER_READ:
-      return await handleEthereumExplorerRead(ctx, params[0]);
-    case UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE:
-      return await handleEthereumExplorerUpdate(ctx, params[0]);
     case UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ:
       return await handleEthereumConnectionUrlRead(ctx, params[0]);
     case UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE:
@@ -914,19 +905,12 @@ async function handleSolanaCommitmentUpdate(
   return [resp];
 }
 
-async function handleSolanaExplorerRead(
+async function handleExplorerUpdate(
   ctx: Context<Backend>,
-  uuid: string
+  url: string,
+  blockchain: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaExplorerRead(uuid);
-  return [resp];
-}
-
-async function handleSolanaExplorerUpdate(
-  ctx: Context<Backend>,
-  url: string
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaExplorerUpdate(url);
+  const resp = await ctx.backend.explorerUpdate(url, blockchain as Blockchain);
   return [resp];
 }
 
@@ -972,22 +956,6 @@ async function handleSolanaSignAndSendTransaction(
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.solanaSignAndSendTx(tx, walletAddress);
-  return [resp];
-}
-
-async function handleEthereumExplorerRead(
-  ctx: Context<Backend>,
-  uuid: string
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.ethereumExplorerRead(uuid);
-  return [resp];
-}
-
-async function handleEthereumExplorerUpdate(
-  ctx: Context<Backend>,
-  url: string
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.ethereumExplorerUpdate(url);
   return [resp];
 }
 
