@@ -697,9 +697,6 @@ function OnboardingMnemonicInputScreen({
         {maybeRender(Boolean(error), () => (
           <ErrorMessage for={{ message: error }} />
         ))}
-        <StyledText>
-          {JSON.stringify({ isValid, checked, error, readOnly })}
-        </StyledText>
         <PrimaryButton
           disabled={isButtonDisabled}
           label={action === "create" ? "Next" : "Import"}
