@@ -59,9 +59,11 @@ export function MnemonicInput({ readOnly, onComplete }: MnemonicInputProps) {
 
   const onChange = async (words: string[]) => {
     setMnemonicWords(words);
-    const mnemonic = mnemonicWords.map((f) => f.trim()).join(" ");
-    const isValid = await isValidAsync(mnemonic);
-    onComplete({ isValid, mnemonic });
+    if (words.length > 11) {
+      const mnemonic = mnemonicWords.map((f) => f.trim()).join(" ");
+      const isValid = words.length > 11 ? await isValidAsync(mnemonic) : false;
+      onComplete({ isValid, mnemonic });
+    }
   };
 
   return (
