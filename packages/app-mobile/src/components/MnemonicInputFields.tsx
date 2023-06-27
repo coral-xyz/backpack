@@ -12,11 +12,19 @@ type MnemonicWordInputProps = {
   returnKeyType: "next" | "done";
   onChangeText: (word: string) => void;
   onSubmitEditing: () => void;
+  onBlur: () => void;
 };
 
 const _MnemonicWordInput = forwardRef<TextInput, MnemonicWordInputProps>(
   (props, ref) => {
-    const { word, index, returnKeyType, onChangeText, onSubmitEditing } = props;
+    const {
+      word,
+      index,
+      returnKeyType,
+      onChangeText,
+      onSubmitEditing,
+      onBlur,
+    } = props;
     const theme = useTheme();
     return (
       <View
@@ -48,6 +56,7 @@ const _MnemonicWordInput = forwardRef<TextInput, MnemonicWordInputProps>(
           spellCheck={false}
           scrollEnabled={false}
           onSubmitEditing={onSubmitEditing}
+          onBlur={onBlur}
           maxLength={10}
           value={word}
           style={[
@@ -103,7 +112,7 @@ export function MnemonicInputFields({
       if (next) {
         next.focus();
       } else {
-        onComplete();
+        onComplete?.();
       }
     },
     [onComplete]
@@ -123,6 +132,11 @@ export function MnemonicInputFields({
           index={index}
           returnKeyType={index === mnemonicWords.length - 1 ? "done" : "next"}
           onSubmitEditing={selectNextInput(index)}
+          onBlur={() => {
+            if (mnemonicWords.length > 11) {
+              onComplete?.();
+            }
+          }}
           onChangeText={(word) => {
             if (onChange) {
               const newMnemonicWords = [...mnemonicWords];
@@ -133,7 +147,7 @@ export function MnemonicInputFields({
         />
       );
     },
-    [mnemonicWords, onChange, selectNextInput]
+    [mnemonicWords, onChange, selectNextInput, onComplete]
   );
 
   return (
@@ -141,12 +155,13 @@ export function MnemonicInputFields({
       data={mnemonicWords}
       numColumns={3}
       initialNumToRender={12}
-      scrollEnabled={false}
+      scrollEnabled={mnemonicWords.length > 12}
       keyExtractor={keyExtractor}
       contentContainerStyle={{ gap: ITEM_GAP }}
       columnWrapperStyle={{ gap: ITEM_GAP }}
       renderItem={renderItem}
       maxToRenderPerBatch={12}
+      style={{ maxHeight: 275 }}
       getItemLayout={(_data, index) => ({
         length: ITEM_HEIGHT,
         offset: ITEM_HEIGHT * index,

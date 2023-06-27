@@ -47,49 +47,64 @@ function Container({
   );
 }
 
-type UsernameInputProps = {
-  username: string;
-  onChange: (username: string) => void;
-  onComplete: () => void;
-  showError?: boolean;
-  disabled?: boolean;
-};
+type UsernameInputProps = TextInputProps &
+  UseControllerProps & {
+    username: string;
+    onChange: (username: string) => void;
+    onComplete: () => void;
+    showError?: boolean;
+    disabled?: boolean;
+  };
+
 export function UsernameInput({
+  onSubmitEditing,
+  autoFocus,
+  control,
   showError,
-  username,
-  onChange,
-  onComplete,
-  disabled,
 }: UsernameInputProps): JSX.Element {
-  const [localError, setLocalError] = useState(false);
   return (
-    <Container hasError={localError || showError}>
-      <XStack>
-        <StyledText color="$fontColor">@</StyledText>
-        <RNTextInput
-          style={{ paddingLeft: 4 }}
-          autoFocus
-          placeholder="Username"
-          autoCapitalize="none"
-          returnKeyType="done"
-          maxLength={15}
-          value={username}
-          onSubmitEditing={onComplete}
-          onChangeText={(text) => {
-            const username = text.toLowerCase().replace(/[^a-z0-9_]/g, "");
-            if (
-              username !== "" &&
-              (username.length < 4 || username.length > 15)
-            ) {
-              setLocalError(true);
-            } else {
-              setLocalError(false);
-            }
-            onChange(username);
-          }}
-        />
-      </XStack>
-    </Container>
+    <Controller
+      name="username"
+      control={control}
+      rules={{
+        required: true,
+        minLength: {
+          value: 3,
+          message: "Username must be at least 3 characters",
+        },
+        maxLength: {
+          value: 15,
+          message: "Username must be less than 15 characters",
+        },
+      }}
+      render={({
+        field: { onChange, onBlur, value },
+        fieldState: { invalid },
+      }) => (
+        <Container hasError={invalid || showError}>
+          <XStack ai="center" h={48}>
+            <StyledText color="$fontColor">@</StyledText>
+            <RNTextInput
+              style={{
+                height: 48,
+                flex: 1,
+                paddingLeft: 4,
+              }}
+              autoFocus={autoFocus}
+              autoCorrect={false}
+              placeholder="Username"
+              autoCapitalize="none"
+              returnKeyType="done"
+              maxLength={15}
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              onSubmitEditing={onSubmitEditing}
+            />
+          </XStack>
+        </Container>
+      )}
+    />
   );
 }
 

@@ -56,7 +56,13 @@ import { EditWalletDetailScreen } from "~screens/Unlocked/EditWalletDetailScreen
 import { EditWalletsScreen } from "~screens/Unlocked/EditWalletsScreen";
 import { ForgotPasswordScreen } from "~screens/Unlocked/ForgotPasswordScreen";
 import { RenameWalletScreen } from "~screens/Unlocked/RenameWalletScreen";
-import { AddConnectWalletScreen } from "~screens/Unlocked/Settings/AddConnectWalletScreen";
+import {
+  AddWalletPrivacyDisclaimer,
+  AddWalletSelectBlockchain,
+  AddWalletCreateOrImportScreen,
+  AddWalletAdvancedImportScreen,
+  ImportFromMnemonicScreen,
+} from "~screens/Unlocked/Settings/AddConnectWalletScreen";
 import { ChangePasswordScreen } from "~screens/Unlocked/Settings/ChangePasswordScreen";
 import { PreferencesScreen } from "~screens/Unlocked/Settings/PreferencesScreen";
 import { PreferencesTrustedSitesScreen } from "~screens/Unlocked/Settings/PreferencesTrustedSitesScreen";
@@ -97,7 +103,14 @@ type AccountSettingsParamList = {
   PreferencesSolanaExplorer: undefined;
   PreferencesSolanaCustomRpcUrl: undefined;
   PreferencesTrustedSites: undefined;
-  "import-private-key": undefined;
+  ImportFromMnemonic: {
+    blockchain: Blockchain;
+    keyringExists: boolean;
+    inputMnemonic: boolean;
+  };
+  ImportPrivateKey: {
+    blockchain: Blockchain;
+  };
   "reset-warning": undefined;
   "show-secret-phrase-warning": undefined;
   "show-secret-phrase": {
@@ -122,6 +135,13 @@ type AccountSettingsParamList = {
   "forgot-password": undefined;
   "logout-warning": undefined;
   UserAccountMenu: undefined;
+  AddWalletPrivacyDisclaimer: undefined;
+  AddWalletSelectBlockchain: undefined;
+  AddWalletCreateOrImport: undefined;
+  AddWalletAdvancedImport: {
+    publicKey: PublicKey;
+    blockchain: Blockchain;
+  };
 };
 
 export type EditWalletsScreenProps = StackScreenProps<
@@ -238,7 +258,7 @@ export function AccountSettingsNavigator(): JSX.Element {
         />
         <Stack.Screen
           options={{ title: "Import Private Key" }}
-          name="import-private-key"
+          name="ImportPrivateKey"
           component={ImportPrivateKeyScreen}
         />
         <Stack.Screen
@@ -274,7 +294,7 @@ export function AccountSettingsNavigator(): JSX.Element {
             headerRight: () => (
               <Pressable
                 onPress={() => {
-                  navigation.push("add-wallet");
+                  navigation.push("AddWalletPrivacyDisclaimer");
                 }}
               >
                 <MaterialIcons
@@ -313,9 +333,29 @@ export function AccountSettingsNavigator(): JSX.Element {
           options={{ title: "About" }}
         />
         <Stack.Screen
-          options={{ title: "Add / Connect Wallet" }}
-          name="add-wallet"
-          component={AddConnectWalletScreen}
+          options={{ title: "Warning" }}
+          name="AddWalletPrivacyDisclaimer"
+          component={AddWalletPrivacyDisclaimer}
+        />
+        <Stack.Screen
+          options={{ title: "Select a network" }}
+          name="AddWalletSelectBlockchain"
+          component={AddWalletSelectBlockchain}
+        />
+        <Stack.Screen
+          options={{ title: "Create or import wallet" }}
+          name="AddWalletCreateOrImport"
+          component={AddWalletCreateOrImportScreen}
+        />
+        <Stack.Screen
+          options={{ title: "Advanced import" }}
+          name="AddWalletAdvancedImport"
+          component={AddWalletAdvancedImportScreen}
+        />
+        <Stack.Screen
+          options={{ title: "Recovery Phrase" }}
+          name="ImportFromMnemonic"
+          component={ImportFromMnemonicScreen}
         />
       </Stack.Group>
       <Stack.Group

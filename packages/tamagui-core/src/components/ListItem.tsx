@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   Pressable,
@@ -531,12 +532,16 @@ export function ListItemFriendRequest({
 }
 
 export function _ListItemOneLine({
+  loading,
+  disabled,
   icon,
   title,
   rightText,
   iconAfter,
   onPress,
 }: {
+  disabled?: boolean;
+  loading?: boolean;
   icon: JSX.Element | null;
   title: string;
   rightText?: string;
@@ -546,7 +551,7 @@ export function _ListItemOneLine({
   return (
     <ListItem
       pressTheme
-      disabled={!onPress}
+      disabled={disabled || !onPress}
       onPress={onPress}
       height={48}
       bg="$nav"
@@ -556,7 +561,7 @@ export function _ListItemOneLine({
       <XStack f={1} jc="space-between" ai="center">
         <XStack ai="center">
           {icon ? (
-            <Stack mr={8} width={32} height={32}>
+            <Stack ai="center" jc="center" mr={8} width={32} height={32}>
               {icon}
             </Stack>
           ) : null}
@@ -566,7 +571,7 @@ export function _ListItemOneLine({
         </XStack>
         <XStack ai="center">
           {rightText ? <StyledText mr={8}>{rightText}</StyledText> : null}
-          {iconAfter}
+          {loading ? <ActivityIndicator size="small" /> : iconAfter}
         </XStack>
       </XStack>
     </ListItem>

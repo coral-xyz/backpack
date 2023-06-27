@@ -4,12 +4,11 @@ import { YGroup, Separator, _ListItemOneLine } from "@coral-xyz/tamagui";
 
 import { IconPushDetail } from "./SettingsRow";
 
-export function SettingsList({
-  menuItems,
-}: {
+type SettingsListProps = {
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   borderColor?: string;
+  children?: React.ReactNode;
   menuItems: {
     [key: string]: {
       onPress: () => void;
@@ -20,7 +19,9 @@ export function SettingsList({
       label?: string;
     };
   };
-}) {
+};
+
+export function SettingsList({ menuItems, children }: SettingsListProps) {
   return (
     <YGroup
       overflow="hidden"
@@ -29,6 +30,7 @@ export function SettingsList({
       borderRadius="$container"
       separator={<Separator />}
     >
+      <YGroup.Item>{children}</YGroup.Item>
       {Object.entries(menuItems).map(
         ([key, { onPress, detail, icon, label }]) => (
           <YGroup.Item key={key}>
