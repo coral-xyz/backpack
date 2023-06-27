@@ -23,13 +23,15 @@ import { Error, Sending } from "../Send";
 const logger = getLogger("send-ethereum-confirmation-card");
 const { base58: bs58 } = ethers.utils;
 
-export function SendEthereumConfirmationCard({
+// Note: have not tested this for non main Ethereum chains (e.g. Polygon).
+export function SendEvmConfirmationCard({
   token,
   destinationAddress,
   destinationUser,
   amount,
   onComplete,
   onViewBalances,
+  blockchain,
 }: {
   token: {
     address: string;
@@ -46,6 +48,7 @@ export function SendEthereumConfirmationCard({
   amount: BigNumber;
   onComplete?: () => void;
   onViewBalances?: () => void;
+  blockchain: Blockchain;
 }) {
   const ethereumCtx = useEthereumCtx();
   const [txSignature, setTxSignature] = useState<string | null>(null);
@@ -142,7 +145,7 @@ export function SendEthereumConfirmationCard({
         />
       ) : cardType === "sending" ? (
         <Sending
-          blockchain={Blockchain.ETHEREUM}
+          blockchain={blockchain}
           isComplete={false}
           amount={amount}
           token={token}
@@ -150,7 +153,7 @@ export function SendEthereumConfirmationCard({
         />
       ) : cardType === "complete" ? (
         <Sending
-          blockchain={Blockchain.ETHEREUM}
+          blockchain={blockchain}
           isComplete
           amount={amount}
           token={token}
@@ -159,7 +162,7 @@ export function SendEthereumConfirmationCard({
         />
       ) : (
         <Error
-          blockchain={Blockchain.ETHEREUM}
+          blockchain={blockchain}
           signature={txSignature!}
           onRetry={() => retry()}
           error={error}
