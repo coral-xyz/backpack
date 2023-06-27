@@ -135,7 +135,7 @@ function BiometricsUnlock({ userUuid }: { userUuid: string }) {
 
 function PasswordUnlock({ userUuid }: { userUuid: string }): JSX.Element {
   const background = useBackgroundClient();
-  const { control, handleSubmit, formState, setError } = useForm<FormData>();
+  const { control, handleSubmit, setError } = useForm<FormData>();
 
   const onSubmit = async ({ password }: FormData) => {
     await maybeUnlock({ password });

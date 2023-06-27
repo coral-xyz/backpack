@@ -541,22 +541,27 @@ function OnboardingPrivateKeyInputScreen({
   );
 }
 
+type UsernameData = {
+  username: string;
+};
+
 function CreateOrRecoverUsernameScreen({
   navigation,
 }: StackScreenProps<
   OnboardingStackParamList,
   "CreateOrRecoverUsername"
 >): JSX.Element {
-  const [error, setError] = useState("");
+  const { control, clearErrors, handleSubmit, setError, formState } =
+    useForm<UsernameData>();
   const [loading, setLoading] = useState(false);
-  const [username, setUsername] = useState("");
   const { onboardingData, setOnboardingData } = useOnboarding();
   const { action } = onboardingData; // create | recover
 
   const screenTitle =
     action === "create" ? "Claim your username" : "Username recovery";
 
-  const handlePresContinue = async () => {
+  const onSubmit = async ({ username }: UsernameData) => {
+    clearErrors("username");
     setLoading(true);
     if (action === "recover") {
       try {
@@ -570,7 +575,7 @@ function CreateOrRecoverUsernameScreen({
         navigation.push(RecoverAccountRoutes.KeyringTypeSelector);
       } catch (err: any) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-        setError(err.message);
+        setError("username", { message: err.message });
       } finally {
         setLoading(false);
       }
@@ -586,7 +591,7 @@ function CreateOrRecoverUsernameScreen({
         setOnboardingData({ username });
         navigation.push(NewAccountRoutes.CreateOrImportWallet);
       } catch (err: any) {
-        setError(err.message);
+        setError("username", { message: err.message });
       } finally {
         setLoading(false);
       }
@@ -619,8 +624,6 @@ function CreateOrRecoverUsernameScreen({
       </View>
     );
 
-  const isButtonDisabled = loading || username.length < 4;
-
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -629,23 +632,18 @@ function CreateOrRecoverUsernameScreen({
     >
       <OnboardingScreen title={screenTitle}>
         {text}
-        <Form.Input errorMessage={error}>
+        <Form.Input errorMessage={formState.errors?.username?.message}>
           <UsernameInput
-            showError={Boolean(error)}
-            username={username}
-            onChange={setUsername}
-            onComplete={() => {
-              if (!isButtonDisabled) {
-                handlePresContinue();
-              }
-            }}
+            control={control}
+            errorMessage={Boolean(formState.errors?.username)}
+            onSubmitEditing={handleSubmit(onSubmit)}
           />
         </Form.Input>
         <PrimaryButton
           loading={loading}
-          disabled={isButtonDisabled}
+          disabled={!formState.isValid ? !formState.isDirty : null}
           label="Continue"
-          onPress={handlePresContinue}
+          onPress={handleSubmit(onSubmit)}
         />
       </OnboardingScreen>
     </KeyboardAvoidingView>
