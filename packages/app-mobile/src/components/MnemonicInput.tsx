@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Alert, Pressable } from "react-native";
+import { Alert, Keyboard, Pressable } from "react-native";
 
 import {
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
@@ -25,12 +25,27 @@ type MnemonicInputProps = {
 };
 export function MnemonicInput({ readOnly, onComplete }: MnemonicInputProps) {
   const background = useBackgroundClient();
+  const [keyboardStatus, setKeyboardStatus] = useState("");
 
   const [mnemonicWords, setMnemonicWords] = useState<string[]>([
     ...Array(12).fill(""),
   ]);
 
   const mnemonic = mnemonicWords.map((f) => f.trim()).join(" ");
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardStatus("shown");
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardStatus("hidden");
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   const generateRandom = useCallback(() => {
     background
@@ -66,6 +81,7 @@ export function MnemonicInput({ readOnly, onComplete }: MnemonicInputProps) {
     }
 
     if (words.length > 11) {
+      const mnemonic = mnemonicWords.map((f) => f.trim()).join(" ");
       const isValid = words.length > 11 ? await isValidAsync(mnemonic) : false;
       onComplete({ isValid, mnemonic });
     }
@@ -83,7 +99,7 @@ export function MnemonicInput({ readOnly, onComplete }: MnemonicInputProps) {
       />
       {readOnly ? (
         <CopyButton text={mnemonicWords.join(", ")} />
-      ) : (
+      ) : keyboardStatus === "shown" ? null : (
         <PasteButton
           onPaste={(words) => {
             const split = words.split(" ");
