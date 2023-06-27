@@ -12,8 +12,6 @@ import {
   View,
   Platform,
   KeyboardAvoidingView,
-  Pressable,
-  Text,
   DevSettings,
   StyleProp,
   ViewStyle,
@@ -33,8 +31,6 @@ import {
   DISCORD_INVITE_LINK,
   toTitleCase,
   TWITTER_LINK,
-  UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
-  UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
   XNFT_GG_LINK,
   PrivateKeyWalletDescriptor,
 } from "@coral-xyz/common";
@@ -78,7 +74,6 @@ import {
   FullScreenLoading,
   Header,
   Margin,
-  MnemonicInputFields,
   PrimaryButton,
   SecondaryButton,
   LinkButton,
@@ -86,8 +81,6 @@ import {
   StyledText,
   SubtextParagraph,
   WelcomeLogoHeader,
-  CopyButton,
-  PasteButton,
   EmptyState,
   CallToAction,
 } from "~components/index";
@@ -661,8 +654,6 @@ function OnboardingMnemonicInputScreen({
   const { action } = onboardingData;
   const readOnly = action === "create";
 
-  const isButtonEnabled = readOnly ? checked : isValid;
-
   const subtitle = readOnly
     ? "This is the only way to recover your account if you lose your device. Write it down and store it in a safe place."
     : "Enter your 12 or 24-word secret recovery mnemonic to add an existing wallet.";
@@ -680,6 +671,9 @@ function OnboardingMnemonicInputScreen({
     }
   };
 
+  const isButtonDisabled =
+    (readOnly && !checked) || (!readOnly && !isValid && !checked);
+
   return (
     <OnboardingScreen title="Secret recovery phrase" subtitle={subtitle}>
       <YStack f={1}>
@@ -694,6 +688,7 @@ function OnboardingMnemonicInputScreen({
                 value={checked}
                 onPress={() => {
                   setChecked(!checked);
+                  setIsValid(readOnly && !checked);
                 }}
               />
             </Margin>
@@ -702,8 +697,11 @@ function OnboardingMnemonicInputScreen({
         {maybeRender(Boolean(error), () => (
           <ErrorMessage for={{ message: error }} />
         ))}
+        <StyledText>
+          {JSON.stringify({ isValid, checked, error, readOnly })}
+        </StyledText>
         <PrimaryButton
-          disabled={!isButtonEnabled}
+          disabled={isButtonDisabled}
           label={action === "create" ? "Next" : "Import"}
           onPress={() => {
             if (isValid) {

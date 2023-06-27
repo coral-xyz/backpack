@@ -61,6 +61,7 @@ import {
   AddWalletSelectBlockchain,
   AddWalletCreateOrImportScreen,
   AddWalletAdvancedImportScreen,
+  ImportFromMnemonicScreen,
 } from "~screens/Unlocked/Settings/AddConnectWalletScreen";
 import { ChangePasswordScreen } from "~screens/Unlocked/Settings/ChangePasswordScreen";
 import { PreferencesScreen } from "~screens/Unlocked/Settings/PreferencesScreen";
@@ -350,6 +351,11 @@ export function AccountSettingsNavigator(): JSX.Element {
           options={{ title: "Advanced import" }}
           name="AddWalletAdvancedImport"
           component={AddWalletAdvancedImportScreen}
+        />
+        <Stack.Screen
+          options={{ title: "Recovery Phrase" }}
+          name="ImportFromMnemonic"
+          component={ImportFromMnemonicScreen}
         />
       </Stack.Group>
       <Stack.Group

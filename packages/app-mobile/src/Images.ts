@@ -1,6 +1,12 @@
 const Images = {
   solanaLogo: require("../assets/blockchains/solana.png"),
   ethereumLogo: require("../assets/blockchains/ethereum.png"),
+  logoAvalanche: require("./images/logo-avalanche.png"),
+  logoBsc: require("./images/logo-bsc.png"),
+  logoCosmos: require("./images/logo-cosmos.png"),
+  logoEthereum: require("./images/logo-ethereum.png"),
+  logoPolygon: require("./images/logo-polygon.png"),
+  logoSolana: require("./images/logo-solana.png"),
 };
 
 export default Images;

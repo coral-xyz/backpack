@@ -54,6 +54,7 @@ import { WalletListItem } from "~screens/Unlocked/EditWalletsScreen";
 import { SettingsList } from "./components/SettingsMenuList";
 import { IconPushDetail } from "./components/SettingsRow";
 
+import { MnemonicInput } from "~src/components/MnemonicInput";
 import { useSession } from "~src/lib/SessionProvider";
 
 export function AddWalletPrivacyDisclaimer({ navigation }): JSX.Element {
@@ -277,6 +278,54 @@ export function AddWalletAdvancedImportScreen({ navigation, route }) {
   return (
     <Screen>
       <SettingsList menuItems={menuItems} />
+    </Screen>
+  );
+}
+
+export function ImportFromMnemonicScreen({ navigation, route }): JSX.Element {
+  const insets = useSafeAreaInsets();
+  const { blockchain, keyringExists, inputMnemonic } = route.params;
+  const [isValid, setIsValid] = useState(false);
+
+  const onComplete = ({
+    isValid,
+    mnemonic,
+  }: {
+    isValid: boolean;
+    mnemonic: string;
+  }) => {
+    setIsValid(isValid);
+    if (isValid) {
+      console.log(mnemonic);
+    }
+  };
+
+  return (
+    <Screen jc="space-between" style={{ marginBottom: insets.bottom }}>
+      <YStack f={1}>
+        <YStack mb={24}>
+          <Header text="Secret Recovery Phrase" />
+          <SubtextParagraph>
+            Enter your 12 or 24-word secret recovery mnemonic to add an existing
+            wallet.
+          </SubtextParagraph>
+        </YStack>
+        <MnemonicInput readOnly={!inputMnemonic} onComplete={onComplete} />
+      </YStack>
+
+      <PrimaryButton
+        disabled={!isValid}
+        label="Next"
+        onPress={() => {
+          // if (isValid) {
+          //   const route =
+          //     action === "recover" ? "MnemonicSearch" : "SelectBlockchain";
+          //   navigation.push(route);
+          // } else {
+          //   setError("Invalid secret recovery phrase");
+          // }
+        }}
+      />
     </Screen>
   );
 }

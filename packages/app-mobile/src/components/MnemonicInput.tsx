@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Alert, Pressable, View, Text } from "react-native";
+import { Alert, Pressable } from "react-native";
 
 import {
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
@@ -59,8 +59,13 @@ export function MnemonicInput({ readOnly, onComplete }: MnemonicInputProps) {
 
   const onChange = async (words: string[]) => {
     setMnemonicWords(words);
-    if (words.length > 11) {
+    if (readOnly) {
       const mnemonic = mnemonicWords.map((f) => f.trim()).join(" ");
+      onComplete({ isValid: true, mnemonic });
+      return;
+    }
+
+    if (words.length > 11) {
       const isValid = words.length > 11 ? await isValidAsync(mnemonic) : false;
       onComplete({ isValid, mnemonic });
     }
