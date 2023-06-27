@@ -141,12 +141,13 @@ export function MnemonicInputFields({
       data={mnemonicWords}
       numColumns={3}
       initialNumToRender={12}
-      scrollEnabled={false}
+      scrollEnabled={mnemonicWords.length > 12}
       keyExtractor={keyExtractor}
       contentContainerStyle={{ gap: ITEM_GAP }}
       columnWrapperStyle={{ gap: ITEM_GAP }}
       renderItem={renderItem}
       maxToRenderPerBatch={12}
+      style={{ maxHeight: 275 }}
       getItemLayout={(_data, index) => ({
         length: ITEM_HEIGHT,
         offset: ITEM_HEIGHT * index,

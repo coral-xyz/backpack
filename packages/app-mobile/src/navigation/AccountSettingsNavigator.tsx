@@ -102,7 +102,14 @@ type AccountSettingsParamList = {
   PreferencesSolanaExplorer: undefined;
   PreferencesSolanaCustomRpcUrl: undefined;
   PreferencesTrustedSites: undefined;
-  "import-private-key": undefined;
+  ImportFromMnemonic: {
+    blockchain: Blockchain;
+    keyringExists: boolean;
+    inputMnemonic: boolean;
+  };
+  ImportPrivateKey: {
+    blockchain: Blockchain;
+  };
   "reset-warning": undefined;
   "show-secret-phrase-warning": undefined;
   "show-secret-phrase": {
@@ -250,7 +257,7 @@ export function AccountSettingsNavigator(): JSX.Element {
         />
         <Stack.Screen
           options={{ title: "Import Private Key" }}
-          name="import-private-key"
+          name="ImportPrivateKey"
           component={ImportPrivateKeyScreen}
         />
         <Stack.Screen

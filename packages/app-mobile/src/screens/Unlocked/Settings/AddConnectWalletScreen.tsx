@@ -4,24 +4,33 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { Alert, Text, View } from "react-native";
 
 import {
+  BackgroundClient,
   Blockchain,
+  getAddMessage,
+  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+  UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+  UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
 } from "@coral-xyz/common";
 import {
   useActiveWallet,
   useBackgroundClient,
   useEnabledBlockchains,
   useKeyringHasMnemonic,
+  useRpcRequests,
   useUser,
   useWalletName,
+  useWalletPublicKeys,
 } from "@coral-xyz/recoil";
 import {
   getIcon,
   LinkButton,
+  ListItem,
   PrimaryButton,
   Stack,
   StyledText,
   YStack,
+  _ListItemOneLine,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
@@ -43,6 +52,7 @@ import { useTheme } from "~hooks/useTheme";
 import { WalletListItem } from "~screens/Unlocked/EditWalletsScreen";
 
 import { SettingsList } from "./components/SettingsMenuList";
+import { IconPushDetail } from "./components/SettingsRow";
 
 import { useSession } from "~src/lib/SessionProvider";
 
@@ -107,56 +117,119 @@ export function AddWalletSelectBlockchain({ navigation }): JSX.Element {
   );
 }
 
-export function AddWalletCreateOrImportScreen({ route }) {
-  const user = useUser();
-  const { blockchain } = route.params;
-  const { setActiveWallet } = useSession();
-  // const { blockchain } = useActiveWallet();
-  const navigation = useNavigation();
+function CreateNewWalletButton({ blockchain }: { blockchain: Blockchain }) {
   const background = useBackgroundClient();
-  const hasMnemonic = useKeyringHasMnemonic();
-  const theme = useTheme();
-  const [newPublicKey, setNewPublicKey] = useState(null);
+  const { signMessageForWallet } = useRpcRequests();
+  const publicKeys = useWalletPublicKeys();
+  const keyringExists = publicKeys[blockchain];
 
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ["25%"], []);
-  const modalHeight = 240;
+  // If the keyring or if we don't have any public keys of the type we are
+  // adding then additional logic is required to select the account index of
+  // the first derivation path added
+  const hasHdPublicKeys =
+    publicKeys?.[blockchain]?.["hdPublicKeys"]?.length > 0;
 
-  const handleOpenModal = () => bottomSheetModalRef.current?.present();
-  const renderBackdrop = useCallback(
-    (props: BottomSheetBackdropProps) => (
-      <BottomSheetBackdrop
-        {...props}
-        pressBehavior="close"
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-      />
-    ),
-    []
+  const [newPublicKey, setNewPublicKey] = useState("");
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Copied from extension/AddConnectWallet/index
+  const createNewWithPhrase = async () => {
+    // Mnemonic based keyring. This is the simple case because we don't
+    // need to prompt for the user to open their Ledger app to get the
+    // required public key. We also don't need a signature to prove
+    // ownership of the public key because that can't be done
+    // transparently by the backend.
+    if (loading) {
+      return;
+    }
+
+    setOpenDrawer(true);
+    setLoading(true);
+
+    let newPublicKey;
+    if (!keyringExists || !hasHdPublicKeys) {
+      // No keyring or no existing mnemonic public keys so can't derive next
+      const walletDescriptor = await background.request({
+        method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
+        params: [blockchain, 0],
+      });
+
+      const signature = await signMessageForWallet(
+        blockchain,
+        walletDescriptor.publicKey,
+        getAddMessage(walletDescriptor.publicKey),
+        {
+          mnemonic: true,
+          signedWalletDescriptors: [
+            {
+              ...walletDescriptor,
+              signature: "",
+            },
+          ],
+        }
+      );
+
+      const signedWalletDescriptor = { ...walletDescriptor, signature };
+      if (!keyringExists) {
+        // Keyring doesn't exist, create it
+        await background.request({
+          method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+          params: [
+            {
+              mnemonic: true, // Use the existing mnemonic
+              signedWalletDescriptors: [signedWalletDescriptor],
+            },
+          ],
+        });
+      } else {
+        // Keyring exists but the hd keyring is not initialised, import
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
+          params: [signedWalletDescriptor],
+        });
+      }
+
+      newPublicKey = walletDescriptor.publicKey;
+    } else {
+      newPublicKey = await background.request({
+        method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+        params: [blockchain],
+      });
+    }
+
+    setNewPublicKey(newPublicKey);
+    setLoading(false);
+  };
+
+  return (
+    <_ListItemOneLine
+      loading={loading}
+      title="Create a new wallet"
+      icon={getIcon("add-circle")}
+      iconAfter={<IconPushDetail />}
+      onPress={createNewWithPhrase}
+    />
   );
+}
+
+// {openDrawer ? (
+//   <ConfirmCreateWallet blockchain={blockchain} publicKey={newPublicKey} />
+// ) : null}
+
+export function AddWalletCreateOrImportScreen({
+  navigation,
+  route,
+}): JSX.Element {
+  const { blockchain } = route.params;
 
   const menuItems = {
-    NewWallet: {
-      label: "Create a new wallet",
-      icon: getIcon("add-circle"),
-      onPress: async () => {
-        // could not remove public key error
-        const newPubkey = await background.request({
-          method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-          params: [blockchain],
-        });
-
-        console.log("newPubkey", newPubkey);
-
-        handleOpenModal();
-      },
-    },
     Advanced: {
       label: "Advanced wallet import",
       icon: getIcon("arrow-circle-up"),
       onPress: () => {
         navigation.push("AddWalletAdvancedImport", {
-          blockchain: Blockchain.ETHEREUM,
+          blockchain,
         });
       },
     },
@@ -164,22 +237,9 @@ export function AddWalletCreateOrImportScreen({ route }) {
 
   return (
     <Screen>
-      <SettingsList menuItems={menuItems} />
-      <BottomSheetModal
-        index={0}
-        snapPoints={snapPoints}
-        ref={bottomSheetModalRef}
-        backdropComponent={renderBackdrop}
-        contentHeight={modalHeight}
-        handleStyle={{
-          marginBottom: 12,
-        }}
-        backgroundStyle={{
-          backgroundColor: theme.custom.colors.background,
-        }}
-      >
-        <ConfirmCreateWallet blockchain={blockchain} publicKey={newPublicKey} />
-      </BottomSheetModal>
+      <SettingsList menuItems={menuItems}>
+        <CreateNewWalletButton blockchain={blockchain} />
+      </SettingsList>
     </Screen>
   );
 }
@@ -192,7 +252,7 @@ export function AddWalletAdvancedImportScreen({ navigation, route }) {
   const menuItems = {
     "Backpack recovery phrase": {
       onPress: () =>
-        navigation.push("import-from-mnemonic", {
+        navigation.push("ImportFromMnemonic", {
           blockchain,
           keyringExists,
           inputMnemonic: false,
@@ -200,18 +260,16 @@ export function AddWalletAdvancedImportScreen({ navigation, route }) {
     },
     "Other recovery phrase": {
       onPress: () =>
-        navigation.push("import-from-mnemonic", {
+        navigation.push("ImportFromMnemonic", {
           blockchain,
-          inputMnemonic: true,
           keyringExists,
-          publicKey,
+          inputMnemonic: true,
         }),
     },
     "Private key": {
       onPress: () =>
-        navigation.push("import-private-key", {
+        navigation.push("ImportPrivateKey", {
           blockchain,
-          publicKey,
         }),
     },
   };
@@ -222,46 +280,3 @@ export function AddWalletAdvancedImportScreen({ navigation, route }) {
     </Screen>
   );
 }
-
-export const ConfirmCreateWallet = ({
-  blockchain,
-  publicKey,
-}: {
-  blockchain: Blockchain;
-  publicKey: string;
-}): JSX.Element => {
-  const theme = useTheme();
-  const walletName = useWalletName(publicKey);
-
-  return (
-    <View
-      style={{
-        marginHorizontal: 16,
-        backgroundColor: theme.custom.colors.bg2,
-      }}
-    >
-      <View>
-        <Text
-          style={{
-            textAlign: "center",
-            fontWeight: "500",
-            fontSize: 18,
-            color: theme.custom.colors.fontColor,
-          }}
-        >
-          Wallet Created
-        </Text>
-        <View style={{ alignSelf: "center", marginVertical: 24 }}>
-          <CheckIcon />
-        </View>
-      </View>
-      <RoundedContainerGroup>
-        <WalletListItem
-          blockchain={blockchain}
-          publicKey={publicKey}
-          name={walletName}
-        />
-      </RoundedContainerGroup>
-    </View>
-  );
-};
