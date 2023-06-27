@@ -111,6 +111,8 @@ export function UnlockedNavigator(): JSX.Element {
           const { name, publicKey } = route.params;
           return {
             title: `${name} (${formatWalletAddress(publicKey)})`,
+            publicKey,
+            name,
           };
         }}
       />

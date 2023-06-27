@@ -1,10 +1,11 @@
-import { SolanaTokenList } from "@coral-xyz/common";
 import { getATAAddressesSync } from "@saberhq/token-utils";
 import { PublicKey } from "@solana/web3.js";
 import { ethers } from "ethers";
 
+import { HELIUS_API_KEY } from "../../../../config";
 import type { CoinGeckoPriceData } from "../../clients/coingecko";
 import {
+  Helius,
   type HeliusGetAssetsByOwnerResponse,
   IN_MEM_COLLECTION_DATA_CACHE,
 } from "../../clients/helius";
@@ -32,6 +33,10 @@ import { createMarketDataNode, sortTokenBalanceNodes } from "../util";
 
 import { SolanaRpc } from "./rpc";
 
+export type SolanaProviderSettings = {
+  context?: ApiContext;
+};
+
 /**
  * Solana blockchain implementation for the common API sourced by API indexes.
  * @export
@@ -40,8 +45,14 @@ import { SolanaRpc } from "./rpc";
  * @implements {BlockchainDataProvider}
  */
 export class Solana extends SolanaRpc implements BlockchainDataProvider {
-  constructor(ctx?: ApiContext) {
-    super(ctx);
+  readonly #helius: Helius;
+
+  constructor({ context }: SolanaProviderSettings) {
+    super({ context });
+    this.#helius = new Helius({
+      apiKey: HELIUS_API_KEY,
+      devnet: context?.network.devnet,
+    });
   }
 
   /**
@@ -65,7 +76,7 @@ export class Solana extends SolanaRpc implements BlockchainDataProvider {
 
     try {
       // Get the address balances and filter out the NFTs and empty ATAs
-      const balances = await this.ctx.dataSources.helius.getBalances(address);
+      const balances = await this.#helius.getBalances(address);
       const nonEmptyOrNftTokens = balances.tokens.filter(
         (t) => t.amount > 0 && !(t.amount === 1 && t.decimals === 0)
       );
@@ -74,7 +85,7 @@ export class Solana extends SolanaRpc implements BlockchainDataProvider {
       // in-memory Jupiter token list
       const nonNftMints = nonEmptyOrNftTokens.map((t) => t.mint);
       const meta = nonNftMints.reduce<Map<string, string>>((acc, curr) => {
-        const entry = SolanaTokenList[curr];
+        const entry = this.tokenList[curr];
         if (entry && entry.coingeckoId) {
           acc.set(curr, entry.coingeckoId);
         }
@@ -107,9 +118,7 @@ export class Solana extends SolanaRpc implements BlockchainDataProvider {
             prices.solana
           ),
           token: this.defaultAddress(),
-          tokenListEntry: NodeBuilder.tokenListEntry(
-            SolanaTokenList[this.defaultAddress()]
-          ),
+          tokenListEntry: NodeBuilder.tokenListEntry(this.tokenList["native"]),
         },
         true
       );
@@ -126,8 +135,8 @@ export class Solana extends SolanaRpc implements BlockchainDataProvider {
           );
 
           const marketData = createMarketDataNode(displayAmount, id, p);
-          const tokenListEntry = SolanaTokenList[curr.mint]
-            ? NodeBuilder.tokenListEntry(SolanaTokenList[curr.mint])
+          const tokenListEntry = this.tokenList[curr.mint]
+            ? NodeBuilder.tokenListEntry(this.tokenList[curr.mint])
             : undefined;
 
           if (filters?.marketListedTokensOnly && !marketData) {
@@ -190,9 +199,7 @@ export class Solana extends SolanaRpc implements BlockchainDataProvider {
 
     try {
       // Get the list of digital assets (NFTs) owned by the argued address from Helius DAS API.
-      const response = await this.ctx.dataSources.helius.rpc.getAssetsByOwner(
-        address
-      );
+      const response = await this.#helius.rpc.getAssetsByOwner(address);
 
       // Optionally filter for only argued NFT mints if provided
       let { items } = response.result;
@@ -217,7 +224,7 @@ export class Solana extends SolanaRpc implements BlockchainDataProvider {
       }
 
       // Create a map of collection address to name and image for reference
-      const collectionMap = await _getCollectionMetadatas(this.ctx, items);
+      const collectionMap = await _getCollectionMetadatas(this.#helius, items);
 
       // Create a map of associated token account addresses
       const atas = getATAAddressesSync({
@@ -299,7 +306,7 @@ export class Solana extends SolanaRpc implements BlockchainDataProvider {
     }
 
     try {
-      const resp = await this.ctx.dataSources.helius.getTransactionHistory(
+      const resp = await this.#helius.getTransactionHistory(
         address,
         filters?.before ?? undefined,
         filters?.after ?? undefined,
@@ -322,10 +329,7 @@ export class Solana extends SolanaRpc implements BlockchainDataProvider {
           description: r.description,
           block: r.slot,
           error: transactionError,
-          fee: `${ethers.utils.formatUnits(
-            r.fee,
-            this.decimals()
-          )} ${this.symbol()}`,
+          fee: ethers.utils.formatUnits(r.fee, this.decimals()),
           feePayer: r.feePayer,
           hash: r.signature,
           nfts,
@@ -350,12 +354,12 @@ export class Solana extends SolanaRpc implements BlockchainDataProvider {
 
 /**
  * Build a map of collection addresses to their name and images if discovered.
- * @param {ApiContext} ctx
+ * @param {Helius} helius
  * @param {Set<string>} items
  * @returns {Promise<Map<string, { name?: string; image?: string }>>}
  */
 async function _getCollectionMetadatas(
-  ctx: ApiContext,
+  helius: Helius,
   items: HeliusGetAssetsByOwnerResponse["result"]["items"]
 ): Promise<Map<string, { name?: string; image?: string }>> {
   // Create a set of unique NFT collection addresses and fetch
@@ -387,10 +391,7 @@ async function _getCollectionMetadatas(
   // Fetch metadata from API for any remaining un-cached addresses
   const remaining = [...uniqueCollections.values()];
   if (remaining.length > 0) {
-    const collectionMetadatas = await ctx.dataSources.helius.getTokenMetadata(
-      remaining,
-      true
-    );
+    const collectionMetadatas = await helius.getTokenMetadata(remaining, true);
 
     for (const c of collectionMetadatas) {
       const onChain = c.onChainMetadata?.metadata.data ?? undefined;

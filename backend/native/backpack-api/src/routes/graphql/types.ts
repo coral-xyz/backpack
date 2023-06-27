@@ -360,7 +360,9 @@ export type Provider = Node & {
 /** Provider ID enum variants for the supported blockchains or wallet types in the API. */
 export enum ProviderId {
   Bitcoin = "BITCOIN",
+  Eclipse = "ECLIPSE",
   Ethereum = "ETHEREUM",
+  Polygon = "POLYGON",
   Solana = "SOLANA",
 }
 
@@ -557,7 +559,7 @@ export type UserNotificationsArgs = {
  */
 export type UserWalletArgs = {
   address: Scalars["String"];
-  providerId?: InputMaybe<ProviderId>;
+  providerId: ProviderId;
 };
 
 /**
@@ -1382,7 +1384,7 @@ export type UserResolvers<
     Maybe<ResolversTypes["Wallet"]>,
     ParentType,
     ContextType,
-    RequireFields<UserWalletArgs, "address">
+    RequireFields<UserWalletArgs, "address" | "providerId">
   >;
   wallets?: Resolver<
     Maybe<ResolversTypes["WalletConnection"]>,

@@ -1,3 +1,5 @@
+import type { ProviderId } from "~src/graphql/__generated__/graphql";
+
 import { Suspense } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -71,10 +73,10 @@ function TextPercentChange({
 }
 
 const QUERY_USER_BALANCE_SUMMARY = gql(`
-  query UserWalletBalanceSummary($address: String!) {
+  query UserWalletBalanceSummary($address: String!, $providerId: ProviderID!) {
     user {
       id
-      wallet(address: $address) {
+      wallet(address: $address, providerId: $providerId) {
         id
         isPrimary
         provider {
@@ -100,6 +102,7 @@ function Container() {
   const { data } = useSuspenseQuery(QUERY_USER_BALANCE_SUMMARY, {
     variables: {
       address: activeWallet.publicKey,
+      providerId: activeWallet.blockchain.toUpperCase() as ProviderId,
     },
   });
 

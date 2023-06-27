@@ -36,7 +36,7 @@ export function RoundedContainerGroup({
 const styles = StyleSheet.create({
   container: {
     overflow: "hidden",
-    borderRadius: 16,
+    borderRadius: 12,
     borderLeftWidth: 2,
     borderRightWidth: 2,
     borderTopWidth: 2,

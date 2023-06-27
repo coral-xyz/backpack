@@ -4,7 +4,10 @@ import { useActiveWallet } from "@coral-xyz/recoil";
 import { RoundedContainerGroup } from "@coral-xyz/tamagui";
 
 import { gql } from "../../../apollo";
-import type { GetTokenBalancesQuery } from "../../../apollo/graphql";
+import type {
+  GetTokenBalancesQuery,
+  ProviderId,
+} from "../../../apollo/graphql";
 import { usePolledSuspenseQuery } from "../../../hooks";
 
 import { BalancesTableRow } from "./BalancesTableRow";
@@ -12,10 +15,10 @@ import { BalancesTableRow } from "./BalancesTableRow";
 const DEFAULT_POLLING_INTERVAL = 60000;
 
 const GET_TOKEN_BALANCES = gql(`
-  query GetTokenBalances($address: String!) {
+  query GetTokenBalances($address: String!, $providerId: ProviderID!) {
     user {
       id
-      wallet(address: $address) {
+      wallet(address: $address, providerId: $providerId) {
         id
         balances {
           id
@@ -80,6 +83,7 @@ function _BalancesTable({
     {
       variables: {
         address: activeWallet.publicKey,
+        providerId: activeWallet.blockchain.toUpperCase() as ProviderId,
       },
     }
   );

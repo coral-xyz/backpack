@@ -11,3 +11,8 @@ export type TokenListEntry = {
   /** The registered symbol of the token. */
   symbol: string;
 };
+
+export type CustomTokenList = {
+  native: TokenListEntry;
+  [addr: string]: TokenListEntry;
+};

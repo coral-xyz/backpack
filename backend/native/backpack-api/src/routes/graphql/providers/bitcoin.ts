@@ -18,6 +18,10 @@ import { calculateBalanceAggregate, createConnection } from "../utils";
 
 import type { BlockchainDataProvider } from ".";
 
+export type BitcoinProviderSettings = {
+  context?: ApiContext;
+};
+
 /**
  * Bitcoin blockchain implementation for the common API.
  * @export
@@ -27,8 +31,8 @@ import type { BlockchainDataProvider } from ".";
 export class Bitcoin implements BlockchainDataProvider {
   readonly #ctx?: ApiContext;
 
-  constructor(ctx?: ApiContext) {
-    this.#ctx = ctx;
+  constructor({ context }: BitcoinProviderSettings) {
+    this.#ctx = context;
   }
 
   /**
@@ -74,15 +78,6 @@ export class Bitcoin implements BlockchainDataProvider {
    */
   name(): string {
     return BitcoinToken.name;
-  }
-
-  /**
-   * Symbol of the native coin.
-   * @returns {string}
-   * @memberof Bitcoin
-   */
-  symbol(): string {
-    return BitcoinToken.symbol;
   }
 
   /**
@@ -132,11 +127,11 @@ export class Bitcoin implements BlockchainDataProvider {
             : undefined,
           token: this.defaultAddress(),
           tokenListEntry: NodeBuilder.tokenListEntry({
-            address: this.defaultAddress(),
+            address: BitcoinToken.address,
             coingeckoId: "bitcoin",
-            logo: this.logo(),
-            name: this.name(),
-            symbol: this.symbol(),
+            logo: BitcoinToken.logo,
+            name: BitcoinToken.name,
+            symbol: BitcoinToken.symbol,
           }),
         },
         true

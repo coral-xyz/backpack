@@ -17,6 +17,15 @@ import { useTheme } from "~hooks/useTheme";
 
 import { ArrowRightIcon } from "./Icon";
 
+type MenuItem = {
+  label: string;
+  iconName?: string;
+  icon?: any;
+  route?: string;
+  hideArrow?: boolean;
+  onPress?: () => void;
+};
+
 export function SettingsList({ navigation }): JSX.Element {
   const background = useBackgroundClient();
 
@@ -79,7 +88,7 @@ export function SettingsList({ navigation }): JSX.Element {
           key={JSON.stringify(index)}
           separator={<Separator />}
         >
-          {group.map((item) => (
+          {group.map((item: MenuItem) => (
             <YGroup.Item key={item.label}>
               <_ListItemOneLine
                 title={item.label}

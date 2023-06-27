@@ -2,7 +2,7 @@ import { Chain } from "@coral-xyz/zeus";
 import { GraphQLError } from "graphql";
 
 import { NodeBuilder } from "../nodes";
-import { getProviderForId } from "../providers";
+import { getProviderForId, inferProviderIdFromString } from "../providers";
 import type {
   Friend,
   FriendRequest,
@@ -16,7 +16,7 @@ import type {
   WalletFiltersInput,
 } from "../types";
 import { FriendRequestType } from "../types";
-import { createConnection, inferProviderIdFromString } from "../utils";
+import { createConnection } from "../utils";
 
 type HasuraOptions = {
   secret: string;
@@ -357,14 +357,14 @@ export class Hasura {
    * by the user ID in the database.
    * @param {string} id
    * @param {string} address
-   * @param {ProviderId} [providerId]
+   * @param {ProviderId} providerId
    * @returns {Promise<Wallet | null>}
    * @memberof Hasura
    */
   async getWallet(
     id: string,
     address: string,
-    providerId?: ProviderId
+    providerId: ProviderId
   ): Promise<Wallet | null> {
     // Query Hasura for a single public key owned by the argued user ID
     // and matches the argued public key address
@@ -379,7 +379,6 @@ export class Hasura {
             },
           },
           {
-            blockchain: true,
             created_at: true,
             is_primary: true,
           },
@@ -392,10 +391,8 @@ export class Hasura {
       return null;
     }
 
-    const { blockchain, created_at, is_primary } = resp.auth_public_keys[0];
-    const provider = getProviderForId(
-      providerId ?? inferProviderIdFromString(blockchain)
-    );
+    const { created_at, is_primary } = resp.auth_public_keys[0];
+    const provider = getProviderForId(providerId);
 
     return NodeBuilder.wallet(provider.id(), {
       address,

@@ -1,7 +1,7 @@
-import type { TokenListEntry } from "./types";
+import type { CustomTokenList } from "./types";
 
-export const SolanaTokenList: Record<string, Omit<TokenListEntry, "id">> = {
-  "11111111111111111111111111111111": {
+export const SolanaTokenList: CustomTokenList = {
+  native: {
     address: "11111111111111111111111111111111",
     coingeckoId: "solana",
     logo: "https://assets.coingecko.com/coins/images/4128/large/solana.png",

@@ -1,4 +1,4 @@
-import { Disclosure } from '@headlessui/react';
+import { Disclosure, Menu } from '@headlessui/react';
 import { ExternalLinkIcon, MenuIcon, XIcon } from '@heroicons/react/outline';
 import Image from 'next/legacy/image';
 import Link from 'next/link';
@@ -20,6 +20,9 @@ export const mainMenu = [
     path: '/about'
   },
   {
+    title: 'Support'
+  },
+  {
     title: 'Downloads',
     path: '/downloads'
   }
@@ -39,7 +42,7 @@ function Nav() {
                   {/* Logo */}
                   <Link href="/">
                     <div className="flex">
-                      <Image alt="Backpack" src="/backpack.svg" width="150px" height="50px" />
+                      <Image alt="Backpack" src="/backpack.svg" width={150} height={50} />
                     </div>
                   </Link>
                 </div>
@@ -61,6 +64,28 @@ function Nav() {
                         >
                           {item.title}
                         </a>
+                      );
+                    } else if (item.title === 'Support') {
+                      return (
+                        <Menu key={index} as="div" className="relative">
+                          <Menu.Button className="px-3 py-2 text-sm font-medium tracking-wide text-zinc-100">
+                            {item.title}
+                          </Menu.Button>
+                          <Menu.Items className="absolute left-0 mt-2 rounded-lg bg-[#27272A] px-3 text-sm font-medium tracking-wide text-zinc-100">
+                            {[
+                              { title: 'Discord', link: 'http://discord.gg/backpack' },
+                              { title: 'User Guides', link: 'https://help.backpack.app' }
+                            ].map(item => (
+                              <Menu.Item key={item.title}>
+                                <div className="w-24 py-2">
+                                  <a href={item.link} target="_blank" rel="noopener noreferrer">
+                                    {item.title}
+                                  </a>
+                                </div>
+                              </Menu.Item>
+                            ))}
+                          </Menu.Items>
+                        </Menu>
                       );
                     } else {
                       return (

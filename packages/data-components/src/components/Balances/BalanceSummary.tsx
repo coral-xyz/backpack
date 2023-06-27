@@ -9,15 +9,16 @@ import {
 } from "@coral-xyz/tamagui";
 
 import { gql } from "../../apollo";
+import type { ProviderId } from "../../apollo/graphql";
 import { usePolledSuspenseQuery } from "../../hooks";
 
 const DEFAULT_POLLING_INTERVAL = 60000;
 
 const GET_BALANCE_SUMMARY = gql(`
-  query GetBalanceSummary($address: String!) {
+  query GetBalanceSummary($address: String!, $providerId: ProviderID!) {
     user {
       id
-      wallet(address: $address) {
+      wallet(address: $address, providerId: $providerId) {
         id
         balances {
           id
@@ -59,6 +60,7 @@ function _BalanceSummaryWidget({
     {
       variables: {
         address: activeWallet.publicKey,
+        providerId: activeWallet.blockchain.toUpperCase() as ProviderId,
       },
     }
   );

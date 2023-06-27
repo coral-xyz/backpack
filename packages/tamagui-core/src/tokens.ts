@@ -5,7 +5,10 @@ import { color } from "./colors";
 
 export const tokens = createTokens({
   color,
-  space,
+  space: {
+    ...space,
+    settingsList: 12,
+  },
   size: {
     ...size,
     xs: 12,
@@ -27,6 +30,7 @@ export const tokens = createTokens({
     screenPx: 16,
     screenPt: 16,
     screenPb: 16,
+    settingsList: 12,
   },
   zIndex,
   radius: {

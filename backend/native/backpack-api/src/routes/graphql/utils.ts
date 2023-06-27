@@ -122,25 +122,3 @@ export async function getSubjectFromVerifiedJwt(
     return undefined;
   }
 }
-
-/**
- * Infer and return a ProviderId enum variant from the argued string value.
- * @export
- * @param {string} val
- * @returns {(ProviderId | never)}
- */
-export function inferProviderIdFromString(val: string): ProviderId | never {
-  switch (val.toLowerCase()) {
-    case "ethereum": {
-      return ProviderId.Ethereum;
-    }
-
-    case "solana": {
-      return ProviderId.Solana;
-    }
-
-    default: {
-      throw new Error(`unknown chain id string: ${val}`);
-    }
-  }
-}

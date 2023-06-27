@@ -4,11 +4,11 @@ import { Suspense, useCallback, useMemo } from "react";
 import { FlatList } from "react-native";
 
 import { useSuspenseQuery } from "@apollo/client";
-import { PaddedListItemSeparator } from "@coral-xyz/tamagui";
+import { PaddedListItemSeparator, Separator } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { ListItemWallet } from "~components/ListItem";
+import { ListItemEditWallet, ListItemWallet } from "~components/ListItem";
 import {
   RoundedContainerGroup,
   ScreenError,
@@ -66,18 +66,14 @@ function Container({ navigation }: EditWalletsScreenProps) {
           disableTopRadius={!isFirst}
           disableBottomRadius={!isLast}
         >
-          <ListItemWallet
+          <ListItemEditWallet
             name={item.name}
             type={item.type}
             publicKey={item.publicKey}
             blockchain={item.blockchain}
             isCold={item.isCold}
-            selected={false}
-            loading={false}
             primary={item.isPrimary}
-            balance={item.balance}
-            onPressEdit={handlePressEdit}
-            onSelect={handlePressEdit}
+            onPress={handlePressEdit}
           />
         </RoundedContainerGroup>
       );
@@ -90,7 +86,7 @@ function Container({ navigation }: EditWalletsScreenProps) {
       data={wallets}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
-      ItemSeparatorComponent={PaddedListItemSeparator}
+      ItemSeparatorComponent={Separator}
       style={{
         paddingTop: 16,
         paddingHorizontal: 16,

@@ -354,7 +354,9 @@ export type Provider = Node & {
 /** Provider ID enum variants for the supported blockchains or wallet types in the API. */
 export enum ProviderId {
   Bitcoin = "BITCOIN",
+  Eclipse = "ECLIPSE",
   Ethereum = "ETHEREUM",
+  Polygon = "POLYGON",
   Solana = "SOLANA",
 }
 
@@ -551,7 +553,7 @@ export type UserNotificationsArgs = {
  */
 export type UserWalletArgs = {
   address: Scalars["String"];
-  providerId?: InputMaybe<ProviderId>;
+  providerId: ProviderId;
 };
 
 /**
@@ -624,6 +626,7 @@ export type WalletFiltersInput = {
 
 export type GetBalanceSummaryQueryVariables = Exact<{
   address: Scalars["String"];
+  providerId: ProviderId;
 }>;
 
 export type GetBalanceSummaryQuery = {
@@ -651,6 +654,7 @@ export type GetBalanceSummaryQuery = {
 
 export type GetTokenBalancesQueryVariables = Exact<{
   address: Scalars["String"];
+  providerId: ProviderId;
 }>;
 
 export type GetTokenBalancesQuery = {
@@ -765,6 +769,7 @@ export type GetTokenListEntryLogoQuery = {
 
 export type GetTransactionsQueryVariables = Exact<{
   address: Scalars["String"];
+  providerId: ProviderId;
   filters?: InputMaybe<TransactionFiltersInput>;
 }>;
 
@@ -822,6 +827,20 @@ export const GetBalanceSummaryDocument = {
             },
           },
         },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "providerId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "ProviderID" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -843,6 +862,14 @@ export const GetBalanceSummaryDocument = {
                       value: {
                         kind: "Variable",
                         name: { kind: "Name", value: "address" },
+                      },
+                    },
+                    {
+                      kind: "Argument",
+                      name: { kind: "Name", value: "providerId" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "providerId" },
                       },
                     },
                   ],
@@ -930,6 +957,20 @@ export const GetTokenBalancesDocument = {
             },
           },
         },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "providerId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "ProviderID" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -951,6 +992,14 @@ export const GetTokenBalancesDocument = {
                       value: {
                         kind: "Variable",
                         name: { kind: "Name", value: "address" },
+                      },
+                    },
+                    {
+                      kind: "Argument",
+                      name: { kind: "Name", value: "providerId" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "providerId" },
                       },
                     },
                   ],
@@ -1471,6 +1520,20 @@ export const GetTransactionsDocument = {
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
+            name: { kind: "Name", value: "providerId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "ProviderID" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
             name: { kind: "Name", value: "filters" },
           },
           type: {
@@ -1499,6 +1562,14 @@ export const GetTransactionsDocument = {
                       value: {
                         kind: "Variable",
                         name: { kind: "Name", value: "address" },
+                      },
+                    },
+                    {
+                      kind: "Argument",
+                      name: { kind: "Name", value: "providerId" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "providerId" },
                       },
                     },
                   ],

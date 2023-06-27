@@ -40,7 +40,6 @@ const _MnemonicWordInput = forwardRef<TextInput, MnemonicWordInputProps>(
           autoCapitalize="none"
           autoComplete="off"
           autoCorrect={false}
-          autoFocus={index === 0}
           onChangeText={onChangeText}
           clearButtonMode="while-editing"
           numberOfLines={1}
@@ -89,7 +88,7 @@ const styles = StyleSheet.create({
 type MnemonicInputFieldsProps = {
   mnemonicWords: string[];
   onChange?: (mnemonicWords: string[]) => void;
-  onComplete: () => void;
+  onComplete?: () => void;
 };
 export function MnemonicInputFields({
   mnemonicWords,

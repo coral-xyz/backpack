@@ -1,12 +1,21 @@
 import type { BigNumber } from "ethers";
 
 import type { StyleProp, ViewStyle } from "react-native";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TextInputProps,
+} from "react-native";
 
+import { XStack, YStack } from "@coral-xyz/tamagui";
 import { ethers } from "ethers";
 import { Controller } from "react-hook-form";
 
-import { useTheme } from "~hooks/useTheme";
+import { ErrorMessage } from "~src/components/ErrorMessage";
+import { useTheme } from "~src/hooks/useTheme";
 
 // Wraps multiple components in one singular input group with a shared border
 export function InputGroup({
@@ -56,7 +65,8 @@ export function InputListItem({
   rules,
   secureTextEntry,
   name,
-}: {
+  ...props
+}: TextInputProps & {
   autoFocus?: boolean;
   title: string;
   placeholder?: string;
@@ -67,7 +77,7 @@ export function InputListItem({
 }): JSX.Element {
   const theme = useTheme();
   return (
-    <View style={[styles.inputListItem]}>
+    <XStack height={48} ai="center" jc="space-between">
       <Text style={[styles.label, { color: theme.custom.colors.fontColor }]}>
         {title}
       </Text>
@@ -90,10 +100,11 @@ export function InputListItem({
             placeholder={placeholder}
             placeholderTextColor={theme.custom.colors.textPlaceholder}
             secureTextEntry={secureTextEntry}
+            {...props}
           />
         )}
       />
-    </View>
+    </XStack>
   );
 }
 
@@ -103,13 +114,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 2,
   },
-  inputListItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
   label: {
-    paddingLeft: 12,
+    paddingLeft: 16,
     width: 80,
     overflow: "hidden",
     fontWeight: "500",
@@ -262,3 +268,66 @@ const inputFieldMaxLabelStyles = StyleSheet.create({
     lineHeight: 16,
   },
 });
+
+export function InputForm({
+  children,
+  hasError,
+  errorMessage,
+}: {
+  children: React.ReactNode;
+  hasError: boolean;
+  errorMessage?: string | undefined;
+}) {
+  return (
+    <YStack space={8}>
+      {children}
+      {hasError && errorMessage ? (
+        <YStack mx={4} ai="center" als="center">
+          <ErrorMessage for={{ message: errorMessage }} />
+        </YStack>
+      ) : null}
+    </YStack>
+  );
+}
+
+export function Group({
+  children,
+  errorMessage,
+}: {
+  children: React.ReactNode;
+  errorMessage?: string;
+}) {
+  return (
+    <YStack space={4} mb={8}>
+      {children}
+      {errorMessage ? (
+        <YStack mx={4} ai="center" als="center">
+          <ErrorMessage for={{ message: errorMessage }} />
+        </YStack>
+      ) : null}
+    </YStack>
+  );
+}
+
+export function Wrapper({ children }: { children: React.ReactNode }) {
+  return <YStack space={8}>{children}</YStack>;
+}
+
+export function Input({
+  children,
+  errorMessage,
+}: {
+  children: React.ReactNode;
+  errorMessage?: string;
+}) {
+  return (
+    <YStack space={4} mb={8}>
+      {children}
+      {errorMessage ? (
+        <YStack mx={4} ai="center" als="center">
+          <ErrorMessage for={{ message: errorMessage }} />
+        </YStack>
+      ) : null}
+    </YStack>
+  );
+}

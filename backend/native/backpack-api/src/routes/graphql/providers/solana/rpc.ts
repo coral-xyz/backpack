@@ -1,4 +1,5 @@
 import {
+  type CustomTokenList,
   externalResourceUri,
   SolanaTokenList,
   TOKEN_PROGRAM_ID,
@@ -39,6 +40,12 @@ import { calculateBalanceAggregate, createConnection } from "../../utils";
 import type { BlockchainDataProvider } from "..";
 import { createMarketDataNode, sortTokenBalanceNodes } from "../util";
 
+export type SolanaRpcProviderSettings = {
+  context?: ApiContext;
+  customRpc?: string;
+  tokenList?: CustomTokenList;
+};
+
 /**
  * Solana blockchain implementation for the common API sourced by raw RPC calls.
  * @export
@@ -47,19 +54,21 @@ import { createMarketDataNode, sortTokenBalanceNodes } from "../util";
  */
 export class SolanaRpc implements BlockchainDataProvider {
   protected readonly ctx?: ApiContext;
+  protected readonly tokenList: CustomTokenList;
+
   readonly #connection: Connection;
   readonly #mpl: Metaplex;
 
-  constructor(ctx?: ApiContext) {
+  constructor({ context, customRpc, tokenList }: SolanaRpcProviderSettings) {
     const rpcUrl =
-      ctx?.network.rpc ??
-      (ctx?.network.devnet
-        ? `https://rpc-devnet.helius.xyz/?api-key=${HELIUS_API_KEY}`
-        : `https://rpc.helius.xyz/?api-key=${HELIUS_API_KEY}`);
+      context?.network.rpc ??
+      customRpc ??
+      `https://rpc.helius.xyz/?api-key=${HELIUS_API_KEY}`;
 
     this.#connection = new Connection(rpcUrl, "confirmed");
     this.#mpl = Metaplex.make(this.#connection);
-    this.ctx = ctx;
+    this.ctx = context;
+    this.tokenList = tokenList ?? SolanaTokenList;
   }
 
   /**
@@ -86,7 +95,7 @@ export class SolanaRpc implements BlockchainDataProvider {
    * @memberof SolanaRpc
    */
   defaultAddress(): string {
-    return SystemProgram.programId.toBase58();
+    return this.tokenList.native.address;
   }
 
   /**
@@ -95,7 +104,7 @@ export class SolanaRpc implements BlockchainDataProvider {
    * @memberof SolanaRpc
    */
   logo(): string {
-    return SolanaTokenList[this.defaultAddress()].logo!;
+    return this.tokenList.native.logo!;
   }
 
   /**
@@ -105,15 +114,6 @@ export class SolanaRpc implements BlockchainDataProvider {
    */
   name(): string {
     return "Solana";
-  }
-
-  /**
-   * Symbol of the native token.
-   * @returns {string}
-   * @memberof SolanaRpc
-   */
-  symbol(): string {
-    return "SOL";
   }
 
   /**
@@ -177,7 +177,7 @@ export class SolanaRpc implements BlockchainDataProvider {
 
     // Attempt to get the Coingecko IDs for each of the token account mints
     const meta = atasMints.reduce<Map<string, string>>((acc, curr) => {
-      const entry = SolanaTokenList[curr];
+      const entry = this.tokenList[curr];
       if (entry && entry.coingeckoId) {
         acc.set(curr, entry.coingeckoId);
       }
@@ -210,9 +210,7 @@ export class SolanaRpc implements BlockchainDataProvider {
           prices.solana
         ),
         token: this.defaultAddress(),
-        tokenListEntry: NodeBuilder.tokenListEntry(
-          SolanaTokenList[this.defaultAddress()]
-        ),
+        tokenListEntry: NodeBuilder.tokenListEntry(this.tokenList["native"]),
       },
       true
     );
@@ -232,9 +230,9 @@ export class SolanaRpc implements BlockchainDataProvider {
         );
 
         const marketData = createMarketDataNode(displayAmount, id, p);
-        const tokenListEntry = SolanaTokenList[curr.data.mint.toBase58()]
+        const tokenListEntry = this.tokenList[curr.data.mint.toBase58()]
           ? NodeBuilder.tokenListEntry(
-              SolanaTokenList[curr.data.mint.toBase58()]
+              this.tokenList[curr.data.mint.toBase58()]
             )
           : undefined;
 
