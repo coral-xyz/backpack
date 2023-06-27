@@ -15,6 +15,7 @@ import {
   BACKEND_API_URL,
   BACKEND_EVENT,
   Blockchain,
+  BLOCKCHAIN_COMMON,
   DEFAULT_DARK_MODE,
   defaultPreferences,
   deserializeTransaction,
@@ -37,7 +38,7 @@ import {
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-  NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
+  NOTIFICATION_EXPLORER_UPDATED,
   NOTIFICATION_FEATURE_GATES_UPDATED,
   NOTIFICATION_KEY_IS_COLD_UPDATE,
   NOTIFICATION_KEYNAME_UPDATE,
@@ -57,7 +58,6 @@ import {
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
-  NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED,
@@ -309,27 +309,24 @@ export class Backend {
     return true;
   }
 
-  async solanaExplorerRead(uuid: string): Promise<string> {
-    const data = await secureStore.getWalletDataForUser(uuid);
-    return data.solana && data.solana.explorer
-      ? data.solana.explorer
-      : SolanaExplorer.DEFAULT;
-  }
-
-  async solanaExplorerUpdate(explorer: string): Promise<string> {
+  public async explorerUpdate(
+    explorer: string,
+    blockchain: Blockchain
+  ): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
     const data = await secureStore.getWalletDataForUser(uuid);
+    data[blockchain as string] = {
+      ...(data[blockchain] || {}),
+      explorer,
+    };
     await secureStore.setWalletDataForUser(uuid, {
       ...data,
-      solana: {
-        ...data.solana,
-        explorer,
-      },
     });
     this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_SOLANA_EXPLORER_UPDATED,
+      name: NOTIFICATION_EXPLORER_UPDATED,
       data: {
         explorer,
+        blockchain,
       },
     });
     return SUCCESS_RESPONSE;
@@ -399,32 +396,6 @@ export class Backend {
   ///////////////////////////////////////////////////////////////////////////////
   // Ethereum.
   ///////////////////////////////////////////////////////////////////////////////
-
-  async ethereumExplorerRead(uuid: string): Promise<string> {
-    const data = await secureStore.getWalletDataForUser(uuid);
-    return data.ethereum && data.ethereum.explorer
-      ? data.ethereum.explorer
-      : EthereumExplorer.DEFAULT;
-  }
-
-  async ethereumExplorerUpdate(explorer: string): Promise<string> {
-    const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await secureStore.getWalletDataForUser(uuid);
-    await secureStore.setWalletDataForUser(uuid, {
-      ...data,
-      ethereum: {
-        ...(data.ethereum || {}),
-        explorer,
-      },
-    });
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
-      data: {
-        explorer,
-      },
-    });
-    return SUCCESS_RESPONSE;
-  }
 
   async ethereumConnectionUrlRead(uuid: string): Promise<string> {
     const data = await secureStore.getWalletDataForUser(uuid);

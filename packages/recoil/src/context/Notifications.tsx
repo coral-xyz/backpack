@@ -1,11 +1,8 @@
 import React, { useEffect } from "react";
-import type {
-  AutolockSettings,
-  Blockchain,
-  Notification,
-} from "@coral-xyz/common";
+import type { AutolockSettings, Notification } from "@coral-xyz/common";
 import {
   BackgroundSolanaConnection,
+  Blockchain,
   CHANNEL_POPUP_NOTIFICATIONS,
   ChannelAppUi,
   getLogger,
@@ -23,6 +20,7 @@ import {
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
+  NOTIFICATION_EXPLORER_UPDATED,
   NOTIFICATION_FEATURE_GATES_UPDATED,
   NOTIFICATION_KEY_IS_COLD_UPDATE,
   NOTIFICATION_KEYNAME_UPDATE,
@@ -42,7 +40,6 @@ import {
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
-  NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
@@ -278,8 +275,8 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_AGGREGATE_WALLETS_UPDATED:
           handleAggregateWalletsUpdated(notif);
           break;
-        case NOTIFICATION_SOLANA_EXPLORER_UPDATED:
-          handleSolanaExplorerUpdated(notif);
+        case NOTIFICATION_EXPLORER_UPDATED:
+          handleExplorerUpdated(notif);
           break;
         case NOTIFICATION_SOLANA_COMMITMENT_UPDATED:
           handleSolanaCommitmentUpdated(notif);
@@ -603,8 +600,13 @@ export function NotificationsProvider(props: any) {
       setIsAggregateWallets(notif.data.aggregateWallets);
     };
 
-    const handleSolanaExplorerUpdated = (notif: Notification) => {
-      setSolanaExplorer(notif.data.explorer);
+    const handleExplorerUpdated = (notif: Notification) => {
+      // TODO: make this impl blockchain agnostic.
+      if (notif.data.blockchain === Blockchain.SOLANA) {
+        setSolanaExplorer(notif.data.explorer);
+      } else {
+        //
+      }
     };
 
     const handleSolanaCommitmentUpdated = (notif: Notification) => {
