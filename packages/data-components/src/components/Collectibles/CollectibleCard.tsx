@@ -1,16 +1,18 @@
-import { Image, View } from "react-native";
-import { externalResourceUri,UNKNOWN_NFT_ICON_SRC } from "@coral-xyz/common";
+import { View } from "react-native";
+import { externalResourceUri, UNKNOWN_NFT_ICON_SRC } from "@coral-xyz/common";
 import { ProxyImage, StyledText, XStack, YStack } from "@coral-xyz/tamagui";
 
 import type { CollectibleGroup } from "./utils";
 
 export type CollectibleCardProps = {
   collectibles: CollectibleGroup;
+  imageBoxSize: number;
   onCardClick: () => void;
 };
 
 export function CollectibleCard({
   collectibles,
+  imageBoxSize,
   onCardClick,
 }: CollectibleCardProps) {
   return (
@@ -21,6 +23,7 @@ export function CollectibleCard({
       onPress={onCardClick}
     >
       <_CollectibleImagePreview
+        size={imageBoxSize}
         images={collectibles.data.map((d) =>
           d.image ? externalResourceUri(d.image) : UNKNOWN_NFT_ICON_SRC
         )}
@@ -41,23 +44,30 @@ export function CollectibleCard({
 
 type _CollectibleImagePreviewProps = {
   images: string[];
+  size: number;
 };
 
-function _CollectibleImagePreview({ images }: _CollectibleImagePreviewProps) {
+function _CollectibleImagePreview({
+  images,
+  size,
+}: _CollectibleImagePreviewProps) {
   if (images.length === 1) {
     return (
       <ProxyImage
-        style={{ borderRadius: 12, height: 164, width: 164 }}
-        size={164}
+        style={{ borderRadius: 12, height: size, width: size }}
+        size={size}
         src={images[0]}
       />
     );
   }
-  return <_CollectibleImagePreviewBox images={images.slice(0, 4)} />;
+  return (
+    <_CollectibleImagePreviewBox size={size} images={images.slice(0, 4)} />
+  );
 }
 
 function _CollectibleImagePreviewBox({
   images,
+  size,
 }: _CollectibleImagePreviewProps) {
   return (
     <View
@@ -65,19 +75,17 @@ function _CollectibleImagePreviewBox({
         display: "flex",
         flexDirection: "row",
         flexWrap: "wrap",
-        justifyContent: "space-evenly",
-        alignItems: "center",
-        gap: 12,
+        gap: 4,
         borderRadius: 12,
-        height: 164,
-        padding: 12,
+        height: size,
+        width: size,
       }}
     >
       {images.map((uri, idx) => (
         <ProxyImage
           key={`${idx}-${uri}`}
-          style={{ borderRadius: 8, height: 64, width: 64 }}
-          size={64}
+          style={{ borderRadius: 8, height: 80, width: 80 }}
+          size={80}
           src={uri}
         />
       ))}

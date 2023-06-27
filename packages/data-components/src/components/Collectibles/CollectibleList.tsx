@@ -6,11 +6,13 @@ import type { CollectibleGroup } from "./utils";
 
 export type CollectibleListProps = {
   collectibleGroups: CollectibleGroup[];
+  imageBoxSize: number;
   onCardClick: () => void;
 };
 
 export function CollectibleList({
   collectibleGroups,
+  imageBoxSize,
   onCardClick,
 }: CollectibleListProps) {
   /**
@@ -33,6 +35,7 @@ export function CollectibleList({
       <CollectibleCard
         key={item.collection}
         collectibles={item}
+        imageBoxSize={imageBoxSize}
         onCardClick={onCardClick}
       />
     ),

@@ -89,6 +89,7 @@ function _Collectibles({
   return (
     <CollectibleList
       collectibleGroups={groupedCollectibles}
+      imageBoxSize={165}
       onCardClick={() => alert("CLICK")}
     />
   );
