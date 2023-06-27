@@ -1,7 +1,9 @@
+import { useMemo } from "react";
 import { View } from "react-native";
 import { externalResourceUri, UNKNOWN_NFT_ICON_SRC } from "@coral-xyz/common";
 import { ProxyImage, StyledText, XStack, YStack } from "@coral-xyz/tamagui";
 
+// import { MoreHorizontal } from "@tamagui/lucide-icons";
 import type { CollectibleGroup } from "./utils";
 
 export type CollectibleCardProps = {
@@ -37,6 +39,9 @@ export function CollectibleCard({
         >
           {collectibles.collection}
         </StyledText>
+        {/* {collectibles.data.length === 1 && (
+          <MoreHorizontal color="$secondary" />
+        )} */}
       </XStack>
     </YStack>
   );
@@ -69,6 +74,7 @@ function _CollectibleImagePreviewBox({
   images,
   size,
 }: _CollectibleImagePreviewProps) {
+  const innerSize = useMemo(() => Math.floor(size / 2) - 2, [size]);
   return (
     <View
       style={{
@@ -84,8 +90,8 @@ function _CollectibleImagePreviewBox({
       {images.map((uri, idx) => (
         <ProxyImage
           key={`${idx}-${uri}`}
-          style={{ borderRadius: 8, height: 80, width: 80 }}
-          size={80}
+          style={{ borderRadius: 8, height: innerSize, width: innerSize }}
+          size={innerSize}
           src={uri}
         />
       ))}

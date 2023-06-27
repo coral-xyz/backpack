@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { FlatList, type ListRenderItem } from "react-native";
+import { useMedia } from "@coral-xyz/tamagui";
 
 import { CollectibleCard } from "./CollectibleCard";
 import type { CollectibleGroup } from "./utils";
@@ -15,6 +16,22 @@ export function CollectibleList({
   imageBoxSize,
   onCardClick,
 }: CollectibleListProps) {
+  const media = useMedia();
+
+  const numColumns = media.sm
+    ? 2
+    : media.md
+    ? 3
+    : media.lg
+    ? 4
+    : media.xl
+    ? 5
+    : media.xxl
+    ? 6
+    : 7;
+
+  const gap = media.sm ? 12 : media.md ? 18 : 24;
+
   /**
    * Returns the child component key for an item.
    * @param {CollectibleGroup} item
@@ -44,11 +61,12 @@ export function CollectibleList({
 
   return (
     <FlatList
+      key={numColumns}
       showsVerticalScrollIndicator={false}
       style={{ marginHorizontal: 16, marginTop: 16 }}
       contentContainerStyle={{ gap: 12, paddingBottom: 12 }}
-      columnWrapperStyle={{ gap: 12 }}
-      numColumns={2}
+      columnWrapperStyle={{ gap }}
+      numColumns={numColumns}
       data={collectibleGroups}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
