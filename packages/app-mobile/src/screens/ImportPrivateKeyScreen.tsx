@@ -1,5 +1,11 @@
 import { Alert, View } from "react-native";
 
+import { UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY } from "@coral-xyz/common";
+import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
+import { Controller, useForm } from "react-hook-form";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { InputField } from "~components/Form";
 import {
   Header,
   Margin,
@@ -8,11 +14,6 @@ import {
   StyledTextInput,
   SubtextParagraph,
 } from "~components/index";
-import { UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY } from "@coral-xyz/common";
-import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
-import { Controller, useForm } from "react-hook-form";
-
-import { InputField } from "~components/Form";
 import { validateSecretKey } from "~lib/validateSecretKey";
 
 type PrivateKeyInput = {
@@ -22,6 +23,7 @@ type PrivateKeyInput = {
 
 export function ImportPrivateKeyScreen({ route }) {
   const { blockchain } = route.params;
+  const insets = useSafeAreaInsets();
   const background = useBackgroundClient();
   const existingPublicKeys = useWalletPublicKeys();
 
@@ -60,7 +62,7 @@ export function ImportPrivateKeyScreen({ route }) {
   };
 
   return (
-    <Screen style={{ justifyContent: "space-between" }}>
+    <Screen jc="space-between" style={{ marginBottom: insets.bottom }}>
       <View>
         <Header text="Import private key" />
         <Margin bottom={32}>
@@ -69,44 +71,23 @@ export function ImportPrivateKeyScreen({ route }) {
             device.
           </SubtextParagraph>
         </Margin>
-        <InputField label="Wallet Name" hasError={hasError("name")}>
-          <Controller
-            name="name"
-            control={control}
-            rules={{
-              required: true,
-              minLength: 2,
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <StyledTextInput
-                autoFocus
-                placeholder="Enter wallet name"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-              />
-            )}
-          />
-        </InputField>
-        <InputField label="Private Key" hasError={hasError("privateKey")}>
-          <Controller
-            name="privateKey"
-            control={control}
-            rules={{
-              required: true,
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <StyledTextInput
-                multiline
-                numberOfLines={6}
-                placeholder="Enter private key"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-              />
-            )}
-          />
-        </InputField>
+        <Controller
+          name="privateKey"
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <StyledTextInput
+              multiline
+              numberOfLines={1}
+              placeholder="Enter private key"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
+          )}
+        />
       </View>
       <PrimaryButton
         onPress={handleSubmit(onSubmit)}

@@ -556,7 +556,7 @@ export function _ListItemOneLine({
       <XStack f={1} jc="space-between" ai="center">
         <XStack ai="center">
           {icon ? (
-            <Stack mr={8} width={32} height={32}>
+            <Stack ai="center" jc="center" mr={8} width={32} height={32}>
               {icon}
             </Stack>
           ) : null}

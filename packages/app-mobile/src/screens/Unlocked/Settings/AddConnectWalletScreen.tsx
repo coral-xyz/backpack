@@ -1,19 +1,32 @@
-import type { Blockchain } from "@coral-xyz/common";
 import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
 
 import { useCallback, useMemo, useRef, useState } from "react";
-import { Text, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 
-import { UI_RPC_METHOD_KEYRING_DERIVE_WALLET } from "@coral-xyz/common";
+import {
+  Blockchain,
+  UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+} from "@coral-xyz/common";
 import {
   useActiveWallet,
   useBackgroundClient,
+  useEnabledBlockchains,
   useKeyringHasMnemonic,
+  useUser,
   useWalletName,
 } from "@coral-xyz/recoil";
+import {
+  getIcon,
+  LinkButton,
+  PrimaryButton,
+  Stack,
+  StyledText,
+  YStack,
+} from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { CheckIcon } from "~components/Icon";
 import {
@@ -23,15 +36,82 @@ import {
   Screen,
   SubtextParagraph,
   RoundedContainerGroup,
+  CurrentUserAvatar,
+  BlockchainLogo,
 } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 import { WalletListItem } from "~screens/Unlocked/EditWalletsScreen";
 
+import { SettingsList } from "./components/SettingsMenuList";
+
 import { useSession } from "~src/lib/SessionProvider";
 
-export function AddConnectWalletScreen() {
+export function AddWalletPrivacyDisclaimer({ navigation }): JSX.Element {
+  const user = useUser();
+  const insets = useSafeAreaInsets();
+
+  return (
+    <Screen jc="space-between" style={{ marginBottom: insets.bottom }}>
+      <YStack ai="center" space={12}>
+        <CurrentUserAvatar size={96} />
+        <StyledText textAlign="center" fontSize="$2xl" color="$fontColor">
+          Your new wallet will be associated with @{user.username}
+        </StyledText>
+        <StyledText textAlign="center" color="$secondary">
+          This connection will be public, so if you'd prefer to create a
+          separate identity, create a new account.
+        </StyledText>
+      </YStack>
+      <YStack>
+        <PrimaryButton
+          label={`Continue as @${user.username}`}
+          onPress={() => {
+            navigation.push("AddWalletSelectBlockchain");
+          }}
+        />
+        <LinkButton
+          label="Create a new account"
+          onPress={() => {
+            Alert.alert("Create a new account");
+          }}
+        />
+      </YStack>
+    </Screen>
+  );
+}
+
+export function AddWalletSelectBlockchain({ navigation }): JSX.Element {
+  const menuItems = {
+    Solana: {
+      icon: <BlockchainLogo blockchain={Blockchain.SOLANA} size={24} />,
+      onPress: () => {
+        navigation.push("AddWalletCreateOrImport", {
+          blockchain: Blockchain.SOLANA,
+        });
+      },
+    },
+    Ethereum: {
+      icon: <BlockchainLogo blockchain={Blockchain.ETHEREUM} size={24} />,
+      onPress: () => {
+        navigation.push("AddWalletCreateOrImport", {
+          blockchain: Blockchain.ETHEREUM,
+        });
+      },
+    },
+  };
+
+  return (
+    <Screen>
+      <SettingsList menuItems={menuItems} />
+    </Screen>
+  );
+}
+
+export function AddWalletCreateOrImportScreen({ route }) {
+  const user = useUser();
+  const { blockchain } = route.params;
   const { setActiveWallet } = useSession();
-  const { blockchain } = useActiveWallet();
+  // const { blockchain } = useActiveWallet();
   const navigation = useNavigation();
   const background = useBackgroundClient();
   const hasMnemonic = useKeyringHasMnemonic();
@@ -55,76 +135,36 @@ export function AddConnectWalletScreen() {
     []
   );
 
+  const menuItems = {
+    NewWallet: {
+      label: "Create a new wallet",
+      icon: getIcon("add-circle"),
+      onPress: async () => {
+        // could not remove public key error
+        const newPubkey = await background.request({
+          method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+          params: [blockchain],
+        });
+
+        console.log("newPubkey", newPubkey);
+
+        handleOpenModal();
+      },
+    },
+    Advanced: {
+      label: "Advanced wallet import",
+      icon: getIcon("arrow-circle-up"),
+      onPress: () => {
+        navigation.push("AddWalletAdvancedImport", {
+          blockchain: Blockchain.ETHEREUM,
+        });
+      },
+    },
+  };
+
   return (
     <Screen>
-      <Margin bottom={24}>
-        <Header text="Add or connect a wallet" />
-        <SubtextParagraph>Add new wallets to Backpack</SubtextParagraph>
-      </Margin>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        {hasMnemonic ? (
-          <View style={{ flex: 1, marginRight: 12 }}>
-            <ActionCard
-              icon={
-                <MaterialIcons
-                  size={24}
-                  name="add-circle"
-                  color={theme.custom.colors.icon}
-                />
-              }
-              text="Create a new wallet"
-              onPress={async () => {
-                const newPubkey = await background.request({
-                  method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-                  params: [blockchain],
-                });
-
-                await setActiveWallet({ blockchain, publicKey: newPubkey });
-
-                setNewPublicKey(newPubkey);
-                handleOpenModal();
-              }}
-            />
-          </View>
-        ) : null}
-        <View style={{ flex: 1 }}>
-          <ActionCard
-            icon={
-              <MaterialIcons
-                size={24}
-                name="arrow-circle-down"
-                color={theme.custom.colors.icon}
-              />
-            }
-            text="Import a private key"
-            onPress={() =>
-              navigation.push("import-private-key", { blockchain })
-            }
-          />
-        </View>
-      </View>
-      <View style={{ flex: 0.5, width: "48%", marginTop: 12 }}>
-        <ActionCard
-          disabled
-          icon={
-            <MaterialIcons
-              size={24}
-              name="account-balance-wallet"
-              color={theme.custom.colors.icon}
-            />
-          }
-          text="Import from hardware wallet"
-          onPress={() => {
-            // openConnectHardware(blockchain);
-          }}
-        />
-      </View>
+      <SettingsList menuItems={menuItems} />
       <BottomSheetModal
         index={0}
         snapPoints={snapPoints}
@@ -140,6 +180,45 @@ export function AddConnectWalletScreen() {
       >
         <ConfirmCreateWallet blockchain={blockchain} publicKey={newPublicKey} />
       </BottomSheetModal>
+    </Screen>
+  );
+}
+
+export function AddWalletAdvancedImportScreen({ navigation, route }) {
+  const { blockchain, publicKey } = route.params;
+  const enabledBlockchains = useEnabledBlockchains();
+  const keyringExists = enabledBlockchains.includes(blockchain);
+
+  const menuItems = {
+    "Backpack recovery phrase": {
+      onPress: () =>
+        navigation.push("import-from-mnemonic", {
+          blockchain,
+          keyringExists,
+          inputMnemonic: false,
+        }),
+    },
+    "Other recovery phrase": {
+      onPress: () =>
+        navigation.push("import-from-mnemonic", {
+          blockchain,
+          inputMnemonic: true,
+          keyringExists,
+          publicKey,
+        }),
+    },
+    "Private key": {
+      onPress: () =>
+        navigation.push("import-private-key", {
+          blockchain,
+          publicKey,
+        }),
+    },
+  };
+
+  return (
+    <Screen>
+      <SettingsList menuItems={menuItems} />
     </Screen>
   );
 }
