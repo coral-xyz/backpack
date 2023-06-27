@@ -17,6 +17,10 @@ export function CollectibleCard({
   imageBoxSize,
   onCardClick,
 }: CollectibleCardProps) {
+  const imageSources = collectibles.data.map((d) =>
+    d.image ? externalResourceUri(d.image) : UNKNOWN_NFT_ICON_SRC
+  );
+
   return (
     <YStack
       flex={1}
@@ -24,12 +28,7 @@ export function CollectibleCard({
       pointerEvents="box-only"
       onPress={onCardClick}
     >
-      <_CollectibleImagePreview
-        size={imageBoxSize}
-        images={collectibles.data.map((d) =>
-          d.image ? externalResourceUri(d.image) : UNKNOWN_NFT_ICON_SRC
-        )}
-      />
+      <_CollectibleImagePreview size={imageBoxSize} images={imageSources} />
       <XStack marginTop={8}>
         <StyledText
           ellipsizeMode="tail"

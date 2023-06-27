@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { FlatList, type ListRenderItem } from "react-native";
+import { FlatList, type ListRenderItem, View } from "react-native";
 import { useMedia } from "@coral-xyz/tamagui";
 
 import { CollectibleCard } from "./CollectibleCard";
@@ -60,16 +60,18 @@ export function CollectibleList({
   );
 
   return (
-    <FlatList
-      key={numColumns}
-      showsVerticalScrollIndicator={false}
-      style={{ marginHorizontal: 16, marginTop: 16 }}
-      contentContainerStyle={{ gap: 12, paddingBottom: 12 }}
-      columnWrapperStyle={{ gap }}
-      numColumns={numColumns}
-      data={collectibleGroups}
-      keyExtractor={keyExtractor}
-      renderItem={renderItem}
-    />
+    <View style={{ display: "flex" }}>
+      <FlatList
+        key={numColumns}
+        showsVerticalScrollIndicator={false}
+        style={{ alignSelf: "center", marginHorizontal: 16, marginTop: 16 }}
+        contentContainerStyle={{ gap: 12, paddingBottom: 12 }}
+        columnWrapperStyle={{ gap }}
+        numColumns={numColumns}
+        data={collectibleGroups}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+      />
+    </View>
   );
 }
