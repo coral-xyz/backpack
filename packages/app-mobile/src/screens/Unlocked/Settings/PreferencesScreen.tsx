@@ -31,6 +31,7 @@ function SettingsBiometricsMode() {
   const { biometricName } = useDeviceSupportsBiometricAuth();
   const isSupported = useDeviceSupportsBiometricAuth();
   const isEnabled = useOsBiometricAuthEnabled();
+
   if (!isSupported) {
     return null;
   }
@@ -66,12 +67,14 @@ function SettingsBiometricsMode() {
   };
 
   return (
-    <SettingsRowSwitch
-      loading={loading}
-      value={Boolean(isEnabled)}
-      label={`Enable ${biometricName}`}
-      onPress={onBiometricSwitch}
-    />
+    <RoundedContainerGroup>
+      <SettingsRowSwitch
+        loading={loading}
+        value={Boolean(isEnabled)}
+        label={`Enable ${biometricName}`}
+        onPress={onBiometricSwitch}
+      />
+    </RoundedContainerGroup>
   );
 }
 
@@ -96,9 +99,7 @@ function Container({ navigation }) {
   return (
     <Screen>
       <YStack space="$settingsList">
-        <RoundedContainerGroup>
-          <SettingsBiometricsMode />
-        </RoundedContainerGroup>
+        <SettingsBiometricsMode />
         <SettingsList menuItems={menuItems} />
         <RoundedContainerGroup>
           <SettingsRowText
