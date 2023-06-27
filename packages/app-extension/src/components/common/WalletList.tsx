@@ -1,8 +1,9 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
+import type {
+  Blockchain} from "@coral-xyz/common";
 import {
-  Blockchain,
   formatWalletAddress,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
 } from "@coral-xyz/common";
@@ -24,16 +25,11 @@ import {
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
 import type { SxProps, Theme } from "@mui/material/styles";
 
-import {
-  EclipseIconOnboarding as EclipseIcon,
-  EthereumIconOnboarding as EthereumIcon,
-  SolanaIconOnboarding as SolanaIcon,
-} from "../common/Icon";
+import { BLOCKCHAIN_COMPONENTS } from "../common/Blockchains";
 import { ActionCard } from "../common/Layout/ActionCard";
 import { useDrawerContext, WithMiniDrawer } from "../common/Layout/Drawer";
 import {
@@ -64,7 +60,6 @@ import {
 } from "../Unlocked/Settings/YourAccount/ShowPrivateKey";
 
 import { Scrollbar } from "./Layout/Scrollbar";
-import { WithCopyTooltip } from "./WithCopyTooltip";
 
 const useStyles = styles((theme) => ({
   addressButton: {
@@ -419,27 +414,17 @@ export function WalletListBlockchainSelector() {
   return (
     <Box style={{ padding: "0 16px 16px", marginTop: 12 }}>
       <Grid container spacing={1.5}>
-        <Grid item xs={6}>
-          <ActionCard
-            icon={<EthereumIcon />}
-            text="Ethereum"
-            onClick={() => onClick(Blockchain.ETHEREUM)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <ActionCard
-            icon={<SolanaIcon />}
-            text="Solana"
-            onClick={() => onClick(Blockchain.SOLANA)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <ActionCard
-            icon={<EclipseIcon />}
-            text="Eclipse"
-            onClick={() => onClick(Blockchain.ECLIPSE)}
-          />
-        </Grid>
+        {Object.entries(BLOCKCHAIN_COMPONENTS).map(
+          ([blockchain, Component]) => (
+            <Grid item xs={6}>
+              <ActionCard
+                icon={<Component.Icon />}
+                text={Component.Name}
+                onClick={() => onClick(blockchain as Blockchain)}
+              />
+            </Grid>
+          )
+        )}
       </Grid>
     </Box>
   );

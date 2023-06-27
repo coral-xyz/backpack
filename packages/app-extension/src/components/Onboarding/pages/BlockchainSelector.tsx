@@ -1,13 +1,9 @@
-import { Blockchain } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import { PrimaryButton } from "@coral-xyz/react-common";
 import { Box, Grid } from "@mui/material";
 
 import { Header, SubtextParagraph } from "../../common";
-import {
-  EclipseIconOnboarding as EclipseIcon,
-  EthereumIconOnboarding as EthereumIcon,
-  SolanaIconOnboarding as SolanaIcon,
-} from "../../common/Icon";
+import { BLOCKCHAIN_COMPONENTS } from "../../common/Blockchains";
 import { ActionCard } from "../../common/Layout/ActionCard";
 
 export const BlockchainSelector = ({
@@ -58,30 +54,20 @@ export const BlockchainSelector = ({
         </Box>
         <Box style={{ padding: "0 16px 16px" }}>
           <Grid container spacing={1.5}>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={<EthereumIcon />}
-                checked={selectedBlockchains.includes(Blockchain.ETHEREUM)}
-                text="Ethereum"
-                onClick={() => onClick(Blockchain.ETHEREUM)}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={<SolanaIcon />}
-                checked={selectedBlockchains.includes(Blockchain.SOLANA)}
-                text="Solana"
-                onClick={() => onClick(Blockchain.SOLANA)}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={<EclipseIcon />}
-                checked={selectedBlockchains.includes(Blockchain.ECLIPSE)}
-                text="Solana"
-                onClick={() => onClick(Blockchain.ECLIPSE)}
-              />
-            </Grid>
+            {Object.entries(BLOCKCHAIN_COMPONENTS).map(
+              ([blockchain, Component]) => (
+                <Grid item xs={6}>
+                  <ActionCard
+                    icon={<Component.Icon />}
+                    checked={selectedBlockchains.includes(
+                      blockchain as Blockchain
+                    )}
+                    text={Component.Name}
+                    onClick={() => onClick(blockchain as Blockchain)}
+                  />
+                </Grid>
+              )
+            )}
           </Grid>
         </Box>
       </Box>

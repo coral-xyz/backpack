@@ -1,4 +1,4 @@
-import { Blockchain } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import { PrimaryButton, UserIcon } from "@coral-xyz/react-common";
 import {
   useActiveWallet,
@@ -24,83 +24,7 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function SendEclipseConfirmationCard({
-  token,
-  destinationAddress,
-  destinationUser,
-  amount,
-  onComplete,
-  onViewBalances,
-}: {
-  token: {
-    address: string;
-    logo: string;
-    decimals: number;
-    tokenId?: string;
-    mint?: string;
-  };
-  destinationAddress: string;
-  destinationUser?: {
-    username: string;
-    walletName?: string;
-    image: string;
-  };
-  amount: BigNumber;
-  onComplete?: (txSig?: any) => void;
-  onViewBalances?: () => void;
-}) {
-  return (
-    <SendSvmConfirmationCard
-      token={token}
-      destinationAddress={destinationAddress}
-      destinationUser={destinationUser}
-      amount={amount}
-      onComplete={onComplete}
-      onViewBalances={onViewBalances}
-      blockchain={Blockchain.ECLIPSE}
-    />
-  );
-}
-
-export function SendSolanaConfirmationCard({
-  token,
-  destinationAddress,
-  destinationUser,
-  amount,
-  onComplete,
-  onViewBalances,
-}: {
-  token: {
-    address: string;
-    logo: string;
-    decimals: number;
-    tokenId?: string;
-    mint?: string;
-  };
-  destinationAddress: string;
-  destinationUser?: {
-    username: string;
-    walletName?: string;
-    image: string;
-  };
-  amount: BigNumber;
-  onComplete?: (txSig?: any) => void;
-  onViewBalances?: () => void;
-}) {
-  return (
-    <SendSvmConfirmationCard
-      token={token}
-      destinationAddress={destinationAddress}
-      destinationUser={destinationUser}
-      amount={amount}
-      onComplete={onComplete}
-      onViewBalances={onViewBalances}
-      blockchain={Blockchain.SOLANA}
-    />
-  );
-}
-
-function SendSvmConfirmationCard({
+export function SendSvmConfirmationCard({
   token,
   destinationAddress,
   destinationUser,
