@@ -32,6 +32,7 @@ import { TokenDetailScreen } from "~screens/TokenDetailScreen";
 import { TokenListScreen } from "~screens/TokenListScreen";
 import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollectibleSelectRecipientScreen";
 
+import { OnboardingNavigator } from "~src/navigation/OnboardingNavigator";
 import { SendNavigator } from "~src/navigation/SendNavigator";
 import {
   Direction,
@@ -40,25 +41,38 @@ import {
   SwapTokenListScreen,
 } from "~src/screens/Unlocked/SwapTokenScreen";
 
+function OnboardScreen() {
+  return <OnboardingNavigator onStart={console.log} />;
+}
+
 const TopTabs = createMaterialTopTabNavigator<TopTabsParamList>();
 function TopTabsNavigator(): JSX.Element {
-  const theme = useTheme();
   return (
     <TopTabs.Navigator
       initialLayout={{
         width: WINDOW_WIDTH,
       }}
       screenOptions={{
-        tabBarIndicatorStyle: {
-          backgroundColor: theme.custom.colors.fontColor,
+        tabBarStyle: {
+          marginTop: 12,
+          marginHorizontal: 24,
+          backgroundColor: "transparent",
         },
-        tabBarActiveTintColor: theme.custom.colors.fontColor,
         tabBarLabelStyle: {
           textTransform: "capitalize",
           fontSize: 15,
           fontFamily: "InterMedium",
-          color: theme.custom.colors.fontColor,
         },
+        tabBarIndicatorStyle: {
+          borderRadius: 12,
+          backgroundColor: "rgba(0, 87, 235, 0.15)",
+          alignSelf: "center",
+          height: 40,
+          marginBottom: 4,
+        },
+        tabBarActiveTintColor: "#0057EB",
+        tabBarInactiveTintColor: "#5D606F",
+        tabBarPressOpacity: 0.2,
       }}
     >
       <TopTabs.Screen
@@ -136,6 +150,9 @@ export function WalletsNavigator(): JSX.Element {
       initialRouteName="HomeWalletList"
       screenOptions={{
         headerTintColor: theme.fontColor.val,
+        headerStyle: {
+          backgroundColor: "transparent",
+        },
       }}
     >
       <Stack.Screen
@@ -146,6 +163,9 @@ export function WalletsNavigator(): JSX.Element {
             headerShown: true,
             headerBackTitleVisible: false,
             title: "Balances",
+            headerStyle: {
+              backgroundColor: "transparent",
+            },
             headerTitle: ({ tintColor, children }) => {
               return (
                 <BottomSheetViewOptions
@@ -163,8 +183,9 @@ export function WalletsNavigator(): JSX.Element {
             headerRight: (props) => (
               <HeaderButtonSpacer>
                 <HeaderButton
-                  name="notifications"
                   {...props}
+                  name="notifications-none"
+                  tintColor={theme.icon.val}
                   onPress={() => {
                     navigation.navigate("Notifications");
                   }}
@@ -181,6 +202,9 @@ export function WalletsNavigator(): JSX.Element {
         options={{
           headerShadowVisible: false,
           headerBackTitleVisible: false,
+          headerStyle: {
+            backgroundColor: "transparent",
+          },
           headerTitle: () => {
             return <WalletSwitcherButton />;
           },
@@ -233,6 +257,7 @@ export function WalletsNavigator(): JSX.Element {
         />
         <Stack.Group screenOptions={{ headerShown: false }}>
           <Stack.Screen name="SendSelectTokenModal" component={SendNavigator} />
+          <Stack.Screen name="OnboardScreen" component={OnboardScreen} />
           <Stack.Screen name="SwapModal" component={SwapNavigator} />
         </Stack.Group>
         <Stack.Screen

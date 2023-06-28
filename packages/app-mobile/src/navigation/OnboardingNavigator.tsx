@@ -299,26 +299,30 @@ function CreateOrRecoverAccountScreen({
 }: CreateOrRecoverAccountScreenProps) {
   const insets = useSafeAreaInsets();
   const { setOnboardingData } = useOnboarding();
+  const { appState } = useSession();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const handlePresentModalPress = () => {
     setIsModalVisible((last) => !last);
   };
 
+  const isAddingAccount = appState === "isAddingAccount";
+
+  const insetStyles = {
+    marginTop: insets.top,
+    marginBottom: insets.bottom,
+    paddingLeft: insets.left,
+    paddingRight: insets.right,
+  };
+
   return (
     <>
       <Screen
-        style={[
-          styles.container,
-          {
-            marginTop: insets.top,
-            // marginBottom: insets.bottom,
-            paddingLeft: insets.left,
-            paddingRight: insets.right,
-          },
-        ]}
+        style={[styles.container, !isAddingAccount ? insetStyles : undefined]}
       >
-        <HelpModalMenuButton onPress={handlePresentModalPress} />
+        {isAddingAccount ? null : (
+          <HelpModalMenuButton onPress={handlePresentModalPress} />
+        )}
         <Box marginTop={48} marginBottom={24}>
           <WelcomeLogoHeader />
         </Box>
@@ -1192,11 +1196,17 @@ export function OnboardingNavigator({
     <OnboardingProvider>
       <Stack.Navigator
         initialRouteName="CreateOrRecoverAccount"
-        screenOptions={{ headerShown: false }}
+        screenOptions={{ headerShown: false, presentation: "modal" }}
       >
         <Stack.Screen
           name="CreateOrRecoverAccount"
           component={CreateOrRecoverAccountScreen}
+          options={{
+            presentation: "modal",
+            cardStyle: {
+              marginTop: 0,
+            },
+          }}
         />
         <Stack.Screen
           name="Biometrics"

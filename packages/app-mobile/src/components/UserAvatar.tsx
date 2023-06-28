@@ -26,9 +26,9 @@ export function UserAvatar({
   const [type, setType] = useState<string | undefined>(undefined);
   const width = size;
   const height = size;
-  const proxiedUri = proxyImageUrl(uri, size);
   // we do this bc fetching a 1x1 image is faster than fetching a 32x32 image, etc
   const smallUri = proxyImageUrl(uri, 1);
+  const proxiedUri = proxyImageUrl(uri, size);
 
   useEffect(() => {
     if (cache.has(smallUri)) {
@@ -52,7 +52,7 @@ export function UserAvatar({
   if (type === "image/svg+xml") {
     return (
       <View style={[styles.container, { width, height }]}>
-        <SvgUri width={width} height={height} uri={`${smallUri}.svg`} />
+        <SvgUri width={width} height={height} uri={`${proxiedUri}.svg`} />
       </View>
     );
   }
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   container: {
     aspectRatio: 1,
     borderRadius: 100,
-    backgroundColor: "gray",
+    backgroundColor: "#FFF",
     overflow: "hidden",
   },
 });
@@ -89,22 +89,7 @@ export function Avatar({
   username?: string;
 }): JSX.Element {
   const avatarUrl = useAvatarUrl(size, username);
-  const theme = useTheme();
-  const outerSize = size + 6;
-
-  return (
-    <View
-      style={{
-        backgroundColor: theme.custom.colors.avatarIconBackground,
-        borderRadius: outerSize / 2,
-        padding: 3,
-        width: outerSize,
-        height: outerSize,
-      }}
-    >
-      <UserAvatar size={size} uri={avatarUrl} />
-    </View>
-  );
+  return <UserAvatar size={size} uri={avatarUrl} />;
 }
 
 export const CurrentUserAvatar = ({ size = 64 }: { size?: number }) => (

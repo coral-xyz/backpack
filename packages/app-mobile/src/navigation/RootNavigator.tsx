@@ -100,9 +100,9 @@ function RootNavigator(): JSX.Element {
     setAppState("onboardingComplete");
   }, [setAppState]);
 
-  if (appState === "isAddingAccount") {
-    return <OnboardingNavigator onStart={console.log} />;
-  }
+  // if (appState === "isAddingAccount") {
+  //   return <OnboardingNavigator onStart={console.log} />;
+  // }
 
   switch (keyringStoreState) {
     case KeyringStoreState.NeedsOnboarding:

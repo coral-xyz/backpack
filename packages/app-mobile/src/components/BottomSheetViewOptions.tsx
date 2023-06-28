@@ -31,10 +31,10 @@ export function BottomSheetViewOptions({
   return (
     <>
       <HeaderDropdownButton
+        tintColor={tintColor}
         onPress={() => {
           setIsVisible(!isVisible);
         }}
-        tintColor={tintColor}
       >
         {title}
       </HeaderDropdownButton>
