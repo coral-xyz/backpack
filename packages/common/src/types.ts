@@ -236,6 +236,7 @@ export type DeprecatedWalletDataDoNotUse = {
 
 export type SolanaData = {
   explorer: string;
+  connectionUrl?: string; // TODO: combine with EthereumData.
   commitment: Commitment;
   cluster: string;
 };
@@ -245,6 +246,7 @@ export type EclipseData = SolanaData;
 export type EthereumData = {
   explorer: string;
   connectionUrl: string;
+  cluster?: string;
   chainId: string;
 };
 

@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import {
+  Blockchain,
   SolanaCluster,
-  UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
+  UI_RPC_METHOD_CONNECTION_URL_UPDATE,
 } from "@coral-xyz/common";
 import { PushDetail } from "@coral-xyz/react-common";
 import { useBackgroundClient, useSolanaConnectionUrl } from "@coral-xyz/recoil";
@@ -55,8 +56,8 @@ export function PreferencesSolanaConnection() {
     try {
       background
         .request({
-          method: UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
-          params: [url],
+          method: UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+          params: [url, Blockchain.SOLANA],
         })
         .catch(console.error);
     } catch (err) {

@@ -6,9 +6,9 @@ import {
   getLogger,
   NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
   NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
   NOTIFICATION_KEYRING_STORE_CREATED,
@@ -70,7 +70,7 @@ export class EthereumConnectionBackend {
         case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
           handleActiveWalletUpdated(notif);
           break;
-        case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
+        case NOTIFICATION_CONNECTION_URL_UPDATED:
           handleConnectionUrlUpdated(notif);
           break;
         case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
@@ -119,7 +119,12 @@ export class EthereumConnectionBackend {
     };
 
     const handleConnectionUrlUpdated = (notif: Notification) => {
-      const { connectionUrl } = notif.data;
+      const { connectionUrl, blockchain } = notif.data;
+
+      if (blockchain !== Blockchain.ETHEREUM) {
+        return;
+      }
+
       this.provider = new ethers.providers.JsonRpcProvider(connectionUrl);
       this.url = connectionUrl;
     };

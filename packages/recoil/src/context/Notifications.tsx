@@ -12,12 +12,12 @@ import {
   NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
   NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_DEVELOPER_MODE_UPDATED,
   NOTIFICATION_ECLIPSE_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
   NOTIFICATION_EXPLORER_UPDATED,
@@ -39,7 +39,6 @@ import {
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
-  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
@@ -284,8 +283,8 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE:
           await handleSolanaSplTokensDidUpdate(notif);
           break;
-        case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
-          handleSolanaConnectionUrlUpdated(notif);
+        case NOTIFICATION_CONNECTION_URL_UPDATED:
+          handleConnectionUrlUpdated(notif);
           break;
         case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
           handleSolanaActiveWalletUpdated(notif);
@@ -295,9 +294,6 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
           handleEthereumActiveWalletUpdated(notif);
-          break;
-        case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
-          handleEthereumConnectionUrlUpdated(notif);
           break;
         case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
           handleEthereumChainIdUpdated(notif);
@@ -613,11 +609,18 @@ export function NotificationsProvider(props: any) {
       setSolanaCommitment(notif.data.commitment);
     };
 
-    const handleSolanaConnectionUrlUpdated = (notif: Notification) => {
-      setSolanaConnectionUrl(notif.data.url);
-      allPlugins().forEach((p) => {
-        p.pushSolanaConnectionChangedNotification(notif.data.url);
-      });
+    const handleConnectionUrlUpdated = (notif: Notification) => {
+      if (notif.data.blockchain === Blockchain.SOLANA) {
+        setSolanaConnectionUrl(notif.data.url);
+        allPlugins().forEach((p) => {
+          p.pushSolanaConnectionChangedNotification(notif.data.url);
+        });
+      } else if (notif.data.blockchain === Blockchain.ETHEREUM) {
+        setEthereumConnectionUrl(notif.data.connectionUrl);
+        allPlugins().forEach((p) => {
+          p.pushEthereumConnectionChangedNotification(notif.data.connectionUrl);
+        });
+      }
     };
 
     const handleSolanaSplTokensDidUpdate = async (notif: Notification) => {
@@ -635,7 +638,6 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleUserAccountAuthenticated = (notif: Notification) => {
-      logger.debug("dd handleUserAccountAuthenticated:notf", notif.data);
       setAuthenticatedUser({
         username: notif.data.username,
         uuid: notif.data.uuid,
@@ -681,13 +683,6 @@ export function NotificationsProvider(props: any) {
 
     const handleEthereumFeeDataDidUpdate = (notif: Notification) => {
       setEthereumFeeData(notif.data.feeData);
-    };
-
-    const handleEthereumConnectionUrlUpdated = (notif: Notification) => {
-      setEthereumConnectionUrl(notif.data.connectionUrl);
-      allPlugins().forEach((p) => {
-        p.pushEthereumConnectionChangedNotification(notif.data.connectionUrl);
-      });
     };
 
     const handleEthereumChainIdUpdated = (notif: Notification) => {

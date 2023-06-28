@@ -13,9 +13,9 @@ import {
   DEFAULT_SOLANA_CLUSTER,
   getLogger,
   InjectedRequestManager,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_CONNECTED,
-  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_DISCONNECTED,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_MOUNT,
@@ -124,7 +124,7 @@ export class ProviderSolanaInjection
       case NOTIFICATION_SOLANA_DISCONNECTED:
         this.#handleNotificationDisconnected(event);
         break;
-      case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
+      case NOTIFICATION_CONNECTION_URL_UPDATED:
         this.#handleNotificationConnectionUrlUpdated(event);
         break;
       case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
@@ -219,6 +219,9 @@ export class ProviderSolanaInjection
   }
 
   #handleNotificationConnectionUrlUpdated(event: Event) {
+    if (event.data.detail.data.blockchain !== Blockchain.SOLANA) {
+      return;
+    }
     this.#connection = new BackgroundSolanaConnection(
       this.#connectionRequestManager,
       event.data.detail.data.url

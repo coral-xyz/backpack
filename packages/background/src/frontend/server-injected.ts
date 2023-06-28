@@ -309,8 +309,9 @@ async function handleConnect(
     const user = await ctx.backend.userRead();
     const publicKey = ctx.backend.activeWalletForBlockchain(blockchain);
     if (blockchain === Blockchain.ETHEREUM) {
-      const connectionUrl = await ctx.backend.ethereumConnectionUrlRead(
-        user.uuid
+      const connectionUrl = await ctx.backend.connectionUrlRead(
+        user.uuid,
+        Blockchain.ETHEREUM
       );
       const chainId = await ctx.backend.ethereumChainIdRead();
       const data = {
@@ -324,8 +325,9 @@ async function handleConnect(
       });
       return [data];
     } else if (blockchain === Blockchain.SOLANA) {
-      const connectionUrl = await ctx.backend.solanaConnectionUrlRead(
-        user.uuid
+      const connectionUrl = await ctx.backend.connectionUrlRead(
+        user.uuid,
+        Blockchain.SOLANA
       );
       const data = { publicKey, connectionUrl };
       ctx.events.emit(BACKEND_EVENT, {
@@ -642,7 +644,7 @@ async function handleEthereumSwitchChain(
   try {
     // Only sign if the user clicked approve.
     if (didApprove) {
-      await ctx.backend.ethereumConnectionUrlUpdate(url);
+      await ctx.backend.connectionUrlUpdate(url, Blockchain.ETHEREUM);
       resp = await ctx.backend.ethereumChainIdUpdate(chainId);
     }
   } catch (err) {

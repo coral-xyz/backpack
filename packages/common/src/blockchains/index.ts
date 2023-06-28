@@ -1,9 +1,9 @@
-import type { EclipseData, EthereumData,SolanaData } from "../";
 import { EthereumConnectionUrl } from "../ethereum/connection-url";
 import { EthereumExplorer } from "../ethereum/explorer";
 import { SolanaCluster } from "../solana/cluster";
 import { SolanaExplorer } from "../solana/explorer";
-import { Blockchain  } from "../";
+import type { EclipseData, EthereumData, SolanaData } from "../types";
+import { Blockchain } from "../types";
 
 export const BLOCKCHAIN_COMMON: Record<
   Blockchain,

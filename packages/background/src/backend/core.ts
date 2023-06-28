@@ -32,12 +32,12 @@ import {
   NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
   NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_DEVELOPER_MODE_UPDATED,
   NOTIFICATION_ECLIPSE_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_EXPLORER_UPDATED,
   NOTIFICATION_FEATURE_GATES_UPDATED,
   NOTIFICATION_KEY_IS_COLD_UPDATE,
@@ -57,7 +57,6 @@ import {
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
-  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED,
@@ -245,45 +244,40 @@ export class Backend {
     return blockhash;
   }
 
-  async solanaConnectionUrlRead(uuid: string): Promise<string> {
-    let data = await secureStore.getWalletDataForUser(uuid);
-
-    // migrate the old default RPC value, this can be removed in future
-    const OLD_DEFAULT = "https://solana-rpc-nodes.projectserum.com";
-    if (
-      // if the current default RPC does not match the old one
-      SolanaCluster.DEFAULT !== OLD_DEFAULT &&
-      // and the user's RPC URL is that old default value
-      data.solana?.cluster === OLD_DEFAULT
-    ) {
-      // set the user's RPC URL to the new default value
-      data = {
-        ...data,
-        solana: {
-          ...data.solana,
-          cluster: SolanaCluster.DEFAULT,
-        },
-      };
-      await secureStore.setWalletDataForUser(uuid, data);
-    }
-
-    return (data.solana && data.solana.cluster) ?? SolanaCluster.DEFAULT;
+  async connectionUrlRead(
+    uuid: string,
+    blockchain: Blockchain
+  ): Promise<string> {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    const bcData = data[blockchain];
+    const defaultPreferences = BLOCKCHAIN_COMMON[blockchain].PreferencesDefault;
+    return (bcData.connectionUrl ??
+      bcData.cluster ??
+      defaultPreferences.connectionUrl ??
+      defaultPreferences.cluster) as string;
   }
 
   // Returns true if the url changed.
-  async solanaConnectionUrlUpdate(cluster: string): Promise<boolean> {
+  public async connectionUrlUpdate(
+    cluster: string,
+    blockchain: Blockchain
+  ): Promise<boolean> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
     const data = await secureStore.getWalletDataForUser(uuid);
 
-    if (data.solana.cluster === cluster) {
+    // TODO: consolidate cluster and connectionUrl fields.
+    // @ts-ignore
+    if (
+      data[blockchain].cluster === cluster ||
+      data[blockchain].connectionUrl === cluster
+    ) {
       return false;
     }
 
     let keyring: BlockchainKeyring | null;
     try {
-      keyring = this.keyringStore.activeUserKeyring.keyringForBlockchain(
-        Blockchain.SOLANA
-      );
+      keyring =
+        this.keyringStore.activeUserKeyring.keyringForBlockchain(blockchain);
     } catch {
       // Blockchain may be disabled
       keyring = null;
@@ -292,17 +286,20 @@ export class Backend {
 
     await secureStore.setWalletDataForUser(uuid, {
       ...data,
-      solana: {
-        ...data.solana,
+      [blockchain]: {
+        ...(data[blockchain] || {}),
+        // TODO: consolidate cluster and connectionUrl fields.
         cluster,
+        connectionUrl: cluster,
       },
     });
 
     this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
+      name: NOTIFICATION_CONNECTION_URL_UPDATED,
       data: {
         activeWallet,
         url: cluster,
+        blockchain,
       },
     });
 
@@ -396,46 +393,6 @@ export class Backend {
   ///////////////////////////////////////////////////////////////////////////////
   // Ethereum.
   ///////////////////////////////////////////////////////////////////////////////
-
-  async ethereumConnectionUrlRead(uuid: string): Promise<string> {
-    const data = await secureStore.getWalletDataForUser(uuid);
-    return data.ethereum && data.ethereum.connectionUrl
-      ? data.ethereum.connectionUrl
-      : EthereumConnectionUrl.DEFAULT;
-  }
-
-  async ethereumConnectionUrlUpdate(connectionUrl: string): Promise<string> {
-    const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await secureStore.getWalletDataForUser(uuid);
-
-    await secureStore.setWalletDataForUser(uuid, {
-      ...data,
-      ethereum: {
-        ...(data.ethereum || {}),
-        connectionUrl,
-      },
-    });
-
-    let keyring: BlockchainKeyring | null;
-    try {
-      keyring = this.keyringStore.activeUserKeyring.keyringForBlockchain(
-        Blockchain.ETHEREUM
-      );
-    } catch {
-      // Blockchain may be disabled
-      keyring = null;
-    }
-    const activeWallet = keyring ? keyring.getActiveWallet() : null;
-
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-      data: {
-        activeWallet,
-        connectionUrl,
-      },
-    });
-    return SUCCESS_RESPONSE;
-  }
 
   async ethereumChainIdRead(): Promise<string> {
     const data = await secureStore.getWalletDataForUser(
@@ -566,8 +523,14 @@ export class Backend {
       name: NOTIFICATION_KEYRING_STORE_CREATED,
       data: {
         blockchainActiveWallets: await this.blockchainActiveWallets(),
-        ethereumConnectionUrl: await this.ethereumConnectionUrlRead(uuid),
-        solanaConnectionUrl: await this.solanaConnectionUrlRead(uuid),
+        ethereumConnectionUrl: await this.connectionUrlRead(
+          uuid,
+          Blockchain.ETHEREUM
+        ),
+        solanaConnectionUrl: await this.connectionUrlRead(
+          uuid,
+          Blockchain.SOLANA
+        ),
         solanaCommitment: await this.solanaCommitmentRead(uuid),
         preferences: await this.preferencesRead(uuid),
       },
@@ -678,12 +641,14 @@ export class Backend {
     await this.keyringStore.tryUnlock(userInfo);
     const activeUser = (await secureStore.getUserData()).activeUser;
     const blockchainActiveWallets = await this.blockchainActiveWallets();
-    const ethereumConnectionUrl = await this.ethereumConnectionUrlRead(
-      userInfo.uuid
+    const ethereumConnectionUrl = await this.connectionUrlRead(
+      userInfo.uuid,
+      Blockchain.ETHEREUM
     );
     const ethereumChainId = await this.ethereumChainIdRead();
-    const solanaConnectionUrl = await this.solanaConnectionUrlRead(
-      userInfo.uuid
+    const solanaConnectionUrl = await this.connectionUrlRead(
+      userInfo.uuid,
+      Blockchain.SOLANA
     );
     const solanaCommitment = await this.solanaCommitmentRead(userInfo.uuid);
 

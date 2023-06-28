@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE } from "@coral-xyz/common";
+import {
+  Blockchain,
+  UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+} from "@coral-xyz/common";
 import { InputListItem, Inputs, PrimaryButton } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 
@@ -18,8 +21,8 @@ export function PreferenceSolanaCustomRpcUrl() {
     try {
       background
         .request({
-          method: UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
-          params: [rpcUrl],
+          method: UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+          params: [rpcUrl, Blockchain.SOLANA],
         })
         .then(close)
         .catch(console.error);
