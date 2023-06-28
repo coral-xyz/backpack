@@ -1,9 +1,8 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
-import type {
-  Blockchain} from "@coral-xyz/common";
 import {
+  Blockchain,
   formatWalletAddress,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
 } from "@coral-xyz/common";
@@ -21,6 +20,7 @@ import {
   useAllWallets,
   useBackgroundClient,
   useDehydratedWallets,
+  useFeatureGates,
   usePrimaryWallets,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -401,6 +401,8 @@ function WalletSettingsButton() {
 
 export function WalletListBlockchainSelector() {
   const nav = useNavigation();
+  const gates = useFeatureGates();
+
   useEffect(() => {
     nav.setOptions({ headerTitle: "Select a network" });
   }, [nav]);
@@ -414,8 +416,11 @@ export function WalletListBlockchainSelector() {
   return (
     <Box style={{ padding: "0 16px 16px", marginTop: 12 }}>
       <Grid container spacing={1.5}>
-        {Object.entries(BLOCKCHAIN_COMPONENTS).map(
-          ([blockchain, Component]) => (
+        {Object.entries(BLOCKCHAIN_COMPONENTS)
+          .filter(
+            ([blockchain]) => gates.ECLIPSE || blockchain !== Blockchain.ECLIPSE
+          )
+          .map(([blockchain, Component]) => (
             <Grid item xs={6}>
               <ActionCard
                 icon={<Component.Icon />}
@@ -423,8 +428,7 @@ export function WalletListBlockchainSelector() {
                 onClick={() => onClick(blockchain as Blockchain)}
               />
             </Grid>
-          )
-        )}
+          ))}
       </Grid>
     </Box>
   );

@@ -1,5 +1,6 @@
-import type { Blockchain } from "@coral-xyz/common";
+import { Blockchain } from "@coral-xyz/common";
 import { PrimaryButton } from "@coral-xyz/react-common";
+import { useFeatureGates } from "@coral-xyz/recoil";
 import { Box, Grid } from "@mui/material";
 
 import { Header, SubtextParagraph } from "../../common";
@@ -17,6 +18,7 @@ export const BlockchainSelector = ({
   onNext: () => void;
   isRecovery?: boolean;
 }) => {
+  const gates = useFeatureGates();
   return (
     <Box
       sx={{
@@ -54,8 +56,12 @@ export const BlockchainSelector = ({
         </Box>
         <Box style={{ padding: "0 16px 16px" }}>
           <Grid container spacing={1.5}>
-            {Object.entries(BLOCKCHAIN_COMPONENTS).map(
-              ([blockchain, Component]) => (
+            {Object.entries(BLOCKCHAIN_COMPONENTS)
+              .filter(
+                ([blockchain]) =>
+                  gates.ECLIPSE || blockchain !== Blockchain.ECLIPSE
+              )
+              .map(([blockchain, Component]) => (
                 <Grid item xs={6}>
                   <ActionCard
                     icon={<Component.Icon />}
@@ -66,8 +72,7 @@ export const BlockchainSelector = ({
                     onClick={() => onClick(blockchain as Blockchain)}
                   />
                 </Grid>
-              )
-            )}
+              ))}
           </Grid>
         </Box>
       </Box>
