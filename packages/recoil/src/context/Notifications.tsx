@@ -610,6 +610,7 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleConnectionUrlUpdated = (notif: Notification) => {
+      // TODO: make this impl blockchain agnostic.
       if (notif.data.blockchain === Blockchain.SOLANA) {
         setSolanaConnectionUrl(notif.data.url);
         allPlugins().forEach((p) => {

@@ -4,6 +4,7 @@ import type { MigrationPrivateStoreInterface } from "../../SecureStore";
 
 import { migrate_0_2_0_510 } from "./migrate_0_2_0_510";
 import { migrate_0_2_0_2408 } from "./migrate_0_2_0_2408";
+import { migrate_0_6_12_5798 } from "./migrate_0_6_12_5798";
 
 const logger = getLogger("background/migrations");
 
@@ -41,7 +42,7 @@ async function _runMigrationsIfNeeded(
   },
   storeInterface: MigrationPrivateStoreInterface
 ) {
-  const LATEST_MIGRATION_BUILD = 2408; // Update this everytime a migration is added.
+  const LATEST_MIGRATION_BUILD = 5798; // Update this everytime a migration is added.
   const lastMigration = await getMigration(storeInterface);
 
   logger.debug("starting migrations with last migration", lastMigration);
@@ -90,6 +91,11 @@ async function _runMigrationsIfNeeded(
   if ((await getMigration(storeInterface))?.build === 510) {
     await runMigration(2408, storeInterface, async () => {
       await migrate_0_2_0_2408(userInfo, storeInterface);
+    });
+  }
+  if ((await getMigration(storeInterface))?.build === 2408) {
+    await runMigration(5000, storeInterface, async () => {
+      await migrate_0_6_12_5798(userInfo, storeInterface);
     });
   }
 

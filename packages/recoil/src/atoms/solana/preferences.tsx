@@ -31,10 +31,9 @@ export const solanaConnectionUrl = selector<string>({
 });
 
 export const eclipseConnectionUrl = selector<string>({
-  key: "solanaConnectionUrl",
+  key: "eclipseConnectionUrl",
   get: ({ get }) => {
     const p = get(preferences);
-    // todo
-    return "https://api.injective.eclipsenetwork.xyz:8899/";
+    return p.eclipse.cluster;
   },
 });
