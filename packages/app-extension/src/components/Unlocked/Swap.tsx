@@ -50,6 +50,7 @@ import { ethers, FixedNumber } from "ethers";
 import { Button as XnftButton } from "../../plugin/Component";
 import { TextField } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
+import { BLOCKCHAIN_COMPONENTS } from "../common/Blockchains";
 import { BottomCard } from "../common/Layout/BottomCard";
 import {
   CloseButton,
@@ -296,11 +297,11 @@ export function _Swap({
     }
   };
 
-  if (blockchain === Blockchain.ETHEREUM) {
+  if (blockchain !== Blockchain.SOLANA) {
     return (
       <EmptyState
         icon={(props: any) => <DoNotDisturbIcon {...props} />}
-        title="Ethereum Swaps Soon"
+        title={`${BLOCKCHAIN_COMPONENTS[blockchain].Name} Swaps Soon`}
         subtitle="For now, please use a Solana wallet to swap"
       />
     );

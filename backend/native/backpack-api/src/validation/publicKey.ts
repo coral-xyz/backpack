@@ -11,6 +11,14 @@ export const validatePublicKey = (address: string, chain: BlockChain) => {
     }
     return true;
   }
+  if (chain === "eclipse") {
+    try {
+      new PublicKey(address);
+    } catch (err) {
+      return false;
+    }
+    return true;
+  }
   if (chain === "ethereum") {
     try {
       ethers.utils.getAddress(address);

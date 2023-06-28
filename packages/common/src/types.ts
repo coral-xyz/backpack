@@ -42,7 +42,11 @@ export type RpcResponseData = {
 };
 
 export enum Blockchain {
+  // SVM.
   SOLANA = "solana",
+  ECLIPSE = "eclipse",
+
+  // EVM.
   ETHEREUM = "ethereum",
 }
 
@@ -212,7 +216,9 @@ export type Preferences = {
   darkMode: boolean;
   developerMode: boolean;
   aggregateWallets: boolean;
+  // TODO: this doesn't populate automatically from the common list.
   solana: SolanaData;
+  eclipse: EclipseData;
   ethereum: EthereumData;
 } & DeprecatedWalletDataDoNotUse;
 
@@ -228,15 +234,19 @@ export type DeprecatedWalletDataDoNotUse = {
   autoLockSecs?: number; // Used in releases <=0.4.0
 };
 
-type SolanaData = {
+export type SolanaData = {
   explorer: string;
+  connectionUrl?: string; // TODO: combine with EthereumData.
   commitment: Commitment;
   cluster: string;
 };
 
-type EthereumData = {
+export type EclipseData = SolanaData;
+
+export type EthereumData = {
   explorer: string;
   connectionUrl: string;
+  cluster?: string;
   chainId: string;
 };
 

@@ -1,9 +1,9 @@
 import type {
-  Blockchain,
   BlockchainKeyringJson,
   DeprecatedWalletDataDoNotUse,
   Preferences,
 } from "@coral-xyz/common";
+import { Blockchain } from "@coral-xyz/common";
 
 import type { SecretPayload } from "./keyring/crypto";
 import { decrypt, encrypt } from "./keyring/crypto";
@@ -114,18 +114,33 @@ export class SecureStore {
     return isCold;
   }
 
-  async setKeyname(publicKey: string, name: string) {
+  async setKeyname(publicKey: string, name: string, blockchain: Blockchain) {
     let keynames = await this.db.get(KEY_KEYNAME_STORE);
     if (!keynames) {
-      keynames = {};
+      keynames = {
+        [Blockchain.ECLIPSE]: {},
+      };
     }
-    keynames[publicKey] = name;
+    if (
+      blockchain !== Blockchain.ETHEREUM &&
+      blockchain !== Blockchain.SOLANA
+    ) {
+      keynames[blockchain][publicKey] = name;
+    } else {
+      keynames[publicKey] = name;
+    }
     await this.db.set(KEY_KEYNAME_STORE, keynames);
   }
 
-  async getKeyname(publicKey: string): Promise<string> {
+  async getKeyname(publicKey: string, blockchain: Blockchain): Promise<string> {
     const names = await this.db.get(KEY_KEYNAME_STORE);
-    const name = names[publicKey];
+    let name = names[publicKey];
+    if (
+      blockchain !== Blockchain.ETHEREUM &&
+      blockchain !== Blockchain.SOLANA
+    ) {
+      name = names[blockchain][publicKey];
+    }
     if (!name) {
       throw Error(`unable to find name for key: ${publicKey.toString()}`);
     }

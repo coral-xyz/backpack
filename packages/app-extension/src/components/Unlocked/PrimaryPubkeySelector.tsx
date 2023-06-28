@@ -1,7 +1,8 @@
 import { useState } from "react";
+import type {
+  Blockchain} from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
-  Blockchain,
   formatWalletAddress,
   toTitleCase,
 } from "@coral-xyz/common";
@@ -17,6 +18,7 @@ import { Box } from "@mui/material";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 
 import { Header, SubtextParagraph } from "../common";
+import { BLOCKCHAIN_COMPONENTS } from "../common/Blockchains";
 import { WithDrawer } from "../common/Layout/Drawer";
 
 import { TokenBadge } from "./Balances/TokensWidget/TokenBadge";
@@ -25,12 +27,15 @@ export const PrimaryPubkeySelector = () => {
   const gates = useFeatureGates();
   const wallets = useRecoilValue(serverPublicKeys);
   const primaryWallets = usePrimaryWallets();
-  const blockchains: Blockchain[] = [Blockchain.SOLANA, Blockchain.ETHEREUM];
+  const blockchains: Blockchain[] = Object.keys(
+    BLOCKCHAIN_COMPONENTS
+  ) as Blockchain[];
   const needsMigration: Blockchain[] = [];
-  const [selectedAddresses, setSelectedSolAddresses] = useState({
-    [Blockchain.ETHEREUM]: "",
-    [Blockchain.SOLANA]: "",
-  });
+  const [selectedAddresses, setSelectedSolAddresses] = useState(
+    Object.fromEntries(
+      new Map(Object.keys(BLOCKCHAIN_COMPONENTS).map((k) => [k, ""]))
+    )
+  );
   const setServerPublicKeys = useSetRecoilState(serverPublicKeys);
   const [migrationDone, setMigrationDone] = useState(false);
 
@@ -99,12 +104,17 @@ export const PrimaryPubkeySelector = () => {
           }}
         >
           <PrimaryButton
-            disabled={
-              (needsMigration.find((x) => x === Blockchain.SOLANA) &&
-                !selectedAddresses[Blockchain.SOLANA]) ||
-              (needsMigration.find((x) => x === Blockchain.ETHEREUM) &&
-                !selectedAddresses[Blockchain.ETHEREUM])
-            }
+            disabled={(() => {
+              Object.keys(BLOCKCHAIN_COMPONENTS).forEach((blockchain) => {
+                if (
+                  needsMigration.find((x) => x === blockchain) &&
+                  !selectedAddresses[blockchain]
+                ) {
+                  return true;
+                }
+              });
+              return false;
+            })()}
             label={
               needsMigration.length === 1
                 ? "Set primary wallet"

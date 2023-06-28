@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import type { WalletDescriptor } from "@coral-xyz/common";
+import type {   Blockchain,WalletDescriptor } from "@coral-xyz/common";
 import {
-  Blockchain,
   UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH,
 } from "@coral-xyz/common";
 import { Loading } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import Ethereum from "@ledgerhq/hw-app-eth";
-import Solana from "@ledgerhq/hw-app-solana";
+import type Ethereum from "@ledgerhq/hw-app-eth";
+import type Solana from "@ledgerhq/hw-app-solana";
 import type Transport from "@ledgerhq/hw-transport";
 import { ethers } from "ethers";
+
+import { BLOCKCHAIN_COMPONENTS } from "../../common/Blockchains";
 
 const { base58 } = ethers.utils;
 
@@ -31,10 +32,8 @@ export const HardwareDeriveWallet = ({
 
   useEffect(() => {
     (async () => {
-      const ledgerWallet = {
-        [Blockchain.SOLANA]: new Solana(transport),
-        [Blockchain.ETHEREUM]: new Ethereum(transport),
-      }[blockchain];
+      const ledgerWallet =
+        BLOCKCHAIN_COMPONENTS[blockchain].LedgerApp(transport);
       setLedgerWallet(ledgerWallet);
     })();
   }, [blockchain, transport]);
@@ -50,13 +49,10 @@ export const HardwareDeriveWallet = ({
 
       let publicKey: string;
       try {
-        const ledgerAddress = (
-          await ledgerWallet.getAddress(derivationPath.replace("m/", ""))
-        ).address;
-        publicKey =
-          blockchain === Blockchain.SOLANA
-            ? base58.encode(ledgerAddress)
-            : ledgerAddress.toString();
+        publicKey = await BLOCKCHAIN_COMPONENTS[blockchain].PublicKeyFromPath(
+          ledgerWallet,
+          derivationPath
+        );
       } catch (error) {
         if (onError) {
           console.debug("hardware derive wallet transport error", error);

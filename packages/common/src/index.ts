@@ -17,6 +17,7 @@ import type {
 
 export * from "./api";
 export * from "./apollo";
+export * from "./blockchains";
 export * from "./browser";
 export * from "./channel";
 export * from "./constants";

@@ -20,19 +20,16 @@ import {
   useAllWallets,
   useBackgroundClient,
   useDehydratedWallets,
+  useFeatureGates,
   usePrimaryWallets,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
 import type { SxProps, Theme } from "@mui/material/styles";
 
-import {
-  EthereumIconOnboarding as EthereumIcon,
-  SolanaIconOnboarding as SolanaIcon,
-} from "../common/Icon";
+import { BLOCKCHAIN_COMPONENTS } from "../common/Blockchains";
 import { ActionCard } from "../common/Layout/ActionCard";
 import { useDrawerContext, WithMiniDrawer } from "../common/Layout/Drawer";
 import {
@@ -63,7 +60,6 @@ import {
 } from "../Unlocked/Settings/YourAccount/ShowPrivateKey";
 
 import { Scrollbar } from "./Layout/Scrollbar";
-import { WithCopyTooltip } from "./WithCopyTooltip";
 
 const useStyles = styles((theme) => ({
   addressButton: {
@@ -405,6 +401,8 @@ function WalletSettingsButton() {
 
 export function WalletListBlockchainSelector() {
   const nav = useNavigation();
+  const gates = useFeatureGates();
+
   useEffect(() => {
     nav.setOptions({ headerTitle: "Select a network" });
   }, [nav]);
@@ -418,20 +416,19 @@ export function WalletListBlockchainSelector() {
   return (
     <Box style={{ padding: "0 16px 16px", marginTop: 12 }}>
       <Grid container spacing={1.5}>
-        <Grid item xs={6}>
-          <ActionCard
-            icon={<EthereumIcon />}
-            text="Ethereum"
-            onClick={() => onClick(Blockchain.ETHEREUM)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <ActionCard
-            icon={<SolanaIcon />}
-            text="Solana"
-            onClick={() => onClick(Blockchain.SOLANA)}
-          />
-        </Grid>
+        {Object.entries(BLOCKCHAIN_COMPONENTS)
+          .filter(
+            ([blockchain]) => gates.ECLIPSE || blockchain !== Blockchain.ECLIPSE
+          )
+          .map(([blockchain, Component]) => (
+            <Grid item xs={6}>
+              <ActionCard
+                icon={<Component.Icon />}
+                text={Component.Name}
+                onClick={() => onClick(blockchain as Blockchain)}
+              />
+            </Grid>
+          ))}
       </Grid>
     </Box>
   );
@@ -686,7 +683,10 @@ function WalletListItem({
   inverted?: boolean;
 }) {
   const primaryWallets = usePrimaryWallets();
-  const isPrimary = primaryWallets.find((x) => x.publicKey === wallet.publicKey)
+  const isPrimary = primaryWallets.find(
+    (x) =>
+      x.publicKey === wallet.publicKey && x.blockchain === wallet.blockchain
+  )
     ? true
     : false;
   const theme = useCustomTheme();

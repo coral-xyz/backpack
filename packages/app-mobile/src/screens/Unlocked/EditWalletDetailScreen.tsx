@@ -11,7 +11,7 @@ import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
 import { YStack } from "@coral-xyz/tamagui";
 import { useFocusEffect } from "@react-navigation/native";
 
-import { Screen } from "~components/index";
+import { Margin, Screen } from "~components/index";
 import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 import { IconCopyContent } from "~screens/Unlocked/Settings/components/SettingsRow";
 
@@ -25,7 +25,7 @@ export function EditWalletDetailScreen({ navigation, route }): JSX.Element {
     (async () => {
       const name = await background.request({
         method: UI_RPC_METHOD_KEYNAME_READ,
-        params: [publicKey],
+        params: [publicKey, blockchain],
       });
 
       setName(name);
@@ -54,6 +54,7 @@ export function EditWalletDetailScreen({ navigation, route }): JSX.Element {
         navigation.push("edit-wallets-rename", {
           publicKey,
           name,
+          blockchain,
         }),
     },
     "Copy Address": {

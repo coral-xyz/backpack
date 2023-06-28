@@ -8,6 +8,8 @@ const Images = {
     "https://s3.us-east-1.amazonaws.com/app-assets.xnfts.dev/images/useBlockchainLogo/ethereum.png",
   solanaLogo:
     "https://s3.us-east-1.amazonaws.com/app-assets.xnfts.dev/images/useBlockchainLogo/solana.png",
+  eclipseLogo:
+    "https://s3.us-east-1.amazonaws.com/app-assets.xnfts.dev/images/useBlockchainLogo/solana.png", // todo
 };
 
 function getBlockchainLogo(blockchain: Blockchain) {
@@ -16,6 +18,8 @@ function getBlockchainLogo(blockchain: Blockchain) {
       return Images.ethereumLogo;
     case Blockchain.SOLANA:
       return Images.solanaLogo;
+    case Blockchain.ECLIPSE:
+      return Images.eclipseLogo;
     default:
       throw new Error(`invalid blockchain ${blockchain}`);
   }

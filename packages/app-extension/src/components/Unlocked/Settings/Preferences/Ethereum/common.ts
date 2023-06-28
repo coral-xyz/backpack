@@ -1,7 +1,8 @@
 import type { ChannelAppUiClient } from "@coral-xyz/common";
 import {
+  Blockchain,
+  UI_RPC_METHOD_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
-  UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
 } from "@coral-xyz/common";
 import { ethers } from "ethers";
 const { hexlify } = ethers.utils;
@@ -12,8 +13,8 @@ export const changeNetwork = async (
   chainId?: string
 ) => {
   await background.request({
-    method: UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
-    params: [url],
+    method: UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+    params: [url, Blockchain.ETHEREUM],
   });
 
   if (!chainId) {

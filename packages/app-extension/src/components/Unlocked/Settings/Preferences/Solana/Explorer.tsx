@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import {
+  Blockchain,
   SolanaExplorer,
-  UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
+  UI_RPC_METHOD_EXPLORER_UPDATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient, useSolanaExplorer } from "@coral-xyz/recoil";
 
@@ -28,16 +29,11 @@ export function PreferencesSolanaExplorer() {
     "Solana Explorer": {
       onClick: () => changeExplorer(SolanaExplorer.SOLANA_EXPLORER),
       detail:
-        explorer === SolanaExplorer.SOLANA_EXPLORER ? (
-          <Checkmark />
-        ) : (
-          <div />
-        ),
+        explorer === SolanaExplorer.SOLANA_EXPLORER ? <Checkmark /> : <div />,
     },
     "Solana FM": {
       onClick: () => changeExplorer(SolanaExplorer.SOLANA_FM),
-      detail:
-        explorer === SolanaExplorer.SOLANA_FM ? <Checkmark /> : <div />,
+      detail: explorer === SolanaExplorer.SOLANA_FM ? <Checkmark /> : <div />,
     },
     Solscan: {
       onClick: () => changeExplorer(SolanaExplorer.SOLSCAN),
@@ -53,8 +49,8 @@ export function PreferencesSolanaExplorer() {
     try {
       background
         .request({
-          method: UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
-          params: [explorer],
+          method: UI_RPC_METHOD_EXPLORER_UPDATE,
+          params: [explorer, Blockchain.SOLANA],
         })
         .catch(console.error);
     } catch (err) {

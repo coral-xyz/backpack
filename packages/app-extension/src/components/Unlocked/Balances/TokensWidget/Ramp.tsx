@@ -1,15 +1,12 @@
 import { useState } from "react";
-import { Blockchain } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import { ProxyImage } from "@coral-xyz/react-common";
-import {
-  SOL_LOGO_URI,
-  useAllWalletsDisplayed,
-  useWalletName,
-} from "@coral-xyz/recoil";
+import { useAllWalletsDisplayed, useWalletName } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import { ListItemIcon, Typography } from "@mui/material";
 
 import { TextField } from "../../../common";
+import { BLOCKCHAIN_COMPONENTS } from "../../../common/Blockchains";
 import { useNavigation } from "../../../common/Layout/NavStack";
 import {
   BalancesTable,
@@ -88,23 +85,6 @@ const useStyles = styles((theme) => ({
     marginLeft: "6px",
   },
 }));
-
-const RAMP_SUPPORTED_TOKENS = {
-  [Blockchain.SOLANA]: [
-    {
-      title: "SOL",
-      icon: SOL_LOGO_URI,
-      subtitle: "Solana",
-    },
-  ],
-  [Blockchain.ETHEREUM]: [
-    {
-      title: "ETH",
-      subtitle: "Ethereum",
-      icon: "/ethereum.png",
-    },
-  ],
-};
 
 export function Ramp({
   blockchain,
@@ -201,19 +181,17 @@ function RampCard({
     <BalancesTable>
       <BalancesTableHead wallet={{ name, publicKey, blockchain }} />
       <BalancesTableContent>
-        {RAMP_SUPPORTED_TOKENS[blockchain]
-          .filter(
-            ({ title, subtitle }) =>
-              title.toLowerCase().includes(searchFilter.toLocaleLowerCase()) ||
-              subtitle.toLowerCase().includes(searchFilter.toLowerCase())
-          )
-          .map((token: any) => (
-            <BalancesTableRow
-              onClick={() => onStartRamp({ blockchain, token, publicKey })}
-            >
-              <RampTokenCell token={token} />
-            </BalancesTableRow>
-          ))}
+        {BLOCKCHAIN_COMPONENTS[blockchain].RampSupportedTokens.filter(
+          ({ title, subtitle }) =>
+            title.toLowerCase().includes(searchFilter.toLocaleLowerCase()) ||
+            subtitle.toLowerCase().includes(searchFilter.toLowerCase())
+        ).map((token: any) => (
+          <BalancesTableRow
+            onClick={() => onStartRamp({ blockchain, token, publicKey })}
+          >
+            <RampTokenCell token={token} />
+          </BalancesTableRow>
+        ))}
       </BalancesTableContent>
     </BalancesTable>
   );

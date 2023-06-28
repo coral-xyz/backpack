@@ -1,4 +1,4 @@
-import { Blockchain } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import { PrimaryButton, UserIcon } from "@coral-xyz/react-common";
 import {
   useActiveWallet,
@@ -24,13 +24,14 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function SendSolanaConfirmationCard({
+export function SendSvmConfirmationCard({
   token,
   destinationAddress,
   destinationUser,
   amount,
   onComplete,
   onViewBalances,
+  blockchain,
 }: {
   token: {
     address: string;
@@ -48,6 +49,7 @@ export function SendSolanaConfirmationCard({
   amount: BigNumber;
   onComplete?: (txSig?: any) => void;
   onViewBalances?: () => void;
+  blockchain: Blockchain;
 }) {
   const { txSignature, onConfirm, cardType, error } = useSolanaTransaction({
     token,
@@ -70,7 +72,7 @@ export function SendSolanaConfirmationCard({
         />
       ) : cardType === "sending" ? (
         <Sending
-          blockchain={Blockchain.SOLANA}
+          blockchain={blockchain}
           isComplete={false}
           amount={amount}
           token={token}
@@ -78,7 +80,7 @@ export function SendSolanaConfirmationCard({
         />
       ) : cardType === "complete" ? (
         <Sending
-          blockchain={Blockchain.SOLANA}
+          blockchain={blockchain}
           isComplete
           amount={amount}
           token={token}
@@ -87,7 +89,7 @@ export function SendSolanaConfirmationCard({
         />
       ) : (
         <Error
-          blockchain={Blockchain.SOLANA}
+          blockchain={blockchain}
           signature={txSignature!}
           onRetry={onConfirm}
           error={error}

@@ -13,13 +13,13 @@ import {
   DEFAULT_SOLANA_CLUSTER,
   getLogger,
   InjectedRequestManager,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_CONNECTED,
-  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_DISCONNECTED,
   PLUGIN_NOTIFICATION_CONNECT,
+  PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
   PLUGIN_NOTIFICATION_MOUNT,
-  PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED,
   PLUGIN_NOTIFICATION_UNMOUNT,
   PLUGIN_NOTIFICATION_UPDATE_METADATA,
@@ -124,7 +124,7 @@ export class ProviderSolanaInjection
       case NOTIFICATION_SOLANA_DISCONNECTED:
         this.#handleNotificationDisconnected(event);
         break;
-      case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
+      case NOTIFICATION_CONNECTION_URL_UPDATED:
         this.#handleNotificationConnectionUrlUpdated(event);
         break;
       case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
@@ -144,7 +144,7 @@ export class ProviderSolanaInjection
       case PLUGIN_NOTIFICATION_UNMOUNT:
         this.#handlePluginUnmount(event);
         break;
-      case PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
+      case PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED:
         this.#handlePluginConnectionUrlUpdated(event);
         break;
       case PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED:
@@ -185,6 +185,9 @@ export class ProviderSolanaInjection
   }
 
   #handlePluginConnectionUrlUpdated(event: Event) {
+    if (event.data.detail.data.blockchain !== Blockchain.SOLANA) {
+      return;
+    }
     const connectionUrl = event.data.detail.data.url;
     this.#connection = new BackgroundSolanaConnection(
       this.#connectionRequestManager,
@@ -219,6 +222,9 @@ export class ProviderSolanaInjection
   }
 
   #handleNotificationConnectionUrlUpdated(event: Event) {
+    if (event.data.detail.data.blockchain !== Blockchain.SOLANA) {
+      return;
+    }
     this.#connection = new BackgroundSolanaConnection(
       this.#connectionRequestManager,
       event.data.detail.data.url

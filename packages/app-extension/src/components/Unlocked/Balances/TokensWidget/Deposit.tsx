@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Blockchain } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import { SecondaryButton } from "@coral-xyz/react-common";
 import {
   getBlockchainLogo,
@@ -11,7 +11,8 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import { IconButton, Modal, Typography } from "@mui/material";
 
-import { formatWalletAddress,TextField } from "../../../common";
+import { formatWalletAddress, TextField } from "../../../common";
+import { BLOCKCHAIN_COMPONENTS } from "../../../common/Blockchains";
 import { CloseButton, useDrawerContext } from "../../../common/Layout/Drawer";
 import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 
@@ -363,6 +364,7 @@ function _Deposit({
   const theme = useCustomTheme();
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const name = useWalletName(publicKey);
+  const bc_components = BLOCKCHAIN_COMPONENTS[blockchain];
 
   const walletDisplay =
     publicKey.toString().slice(0, 12) +
@@ -445,12 +447,10 @@ function _Deposit({
       </div>
       <div>
         <Typography className={classes.subtext}>
-          {blockchain === Blockchain.SOLANA ? (
-            <>This address can only receive SOL and SPL tokens on Solana.</>
-          ) : null}
-          {blockchain === Blockchain.ETHEREUM ? (
-            <>This address can only receive ETH and ERC20 tokens on Ethereum.</>
-          ) : null}
+          <>
+            This address can only receive {bc_components.GasTokenName} and{" "}
+            {bc_components.AppTokenName} tokens on {bc_components.Name}.
+          </>
         </Typography>
       </div>
     </div>

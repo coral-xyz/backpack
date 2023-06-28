@@ -20,9 +20,9 @@ import { Button, Grid, Skeleton, Typography } from "@mui/material";
 import { getSvgPath } from "figma-squircle";
 import { useRecoilValue, waitForAll } from "recoil";
 
+import { BLOCKCHAIN_COMPONENTS } from "../../common/Blockchains";
 import {
   _BalancesTableHead,
-  BalancesTableHead,
   BalancesTableProvider,
   useBalancesContext,
 } from "../Balances/Balances";
@@ -92,24 +92,16 @@ function PluginGrid() {
   //
   if (wallets.length === 1) {
     const wallet = wallets[0];
-    if (wallet.blockchain === Blockchain.ETHEREUM) {
+    if (wallet.blockchain !== Blockchain.SOLANA) {
       return (
         <EmptyState
           icon={(props: any) => <BlockIcon {...props} />}
-          title="Ethereum xNFTs not yet supported"
+          title={`${
+            BLOCKCHAIN_COMPONENTS[wallet.blockchain].Name
+          } xNFTs not yet supported`}
           subtitle="Switch to Solana to use xNFTs"
           buttonText=""
           onClick={() => {}}
-          header={
-            // Only show the wallet switcher if we are in single wallet mode.
-            !_isAggregateWallets ? (
-              <_BalancesTableHead
-                blockchain={wallet.blockchain}
-                showContent
-                setShowContent={() => {}}
-              />
-            ) : null
-          }
         />
       );
     }

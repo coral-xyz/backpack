@@ -1,6 +1,7 @@
 import type { Event } from "@coral-xyz/common";
 import {
   BackgroundEthereumProvider,
+  Blockchain,
   CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST,
   CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE,
   CHANNEL_ETHEREUM_NOTIFICATION,
@@ -10,10 +11,10 @@ import {
   ETHEREUM_RPC_METHOD_SWITCH_CHAIN,
   getLogger,
   InjectedRequestManager,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_DISCONNECTED,
 } from "@coral-xyz/common";
 import { ethErrors } from "eth-rpc-errors";
@@ -357,7 +358,7 @@ export class ProviderEthereumInjection extends EventEmitter {
       case NOTIFICATION_ETHEREUM_DISCONNECTED:
         this._handleNotificationDisconnected();
         break;
-      case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
+      case NOTIFICATION_CONNECTION_URL_UPDATED:
         this._handleNotificationConnectionUrlUpdated(event);
         break;
       case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
@@ -410,7 +411,12 @@ export class ProviderEthereumInjection extends EventEmitter {
    * of the chainId/network if the change was to a different network RPC.
    */
   _handleNotificationConnectionUrlUpdated = async (event: any) => {
-    const { connectionUrl } = event.data.detail.data;
+    const { connectionUrl, blockchain } = event.data.detail.data;
+
+    if (blockchain !== Blockchain.ETHEREUM) {
+      return;
+    }
+
     this.provider = new BackgroundEthereumProvider(
       this.connectionRequestManager,
       connectionUrl

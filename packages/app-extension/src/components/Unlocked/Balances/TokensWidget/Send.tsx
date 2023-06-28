@@ -2,10 +2,7 @@ import React, { type ChangeEvent, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {
   Blockchain,
-  ETH_NATIVE_MINT,
   explorerUrl,
-  NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
-  SOL_NATIVE_MINT,
   toDisplayBalance,
   toTitleCase,
 } from "@coral-xyz/common";
@@ -37,14 +34,12 @@ import { Typography } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
+import { BLOCKCHAIN_COMPONENTS } from "../../../common/Blockchains";
 import { CopyablePublicKey } from "../../../common/CopyablePublicKey";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavigation } from "../../../common/Layout/NavStack";
 import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 import { TokenInputField } from "../../../common/TokenInput";
-
-import { SendEthereumConfirmationCard } from "./Ethereum";
-import { SendSolanaConfirmationCard } from "./Solana";
 
 export const useStyles = makeStyles((theme) => ({
   topImage: {
@@ -131,25 +126,12 @@ export function Send({
 
   useEffect(() => {
     if (!token) return;
-    if (token.mint === SOL_NATIVE_MINT) {
-      // When sending SOL, account for the tx fee and rent exempt minimum.
-      setFeeOffset(
-        BigNumber.from(5000).add(
-          BigNumber.from(NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS)
-        )
-      );
-    } else if (token.address === ETH_NATIVE_MINT) {
-      // 21,000 GWEI for a standard ETH transfer
-      setFeeOffset(
-        BigNumber.from("21000")
-          .mul(ethereumCtx?.feeData.maxFeePerGas!)
-          .add(
-            BigNumber.from("21000").mul(
-              ethereumCtx?.feeData.maxPriorityFeePerGas!
-            )
-          )
-      );
-    }
+    setFeeOffset(
+      BLOCKCHAIN_COMPONENTS[blockchain].MaxFeeOffset(
+        { address: token.address, mint: token.mint },
+        ethereumCtx
+      )
+    );
   }, [blockchain, token]); // eslint-disable-line
 
   const amountSubFee = BigNumber.from(token!.nativeBalance).sub(feeOffset);
@@ -187,10 +169,8 @@ export function Send({
     drawer.close();
   };
 
-  const SendConfirmComponent = {
-    [Blockchain.SOLANA]: SendSolanaConfirmationCard,
-    [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
-  }[blockchain];
+  const SendConfirmComponent =
+    BLOCKCHAIN_COMPONENTS[blockchain].SendTokenConfirmationCard;
 
   return (
     <form
@@ -252,6 +232,8 @@ export function Send({
               to?.uuid !== uuid &&
               blockchain === Blockchain.SOLANA
             ) {
+              // Note: I don't know what this is used for, but if it's uncommented
+              //       out, we should generalize it to work for other SVM chains?
               // const client_generated_uuid = uuidv4();
               // createEmptyFriendship(uuid, to?.uuid, {
               //   last_message_sender: uuid,

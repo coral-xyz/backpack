@@ -66,12 +66,10 @@ export const PLUGIN_NOTIFICATION_MOUNT = "plugin-notification-mount";
 export const PLUGIN_NOTIFICATION_UPDATE_METADATA =
   "plugin-notification-update-metadata";
 export const PLUGIN_NOTIFICATION_UNMOUNT = "plugin-notification-unmount";
-export const PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED =
-  "plugin-notification-solana-connection-url-updated";
 export const PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED =
   "plugin-notification-solana-public-key-updated";
-export const PLUGIN_NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED =
-  "plugin-notification-ethereum-connection-url-updated";
+export const PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED =
+  "plugin-notification-connection-url-updated";
 export const PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED =
   "plugin-notification-ethereum-public-key-updated";
 
@@ -231,14 +229,11 @@ export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ =
   "ui-rpc-method-solana-commitment-read";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE =
   "ui-rpc-method-solana-commitment-update";
-export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ =
-  "ui-rpc-method-solana-connection-url-read";
-export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE =
-  "ui-rpc-method-solana-connection-url-update";
-export const UI_RPC_METHOD_SOLANA_EXPLORER_READ =
-  "ui-rpc-method-solana-explorer-read";
-export const UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE =
-  "ui-rpc-method-solana-explorer-update";
+export const UI_RPC_METHOD_CONNECTION_URL_READ =
+  "ui-rpc-method-connection-url-read";
+export const UI_RPC_METHOD_CONNECTION_URL_UPDATE =
+  "ui-rpc-method-connection-url-update";
+export const UI_RPC_METHOD_EXPLORER_UPDATE = "ui-rpc-method-explorer-update";
 export const UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS =
   "ui-rpc-method-solana-sign-all-txs";
 export const UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION =
@@ -253,14 +248,6 @@ export const UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ =
   "ui-rpc-method-ethereum-chain-id-read";
 export const UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE =
   "ui-rpc-method-ethereum-chain-id-update";
-export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ =
-  "ui-rpc-method-ethereum-connection-url-read";
-export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE =
-  "ui-rpc-method-ethereum-connection-url-update";
-export const UI_RPC_METHOD_ETHEREUM_EXPLORER_READ =
-  "ui-rpc-method-ethereum-explorer-read";
-export const UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE =
-  "ui-rpc-method-ethereum-explorer-update";
 export const UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION =
   "ui-rpc-method-ethereum-sign-and-send-tx";
 export const UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE =
@@ -334,28 +321,25 @@ export const NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED =
   "notification-ethereum-chain-id-updated";
 export const NOTIFICATION_ETHEREUM_CONNECTED =
   "notification-ethereum-connected";
-export const NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED =
-  "notification-ethereum-connection-url-updated";
 export const NOTIFICATION_ETHEREUM_DISCONNECTED =
   "notification-ethereum-disconnected";
-export const NOTIFICATION_ETHEREUM_EXPLORER_UPDATED =
-  "notification-ethereum-explorer-updated";
 export const NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE =
   "notification-ethereum-fee-data-did-update";
 export const NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE =
   "notification-ethereum-tokens-did-update";
+export const NOTIFICATION_ECLIPSE_ACTIVE_WALLET_UPDATED =
+  "notification-keyring-eclipse-active-wallet-updated";
 // Solana specific notifications
 export const NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED =
   "notification-keyring-solana-active-wallet-updated";
 export const NOTIFICATION_SOLANA_COMMITMENT_UPDATED =
   "notification-solana-commitment-updated";
 export const NOTIFICATION_SOLANA_CONNECTED = "notification-solana-connected";
-export const NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED =
-  "notification-solana-connection-url-updated";
+export const NOTIFICATION_CONNECTION_URL_UPDATED =
+  "notification-connection-url-updated";
 export const NOTIFICATION_SOLANA_DISCONNECTED =
   "notification-solana-disconnected";
-export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
-  "notification-solana-explorer-updated";
+export const NOTIFICATION_EXPLORER_UPDATED = "notification-explorer-updated";
 export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
   "notification-solana-spl-tokens-did-update";
 export const NOTIFICATION_USER_ACCOUNT_AUTHENTICATED =

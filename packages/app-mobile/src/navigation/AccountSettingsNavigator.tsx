@@ -15,10 +15,9 @@ import {
   SolanaCluster,
   SolanaExplorer,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
-  UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
+  UI_RPC_METHOD_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
-  UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
-  UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
+  UI_RPC_METHOD_EXPLORER_UPDATE,
   formatWalletAddress,
   Blockchain,
 } from "@coral-xyz/common";
@@ -394,8 +393,8 @@ function PreferencesSolanaCustomRpcUrl({ navigation }) {
   const onSubmit = async ({ url }: SolanaRPCUrlFormData) => {
     try {
       await background.request({
-        method: UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
-        params: [url],
+        method: UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+        params: [url, Blockchain.SOLANA],
       });
     } catch (err) {
       console.error(err);
@@ -450,8 +449,8 @@ function PreferencesSolanaConnection({ navigation }) {
     async (url: string) => {
       try {
         await background.request({
-          method: UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
-          params: [url],
+          method: UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+          params: [url, Blockchain.SOLANA],
         });
       } catch (err) {
         Alert.alert("Something went wrong", "Try again");
@@ -543,8 +542,8 @@ export function PreferencesSolanaExplorer({ navigation }) {
     async (explorer: string) => {
       try {
         await background.request({
-          method: UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
-          params: [explorer],
+          method: UI_RPC_METHOD_EXPLORER_UPDATE,
+          params: [explorer, Blockchain.SOLANA],
         });
       } catch (err) {
         Alert.alert("Something went wrong", "Try again");
@@ -610,8 +609,8 @@ async function changeEthereumNetwork(
   chainId?: string
 ) {
   await background.request({
-    method: UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
-    params: [url],
+    method: UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+    params: [url, Blockchain.ETHEREUM],
   });
 
   if (!chainId) {

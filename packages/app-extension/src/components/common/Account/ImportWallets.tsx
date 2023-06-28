@@ -1,16 +1,6 @@
 import { useEffect, useState } from "react";
-import type { WalletDescriptor } from "@coral-xyz/common";
+import type {   Blockchain,WalletDescriptor } from "@coral-xyz/common";
 import {
-  Blockchain,
-  DEFAULT_SOLANA_CLUSTER,
-  EthereumConnectionUrl,
-  ethereumIndexed,
-  legacyBip44ChangeIndexed,
-  legacyBip44Indexed,
-  legacyEthereum,
-  legacyLedgerIndexed,
-  legacyLedgerLiveAccount,
-  legacySolletIndexed,
   LOAD_PUBLIC_KEY_AMOUNT,
   UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
@@ -19,8 +9,6 @@ import {
 import { Loading, PrimaryButton, TextInput } from "@coral-xyz/react-common";
 import { useBackgroundClient, useDehydratedWallets } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import Ethereum from "@ledgerhq/hw-app-eth";
-import Solana from "@ledgerhq/hw-app-solana";
 import type Transport from "@ledgerhq/hw-transport";
 import {
   Box,
@@ -29,9 +17,8 @@ import {
   ListItemText,
   MenuItem,
 } from "@mui/material";
-import * as anchor from "@project-serum/anchor";
-import { Connection as SolanaConnection, PublicKey } from "@solana/web3.js";
-import { BigNumber, ethers } from "ethers";
+import type { BigNumber} from "ethers";
+import { ethers } from "ethers";
 
 import {
   Checkbox,
@@ -39,9 +26,8 @@ import {
   Header,
   SubtextParagraph,
 } from "../../common";
+import { BLOCKCHAIN_COMPONENTS } from "../../common/Blockchains";
 import { Scrollbar } from "../Layout/Scrollbar";
-
-const { base58: bs58 } = ethers.utils;
 
 export function ImportWallets({
   blockchain,
@@ -88,56 +74,8 @@ export function ImportWallets({
     []
   );
 
-  const derivationPathOptions = {
-    [Blockchain.SOLANA]: [
-      {
-        path: (i: number) => legacyBip44Indexed(Blockchain.SOLANA, i),
-        label: "m/44/501'/x'",
-      },
-      {
-        path: (i: number) => legacyBip44ChangeIndexed(Blockchain.SOLANA, i),
-        label: "m/44/501'/x'/0'",
-      },
-      {
-        path: (i: number) =>
-          legacyBip44ChangeIndexed(Blockchain.SOLANA, i) + "/0'",
-        label: "m/44/501'/x'/0'/0'",
-      },
-    ]
-      // Note: We only allow importing the deprecated sollet derivation path for
-      //       hot wallets. This UI is hidden behind a local storage flag we
-      //       expect people to manually set, since this derivation path was only
-      //       used by mostly technical early Solana users.
-      .concat(
-        mnemonic && window.localStorage.getItem("sollet")
-          ? [
-              {
-                path: (i: number) => legacySolletIndexed(i),
-                label: "501'/0'/0/0 (Deprecated)",
-              },
-            ]
-          : []
-      ),
-    [Blockchain.ETHEREUM]: [
-      {
-        path: (i: number) => legacyEthereum(i),
-        label: "m/44/60'/x",
-      },
-      {
-        path: (i: number) => legacyLedgerIndexed(i),
-        label: "m/44'/60'/0'/x' - Ledger",
-      },
-      {
-        path: (i: number) => legacyLedgerLiveAccount(i),
-        label: "m/44'/60'/x'/0/0 - Ledger Live",
-      },
-      {
-        path: (i: number) => ethereumIndexed(i),
-        label: "m/44'/60'/0'/0/x - Ethereum Standard",
-      },
-    ],
-  }[blockchain];
-
+  const derivationPathOptions =
+    BLOCKCHAIN_COMPONENTS[blockchain].DerivationPathOptions;
   const [derivationPathLabel, setDerivationPathLabel] = useState<string>(
     derivationPathOptions[0].label
   );
@@ -269,48 +207,7 @@ export function ImportWallets({
   //
   // Load balances for accounts that have been loaded
   //
-  const loadBalances = async (publicKeys: string[]) => {
-    if (blockchain === Blockchain.SOLANA) {
-      // TODO use Backpack configured value
-      const solanaMainnetRpc =
-        process.env.DEFAULT_SOLANA_CONNECTION_URL || DEFAULT_SOLANA_CLUSTER;
-      const solanaConnection = new SolanaConnection(
-        solanaMainnetRpc,
-        "confirmed"
-      );
-      const accounts = (
-        await anchor.utils.rpc.getMultipleAccounts(
-          solanaConnection,
-          publicKeys.map((p) => new PublicKey(p))
-        )
-      ).map((result, index) => {
-        return {
-          publicKey: publicKeys[index],
-          balance: result
-            ? BigNumber.from(result.account.lamports)
-            : BigNumber.from(0),
-          index,
-        };
-      });
-      return accounts;
-    } else if (blockchain === Blockchain.ETHEREUM) {
-      // TODO use Backpack configured value
-      const ethereumMainnetRpc =
-        process.env.DEFAULT_ETHEREUM_CONNECTION_URL ||
-        EthereumConnectionUrl.MAINNET;
-      const ethereumProvider = new ethers.providers.JsonRpcProvider(
-        ethereumMainnetRpc
-      );
-      const balances = await Promise.all(
-        publicKeys.map((p) => ethereumProvider.getBalance(p))
-      );
-      return publicKeys.map((p, index) => {
-        return { publicKey: p, balance: balances[index], index };
-      });
-    } else {
-      throw new Error("invalid blockchain");
-    }
-  };
+  const loadBalances = BLOCKCHAIN_COMPONENTS[blockchain].LoadBalances;
 
   //
   // Load accounts for the given mnemonic. This is passed to the ImportWallets
@@ -335,20 +232,18 @@ export function ImportWallets({
   ): Promise<string[]> => {
     const publicKeys = [];
     setLedgerLocked(true);
-    const ledger = {
-      [Blockchain.SOLANA]: new Solana(transport),
-      [Blockchain.ETHEREUM]: new Ethereum(transport),
-    }[blockchain];
+    const ledger = BLOCKCHAIN_COMPONENTS[blockchain].LedgerApp(transport);
     // Add remaining accounts
     for (const derivationPath of derivationPaths) {
       publicKeys.push(
-        (await ledger.getAddress(derivationPath.replace("m/", ""))).address
+        await BLOCKCHAIN_COMPONENTS[blockchain].PublicKeyFromPath(
+          ledger,
+          derivationPath
+        )
       );
     }
     setLedgerLocked(false);
-    return publicKeys.map((p) =>
-      blockchain === Blockchain.SOLANA ? bs58.encode(p) : p.toString()
-    );
+    return publicKeys;
   };
 
   const isDisabledPublicKey = (pk: string): boolean => {
@@ -389,16 +284,10 @@ export function ImportWallets({
   };
 
   // Symbol for balance displays
-  const symbol = {
-    [Blockchain.SOLANA]: "SOL",
-    [Blockchain.ETHEREUM]: "ETH",
-  }[blockchain];
+  const symbol = BLOCKCHAIN_COMPONENTS[blockchain].GasTokenName;
 
   // Decimals for balance displays
-  const decimals = {
-    [Blockchain.SOLANA]: 9,
-    [Blockchain.ETHEREUM]: 18,
-  }[blockchain];
+  const decimals = BLOCKCHAIN_COMPONENTS[blockchain].GasTokenDecimals;
 
   return (
     <Box

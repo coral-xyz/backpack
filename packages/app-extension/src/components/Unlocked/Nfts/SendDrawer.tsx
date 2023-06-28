@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
+import type {
+  Blockchain} from "@coral-xyz/common";
 import {
-  Blockchain,
   isMadLads,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
@@ -20,6 +21,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { BigNumber } from "ethers";
 
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
+import { BLOCKCHAIN_COMPONENTS } from "../../common/Blockchains";
 import { CopyablePublicKey } from "../../common/CopyablePublicKey";
 import {
   CloseButton,
@@ -33,9 +35,7 @@ import {
 } from "../../common/Layout/NavStack";
 import type { SendData } from "../Balances/TokensWidget/AddressSelector";
 import { AddressSelector } from "../Balances/TokensWidget/AddressSelector";
-import { SendEthereumConfirmationCard } from "../Balances/TokensWidget/Ethereum";
 import { useStyles } from "../Balances/TokensWidget/Send";
-import { SendSolanaConfirmationCard } from "../Balances/TokensWidget/Solana";
 
 export function SendDrawer({
   children,
@@ -110,6 +110,8 @@ function SendScreen({ nft, to }: { nft: any; to: SendData }) {
     ethereumCtx.provider
   );
   const theme = useCustomTheme();
+  const SendNftConfirmationCard =
+    BLOCKCHAIN_COMPONENTS[nft.blockchain as Blockchain].SendNftConfirmationCard;
 
   useEffect(() => {
     (async () => {
@@ -214,46 +216,15 @@ function SendScreen({ nft, to }: { nft: any; to: SendData }) {
         openDrawer={openConfirm}
         setOpenDrawer={setOpenConfirm}
       >
-        {nft.blockchain === Blockchain.SOLANA ? (
-          <SendSolanaConfirmationCard
-            token={{
-              address: nft.publicKey,
-              logo: nft.imageUrl,
-              decimals: 0, // Are there any NFTs that don't use decimals 0?
-              mint: nft.mint,
-            }}
-            destinationUser={
-              (to && to.uuid && to.username && to.image
-                ? to
-                : undefined) as React.ComponentProps<
-                typeof SendSolanaConfirmationCard
-              >["destinationUser"]
+        <SendNftConfirmationCard
+          nft={nft}
+          destinationUser={
+              (to && to.uuid && to.username && to.image ? to : undefined) as any
             }
-            destinationAddress={destinationAddress}
-            amount={BigNumber.from(1)}
-            onComplete={() => setWasSent(true)}
+          destinationAddress={destinationAddress}
+          amount={BigNumber.from(1)}
+          onComplete={() => setWasSent(true)}
           />
-        ) : null}
-        {nft.blockchain === Blockchain.ETHEREUM ? (
-          <SendEthereumConfirmationCard
-            token={{
-              logo: nft.imageUrl,
-              decimals: 0, // Are there any NFTs that don't use decimals 0?
-              address: nft.contractAddress,
-              tokenId: nft.tokenId,
-            }}
-            destinationUser={
-              (to && to.uuid && to.username && to.image
-                ? to
-                : undefined) as React.ComponentProps<
-                typeof SendEthereumConfirmationCard
-              >["destinationUser"]
-            }
-            destinationAddress={destinationAddress}
-            amount={BigNumber.from(1)}
-            onComplete={() => setWasSent(true)}
-          />
-        ) : null}
       </ApproveTransactionDrawer>
     </>
   );

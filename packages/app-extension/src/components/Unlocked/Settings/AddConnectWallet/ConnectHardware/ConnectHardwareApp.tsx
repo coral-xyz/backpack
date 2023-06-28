@@ -1,12 +1,9 @@
-import { Blockchain } from "@coral-xyz/common";
-import {
-  EthereumIcon,
-  PrimaryButton,
-  SolanaIcon,
-} from "@coral-xyz/react-common";
+import type { Blockchain } from "@coral-xyz/common";
+import { PrimaryButton } from "@coral-xyz/react-common";
 import { Box } from "@mui/material";
 
 import { Header, HeaderIcon, SubtextParagraph } from "../../../../common";
+import { BLOCKCHAIN_COMPONENTS } from "../../../../common/Blockchains";
 
 export function ConnectHardwareApp({
   blockchain,
@@ -15,13 +12,7 @@ export function ConnectHardwareApp({
   blockchain: Blockchain;
   onNext: () => void;
 }) {
-  const header = {
-    [Blockchain.SOLANA]: { icon: <SolanaIcon />, text: "Open the Solana app" },
-    [Blockchain.ETHEREUM]: {
-      icon: <EthereumIcon />,
-      text: "Open the Ethereum app",
-    },
-  }[blockchain];
+  const header = BLOCKCHAIN_COMPONENTS[blockchain];
 
   return (
     <Box
@@ -33,8 +24,8 @@ export function ConnectHardwareApp({
       }}
     >
       <Box sx={{ margin: "0 24px" }}>
-        <HeaderIcon icon={header.icon} />
-        <Header text={header.text} />
+        <HeaderIcon icon={header.Icon} />
+        <Header text={header.LedgerText} />
         <SubtextParagraph>
           Make sure your wallet remains connected.
         </SubtextParagraph>

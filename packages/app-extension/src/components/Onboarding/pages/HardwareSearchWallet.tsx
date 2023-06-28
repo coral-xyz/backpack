@@ -2,20 +2,18 @@
 // a loading indicator until it is found (or an error if it not found).
 
 import { useEffect, useState } from "react";
-import type { WalletDescriptor } from "@coral-xyz/common";
+import type {   Blockchain,WalletDescriptor } from "@coral-xyz/common";
 import {
-  Blockchain,
   formatWalletAddress,
   getRecoveryPaths,
 } from "@coral-xyz/common";
 import { Loading, PrimaryButton } from "@coral-xyz/react-common";
-import Ethereum from "@ledgerhq/hw-app-eth";
-import Solana from "@ledgerhq/hw-app-solana";
 import type Transport from "@ledgerhq/hw-transport";
 import { Box } from "@mui/material";
 import { ethers } from "ethers";
 
 import { Header, SubtextParagraph } from "../../common";
+import { BLOCKCHAIN_COMPONENTS } from "../../common/Blockchains";
 
 const { base58: bs58 } = ethers.utils;
 
@@ -38,10 +36,7 @@ export const HardwareSearchWallet = ({
 
   useEffect(() => {
     (async () => {
-      const ledger = {
-        [Blockchain.SOLANA]: new Solana(transport),
-        [Blockchain.ETHEREUM]: new Ethereum(transport),
-      }[blockchain];
+      const ledger = BLOCKCHAIN_COMPONENTS[blockchain].LedgerApp(transport);
       for (const derivationPath of getRecoveryPaths(blockchain, true)) {
         let ledgerAddress;
         try {
