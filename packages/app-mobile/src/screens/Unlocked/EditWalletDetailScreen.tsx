@@ -54,6 +54,7 @@ export function EditWalletDetailScreen({ navigation, route }): JSX.Element {
         navigation.push("edit-wallets-rename", {
           publicKey,
           name,
+          blockchain,
         }),
     },
     "Copy Address": {

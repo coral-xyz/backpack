@@ -22,7 +22,7 @@ export function RenameWalletScreen({ navigation, route }): JSX.Element {
   const background = useBackgroundClient();
   const theme = useTheme();
 
-  const { name, publicKey } = route.params;
+  const { name, publicKey, blockchain } = route.params;
   const [walletName, setWalletName] = useState(name);
 
   const isPrimaryDisabled = walletName.trim() === "";
@@ -30,7 +30,7 @@ export function RenameWalletScreen({ navigation, route }): JSX.Element {
   const handleSaveName = async () => {
     await background.request({
       method: UI_RPC_METHOD_KEYNAME_UPDATE,
-      params: [publicKey, walletName], // TODO: add blockchain as third param here.
+      params: [publicKey, walletName, blockchain],
     });
 
     navigation.goBack();
