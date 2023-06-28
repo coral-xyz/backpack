@@ -5,7 +5,7 @@ import { PublicKey } from "@solana/web3.js";
 import type { EnrichedTransaction } from "helius-sdk";
 import { LRUCache } from "lru-cache";
 
-export const IN_MEM_COLLECTION_DATA_CACHE = new LRUCache<
+export const IN_MEM_SOL_COLLECTION_DATA_CACHE = new LRUCache<
   string,
   { name?: string; image?: string }
 >({
