@@ -94,7 +94,7 @@ async function _runMigrationsIfNeeded(
     });
   }
   if ((await getMigration(storeInterface))?.build === 2408) {
-    await runMigration(5000, storeInterface, async () => {
+    await runMigration(5798, storeInterface, async () => {
       await migrate_0_6_12_5798(userInfo, storeInterface);
     });
   }
