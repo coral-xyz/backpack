@@ -8,7 +8,7 @@ import {
   getLogger,
   InjectedRequestManager,
   PLUGIN_NOTIFICATION_CONNECT,
-  PLUGIN_NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
+  PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
   PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED,
 } from "@coral-xyz/common";
 import type { UnsignedTransaction } from "@ethersproject/transactions";
@@ -114,7 +114,7 @@ export class ProviderEthereumXnftInjection extends PrivateEventEmitter {
       case PLUGIN_NOTIFICATION_CONNECT:
         this.#handleConnect(event);
         break;
-      case PLUGIN_NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
+      case PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED:
         this.#handleConnectionUrlUpdated(event);
         break;
       case PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED:
@@ -135,11 +135,16 @@ export class ProviderEthereumXnftInjection extends PrivateEventEmitter {
   }
 
   #handleConnectionUrlUpdated(event: Event) {
-    const { connectionUrl } = event.data.detail.data;
-    this.#connectionUrl = connectionUrl;
+    const { url, blockchain } = event.data.detail.data;
+
+    if (blockchain !== Blockchain.ETHEREUM) {
+      return;
+    }
+
+    this.#connectionUrl = url;
     this.#provider = new BackgroundEthereumProvider(
       this.#connectionRequestManager,
-      connectionUrl
+      url
     );
     this.emit("connectionUpdate", event.data.detail);
   }

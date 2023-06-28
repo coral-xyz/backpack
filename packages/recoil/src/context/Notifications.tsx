@@ -559,7 +559,6 @@ export function NotificationsProvider(props: any) {
     const handleEclipseActiveWalletUpdated = (notif: Notification) => {
       allPlugins().forEach((p) => {
         // TODO
-        //        p.pushSolanaPublicKeyChangedNotification(notif.data.activeWallet);
       });
       setActivePublicKeys(notif.data.activeWallets);
     };
@@ -601,7 +600,7 @@ export function NotificationsProvider(props: any) {
       if (notif.data.blockchain === Blockchain.SOLANA) {
         setSolanaExplorer(notif.data.explorer);
       } else {
-        //
+        // TODO (wasn't ever implemented).
       }
     };
 

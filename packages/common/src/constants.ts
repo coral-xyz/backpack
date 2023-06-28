@@ -66,12 +66,10 @@ export const PLUGIN_NOTIFICATION_MOUNT = "plugin-notification-mount";
 export const PLUGIN_NOTIFICATION_UPDATE_METADATA =
   "plugin-notification-update-metadata";
 export const PLUGIN_NOTIFICATION_UNMOUNT = "plugin-notification-unmount";
-export const PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED =
-  "plugin-notification-solana-connection-url-updated";
 export const PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED =
   "plugin-notification-solana-public-key-updated";
-export const PLUGIN_NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED =
-  "plugin-notification-ethereum-connection-url-updated";
+export const PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED =
+  "plugin-notification-connection-url-updated";
 export const PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED =
   "plugin-notification-ethereum-public-key-updated";
 
@@ -337,10 +335,6 @@ export const NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED =
 export const NOTIFICATION_SOLANA_COMMITMENT_UPDATED =
   "notification-solana-commitment-updated";
 export const NOTIFICATION_SOLANA_CONNECTED = "notification-solana-connected";
-export const NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED =
-  "notification-solana-connection-url-updated";
-export const NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED =
-  "notification-ethereum-connection-url-updated";
 export const NOTIFICATION_CONNECTION_URL_UPDATED =
   "notification-connection-url-updated";
 export const NOTIFICATION_SOLANA_DISCONNECTED =
