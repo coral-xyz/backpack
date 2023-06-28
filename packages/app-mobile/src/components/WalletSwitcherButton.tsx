@@ -29,17 +29,26 @@ export function WalletSwitcherButton(): JSX.Element {
         }}
         style={{
           borderRadius: 32,
-          borderWidth: 2,
+          borderWidth: 1,
           backgroundColor: theme.nav.val,
           borderColor: theme.borderFull.val,
+
+          shadowColor: "rgba(0, 0, 0, 1)",
+          shadowOffset: {
+            width: 0,
+            height: 1,
+          },
+          shadowOpacity: 0.06,
+          shadowRadius: 1,
+          elevation: 2,
         }}
       >
-        <XStack space={8} ai="center" py={8} px={18}>
+        <XStack space={8} ai="center" py={8} pl={18} pr={12}>
           <BlockchainLogo blockchain={activeWallet!.blockchain} size={16} />
-          <StyledText fontSize="$base" color="$fontColor" mr={-6}>
+          <StyledText fontSize="$base" color="$baseTextMedEmphasis" mr={-6}>
             {activeWallet?.name}
           </StyledText>
-          <IconDropdown size={22} color="$fontColor" />
+          <IconDropdown size={22} color="#8E919F" />
         </XStack>
       </Pressable>
       <BetterBottomSheet

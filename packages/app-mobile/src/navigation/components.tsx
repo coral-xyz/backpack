@@ -15,7 +15,7 @@ type HeaderButtonProps = HeaderBackButtonProps & {
 export function HeaderButton({ name, tintColor, ...rest }: HeaderButtonProps) {
   return (
     <PlatformPressable {...rest}>
-      <MaterialIcons name={name} size={24} color={tintColor} />
+      <MaterialIcons name={name} size={32} color={tintColor} />
     </PlatformPressable>
   );
 }
@@ -29,11 +29,13 @@ export function HeaderDropdownButton({
   return (
     <PlatformPressable
       onPress={onPress}
-      style={{ flexDirection: "row", alignItems: "center" }}
+      style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
       {...rest}
     >
-      <StyledText color={tintColor}>{children}</StyledText>
-      <IconDropdown size={22} color="$baseTextMedEmphasis" />
+      <StyledText fontSize="$xl" color={tintColor}>
+        {children}
+      </StyledText>
+      <IconDropdown size={24} color="$baseIcon" />
     </PlatformPressable>
   );
 }
@@ -46,7 +48,7 @@ export function HeaderAvatarButton(props) {
         props.navigation.openDrawer();
       }}
     >
-      <CurrentUserAvatar size={32} />
+      <CurrentUserAvatar size={44} />
     </PlatformPressable>
   );
 }

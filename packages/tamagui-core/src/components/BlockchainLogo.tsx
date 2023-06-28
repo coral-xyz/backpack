@@ -17,7 +17,7 @@ function getBlockchainLogo(blockchain: Blockchain) {
     case Blockchain.SOLANA:
       return Images.solanaLogo;
     default:
-      throw new Error(`invalid blockchain ${blockchain}`);
+      return Images.solanaLogo;
   }
 }
 

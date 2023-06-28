@@ -18,6 +18,7 @@ import {
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import { DrawerItemList } from "@react-navigation/drawer";
+import { useNavigation } from "@react-navigation/native";
 import { FlatList } from "react-native-gesture-handler";
 
 import { UserAccountListItem } from "~components/ListItem";
@@ -41,6 +42,7 @@ function Header() {
 }
 
 function UserList() {
+  const navigation = useNavigation();
   const background = useBackgroundClient();
   const users = useAllUsers();
   const user = useUser();
@@ -66,6 +68,7 @@ function UserList() {
   };
 
   const handlePressAddAccount = () => {
+    navigation.navigate("OnboardScreen");
     setAppState("isAddingAccount");
   };
 
