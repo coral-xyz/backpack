@@ -3,8 +3,12 @@ import { useSuspenseQuery } from "@apollo/client";
 import { UNKNOWN_ICON_SRC, UNKNOWN_NFT_ICON_SRC } from "@coral-xyz/common";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import type { SizeTokens } from "@coral-xyz/tamagui";
-import { ListItemIconCore } from "@coral-xyz/tamagui";
-import * as TamaguiIcons from "@tamagui/lucide-icons";
+import {
+  CheckIcon,
+  FlameIcon,
+  ListItemIconCore,
+  XIcon,
+} from "@coral-xyz/tamagui";
 
 import { gql } from "../../apollo";
 import type { ProviderId } from "../../apollo/graphql";
@@ -50,7 +54,7 @@ export const TransactionListItemIconBurn = ({
       { height: containerSize ?? size, width: containerSize ?? size },
     ]}
   >
-    <TamaguiIcons.Flame color="$negative" size={size} />
+    <FlameIcon color="$negative" size={size} />
   </View>
 );
 
@@ -64,7 +68,7 @@ export const TransactionListItemIconDefault = ({
       { height: containerSize ?? size, width: containerSize ?? size },
     ]}
   >
-    <TamaguiIcons.Check color="$positive" size={size} />
+    <CheckIcon color="$positive" size={size} />
   </View>
 );
 
@@ -78,7 +82,7 @@ export const TransactionListItemIconError = ({
       { height: containerSize ?? size, width: containerSize ?? size },
     ]}
   >
-    <TamaguiIcons.X color="$negative" size={size} />
+    <XIcon color="$negative" size={size} />
   </View>
 );
 

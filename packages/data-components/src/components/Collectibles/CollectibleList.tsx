@@ -9,12 +9,14 @@ export type CollectibleListProps = {
   collectibleGroups: CollectibleGroup[];
   imageBoxSize: number;
   onCardClick: () => void;
+  onOptionsClick: () => void;
 };
 
 export function CollectibleList({
   collectibleGroups,
   imageBoxSize,
   onCardClick,
+  onOptionsClick,
 }: CollectibleListProps) {
   const media = useMedia();
 
@@ -54,9 +56,10 @@ export function CollectibleList({
         collectibles={item}
         imageBoxSize={imageBoxSize}
         onCardClick={onCardClick}
+        onOptionsClick={onOptionsClick}
       />
     ),
-    [onCardClick]
+    [onCardClick, onOptionsClick]
   );
 
   return (

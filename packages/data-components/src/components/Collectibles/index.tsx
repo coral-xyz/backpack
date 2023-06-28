@@ -2,6 +2,7 @@ import { type ReactNode, Suspense, useMemo } from "react";
 import { useActiveWallet } from "@coral-xyz/recoil";
 
 import { gql } from "../../apollo";
+import type { ProviderId } from "../../apollo/graphql";
 import { usePolledSuspenseQuery } from "../../hooks";
 
 import { CollectibleList } from "./CollectibleList";
@@ -12,10 +13,10 @@ export type { ResponseCollectible };
 const DEFAULT_POLLING_INTERVAL = 60000;
 
 const GET_COLLECTIBLES = gql(`
-  query GetCollectibles($address: String!) {
+  query GetCollectibles($address: String!, $providerId: ProviderID!) {
     user {
       id
-      wallet(address: $address) {
+      wallet(address: $address, providerId: $providerId) {
         id
         nfts {
           edges {
@@ -31,6 +32,7 @@ const GET_COLLECTIBLES = gql(`
                 address
                 name
               }
+              compressed
               image
               name
             }
@@ -65,16 +67,9 @@ function _Collectibles({
     {
       variables: {
         address: activeWallet.publicKey,
+        providerId: activeWallet.blockchain.toUpperCase() as ProviderId,
       },
     }
-  );
-
-  /**
-   * Memoized value for the extracted wallet NFTs from the GraphQL response
-   */
-  const collectibles: ResponseCollectible[] = useMemo(
-    () => data.user?.wallet?.nfts?.edges.map((e) => e.node) ?? [],
-    [data.user]
   );
 
   /**
@@ -82,8 +77,11 @@ function _Collectibles({
    * grouped by collection address, or singletons by their mint if they have no parent
    */
   const groupedCollectibles = useMemo(
-    () => getGroupedCollectibles(collectibles),
-    [collectibles]
+    () =>
+      getGroupedCollectibles(
+        data.user?.wallet?.nfts?.edges.map((e) => e.node) ?? []
+      ),
+    [data.user]
   );
 
   return (
@@ -91,6 +89,7 @@ function _Collectibles({
       collectibleGroups={groupedCollectibles}
       imageBoxSize={165}
       onCardClick={() => alert("CLICK")}
+      onOptionsClick={() => alert("OPTIONS CLICK")}
     />
   );
 }

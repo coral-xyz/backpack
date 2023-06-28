@@ -11,12 +11,12 @@ import {
   useBlockchainExplorer,
 } from "@coral-xyz/recoil";
 import {
+  ArrowUpRightIcon,
   StyledText,
   TableCore,
   TableRowCore,
   XStack,
 } from "@coral-xyz/tamagui";
-import * as TamaguiIcons from "@tamagui/lucide-icons";
 import * as Linking from "expo-linking";
 
 import type { ParseTransactionDetails } from "../parsing";
@@ -110,7 +110,7 @@ function _TransactionSignatureRowValue({ hash }: { hash: string }) {
       <StyledText color="$blue" fontSize="$sm">
         {_truncateSignature(hash)}
       </StyledText>
-      <TamaguiIcons.ArrowUpRight color="$blue" size={14} />
+      <ArrowUpRightIcon color="$blue" size={14} />
     </XStack>
   );
 }

@@ -701,6 +701,7 @@ export type GetTokenBalancesQuery = {
 
 export type GetCollectiblesQueryVariables = Exact<{
   address: Scalars["String"];
+  providerId: ProviderId;
 }>;
 
 export type GetCollectiblesQuery = {
@@ -719,6 +720,7 @@ export type GetCollectiblesQuery = {
             __typename?: "Nft";
             id: string;
             address: string;
+            compressed: boolean;
             image?: string | null;
             name?: string | null;
             attributes?: Array<{
@@ -1224,6 +1226,20 @@ export const GetCollectiblesDocument = {
             },
           },
         },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "providerId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "ProviderID" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -1245,6 +1261,14 @@ export const GetCollectiblesDocument = {
                       value: {
                         kind: "Variable",
                         name: { kind: "Name", value: "address" },
+                      },
+                    },
+                    {
+                      kind: "Argument",
+                      name: { kind: "Name", value: "providerId" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "providerId" },
                       },
                     },
                   ],
@@ -1338,6 +1362,13 @@ export const GetCollectiblesDocument = {
                                                 },
                                               },
                                             ],
+                                          },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "compressed",
                                           },
                                         },
                                         {

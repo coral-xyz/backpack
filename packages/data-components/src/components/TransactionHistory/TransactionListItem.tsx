@@ -7,13 +7,13 @@ import {
   useBlockchainExplorer,
 } from "@coral-xyz/recoil";
 import {
+  ArrowUpRightIcon,
   ListItemCore,
   ListItemIconCore,
   StyledText,
   XStack,
   YStack,
 } from "@coral-xyz/tamagui";
-import * as TamaguiIcons from "@tamagui/lucide-icons";
 
 import type { ProviderId } from "../../apollo/graphql";
 
@@ -173,7 +173,7 @@ function _TransactionListItemBasic({
           {new Date(transaction.timestamp!).toLocaleString()}
         </StyledText>
       </YStack>
-      <TamaguiIcons.ArrowUpRight color="$secondary" />
+      <ArrowUpRightIcon color="$secondary" />
     </XStack>
   );
 }

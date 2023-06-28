@@ -41,42 +41,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:3.8.0-beta.2":
-  version: 3.8.0-beta.2
-  resolution: "@apollo/client@npm:3.8.0-beta.2"
-  dependencies:
-    "@graphql-typed-document-node/core": ^3.1.1
-    "@wry/context": ^0.7.3
-    "@wry/equality": ^0.5.6
-    "@wry/trie": ^0.4.3
-    graphql-tag: ^2.12.6
-    hoist-non-react-statics: ^3.3.2
-    optimism: ^0.17.4
-    prop-types: ^15.7.2
-    response-iterator: ^0.2.6
-    symbol-observable: ^4.0.0
-    ts-invariant: ^0.10.3
-    tslib: ^2.3.0
-    zen-observable-ts: ^1.2.5
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-    graphql-ws: ^5.5.5
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-    subscriptions-transport-ws: ^0.9.0 || ^0.11.0
-  peerDependenciesMeta:
-    graphql-ws:
-      optional: true
-    react:
-      optional: true
-    react-dom:
-      optional: true
-    subscriptions-transport-ws:
-      optional: true
-  checksum: 2af797e1ac92ce5fcb09b8da4515fee3f4bbbbc3975475750a0de13841d27a02d60ff4e0be000bb955f15cf0ca116972f9c0f71696c6672c8b4b8b9f9a2446ed
-  languageName: node
-  linkType: hard
-
 "@apollo/client@npm:3.8.0-beta.3":
   version: 3.8.0-beta.3
   resolution: "@apollo/client@npm:3.8.0-beta.3"
@@ -110,6 +74,42 @@ __metadata:
     subscriptions-transport-ws:
       optional: true
   checksum: 12a87b529ca7aeb2ddf60a46553cf2fda14b940fa1e1dee8d6cb43fe77827becd94c823dd824126453347cfbb8bd8542f77527b83884a32d52bc206886126e38
+  languageName: node
+  linkType: hard
+
+"@apollo/client@npm:3.8.0-beta.4":
+  version: 3.8.0-beta.4
+  resolution: "@apollo/client@npm:3.8.0-beta.4"
+  dependencies:
+    "@graphql-typed-document-node/core": ^3.1.1
+    "@wry/context": ^0.7.3
+    "@wry/equality": ^0.5.6
+    "@wry/trie": ^0.4.3
+    graphql-tag: ^2.12.6
+    hoist-non-react-statics: ^3.3.2
+    optimism: ^0.17.4
+    prop-types: ^15.7.2
+    response-iterator: ^0.2.6
+    symbol-observable: ^4.0.0
+    ts-invariant: ^0.10.3
+    tslib: ^2.3.0
+    zen-observable-ts: ^1.2.5
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+    graphql-ws: ^5.5.5
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    subscriptions-transport-ws: ^0.9.0 || ^0.11.0
+  peerDependenciesMeta:
+    graphql-ws:
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+    subscriptions-transport-ws:
+      optional: true
+  checksum: 37f0cb2c195096221f979095c09bc3e60866ac2476cedfebeb856c908e603f9ba25c812ca4e5321d5f985ad48456c95d677ed94530aedaf8260546956dd86cec
   languageName: node
   linkType: hard
 
@@ -3725,7 +3725,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/app-extension@workspace:packages/app-extension"
   dependencies:
-    "@apollo/client": 3.8.0-beta.2
+    "@apollo/client": 3.8.0-beta.4
     "@bonfida/spl-name-service": ^0.1.51
     "@cardinal/token-manager": ^1.7.9
     "@coral-xyz/background": "*"
@@ -4111,7 +4111,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/common@workspace:packages/common"
   dependencies:
-    "@apollo/client": 3.8.0-beta.2
+    "@apollo/client": 3.8.0-beta.4
     "@cardinal/creator-standard": ^2.1.10
     "@cardinal/token-manager": ^1.7.9
     "@ethersproject/abstract-provider": ^5.7.0
@@ -4159,7 +4159,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/data-components@workspace:packages/data-components"
   dependencies:
-    "@apollo/client": 3.8.0-beta.2
+    "@apollo/client": 3.8.0-beta.4
     "@coral-xyz/chat-xplat": "*"
     "@coral-xyz/common": "*"
     "@coral-xyz/recoil": "*"
@@ -4175,7 +4175,7 @@ __metadata:
     helius-sdk: ^1.0.6
     react: ^18.2.0
     react-error-boundary: ^4.0.4
-    react-native-svg: ^13.9.0
+    react-native-svg: 13.4.0
     recoil: ^0.7.5
     tsc-alias: ^1.8.6
     typescript: ^5.0.4
@@ -4479,7 +4479,7 @@ __metadata:
     expo-image: ~1.2.3
     react-content-loader: ^6.2.1
     react-error-boundary: ^4.0.9
-    react-native-svg: ^13.9.0
+    react-native-svg: 13.4.0
     tamagui: ^1.28.1
   languageName: unknown
   linkType: soft
@@ -37248,19 +37248,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: e630c057d6a0947c4d729538f643585a1fd9380975c1cf9adffad7647822b35219a9e1e60407f422b2b70592ed7f7e8766fab15df74f9cfce0b1c8a1c3544676
-  languageName: node
-  linkType: hard
-
-"react-native-svg@npm:^13.9.0":
-  version: 13.9.0
-  resolution: "react-native-svg@npm:13.9.0"
-  dependencies:
-    css-select: ^5.1.0
-    css-tree: ^1.1.3
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: f4fe1c9e802d7ea86b9efef74313a80fb75d486f40ca79aaa04d42ffd3f6e462a3f37ee54018fae9fd1efdc2d8b005d1e71b02bb266c0ab8baec70d9a5730892
   languageName: node
   linkType: hard
 

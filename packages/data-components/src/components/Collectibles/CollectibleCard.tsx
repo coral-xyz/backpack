@@ -1,46 +1,54 @@
 import { useMemo } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { externalResourceUri, UNKNOWN_NFT_ICON_SRC } from "@coral-xyz/common";
-import { ProxyImage, StyledText, XStack, YStack } from "@coral-xyz/tamagui";
+import {
+  MoreHorizontalIcon,
+  ProxyImage,
+  StyledText,
+  XStack,
+  YStack,
+} from "@coral-xyz/tamagui";
 
-// import { MoreHorizontal } from "@tamagui/lucide-icons";
 import type { CollectibleGroup } from "./utils";
 
 export type CollectibleCardProps = {
   collectibles: CollectibleGroup;
   imageBoxSize: number;
   onCardClick: () => void;
+  onOptionsClick: () => void;
 };
 
 export function CollectibleCard({
   collectibles,
   imageBoxSize,
   onCardClick,
+  onOptionsClick,
 }: CollectibleCardProps) {
   const imageSources = collectibles.data.map((d) =>
     d.image ? externalResourceUri(d.image) : UNKNOWN_NFT_ICON_SRC
   );
 
   return (
-    <YStack
-      flex={1}
-      cursor="pointer"
-      pointerEvents="box-only"
-      onPress={onCardClick}
-    >
-      <_CollectibleImagePreview size={imageBoxSize} images={imageSources} />
-      <XStack marginTop={8}>
+    <YStack flex={1} cursor="pointer">
+      <Pressable onPress={onCardClick}>
+        <_CollectibleImagePreview size={imageBoxSize} images={imageSources} />
+      </Pressable>
+      <XStack alignItems="center" marginTop={8} width="100%">
         <StyledText
           ellipsizeMode="tail"
           fontSize="$sm"
-          maxWidth="90%"
+          maxWidth="80%"
           numberOfLines={1}
+          onPress={onCardClick}
         >
           {collectibles.collection}
         </StyledText>
-        {/* {collectibles.data.length === 1 && (
-          <MoreHorizontal color="$secondary" />
-        )} */}
+        {collectibles.data.length > 1 ? <StyledText fontSize="$sm" color="$secondary">
+          {collectibles.data.length}
+        </StyledText> : null}
+        {collectibles.data.length === 1 ? <Pressable onPress={onOptionsClick}>
+          <MoreHorizontalIcon color="$secondary" />
+        </Pressable> : null}
       </XStack>
     </YStack>
   );
