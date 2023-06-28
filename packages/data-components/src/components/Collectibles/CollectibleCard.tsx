@@ -29,26 +29,29 @@ export function CollectibleCard({
   );
 
   return (
-    <YStack flex={1} cursor="pointer">
+    <YStack
+      flex={1}
+      maxWidth={imageBoxSize}
+      width={imageBoxSize}
+      cursor="pointer"
+    >
       <Pressable onPress={onCardClick}>
         <_CollectibleImagePreview size={imageBoxSize} images={imageSources} />
       </Pressable>
       <XStack alignItems="center" marginTop={8} width="100%">
-        <StyledText
-          ellipsizeMode="tail"
-          fontSize="$sm"
-          maxWidth="80%"
-          numberOfLines={1}
-          onPress={onCardClick}
-        >
-          {collectibles.collection}
-        </StyledText>
-        {collectibles.data.length > 1 ? <StyledText fontSize="$sm" color="$secondary">
-          {collectibles.data.length}
-        </StyledText> : null}
-        {collectibles.data.length === 1 ? <Pressable onPress={onOptionsClick}>
-          <MoreHorizontalIcon color="$secondary" />
-        </Pressable> : null}
+        <_CollectibleTitle
+          amount={collectibles.data.length}
+          onClick={onCardClick}
+          title={collectibles.collection}
+        />
+        {collectibles.data.length === 1 ? (
+          <Pressable
+            onPress={onOptionsClick}
+            style={{ display: "flex", flexGrow: 1, alignItems: "flex-end" }}
+          >
+            <MoreHorizontalIcon color="$secondary" />
+          </Pressable>
+        ) : null}
       </XStack>
     </YStack>
   );
@@ -105,3 +108,31 @@ function _CollectibleImagePreviewBox({
     </View>
   );
 }
+
+type _CollectibleTitleProps = {
+  amount: number;
+  onClick: () => void;
+  title: string;
+};
+
+const _CollectibleTitle = ({
+  amount,
+  onClick,
+  title,
+}: _CollectibleTitleProps) => (
+  <XStack flex={1} maxWidth="80%" overflow="hidden">
+    <StyledText
+      numberOfLines={1}
+      overflow="hidden"
+      whiteSpace="nowrap"
+      ellipsizeMode="tail"
+      fontSize="$sm"
+      onPress={onClick}
+    >
+      {title}
+    </StyledText>
+    <StyledText fontSize="$sm" color="$secondary" marginLeft={8}>
+      {amount}
+    </StyledText>
+  </XStack>
+);

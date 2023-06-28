@@ -77,9 +77,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:3.8.0-beta.4":
-  version: 3.8.0-beta.4
-  resolution: "@apollo/client@npm:3.8.0-beta.4"
+"@apollo/client@npm:3.8.0-beta.5":
+  version: 3.8.0-beta.5
+  resolution: "@apollo/client@npm:3.8.0-beta.5"
   dependencies:
     "@graphql-typed-document-node/core": ^3.1.1
     "@wry/context": ^0.7.3
@@ -109,7 +109,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: 37f0cb2c195096221f979095c09bc3e60866ac2476cedfebeb856c908e603f9ba25c812ca4e5321d5f985ad48456c95d677ed94530aedaf8260546956dd86cec
+  checksum: 0695c5dbd56b829b3702fae166ac5bca700eac27614cf6b830b359e98cdf66ef444375e56713875d0a545c901187092b245818a608786e8d29677085f7de79f5
   languageName: node
   linkType: hard
 
@@ -3725,7 +3725,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/app-extension@workspace:packages/app-extension"
   dependencies:
-    "@apollo/client": 3.8.0-beta.4
+    "@apollo/client": 3.8.0-beta.5
     "@bonfida/spl-name-service": ^0.1.51
     "@cardinal/token-manager": ^1.7.9
     "@coral-xyz/background": "*"
@@ -4111,7 +4111,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/common@workspace:packages/common"
   dependencies:
-    "@apollo/client": 3.8.0-beta.4
+    "@apollo/client": 3.8.0-beta.5
     "@cardinal/creator-standard": ^2.1.10
     "@cardinal/token-manager": ^1.7.9
     "@ethersproject/abstract-provider": ^5.7.0
@@ -4159,7 +4159,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/data-components@workspace:packages/data-components"
   dependencies:
-    "@apollo/client": 3.8.0-beta.4
+    "@apollo/client": 3.8.0-beta.5
     "@coral-xyz/chat-xplat": "*"
     "@coral-xyz/common": "*"
     "@coral-xyz/recoil": "*"
@@ -4167,7 +4167,6 @@ __metadata:
     "@coral-xyz/themes": "*"
     "@graphql-codegen/cli": ^3.3.1
     "@graphql-codegen/client-preset": ^3.0.1
-    "@tamagui/lucide-icons": ^1.28.1
     "@types/react": ^18.2.6
     eslint-config-custom: "*"
     expo-linking: ^4.0.1
@@ -4175,7 +4174,6 @@ __metadata:
     helius-sdk: ^1.0.6
     react: ^18.2.0
     react-error-boundary: ^4.0.4
-    react-native-svg: 13.4.0
     recoil: ^0.7.5
     tsc-alias: ^1.8.6
     typescript: ^5.0.4
