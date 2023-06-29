@@ -14,7 +14,7 @@ type BlockchainsNative = Record<
   Blockchain,
   {
     validateSignature: (msg: Buffer, sig: string, pubkey: string) => boolean;
-    ZodPublicKey: any; // TODO: type.
+    ZodPublicKey: () => any; // TODO: type.
     ZodCreatePublicKey: () => any; // TODO: type.
   }
 >;
@@ -30,20 +30,21 @@ export const BLOCKCHAINS_NATIVE: BlockchainsNative = {
     validateSignature: (msg: Buffer, signature: string, publicKey: string) => {
       return ethers.utils.verifyMessage(msg, signature) === publicKey;
     },
-    ZodPublicKey: z.object({
-      publicKey: z.string().refine((str) => {
-        try {
-          ethers.utils.getAddress(str);
-          return true;
-        } catch {
-          // Pass
-        }
-        return false;
-      }, "must be a valid Ethereum public key"),
-      blockchain: z.literal("ethereum"),
-    }),
+    ZodPublicKey: () =>
+      z.object({
+        publicKey: z.string().refine((str) => {
+          try {
+            ethers.utils.getAddress(str);
+            return true;
+          } catch {
+            // Pass
+          }
+          return false;
+        }, "must be a valid Ethereum public key"),
+        blockchain: z.literal("ethereum"),
+      }),
     ZodCreatePublicKey: () =>
-      BLOCKCHAINS_NATIVE[Blockchain.ETHEREUM].ZodPublicKey.extend({
+      BLOCKCHAINS_NATIVE[Blockchain.ETHEREUM].ZodPublicKey().extend({
         signature: z.string(),
       }),
   },
@@ -88,20 +89,21 @@ export const BLOCKCHAINS_NATIVE: BlockchainsNative = {
         return false;
       }
     },
-    ZodPublicKey: z.object({
-      publicKey: z.string().refine((str) => {
-        try {
-          new PublicKey(str);
-          return true;
-        } catch {
-          // Pass
-        }
-        return false;
-      }, "must be a valid Solana public key"),
-      blockchain: z.literal("solana"),
-    }),
+    ZodPublicKey: () =>
+      z.object({
+        publicKey: z.string().refine((str) => {
+          try {
+            new PublicKey(str);
+            return true;
+          } catch {
+            // Pass
+          }
+          return false;
+        }, "must be a valid Solana public key"),
+        blockchain: z.literal("solana"),
+      }),
     ZodCreatePublicKey: () =>
-      BLOCKCHAINS_NATIVE[Blockchain.SOLANA].ZodPublicKey.extend({
+      BLOCKCHAINS_NATIVE[Blockchain.SOLANA].ZodPublicKey().extend({
         signature: z.string(),
       }),
   },
@@ -117,20 +119,21 @@ export const BLOCKCHAINS_NATIVE: BlockchainsNative = {
         encodedPublicKey
       );
     },
-    ZodPublicKey: z.object({
-      publicKey: z.string().refine((str) => {
-        try {
-          new PublicKey(str);
-          return true;
-        } catch {
-          // Pass
-        }
-        return false;
-      }, "must be a valid Eclipse public key"),
-      blockchain: z.literal("eclipse"),
-    }),
+    ZodPublicKey: () =>
+      z.object({
+        publicKey: z.string().refine((str) => {
+          try {
+            new PublicKey(str);
+            return true;
+          } catch {
+            // Pass
+          }
+          return false;
+        }, "must be a valid Eclipse public key"),
+        blockchain: z.literal("eclipse"),
+      }),
     ZodCreatePublicKey: () =>
-      BLOCKCHAINS_NATIVE[Blockchain.ECLIPSE].ZodPublicKey.extend({
+      BLOCKCHAINS_NATIVE[Blockchain.ECLIPSE].ZodPublicKey().extend({
         signature: z.string(),
       }),
   },

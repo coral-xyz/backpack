@@ -23,7 +23,7 @@ export const BaseCreateUser = z.object({
 //
 export const BlockchainPublicKey = z.discriminatedUnion(
   "blockchain",
-  Object.values(BLOCKCHAINS_NATIVE).map((native) => native.ZodPublicKey)
+  Object.values(BLOCKCHAINS_NATIVE).map((native) => native.ZodPublicKey())
 );
 
 //
