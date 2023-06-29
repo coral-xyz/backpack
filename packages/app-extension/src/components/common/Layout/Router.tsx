@@ -12,7 +12,7 @@ import {
   BACKPACK_TEAM,
   NAV_COMPONENT_MESSAGE_PROFILE,
 } from "@coral-xyz/common";
-import { Collectibles } from "@coral-xyz/data-components";
+// import { Collectibles } from "@coral-xyz/data-components";
 import {
   ChatScreen,
   Inbox,
@@ -141,7 +141,7 @@ function BalancesPage() {
 }
 
 function NftsPage() {
-  return <NavScreen noScrollbars component={<Collectibles />} />;
+  return <NavScreen noScrollbars component={<Nfts />} />;
 }
 
 function NftsChatPage() {
