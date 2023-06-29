@@ -55,22 +55,43 @@ function parseTokenName(name: string) {
   return formatWalletAddress(name);
 }
 
+function parseAmountIfUsdc(amount: string, token: string): string {
+  if (token.includes("USDC")) {
+    const num = parseFloat(amount);
+    const result = num.toFixed(2);
+    return result;
+  } else {
+    const num = parseFloat(amount);
+    const result = num.toFixed(5);
+    return result;
+  }
+}
+
 export function parseSwap(str: string) {
   // "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz swapped 0.001 SOL for 0.022 USDC"
   try {
     const [sent, received] = str.split("swapped ")[1].split(" for ");
     const sentToken = parseTokenName(sent.split(" ")[1]);
-    const receivedToken = parseTokenName(received.split(" ")[1]);
+    const [receivedAmount, rawToken] = received.split(" ");
+    const receivedToken = parseTokenName(rawToken);
+
     return {
       sent: `-${sent}`,
-      received: `+${received}`,
+      received: `+${parseAmountIfUsdc(
+        receivedAmount,
+        receivedToken
+      )} ${receivedToken}`,
       display: `${sentToken} -> ${receivedToken}`,
+      sentToken,
+      receivedToken,
     };
-  } catch (_err) {
+  } catch (_) {
     return {
       sent: "",
       received: "",
       display: "",
+      sentToken: "",
+      receivedToken: "",
     };
   }
 }
