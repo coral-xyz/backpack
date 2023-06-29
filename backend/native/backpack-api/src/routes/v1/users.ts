@@ -320,9 +320,8 @@ router.post(
     const signedMessage = getAddMessage(publicKey);
 
     if (
-      !validateSignature(
+      !BLOCKCHAINS_NATIVE[blockchain as Blockchain].validateSignature(
         Buffer.from(signedMessage, "utf-8"),
-        blockchain as Blockchain,
         signature,
         publicKey
       )
