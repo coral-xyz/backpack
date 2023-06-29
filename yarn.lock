@@ -113,21 +113,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/datasource-rest@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "@apollo/datasource-rest@npm:5.1.0"
+"@apollo/datasource-rest@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "@apollo/datasource-rest@npm:6.0.1"
   dependencies:
-    "@apollo/utils.fetcher": ^2.0.0
-    "@apollo/utils.keyvaluecache": ^2.0.0
-    "@apollo/utils.logger": ^2.0.1
-    "@apollo/utils.withrequired": ^2.0.0
+    "@apollo/utils.fetcher": ^3.0.0
+    "@apollo/utils.keyvaluecache": ^3.0.0
+    "@apollo/utils.logger": ^3.0.0
+    "@apollo/utils.withrequired": ^3.0.0
     "@types/http-cache-semantics": ^4.0.1
     http-cache-semantics: ^4.1.1
     lodash.isplainobject: ^4.0.6
     node-fetch: ^2.6.7
   peerDependencies:
     graphql: ^16.5.0
-  checksum: b508196c39ea2539521ab204b7bd2ff2e23f501f930c54c24e7a8a7f1f7f38e52fd54d786f3f4f25248cd19f2d274c862d26239649bd27e8cc6972445e0007c4
+  checksum: 66c704679e5687a92944ae19589e76898a279a424f5f2b3b68dc73a04f5fbe24054650daa66419a76b10a3c2a28c7cee0ce093aeaf45f7427b7e9a6b63b1f60e
   languageName: node
   linkType: hard
 
@@ -262,6 +262,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@apollo/utils.fetcher@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@apollo/utils.fetcher@npm:3.0.0"
+  checksum: 210b739f5451357690960268e2cfc3390e09348c8d64774a1ca5581c068332ae97d44dd84274baad8ef7bb33f8f9ced08c51ac3703a3b2ad4321f7831d485626
+  languageName: node
+  linkType: hard
+
 "@apollo/utils.isnodelike@npm:^2.0.0, @apollo/utils.isnodelike@npm:^2.0.1":
   version: 2.0.1
   resolution: "@apollo/utils.isnodelike@npm:2.0.1"
@@ -276,7 +283,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/utils.keyvaluecache@npm:^2.0.0, @apollo/utils.keyvaluecache@npm:^2.1.0":
+"@apollo/utils.keyvaluecache@npm:^2.1.0":
   version: 2.1.1
   resolution: "@apollo/utils.keyvaluecache@npm:2.1.1"
   dependencies:
@@ -286,10 +293,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@apollo/utils.keyvaluecache@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@apollo/utils.keyvaluecache@npm:3.0.0"
+  dependencies:
+    "@apollo/utils.logger": ^3.0.0
+    lru-cache: ^9.0.3
+  checksum: 4cdeefa8cb1991abc53b2f636ad26b6255516086f6dea88f0502be9c46598ffa804ab512af7aa95f6903f8496fb4c649144b18f092a60a1b11d7c8a662936125
+  languageName: node
+  linkType: hard
+
 "@apollo/utils.logger@npm:^2.0.0, @apollo/utils.logger@npm:^2.0.1":
   version: 2.0.1
   resolution: "@apollo/utils.logger@npm:2.0.1"
   checksum: f975c81fcc7e54669b975031349f292930dc4cc3dd6bdc58bc7fe2159e0398a7d18b28860ee324c23722b005848e258094a143d20f6989fde5837379240b0066
+  languageName: node
+  linkType: hard
+
+"@apollo/utils.logger@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@apollo/utils.logger@npm:3.0.0"
+  checksum: e3bd3e55e7ff86410afa2620dd767073dcf017a8d1e5ab5484fe293a42d06c38e73b5dc5ada99dbb7b9ef2919f225214f7a7d3944a1665e72d84082837359c0b
   languageName: node
   linkType: hard
 
@@ -351,6 +375,13 @@ __metadata:
   version: 2.0.1
   resolution: "@apollo/utils.withrequired@npm:2.0.1"
   checksum: ddd3a72d0f13e6283128d1aae787b65f8ef0bf2f2cf351e143c479f0838679e72d82f42f653b6baadd33a092854fc9cb9dd8af4a45938ee25b718274cef408ee
+  languageName: node
+  linkType: hard
+
+"@apollo/utils.withrequired@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@apollo/utils.withrequired@npm:3.0.0"
+  checksum: 63fb7e93a64d24b0f02ef8a14f53ed16288a9481bfde401b679614d00b18ecc894bac8e36e9bff53d6955a031d2a080d4056914530bf32592a131eb63a4c7ed0
   languageName: node
   linkType: hard
 
@@ -15640,25 +15671,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/passport-twitter@npm:^1.0.37":
-  version: 1.0.37
-  resolution: "@types/passport-twitter@npm:1.0.37"
-  dependencies:
-    "@types/express": "*"
-    "@types/passport": "*"
-  checksum: 4212f96287b6623c151c40576470d0552db6dba773563ec7c66de0a34878d86d8acf824c7faebeaa5a87e684bdf3fcc91d7fa6ffdada5d80d05ebc0a8f0240f9
-  languageName: node
-  linkType: hard
-
-"@types/passport@npm:*, @types/passport@npm:^1.0.12":
-  version: 1.0.12
-  resolution: "@types/passport@npm:1.0.12"
-  dependencies:
-    "@types/express": "*"
-  checksum: 2bce41b248566d8c2aeafcb38f105e3521d42a572e92da9edc5eb669f1b3cb02e5911c9d124191f67d432b677562a885b6ad7f56320c712df1e87ba7619eb8a4
-  languageName: node
-  linkType: hard
-
 "@types/pbkdf2@npm:^3.0.0":
   version: 3.1.0
   resolution: "@types/pbkdf2@npm:3.1.0"
@@ -18663,7 +18675,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "backpack-api@workspace:backend/native/backpack-api"
   dependencies:
-    "@apollo/datasource-rest": ^5.1.0
+    "@apollo/datasource-rest": ^6.0.1
     "@apollo/server": ^4.7.0
     "@apollo/server-plugin-response-cache": ^4.1.2
     "@apollo/utils.createhash": ^3.0.0
@@ -18688,8 +18700,6 @@ __metadata:
     "@solana/spl-token": ^0.3.7
     "@solana/web3.js": ^1.73.0
     "@types/express": ^4.17.14
-    "@types/passport": ^1.0.12
-    "@types/passport-twitter": ^1.0.37
     "@types/redis": ^4.0.11
     "@types/request": ^2.48.8
     "@types/web-push": ^3.3.2
@@ -18715,8 +18725,6 @@ __metadata:
     jsonwebtoken: ^8.5.1
     jws: ^4.0.0
     lru-cache: ^9.1.1
-    passport: ^0.6.0
-    passport-twitter: ^1.0.4
     redis: ^4.6.2
     request: ^2.88.2
     tweetnacl: ^1.0.3
@@ -32442,6 +32450,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lru-cache@npm:^9.0.3":
+  version: 9.1.2
+  resolution: "lru-cache@npm:9.1.2"
+  checksum: d3415634be3908909081fc4c56371a8d562d9081eba70543d86871b978702fffd0e9e362b83921b27a29ae2b37b90f55675aad770a54ac83bb3e4de5049d4b15
+  languageName: node
+  linkType: hard
+
 "lru-cache@npm:^9.1.1":
   version: 9.1.1
   resolution: "lru-cache@npm:9.1.1"
@@ -34678,13 +34693,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"oauth@npm:0.9.x":
-  version: 0.9.15
-  resolution: "oauth@npm:0.9.15"
-  checksum: 957c0d8d85300398dcb0e293953650c0fc3facc795bee8228238414f19f59cef5fd4ee8d17a972c142924c10c5f6ec50ef80f77f4a6cc6e3c98f9d22c027801c
-  languageName: node
-  linkType: hard
-
 "ob1@npm:0.73.9":
   version: 0.73.9
   resolution: "ob1@npm:0.73.9"
@@ -35380,45 +35388,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-oauth1@npm:1.x.x":
-  version: 1.3.0
-  resolution: "passport-oauth1@npm:1.3.0"
-  dependencies:
-    oauth: 0.9.x
-    passport-strategy: 1.x.x
-    utils-merge: 1.x.x
-  checksum: 69a0538221f11509aa405de0cadf510e635a6723e1e7e6179db34b4d21d82db8eff8a1e95a6e9eaeca3233e8e1fa5dce87999cd3ec32387238a73a552f95ca16
-  languageName: node
-  linkType: hard
-
-"passport-strategy@npm:1.x.x":
-  version: 1.0.0
-  resolution: "passport-strategy@npm:1.0.0"
-  checksum: 5086693f2508e538dffa55a338c89fe8192fb5f4478c71f80cd5890b8573419a098f4fec88b505374f60bbe9049f6f24b9f3992678612528a3370b4dc73354a2
-  languageName: node
-  linkType: hard
-
-"passport-twitter@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "passport-twitter@npm:1.0.4"
-  dependencies:
-    passport-oauth1: 1.x.x
-    xtraverse: 0.1.x
-  checksum: f53a8b9589a0368ce819683785f24b1ff8c6c80e63fdffd0d8408395956a307a9243a6e05a4d19a44ca7ce4f167cdfff98b199a8b42adb712655fca353958854
-  languageName: node
-  linkType: hard
-
-"passport@npm:^0.6.0":
-  version: 0.6.0
-  resolution: "passport@npm:0.6.0"
-  dependencies:
-    passport-strategy: 1.x.x
-    pause: 0.0.1
-    utils-merge: ^1.0.1
-  checksum: ef932ad671d50de34765c7a53cd1e058d8331a82a6df09265a9c6c1168911aee4a7b5215803d0101110ab7f317e096b4954ca7e18fb2c33b9929f0bd17dbe159
-  languageName: node
-  linkType: hard
-
 "password-prompt@npm:^1.0.4":
   version: 1.1.2
   resolution: "password-prompt@npm:1.1.2"
@@ -35608,13 +35577,6 @@ __metadata:
   dependencies:
     through: ~2.3
   checksum: 3c4a14052a638b92e0c96eb00c0d7977df7f79ea28395250c525d197f1fc02d34ce1165d5362e2e6ebbb251524b94a76f3f0d4abc39ab8b016d97449fe15583c
-  languageName: node
-  linkType: hard
-
-"pause@npm:0.0.1":
-  version: 0.0.1
-  resolution: "pause@npm:0.0.1"
-  checksum: e96ee581b68085e6f2ba5adbcb4d4a41fe88e5b514061e76df2fe1905f0f65f4fe5a843b538e9551122c6b9184ff4be266c2ee0ea4614702f9a3d04466d9f462
   languageName: node
   linkType: hard
 
@@ -42366,7 +42328,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"utils-merge@npm:1.0.1, utils-merge@npm:1.x.x, utils-merge@npm:^1.0.1":
+"utils-merge@npm:1.0.1":
   version: 1.0.1
   resolution: "utils-merge@npm:1.0.1"
   checksum: c81095493225ecfc28add49c106ca4f09cdf56bc66731aa8dabc2edbbccb1e1bfe2de6a115e5c6a380d3ea166d1636410b62ef216bb07b3feb1cfde1d95d5080
@@ -43665,13 +43627,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xmldom@npm:0.1.x":
-  version: 0.1.31
-  resolution: "xmldom@npm:0.1.31"
-  checksum: 3073ca4a096892f86991ad0fce9aa1e874f16a974aa2c0911b1a218922d80fe3762b56aa3a2d9fe4a46d61416193c6dc0839776748b24e0cfb56197babf77a94
-  languageName: node
-  linkType: hard
-
 "xnft-api-server@workspace:backend/native/xnft-api-server":
   version: 0.0.0-use.local
   resolution: "xnft-api-server@workspace:backend/native/xnft-api-server"
@@ -43732,15 +43687,6 @@ __metadata:
   version: 4.0.2
   resolution: "xtend@npm:4.0.2"
   checksum: ac5dfa738b21f6e7f0dd6e65e1b3155036d68104e67e5d5d1bde74892e327d7e5636a076f625599dc394330a731861e87343ff184b0047fef1360a7ec0a5a36a
-  languageName: node
-  linkType: hard
-
-"xtraverse@npm:0.1.x":
-  version: 0.1.0
-  resolution: "xtraverse@npm:0.1.0"
-  dependencies:
-    xmldom: 0.1.x
-  checksum: 50da955606472168d4aecfde9d47280814defa8686ccf8452c2c31d3fcd841c2f75c753ad2fc7c64bf9968fc23bcb902ab500e70158d8b006d924d15a66f7028
   languageName: node
   linkType: hard
 

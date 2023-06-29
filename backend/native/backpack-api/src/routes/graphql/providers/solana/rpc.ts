@@ -16,12 +16,12 @@ import {
   type TokenAccountData,
 } from "@saberhq/token-utils";
 import type { MintInfo } from "@solana/spl-token";
-import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import { ethers } from "ethers";
 
 import { HELIUS_API_KEY } from "../../../../config";
 import type { CoinGeckoPriceData } from "../../clients/coingecko";
-import { IN_MEM_COLLECTION_DATA_CACHE } from "../../clients/helius";
+import { IN_MEM_SOL_COLLECTION_DATA_CACHE } from "../../clients/helius";
 import type { ApiContext } from "../../context";
 import { NodeBuilder } from "../../nodes";
 import type {
@@ -331,7 +331,7 @@ export class SolanaRpc implements BlockchainDataProvider {
         });
 
         // Try to get the collection metadata from the in-memory cache
-        const collectionData = IN_MEM_COLLECTION_DATA_CACHE.get(
+        const collectionData = IN_MEM_SOL_COLLECTION_DATA_CACHE.get(
           curr.collection?.address?.toBase58() ?? ""
         );
 
