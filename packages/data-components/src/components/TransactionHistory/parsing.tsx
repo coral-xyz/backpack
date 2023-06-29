@@ -2,13 +2,13 @@ import { Suspense } from "react";
 import { formatSnakeToTitleCase, formatWalletAddress } from "@coral-xyz/common";
 import { TransactionType } from "helius-sdk";
 
-import type { ResponseTransaction } from ".";
 import {
   TransactionListItemIconBurn,
   TransactionListItemIconNft,
   TransactionListItemIconSwap,
   TransactionListItemIconTransfer,
 } from "./TransactionListItemIcon";
+import type { ResponseTransaction } from "./utils";
 
 export type ParseTransactionDetails = {
   details: {

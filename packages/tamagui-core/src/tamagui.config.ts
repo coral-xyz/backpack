@@ -39,6 +39,18 @@ export const config = createTamagui({
       ...darkTheme,
     },
   },
+  media: {
+    sm: { maxWidth: 650 },
+    gtSm: { minWidth: 650 + 1 },
+    md: { maxWidth: 850 },
+    gtMd: { minWidth: 850 + 1 },
+    lg: { maxWidth: 1050 },
+    gtLg: { minWidth: 1050 + 1 },
+    xl: { maxWidth: 1250 },
+    gtXl: { minWidth: 1250 + 1 },
+    xxl: { maxWidth: 1450 },
+    gtXxl: { minWidth: 1450 + 1 },
+  },
 });
 
 export type Conf = typeof config;

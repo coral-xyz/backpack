@@ -1,8 +1,8 @@
 import type { ViewStyle } from "react-native";
 import { YStack } from "@coral-xyz/tamagui";
 
-import type { ResponseTransaction } from "..";
 import type { ParseTransactionDetails } from "../parsing";
+import type { ResponseTransaction } from "../utils";
 
 import { TransactionDetailsHeader } from "./TransactionDetailsHeader";
 import { TransactionDetailsTable } from "./TransactionDetailsTable";

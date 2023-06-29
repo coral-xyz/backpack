@@ -10,8 +10,8 @@ import {
   YStack,
 } from "@coral-xyz/tamagui";
 
-import type { ResponseNotification } from ".";
 import { NotificationListItemFriendRequestAction } from "./NotificationListItemActions";
+import type { ResponseNotification } from "./utils";
 
 export type NotificationListItemProps = {
   notification: ResponseNotification;
