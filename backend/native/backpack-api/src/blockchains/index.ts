@@ -13,6 +13,7 @@ type BlockchainsNative = Record<
   Blockchain,
   {
     validateSignature: (msg: Buffer, sig: string, pubkey: string) => boolean;
+    validatePublicKey: (address: string) => boolean;
   }
 >;
 
@@ -26,6 +27,14 @@ export const BLOCKCHAINS_NATIVE: BlockchainsNative = {
      */
     validateSignature: (msg: Buffer, signature: string, publicKey: string) => {
       return ethers.utils.verifyMessage(msg, signature) === publicKey;
+    },
+    validatePublicKey: (address: string) => {
+      try {
+        ethers.utils.getAddress(address);
+      } catch (e) {
+        return false;
+      }
+      return true;
     },
   },
   [Blockchain.SOLANA]: {
@@ -69,6 +78,14 @@ export const BLOCKCHAINS_NATIVE: BlockchainsNative = {
         return false;
       }
     },
+    validatePublicKey: (address: string) => {
+      try {
+        new PublicKey(address);
+      } catch (err) {
+        return false;
+      }
+      return true;
+    },
   },
   [Blockchain.ECLIPSE]: {
     validateSignature: (
@@ -81,6 +98,14 @@ export const BLOCKCHAINS_NATIVE: BlockchainsNative = {
         encodedSignature,
         encodedPublicKey
       );
+    },
+    validatePublicKey: (address: string) => {
+      try {
+        new PublicKey(address);
+      } catch (err) {
+        return false;
+      }
+      return true;
     },
   },
 };

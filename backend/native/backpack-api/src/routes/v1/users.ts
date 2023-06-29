@@ -33,7 +33,6 @@ import {
 } from "../../db/users";
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
 import { logger } from "../../logger";
-import { validatePublicKey } from "../../validation/publicKey";
 import {
   BlockchainPublicKey,
   CreatePublicKeys,
@@ -50,35 +49,31 @@ router.get("/", extractUserId, async (req, res) => {
   // @ts-ignore
   const limit: number = req.query.limit ? parseInt(req.query.limit) : 20;
 
-  const isSolPublicKey = validatePublicKey(usernamePrefix, "solana");
-  const isEclipsePublicKey = validatePublicKey(usernamePrefix, "eclipse");
-  const isEthPublicKey = validatePublicKey(usernamePrefix, "ethereum");
-
-  let users: any = [];
-
   //
-  // SVM.
+  // Maps blockchain -> boolean, where true if the usernamePrefix is a valid
+  // pubkey for that chian.
   //
-  if (isSolPublicKey) {
-    users = users.concat(
-      await getUserByPublicKeyAndChain(usernamePrefix, Blockchain.SOLANA)
+  const blockchainsToSearch: { [blockchain: string]: boolean } =
+    Object.fromEntries(
+      new Map(
+        Object.entries(BLOCKCHAINS_NATIVE).map(([blockchain, native]) => {
+          return [blockchain, native.validatePublicKey(usernamePrefix)];
+        })
+      )
     );
-  }
-  if (isEclipsePublicKey) {
-    users = users.concat(
-      await getUserByPublicKeyAndChain(usernamePrefix, Blockchain.ECLIPSE)
-    );
-  }
 
   //
-  // EVM.
+  // The users found for that key (should only be one).
   //
-  if (isEthPublicKey) {
-    users = await getUserByPublicKeyAndChain(
-      usernamePrefix,
-      Blockchain.ETHEREUM
-    );
-  }
+  let users = (
+    await Promise.all(
+      Object.entries(blockchainsToSearch)
+        .filter(([, isValid]) => isValid)
+        .map(([blockchain]) =>
+          getUserByPublicKeyAndChain(usernamePrefix, blockchain as Blockchain)
+        )
+    )
+  ).reduce((accumulator, users) => accumulator.concat(users), []);
 
   //
   // Not a pubkey so assume it's a username.
@@ -109,9 +104,12 @@ router.get("/", extractUserId, async (req, res) => {
         requested: friendship?.requested || false,
         remoteRequested: friendship?.remoteRequested || false,
         areFriends: friendship?.areFriends || false,
-        searchedSolPubKey: isSolPublicKey ? usernamePrefix : undefined,
-        searchedEclipsePubKey: isEclipsePublicKey ? usernamePrefix : undefined,
-        searchedEthPubKey: isEthPublicKey ? usernamePrefix : undefined,
+        searched: {
+          usernamePrefix,
+          blockchains: {
+            ...blockchainsToSearch,
+          },
+        },
         // TODO: fix the disambiguation with snake_case and camelCase in API responses
         public_keys: public_keys.map((pk) => ({
           ...pk,

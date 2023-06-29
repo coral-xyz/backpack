@@ -13,7 +13,7 @@ export const DEFAULT_FEATURE_GATES = {
   STICKER_ENABLED: false,
   STRIPE_ENABLED: false,
   SWAP_FEES_ENABLED: false,
-  ECLIPSE: false,
+  ECLIPSE: true,
 } as const;
 
 export type FEATURE_GATES_MAP = typeof DEFAULT_FEATURE_GATES;
