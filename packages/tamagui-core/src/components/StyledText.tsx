@@ -1,19 +1,18 @@
 import React from "react";
-import type { StyleProp, TextProps, TextStyle } from "react-native";
-import type { SizableTextProps } from "tamagui";
+import type { StyleProp, TextStyle } from "react-native";
+import type { SizableTextProps, TextProps } from "tamagui";
 import { Text } from "tamagui";
 
 import { useCustomTheme } from "../hooks/index";
 
-export type StyledTextProps = TextProps &
-  SizableTextProps & {
-    fontSize?: number | string;
-    fontWeight?: string;
-    children: React.ReactNode;
-    textAlign?: SizableTextProps["textAlign"];
-    color?: string;
-    style?: StyleProp<TextStyle>;
-  };
+export type StyledTextProps = TextProps & {
+  fontSize?: number | string;
+  fontWeight?: string;
+  children: React.ReactNode;
+  textAlign?: SizableTextProps["textAlign"];
+  color?: string;
+  style?: StyleProp<TextStyle>;
+};
 
 export function StyledText({
   fontWeight = "500",
@@ -23,7 +22,7 @@ export function StyledText({
   color,
   style,
   ...props
-}: StyledTextProps) {
+}: TextProps) {
   const theme = useCustomTheme();
   const _color = color || theme.custom.colors.fontColor;
   return (

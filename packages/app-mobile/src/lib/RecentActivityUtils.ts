@@ -102,10 +102,11 @@ export function parseTransfer(str: string) {
     const _to = str.split("to ");
     const to = _to[1]; // remove period at the end
     const amount = _to[0].split("transferred ")[1].trim();
+    const token = amount.split(" ")[1];
     const action = "Sent"; // TODO sent/received, pass down publickey
-    return { to: formatWalletAddress(to), amount, action };
+    return { to: formatWalletAddress(to), amount, action, token };
   } catch (_err) {
-    return { to: "", amount: "", action: "Sent" };
+    return { to: "", amount: "", action: "Sent", token: null };
   }
 }
 

@@ -1,27 +1,24 @@
+import type { StyleProp } from "react-native";
 import {
   ActivityIndicator,
   FlatList,
-  Image,
-  Pressable,
   SectionList,
   StyleSheet,
   View,
 } from "react-native";
 import type { Blockchain } from "@coral-xyz/common";
 import { formatUsd } from "@coral-xyz/common";
-
-import { useCustomTheme as useTheme } from "../hooks/index";
+import { Image, type ImageStyle } from "expo-image";
 import {
-  Circle,
   ListItem,
   Separator,
   Stack,
+  styled,
   XStack,
   YGroup,
   YStack,
-} from "../";
+} from "tamagui";
 
-import type { StyledTextProps } from "./";
 import { getIcon, IconCheckmark, IconKeyboardArrowRight } from "./Icon";
 import {
   BlockchainLogo,
@@ -134,65 +131,55 @@ export function ListItemTableWrapper({ children }): JSX.Element {
   );
 }
 
-function ListItemWrapper({ children, grouped, ...props }): JSX.Element {
-  return (
-    <ListItem
-      pressTheme
-      hoverTheme
-      overflow="hidden"
-      backgroundColor="$nav"
-      borderRadius={grouped ? 0 : "$container"}
-      borderColor={grouped ? undefined : "$borderFull"}
-      borderWidth={grouped ? 0 : 2}
-      px={16}
-      py={12}
-      {...props}
-    >
-      {children}
-    </ListItem>
-  );
-}
+const ListItemWrapper = styled(ListItem, {
+  pressTheme: true,
+  hoverTheme: true,
+  overflow: "hidden",
+  backgroundColor: "$nav",
+  px: 16,
+  py: 12,
+  variants: {
+    grouped: {
+      false: {
+        borderRadius: "$container",
+        borderColor: "$borderFull",
+        borderWidth: 2,
+      },
+    },
+  },
+});
 
-type ListItemSubProps = {
-  children: React.ReactNode;
-};
+const ListItemSide = styled(YStack, {
+  space: 4,
+  variants: {
+    side: {
+      left: {
+        maxWidth: "60%",
+        f: 1,
+        mr: 24,
+        jc: "center",
+      },
+      right: {
+        maxWidth: "40%",
+        f: 1,
+        jc: "center",
+        ai: "flex-end",
+      },
+    },
+  } as const,
+});
 
-function ListItemLeft({ children }: ListItemSubProps) {
-  return (
-    <YStack f={1} space={4} mr={24}>
-      {children}
-    </YStack>
-  );
-}
+const ListItemStyledText = styled(StyledText, {
+  textOverflow: "ellipsis",
+  color: "$baseTextHighEmphasis",
+  numberOfLines: 1,
+});
 
-function ListItemRight({ children, ...props }: ListItemSubProps) {
-  return (
-    <YStack f={-1} space={4} ai="flex-end" {...props}>
-      {children}
-    </YStack>
-  );
-}
-
-function ListItemRow({ children }: ListItemSubProps) {
-  return (
-    <XStack f={1} jc="space-between" ai="center">
-      {children}
-    </XStack>
-  );
-}
-
-function ListItemStyledText({ children, ...props }: StyledTextProps) {
-  return (
-    <StyledText
-      textOverflow="ellipsis"
-      color="$baseTextHighEmphasis"
-      numberOfLines={1}
-      {...props}
-    >
-      {children}
-    </StyledText>
-  );
-}
+const ListItemRow = styled(XStack, {
+  flex: 1,
+  justifyContent: "space-between",
+  alignItems: "center",
+});
 
 export function ListItemSentReceived({
   grouped = false,
@@ -216,25 +203,68 @@ export function ListItemSentReceived({
       icon={<Image style={styles.rowLogo} source={{ uri: iconUrl }} />}
     >
       <ListItemRow>
-        <ListItemLeft>
-          <ListItemStyledText fontSize="$lg" color="$fontColor">
+        <ListItemSide side="left">
+          <ListItemStyledText fontSize="$lg" color="$baseTextHighEmphasis">
             {action}
           </ListItemStyledText>
-          <ListItemStyledText fontSize="$sm" color="$secondary">
+          <ListItemStyledText fontSize="$sm" color="$baseTextMedEmphasis">
             To: {address}
           </ListItemStyledText>
-        </ListItemLeft>
-        <ListItemRight f={1}>
+        </ListItemSide>
+        <ListItemSide side="right">
           <ListItemStyledText
+            fontWeight="500"
             fontSize="$sm"
-            color={action === "Sent" ? "$negative" : "$positive"}
+            color={action === "Sent" ? "$baseTextHighEmphasis" : "$positive"}
           >
             {action === "Sent" ? "-" : "+"}
             {amount}
           </ListItemStyledText>
-        </ListItemRight>
+        </ListItemSide>
       </ListItemRow>
     </ListItemWrapper>
+  );
+}
+
+function SwapIcon({
+  iconUrl,
+  style,
+}: {
+  iconUrl: string;
+  style: any; // TODO expo-image style
+}): JSX.Element {
+  return (
+    <Image
+      source={{ uri: iconUrl }}
+      style={[
+        style,
+        {
+          overflow: "hidden",
+          aspectRatio: 1,
+          width: 25,
+          height: 25,
+          borderRadius: 15,
+        },
+      ]}
+    />
+  );
+}
+
+function SwapIconSet({
+  fromIcon,
+  toIcon,
+}: {
+  fromIcon: string;
+  toIcon: string;
+}): JSX.Element {
+  return (
+    <View style={{ width: 40, height: 40 }}>
+      <SwapIcon iconUrl={fromIcon} style={{ top: 5 }} />
+      <SwapIcon
+        iconUrl={toIcon}
+        style={{ position: "absolute", top: 15, left: 10 }}
+      />
+    </View>
   );
 }
 
@@ -245,6 +275,8 @@ export function ListItemTokenSwap({
   caption,
   sent,
   received,
+  sentTokenUrl,
+  receivedTokenUrl,
 }: {
   grouped?: boolean;
   title: string;
@@ -252,30 +284,32 @@ export function ListItemTokenSwap({
   sent: string;
   received: string;
   onPress?: () => void;
+  sentTokenUrl: string;
+  receivedTokenUrl: string;
 }) {
   return (
     <ListItemWrapper
       grouped={grouped}
       onPress={onPress}
-      icon={<View style={styles.rowLogo} />}
+      icon={<SwapIconSet fromIcon={sentTokenUrl} toIcon={receivedTokenUrl} />}
     >
       <ListItemRow>
-        <ListItemLeft f={4}>
+        <ListItemSide side="left">
           <ListItemStyledText fontSize="$lg" color="$fontColor">
-            {title} {title}
+            {title}
           </ListItemStyledText>
           <ListItemStyledText fontSize="$sm" color="$secondary">
             {caption}
           </ListItemStyledText>
-        </ListItemLeft>
-        <ListItemRight f={1}>
+        </ListItemSide>
+        <ListItemSide side="right">
           <ListItemStyledText fontSize="$sm" color="$positive">
             {received}
           </ListItemStyledText>
           <ListItemStyledText fontSize="$sm" color="$negative">
             {sent}
           </ListItemStyledText>
-        </ListItemRight>
+        </ListItemSide>
       </ListItemRow>
     </ListItemWrapper>
   );
@@ -441,14 +475,9 @@ export function ListItemToken({
   }
 
   return (
-    <ListItem
-      backgroundColor="$nav"
+    <ListItemWrapper
+      grouped={grouped}
       onPress={() => onPressRow(blockchain, token, walletPublicKey)}
-      borderRadius={!grouped ? "$container" : undefined}
-      borderColor={!grouped ? "$borderFull" : undefined}
-      borderWidth={!grouped ? 2 : undefined}
-      paddingHorizontal={16}
-      paddingVertical={12}
       icon={<ProxyImage size={32} style={styles.rowLogo} src={iconUrl} />}
     >
       <XStack flex={1} justifyContent="space-between">
@@ -467,7 +496,7 @@ export function ListItemToken({
           <TextPercentChanged percentChange={recentUsdBalanceChange} />
         </YStack>
       </XStack>
-    </ListItem>
+    </ListItemWrapper>
   );
 }
 

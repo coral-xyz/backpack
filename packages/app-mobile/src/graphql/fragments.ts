@@ -2,7 +2,7 @@ import { gql } from "~src/graphql/__generated__";
 // import { gql } from "@apollo/client";
 
 export const TokenListItemFragment = gql(`
-  fragment TokenListItemFragment on TokenList {
+  fragment TokenEntryFragment on TokenListEntry {
     address
     coingeckoId
     id

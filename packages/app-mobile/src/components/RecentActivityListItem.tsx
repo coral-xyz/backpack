@@ -8,10 +8,19 @@ import {
 import { parseTransactionDescription } from "~lib/RecentActivityUtils";
 export type ListItemProps = any;
 
-export function ListItem({ item }: { item: ListItemProps }): JSX.Element {
+export function ListItem({
+  item,
+  getTokenUrl,
+}: {
+  item: ListItemProps;
+  getTokenUrl: any;
+}): JSX.Element {
   switch (item.type) {
     case "SWAP": {
-      const { sent, received, display } = parseTransactionDescription(item);
+      const { sent, received, display, receivedToken, sentToken } =
+        parseTransactionDescription(item);
+      const sentTokenUrl = getTokenUrl(sentToken);
+      const receivedTokenUrl = getTokenUrl(receivedToken);
       return (
         <ListItemTokenSwap
           grouped
@@ -19,18 +28,21 @@ export function ListItem({ item }: { item: ListItemProps }): JSX.Element {
           caption={display}
           sent={sent}
           received={received}
+          sentTokenUrl={sentTokenUrl.logo}
+          receivedTokenUrl={receivedTokenUrl.logo}
         />
       );
     }
     case "TRANSFER": {
-      const { to, amount, action } = parseTransactionDescription(item);
+      const { to, amount, action, token } = parseTransactionDescription(item);
+      const tokenUrl = getTokenUrl(token);
       return (
         <ListItemSentReceived
           grouped
           address={to}
           action={action}
           amount={amount}
-          iconUrl="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+          iconUrl={tokenUrl?.logo}
         />
       );
     }

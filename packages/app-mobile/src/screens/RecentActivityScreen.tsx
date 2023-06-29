@@ -26,6 +26,9 @@ import { gql } from "~src/graphql/__generated__";
 
 const QUERY_RECENT_TRANSACTIONS = gql(`
   query WalletTransactions($providerId: ProviderID!, $address: String!) {
+    tokenList(providerId: $providerId) {
+      ...TokenEntryFragment
+    }
     wallet(providerId: $providerId, address: $address) {
       id
       transactions {
@@ -43,10 +46,15 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
   const activeWallet = useActiveWallet();
   const { data } = useSuspenseQuery(QUERY_RECENT_TRANSACTIONS, {
     variables: {
+      // @ts-expect-error
       providerId: activeWallet.blockchain.toUpperCase(),
       address: activeWallet.publicKey,
     },
   });
+
+  const tokenMap = new Map(
+    (data.tokenList ?? []).map((token) => [token.symbol, token])
+  );
 
   console.log("jj1:data", data, activeWallet);
 
@@ -59,6 +67,13 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
   //   },
   //   [navigation]
   // );
+
+  const getTokenUrl = useCallback(
+    (symbol: string) => {
+      return tokenMap.get(symbol);
+    },
+    [tokenMap]
+  );
 
   const keyExtractor = (item: ListItemProps) => item.id;
   const renderItem = useCallback(
@@ -75,7 +90,7 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
           disableBottomRadius={!isLast}
           borderRadius={borderRadius}
         >
-          <ListItem item={item} />
+          <ListItem item={item} getTokenUrl={getTokenUrl} />
         </RoundedContainerGroup>
       );
     },
@@ -92,6 +107,7 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
 
   return (
     <PaddedSectionList
+      extraData={tokenMap}
       sections={sections}
       ListEmptyComponent={NoRecentActivity}
       keyExtractor={keyExtractor}
