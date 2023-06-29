@@ -52,12 +52,6 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
     },
   });
 
-  const tokenMap = new Map(
-    (data.tokenList ?? []).map((token) => [token.symbol, token])
-  );
-
-  console.log("jj1:data", data, activeWallet);
-
   // const handlePressItem = useCallback(
   //   (item: ListItemProps) => {
   //     navigation.push("ActivityDetail", {
@@ -70,9 +64,12 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
 
   const getTokenUrl = useCallback(
     (symbol: string) => {
+      const tokenMap = new Map(
+        (data.tokenList ?? []).map((token) => [token.symbol, token])
+      );
       return tokenMap.get(symbol);
     },
-    [tokenMap]
+    [data.tokenList]
   );
 
   const keyExtractor = (item: ListItemProps) => item.id;
@@ -90,11 +87,15 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
           disableBottomRadius={!isLast}
           borderRadius={borderRadius}
         >
-          <ListItem item={item} getTokenUrl={getTokenUrl} />
+          <ListItem
+            item={item}
+            getTokenUrl={getTokenUrl}
+            onPress={console.log}
+          />
         </RoundedContainerGroup>
       );
     },
-    []
+    [getTokenUrl]
   );
 
   const renderSectionHeader = useCallback(({ section }: any) => {
@@ -107,7 +108,6 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
 
   return (
     <PaddedSectionList
-      extraData={tokenMap}
       sections={sections}
       ListEmptyComponent={NoRecentActivity}
       keyExtractor={keyExtractor}

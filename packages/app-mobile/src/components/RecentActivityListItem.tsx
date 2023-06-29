@@ -11,9 +11,11 @@ export type ListItemProps = any;
 export function ListItem({
   item,
   getTokenUrl,
+  onPress,
 }: {
   item: ListItemProps;
   getTokenUrl: any;
+  onPress: any;
 }): JSX.Element {
   switch (item.type) {
     case "SWAP": {
@@ -24,6 +26,7 @@ export function ListItem({
       return (
         <ListItemTokenSwap
           grouped
+          onPress={onPress}
           title="Token Swap"
           caption={display}
           sent={sent}
@@ -39,10 +42,12 @@ export function ListItem({
       return (
         <ListItemSentReceived
           grouped
+          onPress={onPress}
           address={to}
           action={action}
           amount={amount}
           iconUrl={tokenUrl?.logo}
+          showSuccessIcon={!tokenUrl?.logo}
         />
       );
     }
@@ -51,13 +56,13 @@ export function ListItem({
       return (
         <ListItemActivity
           grouped
-          onPress={console.log}
+          onPress={onPress}
           topLeftText={nft}
           bottomLeftText={`Listed on ${marketplace}`}
           bottomRightText={amount} // TODO amount in USD
           topRightText={amount}
-          // nft image sold
-          iconUrl="https://swr.xnfts.dev/1min/https://madlist-images.s3.us-west-2.amazonaws.com/backpack_dev.png"
+          showSuccessIcon={!item.transactionError}
+          showErrorIcon={item.transactionError}
         />
       );
     }
@@ -66,13 +71,13 @@ export function ListItem({
       return (
         <ListItemActivity
           grouped
-          onPress={console.log}
+          onPress={onPress}
           topLeftText={nft}
           bottomLeftText={`Sold on ${marketplace}`}
           bottomRightText={amount} // TODO amount in USD
           topRightText={amount}
-          // nft image sold
-          iconUrl="https://swr.xnfts.dev/1min/https://madlist-images.s3.us-west-2.amazonaws.com/backpack_dev.png"
+          showSuccessIcon={!item.transactionError}
+          showErrorIcon={item.transactionError}
         />
       );
     }
@@ -81,7 +86,7 @@ export function ListItem({
       return (
         <ListItemActivity
           grouped
-          onPress={console.log}
+          onPress={onPress}
           topLeftText="App Interaction"
           bottomLeftText={formatWalletAddress(item.hash)}
           bottomRightText=""
