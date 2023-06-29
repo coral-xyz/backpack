@@ -2,6 +2,7 @@ import type { RemoteUserData } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
   Blockchain,
+  BLOCKCHAIN_COMMON,
   getAddMessage,
   getCreateMessage,
 } from "@coral-xyz/common";
@@ -14,7 +15,6 @@ import {
   extractUserId,
 } from "../../auth/middleware";
 import { clearCookie, setJWTCookie, validateJwt } from "../../auth/util";
-import { BLOCKCHAINS_NATIVE } from "../../blockchains";
 import { REFERRER_COOKIE_NAME } from "../../config";
 import { getFriendshipStatus } from "../../db/friendships";
 import { getPublicKeyDetails, updatePublicKey } from "../../db/publicKey";
@@ -56,7 +56,7 @@ router.get("/", extractUserId, async (req, res) => {
   const blockchainsToSearch: { [blockchain: string]: boolean } =
     Object.fromEntries(
       new Map(
-        Object.entries(BLOCKCHAINS_NATIVE).map(([blockchain, native]) => {
+        Object.entries(BLOCKCHAIN_COMMON).map(([blockchain, native]) => {
           return [blockchain, native.validatePublicKey(usernamePrefix)];
         })
       )

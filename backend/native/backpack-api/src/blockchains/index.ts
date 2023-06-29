@@ -14,7 +14,6 @@ type BlockchainsNative = Record<
   Blockchain,
   {
     validateSignature: (msg: Buffer, sig: string, pubkey: string) => boolean;
-    validatePublicKey: (address: string) => boolean;
     ZodPublicKey: any; // TODO: type.
     ZodCreatePublicKey: () => any; // TODO: type.
   }
@@ -30,14 +29,6 @@ export const BLOCKCHAINS_NATIVE: BlockchainsNative = {
      */
     validateSignature: (msg: Buffer, signature: string, publicKey: string) => {
       return ethers.utils.verifyMessage(msg, signature) === publicKey;
-    },
-    validatePublicKey: (address: string) => {
-      try {
-        ethers.utils.getAddress(address);
-      } catch (e) {
-        return false;
-      }
-      return true;
     },
     ZodPublicKey: z.object({
       publicKey: z.string().refine((str) => {
@@ -97,14 +88,6 @@ export const BLOCKCHAINS_NATIVE: BlockchainsNative = {
         return false;
       }
     },
-    validatePublicKey: (address: string) => {
-      try {
-        new PublicKey(address);
-      } catch (err) {
-        return false;
-      }
-      return true;
-    },
     ZodPublicKey: z.object({
       publicKey: z.string().refine((str) => {
         try {
@@ -133,14 +116,6 @@ export const BLOCKCHAINS_NATIVE: BlockchainsNative = {
         encodedSignature,
         encodedPublicKey
       );
-    },
-    validatePublicKey: (address: string) => {
-      try {
-        new PublicKey(address);
-      } catch (err) {
-        return false;
-      }
-      return true;
     },
     ZodPublicKey: z.object({
       publicKey: z.string().refine((str) => {
