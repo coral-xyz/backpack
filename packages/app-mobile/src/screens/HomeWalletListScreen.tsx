@@ -1,7 +1,7 @@
 import type { Wallet, PublicKey } from "~types/types";
 
 import { Suspense, useCallback } from "react";
-import { FlatList, Pressable } from "react-native";
+import { Pressable } from "react-native";
 
 import Constants from "expo-constants";
 import { Image } from "expo-image";

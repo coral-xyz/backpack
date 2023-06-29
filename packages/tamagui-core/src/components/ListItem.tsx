@@ -11,8 +11,17 @@ import type { Blockchain } from "@coral-xyz/common";
 import { formatUsd } from "@coral-xyz/common";
 
 import { useCustomTheme as useTheme } from "../hooks/index";
-import { ListItem, Separator, Stack, XStack, YGroup, YStack } from "../";
+import {
+  Circle,
+  ListItem,
+  Separator,
+  Stack,
+  XStack,
+  YGroup,
+  YStack,
+} from "../";
 
+import type { StyledTextProps } from "./";
 import { getIcon, IconCheckmark, IconKeyboardArrowRight } from "./Icon";
 import {
   BlockchainLogo,
@@ -125,6 +134,66 @@ export function ListItemTableWrapper({ children }): JSX.Element {
   );
 }
 
+function ListItemWrapper({ children, grouped, ...props }): JSX.Element {
+  return (
+    <ListItem
+      pressTheme
+      hoverTheme
+      overflow="hidden"
+      backgroundColor="$nav"
+      borderRadius={grouped ? 0 : "$container"}
+      borderColor={grouped ? undefined : "$borderFull"}
+      borderWidth={grouped ? 0 : 2}
+      px={16}
+      py={12}
+      {...props}
+    >
+      {children}
+    </ListItem>
+  );
+}
+
+type ListItemSubProps = {
+  children: React.ReactNode;
+};
+
+function ListItemLeft({ children }: ListItemSubProps) {
+  return (
+    <YStack f={1} space={4} mr={24}>
+      {children}
+    </YStack>
+  );
+}
+
+function ListItemRight({ children, ...props }: ListItemSubProps) {
+  return (
+    <YStack f={-1} space={4} ai="flex-end" {...props}>
+      {children}
+    </YStack>
+  );
+}
+
+function ListItemRow({ children }: ListItemSubProps) {
+  return (
+    <XStack f={1} jc="space-between" ai="center">
+      {children}
+    </XStack>
+  );
+}
+
+function ListItemStyledText({ children, ...props }: StyledTextProps) {
+  return (
+    <StyledText
+      textOverflow="ellipsis"
+      color="$baseTextHighEmphasis"
+      numberOfLines={1}
+      {...props}
+    >
+      {children}
+    </StyledText>
+  );
+}
+
 export function ListItemSentReceived({
   grouped = false,
   onPress,
@@ -141,37 +210,31 @@ export function ListItemSentReceived({
   iconUrl: string;
 }) {
   return (
-    <ListItem
-      overflow="hidden"
+    <ListItemWrapper
+      grouped={grouped}
       onPress={onPress}
-      backgroundColor="$nav"
-      borderRadius={grouped ? 0 : "$container"}
-      borderColor={grouped ? undefined : "$borderFull"}
-      borderWidth={grouped ? 0 : 2}
-      paddingHorizontal={16}
-      paddingVertical={12}
       icon={<Image style={styles.rowLogo} source={{ uri: iconUrl }} />}
     >
-      <XStack flex={1} justifyContent="space-between">
-        <YStack>
-          <StyledText fontSize="$lg" color="$fontColor">
+      <ListItemRow>
+        <ListItemLeft>
+          <ListItemStyledText fontSize="$lg" color="$fontColor">
             {action}
-          </StyledText>
-          <StyledText fontSize="$sm" color="$secondary">
+          </ListItemStyledText>
+          <ListItemStyledText fontSize="$sm" color="$secondary">
             To: {address}
-          </StyledText>
-        </YStack>
-        <YStack jc="center">
-          <StyledText
+          </ListItemStyledText>
+        </ListItemLeft>
+        <ListItemRight f={1}>
+          <ListItemStyledText
             fontSize="$sm"
             color={action === "Sent" ? "$negative" : "$positive"}
           >
             {action === "Sent" ? "-" : "+"}
             {amount}
-          </StyledText>
-        </YStack>
-      </XStack>
-    </ListItem>
+          </ListItemStyledText>
+        </ListItemRight>
+      </ListItemRow>
+    </ListItemWrapper>
   );
 }
 
@@ -191,55 +254,30 @@ export function ListItemTokenSwap({
   onPress?: () => void;
 }) {
   return (
-    <ListItem
+    <ListItemWrapper
+      grouped={grouped}
       onPress={onPress}
-      backgroundColor="$nav"
-      borderRadius={!grouped ? "$container" : undefined}
-      borderColor={!grouped ? "$borderFull" : undefined}
-      borderWidth={!grouped ? 2 : undefined}
-      paddingHorizontal={16}
-      paddingVertical={12}
       icon={<View style={styles.rowLogo} />}
     >
-      <XStack flex={1} justifyContent="space-between">
-        <YStack>
-          <StyledText
-            fontSize="$lg"
-            color="$fontColor"
-            ellipsizeMode="tail"
-            numberOfLines={1}
-          >
-            {title}
-          </StyledText>
-          <StyledText
-            fontSize="$sm"
-            color="$secondary"
-            ellipsizeMode="tail"
-            numberOfLines={1}
-          >
+      <ListItemRow>
+        <ListItemLeft f={4}>
+          <ListItemStyledText fontSize="$lg" color="$fontColor">
+            {title} {title}
+          </ListItemStyledText>
+          <ListItemStyledText fontSize="$sm" color="$secondary">
             {caption}
-          </StyledText>
-        </YStack>
-        <YStack flex={0} maxWidth={100} alignItems="flex-end">
-          <StyledText
-            fontSize="$sm"
-            color="$positive"
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
+          </ListItemStyledText>
+        </ListItemLeft>
+        <ListItemRight f={1}>
+          <ListItemStyledText fontSize="$sm" color="$positive">
             {received}
-          </StyledText>
-          <StyledText
-            fontSize="$sm"
-            color="$negative"
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
+          </ListItemStyledText>
+          <ListItemStyledText fontSize="$sm" color="$negative">
             {sent}
-          </StyledText>
-        </YStack>
-      </XStack>
-    </ListItem>
+          </ListItemStyledText>
+        </ListItemRight>
+      </ListItemRow>
+    </ListItemWrapper>
   );
 }
 
@@ -259,13 +297,9 @@ export function ListItemNotification({
   iconUrl: string;
 }): JSX.Element {
   return (
-    <ListItem
+    <ListItemWrapper
+      grouped={grouped}
       backgroundColor={unread ? "#E5EEFD" : "$nav"}
-      borderRadius={!grouped ? "$container" : undefined}
-      borderColor={!grouped ? "$borderFull" : undefined}
-      borderWidth={!grouped ? 2 : undefined}
-      paddingHorizontal={16}
-      paddingVertical={16}
       alignItems="flex-start"
       icon={<UserAvatar uri={iconUrl} size={44} />}
     >
@@ -293,7 +327,7 @@ export function ListItemNotification({
           {body}
         </StyledText>
       </YStack>
-    </ListItem>
+    </ListItemWrapper>
   );
 }
 
@@ -353,16 +387,7 @@ export function ListItemActivity({
   const Icon = getIcon(icon, iconUrl);
 
   return (
-    <ListItem
-      onPress={onPress}
-      backgroundColor="$nav"
-      borderRadius={!grouped ? "$container" : undefined}
-      borderColor={!grouped ? "$borderFull" : undefined}
-      borderWidth={!grouped ? 2 : undefined}
-      paddingHorizontal={16}
-      paddingVertical={12}
-      icon={Icon}
-    >
+    <ListItemWrapper grouped={grouped} onPress={onPress} icon={Icon}>
       <XStack flex={1} justifyContent="space-between">
         <YStack>
           <StyledText fontSize="$lg" color="$fontColor">
@@ -387,7 +412,7 @@ export function ListItemActivity({
           </StyledText>
         </YStack>
       </XStack>
-    </ListItem>
+    </ListItemWrapper>
   );
 }
 
@@ -507,13 +532,8 @@ export function ListItemFriendRequest({
   avatarUrl: string;
 }): JSX.Element {
   return (
-    <ListItem
-      backgroundColor="$nav"
-      borderRadius={!grouped ? "$container" : undefined}
-      borderColor={!grouped ? "$borderFull" : undefined}
-      borderWidth={!grouped ? 2 : undefined}
-      paddingHorizontal={16}
-      paddingVertical={8}
+    <ListItemWrapper
+      grouped={grouped}
       icon={<UserAvatar uri={avatarUrl} size={44} />}
     >
       <XStack flex={1} justifyContent="space-between" alignItems="flex-start">
@@ -527,7 +547,7 @@ export function ListItemFriendRequest({
           {time}
         </StyledText>
       </XStack>
-    </ListItem>
+    </ListItemWrapper>
   );
 }
 

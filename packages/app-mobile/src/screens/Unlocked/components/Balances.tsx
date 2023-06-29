@@ -303,9 +303,9 @@ export function WalletPickerButton({
 
 function TextUsdBalance({ usdBalance }: { usdBalance: number }): JSX.Element {
   return (
-    <StyledText fontSize="$lg" color="$baseTextHighEmphasis" numberOfLines={1}>
+    <ListItemStyledText fontSize="$lg" color="$baseTextHighEmphasis">
       {formatUsd(usdBalance)}
-    </StyledText>
+    </ListItemStyledText>
   );
 }
 
@@ -318,13 +318,77 @@ function TextAmountBalance({
 }): JSX.Element {
   const subtitle = displayBalance ? `${displayBalance} ${ticker}` : ticker;
   return (
+    <ListItemStyledText color="$baseTextMedEmphasis">
+      {subtitle}
+    </ListItemStyledText>
+  );
+}
+
+type ListItemSubProps = {
+  children: React.ReactNode;
+};
+
+function ListItemLeft({ children }: ListItemSubProps) {
+  return (
+    <YStack f={1} space={4} mr={24}>
+      {children}
+    </YStack>
+  );
+}
+
+function ListItemRight({ children }: ListItemSubProps) {
+  return (
+    <YStack f={-1} space={4} ai="flex-end">
+      {children}
+    </YStack>
+  );
+}
+
+function ListItemRow({ children }: ListItemSubProps) {
+  return (
+    <XStack f={1} jc="space-between" ai="center">
+      {children}
+    </XStack>
+  );
+}
+
+function ListItemStyledText({ children, ...props }: ListItemSubProps) {
+  return (
     <StyledText
       textOverflow="ellipsis"
-      color="$baseTextMedEmphasis"
+      color="$baseTextHighEmphasis"
       numberOfLines={1}
+      {...props}
     >
-      {subtitle}
+      {children}
     </StyledText>
+  );
+}
+
+function ListItemIcon({ iconUrl }: { iconUrl: string }) {
+  return (
+    <Circle size={40} overflow="hidden">
+      {iconUrl ? <ProxyImage size={40} src={iconUrl} /> : null}
+    </Circle>
+  );
+}
+
+function ListItemWrapper({ children, grouped, ...props }): JSX.Element {
+  return (
+    <ListItem
+      pressTheme
+      hoverTheme
+      overflow="hidden"
+      backgroundColor="$nav"
+      borderRadius={grouped ? 0 : "$container"}
+      borderColor={grouped ? undefined : "$borderFull"}
+      borderWidth={grouped ? 0 : 2}
+      px={16}
+      py={12}
+      {...props}
+    >
+      {children}
+    </ListItem>
   );
 }
 
@@ -346,38 +410,24 @@ export function TokenRow({
   const { name, recentUsdBalanceChange, logo: iconUrl } = token;
 
   return (
-    <ListItem
-      ai="center"
-      bg="$card"
-      py={16}
-      px={16}
+    <ListItemWrapper
+      grouped
       onPress={() => onPressRow(blockchain, token, walletPublicKey)}
+      icon={<ListItemIcon iconUrl={iconUrl} />}
     >
-      <XStack ai="center">
-        <XStack ai="center" jc="space-between">
-          <Circle size={40} mr={16} overflow="hidden">
-            {iconUrl ? <ProxyImage size={40} src={iconUrl} /> : null}
-          </Circle>
-          <YStack f={1} space={4} mr={24}>
-            <StyledText
-              fontSize="$lg"
-              textOverflow="ellipsis"
-              color="$baseTextHighEmphasis"
-              numberOfLines={1}
-            >
-              {name}
-            </StyledText>
-            <TextAmountBalance
-              displayBalance={token.displayBalance}
-              ticker={token.ticker}
-            />
-          </YStack>
-          <YStack f={-1} space={4} ai="flex-end">
-            <TextUsdBalance usdBalance={token.usdBalance} />
-            <TextPercentChanged percentChange={recentUsdBalanceChange} />
-          </YStack>
-        </XStack>
-      </XStack>
-    </ListItem>
+      <ListItemRow>
+        <ListItemLeft>
+          <ListItemStyledText fontSize="$lg">{name}</ListItemStyledText>
+          <TextAmountBalance
+            displayBalance={token.displayBalance}
+            ticker={token.ticker}
+          />
+        </ListItemLeft>
+        <ListItemRight>
+          <TextUsdBalance usdBalance={token.usdBalance} />
+          <TextPercentChanged percentChange={recentUsdBalanceChange} />
+        </ListItemRight>
+      </ListItemRow>
+    </ListItemWrapper>
   );
 }

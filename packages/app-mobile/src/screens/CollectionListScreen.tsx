@@ -19,7 +19,6 @@ import { CollectionListScreenProps } from "~navigation/types";
 import {
   ListSpacer,
   PaddedFlatList,
-  ITEM_GAP,
   ListStyles,
 } from "~src/components/PaddedFlatList";
 import { gql } from "~src/graphql/__generated__";

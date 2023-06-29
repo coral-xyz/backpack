@@ -77,9 +77,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:3.8.0-beta.3":
-  version: 3.8.0-beta.3
-  resolution: "@apollo/client@npm:3.8.0-beta.3"
+"@apollo/client@npm:3.8.0-beta.5":
+  version: 3.8.0-beta.5
+  resolution: "@apollo/client@npm:3.8.0-beta.5"
   dependencies:
     "@graphql-typed-document-node/core": ^3.1.1
     "@wry/context": ^0.7.3
@@ -109,7 +109,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: 12a87b529ca7aeb2ddf60a46553cf2fda14b940fa1e1dee8d6cb43fe77827becd94c823dd824126453347cfbb8bd8542f77527b83884a32d52bc206886126e38
+  checksum: 0695c5dbd56b829b3702fae166ac5bca700eac27614cf6b830b359e98cdf66ef444375e56713875d0a545c901187092b245818a608786e8d29677085f7de79f5
   languageName: node
   linkType: hard
 
@@ -3830,7 +3830,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/app-mobile@workspace:packages/app-mobile"
   dependencies:
-    "@apollo/client": 3.8.0-beta.3
+    "@apollo/client": 3.8.0-beta.5
     "@babel/core": ^7.19.3
     "@cardinal/payment-manager": ^1.7.9
     "@cardinal/token-manager": ^1.7.9

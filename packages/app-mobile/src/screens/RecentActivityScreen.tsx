@@ -50,27 +50,28 @@ const GET_RECENT_TRANSACTIONS = gql(`
 
 function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
   const activeWallet = useActiveWallet();
-  const { data } = useSuspenseQuery(GET_RECENT_TRANSACTIONS, {
+  const { data } = useSuspenseQuery(QUERY_RECENT_TRANSACTIONS, {
     variables: {
-      // @ts-expect-error
       providerId: activeWallet.blockchain.toUpperCase(),
       address: activeWallet.publicKey,
     },
   });
 
-  const handlePressItem = useCallback(
-    (item: ListItemProps) => {
-      navigation.push("ActivityDetail", {
-        id: item.id,
-        title: item.title,
-      });
-    },
-    [navigation]
-  );
+  console.log("jj1:data", data, activeWallet);
+
+  // const handlePressItem = useCallback(
+  //   (item: ListItemProps) => {
+  //     navigation.push("ActivityDetail", {
+  //       id: item.id,
+  //       title: item.title,
+  //     });
+  //   },
+  //   [navigation]
+  // );
 
   const keyExtractor = (item: ListItemProps) => item.id;
   const renderItem = useCallback(
-    ({ item, section, index }: { item: ListItemProps }) => {
+    ({ item, section, index }: { item: ListItemProps; index: number }) => {
       const isFirst = index === 0;
       const isLast = index === section.data.length - 1;
 
@@ -83,11 +84,11 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
           disableBottomRadius={!isLast}
           borderRadius={borderRadius}
         >
-          <ListItem item={item} handlePress={handlePressItem} />
+          <ListItem item={item} />
         </RoundedContainerGroup>
       );
     },
-    [handlePressItem]
+    []
   );
 
   const renderSectionHeader = useCallback(({ section }: any) => {
