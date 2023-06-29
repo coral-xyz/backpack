@@ -2,12 +2,10 @@ import type { Blockchain } from "@coral-xyz/common";
 import type { Token, NavTokenOptions } from "~types/types";
 
 import { Suspense, useCallback } from "react";
-import { FlatList } from "react-native";
 
 import { blockchainBalancesSorted } from "@coral-xyz/recoil";
 import { Stack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRecoilValue } from "recoil";
 
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
@@ -23,7 +21,6 @@ import { useSession } from "~src/lib/SessionProvider";
 function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
   const { activeWallet } = useSession();
   const { blockchain, publicKey } = route.params;
-  const insets = useSafeAreaInsets();
   const balances = useRecoilValue(
     blockchainBalancesSorted({
       blockchain: (activeWallet?.blockchain as Blockchain) || blockchain,

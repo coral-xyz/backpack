@@ -1,5 +1,4 @@
 import { Suspense, useCallback } from "react";
-import { View } from "react-native";
 
 import { useSuspenseQuery } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
@@ -25,22 +24,14 @@ import {
 } from "~src/components/PaddedFlatList";
 import { gql } from "~src/graphql/__generated__";
 
-const GET_RECENT_TRANSACTIONS = gql(`
+const QUERY_RECENT_TRANSACTIONS = gql(`
   query WalletTransactions($providerId: ProviderID!, $address: String!) {
     wallet(providerId: $providerId, address: $address) {
       id
       transactions {
         edges {
           node {
-            id
-            description
-            block
-            fee
-            feePayer
-            hash
-            source
-            type
-            timestamp
+            ...TransactionFragment
           }
         }
       }
