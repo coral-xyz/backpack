@@ -1,7 +1,6 @@
-import type { RemoteUserData } from "@coral-xyz/common";
+import type {   Blockchain,RemoteUserData } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
-  Blockchain,
   BLOCKCHAIN_COMMON,
   getAddMessage,
   getCreateMessage,
@@ -267,52 +266,6 @@ router.get("/me", extractUserId, async (req: Request, res: Response) => {
     }
   }
   return res.status(404).json({ msg: "User not found" });
-});
-
-router.get("/primarySolPubkey/:username", async (req, res) => {
-  const username = req.params.username;
-  try {
-    const user = await getUserByUsername(username);
-    if (!user) {
-      return res.status(411).json({ msg: "User not found" });
-    }
-    const pubKey = user.publicKeys.find(
-      (x) => x.blockchain === Blockchain.SOLANA && x.primary
-    );
-    if (!pubKey)
-      return res
-        .status(411)
-        .json({ msg: "No active pubkey on SOL for this user" });
-
-    return res.json({
-      publicKey: pubKey.publicKey,
-    });
-  } catch (e) {
-    return res.status(411).json({ msg: "User not found" });
-  }
-});
-
-router.get("/primaryEclipsePubkey/:username", async (req, res) => {
-  const username = req.params.username;
-  try {
-    const user = await getUserByUsername(username);
-    if (!user) {
-      return res.status(411).json({ msg: "User not found" });
-    }
-    const pubKey = user.publicKeys.find(
-      (x) => x.blockchain === Blockchain.ECLIPSE && x.primary
-    );
-    if (!pubKey)
-      return res
-        .status(411)
-        .json({ msg: "No active pubkey on Eclipse for this user" });
-
-    return res.json({
-      publicKey: pubKey.publicKey,
-    });
-  } catch (e) {
-    return res.status(411).json({ msg: "User not found" });
-  }
 });
 
 /**

@@ -4,20 +4,6 @@ import { alice, bob, unregistered_user } from "./_constants";
 
 test.todo("creating a user");
 
-describe("getting the primary solana public key", async () => {
-  test("for a user with a primary solana public key", async () => {
-    expect((await bob.get("users/primarySolPubkey/alice")).publicKey).toEqual(
-      alice.public_keys.solana.keys[alice.public_keys.solana.primary]
-    );
-  });
-
-  test("for a user that doesn't have a primary solana public key", async () => {
-    expect((await bob.get("users/primarySolPubkey/ali")).msg).toEqual(
-      "No active pubkey on SOL for this user"
-    );
-  });
-});
-
 test("getting a user", async () => {
   const res = await unregistered_user.get("users/alice");
   expect(res.id).toEqual(alice.id);
