@@ -6,6 +6,7 @@ import {
 } from "@solana/web3.js";
 import { ethers } from "ethers";
 import { sign } from "tweetnacl";
+import { z } from "zod";
 
 const { base58 } = ethers.utils;
 
@@ -14,6 +15,8 @@ type BlockchainsNative = Record<
   {
     validateSignature: (msg: Buffer, sig: string, pubkey: string) => boolean;
     validatePublicKey: (address: string) => boolean;
+    ZodPublicKey: any; // TODO: type.
+    ZodCreatePublicKey: () => any; // TODO: type.
   }
 >;
 
@@ -36,6 +39,22 @@ export const BLOCKCHAINS_NATIVE: BlockchainsNative = {
       }
       return true;
     },
+    ZodPublicKey: z.object({
+      publicKey: z.string().refine((str) => {
+        try {
+          ethers.utils.getAddress(str);
+          return true;
+        } catch {
+          // Pass
+        }
+        return false;
+      }, "must be a valid Ethereum public key"),
+      blockchain: z.literal("ethereum"),
+    }),
+    ZodCreatePublicKey: () =>
+      BLOCKCHAINS_NATIVE[Blockchain.ETHEREUM].ZodPublicKey.extend({
+        signature: z.string(),
+      }),
   },
   [Blockchain.SOLANA]: {
     /**
@@ -86,6 +105,22 @@ export const BLOCKCHAINS_NATIVE: BlockchainsNative = {
       }
       return true;
     },
+    ZodPublicKey: z.object({
+      publicKey: z.string().refine((str) => {
+        try {
+          new PublicKey(str);
+          return true;
+        } catch {
+          // Pass
+        }
+        return false;
+      }, "must be a valid Solana public key"),
+      blockchain: z.literal("solana"),
+    }),
+    ZodCreatePublicKey: () =>
+      BLOCKCHAINS_NATIVE[Blockchain.SOLANA].ZodPublicKey.extend({
+        signature: z.string(),
+      }),
   },
   [Blockchain.ECLIPSE]: {
     validateSignature: (
@@ -107,5 +142,21 @@ export const BLOCKCHAINS_NATIVE: BlockchainsNative = {
       }
       return true;
     },
+    ZodPublicKey: z.object({
+      publicKey: z.string().refine((str) => {
+        try {
+          new PublicKey(str);
+          return true;
+        } catch {
+          // Pass
+        }
+        return false;
+      }, "must be a valid Eclipse public key"),
+      blockchain: z.literal("eclipse"),
+    }),
+    ZodCreatePublicKey: () =>
+      BLOCKCHAINS_NATIVE[Blockchain.ECLIPSE].ZodPublicKey.extend({
+        signature: z.string(),
+      }),
   },
 };
