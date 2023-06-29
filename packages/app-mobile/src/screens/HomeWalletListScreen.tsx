@@ -19,6 +19,7 @@ import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummar
 
 import Images from "~src/Images";
 import { ScreenListLoading } from "~src/components/LoadingStates";
+import { PaddedFlatList } from "~src/components/PaddedFlatList";
 import { gql } from "~src/graphql/__generated__";
 import { useSession } from "~src/lib/SessionProvider";
 import { coalesceWalletData } from "~src/lib/WalletUtils";
@@ -87,7 +88,7 @@ function ListItemWalletCard({
       }}
     >
       <Stack
-        mt={isFirst ? 0 : -12}
+        mt={isFirst ? 0 : -20}
         jc="space-between"
         p={16}
         borderRadius={12}
@@ -177,13 +178,10 @@ function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
   );
 
   return (
-    <FlatList
-      style={{ paddingTop: 16, paddingHorizontal: 16 }}
-      contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
+    <PaddedFlatList
       data={wallets}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
-      showsVerticalScrollIndicator={false}
       ListHeaderComponent={
         <Stack mt={12} mb={36}>
           <BalanceSummaryWidget />

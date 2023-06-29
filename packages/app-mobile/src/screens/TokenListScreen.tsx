@@ -17,6 +17,7 @@ import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummar
 import { TokenRow } from "~screens/Unlocked/components/Balances";
 
 import { ScreenListLoading } from "~src/components/LoadingStates";
+import { PaddedFlatList } from "~src/components/PaddedFlatList";
 import { useSession } from "~src/lib/SessionProvider";
 
 function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
@@ -65,28 +66,27 @@ function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
     [balances.length, onPressToken, blockchain, publicKey]
   );
 
+  const ListHeader = (
+    <>
+      <BalanceSummaryWidget hideChange />
+      <Stack mt={18} mb={24}>
+        <TransferWidget
+          swapEnabled
+          rampEnabled={false}
+          onPressOption={(route: string, options: NavTokenOptions) => {
+            navigation.push(route, options);
+          }}
+        />
+      </Stack>
+    </>
+  );
+
   return (
-    <FlatList
-      style={{ paddingTop: 8, marginTop: 8, paddingHorizontal: 16 }}
-      contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
+    <PaddedFlatList
       data={balances}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
-      showsVerticalScrollIndicator={false}
-      ListHeaderComponent={
-        <>
-          <BalanceSummaryWidget hideChange />
-          <Stack mt={18} mb={24}>
-            <TransferWidget
-              swapEnabled
-              rampEnabled={false}
-              onPressOption={(route: string, options: NavTokenOptions) => {
-                navigation.push(route, options);
-              }}
-            />
-          </Stack>
-        </>
-      }
+      ListHeaderComponent={ListHeader}
     />
   );
 }

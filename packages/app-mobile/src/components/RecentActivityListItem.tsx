@@ -8,13 +8,7 @@ import {
 import { parseTransactionDescription } from "~lib/RecentActivityUtils";
 export type ListItemProps = any;
 
-export function ListItem({
-  item,
-  handlePress,
-}: {
-  item: ListItemProps;
-  handlePress: (item: ListItemProps) => void;
-}): JSX.Element {
+export function ListItem({ item }: { item: ListItemProps }): JSX.Element {
   switch (item.type) {
     case "SWAP": {
       const { sent, received, display } = parseTransactionDescription(item);

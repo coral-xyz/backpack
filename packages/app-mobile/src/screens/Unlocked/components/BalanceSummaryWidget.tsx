@@ -141,7 +141,7 @@ function ErrorFallback({ error }: { error: Error }) {
   );
 }
 
-export function BalanceSummaryWidget({ hideChange }: { hideChange: boolean }) {
+export function BalanceSummaryWidget({ hideChange }: { hideChange?: boolean }) {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <Suspense fallback={<BalanceSummaryWidgetLoading />}>

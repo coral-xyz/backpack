@@ -1,11 +1,11 @@
 import { Suspense, useCallback } from "react";
-import { SectionList } from "react-native";
+import { View } from "react-native";
 
 import { useSuspenseQuery } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { SectionHeader, SectionSeparator } from "~components/ListItem";
+import { SectionSeparator } from "~components/ListItem";
 import { NoRecentActivity } from "~components/RecentActivityList";
 import {
   ListItem,
@@ -19,6 +19,10 @@ import {
 import { convertTransactionDataToSectionList } from "~lib/RecentActivityUtils";
 import { RecentActivityScreenProps } from "~navigation/types";
 
+import {
+  PaddedSectionList,
+  SectionHeader,
+} from "~src/components/PaddedFlatList";
 import { gql } from "~src/graphql/__generated__";
 
 const GET_RECENT_TRANSACTIONS = gql(`
@@ -64,19 +68,20 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
     [navigation]
   );
 
-  const sections = convertTransactionDataToSectionList(
-    data?.wallet?.transactions?.edges ?? []
-  );
-
   const keyExtractor = (item: ListItemProps) => item.id;
   const renderItem = useCallback(
     ({ item, section, index }: { item: ListItemProps }) => {
       const isFirst = index === 0;
       const isLast = index === section.data.length - 1;
+
+      // there's a weird glitch that prevents the border from showing up properly when more than 1 item
+      const borderRadius = section.data.length > 1 ? 24 : 16;
+
       return (
         <RoundedContainerGroup
           disableTopRadius={!isFirst}
           disableBottomRadius={!isLast}
+          borderRadius={borderRadius}
         >
           <ListItem item={item} handlePress={handlePressItem} />
         </RoundedContainerGroup>
@@ -89,18 +94,18 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
     return <SectionHeader title={section.title} />;
   }, []);
 
+  const sections = convertTransactionDataToSectionList(
+    data?.wallet?.transactions?.edges ?? []
+  );
+
   return (
-    <SectionList
-      style={{ paddingTop: 16, paddingHorizontal: 16 }}
-      contentContainerStyle={{ paddingBottom: 32 }}
+    <PaddedSectionList
       sections={sections}
       ListEmptyComponent={NoRecentActivity}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
       renderSectionHeader={renderSectionHeader}
-      SectionSeparatorComponent={SectionSeparator}
-      stickySectionHeadersEnabled={false}
-      showsVerticalScrollIndicator={false}
+      renderSectionFooter={SectionSeparator}
     />
   );
 }

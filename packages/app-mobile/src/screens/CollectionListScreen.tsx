@@ -1,5 +1,5 @@
 import { Suspense, useMemo, useCallback } from "react";
-import { View, Text, FlatList, FlatListProps } from "react-native";
+import { View, Text } from "react-native";
 
 import * as Linking from "expo-linking";
 
@@ -7,7 +7,6 @@ import { useSuspenseQuery } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ErrorBoundary } from "react-error-boundary";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BaseListItem, ITEM_HEIGHT } from "~components/CollectionListItem";
 import { EmptyState, FullScreenLoading } from "~components/index";
@@ -17,11 +16,13 @@ import {
 } from "~lib/CollectionUtils";
 import { CollectionListScreenProps } from "~navigation/types";
 
+import {
+  ListSpacer,
+  PaddedFlatList,
+  ITEM_GAP,
+  ListStyles,
+} from "~src/components/PaddedFlatList";
 import { gql } from "~src/graphql/__generated__";
-import { GlobalStyles } from "~src/lib";
-
-const ITEM_GAP = 16;
-const ITEM_SPACE = ITEM_GAP / 2;
 
 function NoNFTsEmptyState() {
   return (
@@ -55,7 +56,6 @@ const GET_NFT_COLLECTIONS = gql(`
 `);
 
 function Container({ navigation }: CollectionListScreenProps): JSX.Element {
-  const insets = useSafeAreaInsets();
   const { blockchain, publicKey } = useActiveWallet();
   const { data } = useSuspenseQuery(GET_NFT_COLLECTIONS, {
     variables: {
@@ -98,30 +98,16 @@ function Container({ navigation }: CollectionListScreenProps): JSX.Element {
     <PaddedFlatList
       data={rows}
       numColumns={2}
-      ListEmptyComponent={NoNFTsEmptyState}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
-      columnWrapperStyle={{ gap: ITEM_GAP }}
-      showsVerticalScrollIndicator={false}
+      columnWrapperStyle={ListStyles.columnGap}
+      ItemSeparatorComponent={ListSpacer}
+      ListEmptyComponent={NoNFTsEmptyState}
       getItemLayout={(_, index: number) => ({
         length: ITEM_HEIGHT,
         offset: ITEM_HEIGHT * index,
         index,
       })}
-    />
-  );
-}
-
-export function PaddedFlatList(props: FlatListProps<any>) {
-  const insets = useSafeAreaInsets();
-  return (
-    <FlatList
-      style={GlobalStyles.listContainer}
-      contentContainerStyle={[
-        GlobalStyles.listContentContainer,
-        { paddingBottom: insets.bottom + ITEM_GAP },
-      ]}
-      {...props}
     />
   );
 }

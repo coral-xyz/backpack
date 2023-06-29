@@ -17,11 +17,14 @@ export function convertTransactionDataToSectionList(
 ): Section[] {
   // Group transactions by timestamp
   const groups = transactions.reduce((acc, transaction) => {
-    const date = new Date(transaction.node.timestamp).toLocaleDateString();
-    if (acc[date]) {
-      acc[date].push(transaction.node);
+    const date = new Date(transaction.node.timestamp);
+    const formattedDate = `${date.toLocaleString("default", {
+      month: "long",
+    })} ${date.getDate()}, ${date.getFullYear()}`;
+    if (acc[formattedDate]) {
+      acc[formattedDate].push(transaction.node);
     } else {
-      acc[date] = [transaction.node];
+      acc[formattedDate] = [transaction.node];
     }
     return acc;
   }, {});
