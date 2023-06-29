@@ -170,7 +170,7 @@ export class Bitcoin implements BlockchainDataProvider {
     }
 
     const ordinals = await this.#sdk.ord.getOrdinalsByOwner(address);
-    const collectionSymbols = ordinals.items.reduce<Set<string>>(
+    const collectionSymbols = ordinals.tokens.reduce<Set<string>>(
       (acc, curr) => {
         const s = _parseCollectionSymbol(curr);
         if (s) {
@@ -185,9 +185,9 @@ export class Bitcoin implements BlockchainDataProvider {
       collectionSymbols
     );
 
-    const nodes: Nft[] = ordinals.items.map((ord) =>
+    const nodes: Nft[] = ordinals.tokens.map((ord) =>
       NodeBuilder.nft(this.id(), {
-        address: ord.inscriptionNumber.toString(),
+        address: ord.id,
         attributes: ord.meta?.attributes?.map((attr) => ({
           trait: attr.trait_type,
           value: attr.value,
@@ -198,7 +198,7 @@ export class Bitcoin implements BlockchainDataProvider {
           _parseCollectionSymbol(ord)
         ),
         compressed: false,
-        image: ord.contentURI, // FIXME:
+        image: ord.contentType.startsWith("image") ? ord.contentURI : undefined,
         listing: ord.listed
           ? NodeBuilder.nftListing(this.id(), "", {
               amount: ethers.utils.formatUnits(
@@ -206,10 +206,9 @@ export class Bitcoin implements BlockchainDataProvider {
                 this.decimals()
               ),
               source: ord.listedAt,
-              url: this.#sdk.ord.getOrdinalListingUrl(""), // FIXME:
+              url: this.#sdk.ord.getOrdinalListingUrl(ord.id),
             })
           : undefined,
-        metadataUri: undefined, // FIXME:
         name: ord.meta?.name,
         owner: address,
         token: ord.inscriptionNumber.toString(),
@@ -274,21 +273,21 @@ function _getCollectionData(
   const collectionData = symbol ? collections[symbol] : undefined;
   return collectionData
     ? NodeBuilder.nftCollection(providerId, {
-        address: "", // FIXME:
+        address: collectionData.symbol,
         image: collectionData.imageURI,
         name: collectionData.name,
-        verified: true,
+        verified: false,
       })
     : undefined;
 }
 
 /**
  * Attempt to find and return the symbol for the ordinal collection
- * @param {MagicEdenGetOrdinalsByOwnerResponse['items'][number]} ordinal
+ * @param {MagicEdenGetOrdinalsByOwnerResponse['tokens'][number]} ordinal
  * @returns {(string | undefined)}
  */
 function _parseCollectionSymbol(
-  ordinal: MagicEdenGetOrdinalsByOwnerResponse["items"][number]
+  ordinal: MagicEdenGetOrdinalsByOwnerResponse["tokens"][number]
 ): string | undefined {
   return ordinal.collectionSymbol || ordinal.collection?.symbol || undefined;
 }

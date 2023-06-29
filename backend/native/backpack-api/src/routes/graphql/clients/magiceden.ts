@@ -107,11 +107,14 @@ export class MagicEden extends RESTDataSource {
 
 export type MagicEdenGetOrdinalsByOwnerResponse = {
   total: number;
-  items: Array<{
+  tokens: Array<{
+    id: string;
     chain: string;
     collection?: {
       chain: string;
+      description?: string;
       imageURI?: string;
+      inscriptionIcon?: string;
       name?: string;
       symbol?: string;
     };
@@ -171,5 +174,6 @@ export type MagicEdenGetOrdinalCollectionResponse = Record<
     min_inscription_number: number;
     max_inscription_number: number;
     createdAt: string;
+    inscriptionIcon?: string;
   }
 >;
