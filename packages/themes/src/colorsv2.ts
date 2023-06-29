@@ -20,8 +20,8 @@ export const darkAccentPurple = "#e17aff";
 
 // Neutral Colors
 export const base50 = "rgba(244, 244, 246, 1)"; // formerly #f8f8f9
-export const base100 = "rgba(238, 239, 241, 1)"; // formerly #f0f0f2
-export const base200 = "rgba(227, 228, 232, 1)"; // formerly #dfe0e5
+export const base100 = "rgba(238, 239, 241)"; // formerly #f0f0f2
+export const base200 = "rgba(227, 228, 232)"; // formerly #dfe0e5
 export const base300 = "rgba(200, 201, 208, 1)"; // formerly #c2c4cc
 export const base400 = "rgba(142, 145, 159, 1)"; // formerly #8f929e
 export const base500 = "rgba(117, 121, 138, 1)"; // formerly #787c89
@@ -80,18 +80,14 @@ export const lightGreenText = green700;
 export const lightGreenIcon = green600;
 export const lightGreenBorder = color(green600).alpha(0.4).string();
 export const lightGreenBackgroundSolid = green100;
-export const lightGreenBackgroundTransparent = color(green500)
-  .alpha(0.12)
-  .string();
+export const lightGreenBackgroundTransparent = color(green500).alpha(0.12).string();
 
 // Light Mode Warning
 export const lightYellowText = yellow700;
 export const lightYellowIcon = yellow600;
 export const lightYellowBorder = color(yellow700).alpha(0.5).string();
 export const lightYellowBackgroundSolid = yellow100;
-export const lightYellowBackgroundTransparent = color(yellow500)
-  .alpha(12)
-  .string();
+export const lightYellowBackgroundTransparent = color(yellow500).alpha(12).string();
 
 // Light Mode Error
 export const lightRedText = red700;
