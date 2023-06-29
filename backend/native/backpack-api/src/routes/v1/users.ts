@@ -1,4 +1,4 @@
-import type {   Blockchain,RemoteUserData } from "@coral-xyz/common";
+import type { Blockchain, RemoteUserData } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
   BLOCKCHAIN_COMMON,
@@ -14,6 +14,7 @@ import {
   extractUserId,
 } from "../../auth/middleware";
 import { clearCookie, setJWTCookie, validateJwt } from "../../auth/util";
+import { BLOCKCHAINS_NATIVE } from "../../blockchains";
 import { REFERRER_COOKIE_NAME } from "../../config";
 import { getFriendshipStatus } from "../../db/friendships";
 import { getPublicKeyDetails, updatePublicKey } from "../../db/publicKey";
@@ -136,43 +137,43 @@ router.get("/jwt/xnft", extractUserId, async (req, res) => {
  * Create a new user.
  */
 router.post("/", async (req, res) => {
-  const { username, waitlistId, blockchainPublicKeys } =
-    CreateUserWithPublicKeys.parse(req.body);
+  try {
+    const { username, waitlistId, blockchainPublicKeys } =
+      CreateUserWithPublicKeys.parse(req.body);
 
-  // Validate all the signatures
-  for (const blockchainPublicKey of blockchainPublicKeys) {
-    const signedMessage = getCreateMessage(blockchainPublicKey.publicKey);
-    if (
-      !BLOCKCHAINS_NATIVE[
-        blockchainPublicKey.blockchain as Blockchain
-      ].validateSignature(
-        Buffer.from(signedMessage, "utf-8"),
-        blockchainPublicKey.signature,
-        blockchainPublicKey.publicKey
-      )
-    ) {
-      return res
-        .status(400)
-        .json({ msg: `Invalid ${blockchainPublicKey.blockchain} signature` });
+    // Validate all the signatures
+    for (const blockchainPublicKey of blockchainPublicKeys) {
+      const signedMessage = getCreateMessage(blockchainPublicKey.publicKey);
+      if (
+        !BLOCKCHAINS_NATIVE[
+          blockchainPublicKey.blockchain as Blockchain
+        ].validateSignature(
+          Buffer.from(signedMessage, "utf-8"),
+          blockchainPublicKey.signature,
+          blockchainPublicKey.publicKey
+        )
+      ) {
+        return res
+          .status(400)
+          .json({ msg: `Invalid ${blockchainPublicKey.blockchain} signature` });
+      }
     }
-  }
 
-  // Check for conflicts
-  const conflictingUsers = await getUsersByPublicKeys(
-    blockchainPublicKeys.map((b) => ({
-      blockchain: b.blockchain as Blockchain,
-      publicKey: b.publicKey,
-    }))
-  );
-  if (conflictingUsers.length > 0) {
-    // Another user already uses this public key
-    return res.status(409).json({
-      msg: "Wallet address is used by another Backpack account",
-    });
-  }
+    // Check for conflicts
+    const conflictingUsers = await getUsersByPublicKeys(
+      blockchainPublicKeys.map((b) => ({
+        blockchain: b.blockchain as Blockchain,
+        publicKey: b.publicKey,
+      }))
+    );
+    if (conflictingUsers.length > 0) {
+      // Another user already uses this public key
+      return res.status(409).json({
+        msg: "Wallet address is used by another Backpack account",
+      });
+    }
 
-  const referrerId = await (async () => {
-    try {
+    const referrerId = await (async () => {
       if (req.cookies[REFERRER_COOKIE_NAME]) {
         // Store the referrer if the cookie is valid
         return (await getUser(req.cookies[REFERRER_COOKIE_NAME]))?.id as string;
@@ -187,61 +188,64 @@ router.post("/", async (req, res) => {
           }
         }
       }
-    } catch (err) {
-      // TODO: log this failed referral
-    }
-    return undefined;
-  })();
+      return undefined;
+    })();
 
-  const user = await createUser(
-    username,
-    blockchainPublicKeys.map((b) => ({
-      ...b,
-      // Cast blockchain to correct type
-      blockchain: b.blockchain as Blockchain,
-    })),
-    waitlistId,
-    referrerId
-  );
+    const user = await createUser(
+      username,
+      blockchainPublicKeys.map((b) => ({
+        ...b,
+        // Cast blockchain to correct type
+        blockchain: b.blockchain as Blockchain,
+      })),
+      waitlistId,
+      referrerId
+    );
 
-  user?.public_keys.map(async ({ blockchain, id }) => {
-    //TODO: make a bulk, single call here
-    await updatePublicKey({
-      userId: user.id,
-      blockchain,
-      publicKeyId: id,
-    });
-  });
-  let jwt: string;
-  if (user) {
-    jwt = await setJWTCookie(req, res, user.id as string);
-  } else {
-    return res.status(500).json({ msg: "Error creating user account" });
-  }
-
-  if (process.env.SLACK_WEBHOOK_URL) {
-    try {
-      const publicKeyStr = blockchainPublicKeys
-        .map((b) => `${b.blockchain.substring(0, 3)}: ${b.publicKey}`)
-        .join(", ");
-      await fetch(process.env.SLACK_WEBHOOK_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: [username, publicKeyStr].join("\n"),
-          icon_url: `${AVATAR_BASE_URL}/${username}`,
-        }),
+    user?.public_keys.map(async ({ blockchain, id }) => {
+      //TODO: make a bulk, single call here
+      await updatePublicKey({
+        userId: user.id,
+        blockchain,
+        publicKeyId: id,
       });
-    } catch (err) {
-      console.error({ slackWebhook: err });
+    });
+    let jwt: string;
+    if (user) {
+      jwt = await setJWTCookie(req, res, user.id as string);
+    } else {
+      return res.status(500).json({ msg: "Error creating user account" });
     }
+
+    if (process.env.SLACK_WEBHOOK_URL) {
+      try {
+        const publicKeyStr = blockchainPublicKeys
+          .map((b) => `${b.blockchain.substring(0, 3)}: ${b.publicKey}`)
+          .join(", ");
+        await fetch(process.env.SLACK_WEBHOOK_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text: [username, publicKeyStr].join("\n"),
+            icon_url: `${AVATAR_BASE_URL}/${username}`,
+          }),
+        });
+      } catch (err) {
+        console.error({ slackWebhook: err });
+      }
+    }
+
+    clearCookie(res, REFERRER_COOKIE_NAME);
+
+    return res.json({ id: user.id, msg: "ok", jwt });
+  } catch (err) {
+    console.error("ERROR", err);
+    return res
+      .status(500)
+      .json({ status: "error", msg: (err as Error).message });
   }
-
-  clearCookie(res, REFERRER_COOKIE_NAME);
-
-  return res.json({ id: user.id, msg: "ok", jwt });
 });
 
 /**
